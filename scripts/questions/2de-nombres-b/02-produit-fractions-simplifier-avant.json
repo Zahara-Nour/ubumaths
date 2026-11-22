@@ -62,7 +62,19 @@
 			"conditions": ["p!=q", "gcd(a,b)==1", "gcd(c,d)==1", "gcd(u*v,t*w)==1", "t*w>1"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a*d}} }{ {{eval:b*c}} }",
+							"message": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux.",
+							"label": "Produit en croix"
+						},
+						{
+							"answer": "\\frac{ {{eval:a*d+b*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as additionné les deux fractions au lieu de les multiplier.",
+							"label": "Addition au lieu de multiplication"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -72,7 +84,8 @@
 					"On simplifie par ${{p}}$ et par ${{q}}$ :",
 					"$$\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{if:u==1|{{v}}|{{if:v==1|{{u}}|{{u}}\\times{{v}}}}}} }{ {{if:t==1|{{w}}|{{if:w==1|{{t}}|{{t}}\\times{{w}}}}}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{N}} }{ {{D}} }}$$"
 				]
-			}
+			},
+			"hint": "Ne multiplie pas tout de suite : décompose ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$ en produits pour repérer les facteurs communs, puis simplifie."
 		},
 		{
 			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }\\times\\left(-\\dfrac{ {{c}} }{ {{d}} }\\right)=?$",
@@ -129,7 +142,24 @@
 			"conditions": ["p!=q", "gcd(a,b)==1", "gcd(c,d)==1", "gcd(u*v,t*w)==1", "t*w>1"],
 			"blanks": [
 				{
-					"expectedAnswer": "-\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "-\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{N}} }{ {{D}} }",
+							"message": "Ton résultat a le mauvais signe : un seul des deux facteurs est négatif.",
+							"label": "Signe moins oublié"
+						},
+						{
+							"answer": "-\\frac{ {{eval:a*d}} }{ {{eval:b*c}} }",
+							"message": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux.",
+							"label": "Produit en croix"
+						},
+						{
+							"answer": "\\frac{ {{eval:a*d-b*c}} }{ {{eval:b*d}} }",
+							"message": "Tu as soustrait les deux fractions au lieu de les multiplier.",
+							"label": "Soustraction au lieu de multiplication"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -139,7 +169,8 @@
 					"On simplifie par ${{p}}$ et par ${{q}}$ (un seul signe moins : le produit est négatif) :",
 					"$$\\dfrac{ {{a}} }{ {{b}} }\\times\\left(-\\dfrac{ {{c}} }{ {{d}} }\\right)=-\\dfrac{ {{if:u==1|{{v}}|{{if:v==1|{{u}}|{{u}}\\times{{v}}}}}} }{ {{if:t==1|{{w}}|{{if:w==1|{{t}}|{{t}}\\times{{w}}}}}} }=\\textcolor{{{color:primary.0}}}{-\\dfrac{ {{N}} }{ {{D}} }}$$"
 				]
-			}
+			},
+			"hint": "Ne multiplie pas tout de suite : décompose ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$ pour repérer les facteurs communs. Compte aussi les signes moins."
 		},
 		{
 			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n${{n}}\\times\\dfrac{ {{a}} }{ {{b}} }=?$",
@@ -180,7 +211,24 @@
 			"conditions": ["gcd(a,b)==1", "gcd(u*a,t)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:n*a}} }{ {{eval:n*b}} }",
+							"message": "Tu as multiplié aussi le dénominateur par l'entier : l'entier ne multiplie que le numérateur.",
+							"label": "Entier multiplié en haut et en bas"
+						},
+						{
+							"answer": "\\frac{ {{a}} }{ {{eval:n*b}} }",
+							"message": "Tu as multiplié le dénominateur par l'entier : c'est le numérateur qu'il faut multiplier.",
+							"label": "Entier multiplié au dénominateur"
+						},
+						{
+							"answer": "\\frac{ {{eval:n*b+a}} }{ {{b}} }",
+							"message": "Tu as additionné l'entier et la fraction au lieu de les multiplier.",
+							"label": "Addition au lieu de multiplication"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -190,7 +238,8 @@
 					"On simplifie par ${{q}}$ :",
 					"$${{n}}\\times\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{u}}\\times{{a}} }{ {{t}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{N}} }{ {{D}} }}$$"
 				]
-			}
+			},
+			"hint": "L'entier ne multiplie que le numérateur. Avant de calculer, cherche un facteur commun à ${{n}}$ et à ${{b}}$."
 		}
 	],
 	"testSpecs": [
@@ -316,6 +365,136 @@
 			"expected": {
 				"status": "unoptimal_form",
 				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur prévue : 14/15 × 3/7 en croix (98/45)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{98}{45}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux."
+			}
+		},
+		{
+			"description": "Erreur prévue : 14/15 + 3/7",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{143}{105}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux fractions au lieu de les multiplier."
+			}
+		},
+		{
+			"description": "Erreur prévue : 2/5 pour 14/15 × (−3/7)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat a le mauvais signe : un seul des deux facteurs est négatif."
+			}
+		},
+		{
+			"description": "Erreur prévue : −98/45 en croix",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["-\\frac{98}{45}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié en croix : pour un produit, on multiplie les numérateurs entre eux et les dénominateurs entre eux."
+			}
+		},
+		{
+			"description": "Erreur prévue : 14/15 − 3/7",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7",
+				"u": "2",
+				"q": "3",
+				"t": "5",
+				"v": "1",
+				"w": "1"
+			},
+			"answers": ["\\frac{53}{105}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait les deux fractions au lieu de les multiplier."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 × 5/4 = 30/24",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{30}{24}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié aussi le dénominateur par l'entier : l'entier ne multiplie que le numérateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 × 5/4 = 5/24",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{5}{24}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le dénominateur par l'entier : c'est le numérateur qu'il faut multiplier."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 + 5/4 = 29/4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2",
+				"u": "3",
+				"t": "2",
+				"a": "5"
+			},
+			"answers": ["\\frac{29}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné l'entier et la fraction au lieu de les multiplier."
 			}
 		}
 	]

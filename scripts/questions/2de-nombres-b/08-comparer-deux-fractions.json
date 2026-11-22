@@ -57,7 +57,8 @@
 					"Ainsi $\\dfrac{ {{r}} }{ {{t}} }<1<\\dfrac{ {{p}} }{ {{q}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{p}} }{ {{q}} }|\\dfrac{ {{r}} }{ {{t}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{r}} }{ {{t}} }|\\dfrac{ {{p}} }{ {{q}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ces deux fractions : choisis le bon signe.\n\n$${{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}\\;\\ldots\\;{{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
@@ -107,7 +108,8 @@
 					"La différence est **négative**, donc $\\dfrac{ {{m}} }{ {{n}} }<\\dfrac{ {{n}} }{ {{n1}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{n}} }{ {{n1}} }|\\dfrac{ {{m}} }{ {{n}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{m}} }{ {{n}} }|\\dfrac{ {{n}} }{ {{n1}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ces deux fractions : choisis le bon signe.\n\n$${{if:z==1|\\dfrac{ {{a}} }{ {{n}} }|\\dfrac{ {{b}} }{ {{n}} }}}\\;\\ldots\\;{{if:z==1|\\dfrac{ {{b}} }{ {{n}} }|\\dfrac{ {{a}} }{ {{n}} }}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
@@ -145,7 +147,8 @@
 					"${{a}}>{{b}}$, donc $\\dfrac{ {{a}} }{ {{n}} }>\\dfrac{ {{b}} }{ {{n}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{a}} }{ {{n}} }|\\dfrac{ {{b}} }{ {{n}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{b}} }{ {{n}} }|\\dfrac{ {{a}} }{ {{n}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ces deux fractions : choisis le bon signe.\n\n$${{if:z==1|\\dfrac{ {{n}} }{ {{a}} }|\\dfrac{ {{n}} }{ {{b}} }}}\\;\\ldots\\;{{if:z==1|\\dfrac{ {{n}} }{ {{b}} }|\\dfrac{ {{n}} }{ {{a}} }}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
@@ -183,7 +186,8 @@
 					"${{a}}<{{b}}$, donc $\\dfrac{ {{n}} }{ {{a}} }>\\dfrac{ {{n}} }{ {{b}} }$.",
 					"Donc $\\textcolor{{{color:primary.0}}}{{{if:z==1|\\dfrac{ {{n}} }{ {{a}} }|\\dfrac{ {{n}} }{ {{b}} }}}{{if:z==1|>|<}}{{if:z==1|\\dfrac{ {{n}} }{ {{b}} }|\\dfrac{ {{n}} }{ {{a}} }}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [

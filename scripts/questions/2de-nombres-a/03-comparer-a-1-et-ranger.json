@@ -34,7 +34,8 @@
 					"$1=\\dfrac{ {{q}} }{ {{q}} }$ : on compare les numérateurs, le dénominateur étant le même.",
 					"{{if:idx==0|${{p}}<{{q}}$ : le numérateur est **plus petit** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<1}$.|${{p}}>{{q}}$ : le numérateur est **plus grand** que le dénominateur, donc $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }>1}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Compare ${{n}}$ et $\\dfrac{ {{p}} }{ {{q}} }$.\n\n```choix\nmelanger: non\n- ${{n}}<\\dfrac{ {{p}} }{ {{q}} }$\n- ${{n}}=\\dfrac{ {{p}} }{ {{q}} }$\n- ${{n}}>\\dfrac{ {{p}} }{ {{q}} }$\n```",
@@ -75,7 +76,8 @@
 					"On écrit ${{n}}$ avec le dénominateur ${{q}}$ : ${{n}}=\\dfrac{ {{eval:n*q}} }{ {{q}} }$.",
 					"{{if:sg==1|${{eval:n*q}}<{{p}}$, donc $\\textcolor{{{color:primary.0}}}{{{n}}<\\dfrac{ {{p}} }{ {{q}} }}$.|${{eval:n*q}}>{{p}}$, donc $\\textcolor{{{color:primary.0}}}{{{n}}>\\dfrac{ {{p}} }{ {{q}} }}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Range ces nombres dans l'ordre **croissant**.\n\n```ranger\nsigne: <\n- $\\dfrac{ {{p}} }{ {{q}} }$\n- ${{eval:d2/100;d}}$\n- ${{eval:d3/10;d}}$\n- $\\dfrac{ {{r}} }{ {{s}} }$\n```",
@@ -117,7 +119,8 @@
 					"Pour comparer ${{eval:d2/100;d}}$ et ${{eval:d3/10;d}}$, on écrit ${{eval:d3/10;d}}={{eval:d3/10;d}}0$ : ${{eval:d2/100;d}}<{{eval:d3/10;d}}0$ (on ne compare pas ${{eval:d2}}$ et ${{eval:d3}}$).",
 					"$\\textcolor{{{color:primary.0}}}{\\dfrac{ {{p}} }{ {{q}} }<{{eval:d2/100;d}}<{{eval:d3/10;d}}<\\dfrac{ {{r}} }{ {{s}} }}$"
 				]
-			}
+			},
+			"hint": "Écris tous les nombres en écriture décimale, avec le même nombre de chiffres après la virgule (par exemple trois), puis compare-les."
 		}
 	],
 	"testSpecs": [

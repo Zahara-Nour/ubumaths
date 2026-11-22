@@ -39,7 +39,24 @@
 			"conditions": ["gcd(a,d)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:a/d;d}}"
+					"expectedAnswer": "{{eval:a/d;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}.{{d}}",
+							"message": "Tu as écrit le numérateur et le dénominateur de part et d'autre de la virgule : une fraction est une division.",
+							"label": "Numérateur, virgule, dénominateur"
+						},
+						{
+							"answer": "{{eval:floor(a/d)}}.{{eval:mod(a,d)}}",
+							"message": "Tu as écrit le quotient, une virgule, puis le reste : le reste n'est pas la partie décimale.",
+							"label": "Quotient, virgule, reste"
+						},
+						{
+							"answer": "{{eval:floor(a/d)}}",
+							"message": "Tu as gardé seulement la partie entière : la division continue après la virgule.",
+							"label": "Partie décimale oubliée"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -47,7 +64,8 @@
 					"On écrit une fraction égale dont le dénominateur est $10$, $100$ ou $1\\,000${{if:k==1|, ici elle l'est déjà.| : ici ${{d}}\\times{{k}}={{T}}$.}}",
 					"$$\\dfrac{ {{a}} }{ {{d}} }{{if:k>1|=\\dfrac{ {{a}}\\times{{k}} }{ {{d}}\\times{{k}} }=\\dfrac{ {{A}} }{ {{T}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:a/d;d}}}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Donne l'écriture décimale de $\\dfrac{ {{a}} }{ {{d}} }$.\n\n$\\dfrac{ {{a}} }{ {{d}} }=?$",
@@ -76,7 +94,24 @@
 			"conditions": ["gcd(a,d)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:a/d;d}}"
+					"expectedAnswer": "{{eval:a/d;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}.{{d}}",
+							"message": "Tu as écrit le numérateur et le dénominateur de part et d'autre de la virgule : une fraction est une division.",
+							"label": "Numérateur, virgule, dénominateur"
+						},
+						{
+							"answer": "{{eval:floor(a/d)}}.{{eval:mod(a,d)}}",
+							"message": "Tu as écrit le quotient, une virgule, puis le reste : le reste n'est pas la partie décimale.",
+							"label": "Quotient, virgule, reste"
+						},
+						{
+							"answer": "{{eval:floor(10*a/d)/10;d}}",
+							"message": "Tu t'es arrêté trop tôt : la division tombe juste un peu plus loin.",
+							"label": "Division arrêtée trop tôt"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -84,7 +119,8 @@
 					"On écrit une fraction égale dont le dénominateur est $10$, $100$ ou $1\\,000${{if:k==1|, ici elle l'est déjà.| : ici ${{d}}\\times{{k}}={{T}}$.}}",
 					"$$\\dfrac{ {{a}} }{ {{d}} }{{if:k>1|=\\dfrac{ {{a}}\\times{{k}} }{ {{d}}\\times{{k}} }=\\dfrac{ {{A}} }{ {{T}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:a/d;d}}}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Donne l'écriture décimale de $\\dfrac{ {{a}} }{ {{d}} }$.\n\n$\\dfrac{ {{a}} }{ {{d}} }=?$",
@@ -113,7 +149,24 @@
 			"conditions": ["gcd(a,d)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:a/d;d}}"
+					"expectedAnswer": "{{eval:a/d;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}.{{d}}",
+							"message": "Tu as écrit le numérateur et le dénominateur de part et d'autre de la virgule : une fraction est une division.",
+							"label": "Numérateur, virgule, dénominateur"
+						},
+						{
+							"answer": "{{eval:floor(a/d)}}.{{eval:mod(a,d)}}",
+							"message": "Tu as écrit le quotient, une virgule, puis le reste : le reste n'est pas la partie décimale.",
+							"label": "Quotient, virgule, reste"
+						},
+						{
+							"answer": "{{eval:floor(100*a/d+1/2)/100;d}}",
+							"message": "Tu as arrondi : la division tombe juste, donne toutes les décimales.",
+							"label": "Résultat arrondi"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -121,7 +174,8 @@
 					"On écrit une fraction égale dont le dénominateur est $10$, $100$ ou $1\\,000${{if:k==1|, ici elle l'est déjà.| : ici ${{d}}\\times{{k}}={{T}}$.}}",
 					"$$\\dfrac{ {{a}} }{ {{d}} }{{if:k>1|=\\dfrac{ {{a}}\\times{{k}} }{ {{d}}\\times{{k}} }=\\dfrac{ {{A}} }{ {{T}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:a/d;d}}}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -207,6 +261,123 @@
 			"answers": ["1{,}38"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : 13/5 lu 13,5",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"a": "13"
+			},
+			"answers": ["13{,}5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le numérateur et le dénominateur de part et d'autre de la virgule : une fraction est une division."
+			}
+		},
+		{
+			"description": "Erreur prévue : 13/5 = 2 reste 3 → 2,3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"a": "13"
+			},
+			"answers": ["2{,}3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le quotient, une virgule, puis le reste : le reste n'est pas la partie décimale."
+			}
+		},
+		{
+			"description": "Erreur prévue : 13/5 → 2",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"a": "13"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé seulement la partie entière : la division continue après la virgule."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7/4 lu 7,4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "7"
+			},
+			"answers": ["7{,}4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le numérateur et le dénominateur de part et d'autre de la virgule : une fraction est une division."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7/4 = 1 reste 3 → 1,3",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "7"
+			},
+			"answers": ["1{,}3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le quotient, une virgule, puis le reste : le reste n'est pas la partie décimale."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7/4 → 1,7",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "7"
+			},
+			"answers": ["1{,}7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es arrêté trop tôt : la division tombe juste un peu plus loin."
+			}
+		},
+		{
+			"description": "Erreur prévue : 11/8 lu 11,8",
+			"variationIndex": 2,
+			"variables": {
+				"d": "8",
+				"a": "11"
+			},
+			"answers": ["11{,}8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le numérateur et le dénominateur de part et d'autre de la virgule : une fraction est une division."
+			}
+		},
+		{
+			"description": "Erreur prévue : 11/8 = 1 reste 3 → 1,3",
+			"variationIndex": 2,
+			"variables": {
+				"d": "8",
+				"a": "11"
+			},
+			"answers": ["1{,}3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le quotient, une virgule, puis le reste : le reste n'est pas la partie décimale."
+			}
+		},
+		{
+			"description": "Erreur prévue : 11/8 → 1,38",
+			"variationIndex": 2,
+			"variables": {
+				"d": "8",
+				"a": "11"
+			},
+			"answers": ["1{,}38"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi : la division tombe juste, donne toutes les décimales."
 			}
 		}
 	]

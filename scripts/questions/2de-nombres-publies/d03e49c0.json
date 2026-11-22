@@ -10,7 +10,19 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:abs(sqrt(a)-b)}}"
+					"expectedAnswer": "{{eval:abs(sqrt(a)-b)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-abs(sqrt(a)-b)}}",
+							"message": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres.",
+							"label": "Réponse négative (signe non étudié)"
+						},
+						{
+							"answer": "\\sqrt{ {{a}} }+{{b}}",
+							"message": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative.",
+							"label": "Moins changé en plus"
+						}
+					]
 				}
 			],
 			"statement": "Calcule.\n\n$${{expression1}}$$",
@@ -32,12 +44,25 @@
 				"steps": [
 					"{{if:{{a}}>{{b}}^2|$\\sqrt{{{a}}} \\gt {{b}}$ donc $\\sqrt{{{a}}}-{{b}} \\gt 0$ et $\\left\\lvert \\sqrt{{{a}}}-{{b}} \\right\\rvert=\\sqrt{{{a}}}-{{b}}$|$\\sqrt{{{a}}} \\lt {{b}}$ donc $\\sqrt{{{a}}}-{{b}} \\lt 0$ et $\\left\\lvert \\sqrt{{{a}}}-{{b}} \\right\\rvert={{b}}-\\sqrt{{{a}}}$}}"
 				]
-			}
+			},
+			"hint": "Compare d'abord $\\sqrt{ {{a}} }$ et ${{b}}$, par exemple avec leurs carrés : le signe de $\\sqrt{ {{a}} }-{{b}}$ décide de la réponse."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:b>3|{{b}}-\\pi|\\pi-{{b}}}}"
+					"expectedAnswer": "{{if:b>3|{{b}}-\\pi|\\pi-{{b}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:b>3|\\pi-{{b}}|{{b}}-\\pi}}",
+							"message": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres.",
+							"label": "Réponse négative (signe non étudié)"
+						},
+						{
+							"answer": "\\pi+{{b}}",
+							"message": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative.",
+							"label": "Moins changé en plus"
+						}
+					]
 				}
 			],
 			"statement": "Calcule.\n\n$$\\left\\lvert \\pi-{{b}} \\right\\rvert=?$$",
@@ -51,7 +76,8 @@
 				"steps": [
 					"{{if:b>3|$\\pi\\approx3{,}14 \\lt {{b}}$ donc $\\pi-{{b}} \\lt 0$ et $\\left\\lvert \\pi-{{b}} \\right\\rvert=\\textcolor{{{color:primary.0}}}{{{b}}-\\pi}$|$\\pi\\approx3{,}14 \\gt {{b}}$ donc $\\pi-{{b}} \\gt 0$ et $\\left\\lvert \\pi-{{b}} \\right\\rvert=\\textcolor{{{color:primary.0}}}{\\pi-{{b}}}$}}"
 				]
-			}
+			},
+			"hint": "$\\pi\\approx3{,}14$ : $\\pi-{{b}}$ est-il positif ou négatif ? Une valeur absolue est toujours positive."
 		}
 	],
 	"testSpecs": [
@@ -85,7 +111,8 @@
 			"answers": ["\\sqrt{5}-3"],
 			"expected": {
 				"status": "incorrect",
-				"constraintViolations": []
+				"constraintViolations": [],
+				"expectedErrorMessage": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres."
 			},
 			"variables": {
 				"a": "5",
@@ -111,7 +138,8 @@
 			"answers": ["\\sqrt{7}+1"],
 			"expected": {
 				"status": "incorrect",
-				"constraintViolations": []
+				"constraintViolations": [],
+				"expectedErrorMessage": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative."
 			},
 			"variables": {
 				"a": "7",
@@ -145,7 +173,8 @@
 		{
 			"answers": ["\\pi-4"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Une valeur absolue est toujours positive : étudie le signe de ce qu'il y a entre les barres."
 			},
 			"variables": {
 				"b": "4"
@@ -156,7 +185,8 @@
 		{
 			"answers": ["\\pi+4"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Une valeur absolue ne change pas un moins en plus au milieu de l'expression : elle change le signe de toute l'expression, si elle est négative."
 			},
 			"variables": {
 				"b": "4"

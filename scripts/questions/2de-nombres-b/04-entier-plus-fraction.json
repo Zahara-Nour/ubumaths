@@ -35,10 +35,44 @@
 			"conditions": ["r<d", "gcd(r,d)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Ton entier est trop petit : ta fraction serait plus grande que $1$.",
+							"label": "Entier trop petit (fraction ≥ 1)"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Ton entier est trop grand : ce nombre de fois le dénominateur dépasse le numérateur.",
+							"label": "Entier trop grand"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "\\frac{ {{r}} }{ {{d}} }"
+					"expectedAnswer": "\\frac{ {{r}} }{ {{d}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:r+d}} }{ {{d}} }",
+							"message": "Ta fraction est plus grande que $1$ : elle contient encore une unité entière.",
+							"label": "Fraction plus grande que 1"
+						},
+						{
+							"answer": "\\frac{ {{d}} }{ {{r}} }",
+							"message": "Tu as inversé le numérateur et le dénominateur de la fraction.",
+							"label": "Fraction renversée"
+						},
+						{
+							"answer": "\\frac{ {{q}} }{ {{d}} }",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -48,7 +82,8 @@
 					"$$\\dfrac{ {{n}} }{ {{d}} }=\\dfrac{ {{d}}\\times{{q}} }{ {{d}} }+\\dfrac{ {{r}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{q}}+\\dfrac{ {{r}} }{ {{d}} }}$$",
 					"La fraction $\\dfrac{ {{r}} }{ {{d}} }$ est bien plus petite que $1$, car ${{r}}<{{d}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Écris $\\dfrac{ {{n}} }{ {{d}} }$ comme la somme d'un **nombre entier** et d'une **fraction plus petite que $1$**.\n\n$\\dfrac{ {{n}} }{ {{d}} }=?+?$",
@@ -73,10 +108,44 @@
 			"conditions": ["r<d", "gcd(r,d)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Ton entier est trop petit : ta fraction serait plus grande que $1$.",
+							"label": "Entier trop petit (fraction ≥ 1)"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Ton entier est trop grand : ce nombre de fois le dénominateur dépasse le numérateur.",
+							"label": "Entier trop grand"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "\\frac{ {{r}} }{ {{d}} }"
+					"expectedAnswer": "\\frac{ {{r}} }{ {{d}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:r+d}} }{ {{d}} }",
+							"message": "Ta fraction est plus grande que $1$ : elle contient encore une unité entière.",
+							"label": "Fraction plus grande que 1"
+						},
+						{
+							"answer": "\\frac{ {{d}} }{ {{r}} }",
+							"message": "Tu as inversé le numérateur et le dénominateur de la fraction.",
+							"label": "Fraction renversée"
+						},
+						{
+							"answer": "\\frac{ {{q}} }{ {{d}} }",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -86,7 +155,8 @@
 					"$$\\dfrac{ {{n}} }{ {{d}} }=\\dfrac{ {{d}}\\times{{q}} }{ {{d}} }+\\dfrac{ {{r}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{q}}+\\dfrac{ {{r}} }{ {{d}} }}$$",
 					"La fraction $\\dfrac{ {{r}} }{ {{d}} }$ est bien plus petite que $1$, car ${{r}}<{{d}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Écris $\\dfrac{ {{n}} }{ {{d}} }$ comme la somme d'un **nombre entier** et d'une **fraction plus petite que $1$**.\n\n$\\dfrac{ {{n}} }{ {{d}} }=?+?$",
@@ -111,10 +181,44 @@
 			"conditions": ["r<d", "gcd(r,d)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Ton entier est trop petit : ta fraction serait plus grande que $1$.",
+							"label": "Entier trop petit (fraction ≥ 1)"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Ton entier est trop grand : ce nombre de fois le dénominateur dépasse le numérateur.",
+							"label": "Entier trop grand"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "\\frac{ {{r}} }{ {{d}} }"
+					"expectedAnswer": "\\frac{ {{r}} }{ {{d}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:r+d}} }{ {{d}} }",
+							"message": "Ta fraction est plus grande que $1$ : elle contient encore une unité entière.",
+							"label": "Fraction plus grande que 1"
+						},
+						{
+							"answer": "\\frac{ {{d}} }{ {{r}} }",
+							"message": "Tu as inversé le numérateur et le dénominateur de la fraction.",
+							"label": "Fraction renversée"
+						},
+						{
+							"answer": "\\frac{ {{q}} }{ {{d}} }",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -124,7 +228,8 @@
 					"$$\\dfrac{ {{n}} }{ {{d}} }=\\dfrac{ {{d}}\\times{{q}} }{ {{d}} }+\\dfrac{ {{r}} }{ {{d}} }=\\textcolor{{{color:primary.0}}}{{{q}}+\\dfrac{ {{r}} }{ {{d}} }}$$",
 					"La fraction $\\dfrac{ {{r}} }{ {{d}} }$ est bien plus petite que $1$, car ${{r}}<{{d}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -217,6 +322,90 @@
 			"answers": ["14", "\\frac{2}{7}"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : 2 pour 17/5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["2", "\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton entier est trop petit : ta fraction serait plus grande que $1$."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4 pour 17/5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["4", "\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton entier est trop grand : ce nombre de fois le dénominateur dépasse le numérateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7 en entier pour 47/8",
+			"variationIndex": 1,
+			"variables": {
+				"q": "5",
+				"d": "8",
+				"r": "7"
+			},
+			"answers": ["7", "\\frac{7}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
+			}
+		},
+		{
+			"description": "Erreur prévue : 7/5 en fraction pour 17/5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3", "\\frac{7}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est plus grande que $1$ : elle contient encore une unité entière."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5/2 en fraction pour 17/5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"d": "5",
+				"r": "2"
+			},
+			"answers": ["3", "\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le numérateur et le dénominateur de la fraction."
+			}
+		},
+		{
+			"description": "Erreur prévue : 5/8 en fraction pour 47/8",
+			"variationIndex": 1,
+			"variables": {
+				"q": "5",
+				"d": "8",
+				"r": "7"
+			},
+			"answers": ["5", "\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
 			}
 		}
 	]

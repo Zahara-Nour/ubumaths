@@ -13,7 +13,24 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(p)/(q)-(r)/(s)}}"
+					"expectedAnswer": "{{eval:(p)/(q)-(r)/(s)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(r)/(s)-(p)/(q)}}",
+							"message": "Tu as calculé $b - a$ au lieu de $a - b$.",
+							"label": "Différence b − a"
+						},
+						{
+							"answer": "{{eval:((p)-(r))/((q)-(s))}}",
+							"message": "Pour soustraire deux fractions, on ne soustrait pas les numérateurs et les dénominateurs : il faut un même dénominateur.",
+							"label": "Numérateurs et dénominateurs soustraits"
+						},
+						{
+							"answer": "{{eval:((p)-(r))/((q)*(s))}}",
+							"message": "Avec le dénominateur commun, il faut aussi multiplier chaque numérateur.",
+							"label": "Numérateurs non multipliés"
+						}
+					]
 				},
 				{
 					"expectedAnswer": "{{t}}"
@@ -56,12 +73,30 @@
 					"$$a-b=\\dfrac{ {{eval:(p)*(s)}} }{ {{eval:(q)*(s)}} }-\\dfrac{ {{eval:(r)*(q)}} }{ {{eval:(q)*(s)}} }=\\textcolor{{{color:primary.0}}}{{{eval:(p)/(q)-(r)/(s)}}}$$",
 					"La différence est {{if:t>0|positive|négative}}, donc $\\textcolor{{{color:primary.1}}}{a{{if:t>0|>|<}}b}$."
 				]
-			}
+			},
+			"hint": "Pour soustraire deux fractions, mets-les d'abord au même dénominateur."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{k}}"
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*(k)}}",
+							"message": "Tu as doublé le nombre : regarde le terme du milieu, $-2\\times x\\times ?$.",
+							"label": "Double au lieu du nombre"
+						},
+						{
+							"answer": "{{eval:(k)^2}}",
+							"message": "Regarde le dernier terme : c'est le carré du nombre cherché qui apparaît.",
+							"label": "Carré au lieu du nombre"
+						},
+						{
+							"answer": "-{{k}}",
+							"message": "Revois le signe : dans $A - B$, le terme du milieu est négatif.",
+							"label": "Erreur de signe"
+						}
+					]
 				},
 				{
 					"expectedAnswer": "0"
@@ -80,12 +115,25 @@
 					"$$A-B=x^2-{{eval:2*(k)}}x+{{eval:(k)^2}}=\\textcolor{{{color:primary.0}}}{(x-{{k}})^2}$$",
 					"Un carré est toujours positif ou nul : $A-B\\geqslant 0$, donc $\\textcolor{{{color:primary.1}}}{A\\geqslant B}$ pour tout réel $x$ (égalité pour $x={{k}}$)."
 				]
-			}
+			},
+			"hint": "Calcule $A-B$ et reconnais une identité remarquable : $(a-b)^2=a^2-2ab+b^2$."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{d}}-2\\sqrt{ {{n}} }"
+					"expectedAnswer": "{{d}}-2\\sqrt{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{d}}",
+							"message": "Les deux racines ne s'annulent pas : enlève les parenthèses avec soin.",
+							"label": "Racines annulées"
+						},
+						{
+							"answer": "{{eval:(p)+(q)}}-2\\sqrt{ {{n}} }",
+							"message": "Un signe moins devant une parenthèse change le signe de chaque terme, le nombre aussi.",
+							"label": "Signe de q non changé"
+						}
+					]
 				},
 				{
 					"expectedAnswer": "{{t}}"
@@ -121,7 +169,8 @@
 					"On compare ${{d}}$ et $2\\sqrt{ {{n}} }$, deux nombres positifs, par leurs carrés : ${{d}}^2={{eval:(d)^2}}$ et $\\left(2\\sqrt{ {{n}} }\\right)^2=4\\times{{n}}={{eval:4*(n)}}$. Donc ${{d}}{{if:t>0|>|<}}2\\sqrt{ {{n}} }$.",
 					"La différence est {{if:t>0|positive|négative}}, donc $\\textcolor{{{color:primary.1}}}{a{{if:t>0|>|<}}b}$."
 				]
-			}
+			},
+			"hint": "Enlève les parenthèses avec soin : un signe moins devant une parenthèse change le signe de chaque terme."
 		}
 	],
 	"testSpecs": [
@@ -143,7 +192,8 @@
 		{
 			"answers": ["-\\frac{1}{84}", "1"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $b - a$ au lieu de $a - b$."
 			},
 			"variables": {
 				"p": "3",
@@ -195,7 +245,8 @@
 		{
 			"answers": ["6", "0"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as doublé le nombre : regarde le terme du milieu, $-2\\times x\\times ?$."
 			},
 			"variables": {
 				"k": "3"
@@ -276,6 +327,88 @@
 				"t": "1"
 			},
 			"description": "5 − √2 et 2 + √2 : 3 − 2√2 > 0, a > b",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{2}{5}", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour soustraire deux fractions, on ne soustrait pas les numérateurs et les dénominateurs : il faut un même dénominateur."
+			},
+			"variables": {
+				"p": "3",
+				"q": "7",
+				"r": "5",
+				"s": "12"
+			},
+			"description": "Erreur prévue : (3 − 5)/(7 − 12)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{2}{84}", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec le dénominateur commun, il faut aussi multiplier chaque numérateur."
+			},
+			"variables": {
+				"p": "3",
+				"q": "7",
+				"r": "5",
+				"s": "12"
+			},
+			"description": "Erreur prévue : (3 − 5)/84",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le dernier terme : c'est le carré du nombre cherché qui apparaît."
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "Erreur prévue : (x − 9)²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-3", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le signe : dans $A - B$, le terme du milieu est négatif."
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "Erreur prévue : (x + 3)²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux racines ne s'annulent pas : enlève les parenthèses avec soin."
+			},
+			"variables": {
+				"n": "2",
+				"q": "1",
+				"d": "2"
+			},
+			"description": "Erreur prévue : 2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4-2\\sqrt{2}", "0"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un signe moins devant une parenthèse change le signe de chaque terme, le nombre aussi."
+			},
+			"variables": {
+				"n": "2",
+				"q": "1",
+				"d": "2"
+			},
+			"description": "Erreur prévue : 4 − 2√2",
 			"variationIndex": 2
 		}
 	]

@@ -23,7 +23,8 @@
 					"$0{,}{{a}}^2={{eval:a^2/100;d}}$ et $0{,}{{a}}^3={{eval:a^3/1000;d}}$.",
 					"$\\textcolor{{{color:primary.0}}}{0{,}{{a}}^3<0{,}{{a}}^2<0{,}{{a}}}$."
 				]
-			}
+			},
+			"hint": "Multiplier un nombre compris entre $0$ et $1$ par lui-même, est-ce que ça l'agrandit ou le rapetisse ? Essaie avec $0{,}{{a}}\\times0{,}{{a}}$."
 		},
 		{
 			"statement": "Range dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $0{,}{{a}}^3$\n- $0{,}{{a}}^2$\n- $0{,}{{a}}$\n- $\\sqrt{0{,}{{a}}}$\n```",
@@ -41,7 +42,8 @@
 					"Pour la racine, c'est l'inverse : $\\sqrt{0{,}{{a}}}\\approx{{eval:floor(sqrt(a*1000)+0.5)/100;d}}$, plus grand que $0{,}{{a}}$.",
 					"$\\textcolor{{{color:primary.0}}}{0{,}{{a}}^3<0{,}{{a}}^2<0{,}{{a}}<\\sqrt{0{,}{{a}}}}$."
 				]
-			}
+			},
+			"hint": "Multiplier un nombre compris entre $0$ et $1$ par lui-même, est-ce que ça l'agrandit ou le rapetisse ? Pour la racine, essaie un exemple : $\\sqrt{0{,}25}=0{,}5$."
 		},
 		{
 			"statement": "Range dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\sqrt{{{u}}{,}{{a}}}$\n- ${{u}}{,}{{a}}$\n- ${{u}}{,}{{a}}^2$\n- ${{u}}{,}{{a}}^3$\n```",
@@ -63,7 +65,8 @@
 					"Pour la racine, c'est l'inverse : $\\sqrt{{{u}}{,}{{a}}}\\approx{{eval:floor(sqrt((10*u+a)*1000)+0.5)/100;d}}$, plus petit que ${{u}}{,}{{a}}$.",
 					"$\\textcolor{{{color:primary.0}}}{\\sqrt{{{u}}{,}{{a}}}<{{u}}{,}{{a}}<{{u}}{,}{{a}}^2<{{u}}{,}{{a}}^3}$."
 				]
-			}
+			},
+			"hint": "Multiplier un nombre plus grand que $1$ par lui-même, est-ce que ça l'agrandit ou le rapetisse ? Pour la racine, essaie un exemple : $\\sqrt{4}=2$."
 		}
 	],
 	"testSpecs": [

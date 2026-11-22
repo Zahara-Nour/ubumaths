@@ -47,7 +47,8 @@
 					"${{n}}$ n'est divisible ni par $2$ (impair), ni par $3$ (somme des chiffres), ni par $5$ (dernier chiffre).",
 					"{{if:z==1|Il n'est divisible ni par $7$, ni par $11$, ni par $13$, et $17^2=289>{{n}}$ : $\\textcolor{{{color:primary.0}}}{{{n}}\\text{ est premier}}$.|Mais ${{n}}={{p}}\\times{{q}}$ : $\\textcolor{{{color:primary.0}}}{{{n}}\\text{ n'est pas premier}}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Décompose ${{n}}$ en produit de facteurs premiers. Écris les facteurs **du plus petit au plus grand**, chacun autant de fois qu'il apparaît.\n\n${{n}}=?\\times ?\\times ?\\times ?$",
@@ -92,16 +93,49 @@
 			"conditions": ["a<b", "b<c", "n<=300"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{a}}"
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "1",
+							"message": "$1$ n'est pas un nombre premier : on ne l'écrit pas dans la décomposition.",
+							"label": "Facteur 1"
+						},
+						{
+							"answer": "{{eval:a*f2}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{f2}}"
+					"expectedAnswer": "{{f2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*f2}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{f3}}"
+					"expectedAnswer": "{{f3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:f2*f3}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{c}}"
+					"expectedAnswer": "{{c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:f3*c}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -110,7 +144,8 @@
 					"$${{n}}={{a}}\\times{{n1}}={{a}}\\times{{f2}}\\times{{n2}}={{a}}\\times{{f2}}\\times{{f3}}\\times{{c}}$$",
 					"Les facteurs ${{a}}$, ${{f2}}$, ${{f3}}$ et ${{c}}$ sont premiers. Avec une puissance : ${{n}}=\\textcolor{{{color:primary.0}}}{{{if:w==0|{{a}}^2\\times{{b}}\\times{{c}}|{{if:w==1|{{a}}\\times{{b}}^2\\times{{c}}|{{a}}\\times{{b}}\\times{{c}}^2}}}}}$."
 				]
-			}
+			},
+			"hint": "Divise ${{n}}$ par le plus petit nombre premier possible, puis recommence avec le quotient, jusqu'à tomber sur un nombre premier."
 		},
 		{
 			"statement": "Décompose ${{n}}$ en produit de facteurs premiers. Écris les facteurs **du plus petit au plus grand**, chacun autant de fois qu'il apparaît.\n\n${{n}}=?\\times ?\\times ?\\times ?$",
@@ -139,16 +174,49 @@
 			"conditions": ["n<=300"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{p}}"
+					"expectedAnswer": "{{p}}",
+					"expectedErrors": [
+						{
+							"answer": "1",
+							"message": "$1$ n'est pas un nombre premier : on ne l'écrit pas dans la décomposition.",
+							"label": "Facteur 1"
+						},
+						{
+							"answer": "{{eval:p*p}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{p}}"
+					"expectedAnswer": "{{p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*p}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{p}}"
+					"expectedAnswer": "{{p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*p}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*q}}",
+							"message": "Ce facteur n'est pas premier : il se décompose encore.",
+							"label": "Facteur non premier"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -157,7 +225,8 @@
 					"$${{n}}={{p}}\\times{{n1}}={{p}}\\times{{p}}\\times{{n2}}={{p}}\\times{{p}}\\times{{p}}\\times{{q}}$$",
 					"Avec une puissance : ${{n}}=\\textcolor{{{color:primary.0}}}{{{p}}^3\\times{{q}}}$."
 				]
-			}
+			},
+			"hint": "Divise ${{n}}$ par le plus petit nombre premier possible, puis recommence avec le quotient, jusqu'à tomber sur un nombre premier."
 		}
 	],
 	"testSpecs": [
@@ -265,6 +334,146 @@
 			"answers": ["1", "2", "4", "7"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 × 4 × 3 × 7 (le 1)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["1", "4", "3", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$1$ n'est pas un nombre premier : on ne l'écrit pas dans la décomposition."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4 en premier facteur",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["4", "3", "7", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4 en deuxième facteur",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["1", "4", "3", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 en troisième facteur",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2", "2", "6", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
+			}
+		},
+		{
+			"description": "Erreur prévue : 21 en dernier facteur",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "7",
+				"w": "0"
+			},
+			"answers": ["2", "2", "3", "21"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 × 2 × 4 × 7 (le 1)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["1", "2", "4", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$1$ n'est pas un nombre premier : on ne l'écrit pas dans la décomposition."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4 en premier facteur",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["4", "2", "7", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4 en deuxième facteur",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2", "4", "7", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
+			}
+		},
+		{
+			"description": "Erreur prévue : 4 en troisième facteur",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2", "2", "4", "7"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
+			}
+		},
+		{
+			"description": "Erreur prévue : 14 en dernier facteur",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "7"
+			},
+			"answers": ["2", "2", "2", "14"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce facteur n'est pas premier : il se décompose encore."
 			}
 		}
 	]

@@ -46,10 +46,44 @@
 			"conditions": ["r<b", "n<=999"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Ton quotient est trop petit : avec lui, le reste serait plus grand que le diviseur.",
+							"label": "Quotient trop petit de 1"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Ton quotient est trop grand : ce produit dépasse le nombre de départ.",
+							"label": "Quotient trop grand de 1"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{r}}"
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+b}}",
+							"message": "Ton reste est plus grand que le diviseur : il doit être plus petit que lui.",
+							"label": "Reste plus grand que le diviseur"
+						},
+						{
+							"answer": "{{eval:b-r}}",
+							"message": "Tu as donné ce qui manque pour atteindre le multiple suivant, pas le reste.",
+							"label": "Ce qui manque au lieu du reste"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as inversé le quotient et le reste de la division.",
+							"label": "Quotient et reste inversés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -59,7 +93,8 @@
 					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
 					"Le quotient est ${{q}}$ et le reste ${{r}}$."
 				]
-			}
+			},
+			"hint": "Cherche le plus grand multiple de ${{b}}$ qui ne dépasse pas ${{n}}$. Le reste doit être plus petit que ${{b}}$."
 		},
 		{
 			"statement": "{{if:w==0|Nina|{{if:w==1|Ilyes|Margaux}}}} a ${{n}}$ bonbons. {{if:w==1|Il|Elle}} les range dans des sachets de ${{b}}$ bonbons.\n\nCombien de sachets pleins peut-{{if:w==1|il|elle}} remplir ? Combien de bonbons reste-t-il ?\n\nSachets pleins : $?$\n\nBonbons restants : $?$",
@@ -100,10 +135,44 @@
 			"conditions": ["r<b", "n<=999"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Il reste encore assez de bonbons pour remplir un sachet de plus.",
+							"label": "Quotient trop petit de 1"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "Le dernier sachet ne serait pas plein : il n'y a pas assez de bonbons.",
+							"label": "Sachet incomplet compté"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{r}}"
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+b}}",
+							"message": "Avec autant de bonbons restants, on peut encore remplir un sachet.",
+							"label": "Reste plus grand que le diviseur"
+						},
+						{
+							"answer": "{{eval:b-r}}",
+							"message": "Tu as donné ce qui manque pour remplir un sachet de plus, pas ce qui reste.",
+							"label": "Ce qui manque au lieu du reste"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -113,7 +182,8 @@
 					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
 					"On remplit $\\textcolor{{{color:primary.0}}}{{{q}}}$ sachets et il reste $\\textcolor{{{color:primary.0}}}{{{r}}}$ bonbons."
 				]
-			}
+			},
+			"hint": "Cherche combien de fois ${{b}}$ va dans ${{n}}$ : c'est une division euclidienne, et le reste doit être plus petit que ${{b}}$."
 		},
 		{
 			"statement": "Pour un tournoi, ${{n}}$ élèves forment des équipes de ${{b}}$.\n\nCombien d'équipes complètes peut-on former ? Combien d'élèves restent sans équipe ?\n\nÉquipes complètes : $?$\n\nÉlèves sans équipe : $?$",
@@ -154,10 +224,44 @@
 			"conditions": ["r<b", "n<=999"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{q}}"
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Il reste encore assez d'élèves pour former une équipe de plus.",
+							"label": "Quotient trop petit de 1"
+						},
+						{
+							"answer": "{{eval:q+1}}",
+							"message": "La dernière équipe ne serait pas complète : il n'y a pas assez d'élèves.",
+							"label": "Équipe incomplète comptée"
+						},
+						{
+							"answer": "{{r}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{r}}"
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+b}}",
+							"message": "Avec autant d'élèves restants, on peut encore former une équipe.",
+							"label": "Reste plus grand que le diviseur"
+						},
+						{
+							"answer": "{{eval:b-r}}",
+							"message": "Tu as donné ce qui manque pour une équipe de plus, pas le nombre d'élèves sans équipe.",
+							"label": "Ce qui manque au lieu du reste"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as échangé les deux réponses : relis chaque question.",
+							"label": "Réponses échangées"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -167,7 +271,8 @@
 					"$$\\textcolor{{{color:primary.0}}}{{{n}}={{b}}\\times{{q}}+{{r}}}$$",
 					"On forme $\\textcolor{{{color:primary.0}}}{{{q}}}$ équipes complètes et $\\textcolor{{{color:primary.0}}}{{{r}}}$ élèves restent sans équipe."
 				]
-			}
+			},
+			"hint": "Cherche combien de fois ${{b}}$ va dans ${{n}}$ : c'est une division euclidienne, et le reste doit être plus petit que ${{b}}$."
 		}
 	],
 	"testSpecs": [
@@ -253,6 +358,171 @@
 			"answers": ["32", "6"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : quotient 12 pour 157 ÷ 12",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est trop petit : avec lui, le reste serait plus grand que le diviseur."
+			}
+		},
+		{
+			"description": "Erreur prévue : quotient 14",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["14", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est trop grand : ce produit dépasse le nombre de départ."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1 et 13 inversés",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["1", "13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé le quotient et le reste de la division."
+			}
+		},
+		{
+			"description": "Erreur prévue : reste 13",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton reste est plus grand que le diviseur : il doit être plus petit que lui."
+			}
+		},
+		{
+			"description": "Erreur prévue : reste 11 (12 − 1)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "11"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné ce qui manque pour atteindre le multiple suivant, pas le reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 sachets",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["12", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il reste encore assez de bonbons pour remplir un sachet de plus."
+			}
+		},
+		{
+			"description": "Erreur prévue : 14 sachets",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["14", "1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dernier sachet ne serait pas plein : il n'y a pas assez de bonbons."
+			}
+		},
+		{
+			"description": "Erreur prévue : 11 bonbons",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"b": "12",
+				"q": "13",
+				"r": "1"
+			},
+			"answers": ["13", "11"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné ce qui manque pour remplir un sachet de plus, pas ce qui reste."
+			}
+		},
+		{
+			"description": "Erreur prévue : 6 et 32 échangés",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"b": "7",
+				"q": "32",
+				"r": "6"
+			},
+			"answers": ["6", "32"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé les deux réponses : relis chaque question."
+			}
+		},
+		{
+			"description": "Erreur prévue : 13 élèves sans équipe",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"b": "7",
+				"q": "32",
+				"r": "6"
+			},
+			"answers": ["32", "13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec autant d'élèves restants, on peut encore former une équipe."
+			}
+		},
+		{
+			"description": "Erreur prévue : 31 équipes",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"b": "7",
+				"q": "32",
+				"r": "6"
+			},
+			"answers": ["31", "6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il reste encore assez d'élèves pour former une équipe de plus."
 			}
 		}
 	]

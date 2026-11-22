@@ -50,7 +50,24 @@
 			"conditions": ["k >= 2"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{k}}"
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(m)+(n)-(r)}}",
+							"message": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base.",
+							"label": "Bases non converties"
+						},
+						{
+							"answer": "{{eval:(m)+(n)+5-(r)}}",
+							"message": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas.",
+							"label": "(aᵖ)ᵐ = aᵖ⁺ᵐ"
+						},
+						{
+							"answer": "{{eval:3*(m)+2*(n)+(r)}}",
+							"message": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter.",
+							"label": "Exposant du dénominateur ajouté"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -60,7 +77,8 @@
 					"$${{A}}^{ {{m}} }=\\left(\\textcolor{{{color:primary.0}}}{{{b}}^{3}}\\right)^{ {{m}} }={{b}}^{3\\times{{m}}}={{b}}^{ {{x}} }\\quad\\text{et}\\quad{{B}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.1}}}{{{b}}^{2}}\\right)^{ {{n}} }={{b}}^{2\\times{{n}}}={{b}}^{ {{y}} }$$",
 					"$$\\dfrac{ {{b}}^{ {{x}} }\\times{{b}}^{ {{y}} } }{ {{b}}^{ {{r}} } }={{b}}^{ {{x}}+{{y}}-{{r}} }=\\textcolor{{{color:primary.2}}}{{{b}}^{ {{k}} }}$$"
 				]
-			}
+			},
+			"hint": "Écris ${{A}}$ et ${{B}}$ comme des puissances de ${{b}}$, puis utilise les règles sur les exposants."
 		},
 		{
 			"statement": "Écris sous la forme d'une puissance de ${{b}}$.\n\n$$\\dfrac{ {{B}}^{ {{m}} } }{ {{A}}^{ {{n}} } }={{b}}^{?}$$",
@@ -101,7 +119,29 @@
 			"conditions": ["k != 0", "k != 1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{k}}"
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:3*(n)-2*(m)}}",
+							"message": "Ton signe n'est pas le bon : compare l'exposant du numérateur à celui du dénominateur.",
+							"label": "Signe de l'exposant"
+						},
+						{
+							"answer": "{{eval:(m)-(n)}}",
+							"message": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base.",
+							"label": "Bases non converties"
+						},
+						{
+							"answer": "{{eval:(m)-(n)-1}}",
+							"message": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas.",
+							"label": "(aᵖ)ᵐ = aᵖ⁺ᵐ"
+						},
+						{
+							"answer": "{{eval:2*(m)+3*(n)}}",
+							"message": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter.",
+							"label": "Exposant du dénominateur ajouté"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -111,7 +151,8 @@
 					"$${{B}}^{ {{m}} }=\\left(\\textcolor{{{color:primary.0}}}{{{b}}^{2}}\\right)^{ {{m}} }={{b}}^{ {{x}} }\\quad\\text{et}\\quad{{A}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.1}}}{{{b}}^{3}}\\right)^{ {{n}} }={{b}}^{ {{y}} }$$",
 					"$$\\dfrac{ {{b}}^{ {{x}} } }{ {{b}}^{ {{y}} } }={{b}}^{ {{x}}-{{y}} }=\\textcolor{{{color:primary.2}}}{{{b}}^{ {{k}} }}$$"
 				]
-			}
+			},
+			"hint": "Écris ${{B}}$ et ${{A}}$ comme des puissances de ${{b}}$, puis utilise les règles sur les exposants."
 		}
 	],
 	"testSpecs": [
@@ -140,7 +181,8 @@
 			},
 			"answers": ["0"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base."
 			}
 		},
 		{
@@ -154,7 +196,8 @@
 			},
 			"answers": ["5"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas."
 			}
 		},
 		{
@@ -207,7 +250,8 @@
 			},
 			"answers": ["5"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton signe n'est pas le bon : compare l'exposant du numérateur à celui du dénominateur."
 			}
 		},
 		{
@@ -220,7 +264,51 @@
 			},
 			"answers": ["-1"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé les exposants sans écrire d'abord chaque nombre comme une puissance de la même base."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant du dénominateur ajouté",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter."
+			}
+		},
+		{
+			"description": "Erreur prévue : (aᵖ)ᵐ = aᵖ⁺ᵐ",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, les exposants se multiplient, ils ne s'additionnent pas."
+			}
+		},
+		{
+			"description": "Erreur prévue : Exposant du dénominateur ajouté",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Diviser par une puissance, c'est soustraire son exposant, pas l'ajouter."
 			}
 		}
 	]

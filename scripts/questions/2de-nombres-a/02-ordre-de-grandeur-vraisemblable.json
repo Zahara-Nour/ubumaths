@@ -33,7 +33,8 @@
 					"Une salle de classe mesure environ $8~\\unit{m}$ sur $8~\\unit{m}$ : son aire est de l'ordre de $50$ à $70~\\unit{m^2}$.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "Imagine les dimensions d'une salle de classe (combien de mètres de long, de large ?) et calcule une aire approchée, puis compare."
 		},
 		{
 			"statement": "Un élève de Seconde pèse ${{if:k==0|{{v}}|{{w}}}}~\\unit{kg}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -61,7 +62,8 @@
 					"La masse d'un adolescent est de l'ordre de $50$ à $70~\\unit{kg}$.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "Pense à ta propre masse ou à celle d'un camarade, puis compare avec la valeur annoncée."
 		},
 		{
 			"statement": "Un élève de Seconde mesure ${{if:k==0|{{v}}|{{w}}}}~\\unit{cm}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -89,7 +91,8 @@
 					"Un adolescent mesure de l'ordre de $1{,}60~\\unit{m}$ à $1{,}80~\\unit{m}$, soit $160$ à $180~\\unit{cm}$.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "Pense à ta propre taille en mètres, convertis-la en centimètres, puis compare."
 		},
 		{
 			"statement": "Un film au cinéma dure ${{if:k==0|{{v}}|{{w}}}}~\\unit{min}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -117,7 +120,8 @@
 					"Un film dure de l'ordre d'une heure et demie à deux heures, soit $90$ à $120~\\unit{min}$.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "Une heure, c'est $60$ minutes. Combien de temps dure environ un film au cinéma ?"
 		},
 		{
 			"statement": "Une baignoire remplie contient ${{if:k==0|{{v}}|{{w}}}}~\\unit{L}$ d'eau. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -145,7 +149,8 @@
 					"Une baignoire remplie contient de l'ordre de $150$ à $250~\\unit{L}$ d'eau.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "Une bouteille d'eau contient environ $1{,}5~\\unit{L}$. Combien de bouteilles faudrait-il pour remplir une baignoire ?"
 		},
 		{
 			"statement": "Un téléphone portable a une masse de ${{if:k==0|{{v}}|{{w}}}}~\\unit{g}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -173,7 +178,8 @@
 					"Un téléphone portable a une masse de l'ordre de $150$ à $250~\\unit{g}$.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "Une tablette de chocolat pèse environ $100~\\unit{g}$. Un téléphone est-il plus léger ou plus lourd ?"
 		},
 		{
 			"statement": "Un immeuble de cinq étages a une hauteur de ${{if:k==0|{{v}}|{{w}}}}~\\unit{m}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -201,7 +207,8 @@
 					"Un étage mesure environ $3~\\unit{m}$ : cinq étages font de l'ordre de $15$ à $20~\\unit{m}$.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "Estime la hauteur d'un étage (du sol au plafond, plus le plancher), puis multiplie par le nombre d'étages."
 		},
 		{
 			"statement": "Un trajet à pied de ${{if:k==0|{{v}}|{{w}}}}~\\unit{km}$ dure une demi-heure. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -229,7 +236,8 @@
 					"On marche à environ $5~\\unit{km}$ par heure : en une demi-heure, on parcourt de l'ordre de $2$ à $3~\\unit{km}$.",
 					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
 				]
-			}
+			},
+			"hint": "À pied, on marche à environ $5~\\unit{km}$ par heure. Quelle distance parcourt-on en une demi-heure ?"
 		}
 	],
 	"testSpecs": [
@@ -413,6 +421,58 @@
 			"answers": ["1"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : élève de 6 kg jugé vraisemblable",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : film de 9 min jugé vraisemblable",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"v": "110",
+				"w": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : téléphone de 15 g jugé vraisemblable",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30 km en une demi-heure à pied jugés vraisemblables",
+			"variationIndex": 7,
+			"variables": {
+				"k": "1",
+				"v": "3",
+				"w": "30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
 			}
 		}
 	]

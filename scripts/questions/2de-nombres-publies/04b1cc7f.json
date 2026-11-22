@@ -10,7 +10,24 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(k)^(n)}}{{L}}^{ {{n}} }"
+					"expectedAnswer": "{{eval:(k)^(n)}}{{L}}^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}{{L}}^{ {{n}} }",
+							"message": "Le nombre aussi est élevé à la puissance, pas seulement la lettre.",
+							"label": "Seule la lettre élevée à la puissance"
+						},
+						{
+							"answer": "{{eval:(k)*(n)}}{{L}}^{ {{n}} }",
+							"message": "Élever à la puissance $n$, ce n'est pas multiplier par $n$.",
+							"label": "Nombre multiplié par n au lieu d'élevé à la puissance"
+						},
+						{
+							"answer": "{{eval:(k)^(n)}}{{L}}",
+							"message": "La lettre aussi est élevée à la puissance, pas seulement le nombre.",
+							"label": "Seul le nombre élevé à la puissance"
+						}
+					]
 				}
 			],
 			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left({{k}}{{L}}\\right)^{ {{n}} }=?$$",
@@ -34,12 +51,30 @@
 					"**Puissance d'un produit** : $(ab)^n=a^n\\times b^n$ : chaque facteur est élevé à la puissance $n$.",
 					"$$\\left({{k}}{{L}}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}\\times\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}{{L}}^{ {{n}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(-(k))^(n)}}{{L}}^{ {{n}} }"
+					"expectedAnswer": "{{eval:(-(k))^(n)}}{{L}}^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-((-(k))^(n))}}{{L}}^{ {{n}} }",
+							"message": "Revois le signe : compte combien de fois tu multiplies un nombre négatif.",
+							"label": "Erreur de signe"
+						},
+						{
+							"answer": "-{{k}}{{L}}^{ {{n}} }",
+							"message": "Le nombre aussi est élevé à la puissance, pas seulement la lettre.",
+							"label": "Seule la lettre élevée à la puissance"
+						},
+						{
+							"answer": "{{eval:-(k)*(n)}}{{L}}^{ {{n}} }",
+							"message": "Élever à la puissance $n$, ce n'est pas multiplier par $n$.",
+							"label": "Nombre multiplié par n au lieu d'élevé à la puissance"
+						}
+					]
 				}
 			],
 			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left(-{{k}}{{L}}\\right)^{ {{n}} }=?$$",
@@ -64,12 +99,30 @@
 					"$$\\left(-{{k}}{{L}}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{(-{{k}})^{ {{n}} }}\\times\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(-(k))^(n)}}{{L}}^{ {{n}} }}$$",
 					"{{if:n==2|Un exposant pair rend le signe positif.|Un exposant impair garde le signe négatif.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(k)^(n)}}{{L}}^{ {{eval:(m)*(n)}} }"
+					"expectedAnswer": "{{eval:(k)^(n)}}{{L}}^{ {{eval:(m)*(n)}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(k)^(n)}}{{L}}^{ {{eval:(m)+(n)}} }",
+							"message": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas.",
+							"label": "Exposants additionnés"
+						},
+						{
+							"answer": "{{k}}{{L}}^{ {{eval:(m)*(n)}} }",
+							"message": "Le nombre aussi est élevé à la puissance, pas seulement la lettre.",
+							"label": "Coefficient non élevé à la puissance"
+						},
+						{
+							"answer": "{{eval:(k)*(n)}}{{L}}^{ {{eval:(m)*(n)}} }",
+							"message": "Élever à la puissance $n$, ce n'est pas multiplier par $n$.",
+							"label": "Coefficient multiplié par n"
+						}
+					]
 				}
 			],
 			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left({{k}}{{L}}^{ {{m}} }\\right)^{ {{n}} }=?$$",
@@ -96,12 +149,35 @@
 					"**Puissance d'un produit** : $(ab)^n=a^n\\times b^n$ : chaque facteur est élevé à la puissance $n$. Puis **puissance d'une puissance** : $(a^m)^n=a^{m\\times n}$.",
 					"$$\\left({{k}}{{L}}^{ {{m}} }\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}\\times\\textcolor{{{color:primary.1}}}{\\left({{L}}^{ {{m}} }\\right)^{ {{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}}\\times\\textcolor{{{color:primary.1}}}{{{L}}^{ {{m}}\\times{{n}} }}=\\textcolor{{{color:primary.0}}}{{{eval:(k)^(n)}}{{L}}^{ {{eval:(m)*(n)}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:s==1|(-{{eval:(p)*(q)}})|{{eval:(p)*(q)}}}}^{ {{n}} }"
+					"expectedAnswer": "{{if:s==1|(-{{eval:(p)*(q)}})|{{eval:(p)*(q)}}}}^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(p)*(q)}}^{ {{eval:2*(n)}} }",
+							"message": "Même exposant : on multiplie les bases, et l'exposant reste le même.",
+							"label": "Exposants additionnés"
+						},
+						{
+							"answer": "{{eval:(p)+(q)}}^{ {{n}} }",
+							"message": "Les bases se multiplient, elles ne s'additionnent pas.",
+							"label": "Bases additionnées"
+						},
+						{
+							"answer": "{{eval:(p)*(q)}}^{ {{eval:(n)*(n)}} }",
+							"message": "Même exposant : on multiplie les bases, et l'exposant reste le même.",
+							"label": "Exposants multipliés"
+						},
+						{
+							"answer": "{{eval:(p)*(q)}}^{ {{n}} }",
+							"message": "Revois le signe : compte combien de fois tu multiplies un nombre négatif.",
+							"label": "Signe perdu"
+						}
+					]
 				}
 			],
 			"statement": "Écris sous la forme d'une seule puissance.\n\n$${{if:s==1|(-{{p}})|{{p}}}}^{ {{n}} }\\times{{q}}^{ {{n}} }=?$$",
@@ -129,7 +205,8 @@
 					"**Puissance d'un produit**, lue de droite à gauche : $a^n\\times b^n=(ab)^n$ : même exposant, on multiplie les bases.",
 					"$${{if:s==1|(-{{p}})|{{p}}}}^{ {{n}} }\\times{{q}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.0}}}{{{if:s==1|(-{{p}})|{{p}}}}\\times{{q}}}\\right)^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{if:s==1|(-{{eval:(p)*(q)}})|{{eval:(p)*(q)}}}}^{ {{n}} }}$$"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -149,7 +226,8 @@
 		{
 			"answers": ["2x^3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Le nombre aussi est élevé à la puissance, pas seulement la lettre."
 			},
 			"variables": {
 				"L": "x|x",
@@ -162,7 +240,8 @@
 		{
 			"answers": ["6x^3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Élever à la puissance $n$, ce n'est pas multiplier par $n$."
 			},
 			"variables": {
 				"L": "x|x",
@@ -202,7 +281,8 @@
 		{
 			"answers": ["-9y^2"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le signe : compte combien de fois tu multiplies un nombre négatif."
 			},
 			"variables": {
 				"L": "y|y",
@@ -229,7 +309,8 @@
 		{
 			"answers": ["8x^5"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance de puissance, on multiplie les exposants, on ne les additionne pas."
 			},
 			"variables": {
 				"L": "x|x",
@@ -243,7 +324,8 @@
 		{
 			"answers": ["2x^6"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Le nombre aussi est élevé à la puissance, pas seulement la lettre."
 			},
 			"variables": {
 				"L": "x|x",
@@ -271,7 +353,8 @@
 		{
 			"answers": ["10^{10}"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Même exposant : on multiplie les bases, et l'exposant reste le même."
 			},
 			"variables": {
 				"p": "2",
@@ -300,7 +383,8 @@
 		{
 			"answers": ["7^5"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Les bases se multiplient, elles ne s'additionnent pas."
 			},
 			"variables": {
 				"p": "2",
@@ -328,7 +412,8 @@
 		{
 			"answers": ["10^3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois le signe : compte combien de fois tu multiplies un nombre négatif."
 			},
 			"variables": {
 				"p": "2",
@@ -337,6 +422,78 @@
 				"s": "1"
 			},
 			"description": "Erreur : signe perdu (10³)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["8x"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La lettre aussi est élevée à la puissance, pas seulement le nombre."
+			},
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"n": "3"
+			},
+			"description": "Erreur prévue : 8x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3y^2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le nombre aussi est élevé à la puissance, pas seulement la lettre."
+			},
+			"variables": {
+				"L": "y|y",
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur prévue : −3y²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-6y^2"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Élever à la puissance $n$, ce n'est pas multiplier par $n$."
+			},
+			"variables": {
+				"L": "y|y",
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur prévue : −6y²",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6x^6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Élever à la puissance $n$, ce n'est pas multiplier par $n$."
+			},
+			"variables": {
+				"L": "x|x",
+				"k": "2",
+				"m": "2",
+				"n": "3"
+			},
+			"description": "Erreur prévue : 6x⁶",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["10^9"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Même exposant : on multiplie les bases, et l'exposant reste le même."
+			},
+			"variables": {
+				"p": "2",
+				"q": "5",
+				"n": "3",
+				"s": "0"
+			},
+			"description": "Erreur prévue : 10⁹ (exposants multipliés)",
 			"variationIndex": 3
 		}
 	]

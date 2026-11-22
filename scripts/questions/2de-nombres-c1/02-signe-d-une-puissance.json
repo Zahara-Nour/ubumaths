@@ -38,7 +38,8 @@
 					"Les parenthèses contiennent le signe : on multiplie ${{n}}$ fois le nombre négatif $-{{a}}$.",
 					"L'exposant ${{n}}$ est {{if:o==1|impair|pair}} : $(-{{a}})^{ {{n}} }$ est **{{if:o==1|négatif|positif}}**."
 				]
-			}
+			},
+			"hint": "Regarde si l'exposant ${{n}}$ est pair ou impair : les signes « − » se compensent deux par deux."
 		},
 		{
 			"statement": "Sans calculer, dis si ce nombre est positif ou négatif.\n\n$$-{{a}}^{ {{n}} }$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
@@ -66,7 +67,8 @@
 					"**Attention aux parenthèses** : dans $-{{a}}^{ {{n}} }$, l'exposant ne porte que sur ${{a}}$ ; le signe « $-$ » est devant le résultat : $-{{a}}^{ {{n}} }=-\\left({{a}}^{ {{n}} }\\right)$.",
 					"${{a}}^{ {{n}} }$ est positif (produit de nombres positifs), donc $-{{a}}^{ {{n}} }$ est **négatif**, que l'exposant soit pair ou impair."
 				]
-			}
+			},
+			"hint": "Regarde sur quoi porte l'exposant : y a-t-il des parenthèses autour de $-{{a}}$ ?"
 		},
 		{
 			"statement": "Sans calculer, dis si ce nombre est positif ou négatif.\n\n$$-(-{{a}})^{ {{n}} }$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
@@ -99,7 +101,8 @@
 					"L'exposant ${{n}}$ est {{if:o==1|impair|pair}} : $(-{{a}})^{ {{n}} }$ est {{if:o==1|négatif|positif}}.",
 					"Le signe « $-$ » devant change le signe : $-(-{{a}})^{ {{n}} }$ est **{{if:o==1|positif|négatif}}**."
 				]
-			}
+			},
+			"hint": "Cherche d'abord le signe de $(-{{a}})^{ {{n}} }$, puis tiens compte du « − » placé devant."
 		},
 		{
 			"statement": "Sans calculer, dis si ce nombre est positif ou négatif.\n\n$$(-{{a}})^{-{{n}} }$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
@@ -132,7 +135,8 @@
 					"$(-{{a}})^{-{{n}} }=\\dfrac{1}{(-{{a}})^{ {{n}} } }$ : l'exposant négatif donne un inverse, qui a le même signe que $(-{{a}})^{ {{n}} }$.",
 					"L'exposant ${{n}}$ est {{if:o==1|impair|pair}} : $(-{{a}})^{-{{n}} }$ est **{{if:o==1|négatif|positif}}**."
 				]
-			}
+			},
+			"hint": "$(-{{a}})^{-{{n}} }$ est l'inverse de $(-{{a}})^{ {{n}} }$, et un inverse a le même signe que le nombre."
 		}
 	],
 	"testSpecs": [

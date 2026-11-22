@@ -41,7 +41,24 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:w}}"
+					"expectedAnswer": "{{eval:w}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:w+1}}",
+							"message": "Tu as compté un entier qui n'est pas dans l'intervalle : vérifie quel est le premier entier après la borne de gauche.",
+							"label": "Entier avant la borne de gauche compté"
+						},
+						{
+							"answer": "{{eval:w-1}}",
+							"message": "Tu as fait la différence des entiers extrêmes : elle compte les écarts entre eux, pas les entiers eux-mêmes.",
+							"label": "Oubli du « + 1 » (différence des entiers extrêmes)"
+						},
+						{
+							"answer": "{{eval:w+2}}",
+							"message": "Tu as compté des entiers en dehors de l'intervalle : les bornes ne sont pas entières, les entiers extrêmes sont à l'intérieur.",
+							"label": "Bornes arrondies vers l'extérieur"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -49,7 +66,8 @@
 					"Les bornes ne sont pas entières. Le plus petit entier de l'intervalle est ${{eval:la+1}}$ (le premier entier **après** ${{eval:(10*la+fa)/10;d}}$), le plus grand est ${{eval:lb}}$.",
 					"On compte les entiers de ${{eval:la+1}}$ à ${{eval:lb}}$ : {{if:m<0|${{eval:M}}-({{eval:m}})+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$|${{eval:M}}-{{eval:m}}+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$}}."
 				]
-			}
+			},
+			"hint": "Cherche le plus petit et le plus grand entier de l'intervalle, puis compte les entiers de l'un à l'autre. Attention : la différence de deux entiers ne donne pas le nombre d'entiers."
 		},
 		{
 			"statement": "Combien de nombres **entiers** l'intervalle $\\left{{if:o1==0|[|]}}{{a}}\\,;{{b}}\\right{{if:o2==0|]|[}}$ contient-il ?\n\n$?$ entiers",
@@ -85,7 +103,24 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:w+1-o1-o2}}"
+					"expectedAnswer": "{{eval:w+1-o1-o2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:w+1}}",
+							"message": "Tu as compté une borne alors que le crochet est ouvert de ce côté : elle n'est pas dans l'intervalle.",
+							"label": "Borne exclue comptée"
+						},
+						{
+							"answer": "{{eval:w-o1-o2}}",
+							"message": "Tu as fait la différence des entiers extrêmes : elle compte les écarts entre eux, pas les entiers eux-mêmes.",
+							"label": "Oubli du « + 1 » (différence des entiers extrêmes)"
+						},
+						{
+							"answer": "{{eval:w-1+o1+o2}}",
+							"message": "Tu as confondu crochet ouvert et crochet fermé : un crochet tourné vers l'extérieur exclut la borne.",
+							"label": "Crochets ouverts et fermés confondus"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -93,7 +128,8 @@
 					"{{if:o1==0|Le crochet est **fermé** en ${{a}}$ : ${{a}}$ est dans l'intervalle.|Le crochet est **ouvert** en ${{a}}$ : ${{a}}$ n'est **pas** dans l'intervalle.}} {{if:o2==0|Le crochet est **fermé** en ${{b}}$ : ${{b}}$ est dans l'intervalle.|Le crochet est **ouvert** en ${{b}}$ : ${{b}}$ n'est **pas** dans l'intervalle.}}",
 					"Les entiers vont de ${{eval:m}}$ à ${{eval:M}}$ : {{if:m<0|${{eval:M}}-({{eval:m}})+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$|${{eval:M}}-{{eval:m}}+1=\\textcolor{{{color:primary.0}}}{{{eval:M-(m)+1}}}$}}."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Quel est le **plus petit** nombre entier de l'intervalle $\\left{{if:o1==0|[|]}}{{a}}\\,;{{b}}\\right]$ ?\n\n$?$",
@@ -117,14 +153,32 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:a+o1}}"
+					"expectedAnswer": "{{eval:a+o1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+1-o1}}",
+							"message": "Tu as mal lu le crochet de gauche : regarde s'il contient la borne ${{a}}$ ou s'il l'exclut.",
+							"label": "Crochet de gauche mal lu"
+						},
+						{
+							"answer": "{{b}}",
+							"message": "Tu as donné le plus grand entier de l'intervalle : on cherche le plus petit.",
+							"label": "Plus grand entier au lieu du plus petit"
+						},
+						{
+							"answer": "{{eval:a-1}}",
+							"message": "Ce nombre est avant la borne de gauche : il n'est pas dans l'intervalle.",
+							"label": "Entier pris avant la borne de gauche"
+						}
+					]
 				}
 			],
 			"correction": {
 				"steps": [
 					"{{if:o1==0|Le crochet est **fermé** en ${{a}}$ : ${{a}}$ est dans l'intervalle, c'est son plus petit entier : $\\textcolor{{{color:primary.0}}}{{{a}}}$.|Le crochet est **ouvert** en ${{a}}$ : ${{a}}$ n'est **pas** dans l'intervalle. Le plus petit entier est le suivant : $\\textcolor{{{color:primary.0}}}{{{eval:a+1}}}$.}}"
 				]
-			}
+			},
+			"hint": "Regarde le crochet de gauche : est-il tourné vers ${{a}}$ (borne comprise) ou vers l'extérieur (borne exclue) ?"
 		},
 		{
 			"statement": "Quel est le **plus petit** nombre entier de l'intervalle $\\left[{{eval:(10*la+fa)/10;d}}\\,;{{eval:(10*lb+fb)/10;d}}\\right]$ ?\n\n$?$",
@@ -152,7 +206,24 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:la+1}}"
+					"expectedAnswer": "{{eval:la+1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{la}}",
+							"message": "Ce nombre est plus petit que la borne de gauche : il n'est pas dans l'intervalle.",
+							"label": "Entier avant la borne négative (−2,5 → −3)"
+						},
+						{
+							"answer": "{{lb}}",
+							"message": "Tu as donné le plus grand entier de l'intervalle : on cherche le plus petit.",
+							"label": "Plus grand entier au lieu du plus petit"
+						},
+						{
+							"answer": "{{eval:(10*la+fa)/10;d}}",
+							"message": "Tu as donné la borne de gauche, mais elle n'est pas un nombre entier.",
+							"label": "Borne décimale donnée au lieu d'un entier"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -160,7 +231,8 @@
 					"Sur la droite graduée, ${{eval:(10*la+fa)/10;d}}$ est entre ${{eval:la}}$ et ${{eval:la+1}}$.",
 					"Les nombres de l'intervalle sont **après** ${{eval:(10*la+fa)/10;d}}$ : le plus petit entier est $\\textcolor{{{color:primary.0}}}{{{eval:la+1}}}$ (et non ${{eval:la}}$, qui est plus petit que ${{eval:(10*la+fa)/10;d}}$)."
 				]
-			}
+			},
+			"hint": "Place ${{eval:(10*la+fa)/10;d}}$ sur une droite graduée : entre quels entiers se trouve-t-il ? Les nombres de l'intervalle sont à sa droite."
 		}
 	],
 	"testSpecs": [
@@ -195,7 +267,8 @@
 			},
 			"answers": ["7"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté un entier qui n'est pas dans l'intervalle : vérifie quel est le premier entier après la borne de gauche."
 			}
 		},
 		{
@@ -212,7 +285,8 @@
 			},
 			"answers": ["5"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait la différence des entiers extrêmes : elle compte les écarts entre eux, pas les entiers eux-mêmes."
 			}
 		},
 		{
@@ -246,7 +320,8 @@
 			},
 			"answers": ["7"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté une borne alors que le crochet est ouvert de ce côté : elle n'est pas dans l'intervalle."
 			}
 		},
 		{
@@ -280,7 +355,8 @@
 			},
 			"answers": ["4"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as fait la différence des entiers extrêmes : elle compte les écarts entre eux, pas les entiers eux-mêmes."
 			}
 		},
 		{
@@ -325,7 +401,8 @@
 			},
 			"answers": ["-3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mal lu le crochet de gauche : regarde s'il contient la borne $-3$ ou s'il l'exclut."
 			}
 		},
 		{
@@ -369,7 +446,139 @@
 			},
 			"answers": ["-3"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est plus petit que la borne de gauche : il n'est pas dans l'intervalle."
+			}
+		},
+		{
+			"description": "Erreur : [−2,5 ; 3,7] de −3 à 4 (8)",
+			"variationIndex": 0,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7",
+				"m": "-2",
+				"M": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté des entiers en dehors de l'intervalle : les bornes ne sont pas entières, les entiers extrêmes sont à l'intérieur."
+			}
+		},
+		{
+			"description": "Erreur : ]1 ; 5[ lu [1 ; 5] (5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"w": "4",
+				"b": "5",
+				"o1": "1",
+				"o2": "1",
+				"m": "2",
+				"M": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté une borne alors que le crochet est ouvert de ce côté : elle n'est pas dans l'intervalle."
+			}
+		},
+		{
+			"description": "Erreur : [1 ; 5] lu ]1 ; 5[ (3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"w": "4",
+				"b": "5",
+				"o1": "0",
+				"o2": "0",
+				"m": "1",
+				"M": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as confondu crochet ouvert et crochet fermé : un crochet tourné vers l'extérieur exclut la borne."
+			}
+		},
+		{
+			"description": "Erreur : [2 ; 7] plus petit entier 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"w": "5",
+				"b": "7",
+				"o1": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mal lu le crochet de gauche : regarde s'il contient la borne $2$ ou s'il l'exclut."
+			}
+		},
+		{
+			"description": "Erreur : ]−3 ; 4] plus grand entier 4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"w": "7",
+				"b": "4",
+				"o1": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le plus grand entier de l'intervalle : on cherche le plus petit."
+			}
+		},
+		{
+			"description": "Erreur : ]−3 ; 4] répondu −4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"w": "7",
+				"b": "4",
+				"o1": "1"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est avant la borne de gauche : il n'est pas dans l'intervalle."
+			}
+		},
+		{
+			"description": "Erreur : [−2,5 ; 3,7] plus grand entier 3",
+			"variationIndex": 3,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le plus grand entier de l'intervalle : on cherche le plus petit."
+			}
+		},
+		{
+			"description": "Erreur : [−2,5 ; 3,7] borne −2,5 donnée",
+			"variationIndex": 3,
+			"variables": {
+				"la": "-3",
+				"w": "6",
+				"lb": "3",
+				"fa": "5",
+				"fb": "7"
+			},
+			"answers": ["-2{,}5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la borne de gauche, mais elle n'est pas un nombre entier."
 			}
 		}
 	]

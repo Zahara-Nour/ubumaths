@@ -30,7 +30,29 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:a-r}}[\\cup]{{eval:a+r}};+\\infty[|]-\\infty;{{eval:a-r}}]\\cup[{{eval:a+r}};+\\infty[}}"
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:a-r}}[\\cup]{{eval:a+r}};+\\infty[|]-\\infty;{{eval:a-r}}]\\cup[{{eval:a+r}};+\\infty[}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==0|]{{eval:a-r}};{{eval:a+r}}[|[{{eval:a-r}};{{eval:a+r}}]}}",
+							"message": "Tu as donné les nombres proches de ${{a}}$ : ici, on cherche ceux dont la distance à ${{a}}$ est grande.",
+							"label": "Intervalle entre a − r et a + r (sens de l'inégalité)"
+						},
+						{
+							"answer": "{{if:s==0|]-\\infty;{{eval:a-r}}]\\cup[{{eval:a+r}};+\\infty[|]-\\infty;{{eval:a-r}}[\\cup]{{eval:a+r}};+\\infty[}}",
+							"message": "Tu t'es trompé sur les crochets : regarde si les nombres ${{eval:a-r}}$ et ${{eval:a+r}}$ vérifient l'inéquation.",
+							"label": "Bornes incluses ou exclues à tort"
+						},
+						{
+							"answer": "{{if:s==0|]{{eval:a+r}};+\\infty[|[{{eval:a+r}};+\\infty[}}",
+							"message": "Tu n'as gardé qu'un côté : il y a aussi des solutions de l'autre côté de ${{a}}$.",
+							"label": "Seulement le morceau de droite"
+						},
+						{
+							"answer": "{{if:s==0|]-\\infty;{{eval:a-r}}[|]-\\infty;{{eval:a-r}}]}}",
+							"message": "Tu n'as gardé qu'un côté : il y a aussi des solutions de l'autre côté de ${{a}}$.",
+							"label": "Seulement le morceau de gauche"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -39,7 +61,8 @@
 					"On cherche les nombres dont la distance à ${{eval:a}}$ est {{if:s==0|**strictement supérieure** à|**supérieure ou égale** à}} ${{r}}$ : ceux situés {{if:s==0|strictement avant|avant}} ${{eval:a}}-{{r}}={{eval:a-r}}$ ou {{if:s==0|strictement après|après}} ${{eval:a}}+{{r}}={{eval:a+r}}${{if:s==0|.|, bornes comprises.}}",
 					"Deux morceaux séparés : on les réunit par $\\cup$. $S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:a-r}}\\right[\\cup\\left]{{eval:a+r}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:a-r}}\\right]\\cup\\left[{{eval:a+r}}\\,;+\\infty\\right[}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $\\lvert x+{{eval:-a}}\\rvert{{if:s==0|>|\\geqslant }}{{r}}$.\n\nL'ensemble des solutions est $S=?$.",
@@ -59,7 +82,29 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:a-r}}[\\cup]{{eval:a+r}};+\\infty[|]-\\infty;{{eval:a-r}}]\\cup[{{eval:a+r}};+\\infty[}}"
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:a-r}}[\\cup]{{eval:a+r}};+\\infty[|]-\\infty;{{eval:a-r}}]\\cup[{{eval:a+r}};+\\infty[}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==0|]-\\infty;{{eval:-a-r}}[\\cup]{{eval:-a+r}};+\\infty[|]-\\infty;{{eval:-a-r}}]\\cup[{{eval:-a+r}};+\\infty[}}",
+							"message": "Tu as pris ${{eval:-a}}$ comme centre : $x+{{eval:-a}}$ s'écrit $x-({{a}})$.",
+							"label": "Centre lu avec le mauvais signe"
+						},
+						{
+							"answer": "{{if:s==0|]{{eval:a-r}};{{eval:a+r}}[|[{{eval:a-r}};{{eval:a+r}}]}}",
+							"message": "Tu as donné les nombres proches de ${{a}}$ : ici, on cherche ceux dont la distance à ${{a}}$ est grande.",
+							"label": "Intervalle entre a − r et a + r (sens de l'inégalité)"
+						},
+						{
+							"answer": "{{if:s==0|]-\\infty;{{eval:a-r}}]\\cup[{{eval:a+r}};+\\infty[|]-\\infty;{{eval:a-r}}[\\cup]{{eval:a+r}};+\\infty[}}",
+							"message": "Tu t'es trompé sur les crochets : regarde si les nombres ${{eval:a-r}}$ et ${{eval:a+r}}$ vérifient l'inéquation.",
+							"label": "Bornes incluses ou exclues à tort"
+						},
+						{
+							"answer": "{{if:s==0|]{{eval:a+r}};+\\infty[|[{{eval:a+r}};+\\infty[}}",
+							"message": "Tu n'as gardé qu'un côté : il y a aussi des solutions de l'autre côté de ${{a}}$.",
+							"label": "Seulement le morceau de droite"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -68,7 +113,8 @@
 					"On cherche les nombres dont la distance à ${{eval:a}}$ est {{if:s==0|**strictement supérieure** à|**supérieure ou égale** à}} ${{r}}$ : ceux situés {{if:s==0|strictement avant|avant}} ${{eval:a}}-{{r}}={{eval:a-r}}$ ou {{if:s==0|strictement après|après}} ${{eval:a}}+{{r}}={{eval:a+r}}${{if:s==0|.|, bornes comprises.}}",
 					"Deux morceaux séparés : on les réunit par $\\cup$. $S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:a-r}}\\right[\\cup\\left]{{eval:a+r}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:a-r}}\\right]\\cup\\left[{{eval:a+r}}\\,;+\\infty\\right[}}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -108,7 +154,8 @@
 			},
 			"answers": ["]-1;5["],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné les nombres proches de $2$ : ici, on cherche ceux dont la distance à $2$ est grande."
 			}
 		},
 		{
@@ -121,7 +168,8 @@
 			},
 			"answers": ["]-\\infty;-1]\\cup[5;+\\infty["],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es trompé sur les crochets : regarde si les nombres $-1$ et $5$ vérifient l'inéquation."
 			}
 		},
 		{
@@ -134,7 +182,8 @@
 			},
 			"answers": ["]5;+\\infty["],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as gardé qu'un côté : il y a aussi des solutions de l'autre côté de $2$."
 			}
 		},
 		{
@@ -160,7 +209,8 @@
 			},
 			"answers": ["]-\\infty;3[\\cup]5;+\\infty["],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es trompé sur les crochets : regarde si les nombres $3$ et $5$ vérifient l'inéquation."
 			}
 		},
 		{
@@ -186,7 +236,78 @@
 			},
 			"answers": ["]-\\infty;1[\\cup]5;+\\infty["],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris $3$ comme centre : $x + 3$ s'écrit $x - \\left( -3 \\right)$."
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; −1[ seul",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "3",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;-1["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as gardé qu'un côté : il y a aussi des solutions de l'autre côté de $2$."
+			}
+		},
+		{
+			"description": "Erreur : |x − 4| ⩾ 1 répondu [3 ; 5]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"r": "1",
+				"s": "1"
+			},
+			"answers": ["[3;5]"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné les nombres proches de $4$ : ici, on cherche ceux dont la distance à $4$ est grande."
+			}
+		},
+		{
+			"description": "Erreur : |x + 3| > 2 répondu ]−5 ; −1[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"r": "2",
+				"s": "0"
+			},
+			"answers": ["]-5;-1["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné les nombres proches de $-3$ : ici, on cherche ceux dont la distance à $-3$ est grande."
+			}
+		},
+		{
+			"description": "Erreur : |x + 3| > 2 crochets fermés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"r": "2",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;-5]\\cup[-1;+\\infty["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es trompé sur les crochets : regarde si les nombres $-5$ et $-1$ vérifient l'inéquation."
+			}
+		},
+		{
+			"description": "Erreur : |x + 3| > 2 répondu ]−1 ; +∞[ seul",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"r": "2",
+				"s": "0"
+			},
+			"answers": ["]-1;+\\infty["],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as gardé qu'un côté : il y a aussi des solutions de l'autre côté de $-3$."
 			}
 		}
 	]

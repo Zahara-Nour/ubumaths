@@ -38,7 +38,24 @@
 			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{g}}"
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:g*u*v}}",
+							"message": "Tu as cherché un multiple commun : ici, le nombre de sachets doit diviser les deux nombres.",
+							"label": "PPCM au lieu du PGCD"
+						},
+						{
+							"answer": "{{eval:u+v}}",
+							"message": "Tu as donné le nombre d'objets dans un sachet, pas le nombre de sachets.",
+							"label": "Contenu d'un sachet"
+						},
+						{
+							"answer": "{{B}}",
+							"message": "Avec un sachet par bonbon, les billes ne se partagent pas toutes de la même façon.",
+							"label": "Un sachet par bonbon"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -47,7 +64,8 @@
 					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$, et ${{u}}$ et ${{v}}$ n'ont aucun diviseur commun autre que $1$ : on ne peut pas faire plus grand que ${{g}}$.",
 					"On fait $\\textcolor{{{color:primary.0}}}{{{g}}}$ sachets de ${{u}}$ billes et ${{v}}$ bonbons."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "On coupe deux rubans de ${{A}}~\\unit{cm}$ et de ${{B}}~\\unit{cm}$ en morceaux **tous de même longueur**, sans aucune chute, les plus longs possible.\n\nQuelle est la longueur d'un morceau ?\n\n$?~\\unit{cm}$",
@@ -80,7 +98,24 @@
 			"conditions": ["u>v", "gcd(u,v)==1", "g*u<=200"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{g}}"
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:g*u*v}}",
+							"message": "Tu as cherché un multiple commun : ici, la longueur d'un morceau doit diviser les deux longueurs.",
+							"label": "PPCM au lieu du PGCD"
+						},
+						{
+							"answer": "{{eval:u+v}}",
+							"message": "Tu as donné le nombre de morceaux, pas la longueur d'un morceau.",
+							"label": "Nombre de morceaux"
+						},
+						{
+							"answer": "{{B}}",
+							"message": "Le grand ruban ne se coupe pas en morceaux de cette longueur sans chute.",
+							"label": "Petit ruban gardé entier"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -89,7 +124,8 @@
 					"${{A}}={{g}}\\times{{u}}$ et ${{B}}={{g}}\\times{{v}}$, et ${{u}}$ et ${{v}}$ n'ont aucun diviseur commun autre que $1$ : on ne peut pas faire plus grand que ${{g}}$.",
 					"Chaque morceau mesure $\\textcolor{{{color:primary.0}}}{{{g}}~\\unit{cm}}$ : on obtient ${{u}}$ et ${{v}}$ morceaux."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Deux phares s'allument en même temps. Le premier se rallume toutes les ${{A}}~\\unit{s}$, le second toutes les ${{B}}~\\unit{s}$.\n\nAu bout de combien de secondes se rallumeront-ils de nouveau **ensemble**, pour la première fois ?\n\nAu bout de $?$ secondes.",
@@ -122,7 +158,24 @@
 			"conditions": ["u>v", "gcd(u,v)==1", "g*u*v<=200"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{L}}"
+					"expectedAnswer": "{{L}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A*B}}",
+							"message": "Tu as multiplié les deux durées : c'est un multiple commun, mais pas le plus petit.",
+							"label": "Produit des deux durées"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Tu as cherché un diviseur commun : ici, on veut un multiple commun aux deux durées.",
+							"label": "PGCD au lieu du PPCM"
+						},
+						{
+							"answer": "{{eval:A+B}}",
+							"message": "Tu as additionné les deux durées : ce n'est pas un multiple commun.",
+							"label": "Somme des deux durées"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -131,7 +184,8 @@
 					"On parcourt les multiples de ${{A}}$ : ${{A}}\\times{{v}}={{L}}={{B}}\\times{{u}}$ est le premier qui est aussi un multiple de ${{B}}$.",
 					"Ils se rallument ensemble au bout de $\\textcolor{{{color:primary.0}}}{{{L}}~\\unit{s}}$."
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [
@@ -228,6 +282,138 @@
 			"answers": ["6"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur prévue : PPCM 420",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["420"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un multiple commun : ici, le nombre de sachets doit diviser les deux nombres."
+			}
+		},
+		{
+			"description": "Erreur prévue : 8 objets par sachet (30 billes, 18 bonbons)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre d'objets dans un sachet, pas le nombre de sachets."
+			}
+		},
+		{
+			"description": "Erreur prévue : 60 sachets",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"g": "12",
+				"u": "7",
+				"v": "5"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec un sachet par bonbon, les billes ne se partagent pas toutes de la même façon."
+			}
+		},
+		{
+			"description": "Erreur prévue : PPCM 90 pour 30 et 18 cm",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un multiple commun : ici, la longueur d'un morceau doit diviser les deux longueurs."
+			}
+		},
+		{
+			"description": "Erreur prévue : 8 morceaux",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le nombre de morceaux, pas la longueur d'un morceau."
+			}
+		},
+		{
+			"description": "Erreur prévue : 18 cm",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"g": "6",
+				"u": "5",
+				"v": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le grand ruban ne se coupe pas en morceaux de cette longueur sans chute."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 × 18",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["216"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les deux durées : c'est un multiple commun, mais pas le plus petit."
+			}
+		},
+		{
+			"description": "Erreur prévue : PGCD 6",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un diviseur commun : ici, on veut un multiple commun aux deux durées."
+			}
+		},
+		{
+			"description": "Erreur prévue : 12 + 18",
+			"variationIndex": 2,
+			"variables": {
+				"g": "6",
+				"u": "3",
+				"v": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les deux durées : ce n'est pas un multiple commun."
 			}
 		}
 	]

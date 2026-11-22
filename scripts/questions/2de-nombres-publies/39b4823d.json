@@ -15,7 +15,24 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(b)*(m)}}"
+					"expectedAnswer": "{{eval:(b)*(m)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a)*(a)*(m)/(b)}}",
+							"message": "Tu as multiplié la partie par la proportion : le tout doit être plus grand que la partie.",
+							"label": "Partie multipliée par la proportion"
+						},
+						{
+							"answer": "{{eval:(a)*(m)*(b)}}",
+							"message": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul.",
+							"label": "Multiplié par le dénominateur, sans diviser par le numérateur"
+						},
+						{
+							"answer": "{{eval:(a)*(m)/(b)}}",
+							"message": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul.",
+							"label": "Divisé par le dénominateur seulement"
+						}
+					]
 				}
 			],
 			"statement": "${{eval:(a)*(m)}}$ adhérents d'un club ont moins de $18$ ans, ce qui représente ${{if:f==0|\\dfrac{ {{a}} }{ {{b}} }|{{if:f==1|{{eval:(a)/(b);d}}|{{eval:100*(a)/(b);d}}\\,\\%}}}}$ des adhérents.\n\nCombien le club compte-t-il d'adhérents ?\n\n$?$ adhérents",
@@ -44,12 +61,30 @@
 					"Ici la proportion vaut $\\dfrac{ {{a}} }{ {{b}} }$ : $\\dfrac{ {{eval:(a)*(m)}} }{ \\frac{ {{a}} }{ {{b}} } }={{eval:(a)*(m)}}\\times\\dfrac{ {{b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(b)*(m)}}}$ adhérents.",
 					"Vérification : $\\dfrac{ {{eval:(a)*(m)}} }{ {{eval:(b)*(m)}} }=\\dfrac{ {{a}} }{ {{b}} }$."
 				]
-			}
+			},
+			"hint": "Partie $=$ proportion $\\times$ tout. Tu connais la partie et la proportion : quelle opération te redonne le tout ?"
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:(b)*(m)}}"
+					"expectedAnswer": "{{eval:(b)*(m)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a)*(a)*(m)/(b)}}",
+							"message": "Tu as multiplié la partie par la proportion : le tout doit être plus grand que la partie.",
+							"label": "Partie multipliée par la proportion"
+						},
+						{
+							"answer": "{{eval:(a)*(m)*(b)}}",
+							"message": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul.",
+							"label": "Multiplié par le dénominateur, sans diviser par le numérateur"
+						},
+						{
+							"answer": "{{eval:(a)*(m)/(b)}}",
+							"message": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul.",
+							"label": "Divisé par le dénominateur seulement"
+						}
+					]
 				}
 			],
 			"statement": "{{if:a==1|Le|Les}} $\\dfrac{ {{a}} }{ {{b}} }$ d'un gâteau {{if:a==1|pèse|pèsent}} ${{eval:(a)*(m)}}~\\unit{g}$.\n\nCombien pèse le gâteau entier ?\n\n$?~\\unit{g}$",
@@ -74,7 +109,8 @@
 					"$\\dfrac{ {{eval:(a)*(m)}} }{ \\frac{ {{a}} }{ {{b}} } }={{eval:(a)*(m)}}\\times{{if:a==1|{{b}}|\\dfrac{ {{b}} }{ {{a}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:(b)*(m)}}}~\\unit{g}$.",
 					"Vérification : $\\dfrac{ {{a}} }{ {{b}} }\\times{{eval:(b)*(m)}}={{eval:(a)*(m)}}$."
 				]
-			}
+			},
+			"hint": "Partie $=$ proportion $\\times$ tout. Tu connais la partie et la proportion : quelle opération te redonne le tout ?"
 		}
 	],
 	"testSpecs": [
@@ -95,7 +131,8 @@
 		{
 			"answers": ["6.75"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la partie par la proportion : le tout doit être plus grand que la partie."
 			},
 			"variables": {
 				"a": "3",
@@ -178,7 +215,8 @@
 		{
 			"answers": ["200"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la partie par la proportion : le tout doit être plus grand que la partie."
 			},
 			"variables": {
 				"b": "3",
@@ -191,7 +229,8 @@
 		{
 			"answers": ["900"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul."
 			},
 			"variables": {
 				"b": "3",
@@ -213,6 +252,50 @@
 			},
 			"description": "Les 5/8 pèsent 750 g : 1 200 g",
 			"variationIndex": 1
+		},
+		{
+			"answers": ["144"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul."
+			},
+			"variables": {
+				"a": "3",
+				"b": "8",
+				"f": "0",
+				"m": "6"
+			},
+			"description": "Erreur prévue : 18 × 8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul."
+			},
+			"variables": {
+				"b": "3",
+				"a": "2",
+				"m": "150"
+			},
+			"description": "Erreur prévue : 300 ÷ 3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2.25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as utilisé qu'un des deux nombres de la fraction dans ton calcul."
+			},
+			"variables": {
+				"a": "3",
+				"b": "8",
+				"f": "0",
+				"m": "6"
+			},
+			"description": "Erreur prévue : 18 ÷ 8",
+			"variationIndex": 0
 		}
 	]
 }

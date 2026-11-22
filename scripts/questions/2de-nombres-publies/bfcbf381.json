@@ -32,7 +32,8 @@
 					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
 					"$x=\\dfrac{ {{eval:(a)*(b)}} }{ {{b}} }={{a}}$ est un entier positif : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{N}}$, le plus petit des cinq."
 				]
-			}
+			},
+			"hint": "Commence par simplifier la fraction."
 		},
 		{
 			"blanks": [
@@ -52,7 +53,8 @@
 					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
 					"$x=-\\sqrt{ {{eval:(a)^2}} }=-{{a}}$ est un entier négatif : $x\\notin\\mathbb{N}$ mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
 				]
-			}
+			},
+			"hint": "Calcule d'abord $\\sqrt{ {{eval:(a)^2}} }$, puis regarde le signe."
 		},
 		{
 			"blanks": [
@@ -77,7 +79,8 @@
 					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
 					"$x=\\dfrac{ {{p}} }{ {{q}} }=\\dfrac{ {{eval:(p)*100/(q)}} }{100}$ : une fraction de dénominateur $100$, donc $x$ est **décimal**, sans être entier : $x\\in\\textcolor{{{color:primary.0}}}{𝔻}$, $x\\notin\\mathbb{Z}$."
 				]
-			}
+			},
+			"hint": "Peux-tu écrire cette fraction avec un dénominateur $10$, $100$… ?"
 		},
 		{
 			"blanks": [
@@ -103,7 +106,8 @@
 					"La fraction $\\dfrac{ {{p}} }{ {{q}} }$ est irréductible et son dénominateur ${{q}}$ a un facteur premier autre que $2$ et $5$ : $x$ n'est pas décimal (son écriture décimale ne s'arrête pas).",
 					"C'est un quotient d'entiers : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Q}}$."
 				]
-			}
+			},
+			"hint": "La fraction est irréductible : son dénominateur ${{q}}$ ne contient-il que les facteurs premiers $2$ et $5$ ?"
 		},
 		{
 			"blanks": [
@@ -123,7 +127,8 @@
 					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
 					"${{k}}$ n'est pas le carré d'un entier : $\\sqrt{ {{k}} }$ est **irrationnel** (admis), il n'est dans aucun des quatre premiers ensembles : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$."
 				]
-			}
+			},
+			"hint": "${{k}}$ est-il le carré d'un entier ?"
 		},
 		{
 			"blanks": [
@@ -143,7 +148,8 @@
 					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
 					"$x=-{{a}}$ est un entier négatif : $x\\notin\\mathbb{N}$ mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
 				]
-			}
+			},
+			"hint": "Rappelle-toi : $\\mathbb{N}$ contient les entiers positifs ou nuls, $\\mathbb{Z}$ tous les entiers, positifs ou négatifs."
 		}
 	],
 	"testSpecs": [

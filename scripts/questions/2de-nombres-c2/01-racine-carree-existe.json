@@ -35,7 +35,8 @@
 					"$\\pi\\approx3{,}14$, donc {{if:s==0|${{a}}-\\pi$|$\\pi-{{a}}$}} est {{if:rep==0|positif|négatif}} : ${{if:s==0|{{a}}-\\pi|\\pi-{{a}}}}{{if:rep==0|>|<}}0$.",
 					"{{if:rep==0|$\\sqrt{ {{if:s==0|{{a}}-\\pi|\\pi-{{a}}}} }$ existe : la réponse est $\\textcolor{{{color:primary.0}}}{\\text{Oui}}$.|$\\sqrt{ {{if:s==0|{{a}}-\\pi|\\pi-{{a}}}} }$ n'existe pas : la réponse est $\\textcolor{{{color:primary.0}}}{\\text{Non}}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Le nombre $\\sqrt{ {{if:t==0|-{{a}}|{{if:t==1|(-{{a}})^2|-{{a}}^2}}}} }$ existe-t-il ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -65,7 +66,8 @@
 					"{{if:t==0|$-{{a}}$ est négatif.|{{if:t==1|$(-{{a}})^2=(-{{a}})\\times(-{{a}})={{eval:a^2}}$ : un carré est toujours positif.|$-{{a}}^2=-({{a}}\\times{{a}})=-{{eval:a^2}}$ : le carré ne porte que sur ${{a}}$, le signe $-$ reste devant. C'est un nombre négatif.}}}}",
 					"{{if:rep==0|$\\sqrt{(-{{a}})^2}=\\sqrt{ {{eval:a^2}} }={{a}}$ existe : la réponse est $\\textcolor{{{color:primary.0}}}{\\text{Oui}}$.|Ce nombre n'existe pas : la réponse est $\\textcolor{{{color:primary.0}}}{\\text{Non}}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		},
 		{
 			"statement": "Le nombre $\\sqrt{ {{a}}-\\sqrt{ {{b}} } }$ existe-t-il ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
@@ -99,7 +101,8 @@
 					"Ce sont deux nombres positifs : on compare leurs carrés. ${{a}}^2={{eval:a^2}}$ et $(\\sqrt{ {{b}} })^2={{b}}$.",
 					"{{if:rep==0|${{eval:a^2}}>{{b}}$, donc ${{a}}>\\sqrt{ {{b}} }$ et ${{a}}-\\sqrt{ {{b}} }>0$ : la racine existe, la réponse est $\\textcolor{{{color:primary.0}}}{\\text{Oui}}$.|${{eval:a^2}}<{{b}}$, donc ${{a}}<\\sqrt{ {{b}} }$ et ${{a}}-\\sqrt{ {{b}} }<0$ : la racine n'existe pas, la réponse est $\\textcolor{{{color:primary.0}}}{\\text{Non}}$.}}"
 				]
-			}
+			},
+			"hintFromFirstStep": true
 		}
 	],
 	"testSpecs": [

@@ -13,7 +13,24 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{k}}"
+					"expectedAnswer": "{{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(k)*(b)*(b)}}",
+							"message": "Tu as multiplié au lieu de diviser.",
+							"label": "Multiplié au lieu de diviser"
+						},
+						{
+							"answer": "{{eval:(k)+1}}",
+							"message": "Vérifie ta division : multiplie ton résultat par le diviseur, tu dois retrouver le nombre de départ.",
+							"label": "Division fausse (une unité de trop)"
+						},
+						{
+							"answer": "{{eval:(k)-1}}",
+							"message": "Vérifie ta division : multiplie ton résultat par le diviseur, tu dois retrouver le nombre de départ.",
+							"label": "Division fausse (une unité de moins)"
+						}
+					]
 				}
 			],
 			"statement": "Trouve l'entier $k$ tel que ${{eval:(k)*(b)}}=k\\times{{b}}$.\n\n$$k=?$$",
@@ -34,7 +51,8 @@
 					"$$k=\\dfrac{ {{eval:(k)*(b)}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{k}}}$$",
 					"$k$ est un entier : ${{eval:(k)*(b)}}={{k}}\\times{{b}}$ est un multiple de ${{b}}$."
 				]
-			}
+			},
+			"hint": "$k\\times{{b}}={{eval:(k)*(b)}}$ : quelle opération défait une multiplication par ${{b}}$ ?"
 		},
 		{
 			"blanks": [
@@ -68,12 +86,30 @@
 					"On divise : ${{eval:(k)*(b)+(w)*(r)}}={{k}}\\times{{b}}{{if:w==1|+{{r}}}}$.",
 					"{{if:w==0|Le reste est nul : $k={{k}}$ est entier, **oui**, $\\textcolor{{{color:primary.0}}}{{{eval:(k)*(b)}}={{k}}\\times{{b}}}$ est un multiple de ${{b}}$.|Le reste vaut ${{r}}\\neq0$ : le quotient $\\dfrac{ {{eval:(k)*(b)+(r)}} }{ {{b}} }$ n'est pas entier, **non**, ce n'est pas un multiple de ${{b}}$.}}"
 				]
-			}
+			},
+			"hint": "Fais la division euclidienne de ${{eval:(k)*(b)+(w)*(r)}}$ par ${{b}}$ et regarde le reste."
 		},
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{p}}n+{{q}}"
+					"expectedAnswer": "{{p}}n+{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}n+{{eval:(d)*(q)}}",
+							"message": "Tu n'as pas divisé le nombre constant par le facteur commun.",
+							"label": "Constante non divisée"
+						},
+						{
+							"answer": "{{eval:(d)*(p)}}n+{{q}}",
+							"message": "Tu n'as pas divisé le coefficient de $n$ par le facteur commun.",
+							"label": "Coefficient non divisé"
+						},
+						{
+							"answer": "{{eval:(d)*(p)}}n+{{eval:(d)*(q)}}",
+							"message": "Tu as recopié l'expression sans la diviser par le facteur commun.",
+							"label": "Rien divisé"
+						}
+					]
 				}
 			],
 			"statement": "$n$ désigne un entier. Complète pour montrer que ${{eval:(d)*(p)}}n+{{eval:(d)*(q)}}$ est un multiple de ${{d}}$.\n\n$${{eval:(d)*(p)}}n+{{eval:(d)*(q)}}={{d}}\\times\\left(?\\right)$$",
@@ -98,7 +134,8 @@
 					"$${{eval:(d)*(p)}}n+{{eval:(d)*(q)}}={{d}}\\times{{p}}n+{{d}}\\times{{q}}={{d}}\\times\\textcolor{{{color:primary.0}}}{\\left({{p}}n+{{q}}\\right)}$$",
 					"$k=\\textcolor{{{color:primary.0}}}{{{p}}n+{{q}}}$ est un entier (produit et somme d'entiers) : le nombre est un multiple de ${{d}}$."
 				]
-			}
+			},
+			"hint": "Chaque terme est un multiple de ${{d}}$ : mets ${{d}}$ en facteur."
 		},
 		{
 			"blanks": [
@@ -136,7 +173,8 @@
 					"On divise ${{eval:(k)*(b)+(w)*(r)}}$ par ${{b}}$ : ${{eval:(k)*(b)+(w)*(r)}}={{b}}\\times{{k}}{{if:w==1|+{{r}}}}$.",
 					"{{if:w==0|Le reste est nul : **oui**, $\\textcolor{{{color:primary.0}}}{{{eval:(k)*(b)}}={{b}}\\times{{k}}}$, donc ${{eval:(k)*(b)}}$ est un multiple de ${{b}}$ et ${{b}}$ est un diviseur de ${{eval:(k)*(b)}}$.|Le reste vaut ${{r}}\\neq0$ : le quotient $\\dfrac{ {{eval:(k)*(b)+(r)}} }{ {{b}} }$ n'est pas entier, **non**.}}"
 				]
-			}
+			},
+			"hint": "Être un diviseur ou être un multiple, c'est la même relation : fais la division euclidienne par ${{b}}$ et regarde le reste."
 		}
 	],
 	"testSpecs": [
@@ -155,7 +193,8 @@
 		{
 			"answers": ["4563"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié au lieu de diviser."
 			},
 			"variables": {
 				"b": "13",
@@ -222,7 +261,8 @@
 		{
 			"answers": ["2n+15"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas divisé le nombre constant par le facteur commun."
 			},
 			"variables": {
 				"d": "3",
@@ -235,7 +275,8 @@
 		{
 			"answers": ["6n+5"],
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas divisé le coefficient de $n$ par le facteur commun."
 			},
 			"variables": {
 				"d": "3",
@@ -319,6 +360,46 @@
 			},
 			"description": "Erreur : 94 multiple de 7",
 			"variationIndex": 3
+		},
+		{
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie ta division : multiplie ton résultat par le diviseur, tu dois retrouver le nombre de départ."
+			},
+			"variables": {
+				"b": "13",
+				"k": "27"
+			},
+			"description": "Erreur prévue : 28",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie ta division : multiplie ton résultat par le diviseur, tu dois retrouver le nombre de départ."
+			},
+			"variables": {
+				"b": "13",
+				"k": "27"
+			},
+			"description": "Erreur prévue : 26",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6n+15"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié l'expression sans la diviser par le facteur commun."
+			},
+			"variables": {
+				"d": "3",
+				"p": "2",
+				"q": "5"
+			},
+			"description": "Erreur prévue : 6n + 15",
+			"variationIndex": 2
 		}
 	]
 }

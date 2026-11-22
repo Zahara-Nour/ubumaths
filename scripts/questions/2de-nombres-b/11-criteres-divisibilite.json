@@ -68,7 +68,8 @@
 					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. C'est un multiple de $4$ : divisible par $4$.",
 					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{3}$, $\\textcolor{{{color:primary.0}}}{4}$, $\\textcolor{{{color:primary.0}}}{5}$ et $\\textcolor{{{color:primary.0}}}{9}$."
 				]
-			}
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
 		},
 		{
 			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
@@ -127,7 +128,8 @@
 					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. Ce n'est pas un multiple de $4$ : pas divisible par $4$.",
 					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{5}$."
 				]
-			}
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
 		},
 		{
 			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
@@ -186,7 +188,8 @@
 					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. Ce n'est pas un multiple de $4$ : pas divisible par $4$.",
 					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{9}$."
 				]
-			}
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
 		},
 		{
 			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
@@ -245,7 +248,8 @@
 					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. C'est un multiple de $4$ : divisible par $4$.",
 					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{2}$, $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{4}$."
 				]
-			}
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
 		},
 		{
 			"statement": "Par quels nombres ${{n}}$ est-il divisible ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $2$\n- $3$\n- $4$\n- $5$\n- $9$\n```",
@@ -304,7 +308,8 @@
 					"**Par $4$** : on regarde le nombre formé par les deux derniers chiffres, ${{du}}$. Ce n'est pas un multiple de $4$ : pas divisible par $4$.",
 					"${{n}}$ est divisible par $\\textcolor{{{color:primary.0}}}{3}$ et $\\textcolor{{{color:primary.0}}}{5}$."
 				]
-			}
+			},
+			"hint": "Rappel : pour $2$ et $5$, on regarde le dernier chiffre ; pour $4$, le nombre formé par les deux derniers chiffres ; pour $3$ et $9$, la somme des chiffres."
 		}
 	],
 	"testSpecs": [

@@ -62,7 +62,24 @@
 			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "a<2*b", "c<2*d", "D!=1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }"
+					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a+(1-2*s)*c}} }{ {{eval:b+(1-2*s)*d}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						},
+						{
+							"answer": "\\frac{ {{eval:a+(1-2*s)*c}} }{ {{d}} }",
+							"message": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre.",
+							"label": "Dénominateur changé, numérateur oublié"
+						},
+						{
+							"answer": "{{if:N<0||-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+							"message": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires.",
+							"label": "Erreur de signe"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -72,7 +89,8 @@
 					"$$\\dfrac{ {{A}} }{ {{d}} }{{if:s==0|+|-}}\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{A}}{{if:s==0|+|-}}{{c}} }{ {{d}} }={{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hint": "Écris les deux fractions avec le même dénominateur : ${{d}}$ est un multiple de ${{b}}$."
 		},
 		{
 			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }{{if:s==0|+|-}}\\dfrac{ {{c}} }{ {{d}} }=?$",
@@ -141,7 +159,24 @@
 			"conditions": ["mod(b,d)!=0", "mod(d,b)!=0", "gcd(a,b)==1", "gcd(c,d)==1", "D!=1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }"
+					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a+(1-2*s)*c}} }{ {{eval:b+(1-2*s)*d}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						},
+						{
+							"answer": "\\frac{ {{eval:a+(1-2*s)*c}} }{ {{L}} }",
+							"message": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre.",
+							"label": "Dénominateur changé, numérateur oublié"
+						},
+						{
+							"answer": "{{if:N<0||-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+							"message": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires.",
+							"label": "Erreur de signe"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -151,7 +186,8 @@
 					"$$\\dfrac{ {{A}} }{ {{L}} }{{if:s==0|+|-}}\\dfrac{ {{C}} }{ {{L}} }=\\dfrac{ {{A}}{{if:s==0|+|-}}{{C}} }{ {{L}} }={{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hint": "Cherche un dénominateur commun à ${{b}}$ et ${{d}}$ : le plus petit nombre qui est à la fois un multiple de ${{b}}$ et de ${{d}}$."
 		},
 		{
 			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }{{if:s==0|+|-}}\\dfrac{ {{c}} }{ {{d}} }{{if:t==0|+|-}}\\dfrac{ {{f}} }{ {{h}} }=?$",
@@ -232,7 +268,24 @@
 			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "gcd(f,h)==1", "D!=1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }"
+					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:a+(1-2*s)*c+(1-2*t)*f}} }{ {{eval:b+d+h}} }",
+							"message": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Numérateurs et dénominateurs combinés entre eux"
+						},
+						{
+							"answer": "\\frac{ {{eval:a+(1-2*s)*c+(1-2*t)*f}} }{ {{L}} }",
+							"message": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre.",
+							"label": "Dénominateur changé, numérateur oublié"
+						},
+						{
+							"answer": "{{if:N<0||-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+							"message": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires.",
+							"label": "Erreur de signe"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -242,7 +295,8 @@
 					"$$=\\dfrac{ {{A}}{{if:s==0|+|-}}{{C}}{{if:t==0|+|-}}{{F}} }{ {{L}} }={{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hint": "Mets les trois fractions au même dénominateur : cherche le plus petit multiple commun de ${{b}}$, ${{d}}$ et ${{h}}$."
 		},
 		{
 			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n${{n}}{{if:s==0|+|-}}\\dfrac{ {{a}} }{ {{b}} }=?$",
@@ -291,7 +345,24 @@
 			"conditions": ["gcd(a,b)==1"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }"
+					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{eval:n+(1-2*s)*a}} }{ {{b}} }",
+							"message": "Tu as mis l'entier directement au numérateur : écris-le d'abord comme une fraction de même dénominateur.",
+							"label": "Entier ajouté au numérateur seulement"
+						},
+						{
+							"answer": "\\frac{ {{eval:n+(1-2*s)*a}} }{ {{eval:b+1}} }",
+							"message": "Tu as écrit l'entier sur $1$ puis combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur.",
+							"label": "Entier sur 1, numérateurs et dénominateurs combinés"
+						},
+						{
+							"answer": "{{if:N<0||-}}\\frac{ {{eval:abs(N)}} }{ {{D}} }",
+							"message": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires.",
+							"label": "Erreur de signe"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -300,7 +371,8 @@
 					"$${{n}}{{if:s==0|+|-}}\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{B}} }{ {{b}} }{{if:s==0|+|-}}\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{B}}{{if:s==0|+|-}}{{a}} }{ {{b}} }={{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }$$",
 					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
 				]
-			}
+			},
+			"hint": "Écris d'abord ${{n}}$ comme une fraction de dénominateur ${{b}}$."
 		}
 	],
 	"testSpecs": [
@@ -505,6 +577,204 @@
 			"answers": ["-\\frac{1}{3}"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur prévue : (3 − 5)/(4 − 12) pour 3/4 − 5/12",
+			"variationIndex": 0,
+			"variables": {
+				"b": "4",
+				"k": "3",
+				"a": "3",
+				"c": "5",
+				"s": "1"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : (3 − 5)/12 pour 3/4 − 5/12",
+			"variationIndex": 0,
+			"variables": {
+				"b": "4",
+				"k": "3",
+				"a": "3",
+				"c": "5",
+				"s": "1"
+			},
+			"answers": ["-\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre."
+			}
+		},
+		{
+			"description": "Erreur prévue : −1/3 pour 3/4 − 5/12",
+			"variationIndex": 0,
+			"variables": {
+				"b": "4",
+				"k": "3",
+				"a": "3",
+				"c": "5",
+				"s": "1"
+			},
+			"answers": ["-\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires."
+			}
+		},
+		{
+			"description": "Erreur prévue : (3 − 5)/12 pour 3/4 − 5/6",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"d": "6",
+				"a": "3",
+				"c": "5",
+				"s": "1"
+			},
+			"answers": ["-\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre."
+			}
+		},
+		{
+			"description": "Erreur prévue : 1/12 pour 3/4 − 5/6",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"d": "6",
+				"a": "3",
+				"c": "5",
+				"s": "1"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires."
+			}
+		},
+		{
+			"description": "Erreur prévue : (3 − 5)/(4 − 6) = 1 pour 3/4 − 5/6",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"d": "6",
+				"a": "3",
+				"c": "5",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : (1 + 3 − 5)/(2 + 4 + 8)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "2",
+				"d": "4",
+				"h": "8",
+				"a": "1",
+				"c": "3",
+				"f": "5",
+				"s": "0",
+				"t": "1"
+			},
+			"answers": ["-\\frac{1}{14}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : (1 + 3 − 5)/8",
+			"variationIndex": 2,
+			"variables": {
+				"b": "2",
+				"d": "4",
+				"h": "8",
+				"a": "1",
+				"c": "3",
+				"f": "5",
+				"s": "0",
+				"t": "1"
+			},
+			"answers": ["-\\frac{1}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé un dénominateur sans multiplier aussi le numérateur par le même nombre."
+			}
+		},
+		{
+			"description": "Erreur prévue : −5/8",
+			"variationIndex": 2,
+			"variables": {
+				"b": "2",
+				"d": "4",
+				"h": "8",
+				"a": "1",
+				"c": "3",
+				"f": "5",
+				"s": "0",
+				"t": "1"
+			},
+			"answers": ["-\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires."
+			}
+		},
+		{
+			"description": "Erreur prévue : (2 − 3)/5 pour 2 − 3/5",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"a": "3",
+				"b": "5",
+				"s": "1"
+			},
+			"answers": ["-\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis l'entier directement au numérateur : écris-le d'abord comme une fraction de même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : (2 − 3)/(1 + 5)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"a": "3",
+				"b": "5",
+				"s": "1"
+			},
+			"answers": ["-\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit l'entier sur $1$ puis combiné les numérateurs entre eux et les dénominateurs entre eux : il faut d'abord un même dénominateur."
+			}
+		},
+		{
+			"description": "Erreur prévue : −7/5 pour 2 − 3/5",
+			"variationIndex": 3,
+			"variables": {
+				"n": "2",
+				"a": "3",
+				"b": "5",
+				"s": "1"
+			},
+			"answers": ["-\\frac{7}{5}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton résultat a le mauvais signe : compare la taille de ce que tu ajoutes et de ce que tu retires."
 			}
 		}
 	]

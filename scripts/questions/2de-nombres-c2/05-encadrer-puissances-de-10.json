@@ -31,10 +31,44 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:-n}}"
+					"expectedAnswer": "{{eval:-n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-n-1}}",
+							"message": "Tu as compté les chiffres après la virgule : regarde plutôt la notation scientifique du nombre.",
+							"label": "Chiffres après la virgule comptés"
+						},
+						{
+							"answer": "{{eval:1-n}}",
+							"message": "Avec cet exposant à gauche, l'inégalité est fausse : la puissance de 10 dépasse le nombre.",
+							"label": "Borne de gauche trop grande"
+						},
+						{
+							"answer": "{{n}}",
+							"message": "Ton exposant est positif : une telle puissance de 10 est plus grande que 1, donc que ce nombre.",
+							"label": "Signe de l'exposant oublié"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{eval:1-n}}"
+					"expectedAnswer": "{{eval:1-n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-n}}",
+							"message": "Avec cet exposant à droite, l'inégalité est fausse : la puissance de 10 est plus petite que le nombre.",
+							"label": "Borne de droite trop petite"
+						},
+						{
+							"answer": "{{eval:2-n}}",
+							"message": "Tu as compté les zéros après la virgule : regarde plutôt la notation scientifique du nombre.",
+							"label": "Zéros après la virgule comptés"
+						},
+						{
+							"answer": "{{eval:n-1}}",
+							"message": "Ton exposant est positif : une telle puissance de 10 est plus grande que 1, donc que ce nombre.",
+							"label": "Signe de l'exposant oublié"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -43,7 +77,8 @@
 					"Comme $1\\leqslant{{u}}{,}{{v}}<10$, en multipliant par $10^{-{{n}}}$ : $10^{-{{n}}}\\leqslant{{eval:(10*u+v)/10^(n+1);d}}<10^{ {{eval:1-n}} }$.",
 					"Les deux entiers sont $\\textcolor{{{color:primary.0}}}{{{eval:-n}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:1-n}}}$."
 				]
-			}
+			},
+			"hint": "Écris d'abord le nombre en notation scientifique, $a\\times10^{p}$ avec $1\\leqslant a<10$ : l'exposant $p$ donne la borne de gauche."
 		},
 		{
 			"statement": "Complète avec deux entiers.\n\n$$10^{?}\\leqslant{{eval:(10*u+v)*10^(n-1)}}<10^{?}$$",
@@ -64,10 +99,34 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{n}}"
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n+1}}",
+							"message": "Avec cet exposant à gauche, l'inégalité est fausse : la puissance de 10 dépasse le nombre.",
+							"label": "Borne de gauche trop grande"
+						},
+						{
+							"answer": "{{eval:n-1}}",
+							"message": "Tu as compté les zéros du nombre : regarde plutôt sa notation scientifique.",
+							"label": "Zéros comptés"
+						}
+					]
 				},
 				{
-					"expectedAnswer": "{{eval:n+1}}"
+					"expectedAnswer": "{{eval:n+1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}",
+							"message": "Avec cet exposant à droite, l'inégalité est fausse : la puissance de 10 est plus petite que le nombre.",
+							"label": "Borne de droite trop petite"
+						},
+						{
+							"answer": "{{eval:n+2}}",
+							"message": "Tu as compté les chiffres du nombre : regarde plutôt sa notation scientifique.",
+							"label": "Chiffres comptés"
+						}
+					]
 				}
 			],
 			"correction": {
@@ -76,7 +135,8 @@
 					"Comme $1\\leqslant{{u}}{,}{{v}}<10$, en multipliant par $10^{ {{n}} }$ : $10^{ {{n}} }\\leqslant{{eval:(10*u+v)*10^(n-1)}}<10^{ {{eval:n+1}} }$.",
 					"Les deux entiers sont $\\textcolor{{{color:primary.0}}}{{{n}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$."
 				]
-			}
+			},
+			"hint": "Écris d'abord le nombre en notation scientifique, $a\\times10^{p}$ avec $1\\leqslant a<10$ : l'exposant $p$ donne la borne de gauche."
 		}
 	],
 	"testSpecs": [
@@ -102,7 +162,8 @@
 				"n": "3"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec cet exposant à gauche, l'inégalité est fausse : la puissance de 10 dépasse le nombre."
 			},
 			"answers": ["-2", "-1"]
 		},
@@ -115,7 +176,8 @@
 				"n": "3"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec cet exposant à gauche, l'inégalité est fausse : la puissance de 10 dépasse le nombre."
 			},
 			"answers": ["-2", "-3"]
 		},
@@ -154,9 +216,122 @@
 				"n": "4"
 			},
 			"expected": {
-				"status": "incorrect"
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les chiffres du nombre : regarde plutôt sa notation scientifique."
 			},
 			"answers": ["5", "6"]
+		},
+		{
+			"description": "Erreur : 0,003 2, gauche 10⁻⁴ (décimales comptées)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les chiffres après la virgule : regarde plutôt la notation scientifique du nombre."
+			},
+			"answers": ["-4", "-2"]
+		},
+		{
+			"description": "Erreur : 0,003 2, gauche 10³ (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant est positif : une telle puissance de 10 est plus grande que 1, donc que ce nombre."
+			},
+			"answers": ["3", "-2"]
+		},
+		{
+			"description": "Erreur : 0,003 2, droite 10⁻³",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec cet exposant à droite, l'inégalité est fausse : la puissance de 10 est plus petite que le nombre."
+			},
+			"answers": ["-3", "-3"]
+		},
+		{
+			"description": "Erreur : 0,003 2, droite 10⁻¹ (zéros comptés)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les zéros après la virgule : regarde plutôt la notation scientifique du nombre."
+			},
+			"answers": ["-3", "-1"]
+		},
+		{
+			"description": "Erreur : 0,003 2, droite 10² (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton exposant est positif : une telle puissance de 10 est plus grande que 1, donc que ce nombre."
+			},
+			"answers": ["-3", "2"]
+		},
+		{
+			"description": "Erreur : 32 000, gauche 10⁵",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec cet exposant à gauche, l'inégalité est fausse : la puissance de 10 dépasse le nombre."
+			},
+			"answers": ["5", "5"]
+		},
+		{
+			"description": "Erreur : 32 000, gauche 10³ (zéros comptés)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les zéros du nombre : regarde plutôt sa notation scientifique."
+			},
+			"answers": ["3", "5"]
+		},
+		{
+			"description": "Erreur : 32 000, droite 10⁴",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec cet exposant à droite, l'inégalité est fausse : la puissance de 10 est plus petite que le nombre."
+			},
+			"answers": ["4", "4"]
 		}
 	]
 }
