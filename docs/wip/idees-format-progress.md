@@ -249,6 +249,13 @@ validé (Q1 C : case par variation, absente sans erreur prévue, à plusieurs ca
 - Éditeur de série : `handleChoiceVariations` (clé retirée quand vide).
 - Tests (rouges avant le code) : `choice-eligibility` (4), `questionCart-qcm` (4),
   `VariationPicker` (+7), éditeur `variations` (+1).
+- Relecture `code-reviewer` (Sonnet). Corrigé (tests rouges puis verts) : le pré-filtre `mayBeChoice` ne
+  voit ni le type de case ni le bloc d'opération (décidés au tirage) → bouton, résumé et cases jugés sur
+  l'exemple tiré (`choosable`, seulement pour les variations à erreurs prévues) ; retirer une variation
+  retire son QCM enregistré même invisible, et `setVariations` du panier élague `choiceVariations` ;
+  dialogue : « si un tirage ne le permet pas, reste en saisie », titre « Réponse en QCM » pour un
+  modèle à une variation. Faux : « seule l'évaluation tire en QCM » (`automaths/test` aussi). Laissé :
+  un élève qui ouvre le lien du prof garde son QCM sans le voir, comme les variations choisies.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 

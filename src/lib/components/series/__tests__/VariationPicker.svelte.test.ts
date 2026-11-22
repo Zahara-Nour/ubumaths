@@ -175,4 +175,24 @@ describe('VariationPicker — en QCM (idée 4)', () => {
 		await page.getByRole('button').click();
 		expect(page.getByRole('checkbox', { name: 'Variation 1 en QCM' }).query()).toBeNull();
 	});
+
+	it('erreurs prévues, mais question qui ne se pose pas en QCM au tirage : rien à régler', async () => {
+		const screen = await render(VariationPicker, {
+			template: model([
+				withErrors('Calcule : $8 + 4 = ?$', {
+					precision: { type: 'tolerance', tolerance: 0.5, mode: 'absolute' }
+				})
+			]),
+			onchange: vi.fn(),
+			onchoicechange: vi.fn()
+		});
+		expect(screen.container.querySelector('[data-choix-variations]')).toBeNull();
+	});
+
+	it('retirer une variation retire son QCM enregistré, même hors de l’affichage', async () => {
+		// Variation 3 : QCM enregistré (lien fabriqué, modèle changé) mais sous veto, donc invisible
+		const { onchoicechange } = await openQcm(CALCULS, { choiceSelected: [0, 2] });
+		await page.getByRole('checkbox', { name: 'Variation 3', exact: true }).click();
+		expect(onchoicechange).toHaveBeenCalledWith([0]);
+	});
 });

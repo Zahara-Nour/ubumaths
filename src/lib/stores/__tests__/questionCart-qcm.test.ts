@@ -50,4 +50,13 @@ describe('questionCart — variations en QCM (idée 4)', () => {
 		expect(questionCart.getItem(TEMPLATE)?.choiceVariations).toBeUndefined();
 		expect(questionCart.getItem(OTHER)?.choiceVariations).toEqual([0]);
 	});
+
+	it('retirer une variation retire son QCM', () => {
+		questionCart.addToCart(TEMPLATE, 3);
+		questionCart.setChoiceVariations(TEMPLATE, [0, 2]);
+		questionCart.setVariations(TEMPLATE, [1, 2]);
+		expect(questionCart.getItem(TEMPLATE)?.choiceVariations).toEqual([2]);
+		questionCart.setVariations(TEMPLATE, [1]);
+		expect(questionCart.getItem(TEMPLATE)?.choiceVariations).toBeUndefined();
+	});
 });

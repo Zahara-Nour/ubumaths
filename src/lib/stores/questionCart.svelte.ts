@@ -151,6 +151,10 @@ export class QuestionCartStore {
 		if (!item) return;
 		if (variations && variations.length > 0) {
 			item.variations = sortedUnique(variations);
+			// Une variation retirée emporte son QCM (idée 4)
+			const kept = item.choiceVariations?.filter((index) => variations.includes(index));
+			if (kept && kept.length > 0) item.choiceVariations = kept;
+			else delete item.choiceVariations;
 		} else {
 			delete item.variations;
 		}

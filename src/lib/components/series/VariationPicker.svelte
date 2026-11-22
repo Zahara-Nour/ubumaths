@@ -55,9 +55,17 @@
 				)
 			: []
 	);
+	// Celles dont l'exemple tiré se pose VRAIMENT en QCM : le type de case, un bloc
+	// d'opération ne se savent qu'au tirage. Exemples calculés pour ces seules variations
+	let choosable = $derived(
+		mayChoose.filter((index) => {
+			const example = variationExample(template, index, generateInstance);
+			return example !== null && canBeChoice(example);
+		})
+	);
 	// En QCM et encore permises (une variation retirée ne compte plus)
 	let inChoice = $derived(
-		(choiceSelected ?? []).filter((index) => allowed.includes(index) && mayChoose.includes(index))
+		(choiceSelected ?? []).filter((index) => allowed.includes(index) && choosable.includes(index))
 	);
 	let summary = $derived(summaryOf(count, allowed.length, inChoice.length));
 	// Exemples calculés à l'ouverture seulement (graine fixe : toujours les mêmes)
@@ -81,8 +89,11 @@
 			? [...allowed, index].sort((a, b) => a - b)
 			: allowed.filter((other) => other !== index);
 		if (next.length === 0) return;
-		// Variation retirée : son QCM part avec elle
-		if (!checked && inChoice.includes(index)) toggleChoice(index, false);
+		// Variation retirée : son QCM part avec elle (choix enregistré, même hors de l'affichage)
+		if (!checked && choiceSelected?.includes(index)) {
+			const kept = inChoice.filter((other) => other !== index);
+			onchoicechange?.(kept.length > 0 ? kept : undefined);
+		}
 		onchange(next.length === count ? undefined : next);
 	}
 
@@ -94,7 +105,7 @@
 	}
 </script>
 
-{#if count > 1 || mayChoose.length > 0}
+{#if count > 1 || choosable.length > 0}
 	<Button
 		type="button"
 		size="sm"
@@ -112,15 +123,15 @@
 	<Dialog.Root bind:open>
 		<Dialog.Content class="max-h-[85vh] max-w-3xl overflow-y-auto">
 			<Dialog.Header>
-				<Dialog.Title>Variations du modèle</Dialog.Title>
+				<Dialog.Title>{count > 1 ? 'Variations du modèle' : 'Réponse en QCM'}</Dialog.Title>
 				<Dialog.Description>
 					{#if count > 1}
 						Coche celles à garder dans la série. Chaque variation est montrée par un exemple de
 						question.
 					{/if}
-					{#if mayChoose.length > 0}
+					{#if choosable.length > 0}
 						« En QCM » : l'élève choisit entre la bonne réponse et les erreurs prévues (en
-						Flash-cards, la question reste en saisie).
+						Flash-cards, ou si un tirage ne le permet pas, la question reste en saisie).
 					{/if}
 				</Dialog.Description>
 			</Dialog.Header>
@@ -138,7 +149,7 @@
 									onchange={(value) => toggle(index, value)}
 								/>
 							{/if}
-							{#if mayChoose.includes(index) && example && canBeChoice(example)}
+							{#if choosable.includes(index)}
 								<MyCheckbox
 									checked={inChoice.includes(index)}
 									disabled={!checked}
