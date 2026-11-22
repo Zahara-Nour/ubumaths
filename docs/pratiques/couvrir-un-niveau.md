@@ -240,9 +240,8 @@ d'additionner.", "label": "Soustraction au lieu d'addition"}]`. `answer` s'écri
    piste, une méthode ou un rappel de propriété, en une ou deux phrases, **sans donner ni calculer
    la réponse** ; ou `"hintFromFirstStep": true` quand la première étape de la correction est
    une vraie piste (jamais si elle affiche ou calcule la réponse). L'élève l'ouvre en Saisie,
-   Flash-cards et révision, jamais en évaluation. ⚠️ La prod ne lit `hint` qu'après le
-   `deploy:prod` qui livre #2991 : avant, ne pas lancer `create-questions --publier` sur des
-   fichiers qui en portent (le demander à David).
+   Flash-cards et révision, jamais en évaluation. La prod lit `hint` et `expectedErrors` depuis
+   la 0.101.0 (2026-11-22).
    **Forme** (revue du lot de Seconde, 2026-11-22, faits vérifiés) : un motif de `requiredForm`
    sait comparer deux de ses parties (`e:integer + p:integer & gte(0) & lt(w) / w:integer` exige
    une fraction plus petite que 1 ; `{{b}}*k:integer + r:integer & gte(0) & lt({{b}})` un reste
