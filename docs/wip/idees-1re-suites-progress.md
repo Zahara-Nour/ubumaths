@@ -27,12 +27,12 @@ _Mis à jour le 2026-11-22, rubrique prise._
 
 ### 2026-11-22 — relevé et phase 0
 
-- Relevé des 19 exercices : 3 ✅, 14 🟡, 1 ❌ (somme écrite en extension), 1 ✅ seulement en
-  Terminale (arithmético-géométrique). Détail : [idees-1re-suites-releve.md](idees-1re-suites-releve.md).
+- Relevé des 19 exercices : 3 ✅, 12 🟡, 2 ❌ (placer des termes en 1re spé, somme écrite en
+  extension), 1 ✅ seulement en Terminale (arithmético-géométrique), 1 doublon (1AL11-8QCM). Détail : [idees-1re-suites-releve.md](idees-1re-suites-releve.md).
 - Phase 0 : https://claude.ai/artifact/6ijd2FYjXxh9xx6dszdKnx. Trois questions d'ensemble
   (Q1 arithmético-géométrique en 1re : non recommandé ; Q2 monotone « à partir d'un rang » : oui ;
   Q3 questions enchaînées sur un même contexte : idée d'outil, plus tard). Seize fiches :
-  4 nouveaux modèles (3, 11, 12, 13), 10 variations de 13 modèles publiés (1, 2, 4 à 10, 14),
+  4 nouveaux modèles (3, 11, 12, 13), 10 fiches de variations sur 14 modèles publiés (1, 2, 4 à 10, 14),
   1 « plus tard » (15), 1 « non » (16).
 - Modèles publiés à réserver au tableau dès les verdicts : 45da9678, 7703e625, cea65372, 84114cb2,
   d2943133, 727fb88a, cf51cb93, 85afd455, 65e96f31, e67b1cbd, 44b32cad, b72fae4a, 5042401b,
