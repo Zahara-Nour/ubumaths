@@ -32,8 +32,8 @@ const breakdown: Breakdown = {
 	copies: 4,
 	lateCopies: 0,
 	questions: [
-		{ templateId: T1, title: 'Fractions égales', timing: null, ...tally },
-		{ templateId: null, title: 'Modèle supprimé', timing: null, ...tally }
+		{ templateId: T1, title: 'Fractions égales', timing: null, choiceAnswers: 0, ...tally },
+		{ templateId: null, title: 'Modèle supprimé', timing: null, choiceAnswers: 0, ...tally }
 	],
 	notions: []
 };
@@ -50,7 +50,8 @@ function group(students: string[]): QuestionErrorGroup {
 		status: 'incorrect',
 		verdict: { unavailable: true, status: 'incorrect' },
 		students,
-		errorKinds: []
+		errorKinds: [],
+		asChoice: false
 	};
 }
 
@@ -303,5 +304,39 @@ describe('bilan par question : erreurs dépliables', () => {
 	it('sans identifiant de contrôle : aucune ligne dépliable (compatibilité)', async () => {
 		const { container } = await render(EvaluationBreakdown, { breakdown });
 		expect(container.querySelectorAll('tbody button[aria-expanded]')).toHaveLength(0);
+	});
+	it('idée 4 : la ligne dit « en QCM », ou combien de réponses l’ont été', async () => {
+		const mixed: Breakdown = {
+			...breakdown,
+			questions: [
+				{ ...breakdown.questions[0], choiceAnswers: 4 },
+				{ ...breakdown.questions[1], choiceAnswers: 1 }
+			]
+		} as Breakdown;
+		const { container } = await render(EvaluationBreakdown, { breakdown: mixed });
+		const rows = [...container.querySelectorAll('[data-testid="bilan-questions"] tbody tr')].map(
+			(row) => text(row as HTMLElement)
+		);
+		expect(rows[0]).toContain('en QCM');
+		expect(rows[0]).not.toContain('dont');
+		expect(rows[1]).toContain('dont 1 en QCM');
+	});
+
+	it('idée 4 : sans réponse en QCM, aucune mention', async () => {
+		const { container } = await render(EvaluationBreakdown, { breakdown });
+		expect(text(container)).not.toContain('QCM');
+	});
+
+	it('idée 4 : chaque groupe répondu en QCM porte la mention', async () => {
+		stubFetch(ok({ groups: [{ ...group(['Ada']), asChoice: true }, group(['Bob'])] }));
+		const { container } = await render(EvaluationBreakdown, {
+			breakdown,
+			evaluationId: EVALUATION
+		});
+		await userEvent.click(toggle(container));
+		await vi.waitFor(() => expect(text(container)).toContain('Bob'));
+		const marks = container.querySelectorAll('[data-testid="as-choice"]');
+		expect(marks).toHaveLength(1);
+		expect(marks[0].textContent?.trim()).toBe('en QCM');
 	});
 });

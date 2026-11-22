@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('skill_attempts')
 				.select(
-					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
+					'observable_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts, answered_as_choice'
 				)
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })

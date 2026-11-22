@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { asChoiceInstance } from '../choice-from-errors';
+import { asChoiceInstance, isAnsweredAsChoice } from '../choice-from-errors';
 import { buildExpectedResult, type ExpectedResult } from '../expected-result';
 import { answerErrorKinds } from '../error-kinds';
 import { generateInstance } from '../generator/instance-generator';
@@ -319,5 +319,39 @@ describe('schéma du modèle : veto « jamais en QCM »', () => {
 		void _id;
 		const parsed = questionTemplateSchema.safeParse({ ...rest, status: 'draft' });
 		expect(parsed.success ? [] : parsed.error.issues).toEqual([]);
+	});
+});
+
+describe('question répondue en QCM : repère (PR 3)', () => {
+	it('la question passée en QCM le dit', () => {
+		expect(isAnsweredAsChoice(asChoice(addition(THREE_ERRORS)))).toBe(true);
+	});
+
+	it('la même question en saisie ne le dit pas', () => {
+		expect(isAnsweredAsChoice(generate(addition(THREE_ERRORS)))).toBe(false);
+	});
+
+	it('un QCM écrit par l’auteur n’est pas « répondu en QCM »', () => {
+		const authored = {
+			...generate(addition(THREE_ERRORS)),
+			blanks: [
+				{
+					type: 'choice',
+					expectedAnswer: '0',
+					choice: { choices: ['$12$', '$4$'], order: [0, 1], multiple: false }
+				}
+			]
+		} as unknown as QuestionInstance;
+		expect(isAnsweredAsChoice(authored)).toBe(false);
+	});
+
+	it('le repère survit au passage en JSON (copie figée d’un contrôle)', () => {
+		const stored: unknown = JSON.parse(JSON.stringify(asChoice(addition(THREE_ERRORS))));
+		expect(isAnsweredAsChoice(stored)).toBe(true);
+	});
+
+	it('rien de lisible → faux', () => {
+		expect(isAnsweredAsChoice(null)).toBe(false);
+		expect(isAnsweredAsChoice({ blanks: 'x' })).toBe(false);
 	});
 });

@@ -809,7 +809,9 @@ describe('GET /api/account/export', () => {
 				'end_reason',
 				'seed',
 				'answer_parts',
-				'part_verdicts'
+				'part_verdicts',
+				// Idée 4 (chantier `idees-format`) : posée en QCM
+				'answered_as_choice'
 			]) {
 				expect(columns).toContain(column);
 			}

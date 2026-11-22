@@ -53,6 +53,8 @@ export interface QuestionBreakdown extends BreakdownTally {
 	 * élève inconnue)
 	 */
 	timing: QuestionTiming | null;
+	/** Réponses comptées posées en QCM depuis les erreurs prévues (idée 4) */
+	choiceAnswers: number;
 }
 
 /** Une notion du programme (branche › notion) */
@@ -86,6 +88,15 @@ export const BREAKDOWN_ERROR_MESSAGE = 'Le bilan ne peut pas être calculé pour
 /** Durée sans doute trop courte : pas de jugement sous ce nombre d'élèves (P7, Q1) */
 export const TOO_SHORT_MIN_STUDENTS = 5;
 export const TOO_SHORT_LABEL = 'Durée sans doute trop courte';
+
+/**
+ * Mention d'une ligne du bilan dont des réponses ont été données en QCM (idée 4) :
+ * « en QCM » quand toutes, « dont 2 en QCM » sinon ; null sans QCM.
+ */
+export function choiceAnswersLabel(row: { answers: number; choiceAnswers: number }): string | null {
+	if (row.choiceAnswers <= 0) return null;
+	return row.choiceAnswers >= row.answers ? 'en QCM' : `dont ${row.choiceAnswers} en QCM`;
+}
 
 /** « 7 élèves sur 10 n'ont rien répondu dans les 20 s » */
 export function tooShortSentence(timing: QuestionTiming): string {
@@ -123,6 +134,8 @@ export interface QuestionErrorGroup {
 	students: string[];
 	/** Type d'erreur des cases fausses, quand il est reconnu (chantier `type-erreur`) */
 	errorKinds: BlankErrorKind[];
+	/** Question posée en QCM depuis ses erreurs prévues (idée 4) : mention « en QCM » */
+	asChoice: boolean;
 }
 
 /**

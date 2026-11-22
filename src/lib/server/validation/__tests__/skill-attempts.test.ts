@@ -167,3 +167,23 @@ describe('skillAttemptInputSchema — réponse et verdict par case', () => {
 		}
 	});
 });
+
+describe('skillAttemptInputSchema — répondu en QCM (idée 4, PR 3)', () => {
+	it.each(['typing', 'mock_test', 'number_race'])('accepte « en QCM » en %s', (place) => {
+		const parsed = skillAttemptInputSchema.safeParse(corps({ place, answered_as_choice: true }));
+		expect(parsed.success && parsed.data.answered_as_choice).toBe(true);
+	});
+
+	it('refuse « en QCM » en Flash-cards (la base le refuse aussi)', () => {
+		refuse({ place: 'flash_cards', answered_as_choice: true });
+	});
+
+	it('absent → faux', () => {
+		const parsed = skillAttemptInputSchema.safeParse(corps({ place: 'typing' }));
+		expect(parsed.success && parsed.data.answered_as_choice).toBe(false);
+	});
+
+	it('refuse autre chose qu’un booléen', () => {
+		refuse({ place: 'typing', answered_as_choice: 'oui' });
+	});
+});

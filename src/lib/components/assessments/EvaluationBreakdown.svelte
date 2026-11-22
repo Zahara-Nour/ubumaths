@@ -27,6 +27,7 @@
 	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
 	import {
 		QUESTION_ERRORS_MESSAGE,
+		choiceAnswersLabel,
 		type BreakdownTally,
 		type EvaluationBreakdown,
 		type EvaluationQuestionErrors,
@@ -145,6 +146,13 @@
 
 {#snippet tooShortMark(row: QuestionBreakdown)}
 	<TooShortMark timing={row.timing} class="mt-1" />
+	<!-- Idée 4 : réponses données en QCM (le taux n'est pas celui d'une saisie) -->
+	{@const choiceLabel = choiceAnswersLabel(row)}
+	{#if choiceLabel}
+		<p class="mt-1 text-sm font-normal text-muted-foreground" data-testid="choice-answers">
+			{choiceLabel}
+		</p>
+	{/if}
 {/snippet}
 
 {#snippet state()}

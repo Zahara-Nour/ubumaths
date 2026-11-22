@@ -213,7 +213,8 @@ export function asChoiceInstance(
 		type: 'choice',
 		expectedAnswer: '0',
 		choice: { choices, order, multiple: false },
-		expectedErrors: errors
+		expectedErrors: errors,
+		fromExpectedErrors: true
 	};
 	const block = serializeChoiceBlock({
 		caseIndex: 0,
@@ -241,4 +242,24 @@ export function expectedErrorOfChoice(
 	const index = Number(answer);
 	if (index < 1) return null;
 	return blank.expectedErrors?.[index - 1] ?? null;
+}
+
+/**
+ * La question a-t-elle été posée en QCM depuis ses erreurs prévues ? Lit le
+ * repère de la case (`fromExpectedErrors`) ; accepte une instance relue en base
+ * (copie figée d'un contrôle). Un QCM écrit par l'auteur : non.
+ */
+export function isAnsweredAsChoice(instance: unknown): boolean {
+	if (!instance || typeof instance !== 'object' || !('blanks' in instance)) return false;
+	const { blanks } = instance;
+	if (!Array.isArray(blanks) || blanks.length !== 1) return false;
+	const blank: unknown = blanks[0];
+	return (
+		!!blank &&
+		typeof blank === 'object' &&
+		'type' in blank &&
+		blank.type === 'choice' &&
+		'fromExpectedErrors' in blank &&
+		blank.fromExpectedErrors === true
+	);
 }

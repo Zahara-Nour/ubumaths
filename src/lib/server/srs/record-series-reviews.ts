@@ -17,6 +17,8 @@
  *   question de cours ou brouillon (`entersProgrammeDeck`, Q113) et les modèles
  *   de `neverInDeck` (cartes de cours lues par le serveur, décision 2026-09-28).
  *
+ * - Question posée en QCM depuis ses erreurs prévues (idée 4 du chantier
+ *   `idees-format`) : réussite = demi-réussite (« Difficile »), trace « en QCM ».
  * - Traces d'un contrôle (PR 4 bis) : colonnes du lieu `evaluation` (durées,
  *   fin) portées par chaque révision, écrites au client `attemptsClient`
  *   (service : la policy élève refuse ce lieu). FSRS et paquet restent au
@@ -28,7 +30,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { FSRS } from '#lib/srs/fsrs.ts';
-import { Grade } from '#lib/srs/types.ts';
+import type { Grade } from '#lib/srs/types.ts';
+import { answerGrade } from '#lib/server/srs/answer-grade.ts';
 import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
 import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
 import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
@@ -45,6 +48,8 @@ export interface SeriesReview {
 	selfAssessed: boolean;
 	/** Colonnes de trace d'une question de contrôle (lieu, durées, fin) */
 	trace?: EvaluationTraceColumns;
+	/** Posée en QCM depuis ses erreurs prévues (idée 4) : demi-réussite, trace « en QCM » */
+	answeredAsChoice?: boolean;
 }
 
 // Functions
@@ -91,11 +96,13 @@ export async function recordSeriesReviews(
 			grade: Grade;
 			source: 'auto' | 'student_self';
 			with_help: boolean;
+			answered_as_choice: boolean;
 		} & Partial<EvaluationTraceColumns>
 	> = [];
 
 	for (const review of reviews) {
-		const grade: Grade = review.success ? Grade.GOOD : Grade.AGAIN;
+		const answeredAsChoice = review.answeredAsChoice === true;
+		const grade: Grade = answerGrade(review.success, answeredAsChoice);
 
 		try {
 			if (review.selfAssessed) {
@@ -129,6 +136,7 @@ export async function recordSeriesReviews(
 			grade,
 			source: review.selfAssessed ? 'student_self' : 'auto',
 			with_help: false,
+			answered_as_choice: answeredAsChoice,
 			...review.trace
 		});
 	}

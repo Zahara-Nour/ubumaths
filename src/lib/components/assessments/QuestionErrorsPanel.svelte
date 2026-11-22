@@ -9,6 +9,7 @@
 	des cases fausses par type d'erreur, et type de chaque réponse quand il est reconnu.
 	Chantier `idees-format` (idée 3) : les erreurs prévues par l'auteur y comptent
 	sous leur nom, formules (`$…$`) rendues comme dans la remarque de l'élève.
+	Idée 4 : un groupe posé en QCM depuis ses erreurs prévues porte « en QCM ».
 
 	Props:
 	- errors: erreurs d'une question, déjà lues (statut `ok`)
@@ -104,13 +105,23 @@
 						{/if}
 						{group.students.join(', ')}
 					</p>
-					{#if group.errorKinds.length > 0}
-						<div class="flex flex-wrap gap-1" data-testid="error-kinds">
-							{#each kindLabelsOf(group) as label (label)}
-								<span class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium"
-									>{@render withMath(label)}</span
+					{#if group.errorKinds.length > 0 || group.asChoice}
+						<div class="flex flex-wrap gap-1">
+							{#if group.asChoice}
+								<span
+									class="rounded-full border px-2 py-0.5 text-xs font-medium"
+									data-testid="as-choice">en QCM</span
 								>
-							{/each}
+							{/if}
+							{#if group.errorKinds.length > 0}
+								<span class="contents" data-testid="error-kinds">
+									{#each kindLabelsOf(group) as label (label)}
+										<span class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium"
+											>{@render withMath(label)}</span
+										>
+									{/each}
+								</span>
+							{/if}
 						</div>
 					{/if}
 					<CorrectionCard answerResult={answerResultOf(group)} verdict={group.verdict} size="sm" />

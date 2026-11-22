@@ -12,6 +12,8 @@
  * - formes chronométrées (Contrôle blanc, Course) : durée de réponse, plafonnée
  *   à la durée allouée, durée allouée et fin (validée / temps écoulé) ; aucune
  *   durée pour une question laissée par « Terminer » (décision du 2026-11-11) ;
+ * - formes où l'on tape : « répondu en QCM » quand la question a été posée en
+ *   QCM depuis ses erreurs prévues (idée 4 du chantier `idees-format`) ;
  * - formes où l'on tape : réponse case par case et verdict par case (juste en
  *   valeur : le vert ou l'ambre de la carte). Figure à compléter : son verdict,
  *   jamais le tracé (case vide). Aucune case → rien (la base refuse `[]`).
@@ -34,6 +36,7 @@
 
 import { computeBlankColors } from '#lib/components/questions/blank-verdicts.ts';
 import { getQuestionType, type QuestionInstance } from '#lib/questions/types.ts';
+import { isAnsweredAsChoice } from '#lib/questions/choice-from-errors.ts';
 import type { AnswerData } from '#lib/types/question-display.ts';
 
 // Types
@@ -58,6 +61,8 @@ export interface SeriesTraceBody {
 	end_reason?: 'validated' | 'timeout';
 	answer_parts?: string[];
 	part_verdicts?: boolean[];
+	/** Question posée en QCM depuis ses erreurs prévues (idée 4) ; absent : en saisie */
+	answered_as_choice?: true;
 }
 
 export interface TraceRecorder {
@@ -132,6 +137,10 @@ export function buildSeriesTrace(input: {
 		trace.response_ms = Math.min(clampDuration(timing.responseMs), allotted);
 		trace.allotted_ms = allotted;
 		trace.end_reason = timing.endReason;
+	}
+	// Idée 4 : posée en QCM, réponse donnée ou non (jamais en Flash-cards)
+	if (ANSWERED_PLACES.includes(place) && isAnsweredAsChoice(instance)) {
+		trace.answered_as_choice = true;
 	}
 	if (ANSWERED_PLACES.includes(place) && getQuestionType(instance) !== 'course_card') {
 		const typed = answerOf(instance, answer);

@@ -66,6 +66,11 @@ export interface AnswerRow {
 	points: number | null;
 	/** Secondes passées, déclarées par la page (entières) ; null si absentes */
 	time_spent: number | null;
+	/**
+	 * Repère « posée en QCM » lu dans la copie figée (`fromExpectedErrors` de la
+	 * case, idée 4) : PostgREST le rend en texte (`'true'`) ; absent : en saisie
+	 */
+	as_choice?: boolean | string | null;
 }
 
 interface NodeRow {
@@ -293,7 +298,7 @@ export function computeEvaluationBreakdown(input: BreakdownInput): EvaluationBre
 				templateId === null
 					? DELETED_TEMPLATE_LABEL
 					: (titles.get(templateId) ?? UNKNOWN_TEMPLATE_LABEL);
-			row = { templateId, title, timing: null, ...emptyTally() };
+			row = { templateId, title, timing: null, choiceAnswers: 0, ...emptyTally() };
 			questions.set(key, row);
 		}
 		return row;
@@ -322,7 +327,9 @@ export function computeEvaluationBreakdown(input: BreakdownInput): EvaluationBre
 
 	for (const answer of input.answers) {
 		if (!counted.has(answer.test_session_id)) continue;
-		add(questionOf(answer.template_id), answer);
+		const question = questionOf(answer.template_id);
+		add(question, answer);
+		if (answer.as_choice === true || answer.as_choice === 'true') question.choiceAnswers += 1;
 		const ids = answer.template_id ? notionIds.get(answer.template_id) : undefined;
 		if (!ids || ids.size === 0) add(notionRow(null), answer);
 		else for (const id of ids) add(notionRow(id), answer);
@@ -443,7 +450,10 @@ export async function getEvaluationBreakdown(
 			(batch, from, to) =>
 				supabase
 					.from('test_answers')
-					.select('test_session_id, template_id, status, points, time_spent')
+					// Idée 4 : le seul repère « en QCM » de la copie figée, pas l'énoncé entier
+					.select(
+						'test_session_id, template_id, status, points, time_spent, as_choice:question_instance->blanks->0->>fromExpectedErrors'
+					)
 					.in('test_session_id', batch)
 					.order('id')
 					.range(from, to)

@@ -13,7 +13,8 @@ import {
 	BREAKDOWN_ERROR_MESSAGE,
 	DELETED_TEMPLATE_LABEL,
 	NO_NOTION_LABEL,
-	UNKNOWN_TEMPLATE_LABEL
+	UNKNOWN_TEMPLATE_LABEL,
+	choiceAnswersLabel
 } from '#lib/types/evaluation-breakdown.ts';
 import { called, createFakeSupabase, type Call, type Result } from './helpers/fake-supabase';
 
@@ -624,7 +625,11 @@ describe('getEvaluationBreakdown', () => {
 		expect(called(answers, 'in', 'test_session_id', ['s-ada'])).toBe(true);
 		// P7 : le temps passé est lu avec la réponse
 		expect(
-			called(answers, 'select', 'test_session_id, template_id, status, points, time_spent')
+			called(
+				answers,
+				'select',
+				'test_session_id, template_id, status, points, time_spent, as_choice:question_instance->blanks->0->>fromExpectedErrors'
+			)
 		).toBe(true);
 	});
 
@@ -731,5 +736,56 @@ describe('getEvaluationBreakdown', () => {
 		});
 		const result = await getEvaluationBreakdown(fake.client, EVALUATION_INPUT, [ADA]);
 		expect(result).toEqual({ status: 'error', message: BREAKDOWN_ERROR_MESSAGE });
+	});
+});
+
+describe('computeEvaluationBreakdown — réponses en QCM (idée 4, PR 3)', () => {
+	const sessions = [
+		session('s-ada', ADA, 10, '2026-11-10T10:00:00Z'),
+		session('s-bob', BOB, 10, '2026-11-10T10:00:00Z')
+	];
+
+	it('compte les réponses posées en QCM, par question', () => {
+		const result = computeEvaluationBreakdown(
+			input({
+				sessions,
+				answers: [
+					{ ...answer('s-ada', T1, 'correct', 1), as_choice: true },
+					{ ...answer('s-bob', T1, 'incorrect', 0), as_choice: false },
+					answer('s-ada', T2, 'correct', 1)
+				]
+			})
+		);
+		if (result.status !== 'ok') throw new Error('erreur');
+		expect(result.questions.map((q) => q.choiceAnswers)).toEqual([1, 0]);
+	});
+
+	it('mention : « en QCM » si toutes, « dont N en QCM » sinon, rien sans QCM', () => {
+		expect(choiceAnswersLabel({ answers: 3, choiceAnswers: 3 })).toBe('en QCM');
+		expect(choiceAnswersLabel({ answers: 3, choiceAnswers: 2 })).toBe('dont 2 en QCM');
+		expect(choiceAnswersLabel({ answers: 3, choiceAnswers: 0 })).toBeNull();
+	});
+
+	it('lecture : le repère est lu dans la copie figée, sans charger l’énoncé entier', async () => {
+		const fake = createFakeSupabase((table) => {
+			if (table === 'test_sessions') return { data: [sessions[0]] };
+			if (table === 'test_answers')
+				return {
+					data: [{ ...answer('s-ada', T1, 'correct', 1), as_choice: 'true' }]
+				};
+			if (table === 'question_templates') return { data: [{ id: T1, title: 'Fractions égales' }] };
+			return { data: [] };
+		});
+		const result = await getEvaluationBreakdown(
+			fake.client,
+			{ id: EVALUATION, form: 'interactive', series: { items: [{ templateId: T1 }] } },
+			[ADA]
+		);
+		if (result.status !== 'ok') throw new Error(JSON.stringify(result));
+		expect(result.questions[0].choiceAnswers).toBe(1);
+		const [query] = fake.on('test_answers');
+		const select = String(query.calls.find((c) => c.method === 'select')?.args[0]);
+		expect(select).toContain('as_choice:question_instance->blanks->0->>fromExpectedErrors');
+		expect(select).not.toMatch(/question_instance(,|$)/);
 	});
 });

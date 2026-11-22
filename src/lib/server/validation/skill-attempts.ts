@@ -62,6 +62,9 @@ function emptyToNull<T>(list: T[] | null | undefined): T[] | null {
  * - `success`: outcome of local answer validation
  * - `with_help`: stored for analytics, not used in acquisition rule (decision 58)
  * - `phase_blocage`: optional diagnostic phase when the student failed (decision 30)
+ * - `answered_as_choice` : question posée en QCM depuis ses erreurs prévues
+ *   (idée 4) ; formes où l'on tape seulement (CHECK de la base) ; demi-réussite
+ *   pour la révision espacée
  * - `place`, `seed`, durées, `answer_parts`, `part_verdicts` : contenu d'une trace
  *   (ADR 0038) ; mêmes règles que les CHECK de la base, pour un 400 plutôt qu'un 500.
  */
@@ -87,7 +90,8 @@ export const skillAttemptInputSchema = z
 			.max(MAX_PARTS)
 			.nullish()
 			.transform(emptyToNull),
-		part_verdicts: z.array(z.boolean()).max(MAX_PARTS).nullish().transform(emptyToNull)
+		part_verdicts: z.array(z.boolean()).max(MAX_PARTS).nullish().transform(emptyToNull),
+		answered_as_choice: z.boolean().default(false)
 	})
 	.superRefine((body, ctx) => {
 		const timed = TIMED_PLACES.includes(body.place);
@@ -108,6 +112,9 @@ export const skillAttemptInputSchema = z
 			ctx.addIssue({ code: 'custom', message: 'answer_parts and part_verdicts go together' });
 		} else if (parts && verdicts && parts.length !== verdicts.length) {
 			ctx.addIssue({ code: 'custom', message: 'one verdict per answer part' });
+		}
+		if (body.answered_as_choice && !ANSWERED_PLACES.includes(body.place)) {
+			ctx.addIssue({ code: 'custom', message: `no choice answer for place ${body.place}` });
 		}
 		if (parts && !ANSWERED_PLACES.includes(body.place)) {
 			ctx.addIssue({ code: 'custom', message: `no answer for place ${body.place}` });

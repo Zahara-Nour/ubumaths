@@ -284,7 +284,8 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
    (`is('completed_at', null)`) — un envoi concurrent retire ses réponses et rend la copie existante.
 5. Durée mesurée par le serveur (démarrage → envoi). `score` = note / 2 pour les anciens écrans.
 6. Si pas en retard : SRS nourri par le **verdict serveur** (`srsReviewsOf`, « su » = juste ou forme
-   non optimale non partielle, Q40), puis XP du compagnon (non bloquant). Une trace `auto` par
+   non optimale non partielle, Q40 ; question posée en QCM depuis ses erreurs prévues, lue sur la copie
+   figée par `isAnsweredAsChoice` : réussite = demi-réussite, trace « en QCM », idée 4), puis XP du compagnon (non bloquant). Une trace `auto` par
    question, **lieu `evaluation`**, écrite au client **service** (la policy élève refuse ce lieu) ;
    FSRS et paquet Programme au client de l'élève. Colonnes (`evaluationTraceOf`,
    `src/lib/server/evaluation-trace.ts`) : durée allouée = délai de la question (Contrôle blanc) ou
@@ -332,6 +333,12 @@ les cartes de la page résultats) :
   dès la première séance). `timing` nul : Course aux nombres (chrono global), modèle hors de la série
   ou supprimé, modèle sur **deux lignes à durées différentes** (durée de chaque élève non lisible
   ici).
+- **En QCM** (chantier `idees-format`, idée 4, PR 3 ; champ `choiceAnswers`) : réponses comptées dont la
+  copie figée porte le repère « posée en QCM » (`fromExpectedErrors` de la case, lu seul par PostgREST :
+  `question_instance->blanks->0->>fromExpectedErrors`, jamais l'énoncé entier). La ligne dit « en QCM »
+  quand toutes l'ont été, « dont 2 en QCM » sinon (`choiceAnswersLabel`) : le taux n'est pas celui d'une
+  saisie. Dans les erreurs de la question, chaque groupe posé en QCM porte la mention « en QCM »
+  (`QuestionErrorGroup.asChoice`).
 - **Lecture** : client du prof, RLS existante (`test_answers_select_teacher`), réponses par pages de
   1 000 (`max_rows`). Une lecture en échec rend `{ status: 'error' }` : la section le dit, la page
   garde cartes et tableau.

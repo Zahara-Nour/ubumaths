@@ -64,6 +64,7 @@ import {
 	isAssignmentRecipient
 } from '#lib/server/evaluations.ts';
 import { recordSeriesReviews } from '#lib/server/srs/record-series-reviews.ts';
+import { isAnsweredAsChoice } from '#lib/questions/choice-from-errors.ts';
 import {
 	evaluationTraceOf,
 	type EvaluationEndReason,
@@ -158,7 +159,7 @@ export class AttemptAlreadySubmittedError extends EvaluationError {
  * `is_correct` qu'à 1 point.
  */
 export function srsReviewsOf(
-	questions: ReadonlyArray<{ status: ValidationStatus; partial: boolean }>,
+	questions: ReadonlyArray<{ status: ValidationStatus; partial: boolean; instance?: unknown }>,
 	templateIds: readonly string[],
 	traces?: readonly EvaluationTraceColumns[]
 ): SeriesReview[] {
@@ -166,7 +167,9 @@ export function srsReviewsOf(
 		templateId: templateIds[index],
 		success: isKnownForSrs(question),
 		selfAssessed: false,
-		...(traces?.[index] && { trace: traces[index] })
+		...(traces?.[index] && { trace: traces[index] }),
+		// Idée 4 : lu sur la copie figée par le serveur (demi-réussite, trace « en QCM »)
+		...(isAnsweredAsChoice(question.instance) && { answeredAsChoice: true })
 	}));
 }
 

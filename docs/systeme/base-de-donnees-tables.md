@@ -204,7 +204,7 @@ Liens : `tag_id` → `tags`
 
 ### `skill_attempts`
 
-`allotted_ms?` · `answer_parts?` · `code?` · `created_at` · `end_reason?` · `grade?` · `id` · `observable_id?` · `part_verdicts?` · `phase_blocage?` · `place?` · `response_ms?` · `seed?` · `source` · `source_ref?` · `student_id` · `success?` · `task_id?` · `template_id?` · `with_help`
+`allotted_ms?` · `answer_parts?` · `answered_as_choice` · `code?` · `created_at` · `end_reason?` · `grade?` · `id` · `observable_id?` · `part_verdicts?` · `phase_blocage?` · `place?` · `response_ms?` · `seed?` · `source` · `source_ref?` · `student_id` · `success?` · `task_id?` · `template_id?` · `with_help`
 
 Liens : `observable_id` → `observables` · `student_id` → `profiles` · `task_id` → `evaluation_tasks` · `template_id` → `question_templates`
 
