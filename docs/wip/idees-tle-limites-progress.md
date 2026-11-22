@@ -5,18 +5,17 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, lot écrit (F3 en attente)._
+_Mis à jour le 2026-11-22, après #3008._
 
-- **État** : lot écrit et vert (specs, sonde des courbes, tableaux sondés, aperçu local) : 4 modèles
-  neufs (F1 ×2, F2, Q2 sans point ; 13 variations) et 15 variations ajoutées aux 7 publiés ; PR des
-  fichiers ouverte · **Prochaine action** : CI verte → merge ; puis David lance
-  `create-questions --dir scripts/questions/idees-tle-limites-neufs --publier` (prod), je commite
-  les ids, PR des migrations (rangement + tag des neufs, contenu des publiés par
-  `migration-contenu.ts`) · **En attente de David** : F3 (voir Historique, « lot écrit ») ·
-  **Pièges en cours** : règles du tag à vérifier en base avant la migration de rangement ; niveaux
-  numérotés à relever juste avant ; `{{e}}` interdit (constante d'Euler), `e^x` dans un message
-  d'erreur réécrit en `\exponentialE` · **Worktree / branche** :
-  `../ubumaths-wt-idees-tle-limites`, `feat/idees-tle-limites`.
+- **État** : #3008 mergée (fichiers du lot : 4 modèles neufs, 15 variations de 7 publiés), rien en
+  base · **Prochaine action** : David lance depuis le dépôt principal
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-limites-neufs --publier`
+  (brouillons en prod) ; puis nouveau worktree `ubumaths-wt-idees-tle-limites-migrations` : commit
+  des ids, migration de rangement + tag des neufs (F1 → TSPE-397 / TSPE-572, F2 → TSPE-581, Q2 sans
+  point), migration de contenu des publiés (`migration-contenu.ts`) · **En attente de David** : la
+  création en prod ; F3 (a, b ou c, voir Historique « lot écrit ») · **Pièges en cours** : règles du
+  tag à vérifier en base ; niveaux numérotés à relever juste avant ; `{{e}}` interdit (Euler) ·
+  **Worktree / branche** : aucun (retiré après #3008).
 
 ## Historique
 
