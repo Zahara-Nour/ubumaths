@@ -14,7 +14,9 @@
  *   réponse d'un tirage est donc ignorée d'elle-même) ;
  * - deux erreurs prévues de même valeur : la première écrite l'emporte ;
  * - Q3 : cases à écriture mathématique ordinaire seulement (le générateur refuse
- *   les autres).
+ *   les autres) ;
+ * - idée 4 : une case répondue en QCM (`choice-from-errors.ts`) porte ses
+ *   erreurs prévues dans l'ordre de ses choix : le choix coché dit l'erreur.
  *
  * Calculé à la lecture, jamais stocké ; la note ne change jamais.
  *
@@ -23,6 +25,8 @@
 
 import { isBlankValueCorrect, type BlankVerdict } from '#lib/utils/answer-validator.ts';
 import type { InstanceBlank, InstanceExpectedError, QuestionInstance } from './types';
+import { isChoiceBlank } from './choice-case';
+import { expectedErrorOfChoice } from './choice-from-errors';
 
 // Constantes
 
@@ -79,6 +83,7 @@ export function expectedErrorOf(
 	const errors = blank?.expectedErrors;
 	if (!blank || !errors || errors.length === 0) return null;
 	const answer = verdict.answer.trim();
+	if (isChoiceBlank(blank)) return expectedErrorOfChoice(blank, answer);
 	if (answer === '' || answer.length > MAX_COMPARED_LENGTH) return null;
 	return errors.find((error) => matches(answer, blank, error, instance)) ?? null;
 }

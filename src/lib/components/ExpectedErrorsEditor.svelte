@@ -8,8 +8,13 @@
 	garde ses erreurs dans `errors` ; liste vide → `undefined` (le modèle reste tel
 	qu'avant), nom court vide → absent (Zod refuse une chaîne vide).
 
+	Idée 4 : avec au moins une erreur prévue, « Jamais en QCM » interdit que la case
+	se réponde en QCM quand une série le demande (`neverChoice`, clé retirée si
+	décochée ou s'il ne reste aucune erreur prévue).
+
 	PROPS:
 	- errors: ExpectedError[] | undefined (bindable)
+	- neverChoice: boolean | undefined (bindable)
 	- caseNumber: numéro de la case (1, 2, …), pour les identifiants des champs
 -->
 
@@ -19,13 +24,15 @@
 	import { Label } from '#lib/components/ui/label/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Plus, Trash2 } from '@lucide/svelte';
+	import MyCheckbox from './MyCheckbox.svelte';
 
 	interface Props {
 		errors?: ExpectedError[];
+		neverChoice?: boolean;
 		caseNumber: number;
 	}
 
-	let { errors = $bindable(), caseNumber }: Props = $props();
+	let { errors = $bindable(), neverChoice = $bindable(), caseNumber }: Props = $props();
 
 	// Constantes
 	/** Plafond du schéma (`EXPECTED_ERRORS_MAX`) */
@@ -42,6 +49,13 @@
 	function removeError(index: number) {
 		const rest = (errors ?? []).filter((_, i) => i !== index);
 		errors = rest.length > 0 ? rest : undefined;
+		// Sans erreur prévue, pas de QCM possible : le veto n'a plus de sens
+		if (rest.length === 0) neverChoice = undefined;
+	}
+
+	// Décochée → clé retirée (le modèle reste tel qu'avant)
+	function setNeverChoice(value: boolean) {
+		neverChoice = value ? true : undefined;
 	}
 
 	function setField(index: number, field: 'answer' | 'message', value: string) {
@@ -112,6 +126,16 @@
 			{/if}
 		</div>
 	{/each}
+
+	{#if (errors?.length ?? 0) > 0}
+		<div class="space-y-1">
+			<MyCheckbox checked={neverChoice === true} onchange={setNeverChoice} label="Jamais en QCM" />
+			<p class="text-xs text-muted-foreground">
+				En série, cette case peut se répondre en choisissant parmi la bonne réponse et ces erreurs.
+				Cochez pour l'interdire.
+			</p>
+		</div>
+	{/if}
 
 	{#if (errors?.length ?? 0) < ERRORS_MAX}
 		<Button variant="ghost" size="sm" type="button" class="gap-2" onclick={addError}>

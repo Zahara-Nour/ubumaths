@@ -1381,6 +1381,20 @@ figure de travail : une telle case qui garde des erreurs prévues (case devenue 
 (message situé).
 Garde : `AnswerEditor-erreurs-prevues.svelte.test.ts`.
 
+Case répondue en QCM (chantier `idees-format`, idée 4, `choice-from-errors.ts`) : quand le prof
+coche une variation « en QCM » sur une ligne de série (`choiceVariations`, [evaluations.md](evaluations.md)),
+`asChoiceInstance(instance, seed)` transforme la question **tirée** (le générateur n'y est pour rien :
+mêmes nombres en saisie et en QCM). Seulement pour une question à **une seule case** `math`, avec
+des erreurs prévues, sans veto de l'auteur (`neverChoice`, case « Jamais en QCM » d'`ExpectedErrorsEditor`).
+La case devient une case choix : bonne réponse à l'indice d'origine 0, puis jusqu'à **trois**
+erreurs prévues, dans l'ordre de l'auteur, sans doublon de valeur (même juge que l'erreur prévue)
+ni égale à la bonne réponse sur ce tirage ; `expectedErrors[k]` est le choix `k + 1`. Ordre affiché
+mélangé sur une source de hasard à part. Dans l'énoncé, la case devient `\ldots` et le bloc ```choix
+suit. Aucune erreur prévue utilisable sur ce tirage → `null`, la question reste en saisie. Cocher
+une erreur prévue : `expectedErrorOf` rend son erreur, le résultat attendu affiche son message sous
+le bloc (une case choix n'a jamais d'autre remarque) et le prof la compte sous son nom.
+Gardes : `choice-from-errors.test.ts`, `AnswerEditor-jamais-en-qcm.svelte.test.ts`.
+
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en
 markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`
 la dessine en lecture seule : droites de l'élève (vertes si juste ; sinon la bonne droite en

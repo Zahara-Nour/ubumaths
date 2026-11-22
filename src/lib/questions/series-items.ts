@@ -38,6 +38,11 @@ interface BuildOptions {
 	nextSeed?: () => number;
 	/** Génération impossible (question omise) : le serveur passe son logger */
 	onGenerationFailure?: (templateId: string, errors: unknown) => void;
+	/**
+	 * Idée 4 : les variations « en QCM » des lignes deviennent des QCM. Jamais en
+	 * flash-cards (rien à répondre) : la forme qui répond le demande.
+	 */
+	choiceCases?: boolean;
 }
 
 // ============================================================================
@@ -122,7 +127,8 @@ export function drawSeriesQuestions(
 			seen,
 			generate,
 			(errors) => onGenerationFailure(template.id, errors),
-			item.variations
+			item.variations,
+			options.choiceCases ? item.choiceVariations : undefined
 		);
 		for (const { seed, instance } of questions) {
 			draws.push({ template, seed, instance, delaySeconds });

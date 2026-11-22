@@ -607,6 +607,9 @@ function blankViews(
  */
 function blankRemarks(instance: QuestionInstance, detail: BlankVerdict): string[] {
 	const expected = expectedErrorOf(instance, detail);
+	// Case choix : seulement le message du choix coché, quand il vient d'une erreur
+	// prévue (idée 4) ; jamais de type deviné sur des numéros de choix
+	if (isChoiceBlank(instance.blanks?.[detail.index])) return expected ? [expected.message] : [];
 	if (expected) {
 		return [expected.message, ...detail.remarks.filter((remark) => remark !== expected.message)];
 	}
@@ -679,7 +682,8 @@ function statementLines(
 	markdown: string,
 	views: readonly BlankView[],
 	status: ValidationStatus,
-	choiceCases: readonly ExpectedChoiceCase[]
+	choiceCases: readonly ExpectedChoiceCase[],
+	choiceViews: readonly BlankView[] = []
 ): ExpectedLine[] {
 	if (status === 'correct') {
 		return [
@@ -700,11 +704,13 @@ function statementLines(
 		...withChoiceCases(choiceCases)
 	};
 	if (status === 'empty') return [filled, { kind: 'empty', text: EMPTY_ANSWER_TEXT }];
-	if (views.length === 0) return [filled];
+	// Case choix : le choix coché se lit dans son bloc, seules ses remarques suivent
+	if (views.length === 0) return [filled, ...remarkLines(choiceViews)];
 	return [
 		filled,
 		{ kind: 'your-answer', markdown: withoutChoiceCases(markdown), fills: views.map(studentFill) },
-		...remarkLines(views)
+		...remarkLines(views),
+		...remarkLines(choiceViews)
 	];
 }
 
@@ -1060,7 +1066,13 @@ function buildAnswers(
 			const judged = [...pieceViews, ...choiceViews.filter((v) => pieceChoices.has(v.index))].map(
 				(v) => v.status ?? 'empty'
 			);
-			return statementLines(piece, pieceViews, pieceStatus(judged), pieceChoiceCases);
+			return statementLines(
+				piece,
+				pieceViews,
+				pieceStatus(judged),
+				pieceChoiceCases,
+				choiceViews.filter((v) => pieceChoices.has(v.index))
+			);
 		});
 		return { status, lines: [...figures, ...ordered, ...apart] };
 	}
@@ -1093,7 +1105,7 @@ function buildAnswers(
 	const main =
 		lhs !== null && inStatement.length === 1
 			? comparisonLines(lhs, inStatement[0])
-			: statementLines(markdown, inStatement, status, choiceCases);
+			: statementLines(markdown, inStatement, status, choiceCases, choiceViews);
 	return { status, lines: [...figures, ...main, ...apart] };
 }
 

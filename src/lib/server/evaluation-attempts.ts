@@ -420,6 +420,8 @@ export async function startEvaluationAttempt(
 	const templates = await loadSeriesTemplates(userClient, items);
 	const draws = drawSeriesQuestions(items, templates, {
 		excludeCourseCards: true,
+		// Idée 4 : variations « en QCM » ; l'instance figée (Q42) garde la forme QCM
+		choiceCases: true,
 		nextSeed: () => randomInt(MAX_QUESTION_SEED),
 		onGenerationFailure: (templateId, errors) =>
 			logger.error('[evaluation-attempts] Génération impossible :', templateId, errors)

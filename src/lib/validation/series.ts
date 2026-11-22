@@ -2,8 +2,9 @@
  * Composition d'une série : schémas partagés client / serveur.
  *
  * Une série (et le panier) est une liste de lignes `{ templateId, quantity,
- * delay, variations? }` : tel MODÈLE, tant de fois, tant de secondes par question
- * (ADR 0035), dans les variations choisies par le prof (toutes si absent).
+ * delay, variations?, choiceVariations? }` : tel MODÈLE, tant de fois, tant de secondes
+ * par question (ADR 0035), dans les variations choisies par le prof (toutes si absent),
+ * certaines répondues en QCM (idée 4, aucune si absent).
  * Les mêmes bornes valent pour l'enregistrement d'une série (serveur, B11) et
  * pour un lien `/automaths/panier?modeles=…` relu par le navigateur (C19, Q45) :
  * un lien abîmé ou fabriqué ne doit jamais faire planter la page.
@@ -75,12 +76,22 @@ export const itemVariationsSchema = z
 	.refine((indexes) => new Set(indexes).size === indexes.length, 'Variation choisie deux fois')
 	.transform((indexes) => [...indexes].sort((a, b) => a - b));
 
+/**
+ * Variations « en QCM » d'une ligne (chantier `idees-format`, idée 4) : leur case
+ * se répond en choisissant parmi la bonne réponse et les erreurs prévues. Mêmes
+ * règles que `itemVariationsSchema` ; absent = aucune. Une variation qui ne peut
+ * pas être en QCM (plusieurs cases, veto de l'auteur, aucune erreur prévue) reste
+ * en saisie au tirage (`questions/choice-from-errors.ts`).
+ */
+export const itemChoiceVariationsSchema = itemVariationsSchema;
+
 /** Une ligne de série : un modèle, son nombre de questions, sa durée par question, ses variations */
 export const seriesItemSchema = z.object({
 	templateId: z.string().uuid('Modèle invalide'),
 	quantity: itemQuantitySchema,
 	delay: itemDelaySchema,
-	variations: itemVariationsSchema.optional()
+	variations: itemVariationsSchema.optional(),
+	choiceVariations: itemChoiceVariationsSchema.optional()
 });
 
 export type SeriesItem = z.infer<typeof seriesItemSchema>;
