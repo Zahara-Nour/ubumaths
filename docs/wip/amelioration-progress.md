@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, #2982 ouverte, revues faites._
+_Mis à jour le 2026-11-22, après #2982._
 
-- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; PR 1 et PR 2 **en prod** depuis la 0.100.0 (2026-11-22) : des lignes arrivent dans `web_vital_samples` ; **PR 3 (le relevé) = #2982 ouverte** sur `feat/amelioration-releve` : route `GET /api/web-vitals/releve` à jeton dédié, script et workflow réécrits ; les deux revues (`code-reviewer`, `security-auditor`) sont faites, sans bloquant, et leurs remarques sont corrigées et poussées ; workflow `web-vitals.yml` encore désactivé
-- **Prochaine action** : suivre la CI de #2982 (`gh pr checks 2982`), corriger si rouge, **merger dès qu'elle est verte** (pas de migration, pas de nouvelle revue à faire) ; nettoyage du worktree ; puis les gestes de David ci-dessous, puis `gh workflow enable web-vitals.yml` et un premier relevé à la main (`gh workflow run web-vitals.yml`)
-- **En attente de David** (après le merge de la PR 3, écritures en prod) : créer le jeton (`openssl rand -hex 32`), le poser en variable `WEB_VITALS_RELEVE_TOKEN` de production sur Vercel et en secret du dépôt GitHub, puis `pnpm deploy:prod` ; ouvrir le site dans Safari et dans Firefox pour voir si des lignes arrivent (la table n'enregistre pas le navigateur)
+- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; PR 1 et PR 2 **en prod** depuis la 0.100.0 (2026-11-22) : des lignes arrivent dans `web_vital_samples` ; **PR 3 (le relevé) mergée (#2982)**, pas encore en prod : route `GET /api/web-vitals/releve` à jeton dédié, script et workflow réécrits ; docs `auth.md` et `serveur.md` à jour ; workflow `web-vitals.yml` encore désactivé ; worktree supprimé
+- **Prochaine action** (après les gestes de David ci-dessous) : `gh workflow enable web-vitals.yml` puis un premier relevé à la main (`gh workflow run web-vitals.yml`) et lire l'issue produite
+- **En attente de David** (écritures en prod) : créer le jeton (`openssl rand -hex 32`), le poser en variable `WEB_VITALS_RELEVE_TOKEN` de production sur Vercel et en secret du dépôt GitHub, puis `pnpm deploy:prod` ; ouvrir le site dans Safari et dans Firefox pour voir si des lignes arrivent (la table n'enregistre pas le navigateur)
 - **Tranché** : ne rien payer à Vercel ; table anonyme chez nous, lecture admin seul, 90 jours, Q1 à Q4 validées ; une ligne par visite et par indicateur, envoyée au premier passage en arrière-plan (David, 2026-11-21) ; le reste inchangé, cf. sections ci-dessous
 - **Pièges en cours** : pour lire la table en PR 3 : l'accueil est `/(public)`, pas `/` ; lire sans ordre d'arrivée ; TTFB et CLS suivent la définition de Google (pas celle du journal des erreurs) ; pas de CLS sous Safari ; le CLS est rattaché à la page affichée à l'envoi ; pages d'admin et `/dev` absentes ; page de moins de 10 mesures = « peu fiable » ; le serveur ne peut insérer que `route`, `metric`, `value`, `device_type` ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom)
-- **Worktree / branche** : `../ubumaths-wt-amelioration`, `feat/amelioration-releve`
+- **Worktree / branche** : aucun (le reste se fait depuis `main`)
 
 ## N° 26 — mesurer un segment en posant la règle : phase 0 (2026-11-12, validée)
 
