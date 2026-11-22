@@ -65,7 +65,8 @@ export interface AnswerRow {
 	status: string | null;
 	points: number | null;
 	/** Secondes passées, déclarées par la page (entières) ; null si absentes */
-	time_spent: number | null; /**
+	time_spent: number | null;
+	/**
 	 * Repère « posée en QCM » lu dans la copie figée (`fromExpectedErrors` de la
 	 * case, idée 4) : PostgREST le rend en texte (`'true'`) ; absent : en saisie
 	 */

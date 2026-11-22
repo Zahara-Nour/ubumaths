@@ -6,19 +6,16 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2983._
+_Mis à jour le 2026-11-22, PR 3 de l'idée 4 en cours._
 
-- **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : PR 1 (#2979, colonne
-  `answered_as_choice`, migrée) et PR 2 (#2983, moteur : case → QCM au tirage, veto, arrondis)
-  mergées.
-- **Prochaine action** : PR 3, dans un nouveau worktree : `pnpm db:types` d'abord, puis
-  demi-réussite FSRS, trace `answered_as_choice`, bilan « en QCM », statistiques rejouées en QCM
-  (`server/stats/point-errors.ts`), export RGPD de la colonne. Puis PR 4 (case « en QCM » dans le
-  panier et l'éditeur de série ; le panier perd aujourd'hui `choiceVariations` à la fusion).
+- **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : PR 1 (#2979) et PR 2 (#2983) mergées ;
+  PR 3 (demi-réussite FSRS, trace, bilan « en QCM », rejeu QCM, export) codée, relue, à merger.
+- **Prochaine action** : merger la PR 3 si la CI est verte, puis PR 4 (case « en QCM » par variation
+  dans le panier et l'éditeur de série ; le panier perd aujourd'hui `choiceVariations` à la fusion).
 - **En attente de David** : rien (trois choix d'affichage signalés, § Idée 4, PR 2).
-- **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le
-  `deploy:prod` de #2962 ; statistiques rejouées en saisie tant que la PR 3 n'est pas faite.
-- **Worktree / branche** : aucun ; à créer pour la PR 3.
+- **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod`
+  de #2962.
+- **Worktree / branche** : `ubumaths-wt-idees-format`, `feat/idees-format-qcm-demi-reussite`.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -221,6 +218,19 @@ et en QCM d'un même modèle mêlées, mention « en QCM » sur chaque réponse.
 - Tests : `choice-from-errors` (+5), `series-trace` (+6), `skill-attempts` Zod (+6),
   `answer-grade` (4), `evaluation-attempts-srs` (+1), intégration `skill-attempts-endpoint`
   (+3, rouges sans `record-attempt.ts`).
+- Côté prof (2ᵉ commit) : `choiceAnswers` par ligne du bilan (repère lu seul par PostgREST,
+  `question_instance->blanks->0->>fromExpectedErrors`, vérifié sous RLS dans `bilan-controle.test.ts`),
+  mention « en QCM » / « dont N en QCM » (`choiceAnswersLabel`) ; `asChoice` par groupe d'erreurs
+  (`QuestionErrorsPanel`) ; `point-errors.ts` rejoue en QCM une trace `answered_as_choice` (tirage
+  qui ne se pose plus en QCM → écarté) ; export RGPD de la colonne. Doc : `srs.md`, `questions.md`,
+  `evaluations.md`, `analytique-prof.md`.
+- Relectures : `security-auditor` (Opus) aucun bloquant (ajouté : test avec le client de l'élève,
+  RLS réelle). `code-reviewer` : corrigé, une carte de cours déclarée « en QCM » écrivait FSRS puis
+  voyait sa trace refusée par le CHECK (500) → « en QCM » ignoré quand `selfAssessed` (test rouge
+  puis vert). Faux : « aucune série libre ne tire de QCM » (`automaths/test/+page.svelte`,
+  `choiceCases: mode !== 'flash'`). Laissé, limite connue : le dédoublonnage du tirage compare la
+  question déjà posée ; deux lignes d'un même modèle sans variables, l'une en QCM et l'autre en
+  saisie, peuvent donner la même question sous les deux formes.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 

@@ -95,15 +95,16 @@ export async function recordStudentAttempt(
 	const links = (templateRow.question_template_points ?? []) as unknown as LinkRow[];
 	const pointIds = links.map((l) => l.point_id);
 
-	// Réussi → Good, raté → Again (spec §1.1) ; réussi en QCM → Hard (idée 4)
-	const answeredAsChoice = input.answeredAsChoice === true;
-	const grade: Grade = answerGrade(success, answeredAsChoice);
-
 	// 2. FSRS AVANT la trace (fail-loud) : sinon désynchro durable fiche ↔ suivi.
 	// Auto-évaluation (« déclaré ») : carte de cours (#617) ou Flash-cards (ADR 0038),
 	// fiche au MEILLEUR résultat du jour (décision de David, 2026-09-30).
 	const selfAssessed =
 		input.place === 'flash_cards' || attemptSourceForTemplate(templateRow) === 'student_self';
+	// Réussi → Good, raté → Again (spec §1.1) ; réussi en QCM → Hard (idée 4).
+	// Jamais « en QCM » pour une auto-évaluation (carte de cours) : la base le
+	// refuse (source `student_self`), et FSRS serait écrit avant une trace refusée.
+	const answeredAsChoice = input.answeredAsChoice === true && !selfAssessed;
+	const grade: Grade = answerGrade(success, answeredAsChoice);
 	try {
 		if (selfAssessed) {
 			await applyFsrsReview(

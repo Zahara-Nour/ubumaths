@@ -1175,6 +1175,30 @@ describe('POST /api/skill-attempts — répondu en QCM', () => {
 		expect(rows).toEqual([{ grade: 2, answered_as_choice: true }]);
 	});
 
+	it('carte de cours déclarée « en QCM » : ignoré (Good, trace sans QCM), jamais un 500', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const { error: cardError } = await service
+			.from('question_templates')
+			.update({ type: 'course_card', options: { courseCard: true } })
+			.eq('id', templateId);
+		expect(cardError).toBeNull();
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const response = await POST({
+			request: buildRequest({ template_id: templateId, success: true, answered_as_choice: true }),
+			locals
+		} as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('grade, source, answered_as_choice')
+			.eq('student_id', student.id)
+			.eq('template_id', templateId);
+		expect(rows).toEqual([{ grade: 3, source: 'student_self', answered_as_choice: false }]);
+	});
+
 	it('raté en QCM : reste un échec (note 1), trace « en QCM »', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const templateId = await createFakeTemplate(service, student.id);
