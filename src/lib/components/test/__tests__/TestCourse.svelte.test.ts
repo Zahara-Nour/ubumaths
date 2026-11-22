@@ -439,6 +439,30 @@ describe('TestCourse — page d’attente (chantier diaporama-reglages, PR 2a)',
 		expect(record.mock.calls[0][0].response_ms).toBeLessThan(5000);
 	});
 
+	it('« Recommencer » sur place (sans onRestart) : retour à la page d’attente', async () => {
+		const onStart = vi.fn();
+		const { container } = await renderCourse(
+			{ session: sessionOf(1, 300), onComplete: vi.fn(), onBack: vi.fn(), onStart },
+			{ start: false }
+		);
+		expect(onStart).not.toHaveBeenCalled();
+		await page.getByRole('button', { name: "C'est parti !" }).click();
+		expect(onStart).toHaveBeenCalledTimes(1);
+
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+		await page.getByRole('button', { name: 'Terminer' }).click();
+		confirmSpy.mockRestore();
+		await page.getByRole('button', { name: /Recommencer/ }).click();
+
+		await expect.element(page.getByRole('button', { name: "C'est parti !" })).toBeInTheDocument();
+		expect(container.querySelector('.question-card-wrapper')).toBeNull();
+		await page.getByRole('button', { name: "C'est parti !" }).click();
+		expect(onStart).toHaveBeenCalledTimes(2);
+		await vi.waitFor(() =>
+			expect(container.querySelectorAll('.question-card-wrapper')).toHaveLength(1)
+		);
+	});
+
 	it('contrôle assigné : pas de page d’attente (PR 2b)', async () => {
 		const { container } = await renderCourse({
 			session: sessionOf(2, 300),

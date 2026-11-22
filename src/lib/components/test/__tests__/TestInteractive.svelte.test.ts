@@ -395,6 +395,23 @@ describe('TestInteractive — page d’attente (chantier diaporama-reglages, PR 
 		expect(record.mock.calls[0][0].response_ms).toBeLessThan(2500);
 	});
 
+	it('« C’est parti ! » prévient la page (durée de série), une fois, au clic', async () => {
+		const onStart = vi.fn();
+		const result = await render(TestInteractive, {
+			items: [item('Énoncé A', 10)],
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			onStart
+		});
+		flushSync();
+		await tick();
+		expect(onStart).not.toHaveBeenCalled();
+		await startSeries(result.container);
+		expect(onStart).toHaveBeenCalledTimes(1);
+	});
+
 	it('contrôle assigné : pas de page d’attente (PR 2b)', async () => {
 		const { container } = await open([item('Énoncé A', 10)], true, true);
 		expect(container.textContent).not.toContain(START);

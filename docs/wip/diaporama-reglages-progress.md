@@ -91,3 +91,4 @@ Phase 0 discutée et validée avec David (réglages avant ET pendant, page d'att
 - Phase 0 de la PR 2 validée (« je suis tes recos »).
 - `TestInteractive`, `TestCourse` : page d'attente hors contrôle assigné (`started`, `handleStart`) ; la course compte ses durées depuis le clic (`raceStart()`), plus depuis `session.startTime` (ce n'est plus muté par « Recommencer »). Résumé commun : `series-summary.ts` (En classe y passe aussi, sortie inchangée).
 - Tests : 8 nouveaux (page d'attente, durée tracée depuis le clic — vérifiés rouges sans la remise à zéro —, contrôle sans page d'attente) ; les tests existants passent la page d'attente (`startSeries`, `renderCourse`).
+- Relecture (`code-reviewer`, Sonnet) : pas de bloquant. Corrigés : la durée de série envoyée à `/api/tests/save` partait de l'ouverture (`onStart` → la page remet `testSession.startTime`) ; test ajouté pour « Recommencer » sur place d'une course sans `onRestart` (vérifié rouge).

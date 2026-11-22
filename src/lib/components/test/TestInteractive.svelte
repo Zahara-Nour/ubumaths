@@ -24,6 +24,7 @@
 	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé à la fin de la série
 	- onRestart: () => void - Nouvelles questions (la page régénère)
+	- onStart?: () => void - « C'est parti ! » cliqué sur la page d'attente (la page y fait partir la durée de série)
 	- onBack: () => void - Retour à ma série (à « Mes évaluations » pour une évaluation)
 	- inEvaluation: évaluation assignée → pas de « Recommencer »
 	- assessmentTitle?: string - Titre d'une évaluation assignée
@@ -72,6 +73,8 @@
 		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
+		/** « C'est parti ! » cliqué sur la page d'attente */
+		onStart?: () => void;
 		/** « Mêmes nombres pour tous » : Recommencer redonne les mêmes questions */
 		sameQuestions?: boolean;
 		onBack: () => void;
@@ -95,6 +98,7 @@
 		loginNote = true,
 		onComplete,
 		onRestart,
+		onStart,
 		sameQuestions = false,
 		onBack,
 		assessmentTitle,
@@ -149,6 +153,7 @@
 		startTime = Date.now();
 		questionShownAt = startTime;
 		started = true;
+		onStart?.();
 	}
 
 	/**

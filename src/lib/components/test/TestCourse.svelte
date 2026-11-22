@@ -24,6 +24,8 @@
 	- onRestart: « Recommencer » demande de nouvelles questions à la page (comme les
 	  autres formes) ; absent → la même série, remise à zéro sur place (page
 	  d'attente comprise)
+	- onStart: « C'est parti ! » cliqué sur la page d'attente (la page y fait partir
+	  la durée de série)
 	- sameQuestions: « Mêmes nombres pour tous » (lien avec graine) → Recommencer
 	  redonne les mêmes questions, et le bouton le dit
 	- collectOnly: évaluation notée → réponses collectées SANS correction (ADR 0015)
@@ -68,6 +70,8 @@
 		onComplete: (result: TestResult) => void;
 		onBack: () => void;
 		onRestart?: () => void;
+		/** « C'est parti ! » cliqué sur la page d'attente */
+		onStart?: () => void;
 		sameQuestions?: boolean;
 		inEvaluation?: boolean;
 		collectOnly?: boolean;
@@ -83,6 +87,7 @@
 		onComplete,
 		onBack,
 		onRestart,
+		onStart,
 		sameQuestions = false,
 		inEvaluation = false,
 		collectOnly = false,
@@ -127,6 +132,7 @@
 	function handleStart() {
 		startedAt = Date.now();
 		started = true;
+		onStart?.();
 	}
 
 	/**
