@@ -1,0 +1,139 @@
+{
+	"id": "b9677e1f-273e-4709-a870-96e49ff6d19e",
+	"title": "Chiffre des unités d'un produit",
+	"description": null,
+	"grades": ["6"],
+	"level": 9,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			],
+			"statement": "Quel est le chiffre des unités du produit de ${{eval:b}}$ par ${{eval:d}}$ ?\n\nLe chiffre des unités est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:b1*10+a"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d1",
+					"expression": "1..9"
+				},
+				{
+					"name": "d2",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:d1*100+d2*10+c"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a*c"
+				},
+				{
+					"name": "g",
+					"expression": "eval:mod(f, 10)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le chiffre des unités d'un produit ne dépend que des chiffres des unités des facteurs : {{if:{{f}}>=10|${{a}}\\times {{c}} = {{eval:(f-g):10}}\\textcolor{{{color:primary.2}}}{{{g}}}$|${{a}}\\times {{c}} = \\textcolor{{{color:primary.2}}}{{{g}}}$}} "
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"c": "6",
+				"b1": "9",
+				"d1": "3",
+				"d2": "8"
+			},
+			"description": "97×386 : 7×6 = 42 → 2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["42"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"c": "6",
+				"b1": "9",
+				"d1": "3",
+				"d2": "8"
+			},
+			"description": "Erreur : 42 (produit des unités)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"c": "6",
+				"b1": "9",
+				"d1": "3",
+				"d2": "8"
+			},
+			"description": "Erreur : 7+6 → 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b1": "1",
+				"d1": "4",
+				"d2": "4"
+			},
+			"description": "12×445 : 2×5 = 10 → 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b1": "1",
+				"d1": "1",
+				"d2": "0"
+			},
+			"description": "11×101 : 1×1 = 1",
+			"variationIndex": 0
+		}
+	]
+}
