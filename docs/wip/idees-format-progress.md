@@ -6,13 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, revue du lot de Seconde en cours (pas de PR)._
+_Mis à jour le 2026-11-22, avant /clear ; revue du lot de Seconde en cours (pas de PR)._
 
 - **État** : idées 1 à 5 terminées (pas en prod). Revue du lot « nombres et calculs » de Seconde :
   passe 1 (erreurs prévues, coups de pouce, specs) commitée sur `feat/idees-format-revue-2de` ;
   passe 2 (forme) : 68 propositions + 16 questions sur la page à cocher
   https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af (réponses dans sa base, collection `reponses`).
-- **Prochaine action** : lire les réponses de David (`ArtifactData list reponses`, compter avant de
+- **Prochaine action (David, 2026-11-22)** : (1) `deploy:prod` lancé par David (migrations
+  vérifiées : 631/631 jouées en prod ; livre idées 1 à 5, dont `hint`) ; (2) expliquer à David
+  comment lancer `/idees-rubrique` pour la Première et la Terminale, une session par rubrique
+  (skill `.claude/skills/idees-rubrique/SKILL.md`, tableau `docs/wip/idees-ailleurs-repartition.md`) ;
+  skills de lot mis à jour sur main (`41e1628cb` : coup de pouce, 3 erreurs prévues, faits de forme).
+  Puis : lire les réponses de David (`ArtifactData list reponses`, compter avant de
   dire « tout est relu »), puis réécrire les modèles retenus, ajouter les outils retenus à
   `docs/wip/outils-manquants.md`, une PR.
 - **En attente de David** : la page à cocher ; essais « En QCM » et coup de pouce (§ Idée 4, 5).
