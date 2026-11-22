@@ -17,6 +17,7 @@ import {
 } from '#lib/components/buddy/seance-reactions.ts';
 
 const RESTART = 'Recommencer avec de nouvelles questions';
+const START = "C'est parti !";
 const VISITOR_NOTE = 'Connecte-toi pour que tes réponses comptent dans tes révisions.';
 
 /** Case choix « statement » : deux choix, le bon est « 4 » (index 1, ordre conservé) */
@@ -47,7 +48,8 @@ async function open(
 	isLoggedIn = true,
 	inEvaluation = false,
 	collectOnly = false,
-	palotinReactions: { notionOf: (templateId: string) => string | null } | null = null
+	palotinReactions: { notionOf: (templateId: string) => string | null } | null = null,
+	{ start = true } = {}
 ) {
 	const onComplete = vi.fn<(result: TestResult) => void>();
 	const onRestart = vi.fn();
@@ -64,7 +66,19 @@ async function open(
 	});
 	flushSync();
 	await tick();
+	// Entraînement libre : passe la page d'attente (« C'est parti ! »)
+	if (!inEvaluation && start) await startSeries(result.container);
 	return { ...result, onComplete, onRestart, onBack };
+}
+
+async function startSeries(container: HTMLElement) {
+	clickButton(container, START);
+	await tick();
+	flushSync();
+}
+
+function summary(container: HTMLElement): string {
+	return container.querySelector('[data-testid="series-start-summary"]')?.textContent?.trim() ?? '';
 }
 
 // Avance le temps simulé (minuteur à requestAnimationFrame compris)
@@ -296,6 +310,98 @@ describe('TestInteractive — Contrôle blanc', () => {
 	});
 });
 
+describe('TestInteractive — page d’attente (chantier diaporama-reglages, PR 2a)', () => {
+	beforeEach(() => {
+		vi.useFakeTimers({
+			toFake: [
+				'setTimeout',
+				'clearTimeout',
+				'Date',
+				'requestAnimationFrame',
+				'cancelAnimationFrame',
+				'performance'
+			]
+		});
+	});
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	it('entraînement : attend « C’est parti ! », ni question ni chrono avant', async () => {
+		const { container, onComplete } = await open(
+			[item('Énoncé A', 10), item('Énoncé B', 20)],
+			true,
+			false,
+			false,
+			null,
+			{ start: false }
+		);
+
+		expect(summary(container)).toBe('2 questions · environ 30 s');
+		expect(container.querySelector('[data-testid="interactive-question"]')).toBeNull();
+
+		// Le temps passé sur la page d'attente ne compte pas
+		elapse(60_000);
+		await tick();
+		expect(onComplete).not.toHaveBeenCalled();
+		expect(container.querySelector('[data-testid="interactive-question"]')).toBeNull();
+
+		await startSeries(container);
+		expect(position(container)).toBe('Question 1 sur 2');
+		elapse(9_000);
+		expect(position(container)).toBe('Question 1 sur 2');
+		elapse(1_200);
+		expect(position(container)).toBe('Question 2 sur 2');
+	});
+
+	it('durée annoncée au-delà d’une minute : arrondie à la minute', async () => {
+		const { container } = await open(
+			[item('Énoncé A', 60), item('Énoncé B', 30), item('Énoncé C', 60)],
+			true,
+			false,
+			false,
+			null,
+			{ start: false }
+		);
+		expect(summary(container)).toBe('3 questions · environ 3 min');
+	});
+
+	it('la durée de réponse tracée part de « C’est parti ! », pas de l’ouverture', async () => {
+		const record = vi.fn();
+		// Une trace exige un vrai modèle (UUID)
+		const modele = '22222222-2222-4222-8222-222222222222';
+		const traced: ClassroomItem = {
+			instance: { ...choiceQuestion('Énoncé A'), templateId: modele, seed: 77 },
+			delaySeconds: 10,
+			templateId: modele
+		};
+		const result = await render(TestInteractive, {
+			items: [traced],
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		flushSync();
+		await tick();
+		elapse(5_000);
+		await startSeries(result.container);
+		elapse(2_000);
+		choose(result.container, 1);
+		clickButton(currentCard(result.container), 'Valider');
+
+		expect(record).toHaveBeenCalledTimes(1);
+		expect(record.mock.calls[0][0].response_ms).toBeLessThan(2500);
+	});
+
+	it('contrôle assigné : pas de page d’attente (PR 2b)', async () => {
+		const { container } = await open([item('Énoncé A', 10)], true, true);
+		expect(container.textContent).not.toContain(START);
+		expect(position(container)).toBe('Question 1 sur 1');
+	});
+});
+
 describe('TestInteractive — réactions du Palotin (chantier palotins, partie C)', () => {
 	let unregister: () => void = () => {};
 	let finishPassage: () => void = () => {};
@@ -411,6 +517,7 @@ describe('TestInteractive — traces du Contrôle blanc', () => {
 		});
 		flushSync();
 		await tick();
+		if (!collectOnly) await startSeries(result.container);
 		return { ...result, record };
 	}
 

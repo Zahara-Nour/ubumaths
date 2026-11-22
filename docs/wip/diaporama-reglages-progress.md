@@ -4,13 +4,13 @@ Proposition 3 du chantier `inspiration` (cf. `docs/wip/inspiration-progress.md`)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2936._
+_Mis à jour le 2026-11-22 : phase 0 de la PR 2 validée, PR 2a en cours._
 
-- **État** : PR 1 (En classe : page d'attente, réglages, correction, pause, son, plein écran) **mergée** (#2936), pas encore en prod.
-- **Prochaine action** : PR 2 — page d'attente pour les autres formes (Course aux nombres, Contrôle blanc dont évaluation, Flash-cards, Saisie) : écrire sa phase 0 et la faire valider (cf. § Découpage).
-- **En attente de David** : son essai de la PR 1 (serveur de test 5176 sur le worktree) ; puis la phase 0 de la PR 2.
-- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : changer la liste des diapositives = remonter le `Deck`. `ClassroomSeries` est aussi monté par `/demo/questions` (sous son `h1`).
-- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` (branche mergée, gardée le temps de l'essai de David).
+- **État** : PR 1 (En classe) mergée (#2936). PR 2a (page d'attente du Contrôle blanc et de la Course aux nombres, entraînements libres) en cours sur `feat/diaporama-attente-libres`.
+- **Prochaine action** : finir la PR 2a (tests rouges → code → verts → PR) ; puis PR 2b (contrôles assignés), revue de sécurité comprise.
+- **En attente de David** : son essai de la PR 1, s'il ne l'a pas fait (serveur 5176 arrêté le 2026-11-21).
+- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : changer la liste des diapositives = remonter le `Deck`. `ClassroomSeries`, `TestInteractive`, `TestCourse` sont aussi montés par `/demo/questions` (sous son `h1`). Branche `feat/diaporama-reglages` mergée mais encore locale (suppression = liste `ask`).
+- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` · `feat/diaporama-attente-libres`.
 
 ## Phase 0 (validée par David le 2026-11-20)
 
@@ -62,6 +62,18 @@ _Mis à jour le 2026-11-20, après #2936._
 
 Vérifié : « Question i / n » est déjà affiché en haut à gauche (`classroom-position`).
 
+## Phase 0 de la PR 2 (validée par David le 2026-11-22 : « je suis tes recos »)
+
+Constat : seule « En classe » avait une page d'attente ; les autres formes démarrent à l'ouverture. En contrôle assigné, le serveur démarre la tentative au chargement : le chrono d'une Course aux nombres tourne avant que l'élève ait rien vu.
+
+- **Page d'attente seulement pour les formes à chrono** (même cadre `SeriesStartScreen`, sans réglages) :
+  - **Contrôle blanc** libre : « 10 questions · environ 4 min » (somme des durées) ; le chrono de la question 1 part au clic ; « Recommencer » ramène à la page d'attente.
+  - **Course aux nombres** libre : « 20 questions · 5 min » ; le chrono global part au clic. Le temps imparti reste choisi dans la fenêtre de choix de la forme (le lien de série le porte) ; la page d'attente l'affiche sans le changer.
+- **Flash-cards, Saisie** : pas de page d'attente (sans chrono, elle n'ajouterait qu'un clic).
+- **Aucun réglage** pour les formes en autonomie.
+- **Contrôle assigné** (Contrôle blanc ou Course aux nombres) : page d'attente AVANT que le serveur démarre la tentative, ex. « Contrôle de fractions · Course aux nombres · 15 questions · 10 min » ; le clic démarre la tentative ; tentative déjà commencée → « Tu reprends ton contrôle : il te reste 6 min ». Demande un appel serveur en lecture seule (titre, forme, nombre de questions, temps) → PR à part, revue de sécurité.
+- **Découpage** : **PR 2a** entraînements libres (sans serveur) · **PR 2b** contrôles assignés.
+
 ## Historique
 
 ### 2026-11-20 — ouverture
@@ -73,3 +85,9 @@ Phase 0 discutée et validée avec David (réglages avant ET pendant, page d'att
 - Fichiers : `SeriesStartScreen.svelte` (cadre commun), `ClassroomSettingsPanel.svelte`, `classroomSettings.svelte.ts`, `utils/chime.ts`, `Deck.svelte` (`holdOnExpire`), `ClassroomSeries.svelte`.
 - Relecture : corrigés — panneau ⚙ ouvert, Espace / flèches allaient encore au Deck (délégation des événements Svelte) ; Échap ferme le panneau ; « Temps écoulé » périmé après remontage du Deck ; `restoring` jamais coincé. Gardés tels quels : flèche après « Temps écoulé » = question suivante en pause (comme la navigation manuelle) ; pas de son pour la 1re question (phase 0 : « entre deux questions »).
 - Test d'environnement : les diapositives de correction (verso en grand) chargent le dictionnaire des mots cliquables ; en test, sans API, avertissement `wrapDynamicImport` en fin de fichier, sans échec (exit 0).
+
+### 2026-11-22 — PR 2a écrite
+
+- Phase 0 de la PR 2 validée (« je suis tes recos »).
+- `TestInteractive`, `TestCourse` : page d'attente hors contrôle assigné (`started`, `handleStart`) ; la course compte ses durées depuis le clic (`raceStart()`), plus depuis `session.startTime` (ce n'est plus muté par « Recommencer »). Résumé commun : `series-summary.ts` (En classe y passe aussi, sortie inchangée).
+- Tests : 8 nouveaux (page d'attente, durée tracée depuis le clic — vérifiés rouges sans la remise à zéro —, contrôle sans page d'attente) ; les tests existants passent la page d'attente (`startSeries`, `renderCourse`).
