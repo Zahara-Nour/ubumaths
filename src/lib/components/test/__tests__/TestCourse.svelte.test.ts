@@ -5,6 +5,7 @@
  * « Mes évaluations », où date limite et tentatives sont vérifiées).
  */
 import { describe, it, expect, vi } from 'vitest';
+import type { ComponentProps } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import TestCourse from '../TestCourse.svelte';
@@ -25,6 +26,20 @@ function session(): TestSession {
 	};
 }
 
+type CourseProps = ComponentProps<typeof TestCourse>;
+
+/**
+ * Monte la course ; en entraînement libre, passe la page d'attente
+ * (« C'est parti ! ») sauf `start: false`
+ */
+async function renderCourse(props: CourseProps, { start = true } = {}) {
+	const screen = await render(TestCourse, props);
+	if (!props.inEvaluation && start) {
+		await page.getByRole('button', { name: "C'est parti !" }).click();
+	}
+	return screen;
+}
+
 /** Lien « Quitter » de l'en-tête (un vrai lien : la destination est écrite dedans) */
 function quitLink(container: HTMLElement): HTMLAnchorElement | undefined {
 	return [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
@@ -33,7 +48,7 @@ function quitLink(container: HTMLElement): HTMLAnchorElement | undefined {
 }
 
 async function finish(inEvaluation: boolean) {
-	const screen = await render(TestCourse, {
+	const screen = await renderCourse({
 		session: session(),
 		onComplete: vi.fn(),
 		onBack: vi.fn(),
@@ -77,7 +92,7 @@ describe('TestCourse — fin de la course', () => {
 	});
 
 	it('évaluation : « Quitter » dans l’en-tête mène à « Mes contrôles », pas au panier', async () => {
-		const { container } = await render(TestCourse, {
+		const { container } = await renderCourse({
 			session: session(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
@@ -87,7 +102,7 @@ describe('TestCourse — fin de la course', () => {
 	});
 
 	it('hors évaluation : « Quitter » dans l’en-tête mène au panier', async () => {
-		const { container } = await render(TestCourse, {
+		const { container } = await renderCourse({
 			session: session(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
@@ -125,7 +140,7 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 	it('cochée sans « Valider » : pas comptée non répondue, et envoyée à la fin', async () => {
 		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
 		const onComplete = vi.fn<(result: TestResult) => void>();
-		const { container } = await render(TestCourse, {
+		const { container } = await renderCourse({
 			session: qcmSession(),
 			onComplete,
 			onBack: vi.fn(),
@@ -159,7 +174,7 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 
 	it('rien du tout sur une question : la confirmation le dit (1 non répondue)', async () => {
 		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
-		const { container } = await render(TestCourse, {
+		const { container } = await renderCourse({
 			session: qcmSession(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
@@ -181,7 +196,7 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 describe('TestCourse — quitter en cours de route', () => {
 	it('contrôle : « Quitter » demande confirmation, un refus garde l’élève sur la course', async () => {
 		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
-		const { container } = await render(TestCourse, {
+		const { container } = await renderCourse({
 			session: session(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
@@ -195,7 +210,7 @@ describe('TestCourse — quitter en cours de route', () => {
 
 	it('entraînement : « Quitter » part sans question', async () => {
 		const confirmSpy = vi.spyOn(window, 'confirm');
-		const { container } = await render(TestCourse, {
+		const { container } = await renderCourse({
 			session: session(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
@@ -236,7 +251,7 @@ describe('TestCourse — traces de la Course aux nombres', () => {
 
 	async function openTraced(timeLimit?: number) {
 		const record = vi.fn();
-		const screen = await render(TestCourse, {
+		const screen = await renderCourse({
 			session: tracedSession(timeLimit),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
@@ -291,7 +306,7 @@ describe('TestCourse — traces de la Course aux nombres', () => {
 
 	it('contrôle (copie collectée) : aucune trace, ni à « Valider », ni en fin de course', async () => {
 		const record = vi.fn();
-		const { container } = await render(TestCourse, {
+		const { container } = await renderCourse({
 			session: tracedSession(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
@@ -324,7 +339,7 @@ describe('TestCourse — traces de la Course aux nombres', () => {
 
 	it('contrôle, chrono écoulé : chaque question non validée part avec la fin « temps écoulé »', async () => {
 		const onComplete = vi.fn<(result: TestResult) => void>();
-		await render(TestCourse, {
+		await renderCourse({
 			session: tracedSession(1),
 			onComplete,
 			onBack: vi.fn(),
@@ -336,5 +351,126 @@ describe('TestCourse — traces de la Course aux nombres', () => {
 		const { answers } = onComplete.mock.calls[0][0];
 		expect(answers.length).toBeGreaterThan(0);
 		expect(answers.every((a) => a.endReason === 'timeout')).toBe(true);
+	});
+});
+
+describe('TestCourse — page d’attente (chantier diaporama-reglages, PR 2a)', () => {
+	function sessionOf(count: number, timeLimit: number): TestSession {
+		const instance = (statement: string): QuestionInstance => ({
+			templateId: '',
+			statement: resolvedMarkdown(statement),
+			grades: [],
+			level: 0,
+			generatedAt: ''
+		});
+		return {
+			...session(),
+			timeLimit,
+			instances: Array.from({ length: count }, (_, index) => instance(`Énoncé ${index + 1}`))
+		};
+	}
+
+	it('entraînement : résumé avec le temps imparti, ni questions ni chrono avant le clic', async () => {
+		const onComplete = vi.fn();
+		const { container } = await renderCourse(
+			{ session: sessionOf(3, 1), onComplete, onBack: vi.fn() },
+			{ start: false }
+		);
+
+		await expect
+			.element(page.getByTestId('series-start-summary'))
+			.toHaveTextContent('3 questions · 1 s');
+		expect(container.querySelector('.question-card-wrapper')).toBeNull();
+		expect(container.textContent).not.toContain('Terminer');
+
+		// Une course d'1 s n'expire pas tant qu'elle n'a pas commencé
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+		expect(onComplete).not.toHaveBeenCalled();
+
+		await page.getByRole('button', { name: "C'est parti !" }).click();
+		await vi.waitFor(() =>
+			expect(container.querySelectorAll('.question-card-wrapper')).toHaveLength(3)
+		);
+		await vi.waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1), { timeout: 4000 });
+	});
+
+	it('temps imparti en minutes : annoncé tel quel, sans « environ »', async () => {
+		await renderCourse(
+			{ session: sessionOf(20, 300), onComplete: vi.fn(), onBack: vi.fn() },
+			{ start: false }
+		);
+		await expect
+			.element(page.getByTestId('series-start-summary'))
+			.toHaveTextContent('20 questions · 5 min');
+	});
+
+	it('la durée tracée part de « C’est parti ! », pas de l’ouverture', async () => {
+		const record = vi.fn();
+		const base = sessionOf(1, 420);
+		const instance: QuestionInstance = {
+			...base.instances[0],
+			templateId: '22222222-2222-4222-8222-222222222222',
+			statement: resolvedMarkdown('Q ?\n\n```choix\ncase: 0\n- 3\n- 4\n```'),
+			blanks: [
+				{
+					expectedAnswer: '1',
+					type: 'choice',
+					choice: { choices: ['3', '4'], order: [0, 1], multiple: false }
+				}
+			]
+		};
+		// Course préparée 10 s avant le clic (session créée par la page au chargement)
+		const { container } = await renderCourse({
+			session: { ...base, instances: [instance], startTime: Date.now() - 10_000 },
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		const card = container.querySelector('.question-card-wrapper')!;
+		card.querySelectorAll<HTMLButtonElement>('.choice-button')[1].click();
+		await vi.waitFor(() => {
+			const button = [...card.querySelectorAll('button')].find((b) =>
+				b.textContent?.includes('Valider')
+			);
+			expect(button?.disabled).toBe(false);
+			button!.click();
+		});
+		await vi.waitFor(() => expect(record).toHaveBeenCalledTimes(1));
+		expect(record.mock.calls[0][0].response_ms).toBeLessThan(5000);
+	});
+
+	it('« Recommencer » sur place (sans onRestart) : retour à la page d’attente', async () => {
+		const onStart = vi.fn();
+		const { container } = await renderCourse(
+			{ session: sessionOf(1, 300), onComplete: vi.fn(), onBack: vi.fn(), onStart },
+			{ start: false }
+		);
+		expect(onStart).not.toHaveBeenCalled();
+		await page.getByRole('button', { name: "C'est parti !" }).click();
+		expect(onStart).toHaveBeenCalledTimes(1);
+
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+		await page.getByRole('button', { name: 'Terminer' }).click();
+		confirmSpy.mockRestore();
+		await page.getByRole('button', { name: /Recommencer/ }).click();
+
+		await expect.element(page.getByRole('button', { name: "C'est parti !" })).toBeInTheDocument();
+		expect(container.querySelector('.question-card-wrapper')).toBeNull();
+		await page.getByRole('button', { name: "C'est parti !" }).click();
+		expect(onStart).toHaveBeenCalledTimes(2);
+		await vi.waitFor(() =>
+			expect(container.querySelectorAll('.question-card-wrapper')).toHaveLength(1)
+		);
+	});
+
+	it('contrôle assigné : pas de page d’attente (PR 2b)', async () => {
+		const { container } = await renderCourse({
+			session: sessionOf(2, 300),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			inEvaluation: true
+		});
+		expect(container.textContent).not.toContain("C'est parti");
+		expect(container.querySelectorAll('.question-card-wrapper')).toHaveLength(2);
 	});
 });

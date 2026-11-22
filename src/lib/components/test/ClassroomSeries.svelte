@@ -35,6 +35,7 @@
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import SeriesStartScreen, { type StartHint } from './SeriesStartScreen.svelte';
+	import { seriesSummary } from './series-summary.ts';
 	import ClassroomSettingsPanel from './ClassroomSettingsPanel.svelte';
 	import {
 		classroomSettings,
@@ -123,14 +124,13 @@
 	}
 
 	function buildSummary(): string {
-		const count = `${items.length} ${items.length > 1 ? 'questions' : 'question'}`;
 		const questionsSeconds = items.reduce((total, item) => total + delayOf(item), 0);
 		const correctionsSeconds = activeSettings.correctionAfterEach
 			? items.length * activeSettings.correctionSeconds
 			: 0;
-		const seconds = questionsSeconds + correctionsSeconds;
-		const duration = seconds < 60 ? `${seconds} s` : `${Math.round(seconds / 60)} min`;
-		return `${count} · environ ${duration}`;
+		return seriesSummary(items.length, questionsSeconds + correctionsSeconds, {
+			approximate: true
+		});
 	}
 
 	function delayOf(item: ClassroomItem): number {

@@ -145,7 +145,10 @@
 				variant="outline"
 				size="sm"
 				type="button"
-				onclick={() => (blank.expectedErrors = undefined)}
+				onclick={() => {
+					blank.expectedErrors = undefined;
+					blank.neverChoice = undefined;
+				}}
 			>
 				Retirer
 			</Button>
@@ -202,7 +205,11 @@
 										bind:value={blank.expectedAnswer}
 										class="font-mono"
 									/>
-									<ExpectedErrorsEditor bind:errors={blank.expectedErrors} caseNumber={index + 1} />
+									<ExpectedErrorsEditor
+										bind:errors={blank.expectedErrors}
+										bind:neverChoice={blank.neverChoice}
+										caseNumber={index + 1}
+									/>
 								</div>
 								<Button
 									variant="destructive"

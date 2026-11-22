@@ -1580,6 +1580,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						}
 					});
 				}
+				if (templateBlank.neverChoice === true) resolved.neverChoice = true;
 				return resolved;
 			});
 			// Erreur prévue sur une case sortie plus tôt (choix, figure, tableau de signes)

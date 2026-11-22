@@ -31,6 +31,7 @@ import { tokenize } from '#lib/ubumark/parameterization/parser/tokenizer.ts';
 import { replaceChoiceBlocks, serializeChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
 import type { GenerationResult, QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 import { createRandomSource, randomIndex, shuffled, type RandomSource } from '#lib/utils/random.ts';
+import { asChoiceInstance } from '#lib/questions/choice-from-errors.ts';
 
 // ============================================================================
 // TYPES
@@ -206,7 +207,8 @@ function findNewQuestion(
 	variationIndex: number,
 	random: RandomSource,
 	seen: SeenQuestions,
-	generate: Generate
+	generate: Generate,
+	asChoice: boolean
 ): Search {
 	for (let tries = 0; tries < MAX_GENERATIONS_PER_QUESTION; tries++) {
 		const seed = seedForVariation(template, variationIndex, random);
@@ -214,10 +216,12 @@ function findNewQuestion(
 		const result = generate(template, seed);
 		// Comme avant : une génération qui échoue omet la question, sans réessayer
 		if (!result.success) return { kind: 'failed', errors: result.errors };
-		const fingerprints = questionFingerprints(template, result.instance);
+		// Idée 4 : la case en QCM quand ce tirage le permet, sinon la question en saisie
+		const instance = (asChoice && asChoiceInstance(result.instance, seed)) || result.instance;
+		const fingerprints = questionFingerprints(template, instance);
 		if (isSeen(fingerprints, seen)) continue;
 		remember(fingerprints, seen);
-		return { kind: 'found', question: { seed, instance: result.instance } };
+		return { kind: 'found', question: { seed, instance } };
 	}
 	return { kind: 'exhausted' };
 }
@@ -251,6 +255,8 @@ function variationDeal(allowed: readonly number[], random: RandomSource) {
  * Une génération qui échoue omet sa question (journalisée par `onFailure`) ;
  * un modèle sans question neuve raccourcit la ligne. `variations` : celles
  * choisies par le prof (toutes si absent, cf. `allowedVariations`).
+ * `choiceVariations` : celles dont la case se répond en QCM (idée 4, aucune si
+ * absent) ; la graine reste celle de la question en saisie (mêmes nombres).
  */
 export function drawLineQuestions(
 	template: QuestionTemplate,
@@ -259,7 +265,8 @@ export function drawLineQuestions(
 	seen: SeenQuestions,
 	generate: Generate,
 	onFailure: (errors: unknown) => void = () => {},
-	variations?: readonly number[]
+	variations?: readonly number[],
+	choiceVariations?: readonly number[]
 ): DrawnQuestion[] {
 	const random = createRandomSource(lineSeed);
 	const deal = variationDeal(allowedVariations(template, variations), random);
@@ -270,7 +277,8 @@ export function drawLineQuestions(
 		for (;;) {
 			const variationIndex = deal(exhausted);
 			if (variationIndex === undefined) return questions;
-			const search = findNewQuestion(template, variationIndex, random, seen, generate);
+			const asChoice = choiceVariations?.includes(variationIndex) ?? false;
+			const search = findNewQuestion(template, variationIndex, random, seen, generate, asChoice);
 			if (search.kind === 'found') {
 				questions.push(search.question);
 				break;

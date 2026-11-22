@@ -95,13 +95,18 @@ pas des notes.
 
 ## Les formes d'une série
 
-Une série est une liste de lignes `{ templateId, quantity, delay, variations? }` : tel **modèle**,
+Une série est une liste de lignes `{ templateId, quantity, delay, variations?, choiceVariations? }` : tel **modèle**,
 tant de fois, tant de secondes ([ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)),
 dans les **variations choisies** par le prof (numéros rangés ; absent = toutes ; idée 2 du chantier
 `idees-format`). Un numéro qui n'existe plus dans le modèle est ignoré ; s'il n'en reste aucun, la
 ligne tire dans toutes (`allowedVariations`). La variation se lit dans la graine : une évaluation
 régénérée retombe sur la même question sans rien enregistrer de plus. La révision espacée ne lit
-que le modèle de la ligne (le choix ne la restreint pas). Elle est tirée **à
+que le modèle de la ligne (le choix ne la restreint pas). Variations **« en QCM »**
+(`choiceVariations`, idée 4) : leur case se répond en choisissant parmi la bonne réponse et les
+erreurs prévues ([questions.md](questions.md), `choice-from-errors.ts`), sur la même graine ; le
+tirage le fait pour toutes les formes sauf les flash-cards (`choiceCases`), et pour l'évaluation,
+dont l'instance figée au démarrage garde la forme QCM (la régénération depuis la graine seule, repli
+des tentatives d'avant Q42, la redonnerait en saisie). Elle est tirée **à
 neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) donne à
 chaque ligne une graine neuve (sauf lien « Mêmes nombres pour tous », ci-dessous), d'où sortent les
 graines de ses questions. Une ligne qui répète un modèle **répartit ses variations à parts égales**
@@ -144,6 +149,8 @@ chantier `automaths-arbre`.
 | Course aux nombres (`course`)  | `TestCourse`      | **non**             | Global, toutes les questions à l'écran ; 1 à 60 min (5 min proposées)                                           | Navigateur, score sur 10                                                                                        | Comme le Contrôle blanc                   |
 
 **En classe : page d'attente et réglages** (chantier `diaporama-reglages`). La forme s'ouvre sur une page d'attente (`SeriesStartScreen`, cadre commun prévu pour les autres formes) : résumé (« 10 questions · environ 4 min »), réglages, indications clavier, bouton « C'est parti ! » (geste qui débloque le son et le plein écran). Les réglages (`classroomSettings`, gardés dans le navigateur sous `classroomSettings`, rien en base) se changent aussi pendant la série (⚙, diaporama en pause tant que le panneau est ouvert) : plein écran au lancement (allumé par défaut), correction après chaque question (verso de la carte, 5 à 60 s, 10 s par défaut ; une diapositive de correction suit chaque question, cartes de cours comprises), pause à la fin du temps (`holdOnExpire` du Deck : Espace passe à la suite), son entre deux questions (`src/lib/utils/chime.ts`, Web Audio, pas pour une correction). Changer la correction en cours de route remonte le Deck sur la question affichée.
+
+**Contrôle blanc et Course aux nombres : page d'attente** (même chantier, PR 2a). En entraînement libre, ces deux formes s'ouvrent aussi sur `SeriesStartScreen`, sans réglages ni indications : « 10 questions · environ 4 min » (somme des chronos, Contrôle blanc) ou « 20 questions · 5 min » (temps imparti exact, Course aux nombres ; il reste choisi dans la fenêtre de choix de la forme ou porté par le lien). Rien ne démarre avant « C'est parti ! » : chrono, durée tracée et temps passé partent du clic (le composant prévient la page par `onStart`, qui y remet `startTime` : la durée de série envoyée à `/api/tests/save` part aussi du clic). « Recommencer » ramène à la page d'attente (composant remonté, ou remise à zéro sur place pour une course sans `onRestart`). Résumé : `src/lib/components/test/series-summary.ts`, commun aux trois formes. Contrôle assigné : pas encore de page d'attente (la tentative démarre au chargement ; PR 2b). Flash-cards et Saisie, sans chrono : pas de page d'attente.
 
 Lancement (`resolveTestLaunch`) : `?assignment=<id>` → contrôle (forme et temps viennent du serveur,
 le `mode` de l'URL est ignoré) ; `?modeles=…` (ou un ancien `?categories=…`, signalé sans être relu) sans `mode` → le panier ;

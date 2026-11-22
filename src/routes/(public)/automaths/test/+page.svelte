@@ -164,7 +164,10 @@
 			// Aperçu : les modèles sont chargés seulement maintenant (la page d'un
 			// élève en évaluation n'en reçoit aucun)
 			await questionTemplatesCache.fetchTemplates();
-			seriesItems = generateSeriesItems(start.evaluation.items, { excludeCourseCards: true });
+			seriesItems = generateSeriesItems(start.evaluation.items, {
+				excludeCourseCards: true,
+				choiceCases: true
+			});
 			testSession = {
 				mode: form,
 				items: start.evaluation.items,
@@ -218,7 +221,11 @@
 	function startSeries(mode: TestMode, series: SeriesItem[], timeLimit?: number) {
 		// Contrôle blanc, Course aux nombres : pas de carte de cours (non évaluable)
 		const excludeCourseCards = seriesFormExcludesCourseCards(mode);
-		const items = generateSeriesItems(series, { excludeCourseCards });
+		// Variations « en QCM » (idée 4) : jamais en flash-cards, où rien ne se répond
+		const items = generateSeriesItems(series, {
+			excludeCourseCards,
+			choiceCases: mode !== 'flash'
+		});
 		// Série vide parce que toutes ses lignes sont des cartes : le dire (pas une panne)
 		if (items.length === 0 && excludeCourseCards && onlyCourseCards(series)) {
 			throw new Error(
@@ -259,7 +266,7 @@
 	 */
 	function generateSeriesItems(
 		series: SeriesItem[],
-		options: { excludeCourseCards?: boolean } = {}
+		options: { excludeCourseCards?: boolean; choiceCases?: boolean } = {}
 	): ClassroomItem[] {
 		const templates = questionTemplatesCache.templates;
 
@@ -287,7 +294,8 @@
 		newsRequest += 1;
 		try {
 			seriesItems = generateSeriesItems(testSession.items, {
-				excludeCourseCards: !!assignmentId || seriesFormExcludesCourseCards(testSession.mode)
+				excludeCourseCards: !!assignmentId || seriesFormExcludesCourseCards(testSession.mode),
+				choiceCases: testSession.mode !== 'flash'
 			});
 			testSession.instances = seriesItems.map((item) => item.instance);
 			testSession.startTime = Date.now();
@@ -300,6 +308,14 @@
 	}
 
 	/**
+	 * « C'est parti ! » sur la page d'attente (Contrôle blanc, Course aux nombres) :
+	 * la durée de série envoyée à l'enregistrement part du clic, pas de l'ouverture
+	 */
+	function handleSeriesStarted() {
+		if (testSession) testSession.startTime = Date.now();
+	}
+
+	/**
 	 * « Flash-cards », « Saisie » : Recommencer tire de nouvelles questions (cartes
 	 * de cours comprises) ; avec une graine de série, les mêmes questions
 	 */
@@ -309,7 +325,9 @@
 		mathouNews = null;
 		newsRequest += 1;
 		try {
-			testSession.instances = generateSeriesItems(testSession.items).map((item) => item.instance);
+			testSession.instances = generateSeriesItems(testSession.items, {
+				choiceCases: testSession.mode !== 'flash'
+			}).map((item) => item.instance);
 			testSession.startTime = Date.now();
 		} catch (err) {
 			toaster.error(
@@ -564,6 +582,7 @@
 					onComplete={handleTestComplete}
 					sameQuestions={seriesSeed !== undefined}
 					onRestart={handleSeriesRestart}
+					onStart={handleSeriesStarted}
 					onBack={handleBack}
 					assessmentTitle={assignmentId ? assessmentTitle || undefined : undefined}
 					inEvaluation={!!assignmentId}
@@ -583,6 +602,7 @@
 					onComplete={handleTestComplete}
 					onBack={handleBack}
 					onRestart={handleSeriesRestart}
+					onStart={handleSeriesStarted}
 					sameQuestions={seriesSeed !== undefined}
 					inEvaluation={!!assignmentId}
 					collectOnly={!!attemptId}

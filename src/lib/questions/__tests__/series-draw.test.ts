@@ -398,3 +398,72 @@ describe('idée 2 : la série suit le choix de chaque ligne', () => {
 		expect(draws.map((d) => d.instance.selectedVariationIndex)).toEqual([1, 0]);
 	});
 });
+
+describe('idée 4 : variations « en QCM » de la ligne', () => {
+	/** Deux variations à erreurs prévues : A (addition), B (soustraction) */
+	const QCM = model('qcm', [
+		{
+			statement: templateMarkdown('A : ${{a}} + 3 = ?$'),
+			variables: [{ name: 'a', expression: '{{random:10..400}}' }],
+			blanks: [
+				{
+					expectedAnswer: '{{eval:{{a}}+3}}',
+					expectedErrors: [{ answer: '{{eval:{{a}}-3}}', message: 'Tu as soustrait.' }]
+				}
+			]
+		} as QuestionVariation,
+		{
+			statement: templateMarkdown('B : ${{a}} - 3 = ?$'),
+			variables: [{ name: 'a', expression: '{{random:10..400}}' }],
+			blanks: [
+				{
+					expectedAnswer: '{{eval:{{a}}-3}}',
+					expectedErrors: [{ answer: '{{eval:{{a}}+3}}', message: 'Tu as additionné.' }]
+				}
+			]
+		} as QuestionVariation
+	]);
+
+	const isChoice = (instance: { blanks?: { type: string }[] }) =>
+		instance.blanks?.[0]?.type === 'choice';
+
+	it('seules les variations cochées « en QCM » deviennent des QCM', () => {
+		const questions = drawLineQuestions(
+			QCM,
+			6,
+			7,
+			emptySeen(),
+			generate,
+			undefined,
+			undefined,
+			[1]
+		);
+		expect(questions.length).toBe(6);
+		for (const { instance } of questions) {
+			expect(isChoice(instance)).toBe(instance.selectedVariationIndex === 1);
+		}
+	});
+
+	it('la graine de la question en QCM redonne ses nombres en saisie', () => {
+		const [question] = drawLineQuestions(QCM, 1, 7, emptySeen(), generate, undefined, [0], [0]);
+		const typed = generateInstance(QCM, question.seed);
+		if (!typed.success) throw new Error('génération impossible');
+		expect(typed.instance.resolvedVariables?.length).toBe(1);
+		expect(question.instance.blanks?.[0].type).toBe('choice');
+		expect(typed.instance.resolvedVariables).toEqual(question.instance.resolvedVariables);
+	});
+
+	it('drawSeriesQuestions : la ligne en QCM, sauf quand la forme l’exclut (flash-cards)', () => {
+		const items = [{ templateId: 'qcm', quantity: 2, delay: 20, choiceVariations: [0, 1] }];
+		const withChoices = drawSeriesQuestions(items, [QCM], {
+			generate,
+			nextSeed: seriesSeedSequence(5),
+			choiceCases: true
+		});
+		expect(withChoices.every((d) => isChoice(d.instance))).toBe(true);
+		const flash = drawSeriesQuestions(items, [QCM], { generate, nextSeed: seriesSeedSequence(5) });
+		expect(flash.some((d) => isChoice(d.instance))).toBe(false);
+		// Mêmes questions, seule la forme de la case change
+		expect(flash.map((d) => d.seed)).toEqual(withChoices.map((d) => d.seed));
+	});
+});

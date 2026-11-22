@@ -386,6 +386,7 @@ export const blankSchema = z.object({
 	openableBounds: z.boolean().optional(),
 	angleModulo: z.enum(ANGLE_MODULOS).optional(),
 	expectedErrors: expectedErrorsSchema.optional(),
+	neverChoice: z.boolean().optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -642,6 +643,7 @@ const blankStrictZ = z
 		openableBounds: z.boolean().optional(),
 		angleModulo: z.enum(ANGLE_MODULOS).optional(),
 		expectedErrors: expectedErrorsSchema.optional(),
+		neverChoice: z.boolean().optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
