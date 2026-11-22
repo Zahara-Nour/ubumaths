@@ -4,11 +4,11 @@
 
 _Mis à jour le 2026-11-22, avant toute PR._
 
-- **État** : bilan mesuré le 2026-11-22, rien de modifié dans le code. David a dit « je te suis, go » : phase 0 de R4, R1 et R7 écrite en fin de journal, **pas encore validée**.
-- **Prochaine action** : sur validation de la phase 0 (et réponses Q1 à Q4), ouvrir le worktree `outils-a-distance` et coder dans l'ordre R4, R1, R7, une PR chacun, tests d'abord.
-- **En attente de David** : validation de la phase 0 et Q1 à Q4 ; lot A (rouges évitables) : à lancer ou non ; ce qui échoue exactement avec Claude dans Chrome à distance (non diagnostiqué).
-- **Pièges en cours** : Tailscale Serve porte déjà 4 liens d'autres sessions (443, 8443, 8444, 10000) : ne jamais faire `tailscale serve reset` ; chiffres de l'intégration à remesurer vers le 2026-11-29 ; zsh ne découpe pas `$ids` (boucle `while read`).
-- **Worktree / branche** : aucun (dépôt principal, doc seule).
+- **État** : bilan mesuré le 2026-11-22, rien de modifié dans le code. **Phase 0 des outils à distance validée par David (« oui à tout », 2026-11-22)** : Q1 Safari au format iPhone par défaut ; Q2 bouton « signaler » sur toutes les pages en dev ; Q3 pas d'image de l'écran en première version ; Q4 ordre `voir`, `lien`, « signaler », une PR chacun. **Lot A validé aussi** (points 1 à 4, une petite PR, plus les deux réglages GitHub).
+- **Prochaine action** : worktree `outils-a-distance` (`feat/outils-a-distance-voir`) → `pnpm voir` (R4), tests d'abord ; puis `pnpm lien` (R1), puis le bouton « signaler » (R7). Lot A : worktree à part `ci-rouges-evitables`, une session à part.
+- **En attente de David** : ce qui échoue exactement avec Claude dans Chrome à distance (non diagnostiqué, non bloquant) ; les points 8 à 11 et R3 restent à trancher, rien n'est lancé dessus.
+- **Pièges en cours** : Tailscale Serve porte déjà 4 liens d'autres sessions (443, 8443, 8444, 10000) : ne jamais faire `tailscale serve reset` ; réglages GitHub du lot A = écriture hors du dépôt, les annoncer avant de les faire ; R7 touche une route d'API (Zod, revue `code-reviewer` + `security-auditor`) ; chiffres de l'intégration à remesurer vers le 2026-11-29.
+- **Worktree / branche** : aucun pour l'instant (dépôt principal, doc seule).
 
 ## Mesures du 2026-11-22
 
@@ -69,7 +69,7 @@ Constat : trois méthodes selon l'appareil (`docs/pratiques/tester-sur-un-autre-
 - R13. Vérifications sur la prod après `deploy:prod` (`VERIFS_URL`), résultat notifié.
 - R14. Une seule méthode (Tailscale Serve) pour MacBook et iPhone, le tunnel SSH en secours.
 
-## Phase 0 — outils à distance (2026-11-22, à valider)
+## Phase 0 — outils à distance (2026-11-22, validée : « oui à tout »)
 
 Briques déjà là : Playwright avec Chromium et WebKit installés ; `pnpm test:verifs` et ses aides (`e2e/verifs/helpers/`) ; Tailscale Serve activé, publié en « tailnet only » ; courriels capturés dans `.captures/` ; comptes fictifs de la base locale.
 
