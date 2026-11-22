@@ -5,16 +5,18 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, phase 0 validée._
+_Mis à jour le 2026-11-22, lot écrit (F3 en attente)._
 
-- **État** : phase 0 validée par David (tout oui, quantité conjuguée gardée sans point) ; 7 modèles
-  publiés réservés dans le tableau · **Prochaine action** : worktree
-  `../ubumaths-wt-idees-tle-limites` (branche `feat/idees-tle-limites`), écrire le lot d'un coup
-  (5 modèles neufs, 15 variations ; 15 variations des 7 publiés exportés de prod), specs, erreurs
-  prévues, coups de pouce, sonde des courbes, essai en base locale · **En attente de David** : rien
-  · **Pièges en cours** : vérifier en base les règles du tag (point sur le nœud ou sa notion) avant la
-  migration de rangement ; relever les niveaux numérotés juste avant · **Worktree / branche** : pas
-  encore créé.
+- **État** : lot écrit et vert (specs, sonde des courbes, tableaux sondés, aperçu local) : 4 modèles
+  neufs (F1 ×2, F2, Q2 sans point ; 13 variations) et 15 variations ajoutées aux 7 publiés ; PR des
+  fichiers ouverte · **Prochaine action** : CI verte → merge ; puis David lance
+  `create-questions --dir scripts/questions/idees-tle-limites-neufs --publier` (prod), je commite
+  les ids, PR des migrations (rangement + tag des neufs, contenu des publiés par
+  `migration-contenu.ts`) · **En attente de David** : F3 (voir Historique, « lot écrit ») ·
+  **Pièges en cours** : règles du tag à vérifier en base avant la migration de rangement ; niveaux
+  numérotés à relever juste avant ; `{{e}}` interdit (constante d'Euler), `e^x` dans un message
+  d'erreur réécrit en `\exponentialE` · **Worktree / branche** :
+  `../ubumaths-wt-idees-tle-limites`, `feat/idees-tle-limites`.
 
 ## Historique
 
@@ -50,3 +52,24 @@ _Mis à jour le 2026-11-22, phase 0 validée._
 - Lot : **5 modèles neufs** (15 variations) et **15 variations** de 7 modèles publiés, réservés dans
   le tableau (a4d8dc52 +3, 04ec9518 +2, 5bf5b452 +1, b97dabe1 +2, ae70373c +3, 806c10f4 +3,
   7844be9a +1).
+
+### 2026-11-22 — lot écrit
+
+- Scripts `docs/wip/questions/idees-tle-limites-neufs.py` (→ `scripts/questions/idees-tle-limites-neufs/`)
+  et `idees-tle-limites-publies.py` (→ `scripts/questions/idees-tle-limites-publies/`, 7 modèles exportés de
+  prod, variations ajoutées à la fin ; le script repart du contenu de prod, relançable).
+- Neufs : « Conjecturer la limite en +∞ / −∞ d'une fonction sur sa courbe » (3 variations chacun :
+  palier ou cloche, limite infinie, oscillation pure ou amortie en choix), « Limite d'une fonction
+  par composition » (5), « Lever une forme indéterminée avec la quantité conjuguée » (2, sans point).
+- Publiés : a4d8dc52 +3 (F4 ×2 tableau de variations, F5 choix), 04ec9518 +2, 5bf5b452 +1, b97dabe1
+  +2, ae70373c +3, 806c10f4 +3, 7844be9a +1.
+- Vérifié : `question:specs` vert sur les 11 fichiers, `create-questions` en simulation vert,
+  `sonde-courbes` 0 problème (600 blocs), tableaux de F4 passés au parseur sur 300 tirages (91 blocs,
+  0 problème), modèles neufs créés en base locale et joués dans l'aperçu (ids locaux retirés).
+- Erreurs prévues : pas d'erreur inventée pour atteindre trois. F9 b et c (gendarmes avec sin / cos)
+  n'en ont aucune : l'erreur réelle (« sin x n'a pas de limite, donc f non plus ») ne se tape pas.
+- **F3 bloqué, question à David** : le tableau de variations d'une homographique à compléter
+  demandait de cacher les quatre limites. Notre bloc ```variation refuse de cacher une limite
+  infinie (`variation-table-parser.ts`) ; trois des quatre le sont. Ajouté à `outils-manquants.md`
+  (n° 50). Choix possibles : (a) tableau affiché sans limites et quatre cases sous le tableau ;
+  (b) attendre l'outil (n° 50) ; (c) laisser F3. Sans réponse, rien n'est écrit.
