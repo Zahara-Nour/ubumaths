@@ -89,6 +89,39 @@
 					"```variation\nvariable: x\ndomain: -inf, {{eval:min(q/p,s)}}, {{eval:max(q/p,s)}}, +inf\n\nsign: P(x)\n  -inf,{{eval:min(q/p,s)}}: +\n  {{eval:min(q/p,s)}}: z\n  {{eval:min(q/p,s)}},{{eval:max(q/p,s)}}: -\n  {{eval:max(q/p,s)}}: z\n  {{eval:max(q/p,s)}},+inf: +\n```"
 				]
 			}
+		},
+		{
+			"statement": "La parabole ci-dessous représente un polynôme du second degré $P$.\n\n```courbe\nx: -7 ; 7\ny: -10 ; 10\ngrille: 1 ; 1\nf(x) = {{a}}*(x-{{r}})*(x-{{s}})   bleu   nom=C_P\ntaille: moyenne\ndescription: Parabole qui coupe l'axe des abscisses en deux points à coordonnées entières.\n```\n\nLis ses racines sur le graphique.\n\nLes racines sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-5..3"
+				},
+				{
+					"name": "s",
+					"expression": "-3..5"
+				}
+			],
+			"conditions": ["r < s", "s - r >= 2", "s - r <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les racines de $P$ sont les abscisses des points où la parabole coupe l'axe des abscisses.",
+					"On lit $\\textcolor{{{color:primary.0}}}{ {{r}} }$ et $\\textcolor{{{color:primary.0}}}{ {{s}} }$."
+				]
+			},
+			"hint": "Cherche les points où la courbe coupe l'axe horizontal : leurs abscisses sont les racines."
 		}
 	],
 	"testSpecs": [
@@ -221,6 +254,45 @@
 			},
 			"description": "racine rationnelle : fraction inversée refusée",
 			"variationIndex": 1
+		},
+		{
+			"description": "Racines −2 et 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "3"]
+		},
+		{
+			"description": "Ordre inverse",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "-2"]
+		},
+		{
+			"description": "Ordonnée à l'origine",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-6", "3"]
 		}
 	]
 }

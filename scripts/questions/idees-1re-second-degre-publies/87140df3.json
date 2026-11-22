@@ -116,6 +116,61 @@
 					"La forme canonique est ${{eval:s*m*(x-u)^2+v}}$."
 				]
 			}
+		},
+		{
+			"statement": "Une parabole a pour sommet $S({{al}}\\,;{{be}})$ et passe par le point $A({{eval:al+d}}\\,;{{eval:be+a*d^2}})$.\n\nDétermine la forme canonique du polynôme qu'elle représente.\n\nLa forme canonique est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "be",
+					"expression": "-6..6"
+				},
+				{
+					"name": "d",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(x-al)^2+be}}",
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w",
+						"acceptable": "u*($x-(-v))^2+w"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*(x+al)^2+be}}",
+							"message": "Le sommet $S({{al}}\\,;{{be}})$ donne le facteur $(x{{eval:-al;+}})^2$ : attention au signe.",
+							"label": "Signe de α"
+						},
+						{
+							"answer": "{{eval:(x-al)^2+be}}",
+							"message": "Il faut trouver $a$ avec le point $A$ : $a\\times{{eval:d;()}}^2+{{eval:be;()}}={{eval:be+a*d^2}}$.",
+							"label": "Coefficient a non cherché"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sommet donne $f(x)=a(x{{eval:-al;+}})^2{{eval:be;+}}$.",
+					"Le point $A$ donne $a\\times{{eval:d;()}}^2{{eval:be;+}}={{eval:be+a*d^2}}$, donc $a={{a}}$.",
+					"La forme canonique est $\\textcolor{{{color:primary.0}}}{ {{eval:a*(x-al)^2+be}} }$."
+				]
+			},
+			"hint": "Le sommet donne $\\alpha$ et $\\beta$ ; il reste $a$, que le point $A$ permet de trouver."
 		}
 	],
 	"testSpecs": [
@@ -533,6 +588,50 @@
 			},
 			"description": "a=2 : forme canonique juste",
 			"variationIndex": 1
+		},
+		{
+			"description": "S(1 ; −3), A(3 ; 5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "-3",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2(x-1)^2-3"]
+		},
+		{
+			"description": "Signe",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "-3",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le sommet $S(1\\,;-3)$ donne le facteur $\\left( x - 1 \\right)^2$ : attention au signe."
+			},
+			"answers": ["2(x+1)^2-3"]
+		},
+		{
+			"description": "a oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "-3",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut trouver $a$ avec le point $A$ : $a\\times2^2+(-3)=5$."
+			},
+			"answers": ["(x-1)^2-3"]
 		}
 	]
 }

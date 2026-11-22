@@ -127,6 +127,52 @@
 					"$$\\begin{align}\\Delta &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2}}{{eval:-4*a*c;+}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$"
 				]
 			}
+		},
+		{
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)=\\dfrac{1}{ {{d}} }x^2{{eval:bx;+}}{{eval:c;+}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2-4*c/d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b^2-4*c}}",
+							"message": "Ici $a=\\dfrac{1}{ {{d}} }$, pas $1$ : $4ac=4\\times\\dfrac{1}{ {{d}} }\\times{{eval:c;()}}$.",
+							"label": "a = 1 au lieu de 1/d"
+						},
+						{
+							"answer": "{{eval:-b^2-4*c/d}}",
+							"message": "$b^2$ est toujours positif : ${{eval:b;()}}^2={{eval:b^2}}$.",
+							"label": "Carré de b négatif"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ici $a=\\dfrac{1}{ {{d}} }$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times\\dfrac{1}{ {{d}} }\\times{{eval:c;()}} \\\\ &= \\textcolor{{{color:primary.0}}}{ {{eval:b^2-4*c/d}} }\\end{align}$$"
+				]
+			},
+			"hint": "Repère bien $a$, $b$ et $c$ : le coefficient de $x^2$ est une fraction."
 		}
 	],
 	"testSpecs": [
@@ -319,6 +365,47 @@
 			},
 			"description": "b et c confondus : 5² − 4×(−3)×2 = 49",
 			"variationIndex": 3
+		},
+		{
+			"description": "½x² + 3x − 4",
+			"variationIndex": 4,
+			"variables": {
+				"d": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17"]
+		},
+		{
+			"description": "a = 1",
+			"variationIndex": 4,
+			"variables": {
+				"d": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ici $a = \\dfrac{1}{2}$, pas $1$ : $4ac=4\\times\\dfrac{1}{ 2 }\\times(-4)$."
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "b² négatif",
+			"variationIndex": 4,
+			"variables": {
+				"d": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$b^2$ est toujours positif : $3^2 = 9$."
+			},
+			"answers": ["-1"]
 		}
 	]
 }

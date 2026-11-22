@@ -146,6 +146,54 @@
 					"Entre les racines, $P(x)$ est du signe contraire de $a$ : $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $P(x)=({{p}}x{{eval:q;+}})({{t}}x{{eval:w;+}})$.\n\nRésous l'inéquation $P(x)\\leqslant0$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "t",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "w",
+					"expression": "1..7;±"
+				}
+			],
+			"conditions": ["-q/p < -w/t", "q % p != 0", "w % t != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:p*t>0|[{{eval:-q/p}};{{eval:-w/t}}]|]-\\infty;{{eval:-q/p}}]\\cup[{{eval:-w/t}};+\\infty[}}",
+					"answerKind": "intervalles",
+					"expectedErrors": [
+						{
+							"answer": "{{if:p*t>0|]-\\infty;{{eval:-q/p}}]\\cup[{{eval:-w/t}};+\\infty[|[{{eval:-q/p}};{{eval:-w/t}}]}}",
+							"message": "Développé, $P(x)$ a pour coefficient de $x^2$ ${{p}}\\times{{eval:t;()}}={{eval:p*t}}$ : il est du signe de ce coefficient à l'extérieur des racines.",
+							"label": "Signe du trinôme inversé"
+						},
+						{
+							"answer": "{{if:p*t>0|]{{eval:-q/p}};{{eval:-w/t}}[|]-\\infty;{{eval:-q/p}}[\\cup]{{eval:-w/t}};+\\infty[}}",
+							"message": "L'inégalité est large : les deux racines sont des solutions.",
+							"label": "Racines exclues"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les facteurs s'annulent en $-\\dfrac{ {{q}} }{ {{p}} }={{eval:-q/p}}$ et en $-\\dfrac{ {{w}} }{ {{t}} }={{eval:-w/t}}$.",
+					"Le coefficient de $x^2$ vaut ${{p}}\\times{{eval:t;()}}={{eval:p*t}}$ : $P(x)$ est {{if:p*t>0|négatif entre les racines|négatif à l'extérieur des racines}}, et nul en chacune.",
+					"$S=\\textcolor{{{color:primary.0}}}{ {{if:p*t>0|[{{eval:-q/p}};{{eval:-w/t}}]|]-\\infty;{{eval:-q/p}}]\\cup[{{eval:-w/t}};+\\infty[}} }$."
+				]
+			},
+			"hint": "Cherche où chaque facteur s'annule, puis le signe du produit (un tableau de signes aide)."
 		}
 	],
 	"testSpecs": [
@@ -311,6 +359,50 @@
 			},
 			"description": "Erreur : a lu positif",
 			"variationIndex": 3
+		},
+		{
+			"description": "(2x − 3)(−3x + 6) ≤ 0",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "-3",
+				"t": "-3",
+				"w": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;\\frac{3}{2}]\\cup[2;+\\infty["]
+		},
+		{
+			"description": "Région inverse",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "-3",
+				"t": "-3",
+				"w": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Développé, $P \\left( x \\right)$ a pour coefficient de $x^2$ $2\\times(-3)=-6$ : il est du signe de ce coefficient à l'extérieur des racines."
+			},
+			"answers": ["[\\frac{3}{2};2]"]
+		},
+		{
+			"description": "Racines exclues",
+			"variationIndex": 4,
+			"variables": {
+				"p": "2",
+				"q": "-3",
+				"t": "-3",
+				"w": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'inégalité est large : les deux racines sont des solutions."
+			},
+			"answers": ["]-\\infty;\\frac{3}{2}[\\cup]2;+\\infty["]
 		}
 	]
 }

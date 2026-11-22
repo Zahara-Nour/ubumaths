@@ -102,6 +102,61 @@
 					"Ajouter une constante $a$ change les racines : $(x{{eval:-(r);+}})(x{{eval:-(s);+}})+a$ ne s'annule plus en ${{r}}$ dès que $a\\neq0$."
 				]
 			}
+		},
+		{
+			"statement": "Un polynôme du second degré $P$ s'annule en ${{r}}$ et en ${{s}}$, et sa courbe passe par le point $A({{t}}\\,;{{y}})$.\n\nDonne $P(x)$ sous forme factorisée.\n\n$P(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-4..3"
+				},
+				{
+					"name": "s",
+					"expression": "-3..4"
+				},
+				{
+					"name": "t",
+					"expression": "-5..5"
+				},
+				{
+					"name": "y",
+					"expression": "eval:a*(t-r)*(t-s)"
+				}
+			],
+			"conditions": ["r < s", "t != r", "t != s", "t != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(x-r)*(x-s)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(x-r)*(x-s)}}",
+							"message": "Il faut trouver $a$ : $P({{t}})={{y}}$ donne $a\\times({{t}}{{eval:-r;+}})({{t}}{{eval:-s;+}})={{y}}$.",
+							"label": "Coefficient a non cherché"
+						},
+						{
+							"answer": "{{eval:a*(x+r)*(x+s)}}",
+							"message": "Un polynôme qui s'annule en ${{r}}$ a un facteur $(x{{eval:-r;+}})$ : attention aux signes.",
+							"label": "Signes des racines"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(x)=a(x{{eval:-r;+}})(x{{eval:-s;+}})$ pour un réel $a$ à trouver.",
+					"$P({{t}})={{y}}$ : $a\\times{{eval:t-r;()}}\\times{{eval:t-s;()}}={{y}}$, donc $a={{a}}$.",
+					"Donc $P(x)=\\textcolor{{{color:primary.0}}}{ {{eval:a*(x-r)*(x-s)}} }$."
+				]
+			},
+			"hint": "Écris $P(x)=a(x-x_1)(x-x_2)$, puis utilise le point $A$ pour trouver $a$."
 		}
 	],
 	"testSpecs": [
@@ -220,6 +275,53 @@
 			},
 			"description": "Erreur : un seul polynôme",
 			"variationIndex": 2
+		},
+		{
+			"description": "2(x + 1)(x − 3)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3",
+				"t": "1",
+				"y": "-8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2(x+1)(x-3)"]
+		},
+		{
+			"description": "a oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3",
+				"t": "1",
+				"y": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut trouver $a$ : $P \\left( 1 \\right) = -8$ donne $a\\times(1+1)(1-3)=-8$."
+			},
+			"answers": ["(x+1)(x-3)"]
+		},
+		{
+			"description": "Signes",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3",
+				"t": "1",
+				"y": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un polynôme qui s'annule en $-1$ a un facteur $\\left( x + 1 \\right)$ : attention aux signes."
+			},
+			"answers": ["2(x-1)(x+3)"]
 		}
 	]
 }

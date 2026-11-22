@@ -136,6 +136,73 @@
 					"Donc $P(x)=\\left(x{{eval:b/2;+}}\\right)^2{{eval:c-b^2/4;+}}$."
 				]
 			}
+		},
+		{
+			"statement": "Détermine la forme canonique du polynôme $P(x)={{a}}(x{{eval:-x1;+}})(x{{eval:-x2;+}})$.\n\n$P(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "x1",
+					"expression": "-5..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+2*k"
+				},
+				{
+					"name": "al",
+					"expression": "eval:x1+k"
+				},
+				{
+					"name": "be",
+					"expression": "eval:-a*k^2"
+				}
+			],
+			"conditions": ["x1 != 0", "x2 != 0", "al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}(x{{eval:-al;+}})^2{{eval:be;+}}",
+					"requiredForm": {
+						"pattern": "u*($x+v)^2+w"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{a}}(x{{eval:-al;+}})^2{{eval:-be;+}}",
+							"message": "$\\beta=f(\\alpha)$ : calcule $f({{al}})={{a}}\\times{{eval:al-x1;()}}\\times{{eval:al-x2;()}}$ ; attention au signe.",
+							"label": "Signe de β"
+						},
+						{
+							"answer": "{{a}}(x{{eval:-al;+}})^2{{eval:-k^2;+}}",
+							"message": "Tu as oublié le facteur ${{a}}$ en calculant $\\beta=f({{al}})$.",
+							"label": "Facteur a oublié dans β"
+						},
+						{
+							"answer": "{{a}}(x{{eval:al;+}})^2{{eval:be;+}}",
+							"message": "$\\alpha$ est le milieu des racines : $\\dfrac{ {{x1}}{{eval:x2;+}} }{2}={{al}}$ ; attention au signe dans $(x-\\alpha)^2$.",
+							"label": "Signe de α"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'axe de symétrie passe par le milieu des racines : $\\alpha=\\dfrac{ {{x1}}{{eval:x2;+}} }{2}={{al}}$.",
+					"$\\beta=P({{al}})={{a}}\\times{{eval:al-x1;()}}\\times{{eval:al-x2;()}}={{be}}$.",
+					"Donc $P(x)=\\textcolor{{{color:primary.0}}}{ {{a}}(x{{eval:-al;+}})^2{{eval:be;+}}}$."
+				]
+			},
+			"hint": "L'abscisse du sommet est le milieu des deux racines ; l'ordonnée est l'image de ce milieu."
 		}
 	],
 	"testSpecs": [
@@ -328,6 +395,73 @@
 			},
 			"description": "β non réduit : (x+3/2)²+4/4−9/4",
 			"variationIndex": 2
+		},
+		{
+			"description": "2(x + 1)(x − 3)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2(x-1)^2-8"]
+		},
+		{
+			"description": "Signe de β",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\beta = f\\left( \\alpha \\right)$ : calcule $f(1)=2\\times2\\times(-2)$ ; attention au signe."
+			},
+			"answers": ["2(x-1)^2+8"]
+		},
+		{
+			"description": "a oublié dans β",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le facteur $2$ en calculant $\\beta = f\\left( 1 \\right)$."
+			},
+			"answers": ["2(x-1)^2-4"]
+		},
+		{
+			"description": "Signe de α",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\alpha$ est le milieu des racines : $\\dfrac{ -1+3 }{2}=1$ ; attention au signe dans $\\left( x - \\alpha \\right)^2$."
+			},
+			"answers": ["2(x+1)^2-8"]
 		}
 	]
 }
