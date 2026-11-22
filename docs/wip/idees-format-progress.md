@@ -10,8 +10,8 @@ _Mis à jour le 2026-11-22, après #2990._
 
 - **État** : idées 1 à 4 terminées (pas en prod). Idée 4 : PR 1 à 4 mergées (#2979, #2983, #2987,
   #2990 : case « En QCM » par variation dans le panier et l'éditeur de série).
-- **Prochaine action** : idée 5 (coup de pouce) : phase 0 écrite, quatre questions posées à David
-  (§ Idée 5 — phase 0) ; rien à coder avant ses réponses.
+- **Prochaine action** : idée 5 (coup de pouce), phase 0 validée (§ Idée 5) : PR 1 (migration
+  `answered_with_hint`), puis PR 2 (moteur, éditeur), PR 3 (élève, bilan).
 - **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
   en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2).
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod`
@@ -256,7 +256,7 @@ validé (Q1 C : case par variation, absente sans erreur prévue, à plusieurs ca
   modèle à une variation. Faux : « seule l'évaluation tire en QCM » (`automaths/test` aussi). Laissé :
   un élève qui ouvre le lien du prof garde son QCM sans le voir, comme les variations choisies.
 
-## Idée 5 — coup de pouce : phase 0 (2026-11-22, questions posées, sans réponse)
+## Idée 5 — coup de pouce : phase 0 (2026-11-22)
 
 Déjà tranché (`idees-format-exercices.md`, décisions de David, 2026-11-21) : coup de pouce **oui** ;
 masqué en évaluation notée (la question publique est une liste blanche : rien à retirer) ; indice
@@ -286,6 +286,24 @@ Questions posées à David :
 - **Q4 — modèles existants** : aucun n'a d'indice. Recommandation : le champ seulement, puis des
   indices dans les nouveaux modèles et dans le lot « nombres et calculs » de Seconde (sa revue est
   déjà au programme) ; pas de passe sur les 2 644.
+
+**Réponse de David (2026-11-22) : « je te suis »**, aux quatre questions, chacune posée avec sa
+recommandation : **Q1 → C** (champ « indice » écrit par l'auteur, ou case « la première étape de la
+correction sert d'indice ») · **Q2** : bouton en séries d'entraînement et en révisions, jamais en
+course aux nombres ni en combat · **Q3 → oui** (« avec indice » dans le bilan, colonne de trace ;
+question d'accès : personne ne gagne d'accès) · **Q4** : le champ seulement, indices dans les
+nouveaux modèles et le lot de Seconde.
+
+Lieux de trace (lecture du code) : `typing` (Saisie), `flash_cards` (Flash-cards) et `review`
+(révision) montrent le bouton. **Défaut de Claude, non tranché** : rien en Contrôle blanc
+(`mock_test`), comme en évaluation (cas non posé à David ; le choix qui ne montre rien de neuf).
+En Flash-cards et en révision (auto-évaluées), « Je savais » après un indice ouvert donne
+« Difficile » au lieu de « Bien ».
+
+**Découpage** : PR 1 migration (`skill_attempts.answered_with_hint`, CHECK des lieux) ; PR 2
+moteur et éditeur (champ `hint` et case « première étape » par variation, refus d'un indice qui
+contient `{{solution}}`, résolution au tirage) ; PR 3 élève et prof (bouton, trace, demi-réussite,
+bilan « avec indice »).
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
