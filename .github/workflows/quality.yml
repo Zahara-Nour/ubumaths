@@ -651,7 +651,10 @@ jobs:
           path: /tmp/supabase-db-images.tar.zst
           key: ${{ steps.supabase-images.outputs.cache-primary-key }}
 
+      # `!cancelled()` : des types périmés (étape plus haut) ne doivent pas cacher
+      # un défaut de la garde dans le même tour de CI.
       - name: Run the SECURITY DEFINER guard
+        if: ${{ !cancelled() }}
         run: pnpm test:definer-guard
 
       - name: Stop Supabase

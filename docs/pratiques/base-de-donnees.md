@@ -91,6 +91,9 @@ branches.
 - **Garde de la CI** (`pnpm db:types:verifier`, job « Garde SECURITY DEFINER » de `quality.yml`) :
   la base du job est montée depuis les migrations de la PR, le fichier est régénéré et comparé.
   Rouge = migration ajoutée sans `pnpm db:types`, ou `database.ts` retouché à la main.
+- **Limite connue** : la garde ne tourne que sur les PR. Deux PR de migration vertes chacune de son
+  côté peuvent laisser sur `main` un `database.ts` qui n'est celui d'aucune des deux ; la PR
+  suivante qui touche au schéma rougit alors : `pnpm db:types` et commit.
 - **Le fichier dépend de la version de la CLI Supabase** (son générateur) et de prettier, toutes
   deux épinglées : une montée de version de la CLI peut le changer, et sa PR le régénère.
 - **Plus strict que l'ancien fichier (lu en prod jusqu'au 2026-11-22)** : une colonne jsonb
