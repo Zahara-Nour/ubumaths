@@ -395,6 +395,58 @@ Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
   - **bloc « succès » de l'accueil élève mort** : la requête vise `game_achievements` (Navadra) au lieu
     d'`achievements`, et la page ne l'affiche pas (`dashboard/+page.server.ts:230`).
 
+## 11. PR 4 : échanges et famille — phase 0 (2026-11-22, branche `feat/seed-complet-echanges`, **à valider**)
+
+**Mesures** (prod en lecture seule, des comptes de lignes ; lecteurs relevés dans `src/`). Messagerie
+du prof (`/messages`) : 3 messages privés en prod, la boîte lit `message_inbox`, que la fonction d'envoi
+remplit (pas calculée : elle sort de `JAMAIS`). Discussion de classe : 284 messages, 27 réactions,
+4 signalements, 2 restrictions, 2 actions de modération. Tuteur : 652 conversations, 304 messages, lus
+par la page « statistiques du tuteur » du prof et l'historique de l'élève. Notifications : 7 (récompenses
+de la semaine), 0 lecture. Marché : 59 annonces, 31 propositions, 158 échanges, 10 cartes bloquées ;
+ouvert seulement pour deux classes (réglage par classe). Famille : 1 consentement, **aucune classe n'a le
+carnet de liaison activé**, 0 parent, 0 élève en attente d'activation. Cahier de texte : 2 séances,
+2 devoirs. Liens de partage : 2 + 2 + 9. Tâches du prof : 2 tableaux, 3 cartes. Signalements de bug : 245.
+Modèles de messages : 0 en prod ; **les 13 de la base locale viennent de `supabase/seed/default_message_templates.sql`**,
+rejoué à chaque `db:neuf` : rien à faire.
+
+**Inventé (plan pur testé sans base, comme `jeux.ts`)** :
+
+1. **Messagerie du prof** : une dizaine de messages entre le prof et des élèves (questions sur un devoir,
+   une absence, un merci), quelques-uns lus, un archivé, un brouillon du prof. Écrits par la vraie
+   fonction d'envoi, pour que la boîte de réception, les envoyés et le fil se remplissent ensemble.
+2. **Discussion de classe** : des réactions sur les messages déjà inventés, un message signalé (en
+   attente) et un traité, une restriction finie et une en cours sur un élève, et leur trace de modération
+   → page « modération » du prof.
+3. **Tuteur** : 1 à 3 conversations pour la moitié des élèves, avec des réponses écrites à l'avance
+   (aucun appel à l'IA) → statistiques du prof et historique de l'élève.
+4. **Notifications** : 3 ou 4 annonces du prof à ses classes, lues par une partie des élèves.
+5. **Marché** : ouvert pour les classes actives (comme le tournoi : ajouté aux réglages copiés) ;
+   des annonces de cartes VIP prises dans les cartes de la PR 3, des propositions, quelques échanges
+   faits et un en cours avec ses messages, les cartes proposées bloquées en face.
+6. **Consentements** : pour les élèves qui y sont soumis, des accords donnés, des demandes en attente,
+   un refus. Preuve fictive (adresse IP de documentation `192.0.2.x`).
+7. **Carnet de liaison** : activé sur une classe, de faux parents (adresses `@example.test`), quelques
+   envois déjà partis dans l'historique, un élève qui s'est retiré. **Rien n'est envoyé** : le seed
+   écrit les lignes, n'appelle jamais l'envoi des courriels.
+8. **Élèves en attente d'activation** : 3 élèves importés pas encore activés → page d'import de l'admin.
+9. **Cahier de texte** : 4 à 6 séances par classe active sur les dernières semaines, chacune avec ses
+   points du programme et une activité, des devoirs (dont un à rendre la semaine prochaine) → cahier
+   du prof, cahier de l'élève, page « avancement ».
+10. **Liens de partage** : un lien de cours et un lien de cahier de texte par classe active, un lien
+    d'exercice, dont un expiré.
+11. **Tâches du prof** : un tableau de trois colonnes, une dizaine de cartes avec étiquettes.
+12. **Signalements de bug** : une dizaine (élèves et prof), états variés (en attente, pris en compte,
+    résolu, doublon), **sans capture d'écran** → page de l'élève et page de l'admin.
+
+**Pas inventé, et pourquoi** (→ `JAMAIS`) : `terms_acceptances` (écrite à l'inscription, aucune page ne
+la lit), `marketplace_listing_views` et `message_moderation_logs` (aucun lecteur), `notification_reads`
+`marketplace_trade_offers` (0 ligne pour 158 échanges : ancien
+circuit, à confirmer en codant), `parent_exception_episodes` (tenue par l'envoi des courriels).
+
+**Preuve** : même méthode qu'aux § 8 et § 10 (copie isolée, seed rejoué trois fois, pages ouvertes en
+élève, prof et admin : messagerie, modération, tuteur, notifications, marché et un échange, consentements,
+carnet, import, cahier de texte et avancement, pages publiques des liens, tableau de tâches, signalements).
+
 ## 6. Historique
 
 - **2026-11-22** : #2981, compteurs de « Mes révisions » (trouvé grâce au seed).
