@@ -12,8 +12,9 @@
  * Mêmes règles que l'appli, recopiées et testées :
  * - points d'une partie gagnée : `calculate_minesweeper_points` ;
  * - gain théorique et récompense du jour : `complete_minesweeper_game` et `record_game_reward`
- *   (1 Gidouille à la première victoire du jour, par jeu) ; temps de référence de repli (ceux
- *   de la fonction quand le cycle de l'élève est inconnu) ;
+ *   (1 Gidouille à la première victoire du jour, par jeu) ; temps de référence du cycle de
+ *   l'élève (`get_minesweeper_reference_time`, lus par `index.ts`), sinon ceux de repli de la
+ *   fonction ; jour et semaine comptés à Paris, du lundi au dimanche (l'école copiée) ;
  * - succès de 2048 et de Mathémo : seuils des routes `api/games/{2048,mathemo}/scores` ;
  * - niveau d'un Palotin : table d'expérience de `add_buddy_xp`.
  *
@@ -21,6 +22,9 @@
  * parties, de succès et de cartes, et une demande d'activation de carte attend le prof ; l'élève
  * « absent » (le dernier de la première classe) et l'élève hors classe n'ont rien ; trois élèves
  * n'ont pas encore choisi de Palotin.
+ *
+ * Pas de récompense du jour pour 2048 ni Mathémo : la base n'en garde qu'une ligne de totaux par
+ * élève, sans partie à laquelle la rattacher.
  *
  * Jamais écrit ici : le journal des récompenses (`reward_events`, rempli par les déclencheurs de
  * `gidouilles_activity`, `student_achievements` et `vip_cards_activity`), le score d'une partie de
@@ -38,6 +42,11 @@ export interface ContexteJeux {
 	horsClasse: string;
 	maintenant: Date;
 	graine: number;
+	/**
+	 * Temps de référence du démineur (s) par élève, ceux de son cycle. Un élève absent prend les
+	 * temps de repli, comme la fonction quand son cycle est inconnu.
+	 */
+	references?: Record<string, Record<Difficulte, number>>;
 	/** Succès actifs (`achievements`). */
 	succes: { id: string; nom: string; gidouilles: number; points: number }[];
 	/** Succès du démineur existants (`minesweeper_achievements.id`). */
@@ -53,10 +62,11 @@ export interface ContexteJeux {
 }
 
 type Lignes = Record<string, unknown>[];
-type Difficulte = 'beginner' | 'intermediate' | 'expert';
+export type Difficulte = 'beginner' | 'intermediate' | 'expert';
 
 const JOUR = 86_400_000;
 const SECONDE = 1000;
+const HEURE = 3_600_000;
 const JOURS_DE_JEU = 28;
 
 /** Grille de chaque difficulté (contraintes de `minesweeper_games`). */
@@ -146,6 +156,15 @@ export function semaine(jour: string): { debut: string; fin: string } {
 	return { debut: debut.toISOString().slice(0, 10), fin: fin.toISOString().slice(0, 10) };
 }
 
+/**
+ * Arrondi au centième comme `ROUND(x, 2)` sur un `numeric` Postgres (décimal exact, demi vers le
+ * haut) : en flottant, 0,7 × 0,65 vaut 0,45499999… et s'arrondirait à 0,45 au lieu de 0,46. On
+ * retire d'abord le bruit du flottant (dix décimales).
+ */
+function centiemes(x: number): number {
+	return Math.round(Number(x.toFixed(10)) * 100) / 100;
+}
+
 /** Points d'une partie gagnée (`calculate_minesweeper_points`). */
 export function pointsDemineur(p: {
 	difficulte: Difficulte;
@@ -161,13 +180,21 @@ export function pointsDemineur(p: {
 	return Math.floor(base * (1 + vitesse) * indices * serie) + (p.premiereVictoireDuJour ? 20 : 0);
 }
 
-/** Gain théorique d'une partie gagnée (`complete_minesweeper_game`, temps de référence de repli). */
-export function gainTheorique(difficulte: Difficulte, secondes: number, indices: number): number {
-	const { base, reference } = GAIN[difficulte];
-	const multiplicateur = Math.round(Math.max(0.7, 1.3 - 0.3 * (secondes / reference)) * 100) / 100;
+/**
+ * Gain théorique d'une partie gagnée (`complete_minesweeper_game`) ; sans temps de référence, celui
+ * de repli de la fonction.
+ */
+export function gainTheorique(
+	difficulte: Difficulte,
+	secondes: number,
+	indices: number,
+	reference: number = GAIN[difficulte].reference
+): number {
+	const { base } = GAIN[difficulte];
+	const multiplicateur = centiemes(Math.max(0.7, 1.3 - 0.3 * (secondes / reference)));
 	const penalite = Math.min(0.5, PENALITES_INDICE[Math.min(indices, 3)]);
 	const brut = base * multiplicateur * (1 - penalite);
-	return Math.round(Math.min(8, Math.max(0.3, brut)) * 100) / 100;
+	return centiemes(Math.min(8, Math.max(0.3, brut)));
 }
 
 /** Niveau d'un Palotin pour une expérience donnée (`add_buddy_xp`). */
@@ -218,11 +245,12 @@ export function planJeux(c: ContexteJeux) {
 		const estEtoile = eleve === etoile;
 		const nb = estEtoile ? 40 : entier(10, 30);
 		// Débuts de partie, du plus ancien au plus récent : la série et la première victoire du jour
-		// se lisent dans l'ordre où l'élève a joué.
-		const debuts = Array.from(
-			{ length: nb },
-			() => t0 - (entier(0, JOURS_DE_JEU - 1) * JOUR + entier(30, 20 * 60) * 60 * SECONDE)
-		).sort((a, b) => a - b);
+		// se lisent dans l'ordre où l'élève a joué. Une heure différente pour chacune, au moins une heure
+		// avant maintenant : une partie dure moins d'une heure, deux parties ne se chevauchent donc
+		// jamais et l'ordre des débuts est celui des fins.
+		const heures = new Set<number>();
+		while (heures.size < nb) heures.add(entier(1, JOURS_DE_JEU * 24 - 1));
+		const debuts = [...heures].map((h) => t0 - h * HEURE).sort((a, b) => a - b);
 		let serie = 0;
 		const joursGagnes = new Set<string>();
 		const joursGagnesUtc = new Set<string>();
@@ -269,7 +297,12 @@ export function planJeux(c: ContexteJeux) {
 				});
 				joursGagnes.add(jour);
 				joursGagnesUtc.add(jourUtc);
-				const theorique = gainTheorique(difficulte, secondes, indices);
+				const theorique = gainTheorique(
+					difficulte,
+					secondes,
+					indices,
+					c.references?.[eleve]?.[difficulte]
+				);
 				recompense = premiereDuJour ? 1 : 0;
 				const { debut: lundi, fin: dimanche } = semaine(jour);
 				recompensesJour.push({

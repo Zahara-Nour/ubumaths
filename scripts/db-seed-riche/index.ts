@@ -45,7 +45,7 @@ import {
 import { planActivite } from './activite';
 import { ECRITURE_SUIVI, planSuivi, PREFIXE_SUIVI } from './suivi';
 import { creerMoteur } from './moteur';
-import { devinetteInventee, ECRITURE_JEUX, planJeux, PREFIXE_JEUX } from './jeux';
+import { devinetteInventee, ECRITURE_JEUX, planJeux, PREFIXE_JEUX, type Difficulte } from './jeux';
 import { memoireMathoux, type EtatPoint } from './mathoux';
 import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
@@ -224,8 +224,14 @@ async function creerEleves(db: pg.Client): Promise<number> {
 			// lui, la chatterie et les Mathoux restent vides.
 			`insert into public.profiles (id, email, role, full_name, status, firstname, lastname, school_id, grade)
 			 values ($1, $2, 'student', $3, 'approved', $4, $5, $6, $7)
+			 -- Délai de consentement parental renouvelé à chaque passage : échu (création il y a plus
+			 -- de 30 jours), il mettrait l'élève en lecture seule et les gardes d'écriture refuseraient
+			 -- ses parties inventées.
 			 on conflict (id) do update set status = 'approved', firstname = excluded.firstname,
-			   lastname = excluded.lastname, school_id = excluded.school_id, grade = excluded.grade`,
+			   lastname = excluded.lastname, school_id = excluded.school_id, grade = excluded.grade,
+			   consent_grace_period_ends = case when profiles.consent_required
+			     and profiles.consent_granted_at is null then now() + interval '30 days'
+			     else profiles.consent_grace_period_ends end`,
 			[
 				id,
 				email,
@@ -619,9 +625,26 @@ async function genererJeux(
 		)
 	).rows as { id: string; utilisations: number | null; activable: boolean }[];
 
+	// Temps de référence du démineur au cycle de chaque élève, comme `complete_minesweeper_game`
+	// (élève sans cycle, ou cycle sans temps : ceux de repli, dans `jeux.ts`).
+	const references: Record<string, Record<Difficulte, number>> = {};
+	for (const x of (
+		await db.query(
+			`select p.id, m.difficulty,
+			        public.get_minesweeper_reference_time(m.cycle, m.difficulty) reference
+			   from public.profiles p
+			   join public.minesweeper_reference_times m on m.cycle = public.get_cycle_for_grade(p.grade)
+			  where p.id::text like ${FICTIFS}`
+		)
+	).rows as { id: string; difficulty: Difficulte; reference: number }[]) {
+		references[x.id] ??= { beginner: 180, intermediate: 600, expert: 1200 };
+		references[x.id][x.difficulty] = Number(x.reference);
+	}
+
 	const plan = planJeux({
 		prof: PROF_LOCAL,
 		classes: activite.classes,
+		references,
 		horsClasse: `5eed0000-0000-4000-8000-0000000000${String(NB_ELEVES + 1).padStart(2, '0')}`,
 		maintenant,
 		graine: 20261123,
@@ -716,8 +739,8 @@ async function genererJeux(
 
 	// --- Mathoux : la vraie règle de l'appli sur les points acquis --------------------------------
 	const mathoux = await ecrireMathoux(db, maintenant);
-	// Quelques décorations achetées par la fonction de l'appli (débit et historique compris), sur
-	// le Mathou né le plus ancien des élèves les plus riches.
+	// Quelques décorations achetées par la fonction de l'appli (débit et historique compris), chez
+	// les quatre élèves les plus riches, sur un de leurs Mathoux (le premier par identifiant).
 	await db.query(`select set_config('request.jwt.claims', '{"role":"service_role"}', true)`);
 	const acheteurs = (
 		await db.query(
@@ -726,7 +749,11 @@ async function genererJeux(
 			  where p.id::text like ${FICTIFS} and p.gidouilles >= 10
 			  order by p.id, m.notion_id`
 		)
-	).rows as { id: string; gidouilles: number; notion_id: string }[];
+	).rows.map((x) => ({
+		id: x.id as string,
+		gidouilles: Number(x.gidouilles),
+		notion_id: x.notion_id as string
+	}));
 	let decorations = 0;
 	for (const a of acheteurs.sort((x, y) => y.gidouilles - x.gidouilles).slice(0, 4)) {
 		for (const deco of a.gidouilles >= 20 ? ['heart', 'bow_tie'] : ['heart']) {
@@ -955,7 +982,12 @@ async function main() {
 		const nbClasses = await creerEleves(db);
 		const activite = await genererActivite(db);
 		const plan = activite.plan;
-		await publierDevinette(db);
+		await publierDevinette(db).catch(async (e: unknown) => {
+			await db.query('rollback').catch(() => {});
+			throw new Error(
+				`Contenu, élèves et activité de base sont écrits, mais la devinette inventée est annulée (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
+			);
+		});
 		const suivi = await genererSuivi(db, activite, new Date()).catch(async (e: unknown) => {
 			await db.query('rollback').catch(() => {});
 			throw new Error(

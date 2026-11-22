@@ -114,13 +114,16 @@ describe('règles de l’appli recopiées', () => {
 		).toBe(Math.floor(200 * 1 * 0.81 * 1.25));
 	});
 
-	it('gain théorique (complete_minesweeper_game, temps de référence de repli)', () => {
+	it('gain théorique (complete_minesweeper_game)', () => {
 		// 1 × (1,3 − 0,3 × 90/180) = 1,15
 		expect(gainTheorique('beginner', 90, 0)).toBe(1.15);
 		// Très lent : multiplicateur plancher 0,7 ; 6 × 0,7 = 4,2
 		expect(gainTheorique('expert', 5000, 0)).toBe(4.2);
-		// Plancher 0,30, quelle que soit la pénalité
-		expect(gainTheorique('beginner', 3000, 3)).toBeGreaterThanOrEqual(0.3);
+		// Le pire cas d'un débutant reste au-dessus du plancher 0,30 : 1 × 0,7 × (1 − 0,35) = 0,455
+		expect(gainTheorique('beginner', 3000, 3)).toBe(0.46);
+		// Temps de référence du cycle : 100 s en terminale au lieu de 180 s de repli
+		expect(gainTheorique('beginner', 100, 0, 100)).toBe(1);
+		expect(gainTheorique('beginner', 100, 0)).toBe(1.13);
 		// Un indice : −10 %
 		expect(gainTheorique('intermediate', 600, 1)).toBe(Math.round(3 * 1 * 0.9 * 100) / 100);
 	});
@@ -204,6 +207,61 @@ describe('démineur', () => {
 		expect(new Set(gagnees.map((p) => p.difficulty))).toEqual(
 			new Set(['beginner', 'intermediate', 'expert'])
 		);
+	});
+
+	it('deux parties d’un même élève ne se chevauchent jamais', () => {
+		const parEleve = new Map<string, { debut: number; fin: number }[]>();
+		for (const p of plan.parties) {
+			const liste = parEleve.get(p.student_id as string) ?? [];
+			liste.push({
+				debut: Date.parse(p.started_at as string),
+				fin: Date.parse(p.completed_at as string)
+			});
+			parEleve.set(p.student_id as string, liste);
+		}
+		for (const liste of parEleve.values()) {
+			liste.sort((a, b) => a.debut - b.debut);
+			for (let i = 1; i < liste.length; i++) {
+				expect(liste[i].debut).toBeGreaterThanOrEqual(liste[i - 1].fin);
+			}
+		}
+	});
+
+	it('rejouées dans l’ordre, les parties gagnées ont les points et les gains de l’appli', () => {
+		const references = { beginner: 100, intermediate: 360, expert: 780 };
+		const avecCycle = planJeux({ ...contexte(), references: { [ETOILE]: references } });
+		const parties = avecCycle.parties
+			.filter((p) => p.student_id === ETOILE)
+			.sort((a, b) => Date.parse(a.completed_at as string) - Date.parse(b.completed_at as string));
+		let serie = 0;
+		const joursUtc = new Set<string>();
+		for (const p of parties) {
+			if (p.status === 'lost') {
+				serie = 0;
+				continue;
+			}
+			const jour = (p.completed_at as string).slice(0, 10);
+			expect(p.points_earned).toBe(
+				pointsDemineur({
+					difficulte: p.difficulty as 'beginner',
+					secondes: p.time_seconds as number,
+					indices: p.hints_used as number,
+					serie,
+					premiereVictoireDuJour: !joursUtc.has(jour)
+				})
+			);
+			joursUtc.add(jour);
+			serie = Math.min(serie + 1, 10);
+			const recompense = avecCycle.recompensesJour.find((k) => k.game_id === p.id);
+			expect(recompense?.theoretical_reward).toBe(
+				gainTheorique(
+					p.difficulty as 'beginner',
+					p.time_seconds as number,
+					p.hints_used as number,
+					references[p.difficulty as 'beginner']
+				)
+			);
+		}
 	});
 
 	it('une récompense par partie gagnée, 1 Gidouille à la première victoire du jour seulement', () => {

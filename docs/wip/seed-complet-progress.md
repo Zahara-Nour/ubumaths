@@ -368,13 +368,26 @@ Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
   - les tables du tournoi restent dans `COPIE` (contenu du prof) : le seed y ajoute le tournoi inventé ;
   - 7 tables passent dans `JAMAIS` (sans lecteur ou calculées).
 - **Preuve** (copie isolée `ubumaths-essai`, ports 544xx, services compris ; serveur du worktree branché
-  dessus) : seed rejoué trois fois, mêmes nombres : 533 parties de démineur (159 succès), 42 parties de
-  tournoi, 20 scores de 2048, 19 de Mathémo, 111 succès, 26 Palotins, 82 mouvements de cartes VIP,
-  256 Mathoux, 8 décorations ; journal des récompenses stable à 733 lignes ; nombres de la PR 2
-  inchangés. Pages lues connecté : élève (stats et succès du démineur, tournoi et sa position,
-  classements, chatterie avec 11 Mathoux, inventaire 3 cartes + 1 dans l'historique, devinette publiée
-  assignée), prof (Mathoux par classe, chatterie et journal d'un élève, tournoi et son classement,
-  demande d'activation VIP transmise à la page).
+  dessus) : seed rejoué trois fois après les corrections de relecture, mêmes nombres : 596 parties de
+  démineur (150 succès), 41 parties de tournoi, 20 scores de 2048, 19 de Mathémo, 105 succès,
+  26 Palotins, 79 mouvements de cartes VIP, 256 Mathoux, 8 décorations ; journal des récompenses stable
+  à 717 lignes ; nombres de la PR 2 inchangés. Pages lues connecté : élève (stats et succès du démineur,
+  tournoi et sa position, classements, chatterie avec 11 Mathoux, inventaire 3 cartes + 1 dans
+  l'historique, devinette publiée assignée), prof (Mathoux par classe, chatterie et journal d'un élève,
+  tournoi et son classement, demande d'activation VIP transmise à la page).
+- **Relectures** : `security-auditor`, aucun finding. `code-reviewer`, rien de bloquant ; corrigé :
+  - **délai de consentement échu** : un élève soumis au consentement, créé il y a plus de 30 jours,
+    passait en lecture seule et la garde refusait ses parties (`Consentement parental requis`,
+    reproduit sur la copie) ; le délai est renouvelé à chaque passage, preuve sur 13 délais échus exprès ;
+  - **temps de référence du cycle** de l'élève (`get_minesweeper_reference_time`) au lieu de ceux de
+    repli ; et un **arrondi** du gain qui divergeait de Postgres (0,455 → 0,45 en flottant, 0,46 en
+    base), trouvé par le test ajouté ;
+  - parties d'un même élève sans chevauchement ; test qui rejoue les parties dans l'ordre (points et
+    gains) ; `rollback` de la devinette ; type et commentaire des décorations.
+  - Écartés, et pourquoi : carte sans nombre d'utilisations = une utilisation pour l'appli
+    (`coalesce(…, 1)` dans `use_vip_card`), pas illimitée ; fuseau et premier jour de la semaine de
+    l'école copiée = Paris et lundi, ceux du plan ; pas de récompense du jour pour 2048 et Mathémo (une
+    seule ligne de totaux par élève, sans partie à rattacher).
 - **Trouvé grâce au seed, hors PR** :
   - **page « Palotins » du prof toujours vide** (« Aucun Bataillon actif ») : sa requête embarque
     `student_buddies:student_id` depuis `class_members`, que PostgREST résout vers `profiles`
