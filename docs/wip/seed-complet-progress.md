@@ -2,23 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2981._
+_Mis à jour le 2026-11-22, après #2986._
 
-- **État** : PR 1 (#2977), PR 2 (#2980) et le correctif des compteurs de « Mes révisions » (#2981)
-  mergés. PR 2 : suivi et travail scolaire inventés (§ 8),
-  liens vérifiés après la copie, 30 élèves rangés dans les 5 classes de l'année en cours. La base de
-  dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche` (pas lancé).
-- **Prochaine action** : PR 3, jeux et récompenses (§ 5), en commençant par la **phase 0** (ce qui
-  sera inventé, en français, à faire valider par David avant de coder) : jeux, succès, récompenses, boutique, Mathoux et
-  Palotins, plus **une devinette publiée inventée** par le seed (la prod n'en a qu'une, en
-  brouillon). Même méthode qu'au § 8 : plan pur testé sans base, vraies règles de l'appli, preuve
-  sur copie isolée avec ses services, pages ouvertes en prof et en élève.
-- **En attente de David** : rien (phase 0 de la PR 3 validée le 2026-11-22, § 9).
-- **Tranché le 2026-11-22** : devinette **inventée** (pas de publication en prod) ; tableau de tâches du prof et signalements de bug **inventés, en
-  PR 4** ; modèles de messages : voir si le seed existant les recrée, sinon en inventer en PR 4.
-- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** (une table d'activité s'invente).
-  Essais sur copie isolée, jamais la base de dev. Remplacement par script dans `index.ts` : motif
-  unique d'abord. Worktree à recréer : `../ubumaths-wt-seed-complet`, `feat/seed-complet-jeux`.
+- **État** : PR 1 (#2977), PR 2 (#2980), #2981 et **PR 3 jeux et récompenses (#2986, § 9-10)** mergées.
+  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
+  (pas lancé).
+- **Prochaine action** : PR 4, échanges et famille (§ 5), par sa **phase 0** à faire valider : messages
+  privés, tuteur, notifications, marché, modération, parents, inscriptions, cahier de texte et liens
+  de partage (§ 4), tableau de tâches du prof et signalements de bug (inventés, tranché), modèles de
+  messages (voir si le seed les recrée). Même méthode qu'aux § 8 et § 10.
+- **En attente de David** : faut-il corriger à part les deux pannes trouvées en PR 3 (§ 10) : page
+  « Palotins » du prof toujours vide, bloc « succès » mort de l'accueil élève ?
+- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
+  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev. Élèves soumis au
+  consentement : délai renouvelé par le seed (sinon lecture seule). Arrondis : `centiemes()` comme
+  `ROUND` de Postgres. Nouveau worktree à créer pour la PR 4 (`feat/seed-complet-echanges`).
 
 ---
 
