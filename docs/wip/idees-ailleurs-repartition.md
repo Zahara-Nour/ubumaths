@@ -58,6 +58,43 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Probabilités                                 | 1A-P  | 27        | libre                                                      |                 |
 | Annales (sujets 2026, mélange des rubriques) | 1A-A  | 14        | libre ; **à faire en dernier**, après les autres rubriques |                 |
 
+## Terminale
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Les rubriques sans exercice (sinus et cosinus `TSA6`, nombres premiers `TEA3`,
+complexes et polynômes `TEC4`, toutes les `TCA` sauf `TCA7`, `TCP`, les `TT` sauf `TTE`) ne
+figurent pas. Les deux fichiers `TA` ne sont pas repris.
+
+### Spécialité
+
+| Rubrique                                                                       | Codes       | Exercices | État               | Sujet / session    |
+| ------------------------------------------------------------------------------ | ----------- | --------- | ------------------ | ------------------ |
+| Suites numériques                                                              | TSA1        | 26        | prise (2026-11-22) | `idees-tle-suites` |
+| Limites de fonctions                                                           | TSA2        | 18        | libre              |                    |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre              |                    |
+| Continuité des fonctions                                                       | TSA4        | 6         | libre              |                    |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | libre              |                    |
+| Primitives et équations différentielles                                        | TSA7        | 7         | libre              |                    |
+| Intégration                                                                    | TSA8        | 5         | libre              |                    |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre              |                    |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | libre              |                    |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre              |                    |
+
+### Maths expertes
+
+| Rubrique                                              | Codes       | Exercices | État  | Sujet / session |
+| ----------------------------------------------------- | ----------- | --------- | ----- | --------------- |
+| Nombres complexes (algèbre, géométrie, trigonométrie) | TEC1 à TEC3 | 56        | libre |                 |
+| Arithmétique (divisibilité, PGCD, Bézout, Gauss)      | TEA1, TEA2  | 24        | libre |                 |
+| Matrices                                              | TEM1        | 13        | libre |                 |
+| Graphes                                               | TEG1        | 2         | libre |                 |
+
+### Technologique
+
+| Rubrique | Codes | Exercices | État  | Sujet / session |
+| -------- | ----- | --------- | ----- | --------------- |
+| Analyse  | TTE   | 12        | libre |                 |
+
 ## Autres niveaux
 
 La première session qui prend un niveau liste son dossier dans la copie locale
