@@ -1,4 +1,5 @@
 {
+	"id": "2938b16b-952e-4700-95eb-628bf1260c64",
 	"title": "Sens de variation d'une suite géométrique, quelle que soit sa raison",
 	"description": "Suite géométrique donnée par u₀ et q, par a × qⁿ ou par u(n+1) = q u(n) : raison négative (ni croissante, ni décroissante ; piège « q < 0 donc décroissante »), raison positive selon q et le signe de u₀, raison 1 (constante)",
 	"grades": ["1_SPE"],

@@ -1,4 +1,5 @@
 {
+	"id": "cdb5a1cf-f8df-4ab1-9305-4d1b5b790711",
 	"title": "Sens de variation par le quotient u(n+1)/u(n)",
 	"description": "Calculer u(n+1)/u(n) (n/kⁿ, a × qⁿ, (n+1)/kⁿ) ou conclure du quotient comparé à 1 pour une suite à termes positifs (pièges : quotient inversé, kⁿ/kⁿ⁺¹ simplifié en 1)",
 	"grades": ["1_SPE"],
