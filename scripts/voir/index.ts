@@ -22,11 +22,13 @@ import { join, relative } from 'node:path';
 import { chromium, devices, webkit, type Page } from 'playwright';
 import {
 	ACCOUNTS,
+	ENV_FILES,
 	VoirError,
 	assertLocalTarget,
 	captureHeight,
 	captureName,
 	isLocalEnv,
+	isSameServer,
 	isLoginRedirect,
 	parseArgs,
 	pickPort,
@@ -118,14 +120,29 @@ function listDevServers(): DevServer[] {
 			continue;
 		}
 		if (!cwd) continue;
-		for (const port of serverPorts) servers.push({ port, cwd });
+		for (const port of serverPorts) servers.push({ port, cwd, pid: serverPid });
 	}
 	return servers;
 }
 
-function readEnvLocal(root: string): string | null {
+/** Contenu des fichiers d'environnement du worktree qui passent devant `.env`. */
+function readEnvFiles(root: string): string[] {
+	const contents: string[] = [];
+	for (const file of ENV_FILES) {
+		try {
+			contents.push(readFileSync(join(root, file), 'utf8'));
+		} catch {
+			// Fichier absent
+		}
+	}
+	return contents;
+}
+
+/** Environnement du process serveur à son lancement. Illisible → `null` (refus). */
+function readServerEnv(pid: number | undefined): string | null {
+	if (pid === undefined) return null;
 	try {
-		return readFileSync(join(root, '.env.local'), 'utf8');
+		return execFileSync('ps', ['eww', '-o', 'command=', '-p', String(pid)], { encoding: 'utf8' });
 	} catch {
 		return null;
 	}
@@ -198,13 +215,19 @@ async function hiddenHeight(page: Page): Promise<number> {
 async function look(options: VoirOptions): Promise<Report> {
 	assertLocalTarget(options.target);
 	const root = worktreeRoot();
-	const port = pickPort(listDevServers(), root, options.port);
+	const servers = listDevServers();
+	const port = pickPort(servers, root, options.port);
 	const requested = resolveTarget(options.target, port);
-	if (options.account && !isLocalEnv(readEnvLocal(root)))
-		throw new VoirError(
-			'--compte refusé : le serveur de ce dossier ne vise pas la base locale ' +
-				'(.env.local absent, ou PUBLIC_SUPABASE_URL distante). Jamais de connexion automatique hors base locale.'
-		);
+	const origin = new URL(requested).origin;
+	if (options.account) {
+		const serverEnv = readServerEnv(servers.find((server) => server.port === port)?.pid);
+		if (serverEnv === null || !isLocalEnv(readEnvFiles(root), serverEnv))
+			throw new VoirError(
+				'--compte refusé : rien ne prouve que le serveur de ce dossier vise la base locale ' +
+					'(.env.local absent, ou une adresse de Supabase distante dans ses fichiers .env ou ' +
+					'dans la commande qui l’a lancé). Jamais de connexion automatique hors base locale.'
+			);
+	}
 
 	const engine = options.chromium ? chromium : webkit;
 	const { defaultBrowserType: _ignored, ...phone } = devices['iPhone 15'];
@@ -219,10 +242,18 @@ async function look(options: VoirOptions): Promise<Report> {
 	try {
 		const context = await browser.newContext(options.desktop ? { viewport: DESKTOP } : phone);
 		context.setDefaultNavigationTimeout(NAVIGATION_TIMEOUT);
+		// La page ne quitte pas le serveur local : une redirection vers un autre site
+		// est coupée (les ressources externes d'une page locale, elles, se chargent)
+		await context.route('**/*', (route) => {
+			const request = route.request();
+			if (request.isNavigationRequest() && !isSameServer(request.url(), origin))
+				return route.abort('blockedbyclient');
+			return route.continue();
+		});
 		let account: string | null = null;
 		if (options.account) {
 			const loginPage = await context.newPage();
-			account = await login(loginPage, new URL(requested).origin, options.account);
+			account = await login(loginPage, origin, options.account);
 			// Fermée avant d'ouvrir la page demandée : les requêtes de la page d'arrivée,
 			// interrompues en route, ne sont pas des erreurs de la page regardée
 			await loginPage.close();

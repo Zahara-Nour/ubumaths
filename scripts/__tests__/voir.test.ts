@@ -19,6 +19,7 @@ import {
 	captureName,
 	isLocalEnv,
 	isLoginRedirect,
+	isSameServer,
 	parseArgs,
 	pickPort,
 	resolveTarget,
@@ -114,18 +115,51 @@ describe('voir — port du serveur du worktree', () => {
 });
 
 describe('voir — --compte seulement sur la base locale', () => {
+	const LOCAL = 'PUBLIC_SUPABASE_URL=http://127.0.0.1:54321\n';
+	const REMOTE = 'PUBLIC_SUPABASE_URL=https://exemple.supabase.co\n';
+
 	it('base locale : oui', () => {
-		expect(isLocalEnv('A=1\nPUBLIC_SUPABASE_URL=http://127.0.0.1:54321\n')).toBe(true);
-		expect(isLocalEnv('PUBLIC_SUPABASE_URL="http://localhost:54321"')).toBe(true);
+		expect(isLocalEnv([`A=1\n${LOCAL}SUPABASE_URL=http://127.0.0.1:54321\n`])).toBe(true);
+		expect(isLocalEnv(['PUBLIC_SUPABASE_URL="http://localhost:54321"'])).toBe(true);
+		expect(isLocalEnv([LOCAL], 'node vite dev HOME=/x PATH=/bin')).toBe(true);
 	});
 
 	it('pas de .env.local, variable absente, ou base distante : non', () => {
-		expect(isLocalEnv(null)).toBe(false);
-		expect(isLocalEnv('A=1\n')).toBe(false);
-		expect(isLocalEnv('PUBLIC_SUPABASE_URL=https://exemple.supabase.co')).toBe(false);
-		expect(isLocalEnv('PUBLIC_SUPABASE_URL=pas une adresse')).toBe(false);
+		expect(isLocalEnv([])).toBe(false);
+		expect(isLocalEnv(['A=1\n'])).toBe(false);
+		expect(isLocalEnv([REMOTE])).toBe(false);
+		expect(isLocalEnv(['PUBLIC_SUPABASE_URL=pas une adresse'])).toBe(false);
 		// Une adresse distante qui contient « localhost » n'est pas locale
-		expect(isLocalEnv('PUBLIC_SUPABASE_URL=https://localhost.exemple.co')).toBe(false);
+		expect(isLocalEnv(['PUBLIC_SUPABASE_URL=https://localhost.exemple.co'])).toBe(false);
+	});
+
+	it('une seule adresse distante suffit à refuser, où qu’elle soit', () => {
+		// Deuxième ligne du même fichier : c'est la dernière que retient Vite
+		expect(isLocalEnv([LOCAL + REMOTE])).toBe(false);
+		expect(isLocalEnv([REMOTE + LOCAL])).toBe(false);
+		// Fichier qui passe devant .env.local
+		expect(isLocalEnv([LOCAL, REMOTE])).toBe(false);
+		// La variable du serveur (sans PUBLIC_) distante
+		expect(isLocalEnv([`${LOCAL}SUPABASE_URL=https://exemple.supabase.co\n`])).toBe(false);
+		expect(isLocalEnv([`${LOCAL}export ${REMOTE}`])).toBe(false);
+		// Variable posée au lancement du serveur
+		expect(
+			isLocalEnv([LOCAL], 'node vite dev PUBLIC_SUPABASE_URL=https://exemple.supabase.co PATH=/bin')
+		).toBe(false);
+	});
+
+	it('SUPABASE_URL locale seule ne suffit pas : sans PUBLIC_, le navigateur viserait .env', () => {
+		expect(isLocalEnv(['SUPABASE_URL=http://127.0.0.1:54321\n'])).toBe(false);
+	});
+});
+
+describe('voir — la page ne quitte pas le serveur local', () => {
+	it('même origine : oui ; autre site, autre port, adresse illisible : non', () => {
+		const origin = 'http://localhost:5176';
+		expect(isSameServer('http://localhost:5176/carnet?x=1', origin)).toBe(true);
+		expect(isSameServer('https://chiph.re/', origin)).toBe(false);
+		expect(isSameServer('http://localhost:5173/', origin)).toBe(false);
+		expect(isSameServer('pas une adresse', origin)).toBe(false);
 	});
 });
 

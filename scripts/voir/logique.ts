@@ -27,6 +27,7 @@ export interface VoirOptions {
 export interface DevServer {
 	port: number;
 	cwd: string;
+	pid?: number;
 }
 
 // Constantes
@@ -156,19 +157,45 @@ export function pickPort(servers: DevServer[], root: string, wanted: number | nu
 	return (mine[0] as DevServer).port;
 }
 
+/** Fichiers d'environnement que Vite lit en dev et qui passent devant `.env` (la prod). */
+export const ENV_FILES = ['.env.local', '.env.development', '.env.development.local'];
+
 /**
- * Le serveur de dev de ce dossier vise-t-il la base locale ? Sans `.env.local`,
- * il vise la prod (`.env`) : jamais de connexion automatique dans ce cas.
+ * Le serveur de dev vise-t-il la base locale ? Jamais de connexion automatique
+ * sinon. Refus prudent : TOUTES les adresses de Supabase trouvées doivent être
+ * locales, et il en faut au moins une dans les fichiers (sans elle, c'est
+ * `.env`, la prod, qui s'applique).
+ *
+ * @param envFiles contenu des fichiers de `ENV_FILES` qui existent
+ * @param serverEnv environnement du process serveur (`ps eww`) : une variable
+ *   posée au lancement (`PUBLIC_SUPABASE_URL=… pnpm dev`) passe devant les fichiers
  */
-export function isLocalEnv(envLocal: string | null): boolean {
-	if (envLocal === null) return false;
-	const raw = /^PUBLIC_SUPABASE_URL=(.*)$/m
-		.exec(envLocal)?.[1]
-		?.trim()
-		.replace(/^["']|["']$/g, '');
-	if (!raw) return false;
+export function isLocalEnv(envFiles: string[], serverEnv = ''): boolean {
+	const inFiles = envFiles.flatMap((content) =>
+		[...content.matchAll(/^\s*(?:export\s+)?(?:PUBLIC_)?SUPABASE_URL\s*=(.*)$/gm)].map((m) =>
+			(m[1] ?? '').trim().replace(/^["']|["']$/g, '')
+		)
+	);
+	const publicInFiles = envFiles.some((content) =>
+		/^\s*(?:export\s+)?PUBLIC_SUPABASE_URL\s*=/m.test(content)
+	);
+	if (!publicInFiles) return false;
+	const inProcess = [...serverEnv.matchAll(/(?:^|\s)(?:PUBLIC_)?SUPABASE_URL=(\S+)/g)].map(
+		(m) => m[1] ?? ''
+	);
+	return [...inFiles, ...inProcess].every((raw) => {
+		try {
+			return LOCAL_HOSTS.has(new URL(raw).hostname);
+		} catch {
+			return false;
+		}
+	});
+}
+
+/** Une navigation de la page vers cette adresse reste-t-elle sur le serveur local ? */
+export function isSameServer(address: string, origin: string): boolean {
 	try {
-		return LOCAL_HOSTS.has(new URL(raw).hostname);
+		return new URL(address).origin === origin;
 	} catch {
 		return false;
 	}
