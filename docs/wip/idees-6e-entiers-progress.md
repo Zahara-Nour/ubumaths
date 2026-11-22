@@ -6,16 +6,15 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2998 et son `db:migrate`._
+_Mis à jour le 2026-11-22, après la relecture de David._
 
-- **État** : #2998 mergée, migrations jouées en prod (vérifié par MCP). 818d5e6b et ba899229 sur
-  « égalités à trous » (CM2-065), e76ab26f sur « écritures » (CM2-003), brouillons. Variations ajoutées
-  aux publiés : 98f558e4 (6), b9677e1f (3), d793de49 (3). Worktree `rangement` supprimé.
-- **Prochaine action** : relecture par David dans `/dev/modeles` (série de relecture des 3 neufs et des
-  variations ajoutées), puis publication des 3 brouillons par David.
-- **En attente de David** : relecture (grille Yohaku `\hline`, bloc trous) ; titre de b9677e1f dans
-  l'éditeur s'il veut ; confirmer que les prénoms d'énoncé (Chloé, Léo, Malo, Rose) ne sont pas ceux
-  d'élèves réels (remarque du `security-auditor`).
+- **État** : #2998 mergée, migrations jouées en prod. Les 6 modèles (brouillons 818d5e6b, ba899229,
+  e76ab26f ; publiés à variations 98f558e4, b9677e1f, d793de49) **validés par David le 2026-11-22**
+  (de vive voix, aucun verdict enregistré dans `/dev/modeles`).
+- **Prochaine action** : publication des 3 brouillons par David dans l'éditeur (écriture en prod),
+  puis vérifier par MCP qu'ils sont `published` et clore le chantier (versement).
+- **En attente de David** : publier les 3 brouillons ; confirmer que les prénoms d'énoncé (Chloé, Léo,
+  Malo, Rose) ne sont pas ceux d'élèves réels (remarque du `security-auditor`).
 - **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; zsh ne découpe pas `$F` ;
   le Chrome connecté n'atteint pas `[::1]:<port>` du Mac mini.
 - **Worktree / branche** : aucun.
