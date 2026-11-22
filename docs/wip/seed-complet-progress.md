@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-22, après #2981._
   Palotins, plus **une devinette publiée inventée** par le seed (la prod n'en a qu'une, en
   brouillon). Même méthode qu'au § 8 : plan pur testé sans base, vraies règles de l'appli, preuve
   sur copie isolée avec ses services, pages ouvertes en prof et en élève.
-- **En attente de David** : validation de la phase 0 de la PR 3 (§ 9), écrite le 2026-11-22.
+- **En attente de David** : rien (phase 0 de la PR 3 validée le 2026-11-22, § 9).
 - **Tranché le 2026-11-22** : devinette **inventée** (pas de publication en prod) ; tableau de tâches du prof et signalements de bug **inventés, en
   PR 4** ; modèles de messages : voir si le seed existant les recrée, sinon en inventer en PR 4.
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** (une table d'activité s'invente).
@@ -298,7 +298,7 @@ pnpm dev --port 5176 --strictPort`), pages lues connecté (jeton pris à l'API d
   la page prof des paquets affiche « Decks attribués 0 » (elle compte les paquets du prof marqués
   assignés, or seules les copies des élèves le sont).
 
-## 9. PR 3 : jeux et récompenses — phase 0 (2026-11-22, à valider par David)
+## 9. PR 3 : jeux et récompenses — phase 0 (2026-11-22, **validée par David le 2026-11-22 : « oui »**)
 
 **Mesures** (prod en lecture seule, des comptes de lignes ; lecteurs et écrivains relevés dans `src/`
 et les migrations). Jeux visibles par l'élève : Démineur (13 909 parties en prod, stats, succès,
@@ -345,6 +345,43 @@ de la semaine (315), succès (23 définis, **0 débloqué en prod**). Le journal
 **Preuve** : même méthode qu'au § 8 (copie isolée avec ses services, seed rejoué trois fois,
 pages ouvertes en élève et en prof : stats, succès et tournoi du démineur, classement, chatterie,
 Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
+
+## 10. PR 3 : jeux et récompenses (2026-11-22, branche `feat/seed-complet-jeux`)
+
+- **Un plan pur de plus**, `scripts/db-seed-riche/jeux.ts` (tests : `scripts/__tests__/db-seed-jeux.test.ts`,
+  34 cas, sans base), écrit dans 13 tables (`ECRITURE_JEUX`), et `mathoux.ts` (mémoire des Mathoux).
+  Règles recopiées des fonctions de l'appli et testées : points d'une partie (`calculate_minesweeper_points`),
+  gain théorique et récompense du jour (`complete_minesweeper_game`, `record_game_reward`, temps de
+  référence de repli), seuils des succès de 2048 et de Mathémo (routes `api/games/*/scores`), niveau
+  d'un Palotin (`add_buddy_xp`).
+- **Calculé par la base, pas écrit** : le journal des récompenses (déclencheurs), le score des parties
+  de tournoi (`calculate_tournament_score`, appelée par le seed après l'insertion), les profils de jeu
+  Navadra (déclencheur à la création du compte).
+- **Mathoux** : la vraie règle (`buildMathouCollection`, `memoryUpdates`) sur les points acquis de la
+  PR 2, données chargées comme `collection.ts`. Ni sieste ni étape payée : la première visite de
+  l'élève endort et verse les Gidouilles des étapes. Décorations : la vraie fonction d'achat
+  (`buy_mathou_decoration`, en rôle service), débit et historique compris.
+- **Écarts au plan, chacun imposé par une mesure** :
+  - **niveau sur le profil des élèves** (`creerEleves`) : sans lui, la chatterie et les Mathoux étaient
+    vides (`grade` nul → collection vide) ;
+  - la devinette est écrite **avant** le suivi (qui assigne d'abord une devinette publiée) ;
+  - les tables du tournoi restent dans `COPIE` (contenu du prof) : le seed y ajoute le tournoi inventé ;
+  - 7 tables passent dans `JAMAIS` (sans lecteur ou calculées).
+- **Preuve** (copie isolée `ubumaths-essai`, ports 544xx, services compris ; serveur du worktree branché
+  dessus) : seed rejoué trois fois, mêmes nombres : 533 parties de démineur (159 succès), 42 parties de
+  tournoi, 20 scores de 2048, 19 de Mathémo, 111 succès, 26 Palotins, 82 mouvements de cartes VIP,
+  256 Mathoux, 8 décorations ; journal des récompenses stable à 733 lignes ; nombres de la PR 2
+  inchangés. Pages lues connecté : élève (stats et succès du démineur, tournoi et sa position,
+  classements, chatterie avec 11 Mathoux, inventaire 3 cartes + 1 dans l'historique, devinette publiée
+  assignée), prof (Mathoux par classe, chatterie et journal d'un élève, tournoi et son classement,
+  demande d'activation VIP transmise à la page).
+- **Trouvé grâce au seed, hors PR** :
+  - **page « Palotins » du prof toujours vide** (« Aucun Bataillon actif ») : sa requête embarque
+    `student_buddies:student_id` depuis `class_members`, que PostgREST résout vers `profiles`
+    (`column profiles_1.palotin_type does not exist`) ; chaque classe est sautée
+    (`gamification/buddies/+page.server.ts:62`). Même schéma en prod : panne probable là-bas aussi.
+  - **bloc « succès » de l'accueil élève mort** : la requête vise `game_achievements` (Navadra) au lieu
+    d'`achievements`, et la page ne l'affiche pas (`dashboard/+page.server.ts:230`).
 
 ## 6. Historique
 
