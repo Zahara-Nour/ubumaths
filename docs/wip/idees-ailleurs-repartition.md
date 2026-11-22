@@ -34,7 +34,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 
 | Rubrique                          | Codes | Exercices | État                 | Sujet / session    |
 | --------------------------------- | ----- | --------- | -------------------- | ------------------ |
-| Suites numériques                 | 1AL1  | 19        | phase 0 (2026-11-22) | `idees-1re-suites` |
+| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites` |
 | Fonctions polynomiales de degré 2 | 1AL2  | 22        | libre                |                    |
 | Dérivation                        | 1AN1  | 12        | libre                |                    |
 | Variations                        | 1AN2  | 5         | libre                |                    |
@@ -154,20 +154,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue                                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 19961e67 Valeur renvoyée par une fonction Python de seuil                               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 44b32cad Somme de termes consécutifs d'une suite arithmétique                           | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 45da9678 De l'énoncé à l'expression de la suite                                         | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 5042401b Sens de variation d'une suite géométrique de raison positive                   | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 65e96f31 Terme général d'une suite arithmétique                                         | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 7703e625 Calculer un terme                                                              | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 727fb88a Calculer un terme d'une suite géométrique                                      | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 84114cb2 Reconnaître une suite géométrique à partir de sa forme explicite               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 85afd455 Déterminer la raison d'une suite géométrique                                   | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| b72fae4a Somme de termes consécutifs d'une suite géométrique                            | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| cea65372 Reconnaître une suite géométrique à partir de sa relation de récurrence        | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| cf51cb93 Calculer un terme d'une suite géométrique                                      | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| d2943133 Reconnaître une suite arithmétique à partir de sa forme explicite              | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| e67b1cbd Terme général d'une suite géométrique                                          | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 | a4d8dc52 Asymptote parallèle à un axe : équation à partir d'une limite                  | `idees-tle-limites`                                         | 2026-11-22 |                                      |
 | 04ec9518 Limite en un point : dénominateur qui tend vers 0                              | `idees-tle-limites`                                         | 2026-11-22 |                                      |
 | 5bf5b452 Comparaison et encadrement pour les fonctions                                  | `idees-tle-limites`                                         | 2026-11-22 |                                      |
