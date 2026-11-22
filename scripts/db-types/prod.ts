@@ -25,9 +25,8 @@ import { comparer, decrire, identiques, lireLeSchema } from './prod-depot';
 const RACINE = process.cwd();
 const FICHIER = 'src/lib/types/database.ts';
 /** Remplaçable par les tests : une commande qui écrit les types de la prod sur sa sortie. */
-const COMMANDE =
-	process.env.DB_TYPES_PROD_COMMANDE ??
-	'pnpm exec supabase gen types typescript --linked --schema public';
+const REMPLACEE = process.env.DB_TYPES_PROD_COMMANDE;
+const COMMANDE = REMPLACEE ?? 'pnpm exec supabase gen types typescript --linked --schema public';
 const TAMPON = 64 * 1024 * 1024;
 
 // ============================================================================
@@ -86,7 +85,9 @@ function main(): number {
 	if (identiques(comparaison)) {
 		console.log(
 			`✅ prod = dépôt : le schéma public de la prod est celui de ${depot.nom} ` +
-				`(${lus.prod.schema.size} éléments comparés).`
+				`(${lus.prod.schema.size} éléments comparés).` +
+				// Une variable oubliée dans le shell ne doit pas donner un accord sans le dire.
+				(REMPLACEE ? ' ⚠️ PAS la prod : types lus par DB_TYPES_PROD_COMMANDE.' : '')
 		);
 		return 0;
 	}

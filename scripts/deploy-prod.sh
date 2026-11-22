@@ -380,11 +380,12 @@ controler_types() {
 		return 0
 	fi
 	if [ -n "$migrations_apres" ]; then
-		echo "↷ Contrôle « prod = dépôt » sauté : la prod garde ce que retire(nt)$migrations_apres. Après pnpm db:migrate : pnpm db:types:prod"
+		echo "⚠️  Contrôle « prod = dépôt » NON FAIT : la prod garde ce que retire(nt)$migrations_apres. Après pnpm db:migrate : pnpm db:types:prod"
 		return 0
 	fi
 	if sortie="$($TYPES_PROD "$1" 2>&1)"; then
-		printf '%s\n' "$sortie" | grep '^✅' | tail -1
+		# Sans ligne ✅ (message changé), montrer la sortie plutôt que s'arrêter sans un mot.
+		printf '%s\n' "$sortie" | grep '^✅' | tail -1 | grep . || printf '%s\n' "$sortie"
 	else
 		printf '%s\n' "$sortie" | grep -v -e '^\$ ' -e ELIFECYCLE | grep . || true
 		arreter "⛔ Contrôle « prod = dépôt » : la prod n'est pas la base que décrit $(decrire "$1")." "Rien n'est créé. Pour le rejouer seul : pnpm db:types:prod. Types de la prod illisibles (générateur changé) : relancer avec --sans-controle-types."

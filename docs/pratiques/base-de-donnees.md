@@ -121,6 +121,12 @@ les compare au `database.ts` du dossier, ou d'un commit (`--commit <sha>`).
 - **Si le générateur de la prod change de forme** : le contrôle crie à l'écart sur toute la base,
   ou dit « forme non reconnue ». `pnpm deploy:prod --sans-controle-types` livre quand même ;
   ajouter ensuite la nouvelle différence de forme dans `prod-depot.ts`, avec son test.
+- **Ce que les types ne disent pas** : l'ordre des valeurs d'un enum, et le caractère calculé
+  (`GENERATED`) d'une colonne — la prod l'écrit comme une colonne ordinaire à valeur par défaut. Une
+  forme que le contrôle ne connaît pas (signature d'index, rubrique nouvelle) est refusée, pas
+  ignorée.
+- **Avec `--migration-apres`, `deploy:prod` ne fait pas ce contrôle** (il le dit) : la prod garde ce
+  que la migration retire. Le rejouer à la main après `pnpm db:migrate`.
 - Sur une branche qui apporte une migration pas encore jouée, l'écart est attendu.
 - **Plus strict que l'ancien fichier (lu en prod jusqu'au 2026-11-22)** : une colonne jsonb
   `NOT NULL` est typée `NonNullable<Json>` (alias `JsonRequis`, `database-helpers.ts`), et une

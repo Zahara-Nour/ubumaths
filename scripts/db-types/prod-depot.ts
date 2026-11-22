@@ -54,6 +54,8 @@ function formeCommune(type: string): string {
 	return type.replace(/NonNullable<Json>/g, 'Json').replace(/Record<PropertyKey, never>/g, 'never');
 }
 
+class FormeInconnue extends Error {}
+
 function nomDe(membre: ts.TypeElement, source: ts.SourceFile): string | null {
 	if (!ts.isPropertySignature(membre)) return null;
 	const nom = membre.name;
@@ -86,7 +88,11 @@ function texteDe(type: ts.TypeNode, source: ts.SourceFile): string {
 	}
 	if (ts.isArrayTypeNode(type)) {
 		const element = texteDe(type.elementType, source);
-		return ts.isUnionTypeNode(type.elementType) ? `(${element})[]` : `${element}[]`;
+		return element.includes(' | ') ? `(${element})[]` : `${element}[]`;
+	}
+	if (ts.isTypeReferenceNode(type) && type.typeArguments) {
+		const arguments_ = type.typeArguments.map((a) => texteDe(a, source)).join(', ');
+		return formeCommune(`${type.typeName.getText(source)}<${arguments_}>`);
 	}
 	if (ts.isLiteralTypeNode(type) && ts.isStringLiteral(type.literal)) {
 		return JSON.stringify(type.literal.text);
@@ -110,11 +116,24 @@ function descendre(
 	facultatif: boolean
 ): void {
 	if (ts.isTypeLiteralNode(type) && type.members.length > 0) {
+		// Un objet facultatif (`Insert?: {…}`) : aucun générateur n'en écrit, mais le `?` ne se perd pas.
+		if (facultatif) schema.set(`${chemin}?`, 'facultatif');
 		for (const membre of type.members) {
 			const nom = nomDe(membre, source);
-			if (nom === null || !ts.isPropertySignature(membre) || !membre.type) continue;
+			if (nom === null || !ts.isPropertySignature(membre) || !membre.type) {
+				// Signature d'index, méthode… : forme inconnue. Refuser de lire plutôt que l'ignorer.
+				throw new FormeInconnue(
+					`membre non reconnu sous ${chemin} : ${membre.getText(source).slice(0, 80)}`
+				);
+			}
 			descendre(membre.type, `${chemin}.${nom}`, source, schema, Boolean(membre.questionToken));
 		}
+		return;
+	}
+	// L'ordre des clés étrangères d'une table ne dit rien : il ne doit pas faire un écart.
+	if (ts.isTupleTypeNode(type) && chemin.endsWith('.Relationships')) {
+		const cles = type.elements.map((e) => texteDe(e, source)).sort();
+		schema.set(chemin, `[${cles.join(', ')}]`);
 		return;
 	}
 	schema.set(chemin, (facultatif ? '?' : '') + texteDe(type, source));
@@ -142,11 +161,18 @@ export function lireLeSchema(texte: string): Lecture {
 		return { ok: false, raison: 'pas de schéma `public` dans `Database`' };
 	}
 	const schema: Schema = new Map();
-	for (const membre of publicNoeud.type.members) {
-		const nom = nomDe(membre, source);
-		if (nom === null || !RUBRIQUES.includes(nom)) continue;
-		if (!ts.isPropertySignature(membre) || !membre.type) continue;
-		descendre(membre.type, nom, source, schema, false);
+	try {
+		for (const membre of publicNoeud.type.members) {
+			const nom = nomDe(membre, source);
+			if (nom === null || !ts.isPropertySignature(membre) || !membre.type) {
+				throw new FormeInconnue(`membre non reconnu dans \`public\``);
+			}
+			if (!RUBRIQUES.includes(nom)) throw new FormeInconnue(`rubrique inconnue : ${nom}`);
+			descendre(membre.type, nom, source, schema, false);
+		}
+	} catch (e) {
+		if (e instanceof FormeInconnue) return { ok: false, raison: e.message };
+		throw e;
 	}
 	const colonnes = [...schema.keys()].filter((c) => /^Tables\.[^.]+\.Row\./.test(c)).length;
 	if (colonnes === 0)
@@ -167,10 +193,14 @@ function propreAuLocal(chemin: string): boolean {
 
 /**
  * Colonne calculée (`GENERATED`) : le local l'interdit à l'écriture (`?never`), la prod l'écrit
- * avec son type. Même colonne, deux écritures.
+ * facultative, avec le type qu'elle a en lecture. Même colonne, deux écritures. La prod n'écrit
+ * rien d'autre : une colonne calculée au dépôt et ordinaire en prod (avec une valeur par défaut)
+ * ne se distingue pas par les types — limite connue, écrite dans la doc.
  */
-function colonneCalculee(chemin: string, depot: string): boolean {
-	return depot === '?never' && /^(Tables|Views)\.[^.]+\.(Insert|Update)\./.test(chemin);
+function colonneCalculee(chemin: string, depot: string, enProd: string, prod: Schema): boolean {
+	const lu = /^((?:Tables|Views)\.[^.]+)\.(?:Insert|Update)\.(.+)$/.exec(chemin);
+	if (depot !== '?never' || !lu) return false;
+	return enProd === `?${prod.get(`${lu[1]}.Row.${lu[2]}`)}`;
 }
 
 export function comparer(depot: Schema, prod: Schema): Comparaison {
@@ -179,7 +209,7 @@ export function comparer(depot: Schema, prod: Schema): Comparaison {
 		if (propreAuLocal(chemin)) continue;
 		const enProd = prod.get(chemin);
 		if (enProd === undefined) resultat.absentDeProd.push(chemin);
-		else if (enProd !== type && !colonneCalculee(chemin, type)) {
+		else if (enProd !== type && !colonneCalculee(chemin, type, enProd, prod)) {
 			resultat.differents.push({ chemin, depot: type, prod: enProd });
 		}
 	}

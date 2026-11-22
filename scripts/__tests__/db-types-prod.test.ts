@@ -182,7 +182,76 @@ describe('lireLeSchema', () => {
 	});
 });
 
+describe('lireLeSchema — une forme inconnue est refusée, pas ignorée', () => {
+	const avec = (row: string, reste = '') =>
+		`export type Database = { public: { Tables: { t: { Row: { id: string; ${row} } } }; Functions: { f: { Args: never; Returns: number } }${reste} } }`;
+
+	it.each([
+		['signature d’index', avec('[k: string]: unknown'), /membre non reconnu sous Tables\.t\.Row/],
+		['méthode', avec('m(): void'), /membre non reconnu sous Tables\.t\.Row/],
+		[
+			'rubrique nouvelle',
+			avec('a: string', '; Domaines: { d: string }'),
+			/rubrique inconnue : Domaines/
+		]
+	])('%s', (_nom, texte, raison) => {
+		const lu = lireLeSchema(texte);
+		expect(lu.ok).toBe(false);
+		if (!lu.ok) expect(lu.raison).toMatch(raison);
+	});
+
+	it('un objet facultatif garde son `?`', () => {
+		const sans = schema(
+			avec('a: string').replace('Row: {', 'Row: {').replace('t: {', 't: { Insert: { a: string };')
+		);
+		const facultatif = schema(avec('a: string').replace('t: {', 't: { Insert?: { a: string };'));
+		expect(identiques(comparer(sans, facultatif))).toBe(false);
+	});
+});
+
+describe('texte d’un type — ni collision, ni forme prise pour du fond', () => {
+	const fonction = (retour: string) =>
+		`export type Database = { public: { Tables: { t: { Row: { id: string } } }; Functions: { f: { Args: never; Returns: ${retour} } } } }`;
+	const retour = (texte: string) => schema(fonction(texte)).get('Functions.f.Returns');
+
+	it('tableau d’éléments facultatifs ≠ tableau facultatif', () => {
+		expect(retour('(string | null)[]')).toBe('(null | string)[]');
+		expect(retour('string[] | null')).toBe('null | string[]');
+	});
+
+	it('type générique : séparateurs et guillemets de ses arguments ne comptent pas', () => {
+		expect(retour("Array<{ a: 'x', b: number }>")).toBe(retour('Array<{ a: "x"; b: number }>'));
+		expect(retour('Array<{ a: string }>')).not.toBe(retour('Array<{ a: number }>'));
+	});
+
+	it('jsonb : tableau et valeur facultative gardent leur différence', () => {
+		expect(retour('NonNullable<Json>[]')).toBe(retour('Json[]'));
+		expect(retour('NonNullable<Json> | null')).toBe(retour('Json | null'));
+		expect(retour('NonNullable<Json>')).not.toBe(retour('Json | null'));
+	});
+});
+
 describe('comparer — la forme n’est pas un écart', () => {
+	it('clés étrangères d’une table dans un autre ordre : identiques ; colonnes d’une clé permutées : écart', () => {
+		const table = (cles: string) =>
+			schema(
+				`export type Database = { public: { Tables: { t: { Row: { id: string }; Relationships: [${cles}] } }; Functions: { f: { Args: never; Returns: number } } } }`
+			);
+		const a = '{ foreignKeyName: "a"; columns: ["x", "y"] }';
+		const b = '{ foreignKeyName: "b"; columns: ["z"] }';
+		expect(identiques(comparer(table(`${a}, ${b}`), table(`${b}, ${a}`)))).toBe(true);
+		const permutee = '{ foreignKeyName: "a"; columns: ["y", "x"] }';
+		expect(identiques(comparer(table(`${a}, ${b}`), table(`${permutee}, ${b}`)))).toBe(false);
+	});
+
+	it('`ComputedFields` n’existe qu’au dépôt : pas un écart', () => {
+		const c = ecartsEntre(
+			DEPOT.replace('ComputedFields: never;', 'ComputedFields: { calcul: string | null };'),
+			PROD
+		);
+		expect(identiques(c)).toBe(true);
+	});
+
 	it('même base écrite par les deux générateurs : identiques', () => {
 		const c = ecartsEntre(DEPOT, PROD);
 		expect(decrire(c)).toEqual([]);
@@ -225,15 +294,12 @@ describe('comparer — le fond est toujours un écart', () => {
 		]);
 	});
 
-	it('colonne devenue facultative (NOT NULL retiré)', () => {
+	it('colonne devenue obligatoire (NOT NULL ajouté)', () => {
 		const c = ecartsEntre(
 			DEPOT,
-			prodAvec(
-				'nom_complet: string | null\n          couleur',
-				'nom_complet: string\n          couleur'
-			)
+			prodAvec('          note: Json | null\n', '          note: Json\n')
 		);
-		expect(c.differents.map((d) => d.chemin)).toEqual(['Tables.classes.Row.nom_complet']);
+		expect(c.differents.map((d) => d.chemin)).toEqual(['Tables.classes.Row.note']);
 	});
 
 	it('jsonb obligatoire devenu facultatif : `NonNullable<Json>` n’efface pas le `| null`', () => {
@@ -284,6 +350,16 @@ describe('comparer — le fond est toujours un écart', () => {
 	it('colonne calculée : absente de la prod, c’est un écart, malgré son `never` à l’écriture', () => {
 		const c = ecartsEntre(DEPOT, prodAvec('          nom_complet?: string | null\n', ''));
 		expect(c.absentDeProd).toEqual(['Tables.classes.Insert.nom_complet']);
+	});
+});
+
+describe('comparer — colonne calculée', () => {
+	it('interdite à l’écriture au dépôt, écrite en prod avec un AUTRE type que sa lecture : écart', () => {
+		const c = ecartsEntre(
+			DEPOT,
+			prodAvec('          nom_complet?: string | null\n', '          nom_complet?: number\n')
+		);
+		expect(c.differents.map((d) => d.chemin)).toEqual(['Tables.classes.Insert.nom_complet']);
 	});
 });
 
@@ -348,6 +424,8 @@ describe('pnpm db:types:prod (scripts/db-types/prod.ts)', () => {
 		const r = lancer({ commande: 'cat src/lib/types/database.ts' });
 		expect(r.status, r.sortie).toBe(0);
 		expect(r.sortie).toContain('✅ prod = dépôt');
+		// Une variable oubliée dans le shell ne doit pas donner un accord sans le dire.
+		expect(r.sortie).toContain('PAS la prod');
 	});
 
 	it('écart : sortie 1, écarts nommés', () => {

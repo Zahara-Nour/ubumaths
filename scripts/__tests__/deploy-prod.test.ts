@@ -859,7 +859,7 @@ describe('deploy-prod.sh — avant : la prod est la base que le dépôt décrit'
 		decor = { TYPES_PROD_ETAT: 'ecart' };
 		const r = deployer('--migration-apres', '20260102000000');
 		expect(r.status, r.sortie).toBe(0);
-		expect(r.sortie).toMatch(/« prod = dépôt » sauté.*20260102000000.*pnpm db:types:prod/);
+		expect(r.sortie).toMatch(/« prod = dépôt » NON FAIT.*20260102000000.*pnpm db:types:prod/);
 		expect(typesCompares()).toEqual([]);
 		expect(production()).toBe(version().sha);
 	});
