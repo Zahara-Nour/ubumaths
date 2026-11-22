@@ -6,19 +6,19 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR élève et prof de l'idée 5 ouverte._
+_Mis à jour le 2026-11-22, après #2992._
 
-- **État** : idées 1 à 4 terminées (pas en prod). Idée 5 : PR moteur mergée (#2991) ; PR élève et
-  prof (bouton « Coup de pouce », trace `with_help`, « Difficile », « (avec indice) ») ouverte.
-- **Prochaine action** : merger la PR élève et prof, puis revue du lot « nombres et calculs » de
-  Seconde (avec des indices dans les modèles).
+- **État** : idées 1 à 5 terminées (pas en prod). Idée 5 : moteur et éditeur (#2991), élève et prof
+  (#2992 : bouton « Coup de pouce » en Saisie, Flash-cards et révision, trace `with_help`,
+  « Difficile », « (avec indice) » côté prof).
+- **Prochaine action** : revue du lot « nombres et calculs » de Seconde (y écrire des indices).
 - **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
   en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2) ; essai du coup de pouce
-  (aucun modèle n'a d'indice : en écrire un dans l'éditeur).
+  (aucun modèle n'a d'indice : en écrire un dans l'éditeur ; serveur 5177).
 - **Pièges en cours** : `expectedErrors` et `hint` refusés ou retirés en prod avant le
   `deploy:prod` qui livre #2962 et #2991 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
-- **Worktree / branche** : `ubumaths-wt-idees-format-indice-eleve` / `feat/idees-format-indice-eleve` ;
-  `ubumaths-wt-idees-format` gardé pour l'essai de la case « En QCM » (serveur 5176).
+- **Worktree / branche** : `ubumaths-wt-idees-format` (essai « En QCM », 5176) et
+  `ubumaths-wt-idees-format-indice-eleve` (essai du coup de pouce, 5177), à retirer après les essais.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
