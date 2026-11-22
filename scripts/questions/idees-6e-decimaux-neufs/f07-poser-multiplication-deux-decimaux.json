@@ -1,4 +1,5 @@
 {
+	"id": "a29bf7c7-6ecc-4650-a731-a32fb896c9e4",
 	"title": "Poser la multiplication de deux nombres décimaux",
 	"description": "Multiplication posée de deux décimaux, trois décimales au produit : 3,46 × 2,7 ; 34,6 × 0,27 (pièges : virgule oubliée, virgule placée comme pour une addition)",
 	"grades": ["6"],

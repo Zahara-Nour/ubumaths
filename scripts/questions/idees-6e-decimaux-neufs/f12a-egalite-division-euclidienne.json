@@ -1,4 +1,5 @@
 {
+	"id": "c04b78f8-04ab-46e9-b8c9-cc330fb84b19",
 	"title": "L'égalité de la division euclidienne",
 	"description": "Compléter l'égalité N = (d × q) + r, corriger une égalité juste dont le reste dépasse le diviseur (247 = 9 × 26 + 13), nommer dividende, diviseur, quotient et reste (pièges : reste plus grand que le diviseur, quotient ou reste recopiés)",
 	"grades": ["6"],
