@@ -2,9 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2939._
+_Mis à jour le 2026-11-22, PR 4 en cours._
 
-- **État** : PR 1, 2a, 2b, #2919, #2928 (3a), #2938 (branche en titre), #2939 (3b : script + 49 réponses validées) mergées, code **pas en prod** ; simulation prod : 49 à écrire, 0 sautée · **Prochaine action** : après le `deploy:prod` de David, il lance depuis le dépôt principal à jour `pnpm tsx scripts/fiches/reprise-categories.ts` (simulation) puis la même avec `--appliquer` ; je vérifie en prod (MCP lecture : 49 fiches catégorisées, notions posées) ; puis PR 4 (script des automatismes, ADR 0011) · **En attente de David** : `deploy:prod`, puis `--appliquer` · **Pièges en cours** : le script lit `.env` (prod) sauf variables déjà posées ; écrire seulement après le deploy (l'éditeur en prod recomposerait les titres sans la branche) ; échapper `/` dans `escapeTypst` (faible, PR à part) · **Worktree** : aucun (worktrees `reprise-fiches` et `titre-branche` supprimés)
+- **État** : PR 1 à 3b mergées et en prod ; reprise appliquée par David, **vérifiée en prod le 2026-11-22** (49/49 : catégorie et notions conformes aux réponses, titres composés avec la branche, titres libres gardés) · **Prochaine action** : PR 4 (les 9 scripts `create-automatismes-*` posent catégorie + notions) → CI, revue, merge ; puis clôture du chantier (versement, archivage du journal) · **En attente de David** : rien · **Pièges en cours** : échapper `/` dans `escapeTypst` (faible, PR à part) · **Worktree** : `ubumaths-wt-categorie-fiche`, branche `feat/categorie-fiche-automatismes`
+
+### 2026-11-22 — reprise vérifiée, PR 4
+
+- Prod lue par le MCP (lecture) : les 49 fiches du fichier de réponses ont la catégorie et les
+  notions attendues, dans l'ordre ; « Suites · Applications », « Dérivation · Applications » ;
+  automatismes et évaluation en titre libre.
+- PR 4 : module `scripts/fiches/automatismes-notions.ts` (notions vérifiées dans l'arbre : au
+  moins une, sans doublon, notion ou sous-notion, non archivée ; posées dans le `try` de la
+  fiche, un refus défait tout). Chaque script déclare `NOTIONS` = celles validées à la reprise
+  pour sa fiche (1). Les 5 autres fiches d'automatismes (dérivation, évolutions, second degré)
+  n'ont pas de script dans `scripts/`.
 
 ### 2026-11-20 — relecture de la page, règle de la branche
 
@@ -75,7 +86,7 @@ _Mis à jour le 2026-11-20, après #2939._
    titre libre, majuscule en tête de chaque notion (`notionLabel`), ADR 0041 amendé.
    **PR 3b — reprise des 50 fiches** : page à cocher (relevé en bas du journal), écriture en
    prod par David, après le `deploy:prod`.
-4. **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions.
+4. **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions (en cours, 2026-11-22).
 
 ## L'idée (David, 2026-11-19)
 

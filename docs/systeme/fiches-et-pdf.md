@@ -221,7 +221,10 @@ worksheets (type, status, config jsonb, translations, style_id, school_id,
 - **Fiche d'automatismes** : exercices ordinaires dont l'énoncé est une série figée (graine fixe,
   même copie pour la classe), créés par script (sur le modèle de `scripts/create-automatismes-droites-1spe.ts`) —
   [ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md),
-  [pratiques § 2 bis](../pratiques/fiches-exercices.md).
+  [pratiques § 2 bis](../pratiques/fiches-exercices.md). Le script pose lui-même la catégorie
+  « Automatismes » et les notions de la fiche (`NOTIONS`, vérifiées dans l'arbre avant toute
+  écriture, posées dans le même `try` que la fiche : `scripts/fiches/automatismes-notions.ts`) ;
+  le titre reste libre, son numéro « (1) » compte.
 
 ## La copie d'un élève
 
