@@ -455,3 +455,21 @@ serveur, 1 du panneau (vérifiés rouges avant le code). Doc : `evaluations.md`,
 Relecture (`code-reviewer`, Sonnet) : aucun bloquant. Corrigé : la ligne des comptes rendue d'un
 seul tenant appariait le `$` isolé d'un nom avec celui du suivant → chaque compte rendu à part
 (test ajouté). Laissé : une erreur prévue nommée « Non reconnue » se confondrait avec cette ligne.
+
+## Revue du lot « nombres et calculs » de Seconde (2026-11-22)
+
+Worktree `../ubumaths-wt-idees-format-revue-2de`, branche `feat/idees-format-revue-2de`. 52 modèles
+(`scripts/questions/2de-nombres-{a,b,c1,c2,publies}/`), tous publiés ; fichiers = prod vérifié
+(`migration-contenu.ts` : 52 « inchangé »). Verdicts en prod (`question_template_reviews`) : un seul
+(« Arrondir », validé, sans commentaire). David : « attaque la revue du lot de seconde : n'oublie pas
+d'essayer de mettre des erreurs prévues ».
+
+- Critères : erreurs prévues (3 par case ordinaire, visées pour le QCM), spec `incorrect` par erreur
+  prévue, coup de pouce par variation, specs justes, meilleure case, bornes de Seconde.
+- Règles de la revue : variations jamais retirées ni déplacées ; seuls `variations`, `testSpecs`,
+  `description` changent (garde de `migration-contenu.ts`) ; réponse attendue, forme exigée et type
+  de case d'une variation existante inchangés → toute correction de ce genre = proposition à David.
+- Les JSON font foi désormais (ids dedans) : les scripts `docs/wip/questions/lot-2de-nombres-*.py`
+  ne sont plus à relancer.
+- ⚠️ Livraison : `hint` (#2991) n'est pas en prod ; la migration de contenu ne se joue qu'après le
+  `deploy:prod` qui livre #2991 (les erreurs prévues, #2962, y sont déjà).
