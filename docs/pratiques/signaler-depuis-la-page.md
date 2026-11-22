@@ -42,6 +42,8 @@ Les 200 retours les plus récents sont gardés, les plus anciens effacés.
 
 ## Limites
 
+- Un objet passé à `console.error` est résumé (3 niveaux, 20 entrées par niveau), jamais écrit
+  en entier ; un message est coupé à 2 000 caractères.
 - Les erreurs sont gardées **depuis le chargement de la page**, pas depuis l'arrivée sur l'écran
   en cours : une navigation interne ne vide pas la liste (l'heure de chaque erreur permet de trier).
   Une erreur survenue avant le démarrage de l'appli dans le navigateur n'est pas vue.
@@ -57,15 +59,22 @@ Les 200 retours les plus récents sont gardés, les plus anciens effacés.
 - **Le bouton** et la collecte des erreurs ne sont chargés que sous `import.meta.env.DEV`
   (`src/routes/+layout.svelte`, `src/hooks.client.ts`), remplacé par `false` au build.
 - **Garde** : étape « Bouton signaler absent du build » de la CI (`quality.yml`), qui cherche
-  l'adresse de la route et l'identifiant du bouton dans tout le build.
+  l'adresse de la route, l'identifiant du bouton et le nom du tampon d'erreurs dans tout le build.
 
 ## Refus de la route
 
+- **Connexion venue d'une autre machine** : seules les connexions par l'adresse de bouclage passent
+  (navigateur du Mac mini, tunnel SSH, `tailscale serve`). Un serveur lancé avec `--host 0.0.0.0`
+  écoute aussi sur le réseau local : un appareil de ce réseau ne peut pas déposer de retour, dont
+  la note serait lue ensuite comme un message de David. Conséquence : le bouton ne marche pas par
+  l'adresse IP du Mac mini, seulement par le lien du tailnet ou le tunnel.
 - **Base qui n'est pas locale** (`PUBLIC_SUPABASE_URL` ni `localhost` / `127.0.0.1`, ni le Mac
   mini par le tailnet) ou variable `VERCEL` posée : 403, rien n'est écrit. Le bouton est alors
   caché. Raison : le retour porte l'adresse du compte connecté, qui ne doit être que fictive.
 - **Requête venue d'un autre site** : l'en-tête `Origin` doit être celui du serveur lui-même, et le
   corps du JSON. Un autre site ouvert dans le même navigateur ne peut pas écrire sur le Mac mini.
-- **Corps de plus de 512 Ko**, JSON illisible, champ inconnu ou hors bornes (Zod, objets stricts).
+- **Serveur joint sous un autre nom** que `localhost` / `127.0.0.1` ou le Mac mini par le tailnet
+  (`*.ts.net`) : 403.
+- **Corps de plus de 1 Mo**, JSON illisible, champ inconnu ou hors bornes (Zod, objets stricts).
 - Le nom du fichier ne reprend rien de l'entrée ; le compte rendu de `pnpm retours` retire les
-  caractères de contrôle du terminal.
+  caractères de contrôle du terminal, les caractères invisibles et ceux d'inversion du sens d'écriture.

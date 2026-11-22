@@ -44,8 +44,11 @@ export interface Refusal {
 /** Dossier des retours, relatif au dossier du serveur de dev (ignoré par git). */
 export const FEEDBACK_DIR = '.captures/retours';
 
-/** Taille maximale du corps de la requête : 50 erreurs de 2 000 caractères tiennent dedans. */
-export const MAX_BODY_BYTES = 512 * 1024;
+/**
+ * Taille maximale du corps de la requête : 50 erreurs de 2 000 caractères tiennent dedans,
+ * même échappées (`\uXXXX`, 6 octets par caractère).
+ */
+export const MAX_BODY_BYTES = 1024 * 1024;
 
 /** Nombre de retours gardés ; les plus anciens sont effacés. */
 export const MAX_FILES = 200;
@@ -54,6 +57,11 @@ export const MAX_FILES = 200;
 const DESKTOP_WIDTH = 1024;
 
 const FILE_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-[a-z0-9]{6}\.json$/;
+
+/* eslint-disable no-control-regex -- retirer les caractères de contrôle est le but */
+const UNPRINTABLE =
+	/[\u0000-\u0008\u000b-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/g;
+/* eslint-enable no-control-regex */
 
 const ROLE_ACCOUNTS: Record<string, string> = { teacher: 'prof', student: 'eleve', admin: 'admin' };
 
@@ -105,9 +113,24 @@ export function checkRequest(facts: RequestFacts): Refusal | null {
 	}
 	if (!originHost || !facts.host || originHost !== facts.host)
 		return { status: 403, message: 'Requête venue d’un autre site' };
+	// Un nom de domaine quelconque pointé sur 127.0.0.1 aurait Origin = Host : le serveur
+	// ne répond que sous ses propres noms (localhost, ou le Mac mini par le tailnet)
+	if (!isLocalSupabaseUrl(`http://${facts.host}`))
+		return { status: 403, message: 'Serveur joint sous un nom inconnu' };
 	const type = (facts.contentType ?? '').split(';')[0]?.trim().toLowerCase();
 	if (type !== 'application/json') return { status: 415, message: 'JSON attendu' };
 	return null;
+}
+
+/**
+ * La connexion vient-elle de la machine elle-même ? Le navigateur du Mac mini, le tunnel
+ * SSH et `tailscale serve` arrivent tous par l'adresse de bouclage. Un serveur lancé avec
+ * `--host 0.0.0.0` écoute aussi sur le réseau local : un appareil de ce réseau ne doit pas
+ * pouvoir déposer un retour (sa note est lue ensuite comme un message de David).
+ */
+export function isLoopbackAddress(address: string | undefined): boolean {
+	if (!address) return false;
+	return address === '::1' || /^(::ffff:)?127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(address);
 }
 
 /** Nom du fichier : la date de réception et un suffixe aléatoire, rien de l'entrée. */
@@ -124,10 +147,12 @@ export function latestFeedbackFiles(dir: string): string[] {
 		.reverse();
 }
 
-/** Retire les caractères de contrôle (séquences du terminal) d'un texte venu de la page. */
+/**
+ * Retire d'un texte venu de la page les caractères de contrôle (séquences du terminal) et les
+ * caractères invisibles ou d'inversion du sens d'écriture (texte affiché autrement qu'il n'est lu).
+ */
 export function printable(text: string): string {
-	// eslint-disable-next-line no-control-regex
-	return text.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '');
+	return text.replace(UNPRINTABLE, '');
 }
 
 /** La commande `pnpm voir` qui refait la même page, au même format et avec le même compte. */

@@ -24,6 +24,7 @@ import {
 	feedbackSchema,
 	formatFeedback,
 	isLocalSupabaseUrl,
+	isLoopbackAddress,
 	latestFeedbackFiles,
 	voirCommand,
 	type StoredFeedback
@@ -93,6 +94,16 @@ describe('retours — base locale seulement', () => {
 		expect(isLocalSupabaseUrl('https://serveur.exemple.ts.net:8443')).toBe(true);
 	});
 
+	it('reconnaît une connexion venue de la machine elle-même', () => {
+		expect(isLoopbackAddress('127.0.0.1')).toBe(true);
+		expect(isLoopbackAddress('::1')).toBe(true);
+		expect(isLoopbackAddress('::ffff:127.0.0.1')).toBe(true);
+		expect(isLoopbackAddress('192.168.1.20')).toBe(false);
+		expect(isLoopbackAddress('100.64.0.7')).toBe(false);
+		expect(isLoopbackAddress('::ffff:192.168.1.20')).toBe(false);
+		expect(isLoopbackAddress(undefined)).toBe(false);
+	});
+
 	it('refuse la prod, une adresse absente ou illisible', () => {
 		expect(isLocalSupabaseUrl('https://abcdefgh.supabase.co')).toBe(false);
 		expect(isLocalSupabaseUrl('https://ts.net.exemple.com')).toBe(false);
@@ -126,6 +137,19 @@ describe('retours — contrôle de la requête', () => {
 		expect(checkRequest({ ...ok, origin: 'https://autre.exemple.com' })?.status).toBe(403);
 		expect(checkRequest({ ...ok, origin: 'null' })?.status).toBe(403);
 		expect(checkRequest({ ...ok, host: undefined })?.status).toBe(403);
+	});
+
+	it('refuse un serveur joint sous un nom qui n’est pas le sien (nom pointé sur 127.0.0.1)', () => {
+		expect(
+			checkRequest({
+				...ok,
+				origin: 'http://piege.exemple.com:5176',
+				host: 'piege.exemple.com:5176'
+			})?.status
+		).toBe(403);
+		expect(
+			checkRequest({ ...ok, origin: 'http://127.0.0.1:5176', host: '127.0.0.1:5176' })
+		).toBeNull();
 	});
 
 	it('refuse un corps qui n’est pas du JSON (formulaire d’un autre site)', () => {
@@ -186,6 +210,11 @@ describe('retours — fichier et compte rendu', () => {
 		expect(text).not.toContain('\u0007');
 		expect(text).toContain('avant');
 	});
+
+	it('retire les caractères invisibles et d’inversion du sens d’écriture', () => {
+		const text = formatFeedback({ ...stored, note: 'a\u202eb\u200bc\u2066d' }, 'x.json');
+		expect(text).toContain('Note    : abcd');
+	});
 });
 
 describe('retours — la route du serveur de dev', () => {
@@ -194,15 +223,18 @@ describe('retours — la route du serveur de dev', () => {
 	let base: string;
 	let supabaseUrl: string | undefined;
 	let vercel: string | undefined;
+	let remote: string | undefined;
 
 	beforeEach(async () => {
 		dir = mkdtempSync(join(tmpdir(), 'retours-'));
 		supabaseUrl = 'http://127.0.0.1:54321';
 		vercel = undefined;
+		remote = undefined;
 		const middleware = createFeedbackMiddleware({
 			dir,
 			supabaseUrl: () => supabaseUrl,
-			vercel: () => vercel
+			vercel: () => vercel,
+			remoteAddress: () => remote
 		});
 		server = createServer((req, res) => {
 			middleware(req, res, () => {
@@ -252,6 +284,35 @@ describe('retours — la route du serveur de dev', () => {
 		expect(readdirSync(dir)).toHaveLength(0);
 	});
 
+	it('refuse une connexion venue d’une autre machine (serveur lancé avec --host)', async () => {
+		remote = '192.168.1.20';
+		expect((await send(VALID)).status).toBe(403);
+		remote = '100.64.0.7';
+		expect((await send(VALID)).status).toBe(403);
+		expect(readdirSync(dir)).toHaveLength(0);
+	});
+
+	it('refuse un corps trop gros envoyé par morceaux, sans longueur annoncée', async () => {
+		const chunk = 'a'.repeat(64 * 1024);
+		const body = new ReadableStream<Uint8Array>({
+			start(controller) {
+				controller.enqueue(new TextEncoder().encode('"'));
+				for (let i = 0; i < MAX_BODY_BYTES / chunk.length + 4; i++)
+					controller.enqueue(new TextEncoder().encode(chunk));
+				controller.close();
+			}
+		});
+		const response = await fetch(base + FEEDBACK_ENDPOINT, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json', origin: base },
+			body,
+			// @ts-expect-error option de Node pour un corps envoyé en flux
+			duplex: 'half'
+		}).catch(() => null);
+		if (response) expect(response.status).toBe(413);
+		expect(readdirSync(dir)).toHaveLength(0);
+	});
+
 	it('refuse sur Vercel, même avec une base à l’air locale', async () => {
 		vercel = '1';
 		expect((await send(VALID)).status).toBe(403);
@@ -266,7 +327,7 @@ describe('retours — la route du serveur de dev', () => {
 		expect(readdirSync(dir)).toHaveLength(0);
 	});
 
-	it('refuse un corps trop gros sans le lire en entier', async () => {
+	it('refuse un corps trop gros sans le garder en mémoire', async () => {
 		const response = await send('"' + 'a'.repeat(MAX_BODY_BYTES + 10) + '"').catch(() => null);
 		// Connexion coupée ou 413 : dans les deux cas, rien n'est écrit
 		if (response) expect(response.status).toBe(413);

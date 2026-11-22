@@ -7,7 +7,7 @@
  * n'est PAS une route SvelteKit : elle n'existe que sur le serveur de dev
  * (`apply: 'serve'`), jamais dans le build ni en prod.
  *
- * Refus : base qui n'est pas locale (le retour porte l'adresse du compte
+ * Refus : connexion venue d'une autre machine, base qui n'est pas locale (le retour porte l'adresse du compte
  * connecté), Vercel, requête venue d'un autre site, corps trop gros, entrée
  * invalide (Zod).
  */
@@ -26,6 +26,7 @@ import {
 	feedbackFileName,
 	feedbackSchema,
 	isLocalSupabaseUrl,
+	isLoopbackAddress,
 	latestFeedbackFiles,
 	type StoredFeedback
 } from './logique.ts';
@@ -39,6 +40,8 @@ export interface FeedbackMiddlewareOptions {
 	supabaseUrl: () => string | undefined;
 	/** Variable `VERCEL` du serveur */
 	vercel: () => string | undefined;
+	/** Adresse d'où vient la connexion (par défaut : celle de la socket) */
+	remoteAddress?: (req: IncomingMessage) => string | undefined;
 }
 
 type Next = () => void;
@@ -62,8 +65,11 @@ function readBody(req: IncomingMessage): Promise<string | null> {
 			if (tooBig) return;
 			size += chunk.length;
 			if (size > MAX_BODY_BYTES) {
+				// On arrête de lire : la réponse 413 part, puis la connexion est fermée
 				tooBig = true;
 				chunks.length = 0;
+				req.pause();
+				resolveBody(null);
 				return;
 			}
 			chunks.push(chunk);
@@ -96,6 +102,11 @@ export function createFeedbackMiddleware(options: FeedbackMiddlewareOptions) {
 			reply(res, 403, { message: 'Retours refusés : ce serveur ne vise pas la base locale' });
 			return;
 		}
+		const remote = options.remoteAddress?.(req) ?? req.socket.remoteAddress;
+		if (!isLoopbackAddress(remote)) {
+			reply(res, 403, { message: 'Retours refusés : connexion venue d’une autre machine' });
+			return;
+		}
 		const refusal = checkRequest({
 			method: req.method,
 			origin: req.headers.origin,
@@ -114,6 +125,8 @@ export function createFeedbackMiddleware(options: FeedbackMiddlewareOptions) {
 		readBody(req)
 			.then((body) => {
 				if (body === null) {
+					res.setHeader('connection', 'close');
+					res.once('finish', () => req.destroy());
 					reply(res, 413, { message: 'Retour trop gros' });
 					return;
 				}

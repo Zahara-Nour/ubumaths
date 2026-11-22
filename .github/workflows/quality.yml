@@ -378,7 +378,7 @@ jobs:
             echo "::error::Sortie du build introuvable (.svelte-kit/output) : la garde ne vérifie rien."
             exit 1
           fi
-          bad=$(grep -rlE -- '__dev/retours|signaler-dev' .svelte-kit/output || true)
+          bad=$(grep -rlE -- '__dev/retours|signaler-dev|__devFeedbackBuffer' .svelte-kit/output || true)
           if [ -n "$bad" ]; then
             echo "::error::Le bouton « signaler » du serveur de dev est dans le build : $bad"
             exit 1
