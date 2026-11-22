@@ -4,8 +4,8 @@
  *
  * Publie le serveur de dev de CE worktree en HTTPS sur le tailnet (Tailscale
  * Serve), sur un port libre, et rend le lien, un QR code et le rappel des
- * comptes fictifs. Publie aussi Supabase local (port 8443, partagé) s'il ne
- * l'est pas encore.
+ * comptes fictifs. Un seul port publié : Supabase local est relayé par le
+ * serveur de dev (`scripts/relais/plugin.ts`), il n'a plus de lien à lui.
  *
  * `--stop` retire le lien de ce worktree seulement ; `--liste` montre tous les
  * liens et le chantier de chacun ; `--port <n>` choisit le serveur quand deux
@@ -13,8 +13,8 @@
  *
  * Ne lance ni ne relance jamais de serveur, ne publie jamais un serveur qui
  * vise la prod, ne fait jamais `funnel` (Internet) ni `serve reset` (qui
- * couperait les liens des autres sessions), ne retire jamais le lien de
- * Supabase. Doc : docs/pratiques/tester-sur-un-autre-appareil.md.
+ * couperait les liens des autres sessions), ne retire jamais l'ancien lien de
+ * Supabase (port 8443). Doc : docs/pratiques/tester-sur-un-autre-appareil.md.
  */
 
 import { execFileSync } from 'node:child_process';
@@ -24,23 +24,23 @@ import { renderUnicodeCompact } from 'uqr';
 import { z } from 'zod';
 import { ACCOUNTS, VoirError, isLocalEnv, pickPort } from '../voir/logique';
 import { listDevServers, readEnvFiles, readServerEnv, worktreeRoot } from '../voir/serveurs';
+import { SUPABASE_RELAY_PATH } from '../../src/lib/dev/supabase-relay.ts';
 import {
 	LienError,
-	SUPABASE_LOCAL_PORT,
 	isMainRepo,
 	lastSync,
 	linkUrl,
 	linksToStop,
 	listing,
-	missingForRemoteLogin,
+	launchedTheOldWay,
 	parseArgs,
 	parseRegistry,
 	parseServeStatus,
 	pickHttpsPort,
 	pruneRegistry,
 	relaunchCommand,
+	relayState,
 	servedPorts,
-	supabasePlan,
 	type Registry,
 	type ServeLink
 } from './logique';
@@ -49,6 +49,7 @@ import {
 
 const REGISTRY_FILE = 'liens-tailnet.json';
 const TAILSCALE_TIMEOUT = 20_000;
+const RELAY_TIMEOUT_SECONDS = 15;
 
 const tailscaleStatusSchema = z.object({ Self: z.object({ DNSName: z.string().min(1) }) });
 
@@ -179,6 +180,32 @@ function assertPublished(httpsPort: number, localPort: number): void {
 	}
 }
 
+/**
+ * Code HTTP de Supabase local joint à travers le relais du serveur de dev ;
+ * `null` si rien ne répond dans le délai.
+ */
+function relayStatus(port: number): number | null {
+	try {
+		const code = execFileSync(
+			'curl',
+			[
+				'-s',
+				'-o',
+				'/dev/null',
+				'-m',
+				String(RELAY_TIMEOUT_SECONDS),
+				'-w',
+				'%{http_code}',
+				`http://localhost:${port}${SUPABASE_RELAY_PATH}/auth/v1/health`
+			],
+			{ encoding: 'utf8' }
+		);
+		return Number(code) || null;
+	} catch {
+		return null;
+	}
+}
+
 function publish(wantedPort: number | null): void {
 	refuseMainRepo();
 	const root = worktreeRoot();
@@ -186,13 +213,14 @@ function publish(wantedPort: number | null): void {
 	const port = pickPort(servers, root, wantedPort);
 	const pid = servers.find((server) => server.port === port)?.pid;
 	const hostname = tailnetHostname();
-	const status = serveStatus();
-	const links = parseServeStatus(status);
-	const supabase = supabasePlan(links);
-	const supabaseOrigin = new URL(linkUrl(hostname, supabase.httpsPort)).origin;
 
 	const serverEnv = readServerEnv(pid);
-	if (serverEnv === null || !isLocalEnv(readEnvFiles(root), serverEnv, [supabaseOrigin]))
+	if (serverEnv !== null && launchedTheOldWay(serverEnv, hostname))
+		throw new LienError(
+			'Serveur lancé à l’ancienne, avec l’adresse de Supabase du tailnet : il n’a pas le relais ' +
+				`de Supabase. L’arrêter, puis le relancer sans variable :\n   ${relaunchCommand(port)}`
+		);
+	if (serverEnv === null || !isLocalEnv(readEnvFiles(root), serverEnv))
 		throw new LienError(
 			'Refusé : rien ne prouve que le serveur de ce dossier vise la base locale (.env.local ' +
 				'absent, ou une adresse de Supabase distante dans ses fichiers .env ou dans la commande ' +
@@ -200,14 +228,19 @@ function publish(wantedPort: number | null): void {
 		);
 
 	const notes: string[] = [];
-	if (supabase.publish) {
-		serve(supabase.httpsPort, SUPABASE_LOCAL_PORT);
-		notes.push(`Supabase local publié : ${supabaseOrigin} (partagé, jamais retiré par --stop).`);
-	}
-	assertPublished(supabase.httpsPort, SUPABASE_LOCAL_PORT);
-	if (!listeningPorts().includes(SUPABASE_LOCAL_PORT))
-		notes.push('⚠️  Supabase local ne répond pas : pnpm db:start.');
+	const relay = relayState(relayStatus(port));
+	if (relay === 'supabase-arrete')
+		notes.push(
+			'⚠️  Supabase local ne répond pas : pnpm db:start. Les pages publiques marchent, pas la connexion.'
+		);
+	else if (relay === 'sans-relais')
+		notes.push(
+			'⚠️  Ce serveur n’a pas le relais de Supabase (branche en retard sur main) : les pages ' +
+				'publiques marchent, pas la connexion. Mettre la branche à jour, puis relancer le serveur.'
+		);
 
+	const status = serveStatus();
+	const links = parseServeStatus(status);
 	const existing = links.find((link) => link.localPort === port);
 	const httpsPort = existing?.httpsPort ?? pickHttpsPort(servedPorts(status), listeningPorts());
 	if (!existing) serve(httpsPort, port);
@@ -221,19 +254,6 @@ function publish(wantedPort: number | null): void {
 		notes.push(
 			'⚠️  Serveur périmé : lancé avant le dernier pull ou merge de la branche. Le relancer ' +
 				'(sinon « Failed to fetch dynamically imported module »).'
-		);
-	const missing = missingForRemoteLogin(serverEnv, hostname, supabaseOrigin);
-	if (missing.includes('hote'))
-		notes.push(
-			'⚠️  Le serveur n’autorise pas le nom du Mac : le lien répondra « Blocked request ».'
-		);
-	else if (missing.includes('supabase'))
-		notes.push(
-			'⚠️  Le serveur joint Supabase par 127.0.0.1 : les pages publiques marchent, pas la connexion.'
-		);
-	if (missing.length > 0)
-		notes.push(
-			`   Arrêter le serveur, puis le relancer ainsi (le lien reste valable) :\n   ${relaunchCommand(hostname, supabaseOrigin, port)}`
 		);
 
 	const url = linkUrl(hostname, httpsPort);

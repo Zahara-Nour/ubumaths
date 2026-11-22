@@ -14,6 +14,7 @@ import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { sanitizeForStorage } from '#lib/utils/filename.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 import {
 	isServerAttachmentPath,
 	MESSAGE_ATTACHMENT_BUCKET,
@@ -145,7 +146,7 @@ export async function getAttachmentDownloadUrl(
 	if (signError || !data) {
 		throw new Error(`Lien de lecture impossible : ${signError?.message ?? 'inconnu'}`);
 	}
-	return data.signedUrl;
+	return toBrowserAddress(data.signedUrl);
 }
 
 /** Fichiers retirés par passage : borne la durée du cron. */

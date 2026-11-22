@@ -53,8 +53,10 @@ pnpm voir /atelier --port 5177          # si deux serveurs tournent dans le work
 - **`--compte` sans preuve que le serveur vise la base locale** : refusé. Il faut
   `PUBLIC_SUPABASE_URL` locale dans `.env.local`, et **aucune** adresse de Supabase distante, ni
   dans `.env.local`, `.env.development`, `.env.development.local`, ni dans la commande qui a lancé
-  le serveur. Conséquence : un serveur lancé pour l'iPhone avec l'adresse du tailnet
-  (`PUBLIC_SUPABASE_URL=https://… pnpm dev`) refuse `--compte` ; en lancer un second, sans.
+  le serveur. Le serveur publié pour l'iPhone par `pnpm lien` est un serveur ordinaire (Supabase
+  local y est relayé, cf. [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)) :
+  `--compte` y marche. Seul un serveur lancé à l'ancienne, avec l'adresse de Supabase du tailnet
+  dans la commande, est refusé : le relancer sans variable.
 - **Redirection de la page vers un autre site** : coupée (elle apparaît dans les requêtes en échec).
 - **Navigateur absent** (Playwright mis à jour) : la commande dit quoi lancer
   (`pnpm exec playwright install webkit`).

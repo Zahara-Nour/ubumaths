@@ -13,6 +13,7 @@ import { render } from 'vitest-browser-svelte';
 import JournalContent from '../JournalContent.svelte';
 import { resolveResource } from '#lib/resources/index.ts';
 import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 
 const FICHE = '664fee6b-c9d0-4406-a9eb-9e0655c2b1ac';
@@ -232,7 +233,8 @@ describe('JournalContent — images', () => {
 			content: `![Figure](${STOCKAGE})`,
 			links: { role: 'student' }
 		});
-		expect(container.querySelector('img')?.getAttribute('src')).toBe(STOCKAGE);
+		// En dev sur la base locale, l'adresse rendue au navigateur passe par le relais
+		expect(container.querySelector('img')?.getAttribute('src')).toBe(toBrowserAddress(STOCKAGE));
 	});
 
 	it('image imbriquée (liste, citation, tableau) : un lien, aucune <img>', async () => {
@@ -262,7 +264,7 @@ describe('JournalContent — images', () => {
 			for (const img of container.querySelectorAll('img')) {
 				expect(img.getAttribute('src'), src).toMatch(
 					new RegExp(
-						`^${PUBLIC_SUPABASE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/storage/v1/object/`
+						`^${toBrowserAddress(`${PUBLIC_SUPABASE_URL}/`).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}storage/v1/object/`
 					)
 				);
 			}
@@ -314,7 +316,9 @@ describe('JournalContent — vidéos', () => {
 			content: `!video[Démo](${STOCKAGE})`,
 			links: { role: 'student' }
 		});
-		expect(container.querySelector('video source')?.getAttribute('src')).toBe(STOCKAGE);
+		expect(container.querySelector('video source')?.getAttribute('src')).toBe(
+			toBrowserAddress(STOCKAGE)
+		);
 	});
 
 	it('vidéo imbriquée (liste, citation) : un lien, aucune requête vers l’hôte', async () => {

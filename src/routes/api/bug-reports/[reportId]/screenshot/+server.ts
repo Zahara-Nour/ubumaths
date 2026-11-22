@@ -21,6 +21,7 @@ import {
 import { DISPLAY_SIGNED_URL_TTL } from '#lib/server/bug-report-screenshots.ts';
 import { z } from 'zod';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 const logger = createServerLogger('api/bug-reports/[reportId]/screenshot/+server');
 
@@ -160,7 +161,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		return Response.json({
 			success: true,
 			data: {
-				url: signed?.signedUrl ?? null,
+				url: signed?.signedUrl ? toBrowserAddress(signed.signedUrl) : null,
 				path: storagePath,
 				size: file.size,
 				mimeType: file.type

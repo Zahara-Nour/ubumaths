@@ -1,4 +1,5 @@
 import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 /**
  * Build a public Supabase Storage URL from a bucket id + object path, derived
@@ -10,5 +11,5 @@ import { PUBLIC_SUPABASE_URL } from '$app/env/public';
  * @param path - Object path relative to the bucket root (e.g. "super-bonus@0.5x.webp")
  */
 export function storageUrl(bucket: string, path: string): string {
-	return `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+	return toBrowserAddress(`${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`);
 }
