@@ -195,7 +195,9 @@ les processus de test orphelins (même règle que la surveillance). À distance 
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
 (`pnpm lien` : lien HTTPS du tailnet et QR code en une commande ; tunnel SSH et `--host` en secours ;
-cookie `Secure`, Supabase local, limiteur de connexion).
+cookie `Secure`, Supabase local, limiteur de connexion). En dev sur la base locale, le serveur de dev
+relaie Supabase local sous `/__dev/supabase` (plugin `supabaseRelay` de `vite.config.ts`) et accepte
+les noms du tailnet : `pnpm dev` se lance sans variable, un seul port se publie.
 
 **Voir une page sans écran** : [voir-une-page.md](voir-une-page.md) (`pnpm voir <page>` : image au
 format iPhone, erreurs de console, requêtes en échec, dans `.captures/voir/`).

@@ -107,6 +107,7 @@ on:
       # Pages du glossaire : la lecture du dictionnaire importe findPrincipal
       - 'src/lib/lexicon/card.ts'
       - 'src/lib/components/markdown/utils/math-utils.ts'
+      - 'src/lib/dev/supabase-relay.ts'
       - 'src/lib/constants/deadlines.ts'
       - 'src/lib/exercises/services/image-dimensions.ts'
       - 'src/lib/exercises/types.ts'

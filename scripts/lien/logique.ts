@@ -2,10 +2,14 @@
  * `pnpm lien` : ce qui se décide sans Tailscale
  * =============================================
  *
- * Options, lecture de l'état de Tailscale Serve, port HTTPS libre, lien de
- * Supabase (partagé, jamais retiré), registre des liens par chantier, liens à
- * retirer, serveur périmé, ce qui manque pour se connecter depuis un autre
- * appareil. Les commandes `tailscale` sont dans `index.ts`.
+ * Options, lecture de l'état de Tailscale Serve, port HTTPS libre, registre des
+ * liens par chantier, liens à retirer, serveur périmé, serveur lancé à
+ * l'ancienne, état du relais de Supabase. Les commandes `tailscale` sont dans
+ * `index.ts`.
+ *
+ * Supabase local n'a plus de lien à lui : le serveur de dev le relaie
+ * (`scripts/relais/plugin.ts`). L'ancien lien (port 8443) n'est plus publié ;
+ * s'il existe encore, il n'est ni repris ni retiré.
  * Tests : `scripts/__tests__/lien.test.ts`.
  */
 
@@ -41,13 +45,17 @@ export interface ListingRow {
 	up: boolean;
 }
 
-export type Missing = 'hote' | 'supabase';
+/** Ce que répond Supabase local à travers le relais du serveur de dev. */
+export type RelayState = 'ok' | 'supabase-arrete' | 'sans-relais';
 
 // Constantes
 
 /** Port local de l'API de Supabase (base de dev). */
 export const SUPABASE_LOCAL_PORT = 54321;
-/** Port HTTPS du tailnet réservé à Supabase local, partagé par tous les chantiers. */
+/**
+ * Port HTTPS du tailnet de l'ancien lien vers Supabase local (avant le relais) :
+ * jamais repris pour un serveur, jamais retiré par `--stop`.
+ */
 export const SUPABASE_HTTPS_PORT = 8443;
 const FIRST_HTTPS_PORT = 8444;
 const LAST_HTTPS_PORT = 8499;
@@ -187,19 +195,6 @@ export function pickHttpsPort(served: number[], listening: number[]): number {
 	);
 }
 
-/** Le lien de Supabase local : celui qui existe, sinon à publier sur 8443. */
-export function supabasePlan(links: ServeLink[]): { publish: boolean; httpsPort: number } {
-	const existing = links.find((link) => link.localPort === SUPABASE_LOCAL_PORT);
-	if (existing) return { publish: false, httpsPort: existing.httpsPort };
-	const squatter = links.find((link) => link.httpsPort === SUPABASE_HTTPS_PORT);
-	if (squatter)
-		throw new LienError(
-			`Le port ${SUPABASE_HTTPS_PORT} du tailnet, réservé à Supabase local, mène à ${squatter.target} : ` +
-				'le lien d’une autre session sans doute. À voir avec David, rien n’est retiré.'
-		);
-	return { publish: true, httpsPort: SUPABASE_HTTPS_PORT };
-}
-
 export function parseRegistry(content: string | null): Registry {
 	if (content === null) return {};
 	try {
@@ -240,7 +235,7 @@ export function listing(
 		return {
 			url: linkUrl(hostname, link.httpsPort),
 			target: link.target,
-			chantier: isSupabase ? 'Supabase local (partagé)' : owner ? chantierName(owner) : '?',
+			chantier: isSupabase ? 'Supabase local (ancien lien)' : owner ? chantierName(owner) : '?',
 			up: isSupabase || servers.some((s) => s.port === link.localPort)
 		};
 	});
@@ -281,35 +276,62 @@ export function lastSync(reflog: string): number | null {
 }
 
 /**
- * Ce qui manque au serveur pour qu'on s'y connecte depuis un autre appareil :
- * le nom du Mac autorisé par Vite (`hote`, sans lui aucune page ne répond) et
- * l'adresse de Supabase du tailnet (`supabase`, sans elle la connexion échoue).
+ * Le serveur a-t-il été lancé à l'ancienne, avec l'adresse de Supabase du
+ * tailnet (`PUBLIC_SUPABASE_URL=https://<mac>.ts.net:8443 pnpm dev`) ? Il n'a
+ * alors pas de relais : à relancer sans variable.
  *
  * @param serverEnv environnement du process serveur (`ps eww`)
  */
-export function missingForRemoteLogin(
-	serverEnv: string,
-	hostname: string,
-	supabaseOrigin: string
-): Missing[] {
-	const read = (name: string) =>
-		new RegExp(`(?:^|\\s)${name}=(\\S+)`).exec(serverEnv)?.[1]?.replace(/^["']|["']$/g, '') ?? '';
-	const missing: Missing[] = [];
-	const hosts = read('__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS').split(',');
-	if (!hosts.includes(hostname)) missing.push('hote');
-	let origin = '';
+export function launchedTheOldWay(serverEnv: string, hostname: string): boolean {
+	const raw = /(?:^|\s)PUBLIC_SUPABASE_URL=(\S+)/.exec(serverEnv)?.[1]?.replace(/^["']|["']$/g, '');
+	if (!raw) return false;
 	try {
-		origin = new URL(read('PUBLIC_SUPABASE_URL')).origin;
+		return new URL(raw).hostname === hostname;
 	} catch {
-		// Variable absente
+		return false;
 	}
-	if (origin !== supabaseOrigin) missing.push('supabase');
-	return missing;
 }
 
-export function relaunchCommand(hostname: string, supabaseOrigin: string, port: number): string {
-	return (
-		`PUBLIC_SUPABASE_URL=${supabaseOrigin} __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=${hostname} ` +
-		`pnpm dev --port ${port} --strictPort`
-	);
+export function relaunchCommand(port: number): string {
+	return `pnpm dev --port ${port} --strictPort`;
+}
+
+/**
+ * État du relais, d'après le code HTTP de `/__dev/supabase/auth/v1/health` sur
+ * le serveur de dev (`null` : pas de réponse). Supabase répond 200, ou 401 sans
+ * clé. Toute autre réponse (404, redirection, page de l'appli) vient du serveur
+ * de dev lui-même : il tourne sur un code d'avant le relais.
+ */
+export function relayState(status: number | null): RelayState {
+	if (status === null || status === 502) return 'supabase-arrete';
+	return status === 200 || status === 401 ? 'ok' : 'sans-relais';
+}
+
+/** Clé publique de Supabase local, lue dans les fichiers d'environnement de dev. */
+export function anonKey(envFiles: string[]): string | null {
+	for (const content of envFiles) {
+		const match = /^\s*(?:export\s+)?PUBLIC_SUPABASE_ANON_KEY\s*=(.*)$/m.exec(content);
+		const key = match?.[1]?.trim().replace(/^["']|["']$/g, '');
+		if (key) return key;
+	}
+	return null;
+}
+
+/**
+ * Le rappel des comptes fictifs : pour chaque rôle, le premier compte qui se
+ * connecte vraiment (`eleveNN@local.test` n'existe qu'après `pnpm db:neuf`).
+ *
+ * @param signsIn le compte se connecte-t-il ? `null` : impossible de le savoir
+ *   (Supabase arrêté, relais absent), le premier compte est alors donné tel quel
+ */
+export function accountLines(
+	accounts: Record<string, { email: string; password: string }[]>,
+	signsIn: ((account: { email: string; password: string }) => boolean) | null
+): string[] {
+	return Object.entries(accounts).map(([role, list]) => {
+		const label = `  ${role.padEnd(5)} : `;
+		const account = signsIn ? list.find(signsIn) : list[0];
+		if (!account) return `${label}aucun compte ne se connecte (pnpm db:neuf les crée)`;
+		return `${label}${account.email} / ${account.password}${signsIn ? '' : ' (non vérifié)'}`;
+	});
 }

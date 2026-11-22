@@ -17,6 +17,9 @@ pnpm retours 2          # l'avant-dernier
 pnpm retours --liste    # les dix derniers, une ligne chacun
 ```
 
+> `src/lib/dev/` porte aussi le relais de Supabase local (`supabase-relay.ts`), sans lien avec le
+> bouton : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md#le-relais-de-supabase-local).
+
 ## Ce que voit David
 
 Sur le **serveur de dev seulement**, un petit bouton « Signaler » en bas à gauche de toutes les

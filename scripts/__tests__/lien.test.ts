@@ -4,14 +4,16 @@
  *
  * `scripts/lien/logique.ts` décide de tout ce qui peut se décider sans lancer
  * `tailscale` : les options, la lecture de l'état de Serve, le port HTTPS
- * libre, le lien de Supabase (partagé, jamais retiré), les liens à retirer, le
- * serveur périmé, ce qui manque pour se connecter depuis un autre appareil.
+ * libre, l'ancien lien de Supabase (jamais repris ni retiré), les liens à
+ * retirer, le serveur périmé, le serveur lancé à l'ancienne, l'état du relais.
  * Les commandes elles-mêmes (`scripts/lien/index.ts`) se vérifient en vrai.
  */
 
 import { describe, it, expect } from 'vitest';
 import {
 	LienError,
+	accountLines,
+	anonKey,
 	SUPABASE_HTTPS_PORT,
 	chantierName,
 	isMainRepo,
@@ -19,15 +21,15 @@ import {
 	linkUrl,
 	linksToStop,
 	listing,
-	missingForRemoteLogin,
+	launchedTheOldWay,
 	parseArgs,
 	parseRegistry,
 	parseServeStatus,
 	pickHttpsPort,
 	pruneRegistry,
+	relayState,
 	relaunchCommand,
 	servedPorts,
-	supabasePlan,
 	type Registry,
 	type ServeLink
 } from '../lien/logique';
@@ -155,24 +157,6 @@ describe('lien — port HTTPS libre', () => {
 	});
 });
 
-describe('lien — Supabase local', () => {
-	it('déjà publié : on garde son lien, où qu’il soit', () => {
-		expect(supabasePlan([link(443, 5176), link(8443, 54321)])).toEqual({
-			publish: false,
-			httpsPort: 8443
-		});
-		expect(supabasePlan([link(9000, 54321)])).toEqual({ publish: false, httpsPort: 9000 });
-	});
-
-	it('pas encore publié : à publier sur 8443', () => {
-		expect(supabasePlan([link(443, 5176)])).toEqual({ publish: true, httpsPort: 8443 });
-	});
-
-	it('8443 pris par autre chose : erreur, on ne le reprend pas', () => {
-		expect(() => supabasePlan([link(8443, 5176)])).toThrow(LienError);
-	});
-});
-
 describe('lien — registre des liens', () => {
 	const registry: Registry = {
 		'8444': { root: ROOT, localPort: 5177, date: '2026-01-02T10:00:00.000Z' },
@@ -208,7 +192,7 @@ describe('lien — registre des liens', () => {
 			{
 				url: `https://${HOST}:8443/`,
 				target: 'http://localhost:54321',
-				chantier: 'Supabase local (partagé)',
+				chantier: 'Supabase local (ancien lien)',
 				up: true
 			},
 			{
@@ -284,48 +268,95 @@ describe('lien — serveur périmé', () => {
 });
 
 describe('lien — serveur qui vise la prod', () => {
-	const tailnet = `https://${HOST}:8443`;
 	const local = 'PUBLIC_SUPABASE_URL=http://127.0.0.1:54321\n';
 
-	it('accepte la base locale jointe par le tailnet', () => {
-		const env = `PUBLIC_SUPABASE_URL=${tailnet} __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=${HOST} node vite`;
-		expect(isLocalEnv([local], env, [tailnet])).toBe(true);
+	it('serveur ordinaire sur la base locale : accepté', () => {
+		expect(isLocalEnv([local], 'node vite dev --port 5177')).toBe(true);
 	});
 
-	it('refuse toujours une adresse distante, et l’absence de .env.local', () => {
-		const env = 'PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co node vite';
-		expect(isLocalEnv([local], env, [tailnet])).toBe(false);
-		expect(isLocalEnv([], '', [tailnet])).toBe(false);
-	});
-
-	it('sans adresse autorisée en plus, le tailnet reste refusé (garde de pnpm voir)', () => {
-		expect(isLocalEnv([local], `PUBLIC_SUPABASE_URL=${tailnet} node vite`)).toBe(false);
+	it('refuse une adresse distante, et l’absence de .env.local', () => {
+		expect(isLocalEnv([local], 'PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co node vite')).toBe(
+			false
+		);
+		expect(isLocalEnv([], '')).toBe(false);
 	});
 });
 
-describe('lien — connexion depuis un autre appareil', () => {
-	const supabase = `https://${HOST}:8443`;
-
-	it('serveur lancé comme il faut : rien ne manque', () => {
-		const env = `PUBLIC_SUPABASE_URL=${supabase} __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=${HOST} node vite dev --port 5177`;
-		expect(missingForRemoteLogin(env, HOST, supabase)).toEqual([]);
+describe('lien — serveur lancé à l’ancienne', () => {
+	it('adresse de Supabase du tailnet dans la commande : à relancer', () => {
+		const env = `PUBLIC_SUPABASE_URL=https://${HOST}:8443 __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=${HOST} node vite dev`;
+		expect(launchedTheOldWay(env, HOST)).toBe(true);
+		expect(launchedTheOldWay(`PUBLIC_SUPABASE_URL="https://${HOST}:9000" node`, HOST)).toBe(true);
 	});
 
-	it('serveur ordinaire : il manque l’adresse de Supabase et le nom autorisé', () => {
-		expect(missingForRemoteLogin('node vite dev --port 5177', HOST, supabase)).toEqual([
-			'hote',
-			'supabase'
+	it('serveur ordinaire : non', () => {
+		expect(launchedTheOldWay('node vite dev --port 5177 PATH=/bin', HOST)).toBe(false);
+		expect(launchedTheOldWay('PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 node vite', HOST)).toBe(
+			false
+		);
+	});
+
+	it('adresse de la prod : non (c’est la garde « base locale » qui refuse)', () => {
+		expect(launchedTheOldWay('PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co node', HOST)).toBe(
+			false
+		);
+	});
+
+	it('commande pour relancer le serveur : sans aucune variable', () => {
+		expect(relaunchCommand(5177)).toBe('pnpm dev --port 5177 --strictPort');
+	});
+});
+
+describe('lien — relais de Supabase', () => {
+	it('Supabase répond à travers le serveur de dev : tout va bien', () => {
+		expect(relayState(200)).toBe('ok');
+		// Supabase local répond 401 sans clé : il répond
+		expect(relayState(401)).toBe('ok');
+	});
+
+	it('502, ou pas de réponse : Supabase local est arrêté', () => {
+		expect(relayState(502)).toBe('supabase-arrete');
+		expect(relayState(null)).toBe('supabase-arrete');
+	});
+
+	it('404, redirection, refus : le serveur de dev n’a pas le relais (branche en retard)', () => {
+		expect(relayState(404)).toBe('sans-relais');
+		expect(relayState(303)).toBe('sans-relais');
+		expect(relayState(403)).toBe('sans-relais');
+	});
+});
+
+describe('lien — comptes fictifs', () => {
+	const accounts = {
+		prof: [{ email: 'teacher@local.test', password: 'local-teacher' }],
+		eleve: [
+			{ email: 'eleve01@local.test', password: 'local-eleve' },
+			{ email: 'student@local.test', password: 'local-student' }
+		]
+	};
+
+	it('donne le premier compte qui se connecte vraiment', () => {
+		const lines = accountLines(accounts, (account) => account.email !== 'eleve01@local.test');
+		expect(lines).toEqual([
+			'  prof  : teacher@local.test / local-teacher',
+			'  eleve : student@local.test / local-student'
 		]);
 	});
 
-	it('adresse de Supabase d’un autre port : elle manque', () => {
-		const env = `PUBLIC_SUPABASE_URL=https://${HOST}:9000 __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=${HOST} node`;
-		expect(missingForRemoteLogin(env, HOST, supabase)).toEqual(['supabase']);
+	it('aucun compte du rôle ne se connecte : le dit, sans en inventer', () => {
+		expect(accountLines(accounts, () => false)[1]).toBe(
+			'  eleve : aucun compte ne se connecte (pnpm db:neuf les crée)'
+		);
 	});
 
-	it('commande pour relancer le serveur', () => {
-		expect(relaunchCommand(HOST, supabase, 5177)).toBe(
-			`PUBLIC_SUPABASE_URL=${supabase} __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=${HOST} pnpm dev --port 5177 --strictPort`
+	it('impossible de vérifier (Supabase arrêté) : le premier compte, marqué non vérifié', () => {
+		expect(accountLines(accounts, null)[1]).toBe(
+			'  eleve : eleve01@local.test / local-eleve (non vérifié)'
 		);
+	});
+
+	it('clé publique de Supabase local lue dans les fichiers d’environnement', () => {
+		expect(anonKey(['A=1\nPUBLIC_SUPABASE_ANON_KEY="cle-fictive"\n'])).toBe('cle-fictive');
+		expect(anonKey(['A=1\n'])).toBeNull();
 	});
 });

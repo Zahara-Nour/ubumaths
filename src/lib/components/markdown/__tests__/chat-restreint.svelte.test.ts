@@ -15,6 +15,8 @@
  * Chemin réel : JSON TipTap → `tipTapToMarkdown` → `MarkdownRenderer`, dans un
  * <main> (décor de l'application).
  */
+import { dev } from '$app/env';
+import { isRelayed } from '#lib/dev/supabase-relay.ts';
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { JSONContent } from '@tiptap/core';
@@ -125,7 +127,12 @@ describe('Chat — mode restreint (S1)', () => {
 	it('image du stockage Supabase du projet : rendue', async () => {
 		const el = await rendu(doc({ type: 'image', attrs: { src: IMAGE_SUPABASE, alt: 'photo' } }));
 		await expect.poll(() => el.querySelector('img')).not.toBeNull();
-		expect(el.querySelector('img')?.getAttribute('src')).toBe(IMAGE_SUPABASE);
+		// En dev sur la base locale, l'adresse rendue au navigateur passe par le relais
+		expect(el.querySelector('img')?.getAttribute('src')).toBe(
+			isRelayed(PUBLIC_SUPABASE_URL, dev)
+				? '/__dev/supabase/storage/v1/object/public/chat-attachments/conv/photo.png'
+				: IMAGE_SUPABASE
+		);
 	});
 
 	it('vidéo (fichier ou YouTube) : ni <video>, ni <iframe>, ni <source>', async () => {
