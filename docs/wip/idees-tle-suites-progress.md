@@ -5,11 +5,12 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, phase 0 validée._
+_Mis à jour le 2026-11-22, lot écrit._
 
-- **État** : phase 0 **validée** par David (F1 à F13 telles quelles, F14 : Sₙ/n ajouté) ; 8 modèles
-  publiés réservés ; outils 48 et 49 ajoutés à `outils-manquants.md` · **Prochaine action** :
-  écrire le gros lot (8 variations de publiés + 5 modèles neufs) · **En attente de David** : rien · **Pièges en cours** : `hint` lu par la
+- **État** : lot écrit et commité (8 publiés : 15 variations ajoutées ; 5 modèles neufs),
+  simulation et specs vertes, 5 neufs créés en base **locale** (ids restaurés) · **Prochaine
+  action** : jouer les neufs dans l'aperçu local (serveur 5178), puis PR des fichiers · **En
+  attente de David** : rien · **Pièges en cours** : `hint` lu par la
   prod seulement après le `deploy:prod` qui livre #2991 (pas de brouillons en prod avant) ; la
   rubrique suites de Première (`idees-1re-suites`) tourne en parallèle : ne pas toucher aux
   modèles 1SPE qu'elle réserve · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
@@ -45,3 +46,16 @@ _Mis à jour le 2026-11-22, phase 0 validée._
 - Modèles publiés réservés dans le tableau : 3d7d1d25, 651907b3, 667a3618, 7063979e, 708f8a08,
   98ba277c, 9f14d672, d1aee0b9.
 - Lot à écrire : variations F1 à F8 (publiés, à exporter de prod), modèles neufs F9 à F12 + Sₙ/n.
+
+### 2026-11-22 — lot écrit
+
+- Deux agents `pedagogy-expert` : variations F1 à F8 ajoutées à la fin des 8 publiés
+  (`scripts/questions/idees-tle-suites-publies/`, diff = ajouts seuls) ; 5 modèles neufs par
+  `docs/wip/questions/idees-tle-suites-neufs.py` → `scripts/questions/idees-tle-suites-neufs/`.
+- Relu et corrigé : F6, le 2e choix (« … ⩽ f(ℓ) ») était vrai mais incomplet → remplacé par une
+  rédaction fausse (une fonction croissante qui « change le sens des inégalités »).
+- F12 : les 4 affirmations étaient toutes fausses ; **David : ajouter 2 vraies** (croissante
+  majorée converge ; comparaison vers +∞), v4 et v5.
+- Choix des agents à connaître : F3 |L| ≠ a et a ± c ≠ ab (erreurs prévues distinctes) ; F7 m de
+  2 à 4 (pas de nombre à 4 chiffres) ; F8 variable `g` (`e` = Euler) ; F14 bis q = 1/2 et
+  q = k/10 (k de 5 à 9) ; `4×(1−1/2ⁿ)/(1−1/2)` jugé « perfectible » (signe ×).
