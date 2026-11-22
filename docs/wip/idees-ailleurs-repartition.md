@@ -67,18 +67,18 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 
 ### Spécialité
 
-| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session    |
-| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ------------------ |
-| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites` |
-| Limites de fonctions                                                           | TSA2        | 18        | libre                |                    |
-| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre                |                    |
-| Continuité des fonctions                                                       | TSA4        | 6         | libre                |                    |
-| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                    |
-| Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                    |
-| Intégration                                                                    | TSA8        | 5         | libre                |                    |
-| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                    |
-| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                    |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                |                    |
+| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session     |
+| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ------------------- |
+| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`  |
+| Limites de fonctions                                                           | TSA2        | 18        | prise (2026-11-22)   | `idees-tle-limites` |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre                |                     |
+| Continuité des fonctions                                                       | TSA4        | 6         | libre                |                     |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                     |
+| Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                     |
+| Intégration                                                                    | TSA8        | 5         | libre                |                     |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                     |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                     |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                |                     |
 
 ### Maths expertes
 
