@@ -122,8 +122,7 @@ Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lo
   case (réponse + message à l'élève, même §), que le prof complète ensuite : **trois par case**
   visées (QCM possible), message écrit sous sa forme réécrite (`$10^3$`, `$b - a$`). Chaque
   variation a son **coup de pouce** (`hint`, ou `hintFromFirstStep`), qui ne donne jamais la
-  réponse ; ⚠️ `hint` n'est lu par la prod qu'après le `deploy:prod` qui livre #2991 : pas de
-  brouillons en prod avant (le dire à David). Forme : faits vérifiés du même § (motif qui compare
+  réponse (lu par la prod depuis la 0.101.0, 2026-11-22). Forme : faits vérifiés du même § (motif qui compare
   deux parties, case unique, pas de Oui / Non au hasard, consigne qui dit ce qu'elle refuse,
   réglages du modèle fixés dès la création). Une variation sans spec ne part pas. `create-questions` en
   simulation, `question:specs`, puis essai dans la base **locale**, modèle joué dans l'aperçu
