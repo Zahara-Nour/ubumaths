@@ -67,18 +67,18 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 
 ### Spécialité
 
-| Rubrique                                                                       | Codes       | Exercices | État               | Sujet / session    |
-| ------------------------------------------------------------------------------ | ----------- | --------- | ------------------ | ------------------ |
-| Suites numériques                                                              | TSA1        | 26        | prise (2026-11-22) | `idees-tle-suites` |
-| Limites de fonctions                                                           | TSA2        | 18        | libre              |                    |
-| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre              |                    |
-| Continuité des fonctions                                                       | TSA4        | 6         | libre              |                    |
-| Fonction logarithme népérien                                                   | TSA5        | 12        | libre              |                    |
-| Primitives et équations différentielles                                        | TSA7        | 7         | libre              |                    |
-| Intégration                                                                    | TSA8        | 5         | libre              |                    |
-| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre              |                    |
-| Géométrie dans l'espace                                                        | TSG2        | 26        | libre              |                    |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre              |                    |
+| Rubrique                                                                       | Codes       | Exercices | État                         | Sujet / session    |
+| ------------------------------------------------------------------------------ | ----------- | --------- | ---------------------------- | ------------------ |
+| Suites numériques                                                              | TSA1        | 26        | phase 0 validée (2026-11-22) | `idees-tle-suites` |
+| Limites de fonctions                                                           | TSA2        | 18        | libre                        |                    |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre                        |                    |
+| Continuité des fonctions                                                       | TSA4        | 6         | libre                        |                    |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                        |                    |
+| Primitives et équations différentielles                                        | TSA7        | 7         | libre                        |                    |
+| Intégration                                                                    | TSA8        | 5         | libre                        |                    |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                        |                    |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                        |                    |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                        |                    |
 
 ### Maths expertes
 
@@ -154,6 +154,14 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3d7d1d25 Limites usuelles d'une suite                                            | `idees-tle-suites`                                          | 2026-11-22 |                                      |
+| 651907b3 Évolution en pourcentage avec apport constant                           | `idees-tle-suites`                                          | 2026-11-22 |                                      |
+| 667a3618 uₙ₊₁ = f(uₙ) : conjecturer la limite sur l'escalier                     | `idees-tle-suites`                                          | 2026-11-22 |                                      |
+| 7063979e Limite infinie par comparaison : minoration, majoration                 | `idees-tle-suites`                                          | 2026-11-22 |                                      |
+| 708f8a08 Limite d'une somme de termes d'une suite géométrique                    | `idees-tle-suites`                                          | 2026-11-22 |                                      |
+| 98ba277c Limite par encadrement : théorème des gendarmes                         | `idees-tle-suites`                                          | 2026-11-22 |                                      |
+| 9f14d672 Suite arithmético-géométrique : expression de uₙ en fonction de n       | `idees-tle-suites`                                          | 2026-11-22 |                                      |
+| d1aee0b9 Récurrence sur une suite définie par une fonction croissante            | `idees-tle-suites`                                          | 2026-11-22 |                                      |
 | 19961e67 Valeur renvoyée par une fonction Python de seuil                        | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 | 44b32cad Somme de termes consécutifs d'une suite arithmétique                    | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 | 45da9678 De l'énoncé à l'expression de la suite                                  | `idees-1re-suites`                                          | 2026-11-22 |                                      |
