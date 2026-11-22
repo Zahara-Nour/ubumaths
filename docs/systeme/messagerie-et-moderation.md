@@ -403,6 +403,17 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 
 ## Écarts connus (constatés le 2026-10-13, non corrigés)
 
+### Messagerie privée en panne (constaté le 2026-11-22, chantier `seed-complet`)
+
+Quelles que soient les données, sur `main` comme en prod (3 messages privés en prod, le dernier en
+octobre 2025) ; réparation décidée par David dans une PR à part, pas encore ouverte.
+
+- **Boîte de réception** : l'appli appelle `/api/messages/inbox?status=inbox` sans dossier ; le schéma
+  refuse `folderId` nul → 400 (`src/routes/api/messages/inbox/+server.ts`).
+- **Envoyés** : l'appli appelle `/api/messages/sent` sans `limit` → 400 (« doit être > 0 ») ; avec
+  `limit`, la réponse de `get_user_sent_messages` n'a ni `id`, ni `sender_name`, ni `created_at`
+  attendus par `messageResponseSchema` → 500 (`src/lib/server/validation/messages.ts`).
+
 ### ⚠️ Safeguarding (élèves mineurs)
 
 - **Un échec de lecture des signalements est muet.** `gestion/+page.server.ts` logue l'erreur

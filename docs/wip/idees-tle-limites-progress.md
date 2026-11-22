@@ -5,14 +5,16 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3010._
+_Mis à jour le 2026-11-22, série de relecture enregistrée._
 
-- **État** : #3010 mergée, migrations de rangement et de contenu en prod (vérifié : 4 brouillons
-  rangés, 3 tags, +15 variations sur les 7 publiés) · **Prochaine action** : relecture dans
-  `/dev/modeles` (brouillons : `?noeud=` Limites de fonctions ; publiés : série de relecture,
-  `scripts/series/creer-serie.ts`), puis corrections et `publier-lot.ts` · **En attente de
-  David** : F3 (a, b ou c, voir Historique « lot écrit ») · **Pièges en cours** : `{{e}}` interdit
-  (Euler) · **Worktree / branche** : aucun (retiré après #3010).
+- **État** : série de relecture des 7 publiés enregistrée en prod (`f3e6eb2c`, fichier
+  `scripts/series/T_SPE-relecture-limites-publies.json`) · **Prochaine action** : lire les verdicts
+  de `/dev/modeles`, corriger les « À revoir », puis `publier-lot.ts` en simulation · **En attente
+  de David** : relecture dans `/dev/modeles?serie=f3e6eb2c-d5c7-4551-bbf7-2e0c7d051693` (publiés) et
+  `/dev/modeles?noeud=T_SPE~e6e7e3e3-bf3c-482c-8e47-275a639b9bfe&statut=draft` (4 brouillons) ·
+  **Pièges en cours** : `{{e}}` interdit (Euler) ; F3 attend l'outil n° 50 de
+  `outils-manquants.md` · **Worktree / branche** : `ubumaths-wt-idees-tle-limites-serie`,
+  `chore/idees-tle-limites-serie` (PR du fichier de série).
 
 ## Historique
 
@@ -88,3 +90,16 @@ _Mis à jour le 2026-11-22, après #3010._
 - David : « je suis tes recos » (rangement). `security-auditor` : aucun bloquant (mineur : la
   migration de contenu change `updated_at` des publiés, voulu). CI verte, merge,
   `migration list --linked` (seules les deux du lot en attente), `db:migrate` ; état vérifié en prod.
+
+### 2026-11-22 — F3 tranché : attendre l'outil
+
+- Reco : (b). Sans le tableau, F3 se réduit à quatre limites d'une homographique déjà entraînées
+  (04ec9518, variation (x + b)/(x − a) en un point ; 7844be9a, quotients en ±∞) ; le geste neuf
+  est de placer les limites dans le tableau. David : « je suis tes recos ». F3 sera écrit quand
+  l'outil n° 50 (cacher une limite infinie dans un tableau de variations) existera.
+
+### 2026-11-22 — série de relecture
+
+- Série « Relecture — limites de fonctions de Terminale, 7 modèles publiés complétés » : simulation
+  verte, enregistrée en prod par David (`f3e6eb2c-d5c7-4551-bbf7-2e0c7d051693`). Brouillons relus
+  sur la notion (`?noeud=T_SPE~e6e7e3e3-…&statut=draft`).

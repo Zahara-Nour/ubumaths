@@ -2,19 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3011._
+_Mis à jour le 2026-11-22 : **chantier CLOS**, journal archivé._
 
-- **État** : PR 1 à 4 mergées (#2977, #2980, #2981, #2986, #2989, **#3011 échanges et famille, § 11-12**).
-  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
-  (pas lancé).
-- **Prochaine action** : PR 5 images (§ 5 : celles du contenu, jamais les pièces jointes), par sa
-  phase 0, puis doc et versement. Nouveau worktree à créer.
-- **En attente de David** : la messagerie privée de l'appli est cassée (§ 12, « trouvé grâce au
-  seed ») : PR à part pour la réparer, ou seulement la noter ?
-- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
-  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev ; serveur de test par
-  `pnpm exec vite dev` (pas `pnpm dev`, qui met à jour la base de dev), à relancer après un merge de
-  `main` (sinon 401 partout). Lignes d'une même table : mêmes colonnes (`uniformiser`).
+- **État** : clos. Découpage du § 5 recompté contre les PR : PR 1 #2977, PR 2 #2980, PR 3 #2986,
+  PR 4 #3011, PR 5 #3012, plus deux correctifs trouvés grâce au seed (#2981 révisions, #2989 Palotins).
+- **Durable** : `docs/pratiques/environnement-de-dev.md` (classement des tables, images, ce que font
+  les élèves fictifs) ; pages à ouvrir dans `docs/wip/verifications-manuelles.md` (#2977 à #3012).
+- **Suites, hors chantier** : messagerie privée cassée (`docs/systeme/messagerie-et-moderation.md`
+  § Écarts connus, PR à part décidée par David) ; 4 cartes Mathémo sans image
+  (`docs/systeme/jeux-et-economie.md` § Doutes).
+- **Non fait** : la base de dev partagée n'a pas encore reçu le tout (prochain `pnpm db:neuf` ou
+  `pnpm db:seed-riche`, à la main).
 
 ---
 
@@ -497,8 +495,75 @@ carnet, import, cahier de texte et avancement, pages publiques des liens, tablea
     attendus par `messageResponseSchema` → 500 (`src/lib/server/validation/messages.ts:55`).
   - En prod : 3 messages privés, le dernier en octobre 2025.
 
+## 13. PR 5 : images — phase 0 (2026-11-22, branche `feat/seed-complet-images`, **validée par David le 2026-11-22 : « je valide »**)
+
+**Mesures** (prod en lecture seule, des comptes seulement) :
+
+| Compartiment         | Fichiers | Taille | Déposés par                  | Cités comment                                                                                                |
+| -------------------- | -------- | ------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `question-images`    | 254      | 8,3 Mo | scripts (aucun propriétaire) | chemin relatif, adresse faite avec `PUBLIC_SUPABASE_URL` → **cassées en local**                              |
+| `exercise-images`    | 95       | 4,6 Mo | 83 scripts, 12 le prof       | adresse complète **de la prod** dans 50 exercices (151 liens) → s'affichent en local, mais lues sur la prod  |
+| `vip-card-images`    | 44       | 2,2 Mo | scripts                      | adresse de la prod dans 45 modèles de cartes ; **cassées** dans le démineur et 2048 (adresse faite en local) |
+| `parody-evaluations` | 1        | 0,2 Mo | scripts                      | chemin relatif → **cassée en local**                                                                         |
+
+Les 4 compartiments sont **publics** en prod : copier ces fichiers ne donne à personne un accès
+qu'il n'a pas déjà. Les 4 autres (pièces jointes, captures, documents de chapitre) restent vides (§ 4).
+
+**Comportements proposés** :
+
+- **Nominal** : `pnpm db:seed-riche` (et donc `db:neuf`) copie les fichiers des 4 compartiments
+  publics dans le stockage local (même compartiment, même chemin), puis réécrit dans le contenu
+  copié l'adresse de la prod en adresse locale. Après : toutes les images s'affichent en local, et
+  aucune page locale ne va chercher une image sur la prod.
+- **Relance** : un fichier déjà présent en local avec la même taille n'est pas retéléchargé
+  (~15 Mo la première fois, presque rien ensuite).
+- **Limite** : un fichier que la prod ne rend pas (supprimé entre-temps) est sauté et compté dans
+  le compte rendu ; le seed ne s'arrête pas pour lui. Un lien du contenu vers un fichier absent
+  reste tel quel (image cassée en local comme en prod).
+- **Erreur** : prod injoignable → le seed s'arrête avant d'écrire, comme aujourd'hui.
+- **Garde** : seuls ces 4 compartiments sont lus ; une liste dans `regles.ts`, et un test qui
+  échoue si un compartiment de la prod n'est dans aucune liste (copié / jamais), comme pour les tables.
+- **Preuve** : copie isolée de la pile ; pages lues : une question à image, un exercice illustré,
+  la boutique VIP, le démineur (pouvoirs), la page des presques-évaluations ; une fiche compilée
+  avec image (Typst lit l'adresse réécrite).
+
+Puis, dans la même PR ou la suivante : doc (`docs/systeme/` de la base locale) et versement du journal.
+
+## 14. PR 5 : images (2026-11-22, branche `feat/seed-complet-images`)
+
+- **Messagerie privée cassée (§ 12)** : David, le 2026-11-22 : « oui on répare dans une PR à part ».
+  Hors de cette PR ; chantier à ouvrir.
+- **Code** : `scripts/db-seed-riche/images.ts` (pur, tests `scripts/__tests__/db-seed-images.test.ts`,
+  13 cas) ; `index.ts` copie les fichiers après la validation du contenu, réécrit les adresses dans la
+  copie du contenu. `SEED_RICHE_API_URL` pour viser une copie isolée.
+- **Écart au plan, imposé par une mesure** : les 95 images d'exercices sont rangées sous le dossier du
+  prof de la prod (son identifiant). Le contenu copié le remplace déjà par le prof local : les chemins
+  des fichiers suivent la même règle (`cheminLocal`), et un chemin qui garderait un identifiant de la
+  prod est écarté. Premier passage sans cette règle : 85 liens d'exercices en 404.
+- **Preuve** (copie isolée `ubumaths-essai`, ports 544xx, avec le stockage) : 1er passage 394 fichiers
+  copiés ; relance : 0 téléchargé, 394 déjà là, autres nombres identiques. En base : 0 adresse de la
+  prod restante (exercices, cartes VIP), 50 exercices et 45 cartes vers le stockage local ; liens
+  vérifiés un par un : exercices 85/85, cartes 44/45 (`2048-bomb-3`, carte inactive : fichier absent
+  en prod aussi, limite prévue). Par le relais du serveur de dev (chemin du tailnet) : 200 pour une
+  image de chaque compartiment. Pages (`pnpm voir`) : presques-évaluations, démineur, admin des
+  cartes VIP, sans requête en échec liée aux images.
+- **Relectures** : `code-reviewer` et `security-auditor`, aucun bloquant. Corrigé : copie des images
+  déplacée en DERNIER (un échec ne laisse plus la base sans élèves) ; un fichier refusé par la prod ou
+  par le stockage local est sauté avec sa raison, jamais d'arrêt, et le compte rendu en montre 5 au
+  plus ; message de liste sans dossier (identifiant du prof de prod) ; taille inconnue = retéléchargé ;
+  `cheminLocal` sans la garde d'e-mail (`logo@hd.webp` n'en est pas une) mais refusant tout
+  identifiant qui n'est pas un compte local ; refus si `.env.local` porte la clé de la prod. Audit :
+  les 4 compartiments ne reçoivent de dépôt que du prof, de l'admin ou de la clé de service, donc
+  aucun fichier d'élève possible. Laissé : adresses `/render/image/` ou signées non réécrites (aucune
+  mesurée, compartiments publics). Preuve refaite sur une copie neuve : mêmes nombres, 129/130 liens
+  en 200 (le 130e : `2048-bomb-3`).
+- **Trouvé, hors PR** : 4 cartes Mathémo citent `/images/vip-cards/mathemo-*.webp`, absents de
+  `static/` → 404 (pas lié au stockage).
+
 ## 6. Historique
 
+- **2026-11-22** : clôture, découpage recompté, journal archivé.
+- **2026-11-22** : PR 5 (images), § 13-14.
 - **2026-11-22** : PR 4 (échanges et famille), § 11-12.
 
 - **2026-11-22** : #2981, compteurs de « Mes révisions » (trouvé grâce au seed).
