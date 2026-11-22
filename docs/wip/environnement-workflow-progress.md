@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-11-22, avant toute PR._
 
-- **État** : bilan mesuré le 2026-11-22 (ci-dessous), rien de modifié dans le code. Deux listes de pistes : workflow (A à D) et travail à distance (R1 à R14).
-- **Prochaine action** : attendre le choix de David, puis phase 0 de ce qu'il retient. Proposé en premier : lot A (une petite PR) et, pour le travail à distance, R1 + R4 + R7.
-- **En attente de David** : quels points lancer ; ce qui échoue exactement avec Claude dans Chrome quand il est à distance (non diagnostiqué) ; décisions d'architecture des points 8 à 11 et R3.
-- **Pièges en cours** : les chiffres de l'intégration datent surtout d'avant la refonte du 2026-11-21, à remesurer vers le 2026-11-29 ; zsh ne découpe pas `$ids` (boucle `while read`).
+- **État** : bilan mesuré le 2026-11-22, rien de modifié dans le code. David a dit « je te suis, go » : phase 0 de R4, R1 et R7 écrite en fin de journal, **pas encore validée**.
+- **Prochaine action** : sur validation de la phase 0 (et réponses Q1 à Q4), ouvrir le worktree `outils-a-distance` et coder dans l'ordre R4, R1, R7, une PR chacun, tests d'abord.
+- **En attente de David** : validation de la phase 0 et Q1 à Q4 ; lot A (rouges évitables) : à lancer ou non ; ce qui échoue exactement avec Claude dans Chrome à distance (non diagnostiqué).
+- **Pièges en cours** : Tailscale Serve porte déjà 4 liens d'autres sessions (443, 8443, 8444, 10000) : ne jamais faire `tailscale serve reset` ; chiffres de l'intégration à remesurer vers le 2026-11-29 ; zsh ne découpe pas `$ids` (boucle `while read`).
 - **Worktree / branche** : aucun (dépôt principal, doc seule).
 
 ## Mesures du 2026-11-22
@@ -68,3 +68,36 @@ Constat : trois méthodes selon l'appareil (`docs/pratiques/tester-sur-un-autre-
 - R12. Notifications (canal ntfy existant) : lien prêt, CI verte, question en attente.
 - R13. Vérifications sur la prod après `deploy:prod` (`VERIFS_URL`), résultat notifié.
 - R14. Une seule méthode (Tailscale Serve) pour MacBook et iPhone, le tunnel SSH en secours.
+
+## Phase 0 — outils à distance (2026-11-22, à valider)
+
+Briques déjà là : Playwright avec Chromium et WebKit installés ; `pnpm test:verifs` et ses aides (`e2e/verifs/helpers/`) ; Tailscale Serve activé, publié en « tailnet only » ; courriels capturés dans `.captures/` ; comptes fictifs de la base locale.
+
+### R4 — `pnpm voir` : Claude regarde une page sans écran
+
+- **Nominal** : `pnpm voir /demo/atelier` ouvre la page du serveur du worktree dans un navigateur sans écran, attend qu'elle soit chargée, et écrit dans `.captures/voir/` une image de la page entière, la liste des erreurs de console et celle des requêtes en échec. Par défaut : format iPhone, moteur de Safari (WebKit). `--ordi` pour un grand écran, `--chrome` pour Chromium, `--compte prof` (ou `eleve`, `admin`) pour arriver connecté avec un compte fictif.
+- **Exemple** : « regarde la page du carnet côté prof sur téléphone » → `pnpm voir /carnet --compte prof` → Claude lit l'image et les erreurs, et envoie l'image à David.
+- **Limite** : aucun serveur sur le port du worktree → il le dit et s'arrête (il n'en lance pas) ; page qui redirige vers la connexion → il le dit ; page très longue → image coupée à une hauteur fixe, signalée.
+- **Erreur** : adresse d'un autre site que le serveur local → refus ; `--compte` quand le serveur pointe sur une base qui n'est pas locale → refus (jamais de connexion automatique sur la prod).
+
+### R1 — `pnpm lien` : un lien de test en une commande
+
+- **Nominal** : dans un worktree dont le serveur tourne, `pnpm lien` trouve le port de CE worktree, le publie en HTTPS sur le tailnet sur un port libre, vérifie « tailnet only », et rend le lien, un QR code dans le terminal et le rappel des comptes fictifs. `pnpm lien --stop` retire ce lien-là seulement ; `pnpm lien --liste` montre tous les liens et le chantier de chacun.
+- **Exemple** : « donne-moi un lien pour tester sur mon téléphone » → `pnpm lien` → `https://serveur…:8445/` + QR code.
+- **Limite** : lien déjà publié pour ce worktree → il le redonne ; serveur lancé avant le dernier pull ou merge de la branche → avertissement « serveur périmé, le relancer » ; Supabase local pas encore publié → il le publie (port 8443, partagé, jamais retiré par `--stop`).
+- **Erreur** : aucun serveur pour ce worktree → il donne la commande à lancer ; dépôt principal → refus ; serveur qui pointe sur la prod (`.env.local` absent) → refus ; jamais `funnel`, jamais `serve reset`.
+- **Hors périmètre** : la connexion depuis l'iPhone demande que le serveur ait été lancé avec l'adresse de Supabase du tailnet (cf. `tester-sur-un-autre-appareil.md`) ; `pnpm lien` le vérifie et le dit, il ne relance pas le serveur. R3 supprimerait cette contrainte.
+
+### R7 — bouton « signaler » en dev
+
+- **Nominal** : sur le serveur de dev seulement, un petit bouton flottant dans un coin. Un appui ouvre une case de texte ; « Envoyer » écrit sur le Mac mini, dans `.captures/retours/`, un fichier avec la note, l'adresse de la page, la taille de l'écran, le navigateur, le compte fictif connecté et les erreurs de console vues depuis le chargement. Claude lit le dernier retour par `pnpm retours`.
+- **Exemple** : sur l'iPhone, David appuie, écrit « le bouton Valider est caché par le clavier », envoie ; il dit à Claude « regarde mon retour ».
+- **Limite** : note vide acceptée (les erreurs seules sont utiles) ; note plafonnée à 2 000 caractères, 50 erreurs gardées au plus ; pas d'image de l'écran dans cette première version (Safari ne sait pas se photographier) : Claude refait la page avec `pnpm voir` à la même adresse et au même format.
+- **Erreur** : en prod, le bouton et sa route n'existent pas (absents du build, test à l'appui) ; base non locale → route refusée ; entrée validée par Zod.
+
+### Questions
+
+- **Q1 — R4, moteur par défaut** : Safari au format iPhone (reco : oui, c'est l'appareil des élèves et la source de nos bugs propres) ou Chrome ?
+- **Q2 — R7, où est le bouton** : sur toutes les pages en dev (reco), ou seulement quand la page est ouverte par un lien du tailnet (invisible sur le Mac mini) ?
+- **Q3 — R7, image de l'écran** : s'en passer en première version (reco), ou essayer tout de suite une capture faite par la page (lourde, infidèle sur les formules) ?
+- **Q4 — ordre** : R4, puis R1, puis R7 (reco : R4 sert à vérifier les deux autres) ?
