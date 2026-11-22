@@ -7,7 +7,8 @@ couvre:
 
 > Quand il faut **voir** une page du serveur de dev (rendu sur téléphone, erreurs de console) et
 > que David n'est pas devant le Mac mini : `pnpm voir <page>`, lire l'image, la lui envoyer.
-> Remplace Claude dans Chrome, qui ne marche pas à distance.
+> Remplace Claude dans Chrome, qui ne marche pas à distance avec une adresse locale
+> ([pourquoi](tester-sur-un-autre-appareil.md#les-deux-pièges)).
 
 ```bash
 pnpm voir /atelier                      # format iPhone, moteur de Safari (WebKit)

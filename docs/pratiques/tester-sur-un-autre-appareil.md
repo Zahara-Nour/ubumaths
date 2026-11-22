@@ -69,6 +69,12 @@ Code : `scripts/lien/logique.ts` (décisions, testées par `scripts/__tests__/li
    (`http://127.0.0.1:54321`, la base LOCALE). Sur un autre appareil, `127.0.0.1` désigne cet
    appareil : il faut lui rendre le port 54321 du Mac mini, ou changer cette adresse.
 
+**Claude dans Chrome, David à distance** : l'extension pilote le Chrome de l'appareil où David
+est assis (le MacBook), pas celui du Mac mini. Une adresse `localhost`, `127.0.0.1` ou `[::1]`
+y désigne le MacBook, où rien n'écoute : la page ne s'ouvre pas (constat de David, 2026-11-22 ;
+non reproduit). Deux voies : `pnpm voir <page>` ([voir-une-page.md](voir-une-page.md)), qui se
+passe de Chrome ; ou donner à Chrome le lien de `pnpm lien`, jamais une adresse locale.
+
 ⛔ Jamais `.env` (base de PROD) pour ces essais : données d'élèves mineurs. Toujours `.env.local`.
 
 ## Quelle méthode
