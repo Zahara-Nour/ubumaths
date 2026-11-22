@@ -6,19 +6,21 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2992._
+_Mis à jour le 2026-11-22, revue du lot de Seconde en cours (pas de PR)._
 
-- **État** : idées 1 à 5 terminées (pas en prod). Idée 5 : moteur et éditeur (#2991), élève et prof
-  (#2992 : bouton « Coup de pouce » en Saisie, Flash-cards et révision, trace `with_help`,
-  « Difficile », « (avec indice) » côté prof).
-- **Prochaine action** : revue du lot « nombres et calculs » de Seconde (y écrire des indices).
-- **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
-  en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2) ; essai du coup de pouce
-  (aucun modèle n'a d'indice : en écrire un dans l'éditeur ; serveur 5177).
-- **Pièges en cours** : `expectedErrors` et `hint` refusés ou retirés en prod avant le
-  `deploy:prod` qui livre #2962 et #2991 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
-- **Worktree / branche** : `ubumaths-wt-idees-format` (essai « En QCM », 5176) et
-  `ubumaths-wt-idees-format-indice-eleve` (essai du coup de pouce, 5177), à retirer après les essais.
+- **État** : idées 1 à 5 terminées (pas en prod). Revue du lot « nombres et calculs » de Seconde :
+  passe 1 (erreurs prévues, coups de pouce, specs) commitée sur `feat/idees-format-revue-2de` ;
+  passe 2 (forme) : 68 propositions + 16 questions sur la page à cocher
+  https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af (réponses dans sa base, collection `reponses`).
+- **Prochaine action** : lire les réponses de David (`ArtifactData list reponses`, compter avant de
+  dire « tout est relu »), puis réécrire les modèles retenus, ajouter les outils retenus à
+  `docs/wip/outils-manquants.md`, une PR.
+- **En attente de David** : la page à cocher ; essais « En QCM » et coup de pouce (§ Idée 4, 5).
+- **Pièges en cours** : `hint` pas en prod → migration de contenu seulement après le `deploy:prod`
+  qui livre #2991 ; `migration-contenu.ts` refuse les réglages du modèle (options) ; dédoublonnage
+  du tirage aveugle à la forme.
+- **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`) ;
+  `ubumaths-wt-idees-format` et `-indice-eleve` à retirer après les essais.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -493,3 +495,13 @@ Remarques de la passe 1 à reprendre : indice de « (√a)² » qui souffle pres
 Trois agents en lecture seule (a + publiés, b, c1 + c2) : idée de chaque modèle, meilleure forme,
 outil existant ou à créer, voie (variation ajoutée, modifiée, nouveau modèle). → page à cocher pour
 David (phase 0), rien n'est réécrit avant.
+
+Passe 2 rendue : a + publiés 14 garder / 8 améliorer / 1 refaire ; b 7 / 5 / 1 ; c1 + c2 6 / 10 / 0.
+Défaut réel : 04b1cc7f v4 et 73514cdb v4 refusent 10⁴ pour (−2)⁴ × 5⁴. Choix du 2026-11-20 à
+revoir : 1 (rationaliser), 2 (décomposition), 3 (entier + fraction : la raison était fausse, un
+motif sait exiger p < w), 5 (arrondi), 6 (puissances) ; 4 (téra) tient. Outils proposés : message
+de forme écrit par l'auteur, « sans racine au dénominateur », « produit de facteurs premiers »,
+arrondi trop court à demi-point, |a − b| = |b − a|, réglages du modèle par la migration de contenu,
+règle sur deux cases, encadrement à l'envers, étapes générées. Propositions brutes :
+scratchpad de session `forme-{a,b,c}/propositions.json` (copiées dans la page).
+Page à cocher : https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af
