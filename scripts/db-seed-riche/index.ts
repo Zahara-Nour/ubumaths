@@ -36,11 +36,16 @@ import {
 	filtrerLignes,
 	neutraliser,
 	remplacerIds,
+	requeteOrphelins,
 	valeurPg,
 	verifierCibles,
-	type Ligne
+	type Ligne,
+	type LienEnBase
 } from './regles';
 import { planActivite } from './activite';
+import { ECRITURE_SUIVI, planSuivi, PREFIXE_SUIVI } from './suivi';
+import { creerMoteur } from './moteur';
+import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
 
 const PROF_LOCAL = '11111111-1111-4111-8111-111111111111';
@@ -48,6 +53,8 @@ const ADMIN_LOCAL = '33333333-3333-4333-8333-333333333333';
 const NB_ELEVES = 30;
 const PAGE = 1000;
 const LOT = 300;
+/** Motif des identifiants des élèves fictifs (dans un `like`). */
+const FICTIFS = `'5eed0000-0000-4000-8000-0000000000%'`;
 
 interface Colonne {
 	nom: string;
@@ -132,10 +139,53 @@ async function inserer(db: pg.Client, table: string, colonnes: Colonne[], lignes
 	}
 }
 
+/**
+ * Liens (clés étrangères) des tables copiées, lus dans la base : après la copie, chacun doit
+ * mener quelque part. Rend les liens rompus, avec le nombre de lignes orphelines.
+ */
+async function liensRompus(db: pg.Client, tables: readonly string[]) {
+	const r = await db.query(
+		`select t.relname as "table",
+		        array(select a.attname::text from unnest(c.conkey) with ordinality k(num, rang)
+		                join pg_attribute a on a.attrelid = c.conrelid and a.attnum = k.num
+		               order by k.rang) as colonnes,
+		        nc.nspname as "schemaCible", tc.relname as cible,
+		        array(select a.attname::text from unnest(c.confkey) with ordinality k(num, rang)
+		                join pg_attribute a on a.attrelid = c.confrelid and a.attnum = k.num
+		               order by k.rang) as "colonnesCible"
+		   from pg_constraint c
+		   join pg_class t on t.oid = c.conrelid
+		   join pg_namespace n on n.oid = t.relnamespace
+		   join pg_class tc on tc.oid = c.confrelid
+		   join pg_namespace nc on nc.oid = tc.relnamespace
+		  where c.contype = 'f' and n.nspname = 'public' and t.relname = any($1::text[])
+		  order by t.relname, c.conname`,
+		[tables]
+	);
+	const liens = r.rows as LienEnBase[];
+	const rompus: string[] = [];
+	for (const lien of liens) {
+		const n = (await db.query(requeteOrphelins(lien))).rows[0].n as number;
+		if (n > 0) {
+			rompus.push(
+				`${lien.table}.${lien.colonnes.join('+')} → ${lien.cible} : ${n} ligne(s) orpheline(s)`
+			);
+		}
+	}
+	return { verifies: liens.length, rompus };
+}
+
 async function creerEleves(db: pg.Client): Promise<number> {
-	const classes = (
-		await db.query(`select id from public.classes where join_code like 'LOCAL%' order by name`)
-	).rows.map((c) => c.id as string);
+	// Les classes de l'année en cours seulement : une classe archivée n'a plus de page de suivi,
+	// y ranger des élèves les rendrait invisibles. À défaut (aucune classe active), toutes.
+	const toutes = (
+		await db.query(
+			`select id, school_id, is_active from public.classes where join_code like 'LOCAL%' order by name`
+		)
+	).rows as { id: string; school_id: string | null; is_active: boolean }[];
+	const classes = toutes.some((c) => c.is_active) ? toutes.filter((c) => c.is_active) : toutes;
+	// Un passage précédent a pu ranger les élèves autrement : on repart de zéro.
+	await db.query(`delete from public.class_members where student_id::text like ${FICTIFS}`);
 	for (let n = 1; n <= NB_ELEVES + 1; n++) {
 		const nn = String(n).padStart(2, '0');
 		const id = `5eed0000-0000-4000-8000-0000000000${nn}`;
@@ -162,25 +212,37 @@ async function creerEleves(db: pg.Client): Promise<number> {
 			 on conflict (provider, provider_id) do nothing`,
 			[id, email]
 		);
+		const classe = n <= NB_ELEVES && classes.length > 0 ? classes[(n - 1) % classes.length] : null;
 		await db.query(
 			// status explicite : le trigger crée un compte sans code « en attente » (B7).
-			`insert into public.profiles (id, email, role, full_name, status)
-			 values ($1, $2, 'student', $3, 'approved')
-			 on conflict (id) do update set status = 'approved'`,
-			[id, email, nom]
+			// Prénom et nom : sans eux, les listes du prof affichent « Élève sans nom ». L'école est
+			// celle de la classe (classements et échanges s'arrêtent à l'école).
+			`insert into public.profiles (id, email, role, full_name, status, firstname, lastname, school_id)
+			 values ($1, $2, 'student', $3, 'approved', $4, $5, $6)
+			 on conflict (id) do update set status = 'approved', firstname = excluded.firstname,
+			   lastname = excluded.lastname, school_id = excluded.school_id`,
+			[id, email, nom, 'Élève', n > NB_ELEVES ? 'hors classe' : nn, classe?.school_id ?? null]
 		);
-		if (n <= NB_ELEVES && classes.length > 0) {
+		if (classe) {
 			await db.query(
 				`insert into public.class_members (class_id, student_id) values ($1, $2) on conflict do nothing`,
-				[classes[(n - 1) % classes.length], id]
+				[classe.id, id]
 			);
 		}
 	}
 	return classes.length;
 }
 
-/** Insertion simple, déclencheurs actifs (contrairement au contenu). */
-async function ajouter(db: pg.Client, table: string, lignes: Record<string, unknown>[]) {
+/**
+ * Insertion simple, déclencheurs actifs (contrairement au contenu). Un objet ou un tableau part en
+ * JSON, sauf les colonnes de `tableaux` : ce sont des tableaux Postgres (`text[]`, `boolean[]`).
+ */
+async function ajouter(
+	db: pg.Client,
+	table: string,
+	lignes: Record<string, unknown>[],
+	tableaux: readonly string[] = []
+) {
 	for (let i = 0; i < lignes.length; i += LOT) {
 		const lot = lignes.slice(i, i + LOT);
 		const cols = Object.keys(lot[0]);
@@ -188,7 +250,9 @@ async function ajouter(db: pg.Client, table: string, lignes: Record<string, unkn
 		const tuples = lot.map((l) => {
 			const places = cols.map((c) => {
 				const v = l[c];
-				valeurs.push(v !== null && typeof v === 'object' ? JSON.stringify(v) : v);
+				valeurs.push(
+					v !== null && typeof v === 'object' && !tableaux.includes(c) ? JSON.stringify(v) : v
+				);
 				return `$${valeurs.length}`;
 			});
 			return `(${places.join(', ')})`;
@@ -199,8 +263,6 @@ async function ajouter(db: pg.Client, table: string, lignes: Record<string, unkn
 		);
 	}
 }
-
-const FICTIFS = `'5eed0000-0000-4000-8000-0000000000%'`;
 
 async function genererActivite(db: pg.Client) {
 	// Un passage précédent est effacé d'abord : relancer ne double rien.
@@ -228,7 +290,9 @@ async function genererActivite(db: pg.Client) {
 			   from public.classes c
 			   left join public.class_members m on m.class_id = c.id and m.student_id::text like ${FICTIFS}
 			  where c.join_code like 'LOCAL%'
-			  group by c.id order by c.id`
+			  -- Les classes les plus remplies d'abord : c'est dans les deux premières que se joue
+			  -- l'essentiel de l'activité (élève étoile, élève absent, amitiés, évaluation).
+			  group by c.id order by count(m.student_id) desc, c.id`
 		)
 	).rows as { id: string; eleves: string[] }[];
 	const feuilles = (
@@ -285,7 +349,202 @@ async function genererActivite(db: pg.Client) {
 		 where p.id::text like ${FICTIFS}`
 	);
 	await db.query('commit');
-	return plan;
+	return { plan, classes };
+}
+
+/**
+ * Suivi et travail scolaire (./suivi.ts), déclencheurs ACTIFS : l'état des points du programme et
+ * la maîtrise Python se calculent seuls, comme si les élèves avaient vraiment travaillé.
+ */
+async function genererSuivi(
+	db: pg.Client,
+	activite: Awaited<ReturnType<typeof genererActivite>>,
+	maintenant: Date
+) {
+	const ids = async (sql: string, params: unknown[] = []) =>
+		(await db.query(sql, params)).rows.map((x) => x.id as string);
+
+	// --- Ce que le contenu copié offre -----------------------------------------------------------
+	const niveaux = new Map<string, string | null>(
+		(await db.query('select id, grade from public.classes')).rows.map((k) => [k.id, k.grade])
+	);
+	const classes = [];
+	for (const k of activite.classes) {
+		// Modèles publiés, rangés à un point vivant du programme du niveau de la classe, hors cours :
+		// ceux que l'appli met dans le paquet « Programme » et dans la grille du prof. Deux modèles
+		// par point, pour les points qui en ont au moins deux : un point ne s'acquiert « par
+		// diversité » qu'avec deux modèles différents réussis.
+		const rangs = `select p.point_id, t.id, t.level,
+			        row_number() over (partition by p.point_id order by t.level, t.id) rang,
+			        count(*) over (partition by p.point_id) nb
+			   from public.question_template_points p
+			   join public.question_templates t on t.id = p.template_id
+			   join public.curriculum_points cp on cp.id = p.point_id
+			  where t.status = 'published' and t.type <> 'course_card'
+			    and coalesce(t.options->>'courseQuestion', '') <> 'true'
+			    and cp.grade = $1 and cp.archived_at is null`;
+		const niveau = [niveaux.get(k.id) ?? null];
+		const parPaires = await ids(
+			`select id from (${rangs}) x where nb >= 2 and rang <= 2 order by point_id, rang limit 48`,
+			niveau
+		);
+		const seuls = await ids(`select id from (${rangs}) x order by level, id limit 24`, niveau);
+		const modeles = [...new Set(parPaires.length > 0 ? parPaires : seuls)].slice(0, 24);
+		classes.push({ ...k, modeles });
+	}
+	const evaluationId = (activite.plan.evaluationsAssignees[0]?.evaluation_id as string) ?? null;
+	const items: unknown[] | null = evaluationId
+		? ((
+				await db.query(
+					`select s.items from public.evaluations e join public.series s on s.id = e.series_id where e.id = $1`,
+					[evaluationId]
+				)
+			).rows[0]?.items ?? null)
+		: null;
+	const idsModeles = [
+		...new Set([
+			...classes.flatMap((k) => k.modeles),
+			...(Array.isArray(items) ? items : []).flatMap((i) =>
+				typeof (i as { templateId?: unknown })?.templateId === 'string'
+					? [(i as { templateId: string }).templateId]
+					: []
+			)
+		])
+	];
+	const lignesModeles = (
+		await db.query('select * from public.question_templates where id = any($1::uuid[])', [
+			idsModeles
+		])
+	).rows as QuestionTemplateRow[];
+	const moteur = creerMoteur(lignesModeles, items ?? []);
+
+	const assignations = [];
+	for (const a of activite.plan.assignations) {
+		assignations.push({
+			id: a.id,
+			classe:
+				activite.plan.assignationsClasses.find((x) => x.assignment_id === a.id)?.class_id ?? '',
+			exercicesDeFiche: await ids(
+				`select id from public.worksheet_exercises where worksheet_id = $1 order by position, id`,
+				[a.worksheet_id]
+			)
+		});
+	}
+	const carnets = (
+		await db.query(
+			`select n.id, coalesce(array(select c->>'id' from jsonb_array_elements(n.content->'cells') c
+			                             where c->>'type' = 'checkpoint'), '{}') controles
+			   from public.python_notebooks n where not n.is_template order by n.id`
+		)
+	).rows as { id: string; controles: string[] }[];
+	const devinette = (
+		await db.query(
+			`select id, difficulty from public.riddles order by (status = 'published') desc, riddle_number, id limit 1`
+		)
+	).rows[0] as { id: string; difficulty: number } | undefined;
+	const observables = (
+		await db.query(
+			`select o.id, o.observable_code code, s.math_competence_id competence
+			   from public.observables o join public.math_competence_subdimensions s on s.id = o.subdimension_id
+			  order by s.math_competence_id, o.observable_code`
+		)
+	).rows as { id: string; code: string; competence: string }[];
+
+	const plan = planSuivi({
+		prof: PROF_LOCAL,
+		classes,
+		horsClasse: `5eed0000-0000-4000-8000-0000000000${String(NB_ELEVES + 1).padStart(2, '0')}`,
+		maintenant,
+		graine: 20261122,
+		evaluation: evaluationId && items ? { id: evaluationId, items } : null,
+		tirer: moteur.tirer,
+		corriger: moteur.corriger,
+		attendues: moteur.attendues,
+		assignations,
+		exercices: await ids('select id from public.exercises order by id limit 4'),
+		python: {
+			exercices: await ids('select id from public.python_exercises order by title, id limit 4'),
+			fichier: (await ids('select id from public.python_files order by id limit 1'))[0] ?? null,
+			carnets
+		},
+		devinette: devinette ? { id: devinette.id, difficulte: devinette.difficulty } : null,
+		observables
+	});
+
+	// --- Un passage précédent est effacé d'abord : relancer ne double rien ------------------------
+	await db.query('begin');
+	const invente = `id::text like '${PREFIXE_SUIVI}-%'`;
+	const parEleve: [table: string, colonne: string][] = [
+		// Les réponses et les questions tirées partent avec leur séance (suppression en cascade).
+		['test_sessions', 'user_id'],
+		['skill_attempts', 'student_id'],
+		['student_point_state', 'student_id'],
+		['student_observable_state', 'student_id'],
+		['student_competence_level', 'student_id'],
+		['student_last_visits', 'student_id'],
+		['student_print_settings', 'student_id'],
+		['srs_review_sessions', 'user_id'],
+		['srs_card_stats', 'user_id'],
+		// Cartes et sections partent avec leur paquet.
+		['srs_decks', 'owner_id'],
+		['python_exercise_submissions', 'student_id'],
+		['python_exercise_mastery', 'student_id'],
+		['python_notebook_checkpoint_runs', 'user_id'],
+		['riddle_attempts', 'student_id'],
+		['worksheet_error_reports', 'student_id'],
+		['worksheet_assignment_students', 'student_id'],
+		['exercise_completions', 'student_id']
+	];
+	for (const [table, colonne] of parEleve) {
+		await db.query(`delete from public."${table}" where "${colonne}"::text like ${FICTIFS}`);
+	}
+	// Ce que le prof local assigne : comme pour les fiches, tout ce qu'il a assigné est remplacé.
+	const parProf: [table: string, colonne: string][] = [
+		['python_exercise_assignments', 'assigned_by'],
+		['python_file_assignments', 'assigned_by'],
+		['python_notebook_assignments', 'shared_by'],
+		['riddle_assignments', 'assigned_by'],
+		['exercise_assignments', 'assigned_by']
+	];
+	for (const [table, colonne] of parProf) {
+		await db.query(`delete from public."${table}" where "${colonne}" = $1`, [PROF_LOCAL]);
+	}
+	// Les paquets que le prof a faits lui-même en local restent : seuls les inventés partent.
+	for (const table of [
+		'srs_deck_assignments',
+		'srs_decks',
+		'worksheet_assignment_exercise_settings'
+	]) {
+		await db.query(`delete from public."${table}" where ${invente}`);
+	}
+	// Notifications créées par le déclencheur des signalements, pour le prof local.
+	await db.query(
+		`delete from public.notifications
+		  where is_system and system_event_type = 'error_reported' and target_user_ids = array[$1::uuid]`,
+		[PROF_LOCAL]
+	);
+
+	// --- Écriture, dans l'ordre des liens ---------------------------------------------------------
+	for (const { partie, table, tableaux } of ECRITURE_SUIVI) {
+		await ajouter(db, table, plan[partie], tableaux);
+	}
+
+	// Gidouilles gagnées aux devinettes : la validation du prof les ajoute au compteur de l'élève.
+	for (const t of plan.devinettesTentatives.filter((x) => x.gidouilles_awarded > 0)) {
+		await db.query('update public.profiles set gidouilles = gidouilles + $1 where id = $2', [
+			t.gidouilles_awarded,
+			t.student_id
+		]);
+	}
+	await db.query('commit');
+
+	const calcules = (
+		await db.query(
+			`select (select count(*)::int from public.student_point_state where student_id::text like ${FICTIFS}) points,
+			        (select count(*)::int from public.python_exercise_mastery where student_id::text like ${FICTIFS}) python`
+		)
+	).rows[0] as { points: number; python: number };
+	return { plan, calcules };
 }
 
 async function main() {
@@ -404,6 +663,15 @@ async function main() {
 				`  ${table.padEnd(38)} ${String(lignes.length).padStart(5)}${ecartees ? `  (${ecartees} écartée(s) : un élève)` : ''}`
 			);
 		}
+		// Déclencheurs suspendus, donc liens non vérifiés par Postgres : on les vérifie ici, avant
+		// de valider. Un lien rompu annule toute la copie (la base garde son contenu d'avant).
+		const liens = await liensRompus(db, COPIE);
+		if (liens.rompus.length > 0) {
+			throw new Error(
+				`Contenu incohérent après la copie, rien n’est écrit :\n  ${liens.rompus.join('\n  ')}`
+			);
+		}
+		console.log(`  ${liens.verifies} liens vérifiés, aucune ligne orpheline.`);
 		await db.query('commit');
 
 		// Rejoué après la copie : la classe et la configuration de dev, effacées par
@@ -411,13 +679,28 @@ async function main() {
 		await db.query(readFileSync('supabase/seed/dev_accounts.sql', 'utf8'));
 		await marquerContenuDeProd(db);
 		const nbClasses = await creerEleves(db);
-		const plan = await genererActivite(db);
+		const activite = await genererActivite(db);
+		const plan = activite.plan;
+		const suivi = await genererSuivi(db, activite, new Date());
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
 		console.log(
 			`✅ ${NB_ELEVES} élèves fictifs répartis dans ${nbClasses} classe(s), plus un hors classe : eleve01…eleve${NB_ELEVES + 1}@local.test / local-eleve`
 		);
 		console.log(
 			`✅ Activité : ${plan.assignations.length} feuille(s) assignée(s), ${plan.maitrise.length} progressions, ${plan.gidouilles.length} mouvements de Gidouilles, ${plan.bonus.length} bonus, ${plan.avertissements.length} avertissement(s), ${plan.messages.length} messages, ${plan.amities.length} amitiés, ${plan.evaluationsAssignees.length} évaluation assignée.`
+		);
+		const s = suivi.plan;
+		console.log(
+			`✅ Suivi : ${s.seances.length} copie(s) d’évaluation (${s.reponses.length} réponses), ${s.traces.length} traces d’entraînement → ${suivi.calcules.points} états de points du programme, ${s.competences.length} niveaux de compétence.`
+		);
+		console.log(
+			`✅ Révisions : ${s.paquets.length} paquets, ${s.cartes.length} cartes, ${s.fiches.length} fiches de mémorisation, ${s.seancesRevision.length} séances.`
+		);
+		console.log(
+			`✅ Python : ${s.pythonAssignes.length} exercice(s) assigné(s), ${s.pythonSoumissions.length} soumissions → ${suivi.calcules.python} maîtrises, ${s.pythonControles.length} points de contrôle de carnet. Devinettes : ${s.devinettesTentatives.length} tentative(s).`
+		);
+		console.log(
+			`✅ Fiches et exercices : ${s.fichesEleves.length} élève(s) nommé(s), ${s.signalements.length} signalement(s), ${s.exercicesAssignes.length} exercice(s) assigné(s), ${s.exercicesVus.length} vu(s).`
 		);
 		const etat = await db.query(
 			`select (select count(*)::int from supabase_migrations.schema_migrations) migrations,
