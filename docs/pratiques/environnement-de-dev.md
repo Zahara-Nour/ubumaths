@@ -388,13 +388,14 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
   d'une colonne que la prod n'a pas. Une migration destructive, qui se joue après la mise en prod,
   passe par `--migration-apres <horodatage>` (répétable ; un horodatage qui n'est pas en attente
   arrête aussi) et le script rappelle de la jouer à la fin. Prod illisible : arrêt, rien n'est créé.
-  Migration jouée en prod mais absente du commit : signalée, la livraison continue.
+  Migration jouée en prod mais absente du commit : signalée, la livraison continue. Aucune migration
+  lue dans le commit : arrêt aussi (le contrôle ne contrôlerait rien).
 - **Après le push de `production`**, verrou « deploy » rendu : le script attend le statut « Vercel »
   du commit de version (au plus 20 min, `DEPLOY_PROD_ATTENTE_SITE_MAX`), puis que
   `/_app/version.json` du site change (la nouvelle construction est servie), puis lance
   `scripts/check-production-health.ts` (les pages du plan du site). Construction en échec, attente
   dépassée ou page qui ne répond pas 200 : sortie en erreur, **sans retour arrière** (`production`
-  reste avancée, David décide). Mode maintenance actif (accueil en 503) : dit, pages non vérifiées,
+  reste avancée, David décide). Mode maintenance actif (accueil en 503 avec la page de maintenance ; un 503 sans elle est une panne) : dit, pages non vérifiées,
   pas une erreur. `pnpm deploy:prod --verifier` rejoue ce contrôle seul, sans rien livrer.
 - CI en cours sur main : `deploy:prod` l'attend sous le verrou « deploy » (au plus 45 min), au lieu
   de s'arrêter ; les sessions Claude ne mergent plus, la CI ne repart donc pas de zéro. `--essai`

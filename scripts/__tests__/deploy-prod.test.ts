@@ -53,6 +53,8 @@ let local: string;
 let etats: string;
 let numero = 0;
 let ciVersion = 'success';
+/** La migration du premier commit de chaque dépôt jetable, jouée en prod. */
+const BASE = '20250101000000';
 /** Variables d'un test : état de Vercel, du site, des pages (cf. les bouchons). */
 let decor: Record<string, string> = {};
 
@@ -246,9 +248,11 @@ printf '{"local":"20990101000000","remote":"","time":"x"}]}\n'
 case "$*" in
 *version.json*)
 	[ -n "\${BUILD_FIGE:-}" ] && { echo '{"version":"111"}'; exit 0; }
+	# $SITE_MUET : le site ne répond plus une fois production avancée
+	if [ -n "\${SITE_MUET:-}" ] && git --git-dir "$GITHUB_NU" rev-parse -q --verify refs/heads/production >/dev/null; then exit 22; fi
 	p=$(git --git-dir "$GITHUB_NU" rev-parse -q --verify refs/heads/production | tr -dc 0-9 | cut -c1-9)
 	echo "{\\"version\\":\\"1\${p:-0}\\"}" ;;
-*) printf '%s' "\${ACCUEIL:-200}" ;;
+*) printf '%s\\n%s' "\${CORPS:-<title>Accueil</title>}" "\${ACCUEIL:-200}" ;;
 esac
 `
 	);
@@ -286,7 +290,9 @@ echo "$(git rev-parse HEAD) $CI_VERSION" >> "$ETATS_CI"
 	git(local, 'init', '-q');
 	git(local, 'symbolic-ref', 'HEAD', 'refs/heads/main');
 	git(local, 'remote', 'add', 'origin', `file://${github}`);
-	pousser('success', 'src/app.ts');
+	// Le dépôt a toujours des migrations : sans aucune, le script refuse de livrer.
+	writeFileSync(join(racine, 'migrations-prod'), `${BASE}\n`);
+	pousser('success', 'src/app.ts', `supabase/migrations/${BASE}_base.sql`);
 	ciVersion = 'success';
 });
 
@@ -696,7 +702,7 @@ describe('deploy-prod.sh — un seul déploiement à la fois (verrou « deploy �
 
 /** Un commit vert qui apporte ces migrations ; `jouees` = celles déjà en prod. */
 function pousserMigrations(migrations: string[], jouees: string[]): string {
-	writeFileSync(join(racine, 'migrations-prod'), jouees.map((m) => `${m}\n`).join(''));
+	writeFileSync(join(racine, 'migrations-prod'), [BASE, ...jouees].map((m) => `${m}\n`).join(''));
 	return pousser('success', ...migrations.map((m) => `supabase/migrations/${m}_exemple.sql`));
 }
 
@@ -705,7 +711,7 @@ describe('deploy-prod.sh — avant : les migrations jouées en prod', () => {
 		pousserMigrations(['20260101000000', '20260102000000'], ['20260101000000', '20260102000000']);
 		const r = deployer();
 		expect(r.status, r.sortie).toBe(0);
-		expect(r.sortie).toContain('✅ migrations : les 2 du commit à livrer sont jouées en prod');
+		expect(r.sortie).toContain('✅ migrations : les 3 du commit à livrer sont jouées en prod');
 		expect(production()).toBe(version().sha);
 	});
 
@@ -835,11 +841,29 @@ describe('deploy-prod.sh — après : la construction de Vercel et le site', () 
 
 	it('mode maintenance : dit, pages non vérifiées, pas une panne', () => {
 		pousser('success', 'src/a.ts');
-		decor = { ACCUEIL: '503', PAGES_ROUGES: '1' };
+		decor = { ACCUEIL: '503', CORPS: '<title>Maintenance | Chiphre</title>', PAGES_ROUGES: '1' };
 		const r = deployer();
 		expect(r.status, r.sortie).toBe(0);
 		expect(r.sortie).toContain('mode maintenance est actif');
 		expect(r.sortie).not.toContain('/automaths');
+	});
+
+	it('503 sans la page de maintenance : une panne, pas la maintenance', () => {
+		pousser('success', 'src/a.ts');
+		decor = { ACCUEIL: '503', PAGES_ROUGES: '1' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).not.toContain('maintenance est actif');
+		expect(r.sortie).toContain('/automaths → 500');
+	});
+
+	it('le site ne répond plus après le push : pas pris pour la nouvelle construction', () => {
+		pousser('success', 'src/a.ts');
+		decor = { SITE_MUET: '1' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('ne répond pas');
+		expect(r.sortie).not.toContain('Tout répond');
 	});
 
 	it('rien à livrer, ou --essai : aucune vérification du site', () => {
@@ -849,6 +873,7 @@ describe('deploy-prod.sh — après : la construction de Vercel et le site', () 
 		rmSync(`${etats}.vercel`);
 		const r = deployer();
 		expect(r.sortie).toContain('rien à livrer');
+		expect(r.sortie).toContain('pnpm deploy:prod --verifier');
 		expect(existsSync(`${etats}.vercel`)).toBe(false);
 	});
 
@@ -865,5 +890,16 @@ describe('deploy-prod.sh — après : la construction de Vercel et le site', () 
 		expect(r.sortie).toMatch(/✅ v0\.\d+\.0 en ligne/);
 		expect(production()).toBe(v.sha);
 		expect(git(local, 'tag')).toBe(tags);
+	});
+
+	it('aucune migration dans le commit à livrer : contrôle impossible, arrêt', () => {
+		git(local, 'rm', '-q', '-r', 'supabase');
+		git(local, 'commit', '-q', '-m', 'sans migrations');
+		git(local, 'push', '-q', 'origin', 'HEAD:main');
+		appendFileSync(etats, `${git(local, 'rev-parse', 'HEAD')} success\n`);
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('Aucune migration trouvée');
+		expect(production()).toBeNull();
 	});
 });

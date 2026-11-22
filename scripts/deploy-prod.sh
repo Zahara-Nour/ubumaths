@@ -129,7 +129,7 @@ etat_vercel() {
 # ici : `production` a déjà avancé, et c'est David qui décide de la suite.
 REVOIR="Rien n'est défait. Pour revérifier seul : pnpm deploy:prod --verifier"
 verifier_le_site() {
-	local sha="$1" avant="$2" attendu=0 lu etat lien sortie nom
+	local sha="$1" avant="$2" attendu=0 lu etat lien sortie nom servi accueil
 	nom="$(git tag --points-at "$sha" | grep '^v' | head -1 || true)"
 	[ -n "$nom" ] || nom="$(decrire "$sha")"
 	while :; do
@@ -150,16 +150,25 @@ verifier_le_site() {
 	done
 	# Construit ne veut pas dire servi : le domaine bascule après les contrôles de Vercel.
 	if [ -n "$avant" ]; then
-		while [ "$(build_en_ligne)" = "$avant" ]; do
-			[ "$attendu" -lt "$ATTENTE_SITE_MAX" ] ||
+		# Lecture vide (site injoignable un instant, pendant la bascule) : ce n'est
+		# pas « la nouvelle construction », on relit.
+		while :; do
+			servi="$(build_en_ligne)"
+			[ -z "$servi" ] || [ "$servi" = "$avant" ] || break
+			if [ "$attendu" -ge "$ATTENTE_SITE_MAX" ]; then
+				[ -n "$servi" ] || arreter "⛔ Vercel a construit $nom, mais $SITE ne répond pas." "$REVOIR"
 				arreter "⏳ Vercel a construit $nom, mais $SITE sert encore l'ancienne construction." "$REVOIR"
-			echo "⏳ $SITE sert encore l'ancienne construction… (${attendu} s)"
+			fi
+			echo "⏳ $SITE ne sert pas encore la nouvelle construction… (${attendu} s)"
 			sleep "$PAUSE"
 			attendu=$((attendu + (PAUSE > 0 ? PAUSE : 1)))
 		done
 	fi
-	# Mode maintenance (pnpm maintenance:on) : tout répond 503, ce n'est pas une panne.
-	if [ "$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$SITE/" || true)" = 503 ]; then
+	# Mode maintenance (pnpm maintenance:on) : tout répond 503 avec la page de
+	# maintenance (src/lib/server/maintenance.ts), ce n'est pas une panne. Un 503
+	# sans cette page en est une : le contrôle des pages le dira.
+	accueil="$(curl -s -m 20 -w '\n%{http_code}' "$SITE/" || true)"
+	if [ "$(printf '%s\n' "$accueil" | tail -1)" = 503 ] && printf '%s\n' "$accueil" | grep -q '<title>Maintenance'; then
 		echo "🚧 $nom est construite, mais le mode maintenance est actif ($SITE répond 503) : pages non vérifiées."
 		echo "   Après pnpm maintenance:off : pnpm deploy:prod --verifier"
 		return 0
@@ -189,17 +198,19 @@ fi
 # Le verrou ne couvre que la livraison (étapes 0 à 4). Une fois `production`
 # avancée, il est rendu : la vérification du site (étape 5) attend Vercel
 # plusieurs minutes sans rien créer, les merges peuvent reprendre. Le script sous
-# verrou écrit le commit livré dans $DEPLOY_PROD_LIVRE ; fichier vide = rien de livré.
+# verrou écrit dans $DEPLOY_PROD_LIVRE le commit livré et la construction en ligne
+# juste avant le push (lue plus tôt, une autre construction passée pendant
+# l'attente de la CI ferait croire la nouvelle déjà servie) ; fichier vide = rien de livré.
 if [ "$essai" = 0 ] && [ -z "${DEPLOY_PROD_SOUS_VERROU:-}" ]; then
 	livre="$(mktemp)"
 	trap 'rm -f "$livre"' EXIT
-	build_avant="$(build_en_ligne)"
 	code=0
 	DEPLOY_PROD_SOUS_VERROU=1 DEPLOY_PROD_LIVRE="$livre" python3 "$(dirname "${BASH_SOURCE[0]}")/lib/lock.py" \
 		deploy "pnpm deploy:prod" -- bash "${BASH_SOURCE[0]}" "$@" || code=$?
 	[ "$code" = 0 ] || exit "$code"
 	[ -s "$livre" ] || exit 0
-	verifier_le_site "$(cat "$livre")" "$build_avant"
+	read -r livre_sha build_avant <"$livre" || true
+	verifier_le_site "$livre_sha" "${build_avant:-}"
 	[ -z "$migrations_apres" ] ||
 		echo "👉 Reste à jouer en prod, laissée(s) pour après la mise en prod :$migrations_apres (pnpm db:migrate)."
 	exit 0
@@ -309,14 +320,17 @@ sans_ci() {
 # prod) ; un horodatage qui n'est pas en attente arrête aussi (faute de frappe).
 controler_migrations() {
 	local fichiers commit lu prod attente avance reste m
-	fichiers="$(git ls-tree --name-only "$1" supabase/migrations/ 2>/dev/null |
-		grep -E '^supabase/migrations/[0-9]{14}_.*\.sql$' || true)"
+	# `<commit>:<chemin>` part de la racine du dépôt, quel que soit le dossier courant.
+	fichiers="$(git ls-tree --name-only "$1:supabase/migrations" 2>/dev/null |
+		grep -E '^[0-9]{14}_.*\.sql$' | sed 's|^|supabase/migrations/|' || true)"
 	commit="$(printf '%s\n' "$fichiers" | grep -oE '/[0-9]{14}_' | tr -d '/_' | sort -u || true)"
+	# Aucune migration lue dans le commit : le contrôle ne contrôlerait rien.
+	[ -n "$commit" ] || arreter "⛔ Aucune migration trouvée dans $(decrire "$1") (supabase/migrations)." "Contrôle impossible, donc rien n'est créé."
 	if ! lu="$($MIGRATIONS_PROD 2>&1)"; then
 		printf '%s\n' "$lu" | tail -3
 		arreter "⛔ Impossible de lire les migrations jouées en prod." "Contrôle non fait, donc rien n'est créé. Vérifier : pnpm exec supabase migration list --linked"
 	fi
-	prod="$(printf '%s\n' "$lu" | grep -oE '"remote":"[0-9]{14}"' | grep -oE '[0-9]{14}' | sort -u || true)"
+	prod="$(printf '%s\n' "$lu" | grep -oE '"remote"[[:space:]]*:[[:space:]]*"[0-9]{14}"' | grep -oE '[0-9]{14}' | sort -u || true)"
 	attente="$(comm -23 <(printf '%s\n' "$commit") <(printf '%s\n' "$prod") | grep . || true)"
 	avance="$(comm -13 <(printf '%s\n' "$commit") <(printf '%s\n' "$prod") | grep . || true)"
 	reste="$attente"
@@ -411,6 +425,7 @@ if git ls-remote --exit-code origin refs/heads/production >/dev/null 2>&1; then
 	prod="$(git rev-parse origin/production)"
 	[ "$prod" != "$cible" ] || {
 		echo "✅ production est déjà sur $(decrire "$cible") : rien à livrer."
+		echo "   Le site n'est pas revérifié ici : pnpm deploy:prod --verifier"
 		exit 0
 	}
 	git merge-base --is-ancestor "$prod" "$cible" ||
@@ -468,6 +483,7 @@ while :; do
 done
 
 # --- 4. la mise en prod -------------------------------------------------------
+build_avant="$(build_en_ligne)"
 git push -q origin "$version:refs/heads/production"
 echo "🚀 production → $(decrire "$version"). Vercel construit."
-[ -z "${DEPLOY_PROD_LIVRE:-}" ] || echo "$version" >"$DEPLOY_PROD_LIVRE"
+[ -z "${DEPLOY_PROD_LIVRE:-}" ] || echo "$version $build_avant" >"$DEPLOY_PROD_LIVRE"
