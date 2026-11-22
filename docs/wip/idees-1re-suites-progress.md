@@ -37,3 +37,15 @@ _Mis à jour le 2026-11-22, rubrique prise._
 - Modèles publiés à réserver au tableau dès les verdicts : 45da9678, 7703e625, cea65372, 84114cb2,
   d2943133, 727fb88a, cf51cb93, 85afd455, 65e96f31, e67b1cbd, 44b32cad, b72fae4a, 5042401b,
   19961e67 (seulement ceux que David retient).
+
+### 2026-11-22 — verdicts de la phase 0
+
+- David : « je valide toutes tes recommandations dans la page à cocher » (message du 2026-11-22 ;
+  la base de la page est restée vide). Donc : Q1 non (pas d'arithmético-géométrique avec suite
+  auxiliaire en 1re), Q2 oui (monotone à partir d'un rang), Q3 plus tard (questions enchaînées :
+  rien dans `outils-manquants.md`) ; fiches 1 à 14 oui, 15 plus tard, 16 non.
+- Les 14 modèles publiés sont réservés au tableau ; export de prod dans
+  `scripts/questions/1re-suites-publies/` (commit 2a85b7b809).
+- Lot : `scripts/questions/1re-suites-a/` (4 nouveaux modèles : fiches 3, 11, 12, 13, script
+  `docs/wip/questions/lot-1re-suites-a.py`) et variations ajoutées à la fin des 14 fichiers publiés
+  (fiches 1, 2, 4 à 10, 14).
