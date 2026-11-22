@@ -6,17 +6,16 @@ Idées reprises d'ailleurs, rubrique « Fonctions polynomiales de degré 2 » de
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, lot écrit (avant la PR)._
+_Mis à jour le 2026-11-22, migrations écrites (PR ouverte)._
 
-- **État** : lot écrit, vérifié et poussé sur la branche `docs/idees-1re-second-degre` (7 modèles
-  neufs, 13 variations de 9 publiés) ; pas encore de PR · **Prochaine action** : après la
-  commande de David, commiter les ids écrits en tête des 7 fichiers, puis migrations de rangement
-  (nœud + point, voir les points prévus dans l'en-tête de `idees-1re-second-degre-neufs.py`) et de
-  contenu (`migration-contenu.ts --dir scripts/questions/idees-1re-second-degre-publies`), tests
-  d'intégration, `security-auditor`, PR · **En attente de David** : depuis le worktree, `pnpm tsx
-scripts/create-questions.ts --dir scripts/questions/idees-1re-second-degre-neufs --publier`
-  (brouillons en prod) · **Pièges en cours** : messages des erreurs prévues réécrits avec espaces
-  (`2 a = 2`) ; 18e26873 a `orderIndependent` (aucune erreur prévue) · **Worktree / branche** :
+- **État** : 7 brouillons créés en prod (ids commités) ; migrations de contenu (13 variations, 9
+  publiés) et de rangement (7 brouillons) écrites, tests d'intégration verts et vérifiés rouges sans
+  elles, `security-auditor` sans finding ; PR ouverte · **Prochaine action** : CI verte → merge →
+  `db:migrate` depuis `main` (`migration list --linked` d'abord : une autre migration en attente =
+  stop), puis relecture dans `/dev/modeles` (`?noeud=` / `?point=` pour les brouillons, série de
+  relecture pour les 9 publiés) · **En attente de David** : rien avant le merge · **Pièges en
+  cours** : F5 (f900ea05, 1SPE-402) rangé sur « variations », alors que son voisin 1acb6d47 est
+  sur « parabole » ; 18e26873 a `orderIndependent` · **Worktree / branche** :
   `../ubumaths-wt-idees-1re-second-degre`, `docs/idees-1re-second-degre`.
 
 ## Historique
@@ -69,3 +68,17 @@ scripts/create-questions.ts --dir scripts/questions/idees-1re-second-degre-neufs
 - Écarts au plan : la factorisation à racines irrationnelles (604f83b7) n'a pas de forme imposée :
   le motif `u*($x+v)*($x+w)` refuse `x-2-\sqrt{3}` ; la contrainte `form` (stricte par défaut)
   garde la forme factorisée. Pas d'erreur inventée : certaines cases n'en ont qu'une ou deux.
+
+### 2026-11-22 — brouillons en prod, migrations
+
+- David a lancé `create-questions --publier` : 7 brouillons créés en prod, ids commités.
+- Contenu : `20261122183232_questions_idees_1re_second_degre_publies_contenu.sql` (+13 variations
+  sur 9 publiés, fixture rejouée par `migrations-contenu-publie.test.ts`).
+- Rangement : `20261122183241_questions_1re_second_degre_rangement_tags.sql` (test
+  `questions-1re-second-degre-rangement-tags.test.ts`). F1, F4 → « Algèbre > Équations : second
+  degré > discriminant » ; F2, F3 → « Fonctions > Second degré > formes » ; F5, F6 → « Fonctions >
+  Second degré > variations » ; F7 → « Algèbre > Inéquations : second degré ». Voisins publiés
+  rangés de même, sauf celui de 1SPE-402 (sur « parabole ») : F5 lit l'extremum dans un tableau de
+  variations.
+- Preuve : corps des deux migrations vidé → 10 tests rouges ; restaurés → 59 verts.
+  `security-auditor` : aucun finding.
