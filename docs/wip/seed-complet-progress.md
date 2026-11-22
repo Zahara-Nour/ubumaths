@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR 4 en cours (branche `feat/seed-complet-echanges`)._
+_Mis à jour le 2026-11-22, après #3011._
 
-- **État** : PR 1 à 3 mergées (#2977, #2980, #2981, #2986, #2989). **PR 4 échanges et famille (§ 11-12)** :
-  codée, relue (aucun bloquant), prouvée sur copie isolée ; PR à ouvrir puis merger CI verte.
-  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`.
-- **Prochaine action** : après le merge de la PR 4, PR 5 images (§ 5 : celles du contenu, jamais les
-  pièces jointes), puis doc et versement.
+- **État** : PR 1 à 4 mergées (#2977, #2980, #2981, #2986, #2989, **#3011 échanges et famille, § 11-12**).
+  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
+  (pas lancé).
+- **Prochaine action** : PR 5 images (§ 5 : celles du contenu, jamais les pièces jointes), par sa
+  phase 0, puis doc et versement. Nouveau worktree à créer.
 - **En attente de David** : la messagerie privée de l'appli est cassée (§ 12, « trouvé grâce au
   seed ») : PR à part pour la réparer, ou seulement la noter ?
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
