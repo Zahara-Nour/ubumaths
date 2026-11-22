@@ -1,18 +1,19 @@
 name: Core Web Vitals
 
-# Le 2026-10-11, Speed Insights montrait un FCP p75 de 3,4 s sur l'accueil pour
-# un TTFB de 0,5 s (94 chunks JS préchargés volaient la bande passante aux CSS,
-# corrigé par #1073). Personne ne l'avait vu : il fallait aller le chercher.
+# Le 2026-10-11, le FCP p75 de l'accueil était de 3,4 s pour un TTFB de 0,5 s
+# (94 chunks JS préchargés volaient la bande passante aux CSS, corrigé par
+# #1073). Personne ne l'avait vu : il fallait aller le chercher.
 #
-# Ce job relève chaque mois les mesures RÉELLES des visiteurs (Speed Insights,
-# 28 jours, 75ᵉ centile), les classe selon les seuils de Google et publie le
-# rapport dans une issue. Il ne diagnostique rien : une page au rouge se
-# diagnostique à la main (docs/pratiques/core-web-vitals.md).
+# Ce job relève chaque mois les mesures RÉELLES des visiteurs (nos mesures, table
+# web_vital_samples, 28 jours, 75ᵉ centile), les classe selon les seuils de
+# Google et publie le rapport dans une issue. Il ne diagnostique rien : une page
+# au rouge se diagnostique à la main (docs/pratiques/core-web-vitals.md).
 #
-# Mensuel : ~150 mesures par mois, un relevé plus serré ne serait que du bruit.
+# Il ne lit pas la base : il appelle GET /api/web-vitals/releve, qui ne rend que
+# des résultats calculés (p75 et nombre de mesures par page).
 #
-# Secret requis : VERCEL_TOKEN (jeton Vercel, portée : l'équipe du projet).
-# Les identifiants ci-dessous ne sont pas secrets (ils figurent dans .vercel/).
+# Secret requis : WEB_VITALS_RELEVE_TOKEN, le même que la variable d'environnement
+# du même nom sur Vercel (production). Il n'ouvre que cette route.
 
 on:
   schedule:
@@ -22,10 +23,6 @@ on:
 permissions:
   contents: read
   issues: write # pour publier le relevé
-
-env:
-  VERCEL_ORG_ID: team_gn9W4dSrGih1EsxVMNUg3fZt
-  VERCEL_PROJECT_ID: prj_7AcalefMmOpS5jANEfVh4LF4t6Hr
 
 jobs:
   releve:
@@ -49,13 +46,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Version épinglée : la sortie JSON de `vercel metrics` est récente.
-      - name: Install Vercel CLI
-        run: npm install --global vercel@63.1.0
-
-      - name: Relevé Speed Insights
+      - name: Relevé de nos mesures
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          WEB_VITALS_RELEVE_TOKEN: ${{ secrets.WEB_VITALS_RELEVE_TOKEN }}
         run: npx tsx scripts/releve-web-vitals.ts 28 > releve.md
 
       # Une issue par mois ; la précédente est refermée en pointant vers la

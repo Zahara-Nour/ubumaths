@@ -130,6 +130,13 @@ const envSchema = z
 		// Cron job authentication
 		CRON_SECRET: z.string().min(16, 'Cron secret must be at least 16 characters').optional(),
 
+		// Relevé des mesures de performance (GET /api/web-vitals/releve) : jeton dédié,
+		// le seul secret que reçoit le workflow GitHub `web-vitals.yml`
+		WEB_VITALS_RELEVE_TOKEN: z
+			.string()
+			.min(32, 'Web vitals report token must be at least 32 characters')
+			.optional(),
+
 		// ====================================================================
 		// File Uploads Configuration
 		// ====================================================================
