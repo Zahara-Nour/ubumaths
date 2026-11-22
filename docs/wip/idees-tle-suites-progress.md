@@ -5,17 +5,17 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3001._
+_Mis à jour le 2026-11-22, après #3003._
 
-- **État** : tout est en prod en brouillon ou publié : 7 neufs rangés et tagués (5 + 2 déplacés,
-  #3001), 9 variations sur 6 publiés ; garde des niveaux verte · **Prochaine action** : série de
-  relecture des 6 publiés (`scripts/series/T_SPE-relecture-suites-publies.json`, branche en
-  cours), puis relecture de David dans `/dev/modeles` (brouillons par `?point=` : TSPE-383, 385,
-  386, 392, 577, 578), lecture des verdicts en base, corrections, `publier-lot.ts` · **En attente
-  de David** : enregistrer la série (`creer-serie.ts --publier`), puis la relecture · **Pièges en
-  cours** : vérifier les bornes de **tous** les points d'un publié (autres niveaux compris) avant d'y
-  ajouter une variation · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
-  `feat/idees-tle-suites-serie-relecture`.
+- **État** : tout est en prod (7 neufs en brouillon, rangés et tagués ; 9 variations sur 6
+  publiés) ; série de relecture enregistrée par David (`5189a0c6`, #3003) · **Prochaine action** :
+  lire les verdicts en base (`question_template_reviews`, `reviewed_at` après le 2026-11-22 14 h),
+  corriger, puis `publier-lot.ts --dir scripts/questions/idees-tle-suites-neufs` en simulation
+  (David lance `--publier`) · **En attente de David** : la relecture dans `/dev/modeles`
+  (`?serie=5189a0c6-3c03-4691-bfe4-4b729c855095` ; brouillons : `?point=` TSPE-383, 385, 386, 392,
+  577, 578) · **Pièges en cours** : vérifier les bornes de **tous** les points d'un publié (autres
+  niveaux compris) avant d'y ajouter une variation · **Worktree / branche** : aucun (le suivant sur `origin/main`, sous le
+  même nom, pour les corrections).
 
 ## Historique
 
@@ -89,3 +89,8 @@ _Mis à jour le 2026-11-22, après #3001._
 - df02afc2 (somme, q ⩾ 2 ou q ⩽ −1) → TSPE-383, « suites géométriques » ; ab0f98c4 (gendarmes avec
   cos n ou sin n) → TSPE-578, « comparaison et encadrement ». Vérifié en prod. Garde des niveaux :
   aucun niveau manquant.
+
+### 2026-11-22 — #3003 mergée
+
+- Série de relecture des 6 publiés complétés enregistrée par David (`5189a0c6`), fichier commité.
+  Relecture en prod, sur `/dev/modeles`.
