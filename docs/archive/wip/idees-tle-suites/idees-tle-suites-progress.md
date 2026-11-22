@@ -5,17 +5,12 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3003._
+_Mis à jour le 2026-11-22, chantier clos._
 
-- **État** : tout est en prod (7 neufs en brouillon, rangés et tagués ; 9 variations sur 6
-  publiés) ; série de relecture enregistrée par David (`5189a0c6`, #3003) · **Prochaine action** :
-  lire les verdicts en base (`question_template_reviews`, `reviewed_at` après le 2026-11-22 14 h),
-  corriger, puis `publier-lot.ts --dir scripts/questions/idees-tle-suites-neufs` en simulation
-  (David lance `--publier`) · **En attente de David** : la relecture dans `/dev/modeles`
-  (`?serie=5189a0c6-3c03-4691-bfe4-4b729c855095` ; brouillons : `?point=` TSPE-383, 385, 386, 392,
-  577, 578) · **Pièges en cours** : vérifier les bornes de **tous** les points d'un publié (autres
-  niveaux compris) avant d'y ajouter une variation · **Worktree / branche** : aucun (le suivant sur `origin/main`, sous le
-  même nom, pour les corrections).
+- **État** : rubrique **publiée** : les 7 modèles neufs sont publiés et validés par David ; les 9 variations des 6
+  publiés aussi ; journal archivé · **Prochaine action** : aucune · **En attente de David** : rien
+  · **Pièges retenus** : vérifier les bornes de **tous** les points d'un publié (autres niveaux
+  compris) avant d'y ajouter une variation · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -94,3 +89,12 @@ _Mis à jour le 2026-11-22, après #3003._
 
 - Série de relecture des 6 publiés complétés enregistrée par David (`5189a0c6`), fichier commité.
   Relecture en prod, sur `/dev/modeles`.
+
+### 2026-11-22 — relecture et publication
+
+- David a validé dans `/dev/modeles` les 6 publiés complétés et les 7 brouillons (aucun verdict
+  « À revoir » en base).
+- `publier-lot.ts` en simulation : 7 brouillons passent le contrôle ; David a lancé `--publier`. En
+  base, les 7 (df02afc2, ab0f98c4, 535f9f8e, 7830c983, aa3cb8e7, b408ace2, 2e10cd76) sont `published`.
+- Rubrique passée à « publiée » dans le tableau, les 8 réservations de modèles sont levées, et le journal, le relevé et les fiches sont versés
+  dans `docs/archive/wip/idees-tle-suites/`.

@@ -1,6 +1,6 @@
 """Écrit les 5 modèles neufs du chantier idees-tle-suites dans scripts/questions/idees-tle-suites-neufs/.
 
-Fiches validées par David le 2026-11-22 : docs/wip/idees-tle-suites-fiches.md § Modèles neufs
+Fiches validées par David le 2026-11-22 : docs/archive/wip/idees-tle-suites/idees-tle-suites-fiches.md § Modèles neufs
 (F9, F10, F11, F12, F14 bis). Grades T_SPE. Ni theme, ni domain, ni subdomain, ni id : le
 rangement (nœud du point + tag) se fera par migration, après la création en brouillon.
 
