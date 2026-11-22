@@ -77,6 +77,14 @@ trois sont partagés entre worktrees ; un second lanceur sort en **exit 2** en n
 de verrou en CI ni sur Vercel. Pourquoi et mesures : [worktrees.md](worktrees.md),
 [mesures-mac-mini.md](mesures-mac-mini.md).
 
+**Shell = zsh, pas bash.** Le shell de la machine, et donc celui des sessions Claude Code et de leurs
+agents, est zsh : une variable non guillemetée n'est **jamais découpée en mots**. `F="a.sql b.ts";
+git add $F` passe UN seul chemin, « a.sql b.ts », et le commit échoue (« pathspec did not match »).
+Une liste de fichiers se met dans un tableau, `F=(a.sql b.ts); git add "${F[@]}"`, ou s'écrit en
+entier ; pour découper une sortie de commande, `${=var}` ou `while read`. Pour attendre une CI,
+`gh pr checks <n> --watch`, jamais une boucle maison qui découpe une chaîne (une boucle
+`set -- $r` n'est jamais sortie, 2026-11-09).
+
 **Typecheck du quotidien : `pnpm check:incremental`**, moteur **tsgo** (TypeScript 7) depuis le
 2026-10-10 : ~18 s, ~20 s à froid (`FRESH=1`), au lieu de ~45 s / ~80 s. **La CI garde le moteur
 classique** (`pnpm check`), qui fait foi : sur 1 812 erreurs comparées, les deux moteurs concordent
