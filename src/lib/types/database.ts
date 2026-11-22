@@ -10685,6 +10685,7 @@ export type Database = {
         Row: {
           allotted_ms: number | null
           answer_parts: string[] | null
+          answered_as_choice: boolean
           code: string | null
           created_at: string
           end_reason: string | null
@@ -10707,6 +10708,7 @@ export type Database = {
         Insert: {
           allotted_ms?: number | null
           answer_parts?: string[] | null
+          answered_as_choice?: boolean
           code?: string | null
           created_at?: string
           end_reason?: string | null
@@ -10729,6 +10731,7 @@ export type Database = {
         Update: {
           allotted_ms?: number | null
           answer_parts?: string[] | null
+          answered_as_choice?: boolean
           code?: string | null
           created_at?: string
           end_reason?: string | null

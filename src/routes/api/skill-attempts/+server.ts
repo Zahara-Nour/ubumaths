@@ -8,7 +8,8 @@
  * `flash_cards`, `auto` (corrigé par l'application) sinon.
  *
  * Effets cumulés (Phase 2 refonte 2026-06-10) :
- *   1. UPSERT `srs_card_stats` via FSRS-6 (le grade est dérivé de `success`).
+ *   1. UPSERT `srs_card_stats` via FSRS-6 (le grade est dérivé de `success` ;
+ *      réussite « en QCM » = demi-réussite, idée 4 du chantier `idees-format`).
  *   2. INSERT 1 row dans `skill_attempts` (au lieu de N comme avant).
  *   3. Si template tagué sur un point du programme : auto-ajout au deck Programme.
  *   4. Le trigger PG recalcule `student_point_state` pour chaque point tagué.
@@ -72,7 +73,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		allotted_ms,
 		end_reason,
 		answer_parts,
-		part_verdicts
+		part_verdicts,
+		answered_as_choice
 	} = validation.data;
 
 	// Seul un élève laisse une trace. L'aperçu admin d'un modèle et les pages de
@@ -95,7 +97,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		allottedMs: allotted_ms,
 		endReason: end_reason,
 		answerParts: answer_parts,
-		partVerdicts: part_verdicts
+		partVerdicts: part_verdicts,
+		answeredAsChoice: answered_as_choice
 	});
 
 	if (!result.ok) {

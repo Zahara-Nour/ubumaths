@@ -38,3 +38,33 @@ describe('Q40 — verdict du serveur envoyé au SRS', () => {
 		]);
 	});
 });
+
+describe('Idée 4, PR 3 — question de contrôle posée en QCM', () => {
+	const enQcm = {
+		blanks: [
+			{
+				type: 'choice',
+				expectedAnswer: '0',
+				choice: { choices: ['$12$', '$4$'], order: [1, 0], multiple: false },
+				fromExpectedErrors: true
+			}
+		]
+	};
+	const enSaisie = { blanks: [{ type: 'math', expectedAnswer: '12' }] };
+
+	it('le serveur le lit sur la copie figée, pas dans ce que dit la page', () => {
+		const reviews = srsReviewsOf(
+			[
+				{ status: 'correct', partial: false, instance: enQcm },
+				{ status: 'incorrect', partial: false, instance: enQcm },
+				{ status: 'correct', partial: false, instance: enSaisie }
+			],
+			['t1', 't2', 't3']
+		);
+		expect(reviews).toEqual([
+			{ templateId: 't1', success: true, selfAssessed: false, answeredAsChoice: true },
+			{ templateId: 't2', success: false, selfAssessed: false, answeredAsChoice: true },
+			{ templateId: 't3', success: true, selfAssessed: false }
+		]);
+	});
+});

@@ -909,6 +909,11 @@ export interface InstanceBlank extends CalculusBlankFields {
 	expectedErrors?: InstanceExpectedError[];
 	/** Voir `TemplateBlank.neverChoice` (posé seulement quand vrai) */
 	neverChoice?: true;
+	/**
+	 * Case choix venue des erreurs prévues (idée 4) : la question est répondue en
+	 * QCM (`isAnsweredAsChoice`). Posé seulement par `asChoiceInstance`.
+	 */
+	fromExpectedErrors?: true;
 
 	/** Unit config (merged) */
 	unit?: {

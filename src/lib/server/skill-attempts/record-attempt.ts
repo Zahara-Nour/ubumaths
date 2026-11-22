@@ -23,7 +23,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import { FSRS } from '#lib/srs/fsrs.ts';
-import { Grade } from '#lib/srs/types.ts';
+import type { Grade } from '#lib/srs/types.ts';
+import { answerGrade } from '#lib/server/srs/answer-grade.ts';
 import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
 import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
 import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
@@ -52,6 +53,8 @@ export interface AttemptInput {
 	endReason?: 'validated' | 'timeout';
 	answerParts: string[] | null;
 	partVerdicts: boolean[] | null;
+	/** Posée en QCM depuis ses erreurs prévues (idée 4) : demi-réussite pour FSRS */
+	answeredAsChoice?: boolean;
 }
 
 export type AttemptFailure =
@@ -92,8 +95,9 @@ export async function recordStudentAttempt(
 	const links = (templateRow.question_template_points ?? []) as unknown as LinkRow[];
 	const pointIds = links.map((l) => l.point_id);
 
-	// Réussi → Good, raté → Again (spec §1.1)
-	const grade: Grade = success ? Grade.GOOD : Grade.AGAIN;
+	// Réussi → Good, raté → Again (spec §1.1) ; réussi en QCM → Hard (idée 4)
+	const answeredAsChoice = input.answeredAsChoice === true;
+	const grade: Grade = answerGrade(success, answeredAsChoice);
 
 	// 2. FSRS AVANT la trace (fail-loud) : sinon désynchro durable fiche ↔ suivi.
 	// Auto-évaluation (« déclaré ») : carte de cours (#617) ou Flash-cards (ADR 0038),
@@ -144,7 +148,8 @@ export async function recordStudentAttempt(
 			allotted_ms: input.allottedMs ?? null,
 			end_reason: input.endReason ?? null,
 			answer_parts: input.answerParts,
-			part_verdicts: input.partVerdicts
+			part_verdicts: input.partVerdicts,
+			answered_as_choice: answeredAsChoice
 		})
 		.select('id');
 

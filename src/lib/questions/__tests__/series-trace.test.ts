@@ -7,6 +7,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { buildSeriesTrace, createTraceRecorder } from '../series-trace';
 import type { QuestionInstance } from '../types';
+import { asChoiceInstance } from '../choice-from-errors';
+import { generateInstance } from '../generator/instance-generator';
 import type { AnswerData } from '#lib/types/question-display.ts';
 
 // Constantes
@@ -302,5 +304,64 @@ describe('createTraceRecorder — envoi (N9, E1)', () => {
 		recorder.record(trace);
 		await recorder.settle();
 		expect(await recorder.settle()).toEqual({ failed: 0 });
+	});
+});
+
+describe('buildSeriesTrace — répondu en QCM (idée 4, PR 3)', () => {
+	function enQcm(): QuestionInstance {
+		const template = {
+			id: 't',
+			level: 1,
+			grades: ['6'],
+			title: 't',
+			variations: [
+				{
+					statement: '$8+4=?$',
+					variables: [],
+					blanks: [
+						{
+							expectedAnswer: '12',
+							expectedErrors: [{ answer: '4', message: 'Tu as soustrait.' }]
+						}
+					]
+				}
+			]
+		} as unknown as Parameters<typeof generateInstance>[0];
+		const generated = generateInstance(template, 1);
+		if (!generated.success) throw new Error('génération');
+		const choice = asChoiceInstance({ ...generated.instance, templateId: MODELE }, 1);
+		if (!choice) throw new Error('restée en saisie');
+		return choice;
+	}
+
+	it.each(['typing', 'mock_test', 'number_race'] as const)(
+		'%s : la trace dit « en QCM »',
+		(place) => {
+			const trace = buildSeriesTrace({ place, instance: enQcm(), answer: reponse(['0'], true) });
+			expect(trace?.answered_as_choice).toBe(true);
+		}
+	);
+
+	it('question en QCM laissée sans réponse : la trace le dit aussi', () => {
+		const trace = buildSeriesTrace({ place: 'typing', instance: enQcm() });
+		expect(trace).toMatchObject({ success: false, answered_as_choice: true });
+	});
+
+	it('Flash-cards : jamais « en QCM »', () => {
+		const trace = buildSeriesTrace({
+			place: 'flash_cards',
+			instance: enQcm(),
+			answer: reponse('knew', true)
+		});
+		expect(trace).not.toHaveProperty('answered_as_choice');
+	});
+
+	it('question en saisie : pas de clé', () => {
+		const trace = buildSeriesTrace({
+			place: 'typing',
+			instance: instance(),
+			answer: reponse(['4', '6'], true)
+		});
+		expect(trace).not.toHaveProperty('answered_as_choice');
 	});
 });

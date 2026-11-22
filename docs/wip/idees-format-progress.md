@@ -204,6 +204,24 @@ Le lien de série porte le JSON de la ligne : `choiceVariations` y passe sans ri
 - Tests : `choice-from-errors.test.ts` (26), `series-draw.test.ts` (+3), `series.test.ts`
   (+2), `AnswerEditor-jamais-en-qcm.svelte.test.ts` (3).
 
+## Idée 4, PR 3 — demi-réussite, trace, bilan « en QCM » (2026-11-22)
+
+Branche `feat/idees-format-qcm-demi-reussite` (worktree `ubumaths-wt-idees-format`). **Phase 0
+(David, 2026-11-22, « je suis tes recos »)** : Q1 A, une réussite en QCM compte pour « acquis »
+(suivi des points inchangé, pas de migration), seule la révision espacée la divise ; Q2 A, mention
+« en QCM » dans le bilan d'un contrôle ET dans « Top points à remédier » ; Q3 A, traces en saisie
+et en QCM d'un même modèle mêlées, mention « en QCM » sur chaque réponse.
+
+- Repère : `fromExpectedErrors: true` sur la case choix posée par `asChoiceInstance` ;
+  `isAnsweredAsChoice(instance)` (accepte une copie relue en base). Un QCM de l'auteur : non.
+- Note : `answerGrade` (`server/srs/answer-grade.ts`) : réussi en QCM → Difficile (2), raté → 1.
+- Série libre : `buildSeriesTrace` envoie `answered_as_choice` (formes où l'on tape, réponse
+  donnée ou non) ; Zod de la route (refus en Flash-cards) ; `recordStudentAttempt` écrit la
+  colonne et la note. Contrôle : `srsReviewsOf` lit le repère sur la copie figée du serveur.
+- Tests : `choice-from-errors` (+5), `series-trace` (+6), `skill-attempts` Zod (+6),
+  `answer-grade` (4), `evaluation-attempts-srs` (+1), intégration `skill-attempts-endpoint`
+  (+3, rouges sans `record-attempt.ts`).
+
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
 - `src/lib/questions/series-draw.ts` : `variationOfSeed`, `questionFingerprints`,
