@@ -2,6 +2,78 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.101.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.100.0...v0.101.0) (2026-11-22)
+
+### ✨ Features
+
+- **evaluations:** page d'attente des controles assignes avant le demarrage ([891c76f](https://github.com/Zahara-Nour/ubumaths/commit/891c76fa451e09917341c90ecb8b1f5d04823fca))
+- **fiches:** les scripts d'automatismes posent categorie et notions ([5ad3e51](https://github.com/Zahara-Nour/ubumaths/commit/5ad3e513c29a441c3b4a4a70eb59dff9d74220ff))
+- **questions:** case a arrondir en QCM, la bonne reponse montree est l'arrondi demande ([52cde8a](https://github.com/Zahara-Nour/ubumaths/commit/52cde8a4fc6a523442f044012d566417e1184f72))
+- **questions:** case repondue en QCM depuis ses erreurs prevues (moteur, idee 4) ([fa4ff22](https://github.com/Zahara-Nour/ubumaths/commit/fa4ff220cabec408b65f961cfa666de03163ba01))
+- **questions:** coup de pouce a l'eleve, trace avec indice, demi-reussite ([cb74c57](https://github.com/Zahara-Nour/ubumaths/commit/cb74c576e2f78f96cc1196b1342b0cf7357d95ae))
+- **questions:** coup de pouce d'une variation, schema, tirage et editeur ([20a6c02](https://github.com/Zahara-Nour/ubumaths/commit/20a6c0218e5675e47563d5e2b0b9db715fa11457))
+- **seed:** jeux et recompenses inventes pour les eleves fictifs ([1f92afd](https://github.com/Zahara-Nour/ubumaths/commit/1f92afdc53c52d9e6fd83b45e8e6026df33aaa89))
+- **seed:** suivi et travail scolaire inventes pour les eleves fictifs, liens verifies ([d9c86e6](https://github.com/Zahara-Nour/ubumaths/commit/d9c86e6eba4751e86f0e978adb583cfb6b30c299))
+- **series:** case en QCM par variation dans le panier et l'editeur de serie ([dfa7438](https://github.com/Zahara-Nour/ubumaths/commit/dfa7438fbc8b93b6ac052607f8d2bd5e4ad34180))
+- **series:** page d'attente du Controle blanc et de la Course aux nombres ([999e2ce](https://github.com/Zahara-Nour/ubumaths/commit/999e2ce2987a7ad5bbbb8de25b393671e9da6be7))
+- **srs:** reussite en QCM = demi-reussite, trace repondu en QCM (idee 4, PR 3) ([2cbe2db](https://github.com/Zahara-Nour/ubumaths/commit/2cbe2db05997a7e97695b8727d5be0d6a435ce42))
+- **stats:** bilan et erreurs en QCM, traces rejouees en QCM, export (idee 4, PR 3) ([a71b029](https://github.com/Zahara-Nour/ubumaths/commit/a71b029bd3637cf1ba6138801bce0c214910d4b8))
+- **traces:** colonne repondu en QCM sur les traces (idee 4, PR 1) ([4f44b23](https://github.com/Zahara-Nour/ubumaths/commit/4f44b236764e2a9389880812dfc7a3dd08c496b3))
+- **web-vitals:** releve des mesures par une route a jeton dedie ([da63fd4](https://github.com/Zahara-Nour/ubumaths/commit/da63fd4505d5395178c0e14837f7127c64adde05))
+
+### 🐛 Bug Fixes
+
+- **evaluations:** page d'attente, questions comptees par tirage a blanc et retour apres echec ([7d0fa00](https://github.com/Zahara-Nour/ubumaths/commit/7d0fa004d28123aeba71d50ec1e2ff69fc5114bb))
+- **palotins:** tableau des Palotins du prof lu a travers le profil, requete morte des succes retiree ([904cab3](https://github.com/Zahara-Nour/ubumaths/commit/904cab3d2b54696f2f93b74adea578508f62f147))
+- **questions:** coup de pouce, solutions indexees refusees, instantane du formulaire ([c45cfce](https://github.com/Zahara-Nour/ubumaths/commit/c45cfce945bc590507379b35fd25c9f2a935d0ec))
+- **questions:** erreurs prevues en QCM, unites comparees, arrondis et operations en saisie ([646f0c1](https://github.com/Zahara-Nour/ubumaths/commit/646f0c1bb349366dae469bd7e6325949684201d2))
+- **revisions:** compteurs « À réviser » et « Nouvelles » lus sous le nom rendu par le serveur ([3894843](https://github.com/Zahara-Nour/ubumaths/commit/3894843c71a806d3153acb2b622c7d957b50d63c))
+- **seed:** corrections de relecture du suivi invente (dates, tirage, cles uniques) ([28e9e9d](https://github.com/Zahara-Nour/ubumaths/commit/28e9e9d3cd31224dc1208cd91fbf24147f8a9f56))
+- **seed:** references du cycle, arrondi du gain et delai de consentement des eleves fictifs ([9cac721](https://github.com/Zahara-Nour/ubumaths/commit/9cac7213b6e4fb8bfd2a6318e5fbbd11210461fa))
+- **series:** case en QCM jugee sur l'exemple tire, QCM retire avec sa variation ([c1f52b6](https://github.com/Zahara-Nour/ubumaths/commit/c1f52b6e5ae1fc675cd47217f2c51e5c98b17f8a))
+- **series:** duree de serie comptee depuis C'est parti, test de Recommencer sur place ([bfde6a2](https://github.com/Zahara-Nour/ubumaths/commit/bfde6a2b713afd8d9058faa0fd6fa56503c45369))
+- **srs:** carte de cours jamais en QCM (trace refusee apres FSRS), journal PR 3 ([0efc097](https://github.com/Zahara-Nour/ubumaths/commit/0efc097c5c8a24e9a8c54c22267e587bee15eaad))
+- **srs:** coup de pouce ignore sur une carte personnelle de revision ([82255fb](https://github.com/Zahara-Nour/ubumaths/commit/82255fbba501216d4e7c167c9ea157c380d992b7))
+- **succes:** widget des succes du demineur retire, plus importe nulle part ([581beb8](https://github.com/Zahara-Nour/ubumaths/commit/581beb82f88a629119622bef5fb061bb3a297ff4))
+- **web-vitals:** remarques des revues sur le releve ([459d425](https://github.com/Zahara-Nour/ubumaths/commit/459d425881fd461a51b85434d22a1b5e24874e2c))
+
+### 📚 Documentation
+
+- **base:** colonne repondu en QCM des traces ([59e61e2](https://github.com/Zahara-Nour/ubumaths/commit/59e61e23c6f6380120f88a1687dce0c859f0340d))
+- **evaluations:** coup de pouce en Flash-cards et Saisie ([0969dd6](https://github.com/Zahara-Nour/ubumaths/commit/0969dd6d0ea3b795cdc50481847ad45dbb5946de))
+- **questions:** coup de pouce, trois erreurs prevues et faits de forme dans les skills de lot ([41e1628](https://github.com/Zahara-Nour/ubumaths/commit/41e1628cb130612a1afb4f5a628f4fe2a2b00bea))
+- **rgpd:** export de la colonne repondu en QCM ([2baa6cb](https://github.com/Zahara-Nour/ubumaths/commit/2baa6cb5259619f66fb04c95dc0571596b273bf4))
+- **seed:** journal de la PR 2 et doc de la base locale ([410af4d](https://github.com/Zahara-Nour/ubumaths/commit/410af4d26ccaa708c790ec4bcdbd3c0b4f18152a))
+- **web-vitals:** jeton du releve et client service dans auth et serveur ([8469c1d](https://github.com/Zahara-Nour/ubumaths/commit/8469c1d19274edee541b25d9a0984137717fd5c6))
+- **wip:** amelioration, reprendre ici apres [#2982](https://github.com/Zahara-Nour/ubumaths/issues/2982) ([2dfd708](https://github.com/Zahara-Nour/ubumaths/commit/2dfd708b6e03bbfc8c0b955cd9eaecc661bb390a))
+- **wip:** categorie-fiche, reprendre ici apres [#2985](https://github.com/Zahara-Nour/ubumaths/issues/2985) ([3af7297](https://github.com/Zahara-Nour/ubumaths/commit/3af729704fda0e3e7f53e2782099a93b736a15f3))
+- **wip:** diaporama-reglages clos, journal archive, pieges du Deck verses ([0068aa9](https://github.com/Zahara-Nour/ubumaths/commit/0068aa938b68c32ce0afe2d2185eca5d65a2a46c))
+- **wip:** diaporama-reglages, reprendre ici et verification apres [#2984](https://github.com/Zahara-Nour/ubumaths/issues/2984) ([cdc401e](https://github.com/Zahara-Nour/ubumaths/commit/cdc401e143768d6d2ce05a0228ab46dbc3b6fa14))
+- **wip:** diaporama-reglages, reprendre ici et verification apres [#2988](https://github.com/Zahara-Nour/ubumaths/issues/2988) ([ce5c9aa](https://github.com/Zahara-Nour/ubumaths/commit/ce5c9aa4702b1273a17396e88b81bf382ce3b498))
+- **wip:** idees-format, phase 0 de l'idee 5 (coup de pouce) ([36fcb9c](https://github.com/Zahara-Nour/ubumaths/commit/36fcb9c816d1c9cdeafd04eaeacef440c32e2829))
+- **wip:** idees-format, phase 0 de l'idee 5 validee, decoupage ([2358752](https://github.com/Zahara-Nour/ubumaths/commit/23587527e072881ef745b18ff7bce5f952f9b59f))
+- **wip:** idees-format, reprendre ici apres [#2979](https://github.com/Zahara-Nour/ubumaths/issues/2979) ([67fdb80](https://github.com/Zahara-Nour/ubumaths/commit/67fdb8036898d96994070912bac80b8c149fb049))
+- **wip:** idees-format, reprendre ici apres [#2983](https://github.com/Zahara-Nour/ubumaths/issues/2983) ([c4ec36a](https://github.com/Zahara-Nour/ubumaths/commit/c4ec36ab2544abb5b378b74734396f1d1ead0e45))
+- **wip:** idees-format, reprendre ici apres [#2987](https://github.com/Zahara-Nour/ubumaths/issues/2987) ([e60b516](https://github.com/Zahara-Nour/ubumaths/commit/e60b516eeb19b6592eb517110469a1fdf240d724))
+- **wip:** idees-format, reprendre ici apres [#2990](https://github.com/Zahara-Nour/ubumaths/issues/2990) ([facb6b0](https://github.com/Zahara-Nour/ubumaths/commit/facb6b028df2a49854a43dae44baca3ac12859e2))
+- **wip:** idees-format, reprendre ici apres [#2991](https://github.com/Zahara-Nour/ubumaths/issues/2991) ([e9c4c72](https://github.com/Zahara-Nour/ubumaths/commit/e9c4c7274731258f77de896ae996a0d70dcdf282))
+- **wip:** idees-format, reprendre ici apres [#2992](https://github.com/Zahara-Nour/ubumaths/issues/2992) ([5c8aafd](https://github.com/Zahara-Nour/ubumaths/commit/5c8aafdc824f5a04e5616139d910068a8a45b298))
+- **wip:** idees-format, reprendre ici pendant la PR 2 de l'idee 4 ([a92d81f](https://github.com/Zahara-Nour/ubumaths/commit/a92d81f3b8212abcf391bd90c8fd8463b2ab9f9b))
+- **wip:** seed-complet, devinette inventee et compteurs de revisions a corriger d'abord ([f502486](https://github.com/Zahara-Nour/ubumaths/commit/f50248629d79305a205b7ac85fe96140a990a32d))
+- **wip:** seed-complet, pannes de la PR 3 corrigees par [#2989](https://github.com/Zahara-Nour/ubumaths/issues/2989) ([8fede4a](https://github.com/Zahara-Nour/ubumaths/commit/8fede4a5a11a44092e74e900f701536c7554df4d))
+- **wip:** seed-complet, phase 0 de la PR 3 (jeux et recompenses) ([33ecf13](https://github.com/Zahara-Nour/ubumaths/commit/33ecf13ab908e2ffccf5c89892e13ccfb825c124))
+- **wip:** seed-complet, phase 0 de la PR 3 en attente de David ([a91256f](https://github.com/Zahara-Nour/ubumaths/commit/a91256f43bb4c8587f35e012908d91c3f065ab4f))
+- **wip:** seed-complet, reprendre ici apres [#2980](https://github.com/Zahara-Nour/ubumaths/issues/2980) et verification manuelle du suivi ([85281d0](https://github.com/Zahara-Nour/ubumaths/commit/85281d045acbf661339f7a46d33bdc11c3731b08))
+- **wip:** seed-complet, reprendre ici apres [#2981](https://github.com/Zahara-Nour/ubumaths/issues/2981) et verification manuelle des compteurs ([ef99a05](https://github.com/Zahara-Nour/ubumaths/commit/ef99a05b8eab44643e3635eeb7f57c511410080a))
+- **wip:** seed-complet, reprendre ici apres [#2986](https://github.com/Zahara-Nour/ubumaths/issues/2986) ([f98bc31](https://github.com/Zahara-Nour/ubumaths/commit/f98bc31e065b12567003e4eb37b40f1b0eca24c9))
+- **wip:** seo, titre de l'accueil encore a verifier au telephone ([e1fa3e2](https://github.com/Zahara-Nour/ubumaths/commit/e1fa3e24d55bd64f973084180131033e88893062))
+- **wip:** seo, titres de l'accueil et du glossaire valides en prod ([2c6f82e](https://github.com/Zahara-Nour/ubumaths/commit/2c6f82e8eeaf5885b202d891b6372c5c2b7d5a2b))
+- **wip:** seo, titres en prod (0.100.0) et relus sur le site ([159208b](https://github.com/Zahara-Nour/ubumaths/commit/159208b5864a9fd4db2d6e6eb1d54b1462b0c916))
+- **wip:** surveillance-machine, worktrees finis supprimes ([e22f6d9](https://github.com/Zahara-Nour/ubumaths/commit/e22f6d92215d12ab3da58f53ccf783de8b1af61c))
+- **wip:** texte-colore clos, journal archive et limite de l'editeur riche versee ([aee6460](https://github.com/Zahara-Nour/ubumaths/commit/aee646087d07e271e43b729acc35046af3cc781e))
+- **wip:** verification manuelle des jeux inventes ([#2986](https://github.com/Zahara-Nour/ubumaths/issues/2986)) ([f2fef19](https://github.com/Zahara-Nour/ubumaths/commit/f2fef191fa197dcae24532f6b203e71da344e972))
+- **wip:** verification manuelle des Palotins du prof ([#2989](https://github.com/Zahara-Nour/ubumaths/issues/2989)) ([29d2750](https://github.com/Zahara-Nour/ubumaths/commit/29d275062ac207abea253958ef21f5dbf066957f))
+
 ## [0.100.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.99.0...v0.100.0) (2026-11-21)
 
 ### ✨ Features
