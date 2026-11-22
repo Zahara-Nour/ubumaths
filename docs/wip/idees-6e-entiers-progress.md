@@ -8,12 +8,14 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 _Mis à jour le 2026-11-22, avant la phase 0 (aucune PR)._
 
-- **État** : relevé en cours. Les 18 exercices 6N0 (6N0A-1 à 14, 6N0B-1 à 4) sont lus. Lot A
-  (6N0A-6 à 11) et exercices courts : notés dans le relevé. Lot B (6N0A-2, 3, 12, 13, 14,
-  6N0B-1 à 4) : lu par un agent dont le rapport n'est pas encore versé → **à relire si absent du relevé**.
-  Nos modèles des niveaux CE2 à 5e sont relevés en prod (titres, niveaux, points).
-- **Prochaine action** : finir le relevé (lot B, verdicts ✅ / 🟡 / ❌), puis rédiger les fiches de
-  phase 0 sur une page à cocher.
+- **État** : les 18 exercices 6N0 sont lus et décrits dans le relevé, en face de nos modèles en prod
+  (niveaux CE2 à 5e). Il reste à poser les verdicts ✅ / 🟡 / ❌.
+- **Prochaine action** : (1) poser les verdicts en lisant les variations des modèles cités en prod :
+  à vérifier en priorité, le tableau des produits partiels (6N0A-12), les égalités avec une opération
+  de chaque côté du signe = (6N0A-14) et le dernier chiffre d'une somme ou d'une différence (b9677e1f :
+  produit seul) ; (2) rédiger les fiches de phase 0 sur une page à cocher. Pistes neuves : écrire un
+  nombre en lettres et en chiffres au CM2 (rien chez nous au-delà du CE2), rose et Yohaku, vocabulaire
+  des opérations au CM, nature d'un calcul.
 - **En attente de David** : rien.
 - **Pièges en cours** : le programme de 6e n'a **aucun point** sur les entiers seuls, les faits
   numériques ni le vocabulaire des opérations. Ces notions sont des points de CM1/CM2 (répertoires,
