@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2980._
+_Mis à jour le 2026-11-22, après #2981._
 
-- **État** : PR 1 (#2977) et PR 2 (#2980) mergées. PR 2 : suivi et travail scolaire inventés (§ 8),
+- **État** : PR 1 (#2977), PR 2 (#2980) et le correctif des compteurs de « Mes révisions » (#2981)
+  mergés. PR 2 : suivi et travail scolaire inventés (§ 8),
   liens vérifiés après la copie, 30 élèves rangés dans les 5 classes de l'année en cours. La base de
   dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche` (pas lancé).
-- **Prochaine action** : d'abord une petite PR à part, les compteurs « À réviser » et « Nouvelles »
-  de « Mes révisions », toujours à 0 (§ 8, « Trouvé grâce au seed » ; go de David le 2026-11-22).
-  Ensuite PR 3, jeux et récompenses (§ 5) : jeux, succès, récompenses, boutique, Mathoux et
+- **Prochaine action** : PR 3, jeux et récompenses (§ 5), en commençant par la **phase 0** (ce qui
+  sera inventé, en français, à faire valider par David avant de coder) : jeux, succès, récompenses, boutique, Mathoux et
   Palotins, plus **une devinette publiée inventée** par le seed (la prod n'en a qu'une, en
   brouillon). Même méthode qu'au § 8 : plan pur testé sans base, vraies règles de l'appli, preuve
   sur copie isolée avec ses services, pages ouvertes en prof et en élève.
@@ -293,12 +293,13 @@ pnpm dev --port 5176 --strictPort`), pages lues connecté (jeton pris à l'API d
   assigné (exercices, Python, devinettes), comme il le faisait déjà pour les fiches.
 - **Trouvé grâce au seed, hors PR** : sur « Mes révisions » de l'élève, les compteurs « À réviser »
   et « Nouvelles » valent toujours 0 : la page lit `stats.due_cards` / `new_cards`, le serveur rend
-  `due_count` / `new_count` (`dashboard/revisions/+page.svelte:46`). Petite PR à part.
+  `due_count` / `new_count` (`dashboard/revisions/+page.svelte:46`). **Corrigé par #2981** (la page prend son type du serveur ; test de page).
 - **Vu en passant** : quelques élèves ont 0 Gidouille (somme négative ramenée à 0 par `activite.ts`) ;
   la page prof des paquets affiche « Decks attribués 0 » (elle compte les paquets du prof marqués
   assignés, or seules les copies des élèves le sont).
 
 ## 6. Historique
 
+- **2026-11-22** : #2981, compteurs de « Mes révisions » (trouvé grâce au seed).
 - **2026-11-22** : PR 2 (suivi et travail scolaire), § 8.
 - **2026-11-21** : ouverture, à la clôture du chantier `base-locale` (#2970 : `pnpm db:neuf`).
