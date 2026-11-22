@@ -1,4 +1,5 @@
 {
+	"id": "ec040806-37f0-45e1-9858-472a902d8f75",
 	"title": "Lever une forme indéterminée avec la quantité conjuguée",
 	"description": "Différence de deux racines carrées en l'infini (√(ax + b) − √(ax + d), √(x² + b) − √(x² + d)) : multiplier par la quantité conjuguée. Hors programme de Terminale (technique ni nommée ni illustrée au BO), rangé sans point (pièges : ∞ − ∞ pris pour +∞, dénominateur oublié)",
 	"grades": ["T_SPE"],
