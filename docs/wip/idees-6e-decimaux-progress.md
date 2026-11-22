@@ -6,18 +6,19 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR des migrations ouverte._
+_Mis à jour le 2026-11-22, après #3018._
 
-- **État** : 6 brouillons publiés par David (ids dans `scripts/questions/idees-6e-decimaux-neufs/`) ;
-  PR des migrations : rangement `20261122183733_…` (6 nœuds + 6 points, niveau 6 ajouté à 590169c4)
-  et contenu `20261122183720_…` (10 publiés, régénérée) ; tests verts, rouges sans les migrations ·
-  **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions) → relecture dans
-  `/dev/modeles` (brouillons par `?point=`, série de relecture pour les 10 publiés) · **En attente de
-  David** : rien avant la relecture.
-- **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu pour l'instant ; l'ancien worktree
-  `ubumaths-wt-idees-6e-decimaux` porte une migration de contenu périmée (`20261122182230_…`), à
-  ne pas pousser (à jeter avec le worktree, avec l'accord de David).
-- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux-migrations`, `feat/idees-6e-decimaux-migrations`.
+- **État** : migrations de rangement et de contenu (#3018) jouées en prod (`db:migrate`), vérifiées : 6
+  brouillons sur leur nœud et leur point, 590169c4 à {CM2, 6}, 16 variations ajoutées aux 10 publiés ·
+  **Prochaine action** : relecture dans `/dev/modeles` par David : brouillons par `?point=` (6-101,
+  6-106, 6-115, 6-118, 6-123), série de relecture des 10 publiés à créer (`scripts/series/creer-serie.ts`,
+  David la publie) ; puis verdicts lus en base, corrections, `publier-lot.ts` · **En attente de David** :
+  la relecture.
+- **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu ; l'ancien worktree
+  `ubumaths-wt-idees-6e-decimaux` porte une migration de contenu périmée non suivie (`20261122182230_…`),
+  à jeter avec le worktree (accord de David demandé).
+- **Worktree / branche** : aucun de travail ; `ubumaths-wt-idees-6e-decimaux` (branche mergée) en attente
+  de suppression.
 
 ## Décisions de David (2026-11-22)
 
@@ -82,3 +83,4 @@ tableau. Q3 : migration de rangement sans accès nouveau. 10 modèles publiés r
   33ff7000 F8, c04b78f8 F12a). Relevé en prod : sans nœud ni tag ; 6-106 posé sur la notion
   « Décimaux : numération » (voisins sur « forme fractionnaire »), les autres sur leur sous-notion ;
   590169c4 à {CM2}. Migrations de rangement et de contenu écrites, tests verts et rouges sans elles.
+- 2026-11-22 : #3018 mergée, `db:migrate` joué (seules nos 2 migrations en attente), état vérifié en prod.
