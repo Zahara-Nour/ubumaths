@@ -6,17 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2979._
+_Mis à jour le 2026-11-22, PR 2 de l'idée 4 en cours._
 
-- **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : phase 0 et découpage validés ; PR 1
-  (#2979, colonne `answered_as_choice`) mergée et migrée en prod (vérifié).
-- **Prochaine action** : PR 2 (moteur) : nouveau worktree, `pnpm db:types` d'abord (la colonne
-  n'est pas encore dans `database.ts`), puis veto de l'auteur, variations « en QCM » de la ligne,
-  case → choix au tirage.
-- **En attente de David** : rien.
+- **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : PR 1 (#2979, colonne
+  `answered_as_choice`) mergée et migrée ; PR 2 (moteur, branche `feat/idees-format-qcm`) en revue.
+- **Prochaine action** : merger la PR 2, puis PR 3 (`pnpm db:types` d'abord ; demi-réussite FSRS,
+  trace, bilan « en QCM », statistiques rejouées en QCM), puis PR 4 (case « en QCM » dans le panier
+  et l'éditeur de série).
+- **En attente de David** : rien (trois choix d'affichage signalés, § Idée 4, PR 2).
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le
-  `deploy:prod` de #2962 ; export RGPD (`api/account/export`) à compléter de la colonne en PR 3.
-- **Worktree / branche** : aucun ; à créer pour la PR 2.
+  `deploy:prod` de #2962 ; export RGPD (`api/account/export`) à compléter de la colonne en PR 3 ;
+  statistiques rejouées en saisie tant que la PR 3 n'est pas faite.
+- **Worktree / branche** : `ubumaths-wt-idees-format`, `feat/idees-format-qcm`.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -171,6 +172,36 @@ ni révision, ni Descente). Aucune policy touchée. Test `trace-repondu-en-qcm.t
 sans la migration : colonne inconnue ; témoin « en saisie » pour chaque refus) ; suites voisines
 des traces vertes (98). Relecture `security-auditor` : aucun finding. Mergée (#2979), `db:migrate`
 le 2026-11-22 (seule migration en attente), colonne vérifiée en prod.
+
+## Idée 4, PR 2 — QCM depuis les erreurs prévues : le moteur (2026-11-22)
+
+Branche `feat/idees-format-qcm`. `questions/choice-from-errors.ts` : `asChoiceInstance(instance,
+seed)` transforme la question tirée APRÈS le générateur (mêmes nombres en saisie et en QCM) :
+case `math` seule, erreurs prévues, sans veto → case choix (bonne réponse à l'indice d'origine 0,
+puis jusqu'à 3 erreurs prévues de valeurs distinctes, ni égales à la bonne réponse) ; mélange sur
+une source à part ; la case devient `\ldots` dans la formule et le bloc ```choix suit l'énoncé ;
+`null` → la question reste en saisie. `expectedErrorOf` lit l'erreur du choix coché ; le résultat
+attendu montre son message sous le bloc (cases choix : ce message seul, jamais de type deviné).
+Veto de l'auteur : `neverChoice` (types, Zod, générateur, case « Jamais en QCM » sous les
+erreurs prévues de l'éditeur). Ligne de série : `choiceVariations` (`validation/series.ts`) ;
+tirage `drawLineQuestions(…, choiceVariations)` ; `drawSeriesQuestions({ choiceCases })` :
+vrai pour toutes les formes sauf flash-cards (page de jeu) et pour l'évaluation (instance figée
+en QCM, corrigée telle quelle ; la version envoyée n'a ni erreurs prévues ni ordre d'origine).
+Le lien de série porte le JSON de la ligne : `choiceVariations` y passe sans rien changer.
+
+- Choix faits sans question (à signaler à David) : « En classe » (diaporama) montre aussi les
+  choix ; la case dans la formule devient des pointillés ; les choix sous l'énoncé.
+- ⚠️ PR 3 : les statistiques rejouées depuis la graine (`server/stats/point-errors.ts`)
+  rejouent la question EN SAISIE ; une trace « en QCM » (indice de choix) doit être rejouée
+  avec `asChoiceInstance` (colonne `answered_as_choice`).
+- Relectures : `security-auditor` (Opus) aucun bloquant ; `code-reviewer` (Opus) : corrigés,
+  comparaison de valeur aveugle aux unités (l'erreur lue aussi sous son LaTeX), veto gardé par
+  « Retirer » ; ajoutés, cases d'opération exclues, choix de même écriture écartés, test du trajet
+  serveur (positions affichées → indices d'origine → message). **Case à arrondir → B (David, 2026-11-22)** :
+  la bonne réponse montrée est l'arrondi demandé (`roundToPrecision`, jugé juste par la case) ;
+  ordre de grandeur et tolérance restent en saisie.
+- Tests : `choice-from-errors.test.ts` (26), `series-draw.test.ts` (+3), `series.test.ts`
+  (+2), `AnswerEditor-jamais-en-qcm.svelte.test.ts` (3).
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 

@@ -197,3 +197,17 @@ describe('idée 2 : variations choisies sur une ligne', () => {
 		}
 	});
 });
+
+describe('idée 4 : variations « en QCM » sur une ligne', () => {
+	it('accepte une liste de numéros distincts, rangés, et une ligne sans QCM', () => {
+		const parsed = seriesItemSchema.parse({ ...ITEM, choiceVariations: [2, 0] });
+		expect(parsed.choiceVariations).toEqual([0, 2]);
+		expect(seriesItemSchema.parse(ITEM).choiceVariations).toBeUndefined();
+	});
+
+	it('refuse une liste vide, un doublon, un numéro négatif ou non entier', () => {
+		for (const choiceVariations of [[], [1, 1], [-1], [1.5]]) {
+			expect(seriesItemSchema.safeParse({ ...ITEM, choiceVariations }).success).toBe(false);
+		}
+	});
+});

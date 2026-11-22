@@ -401,6 +401,11 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * Case à écriture mathématique ordinaire seulement. Voir `ExpectedError`.
 	 */
 	expectedErrors?: ExpectedError[];
+	/**
+	 * Veto de l'auteur (chantier `idees-format`, idée 4) : cette case ne se répond
+	 * jamais en QCM, même si le prof coche « en QCM » sur la ligne de série.
+	 */
+	neverChoice?: boolean;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -902,6 +907,8 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * Retirées de l'énoncé envoyé à l'élève en évaluation notée, comme l'attendu.
 	 */
 	expectedErrors?: InstanceExpectedError[];
+	/** Voir `TemplateBlank.neverChoice` (posé seulement quand vrai) */
+	neverChoice?: true;
 
 	/** Unit config (merged) */
 	unit?: {

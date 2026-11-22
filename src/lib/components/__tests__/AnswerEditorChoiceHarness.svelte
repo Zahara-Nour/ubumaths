@@ -1,7 +1,7 @@
 <!--
 	Banc d'essai d'AnswerEditor, texte à trous avec énoncé : lie l'énoncé et les
 	cases (`$bindable`) et les expose dans le DOM (case choix, PR 1b ; erreurs
-	prévues, idees-format PR 6).
+	prévues, idees-format PR 6 ; veto « jamais en QCM », idée 4).
 -->
 <script lang="ts">
 	import AnswerEditor from '../AnswerEditor.svelte';
@@ -53,4 +53,8 @@
 
 <output data-testid="erreurs">
 	{JSON.stringify(blanks.map((b) => b.expectedErrors ?? null))}
+</output>
+
+<output data-testid="veto">
+	{JSON.stringify(blanks.map((b) => b.neverChoice ?? null))}
 </output>
