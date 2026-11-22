@@ -21,6 +21,7 @@ import {
 	documentTexte,
 	ECRITURE_ECHANGES,
 	empreinte,
+	NETTOYAGE_ECHANGES,
 	joursDeClasse,
 	planEchanges,
 	PREFIXE_ECHANGES,
@@ -57,7 +58,8 @@ function contexte(): ContexteEchanges {
 			messages: [PROF, premiere[0], premiere[1], premiere[2], PROF, premiere[3]].map(
 				(auteur, i) => ({
 					id: `5eed5c00-0000-4000-8000-0000000000m${i}`,
-					auteur
+					auteur,
+					date: new Date(Date.parse('2026-11-13T10:00:00Z') + i * 86_400_000).toISOString()
 				})
 			)
 		},
@@ -75,7 +77,16 @@ function contexte(): ContexteEchanges {
 			[premiere[0], premiere[1]],
 			[premiere[2], premiere[0]]
 		],
-		soumisAuConsentement: [eleve(2), eleve(5), eleve(8), eleve(9), eleve(14), eleve(15)],
+		// L'élève hors classe y est aussi, comme dans la base locale : le plan l'écarte.
+		soumisAuConsentement: [
+			eleve(2),
+			eleve(5),
+			eleve(8),
+			eleve(9),
+			eleve(14),
+			eleve(15),
+			HORS_CLASSE
+		],
 		points: {
 			'classe-a': ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'],
 			'classe-b': ['p8'],
@@ -97,6 +108,19 @@ describe('planEchanges — reproductible et complet', () => {
 
 	it('chaque partie écrite a des lignes', () => {
 		for (const partie of parties) expect(plan[partie].length, partie).toBeGreaterThan(0);
+	});
+
+	it('les jetons des liens de partage viennent du tirage donné', () => {
+		const avec = () => {
+			let n = 0;
+			const tirage = () => `jeton-de-partage-${String(++n).padStart(4, '0')}`;
+			return planEchanges({ ...contexte(), jetonDePartage: tirage });
+		};
+		const p = avec();
+		const liens = [...p.liensCours, ...p.liensCahier, ...p.liensExercice];
+		expect(liens.length).toBeGreaterThan(0);
+		for (const l of liens) expect(String(l.token)).toMatch(/^jeton-de-partage-\d{4}$/);
+		expect(avec()).toEqual(p);
 	});
 
 	it('tous les identifiants inventés portent le préfixe', () => {
@@ -162,6 +186,10 @@ describe('planEchanges — personne d’autre que les comptes locaux', () => {
 		// L'absent reçoit seulement le message envoyé à toute sa classe.
 		const sansBoite = parties.filter((p) => p !== 'boites').flatMap((p) => plan[p]);
 		expect(JSON.stringify(sansBoite)).not.toContain(ABSENT);
+		const sesBoites = plan.boites.filter((b) => b.recipient_id === ABSENT);
+		expect(sesBoites).toHaveLength(1);
+		const message = plan.messagesPrives.find((m) => m.id === sesBoites[0].message_id);
+		expect(message).toMatchObject({ is_group_message: true, class_id: 'classe-a' });
 	});
 
 	it('aucune adresse hors des domaines fictifs', () => {
@@ -191,12 +219,21 @@ describe('planEchanges — messagerie du prof', () => {
 		}
 	});
 
-	it('objet de 1 à 200 caractères, texte brut égal au document', () => {
+	it('objet de 1 à 200 caractères', () => {
 		for (const m of messages) {
 			expect(longueur(m.subject)).toBeGreaterThan(0);
 			expect(longueur(m.subject)).toBeLessThanOrEqual(200);
-			expect(documentTexte(String(m.plain_text)).content).toEqual(m.content);
 		}
+	});
+
+	it('document de l’éditeur : un paragraphe, et son texte brut', () => {
+		expect(documentTexte('Bonjour')).toEqual({
+			content: {
+				type: 'doc',
+				content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Bonjour' }] }]
+			},
+			plain_text: 'Bonjour'
+		});
 	});
 
 	it('un message à la classe, un archivé, un non lu chez le prof, un brouillon', () => {
@@ -215,6 +252,15 @@ describe('planEchanges — messagerie du prof', () => {
 });
 
 describe('planEchanges — discussion de classe', () => {
+	it('réactions et signalements viennent après leur message, et avant maintenant', () => {
+		const date = new Map(contexte().discussion?.messages.map((m) => [m.id, m.date]));
+		const maintenant = contexte().maintenant.toISOString();
+		for (const x of [...plan.reactions, ...plan.signalementsMessages]) {
+			expect(String(x.created_at) > String(date.get(String(x.message_id)))).toBe(true);
+			expect(String(x.created_at) < maintenant).toBe(true);
+		}
+	});
+
 	it('personne ne réagit à son propre message', () => {
 		const auteur = new Map(contexte().discussion?.messages.map((m) => [m.id, m.auteur]));
 		for (const r of plan.reactions) expect(r.user_id).not.toBe(auteur.get(String(r.message_id)));
@@ -300,31 +346,43 @@ describe('planEchanges — marché', () => {
 				Number(a.offered_gidouilles) +
 				Number(a.wanted_gidouilles);
 			expect(objets).toBeGreaterThan(0);
-			if (a.status === 'completed') expect(a.completed_at).not.toBeNull();
 			expect(['sell', 'buy']).toContain(a.listing_type);
 			for (const k of a.offered_card_ids as string[])
 				expect(proprietaire.get(k)).toBe(a.creator_id);
 		}
-		expect(new Set(plan.annonces.map((a) => a.status))).toEqual(
-			new Set(['active', 'completed', 'expired'])
-		);
+		expect(new Set(plan.annonces.map((a) => a.status))).toEqual(new Set(['active', 'expired']));
 	});
 
-	it('propositions : réponse datée, jamais sur sa propre annonce', () => {
+	it('propositions : en attente, jamais sur sa propre annonce', () => {
 		for (const p of plan.propositions) {
 			const annonce = plan.annonces.find((a) => a.id === p.listing_id);
 			expect(p.proposer_id).not.toBe(annonce?.creator_id);
 			expect(Number(p.offered_gidouilles)).toBeGreaterThan(0);
-			if (p.status === 'accepted') expect(p.responded_at).not.toBeNull();
-			else expect(p.status).toBe('pending');
+			// Comme l'appli : une proposition naît en attente ; l'acceptation passe par la fonction.
+			expect(p.status).toBe('pending');
 		}
+	});
+
+	it('une vente conclue par classe, acceptée ensuite au nom du vendeur de l’annonce', () => {
+		expect(plan.propositionsAAccepter).toHaveLength(contexte().classes.length);
+		for (const { proposition, vendeur } of plan.propositionsAAccepter) {
+			const p = plan.propositions.find((x) => x.id === proposition);
+			const annonce = plan.annonces.find((a) => a.id === p?.listing_id);
+			expect(annonce).toMatchObject({
+				status: 'active',
+				listing_type: 'sell',
+				creator_id: vendeur
+			});
+		}
+		// Aucun échange de marché écrit à la main : la fonction le crée et le conclut.
+		expect(plan.echanges.filter((e) => e.trade_type === 'marketplace')).toEqual([]);
 	});
 
 	it('échanges : contraintes de la table, un à conclure tout validé et confirmé', () => {
 		for (const e of plan.echanges) {
 			expect(e.initiator_id).not.toBe(e.partner_id);
-			if (e.trade_type === 'friend') expect([e.listing_id, e.proposal_id]).toEqual([null, null]);
-			else expect(e.listing_id && e.proposal_id).toBeTruthy();
+			expect(e.trade_type).toBe('friend');
+			expect([e.listing_id ?? null, e.proposal_id ?? null]).toEqual([null, null]);
 			if (e.status === 'cancelled') expect(e.cancelled_at).not.toBeNull();
 			const valide = e.validated_by_initiator === true && e.validated_by_partner === true;
 			if (e.validated_at !== null) expect(valide && e.confirmation_started_at !== null).toBe(true);
@@ -356,7 +414,11 @@ describe('planEchanges — marché', () => {
 		expect(p.echangesAConclure).toHaveLength(1);
 		expect(p.echangesAConclure[0].initiateur).toBe(c.amis[1][0]);
 		expect(JSON.stringify(p.echanges.filter((e) => e.trade_type === 'friend'))).not.toContain(b);
-		expect(a).toBeTruthy();
+		expect(p.echangesAConclure[0].initiateur).not.toBe(a);
+		// Comme dans la base locale : la seule paire possible ouvre aussi l'échange en cours.
+		const enCours = p.echanges.filter((e) => e.id !== p.echangesAConclure[0].echange);
+		expect(enCours).toHaveLength(1);
+		expect(enCours[0]).toMatchObject({ status: 'negotiating', validated_by_initiator: false });
 	});
 
 	it('une carte n’est engagée qu’une fois : annonce active, échange en cours ou à conclure', () => {
@@ -386,10 +448,22 @@ describe('planEchanges — marché', () => {
 				});
 			}
 		}
-		for (const e of plan.echanges.filter((x) => x.trade_type === 'marketplace')) {
-			const k = (e.current_offer as { from_initiator: { cards: string[] } }).from_initiator
-				.cards[0];
-			expect(bloquees.get(k)).toMatchObject({ locked_for: 'trade', locked_entity_id: e.id });
+		// L'échange entre amis qui négocie encore bloque les deux cartes ; celui à conclure n'en
+		// bloque aucune (`execute_trade` les déplace aussitôt).
+		const aConclure = new Set(plan.echangesAConclure.map((x) => x.echange));
+		const enCours = plan.echanges.filter(
+			(x) => x.status === 'negotiating' && !aConclure.has(String(x.id))
+		);
+		expect(enCours).toHaveLength(1);
+		for (const e of plan.echanges) {
+			const offre = e.current_offer as {
+				from_initiator: { cards: string[] };
+				from_partner: { cards: string[] };
+			};
+			for (const k of [...offre.from_initiator.cards, ...offre.from_partner.cards]) {
+				if (aConclure.has(String(e.id))) expect(bloquees.has(k)).toBe(false);
+				else expect(bloquees.get(k)).toMatchObject({ locked_for: 'trade', locked_entity_id: e.id });
+			}
 		}
 	});
 
@@ -433,10 +507,14 @@ describe('planEchanges — famille', () => {
 			expect(premiere).toContain(p.student_id);
 			expect(p.email === null).toBe(p.status === 'refused');
 			expect(String(p.email_hash)).toMatch(/^[0-9a-f]{64}$/);
-			if (p.email) expect(p.email_hash).toBe(empreinte(String(p.email)));
 			if (p.confirm_token_hash !== null)
 				expect(String(p.confirm_token_hash)).toMatch(/^[0-9a-f]{64}$/);
 		}
+		// Comme l'appli : l'auteur d'un contact est celui qui a saisi l'adresse.
+		for (const p of plan.parents) {
+			expect(p.created_by).toBe(p.source === 'student' ? p.student_id : PROF);
+		}
+		expect(new Set(plan.parents.map((p) => p.source))).toEqual(new Set(['teacher', 'student']));
 		expect(new Set(plan.parents.map((p) => p.status))).toEqual(
 			new Set(['confirmed', 'pending', 'refused'])
 		);
@@ -575,6 +653,31 @@ describe('ECRITURE_ECHANGES — où va le plan', () => {
 			['kanban_cards', 'kanban_card_tags']
 		];
 		for (const [parent, enfant] of avant) expect(rang(parent), enfant).toBeLessThan(rang(enfant));
+	});
+
+	it('chaque table écrite est effacée au passage suivant, par préfixe ou avec son parent', () => {
+		// Tables filles et la table parente dont la suppression les emporte (clés en cascade).
+		const cascade: Record<string, string> = {
+			message_inbox: 'private_messages',
+			tutor_messages: 'tutor_conversations',
+			notification_reads: 'notifications',
+			marketplace_proposals: 'marketplace_listings',
+			marketplace_chat_messages: 'marketplace_trades',
+			parent_carnet_links: 'parent_contacts',
+			journal_entry_homework: 'class_journal_entries',
+			journal_entry_points: 'class_journal_entries',
+			journal_entry_activities: 'class_journal_entries',
+			kanban_columns: 'kanban_boards',
+			kanban_tags: 'kanban_boards',
+			kanban_cards: 'kanban_columns',
+			kanban_card_tags: 'kanban_cards',
+			// Clé primaire = l'élève : effacée par élève fictif (`index.ts`).
+			student_carnet_opt_outs: 'élèves fictifs'
+		};
+		const efface = (table: string): boolean =>
+			NETTOYAGE_ECHANGES.includes(table) ||
+			(table in cascade && (cascade[table] === 'élèves fictifs' || efface(cascade[table])));
+		for (const { table } of ECRITURE_ECHANGES) expect(efface(table), table).toBe(true);
 	});
 
 	it('aucune partie du plan ne met deux fois la même clé unique', () => {

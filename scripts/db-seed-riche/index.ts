@@ -28,6 +28,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { parse } from 'dotenv';
+import { randomInt } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import pg from 'pg';
 import {
@@ -47,7 +48,13 @@ import { ECRITURE_SUIVI, planSuivi, PREFIXE_SUIVI } from './suivi';
 import { creerMoteur } from './moteur';
 import { devinetteInventee, ECRITURE_JEUX, planJeux, PREFIXE_JEUX, type Difficulte } from './jeux';
 import { memoireMathoux, type EtatPoint } from './mathoux';
-import { ECRITURE_ECHANGES, planEchanges, PREFIXE_ECHANGES } from './echanges';
+import {
+	CARACTERES_LIEN,
+	ECRITURE_ECHANGES,
+	NETTOYAGE_ECHANGES,
+	planEchanges,
+	PREFIXE_ECHANGES
+} from './echanges';
 import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
 
@@ -810,31 +817,12 @@ async function genererEchanges(
 	// --- Un passage précédent est effacé d'abord : relancer ne double rien ------------------------
 	await db.query('begin');
 	const invente = `id::text like '${PREFIXE_ECHANGES}-%'`;
+	// Échanges créés par les fonctions de l'appli (ventes conclues) : sans préfixe, effacés par élève.
+	await db.query(
+		`delete from public.marketplace_trades where initiator_id::text like ${FICTIFS} or partner_id::text like ${FICTIFS}`
+	);
 	// Les tables filles partent avec leurs parents (suppression en cascade).
-	for (const table of [
-		'marketplace_trades',
-		'marketplace_locked_cards',
-		'marketplace_listings',
-		'marketplace_config',
-		'private_messages',
-		'message_drafts',
-		'message_reactions',
-		'message_reports',
-		'user_restrictions',
-		'moderation_logs',
-		'tutor_conversations',
-		'notifications',
-		'parent_notifications',
-		'parent_contacts',
-		'parental_consents',
-		'pending_students',
-		'class_journal_entries',
-		'class_course_share_tokens',
-		'class_journal_share_tokens',
-		'exercise_share_tokens',
-		'kanban_boards',
-		'bug_reports'
-	]) {
+	for (const table of NETTOYAGE_ECHANGES) {
 		await db.query(`delete from public."${table}" where ${invente}`);
 	}
 	await db.query(
@@ -866,7 +854,7 @@ async function genererEchanges(
 					conversation: conversation.id,
 					messages: activite.plan.messages
 						.filter((m) => m.conversation_id === conversation.id)
-						.map((m) => ({ id: m.id, auteur: m.sender_id }))
+						.map((m) => ({ id: m.id, auteur: m.sender_id, date: m.created_at }))
 				}
 			: null,
 		mains: jeux.plan.cartesProfils.map(({ student_id, vip_cards }) => ({
@@ -882,7 +870,10 @@ async function genererEchanges(
 			`select id from public.profiles where id::text like ${FICTIFS} and consent_required order by id`
 		),
 		points,
-		exercices: await ids('select id from public.exercises order by id limit 4')
+		exercices: await ids('select id from public.exercises order by id limit 4'),
+		// Jetons des liens de partage au hasard cryptographique (jamais recalculables du dépôt).
+		jetonDePartage: () =>
+			Array.from({ length: 32 }, () => CARACTERES_LIEN[randomInt(CARACTERES_LIEN.length)]).join('')
 	});
 
 	// --- Écriture, dans l'ordre des liens ---------------------------------------------------------
@@ -947,6 +938,15 @@ async function genererEchanges(
 			error?: string;
 		};
 		if (!res.success) throw new Error(`échange refusé : ${res.error}`);
+	}
+	// Ventes conclues : la fonction d'acceptation de l'appli (rôle service, au nom du vendeur), qui
+	// crée l'échange, le conclut et déplace carte et Gidouilles.
+	await db.query(`select set_config('request.jwt.claims', '{"role":"service_role"}', true)`);
+	for (const { proposition, vendeur } of plan.propositionsAAccepter) {
+		const res = (
+			await db.query('select public.accept_proposal_atomic($1, $2) r', [proposition, vendeur])
+		).rows[0].r as { success: boolean; error?: string };
+		if (!res.success) throw new Error(`vente refusée : ${res.error}`);
 	}
 	await db.query(`select set_config('request.jwt.claims', '', true)`);
 	await db.query('commit');
@@ -1184,7 +1184,7 @@ async function main() {
 			async (e: unknown) => {
 				await db.query('rollback').catch(() => {});
 				throw new Error(
-					`Contenu, élèves, activité, suivi et jeux sont écrits, mais les échanges sont annulés (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
+					`Contenu, élèves, activité, suivi et jeux sont écrits, mais les échanges sont annulés (${e instanceof Error ? e.message : String(e)}). Une ligne faite à la main en local peut bloquer : un lien de partage actif d'une classe, une séance du cahier de texte à la même date, un élève en attente à la même adresse. Relancer \`pnpm db:seed-riche\` après correction.`
 				);
 			}
 		);
@@ -1214,7 +1214,7 @@ async function main() {
 		);
 		const x = echanges.plan;
 		console.log(
-			`✅ Échanges : ${x.messagesPrives.length} messages privés, ${x.reactions.length} réactions, ${x.signalementsMessages.length} signalement(s) de message, ${x.restrictions.length} restriction(s), ${x.tuteurConversations.length} conversations avec le tuteur, ${x.notifications.length} annonces, ${x.annonces.length} annonces du marché, ${x.echanges.length} échanges (${x.echangesAConclure.length} conclu(s)).`
+			`✅ Échanges : ${x.messagesPrives.length} messages privés, ${x.reactions.length} réactions, ${x.signalementsMessages.length} signalement(s) de message, ${x.restrictions.length} restriction(s), ${x.tuteurConversations.length} conversations avec le tuteur, ${x.notifications.length} annonces, ${x.annonces.length} annonces du marché, ${x.echanges.length} échanges entre amis (${x.echangesAConclure.length} conclu(s)), ${x.propositionsAAccepter.length} vente(s) conclue(s).`
 		);
 		console.log(
 			`✅ Famille et classe : ${x.consentements.length} demande(s) de consentement (${x.consentementsAccordes.length} accordée(s)), ${x.parents.length} parent(s) au carnet, ${x.enAttente.length} élève(s) en attente, ${x.seances.length} séances au cahier de texte, ${x.liensCours.length + x.liensCahier.length + x.liensExercice.length} liens de partage, ${x.cartesTaches.length} tâches, ${x.bugs.length} signalements de bug.`

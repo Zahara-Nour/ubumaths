@@ -24,15 +24,50 @@
  * (`execute_trade`, qui déplace les cartes), le nombre de messages d'une conversation du tuteur et
  * celui des propositions d'une annonce (déclencheurs), l'index de recherche des messages.
  *
- * Cas toujours présents : l'élève « absent » (le dernier de la première classe) et l'élève hors
- * classe n'ont ni message, ni tuteur, ni annonce ; un message de la discussion est signalé en
- * attente ; un élève est restreint dans la discussion ; une demande de consentement est échue.
+ * Cas toujours présents : l'élève « absent » (le dernier de la première classe) n'a ni tuteur, ni
+ * annonce, ni message, sauf celui que le prof envoie à toute sa classe ; l'élève hors classe n'a
+ * rien, pas même une demande de consentement ; un message de la discussion est signalé en attente ;
+ * un élève est restreint dans la discussion ; une demande de consentement est échue.
+ *
+ * Écrits par les déclencheurs, donc à l'heure du seed : la date de mise à jour d'une conversation
+ * du tuteur (le compteur de messages la touche), la date de fin d'un échange conclu, la révocation
+ * du lien de l'élève qui a arrêté le carnet. Aucune page ne les lit.
  */
 
 import { createHash } from 'node:crypto';
 
 /** Début de tous les identifiants inventés ici : le seed les retrouve pour les effacer. */
 export const PREFIXE_ECHANGES = '5eed5c03';
+
+/**
+ * Tables effacées par préfixe au début de chaque passage (`index.ts`). Les autres tables écrites
+ * partent avec leur parent, par suppression en cascade (test : chaque table écrite est l'une ou
+ * l'autre).
+ */
+export const NETTOYAGE_ECHANGES: readonly string[] = [
+	'marketplace_trades',
+	'marketplace_locked_cards',
+	'marketplace_listings',
+	'marketplace_config',
+	'private_messages',
+	'message_drafts',
+	'message_reactions',
+	'message_reports',
+	'user_restrictions',
+	'moderation_logs',
+	'tutor_conversations',
+	'notifications',
+	'parent_notifications',
+	'parent_contacts',
+	'parental_consents',
+	'pending_students',
+	'class_journal_entries',
+	'class_course_share_tokens',
+	'class_journal_share_tokens',
+	'exercise_share_tokens',
+	'kanban_boards',
+	'bug_reports'
+];
 
 export interface ContexteEchanges {
 	prof: string;
@@ -43,7 +78,10 @@ export interface ContexteEchanges {
 	maintenant: Date;
 	graine: number;
 	/** Discussion de classe inventée par `activite.ts`. */
-	discussion: { conversation: string; messages: { id: string; auteur: string }[] } | null;
+	discussion: {
+		conversation: string;
+		messages: { id: string; auteur: string; date: string }[];
+	} | null;
 	/** Cartes VIP libres (ni utilisées, ni en demande d'activation) en main de chaque élève. */
 	mains: { eleve: string; cartes: { instance: string; modele: string }[] }[];
 	/** Amitiés acceptées. */
@@ -53,6 +91,11 @@ export interface ContexteEchanges {
 	/** Points vivants du programme, par classe. */
 	points: Record<string, string[]>;
 	exercices: string[];
+	/**
+	 * Tirage des jetons des liens de partage. `index.ts` passe un tirage cryptographique : tirés de la
+	 * graine, publique, ils se recalculeraient depuis le dépôt. Absent (tests) : tirés de la graine.
+	 */
+	jetonDePartage?: () => string;
 }
 
 type Lignes = Record<string, unknown>[];
@@ -62,7 +105,7 @@ const HEURE = 3_600_000;
 const MINUTE = 60_000;
 
 /** Alphabet des liens de partage (`generateShareTokenString`). */
-const CARACTERES_LIEN = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+export const CARACTERES_LIEN = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 /** Fils de la messagerie : [objet, message de l'élève, réponse du prof (ou rien)]. */
 const FILS_ELEVE: [string, string, string | null][] = [
@@ -355,6 +398,7 @@ export function planEchanges(c: ContexteEchanges) {
 	const iso = (ms: number) => new Date(ms).toISOString();
 	const lien = (longueur = 32) =>
 		Array.from({ length: longueur }, () => choisir([...CARACTERES_LIEN])).join('');
+	const jetonDePartage = c.jetonDePartage ?? (() => lien());
 	const t0 = c.maintenant.getTime();
 
 	const premiere = c.classes[0]?.eleves ?? [];
@@ -492,7 +536,8 @@ export function planEchanges(c: ContexteEchanges) {
 					message_id: m.id,
 					user_id: qui,
 					emoji,
-					created_at: iso(t0 - entier(1, 8) * JOUR)
+					// Après le message, jamais après maintenant.
+					created_at: iso(Math.min(Date.parse(m.date) + entier(1, 600) * MINUTE, t0 - MINUTE))
 				});
 			}
 		}
@@ -508,11 +553,12 @@ export function planEchanges(c: ContexteEchanges) {
 				reason: 'inappropriate',
 				details: 'Ce message se moque d’un camarade.',
 				status: 'pending',
-				created_at: iso(t0 - 6 * HEURE)
+				created_at: iso(Math.min(Date.parse(enAttente.date) + 3 * HEURE, t0 - HEURE))
 			});
 		}
 		if (traite && temoin(traite.auteur)) {
-			const signale = t0 - 5 * JOUR;
+			// Signalé deux heures après le message, traité trois heures plus tard.
+			const signale = Math.min(Date.parse(traite.date) + 2 * HEURE, t0 - 8 * HEURE);
 			const id = uuid();
 			signalementsMessages.push({
 				id,
@@ -635,8 +681,7 @@ export function planEchanges(c: ContexteEchanges) {
 				effort_score: entier(40, 95),
 				topics_covered: [modele.sujet],
 				is_active: false,
-				created_at: iso(debut),
-				updated_at: iso(t + MINUTE)
+				created_at: iso(debut)
 			});
 		}
 	}
@@ -691,6 +736,8 @@ export function planEchanges(c: ContexteEchanges) {
 	const discussionsEchange: Lignes = [];
 	/** Échanges entre amis à conclure par `execute_trade` (au nom de l'initiateur). */
 	const echangesAConclure: { echange: string; initiateur: string }[] = [];
+	/** Propositions acceptées ensuite par `accept_proposal_atomic` (au nom du vendeur). */
+	const propositionsAAccepter: { proposition: string; vendeur: string }[] = [];
 	const libres = new Map(c.mains.map((m) => [m.eleve, [...m.cartes]]));
 	const prendre = (eleve: string) => libres.get(eleve)?.shift();
 	const bloquer = (
@@ -716,68 +763,66 @@ export function planEchanges(c: ContexteEchanges) {
 		from_partner: { cards: a.cartes, gidouilles: a.gidouilles }
 	});
 
-	// Échanges entre amis d'abord (une carte contre une carte) : ils prennent leurs cartes avant les
-	// annonces. Parmi les paires d'amis qui ont chacun une carte libre, la première conclut, la
-	// seconde annule.
-	const pairesAvecCartes = c.amis.filter(
-		([a, b]) => (libres.get(a)?.length ?? 0) > 0 && (libres.get(b)?.length ?? 0) > 0
-	);
-	pairesAvecCartes.slice(0, 2).forEach(([a, b], i) => {
-		const carteA = libres.get(a)?.[0];
-		const carteB = libres.get(b)?.[0];
-		if (!carteA || !carteB) return;
-		const debut = t0 - (3 + i * 2) * JOUR;
+	// Échanges entre amis d'abord : ils prennent leurs cartes avant les annonces. Le premier, une
+	// carte contre une carte, est conclu par `execute_trade` ; le second, une carte contre des
+	// Gidouilles, négocie encore, carte bloquée. Une paire n'échange que si ceux qui donnent une
+	// carte en ont encore une libre à ce moment-là.
+	const aDesCartes = (e: string) => (libres.get(e)?.length ?? 0) > 0;
+	const conclu = c.amis.find(([a, b]) => aDesCartes(a) && aDesCartes(b));
+	const paires: [string, string, boolean][] = [];
+	if (conclu) paires.push([conclu[0], conclu[1], true]);
+	// L'échange en cours : une autre paire d'abord, sinon la même (elle peut échanger deux fois).
+	const restes = (p: [string, string]) => {
+		const sansConclu = (e: string) =>
+			(libres.get(e)?.length ?? 0) - (conclu && conclu.includes(e) ? 1 : 0) > 0;
+		return sansConclu(p[0]) ? p : sansConclu(p[1]) ? ([p[1], p[0]] as [string, string]) : null;
+	};
+	const autres = [...c.amis].sort((x, y) => Number(x === conclu) - Number(y === conclu));
+	const enCours = autres.map(restes).find((p) => p !== null);
+	if (enCours) paires.push([enCours[0], enCours[1], false]);
+	paires.forEach(([a, b, valide], i) => {
+		const carteA = prendre(a);
+		const carteB = valide ? prendre(b) : undefined;
+		if (!carteA || (valide && !carteB)) return;
+		const debut = t0 - (3 - i * 2) * JOUR;
 		const id = uuid();
-		const courante = offre(
-			{ cartes: [carteA.instance], gidouilles: 0 },
-			{ cartes: [carteB.instance], gidouilles: 0 }
-		);
-		if (i === 0) {
-			prendre(a);
-			prendre(b);
-			echanges.push({
-				id,
-				trade_type: 'friend',
-				status: 'negotiating',
-				initiator_id: a,
-				partner_id: b,
-				current_offer: courante,
-				last_offer_by: a,
-				validated_by_initiator: true,
-				validated_by_partner: true,
-				validated_at: iso(debut + HEURE),
-				confirmation_started_at: iso(debut + HEURE),
-				confirmed_by_initiator: true,
-				confirmed_by_partner: true,
-				created_at: iso(debut)
-			});
+		echanges.push({
+			id,
+			trade_type: 'friend',
+			status: 'negotiating',
+			initiator_id: a,
+			partner_id: b,
+			current_offer: offre(
+				{ cartes: [carteA.instance], gidouilles: 0 },
+				carteB ? { cartes: [carteB.instance], gidouilles: 0 } : { cartes: [], gidouilles: 5 }
+			),
+			last_offer_by: a,
+			validated_by_initiator: valide,
+			validated_by_partner: valide,
+			validated_at: valide ? iso(debut + HEURE) : null,
+			confirmation_started_at: valide ? iso(debut + HEURE) : null,
+			confirmed_by_initiator: valide,
+			confirmed_by_partner: valide,
+			created_at: iso(debut)
+		});
+		if (valide) {
 			echangesAConclure.push({ echange: id, initiateur: a });
 		} else {
-			echanges.push({
-				id,
-				trade_type: 'friend',
-				status: 'cancelled',
-				initiator_id: a,
-				partner_id: b,
-				current_offer: courante,
-				last_offer_by: a,
-				created_at: iso(debut),
-				cancelled_at: iso(debut + 5 * HEURE)
-			});
+			bloquer(a, carteA.instance, 'trade', id, debut);
 		}
 		discussionsEchange.push(
 			{
 				id: uuid(),
 				trade_id: id,
 				sender_id: a,
-				message: 'Ma carte contre la tienne ?',
+				message: valide ? 'Ma carte contre la tienne ?' : 'Ma carte contre 5 Gidouilles ?',
 				created_at: iso(debut + 5 * MINUTE)
 			},
 			{
 				id: uuid(),
 				trade_id: id,
 				sender_id: b,
-				message: i === 0 ? 'Ok, ça marche !' : 'Non merci, je la garde finalement.',
+				message: valide ? 'Ok, ça marche !' : 'Je réfléchis, je te dis ce soir.',
 				created_at: iso(debut + 30 * MINUTE)
 			}
 		);
@@ -791,78 +836,41 @@ export function planEchanges(c: ContexteEchanges) {
 			if (!carte) return;
 			const quand = t0 - entier(1, 4) * JOUR;
 			const id = uuid();
-			// La première annonce de la classe a trouvé preneur : proposition acceptée, échange en cours.
+			// La première annonce de la classe trouve preneur : sa proposition est acceptée ensuite par
+			// la fonction de l'appli (`accept_proposal_atomic`), qui conclut l'échange et déplace la carte.
 			const conclue = i === 0;
 			annonces.push({
 				id,
 				creator_id: vendeur,
 				school_id: k.ecole,
 				listing_type: 'sell',
-				status: conclue ? 'completed' : 'active',
+				status: 'active',
 				offered_card_ids: [carte.instance],
 				wanted_gidouilles: entier(3, 15),
 				max_proposals: 10,
 				proposal_count: 0,
 				view_count: entier(0, 12),
 				created_at: iso(quand),
-				expires_at: iso(quand + 7 * JOUR),
-				completed_at: conclue ? iso(quand + 6 * HEURE) : null
+				expires_at: iso(quand + 7 * JOUR)
 			});
+			bloquer(vendeur, carte.instance, 'listing', id, quand);
 			const acheteurs = k.eleves.filter((e) => e !== vendeur && e !== absent);
 			const nbPropositions = conclue ? 1 : entier(0, 2);
 			for (let n = 0; n < nbPropositions && n < acheteurs.length; n++) {
 				const acheteur = acheteurs[(i + n * 3) % acheteurs.length];
 				if (propositions.some((p) => p.listing_id === id && p.proposer_id === acheteur)) continue;
 				const proposition = uuid();
-				const prix = entier(3, 15);
 				propositions.push({
 					id: proposition,
 					listing_id: id,
 					proposer_id: acheteur,
-					status: conclue ? 'accepted' : 'pending',
-					offered_gidouilles: prix,
+					status: 'pending',
+					offered_gidouilles: entier(3, 15),
 					message: 'Je te propose des Gidouilles.',
-					response_message: conclue ? 'Marché conclu !' : null,
-					created_at: iso(quand + HEURE),
-					responded_at: conclue ? iso(quand + 6 * HEURE) : null
+					created_at: iso(quand + HEURE)
 				});
-				if (conclue) {
-					const echange = uuid();
-					echanges.push({
-						id: echange,
-						trade_type: 'marketplace',
-						status: 'negotiating',
-						initiator_id: vendeur,
-						partner_id: acheteur,
-						listing_id: id,
-						proposal_id: proposition,
-						current_offer: offre(
-							{ cartes: [carte.instance], gidouilles: 0 },
-							{ cartes: [], gidouilles: prix }
-						),
-						last_offer_by: acheteur,
-						created_at: iso(quand + 6 * HEURE)
-					});
-					bloquer(vendeur, carte.instance, 'trade', echange, quand + 6 * HEURE);
-					discussionsEchange.push(
-						{
-							id: uuid(),
-							trade_id: echange,
-							sender_id: acheteur,
-							message: 'Je valide dès que tu es prêt.',
-							created_at: iso(quand + 7 * HEURE)
-						},
-						{
-							id: uuid(),
-							trade_id: echange,
-							sender_id: vendeur,
-							message: 'Je regarde ce soir.',
-							created_at: iso(quand + 8 * HEURE)
-						}
-					);
-				}
+				if (conclue) propositionsAAccepter.push({ proposition, vendeur });
 			}
-			if (!conclue) bloquer(vendeur, carte.instance, 'listing', id, quand);
 		});
 		// Une demande : un élève cherche un modèle de carte, contre des Gidouilles.
 		const chercheur = k.eleves.find(
@@ -911,26 +919,28 @@ export function planEchanges(c: ContexteEchanges) {
 	// --- Consentements parentaux --------------------------------------------------------------------
 	const consentements: Lignes = [];
 	const consentementsAccordes: { jeton: string; ip: string }[] = [];
-	c.soumisAuConsentement.forEach((eleve, i) => {
-		const nn = eleve.slice(-2);
-		const jeton = uuid();
-		const envoye = t0 - entier(2, 20) * JOUR;
-		const etat = i % 3; // 0 : en attente, 1 : accordé, 2 : échu
-		consentements.push({
-			id: uuid(),
-			student_id: eleve,
-			parent_email: `parent.eleve${nn}@example.test`,
-			parent_name: `Parent de l’élève ${nn}`,
-			status: etat === 2 ? 'expired' : 'pending',
-			consent_token: jeton,
-			created_at: iso(envoye),
-			expires_at: iso(etat === 2 ? t0 - JOUR : envoye + 30 * JOUR),
-			last_email_sent_at: iso(envoye),
-			email_count: etat === 0 ? 2 : 1
+	c.soumisAuConsentement
+		.filter((e) => e !== c.horsClasse)
+		.forEach((eleve, i) => {
+			const nn = eleve.slice(-2);
+			const jeton = uuid();
+			const envoye = t0 - entier(2, 20) * JOUR;
+			const etat = i % 3; // 0 : en attente, 1 : accordé, 2 : échu
+			consentements.push({
+				id: uuid(),
+				student_id: eleve,
+				parent_email: `parent.eleve${nn}@example.test`,
+				parent_name: `Parent de l’élève ${nn}`,
+				status: etat === 2 ? 'expired' : 'pending',
+				consent_token: jeton,
+				created_at: iso(envoye),
+				expires_at: iso(etat === 2 ? t0 - JOUR : envoye + 30 * JOUR),
+				last_email_sent_at: iso(envoye),
+				email_count: etat === 0 ? 2 : 1
+			});
+			// Adresse de documentation (RFC 5737) : la preuve d'un accord est fictive.
+			if (etat === 1) consentementsAccordes.push({ jeton, ip: `192.0.2.${10 + i}` });
 		});
-		// Adresse de documentation (RFC 5737) : la preuve d'un accord est fictive.
-		if (etat === 1) consentementsAccordes.push({ jeton, ip: `192.0.2.${10 + i}` });
-	});
 
 	// --- Carnet de liaison de la première classe -----------------------------------------------------
 	const carnetReglages: Lignes = [];
@@ -970,13 +980,14 @@ export function planEchanges(c: ContexteEchanges) {
 				email_hash: empreinte(email),
 				status: statut,
 				source: i % 2 === 0 ? 'teacher' : 'student',
+				// Comme l'appli : l'auteur est celui qui a saisi l'adresse (le prof ou l'élève).
+				created_by: i % 2 === 0 ? c.prof : eleve,
 				confirm_token_hash: statut === 'pending' ? empreinte(lien()) : null,
 				confirm_expires_at: statut === 'pending' ? iso(t0 + 5 * JOUR) : null,
 				confirm_sent_count: 1,
 				confirm_last_sent_at: iso(cree),
 				confirmed_at: statut === 'confirmed' ? iso(cree + entier(1, 48) * HEURE) : null,
-				created_at: iso(cree),
-				created_by: c.prof
+				created_at: iso(cree)
 			});
 			envoisParents.push({
 				id: uuid(),
@@ -1129,7 +1140,7 @@ export function planEchanges(c: ContexteEchanges) {
 	const liensCours: Lignes = c.classes.map((k) => ({
 		id: uuid(),
 		class_id: k.id,
-		token: lien(),
+		token: jetonDePartage(),
 		is_active: true,
 		expires_at: iso(finAnnee),
 		access_count: entier(0, 20),
@@ -1139,7 +1150,7 @@ export function planEchanges(c: ContexteEchanges) {
 	const liensCahier: Lignes = c.classes.map((k) => ({
 		id: uuid(),
 		class_id: k.id,
-		token: lien(),
+		token: jetonDePartage(),
 		is_active: true,
 		expires_at: iso(finAnnee),
 		access_count: entier(0, 20),
@@ -1149,7 +1160,7 @@ export function planEchanges(c: ContexteEchanges) {
 	const liensExercice: Lignes = c.exercices.slice(0, 2).map((exercice, i) => ({
 		id: uuid(),
 		exercise_id: exercice,
-		token: lien(),
+		token: jetonDePartage(),
 		created_by: c.prof,
 		is_active: true,
 		// Le second a expiré : la page publique doit le refuser.
@@ -1294,7 +1305,9 @@ export function planEchanges(c: ContexteEchanges) {
 		/** Demandes accordées ensuite par `grant_parental_consent`. */
 		consentementsAccordes,
 		/** Échanges entre amis conclus ensuite par `execute_trade`. */
-		echangesAConclure
+		echangesAConclure,
+		/** Propositions acceptées ensuite par `accept_proposal_atomic` : vente conclue, carte déplacée. */
+		propositionsAAccepter
 	};
 }
 
@@ -1302,7 +1315,11 @@ export type PlanEchanges = ReturnType<typeof planEchanges>;
 
 type PartieEcrite = Exclude<
 	keyof PlanEchanges,
-	'marcheReglages' | 'carnetReglages' | 'consentementsAccordes' | 'echangesAConclure'
+	| 'marcheReglages'
+	| 'carnetReglages'
+	| 'consentementsAccordes'
+	| 'echangesAConclure'
+	| 'propositionsAAccepter'
 >;
 
 /**
