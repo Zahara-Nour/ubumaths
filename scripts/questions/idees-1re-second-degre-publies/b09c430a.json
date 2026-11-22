@@ -1,0 +1,411 @@
+{
+	"id": "b09c430a-8ed5-44f1-a431-7b108299982b",
+	"title": "Calculer le discriminant",
+	"description": "Δ = b² − 4ac, coefficients entiers",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2-4*a*c}}"
+				}
+			],
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+bx+c}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$. Ici $a={{a}}$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2}}{{eval:-4*a*c;+}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-4*a*c}}"
+				}
+			],
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+c}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$. Ici $a={{a}}$, $b=0$ (pas de terme en $x$) et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= 0^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:-4*a*c}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2}}"
+				}
+			],
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+bx}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$. Ici $a={{a}}$, $b={{b}}$ et $c=0$ (pas de terme constant).",
+					"$$\\begin{align}\\Delta &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times 0 \\\\ &= {{eval:b^2}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2-4*a*c}}"
+				}
+			],
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{c}}{{eval:bx;+}}{{eval:ax^2;+}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes ne sont pas dans l'ordre habituel : on repère le coefficient de chaque terme. $a={{a}}$ (devant $x^2$), $b={{b}}$ (devant $x$) et $c={{c}}$ (terme constant).",
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$.",
+					"$$\\begin{align}\\Delta &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2}}{{eval:-4*a*c;+}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)=\\dfrac{1}{ {{d}} }x^2{{eval:bx;+}}{{eval:c;+}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2-4*c/d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b^2-4*c}}",
+							"message": "Ici $a=\\dfrac{1}{ {{d}} }$, pas $1$ : $4ac=4\\times\\dfrac{1}{ {{d}} }\\times{{eval:c;()}}$.",
+							"label": "a = 1 au lieu de 1/d"
+						},
+						{
+							"answer": "{{eval:-b^2-4*c/d}}",
+							"message": "$b^2$ est toujours positif : ${{eval:b;()}}^2={{eval:b^2}}$.",
+							"label": "Carré de b négatif"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ici $a=\\dfrac{1}{ {{d}} }$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times\\dfrac{1}{ {{d}} }\\times{{eval:c;()}} \\\\ &= \\textcolor{{{color:primary.0}}}{ {{eval:b^2-4*c/d}} }\\end{align}$$"
+				]
+			},
+			"hint": "Repère bien $a$, $b$ et $c$ : le coefficient de $x^2$ est une fraction."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["49"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"description": "Δ de 2x^2-3x-5 = 49",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "4",
+				"c": "-4"
+			},
+			"description": "Δ de -x^2+4x-4 = 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-83"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "7"
+			},
+			"description": "Δ de 3x^2+x+7 = -83",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-31"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"description": "b² + 4ac au lieu de b² − 4ac",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["31"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"description": "−b² au lieu de (−3)² (= −9 + 40)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9+40"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"description": "calcul non terminé : 9+40",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"description": "Δ de 3x^2-2 = 24",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-16"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"c": "-4"
+			},
+			"description": "Δ de -x^2-4 = -16",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"description": "b pris égal à 1 : 1−4ac",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "5"
+			},
+			"description": "Δ de -2x^2+5x = 25",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "-3"
+			},
+			"description": "Δ de 4x^2-3x = 9",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "5"
+			},
+			"description": "−b² au lieu de b²",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "5"
+			},
+			"description": "désordre : Δ de -3x^2+2x+5 = 64",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "5"
+			},
+			"description": "a et c échangés n'y changent rien (−4ac symétrique) : 4 + 60",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "5"
+			},
+			"description": "b et c confondus : 5² − 4×(−3)×2 = 49",
+			"variationIndex": 3
+		},
+		{
+			"description": "½x² + 3x − 4",
+			"variationIndex": 4,
+			"variables": {
+				"d": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17"]
+		},
+		{
+			"description": "a = 1",
+			"variationIndex": 4,
+			"variables": {
+				"d": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ici $a = \\dfrac{1}{2}$, pas $1$ : $4ac=4\\times\\dfrac{1}{ 2 }\\times(-4)$."
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "b² négatif",
+			"variationIndex": 4,
+			"variables": {
+				"d": "2",
+				"b": "3",
+				"c": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$b^2$ est toujours positif : $3^2 = 9$."
+			},
+			"answers": ["-1"]
+		}
+	]
+}

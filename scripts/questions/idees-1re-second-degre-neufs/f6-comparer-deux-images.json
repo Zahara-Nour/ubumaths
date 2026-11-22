@@ -1,0 +1,277 @@
+{
+	"id": "6ea9ece7-5713-404f-b53b-499ea186fb76",
+	"title": "Comparer deux images d'une fonction du second degré",
+	"description": "f(x) = a(x − α)² + β : comparer deux images par la symétrie de la parabole ou le sens de variation, sans les calculer",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nSans calculer ces images, compare $f({{u}})$ et $f({{v}})$.\n\n```choix\nmelanger: non\n- $f({{u}})<f({{v}})$\n- $f({{u}})=f({{v}})$\n- $f({{u}})>f({{v}})$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "al",
+					"expression": "-5..5"
+				},
+				{
+					"name": "be",
+					"expression": "-9..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "eval:al-k"
+				},
+				{
+					"name": "v",
+					"expression": "eval:al+k"
+				},
+				{
+					"name": "D",
+					"expression": "eval:a*((u-al)^2-(v-al)^2)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:D<0|0|{{if:D==0|1|2}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La parabole est symétrique par rapport à la droite $x={{al}}$.",
+					"${{u}}$ et ${{v}}$ sont à la même distance ${{k}}$ de ${{al}}$, de part et d'autre : leurs images sont égales.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f({{u}}){{if:D<0|<|{{if:D==0|=|>}}}}f({{v}})}$."
+				]
+			},
+			"hint": "La courbe de $f$ est une parabole d'axe $x={{al}}$ : pense à la symétrie par rapport à cet axe, et au sens de variation de chaque côté."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nSans calculer ces images, compare $f({{u}})$ et $f({{v}})$.\n\n```choix\nmelanger: non\n- $f({{u}})<f({{v}})$\n- $f({{u}})=f({{v}})$\n- $f({{u}})>f({{v}})$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "al",
+					"expression": "-5..5"
+				},
+				{
+					"name": "be",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "g",
+					"expression": "1..5"
+				},
+				{
+					"name": "sd",
+					"expression": "1|-1"
+				},
+				{
+					"name": "u",
+					"expression": "eval:al+sd*d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:al+sd*(d+g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:a*((u-al)^2-(v-al)^2)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:D<0|0|{{if:D==0|1|2}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Comme $a={{a}}$ est {{if:a>0|positif|négatif}}, $f$ est {{if:a>0|décroissante|croissante}} sur $\\left]-\\infty\\,;{{al}}\\right]$ et {{if:a>0|croissante|décroissante}} sur $\\left[{{al}}\\,;+\\infty\\right[$.",
+					"${{u}}$ et ${{v}}$ sont tous deux {{if:sd>0|à droite|à gauche}} de ${{al}}$, sur un intervalle où $f$ est monotone : l'ordre des images s'en déduit.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f({{u}}){{if:D<0|<|{{if:D==0|=|>}}}}f({{v}})}$."
+				]
+			},
+			"hint": "La courbe de $f$ est une parabole d'axe $x={{al}}$ : pense à la symétrie par rapport à cet axe, et au sens de variation de chaque côté."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nSans calculer ces images, compare $f({{u}})$ et $f({{v}})$.\n\n```choix\nmelanger: non\n- $f({{u}})<f({{v}})$\n- $f({{u}})=f({{v}})$\n- $f({{u}})>f({{v}})$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "al",
+					"expression": "-5..5"
+				},
+				{
+					"name": "be",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..6"
+				},
+				{
+					"name": "g",
+					"expression": "1..6"
+				},
+				{
+					"name": "u",
+					"expression": "eval:al-d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:al+g"
+				},
+				{
+					"name": "D",
+					"expression": "eval:a*((u-al)^2-(v-al)^2)"
+				}
+			],
+			"conditions": ["d != g"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:D<0|0|{{if:D==0|1|2}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ ne dépend que de la distance de $x$ à ${{al}}$ : ${{u}}$ en est à ${{d}}$, ${{v}}$ à ${{g}}$.",
+					"Avec $a={{a}}$ {{if:a>0|positif, plus on s'éloigne de l'axe, plus $f(x)$ est grand|négatif, plus on s'éloigne de l'axe, plus $f(x)$ est petit}}.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f({{u}}){{if:D<0|<|{{if:D==0|=|>}}}}f({{v}})}$."
+				]
+			},
+			"hint": "La courbe de $f$ est une parabole d'axe $x={{al}}$ : pense à la symétrie par rapport à cet axe, et au sens de variation de chaque côté."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2(x − 1)² + 3 : f(−3) = f(5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "3",
+				"k": "4",
+				"u": "-3",
+				"v": "5",
+				"D": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Pas égales",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"al": "1",
+				"be": "3",
+				"k": "4",
+				"u": "-3",
+				"v": "5",
+				"D": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "(x − 2)² : f(3) < f(5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"al": "2",
+				"be": "0",
+				"d": "1",
+				"g": "2",
+				"sd": "1",
+				"u": "3",
+				"v": "5",
+				"D": "-8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Sens inverse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"al": "2",
+				"be": "0",
+				"d": "1",
+				"g": "2",
+				"sd": "1",
+				"u": "3",
+				"v": "5",
+				"D": "-8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "−x² + 4 : f(−2) > f(5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"al": "0",
+				"be": "4",
+				"d": "2",
+				"g": "5",
+				"u": "-2",
+				"v": "5",
+				"D": "21"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Sens inverse",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"al": "0",
+				"be": "4",
+				"d": "2",
+				"g": "5",
+				"u": "-2",
+				"v": "5",
+				"D": "21"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}

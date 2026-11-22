@@ -1,0 +1,706 @@
+{
+	"id": "9e5c79e3-b684-4ad7-9e21-bc5fcb044789",
+	"title": "Résoudre en choisissant la forme adaptée",
+	"description": "Trois formes d'une fonction du second degré données ; résoudre f(x) = 0, f(x) = c, f(x) = β, f(x) = R ou f(x) < β avec la forme qui rend le calcul immédiat",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par trois écritures égales :\n\n- forme développée : $f(x)={{eval:ax^2+bx+c}}$ ;\n- forme factorisée : $f(x)={{a}}(x{{eval:-x1;+}})(x{{eval:-x2;+}})$ ;\n- forme canonique : $f(x)={{a}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nEn choisissant l'écriture la plus adaptée, résous l'équation $f(x)=0$.\n\nÉcris l'ensemble des solutions entre accolades, par exemple $\\{2;5\\}$, ou $\\varnothing$ s'il n'y en a pas.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "x1",
+					"expression": "-5..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+2*k"
+				},
+				{
+					"name": "al",
+					"expression": "eval:x1+k"
+				},
+				{
+					"name": "be",
+					"expression": "eval:-a*k^2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(x1+x2)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*x1*x2"
+				}
+			],
+			"conditions": ["x1 != 0", "x2 != 0", "al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{x1}} ; {{x2}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:-x1}} ; {{eval:-x2}} \\}",
+							"message": "Un produit $a \\left( x - x_1 \\right) \\left( x - x_2 \\right)$ est nul pour $x = x_1$ ou $x = x_2$ : attention aux signes.",
+							"label": "Signes des racines"
+						},
+						{
+							"answer": "\\{ {{al}} \\}",
+							"message": "${{al}}$ est l'abscisse du sommet : $f({{al}})={{be}}$, pas $0$.",
+							"label": "Abscisse du sommet"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La forme factorisée donne un produit nul : $f(x)=0 \\iff x{{eval:-x1;+}}=0$ ou $x{{eval:-x2;+}}=0$.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\{ {{x1}} ; {{x2}} \\}}$."
+				]
+			},
+			"hint": "Cherche l'écriture qui fait disparaître le plus de calcul : un produit nul, un terme qui s'annule de chaque côté, ou un carré isolé."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par trois écritures égales :\n\n- forme développée : $f(x)={{eval:ax^2+bx+c}}$ ;\n- forme factorisée : $f(x)={{a}}(x{{eval:-x1;+}})(x{{eval:-x2;+}})$ ;\n- forme canonique : $f(x)={{a}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nEn choisissant l'écriture la plus adaptée, résous l'équation $f(x)={{c}}$.\n\nÉcris l'ensemble des solutions entre accolades, par exemple $\\{2;5\\}$, ou $\\varnothing$ s'il n'y en a pas.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "x1",
+					"expression": "-5..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+2*k"
+				},
+				{
+					"name": "al",
+					"expression": "eval:x1+k"
+				},
+				{
+					"name": "be",
+					"expression": "eval:-a*k^2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(x1+x2)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*x1*x2"
+				}
+			],
+			"conditions": ["x1 != 0", "x2 != 0", "al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ 0 ; {{eval:x1+x2}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:x1+x2}} \\}",
+							"message": "En divisant par $x$, tu as perdu la solution $x = 0$ : factorise par $x$.",
+							"label": "Solution 0 perdue"
+						},
+						{
+							"answer": "\\{ 0 ; {{eval:-(x1+x2)}} \\}",
+							"message": "De ${{a}}x{{eval:b;+}}=0$, on tire $x=-\\dfrac{ {{b}} }{ {{a}} }$ : attention au signe.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La forme développée fait disparaître la constante : $f(x)={{c}} \\iff {{eval:ax^2+bx}}=0 \\iff x({{eval:a*x+b}})=0$.",
+					"$x=0$ ou ${{eval:a*x+b}}=0$, soit $x={{eval:x1+x2}}$. Donc $S=\\textcolor{{{color:primary.0}}}{\\{ 0 ; {{eval:x1+x2}} \\}}$."
+				]
+			},
+			"hint": "Cherche l'écriture qui fait disparaître le plus de calcul : un produit nul, un terme qui s'annule de chaque côté, ou un carré isolé."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par trois écritures égales :\n\n- forme développée : $f(x)={{eval:ax^2+bx+c}}$ ;\n- forme factorisée : $f(x)={{a}}(x{{eval:-x1;+}})(x{{eval:-x2;+}})$ ;\n- forme canonique : $f(x)={{a}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nEn choisissant l'écriture la plus adaptée, résous l'équation $f(x)={{be}}$.\n\nÉcris l'ensemble des solutions entre accolades, par exemple $\\{2;5\\}$, ou $\\varnothing$ s'il n'y en a pas.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "x1",
+					"expression": "-5..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+2*k"
+				},
+				{
+					"name": "al",
+					"expression": "eval:x1+k"
+				},
+				{
+					"name": "be",
+					"expression": "eval:-a*k^2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(x1+x2)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*x1*x2"
+				}
+			],
+			"conditions": ["x1 != 0", "x2 != 0", "al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{al}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{x1}} ; {{x2}} \\}",
+							"message": "Ce sont les solutions de $f(x)=0$ ; ici on cherche $f(x)={{be}}$.",
+							"label": "Racines de f"
+						},
+						{
+							"answer": "\\{ {{eval:-al}} \\}",
+							"message": "$(x{{eval:-al;+}})^2=0$ donne $x={{al}}$ : attention au signe.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La forme canonique isole un carré : $f(x)={{be}} \\iff {{a}}(x{{eval:-al;+}})^2=0 \\iff x={{al}}$.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\{ {{al}} \\}}$."
+				]
+			},
+			"hint": "Cherche l'écriture qui fait disparaître le plus de calcul : un produit nul, un terme qui s'annule de chaque côté, ou un carré isolé."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par trois écritures égales :\n\n- forme développée : $f(x)={{eval:ax^2+bx+c}}$ ;\n- forme factorisée : $f(x)={{a}}(x{{eval:-x1;+}})(x{{eval:-x2;+}})$ ;\n- forme canonique : $f(x)={{a}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nEn choisissant l'écriture la plus adaptée, résous l'équation $f(x)={{R}}$.\n\nÉcris l'ensemble des solutions entre accolades, par exemple $\\{2;5\\}$, ou $\\varnothing$ s'il n'y en a pas.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "x1",
+					"expression": "-5..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+2*k"
+				},
+				{
+					"name": "al",
+					"expression": "eval:x1+k"
+				},
+				{
+					"name": "be",
+					"expression": "eval:-a*k^2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(x1+x2)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*x1*x2"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "R",
+					"expression": "eval:be+a*m^2"
+				}
+			],
+			"conditions": ["x1 != 0", "x2 != 0", "al != 0", "m != k", "R != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:al-m}} ; {{eval:al+m}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:al+m}} \\}",
+							"message": "$(x{{eval:-al;+}})^2={{eval:m^2}}$ a deux solutions : $x{{eval:-al;+}}={{m}}$ ou $x{{eval:-al;+}}=-{{m}}$.",
+							"label": "Une seule racine carrée"
+						},
+						{
+							"answer": "\\{ {{eval:-al-m}} ; {{eval:-al+m}} \\}",
+							"message": "$(x{{eval:-al;+}})^2={{eval:m^2}}$ donne $x={{al}}\\pm{{m}}$ : attention au signe de $\\alpha$.",
+							"label": "Signe de α"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La forme canonique : $f(x)={{R}} \\iff {{a}}(x{{eval:-al;+}})^2={{eval:a*m^2}} \\iff (x{{eval:-al;+}})^2={{eval:m^2}}$.",
+					"$x{{eval:-al;+}}={{m}}$ ou $x{{eval:-al;+}}=-{{m}}$. Donc $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:al-m}} ; {{eval:al+m}} \\}}$."
+				]
+			},
+			"hint": "Cherche l'écriture qui fait disparaître le plus de calcul : un produit nul, un terme qui s'annule de chaque côté, ou un carré isolé."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par trois écritures égales :\n\n- forme développée : $f(x)={{eval:ax^2+bx+c}}$ ;\n- forme factorisée : $f(x)={{a}}(x{{eval:-x1;+}})(x{{eval:-x2;+}})$ ;\n- forme canonique : $f(x)={{a}}(x{{eval:-al;+}})^2{{eval:be;+}}$.\n\nEn choisissant l'écriture la plus adaptée, résous l'inéquation $f(x){{if:t==0|<|>}}{{be}}$.\n\nÉcris l'ensemble des solutions : $\\varnothing$, $\\mathbb{R}$, $\\mathbb{R}\\setminus\\{a\\}$ ou des intervalles.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "x1",
+					"expression": "-5..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1+2*k"
+				},
+				{
+					"name": "al",
+					"expression": "eval:x1+k"
+				},
+				{
+					"name": "be",
+					"expression": "eval:-a*k^2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(x1+x2)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*x1*x2"
+				},
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "sg",
+					"expression": "eval:a/abs(a)"
+				},
+				{
+					"name": "ee",
+					"expression": "eval:sg*(1-2*t)"
+				}
+			],
+			"conditions": ["x1 != 0", "x2 != 0", "al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:ee==1|\\varnothing|\\mathbb{R}\\setminus\\{ {{al}} \\}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:ee==1|\\mathbb{R}\\setminus\\{ {{al}} \\}|\\varnothing}}",
+							"message": "Un carré est toujours positif ou nul : avec $a={{a}}$, regarde si ${{a}}(x{{eval:-al;+}})^2$ peut être {{if:t==0|strictement négatif|strictement positif}}.",
+							"label": "Sens du carré"
+						},
+						{
+							"answer": "\\mathbb{R}",
+							"message": "{{if:ee==-1|En $x={{al}}$, on a $f(x)={{be}}$ : l'inégalité est stricte, ce nombre n'est pas solution.|Un carré est toujours positif ou nul : avec $a={{a}}$, regarde si ${{a}}(x{{eval:-al;+}})^2$ peut être {{if:t==0|strictement négatif|strictement positif}}.}}",
+							"label": "Tous les réels"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La forme canonique : $f(x){{if:t==0|<|>}}{{be}} \\iff {{a}}(x{{eval:-al;+}})^2{{if:t==0|<|>}}0$.",
+					"{{if:ee==1|Or ${{a}}(x{{eval:-al;+}})^2$ est toujours du signe de $a$ ou nul : il n'est jamais {{if:t==0|strictement négatif|strictement positif}}. Donc $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|Or ${{a}}(x{{eval:-al;+}})^2$ est {{if:t==0|strictement négatif|strictement positif}} dès que $x\\neq{{al}}$. Donc $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{ {{al}} \\}}$.}}"
+				]
+			},
+			"hint": "Cherche l'écriture qui fait disparaître le plus de calcul : un produit nul, un terme qui s'annule de chaque côté, ou un carré isolé."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 0 : {−1 ; 3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-1;3\\}"]
+		},
+		{
+			"description": "Signes",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un produit $a \\left( x - x_1 \\right) \\left( x - x_2 \\right)$ est nul pour $x = x_1$ ou $x = x_2$ : attention aux signes."
+			},
+			"answers": ["\\{1;-3\\}"]
+		},
+		{
+			"description": "Sommet",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$1$ est l'abscisse du sommet : $f\\left( 1 \\right) = -8$, pas $0$."
+			},
+			"answers": ["\\{1\\}"]
+		},
+		{
+			"description": "f(x) = −6 : {0 ; 2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{0;2\\}"]
+		},
+		{
+			"description": "0 perdu",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En divisant par $x$, tu as perdu la solution $x = 0$ : factorise par $x$."
+			},
+			"answers": ["\\{2\\}"]
+		},
+		{
+			"description": "Signe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "De $2 x - 4 = 0$, on tire $x = -\\dfrac{-4}{2}$ : attention au signe."
+			},
+			"answers": ["\\{0;-2\\}"]
+		},
+		{
+			"description": "f(x) = −8 : {1}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{1\\}"]
+		},
+		{
+			"description": "Racines de f",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les solutions de $f\\left( x \\right) = 0$ ; ici on cherche $f\\left( x \\right) = -8$."
+			},
+			"answers": ["\\{-1;3\\}"]
+		},
+		{
+			"description": "Signe",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left( x - 1 \\right)^2 = 0$ donne $x = 1$ : attention au signe."
+			},
+			"answers": ["\\{-1\\}"]
+		},
+		{
+			"description": "f(x) = 10 : {−2 ; 4}",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"m": "3",
+				"R": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-2;4\\}"]
+		},
+		{
+			"description": "Une seule solution",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"m": "3",
+				"R": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left( x - 1 \\right)^2 = 9$ a deux solutions : $x - 1 = 3$ ou $x - 1 = -3$."
+			},
+			"answers": ["\\{4\\}"]
+		},
+		{
+			"description": "Signe de α",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"m": "3",
+				"R": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left( x - 1 \\right)^2 = 9$ donne $x=1\\pm3$ : attention au signe de $\\alpha$."
+			},
+			"answers": ["\\{-4;2\\}"]
+		},
+		{
+			"description": "f(x) < −8 avec a > 0 : ∅",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"t": "0",
+				"sg": "1",
+				"ee": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\varnothing"]
+		},
+		{
+			"description": "f(x) < −8 : ℝ \\ {1} au lieu de ∅",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"t": "0",
+				"sg": "1",
+				"ee": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un carré est toujours positif ou nul : avec $a = 2$, regarde si $2 \\left( x - 1 \\right)^2$ peut être strictement négatif."
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{1\\}"]
+		},
+		{
+			"description": "f(x) > −8 avec a > 0 : ℝ \\ {1}",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"t": "1",
+				"sg": "1",
+				"ee": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{1\\}"]
+		},
+		{
+			"description": "f(x) > −8 : réunion d'intervalles",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"t": "1",
+				"sg": "1",
+				"ee": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;1[\\cup]1;+\\infty["]
+		},
+		{
+			"description": "f(x) > −8 : ℝ",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"x1": "-1",
+				"k": "2",
+				"x2": "3",
+				"al": "1",
+				"be": "-8",
+				"b": "-4",
+				"c": "-6",
+				"t": "1",
+				"sg": "1",
+				"ee": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En $x = 1$, on a $f\\left( x \\right) = -8$ : l'inégalité est stricte, ce nombre n'est pas solution."
+			},
+			"answers": ["\\mathbb{R}"]
+		}
+	]
+}
