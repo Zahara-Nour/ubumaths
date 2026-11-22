@@ -12,9 +12,7 @@ _Mis à jour le 2026-11-22, recompte fait, verdicts esquissés (§ « Verdicts e
   dans le code conforme (6N2B-5, 6N2C-3, 6N2D, 6N2H) ; nos modèles relevés en prod ; verdicts
   esquissés plus bas · **Prochaine action** : ajouter les 2 lignes et les verdicts au relevé, puis la
   page à cocher (artefact, capacité `db`) avec les fiches F1 à F12 · **En attente de David** : rien.
-- **Pièges en cours** : copie non suivie et périmée de ce journal dans le worktree
-  `../ubumaths-wt-idees-6e-decimaux` (branche `docs/idees-6e-decimaux`, aucun commit) ; sa suppression
-  a été demandée à David, sans réponse : ne pas y toucher.
+- **Pièges en cours** : aucun (copie périmée du journal dans le worktree supprimée sur demande de David).
 - **Worktree / branche** : voir ci-dessus ; il ne servira qu'à la PR des migrations.
 
 ## Verdicts esquissés (2026-11-22, à reporter dans le relevé)
