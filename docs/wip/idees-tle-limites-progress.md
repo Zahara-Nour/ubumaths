@@ -5,13 +5,16 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, phase 0 publiée._
+_Mis à jour le 2026-11-22, phase 0 validée._
 
-- **État** : relevé écrit, fiches de phase 0 publiées sur la page à cocher · **Prochaine action** :
-  lire les verdicts de David, puis écrire le lot dans un worktree `../ubumaths-wt-idees-tle-limites`
-  · **En attente de David** : verdicts des fiches F1 à F12, questions Q1 et Q2 · **Pièges en cours** :
-  réserver les modèles publiés à varier dans le tableau **avant** de les exporter · **Worktree /
-  branche** : aucun (relevé et phase 0 commités sur `main`).
+- **État** : phase 0 validée par David (tout oui, quantité conjuguée gardée sans point) ; 7 modèles
+  publiés réservés dans le tableau · **Prochaine action** : worktree
+  `../ubumaths-wt-idees-tle-limites` (branche `feat/idees-tle-limites`), écrire le lot d'un coup
+  (5 modèles neufs, 15 variations ; 15 variations des 7 publiés exportés de prod), specs, erreurs
+  prévues, coups de pouce, sonde des courbes, essai en base locale · **En attente de David** : rien
+  · **Pièges en cours** : vérifier en base les règles du tag (point sur le nœud ou sa notion) avant la
+  migration de rangement ; relever les niveaux numérotés juste avant · **Worktree / branche** : pas
+  encore créé.
 
 ## Historique
 
@@ -36,3 +39,14 @@ _Mis à jour le 2026-11-22, phase 0 publiée._
 - Pour d'autres rubriques (« Idées en attente » du tableau) : ln(axⁿ + k) par composition (TSA2-35)
   → logarithme ; variations d'une homographique et fonction auxiliaire (TSA2-34, 52) → dérivation.
 - Questions ouvertes, sans réponse = non tranchées : F1 à F12, Q1, Q2.
+
+### 2026-11-22 — phase 0 validée
+
+- David : « je valide tout et je garde les modèles hors programme ». Donc F1 à F11 oui, Q1 oui
+  (deux modèles de lecture sur courbe, TSPE-397 et TSPE-572), Q2 : la quantité conjuguée devient un
+  **modèle sans point**, 2 variations (√(ax + b) − √(ax + d) et √(x² + b) − √(x² + d) → 0) ; la fiche
+  dit pourquoi : technique ni nommée ni illustrée au BO de Tle spé (`T_SPE.md`), qui demande des
+  « cas simples ».
+- Lot : **5 modèles neufs** (15 variations) et **15 variations** de 7 modèles publiés, réservés dans
+  le tableau (a4d8dc52 +3, 04ec9518 +2, 5bf5b452 +1, b97dabe1 +2, ae70373c +3, 806c10f4 +3,
+  7844be9a +1).
