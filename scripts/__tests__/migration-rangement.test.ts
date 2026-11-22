@@ -131,7 +131,11 @@ describe('lireRangement', () => {
 		['point numérique', { noeud: 'A > B', point: 115 }],
 		['niveaux vides', { niveauxAjoutes: [] }],
 		['niveau en double', { niveauxAjoutes: ['6', '6'] }],
-		['niveaux en texte', { niveauxAjoutes: '6' }]
+		['niveaux en texte', { niveauxAjoutes: '6' }],
+		['niveau inconnu', { niveauxAjoutes: ['6e'] }],
+		['niveau qui finirait le commentaire SQL', { niveauxAjoutes: ["6\r; select 'x'; --"] }],
+		['saut de ligne dans le chemin', { noeud: 'A > B\rC', point: '6-115' }],
+		['saut de ligne dans le point', { noeud: 'A > B', point: '6-115\n' }]
 	])('refuse : %s', (_nom, brut) => {
 		const lu = lireRangement(brut, 'a.json');
 		expect(lu.ok).toBe(false);
@@ -281,7 +285,7 @@ describe('examinerModele', () => {
 	});
 
 	it('niveau déjà posé : ignoré ; un seul des deux manque : lui seul est ajouté', () => {
-		const dejaLa = prod({ grades: ['CM2', '6'] });
+		const dejaLa = prod({ grades: ['CM2', '6'], classification_node_id: 's1' });
 		expect(
 			examinerModele('b.json', { sorte: 'niveaux', niveaux: ['6'] }, dejaLa, ARBRE).sorte
 		).toBe('ignore');
@@ -292,6 +296,15 @@ describe('examinerModele', () => {
 			ARBRE
 		);
 		expect(examen.sorte === 'niveaux' && examen.modele.apres).toEqual(['CM2', '6', '5']);
+	});
+});
+
+describe('examinerModele, niveaux', () => {
+	it('niveau ajouté à un modèle SANS nœud en prod : refus (jamais rangé)', () => {
+		const examen = examinerModele('b.json', { sorte: 'niveaux', niveaux: ['5'] }, prod(), ARBRE);
+		expect(examen.sorte === 'refuse' && examen.erreur).toMatch(
+			/b\.json : 0000000a n'a pas de nœud en prod — « niveauxAjoutes »/
+		);
 	});
 });
 
@@ -340,8 +353,24 @@ describe('genererMigration', () => {
 		expect(retour).toContain(`('${ID}'::uuid, '6-115')`);
 		expect(retour).toContain('set classification_node_id = null');
 		expect(retour).toContain(
+			`('${ID}'::uuid, 'Nombres et calculs', 'Décimaux : calculs', 'multiplication'::text)`
+		);
+		expect(retour).toContain(
+			'and t.classification_node_id = case when r.sous_notion is null then n.id else s.id end;'
+		);
+		expect(retour).toContain(
 			`set grades = array['CM2']::text[]\n where id = '${ID2}' and grades = array['CM2', '6']::text[];`
 		);
+	});
+
+	it('aucune ligne hors commentaire avant le corps, même avec un retour chariot dans le lot ou la source', () => {
+		const sql = genererMigration(
+			{ lot: "x\r; select 'a'; --", source: "d\r; select 'b'; --", date: '2026-11-22' },
+			{ ranges: [range({ title: "t\r; select 'c'; --" })], niveaux: [niveaux()] }
+		);
+		const entete = sql.slice(0, sql.indexOf('-- ROLLBACK:END'));
+		expect(entete).not.toContain('\r');
+		expect(entete.split('\n').filter((l) => l !== '' && !l.startsWith('--'))).toEqual([]);
 	});
 
 	it('rollback d’un lot sans aucun tag : pas de suppression de tags', () => {

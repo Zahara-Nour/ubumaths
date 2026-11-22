@@ -12,7 +12,8 @@
  * Le champ `rangement` d'un fichier, deux formes exclusives :
  *  - modèle neuf : `{ "noeud": "Branche > Notion > Sous-notion", "point": "6-106" }`
  *    (la sous-notion est facultative ; `"point": null` = rangé sans tag, à écrire en clair) ;
- *  - modèle déjà rangé qui gagne un niveau : `{ "niveauxAjoutes": ["6"] }`.
+ *  - modèle déjà rangé qui gagne un niveau : `{ "niveauxAjoutes": ["6"] }` (niveaux de
+ *    `GRADE_CODES` ; modèle sans nœud en prod → refus).
  *
  * Règles :
  *  - le choix du nœud et du point reste une décision de la session (phase 0 du lot) : le module
@@ -31,6 +32,8 @@
  * Tests : scripts/__tests__/migration-rangement.test.ts (logique),
  * tests/integration/migrations-rangement-tags.test.ts (SQL rejoué sur Postgres).
  */
+
+import { GRADE_CODES } from '../../src/lib/types/grades';
 
 // ============================================================================
 // TYPES
@@ -129,6 +132,8 @@ export interface EnteteMigration {
 // ============================================================================
 
 const SEPARATEUR = ' > ';
+/** Les niveaux admis : un niveau inconnu ne serait refusé qu'au `db push` (`is_valid_grade_array`) */
+const NIVEAUX: readonly string[] = GRADE_CODES;
 const FORMES =
 	'{ "noeud": "Branche > Notion > Sous-notion", "point": "<code>" | null } ou { "niveauxAjoutes": ["<niveau>"] }';
 
@@ -136,8 +141,13 @@ const FORMES =
 // FONCTIONS
 // ============================================================================
 
+/** Un texte non vide, sans blanc aux bouts ni saut de ligne (il finirait un commentaire SQL) */
 function estTexte(v: unknown): v is string {
-	return typeof v === 'string' && v.trim().length > 0 && v === v.trim();
+	return typeof v === 'string' && v.trim().length > 0 && v === v.trim() && !/[\r\n]/.test(v);
+}
+
+function estNiveau(v: unknown): v is string {
+	return typeof v === 'string' && NIVEAUX.includes(v);
 }
 
 /** Valide le champ `rangement` brut d'un fichier (`undefined` = le fichier n'en porte pas) */
@@ -152,8 +162,10 @@ export function lireRangement(brut: unknown, fichier: string): LectureRangement 
 	const cles = Object.keys(champs).sort().join(',');
 	if (cles === 'niveauxAjoutes') {
 		const niveaux = champs.niveauxAjoutes;
-		if (!Array.isArray(niveaux) || niveaux.length === 0 || !niveaux.every(estTexte)) {
-			return refus('« niveauxAjoutes » doit lister au moins un niveau');
+		if (!Array.isArray(niveaux) || niveaux.length === 0 || !niveaux.every(estNiveau)) {
+			return refus(
+				`« niveauxAjoutes » doit lister au moins un niveau, pris dans ${NIVEAUX.join(', ')}`
+			);
 		}
 		if (new Set(niveaux).size !== niveaux.length) return refus('niveau en double');
 		return { ok: true, rangement: { sorte: 'niveaux', niveaux: [...niveaux] } };
@@ -230,6 +242,12 @@ export function examinerModele(
 		return { sorte: 'ignore', raison: 'déjà rangé, rien à faire' };
 	}
 	if (rangement.sorte === 'niveaux') {
+		if (prod.classification_node_id === null) {
+			return {
+				sorte: 'refuse',
+				erreur: `${fichier} : ${id8} n'a pas de nœud en prod — « niveauxAjoutes » ne vaut que pour un modèle déjà rangé`
+			};
+		}
 		const manquants = rangement.niveaux.filter((n) => !prod.grades.includes(n));
 		if (manquants.length === 0) return { sorte: 'ignore', raison: 'niveaux déjà posés' };
 		return {
@@ -316,7 +334,7 @@ function uneLigne(s: string): string {
 
 function commenter(sql: string): string {
 	return sql
-		.split('\n')
+		.split(/\r\n|\r|\n/)
 		.map((l) => (l === '' ? '--' : `-- ${l}`))
 		.join('\n');
 }
@@ -345,9 +363,22 @@ function rollback({ ranges, niveaux }: Lot): string {
 		`alter table public.question_templates disable trigger update_question_templates_updated_at;`
 	);
 	if (ranges.length > 0) {
+		// Gardé : un modèle déplacé à la main depuis la migration garde son nouveau nœud
 		lignes.push(
-			`update public.question_templates set classification_node_id = null`,
-			` where id in (${ids.join(', ')});`
+			`update public.question_templates t set classification_node_id = null`,
+			`  from (values`,
+			ranges
+				.map(
+					(m) =>
+						`	('${m.id}'::uuid, ${texte(m.branche)}, ${texte(m.notion)}, ${texte(m.sousNotion)}::text)`
+				)
+				.join(',\n'),
+			` ) as r(id, branche, notion, sous_notion)`,
+			`  join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = r.branche`,
+			`  join public.classification_nodes n on n.parent_id = b.id and n.kind = 'notion' and n.name = r.notion`,
+			`  left join public.classification_nodes s on s.parent_id = n.id and s.kind = 'subnotion' and s.name = r.sous_notion`,
+			` where t.id = r.id`,
+			`   and t.classification_node_id = case when r.sous_notion is null then n.id else s.id end;`
 		);
 	}
 	for (const m of niveaux) {
@@ -519,11 +550,11 @@ function entete(e: EnteteMigration, { ranges, niveaux }: Lot): string {
 		),
 		...niveaux.map(
 			(m) =>
-				`--   ${m.id.slice(0, 8)} « ${uneLigne(m.title)} » (${uneLigne(m.fichier)}) : niveaux {${m.avant.join(', ')}} → {${m.apres.join(', ')}}`
+				`--   ${m.id.slice(0, 8)} « ${uneLigne(m.title)} » (${uneLigne(m.fichier)}) : niveaux {${uneLigne(m.avant.join(', '))}} → {${uneLigne(m.apres.join(', '))}}`
 		)
 	];
 	return `-- ============================================================================
--- Lot ${e.lot} : ${titre}
+-- Lot ${uneLigne(e.lot)} : ${titre}
 -- ============================================================================
 ${lignes.join('\n')}
 --   Chaque modèle rangé porte au plus UN point (ADR 0020), posé sur son nœud ou sur la notion de ce
@@ -531,7 +562,7 @@ ${lignes.join('\n')}
 --   \`updated_at\` est PRÉSERVÉ.
 -- ============================================================================
 -- Fichier GÉNÉRÉ par scripts/questions/migration-rangement.ts — ne pas éditer à la main.
--- Source : ${e.source}. État relevé en prod le ${e.date}.
+-- Source : ${uneLigne(e.source)}. État relevé en prod le ${e.date}.
 --
 -- Les modèles n'existent qu'en production : en base locale, la migration ne touche aucun modèle
 -- et ses vérifications le tolèrent ; elle exige TOUT ou RIEN. Prouvée par
@@ -546,8 +577,9 @@ ${lignes.join('\n')}
 -- rangé apparaît sous son nœud dans l'admin, les élèves ne voient rien avant sa publication ; un
 -- modèle publié qui gagne un niveau est aussi proposé dans ce niveau. Données d'élèves : aucune.
 --
--- Rollback : retire les tags posés, rend les modèles sans nœud, rend les niveaux d'avant (gardé :
--- seulement si les niveaux sont encore ceux posés ici). Bloc éprouvé par le test d'intégration, à
+-- Rollback : retire les tags posés, rend les modèles sans nœud (gardé : seulement s'ils sont
+-- encore sur le nœud posé ici), rend les niveaux d'avant (gardé : seulement si les niveaux sont
+-- encore ceux posés ici). Bloc éprouvé par le test d'intégration, à
 -- jouer dans UNE transaction (\`psql -1 -v ON_ERROR_STOP=1 -f\`, ou l'éditeur SQL en un seul envoi) :
 -- ROLLBACK:BEGIN
 ${commenter(rollback({ ranges, niveaux }))}

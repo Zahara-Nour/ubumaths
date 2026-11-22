@@ -185,6 +185,15 @@ describe('ci-integration-ciblee', () => {
 		expect(verdict()).toBe('fichiers=');
 	});
 
+	it('rangement généré avec sa fixture, plus un rangement écrit à la main sans test : suite complète', () => {
+		const aLaMain = 'supabase/migrations/20261120120800_questions_y_rangement_tags.sql';
+		pr(MIGRATION, FIXTURE_RANGEMENT, aLaMain);
+		expect(verdict()).toBe('fichiers=');
+		depot();
+		pr(MIGRATION, FIXTURE_RANGEMENT, aLaMain, TEST);
+		expect(verdict()).toBe(`fichiers=${TEST} ${TEST_RANGEMENT}`);
+	});
+
 	it('fixture de rangement existante modifiée : suite complète', () => {
 		depot(FIXTURE_RANGEMENT);
 		pr(MIGRATION, FIXTURE_RANGEMENT);

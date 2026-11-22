@@ -23,7 +23,8 @@
 #     (`A tests/integration/fixtures/rangement-tags/<nom>.json`), accompagnée de SA migration
 #     ajoutée du même nom : elle ajoute à la liste le test qui rejoue toutes ces fixtures,
 #     `tests/integration/migrations-rangement-tags.test.ts` (une migration de rangement écrite à
-#     la main n'a pas de fixture : elle vient avec son test) ;
+#     la main n'a pas de fixture : elle vient avec son test, et sans aucun test dans la PR la
+#     suite complète tourne) ;
 #   - un test d'intégration ajouté ou modifié (`tests/integration/*.test.ts`, à la racine du
 #     dossier : ni helpers, ni fixtures, ni global-setup) ;
 #   - du contenu (`scripts/questions/**/*.json`), de la doc (`docs/**`), un `.md` hors
@@ -93,6 +94,9 @@ while IFS=$'\t' read -r statut f; do
 	esac
 done <<<"$lignes"
 
+# Les tests que la PR apporte elle-même (avant ceux qu'ajoutent les fixtures)
+tests_de_la_pr="${#tests[@]}"
+
 # Chaque migration de contenu arrive avec SA fixture : sinon le test ne la rejouerait pas
 for nom in "${migrations_contenu[@]-}"; do
 	[ -z "$nom" ] && continue
@@ -112,6 +116,13 @@ for nom in "${fixtures_rangement[@]-}"; do
 	case "$migrations_rangement" in *" $nom "*) ;; *) complete "$nom : fixture de rangement sans sa migration" ;; esac
 	t=tests/integration/migrations-rangement-tags.test.ts
 	case " ${tests[*]-} " in *" $t "*) ;; *) tests+=("$t") ;; esac
+done
+
+# Une migration de rangement sans fixture est écrite à la main : elle vient avec SON test, que le
+# test des fixtures ne remplace pas
+for nom in $migrations_rangement; do
+	case " ${fixtures_rangement[*]-} " in *" $nom "*) continue ;; esac
+	[ "$tests_de_la_pr" -gt 0 ] || complete "$nom : migration de rangement sans fixture ni test dans la PR"
 done
 
 [ "${#tests[@]}" -gt 0 ] || complete "aucun test d'intégration dans la PR"

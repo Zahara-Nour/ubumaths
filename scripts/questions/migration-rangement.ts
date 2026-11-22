@@ -91,13 +91,22 @@ async function main(): Promise<number> {
 		);
 		return 2;
 	}
+	// Deux dossiers de même nom (`6e/lot1`, `5e/lot1`) : le chemin entier, sinon deux fichiers
+	// porteraient le même nom et l'un prendrait le rangement de l'autre
+	const nomsDistincts = new Set(dossiers.map(nomDuDossier)).size === dossiers.length;
 	const lot: ModeleDuLot[] = dossiers.flatMap((d) =>
 		lireLot(d).map((m) => ({
 			...m,
-			fichier: dossiers.length > 1 ? `${nomDuDossier(d)}/${m.fichier}` : m.fichier
+			fichier:
+				dossiers.length > 1 ? `${nomsDistincts ? nomDuDossier(d) : d}/${m.fichier}` : m.fichier
 		}))
 	);
 	const erreurs: string[] = [];
+	const vus = new Set<string>();
+	for (const { fichier } of lot) {
+		if (vus.has(fichier)) erreurs.push(`${fichier} : deux fichiers du lot portent ce nom`);
+		vus.add(fichier);
+	}
 	const rangements = new Map<string, Rangement | null>();
 	for (const { fichier, rangement } of lot) {
 		const lu = lireRangement(rangement, fichier);

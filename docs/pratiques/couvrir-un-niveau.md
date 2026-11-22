@@ -324,12 +324,14 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    tout le lot, rien n'est écrit** : fichier sans id, id absent de la prod, titre ou niveau
    différents, `rangement` illisible, chemin ou point introuvable, nœud archivé, point ni sur le
    nœud ni sur sa notion, modèle déjà rangé ou tagué autrement, modèle sans nœud dont le fichier
-   n'a pas de `rangement` (modèle oublié).
+   n'a pas de `rangement` (modèle oublié), `niveauxAjoutes` sur un modèle sans nœud ou avec un
+   niveau inconnu, deux fichiers de même nom dans le lot.
    Sortie : `supabase/migrations/<horodatage>_questions_<lot>_rangement_tags.sql` (l'heure
    réelle, prise par le script ; réponse à la question d'accès écrite en en-tête ; nœud résolu
    strictement par son chemin, gardes « encore sans nœud ni tag » et « niveaux exactement ceux
    du relevé », tout ou rien, `updated_at` préservé, modèle absent toléré, rollback en
-   commentaire) et sa fixture `tests/integration/fixtures/rangement-tags/<même nom>.json`,
+   commentaire, gardé lui aussi : il ne retire le nœud et ne rend les niveaux que s'ils sont
+   encore ceux posés par la migration) et sa fixture `tests/integration/fixtures/rangement-tags/<même nom>.json`,
    rejouée par `tests/integration/migrations-rangement-tags.test.ts` : **aucun test à écrire**.
    Règles : `scripts/lib/migration-rangement.ts`.
    **PR de rangement courte** : si elle ne contient que la migration **ajoutée**, sa fixture

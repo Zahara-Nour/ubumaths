@@ -103,7 +103,10 @@ async function sansHorodatage(pg: Client, corps: () => Promise<void>): Promise<v
 	await pg.query(`alter table public.question_templates enable trigger ${TRIGGER}`);
 }
 
-/** Pose l'état de la prod : copies sans nœud ni tag ; niveaux relevés pour celles qui en gagnent */
+/**
+ * Pose l'état de la prod : copies sans nœud ni tag pour les modèles à ranger ; niveaux relevés et
+ * un nœud (comme en prod : un modèle qui gagne un niveau est déjà rangé) pour ceux qui en gagnent
+ */
 async function poserEtatProd(pg: Client, cas: Cas): Promise<void> {
 	await insertProdCopies(pg, {
 		templateIds: idsDe(cas),
@@ -113,10 +116,15 @@ async function poserEtatProd(pg: Client, cas: Cas): Promise<void> {
 	});
 	await sansHorodatage(pg, async () => {
 		for (const m of cas.niveaux) {
-			await pg.query('update public.question_templates set grades = $2::text[] where id = $1', [
-				m.id,
-				m.avant
-			]);
+			await pg.query(
+				`update public.question_templates
+				    set grades = $2::text[],
+				        classification_node_id = (select id from public.classification_nodes
+				                                   where kind = 'notion' and archived_at is null
+				                                   order by id limit 1)
+				  where id = $1`,
+				[m.id, m.avant]
+			);
 		}
 	});
 }
@@ -167,6 +175,8 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }): void {
 		const { pg, cas } = obtenir();
 		await enTransaction(pg, async () => {
 			await poserEtatProd(pg, cas);
+			const avant = await lireEtat(pg, cas);
+			expect(cas.niveaux.every((m) => avant.noeuds.get(m.id) !== '∅')).toBe(true);
 			await pg.query(readFileSync(cas.migration, 'utf-8'));
 			const apres = await lireEtat(pg, cas);
 			expect(cas.ranges.map((m) => apres.noeuds.get(m.id))).toEqual(cas.ranges.map(cheminDe));
@@ -174,7 +184,9 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }): void {
 			expect(cas.niveaux.map((m) => apres.grades.get(m.id))).toEqual(
 				cas.niveaux.map((m) => m.apres)
 			);
-			expect(cas.niveaux.map((m) => apres.noeuds.get(m.id))).toEqual(cas.niveaux.map(() => '∅'));
+			expect(cas.niveaux.map((m) => apres.noeuds.get(m.id))).toEqual(
+				cas.niveaux.map((m) => avant.noeuds.get(m.id))
+			);
 			expect([apres.dates, apres.trigger]).toEqual([[AVANT], 'O']);
 
 			await pg.query(extractRollback(cas.migration));
@@ -183,6 +195,9 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }): void {
 			expect(annule.tags).toEqual([]);
 			expect(cas.niveaux.map((m) => annule.grades.get(m.id))).toEqual(
 				cas.niveaux.map((m) => m.avant)
+			);
+			expect(cas.niveaux.map((m) => annule.noeuds.get(m.id))).toEqual(
+				cas.niveaux.map((m) => avant.noeuds.get(m.id))
 			);
 			expect([annule.dates, annule.trigger]).toEqual([[AVANT], 'O']);
 		});
@@ -257,8 +272,35 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }): void {
 			);
 			await pg.query('rollback to savepoint s');
 			const etat = await lireEtat(pg, cas);
-			expect([...etat.noeuds.values()].every((n) => n === '∅')).toBe(true);
+			expect(cas.ranges.every((m) => etat.noeuds.get(m.id) === '∅')).toBe(true);
 			expect(etat.tags).toEqual([]);
+		});
+	});
+
+	it('rollback : un modèle déplacé à la main depuis la migration garde son nouveau nœud', async () => {
+		const { pg, cas } = obtenir();
+		const deplace = cas.ranges.find((m) => m.point === null);
+		if (!deplace) return;
+		await enTransaction(pg, async () => {
+			await poserEtatProd(pg, cas);
+			await pg.query(readFileSync(cas.migration, 'utf-8'));
+			await pg.query(
+				`update public.question_templates t
+				    set classification_node_id = (select n.id from public.classification_nodes n
+				                                   where n.kind = 'notion' and n.archived_at is null
+				                                     and n.id <> t.classification_node_id
+				                                   order by n.id limit 1)
+				  where t.id = $1`,
+				[deplace.id]
+			);
+			const ailleurs = (await lireEtat(pg, cas)).noeuds.get(deplace.id);
+			expect(ailleurs).not.toBe(cheminDe(deplace));
+			await pg.query(extractRollback(cas.migration));
+			const annule = await lireEtat(pg, cas);
+			expect(annule.noeuds.get(deplace.id)).toBe(ailleurs);
+			expect(
+				cas.ranges.filter((m) => m.id !== deplace.id).map((m) => annule.noeuds.get(m.id))
+			).toEqual(cas.ranges.filter((m) => m.id !== deplace.id).map(() => '∅'));
 		});
 	});
 
@@ -402,6 +444,39 @@ describe('cas synthétique (générateur)', () => {
 			await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
 				/chemins ou points introuvables : [1-3] nœud\(s\), [0-2] point\(s\)/
 			);
+		});
+	});
+
+	it('nom de notion avec une apostrophe : la migration et son rollback passent sur Postgres', async () => {
+		await enTransaction(pg, async () => {
+			const a = lieux.surSousNotion;
+			const b = lieux.surNotion;
+			const nom = `${a.notion} d'essai`;
+			await pg.query(
+				`update public.classification_nodes n set name = $3
+				   from public.classification_nodes b
+				  where b.id = n.parent_id and b.name = $1 and b.parent_id is null
+				    and n.kind = 'notion' and n.name = $2 and n.archived_at is null`,
+				[a.branche, a.notion, nom]
+			);
+			const memeNotion = b.branche === a.branche && b.notion === a.notion;
+			const apostrophe = casSynthetique(
+				{ ...a, notion: nom },
+				memeNotion ? { ...b, notion: nom } : b
+			);
+			await poserEtatProd(pg, apostrophe);
+			await pg.query(readFileSync(apostrophe.migration, 'utf-8'));
+			const apres = await lireEtat(pg, apostrophe);
+			expect(apostrophe.ranges.map((m) => apres.noeuds.get(m.id))).toEqual(
+				apostrophe.ranges.map(cheminDe)
+			);
+			expect(apres.tags).toEqual(tagsAttendus(apostrophe));
+			await pg.query(extractRollback(apostrophe.migration));
+			const annule = await lireEtat(pg, apostrophe);
+			expect(apostrophe.ranges.map((m) => annule.noeuds.get(m.id))).toEqual(
+				apostrophe.ranges.map(() => '∅')
+			);
+			expect(annule.tags).toEqual([]);
 		});
 	});
 
