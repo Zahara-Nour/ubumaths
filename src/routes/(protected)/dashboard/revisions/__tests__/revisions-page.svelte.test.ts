@@ -58,14 +58,14 @@ const DATA = {
 
 describe('Mes révisions : compteurs des paquets', () => {
 	it('le total « À Réviser » additionne les cartes dues de chaque paquet', async () => {
-		render(RevisionsPage, { data: DATA });
+		await render(RevisionsPage, { data: DATA });
 
 		await expect.element(page.getByText('Commencez maintenant !')).toBeVisible();
 		await expect.element(page.getByTestId('total-due')).toHaveTextContent('7');
 	});
 
 	it('chaque paquet affiche ses cartes à réviser et ses nouvelles', async () => {
-		render(RevisionsPage, { data: DATA });
+		await render(RevisionsPage, { data: DATA });
 
 		// Onglet « Tous » : une carte par paquet.
 		const tables = page.getByTestId('deck-card-00000000-0000-4000-8000-0000000000a1').first();
@@ -87,7 +87,7 @@ describe('Mes révisions : compteurs des paquets', () => {
 				})
 			]
 		} as unknown as PageData;
-		render(RevisionsPage, { data });
+		await render(RevisionsPage, { data });
 
 		await expect.element(page.getByText('Tout est à jour !')).toBeVisible();
 		await expect.element(page.getByTestId('total-due')).toHaveTextContent('0');
