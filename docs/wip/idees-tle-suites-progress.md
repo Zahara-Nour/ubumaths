@@ -5,12 +5,11 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, rubrique prise._
+_Mis à jour le 2026-11-22, phase 0 validée._
 
-- **État** : relevé fait (26 : ✅ 8 · 🟡 17 · ❌ 1), phase 0 publiée (14 fiches) · **Prochaine
-  action** : lire les verdicts (ArtifactData, collection `verdicts`), réserver les modèles publiés,
-  écrire le gros lot · **En attente de David** : verdicts de la page à cocher
-  https://claude.ai/artifact/TAe8JNJyzAsp3Qyv3uZq6q · **Pièges en cours** : `hint` lu par la
+- **État** : phase 0 **validée** par David (F1 à F13 telles quelles, F14 : Sₙ/n ajouté) ; 8 modèles
+  publiés réservés ; outils 48 et 49 ajoutés à `outils-manquants.md` · **Prochaine action** :
+  écrire le gros lot (8 variations de publiés + 5 modèles neufs) · **En attente de David** : rien · **Pièges en cours** : `hint` lu par la
   prod seulement après le `deploy:prod` qui livre #2991 (pas de brouillons en prod avant) ; la
   rubrique suites de Première (`idees-1re-suites`) tourne en parallèle : ne pas toucher aux
   modèles 1SPE qu'elle réserve · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
@@ -34,3 +33,15 @@ _Mis à jour le 2026-11-22, rubrique prise._
   laissées), page à cocher https://claude.ai/artifact/TAe8JNJyzAsp3Qyv3uZq6q. Question d'accès :
   personne (rangement de modèles).
 - Questions ouvertes, sans réponse = non tranchées : chaque fiche F1 à F14.
+
+### 2026-11-22 — phase 0 validée
+
+- David : « je valide », oui aux outils manquants (lignes 48 et 49 de `outils-manquants.md`).
+- F14 : David demande pourquoi ne pas garder les idées non reprises en modèles hors programme.
+  Réponse : elles sont au programme. Décision : **moyenne Sₙ/n d'une arithmético-géométrique
+  ajoutée au lot** (nouveau modèle, TSPE-577) ; homographique avec étude de f, suites avec ln,
+  suites d'intégrales → « Idées en attente » du tableau, pour les rubriques dérivation, logarithme,
+  intégration.
+- Modèles publiés réservés dans le tableau : 3d7d1d25, 651907b3, 667a3618, 7063979e, 708f8a08,
+  98ba277c, 9f14d672, d1aee0b9.
+- Lot à écrire : variations F1 à F8 (publiés, à exporter de prod), modèles neufs F9 à F12 + Sₙ/n.
