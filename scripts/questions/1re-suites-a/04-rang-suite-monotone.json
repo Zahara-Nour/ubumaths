@@ -1,4 +1,5 @@
 {
+	"id": "63791bb6-782b-46c4-b57f-7b10921f6b99",
 	"title": "Rang à partir duquel une suite est monotone",
 	"description": "Plus petit N tel que la suite est croissante (ou décroissante) à partir du rang N : u(n+1) − u(n) = cn + d donnée, u(n) = an² + bn + c, ou u(n+1) = u(n) + cn + d (pièges : arrondi inférieur, décalage d'un rang, racine non entière donnée)",
 	"grades": ["1_SPE"],

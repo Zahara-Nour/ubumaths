@@ -1,4 +1,5 @@
 {
+	"id": "b2aead94-d41d-4f82-bf62-2620a590d403",
 	"title": "Placer les premiers termes d'une suite",
 	"description": "Placer u₀ à u₃ dans un repère : explicite an + b ou ±n² + c, récurrente au + b, u² − c, u + an (pièges : n² et −n², u₁ = u₀ quand on ajoute a × 0)",
 	"grades": ["1_SPE"],
