@@ -11,7 +11,12 @@
 	  la question compte fausse. Une seule avance par question, même si le
 	  chrono expire pendant les 300 ms qui suivent une validation.
 	Pas de chrono global (Q19). Fin : `TestResults` ; « Recommencer » demande
-	de nouvelles questions à la page (`onRestart`).
+	de nouvelles questions à la page (`onRestart`), qui remonte le composant.
+
+	Entraînement libre : page d'attente d'abord (`SeriesStartScreen`, « 10
+	questions · environ 4 min ») ; le chrono de la question 1 part au clic sur
+	« C'est parti ! ». Contrôle assigné : pas de page d'attente ici (le serveur a
+	déjà démarré la tentative ; chantier `diaporama-reglages`, PR 2b).
 
 	Props:
 	- items: ClassroomItem[] - Questions de la série, chacune avec sa durée
@@ -19,6 +24,7 @@
 	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé à la fin de la série
 	- onRestart: () => void - Nouvelles questions (la page régénère)
+	- onStart?: () => void - « C'est parti ! » cliqué sur la page d'attente (la page y fait partir la durée de série)
 	- onBack: () => void - Retour à ma série (à « Mes évaluations » pour une évaluation)
 	- inEvaluation: évaluation assignée → pas de « Recommencer »
 	- assessmentTitle?: string - Titre d'une évaluation assignée
@@ -43,6 +49,8 @@
 	import type { AnswerData } from '#lib/types/question-display.ts';
 	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
 	import TestResults from './TestResults.svelte';
+	import SeriesStartScreen from './SeriesStartScreen.svelte';
+	import { seriesSummary } from './series-summary.ts';
 	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
 	import type { MathouNews } from '#lib/mathoux/news.ts';
 	import TestTimer from './TestTimer.svelte';
@@ -65,6 +73,8 @@
 		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
+		/** « C'est parti ! » cliqué sur la page d'attente */
+		onStart?: () => void;
 		/** « Mêmes nombres pour tous » : Recommencer redonne les mêmes questions */
 		sameQuestions?: boolean;
 		onBack: () => void;
@@ -88,6 +98,7 @@
 		loginNote = true,
 		onComplete,
 		onRestart,
+		onStart,
 		sameQuestions = false,
 		onBack,
 		assessmentTitle,
@@ -119,14 +130,32 @@
 	const seanceReactions = createSeanceReactions();
 	let destroyed = false;
 
-	const startTime = Date.now();
+	// « C'est parti ! » cliqué (entraînement libre) : la série et son chrono démarrent
+	let started = $state(false);
+	let startTime = Date.now();
 	// Affichage de la question en cours : début de sa durée de réponse
 	let questionShownAt = Date.now();
 
 	const currentItem = $derived(items[currentIndex]);
 	const progressPercentage = $derived(((currentIndex + 1) / items.length) * 100);
+	const showStartScreen = $derived(!inEvaluation && !started);
+	const startSummary = $derived(
+		seriesSummary(
+			items.length,
+			items.reduce((total, item) => total + item.delaySeconds, 0),
+			{ approximate: true }
+		)
+	);
 
 	// Functions
+	/** « C'est parti ! » : la question 1 s'affiche, son chrono part */
+	function handleStart() {
+		startTime = Date.now();
+		questionShownAt = startTime;
+		started = true;
+		onStart?.();
+	}
+
 	/**
 	 * Passe à la question suivante depuis `fromIndex`. Ignoré si la question a
 	 * déjà changé : validation et expiration ne font avancer qu'une fois.
@@ -296,6 +325,14 @@
 			{inEvaluation}
 			{buddyGain}
 			{mathouNews}
+		/>
+	{:else if currentItem && showStartScreen}
+		<SeriesStartScreen
+			title="Contrôle blanc"
+			summary={startSummary}
+			hints={[]}
+			quitHref={quit.href}
+			onstart={handleStart}
 		/>
 	{:else if currentItem}
 		<!-- Header with progress -->

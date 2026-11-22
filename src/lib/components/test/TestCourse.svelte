@@ -10,6 +10,10 @@
 	- User can answer in any order
 	- "Finish" button or auto-finish when time runs out
 	- At the end: show TestResults with score
+	- Entraînement libre : page d'attente d'abord (`SeriesStartScreen`, « 20
+	  questions · 5 min ») ; le chrono global part au clic sur « C'est parti ! »,
+	  et les durées tracées aussi. Contrôle assigné : pas de page d'attente ici
+	  (chantier `diaporama-reglages`, PR 2b)
 
 	Props:
 	- session: TestSession - Active test session
@@ -18,7 +22,10 @@
 	- inEvaluation: évaluation assignée → pas de « Recommencer » (une tentative de
 	  plus ne passe que par « Mes évaluations »)
 	- onRestart: « Recommencer » demande de nouvelles questions à la page (comme les
-	  autres formes) ; absent → la même série, remise à zéro sur place
+	  autres formes) ; absent → la même série, remise à zéro sur place (page
+	  d'attente comprise)
+	- onStart: « C'est parti ! » cliqué sur la page d'attente (la page y fait partir
+	  la durée de série)
 	- sameQuestions: « Mêmes nombres pour tous » (lien avec graine) → Recommencer
 	  redonne les mêmes questions, et le bouton le dit
 	- collectOnly: évaluation notée → réponses collectées SANS correction (ADR 0015)
@@ -42,6 +49,8 @@
 	import QuestionCard from '#lib/components/questions/QuestionCard.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import TestResults from './TestResults.svelte';
+	import SeriesStartScreen from './SeriesStartScreen.svelte';
+	import { seriesSummary } from './series-summary.ts';
 	import type { BuddyGainView } from '#lib/components/buddy/buddy-gain.ts';
 	import type { MathouNews } from '#lib/mathoux/news.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
@@ -61,6 +70,8 @@
 		onComplete: (result: TestResult) => void;
 		onBack: () => void;
 		onRestart?: () => void;
+		/** « C'est parti ! » cliqué sur la page d'attente */
+		onStart?: () => void;
 		sameQuestions?: boolean;
 		inEvaluation?: boolean;
 		collectOnly?: boolean;
@@ -76,6 +87,7 @@
 		onComplete,
 		onBack,
 		onRestart,
+		onStart,
 		sameQuestions = false,
 		inEvaluation = false,
 		collectOnly = false,
@@ -98,10 +110,30 @@
 	let isCompleted = $state(false);
 	let testResult = $state<TestResult | null>(null);
 	let showScrollTop = $state(false);
+	// « C'est parti ! » cliqué (entraînement libre) : la course démarre
+	let started = $state(false);
+	// Début de la course : au clic ; contrôle, sans page d'attente : celui de la session
+	let startedAt: number | null = null;
 
 	// Derived
 	let timeLimit = $derived(session.timeLimit || 300); // Default 5 minutes
 	let answeredCount = $derived(answers.size);
+	const showStartScreen = $derived(!inEvaluation && !started);
+	const startSummary = $derived(
+		seriesSummary(session.instances.length, timeLimit, { approximate: false })
+	);
+
+	/** Début de la course, d'où partent les durées */
+	function raceStart(): number {
+		return startedAt ?? session.startTime;
+	}
+
+	/** « C'est parti ! » : les questions s'affichent, le chrono part */
+	function handleStart() {
+		startedAt = Date.now();
+		started = true;
+		onStart?.();
+	}
 
 	/**
 	 * Handle answer submission for a specific question
@@ -110,7 +142,7 @@
 		if (!answers.has(index)) {
 			validated.add(index);
 			recordTrace(index, answerData, {
-				responseMs: Date.now() - session.startTime,
+				responseMs: Date.now() - raceStart(),
 				allottedMs: timeLimit * 1000,
 				endReason: 'validated'
 			});
@@ -185,7 +217,7 @@
 			);
 		});
 		const endTime = Date.now();
-		const timeSpent = Math.round((endTime - session.startTime) / 1000);
+		const timeSpent = Math.round((endTime - raceStart()) / 1000);
 
 		// Build answer results
 		const answerResults: TestAnswerResult[] = session.instances.map((instance, index) => {
@@ -252,7 +284,9 @@
 		validated.clear();
 		isCompleted = false;
 		testResult = null;
-		session.startTime = Date.now();
+		// Retour à la page d'attente : la course repart au prochain clic
+		startedAt = null;
+		started = false;
 	}
 
 	/**
@@ -276,7 +310,15 @@
 	});
 </script>
 
-{#if !isCompleted}
+{#if showStartScreen}
+	<SeriesStartScreen
+		title="Course aux nombres"
+		summary={startSummary}
+		hints={[]}
+		quitHref={quit.href}
+		onstart={handleStart}
+	/>
+{:else if !isCompleted}
 	<!-- Course aux nombres mode -->
 	<div class="space-y-6">
 		<!-- Sticky header with timer and stats -->

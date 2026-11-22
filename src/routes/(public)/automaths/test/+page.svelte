@@ -308,6 +308,14 @@
 	}
 
 	/**
+	 * « C'est parti ! » sur la page d'attente (Contrôle blanc, Course aux nombres) :
+	 * la durée de série envoyée à l'enregistrement part du clic, pas de l'ouverture
+	 */
+	function handleSeriesStarted() {
+		if (testSession) testSession.startTime = Date.now();
+	}
+
+	/**
 	 * « Flash-cards », « Saisie » : Recommencer tire de nouvelles questions (cartes
 	 * de cours comprises) ; avec une graine de série, les mêmes questions
 	 */
@@ -574,6 +582,7 @@
 					onComplete={handleTestComplete}
 					sameQuestions={seriesSeed !== undefined}
 					onRestart={handleSeriesRestart}
+					onStart={handleSeriesStarted}
 					onBack={handleBack}
 					assessmentTitle={assignmentId ? assessmentTitle || undefined : undefined}
 					inEvaluation={!!assignmentId}
@@ -593,6 +602,7 @@
 					onComplete={handleTestComplete}
 					onBack={handleBack}
 					onRestart={handleSeriesRestart}
+					onStart={handleSeriesStarted}
 					sameQuestions={seriesSeed !== undefined}
 					inEvaluation={!!assignmentId}
 					collectOnly={!!attemptId}
