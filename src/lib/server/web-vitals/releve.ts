@@ -5,7 +5,8 @@
  * Sert `GET /api/web-vitals/releve`, que lit le relevé mensuel de GitHub
  * (`scripts/releve-web-vitals.ts`). Décision du 2026-11-21 : GitHub ne reçoit pas de
  * clé de la base, seulement un jeton dédié qui n'ouvre que cette route, et la route ne
- * rend que des résultats calculés, jamais les lignes.
+ * rend que des résultats calculés, jamais les lignes : le nombre de mesures, et le p75
+ * à partir de `MIN_P75_COUNT` mesures.
  *
  * Le calcul se fait ici et non en base : pas de fonction SQL de plus tant que le
  * volume reste petit (quelques milliers de lignes par mois). Au-delà de
@@ -31,8 +32,9 @@ export interface ReleveRow {
 }
 
 export interface MetricSummary {
-	p75: number;
 	count: number;
+	/** Absent sous `MIN_P75_COUNT` mesures : un centile de si peu serait la mesure elle-même */
+	p75?: number;
 }
 
 export type MetricSummaries = Partial<Record<SampleMetric, MetricSummary>>;
@@ -53,6 +55,8 @@ export interface WebVitalsReleve {
 /** La table garde 90 jours */
 export const MAX_RELEVE_DAYS = 90;
 const DEFAULT_RELEVE_DAYS = 28;
+/** En dessous, seul le nombre de mesures est rendu, pas le p75 */
+export const MIN_P75_COUNT = 5;
 /** Lignes par lecture (plafond de PostgREST : `max_rows = 1000`) */
 export const RELEVE_PAGE_SIZE = 1000;
 /** Lignes lues au plus pour un relevé (100 lectures) */
@@ -91,9 +95,11 @@ function summarizeMetrics(valuesByMetric: Map<SampleMetric, number[]>): MetricSu
 	for (const metric of SAMPLE_METRICS) {
 		const values = valuesByMetric.get(metric);
 		const p75 = values ? percentile75(values) : undefined;
-		if (values && p75 !== undefined) {
-			summaries[metric] = { p75: roundP75(metric, p75), count: values.length };
-		}
+		if (!values || p75 === undefined) continue;
+		summaries[metric] =
+			values.length < MIN_P75_COUNT
+				? { count: values.length }
+				: { count: values.length, p75: roundP75(metric, p75) };
 	}
 	return summaries;
 }
@@ -157,7 +163,10 @@ export function isReleveToken(authorization: string | null, expectedToken: strin
 }
 
 /**
- * Lit les mesures des `days` derniers jours, page après page.
+ * Lit les mesures des `days` derniers jours **entiers** (UTC), page après page. La
+ * journée en cours est exclue : le résultat ne change qu'une fois par jour, et appeler
+ * la route en boucle ne dit pas à quel moment une mesure est arrivée (l'heure d'une
+ * ligne est arrondie exprès, cf. la migration).
  *
  * L'ordre est celui des identifiants de ligne, tirés au hasard : jamais l'ordre
  * d'arrivée (qui dessinerait le parcours d'un visiteur), et une lecture arrêtée au
@@ -170,18 +179,25 @@ export async function readSamples(
 ): Promise<
 	{ rows: ReleveRow[]; truncated: boolean } | { error: { code?: string; message: string } }
 > {
-	const since = new Date(now.getTime() - days * 86_400_000).toISOString();
+	const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+	const since = new Date(today - days * 86_400_000).toISOString();
+	const until = new Date(today).toISOString();
 	const client = createServiceRoleClient();
 	const rows: ReleveRow[] = [];
 	let lastId: string | null = null;
 
-	while (rows.length < MAX_RELEVE_ROWS) {
+	const readPage = (limit: number) => {
 		let query = client
 			.from('web_vital_samples')
 			.select('id, route, metric, value')
-			.gte('created_at', since);
+			.gte('created_at', since)
+			.lt('created_at', until);
 		if (lastId !== null) query = query.gt('id', lastId);
-		const { data, error } = await query.order('id', { ascending: true }).limit(RELEVE_PAGE_SIZE);
+		return query.order('id', { ascending: true }).limit(limit);
+	};
+
+	while (rows.length < MAX_RELEVE_ROWS) {
+		const { data, error } = await readPage(RELEVE_PAGE_SIZE);
 		if (error) return { error: { code: error.code, message: error.message } };
 
 		for (const { route, metric, value } of data) rows.push({ route, metric, value });
@@ -189,5 +205,8 @@ export async function readSamples(
 		lastId = data[data.length - 1].id;
 	}
 
-	return { rows, truncated: true };
+	// Plafond atteint : reste-t-il au moins une ligne ?
+	const { data: next, error } = await readPage(1);
+	if (error) return { error: { code: error.code, message: error.message } };
+	return { rows, truncated: next.length > 0 };
 }

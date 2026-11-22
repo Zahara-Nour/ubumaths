@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR 3 en cours._
+_Mis à jour le 2026-11-22, #2982 ouverte, revues faites._
 
-- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; PR 1 et PR 2 **en prod** depuis la 0.100.0 (2026-11-22) : des lignes arrivent dans `web_vital_samples` ; **PR 3 (le relevé) en cours** sur `feat/amelioration-releve` : route `GET /api/web-vitals/releve` à jeton dédié, script et workflow réécrits ; workflow `web-vitals.yml` encore désactivé
-- **Prochaine action** : revues de la PR 3 (`code-reviewer` + `security-auditor`), CI, merge ; puis les gestes de David ci-dessous, puis `gh workflow enable web-vitals.yml` et un premier relevé à la main (`gh workflow run web-vitals.yml`)
+- **État** : mesures de performance chez nous, découpage en 3 PR (phase 0 validée, en fin de journal) ; PR 1 et PR 2 **en prod** depuis la 0.100.0 (2026-11-22) : des lignes arrivent dans `web_vital_samples` ; **PR 3 (le relevé) = #2982 ouverte** sur `feat/amelioration-releve` : route `GET /api/web-vitals/releve` à jeton dédié, script et workflow réécrits ; les deux revues (`code-reviewer`, `security-auditor`) sont faites, sans bloquant, et leurs remarques sont corrigées et poussées ; workflow `web-vitals.yml` encore désactivé
+- **Prochaine action** : suivre la CI de #2982 (`gh pr checks 2982`), corriger si rouge, **merger dès qu'elle est verte** (pas de migration, pas de nouvelle revue à faire) ; nettoyage du worktree ; puis les gestes de David ci-dessous, puis `gh workflow enable web-vitals.yml` et un premier relevé à la main (`gh workflow run web-vitals.yml`)
 - **En attente de David** (après le merge de la PR 3, écritures en prod) : créer le jeton (`openssl rand -hex 32`), le poser en variable `WEB_VITALS_RELEVE_TOKEN` de production sur Vercel et en secret du dépôt GitHub, puis `pnpm deploy:prod` ; ouvrir le site dans Safari et dans Firefox pour voir si des lignes arrivent (la table n'enregistre pas le navigateur)
 - **Tranché** : ne rien payer à Vercel ; table anonyme chez nous, lecture admin seul, 90 jours, Q1 à Q4 validées ; une ligne par visite et par indicateur, envoyée au premier passage en arrière-plan (David, 2026-11-21) ; le reste inchangé, cf. sections ci-dessous
 - **Pièges en cours** : pour lire la table en PR 3 : l'accueil est `/(public)`, pas `/` ; lire sans ordre d'arrivée ; TTFB et CLS suivent la définition de Google (pas celle du journal des erreurs) ; pas de CLS sous Safari ; le CLS est rattaché à la page affichée à l'envoi ; pages d'admin et `/dev` absentes ; page de moins de 10 mesures = « peu fiable » ; le serveur ne peut insérer que `route`, `metric`, `value`, `device_type` ; le projet Vercel s'appelle `chiphre` (`.vercel/project.json` garde l'ancien nom)
@@ -790,9 +790,17 @@ registre des traitements (`docs/systeme/conformite/registre-traitements.md`) à 
   `WEB_VITALS_RELEVE_TOKEN`. Toujours désactivé : à réactiver quand le jeton est posé et déployé.
 - **Vérifié en vrai** (serveur de dev du worktree, base locale, 14 lignes écrites puis effacées) :
   sans jeton et faux jeton → 401 ; `days=0` → 400 ; bon jeton → relevé ; p75 de 12 LCP = 3 775,
-  identique à `percentile_cont(0.75)` ; le script rend le tableau. **Pas vérifié** : la route en
+  identique à `percentile_cont(0.75)` ; le script rend le tableau. Refait après les corrections des revues, avec des lignes datées de la veille et une du jour : celle du jour est bien exclue, la page à une seule mesure sort sans p75. **Pas vérifié** : la route en
   prod (il faut le jeton sur Vercel et un déploiement).
-- Tests : `releve.test.ts` (lib, 28), `releve/__tests__/releve.test.ts` (route, 15),
-  `releve-web-vitals.test.ts` (script, 14).
+- **Revues sur la PR #2982** : `code-reviewer` sans bloquant ni important ; corrigé : relevé dit
+  « échantillon » à tort pour exactement 100 000 lignes. `security-auditor` sans bloquant ;
+  corrigés : un jeton vide ou trop court sur Vercel arrêtait **tout le site** au démarrage
+  (validation de l'environnement) → il vaut maintenant « absent », la route répond 503 ; appeler
+  la route en boucle donnait l'heure d'arrivée de chaque ligne à quelques secondes près →
+  période en **jours entiers UTC, sans la journée en cours** (une mesure du jour n'apparaît que
+  le lendemain) ; p75 d'une seule mesure = la mesure → **pas de p75 sous 5 mesures**, le nombre
+  seul ; nom de page revalidé par le script avant d'entrer dans le Markdown.
+- Tests : `releve.test.ts` (lib, 31), `releve/__tests__/releve.test.ts` (route, 15),
+  `releve-web-vitals.test.ts` (script, 16), `env.test.ts` (+4).
 - Docs : `core-web-vitals.md` (réécrite autour de notre table), `surveillance-des-erreurs.md`,
   `environnement-de-dev.md`, registre des traitements T8 (le relevé publié), `.env.example`.

@@ -134,12 +134,14 @@ Trois boucles distinctes :
   - Lecture des lignes : admin seul ; purge à 90 jours.
   - **Relevé** (`GET /api/web-vitals/releve?days=28`, `src/lib/server/web-vitals/releve.ts`) :
     pour le relevé mensuel de GitHub. Jeton dédié `WEB_VITALS_RELEVE_TOKEN` en
-    `Authorization: Bearer` (comparé en temps constant ; variable absente = 503), 10 appels par
+    `Authorization: Bearer` (comparé en temps constant ; variable absente ou de moins de 32 caractères = 503), 10 appels par
     minute et par adresse comptés avant le jeton, `days` de 1 à 90 (400 sinon). La route ne se
-    sert pas de la session et ne rend que des résultats calculés : p75 et nombre de mesures par
-    indicateur, pour tout le site et par page ; ni ligne, ni date, ni type d'appareil. Elle lit
-    la table avec le client service, par pages de 1 000 dans l'ordre des identifiants (tirés au
-    hasard, jamais l'ordre d'arrivée), 100 000 lignes au plus (`truncated` au-delà). Usage :
+    sert pas de la session et ne rend que des résultats calculés : nombre de mesures par
+    indicateur, pour tout le site et par page, et p75 à partir de 5 mesures ; ni ligne, ni date,
+    ni type d'appareil. Période en jours entiers (UTC), journée en cours exclue : interroger la
+    route en boucle ne défait pas l'arrondi à l'heure de `created_at`. Elle lit la table avec le
+    client service, par pages de 1 000 dans l'ordre des identifiants (tirés au hasard, jamais
+    l'ordre d'arrivée), 100 000 lignes au plus (`truncated` au-delà). Usage :
     [core-web-vitals.md](../pratiques/core-web-vitals.md).
 - `src/lib/server/errorMonitoring.ts` est le seul écrivain de `error_logs` :
   - `logError` nettoie (`sanitizeErrorData`), tronque (message 1 000, pile 5 000, URL

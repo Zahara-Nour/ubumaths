@@ -146,10 +146,26 @@ describe('toReportInput — réponse de GET /api/web-vitals/releve', () => {
 		]);
 	});
 
+	it('indicateur peu mesuré, rendu sans p75 : compté, case vide', () => {
+		const input = toReportInput(
+			releveSchema.parse({
+				...releve,
+				routes: [{ route: '/(public)', metrics: { LCP: { count: 3 } } }]
+			})
+		);
+		expect(input.routes).toEqual([
+			{ route: '/(public)', count: 3, values: {}, counts: { lcp_ms: 3 } }
+		]);
+	});
+
 	it.each([
 		['page d’erreur à la place du relevé', { message: 'Jeton invalide' }],
 		['p75 qui n’est pas un nombre', { ...releve, global: { LCP: { p75: '2100', count: 60 } } }],
-		['pages absentes', { ...releve, routes: undefined }]
+		['pages absentes', { ...releve, routes: undefined }],
+		[
+			'page dont le nom casserait le tableau',
+			{ ...releve, routes: [{ route: '/a` | <b>', metrics: {} }] }
+		]
 	])('refuse : %s', (_cas, body) => {
 		expect(releveSchema.safeParse(body).success).toBe(false);
 	});

@@ -44,15 +44,20 @@ WEB_VITALS_RELEVE_TOKEN=… npx tsx scripts/releve-web-vitals.ts 28   # 1 à 90 
 si un indicateur est au rouge sur au moins 10 mesures de cet indicateur.
 
 Le script ne lit pas la base. Il appelle `GET /api/web-vitals/releve?days=28`
-(`src/lib/server/web-vitals/releve.ts`), qui ne rend que des **résultats calculés** : p75 et
-nombre de mesures par indicateur, pour tout le site et par page ; jamais les lignes, ni date, ni
-type d'appareil. Le calcul se fait sur le serveur (pas de fonction SQL) ; au-delà de 100 000
-lignes, il porte sur un échantillon pris au hasard et le relevé le dit.
+(`src/lib/server/web-vitals/releve.ts`), qui ne rend que des **résultats calculés** : nombre de
+mesures par indicateur, pour tout le site et par page, et p75 à partir de 5 mesures (en dessous,
+le centile serait presque la mesure elle-même) ; jamais les lignes, ni date, ni type d'appareil.
+La période est faite de **jours entiers (UTC), sans la journée en cours** : le résultat ne
+change qu'une fois par jour, et appeler la route en boucle ne dit pas quand une mesure est
+arrivée. Une mesure du jour n'apparaît donc que le lendemain. Le calcul se fait sur le serveur
+(pas de fonction SQL) ; au-delà de 100 000 lignes, il porte sur un échantillon pris au hasard
+et le relevé le dit.
 
 **Jeton.** La route exige `Authorization: Bearer <WEB_VITALS_RELEVE_TOKEN>`, un jeton dédié
 (32 caractères au moins) qui n'ouvre qu'elle : GitHub n'a aucune clé de la base. Il vit à deux
 endroits, avec la même valeur : variable d'environnement de **production** sur Vercel, et secret
-du dépôt GitHub. Sans la variable sur Vercel, la route répond 503. Pour le changer :
+du dépôt GitHub. Sans la variable sur Vercel, ou avec une valeur trop courte, la route répond
+503 (le reste du site n'est pas touché). Pour le changer :
 `openssl rand -hex 32`, le poser aux deux endroits, puis redéployer (une variable Vercel n'est
 lue qu'au déploiement suivant). Le script appelle `https://www.chiph.re` et refuse toute
 redirection, pour que le jeton ne parte pas ailleurs.

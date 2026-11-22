@@ -14,10 +14,16 @@ interface Row {
 /** Lignes que la « base » contient, rendues par pages de `limit` dans l'ordre des `id` */
 let tableRows: Row[] = [];
 let failure: { code?: string; message: string } | null = null;
-const calls: { table: string; columns: string; since: string; after: string | null }[] = [];
+const calls: {
+	table: string;
+	columns: string;
+	since: string;
+	until: string;
+	after: string | null;
+}[] = [];
 
 function query(table: string) {
-	const call = { table, columns: '', since: '', after: null as string | null };
+	const call = { table, columns: '', since: '', until: '', after: null as string | null };
 	const builder = {
 		select(columns: string) {
 			call.columns = columns;
@@ -25,6 +31,10 @@ function query(table: string) {
 		},
 		gte(_column: string, since: string) {
 			call.since = since;
+			return builder;
+		},
+		lt(_column: string, until: string) {
+			call.until = until;
 			return builder;
 		},
 		gt(_column: string, after: string) {
@@ -55,6 +65,7 @@ vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 import {
 	isReleveToken,
 	MAX_RELEVE_ROWS,
+	MIN_P75_COUNT,
 	percentile75,
 	readSamples,
 	RELEVE_PAGE_SIZE,
@@ -92,29 +103,43 @@ describe('percentile75', () => {
 });
 
 describe('summarize', () => {
+	const lcp = (route: string, values: number[]) =>
+		values.map((value) => ({ route, metric: 'LCP', value }));
 	const rows = [
-		{ route: '/(public)', metric: 'LCP', value: 1000 },
-		{ route: '/(public)', metric: 'LCP', value: 3000 },
+		...lcp('/(public)', [1000, 2000, 3000, 4000, 5000]),
 		{ route: '/(public)', metric: 'CLS', value: 0.1234 },
-		{ route: '/(public)/automaths', metric: 'LCP', value: 5000.4 }
+		...lcp('/(public)/automaths', [5000.4])
 	];
 
 	it('p75 et nombre de mesures par indicateur, pour tout le site et par page', () => {
 		const releve = summarize(rows, 28, false);
 
 		expect(releve.days).toBe(28);
-		expect(releve.total).toBe(4);
+		expect(releve.total).toBe(7);
 		expect(releve.truncated).toBe(false);
-		expect(releve.global.LCP).toEqual({ p75: 4000, count: 3 });
-		expect(releve.global.CLS).toEqual({ p75: 0.123, count: 1 });
+		// 6 LCP : 1000, 2000, 3000, 4000, 5000, 5000.4 → rang 3,75 → 4750
+		expect(releve.global.LCP).toEqual({ count: 6, p75: 4750 });
 		expect(releve.global.INP).toBeUndefined();
-		expect(releve.routes).toEqual([
-			{
-				route: '/(public)',
-				metrics: { LCP: { p75: 2500, count: 2 }, CLS: { p75: 0.123, count: 1 } }
-			},
-			{ route: '/(public)/automaths', metrics: { LCP: { p75: 5000, count: 1 } } }
-		]);
+		expect(releve.routes[0]).toEqual({
+			route: '/(public)',
+			metrics: { LCP: { count: 5, p75: 4000 }, CLS: { count: 1 } }
+		});
+	});
+
+	it('CLS arrondi au millième', () => {
+		const releve = summarize(
+			Array.from({ length: 5 }, () => ({ route: '/(public)', metric: 'CLS', value: 0.1234 })),
+			28,
+			false
+		);
+		expect(releve.global.CLS).toEqual({ count: 5, p75: 0.123 });
+	});
+
+	it(`moins de ${MIN_P75_COUNT} mesures : leur nombre seulement, pas de p75`, () => {
+		const releve = summarize(lcp('/(public)', [1, 2, 3, 4]), 28, false);
+
+		expect(releve.global.LCP).toEqual({ count: 4 });
+		expect(releve.routes[0].metrics.LCP).toEqual({ count: 4 });
 	});
 
 	it('pages les plus mesurées d’abord', () => {
@@ -133,6 +158,7 @@ describe('summarize', () => {
 	it('ne rend que des résultats calculés : aucune valeur brute, aucune date, aucun identifiant', () => {
 		const text = JSON.stringify(summarize(rows, 28, false));
 		expect(text).not.toContain('5000.4');
+		expect(text).not.toContain('0.1234');
 		expect(text).not.toContain('created_at');
 		expect(text).not.toContain('"id"');
 		expect(text).not.toContain('device_type');
@@ -200,7 +226,7 @@ describe('releveQuerySchema', () => {
 describe('readSamples', () => {
 	const now = new Date('2026-11-22T10:30:00Z');
 
-	it('lit la période demandée, sans date, dans l’ordre des identifiants (pas l’ordre d’arrivée)', async () => {
+	it('lit des jours entiers, sans la journée en cours, sans date, dans l’ordre des identifiants', async () => {
 		tableRows = [{ id: id(1), route: '/(public)', metric: 'LCP', value: 1200 }];
 
 		const result = await readSamples(28, now);
@@ -212,7 +238,8 @@ describe('readSamples', () => {
 		expect(calls[0]).toMatchObject({
 			table: 'web_vital_samples',
 			columns: 'id, route, metric, value',
-			since: '2026-10-25T10:30:00.000Z',
+			since: '2026-10-25T00:00:00.000Z',
+			until: '2026-11-22T00:00:00.000Z',
 			after: null
 		});
 	});
@@ -230,6 +257,10 @@ describe('readSamples', () => {
 		expect('rows' in result && result.rows).toHaveLength(RELEVE_PAGE_SIZE + 3);
 		expect(calls).toHaveLength(2);
 		expect(calls[1].after).toBe(id(RELEVE_PAGE_SIZE));
+		// Aucune ligne lue deux fois, aucune sautée
+		expect('rows' in result && result.rows.map((row) => row.value)).toEqual(
+			Array.from({ length: RELEVE_PAGE_SIZE + 3 }, (_, i) => i)
+		);
 	});
 
 	it('s’arrête au plafond de lignes et le dit', async () => {
@@ -244,6 +275,20 @@ describe('readSamples', () => {
 
 		expect('rows' in result && result.rows).toHaveLength(MAX_RELEVE_ROWS);
 		expect('rows' in result && result.truncated).toBe(true);
+	});
+
+	it('exactement le plafond de lignes : tout est lu, rien n’est tronqué', async () => {
+		tableRows = Array.from({ length: MAX_RELEVE_ROWS }, (_, i) => ({
+			id: id(i + 1),
+			route: '/(public)',
+			metric: 'LCP',
+			value: 1
+		}));
+
+		const result = await readSamples(28, now);
+
+		expect('rows' in result && result.rows).toHaveLength(MAX_RELEVE_ROWS);
+		expect('rows' in result && result.truncated).toBe(false);
 	});
 
 	it('erreur de la base : rendue, aucun relevé partiel', async () => {

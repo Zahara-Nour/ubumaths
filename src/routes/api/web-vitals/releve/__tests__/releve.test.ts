@@ -56,10 +56,11 @@ describe('GET /api/web-vitals/releve', () => {
 		env.WEB_VITALS_RELEVE_TOKEN = TOKEN;
 		readSamplesMock.mockReset();
 		readSamplesMock.mockResolvedValue({
-			rows: [
-				{ route: '/(public)', metric: 'LCP', value: 1000 },
-				{ route: '/(public)', metric: 'LCP', value: 3000 }
-			],
+			rows: [1000, 2000, 3000, 4000, 5000].map((value) => ({
+				route: '/(public)',
+				metric: 'LCP',
+				value
+			})),
 			truncated: false
 		});
 		rateLimitMock.mockReset();
@@ -73,10 +74,10 @@ describe('GET /api/web-vitals/releve', () => {
 		expect(readSamplesMock).toHaveBeenCalledWith(28);
 		expect(await response.json()).toEqual({
 			days: 28,
-			total: 2,
+			total: 5,
 			truncated: false,
-			global: { LCP: { p75: 2500, count: 2 } },
-			routes: [{ route: '/(public)', metrics: { LCP: { p75: 2500, count: 2 } } }]
+			global: { LCP: { count: 5, p75: 4000 } },
+			routes: [{ route: '/(public)', metrics: { LCP: { count: 5, p75: 4000 } } }]
 		});
 	});
 

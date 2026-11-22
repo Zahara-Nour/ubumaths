@@ -151,7 +151,15 @@ const METRIC_KEYS = {
 	TTFB: 'ttfb_ms'
 } as const;
 
-const summarySchema = z.object({ p75: z.number().min(0), count: z.number().int().min(1) });
+/** Sous cinq mesures, le site ne rend que leur nombre */
+const summarySchema = z.object({
+	count: z.number().int().min(1),
+	p75: z.number().min(0).optional()
+});
+
+/** Même forme que la contrainte de la table : rien qui puisse casser le Markdown du rapport */
+const ROUTE_PATTERN =
+	/^\/$|^(\/([a-z0-9-]+|\([a-z0-9-]+\)|\[{1,2}(\.\.\.)?[A-Za-z0-9_]+(=[A-Za-z0-9_]+)?\]{1,2}))+$/;
 const metricsSchema = z.object({
 	LCP: summarySchema.optional(),
 	INP: summarySchema.optional(),
@@ -166,7 +174,11 @@ export const releveSchema = z.object({
 	total: z.number().int().min(0),
 	truncated: z.boolean(),
 	global: metricsSchema,
-	routes: z.array(z.object({ route: z.string().min(1).max(200), metrics: metricsSchema })).max(5000)
+	routes: z
+		.array(
+			z.object({ route: z.string().min(1).max(200).regex(ROUTE_PATTERN), metrics: metricsSchema })
+		)
+		.max(5000)
 });
 
 type Metrics = z.infer<typeof metricsSchema>;
@@ -178,7 +190,7 @@ function split(metrics: Metrics): Pick<RouteRow, 'values' | 'counts' | 'count'> 
 	for (const [metric, vital] of Object.entries(METRIC_KEYS) as [keyof Metrics, Vital][]) {
 		const summary = metrics[metric];
 		if (!summary) continue;
-		values[vital] = summary.p75;
+		if (summary.p75 !== undefined) values[vital] = summary.p75;
 		counts[vital] = summary.count;
 		count = Math.max(count, summary.count);
 	}
