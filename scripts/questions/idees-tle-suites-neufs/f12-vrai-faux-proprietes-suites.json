@@ -1,4 +1,5 @@
 {
+	"id": "b408ace2-e2d6-401f-a1ba-bc65977cb53d",
 	"title": "Vrai ou faux : propriétés des suites",
 	"description": "Choisir la réponse justifiée : bornée ⇏ convergente, croissante ⇏ +∞, +∞ ⇏ croissante, majorée par une suite convergente ⇏ convergente",
 	"grades": ["T_SPE"],

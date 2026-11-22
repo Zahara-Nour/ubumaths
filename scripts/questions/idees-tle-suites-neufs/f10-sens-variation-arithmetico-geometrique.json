@@ -1,4 +1,5 @@
 {
+	"id": "7830c983-43e8-4dd5-a2ac-b4a258bbbdaf",
 	"title": "Sens de variation d'une suite arithmético-géométrique",
 	"description": "uₙ₊₁ − uₙ en fonction de uₙ, puis sens de variation et convergence sachant uₙ ⩾ ℓ ou uₙ ⩽ ℓ (a = k/10)",
 	"grades": ["T_SPE"],
