@@ -5,18 +5,17 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2999._
+_Mis à jour le 2026-11-22, après #3001._
 
-- **État** : #2999 mergée et appliquée (`db push --include-all`, une migration plus récente d'une
-  autre session était passée avant) : 708f8a08 et 98ba277c revenus à 4 variations ; en prod, 5
-  neufs rangés en brouillon, 9 variations ajoutées à 6 publiés · **Prochaine action** : commiter
-  les ids des 2 nouveaux brouillons (`f02-…`, `f03-…`), puis PR de rangement (TSPE-383 et
-  TSPE-578, nœuds des publiés voisins) ; ensuite relecture dans `/dev/modeles` (brouillons par
-  `?point=`, série de relecture pour les 6 publiés complétés) · **En attente de David** : lancer
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-suites-neufs --publier`
-  depuis le worktree `ubumaths-wt-idees-tle-suites` · **Pièges en cours** : vérifier les bornes de
-  **tous** les points d'un publié (autres niveaux compris) avant d'y ajouter une variation · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
-  `feat/idees-tle-suites-rangement-2`.
+- **État** : tout est en prod en brouillon ou publié : 7 neufs rangés et tagués (5 + 2 déplacés,
+  #3001), 9 variations sur 6 publiés ; garde des niveaux verte · **Prochaine action** : série de
+  relecture des 6 publiés (`scripts/series/T_SPE-relecture-suites-publies.json`, branche en
+  cours), puis relecture de David dans `/dev/modeles` (brouillons par `?point=` : TSPE-383, 385,
+  386, 392, 577, 578), lecture des verdicts en base, corrections, `publier-lot.ts` · **En attente
+  de David** : enregistrer la série (`creer-serie.ts --publier`), puis la relecture · **Pièges en
+  cours** : vérifier les bornes de **tous** les points d'un publié (autres niveaux compris) avant d'y
+  ajouter une variation · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
+  `feat/idees-tle-suites-serie-relecture`.
 
 ## Historique
 
@@ -84,3 +83,9 @@ _Mis à jour le 2026-11-22, après #2999._
 - Oui de David au retrait. `db:migrate` refusé (« inserted before » : une autre session avait
   appliqué une migration plus récente) ; `db push --dry-run --include-all` ne listait que la nôtre,
   appliquée par `--include-all`. Vérifié en prod : 4 variations, 17 et 16 specs.
+
+### 2026-11-22 — #3001 mergée et appliquée
+
+- df02afc2 (somme, q ⩾ 2 ou q ⩽ −1) → TSPE-383, « suites géométriques » ; ab0f98c4 (gendarmes avec
+  cos n ou sin n) → TSPE-578, « comparaison et encadrement ». Vérifié en prod. Garde des niveaux :
+  aucun niveau manquant.
