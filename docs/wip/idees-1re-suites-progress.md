@@ -5,18 +5,19 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Première spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, lot écrit (pas encore de PR)._
+_Mis à jour le 2026-11-22, essai local validé par David, PR des fichiers ouverte._
 
-- **État** : lot écrit et poussé sur `feat/idees-1re-suites` : 4 nouveaux modèles
-  (`scripts/questions/1re-suites-a/`, `create-questions` simulation 4 ✓, 88 specs) et 26
-  variations ajoutées à 14 modèles publiés (`scripts/questions/1re-suites-publies/`, 303 specs
-  vertes, `migration-contenu` 14/14 acceptés, migration non gardée). · **Prochaine action** :
-  essai en base locale (`.env.local`, `create-questions --publier` en local, puis `git restore`
-  des ids) et modèles joués dans l'aperçu admin ; puis PR des fichiers (revue : aucune, contenu).
-  · **En attente de David** : rien. · **Pièges en cours** : `lot-1re-suites-publies.py` repart de
-  l'export 2a85b7b809 (le relancer réécrit les ajouts, ne les double pas) ; la migration de contenu
-  se régénère juste avant sa PR (prod relue à ce moment). · **Worktree / branche** :
-  `ubumaths-wt-idees-1re-suites`, `feat/idees-1re-suites`.
+- **État** : 4 nouveaux modèles (`scripts/questions/1re-suites-a/`) et 26 variations de 14 modèles
+  publiés (`scripts/questions/1re-suites-publies/`) essayés en base locale ; David : « je valide
+  tout ». PR des fichiers ouverte (contenu, aucune revue). · **Prochaine action** : après merge,
+  David lance `create-questions --dir scripts/questions/1re-suites-a --publier` (brouillons en
+  prod) ; je commite les ids ; puis migrations de rangement (nœud + tag) et de contenu
+  (`migration-contenu.ts --dir scripts/questions/1re-suites-publies`, régénérée à ce moment). ·
+  **En attente de David** : le `--publier` en prod. · **Pièges en cours** :
+  `lot-1re-suites-publies.py` repart de l'export 2a85b7b809 (le relancer réécrit les ajouts, ne
+  les double pas) ; base locale : les 14 publiés y sont des brouillons neufs (ids locaux
+  différents de la prod). · **Worktree / branche** : `ubumaths-wt-idees-1re-suites`,
+  `feat/idees-1re-suites`.
 
 ## Historique
 
@@ -66,3 +67,10 @@ _Mis à jour le 2026-11-22, lot écrit (pas encore de PR)._
 - Limites assumées : deux erreurs prévues (pas trois) sur la 2e case des variations à deux cases
   de 45da9678 ; dans 7703e625, `14/12` reste « forme non optimale » (réglage du modèle, que
   `migration-contenu` ne change pas) ; 01 v3 (u² − c) n'a que 6 tirages différents.
+
+### 2026-11-22 — essai en base locale
+
+- `create-questions --publier` en local sur `1re-suites-a` (ids restaurés par `git restore`, diff
+  = ids seuls) ; les 14 publiés absents de la base locale : créés en brouillon depuis une copie sans
+  id, hors dépôt. Aperçu joué par David à distance (lien Tailscale, `pnpm lien`) : « je valide
+  tout ».
