@@ -298,11 +298,11 @@ export function relaunchCommand(port: number): string {
 
 /**
  * État du relais, d'après le code HTTP de `/__dev/supabase/auth/v1/health` sur
- * le serveur de dev (`null` : pas de réponse). 404 : la page n'existe pas, donc
- * le serveur tourne sur un code d'avant le relais.
+ * le serveur de dev (`null` : pas de réponse). Supabase répond 200, ou 401 sans
+ * clé. Toute autre réponse (404, redirection, page de l'appli) vient du serveur
+ * de dev lui-même : il tourne sur un code d'avant le relais.
  */
 export function relayState(status: number | null): RelayState {
 	if (status === null || status === 502) return 'supabase-arrete';
-	if (status === 404) return 'sans-relais';
-	return 'ok';
+	return status === 200 || status === 401 ? 'ok' : 'sans-relais';
 }

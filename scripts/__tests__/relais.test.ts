@@ -13,7 +13,13 @@ import {
 	relayedSupabaseUrl,
 	sessionCookieName
 } from '../../src/lib/dev/supabase-relay.ts';
-import { relayServerConfig, relayErrorBody, supabaseRelay } from '../relais/plugin.ts';
+import {
+	RELAY_RULE,
+	appliesTo,
+	relayErrorBody,
+	relayServerConfig,
+	supabaseRelay
+} from '../relais/plugin.ts';
 
 const LOCAL = 'http://127.0.0.1:54321';
 const PROD = 'https://abcdefgh.supabase.co';
@@ -36,6 +42,17 @@ describe('relais — quand sert-il', () => {
 		expect(relayTarget(undefined)).toBeNull();
 		expect(relayTarget('pas une adresse')).toBeNull();
 		expect(isRelayed(PROD, true)).toBe(false);
+	});
+
+	it('adresse piégée qui ressemble à la base locale : jamais de relais', () => {
+		for (const trap of [
+			'http://127.0.0.1.evil.example:54321',
+			'http://localhost@evil.example:54321',
+			'http://localhost.:54321',
+			'http://localhost.evil.example',
+			'http://[::ffff:127.0.0.1]:54321'
+		])
+			expect(relayTarget(trap), trap).toBeNull();
 	});
 });
 
@@ -136,19 +153,30 @@ describe('relais — adresses enregistrées', () => {
 });
 
 describe('relais — serveur de dev', () => {
-	it('n’existe que sur le serveur de dev, jamais dans le build', () => {
-		expect(supabaseRelay(() => LOCAL).apply).toBe('serve');
+	it('n’existe que sur le serveur de dev : ni build, ni preview du site construit', () => {
+		expect(supabaseRelay(() => LOCAL).apply).toBe(appliesTo);
+		expect(appliesTo({}, { command: 'serve' })).toBe(true);
+		expect(appliesTo({}, { command: 'build' })).toBe(false);
+		expect(appliesTo({}, { command: 'serve', isPreview: true })).toBe(false);
 	});
 
 	it('base locale : relaie le chemin vers Supabase, sockets compris, et retire le préfixe', () => {
 		const config = relayServerConfig(LOCAL);
-		const rule = config?.proxy[SUPABASE_RELAY_PATH];
+		const rule = config?.proxy[RELAY_RULE];
 		expect(rule?.target).toBe(LOCAL);
 		expect(rule?.ws).toBe(true);
 		expect(rule?.rewrite(`${SUPABASE_RELAY_PATH}/auth/v1/token?grant_type=password`)).toBe(
 			'/auth/v1/token?grant_type=password'
 		);
 		expect(rule?.rewrite(SUPABASE_RELAY_PATH)).toBe('/');
+	});
+
+	it('ne relaie que son chemin, pas ce qui commence pareil', () => {
+		const rule = new RegExp(RELAY_RULE);
+		expect(rule.test(`${SUPABASE_RELAY_PATH}/rest/v1/x`)).toBe(true);
+		expect(rule.test(SUPABASE_RELAY_PATH)).toBe(true);
+		expect(rule.test(`${SUPABASE_RELAY_PATH}-autre/x`)).toBe(false);
+		expect(rule.test('/__dev/retours')).toBe(false);
 	});
 
 	it('base locale : le nom du Mac sur le tailnet est accepté d’office', () => {

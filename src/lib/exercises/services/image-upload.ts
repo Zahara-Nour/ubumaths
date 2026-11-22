@@ -561,7 +561,7 @@ export async function listExerciseImages(
 				images.push({
 					name: file.name,
 					storagePath,
-					url: publicUrl,
+					url: toStoredAddress(publicUrl),
 					size: file.metadata?.size || 0,
 					imageNumber: parseInt(match[1], 10),
 					createdAt: file.created_at || ''

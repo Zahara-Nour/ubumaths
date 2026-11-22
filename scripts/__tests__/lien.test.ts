@@ -317,7 +317,9 @@ describe('lien — relais de Supabase', () => {
 		expect(relayState(null)).toBe('supabase-arrete');
 	});
 
-	it('404 : le serveur de dev n’a pas le relais (branche en retard)', () => {
+	it('404, redirection, refus : le serveur de dev n’a pas le relais (branche en retard)', () => {
 		expect(relayState(404)).toBe('sans-relais');
+		expect(relayState(303)).toBe('sans-relais');
+		expect(relayState(403)).toBe('sans-relais');
 	});
 });

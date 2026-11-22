@@ -72,7 +72,7 @@ joindre, la même page marche sur le Mac mini, par le tunnel SSH et par le lien 
 `pnpm voir --compte` marche sur le serveur qui sert aussi l'iPhone.
 
 - **Dev et base locale seulement.** Le relais est un réglage du serveur de dev de Vite
-  (`scripts/relais/plugin.ts`, `apply: 'serve'`) : rien dans le build, rien en prod. Il n'existe
+  (`scripts/relais/plugin.ts`) : rien dans le build, dans `vite preview` ni en prod. Il n'existe
   que si `PUBLIC_SUPABASE_URL` est une adresse de bouclage en HTTP : un worktree sans `.env.local`
   (adresse de la prod) n'a pas de relais, et rien n'y change. Dans le même cas seulement, le
   serveur de dev accepte les noms du tailnet (`*.ts.net`).
@@ -93,8 +93,9 @@ joindre, la même page marche sur le Mac mini, par le tunnel SSH et par le lien 
 - **`--host 0.0.0.0`** : un appareil du réseau local qui joint le serveur de dev joint aussi la
   base locale à travers lui. Rien de nouveau : le port 54321 écoute déjà sur toutes les interfaces
   du Mac mini, et la base locale ne contient que des données fictives (David, 2026-11-22).
-- Limite connue : dans le sélecteur d'images d'exercice, une image choisie dans la liste garde
-  l'adresse de l'appareil qui l'a listée.
+- Une adresse du stockage **lue en base** et mise telle quelle dans un `<img src>` (carte VIP,
+  galerie d'images) passe aussi par `toBrowserAddress` au rendu. Un endroit oublié donne une image
+  cassée à distance seulement, jamais en prod : l'y ajouter.
 
 Tests : `scripts/__tests__/relais.test.ts`.
 

@@ -13,7 +13,16 @@ import { render } from 'vitest-browser-svelte';
 import JournalContent from '../JournalContent.svelte';
 import { resolveResource } from '#lib/resources/index.ts';
 import { PUBLIC_SUPABASE_URL } from '$app/env/public';
+import { dev } from '$app/env';
+import { isRelayed } from '#lib/dev/supabase-relay.ts';
 import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
+
+/** Adresse attendue dans la page : écrite en toutes lettres, pas recalculée par le code testé. */
+function rendue(chemin: string): string {
+	return isRelayed(PUBLIC_SUPABASE_URL, dev)
+		? `/__dev/supabase${chemin}`
+		: `${PUBLIC_SUPABASE_URL}${chemin}`;
+}
 import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 
 const FICHE = '664fee6b-c9d0-4406-a9eb-9e0655c2b1ac';
@@ -234,7 +243,9 @@ describe('JournalContent — images', () => {
 			links: { role: 'student' }
 		});
 		// En dev sur la base locale, l'adresse rendue au navigateur passe par le relais
-		expect(container.querySelector('img')?.getAttribute('src')).toBe(toBrowserAddress(STOCKAGE));
+		expect(container.querySelector('img')?.getAttribute('src')).toBe(
+			rendue('/storage/v1/object/public/medias/figure.png')
+		);
 	});
 
 	it('image imbriquée (liste, citation, tableau) : un lien, aucune <img>', async () => {
@@ -317,7 +328,7 @@ describe('JournalContent — vidéos', () => {
 			links: { role: 'student' }
 		});
 		expect(container.querySelector('video source')?.getAttribute('src')).toBe(
-			toBrowserAddress(STOCKAGE)
+			rendue('/storage/v1/object/public/medias/clip.mp4')
 		);
 	});
 
