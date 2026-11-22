@@ -16,13 +16,11 @@
  * jamais à une base qui n'est pas locale. Doc : docs/pratiques/voir-une-page.md.
  */
 
-import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { chromium, devices, webkit, type Page } from 'playwright';
 import {
 	ACCOUNTS,
-	ENV_FILES,
 	VoirError,
 	assertLocalTarget,
 	captureHeight,
@@ -35,9 +33,9 @@ import {
 	resolveTarget,
 	slices,
 	type AccountName,
-	type DevServer,
 	type VoirOptions
 } from './logique';
+import { listDevServers, readEnvFiles, readServerEnv, worktreeRoot } from './serveurs';
 
 // Types
 
@@ -70,83 +68,6 @@ const LOGIN_TIMEOUT = 15_000;
 const MAX_LISTED = 50;
 
 // Functions
-
-/** Racine du worktree courant, chemin réel. */
-function worktreeRoot(): string {
-	try {
-		const root = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
-		return realpathSync(root.trim());
-	} catch {
-		return realpathSync(process.cwd());
-	}
-}
-
-/** Les process `node` qui écoutent en local, avec le dossier d'où ils ont été lancés. */
-function listDevServers(): DevServer[] {
-	let listing = '';
-	try {
-		listing = execFileSync('lsof', ['-nP', '-iTCP', '-sTCP:LISTEN', '-a', '-c', 'node', '-Fpn'], {
-			encoding: 'utf8'
-		});
-	} catch {
-		// lsof sort en 1 quand rien n'écoute
-		return [];
-	}
-	const ports = new Map<number, Set<number>>();
-	let pid = 0;
-	for (const line of listing.split('\n')) {
-		if (line.startsWith('p')) pid = Number(line.slice(1));
-		else if (line.startsWith('n')) {
-			const port = Number(line.slice(line.lastIndexOf(':') + 1));
-			if (!Number.isInteger(port)) continue;
-			const known = ports.get(pid) ?? new Set<number>();
-			known.add(port);
-			ports.set(pid, known);
-		}
-	}
-	const servers: DevServer[] = [];
-	for (const [serverPid, serverPorts] of ports) {
-		let cwd = '';
-		try {
-			const out = execFileSync('lsof', ['-a', '-p', String(serverPid), '-d', 'cwd', '-Fn'], {
-				encoding: 'utf8'
-			});
-			cwd =
-				out
-					.split('\n')
-					.find((line) => line.startsWith('n'))
-					?.slice(1) ?? '';
-		} catch {
-			continue;
-		}
-		if (!cwd) continue;
-		for (const port of serverPorts) servers.push({ port, cwd, pid: serverPid });
-	}
-	return servers;
-}
-
-/** Contenu des fichiers d'environnement du worktree qui passent devant `.env`. */
-function readEnvFiles(root: string): string[] {
-	const contents: string[] = [];
-	for (const file of ENV_FILES) {
-		try {
-			contents.push(readFileSync(join(root, file), 'utf8'));
-		} catch {
-			// Fichier absent
-		}
-	}
-	return contents;
-}
-
-/** Environnement du process serveur à son lancement. Illisible → `null` (refus). */
-function readServerEnv(pid: number | undefined): string | null {
-	if (pid === undefined) return null;
-	try {
-		return execFileSync('ps', ['eww', '-o', 'command=', '-p', String(pid)], { encoding: 'utf8' });
-	} catch {
-		return null;
-	}
-}
 
 /** Connexion par la page de connexion, comme un utilisateur. Rend `false` si elle est refusée. */
 async function tryLogin(

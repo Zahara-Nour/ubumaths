@@ -1,11 +1,58 @@
+---
+couvre:
+  - 'scripts/lien/**'
+---
+
 # Tester sur l'iPhone ou le MacBook (Tailscale)
 
-> Quand David demande « un lien pour tester sur mon téléphone / mon MacBook » : lire cette page,
-> choisir la ligne du tableau, donner le lien. Ne pas re-chercher la méthode à chaque fois.
+> Quand David demande « un lien pour tester sur mon téléphone / mon MacBook » : **`pnpm lien`**
+> dans le worktree (ci-dessous). Le reste de la page explique ce que fait la commande, et les
+> méthodes de secours (tunnel SSH, `--host`).
 
 Le serveur de dev tourne sur le Mac mini. Les autres appareils de David (iPhone, MacBook) le
 joignent par **Tailscale** : adresse du Mac mini `100.79.226.105`, nom
 `serveur.tail99357e.ts.net`.
+
+## `pnpm lien` : le lien en une commande
+
+Dans le worktree, serveur de dev lancé **avec les deux variables du tailnet** (sans elles le lien
+répond « Blocked request », ou la connexion échoue : la commande le dit et donne la ligne à
+relancer) :
+
+```bash
+PUBLIC_SUPABASE_URL=https://serveur.tail99357e.ts.net:8443 \
+__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=serveur.tail99357e.ts.net \
+pnpm dev --port <n> --strictPort
+
+pnpm lien            # publie CE serveur, rend le lien, un QR code et les comptes fictifs
+pnpm lien --liste    # tous les liens du Mac mini, avec le chantier de chacun
+pnpm lien --stop     # retire le lien de ce worktree, et lui seul
+pnpm lien --port <n> # si deux serveurs tournent dans le worktree
+```
+
+Ce qu'elle fait :
+
+- trouve le serveur lancé **depuis ce worktree** (jamais celui d'un autre dossier) et le publie par
+  Tailscale Serve sur le premier port HTTPS libre à partir de 8444 ; un lien qui existe déjà est
+  redonné tel quel ;
+- publie Supabase local sur 8443 s'il ne l'est pas encore. Ce lien-là est partagé par tous les
+  chantiers : `--stop` ne le retire jamais ;
+- vérifie après coup que chaque lien est « tailnet only » (un lien ouvert par Funnel est retiré) ;
+- avertit si le serveur a été lancé avant le dernier pull, merge ou rebase de la branche
+  (« serveur périmé », cf. plus bas) ;
+- tient le registre des liens par chantier dans `.git/liens-tailnet.json` du dépôt principal
+  (commun aux worktrees, jamais commité) : c'est lui qui permet à `--stop` et à `--liste` de
+  reconnaître un lien dont le serveur est arrêté. Un lien fait à la main apparaît avec le chantier
+  du serveur qui écoute derrière, ou « ? ».
+
+Ce qu'elle refuse : le dépôt principal ; un serveur dont rien ne prouve qu'il vise la base locale
+(`.env.local` absent, adresse de Supabase distante, même garde que `pnpm voir --compte`, l'adresse
+de Supabase du tailnet en plus) ; le port 8443 s'il mène à autre chose que Supabase. Elle ne lance
+ni ne relance aucun serveur, et ne fait jamais `funnel` ni `serve reset`.
+
+Code : `scripts/lien/logique.ts` (décisions, testées par `scripts/__tests__/lien.test.ts`) ·
+`scripts/lien/index.ts` (commandes `tailscale`, vérifiées en vrai) · `scripts/voir/serveurs.ts`
+(serveurs de dev du Mac, partagé avec `pnpm voir`).
 
 ## Les deux pièges
 
@@ -28,7 +75,7 @@ joignent par **Tailscale** : adresse du Mac mini `100.79.226.105`, nom
 | -------- | ----------------------- | ------------------------------------------------ | ---------------------------- |
 | MacBook  | avec ou sans connexion  | tunnel SSH (ci-dessous)                          | ✅ utilisé souvent           |
 | iPhone   | sans connexion (public) | `--host 0.0.0.0`, `http://100.79.226.105:<port>` | ✅ utilisé (pages publiques) |
-| iPhone   | avec connexion          | Tailscale Serve (HTTPS)                          | ✅ réussi le 2026-10-27      |
+| iPhone   | avec connexion          | Tailscale Serve (HTTPS) : `pnpm lien`            | ✅ réussi le 2026-10-27      |
 
 ### MacBook : tunnel SSH
 
@@ -91,6 +138,9 @@ Lien : `http://100.79.226.105:<n>/<page>`. Suffit pour une page sans compte (`/d
 page derrière une connexion échoue (piège 1).
 
 ### iPhone, page avec connexion : Tailscale Serve
+
+> `pnpm lien` fait tout ce qui suit. Les commandes à la main restent pour comprendre, ou en
+> secours.
 
 Serve publie un port du Mac mini en **HTTPS, sur le tailnet seulement** (jamais `funnel`, qui
 ouvre à Internet). Il faut l'activer une fois dans la console Tailscale (lien donné par

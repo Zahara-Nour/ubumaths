@@ -62,4 +62,5 @@ pnpm voir /atelier --port 5177          # si deux serveurs tournent dans le work
 
 `scripts/voir/logique.ts` (tout ce qui se décide sans navigateur, testé par
 `scripts/__tests__/voir.test.ts`) · `scripts/voir/index.ts` (pilotage du navigateur, vérifié en
-lançant la commande).
+lançant la commande) · `scripts/voir/serveurs.ts` (serveurs de dev du Mac et leur environnement,
+partagé avec `pnpm lien`, cf. [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)).

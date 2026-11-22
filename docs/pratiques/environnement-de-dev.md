@@ -194,7 +194,8 @@ les processus de test orphelins (même règle que la surveillance). À distance 
 « fais le ménage » à n'importe quelle session.
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
-(tunnel SSH, `--host`, Tailscale Serve ; cookie `Secure`, Supabase local, limiteur de connexion).
+(`pnpm lien` : lien HTTPS du tailnet et QR code en une commande ; tunnel SSH et `--host` en secours ;
+cookie `Secure`, Supabase local, limiteur de connexion).
 
 **Voir une page sans écran** : [voir-une-page.md](voir-une-page.md) (`pnpm voir <page>` : image au
 format iPhone, erreurs de console, requêtes en échec, dans `.captures/voir/`).
