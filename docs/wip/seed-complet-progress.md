@@ -298,6 +298,54 @@ pnpm dev --port 5176 --strictPort`), pages lues connecté (jeton pris à l'API d
   la page prof des paquets affiche « Decks attribués 0 » (elle compte les paquets du prof marqués
   assignés, or seules les copies des élèves le sont).
 
+## 9. PR 3 : jeux et récompenses — phase 0 (2026-11-22, à valider par David)
+
+**Mesures** (prod en lecture seule, des comptes de lignes ; lecteurs et écrivains relevés dans `src/`
+et les migrations). Jeux visibles par l'élève : Démineur (13 909 parties en prod, stats, succès,
+tournois), 2048 (43), Mathémo (19), classement commun ; Trio et Évoland n'écrivent rien en base.
+Chatterie : Mathoux (calculés depuis les points du programme), décorations, Palotins (58).
+Récompenses : cartes VIP (2 895 mouvements), récompenses de jeu du jour (2 171) et meilleur score
+de la semaine (315), succès (23 définis, **0 débloqué en prod**). Le journal des récompenses
+(`reward_events`) se remplit seul par déclencheurs : le seed écrit l'activité déclencheurs actifs.
+
+**Inventé (plan pur testé sans base, comme `suivi.ts`)** :
+
+1. **Démineur** : 10 à 40 parties par élève sur quatre semaines (gagnées, perdues, niveaux
+   variés), sauf l'élève « rien fait » et l'élève hors classe ; la récompense du jour et le meilleur
+   score de la semaine qui en découlent ; les succès du démineur atteints par ces parties.
+   **Un tournoi en cours** inventé pour deux classes actives (les 4 tournois copiés datent de
+   janvier 2026 et visent des classes archivées), avec les parties des élèves → classement.
+2. **2048 et Mathémo** : un meilleur score pour 2 élèves sur 3 → classement commun rempli.
+3. **Succès** : 2 à 6 succès débloqués par élève parmi les 23, cohérents avec son activité
+   (l'élève étoile en a le plus) → page d'accueil et journal.
+4. **Palotins** : un Palotin choisi par la plupart des élèves, niveau et expérience variés, une
+   tenue pour certains ; 3 élèves n'en ont pas encore choisi.
+5. **Mathoux** : écrits avec **la vraie règle de l'appli** (`collection-logic.ts`) à partir des
+   points acquis de la PR 2, pour que la page du prof les voie sans que chaque élève ouvre sa
+   chatterie ; quelques décorations achetées (Gidouilles dépensées en face).
+6. **Cartes VIP** : 1 à 4 cartes gagnées par élève, quelques-unes utilisées, une demande
+   d'activation en attente (pour la page du prof).
+7. **Devinette** : une devinette **publiée** inventée, au nom du prof local ; la PR 2 l'assigne
+   déjà d'elle-même (elle prend la devinette publiée d'abord).
+8. **Gidouilles** : chaque gain ou dépense ci-dessus a sa ligne, pour que le solde et le journal
+   disent la même chose.
+
+**Pas inventé, et pourquoi** :
+
+- **Navadra** (combats, sorts) : son entrée est masquée dans la page des jeux ; le profil de jeu
+  se crée seul à la création du compte.
+- **Descente de la Vistule** (bêtes, coups) : chantier en cours, aucune page n'en fait apparaître
+  (l'apparition des bêtes n'est appelée nulle part).
+- **Avatars de la boutique** : le catalogue est vide en prod, rien à acheter.
+- **Démineur à plusieurs** : statistiques lues par le seul mode multijoueur, éphémère.
+- **Tables sans lecteur ou calculées** → passent dans `JAMAIS` : `achievement_events`,
+  `achievement_progress` (calculée), `daily_summaries`, `weekly_rewards`, `game_leaderboards`,
+  `game_player_achievements`, `game_challenge_attempts`.
+
+**Preuve** : même méthode qu'au § 8 (copie isolée avec ses services, seed rejoué trois fois,
+pages ouvertes en élève et en prof : stats, succès et tournoi du démineur, classement, chatterie,
+Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
+
 ## 6. Historique
 
 - **2026-11-22** : #2981, compteurs de « Mes révisions » (trouvé grâce au seed).
