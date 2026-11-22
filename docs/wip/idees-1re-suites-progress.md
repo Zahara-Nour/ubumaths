@@ -5,15 +5,14 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Première spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3007 et `db:migrate`._
+_Mis à jour le 2026-11-22, après la série de relecture (5cbf5d65) et la relecture de David._
 
-- **État** : en prod : 4 brouillons rangés (nœud + point) et 26 variations ajoutées aux 14
-  publiés (migrations 20261122163231 et 20261122163253, vérifiées par MCP : nombres de variations
-  = fichiers, trigger `updated_at` actif). · **Prochaine action** : relecture dans `/dev/modeles`
-  (skill `idees-rubrique` § 5) : brouillons par `?point=` (1SPE-219, 1SPE-221, 1SPE-229),
-  publiés complétés par une série de relecture (`scripts/series/creer-serie.ts`, David la
-  publie) ; puis verdicts lus en base, corrections, `publier-lot.ts` (David). · **En attente de
-  David** : rien avant la série. · **Pièges en cours** : aucun. · **Worktree / branche** : aucun.
+- **État** : relecture faite, David : « je valide tout » (4 brouillons et 14 publiés complétés,
+  aucun verdict saisi en base). `publier-lot.ts` en simulation : 4 brouillons passent le contrôle.
+  · **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/1re-suites-a
+--publier` ; ensuite clore le chantier (versement, archive du journal). · **En attente de
+  David** : la publication. · **Pièges en cours** : aucun. · **Worktree / branche** :
+  `ubumaths-wt-idees-1re-suites-serie`, `chore/idees-1re-suites-serie-relecture`.
 
 ## Historique
 
@@ -87,3 +86,11 @@ _Mis à jour le 2026-11-22, après #3007 et `db:migrate`._
 - `security-auditor` : aucun bloquant (deux mineurs hérités de la migration de Terminale : couple
   `disable`/`enable trigger` hors bloc explicite, `set local` hors transaction). CI verte, merge,
   `migration list --linked` (seules les deux du lot en attente), `db:migrate` ; état vérifié en prod.
+
+### 2026-11-22 — série de relecture, verdict de David
+
+- Série « Relecture — suites de 1re, 14 modèles publiés complétés » publiée par David
+  (`scripts/series/1_SPE-relecture-suites-publies.json`, id 5cbf5d65).
+- David, le 2026-11-22 : « je valide tout » (brouillons par `?point=` et série). Aucun verdict
+  « À revoir » en base (table des relectures vide pour les 18 modèles).
+- `publier-lot.ts --dir scripts/questions/1re-suites-a` en simulation : 4 brouillons passent.
