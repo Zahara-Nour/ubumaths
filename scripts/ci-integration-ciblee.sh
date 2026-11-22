@@ -18,6 +18,12 @@
 #   - la fixture AJOUTÉE d'une migration de contenu
 #     (`A tests/integration/fixtures/contenu-publie/<nom>.json`) : elle ajoute à la liste le test
 #     qui rejoue toutes ces fixtures, `tests/integration/migrations-contenu-publie.test.ts` ;
+#   - la fixture AJOUTÉE d'une migration de rangement générée par
+#     `scripts/questions/migration-rangement.ts`
+#     (`A tests/integration/fixtures/rangement-tags/<nom>.json`), accompagnée de SA migration
+#     ajoutée du même nom : elle ajoute à la liste le test qui rejoue toutes ces fixtures,
+#     `tests/integration/migrations-rangement-tags.test.ts` (une migration de rangement écrite à
+#     la main n'a pas de fixture : elle vient avec son test) ;
 #   - un test d'intégration ajouté ou modifié (`tests/integration/*.test.ts`, à la racine du
 #     dossier : ni helpers, ni fixtures, ni global-setup) ;
 #   - du contenu (`scripts/questions/**/*.json`), de la doc (`docs/**`), un `.md` hors
@@ -47,11 +53,20 @@ tests=()
 contenu=""
 migrations_contenu=()
 fixtures_contenu=" "
+migrations_rangement=" "
+fixtures_rangement=()
 while IFS=$'\t' read -r statut f; do
 	case "$f" in
 	src/* | static/* | data/*) complete "$f touche le code ou des données servies" ;;
 	supabase/migrations/*rangement*.sql)
 		[ "$statut" = "A" ] || complete "$f : migration existante modifiée ($statut)"
+		nom="${f#supabase/migrations/}"
+		migrations_rangement+="${nom%.sql} "
+		;;
+	tests/integration/fixtures/rangement-tags/*.json)
+		[ "$statut" = "A" ] || complete "$f : fixture de rangement existante modifiée ($statut)"
+		nom="${f#tests/integration/fixtures/rangement-tags/}"
+		fixtures_rangement+=("${nom%.json}")
 		;;
 	supabase/migrations/*_contenu.sql)
 		[ "$statut" = "A" ] || complete "$f : migration existante modifiée ($statut)"
@@ -89,6 +104,15 @@ if [ -n "$contenu" ]; then
 	t=tests/integration/migrations-contenu-publie.test.ts
 	case " ${tests[*]-} " in *" $t "*) ;; *) tests+=("$t") ;; esac
 fi
+
+# Chaque fixture de rangement arrive avec SA migration (le test rejoue le fichier qu'elle nomme) ;
+# le test qui rejoue ces fixtures, une seule fois
+for nom in "${fixtures_rangement[@]-}"; do
+	[ -z "$nom" ] && continue
+	case "$migrations_rangement" in *" $nom "*) ;; *) complete "$nom : fixture de rangement sans sa migration" ;; esac
+	t=tests/integration/migrations-rangement-tags.test.ts
+	case " ${tests[*]-} " in *" $t "*) ;; *) tests+=("$t") ;; esac
+done
 
 [ "${#tests[@]}" -gt 0 ] || complete "aucun test d'intégration dans la PR"
 

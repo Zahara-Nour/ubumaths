@@ -9,12 +9,17 @@
  * `theme`, `domain`, `subdomain` (l'ancien quadruplet) sont abandonnés de même (ADR 0035,
  * chantier `automaths-arbre`, lot 3b) : un modèle se range dans l'arbre des notions, et un fichier
  * retrouve SON modèle par l'`id` que `create-questions --publier` y écrit (`withTemplateId`).
+ *
+ * `rangement` (nœud et point voulus, ou niveaux ajoutés) n'est pas un champ du modèle : il est
+ * retiré du modèle rendu et rendu à part, brut. Seul `scripts/questions/migration-rangement.ts`
+ * le lit (`lireRangement` de `migration-rangement.ts`) ; `create-questions` ne l'écrit jamais.
  */
 
 // Types
 
 export type TemplateFileResult =
-	{ ok: true; template: Record<string, unknown> } | { ok: false; error: string };
+	| { ok: true; template: Record<string, unknown>; rangement?: unknown }
+	| { ok: false; error: string };
 
 // Constantes
 
@@ -23,7 +28,7 @@ const OLD_CATEGORY_FIELDS = ['theme', 'domain', 'subdomain'] as const;
 
 // Fonctions
 
-/** Vérifie qu'un fichier de modèle est un objet JSON sans champ abandonné */
+/** Vérifie qu'un fichier de modèle est un objet JSON sans champ abandonné ; met `rangement` à part */
 export function readTemplateFile(raw: unknown, file: string): TemplateFileResult {
 	if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
 		return { ok: false, error: `${file} : le fichier doit contenir un objet JSON` };
@@ -41,7 +46,9 @@ export function readTemplateFile(raw: unknown, file: string): TemplateFileResult
 			error: `${file} : champ « ${oldField} » abandonné — le modèle se range dans l’arbre des notions (ADR 0035)`
 		};
 	}
-	return { ok: true, template: raw as Record<string, unknown> };
+	if (!('rangement' in raw)) return { ok: true, template: raw as Record<string, unknown> };
+	const { rangement, ...template } = raw as Record<string, unknown>;
+	return { ok: true, template, rangement };
 }
 
 /**

@@ -22,6 +22,8 @@ export type ModeleFichier = Omit<QuestionTemplate, 'id'>;
 export interface ModeleDuLot {
 	fichier: string;
 	modele: ModeleFichier;
+	/** Champ `rangement` du fichier, brut (absent du modèle) : lu par `migration-rangement.ts` */
+	rangement?: unknown;
 }
 
 /** Ce qu'il faut d'une ligne `question_templates` pour l'apparier */
@@ -55,7 +57,11 @@ export function lireLot(dossier: string): ModeleDuLot[] {
 			fichier
 		);
 		if (!extrait.ok) throw new Error(extrait.error);
-		return { fichier, modele: extrait.template as unknown as ModeleFichier };
+		return {
+			fichier,
+			modele: extrait.template as unknown as ModeleFichier,
+			...('rangement' in extrait ? { rangement: extrait.rangement } : {})
+		};
 	});
 }
 
