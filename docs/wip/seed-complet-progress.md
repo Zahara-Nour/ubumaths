@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2986._
+_Mis à jour le 2026-11-22, après #2986 et #2989._
 
 - **État** : PR 1 (#2977), PR 2 (#2980), #2981 et **PR 3 jeux et récompenses (#2986, § 9-10)** mergées.
   La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
@@ -11,8 +11,9 @@ _Mis à jour le 2026-11-22, après #2986._
   privés, tuteur, notifications, marché, modération, parents, inscriptions, cahier de texte et liens
   de partage (§ 4), tableau de tâches du prof et signalements de bug (inventés, tranché), modèles de
   messages (voir si le seed les recrée). Même méthode qu'aux § 8 et § 10.
-- **En attente de David** : faut-il corriger à part les deux pannes trouvées en PR 3 (§ 10) : page
-  « Palotins » du prof toujours vide, bloc « succès » mort de l'accueil élève ?
+- **En attente de David** : rien. Les deux pannes trouvées en PR 3 (§ 10) sont corrigées par #2989
+  (Palotins du prof lus à travers le profil ; requête et widget morts des succès retirés, choix de
+  David : retirer plutôt que réafficher).
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
   (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev. Élèves soumis au
   consentement : délai renouvelé par le seed (sinon lecture seule). Arrondis : `centiemes()` comme
@@ -386,7 +387,7 @@ Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
     (`coalesce(…, 1)` dans `use_vip_card`), pas illimitée ; fuseau et premier jour de la semaine de
     l'école copiée = Paris et lundi, ceux du plan ; pas de récompense du jour pour 2048 et Mathémo (une
     seule ligne de totaux par élève, sans partie à rattacher).
-- **Trouvé grâce au seed, hors PR** :
+- **Trouvé grâce au seed, hors PR** (corrigé par #2989, 2026-11-22) :
   - **page « Palotins » du prof toujours vide** (« Aucun Bataillon actif ») : sa requête embarque
     `student_buddies:student_id` depuis `class_members`, que PostgREST résout vers `profiles`
     (`column profiles_1.palotin_type does not exist`) ; chaque classe est sautée
