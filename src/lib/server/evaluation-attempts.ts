@@ -37,14 +37,10 @@ import type {
 	EvaluationOverviewResponse,
 	EvaluationSubmitResponse
 } from '#lib/types/evaluation-attempt.ts';
+import { DEFAULT_COURSE_TIME_LIMIT_SECONDS } from '#lib/types/evaluation-attempt.ts';
 import { getAttemptsRemaining } from '#lib/types/evaluation.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
-import {
-	DEFAULT_QUESTION_DELAY_SECONDS,
-	drawSeriesQuestions,
-	MAX_QUESTION_SEED
-} from '#lib/questions/series-items.ts';
-import { isCourseCard } from '#lib/questions/types.ts';
+import { drawSeriesQuestions, MAX_QUESTION_SEED } from '#lib/questions/series-items.ts';
 import {
 	gestureAnswerLeaks,
 	toPublicQuestion,
@@ -140,9 +136,6 @@ export type SubmitResult = EvaluationSubmitResponse;
 // Constantes
 /** Tolérance réseau après la fin du chrono d'une Course (Q37) */
 export const COURSE_GRACE_SECONDS = 30;
-
-/** Temps d'une Course sans temps limite enregistré (même repli que la page) */
-const DEFAULT_COURSE_TIME_LIMIT = 300;
 
 const VALIDATION_STATUSES: readonly ValidationStatus[] = [
 	'correct',
@@ -442,9 +435,9 @@ async function resolveAssignmentAccess(
  *
  * - tentative en cours : ses questions (comptées en service_role, la table est
  *   fermée aux élèves ; seules les durées sont lues) et son temps RESTANT ;
- * - sinon (aperçu compris) : les lignes de la série dont le modèle est publié et
- *   n'est pas une carte de cours, comme au tirage. Une génération impossible au
- *   démarrage peut en retirer une : le nombre est celui que le tirage vise.
+ * - sinon (aperçu compris) : un tirage à blanc, comme au démarrage (cartes de
+ *   cours exclues, modèles aux questions épuisées, énoncés qui fuient écartés) ;
+ *   aucune question → 409 dès la page d'attente.
  *
  * @throws EvaluationError comme `startEvaluationAttempt` (404, 403, 500)
  */
@@ -471,35 +464,47 @@ export async function readEvaluationOverview(
 			);
 		}
 		const delays = (data ?? []).map((row) => row.delay_seconds);
+		if (delays.length === 0) {
+			// Une tentative ouverte a toujours ses questions (écrites au démarrage)
+			logger.error('[evaluation-attempts] Tentative en cours sans questions :', open.id);
+		}
 		return {
 			preview: false,
 			evaluation: summary(evaluation),
 			questionCount: delays.length,
 			durationSeconds: isCourse
-				? (remainingSeconds(open, now()) ?? 0)
+				? (remainingSeconds(open, now()) ??
+					evaluation.time_limit ??
+					DEFAULT_COURSE_TIME_LIMIT_SECONDS)
 				: delays.reduce((sum, delay) => sum + delay, 0),
 			resumed: true
 		};
 	}
 
+	// Même tirage qu'au démarrage, à blanc (rien n'est gardé) : une ligne dont le
+	// modèle n'a pas assez de questions distinctes en rend moins que demandé
 	const items = evaluation.series.items;
 	const templates = await loadSeriesTemplates(actors.userClient, items);
-	const drawable = new Set(
-		templates.filter((template) => !isCourseCard(template)).map((template) => template.id)
-	);
-	const counted = items.filter((item) => drawable.has(item.templateId));
-	const questionCount = counted.reduce((sum, item) => sum + item.quantity, 0);
-	const totalDelay = counted.reduce(
-		(sum, item) =>
-			sum +
-			item.quantity * (item.delay && item.delay > 0 ? item.delay : DEFAULT_QUESTION_DELAY_SECONDS),
-		0
-	);
+	const draws = drawSeriesQuestions(items, templates, {
+		excludeCourseCards: true,
+		choiceCases: true,
+		nextSeed: () => (actors.randomInt ?? cryptoRandomInt)(MAX_QUESTION_SEED),
+		onGenerationFailure: () => {}
+	}).filter((draw) => gestureAnswerLeaks(draw.instance).length === 0);
+	if (draws.length === 0) {
+		throw new EvaluationError(
+			409,
+			"Ce contrôle n'a aucune question disponible, à signaler au professeur"
+		);
+	}
+	const totalDelay = draws.reduce((sum, draw) => sum + draw.delaySeconds, 0);
 	return {
 		preview: access.kind === 'preview',
 		evaluation: summary(evaluation),
-		questionCount,
-		durationSeconds: isCourse ? (evaluation.time_limit ?? DEFAULT_COURSE_TIME_LIMIT) : totalDelay,
+		questionCount: draws.length,
+		durationSeconds: isCourse
+			? (evaluation.time_limit ?? DEFAULT_COURSE_TIME_LIMIT_SECONDS)
+			: totalDelay,
 		resumed: false
 	};
 }

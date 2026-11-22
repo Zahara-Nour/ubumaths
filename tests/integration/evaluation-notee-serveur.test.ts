@@ -1357,6 +1357,29 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(overview).toMatchObject({ questionCount: 3, durationSeconds: 55, resumed: false });
 		});
 
+		it('Q37 : tentative en cours, date limite passée ENTRE-TEMPS → reprise, pas 403', async () => {
+			const { assignmentId: closing, evaluationId: closingId } = await createEvaluation({
+				form: 'course',
+				time_limit: 600
+			});
+			await start(reader, closing);
+			const { error } = await service
+				.from('evaluations')
+				.update({ deadline: '2020-01-01T00:00:00Z' })
+				.eq('id', closingId)
+				.select('id');
+			expect(error, 'décor : date limite passée').toBeNull();
+			const overview = await readEvaluationOverview(actors(reader), closing);
+			expect(overview.resumed).toBe(true);
+		});
+
+		it('élève hors de la classe (lien copié) → 404, pour la page d’attente comme pour start', async () => {
+			const outsider = await person('student');
+			expect(await statusOf(readEvaluationOverview(actors(outsider), assignmentId))).toBe(404);
+			expect(await statusOf(startEvaluationAttempt(actors(outsider), assignmentId))).toBe(404);
+			expect(await sessionsOf(outsider)).toBe(0);
+		});
+
 		it('membre archivé de la classe → 404', async () => {
 			expect(await statusOf(readEvaluationOverview(actors(archived), assignmentId))).toBe(404);
 		});

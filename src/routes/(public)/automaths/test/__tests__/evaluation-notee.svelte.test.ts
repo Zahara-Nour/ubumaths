@@ -435,6 +435,36 @@ describe('Contrôle assigné — page d’attente avant le démarrage (PR 2b)', 
 		expect(apiCalls().some(([href]) => href.includes('/start'))).toBe(false);
 	});
 
+	it('démarrage en échec (500) : retour à la page d’attente, « C’est parti ! » réessaie', async () => {
+		mockApi(startResponse());
+		const succeed = fetchMock.getMockImplementation() as (
+			input: RequestInfo | URL,
+			init?: RequestInit
+		) => Promise<Response>;
+		let startCalls = 0;
+		fetchMock.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+			if (String(input).includes('/start') && ++startCalls === 1) {
+				return new Response(
+					JSON.stringify({
+						error: 'Impossible de commencer le contrôle, réessayer dans un instant'
+					}),
+					{ status: 500 }
+				);
+			}
+			return succeed(input, init);
+		});
+		await renderWaitingPage();
+
+		startButton().click();
+		await vi.waitFor(() => expect(startCalls).toBe(1));
+		await vi.waitFor(() => expect(startButton().disabled).toBe(false));
+		await expect.element(page.getByTestId('series-start-summary')).toBeVisible();
+
+		startButton().click();
+		await expect.element(page.getByText('Combien font 2 + 2 ?')).toBeVisible();
+		expect(startCalls).toBe(2);
+	});
+
 	it('double clic sur « C’est parti ! » : un seul démarrage', async () => {
 		mockApi(startResponse());
 		await renderWaitingPage();

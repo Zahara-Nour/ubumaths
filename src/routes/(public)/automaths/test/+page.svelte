@@ -24,10 +24,11 @@
 	import { evaluationSummary } from '#lib/components/test/series-summary.ts';
 	import { resolveTestLaunch } from '#lib/utils/test-launch.ts';
 	import type { TestResult } from '#lib/types/test.ts';
-	import type {
-		EvaluationOverviewResponse,
-		EvaluationStartResponse,
-		EvaluationSubmitResponse
+	import {
+		DEFAULT_COURSE_TIME_LIMIT_SECONDS,
+		type EvaluationOverviewResponse,
+		type EvaluationStartResponse,
+		type EvaluationSubmitResponse
 	} from '#lib/types/evaluation-attempt.ts';
 	import { toSubmission, type Submission } from '#lib/questions/submission.ts';
 	import { toDisplayInstance, unitKeysOf } from '#lib/questions/public-question.ts';
@@ -177,8 +178,10 @@
 		try {
 			await startEvaluation(assignmentId);
 		} catch (err) {
+			// Retour à la page d'attente : « C'est parti ! » réessaie
 			console.error('Error starting evaluation:', err);
-			error = err instanceof Error ? err.message : 'Erreur inconnue';
+			toaster.error(err instanceof Error ? err.message : "Impossible d'ouvrir le contrôle");
+			isStartingEvaluation = false;
 			isLoading = false;
 		}
 	}
@@ -247,7 +250,12 @@
 			// Course : le temps RESTANT de la tentative (reprise comprise, B9)
 			timeLimit:
 				form === 'course'
-					? Math.max(1, attempt.remainingSeconds ?? start.evaluation.time_limit ?? 300)
+					? Math.max(
+							1,
+							attempt.remainingSeconds ??
+								start.evaluation.time_limit ??
+								DEFAULT_COURSE_TIME_LIMIT_SECONDS
+						)
 					: undefined,
 			currentQuestionIndex: 0,
 			isPaused: false
@@ -614,7 +622,9 @@
 			title={evaluationOverview.evaluation.title}
 			summary={evaluationSummary(evaluationOverview)}
 			hints={[]}
-			quitHref="/dashboard/student/assessments"
+			quitHref={evaluationOverview.preview
+				? '/dashboard/teacher/assessments'
+				: '/dashboard/student/assessments'}
 			startLabel={evaluationOverview.resumed ? 'Reprendre' : undefined}
 			starting={isStartingEvaluation}
 			onstart={handleEvaluationStart}

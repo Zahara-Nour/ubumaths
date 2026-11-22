@@ -31,21 +31,41 @@ const ASSIGNMENT = '44444444-4444-4444-8444-444444444444';
 const EVALUATION = '55555555-5555-4555-8555-555555555555';
 const TEMPLATE = '4d5e6f70-4444-4444-8444-444444444444';
 const CARD = '4d5e6f70-5555-4555-8555-555555555555';
+const FIXED = '4d5e6f70-6666-4666-8666-666666666666';
 
 const ITEMS = [
 	{ templateId: TEMPLATE, quantity: 4, delay: 20 },
 	// Carte de cours : jamais tirée en contrôle, donc jamais comptée
-	{ templateId: CARD, quantity: 2, delay: 30 }
+	{ templateId: CARD, quantity: 2, delay: 30 },
+	// Une seule question possible : 3 demandées, 1 tirée (comme au démarrage)
+	{ templateId: FIXED, quantity: 3, delay: 10 }
 ];
 
-function templateRow(id: string, options: unknown = null) {
+/** Moitié d'un entier : beaucoup de questions distinctes */
+const HALF_VARIATION = {
+	statement: 'Quelle est la moitié de ${{b}}$ ?\n\nLa moitié de ${{b}}$ est $?$.',
+	variables: [
+		{ name: 'a', expression: '1..9|11..15|16..20|25|30|50' },
+		{ name: 'b', expression: 'eval:2*a' }
+	],
+	blanks: [{ expectedAnswer: '{{eval:a}}' }]
+};
+
+/** Sans variable : une seule question possible */
+const FIXED_VARIATION = {
+	statement: 'Combien font 2 + 2 ?\n\n$?$',
+	blanks: [{ expectedAnswer: '4' }]
+};
+
+function templateRow(id: string, variation: object, options: unknown = null) {
 	return {
 		id,
+		type: 'fill_in_blanks',
 		title: 'Modèle',
 		level: 1,
 		status: 'published',
 		grades: ['6'],
-		variations: [],
+		variations: [variation],
 		options
 	};
 }
@@ -106,7 +126,13 @@ function setup(options: {
 			return { data: [] };
 		}
 		if (table === 'question_templates') {
-			return { data: [templateRow(TEMPLATE), templateRow(CARD, { courseCard: true })] };
+			return {
+				data: [
+					templateRow(TEMPLATE, HALF_VARIATION),
+					templateRow(CARD, HALF_VARIATION, { courseCard: true }),
+					templateRow(FIXED, FIXED_VARIATION)
+				]
+			};
 		}
 		return {};
 	});
@@ -127,14 +153,14 @@ beforeEach(() => {
 });
 
 describe('GET /api/evaluations/assignments/[id] (page d’attente)', () => {
-	it('Course, aucune tentative en cours : titre, forme, questions (sans carte de cours), temps imparti ; rien d’écrit', async () => {
+	it('Course, aucune tentative en cours : titre, forme, questions tirées à blanc (ni carte de cours, ni question en double), temps imparti ; rien d’écrit', async () => {
 		const { call, fake } = setup({ role: 'student', userId: STUDENT, recipient: true });
 		const response = await call();
 		expect(response.status).toBe(200);
 		expect(await response.json()).toEqual({
 			preview: false,
 			evaluation: { id: EVALUATION, form: 'course', time_limit: 420, title: 'Tables de 7' },
-			questionCount: 4,
+			questionCount: 5,
 			durationSeconds: 420,
 			resumed: false
 		});
@@ -154,7 +180,7 @@ describe('GET /api/evaluations/assignments/[id] (page d’attente)', () => {
 			form: 'interactive'
 		});
 		const body = await (await call()).json();
-		expect(body).toMatchObject({ questionCount: 4, durationSeconds: 80, resumed: false });
+		expect(body).toMatchObject({ questionCount: 5, durationSeconds: 90, resumed: false });
 	});
 
 	it('date limite dépassée → 403 dès la page d’attente, rien d’écrit', async () => {
@@ -187,7 +213,7 @@ describe('GET /api/evaluations/assignments/[id] (page d’attente)', () => {
 	it('prof propriétaire, non destinataire : aperçu, sans les lignes de la série', async () => {
 		const { call, fake } = setup({ role: 'teacher', userId: TEACHER, recipient: false });
 		const body = await (await call()).json();
-		expect(body).toMatchObject({ preview: true, questionCount: 4, durationSeconds: 420 });
+		expect(body).toMatchObject({ preview: true, questionCount: 5, durationSeconds: 420 });
 		expect(body.evaluation.items).toBeUndefined();
 		expect(fake.on('test_sessions')).toHaveLength(0);
 		expect(serviceFrom).not.toHaveBeenCalled();

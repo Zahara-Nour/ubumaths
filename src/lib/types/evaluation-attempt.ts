@@ -17,6 +17,9 @@ export interface EvaluationStartSummary {
 	title: string;
 }
 
+/** Temps d'une Course sans temps limite enregistré : même repli partout */
+export const DEFAULT_COURSE_TIME_LIMIT_SECONDS = 300;
+
 /** Réponse de `POST /api/evaluations/assignments/[id]/start` */
 export type EvaluationStartResponse =
 	| { preview: true; evaluation: EvaluationStartSummary & { items: SeriesItem[] } }
