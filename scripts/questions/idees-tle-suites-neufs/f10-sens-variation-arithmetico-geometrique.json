@@ -1,0 +1,295 @@
+{
+	"id": "7830c983-43e8-4dd5-a2ac-b4a258bbbdaf",
+	"title": "Sens de variation d'une suite arithmético-géométrique",
+	"description": "uₙ₊₁ − uₙ en fonction de uₙ, puis sens de variation et convergence sachant uₙ ⩾ ℓ ou uₙ ⩽ ℓ (a = k/10)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:10*m+d}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$. On admet que, pour tout entier naturel $n$, $u_n\\geqslant{{eval:10*m}}$.\n\n1. Exprime $u_{n+1}-u_n$ en fonction de $u_n$.\n\n$u_{n+1}-u_n=?$\n\n2. Quelle conclusion est juste ?\n\n```choix\n- $(u_n)$ est décroissante, car $u_{n+1}-u_n\\leqslant0$ ; décroissante et minorée par ${{eval:10*m}}$, elle converge\n- $(u_n)$ est croissante, car $u_{n+1}-u_n\\geqslant0$ ; croissante et minorée par ${{eval:10*m}}$, elle converge\n- $(u_n)$ est décroissante, donc elle tend vers $-\\infty$\n- On ne peut pas conclure : le signe de $u_{n+1}-u_n$ change avec $n$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/10-1;d}}u_n{{eval:m*(10-k);+}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k/10;d}}u_n{{eval:m*(10-k);+}}",
+							"message": "Tu as écrit $u_{n + 1}$ : il reste à lui soustraire $u_n$.",
+							"label": "uₙ₊₁ au lieu de la différence"
+						},
+						{
+							"answer": "{{eval:k/10-1;d}}u_n",
+							"message": "Tu as oublié le terme constant de la relation.",
+							"label": "Terme constant oublié"
+						},
+						{
+							"answer": "{{eval:1-k/10;d}}u_n{{eval:-m*(10-k);+}}",
+							"message": "Tu as calculé $u_n - u_{n + 1}$, l'opposé de la différence demandée.",
+							"label": "Différence inversée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}-u_n={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}-u_n=\\textcolor{{{color:primary.0}}}{ {{eval:k/10-1;d}}u_n{{eval:m*(10-k);+}} }$.",
+					"Comme ${{eval:m*(10-k)}}={{eval:1-k/10;d}}\\times{{eval:10*m;()}}$, $u_{n+1}-u_n={{eval:k/10-1;d}}\\left(u_n-{{eval:10*m;()}}\\right)$ : un nombre négatif fois un nombre positif ou nul (car $u_n\\geqslant{{eval:10*m}}$), donc $u_{n+1}-u_n\\leqslant0$.",
+					"La suite est décroissante et minorée par ${{eval:10*m}}$ : elle converge. Les autres conclusions se trompent de signe, confondent monotone et « tend vers l'infini », ou oublient que le signe de $u_n-{{eval:10*m;()}}$ est connu."
+				]
+			},
+			"hint": "Remplace $u_{n+1}$ par ${{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$ et réduis ; pour le signe, compare $u_n$ à ${{eval:10*m}}$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:10*m-d}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$. On admet que, pour tout entier naturel $n$, $u_n\\leqslant{{eval:10*m}}$.\n\n1. Exprime $u_{n+1}-u_n$ en fonction de $u_n$.\n\n$u_{n+1}-u_n=?$\n\n2. Quelle conclusion est juste ?\n\n```choix\n- $(u_n)$ est croissante, car $u_{n+1}-u_n\\geqslant0$ ; croissante et majorée par ${{eval:10*m}}$, elle converge\n- $(u_n)$ est décroissante, car $u_{n+1}-u_n\\leqslant0$ ; décroissante et majorée par ${{eval:10*m}}$, elle converge\n- $(u_n)$ est croissante, donc elle tend vers $+\\infty$\n- On ne peut pas conclure : le signe de $u_{n+1}-u_n$ change avec $n$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/10-1;d}}u_n{{eval:m*(10-k);+}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k/10;d}}u_n{{eval:m*(10-k);+}}",
+							"message": "Tu as écrit $u_{n + 1}$ : il reste à lui soustraire $u_n$.",
+							"label": "uₙ₊₁ au lieu de la différence"
+						},
+						{
+							"answer": "{{eval:k/10-1;d}}u_n",
+							"message": "Tu as oublié le terme constant de la relation.",
+							"label": "Terme constant oublié"
+						},
+						{
+							"answer": "{{eval:1-k/10;d}}u_n{{eval:-m*(10-k);+}}",
+							"message": "Tu as calculé $u_n - u_{n + 1}$, l'opposé de la différence demandée.",
+							"label": "Différence inversée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}-u_n={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}-u_n=\\textcolor{{{color:primary.0}}}{ {{eval:k/10-1;d}}u_n{{eval:m*(10-k);+}} }$.",
+					"Comme ${{eval:m*(10-k)}}={{eval:1-k/10;d}}\\times{{eval:10*m;()}}$, $u_{n+1}-u_n={{eval:k/10-1;d}}\\left(u_n-{{eval:10*m;()}}\\right)$ : un nombre négatif fois un nombre négatif ou nul (car $u_n\\leqslant{{eval:10*m}}$), donc $u_{n+1}-u_n\\geqslant0$.",
+					"La suite est croissante et majorée par ${{eval:10*m}}$ : elle converge. Les autres conclusions se trompent de signe, confondent monotone et « tend vers l'infini », ou oublient que le signe de $u_n-{{eval:10*m;()}}$ est connu."
+				]
+			},
+			"hint": "Remplace $u_{n+1}$ par ${{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$ et réduis ; pour le signe, compare $u_n$ à ${{eval:10*m}}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : −0,2uₙ + 10, décroissante",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-0.2u_n+10", "0"]
+		},
+		{
+			"description": "a : ordre inversé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10-0.2u_n", "0"]
+		},
+		{
+			"description": "a : factorisée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-0.2(u_n-50)", "0"]
+		},
+		{
+			"description": "a : croissante choisie",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-0.2u_n+10", "1"]
+		},
+		{
+			"description": "a : tend vers −∞ choisi",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-0.2u_n+10", "2"]
+		},
+		{
+			"description": "a : uₙ₊₁ écrit",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $u_{n + 1}$ : il reste à lui soustraire $u_n$."
+			},
+			"answers": ["0.8u_n+10", "0"]
+		},
+		{
+			"description": "a : constante oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le terme constant de la relation."
+			},
+			"answers": ["-0.2u_n", "0"]
+		},
+		{
+			"description": "a : différence inversée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $u_n - u_{n + 1}$, l'opposé de la différence demandée."
+			},
+			"answers": ["0.2u_n-10", "0"]
+		},
+		{
+			"description": "b : −0,5uₙ − 10, croissante",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-2",
+				"d": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-0.5u_n-10", "0"]
+		},
+		{
+			"description": "b : fraction",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-2",
+				"d": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{1}{2}u_n-10", "0"]
+		},
+		{
+			"description": "b : décroissante choisie",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-2",
+				"d": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-0.5u_n-10", "1"]
+		},
+		{
+			"description": "b : uₙ₊₁ écrit",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-2",
+				"d": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $u_{n + 1}$ : il reste à lui soustraire $u_n$."
+			},
+			"answers": ["0.5u_n-10", "0"]
+		},
+		{
+			"description": "b : différence inversée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-2",
+				"d": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $u_n - u_{n + 1}$, l'opposé de la différence demandée."
+			},
+			"answers": ["0.5u_n+10", "0"]
+		}
+	]
+}

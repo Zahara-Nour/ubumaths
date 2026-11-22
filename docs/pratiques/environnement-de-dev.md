@@ -57,8 +57,8 @@ worktree frère ──► commit ──► push ──► PR ──► CI (quali
    commitlint (header ≤ 100 caractères, conventional commits). Fichiers suivis sous `data/` (dossier
    du `.gitignore`) : lint-staged affiche « paths are ignored » mais le commit passe ; les indexer par
    `git add -u data/…`.
-3. **Push** : le hook pre-push vérifie le formatage, `lint:fast`, les liens et renvois de la doc, et la
-   couverture doc.
+3. **Push** : le hook pre-push vérifie le formatage, `lint:fast`, les liens et renvois de la doc, la
+   couverture doc, « code modifié ⇒ doc modifiée » et le filtre de chemins de l'intégration.
 4. **PR → CI 100 % verte → `gh pr merge --merge` → branche supprimée.** Un merge sur `main` ne
    déploie **rien**.
 5. **Mise en prod** : `pnpm deploy:prod`, **uniquement sur demande de David** (ADR 0021). Il crée la
@@ -132,12 +132,12 @@ brouillon `.ts` non suivi d'une session y bloquait le push de doc de toutes les 
 | Hook         | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pre-commit` | `scripts/garde-deploy-en-cours.sh commit` : sur `main`, refuse le commit pendant un `deploy:prod` (verrou « deploy » tenu ; le script lui-même passe, par `DEPLOY_PROD_SOUS_VERROU`). Puis `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, laisse passer hors ligne). Puis `pnpm garde:donnees --staged` (`scripts/garde-donnees-sensibles.ts`) : refuse un secret ou une adresse courriel réelle dans les lignes indexées. Puis `pnpm lint-staged` (`.lintstagedrc.js`) : oxlint (`--fix` sur JS/TS, sans `--fix` sur `.svelte`) + prettier ; prettier seul sur json/md/css/html. Bloque sur une _erreur_ oxlint seulement. |
-| `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main) ; règle locale `nom-interdit` (`scripts/noms-interdits.cjs`, noms lus hors du dépôt : [git-workflow.md](git-workflow.md#noms-interdits)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `pre-push`   | `scripts/garde-deploy-en-cours.sh push` (push vers `main` refusé pendant un `deploy:prod`) → `pnpm check:migrations` (horodatages des migrations neuves contre `origin/main`) → `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).                                                                                                                                                                                                                                                              |
+| `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main) ; règles locales `nom-interdit` (`scripts/noms-interdits.cjs`, noms lus hors du dépôt : [git-workflow.md](git-workflow.md#noms-interdits)) et `mention-outil` (`scripts/mentions-outil.cjs` : signature de co-auteur, trailer et lien de session).                                                                                                                                                                                                                                                                                                                                                                            |
+| `pre-push`   | `scripts/garde-deploy-en-cours.sh push` (push vers `main` refusé pendant un `deploy:prod`) → `pnpm check:migrations` (horodatages des migrations neuves contre `origin/main`) → `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` → `docs:check-a-jour --depuis origin/main` (seulement si le push emporte le commit courant : pas pour une suppression de branche, un tag ou une autre branche) → `check:integration-paths`. Tous bloquants.                                                                                                                              |
 
 Le pre-push est le seul filet des commits de doc poussés directement sur `main`, que la CI de push
-ignore. « Code modifié ⇒ doc modifiée » n'y fait qu'avertir ; c'est la CI de la PR qui bloque
-(`docs:check-a-jour --depuis`, depuis le 2026-10-26) : modifier la doc, ou écrire la raison dans
+ignore. « Code modifié ⇒ doc modifiée » y bloque depuis le 2026-11-22, comme en CI depuis le 2026-10-26
+(`docs:check-a-jour --depuis` ; 18 des 29 CI rouges d'une semaine en venaient) : modifier la doc, ou écrire la raison dans
 un commit (`Doc-inchangée: …` / `Doc-reportée: …`). `--no-verify` n'a plus de raison d'être (le hook Claude le refuse).
 
 ⚠️ **Un worktree sans `pnpm install` n'a AUCUN hook** : husky s'installe par le script `prepare`.
@@ -194,7 +194,14 @@ les processus de test orphelins (même règle que la surveillance). À distance 
 « fais le ménage » à n'importe quelle session.
 
 **Tester depuis le MacBook ou l'iPhone (Tailscale)** : [tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md)
-(tunnel SSH, `--host`, Tailscale Serve ; cookie `Secure`, Supabase local, limiteur de connexion).
+(`pnpm lien` : lien HTTPS du tailnet et QR code en une commande ; tunnel SSH et `--host` en secours ;
+cookie `Secure`, Supabase local, limiteur de connexion).
+
+**Voir une page sans écran** : [voir-une-page.md](voir-une-page.md) (`pnpm voir <page>` : image au
+format iPhone, erreurs de console, requêtes en échec, dans `.captures/voir/`).
+
+**Retour envoyé depuis la page** : [signaler-depuis-la-page.md](signaler-depuis-la-page.md) (bouton
+« Signaler » du serveur de dev, lu par `pnpm retours` : note, page, écran, compte, erreurs de console).
 
 **Supabase local.** Deux piles pour tout le dépôt : celle de **dev** (ports 54321-54329, `project_id`
 `ubumaths`, verrou `supabase`) et celle de **test** (ports 5532x, `project_id` `ubumaths-test`, verrou
@@ -375,7 +382,22 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
   `pnpm deploy:prod` (`scripts/deploy-prod.sh`) : dernier commit de main vert → `pnpm release`
   (numéro, CHANGELOG, tag, via `commit-and-tag-version`) → CI de la version → avance rapide de
   `production`. Jamais de mise en prod automatique (ADR 0021). `--essai` montre ce qui partirait.
-- CI en cours sur main : `deploy:prod` l'attend sous le verrou « deploy » (au plus 25 min), au lieu
+- **Avant de créer la version** (et avec `--essai`) : le script lit les migrations jouées en prod
+  (`supabase migration list --linked`, lecture seule) et les compare à celles du commit à livrer.
+  Une migration pas encore jouée arrête tout, en nommant le fichier : le code livré pourrait dépendre
+  d'une colonne que la prod n'a pas. Une migration destructive, qui se joue après la mise en prod,
+  passe par `--migration-apres <horodatage>` (répétable ; un horodatage qui n'est pas en attente
+  arrête aussi) et le script rappelle de la jouer à la fin. Prod illisible : arrêt, rien n'est créé.
+  Migration jouée en prod mais absente du commit : signalée, la livraison continue. Aucune migration
+  lue dans le commit : arrêt aussi (le contrôle ne contrôlerait rien).
+- **Après le push de `production`**, verrou « deploy » rendu : le script attend le statut « Vercel »
+  du commit de version (au plus 20 min, `DEPLOY_PROD_ATTENTE_SITE_MAX`), puis que
+  `/_app/version.json` du site change (la nouvelle construction est servie), puis lance
+  `scripts/check-production-health.ts` (les pages du plan du site). Construction en échec, attente
+  dépassée ou page qui ne répond pas 200 : sortie en erreur, **sans retour arrière** (`production`
+  reste avancée, David décide). Mode maintenance actif (accueil en 503 avec la page de maintenance ; un 503 sans elle est une panne) : dit, pages non vérifiées,
+  pas une erreur. `pnpm deploy:prod --verifier` rejoue ce contrôle seul, sans rien livrer.
+- CI en cours sur main : `deploy:prod` l'attend sous le verrou « deploy » (au plus 45 min), au lieu
   de s'arrêter ; les sessions Claude ne mergent plus, la CI ne repart donc pas de zéro. `--essai`
   n'attend pas. `main` local qui diffère d'`origin/main` : arrêt, en nommant les commits en cause
   (le commit local d'une autre session ne peut plus être poussé sous le verrou).

@@ -223,11 +223,15 @@ describe('garde-deploy-en-cours — verrou libre', () => {
 
 describe('garde-deploy-en-cours — branchée dans les hooks husky', () => {
 	it('pre-commit et pre-push l’appellent en premier', () => {
-		const premiere = (f: string) =>
+		const commandes = (f: string) =>
 			readFileSync(join(HUSKY, f), 'utf8')
 				.split('\n')
-				.find((l) => l.trim() && !l.startsWith('#'));
-		expect(premiere('pre-commit')).toBe('bash scripts/garde-deploy-en-cours.sh commit');
-		expect(premiere('pre-push')).toBe('bash scripts/garde-deploy-en-cours.sh push');
+				.filter((l) => l.trim() && !l.startsWith('#'));
+		expect(commandes('pre-commit')[0]).toBe('bash scripts/garde-deploy-en-cours.sh commit');
+		// pre-push : les refs poussées sont lues une fois, puis rendues à la garde, avant tout le reste
+		expect(commandes('pre-push').slice(0, 2)).toEqual([
+			'refs_poussees="$(cat)"',
+			`printf '%s\\n' "$refs_poussees" | bash scripts/garde-deploy-en-cours.sh push || exit 1`
+		]);
 	});
 });

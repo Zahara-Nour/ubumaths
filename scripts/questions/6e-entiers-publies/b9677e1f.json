@@ -1,0 +1,385 @@
+{
+	"id": "b9677e1f-273e-4709-a870-96e49ff6d19e",
+	"title": "Chiffre des unités d'un produit",
+	"description": "Chiffre des unités d'un produit (un facteur à 2 chiffres, l'autre à 3), d'une somme ou d'une différence de deux nombres jusqu'à 999",
+	"grades": ["6"],
+	"level": 9,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			],
+			"statement": "Quel est le chiffre des unités du produit de ${{eval:b}}$ par ${{eval:d}}$ ?\n\nLe chiffre des unités est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:b1*10+a"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d1",
+					"expression": "1..9"
+				},
+				{
+					"name": "d2",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:d1*100+d2*10+c"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a*c"
+				},
+				{
+					"name": "g",
+					"expression": "eval:mod(f, 10)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le chiffre des unités d'un produit ne dépend que des chiffres des unités des facteurs : {{if:{{f}}>=10|${{a}}\\times {{c}} = {{eval:(f-g):10}}\\textcolor{{{color:primary.2}}}{{{g}}}$|${{a}}\\times {{c}} = \\textcolor{{{color:primary.2}}}{{{g}}}$}} "
+				]
+			}
+		},
+		{
+			"statement": "Quel est le chiffre des unités de la somme ${{x}} + {{y}}$ ?\n\nLe chiffre des unités est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "11..999"
+				},
+				{
+					"name": "y",
+					"expression": "11..999"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:mod(x,10)"
+				},
+				{
+					"name": "uy",
+					"expression": "eval:mod(y,10)"
+				},
+				{
+					"name": "s",
+					"expression": "eval:ux+uy"
+				},
+				{
+					"name": "g",
+					"expression": "eval:mod(s,10)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{s}}",
+							"message": "${{s}}$ n'est pas un chiffre : le chiffre des unités de ${{s}}$ est celui du résultat.",
+							"label": "Somme des unités non réduite"
+						},
+						{
+							"answer": "{{eval:mod(ux*uy,10)}}",
+							"message": "Tu as multiplié les chiffres des unités : ici, on additionne ${{ux}}$ et ${{uy}}$.",
+							"label": "Unités multipliées au lieu d'additionnées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le chiffre des unités d'une somme ne dépend que des chiffres des unités des termes : {{if:s>=10|${{ux}} + {{uy}} = {{s}}$, dont le chiffre des unités est $\\textcolor{{{color:primary.0}}}{{{g}}}$.|${{ux}} + {{uy}} = \\textcolor{{{color:primary.0}}}{{{g}}}$.}}",
+					"**Vérification.** ${{x}} + {{y}} = {{eval:x+y}}$."
+				]
+			},
+			"hint": "Le chiffre des unités du résultat ne dépend que des chiffres des unités des deux nombres."
+		},
+		{
+			"statement": "Quel est le chiffre des unités de la différence ${{x}} - {{y}}$ ?\n\nLe chiffre des unités est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "100..999"
+				},
+				{
+					"name": "y",
+					"expression": "11..999"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:mod(x,10)"
+				},
+				{
+					"name": "uy",
+					"expression": "eval:mod(y,10)"
+				},
+				{
+					"name": "g",
+					"expression": "eval:mod(ux-uy+10,10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:1-min(max(ux-uy+1,0),1)"
+				}
+			],
+			"conditions": ["y < x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:abs(ux-uy)}}",
+							"message": "Tu as ôté ${{ux}}$ de ${{uy}}$ : on ne peut pas ôter ${{uy}}$ de ${{ux}}$, il faut faire ${{eval:ux+10}} - {{uy}}$.",
+							"label": "Petit chiffre ôté du grand"
+						},
+						{
+							"answer": "{{eval:mod(ux+uy,10)}}",
+							"message": "Tu as additionné les chiffres des unités : ici, on soustrait.",
+							"label": "Unités additionnées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le chiffre des unités d'une différence ne dépend que des chiffres des unités des deux nombres.",
+					"{{if:r==1|On ne peut pas ôter ${{uy}}$ de ${{ux}}$ : on ôte ${{uy}}$ de ${{eval:ux+10}}$ (retenue), ${{eval:ux+10}} - {{uy}} = \\textcolor{{{color:primary.0}}}{{{g}}}$.|${{ux}} - {{uy}} = \\textcolor{{{color:primary.0}}}{{{g}}}$.}}",
+					"**Vérification.** ${{x}} - {{y}} = {{eval:x-y}}$."
+				]
+			},
+			"hint": "Le chiffre des unités du résultat ne dépend que des chiffres des unités des deux nombres."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"c": "6",
+				"b1": "9",
+				"d1": "3",
+				"d2": "8"
+			},
+			"description": "97×386 : 7×6 = 42 → 2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["42"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"c": "6",
+				"b1": "9",
+				"d1": "3",
+				"d2": "8"
+			},
+			"description": "Erreur : 42 (produit des unités)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"c": "6",
+				"b1": "9",
+				"d1": "3",
+				"d2": "8"
+			},
+			"description": "Erreur : 7+6 → 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b1": "1",
+				"d1": "4",
+				"d2": "4"
+			},
+			"description": "12×445 : 2×5 = 10 → 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b1": "1",
+				"d1": "1",
+				"d2": "0"
+			},
+			"description": "11×101 : 1×1 = 1",
+			"variationIndex": 0
+		},
+		{
+			"description": "487 + 356 : 7 + 6 = 13 → 3",
+			"variationIndex": 1,
+			"variables": {
+				"x": "487",
+				"y": "356"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur prévue : 13 (non réduit)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "487",
+				"y": "356"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$13$ n'est pas un chiffre : le chiffre des unités de $13$ est celui du résultat."
+			},
+			"answers": ["13"]
+		},
+		{
+			"description": "Erreur prévue : 2 (7 × 6 = 42)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "487",
+				"y": "356"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les chiffres des unités : ici, on additionne $7$ et $6$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "124 + 35 : 4 + 5 = 9",
+			"variationIndex": 1,
+			"variables": {
+				"x": "124",
+				"y": "35"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "250 + 40 : 0",
+			"variationIndex": 1,
+			"variables": {
+				"x": "250",
+				"y": "40"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "742 − 168 : 12 − 8 = 4",
+			"variationIndex": 2,
+			"variables": {
+				"x": "742",
+				"y": "168"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Erreur prévue : 6 (8 − 2)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "742",
+				"y": "168"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ôté $2$ de $8$ : on ne peut pas ôter $8$ de $2$, il faut faire $12 - 8$."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Erreur prévue : 0 (2 + 8)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "742",
+				"y": "168"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les chiffres des unités : ici, on soustrait."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "586 − 231 : 6 − 1 = 5 (sans retenue)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "586",
+				"y": "231"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Erreur prévue : 7 (6 + 1)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "586",
+				"y": "231"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné les chiffres des unités : ici, on soustrait."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "300 − 45 : 10 − 5 = 5",
+			"variationIndex": 2,
+			"variables": {
+				"x": "300",
+				"y": "45"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		}
+	]
+}

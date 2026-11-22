@@ -126,6 +126,26 @@
 			.catch((e) => console.debug('[Palotin] Chargement impossible :', e));
 	});
 
+	// Bouton « signaler » : serveur de dev seulement. `import.meta.env.DEV` est remplacé par
+	// `false` au build, qui n'embarque donc ni le bouton ni l'adresse de sa route
+	// (garde : étape « Bouton signaler absent du build » de la CI).
+	let SignalerButton = $state<Component<{
+		account: { email: string; role: string } | null;
+	}> | null>(null);
+	const feedbackAccount = $derived(
+		data.user?.email && data.profile?.role
+			? { email: data.user.email, role: data.profile.role }
+			: null
+	);
+	$effect(() => {
+		if (!browser || SignalerButton) return;
+		if (import.meta.env.DEV) {
+			import('#lib/components/dev/SignalerButton.svelte')
+				.then((module) => (SignalerButton = module.default))
+				.catch((e) => console.debug('[Signaler] Chargement impossible :', e));
+		}
+	});
+
 	// Initialize VIP card templates store from server data
 	$effect(() => {
 		if (data.vipCardTemplates && data.vipCardTemplates.length > 0) {
@@ -177,6 +197,11 @@
 <!-- Palotin de l'élève : il décide lui-même des pages où il apparaît -->
 {#if PalotinPresence && isStudent}
 	<PalotinPresence />
+{/if}
+
+<!-- Bouton « signaler » : serveur de dev seulement -->
+{#if SignalerButton}
+	<SignalerButton account={feedbackAccount} />
 {/if}
 
 <div class="flex h-screen flex-col">
