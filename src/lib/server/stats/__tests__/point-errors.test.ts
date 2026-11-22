@@ -47,6 +47,7 @@ function trace(overrides: Partial<SeriesTraceRow> = {}): SeriesTraceRow {
 		part_verdicts: [false],
 		created_at: '2026-11-13T10:00:00Z',
 		answered_as_choice: false,
+		with_help: false,
 		...overrides
 	};
 }
@@ -310,6 +311,7 @@ describe('getClassPointErrors', () => {
 		expect(called(query, 'gt', 'created_at', UPDATED_AT)).toBe(true);
 		const select = query.calls.find((c) => c.method === 'select');
 		expect(String(select?.args[0])).toContain('answered_as_choice');
+		expect(String(select?.args[0])).toContain('with_help');
 	});
 
 	it('contrôles : copies des élèves de la classe seulement, séances de contrôle seulement', async () => {
@@ -449,5 +451,17 @@ describe('getClassPointErrors', () => {
 		const [templates] = fake.on('question_templates');
 		expect(called(templates, 'in', 'id', [TEMPLATE])).toBe(true);
 		expect(JSON.stringify(templates.calls)).not.toContain(OTHER_TEMPLATE);
+	});
+});
+
+describe('seriesTraceAnswer — coup de pouce ouvert (idée 5)', () => {
+	it('le nom de l’élève porte « avec indice »', () => {
+		const row = seriesTraceAnswer(trace({ with_help: true }), 'Ada', replayAny);
+		expect(row?.studentName).toBe('Ada (avec indice)');
+	});
+
+	it('sans indice : le nom seul', () => {
+		const row = seriesTraceAnswer(trace(), 'Ada', replayAny);
+		expect(row?.studentName).toBe('Ada');
 	});
 });

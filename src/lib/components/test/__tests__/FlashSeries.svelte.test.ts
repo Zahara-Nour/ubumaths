@@ -321,6 +321,31 @@ describe('FlashSeries — traces', () => {
 		expect(record.mock.calls[1][0]).toMatchObject({ template_id: MODELES[1], success: false });
 	});
 
+	it('coup de pouce ouvert (idée 5) : la trace dit « avec indice », pas la carte suivante', async () => {
+		const record = vi.fn();
+		const instances = MODELES.map((templateId, index) => ({
+			...makeInstance(`Énoncé ${index}`),
+			templateId,
+			seed: index + 10,
+			hint: resolvedMarkdown(`Indice ${index}`)
+		}));
+		const { container } = await render(FlashSeries, {
+			instances,
+			isLoggedIn: true,
+			onComplete: vi.fn(),
+			onRestart: vi.fn(),
+			onBack: vi.fn(),
+			traceRecorder: { record, settle: async () => ({ failed: 0 }) }
+		});
+		flushSync();
+		await tick();
+		await click(container, 'Coup de pouce');
+		await answer(container, true);
+		expect(record.mock.calls[0][0]).toMatchObject({ success: true, with_help: true });
+		await answer(container, true);
+		expect(record.mock.calls[1][0]).not.toHaveProperty('with_help');
+	});
+
 	it('« Revoir » les cartes ratées : aucune nouvelle trace', async () => {
 		const { container, record } = await openTraced();
 		await answer(container, true);

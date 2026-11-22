@@ -9,6 +9,8 @@
  *   pour cohérence (idempotent) — sauf question de cours ou brouillon (Q113,
  *   `entersProgrammeDeck`).
  * - Pour les cartes custom (front/back libre), aucun skill_attempts n'est créé.
+ * - Coup de pouce ouvert (`withHelp`, idée 5 du chantier `idees-format`) :
+ *   « Réussi » devient « Difficile » pour FSRS (`helpedGrade`), trace « avec indice ».
  *
  * Spec : docs/archive/wip/srs-fsrs-spec-tdd.md §2
  */
@@ -24,6 +26,7 @@ import { ensureProgrammeDeckCard } from '#lib/server/srs/programme-deck.ts';
 import { entersProgrammeDeck } from '#lib/server/srs/programme-deck-rule.ts';
 import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
 import { recordSrsReviewAttempt } from '#lib/server/srs/srs-attempt.ts';
+import { helpedGrade } from '#lib/server/srs/answer-grade.ts';
 import { rewardFinishedReviewSession } from '#lib/server/srs/review-session-reward.ts';
 import { recordReviewSessionCard } from '#lib/server/srs/review-session-stats.ts';
 import type { BuddyXpFromExerciseResult } from '#lib/server/buddy-xp-service.ts';
@@ -44,6 +47,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const body = validation.data;
+		// Coup de pouce ouvert : demi-réussite (« Difficile »), jamais une note plus haute
+		const grade = helpedGrade(body.grade, body.withHelp);
 
 		// Récupération carte + deck (auth ownership)
 		// Refactor 2026-06-10 (code-quality #2.3) : nested select sur
@@ -98,7 +103,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				user.id,
 				cardReferenceType,
 				cardReferenceId,
-				body.grade,
+				grade,
 				body.timeSpent
 			);
 		} catch (upsertError) {
@@ -114,7 +119,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				supabase,
 				user.id,
 				card.template_id,
-				body.grade
+				grade,
+				body.withHelp
 			);
 
 			// Non bloquant : la review FSRS reste enregistrée.
@@ -165,6 +171,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
+		// Note choisie par l'élève : « Réussi » avec indice compte réussi dans la séance
 		const isCorrect = body.grade >= 3;
 		const timeSpent = body.timeSpent || 0;
 

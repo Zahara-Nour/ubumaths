@@ -365,3 +365,47 @@ describe('buildSeriesTrace — répondu en QCM (idée 4, PR 3)', () => {
 		expect(trace).not.toHaveProperty('answered_as_choice');
 	});
 });
+
+describe('buildSeriesTrace — coup de pouce ouvert (idée 5)', () => {
+	it('Saisie : la trace dit « avec indice »', () => {
+		const trace = buildSeriesTrace({
+			place: 'typing',
+			instance: instance(),
+			answer: reponse(['4', '6'], true),
+			withHelp: true
+		});
+		expect(trace?.with_help).toBe(true);
+	});
+
+	it('Flash-cards : la trace dit « avec indice »', () => {
+		const trace = buildSeriesTrace({
+			place: 'flash_cards',
+			instance: instance(),
+			answer: reponse('knew', true),
+			withHelp: true
+		});
+		expect(trace?.with_help).toBe(true);
+	});
+
+	it('Saisie laissée sans réponse, indice ouvert : la trace le dit aussi', () => {
+		const trace = buildSeriesTrace({ place: 'typing', instance: instance(), withHelp: true });
+		expect(trace).toMatchObject({ success: false, with_help: true });
+	});
+
+	it.each(['mock_test', 'number_race'] as const)(
+		'%s : jamais « avec indice » (pas de bouton, le serveur refuserait)',
+		(place) => {
+			const trace = buildSeriesTrace({ place, instance: instance(), withHelp: true });
+			expect(trace).not.toHaveProperty('with_help');
+		}
+	);
+
+	it('indice non ouvert : pas de clé', () => {
+		const trace = buildSeriesTrace({
+			place: 'typing',
+			instance: instance(),
+			answer: reponse(['4', '6'], true)
+		});
+		expect(trace).not.toHaveProperty('with_help');
+	});
+});

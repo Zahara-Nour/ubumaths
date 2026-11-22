@@ -25,6 +25,8 @@
 	- traceRecorder: élève connecté → une trace par question du premier tour,
 	  envoyée à « Valider » (ou à l'auto-évaluation d'une carte de cours), lieu
 	  `typing` (ADR 0038) ; `null` → rien. « Revoir » n'en laisse pas.
+	  Coup de pouce ouvert (idée 5 du chantier `idees-format`) : la trace dit
+	  « avec indice » (demi-réussite pour la révision espacée).
 	- buddyGain, mathouNews : affichés sur le bilan (`null` → rien)
 -->
 
@@ -91,6 +93,8 @@
 	let isFirstRound = $state(true);
 	// Force une nouvelle FlashCard (au recto, vide) à chaque question, même si elle revient
 	let cardKey = $state(0);
+	// Coup de pouce ouvert sur la question affichée (idée 5)
+	let helped = $state(false);
 
 	let seriesStart = Date.now();
 	let cardStart = Date.now();
@@ -123,7 +127,7 @@
 	/** Trace de la question (premier tour seulement), envoyée tout de suite */
 	function recordTrace(instance: QuestionInstance, answer: AnswerData) {
 		if (!isFirstRound || !traceRecorder) return;
-		const trace = buildSeriesTrace({ place: 'typing', instance, answer });
+		const trace = buildSeriesTrace({ place: 'typing', instance, answer, withHelp: helped });
 		if (trace) traceRecorder.record(trace);
 	}
 
@@ -187,6 +191,7 @@
 	function showNextCard() {
 		currentAnswer = null;
 		revealed = false;
+		helped = false;
 		cardKey += 1;
 		cardStart = Date.now();
 	}
@@ -290,6 +295,8 @@
 						flipOnSubmit
 						flippable={currentAnswer !== null}
 						size="lg"
+						showHint
+						onHintOpen={() => (helped = true)}
 						onAnswerSubmit={handleAnswerSubmit}
 					/>
 				{/if}

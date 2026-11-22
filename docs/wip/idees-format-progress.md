@@ -6,21 +6,19 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2991._
+_Mis à jour le 2026-11-22, PR élève et prof de l'idée 5 ouverte._
 
-- **État** : idées 1 à 4 terminées (pas en prod). Idée 5 (coup de pouce) : PR moteur et éditeur
-  mergée (#2991 : `hint` / `hintFromFirstStep` par variation, refus d'un indice qui donne la
-  réponse, `instance.hint`, carte de l'éditeur). Trace = `with_help` (pas de migration).
-- **Prochaine action** : PR élève et prof, nouvelle branche : bouton « Coup de pouce » en Saisie,
-  Flash-cards et révision (jamais en évaluation, Contrôle blanc, course aux nombres ni combat) ;
-  rendu comme les étapes de correction (`{{if:…}}` est rendu côté navigateur) ; trace `with_help` ;
-  « Difficile » au lieu de « Bien » ; bilan « avec indice ».
+- **État** : idées 1 à 4 terminées (pas en prod). Idée 5 : PR moteur mergée (#2991) ; PR élève et
+  prof (bouton « Coup de pouce », trace `with_help`, « Difficile », « (avec indice) ») ouverte.
+- **Prochaine action** : merger la PR élève et prof, puis revue du lot « nombres et calculs » de
+  Seconde (avec des indices dans les modèles).
 - **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
-  en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2).
+  en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2) ; essai du coup de pouce
+  (aucun modèle n'a d'indice : en écrire un dans l'éditeur).
 - **Pièges en cours** : `expectedErrors` et `hint` refusés ou retirés en prod avant le
   `deploy:prod` qui livre #2962 et #2991 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
-- **Worktree / branche** : aucun pour l'idée 5 (à créer) ; `ubumaths-wt-idees-format` gardé pour
-  l'essai de la case « En QCM » (serveur 5176).
+- **Worktree / branche** : `ubumaths-wt-idees-format-indice-eleve` / `feat/idees-format-indice-eleve` ;
+  `ubumaths-wt-idees-format` gardé pour l'essai de la case « En QCM » (serveur 5176).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -332,6 +330,27 @@ Branche `feat/idees-format-indice-moteur` (worktree `ubumaths-wt-idees-format-in
   Laissé : une variable qui vaut la réponse (`{{b2}}`) ne se voit pas (dit dans la doc) ; le texte
   écrit revient si on décoche la case. Note pour la PR élève : `{{if:…}}` est rendu côté navigateur,
   l'indice doit passer par le même rendu que les étapes de correction.
+
+## Idée 5, PR élève et prof — bouton, trace, demi-réussite, « avec indice » (2026-11-22)
+
+Branche `feat/idees-format-indice-eleve` (worktree `ubumaths-wt-idees-format-indice-eleve`).
+
+- Carte (`FlashCard`, `showHint` / `onHintOpen`) : bouton « Coup de pouce » sous l'énoncé si la
+  variation a un indice (jamais carte de cours) ; ouvert pour de bon, rattaché à l'instance ; rendu
+  `MarkdownRenderer` de la version détaillée (`splitCorrectionDetail`) ; bouton retiré après
+  « Valider » s'il n'a pas servi. `showHint` passé par Saisie, Flash-cards et `ReviewSession` (paquet
+  et chapitre) seulement.
+- Trace : `buildSeriesTrace({ withHelp })` → `with_help` en `typing` / `flash_cards` ; Zod de
+  `api/skill-attempts` refuse `with_help` en `mock_test` / `number_race`. Révision : `withHelp` dans
+  `submitRequest`, schémas `submitReviewSchema` / `chapterReviewSubmitSchema` (défaut faux).
+- Note : `answerGrade(success, enQcm || avecIndice)` ; `helpedGrade` en révision (3-4 → 2, 1 reste 1) ;
+  `recordSrsReviewAttempt(…, withHelp)`. Statistiques de séance de révision : note choisie par l'élève.
+- Prof : `point-errors.ts` lit `with_help`, nom suivi de « (avec indice) ».
+- Tests : `answer-grade` (+6), Zod (+5), `series-trace` (+5), `review-source` (+2), `point-errors` (+3),
+  routes de révision (`coup-de-pouce.test.ts` ×2, 7), `FlashCard-coup-de-pouce` (5, 2 rouges avant),
+  Saisie / Flash-cards / révision (+3, rouges sans le branchement), intégration
+  `skill-attempts-endpoint` (+1).
+- Doc : `questions.md`, `srs.md` (note ⁵), `analytique-prof.md`.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 

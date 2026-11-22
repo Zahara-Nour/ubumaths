@@ -235,6 +235,25 @@ describe('TypingSeries — traces (N9, N10, N11)', () => {
 	});
 });
 
+describe('TypingSeries — coup de pouce (idée 5)', () => {
+	it('indice ouvert : la trace dit « avec indice » ; la question suivante repart sans', async () => {
+		const withHint = (index: number) => ({
+			...question(index),
+			hint: resolvedMarkdown(`Indice ${index + 1}`)
+		});
+		const { container, record } = await open([withHint(0), withHint(1)]);
+		await click(container, 'Coup de pouce');
+		expect(container.querySelector('[data-testid="hint"]')?.textContent).toContain('Indice 1');
+		await answerAndNext(container, '4');
+		expect(record.mock.calls[0][0]).toMatchObject({ success: true, with_help: true });
+
+		// Question suivante : indice fermé, trace sans indice
+		expect(container.querySelector('[data-testid="hint"]')).toBeNull();
+		await answerAndNext(container, '4');
+		expect(record.mock.calls[1][0]).not.toHaveProperty('with_help');
+	});
+});
+
 describe('TypingSeries — fin de série', () => {
 	it('bilan « k questions réussies sur n », onComplete appelé une fois, forme typing', async () => {
 		const { container, onComplete } = await open([question(0), question(1), courseCard(2)]);

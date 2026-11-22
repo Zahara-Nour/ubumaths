@@ -187,3 +187,22 @@ describe('skillAttemptInputSchema — répondu en QCM (idée 4, PR 3)', () => {
 		refuse({ place: 'typing', answered_as_choice: 'oui' });
 	});
 });
+
+describe('skillAttemptInputSchema — coup de pouce (idée 5)', () => {
+	it.each(['typing', 'flash_cards'])('accepte « avec indice » en %s', (place) => {
+		const parsed = skillAttemptInputSchema.safeParse(corps({ place, with_help: true }));
+		expect(parsed.success && parsed.data.with_help).toBe(true);
+	});
+
+	it.each(['mock_test', 'number_race'])(
+		'refuse « avec indice » en %s (aucun bouton coup de pouce)',
+		(place) => {
+			refuse({ place, with_help: true });
+		}
+	);
+
+	it('absent → faux', () => {
+		const parsed = skillAttemptInputSchema.safeParse(corps({ place: 'mock_test' }));
+		expect(parsed.success && parsed.data.with_help).toBe(false);
+	});
+});

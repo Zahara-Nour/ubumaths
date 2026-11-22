@@ -179,9 +179,9 @@ s'affichait « toutes capacités ».
 
 | Chemin                                          | Note FSRS                                                 | Trace `skill_attempts`                 |
 | ----------------------------------------------- | --------------------------------------------------------- | -------------------------------------- |
-| Question interactive (`api/skill-attempts`)     | juste → Good (3), faux → Again (1) (⁴)                    | `success`, source `auto`               |
+| Question interactive (`api/skill-attempts`)     | juste → Good (3), faux → Again (1) (⁴) (⁵)                | `success`, source `auto`               |
 | Carte de cours, lieu `flash_cards` (même route) | idem, **meilleur du jour**                                | source `student_self` (toutes gardées) |
-| Révision d'un paquet / d'un chapitre            | Réussi → Good (3), Pas réussi → Again (1)                 | `student_self`, lieu `review` (¹)      |
+| Révision d'un paquet / d'un chapitre            | Réussi → Good (3), Pas réussi → Again (1) (⁵)             | `student_self`, lieu `review` (¹)      |
 | Évaluation (`recordSeriesReviews`)              | juste → Good, faux → Again ; carte = meilleur du jour (⁴) | `auto`, lieu `evaluation` (²)          |
 | Combat de la Descente (`recordCombatAnswer`)    | juste → Good (3), faux → Again (1)                        | `auto`, lieu `descente` (³)            |
 
@@ -206,6 +206,16 @@ trace porte `answered_as_choice` (CHECK : source `auto`, lieux `typing`, `mock_t
 en contrôle, le serveur le lit sur la copie figée. `success` reste vrai : le suivi des points du
 programme compte la réussite (décision Q1 du 2026-11-22).
 
+(⁵) **Coup de pouce** ouvert (chantier `idees-format`, idée 5, [questions.md](questions.md)) : la
+trace porte `with_help` (colonne prévue en juin, jamais écrite à vrai avant ; décision 58 : marqueur
+sans effet sur l'acquisition). En série (`api/skill-attempts`, Saisie et Flash-cards seulement : le
+Zod refuse `with_help` en `mock_test` et `number_race`, qui n'ont pas de bouton), réussite → **Hard
+(2)** (`answerGrade(success, enQcm || avecIndice)`), Flash-cards comprises (« Réussi » après
+l'indice). En révision (`api/srs/review/submit`, `api/srs/chapters/[id]/submit`, champ `withHelp`,
+défaut faux), la note choisie passe par `helpedGrade` : 3 ou 4 → 2, 1 reste 1 ; trace `with_help`
+(`recordSrsReviewAttempt`). Les statistiques de séance de révision comptent la note choisie par
+l'élève (« Réussi » reste réussi). Le navigateur le déclare, même limite que « Réussi ».
+
 **Contenu d'une trace posée par `api/skill-attempts`** (ADR 0038) : le **lieu** est exigé
 (`flash_cards`, `typing` = Saisie, `mock_test` = Contrôle blanc, `number_race` = Course aux nombres ;
 jamais `evaluation`, `review` ni `descente` — combat de la Descente de la Vistule —, écrits par le
@@ -214,7 +224,7 @@ réponse, durée allouée et fin (`validated` / `timeout`) seulement en formes c
 (`mock_test`, `number_race`) ; réponse case par case (`answer_parts`) et verdict par case
 (`part_verdicts`) seulement là où l'on tape (`typing`, `mock_test`, `number_race`), autant de verdicts
 que de cases, aucune case → NULL ; « répondu en QCM » (`answered_as_choice`, défaut faux) aux mêmes lieux
-seulement. Le Zod (`skillAttemptInputSchema`) reprend les CHECK de la base
+seulement ; « avec indice » (`with_help`, défaut faux) en `typing` et `flash_cards` seulement (⁵). Le Zod (`skillAttemptInputSchema`) reprend les CHECK de la base
 (50 cases, 2 000 caractères par case, 10 000 en tout) : un corps hors règle rend 400, pas 500.
 `answer_parts` est du texte libre de mineur, toujours affiché échappé.
 

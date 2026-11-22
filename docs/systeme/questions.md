@@ -1551,8 +1551,19 @@ l'indice résolu comme le corrigé sur sa **propre** source de hasard (`hintSeed
 prévues) : aucun autre tirage ne bouge ; résolu en vide, pas d'indice. La question publique de l'évaluation ne le porte pas (liste
 blanche). Formulaire : carte « Coup de pouce » sous la correction (case « première étape », sinon le
 texte ; la case l'emporte à l'enregistrement), copiée par la duplication, comptée dans « Modifications non sauvegardées ». Tests :
-`coup-de-pouce.test.ts`, `QuestionTemplateForm-coup-de-pouce.svelte.test.ts`. L'affichage à l'élève,
-la trace (`with_help`) et la demi-réussite viennent avec la PR suivante.
+`coup-de-pouce.test.ts`, `QuestionTemplateForm-coup-de-pouce.svelte.test.ts`.
+
+Côté élève (`FlashCard`, prop `showHint`) : bouton « Coup de pouce » sous l'énoncé, seulement si la
+variation a un indice (jamais sur une carte de cours) et si la forme le permet : **Saisie**,
+**Flash-cards** et **révision** (paquet Programme ou paquet d'un chapitre, `ReviewSession`). Jamais en
+évaluation, Contrôle blanc, Course aux nombres, En classe ni combat (ces formes ne passent pas
+`showHint`). Fermé au départ ; un clic l'ouvre pour de bon (rattaché à l'instance, la question
+suivante repart fermée) ; le chrono continue. Rendu par `MarkdownRenderer`, version détaillée
+(`splitCorrectionDetail`), comme une étape de correction (`{{if:…}}` compris). Le bouton disparaît
+après « Valider » s'il n'a pas été ouvert. `onHintOpen` prévient la forme : trace « avec indice »
+(`with_help`) et demi-réussite pour la révision espacée ([srs.md](srs.md)) ; le professeur voit
+« (avec indice) » après le nom dans les erreurs d'un point ([analytique-prof.md](analytique-prof.md)).
+Tests : `FlashCard-coup-de-pouce.svelte.test.ts`, les tests des trois formes.
 
 ### 8. Publication
 

@@ -11,6 +11,10 @@
  * des points du programme liés au modèle (ADR 0016 : les traces auto-évaluées
  * alimentent le référentiel ; Q169 a pour le chapitre).
  *
+ * Coup de pouce ouvert (idée 5 du chantier `idees-format`) : la note reçue est
+ * déjà ramenée à « Difficile » par l'appelant (`helpedGrade`) ; la trace dit
+ * « avec indice » (`with_help`).
+ *
  * Toutes les traces sont gardées, même quand la planification FSRS ne retient
  * que le meilleur résultat du jour (ADR 0016).
  *
@@ -31,7 +35,8 @@ export async function recordSrsReviewAttempt(
 	supabase: SupabaseClient<Database>,
 	studentId: string,
 	templateId: string,
-	grade: Grade
+	grade: Grade,
+	withHelp = false
 ): Promise<boolean> {
 	const { error } = await supabase.from('skill_attempts').insert({
 		student_id: studentId,
@@ -40,7 +45,7 @@ export async function recordSrsReviewAttempt(
 		grade,
 		source: 'student_self',
 		place: 'review',
-		with_help: false
+		with_help: withHelp
 	});
 	if (error) {
 		logger.error('[srs] skill_attempts INSERT failed:', error);
