@@ -11,6 +11,8 @@
 	- Fetches due cards from API
 	- Displays cards one by one using FlashCard
 	- Shows « Pas réussi / Réussi » after flip (FSRS Again / Good)
+	- Coup de pouce (idée 5 du chantier `idees-format`) : ouvert, « Réussi » devient
+	  « Difficile » côté serveur, trace « avec indice »
 	- Submits reviews and updates stats
 	- Progress tracking
 	- Completion summary
@@ -102,6 +104,8 @@
 	let wrongCount = $state(0);
 	let sessionStartTime = $state<number>(0);
 	let cardStartTime = $state<number>(0);
+	// Coup de pouce ouvert sur la carte affichée (idée 5)
+	let helped = $state(false);
 
 	// Derived state
 	const currentCard = $derived(cards[currentIndex]);
@@ -199,7 +203,7 @@
 		}
 
 		try {
-			const request = submitRequest(source, currentCard, grade, timeSpent);
+			const request = submitRequest(source, currentCard, grade, timeSpent, helped);
 			const response = await fetch(request.url, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -280,6 +284,7 @@
 			// Next card
 			currentIndex++;
 			isFlipped = false;
+			helped = false;
 			isSubmitting = false;
 			cardStartTime = Date.now();
 		}
@@ -493,6 +498,8 @@
 						interactive={false}
 						instance={currentCard.instance}
 						size="lg"
+						showHint
+						onHintOpen={() => (helped = true)}
 						onFlip={handleFlip}
 					/>
 				{:else}

@@ -59,6 +59,15 @@ describe('submitRequest', () => {
 			body: { templateId: 'k1', grade: 1, timeSpent: 5 }
 		});
 	});
+
+	it('coup de pouce ouvert : withHelp dans le corps (paquet et chapitre)', () => {
+		expect(submitRequest(deck, card, 3, 12, true).body).toMatchObject({ withHelp: true });
+		expect(submitRequest(chapter, card, 3, 12, true).body).toMatchObject({ withHelp: true });
+	});
+
+	it('sans indice : pas de clé', () => {
+		expect(submitRequest(deck, card, 3, 12).body).not.toHaveProperty('withHelp');
+	});
 });
 
 describe('toSessionPayload', () => {

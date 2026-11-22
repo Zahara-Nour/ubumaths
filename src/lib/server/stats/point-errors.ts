@@ -17,7 +17,9 @@
  *   ratée = faux ; verdict par case = celui stocké (`part_verdicts`), jamais
  *   recalculé. Trace sans réponse tapée = sans réponse. Trace « répondu en QCM »
  *   (idée 4 du chantier `idees-format`) : rejouée en QCM (`asChoiceInstance`,
- *   même graine, mêmes choix) ; un tirage qui ne se pose plus en QCM est écarté. Les
+ *   même graine, mêmes choix) ; un tirage qui ne se pose plus en QCM est écarté.
+ *   Trace « avec indice » (idée 5, coup de pouce ouvert) : le nom de l'élève le
+ *   dit (« Ada (avec indice) »). Les
  *   `POINT_ERRORS_TRACE_CAP` traces les plus récentes par modèle seulement.
  *
  * Anciennes séries libres (`test_answers` d'une séance sans contrôle) : exclues
@@ -75,6 +77,8 @@ export interface SeriesTraceRow {
 	created_at: string;
 	/** Posée en QCM depuis ses erreurs prévues (idée 4) : rejouée en QCM */
 	answered_as_choice: boolean;
+	/** Coup de pouce ouvert (idée 5) : « avec indice » après le nom */
+	with_help: boolean;
 }
 
 interface ControlSessionRow extends SessionRow {
@@ -143,12 +147,14 @@ export function seriesTraceAnswer(
 	const instance = trace.answered_as_choice ? asChoiceInstance(replayed, trace.seed) : replayed;
 	if (!instance) return null;
 	const parts = trace.answer_parts;
+	// Idée 5 : le professeur voit qui avait ouvert le coup de pouce
+	const name = trace.with_help ? `${studentName} (avec indice)` : studentName;
 	// Rien de tapé : sans réponse, comme une question de contrôle laissée vide
 	if (!parts || parts.length === 0) {
-		return { studentName, instance, userAnswer: null, status: null };
+		return { studentName: name, instance, userAnswer: null, status: null };
 	}
 	return {
-		studentName,
+		studentName: name,
 		instance,
 		userAnswer: { value: parts },
 		status: trace.success ? 'correct' : 'incorrect',
@@ -315,7 +321,7 @@ async function readSeriesTraces(
 		let query = supabase
 			.from('skill_attempts')
 			.select(
-				'id, student_id, template_id, success, seed, answer_parts, part_verdicts, created_at, answered_as_choice'
+				'id, student_id, template_id, success, seed, answer_parts, part_verdicts, created_at, answered_as_choice, with_help'
 			)
 			.eq('template_id', template.id)
 			.in('student_id', batch)

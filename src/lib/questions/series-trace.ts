@@ -14,6 +14,8 @@
  *   durée pour une question laissée par « Terminer » (décision du 2026-11-11) ;
  * - formes où l'on tape : « répondu en QCM » quand la question a été posée en
  *   QCM depuis ses erreurs prévues (idée 4 du chantier `idees-format`) ;
+ * - Saisie et Flash-cards : « avec indice » quand l'élève a ouvert le coup de
+ *   pouce (idée 5), réponse donnée ou non ;
  * - formes où l'on tape : réponse case par case et verdict par case (juste en
  *   valeur : le vert ou l'ambre de la carte). Figure à compléter : son verdict,
  *   jamais le tracé (case vide). Aucune case → rien (la base refuse `[]`).
@@ -63,6 +65,8 @@ export interface SeriesTraceBody {
 	part_verdicts?: boolean[];
 	/** Question posée en QCM depuis ses erreurs prévues (idée 4) ; absent : en saisie */
 	answered_as_choice?: true;
+	/** Coup de pouce ouvert (idée 5) ; absent : sans indice */
+	with_help?: true;
 }
 
 export interface TraceRecorder {
@@ -78,6 +82,8 @@ const MAX_SEED = 2_147_483_647;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Lieux où l'élève tape sa réponse */
 const ANSWERED_PLACES: readonly SeriesTracePlace[] = ['typing', 'mock_test', 'number_race'];
+/** Lieux qui montrent le bouton « Coup de pouce » (idée 5) */
+const HINT_PLACES: readonly SeriesTracePlace[] = ['typing', 'flash_cards'];
 /** Formes chronométrées : durées et fin (N11) ; jamais Flash-cards ni Saisie */
 const TIMED_PLACES: readonly SeriesTracePlace[] = ['mock_test', 'number_race'];
 /** Attentes avant chaque nouvel essai (deux essais de plus) */
@@ -119,6 +125,8 @@ export function buildSeriesTrace(input: {
 	instance: QuestionInstance;
 	answer?: AnswerData;
 	timing?: SeriesTraceTiming;
+	/** Coup de pouce ouvert sur cette question (idée 5) */
+	withHelp?: boolean;
 }): SeriesTraceBody | null {
 	const { place, instance, answer, timing } = input;
 	if (!UUID.test(instance.templateId ?? '')) return null;
@@ -141,6 +149,10 @@ export function buildSeriesTrace(input: {
 	// Idée 4 : posée en QCM, réponse donnée ou non (jamais en Flash-cards)
 	if (ANSWERED_PLACES.includes(place) && isAnsweredAsChoice(instance)) {
 		trace.answered_as_choice = true;
+	}
+	// Idée 5 : indice ouvert, seulement là où le bouton existe (le serveur refuse ailleurs)
+	if (input.withHelp && HINT_PLACES.includes(place)) {
+		trace.with_help = true;
 	}
 	if (ANSWERED_PLACES.includes(place) && getQuestionType(instance) !== 'course_card') {
 		const typed = answerOf(instance, answer);
