@@ -96,6 +96,38 @@ branches.
   suivante qui touche au schéma rougit alors : `pnpm db:types` et commit.
 - **Le fichier dépend de la version de la CLI Supabase** (son générateur) et de prettier, toutes
   deux épinglées : une montée de version de la CLI peut le changer, et sa PR le régénère.
+
+### La prod est-elle la base que le dépôt décrit ?
+
+`database.ts` décrit les migrations du dépôt, pas la prod. Les migrations peuvent être toutes
+« jouées » et la prod différer quand même : table retouchée au Dashboard, migration modifiée après
+avoir été jouée. **`pnpm db:types:prod`** (`scripts/db-types/prod.ts`) le vérifie : il demande les
+types de la prod à Supabase (`supabase gen types --linked`, **lecture seule**, rien n'est écrit) et
+les compare au `database.ts` du dossier, ou d'un commit (`--commit <sha>`).
+
+- **Où** : sur le Mac mini, depuis le dépôt principal (le projet lié y est déclaré). GitHub n'a aucun
+  accès à la prod, et n'en aura pas. `pnpm deploy:prod` le joue avant de créer la version, sur le
+  commit à livrer : un écart arrête tout.
+- **Ce qui est comparé** : le schéma `public` — colonnes (type, obligatoire ou non), clés étrangères,
+  vues, fonctions (arguments, retour, surcharges), enums, types composites. Pas les policies, ni les
+  triggers, ni le corps des fonctions : les types ne les décrivent pas.
+- **Deux générateurs, deux écritures** : celui de la prod n'écrit pas comme celui de la CLI locale.
+  On ne compare donc pas deux textes mais deux listes « chemin → type » lues dans l'arbre
+  syntaxique (`scripts/db-types/prod-depot.ts`), une fois effacées les différences de forme connues :
+  `ComputedFields` (local seulement), `NonNullable<Json>` = `Json`, `Record<PropertyKey, never>` =
+  `never`, colonne calculée interdite à l'écriture (`never` en local).
+- **Sortie 1** : écart (les premiers de chaque famille sont nommés), ou types de la prod illisibles.
+  Un fichier où l'on ne retrouve ni table ni fonction n'est jamais pris pour « aucun écart ».
+- **Si le générateur de la prod change de forme** : le contrôle crie à l'écart sur toute la base,
+  ou dit « forme non reconnue ». `pnpm deploy:prod --sans-controle-types` livre quand même ;
+  ajouter ensuite la nouvelle différence de forme dans `prod-depot.ts`, avec son test.
+- **Ce que les types ne disent pas** : l'ordre des valeurs d'un enum, et le caractère calculé
+  (`GENERATED`) d'une colonne — la prod l'écrit comme une colonne ordinaire à valeur par défaut. Une
+  forme que le contrôle ne connaît pas (signature d'index, rubrique nouvelle) est refusée, pas
+  ignorée.
+- **Avec `--migration-apres`, `deploy:prod` ne fait pas ce contrôle** (il le dit) : la prod garde ce
+  que la migration retire. Le rejouer à la main après `pnpm db:migrate`.
+- Sur une branche qui apporte une migration pas encore jouée, l'écart est attendu.
 - **Plus strict que l'ancien fichier (lu en prod jusqu'au 2026-11-22)** : une colonne jsonb
   `NOT NULL` est typée `NonNullable<Json>` (alias `JsonRequis`, `database-helpers.ts`), et une
   colonne calculée par la base (`slug`, `search_vector`…) ne s'écrit plus. `toJson(valeur)` rend

@@ -74,6 +74,7 @@
 		"menage": "bash scripts/menage-machine.sh",
 		"db:types": "bash scripts/pile-de-test.sh lancer tsx scripts/db-types/index.ts",
 		"db:types:verifier": "bash scripts/pile-de-test.sh lancer tsx scripts/db-types/index.ts --verifier",
+		"db:types:prod": "tsx scripts/db-types/prod.ts",
 		"db:doc": "tsx scripts/generate-db-doc.ts",
 		"check:barrels": "tsx scripts/check-barrel-exports.ts",
 		"check:await-render": "tsx scripts/check-await-render.ts",

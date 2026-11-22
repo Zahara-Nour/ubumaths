@@ -418,6 +418,11 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
   arrête aussi) et le script rappelle de la jouer à la fin. Prod illisible : arrêt, rien n'est créé.
   Migration jouée en prod mais absente du commit : signalée, la livraison continue. Aucune migration
   lue dans le commit : arrêt aussi (le contrôle ne contrôlerait rien).
+- **Puis « prod = dépôt »** (`scripts/db-types/prod.ts --commit <sha>`, lecture seule) : le schéma
+  `public` de la prod doit être celui du `database.ts` du commit à livrer. Écart ou types de la prod
+  illisibles : arrêt, rien n'est créé. Sauté, en le disant, avec `--migration-apres` (la prod garde
+  ce que la migration retire) et avec `--sans-controle-types` (sortie de secours si le générateur
+  de Supabase change de forme). Détail : [base-de-donnees.md](base-de-donnees.md#la-prod-est-elle-la-base-que-le-dépôt-décrit-).
 - **Après le push de `production`**, verrou « deploy » rendu : le script attend le statut « Vercel »
   du commit de version (au plus 20 min, `DEPLOY_PROD_ATTENTE_SITE_MAX`), puis que
   `/_app/version.json` du site change (la nouvelle construction est servie), puis lance

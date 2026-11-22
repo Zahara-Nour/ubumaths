@@ -19,6 +19,10 @@
 # du commit à livrer à celles jouées en prod, en lecture seule : une migration
 # pas encore jouée arrête tout, sauf celles nommées par `--migration-apres`
 # (destructive : elle se joue après la mise en prod, cf. CLAUDE.md § Migrations).
+# Puis il compare le schéma de la prod au `database.ts` du commit à livrer
+# (« prod = dépôt », scripts/db-types/prod.ts, lecture seule) : un écart arrête
+# tout. Contrôle sauté avec `--migration-apres` (l'écart est attendu) et avec
+# `--sans-controle-types` (sortie de secours si le générateur de Supabase change).
 # Lancé par David, ou par Claude à sa demande explicite : jamais de mise en
 # prod — ni de version — à l'initiative de Claude.
 #
@@ -36,6 +40,9 @@
 #         pnpm deploy:prod --migration-apres <horodatage>
 #                                          laisse passer cette migration en attente
 #                                          (répétable) et rappelle de la jouer à la fin
+#         pnpm deploy:prod --sans-controle-types
+#                                          saute le contrôle « prod = dépôt » (types de la
+#                                          prod illisibles : générateur de Supabase changé)
 #         pnpm deploy:prod --verifier      ne livre rien : revérifie la construction de
 #                                          Vercel et les pages du site en ligne
 # À lancer depuis le dépôt principal, sur main propre et à jour.
@@ -60,15 +67,18 @@ SIGNATURE="Browser connection was closed"
 # Lecture seule de l'historique des migrations de la prod. JSON demandé : sans
 # cela le format dépend de qui lance la commande (tableau au terminal).
 MIGRATIONS_PROD="${DEPLOY_PROD_MIGRATIONS_PROD:-pnpm exec supabase migration list --linked --output-format json --agent no}"
+# Lecture seule du schéma de la prod, comparé au database.ts du commit donné.
+TYPES_PROD="${DEPLOY_PROD_TYPES_PROD:-pnpm exec tsx scripts/db-types/prod.ts --commit}"
 SITE="${DEPLOY_PROD_SITE:-https://www.chiph.re}"
 # Les pages du plan du site, une par une (le contrôle quotidien de production-health.yml).
 SANTE="${DEPLOY_PROD_SANTE:-pnpm exec tsx scripts/check-production-health.ts}"
 # Construction de Vercel puis bascule du domaine : 20 min au plus.
 ATTENTE_SITE_MAX="${DEPLOY_PROD_ATTENTE_SITE_MAX:-1200}"
-USAGE="Usage : pnpm deploy:prod [--essai] [--relancer-ci] [--migration-apres <horodatage>]… | --verifier"
+USAGE="Usage : pnpm deploy:prod [--essai] [--relancer-ci] [--migration-apres <horodatage>]… [--sans-controle-types] | --verifier"
 essai=0
 relancer_ci=0
 verifier=0
+sans_types=0
 migrations_apres=""
 attend_horodatage=0
 for option in "$@"; do
@@ -85,6 +95,7 @@ for option in "$@"; do
 	--essai) essai=1 ;;
 	--relancer-ci) relancer_ci=1 ;;
 	--verifier) verifier=1 ;;
+	--sans-controle-types) sans_types=1 ;;
 	--migration-apres) attend_horodatage=1 ;;
 	*)
 		echo "⛔ Option inconnue : $option"
@@ -357,6 +368,30 @@ controler_migrations() {
 	fi
 }
 
+# La base de la prod est-elle celle que le dépôt décrit ? Lecture seule. Les
+# migrations peuvent être toutes « jouées » et la prod différer quand même :
+# table retouchée au Dashboard, migration modifiée après coup. Le code livré
+# est typé par database.ts : s'il ne décrit pas la prod, le typecheck vert ne
+# garantit rien.
+controler_types() {
+	local sortie
+	if [ "$sans_types" = 1 ]; then
+		echo "⚠️  Contrôle « prod = dépôt » sauté (--sans-controle-types)."
+		return 0
+	fi
+	if [ -n "$migrations_apres" ]; then
+		echo "⚠️  Contrôle « prod = dépôt » NON FAIT : la prod garde ce que retire(nt)$migrations_apres. Après pnpm db:migrate : pnpm db:types:prod"
+		return 0
+	fi
+	if sortie="$($TYPES_PROD "$1" 2>&1)"; then
+		# Sans ligne ✅ (message changé), montrer la sortie plutôt que s'arrêter sans un mot.
+		printf '%s\n' "$sortie" | grep '^✅' | tail -1 | grep . || printf '%s\n' "$sortie"
+	else
+		printf '%s\n' "$sortie" | grep -v -e '^\$ ' -e ELIFECYCLE | grep . || true
+		arreter "⛔ Contrôle « prod = dépôt » : la prod n'est pas la base que décrit $(decrire "$1")." "Rien n'est créé. Pour le rejouer seul : pnpm db:types:prod. Types de la prod illisibles (générateur changé) : relancer avec --sans-controle-types."
+	fi
+}
+
 # --- 0. main local propre et à jour -----------------------------------------
 [ "$(git branch --show-current)" = "main" ] || arreter "⛔ À lancer sur main (branche actuelle : $(git branch --show-current))."
 [ -z "$(git status --porcelain --untracked-files=no)" ] || arreter "⛔ main a des modifications non commitées."
@@ -437,6 +472,7 @@ else
 fi
 
 controler_migrations "$cible"
+controler_types "$cible"
 
 if [ "$essai" = 1 ]; then
 	echo "(--essai : rien n'est créé, rien n'est poussé)"
