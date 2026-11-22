@@ -35,7 +35,12 @@ import { createRandomSource, shuffled } from '#lib/utils/random.ts';
 import { resolvedMarkdown } from '#lib/ubumark/types/template.ts';
 import { evaluateExpression } from '#lib/math/index.ts';
 import { roundToPrecision, type RoundingPrecision } from './rounding';
-import type { InstanceBlank, InstanceExpectedError, QuestionInstance } from './types';
+import type {
+	InstanceBlank,
+	InstanceExpectedError,
+	QuestionInstance,
+	QuestionVariation
+} from './types';
 
 // Constantes
 
@@ -122,8 +127,12 @@ function usableErrors(
 	return kept;
 }
 
-/** La case peut-elle devenir un QCM (hors tirage) ? */
-function isEligible(instance: QuestionInstance): boolean {
+/**
+ * La question tirée peut-elle se poser en QCM (hors valeurs du tirage) ? Le
+ * panier et l'éditeur de série ne proposent « en QCM » qu'à une variation dont
+ * l'exemple le peut (PR 4).
+ */
+export function canBeChoice(instance: QuestionInstance): boolean {
 	const blanks = instance.blanks ?? [];
 	if (blanks.length !== 1) return false;
 	const [blank] = blanks;
@@ -141,6 +150,18 @@ function isEligible(instance: QuestionInstance): boolean {
 		blank.expressionName === undefined &&
 		String(instance.statement).split('\\placeholder[0]{}').length === 2
 	);
+}
+
+/**
+ * La variation PEUT-elle se poser en QCM, d'après le modèle seul (sans tirage) ?
+ * Une seule case, à erreurs prévues, sans veto de l'auteur. Lecture légère pour
+ * savoir s'il faut montrer le réglage ; l'exemple tiré tranche (`canBeChoice`).
+ */
+export function mayBeChoice(variation: QuestionVariation): boolean {
+	const blanks = variation.blanks ?? [];
+	if (blanks.length !== 1) return false;
+	const [blank] = blanks;
+	return blank.neverChoice !== true && (blank.expectedErrors?.length ?? 0) > 0;
 }
 
 function isRounding(
@@ -194,7 +215,7 @@ export function asChoiceInstance(
 	instance: QuestionInstance,
 	seed: number
 ): QuestionInstance | null {
-	if (!isEligible(instance)) return null;
+	if (!canBeChoice(instance)) return null;
 	const blank = (instance.blanks ?? [])[0];
 	const correct = correctAnswerShown(blank, instance);
 	if (!correct) return null;

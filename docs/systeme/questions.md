@@ -1404,7 +1404,11 @@ relue en base comprise ; un QCM écrit par l'auteur : non). La trace d'une séri
 (`buildSeriesTrace` → `answered_as_choice`, formes où l'on tape, réponse donnée ou non) ; en contrôle, le
 serveur le lit sur la copie figée. Réussite en QCM = demi-réussite pour la révision espacée
 ([srs.md](srs.md)) ; le suivi des points du programme la compte comme une réussite (Q1, 2026-11-22).
-Gardes : `choice-from-errors.test.ts`, `AnswerEditor-jamais-en-qcm.svelte.test.ts`.
+Réglage proposé au prof (panier, éditeur de série) seulement pour une variation qui peut se poser en
+QCM : `mayBeChoice(variation)` lit le modèle seul (une case, erreurs prévues, pas de veto), puis
+`canBeChoice(instance)` tranche sur l'exemple tiré de la variation (mêmes conditions que le tirage).
+Gardes : `choice-from-errors.test.ts`, `choice-eligibility.test.ts`, `AnswerEditor-jamais-en-qcm.svelte.test.ts`,
+`VariationPicker.svelte.test.ts`.
 
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en
 markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`

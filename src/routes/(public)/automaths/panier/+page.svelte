@@ -135,6 +135,13 @@
 		questionCart.setVariations(templateId, variations);
 	}
 
+	function handleUpdateChoiceVariations(
+		templateId: string,
+		choiceVariations: number[] | undefined
+	) {
+		questionCart.setChoiceVariations(templateId, choiceVariations);
+	}
+
 	function handleUpdateQuantity(templateId: string, quantity: number) {
 		questionCart.updateQuantity(templateId, quantity);
 	}
@@ -346,6 +353,7 @@
 							onUpdateDelay={handleUpdateDelay}
 							distinctMax={distinctMaxOf(template, item.quantity, item.variations)}
 							onUpdateVariations={isTeacher ? handleUpdateVariations : undefined}
+							onUpdateChoiceVariations={isTeacher ? handleUpdateChoiceVariations : undefined}
 							onRemove={handleRemove}
 							tooShort={tooShortAt(durationSignals?.signals, item.templateId, item.delay)}
 							observedDelay={observedSuggestion(

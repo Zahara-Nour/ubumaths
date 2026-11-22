@@ -28,6 +28,7 @@ import { templateMarkdown } from '#lib/ubumark/index.ts';
 // Constantes
 const AIRES_ID = '11111111-1111-4111-8111-111111111111';
 const SEULE_ID = '22222222-2222-4222-8222-222222222222';
+const CALCUL_ID = '33333333-3333-4333-8333-333333333333';
 
 // Functions
 function variation(statement: string): QuestionVariation {
@@ -47,7 +48,15 @@ const TEMPLATES = [
 		variation('Aire du triangle : $\\mathcal{A} = ?$'),
 		variation('Aire du rectangle : $\\mathcal{A} = ?$')
 	]),
-	model(SEULE_ID, 'Seule', [variation('Seule : $x = ?$')])
+	model(SEULE_ID, 'Seule', [variation('Seule : $x = ?$')]),
+	model(CALCUL_ID, 'Calcul', [
+		{
+			statement: templateMarkdown('Calcule : $8 + 4 = ?$'),
+			blanks: [
+				{ expectedAnswer: '12', expectedErrors: [{ answer: '4', message: 'Tu as soustrait.' }] }
+			]
+		} as QuestionVariation
+	])
 ];
 
 function series(items: DbSeries['items']): DbSeries {
@@ -115,6 +124,17 @@ describe('Éditeur de série — choix des variations', () => {
 		await page.getByRole('checkbox', { name: 'Variation 2' }).click();
 		await page.getByRole('button', { name: 'Fermer' }).last().click();
 		expect(await savedItems(screen)).toEqual([{ templateId: AIRES_ID, quantity: 4, delay: 20 }]);
+		await screen.unmount();
+	});
+
+	it('idée 4 : cocher « En QCM » l’enregistre avec la ligne', async () => {
+		const screen = await renderPage(series([{ templateId: CALCUL_ID, quantity: 3, delay: 20 }]));
+		await screen.getByRole('button', { name: 'Réponse en saisie' }).click();
+		await page.getByRole('checkbox', { name: 'Variation 1 en QCM' }).click();
+		await page.getByRole('button', { name: 'Fermer' }).last().click();
+		expect(await savedItems(screen)).toEqual([
+			{ templateId: CALCUL_ID, quantity: 3, delay: 20, choiceVariations: [0] }
+		]);
 		await screen.unmount();
 	});
 });

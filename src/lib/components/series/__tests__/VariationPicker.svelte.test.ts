@@ -87,3 +87,92 @@ describe('VariationPicker', () => {
 		await expect.element(page.getByRole('checkbox', { name: 'Variation 1' })).not.toBeChecked();
 	});
 });
+
+// Idée 4, PR 4 : case « En QCM » par variation
+
+function withErrors(statement: string, extra: Record<string, unknown> = {}): QuestionVariation {
+	return {
+		statement: templateMarkdown(statement),
+		blanks: [
+			{
+				expectedAnswer: '12',
+				expectedErrors: [{ answer: '4', message: 'Tu as soustrait.' }],
+				...extra
+			}
+		]
+	} as QuestionVariation;
+}
+
+const CALCULS = model([
+	withErrors('Calcule : $8 + 4 = ?$'),
+	variation('Aire du triangle : $\\mathcal{A} = ?$'),
+	withErrors('Calcule encore : $8 + 4 = ?$', { neverChoice: true })
+]);
+
+async function openQcm(template: QuestionTemplate, options: Record<string, unknown> = {}) {
+	const onchange = vi.fn();
+	const onchoicechange = vi.fn();
+	const screen = await render(VariationPicker, {
+		template,
+		onchange,
+		onchoicechange,
+		...options
+	});
+	await screen.getByRole('button').click();
+	return { screen, onchange, onchoicechange };
+}
+
+describe('VariationPicker — en QCM (idée 4)', () => {
+	it('case « En QCM » seulement pour une variation à erreurs prévues sans veto', async () => {
+		await openQcm(CALCULS);
+		await expect
+			.element(page.getByRole('checkbox', { name: 'Variation 1 en QCM' }))
+			.not.toBeChecked();
+		expect(page.getByRole('checkbox', { name: 'Variation 2 en QCM' }).query()).toBeNull();
+		expect(page.getByRole('checkbox', { name: 'Variation 3 en QCM' }).query()).toBeNull();
+	});
+
+	it('cocher « En QCM » rend les variations en QCM', async () => {
+		const { onchoicechange } = await openQcm(CALCULS);
+		await page.getByRole('checkbox', { name: 'Variation 1 en QCM' }).click();
+		expect(onchoicechange).toHaveBeenCalledWith([0]);
+	});
+
+	it('décocher le dernier « En QCM » rend « aucune »', async () => {
+		const { onchoicechange } = await openQcm(CALCULS, { choiceSelected: [0] });
+		await page.getByRole('checkbox', { name: 'Variation 1 en QCM' }).click();
+		expect(onchoicechange).toHaveBeenCalledWith(undefined);
+	});
+
+	it('retirer une variation retire aussi son QCM', async () => {
+		const { onchange, onchoicechange } = await openQcm(CALCULS, { choiceSelected: [0] });
+		await page.getByRole('checkbox', { name: 'Variation 1', exact: true }).click();
+		expect(onchoicechange).toHaveBeenCalledWith(undefined);
+		expect(onchange).toHaveBeenCalledWith([1, 2]);
+	});
+
+	it('le résumé dit combien de variations sont en QCM', async () => {
+		const screen = await render(VariationPicker, {
+			template: CALCULS,
+			choiceSelected: [0],
+			onchange: vi.fn(),
+			onchoicechange: vi.fn()
+		});
+		await expect
+			.element(screen.getByText('Toutes les variations (3) · 1 en QCM'))
+			.toBeInTheDocument();
+	});
+
+	it('un modèle à une seule variation, à erreurs prévues : le bouton propose le QCM', async () => {
+		const { onchoicechange } = await openQcm(model([withErrors('Calcule : $8 + 4 = ?$')]));
+		expect(page.getByRole('checkbox', { name: 'Variation 1', exact: true }).query()).toBeNull();
+		await page.getByRole('checkbox', { name: 'Variation 1 en QCM' }).click();
+		expect(onchoicechange).toHaveBeenCalledWith([0]);
+	});
+
+	it('sans `onchoicechange` (élève, lien) : aucune case « En QCM »', async () => {
+		await render(VariationPicker, { template: CALCULS, onchange: vi.fn() });
+		await page.getByRole('button').click();
+		expect(page.getByRole('checkbox', { name: 'Variation 1 en QCM' }).query()).toBeNull();
+	});
+});
