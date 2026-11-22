@@ -100,31 +100,31 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
 anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repris pour l'instant.
 
-| Rubrique                           | Codes | Exercices | État               | Sujet / session    |
-| ---------------------------------- | ----- | --------- | ------------------ | ------------------ |
-| Nombres entiers                    | 6N0   | 18        | prise (2026-11-22) | `idees-6e-entiers` |
-| Nombres entiers et décimaux        | 6N1   | 38        | libre              |                    |
-| Nombres décimaux                   | 6N2   | 55        | libre              |                    |
-| Fractions                          | 6N3   | 53        | libre              |                    |
-| Algèbre                            | 6N4   | 9         | libre              |                    |
-| Résolution de problèmes            | 6N5   | 24        | libre              |                    |
-| Longueurs                          | 6M1   | 16        | libre              |                    |
-| Aires                              | 6M2   | 17        | libre              |                    |
-| Volumes                            | 6M3   | 3         | libre              |                    |
-| Durées                             | 6M4   | 11        | libre              |                    |
-| Géométrie de base                  | 6G0   | 10        | libre              |                    |
-| Distances                          | 6G1   | 6         | libre              |                    |
-| Cercles et disques                 | 6G2   | 9         | libre              |                    |
-| Médiatrices                        | 6G3   | 5         | libre              |                    |
-| Angles                             | 6G4   | 12        | libre              |                    |
-| Bissectrices                       | 6G5   | 3         | libre              |                    |
-| Triangles                          | 6G6   | 16        | libre              |                    |
-| Symétrie axiale                    | 6G7   | 13        | libre              |                    |
-| Espace                             | 6G8   | 4         | libre              |                    |
-| Organisation et gestion de données | 6P1   | 6         | libre              |                    |
-| Probabilités                       | 6P2   | 3         | libre              |                    |
-| Proportionnalité                   | 6P3   | 16        | libre              |                    |
-| Pensée informatique                | 6I1   | 10        | libre              |                    |
+| Rubrique                           | Codes | Exercices | État                 | Sujet / session    |
+| ---------------------------------- | ----- | --------- | -------------------- | ------------------ |
+| Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers` |
+| Nombres entiers et décimaux        | 6N1   | 38        | libre                |                    |
+| Nombres décimaux                   | 6N2   | 55        | libre                |                    |
+| Fractions                          | 6N3   | 53        | libre                |                    |
+| Algèbre                            | 6N4   | 9         | libre                |                    |
+| Résolution de problèmes            | 6N5   | 24        | libre                |                    |
+| Longueurs                          | 6M1   | 16        | libre                |                    |
+| Aires                              | 6M2   | 17        | libre                |                    |
+| Volumes                            | 6M3   | 3         | libre                |                    |
+| Durées                             | 6M4   | 11        | libre                |                    |
+| Géométrie de base                  | 6G0   | 10        | libre                |                    |
+| Distances                          | 6G1   | 6         | libre                |                    |
+| Cercles et disques                 | 6G2   | 9         | libre                |                    |
+| Médiatrices                        | 6G3   | 5         | libre                |                    |
+| Angles                             | 6G4   | 12        | libre                |                    |
+| Bissectrices                       | 6G5   | 3         | libre                |                    |
+| Triangles                          | 6G6   | 16        | libre                |                    |
+| Symétrie axiale                    | 6G7   | 13        | libre                |                    |
+| Espace                             | 6G8   | 4         | libre                |                    |
+| Organisation et gestion de données | 6P1   | 6         | libre                |                    |
+| Probabilités                       | 6P2   | 3         | libre                |                    |
+| Proportionnalité                   | 6P3   | 16        | libre                |                    |
+| Pensée informatique                | 6I1   | 10        | libre                |                    |
 
 ## Autres niveaux
 
@@ -168,9 +168,6 @@ de contenu appliquée en prod.
 | cf51cb93 Calculer un terme d'une suite géométrique                               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 | d2943133 Reconnaître une suite arithmétique à partir de sa forme explicite       | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 | e67b1cbd Terme général d'une suite géométrique                                   | `idees-1re-suites`                                          | 2026-11-22 |                                      |
-| 98f558e4 Trouver le nombre choisi                                                | `idees-6e-entiers`                                          | 2026-11-22 |                                      |
-| b9677e1f Chiffre des unités d'un produit                                         | `idees-6e-entiers`                                          | 2026-11-22 |                                      |
-| d793de49 Calculer un produit d'entiers                                           | `idees-6e-entiers`                                          | 2026-11-22 |                                      |
 
 ## Idées en attente
 

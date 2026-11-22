@@ -1,20 +1,18 @@
 # Chantier `idees-6e-entiers` : idées reprises d'ailleurs, rubrique « Nombres entiers » de 6e
 
-Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
-[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) (section Sixième, ligne 6N0 prise le
+Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
+[idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md) (section Sixième, ligne 6N0 prise le
 2026-11-22). Relevé : [idees-6e-entiers-releve.md](idees-6e-entiers-releve.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après la publication par David._
+_Mis à jour le 2026-11-22, chantier clos._
 
-- **État** : les 6 modèles validés par David et **publiés** (vérifié par MCP) : 3 brouillons publiés par
-  `publier-lot.ts --dir scripts/questions/6e-entiers-a --publier` ; variations des 3 publiés en prod
-  depuis le `db:migrate` de #2998. Prénoms d'énoncé confirmés fictifs par David.
-- **Prochaine action** : clore le chantier (rubrique « publiée » dans `idees-ailleurs-repartition.md`,
-  réservations levées, journal archivé) — sur le go de David.
-- **En attente de David** : go pour la clôture.
-- **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; zsh ne découpe pas `$F` ;
+- **État** : rubrique **publiée** : les 3 modèles neufs (818d5e6b, ba899229, e76ab26f) et les variations
+  des 3 publiés (98f558e4, b9677e1f, d793de49) validés par David et publiés (vérifié par MCP) ; prénoms
+  d'énoncé confirmés fictifs ; journal archivé · **Prochaine action** : aucune · **En attente de David** :
+  rien (idée reportée : la rose des sommes, 6N0A-2, dans « Idées en attente » du tableau).
+- **Pièges retenus** : migration-contenu refuse un titre différent de la prod ; zsh ne découpe pas `$F` ;
   le Chrome connecté n'atteint pas `[::1]:<port>` du Mac mini.
 - **Worktree / branche** : aucun.
 
