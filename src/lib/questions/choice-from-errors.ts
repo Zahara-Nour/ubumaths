@@ -53,8 +53,8 @@ function choiceOrderSeed(seed: number): number {
 	return Math.imul(seed ^ 0x27d4eb2f, 0x165667b1) >>> 0;
 }
 
-/** Les deux réponses ont-elles la même valeur, au sens du juge de la case ? */
-function sameValue(
+/** `answer` (une écriture) a-t-elle la valeur de la référence, au sens du juge de la case ? */
+function judgedEqual(
 	answer: string,
 	reference: string,
 	referenceLatex: string,
@@ -78,6 +78,25 @@ function sameValue(
 }
 
 /**
+ * Même valeur ? L'erreur est présentée au juge sous ses DEUX écritures : le LaTeX
+ * (`1.5~\unit{km}`, que le juge lit comme une saisie, unité comprise) et la forme
+ * interne (`sqrt(8)`, quand le LaTeX `\sqrt{8}` ne se relit pas). Une seule qui
+ * passe suffit.
+ */
+function sameValue(
+	error: { answer: string; answerLatex: string },
+	reference: string,
+	referenceLatex: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): boolean {
+	return (
+		judgedEqual(error.answerLatex, reference, referenceLatex, blank, instance) ||
+		judgedEqual(error.answer, reference, referenceLatex, blank, instance)
+	);
+}
+
+/**
  * Erreurs prévues proposées en choix : ni la valeur de la bonne réponse, ni
  * celle d'une erreur déjà gardée ; les `MAX_CHOICE_ERRORS` premières.
  */
@@ -87,12 +106,11 @@ function usableErrors(blank: InstanceBlank, instance: QuestionInstance): Instanc
 		if (kept.length === MAX_CHOICE_ERRORS) break;
 		const correct = blank.expectedAnswer;
 		const correctLatex = blank.expectedAnswerLatex ?? correct;
-		if (sameValue(error.answer, correct, correctLatex, blank, instance)) continue;
-		if (
-			kept.some((other) =>
-				sameValue(error.answer, other.answer, other.answerLatex, blank, instance)
-			)
-		)
+		// Même écriture : deux choix identiques à l'écran, même si le juge n'a pas su comparer
+		const shown = [correctLatex, ...kept.map((other) => other.answerLatex)];
+		if (shown.includes(error.answerLatex)) continue;
+		if (sameValue(error, correct, correctLatex, blank, instance)) continue;
+		if (kept.some((other) => sameValue(error, other.answer, other.answerLatex, blank, instance)))
 			continue;
 		kept.push(error);
 	}
@@ -106,6 +124,13 @@ function isEligible(instance: QuestionInstance): boolean {
 	const [blank] = blanks;
 	return (
 		blank.type === 'math' &&
+		// Case d'un bloc ```operation : sa réponse s'écrit autrement que les erreurs
+		// prévues (`toFrenchDecimal`), la bonne se reconnaîtrait à sa forme
+		blank.operation !== true &&
+		// Case à arrondir (décimales, chiffres significatifs, tolérance) : l'attendu n'est
+		// pas arrondi, la bonne réponse se reconnaîtrait à sa forme → reste en saisie
+		// (en attendant le choix de David : arrondir la bonne réponse affichée ?)
+		(blank.precision === undefined || blank.precision.type === 'none') &&
 		blank.neverChoice !== true &&
 		(blank.expectedErrors?.length ?? 0) > 0 &&
 		blank.expressionName === undefined &&

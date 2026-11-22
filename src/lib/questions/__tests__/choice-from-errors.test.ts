@@ -17,7 +17,7 @@ import { answerErrorKinds } from '../error-kinds';
 import { generateInstance } from '../generator/instance-generator';
 import { toPublicQuestion } from '../public-question';
 import { questionTemplateSchema } from '../template-schema';
-import { correctChoiceIndexesOf, isChoiceBlank } from '../choice-case';
+import { correctChoiceIndexesOf, isChoiceBlank, toOriginalChoiceValues } from '../choice-case';
 import { validateAnswer, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
 import type { ExpectedError, QuestionInstance, QuestionTemplate, TemplateBlank } from '../types';
 
@@ -146,6 +146,34 @@ describe('case → choix au tirage', () => {
 		expect(instance.blanks?.[0].expectedErrors?.map((e) => e.message)).toEqual([SOUSTRAIT]);
 	});
 
+	it('limite : une erreur prévue de même écriture que la bonne réponse n’est jamais un choix', () => {
+		const instance = asChoiceInstance(generate(addition(THREE_ERRORS)), 1)!;
+		const blank = instance.blanks![0];
+		expect(new Set(blank.choice!.choices).size).toBe(blank.choice!.choices.length);
+	});
+
+	it('case à unité : même valeur dans une autre unité (`1.5 km` pour `1500 m`) : retirée', () => {
+		const t = template('Convertis : $1{,}5\\text{ km} = ?$', [
+			{
+				expectedAnswer: '1500[m]',
+				unit: { expected: true },
+				expectedErrors: [
+					{ answer: '1.5[km]', message: RECOPIE },
+					{ answer: '150[m]', message: 'Un zéro de trop ou de moins.' },
+					{ answer: '15000[cm]', message: 'Autre écriture de 150 m.' }
+				]
+			}
+		]);
+		const instance = asChoice(t);
+		expect(choicesOf(instance)).toHaveLength(2);
+		expect(instance.blanks?.[0].expectedErrors?.map((e) => e.answer)).toEqual(['150[m]']);
+	});
+
+	it('case à arrondir → reste en saisie (bonne réponse non arrondie)', () => {
+		const t = addition(THREE_ERRORS, { precision: { type: 'decimal', digits: 2 } });
+		expect(asChoiceInstance(generate(t), 1)).toBeNull();
+	});
+
 	it('Q2 : une seule erreur prévue utilisable → deux choix', () => {
 		expect(choicesOf(asChoice(addition([THREE_ERRORS[0]])))).toEqual(['$12$', '$4$']);
 	});
@@ -222,6 +250,25 @@ describe('évaluation notée : version envoyée à l’élève', () => {
 		expect(question.blanks?.[0].choice?.choices).toEqual(
 			blank.choice!.order.map((i) => blank.choice!.choices[i])
 		);
+	});
+});
+
+describe('évaluation notée : trajet du serveur', () => {
+	it('positions affichées → indices d’origine → faux, avec le message de la bonne erreur', () => {
+		const instance = asChoice(addition(THREE_ERRORS), 5);
+		const order = instance.blanks![0].choice!.order;
+		for (const [k, message] of [SOUSTRAIT, MULTIPLIE, DIVISE].entries()) {
+			const shown = String(order.indexOf(k + 1));
+			const converted = toOriginalChoiceValues(instance, [shown]);
+			if ('error' in converted) throw new Error(converted.error);
+			expect(converted.values).toEqual([String(k + 1)]);
+			const r = buildExpectedResult(instance, answer(converted.values));
+			expect(r.status).toBe('incorrect');
+			expect(remarks(r)).toEqual([message]);
+		}
+		const right = toOriginalChoiceValues(instance, [String(order.indexOf(0))]);
+		if ('error' in right) throw new Error(right.error);
+		expect(validateAnswer(right.values, instance).isCorrect).toBe(true);
 	});
 });
 

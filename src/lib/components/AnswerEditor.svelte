@@ -145,7 +145,10 @@
 				variant="outline"
 				size="sm"
 				type="button"
-				onclick={() => (blank.expectedErrors = undefined)}
+				onclick={() => {
+					blank.expectedErrors = undefined;
+					blank.neverChoice = undefined;
+				}}
 			>
 				Retirer
 			</Button>

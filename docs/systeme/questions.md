@@ -1385,9 +1385,11 @@ Case répondue en QCM (chantier `idees-format`, idée 4, `choice-from-errors.ts`
 coche une variation « en QCM » sur une ligne de série (`choiceVariations`, [evaluations.md](evaluations.md)),
 `asChoiceInstance(instance, seed)` transforme la question **tirée** (le générateur n'y est pour rien :
 mêmes nombres en saisie et en QCM). Seulement pour une question à **une seule case** `math`, avec
-des erreurs prévues, sans veto de l'auteur (`neverChoice`, case « Jamais en QCM » d'`ExpectedErrorsEditor`).
+des erreurs prévues, sans veto de l'auteur (`neverChoice`, case « Jamais en QCM » d'`ExpectedErrorsEditor`),
+ni case d'opération posée, ni précision à arrondir (l'attendu non arrondi se reconnaîtrait à sa forme).
 La case devient une case choix : bonne réponse à l'indice d'origine 0, puis jusqu'à **trois**
-erreurs prévues, dans l'ordre de l'auteur, sans doublon de valeur (même juge que l'erreur prévue)
+erreurs prévues, dans l'ordre de l'auteur, sans doublon de valeur (même juge que l'erreur prévue,
+l'erreur lue sous son LaTeX puis sous sa forme interne : `1.5 km` vaut `1500 m`) ni d'écriture,
 ni égale à la bonne réponse sur ce tirage ; `expectedErrors[k]` est le choix `k + 1`. Ordre affiché
 mélangé sur une source de hasard à part. Dans l'énoncé, la case devient `\ldots` et le bloc ```choix
 suit. Aucune erreur prévue utilisable sur ce tirage → `null`, la question reste en saisie. Cocher
