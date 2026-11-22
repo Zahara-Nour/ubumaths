@@ -2,23 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2981._
+_Mis à jour le 2026-11-22, après #2986._
 
-- **État** : PR 1 (#2977), PR 2 (#2980) et le correctif des compteurs de « Mes révisions » (#2981)
-  mergés. PR 2 : suivi et travail scolaire inventés (§ 8),
-  liens vérifiés après la copie, 30 élèves rangés dans les 5 classes de l'année en cours. La base de
-  dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche` (pas lancé).
-- **Prochaine action** : PR 3, jeux et récompenses (§ 5), en commençant par la **phase 0** (ce qui
-  sera inventé, en français, à faire valider par David avant de coder) : jeux, succès, récompenses, boutique, Mathoux et
-  Palotins, plus **une devinette publiée inventée** par le seed (la prod n'en a qu'une, en
-  brouillon). Même méthode qu'au § 8 : plan pur testé sans base, vraies règles de l'appli, preuve
-  sur copie isolée avec ses services, pages ouvertes en prof et en élève.
-- **En attente de David** : rien.
-- **Tranché le 2026-11-22** : devinette **inventée** (pas de publication en prod) ; tableau de tâches du prof et signalements de bug **inventés, en
-  PR 4** ; modèles de messages : voir si le seed existant les recrée, sinon en inventer en PR 4.
-- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** (une table d'activité s'invente).
-  Essais sur copie isolée, jamais la base de dev. Remplacement par script dans `index.ts` : motif
-  unique d'abord. Worktree à recréer : `../ubumaths-wt-seed-complet`, `feat/seed-complet-jeux`.
+- **État** : PR 1 (#2977), PR 2 (#2980), #2981 et **PR 3 jeux et récompenses (#2986, § 9-10)** mergées.
+  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
+  (pas lancé).
+- **Prochaine action** : PR 4, échanges et famille (§ 5), par sa **phase 0** à faire valider : messages
+  privés, tuteur, notifications, marché, modération, parents, inscriptions, cahier de texte et liens
+  de partage (§ 4), tableau de tâches du prof et signalements de bug (inventés, tranché), modèles de
+  messages (voir si le seed les recrée). Même méthode qu'aux § 8 et § 10.
+- **En attente de David** : faut-il corriger à part les deux pannes trouvées en PR 3 (§ 10) : page
+  « Palotins » du prof toujours vide, bloc « succès » mort de l'accueil élève ?
+- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
+  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev. Élèves soumis au
+  consentement : délai renouvelé par le seed (sinon lecture seule). Arrondis : `centiemes()` comme
+  `ROUND` de Postgres. Nouveau worktree à créer pour la PR 4 (`feat/seed-complet-echanges`).
 
 ---
 
@@ -297,6 +295,104 @@ pnpm dev --port 5176 --strictPort`), pages lues connecté (jeton pris à l'API d
 - **Vu en passant** : quelques élèves ont 0 Gidouille (somme négative ramenée à 0 par `activite.ts`) ;
   la page prof des paquets affiche « Decks attribués 0 » (elle compte les paquets du prof marqués
   assignés, or seules les copies des élèves le sont).
+
+## 9. PR 3 : jeux et récompenses — phase 0 (2026-11-22, **validée par David le 2026-11-22 : « oui »**)
+
+**Mesures** (prod en lecture seule, des comptes de lignes ; lecteurs et écrivains relevés dans `src/`
+et les migrations). Jeux visibles par l'élève : Démineur (13 909 parties en prod, stats, succès,
+tournois), 2048 (43), Mathémo (19), classement commun ; Trio et Évoland n'écrivent rien en base.
+Chatterie : Mathoux (calculés depuis les points du programme), décorations, Palotins (58).
+Récompenses : cartes VIP (2 895 mouvements), récompenses de jeu du jour (2 171) et meilleur score
+de la semaine (315), succès (23 définis, **0 débloqué en prod**). Le journal des récompenses
+(`reward_events`) se remplit seul par déclencheurs : le seed écrit l'activité déclencheurs actifs.
+
+**Inventé (plan pur testé sans base, comme `suivi.ts`)** :
+
+1. **Démineur** : 10 à 40 parties par élève sur quatre semaines (gagnées, perdues, niveaux
+   variés), sauf l'élève « rien fait » et l'élève hors classe ; la récompense du jour et le meilleur
+   score de la semaine qui en découlent ; les succès du démineur atteints par ces parties.
+   **Un tournoi en cours** inventé pour deux classes actives (les 4 tournois copiés datent de
+   janvier 2026 et visent des classes archivées), avec les parties des élèves → classement.
+2. **2048 et Mathémo** : un meilleur score pour 2 élèves sur 3 → classement commun rempli.
+3. **Succès** : 2 à 6 succès débloqués par élève parmi les 23, cohérents avec son activité
+   (l'élève étoile en a le plus) → page d'accueil et journal.
+4. **Palotins** : un Palotin choisi par la plupart des élèves, niveau et expérience variés, une
+   tenue pour certains ; 3 élèves n'en ont pas encore choisi.
+5. **Mathoux** : écrits avec **la vraie règle de l'appli** (`collection-logic.ts`) à partir des
+   points acquis de la PR 2, pour que la page du prof les voie sans que chaque élève ouvre sa
+   chatterie ; quelques décorations achetées (Gidouilles dépensées en face).
+6. **Cartes VIP** : 1 à 4 cartes gagnées par élève, quelques-unes utilisées, une demande
+   d'activation en attente (pour la page du prof).
+7. **Devinette** : une devinette **publiée** inventée, au nom du prof local ; la PR 2 l'assigne
+   déjà d'elle-même (elle prend la devinette publiée d'abord).
+8. **Gidouilles** : chaque gain ou dépense ci-dessus a sa ligne, pour que le solde et le journal
+   disent la même chose.
+
+**Pas inventé, et pourquoi** :
+
+- **Navadra** (combats, sorts) : son entrée est masquée dans la page des jeux ; le profil de jeu
+  se crée seul à la création du compte.
+- **Descente de la Vistule** (bêtes, coups) : chantier en cours, aucune page n'en fait apparaître
+  (l'apparition des bêtes n'est appelée nulle part).
+- **Avatars de la boutique** : le catalogue est vide en prod, rien à acheter.
+- **Démineur à plusieurs** : statistiques lues par le seul mode multijoueur, éphémère.
+- **Tables sans lecteur ou calculées** → passent dans `JAMAIS` : `achievement_events`,
+  `achievement_progress` (calculée), `daily_summaries`, `weekly_rewards`, `game_leaderboards`,
+  `game_player_achievements`, `game_challenge_attempts`.
+
+**Preuve** : même méthode qu'au § 8 (copie isolée avec ses services, seed rejoué trois fois,
+pages ouvertes en élève et en prof : stats, succès et tournoi du démineur, classement, chatterie,
+Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
+
+## 10. PR 3 : jeux et récompenses (2026-11-22, branche `feat/seed-complet-jeux`)
+
+- **Un plan pur de plus**, `scripts/db-seed-riche/jeux.ts` (tests : `scripts/__tests__/db-seed-jeux.test.ts`,
+  34 cas, sans base), écrit dans 13 tables (`ECRITURE_JEUX`), et `mathoux.ts` (mémoire des Mathoux).
+  Règles recopiées des fonctions de l'appli et testées : points d'une partie (`calculate_minesweeper_points`),
+  gain théorique et récompense du jour (`complete_minesweeper_game`, `record_game_reward`, temps de
+  référence de repli), seuils des succès de 2048 et de Mathémo (routes `api/games/*/scores`), niveau
+  d'un Palotin (`add_buddy_xp`).
+- **Calculé par la base, pas écrit** : le journal des récompenses (déclencheurs), le score des parties
+  de tournoi (`calculate_tournament_score`, appelée par le seed après l'insertion), les profils de jeu
+  Navadra (déclencheur à la création du compte).
+- **Mathoux** : la vraie règle (`buildMathouCollection`, `memoryUpdates`) sur les points acquis de la
+  PR 2, données chargées comme `collection.ts`. Ni sieste ni étape payée : la première visite de
+  l'élève endort et verse les Gidouilles des étapes. Décorations : la vraie fonction d'achat
+  (`buy_mathou_decoration`, en rôle service), débit et historique compris.
+- **Écarts au plan, chacun imposé par une mesure** :
+  - **niveau sur le profil des élèves** (`creerEleves`) : sans lui, la chatterie et les Mathoux étaient
+    vides (`grade` nul → collection vide) ;
+  - la devinette est écrite **avant** le suivi (qui assigne d'abord une devinette publiée) ;
+  - les tables du tournoi restent dans `COPIE` (contenu du prof) : le seed y ajoute le tournoi inventé ;
+  - 7 tables passent dans `JAMAIS` (sans lecteur ou calculées).
+- **Preuve** (copie isolée `ubumaths-essai`, ports 544xx, services compris ; serveur du worktree branché
+  dessus) : seed rejoué trois fois après les corrections de relecture, mêmes nombres : 596 parties de
+  démineur (150 succès), 41 parties de tournoi, 20 scores de 2048, 19 de Mathémo, 105 succès,
+  26 Palotins, 79 mouvements de cartes VIP, 256 Mathoux, 8 décorations ; journal des récompenses stable
+  à 717 lignes ; nombres de la PR 2 inchangés. Pages lues connecté : élève (stats et succès du démineur,
+  tournoi et sa position, classements, chatterie avec 11 Mathoux, inventaire 3 cartes + 1 dans
+  l'historique, devinette publiée assignée), prof (Mathoux par classe, chatterie et journal d'un élève,
+  tournoi et son classement, demande d'activation VIP transmise à la page).
+- **Relectures** : `security-auditor`, aucun finding. `code-reviewer`, rien de bloquant ; corrigé :
+  - **délai de consentement échu** : un élève soumis au consentement, créé il y a plus de 30 jours,
+    passait en lecture seule et la garde refusait ses parties (`Consentement parental requis`,
+    reproduit sur la copie) ; le délai est renouvelé à chaque passage, preuve sur 13 délais échus exprès ;
+  - **temps de référence du cycle** de l'élève (`get_minesweeper_reference_time`) au lieu de ceux de
+    repli ; et un **arrondi** du gain qui divergeait de Postgres (0,455 → 0,45 en flottant, 0,46 en
+    base), trouvé par le test ajouté ;
+  - parties d'un même élève sans chevauchement ; test qui rejoue les parties dans l'ordre (points et
+    gains) ; `rollback` de la devinette ; type et commentaire des décorations.
+  - Écartés, et pourquoi : carte sans nombre d'utilisations = une utilisation pour l'appli
+    (`coalesce(…, 1)` dans `use_vip_card`), pas illimitée ; fuseau et premier jour de la semaine de
+    l'école copiée = Paris et lundi, ceux du plan ; pas de récompense du jour pour 2048 et Mathémo (une
+    seule ligne de totaux par élève, sans partie à rattacher).
+- **Trouvé grâce au seed, hors PR** :
+  - **page « Palotins » du prof toujours vide** (« Aucun Bataillon actif ») : sa requête embarque
+    `student_buddies:student_id` depuis `class_members`, que PostgREST résout vers `profiles`
+    (`column profiles_1.palotin_type does not exist`) ; chaque classe est sautée
+    (`gamification/buddies/+page.server.ts:62`). Même schéma en prod : panne probable là-bas aussi.
+  - **bloc « succès » de l'accueil élève mort** : la requête vise `game_achievements` (Navadra) au lieu
+    d'`achievements`, et la page ne l'affiche pas (`dashboard/+page.server.ts:230`).
 
 ## 6. Historique
 

@@ -143,13 +143,9 @@ export const INVENTE: readonly string[] = [
 	'bonus_history',
 	'reward_events',
 	'student_achievements',
-	'achievement_progress',
-	'achievement_events',
 	'daily_game_rewards',
-	'weekly_rewards',
 	'weekly_best_rewards',
 	'vip_cards_activity',
-	'daily_summaries',
 	// Boutique, Mathoux, Palotins
 	'student_avatars',
 	'student_mathoux',
@@ -162,9 +158,6 @@ export const INVENTE: readonly string[] = [
 	'game_spell_decks',
 	'game_combats',
 	'student_combat_moves',
-	'game_player_achievements',
-	'game_challenge_attempts',
-	'game_leaderboards',
 	'game_2048_scores',
 	'mathemo_scores',
 	'minesweeper_games',
@@ -296,6 +289,17 @@ export const JAMAIS: readonly string[] = [
 	'kanban_card_assignees',
 	'kanban_card_tags',
 	'kanban_tags',
+	// Jeux et récompenses (PR 3 du chantier seed-complet, 2026-11-22) : aucune page ne les lit
+	// (file d'événements, résumés et récompenses hebdomadaires des tâches planifiées, classements
+	// et succès de Navadra jamais branchés, tentatives de défi écrites seulement), ou la base les
+	// calcule (progression des succès).
+	'achievement_events',
+	'achievement_progress',
+	'daily_summaries',
+	'weekly_rewards',
+	'game_leaderboards',
+	'game_player_achievements',
+	'game_challenge_attempts',
 	// Sans lecteur ni écrivain dans l'appli (ADR 0023 : la copie d'une fiche se recalcule à chaque
 	// ouverture), suppression prévue : rien à inventer.
 	'worksheet_instances'

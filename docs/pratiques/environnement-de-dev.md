@@ -234,16 +234,24 @@ n'est dans aucune liste, ou quand une table copiée pointe vers une table qui ne
 `pnpm db:types` qui amène une table nouvelle, la classer** (dans le doute : `JAMAIS`). Après la copie,
 le seed vérifie lui-même chaque lien des tables copiées : une ligne orpheline annule toute la copie.
 **Ce que font les élèves fictifs** : ils sont rangés dans les classes de l'année en cours (6 par
-classe) et leur activité est inventée par deux plans purs, testés sans base : `activite.ts` (fiches
-assignées, Gidouilles, discussion, amitiés) et `suivi.ts` (évaluations passées, entraînement,
-révisions, Python, devinettes, signalements, exercices, compétences). Les copies d'évaluation et les
+classe), avec le niveau de leur classe sur leur profil, et leur activité est inventée par trois plans
+purs, testés sans base : `activite.ts` (fiches assignées, Gidouilles, discussion, amitiés),
+`suivi.ts` (évaluations passées, entraînement, révisions, Python, devinettes, signalements,
+exercices, compétences) et `jeux.ts` (démineur et son tournoi en cours, 2048, Mathémo, succès,
+Palotins, cartes VIP dont une demande d'activation qui attend le prof). Le seed publie aussi une
+devinette inventée au nom du prof local. Les points, gains et succès des jeux suivent les règles
+recopiées des fonctions de l'appli ; le journal des récompenses se remplit seul (déclencheurs). La
+mémoire des Mathoux est écrite par la vraie règle de l'appli sur les points acquis (`mathoux.ts`) :
+la liste d'une classe, côté prof, n'en compte pas d'autre ; quelques décorations sont achetées par la
+fonction d'achat de l'appli. Les copies d'évaluation et les
 réponses saisies sont de **vraies questions**, tirées et corrigées par le moteur de l'appli
 (`moteur.ts`). L'état des points du programme et la maîtrise Python ne sont pas écrits : la base les
 calcule à l'insertion, comme en vrai. Trois élèves servent de repères : le premier de la classe la
 plus remplie réussit tout, le dernier de cette classe n'a rien fait (dernière visite il y a plus de
 trois semaines), et l'élève hors classe n'a qu'une fiche à son nom. Relancer le seed remplace tout ce
 que le prof local a assigné (fiches, exercices, Python, devinettes) ; ses paquets de révision faits à
-la main restent.
+la main restent. Rien n'est inventé pour Navadra (entrée masquée), la Descente de la Vistule (pas
+encore branchée) ni la boutique d'avatars (catalogue vide).
 `pnpm db:a-jour` joue les migrations qui manquent à la base locale **sans rien effacer** ; `pnpm dev`
 le fait tout seul avant de démarrer (`scripts/db-a-jour-auto.sh` : migrations d'`origin/main`
 seulement, jamais bloquant). `db:seed-riche` met la base à jour avant de copier et la marque

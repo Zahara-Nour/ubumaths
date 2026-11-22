@@ -45,6 +45,8 @@ import {
 import { planActivite } from './activite';
 import { ECRITURE_SUIVI, planSuivi, PREFIXE_SUIVI } from './suivi';
 import { creerMoteur } from './moteur';
+import { devinetteInventee, ECRITURE_JEUX, planJeux, PREFIXE_JEUX, type Difficulte } from './jeux';
+import { memoireMathoux, type EtatPoint } from './mathoux';
 import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
 
@@ -182,9 +184,9 @@ async function creerEleves(db: pg.Client): Promise<number> {
 	// y ranger des élèves les rendrait invisibles. À défaut (aucune classe active), toutes.
 	const toutes = (
 		await db.query(
-			`select id, school_id, is_active from public.classes where join_code like 'LOCAL%' order by name`
+			`select id, school_id, is_active, grade from public.classes where join_code like 'LOCAL%' order by name`
 		)
-	).rows as { id: string; school_id: string | null; is_active: boolean }[];
+	).rows as { id: string; school_id: string | null; is_active: boolean; grade: string | null }[];
 	const classes = toutes.some((c) => c.is_active) ? toutes.filter((c) => c.is_active) : toutes;
 	// Un passage précédent a pu ranger les élèves autrement : on repart de zéro.
 	await db.query(`delete from public.class_members where student_id::text like ${FICTIFS}`);
@@ -218,12 +220,27 @@ async function creerEleves(db: pg.Client): Promise<number> {
 		await db.query(
 			// status explicite : le trigger crée un compte sans code « en attente » (B7).
 			// Prénom et nom : sans eux, les listes du prof affichent « Élève sans nom ». L'école est
-			// celle de la classe (classements et échanges s'arrêtent à l'école).
-			`insert into public.profiles (id, email, role, full_name, status, firstname, lastname, school_id)
-			 values ($1, $2, 'student', $3, 'approved', $4, $5, $6)
+			// celle de la classe (classements et échanges s'arrêtent à l'école), le niveau aussi : sans
+			// lui, la chatterie et les Mathoux restent vides.
+			`insert into public.profiles (id, email, role, full_name, status, firstname, lastname, school_id, grade)
+			 values ($1, $2, 'student', $3, 'approved', $4, $5, $6, $7)
+			 -- Délai de consentement parental renouvelé à chaque passage : échu (création il y a plus
+			 -- de 30 jours), il mettrait l'élève en lecture seule et les gardes d'écriture refuseraient
+			 -- ses parties inventées.
 			 on conflict (id) do update set status = 'approved', firstname = excluded.firstname,
-			   lastname = excluded.lastname, school_id = excluded.school_id`,
-			[id, email, nom, 'Élève', n > NB_ELEVES ? 'hors classe' : nn, classe?.school_id ?? null]
+			   lastname = excluded.lastname, school_id = excluded.school_id, grade = excluded.grade,
+			   consent_grace_period_ends = case when profiles.consent_required
+			     and profiles.consent_granted_at is null then now() + interval '30 days'
+			     else profiles.consent_grace_period_ends end`,
+			[
+				id,
+				email,
+				nom,
+				'Élève',
+				n > NB_ELEVES ? 'hors classe' : nn,
+				classe?.school_id ?? null,
+				classe?.grade ?? null
+			]
 		);
 		if (classe) {
 			await db.query(
@@ -559,6 +576,278 @@ async function genererSuivi(
 	return { plan, calcules };
 }
 
+/**
+ * Une devinette PUBLIÉE au nom du prof local (`./jeux.ts`), avant le suivi : `genererSuivi`
+ * assigne d'abord une devinette publiée. Écrite après la copie, qui vide `riddles` à chaque passage.
+ */
+async function publierDevinette(db: pg.Client) {
+	const numero = (
+		await db.query('select coalesce(max(riddle_number), 0) + 1 n from public.riddles')
+	).rows[0].n as number;
+	const { devinette, solution } = devinetteInventee(PROF_LOCAL, numero);
+	await db.query('begin');
+	await db.query(`delete from public.riddles where id::text like '${PREFIXE_JEUX}-%'`);
+	await ajouter(db, 'riddles', [devinette]);
+	await ajouter(db, 'riddle_solutions', [solution]);
+	await db.query('commit');
+}
+
+/**
+ * Jeux et récompenses (./jeux.ts), déclencheurs ACTIFS : le journal des récompenses se remplit
+ * seul. Puis le score des parties de tournoi (fonction de la base), les cartes en main, la mémoire
+ * des Mathoux (./mathoux.ts) et quelques décorations achetées par la vraie fonction d'achat.
+ */
+async function genererJeux(
+	db: pg.Client,
+	activite: Awaited<ReturnType<typeof genererActivite>>,
+	maintenant: Date
+) {
+	const ids = async (sql: string, params: unknown[] = []) =>
+		(await db.query(sql, params)).rows.map((x) => x.id as string);
+	const succes = (
+		await db.query(
+			`select id, name nom, coalesce((metadata->>'gidouilles_reward')::int, 0) gidouilles,
+			        coalesce((metadata->>'points')::int, 0) points
+			   from public.achievements where is_active order by id`
+		)
+	).rows as { id: string; nom: string; gidouilles: number; points: number }[];
+	const tenues = (
+		await db.query(
+			`select id, palotin_type palotin, (unlock_requirement->>'level')::int niveau
+			   from public.buddy_skins
+			  where is_enabled and unlock_method = 'level' and unlock_requirement ? 'level' order by id`
+		)
+	).rows as { id: string; palotin: string; niveau: number }[];
+	const cartes = (
+		await db.query(
+			`select id, uses_total utilisations, action is not null activable
+			   from public.vip_card_templates where is_enabled order by id`
+		)
+	).rows as { id: string; utilisations: number | null; activable: boolean }[];
+
+	// Temps de référence du démineur au cycle de chaque élève, comme `complete_minesweeper_game`
+	// (élève sans cycle, ou cycle sans temps : ceux de repli, dans `jeux.ts`).
+	const references: Record<string, Record<Difficulte, number>> = {};
+	for (const x of (
+		await db.query(
+			`select p.id, m.difficulty,
+			        public.get_minesweeper_reference_time(m.cycle, m.difficulty) reference
+			   from public.profiles p
+			   join public.minesweeper_reference_times m on m.cycle = public.get_cycle_for_grade(p.grade)
+			  where p.id::text like ${FICTIFS}`
+		)
+	).rows as { id: string; difficulty: Difficulte; reference: number }[]) {
+		references[x.id] ??= { beginner: 180, intermediate: 600, expert: 1200 };
+		references[x.id][x.difficulty] = Number(x.reference);
+	}
+
+	const plan = planJeux({
+		prof: PROF_LOCAL,
+		classes: activite.classes,
+		references,
+		horsClasse: `5eed0000-0000-4000-8000-0000000000${String(NB_ELEVES + 1).padStart(2, '0')}`,
+		maintenant,
+		graine: 20261123,
+		succes,
+		succesDemineur: await ids('select id from public.minesweeper_achievements order by id'),
+		tenues,
+		cartes,
+		avecAmis: (
+			await db.query(
+				`select requester_id id from public.friendships where status = 'accepted'
+				 union select addressee_id from public.friendships where status = 'accepted'`
+			)
+		).rows.map((x) => x.id as string),
+		avecReponses: (
+			await db.query(
+				`select distinct student_id id from public.skill_attempts where student_id::text like ${FICTIFS}`
+			)
+		).rows.map((x) => x.id as string)
+	});
+
+	// --- Un passage précédent est effacé d'abord : relancer ne double rien ------------------------
+	// (Gidouilles et journal des récompenses des élèves fictifs : déjà effacés par `genererActivite`.)
+	await db.query('begin');
+	const parEleve: [table: string, colonne: string][] = [
+		['minesweeper_student_achievements', 'student_id'],
+		['daily_game_rewards', 'student_id'],
+		['weekly_best_rewards', 'student_id'],
+		['minesweeper_games', 'student_id'],
+		['minesweeper_tournament_games', 'student_id'],
+		['game_2048_scores', 'user_id'],
+		['mathemo_scores', 'user_id'],
+		['student_achievements', 'student_id'],
+		['student_buddies', 'student_id'],
+		['vip_cards_activity', 'student_id'],
+		['student_mathou_decorations', 'student_id'],
+		['student_mathoux', 'student_id']
+	];
+	for (const [table, colonne] of parEleve) {
+		await db.query(`delete from public."${table}" where "${colonne}"::text like ${FICTIFS}`);
+	}
+	await db.query(
+		`delete from public.minesweeper_tournament_classes where tournament_id::text like '${PREFIXE_JEUX}-%'`
+	);
+	await db.query(
+		`delete from public.minesweeper_tournaments where id::text like '${PREFIXE_JEUX}-%'`
+	);
+	// Cartes en main vidées sans déclencheur : vider la main par une mise à jour ordinaire
+	// journaliserait chaque carte comme « retirée par le prof ».
+	await db.query('set local session_replication_role = replica');
+	await db.query(
+		`update public.profiles set vip_cards = '{}'::jsonb, vip_cards_history = '{}'::jsonb
+		  where id::text like ${FICTIFS}`
+	);
+	await db.query('set local session_replication_role = origin');
+
+	// --- Écriture, dans l'ordre des liens ---------------------------------------------------------
+	for (const { partie, table } of ECRITURE_JEUX) {
+		await ajouter(db, table, plan[partie]);
+	}
+	// Score d'une partie de tournoi gagnée : la fonction de la base, au cycle de l'élève (repli :
+	// cycle 3, comme `complete_tournament_game`).
+	await db.query(
+		`update public.minesweeper_tournament_games g
+		    set score = public.calculate_tournament_score(
+		          g.grid_3bv, g.time_seconds,
+		          coalesce(public.get_cycle_for_grade(p.grade), 'cycle_3'), t.difficulty)
+		   from public.profiles p, public.minesweeper_tournaments t
+		  where p.id = g.student_id and t.id = g.tournament_id
+		    and g.status = 'won' and g.id::text like '${PREFIXE_JEUX}-%'`
+	);
+	for (const { student_id, vip_cards } of plan.cartesProfils) {
+		await db.query('update public.profiles set vip_cards = $1 where id = $2', [
+			JSON.stringify(vip_cards),
+			student_id
+		]);
+	}
+	// Compteur dénormalisé : les Gidouilles de ce lot s'ajoutent (celles des devinettes, versées
+	// par `genererSuivi` sans ligne d'historique, restent).
+	const gains = new Map<string, number>();
+	for (const g of plan.gidouilles) {
+		gains.set(
+			g.student_id as string,
+			(gains.get(g.student_id as string) ?? 0) + (g.delta as number)
+		);
+	}
+	for (const [eleve, gain] of gains) {
+		await db.query('update public.profiles set gidouilles = gidouilles + $1 where id = $2', [
+			gain,
+			eleve
+		]);
+	}
+
+	// --- Mathoux : la vraie règle de l'appli sur les points acquis --------------------------------
+	const mathoux = await ecrireMathoux(db, maintenant);
+	// Quelques décorations achetées par la fonction de l'appli (débit et historique compris), chez
+	// les quatre élèves les plus riches, sur un de leurs Mathoux (le premier par identifiant).
+	await db.query(`select set_config('request.jwt.claims', '{"role":"service_role"}', true)`);
+	const acheteurs = (
+		await db.query(
+			`select distinct on (p.id) p.id, p.gidouilles, m.notion_id
+			   from public.profiles p join public.student_mathoux m on m.student_id = p.id
+			  where p.id::text like ${FICTIFS} and p.gidouilles >= 10
+			  order by p.id, m.notion_id`
+		)
+	).rows.map((x) => ({
+		id: x.id as string,
+		gidouilles: Number(x.gidouilles),
+		notion_id: x.notion_id as string
+	}));
+	let decorations = 0;
+	for (const a of acheteurs.sort((x, y) => y.gidouilles - x.gidouilles).slice(0, 4)) {
+		for (const deco of a.gidouilles >= 20 ? ['heart', 'bow_tie'] : ['heart']) {
+			const res = (
+				await db.query('select public.buy_mathou_decoration($1, $2, $3) r', [
+					a.id,
+					deco,
+					a.notion_id
+				])
+			).rows[0].r as { ok: boolean; reason?: string };
+			if (!res.ok) throw new Error(`achat de décoration refusé : ${res.reason}`);
+			decorations++;
+		}
+	}
+	await db.query(`select set_config('request.jwt.claims', '', true)`);
+	await db.query('commit');
+	return { plan, mathoux, decorations };
+}
+
+/**
+ * Mémoire des Mathoux de chaque élève fictif qui a un niveau, chargée comme
+ * `#lib/server/mathoux/collection.ts` : parcours (le niveau et ses niveaux antérieurs), points
+ * tagués par un modèle publié, arbre des notions, états des points. Rend le nombre de lignes.
+ */
+async function ecrireMathoux(db: pg.Client, maintenant: Date): Promise<number> {
+	const eleves = (
+		await db.query(
+			`select id, grade from public.profiles where id::text like ${FICTIFS} and grade is not null`
+		)
+	).rows as { id: string; grade: string }[];
+	const parNiveau = new Map<string, Parameters<typeof memoireMathoux>[0]['points']>();
+	const noeudsDe = new Map<string, Parameters<typeof memoireMathoux>[0]['noeuds']>();
+	let total = 0;
+	for (const e of eleves) {
+		if (!parNiveau.has(e.grade)) {
+			const parcours = [
+				e.grade,
+				...(await db.query('select g from public.grade_ancestors($1) g', [e.grade])).rows.map(
+					(x) => x.g as string
+				)
+			];
+			const points = (
+				await db.query(
+					`select cp.id, cp.node_id "nodeId", cp.grade, cp.regime_acquisition regime
+					   from public.curriculum_points cp
+					  where cp.grade = any($1) and cp.archived_at is null
+					    and exists (select 1 from public.question_template_points qp
+					                  join public.question_templates t on t.id = qp.template_id
+					                 where qp.point_id = cp.id and t.status = 'published')`,
+					[[...new Set(parcours)]]
+				)
+			).rows;
+			const noeuds = (
+				await db.query(
+					`select id, kind, parent_id "parentId", name, position from public.classification_nodes
+					  where archived_at is null
+					    and (kind in ('branch', 'notion') or (kind = 'subnotion' and id = any($1)))`,
+					[[...new Set(points.map((p) => p.nodeId as string))]]
+				)
+			).rows;
+			parNiveau.set(e.grade, points);
+			noeudsDe.set(e.grade, noeuds);
+		}
+		const points = parNiveau.get(e.grade) ?? [];
+		const etats = (
+			await db.query(
+				`select point_id, is_acquired, total_successes, distinct_template_successes, last_success_at
+				   from public.student_point_state where student_id = $1 and point_id = any($2)`,
+				[e.id, points.map((p) => p.id)]
+			)
+		).rows as EtatPoint[];
+		const lignes = memoireMathoux({
+			eleve: e.id,
+			points,
+			noeuds: noeudsDe.get(e.grade) ?? [],
+			etats: etats.map((s) => ({
+				...s,
+				last_success_at: s.last_success_at ? String(s.last_success_at) : null
+			})),
+			maintenant
+		});
+		if (lignes.length > 0) {
+			await db.query(
+				`insert into public.student_mathoux (student_id, notion_id, best_stage, starred_grades, asleep, first_seen_at)
+				 select * from jsonb_to_recordset($1::jsonb)
+				   as x(student_id uuid, notion_id uuid, best_stage text, starred_grades text[], asleep boolean, first_seen_at timestamptz)`,
+				[JSON.stringify(lignes)]
+			);
+			total += lignes.length;
+		}
+	}
+	return total;
+}
+
 async function main() {
 	const envProd = parse(readFileSync('.env'));
 	const envLocal = parse(readFileSync('.env.local'));
@@ -693,10 +982,22 @@ async function main() {
 		const nbClasses = await creerEleves(db);
 		const activite = await genererActivite(db);
 		const plan = activite.plan;
+		await publierDevinette(db).catch(async (e: unknown) => {
+			await db.query('rollback').catch(() => {});
+			throw new Error(
+				`Contenu, élèves et activité de base sont écrits, mais la devinette inventée est annulée (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
+			);
+		});
 		const suivi = await genererSuivi(db, activite, new Date()).catch(async (e: unknown) => {
 			await db.query('rollback').catch(() => {});
 			throw new Error(
 				`Contenu, élèves et activité de base sont écrits, mais le suivi est annulé (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
+			);
+		});
+		const jeux = await genererJeux(db, activite, new Date()).catch(async (e: unknown) => {
+			await db.query('rollback').catch(() => {});
+			throw new Error(
+				`Contenu, élèves, activité et suivi sont écrits, mais les jeux sont annulés (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
 			);
 		});
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
@@ -718,6 +1019,10 @@ async function main() {
 		);
 		console.log(
 			`✅ Fiches et exercices : ${s.fichesEleves.length} élève(s) nommé(s), ${s.signalements.length} signalement(s), ${s.exercicesAssignes.length} exercice(s) assigné(s), ${s.exercicesVus.length} vu(s).`
+		);
+		const j = jeux.plan;
+		console.log(
+			`✅ Jeux : ${j.parties.length} parties de démineur (${j.succesDemineur.length} succès), ${j.partiesTournoi.length} parties de tournoi, ${j.scores2048.length} scores de 2048, ${j.scoresMathemo.length} de Mathémo, ${j.succes.length} succès, ${j.palotins.length} Palotins, ${j.cartesActivite.length} mouvements de cartes VIP, ${jeux.mathoux} Mathoux, ${jeux.decorations} décoration(s) achetée(s).`
 		);
 		const etat = await db.query(
 			`select (select count(*)::int from supabase_migrations.schema_migrations) migrations,
