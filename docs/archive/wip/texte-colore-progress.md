@@ -1,23 +1,18 @@
 # Chantier « texte-colore » — du texte coloré dans ubumark, hors formule
 
-> Né de la clôture de [questions-ce1](../archive/wip/questions-ce1-progress.md) (§ 17 et après), le 2026-11-20.
+> Né de la clôture de [questions-ce1](questions-ce1-progress.md) (§ 17 et après), le 2026-11-20.
 > Ouvert le 2026-11-20 : worktree `ubumaths-wt-texte-colore`, branche `feat/texte-colore`. Décision :
-> [ADR 0042](../adr/0042-texte-colore-dans-la-prose.md).
+> [ADR 0042](../../adr/0042-texte-colore-dans-la-prose.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20, après #2937._
+_Mis à jour le 2026-11-22 : chantier clos._
 
-- **État** : PR 1 (syntaxe, écran, chat, #2933 + #2934), PR 2 (PDF, #2935) et PR 3 (nettoyage au lieu du filet,
-  #2937, § 7) mergées. Q2 (éditeur riche) = chantier à part, plus tard.
-- **Prochaine action** : après la commande de David, vérifier en prod (lecture seule) qu'aucun modèle n'affiche
-  `\textcolor` hors formule (`findTextcolorOutsideMath` sur toute la prod, § 7) ; puis clôture (versement, archive).
-- **En attente de David** : `pnpm corrections:retouches --lot texte-colore --publier` (prod, depuis le dépôt principal
-  à jour ; d'abord sans `--publier`) ; `deploy:prod` pour livrer #2933 → #2937.
-- **Pièges connus** : la garde `review/textcolor-hors-maths.ts` ne tourne que dans `pnpm question:specs` ; le chat
-  ne doit rien gagner (couleur retirée dans `restrictDocument` ET dans les composants) ; `.def=cible` en dernière
-  classe ; l'éditeur riche perd `color` / `detail` / `lexicon` à l'enregistrement (`markdown-import.ts`, Q2 : plus tard).
-- **Worktree / branche** : `../ubumaths-wt-texte-colore` · aucune (worktree détaché sur `origin/main`, à retirer à la clôture).
+- **État** : clos. PR 1 (#2933 + #2934), PR 2 (#2935), PR 3 (#2937) en prod (0.100.0) ; les 2 modèles réécrits en prod
+  par David le 2026-11-22 ; garde du rendu sur toute la prod : 0 modèle fautif (§ 8). Durable versé dans
+  `docs/systeme/ubumark.md`, `fiches-et-pdf.md`, `realtime.md`, `questions.md`, CONTEXT.md, ADR 0042.
+- **Reste** : vérification à l'œil de David (`docs/wip/verifications-manuelles.md`, ligne du 2026-11-20). Q2 (éditeur
+  riche branché sur `[…]{.nom}`) : futur chantier à part.
 
 ## 1. Le défaut
 
@@ -159,3 +154,12 @@ texte-colore`) : `primary.1` → `{.bleu}`, `primary.0` → `{.orange}` ; les fo
 - Fichiers de lots réécrits : `scripts/questions/1techno-t2/e4784c78.json`,
   `scripts/questions/2de-programmes-11b/13-fonction-complexe.json` (specs 8/8, garde 0/60).
 - Instantané de test : `data/corrections/texte-colore/_modeles.json` (sans identifiant d'utilisateur).
+
+## 8. Clôture (2026-11-22)
+
+- `deploy:prod` 0.100.0 (2026-11-22) contient #2933 → #2937.
+- `pnpm corrections:retouches --lot texte-colore --publier` lancé par David le 2026-11-22 : 2/2 écrites et relues
+  (78feafed : 14/14 specs, vérificateur vert sur 20 000 tirages ; e4784c78 : 8/8 specs).
+- Garde du rendu (`findTextcolorOutsideMath`, 10 tirages par variation) sur toute la prod, lecture seule, après
+  écriture : 2 114 modèles portent `\textcolor`, **0** l'affiche hors formule.
+- Découpage recompté : PR 1, 2, 3 mergées ; Q3 (réécriture de l'existant) faite par la PR 3 ; Q2 renvoyée à plus tard.

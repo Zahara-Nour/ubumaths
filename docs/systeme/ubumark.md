@@ -266,7 +266,9 @@ la variante claire du nom (`namedColorTypst`, celle des figures ; noir et blanc 
 texte (il l'emporte sur le gris d'un calcul, dans le surlignage d'un rappel) ; une cellule de tableau
 lit ses marquages hors formules (`processTableCellContent`, un passage rendu à son tour) ; une classe
 inconnue y donne du texte normal. Rendu réel vérifié : `texte-colore-typst.test.ts` (couleurs de
-remplissage du PDF compilé).
+remplissage du PDF compilé). Limite connue : l'éditeur riche (TipTap) ne sait pas écrire ce marquage
+et perd `color` à l'enregistrement (`markdown-import.ts`) ; un `\textcolor` hors formule n'a pas de filet
+(LaTeX brut pour l'élève), `pnpm question:specs` le refuse.
 
 ### Marques de bloc propres à ubumark
 

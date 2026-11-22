@@ -1,7 +1,7 @@
 # 0042 — Texte coloré dans la prose : `[texte]{.nom}`, les 12 noms de la palette
 
 - **Statut** : acceptée — phase 0 du chantier `texte-colore` (journal
-  `docs/wip/texte-colore-progress.md`, § 2)
+  [`docs/archive/wip/texte-colore-progress.md`](../archive/wip/texte-colore-progress.md), § 2 ; chantier clos le 2026-11-22)
 - **Date** : 2026-11-20 · **Décidée par** : David
 
 ## Contexte
