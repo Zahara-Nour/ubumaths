@@ -401,9 +401,12 @@ SPECS_F11 = [
 
 # =============================================================================================
 # F12 — TSPE-385 : « Vrai ou faux : propriétés des suites ». Pas de Vrai / Faux nu : l'élève
-# choisit une réponse justifiée ; la bonne est « Faux » avec le contre-exemple de la fiche, les
-# pièges : « Vrai » avec un faux argument (théorème mal cité), « Faux » avec un contre-exemple
-# qui n'en est pas un.
+# choisit une réponse justifiée ; v0 à v3 : la bonne est « Faux » avec le contre-exemple de la
+# fiche, les pièges : « Vrai » avec un faux argument (théorème mal cité), « Faux » avec un
+# contre-exemple qui n'en est pas un. v4 et v5 : affirmations VRAIES (ajoutées sur décision de
+# David du 2026-11-22, pour que la réponse ne soit pas toujours « Faux ») ; la bonne cite le
+# théorème du cours, les pièges : un « Vrai » mal justifié, deux « Faux » dont le contre-exemple
+# ne vérifie pas l'hypothèse.
 # =============================================================================================
 
 CONSIGNE_F12 = ('Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement '
@@ -468,12 +471,42 @@ F12_VARIATIONS = [
             'un encadrement par **deux** suites de même limite ; une suite majorée ne converge '
             'pas forcément ; et $\\dfrac{1}{n+1}$ converge vers $0$.',
         ]),
+    f12('Toute suite croissante et majorée converge.', [
+        'Vrai : c\'est le théorème de convergence monotone (admis)',
+        'Faux : $u_n=1-\\dfrac{1}{n+1}$ est croissante, majorée par $1$, mais ne converge pas',
+        'Vrai : une suite majorée converge toujours',
+        'Faux : $u_n=(-1)^n$ est majorée par $1$ mais n\'a pas de limite',
+    ], [
+        'Le cours l\'admet : toute suite croissante et majorée converge (vers un réel inférieur ou '
+        'égal au majorant). L\'affirmation est donc $' + PRIMAIRE + '{\\text{vraie}}$.',
+        '$u_n=1-\\dfrac{1}{n+1}$ converge vers $1$ ; $u_n=(-1)^n$ n\'est pas croissante ; et une '
+        'suite seulement majorée peut ne pas converger, comme $(-1)^n$ ou $-n$.',
+    ]),
+    f12('Si $u_n\\geqslant v_n$ pour tout entier naturel $n$ et si $(v_n)$ tend vers $+\\infty$, '
+        'alors $(u_n)$ tend vers $+\\infty$.', [
+            'Vrai : c\'est un théorème de comparaison du cours',
+            'Faux : avec $v_n=n$ et $u_n=-n$, la suite $(u_n)$ tend vers $-\\infty$',
+            'Vrai : c\'est le théorème des gendarmes',
+            'Faux : avec $v_n=n$ et $u_n=n+(-1)^n$, la suite $(u_n)$ n\'a pas de limite',
+        ], [
+            'Théorème de comparaison : si $u_n\\geqslant v_n$ à partir d\'un certain rang et si '
+            '$(v_n)$ tend vers $+\\infty$, alors $(u_n)$ tend vers $+\\infty$. L\'affirmation '
+            'est donc $' + PRIMAIRE + '{\\text{vraie}}$.',
+            'Avec $u_n=-n$, l\'hypothèse $u_n\\geqslant v_n$ est fausse ; $n+(-1)^n\\geqslant n-1$ '
+            'tend vers $+\\infty$ ; et les gendarmes demandent un encadrement par deux suites de '
+            'même limite finie.',
+        ]),
 ]
 SPECS_F12 = []
 for i, nom in enumerate(['bornée', 'croissante', 'tend vers +∞', 'comparaison']):
     SPECS_F12.append(spec(f'v{i} ({nom}) : faux, bon contre-exemple', i, {}, 'correct', ['0']))
     SPECS_F12.append(spec(f'v{i} ({nom}) : vrai, faux argument', i, {}, 'incorrect', ['1']))
     SPECS_F12.append(spec(f'v{i} ({nom}) : faux contre-exemple', i, {}, 'incorrect', ['3']))
+for i, nom in [(4, 'croissante majorée'), (5, 'comparaison +∞')]:
+    SPECS_F12.append(spec(f'v{i} ({nom}) : vrai, théorème du cours', i, {}, 'correct', ['0']))
+    SPECS_F12.append(spec(f'v{i} ({nom}) : faux, contre-exemple hors hypothèse', i, {}, 'incorrect', ['1']))
+    SPECS_F12.append(spec(f'v{i} ({nom}) : vrai, faux argument', i, {}, 'incorrect', ['2']))
+    SPECS_F12.append(spec(f'v{i} ({nom}) : faux, contre-exemple qui n\'en est pas un', i, {}, 'incorrect', ['3']))
 
 # =============================================================================================
 # F14 bis — TSPE-577 (limite par les opérations) : « Moyenne des premiers termes d'une suite

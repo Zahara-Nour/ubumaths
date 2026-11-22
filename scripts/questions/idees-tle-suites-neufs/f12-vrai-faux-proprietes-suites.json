@@ -74,6 +74,40 @@
 				]
 			},
 			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		},
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Toute suite croissante et majorée converge. »\n\n```choix\n- Vrai : c'est le théorème de convergence monotone (admis)\n- Faux : $u_n=1-\\dfrac{1}{n+1}$ est croissante, majorée par $1$, mais ne converge pas\n- Vrai : une suite majorée converge toujours\n- Faux : $u_n=(-1)^n$ est majorée par $1$ mais n'a pas de limite\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cours l'admet : toute suite croissante et majorée converge (vers un réel inférieur ou égal au majorant). L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$.",
+					"$u_n=1-\\dfrac{1}{n+1}$ converge vers $1$ ; $u_n=(-1)^n$ n'est pas croissante ; et une suite seulement majorée peut ne pas converger, comme $(-1)^n$ ou $-n$."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
+		},
+		{
+			"statement": "Cette affirmation est-elle vraie ou fausse ? Choisis la réponse correctement justifiée.\n\n« Si $u_n\\geqslant v_n$ pour tout entier naturel $n$ et si $(v_n)$ tend vers $+\\infty$, alors $(u_n)$ tend vers $+\\infty$. »\n\n```choix\n- Vrai : c'est un théorème de comparaison du cours\n- Faux : avec $v_n=n$ et $u_n=-n$, la suite $(u_n)$ tend vers $-\\infty$\n- Vrai : c'est le théorème des gendarmes\n- Faux : avec $v_n=n$ et $u_n=n+(-1)^n$, la suite $(u_n)$ n'a pas de limite\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Théorème de comparaison : si $u_n\\geqslant v_n$ à partir d'un certain rang et si $(v_n)$ tend vers $+\\infty$, alors $(u_n)$ tend vers $+\\infty$. L'affirmation est donc $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$.",
+					"Avec $u_n=-n$, l'hypothèse $u_n\\geqslant v_n$ est fausse ; $n+(-1)^n\\geqslant n-1$ tend vers $+\\infty$ ; et les gendarmes demandent un encadrement par deux suites de même limite finie."
+				]
+			},
+			"hint": "Une affirmation sur « toute suite » est vraie si elle se démontre pour toutes les suites ; un seul contre-exemple la rend fausse, à condition qu'il vérifie l'hypothèse **sans** vérifier la conclusion. Vérifie aussi que le théorème cité est bien celui du cours."
 		}
 	],
 	"testSpecs": [
@@ -179,6 +213,78 @@
 		{
 			"description": "v3 (comparaison) : faux contre-exemple",
 			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v4 (croissante majorée) : vrai, théorème du cours",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v4 (croissante majorée) : faux, contre-exemple hors hypothèse",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v4 (croissante majorée) : vrai, faux argument",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v4 (croissante majorée) : faux, contre-exemple qui n'en est pas un",
+			"variationIndex": 4,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : vrai, théorème du cours",
+			"variationIndex": 5,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : faux, contre-exemple hors hypothèse",
+			"variationIndex": 5,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : vrai, faux argument",
+			"variationIndex": 5,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "v5 (comparaison +∞) : faux, contre-exemple qui n'en est pas un",
+			"variationIndex": 5,
 			"variables": {},
 			"expected": {
 				"status": "incorrect"
