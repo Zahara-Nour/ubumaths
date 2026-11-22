@@ -5,16 +5,17 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2993._
+_Mis à jour le 2026-11-22, après #2996._
 
-- **État** : lot mergé (#2993) : 11 variations sur 8 publiés, 5 modèles neufs, rien en prod ·
-  **Prochaine action** : après la création des brouillons, commiter les ids écrits dans les
-  fichiers, puis PR de rangement (nœud + tag des 5 neufs, TSPE-385 ×2, 386, 392, 577) et
-  migration de contenu des 8 publiés (`migration-contenu.ts`) · **En attente de David** : lancer
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-suites-neufs --publier`
-  depuis le worktree `ubumaths-wt-idees-tle-suites` (les ids s'écrivent dans ses fichiers) · **Pièges en cours** : `hint` et `expectedErrors` lus par la
-  prod depuis la 0.101.0 ; ne pas toucher aux modèles 1SPE réservés par `idees-1re-suites` · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
-  `feat/idees-tle-suites-rangement`.
+- **État** : #2996 mergée et `db:migrate` fait (5 neufs rangés, 11 variations sur 8 publiés).
+  Puis bornes TCOMP ratées : F2 (708f8a08, TCOMP-210) et F3 (98ba277c, TCOMP-205) hors bornes de
+  complémentaire → **décision de David : déplacer vers 2 neufs**. Branche en cours : migration de
+  retour `20261122115203` (variations 5 et 6 retirées des 2 publiés, 0 réponse d'élève) + 2 neufs
+  `f02-…`, `f03-…` · **Prochaine action** : test rouge/vert, `security-auditor`, PR ; ⛔ merge et
+  `db:migrate` seulement après le « oui » de David (retrait = destructif) · **En attente de David** :
+  ce « oui » · **Pièges en cours** : vérifier les bornes de **tous** les points d'un publié (autres
+  niveaux compris) avant d'y ajouter une variation · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
+  `feat/idees-tle-suites-hors-tcomp`.
 
 ## Historique
 
@@ -65,3 +66,14 @@ _Mis à jour le 2026-11-22, après #2993._
 - Essai dans l'aperçu local passé, avec l'accord de David (le Chrome relié n'atteint pas le serveur du
   Mac mini) : la relecture dans `/dev/modeles` le remplace.
 - CI verte, mergée ; worktree et branche `docs/idees-tle-suites` supprimés.
+
+### 2026-11-22 — #2996 mergée, migrations appliquées, bornes TCOMP ratées
+
+- `db:migrate` (seules nos 2 migrations en attente) : 5 neufs rangés et tagués, 11 variations
+  ajoutées à 8 publiés (et non 15, compte corrigé), vérifié en prod.
+- Erreur : 3 publiés portent aussi un point TCOMP. 667a3618 (TCOMP-212) reste dans les bornes ;
+  708f8a08 (TCOMP-210, 0 ⩽ q < 1) et 98ba277c (TCOMP-205, pas de trigonométrie) non. Aucune
+  variation ne se réserve à un niveau. Réponses d'élèves sur ces 2 modèles depuis l'ajout : 0.
+- David : déplacer les 4 variations vers 2 modèles neufs de spécialité. Migration de retour générée
+  par `genererMigration` avec avant / après inversés (script ponctuel), en-tête réécrit ; fichiers
+  des 2 publiés rendus à leur export de prod (bb833432aa).
