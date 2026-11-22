@@ -1153,6 +1153,28 @@ describe('POST /api/skill-attempts — répondu en QCM', () => {
 		expect(next.get(tplQcm)).toBeLessThan(next.get(tplSaisie) ?? 0);
 	});
 
+	it('client de l’élève (RLS réelle) : la colonne et la note s’écrivent', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const studentSupabase = await createAuthenticatedClient(student.email);
+		const locals = buildLocals(
+			studentSupabase as unknown as SupabaseClient<Database>,
+			{ id: student.id } as User
+		);
+		const response = await POST({
+			request: buildRequest({ template_id: templateId, success: true, answered_as_choice: true }),
+			locals
+		} as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('grade, answered_as_choice')
+			.eq('student_id', student.id)
+			.eq('template_id', templateId);
+		expect(rows).toEqual([{ grade: 2, answered_as_choice: true }]);
+	});
+
 	it('raté en QCM : reste un échec (note 1), trace « en QCM »', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const templateId = await createFakeTemplate(service, student.id);

@@ -31,11 +31,12 @@ function ok(overrides: Partial<Extract<Breakdown, { status: 'ok' }>> = {}): Brea
 		copies: 4,
 		lateCopies: 0,
 		questions: [
-			{ templateId: 't1', title: 'Fractions égales', timing: null, ...tally() },
+			{ templateId: 't1', title: 'Fractions égales', timing: null, choiceAnswers: 0, ...tally() },
 			{
 				templateId: 't2',
 				title: 'Somme de relatifs',
 				timing: null,
+				choiceAnswers: 0,
 				...tally({
 					successRate: 25,
 					pointsEarned: 1,
@@ -96,6 +97,7 @@ describe('EvaluationBreakdown', () => {
 						templateId: 't1',
 						title: 'Fractions égales',
 						timing: null,
+						choiceAnswers: 0,
 						...tally({
 							answers: 0,
 							pointsEarned: 0,
