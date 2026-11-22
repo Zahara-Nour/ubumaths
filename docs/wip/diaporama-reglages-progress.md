@@ -4,13 +4,13 @@ Proposition 3 du chantier `inspiration` (cf. `docs/wip/inspiration-progress.md`)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22 : phase 0 de la PR 2 validée, PR 2a en cours._
+_Mis à jour le 2026-11-22, après #2984._
 
-- **État** : PR 1 (En classe) mergée (#2936). PR 2a (page d'attente du Contrôle blanc et de la Course aux nombres, entraînements libres) en cours sur `feat/diaporama-attente-libres`.
-- **Prochaine action** : finir la PR 2a (tests rouges → code → verts → PR) ; puis PR 2b (contrôles assignés), revue de sécurité comprise.
-- **En attente de David** : son essai de la PR 1, s'il ne l'a pas fait (serveur 5176 arrêté le 2026-11-21).
-- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : changer la liste des diapositives = remonter le `Deck`. `ClassroomSeries`, `TestInteractive`, `TestCourse` sont aussi montés par `/demo/questions` (sous son `h1`). Branche `feat/diaporama-reglages` mergée mais encore locale (suppression = liste `ask`).
-- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` · `feat/diaporama-attente-libres`.
+- **État** : PR 1 (En classe, #2936) et PR 2a (page d'attente du Contrôle blanc et de la Course aux nombres en entraînement libre, #2984) **mergées**, pas encore en prod.
+- **Prochaine action** : PR 2b — page d'attente des contrôles assignés, AVANT que le serveur démarre la tentative (appel serveur en lecture seule : titre, forme, nombre de questions, temps ; reprise → « il te reste 6 min ») ; revue de sécurité (cf. § Phase 0 de la PR 2). Nouvelle branche depuis `origin/main`.
+- **En attente de David** : ses essais de #2936 et #2984 (serveur 5177 du worktree, cf. `verifications-manuelles.md`).
+- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : changer la liste des diapositives = remonter le `Deck`. `TestInteractive` / `TestCourse` sont montés aussi par `/demo/questions`, `memes-nombres` et `QuestionPreviewTabs-units` (tests) : tout changement de démarrage s'y voit. Branches `feat/diaporama-reglages` et `feat/diaporama-attente-libres` mergées, encore locales (suppression = liste `ask`).
+- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` (sur `feat/diaporama-attente-libres` mergée, gardé pour le serveur de test 5177).
 
 ## Phase 0 (validée par David le 2026-11-20)
 
@@ -92,3 +92,4 @@ Phase 0 discutée et validée avec David (réglages avant ET pendant, page d'att
 - `TestInteractive`, `TestCourse` : page d'attente hors contrôle assigné (`started`, `handleStart`) ; la course compte ses durées depuis le clic (`raceStart()`), plus depuis `session.startTime` (ce n'est plus muté par « Recommencer »). Résumé commun : `series-summary.ts` (En classe y passe aussi, sortie inchangée).
 - Tests : 8 nouveaux (page d'attente, durée tracée depuis le clic — vérifiés rouges sans la remise à zéro —, contrôle sans page d'attente) ; les tests existants passent la page d'attente (`startSeries`, `renderCourse`).
 - Relecture (`code-reviewer`, Sonnet) : pas de bloquant. Corrigés : la durée de série envoyée à `/api/tests/save` partait de l'ouverture (`onStart` → la page remet `testSession.startTime`) ; test ajouté pour « Recommencer » sur place d'une course sans `onRestart` (vérifié rouge).
+- Mergée (#2984) après un premier rouge de CI : trois fichiers de test montaient ces formes sans passer la page d'attente (`memes-nombres`, `page-demo-questions`, `QuestionPreviewTabs-units`) ; `Doc-inchangée:` pour `questions.md` (couvre la page `automaths/test` sans décrire le lancement des formes).
