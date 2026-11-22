@@ -1,4 +1,5 @@
 {
+	"id": "535f9f8e-989d-4b76-9934-7c180c69269b",
 	"title": "Démontrer une forme explicite par récurrence : l'hérédité",
 	"description": "Hérédité d'une formule explicite : uₖ₊₁ sous la forme de la formule au rang k + 1 (arithmético-géométrique, uₙ₊₁ = uₙ/(buₙ + 1)), forme imposée ; vₙ = 1/uₙ arithmétique",
 	"grades": ["T_SPE"],

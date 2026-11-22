@@ -1,4 +1,5 @@
 {
+	"id": "2e10cd76-822d-4cb9-9ce8-f791fb9a8a50",
 	"title": "Moyenne des premiers termes d'une suite arithmético-géométrique",
 	"description": "uₙ = ℓ + c·qⁿ : Sₙ = u₀ + … + uₙ₋₁ en fonction de n (somme géométrique), puis limite de Sₙ/n (q = 1/2, q = k/10)",
 	"grades": ["T_SPE"],

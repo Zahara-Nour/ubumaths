@@ -1,4 +1,5 @@
 {
+	"id": "aa3cb8e7-1f20-4dd1-b93d-caaca88c6682",
 	"title": "Seuil d'une suite récurrente en Python",
 	"description": "Fonction seuil(S) avec une boucle while : condition à choisir (suite croissante), valeur renvoyée lue dans un tableau de termes (suite décroissante vers ℓ)",
 	"grades": ["T_SPE"],
