@@ -25,6 +25,14 @@ if (browser) {
 	console.log('[Hooks Client] Error monitoring, Web Vitals, and freeze detection initialized');
 }
 
+// Serveur de dev seulement : garder les erreurs de console pour le bouton « signaler »
+// (`import.meta.env.DEV` vaut `false` au build, qui n'embarque pas ce module)
+if (browser && import.meta.env.DEV) {
+	import('#lib/dev/feedback-collector.ts')
+		.then((module) => module.startCollectingErrors())
+		.catch((e) => console.debug('[Signaler] Collecte des erreurs impossible :', e));
+}
+
 /**
  * SvelteKit client-side error handler
  *
