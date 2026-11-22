@@ -89,7 +89,10 @@ describe('coup de pouce : écriture du modèle', () => {
 		['{{solution}}', 'La réponse est ${{solution}}$.'],
 		['{{solution:1}}', 'Réponse : {{solution:1}}'],
 		['{{ solution }}', 'Réponse : {{ solution }}'],
-		['{{answer}}', 'Tu as écrit {{answer}}']
+		['{{answer}}', 'Tu as écrit {{answer}}'],
+		['{{solution_0}}', 'Regarde : {{solution_0}}'],
+		['{{ solution_1 }}', 'Regarde : {{ solution_1 }}'],
+		['{{answer_1}}', 'Tu as écrit {{answer_1}}']
 	])('refusé : un indice écrit qui contient %s', (_label, hint) => {
 		const all = issues(template({ hint }));
 		expect(all.some((m) => m.startsWith('strict:') && /coup de pouce/i.test(m))).toBe(true);
@@ -122,6 +125,18 @@ describe('coup de pouce : écriture du modèle', () => {
 		expect(issues(t).filter((m) => /coup de pouce/i.test(m))).toHaveLength(2);
 	});
 
+	it('refusé : case « première étape » dont l’étape affiche une solution indexée', () => {
+		const t = template({
+			hintFromFirstStep: true,
+			correction: { steps: ['On trouve {{solution_0}}.', 'Donc c’est juste.'] }
+		});
+		expect(issues(t).filter((m) => /coup de pouce/i.test(m))).toHaveLength(2);
+	});
+
+	it('accepté : une variable dont le nom commence par « solutions »', () => {
+		expect(issues(template({ hint: 'Compte les {{solutions}} possibles.' }))).toEqual([]);
+	});
+
 	it('refusé : indice vide ou trop long', () => {
 		expect(issues(template({ hint: '   ' })).length).toBeGreaterThanOrEqual(2);
 		expect(issues(template({ hint: 'x'.repeat(1001) })).length).toBeGreaterThanOrEqual(2);
@@ -139,6 +154,14 @@ describe('coup de pouce : tirage', () => {
 		const instance = generate(template({ hintFromFirstStep: true, correction: TWO_STEPS }));
 		expect(instance.hint).toBeDefined();
 		expect(instance.hint).toBe(instance.correction?.steps?.[0]);
+	});
+
+	it('une première étape qui se résout en vide ne donne pas d’indice', () => {
+		const t = template({
+			hintFromFirstStep: true,
+			correction: { steps: ['   ', 'Donc {{solution}}.'] }
+		});
+		expect(generate(t).hint).toBeUndefined();
 	});
 
 	it('sans indice : rien', () => {

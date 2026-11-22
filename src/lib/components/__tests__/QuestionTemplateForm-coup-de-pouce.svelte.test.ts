@@ -101,6 +101,27 @@ describe('QuestionTemplateForm — coup de pouce', () => {
 		expect(saved.variations[0]).not.toHaveProperty('hintFromFirstStep');
 	});
 
+	it('cocher « première étape » marque le modèle comme modifié', async () => {
+		const template = {
+			...baseTemplate([
+				{ statement: templateMarkdown('$3 \\times 4 = ?$'), correction: CORRECTION }
+			]),
+			status: 'published'
+		} as QuestionTemplate;
+		const main = document.body.appendChild(document.createElement('main'));
+		await render(QuestionTemplateForm, {
+			target: main,
+			props: { template, onSave: () => {}, onCancel: () => {}, isSubmitting: false }
+		});
+		// Retour en brouillon : la page reste ouverte, rien n'est plus « non sauvegardé »
+		await page.getByRole('button', { name: 'Repasser en brouillon' }).click();
+		await page.getByRole('dialog').getByRole('button', { name: 'Repasser en brouillon' }).click();
+		await expect.element(page.getByText('Modifications non sauvegardées')).not.toBeInTheDocument();
+
+		await page.getByRole('checkbox', { name: FIRST_STEP }).click();
+		await expect.element(page.getByText('Modifications non sauvegardées')).toBeInTheDocument();
+	});
+
 	it('dupliquer une variation copie son coup de pouce', async () => {
 		const saved = await renderAndSave(
 			baseTemplate([

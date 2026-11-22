@@ -19,8 +19,12 @@ import { z } from 'zod';
 // Constantes
 export const HINT_MAX_LENGTH = 1000;
 
-/** `{{solution}}`, `{{solution:1}}`, `{{ solution_2 }}`, `{{answer}}`… */
-const ANSWER_PLACEHOLDER = /\{\{\s*(solution|answer)\b/;
+/**
+ * `{{solution}}`, `{{solution:1}}`, `{{ solution_2 }}`, `{{answer}}`, `{{answer_1}}`…
+ * (`\b` laisserait passer `_` : `solution_0` est injectée par `correction-resolver.ts`).
+ * Une variable du modèle qui vaut la réponse (`{{b2}}`) ne se voit pas.
+ */
+const ANSWER_PLACEHOLDER = /\{\{\s*(?:solution|answer)(?![A-Za-z])/;
 
 export const hintSchema = z
 	.string()

@@ -324,6 +324,12 @@ Branche `feat/idees-format-indice-moteur` (worktree `ubumaths-wt-idees-format-in
   `setHintFromFirstStep`, `buildTemplate` et la duplication les gardent.
 - Tests : `coup-de-pouce.test.ts` (17, 12 rouges avant le code), `QuestionTemplateForm-coup-de-pouce`
   (5, 4 rouges sans le formulaire) ; suites `questions` et `validation` vertes (8 552).
+- Relecture `code-reviewer` (Sonnet). Corrigé (tests rouges puis verts) : `\b` laissait passer
+  `{{solution_0}}` / `{{answer_1}}` (regex `(?![A-Za-z])`) ; l'instantané du formulaire ignorait le
+  coup de pouce (« Modifications non sauvegardées » muet) ; indice résolu en vide → aucun indice.
+  Laissé : une variable qui vaut la réponse (`{{b2}}`) ne se voit pas (dit dans la doc) ; le texte
+  écrit revient si on décoche la case. Note pour la PR élève : `{{if:…}}` est rendu côté navigateur,
+  l'indice doit passer par le même rendu que les étapes de correction.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 

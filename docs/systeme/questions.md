@@ -1542,15 +1542,15 @@ indice que l'élève ouvre s'il est bloqué. Par variation, au choix (`hint.ts`)
 écrit par l'auteur (variables, `{{eval:…}}`, 1 000 caractères au plus), ou `hintFromFirstStep: true`,
 la première étape de la correction (celle de la variation, sinon la partagée). Refusés par les deux
 schémas (`refineHints`, éditeur JSON strict et route d'écriture, qui sans ces champs les retirerait) :
-un indice qui contient `{{solution…}}` ou `{{answer}}`, les deux à la fois, et la case « première
+un indice qui contient `{{solution…}}` ou `{{answer…}}` (`solution_0`, `solution:2`, `answer_1` compris ; une variable du modèle qui vaut la réponse ne se voit pas), les deux à la fois, et la case « première
 étape » sur une correction de moins de deux étapes ou dont la première affiche `{{solution}}`. Une
 première étape qui calcule la réponse sans `{{solution}}` ne se voit pas : l'auteur qui coche en
 répond (mesure du 2026-11-22 : 991 variations publiées sur 7 685 ont une seule étape, 635 premières
 étapes affichent `{{solution}}`). Au tirage, `instance.hint` est la première étape déjà résolue, ou
 l'indice résolu comme le corrigé sur sa **propre** source de hasard (`hintSeed`, comme les erreurs
-prévues) : aucun autre tirage ne bouge. La question publique de l'évaluation ne le porte pas (liste
+prévues) : aucun autre tirage ne bouge ; résolu en vide, pas d'indice. La question publique de l'évaluation ne le porte pas (liste
 blanche). Formulaire : carte « Coup de pouce » sous la correction (case « première étape », sinon le
-texte ; la case l'emporte à l'enregistrement), copiée par la duplication. Tests :
+texte ; la case l'emporte à l'enregistrement), copiée par la duplication, comptée dans « Modifications non sauvegardées ». Tests :
 `coup-de-pouce.test.ts`, `QuestionTemplateForm-coup-de-pouce.svelte.test.ts`. L'affichage à l'élève,
 la trace (`with_help`) et la demi-réussite viennent avec la PR suivante.
 

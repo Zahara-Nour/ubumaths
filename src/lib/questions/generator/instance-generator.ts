@@ -1803,6 +1803,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			);
 		}
 
+		// Résolu en vide (`{{if:…}}` faux) : pas de coup de pouce plutôt qu'un bouton vide
+		if (hint !== undefined && String(hint).trim() === '') hint = undefined;
+
 		// 8. Construct instance
 		const instance: QuestionInstance = {
 			templateId: template.id,

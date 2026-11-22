@@ -1181,7 +1181,9 @@
 			variations: variations.map((v) => ({
 				statement: v.statement,
 				variables: v.variables?.length,
-				blanks: v.blanks?.length
+				blanks: v.blanks?.length,
+				hint: v.hint,
+				hintFromFirstStep: v.hintFromFirstStep
 			})),
 			sharedVariables: sharedVariables.length,
 			variationExtras,
