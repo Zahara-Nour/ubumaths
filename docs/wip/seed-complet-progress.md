@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-22, après #2981._
   Palotins, plus **une devinette publiée inventée** par le seed (la prod n'en a qu'une, en
   brouillon). Même méthode qu'au § 8 : plan pur testé sans base, vraies règles de l'appli, preuve
   sur copie isolée avec ses services, pages ouvertes en prof et en élève.
-- **En attente de David** : rien.
+- **En attente de David** : validation de la phase 0 de la PR 3 (§ 9), écrite le 2026-11-22.
 - **Tranché le 2026-11-22** : devinette **inventée** (pas de publication en prod) ; tableau de tâches du prof et signalements de bug **inventés, en
   PR 4** ; modèles de messages : voir si le seed existant les recrée, sinon en inventer en PR 4.
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** (une table d'activité s'invente).
