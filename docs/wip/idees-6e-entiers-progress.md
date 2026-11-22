@@ -6,15 +6,14 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après la relecture de David._
+_Mis à jour le 2026-11-22, après la publication par David._
 
-- **État** : #2998 mergée, migrations jouées en prod. Les 6 modèles (brouillons 818d5e6b, ba899229,
-  e76ab26f ; publiés à variations 98f558e4, b9677e1f, d793de49) **validés par David le 2026-11-22**
-  (de vive voix, aucun verdict enregistré dans `/dev/modeles`).
-- **Prochaine action** : publication des 3 brouillons par David dans l'éditeur (écriture en prod),
-  puis vérifier par MCP qu'ils sont `published` et clore le chantier (versement).
-- **En attente de David** : publier les 3 brouillons ; confirmer que les prénoms d'énoncé (Chloé, Léo,
-  Malo, Rose) ne sont pas ceux d'élèves réels (remarque du `security-auditor`).
+- **État** : les 6 modèles validés par David et **publiés** (vérifié par MCP) : 3 brouillons publiés par
+  `publier-lot.ts --dir scripts/questions/6e-entiers-a --publier` ; variations des 3 publiés en prod
+  depuis le `db:migrate` de #2998. Prénoms d'énoncé confirmés fictifs par David.
+- **Prochaine action** : clore le chantier (rubrique « publiée » dans `idees-ailleurs-repartition.md`,
+  réservations levées, journal archivé) — sur le go de David.
+- **En attente de David** : go pour la clôture.
 - **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; zsh ne découpe pas `$F` ;
   le Chrome connecté n'atteint pas `[::1]:<port>` du Mac mini.
 - **Worktree / branche** : aucun.
