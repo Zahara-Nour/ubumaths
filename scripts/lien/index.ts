@@ -39,6 +39,7 @@ import {
 	pickHttpsPort,
 	pruneRegistry,
 	relaunchCommand,
+	servedPorts,
 	supabasePlan,
 	type Registry,
 	type ServeLink
@@ -77,8 +78,33 @@ function tailnetHostname(): string {
 	return parsed.data.Self.DNSName.replace(/\.$/, '');
 }
 
+function serveStatus(): unknown {
+	const out = tailscale(['serve', 'status', '--json']).trim();
+	if (!out) return {};
+	try {
+		return JSON.parse(out);
+	} catch {
+		throw new LienError('État de Tailscale Serve illisible : rien n’est publié ni retiré.');
+	}
+}
+
 function serveLinks(): ServeLink[] {
-	return parseServeStatus(JSON.parse(tailscale(['serve', 'status', '--json']) || '{}'));
+	return parseServeStatus(serveStatus());
+}
+
+/**
+ * Publie un port, après avoir relu l'état : une autre session a pu prendre le
+ * port HTTPS entre le choix et la commande, et Serve écraserait son lien.
+ */
+function serve(httpsPort: number, localPort: number): void {
+	const status = serveStatus();
+	const current = parseServeStatus(status).find((link) => link.httpsPort === httpsPort);
+	if (current?.localPort === localPort) return;
+	if (current || servedPorts(status).includes(httpsPort))
+		throw new LienError(
+			`Le port ${httpsPort} du tailnet vient d'être pris par une autre session : relancer pnpm lien.`
+		);
+	tailscale(['serve', '--bg', `--https=${httpsPort}`, `http://localhost:${localPort}`]);
 }
 
 /** Tous les ports TCP où un programme du Mac écoute. */
@@ -160,9 +186,10 @@ function publish(wantedPort: number | null): void {
 	const port = pickPort(servers, root, wantedPort);
 	const pid = servers.find((server) => server.port === port)?.pid;
 	const hostname = tailnetHostname();
-	const links = serveLinks();
+	const status = serveStatus();
+	const links = parseServeStatus(status);
 	const supabase = supabasePlan(links);
-	const supabaseOrigin = `https://${hostname}:${supabase.httpsPort}`;
+	const supabaseOrigin = new URL(linkUrl(hostname, supabase.httpsPort)).origin;
 
 	const serverEnv = readServerEnv(pid);
 	if (serverEnv === null || !isLocalEnv(readEnvFiles(root), serverEnv, [supabaseOrigin]))
@@ -174,12 +201,7 @@ function publish(wantedPort: number | null): void {
 
 	const notes: string[] = [];
 	if (supabase.publish) {
-		tailscale([
-			'serve',
-			'--bg',
-			`--https=${supabase.httpsPort}`,
-			`http://localhost:${SUPABASE_LOCAL_PORT}`
-		]);
+		serve(supabase.httpsPort, SUPABASE_LOCAL_PORT);
 		notes.push(`Supabase local publié : ${supabaseOrigin} (partagé, jamais retiré par --stop).`);
 	}
 	assertPublished(supabase.httpsPort, SUPABASE_LOCAL_PORT);
@@ -187,13 +209,8 @@ function publish(wantedPort: number | null): void {
 		notes.push('⚠️  Supabase local ne répond pas : pnpm db:start.');
 
 	const existing = links.find((link) => link.localPort === port);
-	const httpsPort =
-		existing?.httpsPort ??
-		pickHttpsPort(
-			links.map((link) => link.httpsPort),
-			listeningPorts()
-		);
-	if (!existing) tailscale(['serve', '--bg', `--https=${httpsPort}`, `http://localhost:${port}`]);
+	const httpsPort = existing?.httpsPort ?? pickHttpsPort(servedPorts(status), listeningPorts());
+	if (!existing) serve(httpsPort, port);
 	assertPublished(httpsPort, port);
 
 	const registry = pruneRegistry(readRegistry(), serveLinks());

@@ -26,7 +26,7 @@ pnpm dev --port <n> --strictPort
 
 pnpm lien            # publie CE serveur, rend le lien, un QR code et les comptes fictifs
 pnpm lien --liste    # tous les liens du Mac mini, avec le chantier de chacun
-pnpm lien --stop     # retire le lien de ce worktree, et lui seul
+pnpm lien --stop     # retire le lien de ce worktree (fait à la main compris), et lui seul
 pnpm lien --port <n> # si deux serveurs tournent dans le worktree
 ```
 
@@ -38,7 +38,9 @@ Ce qu'elle fait :
 - publie Supabase local sur 8443 s'il ne l'est pas encore. Ce lien-là est partagé par tous les
   chantiers : `--stop` ne le retire jamais ;
 - vérifie après coup que chaque lien est « tailnet only » (un lien ouvert par Funnel est retiré) ;
-- avertit si le serveur a été lancé avant le dernier pull, merge ou rebase de la branche
+- s'arrête sans rien publier si l'état de Serve n'a plus la forme connue, ou si le port choisi
+  vient d'être pris par une autre session ;
+- avertit si le serveur a été lancé avant le dernier pull, merge, rebase ou reset de la branche
   (« serveur périmé », cf. plus bas) ;
 - tient le registre des liens par chantier dans `.git/liens-tailnet.json` du dépôt principal
   (commun aux worktrees, jamais commité) : c'est lui qui permet à `--stop` et à `--liste` de

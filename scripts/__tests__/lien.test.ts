@@ -26,6 +26,7 @@ import {
 	pickHttpsPort,
 	pruneRegistry,
 	relaunchCommand,
+	servedPorts,
 	supabasePlan,
 	type Registry,
 	type ServeLink
@@ -104,10 +105,26 @@ describe('lien — état de Serve', () => {
 		]);
 	});
 
-	it('aucun lien : état vide ou sans forme connue', () => {
+	it('aucun lien : état vide', () => {
 		expect(parseServeStatus({})).toEqual([]);
 		expect(parseServeStatus(null)).toEqual([]);
-		expect(parseServeStatus('rien')).toEqual([]);
+	});
+
+	it('état d’une forme inconnue : erreur, jamais « aucun lien » (on publierait par-dessus)', () => {
+		expect(() => parseServeStatus('rien')).toThrow(LienError);
+		expect(() => parseServeStatus({ Web: { [`${HOST}:8444`]: { Handlers: null } } })).toThrow(
+			LienError
+		);
+		expect(() => servedPorts({ Web: [] })).toThrow(LienError);
+	});
+
+	it('ports occupés : liens HTTPS, TCP bruts et chemins autres que / compris', () => {
+		expect(
+			servedPorts({
+				TCP: { '443': { HTTPS: true }, '2222': { TCPForward: 'localhost:22' } },
+				Web: { [`${HOST}:8450`]: { Handlers: { '/api': { Proxy: 'http://localhost:3000' } } } }
+			})
+		).toEqual([443, 2222, 8450]);
 	});
 
 	it('une cible qui n’est pas un port local garde son lien, sans port local', () => {
@@ -251,6 +268,13 @@ describe('lien — serveur périmé', () => {
 
 	it('date du dernier pull, merge ou rebase, en secondes', () => {
 		expect(lastSync(reflog)).toBe(1700002000);
+	});
+
+	it('un reset ou un rebase seul compte aussi', () => {
+		expect(lastSync('HEAD@{1700005000}\treset: moving to origin/main')).toBe(1700005000);
+		expect(lastSync('HEAD@{1700004000}\trebase (finish): returning to refs/heads/x')).toBe(
+			1700004000
+		);
 	});
 
 	it('aucun pull ni merge : rien', () => {

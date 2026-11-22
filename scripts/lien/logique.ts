@@ -68,6 +68,7 @@ const registrySchema = z.record(
 export type Registry = z.infer<typeof registrySchema>;
 
 const serveStatusSchema = z.object({
+	TCP: z.record(z.string(), z.unknown()).optional(),
 	Web: z
 		.record(
 			z.string(),
@@ -125,10 +126,35 @@ function localPortOf(target: string): number | null {
 	}
 }
 
+/**
+ * État de Serve d'une forme inconnue : on s'arrête. Le lire comme « aucun
+ * lien » ferait publier par-dessus les liens des autres sessions.
+ */
+function readServeStatus(json: unknown): z.infer<typeof serveStatusSchema> {
+	if (json === null || json === undefined) return {};
+	const parsed = serveStatusSchema.safeParse(json);
+	if (!parsed.success)
+		throw new LienError(
+			'État de Tailscale Serve illisible (tailscale serve status --json a changé de forme) : rien n’est publié ni retiré.'
+		);
+	return parsed.data;
+}
+
+/**
+ * Tous les ports du tailnet que Serve occupe, liens HTTPS, TCP bruts et
+ * chemins autres que `/` compris : aucun n'est à reprendre.
+ */
+export function servedPorts(json: unknown): number[] {
+	const status = readServeStatus(json);
+	const ports = [...Object.keys(status.TCP ?? {}), ...Object.keys(status.Web ?? {})]
+		.map((key) => Number(key.slice(key.lastIndexOf(':') + 1)))
+		.filter((port) => Number.isInteger(port));
+	return [...new Set(ports)].sort((a, b) => a - b);
+}
+
 /** Les liens de `tailscale serve status --json` (handler `/` seulement), par port HTTPS. */
 export function parseServeStatus(json: unknown): ServeLink[] {
-	const parsed = serveStatusSchema.safeParse(json);
-	if (!parsed.success) return [];
+	const parsed = { data: readServeStatus(json) };
 	const links: ServeLink[] = [];
 	for (const [hostPort, web] of Object.entries(parsed.data.Web ?? {})) {
 		const httpsPort = Number(hostPort.slice(hostPort.lastIndexOf(':') + 1));
@@ -221,7 +247,8 @@ export function listing(
 }
 
 /**
- * Ports HTTPS à retirer pour `--stop` : les liens de CE worktree seulement,
+ * Ports HTTPS à retirer pour `--stop` : les liens de CE worktree seulement
+ * (publiés par `pnpm lien` ou à la main, dès qu'ils mènent à son serveur),
  * jamais celui de Supabase (d'autres chantiers s'en servent).
  */
 export function linksToStop(
@@ -241,13 +268,13 @@ export function linksToStop(
 }
 
 /**
- * Date (secondes) du dernier pull, merge ou rebase du worktree, lue dans
+ * Date (secondes) du dernier pull, merge, rebase ou reset du worktree, lue dans
  * `git reflog --date=unix --format='%gd%x09%gs'`. Un serveur lancé avant sert
  * des modules périmés (« Failed to fetch dynamically imported module »).
  */
 export function lastSync(reflog: string): number | null {
 	for (const line of reflog.split('\n')) {
-		const match = /^HEAD@\{(\d+)\}\t(?:pull|merge|rebase)\b/.exec(line);
+		const match = /^HEAD@\{(\d+)\}\t(?:pull|merge|rebase|reset)\b/.exec(line);
 		if (match) return Number(match[1]);
 	}
 	return null;
