@@ -5,17 +5,15 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Première spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, migrations écrites (PR à ouvrir)._
+_Mis à jour le 2026-11-22, après #3007 et `db:migrate`._
 
-- **État** : 4 brouillons en prod (David, `create-questions --publier`), ids commités. Migrations
-  écrites sur `feat/idees-1re-suites-prod` : `20261122163253_…_rangement_tags` (4 nœuds + tags)
-  et `20261122163231_…_publies_contenu` (26 variations sur 14 publiés) ; tests d'intégration
-  verts, rouges sans les migrations. · **Prochaine action** : `security-auditor`, PR, CI, merge,
-  `db:migrate` (4 conditions réunies si l'audit est sans bloquant) ; puis relecture dans
-  `/dev/modeles` (brouillons : `?point=` ; publiés : série de relecture). · **En attente de
-  David** : rien. · **Pièges en cours** : `migration list --linked` avant `db:migrate` (une autre
-  migration en attente → stop). · **Worktree / branche** : `ubumaths-wt-idees-1re-suites-prod`,
-  `feat/idees-1re-suites-prod`.
+- **État** : en prod : 4 brouillons rangés (nœud + point) et 26 variations ajoutées aux 14
+  publiés (migrations 20261122163231 et 20261122163253, vérifiées par MCP : nombres de variations
+  = fichiers, trigger `updated_at` actif). · **Prochaine action** : relecture dans `/dev/modeles`
+  (skill `idees-rubrique` § 5) : brouillons par `?point=` (1SPE-219, 1SPE-221, 1SPE-229),
+  publiés complétés par une série de relecture (`scripts/series/creer-serie.ts`, David la
+  publie) ; puis verdicts lus en base, corrections, `publier-lot.ts` (David). · **En attente de
+  David** : rien avant la série. · **Pièges en cours** : aucun. · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -83,3 +81,9 @@ _Mis à jour le 2026-11-22, migrations écrites (PR à ouvrir)._
   aux deux questions).
 - Migration de contenu régénérée (prod relue) : 14 migrés, +26 variations, 0 corrigée. Tests
   d'intégration : 47 verts ; sans les migrations, 10 rouges.
+
+### 2026-11-22 — #3007 mergée, migrations en prod
+
+- `security-auditor` : aucun bloquant (deux mineurs hérités de la migration de Terminale : couple
+  `disable`/`enable trigger` hors bloc explicite, `set local` hors transaction). CI verte, merge,
+  `migration list --linked` (seules les deux du lot en attente), `db:migrate` ; état vérifié en prod.
