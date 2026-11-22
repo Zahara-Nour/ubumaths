@@ -6,18 +6,19 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2990._
+_Mis à jour le 2026-11-22, PR moteur de l'idée 5 en cours._
 
-- **État** : idées 1 à 4 terminées (pas en prod). Idée 4 : PR 1 à 4 mergées (#2979, #2983, #2987,
-  #2990 : case « En QCM » par variation dans le panier et l'éditeur de série).
-- **Prochaine action** : idée 5 (coup de pouce), phase 0 validée (§ Idée 5) : PR 1 (migration
-  `answered_with_hint`), puis PR 2 (moteur, éditeur), PR 3 (élève, bilan).
+- **État** : idées 1 à 4 terminées (pas en prod). Idée 5 (coup de pouce) : phase 0 validée,
+  colonne de trace = `with_help` (pas de migration) ; PR moteur et éditeur ouverte.
+- **Prochaine action** : merger la PR moteur, puis PR élève et prof (bouton en Saisie, Flash-cards
+  et révision ; trace `with_help` ; « Difficile » au lieu de « Bien » ; bilan « avec indice »).
 - **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
   en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2).
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod`
-  de #2962 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
-- **Worktree / branche** : `ubumaths-wt-idees-format` gardé pour l'essai (serveur 5176), à retirer
-  ensuite ; nouvelle branche pour l'idée 5.
+  de #2962 (de même pour `hint` avant le déploiement de la PR moteur) ; dédoublonnage du tirage
+  aveugle à la forme (§ Idée 4, PR 3) ; Contrôle blanc sans bouton = défaut de Claude, non tranché.
+- **Worktree / branche** : `ubumaths-wt-idees-format-indice`, `feat/idees-format-indice-moteur` ;
+  `ubumaths-wt-idees-format` gardé pour l'essai de la case « En QCM » (serveur 5176).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -300,10 +301,29 @@ Lieux de trace (lecture du code) : `typing` (Saisie), `flash_cards` (Flash-cards
 En Flash-cards et en révision (auto-évaluées), « Je savais » après un indice ouvert donne
 « Difficile » au lieu de « Bien ».
 
-**Découpage** : PR 1 migration (`skill_attempts.answered_with_hint`, CHECK des lieux) ; PR 2
-moteur et éditeur (champ `hint` et case « première étape » par variation, refus d'un indice qui
-contient `{{solution}}`, résolution au tirage) ; PR 3 élève et prof (bouton, trace, demi-réussite,
-bilan « avec indice »).
+**Colonne de trace (David, 2026-11-22, « je te suis » à la recommandation)** : `skill_attempts.with_help`
+réutilisée (prévue en juin pour un tuteur jamais construit, jamais écrite à vrai, 101 traces en prod
+toutes fausses ; décision 58 : marqueur sans pénalité pour l'acquisition, toujours vraie : la
+demi-réussite ne touche que la date de révision). **Pas de migration.**
+
+**Découpage** : PR moteur et éditeur (champ `hint` et case « première étape » par variation, refus
+d'un indice qui donne la réponse, résolution au tirage) ; PR élève et prof (bouton, trace
+`with_help`, demi-réussite, bilan « avec indice »).
+
+## Idée 5, PR moteur — coup de pouce : schéma, tirage, éditeur (2026-11-22)
+
+Branche `feat/idees-format-indice-moteur` (worktree `ubumaths-wt-idees-format-indice`).
+
+- `hint.ts` : `hintSchema` (texte non vide, 1 000 caractères), `hintIssues` / `refineHints`
+  (contrôles croisés), branchés sur le schéma strict et la route d'écriture (objet non strict : sans
+  les champs, il les RETIRAIT).
+- Tirage : `hint` et `hintFromFirstStep` passent par `resolveVariationWithShared` (et son double de
+  `test-instance-builder.ts`) ; `instance.hint` = première étape résolue, ou indice résolu sur sa
+  source `hintSeed` (aucun tirage décalé, vérifié sur 5 graines).
+- Formulaire : carte « Coup de pouce » (MyCheckbox + MarkdownEditor), `setHint` /
+  `setHintFromFirstStep`, `buildTemplate` et la duplication les gardent.
+- Tests : `coup-de-pouce.test.ts` (17, 12 rouges avant le code), `QuestionTemplateForm-coup-de-pouce`
+  (5, 4 rouges sans le formulaire) ; suites `questions` et `validation` vertes (8 552).
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 

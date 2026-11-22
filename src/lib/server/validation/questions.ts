@@ -24,6 +24,7 @@ import {
 import { refineAssumptionCollisions } from '#lib/questions/answer-assumptions.ts';
 import { genericFunctionNamesSchema } from '#lib/questions/generic-functions.ts';
 import { capitalPairsSchema } from '#lib/questions/capital-pairs.ts';
+import { hintSchema, refineHints } from '#lib/questions/hint.ts';
 
 // Re-export building blocks for downstream consumers (index.ts)
 export {
@@ -59,7 +60,10 @@ const variationSchema = z.object({
 	requiredForm: requiredFormSchema.optional(),
 	validationRules: z.array(validationRuleSchema).optional(),
 	answerFormats: z.record(z.string(), z.string()).optional(),
-	conditions: z.array(z.string()).optional()
+	conditions: z.array(z.string()).optional(),
+	// Coup de pouce (idée 5) : sans eux, l'objet non strict les RETIRERAIT à l'écriture
+	hint: hintSchema.optional(),
+	hintFromFirstStep: z.boolean().optional()
 });
 
 /**
@@ -157,6 +161,7 @@ function refineTemplate(
 	refineSharedCleanCoefficients(data, ctx);
 	refineSharedCapitalPairs(data, ctx);
 	refineSharedRetiredQcm(data, ctx);
+	refineHints(data, ctx);
 }
 
 /**
