@@ -183,3 +183,7 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
+- `idees-tle-suites` (reportées le 2026-11-22, au programme, pour la session de chaque rubrique) :
+  suite définie par une fonction homographique avec l'étude de f (TSA1-44) → rubrique
+  « compléments sur la dérivation » ; suites avec ln, uₙ₊₁ = ln(1 + uₙ) (TSA1-48) → rubrique
+  « logarithme » ; suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration ».
