@@ -2,22 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2986 et #2989._
+_Mis à jour le 2026-11-22, PR 4 en cours (branche `feat/seed-complet-echanges`)._
 
-- **État** : PR 1 (#2977), PR 2 (#2980), #2981 et **PR 3 jeux et récompenses (#2986, § 9-10)** mergées.
-  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
-  (pas lancé).
-- **Prochaine action** : PR 4, échanges et famille (§ 5), par sa **phase 0** à faire valider : messages
-  privés, tuteur, notifications, marché, modération, parents, inscriptions, cahier de texte et liens
-  de partage (§ 4), tableau de tâches du prof et signalements de bug (inventés, tranché), modèles de
-  messages (voir si le seed les recrée). Même méthode qu'aux § 8 et § 10.
-- **En attente de David** : rien. Les deux pannes trouvées en PR 3 (§ 10) sont corrigées par #2989
-  (Palotins du prof lus à travers le profil ; requête et widget morts des succès retirés, choix de
-  David : retirer plutôt que réafficher).
+- **État** : PR 1 à 3 mergées (#2977, #2980, #2981, #2986, #2989). **PR 4 échanges et famille (§ 11-12)** :
+  codée, relue (aucun bloquant), prouvée sur copie isolée ; PR à ouvrir puis merger CI verte.
+  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`.
+- **Prochaine action** : après le merge de la PR 4, PR 5 images (§ 5 : celles du contenu, jamais les
+  pièces jointes), puis doc et versement.
+- **En attente de David** : la messagerie privée de l'appli est cassée (§ 12, « trouvé grâce au
+  seed ») : PR à part pour la réparer, ou seulement la noter ?
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
-  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev. Élèves soumis au
-  consentement : délai renouvelé par le seed (sinon lecture seule). Arrondis : `centiemes()` comme
-  `ROUND` de Postgres. Nouveau worktree à créer pour la PR 4 (`feat/seed-complet-echanges`).
+  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev ; serveur de test par
+  `pnpm exec vite dev` (pas `pnpm dev`, qui met à jour la base de dev), à relancer après un merge de
+  `main` (sinon 401 partout). Lignes d'une même table : mêmes colonnes (`uniformiser`).
 
 ---
 
@@ -446,7 +443,63 @@ la lit), `marketplace_listing_views` et `message_moderation_logs` (aucun lecteur
 élève, prof et admin : messagerie, modération, tuteur, notifications, marché et un échange, consentements,
 carnet, import, cahier de texte et avancement, pages publiques des liens, tableau de tâches, signalements).
 
+## 12. PR 4 : échanges et famille (2026-11-22, branche `feat/seed-complet-echanges`)
+
+- **Un plan pur de plus**, `scripts/db-seed-riche/echanges.ts` (tests : `scripts/__tests__/db-seed-echanges.test.ts`,
+  46 cas, sans base), écrit dans 35 tables (`ECRITURE_ECHANGES`), plus les réglages du marché et du carnet
+  ajoutés aux réglages copiés. Liste de nettoyage exportée (`NETTOYAGE_ECHANGES`) : un test exige que
+  chaque table écrite y soit, ou parte avec son parent par cascade.
+- **Fait par la base, pas écrit** : accord des consentements (`grant_parental_consent`), échange entre
+  amis conclu (`execute_trade`), ventes conclues (`accept_proposal_atomic`, rôle service, au nom du
+  vendeur : l'échange naît conclu, carte et Gidouilles déplacées), nombre de messages du tuteur et de
+  propositions d'une annonce, index de recherche des messages, révocation du lien de l'élève qui a
+  arrêté le carnet.
+- **Écarts au plan, chacun imposé par une mesure** :
+  - messages privés écrits par la règle recopiée de `send_private_message`, pas par la fonction : elle
+    date tout de `now()` ;
+  - pas de « refus » de consentement (l'état n'existe pas) : demandes **échues** à la place ;
+  - l'élève hors classe n'a pas de demande de consentement (le plan l'écarte) ;
+  - `message_inbox` sort de `JAMAIS` (remplie à l'envoi) ; passent dans `JAMAIS`, sans lecteur :
+    `terms_acceptances`, `marketplace_listing_views`, `message_moderation_logs`,
+    `marketplace_trade_offers`, `parent_exception_episodes`, `kanban_card_assignees` ;
+  - `creerEleves` reprend le nom complet (« Élève NN ») : sans lui, l'index de recherche refuse le
+    message d'un élève ;
+  - les jetons des liens de partage sont tirés au hasard cryptographique par `index.ts` (audit : tirés
+    de la graine publique, ils se recalculaient depuis le dépôt).
+- **Preuve** (copie isolée `ubumaths-essai`, ports 544xx, services compris ; serveur du worktree
+  branché dessus) : seed rejoué trois fois après les corrections de relecture et la mise à jour depuis
+  `main`, mêmes nombres : 22 messages privés (27 lignes de boîte), 9 réactions, 2 signalements, 2
+  restrictions, 32 conversations du tuteur (192 messages), 11 annonces du prof (36 lectures), 29
+  annonces du marché, 6 échanges conclus (1 entre amis, 5 ventes) et 1 en cours, 12 demandes de
+  consentement (4 accordées), 5 parents au carnet, 3 élèves en attente, 22 séances, 12 liens, 10
+  tâches, 10 signalements de bug ; nombres des PR 2 et 3 inchangés d'un passage à l'autre. Pages lues
+  connecté : élève (annonces, échanges, cahier de texte, carnet, signalements, inventaire après
+  échange), prof (modération et signalements, statistiques du tuteur, consentements, carnet de la
+  classe, cahier de texte d'une séance, avancement, tableau de tâches), admin (import, signalements),
+  pages publiques (cours, cahier de texte, exercice partagé ; le lien expiré est refusé).
+- **Relectures** : `security-auditor`, aucun bloquant ; corrigé : jetons de partage (ci-dessus).
+  Écartés : `detecterFuite` sur l'inventé (tout y est constant), réglage du marché qui resterait (la
+  copie vide la table à chaque passage). `code-reviewer`, rien de bloquant ; corrigé : ventes conclues
+  par la vraie fonction (le plan écrivait un état que l'appli ne produit jamais), réactions et
+  signalements datés après leur message, auteur d'un contact parent saisi par l'élève, absent qui
+  reçoit le message de sa classe (en-tête et test), tests circulaires retirés, message d'erreur qui
+  nomme les lignes faites à la main qui bloquent une relance.
+- **Limites connues** : l'historique du tuteur côté élève se lit par exercice, et les conversations
+  inventées n'en ont pas (visibles dans les statistiques du prof seulement) ; la page publique du
+  carnet ne s'ouvre pas (la base ne garde que l'empreinte des liens) ; dates de mise à jour et de fin
+  écrites par les déclencheurs à l'heure du seed (aucune page ne les lit).
+- **Trouvé grâce au seed, hors PR** — **messagerie privée cassée dans l'appli**, quelles que soient
+  les données, sur `main` aussi :
+  - boîte de réception : l'appli appelle `/api/messages/inbox?status=inbox` sans dossier, et le schéma
+    refuse `folderId` nul → 400 (`src/routes/api/messages/inbox/+server.ts:22`) ;
+  - envoyés : l'appli appelle `/api/messages/sent` sans `limit` → 400 (« doit être > 0 ») ; avec
+    `limit`, la réponse de `get_user_sent_messages` n'a ni `id`, ni `sender_name`, ni `created_at`
+    attendus par `messageResponseSchema` → 500 (`src/lib/server/validation/messages.ts:55`).
+  - En prod : 3 messages privés, le dernier en octobre 2025.
+
 ## 6. Historique
+
+- **2026-11-22** : PR 4 (échanges et famille), § 11-12.
 
 - **2026-11-22** : #2981, compteurs de « Mes révisions » (trouvé grâce au seed).
 - **2026-11-22** : PR 2 (suivi et travail scolaire), § 8.
