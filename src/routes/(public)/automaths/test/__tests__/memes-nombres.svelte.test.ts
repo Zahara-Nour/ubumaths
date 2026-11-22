@@ -49,11 +49,21 @@ async function seedTemplatesCache() {
 }
 
 /** Ouvre le lien, et rend les nombres affichés, dans l'ordre */
+/** Contrôle blanc, Course aux nombres : passe la page d'attente (« C'est parti ! ») */
+async function startSeries(main: HTMLElement) {
+	const start = () =>
+		[...main.querySelectorAll('button')].find((b) => b.textContent?.trim() === "C'est parti !");
+	await vi.waitFor(() => expect(start()).toBeDefined());
+	start()!.click();
+	await tick();
+}
+
 async function numbersShown(query: Record<string, string>): Promise<string[]> {
 	url.current = new URL(`http://localhost/automaths/test?${new URLSearchParams(query)}`);
 	await seedTemplatesCache();
 	const main = document.body.appendChild(document.createElement('main'));
 	const screen = await render(Page, { target: main, props: { data: { user: null } } as never });
+	if (query.mode === 'interactive' || query.mode === 'course') await startSeries(main);
 	let numbers: string[] = [];
 	await vi.waitFor(() => {
 		numbers = [...(main.textContent ?? '').matchAll(/Nombre tiré : (\d{6})/g)].map((m) => m[1]);
@@ -168,11 +178,14 @@ describe('« Mêmes nombres pour tous » : Recommencer', () => {
 		await seedTemplatesCache();
 		const main = document.body.appendChild(document.createElement('main'));
 		const screen = await render(Page, { target: main, props: { data: { user: null } } as never });
+		await startSeries(main);
 		await vi.waitFor(() => expect(shown(main)).not.toBe(''));
 		const before = shown(main);
 
 		await click(main, 'Terminer');
 		await click(main, restartLabel);
+		// « Recommencer » ramène à la page d'attente
+		await startSeries(main);
 		await vi.waitFor(() => expect(button(main, 'Terminer')).toBeDefined());
 		const after = shown(main);
 

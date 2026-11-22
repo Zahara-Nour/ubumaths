@@ -66,6 +66,7 @@ describe('/demo/questions', () => {
 		await render(Page);
 
 		await openTab('Contrôle blanc');
+		await page.getByRole('button', { name: "C'est parti !" }).click();
 		await expect.element(page.getByText('Question 1 sur 4')).toBeInTheDocument();
 		expect(page.getByText(/Connecte-toi/).elements()).toHaveLength(0);
 
@@ -84,6 +85,7 @@ describe('/demo/questions', () => {
 		await render(Page);
 
 		await openTab('Course aux nombres');
+		await page.getByRole('button', { name: "C'est parti !" }).click();
 		await expect.element(page.getByText(/Résous/).first()).toBeInTheDocument();
 		expect(page.getByText(/Calcule/).elements().length).toBeGreaterThanOrEqual(3);
 	});
