@@ -143,8 +143,11 @@ Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lo
 
 1. David lance `create-questions --publier` (brouillons). Je commite les ids écrits en tête des
    fichiers.
-2. Migrations de rangement (nœud + tag) et de contenu, chacune avec son test d'intégration (rouge
-   sans la migration, mention `@migration-de-donnees` en tête, copiée du gabarit) et `security-auditor`.
+2. Migrations de rangement (nœud + tag) et de contenu, **générées** toutes les deux, avec leur
+   fixture (aucun test à écrire) : champ `rangement` dans les fichiers puis
+   `scripts/questions/migration-rangement.ts --dir …` (modèle neuf : `{ noeud, point }` ; modèle
+   publié qui gagne un niveau : `{ niveauxAjoutes }`), et `migration-contenu.ts --dir …`.
+   `security-auditor` sur la PR.
 3. `db:migrate` selon les 4 conditions de `CLAUDE.md`. ⚠️ Avec plusieurs sessions,
    `migration list --linked` d'abord : si **une autre** migration est en attente, stop.
 
