@@ -6,16 +6,19 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, recompte fait, verdicts esquissés (§ « Verdicts esquissés »)._
+_Mis à jour le 2026-11-22, page de phase 0 publiée._
 
-- **État** : recompte fait (55 = 53 lignes + 6N2autoB et 6N2K-4, à ajouter au relevé) ; sondage B et C
-  dans le code conforme (6N2B-5, 6N2C-3, 6N2D, 6N2H) ; nos modèles relevés en prod ; verdicts
-  esquissés plus bas · **Prochaine action** : ajouter les 2 lignes et les verdicts au relevé, puis la
-  page à cocher (artefact, capacité `db`) avec les fiches F1 à F12 · **En attente de David** : rien.
-- **Pièges en cours** : aucun (copie périmée du journal dans le worktree supprimée sur demande de David).
-- **Worktree / branche** : voir ci-dessus ; il ne servira qu'à la PR des migrations.
+- **État** : relevé complet (55 lignes, § « Verdicts » : 18 ✅, 35 dans F1 à F12, 6N2A-2 et 6N2autoB-2 en
+  questions) ; page à cocher publiée : https://claude.ai/artifact/RB9aMR1HFa8uG5wrPUG1T3 (F1 à F11,
+  F12a, F12b, Q1 à Q3, F8 posée en question) · **Prochaine action** : lire les réponses (ArtifactData,
+  collection `verdicts`, 17 attendues) puis écrire le gros lot · **En attente de David** : ses réponses
+  dans la page.
+- **Pièges en cours** : F7, vérifier que le bloc `operation` pose décimal × décimal avant d'écrire ; F4
+  ajoute le niveau 6 à 590169c4 (CM2-043) ; e3d87166 est sur 6-116, pas 6-115.
+- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux` (`docs/idees-6e-decimaux`, en retard sur
+  main) ; il ne servira qu'à la PR des migrations.
 
-## Verdicts esquissés (2026-11-22, à reporter dans le relevé)
+## Verdicts esquissés (2026-11-22, reportés dans le relevé)
 
 - ✅ rien : 6N2A-1, 6N2A-4, 6N2A (CM1 39e7d0a5, 1ed5202f, 613817ea ; 6e b586bdf8, 4b0b03b7) ;
   6N2autoB-1, -3, -4 (CM2 58f7a8dd, f316dfa7, a62ccb82) ; 6N2B-1, -3, -5 (6-115, ddbce820) ; 6N2C-1,
@@ -58,3 +61,5 @@ _Mis à jour le 2026-11-22, recompte fait, verdicts esquissés (§ « Verdicts e
   « divisible / diviseur / multiple » à partir d'une division (faf57d3b est de 5e, Oui / Non et QCM).
 - 2026-11-22 : les 4 agents ont lu le code source des exercices ; tables versées dans le relevé.
 - 2026-11-22 : recompte, sondage B et C, relevé de nos modèles (6e, CM1, CM2) ; verdicts esquissés.
+- 2026-11-22 : 6N2autoB et 6N2K-4 ajoutés au relevé, verdicts versés (6N2C-3 rangé en F4) ; page de
+  phase 0 publiée (F12 coupée en F12a 6-123 et F12b 6-124).
