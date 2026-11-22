@@ -7,10 +7,9 @@ _Mis à jour le 2026-11-22, après #3011._
 - **État** : PR 1 à 4 mergées (#2977, #2980, #2981, #2986, #2989, **#3011 échanges et famille, § 11-12**).
   La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
   (pas lancé).
-- **Prochaine action** : PR 5 images, phase 0 écrite au § 13 (copier les 4 compartiments publics,
-  réécrire les adresses de la prod en adresses locales) ; coder dès sa validation.
-- **En attente de David** : validation du § 13 ; la messagerie privée de l'appli est cassée (§ 12, « trouvé grâce au
-  seed ») : PR à part pour la réparer, ou seulement la noter ?
+- **Prochaine action** : PR 5 images ouverte (§ 13-14) ; après merge : versement du chantier
+  (journal archivé). Messagerie privée : réparation décidée, PR à part (§ 14).
+- **En attente de David** : rien.
 - **Worktree / branche** : `ubumaths-wt-seed-complet-images` · `feat/seed-complet-images`.
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
   (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev ; serveur de test par
@@ -498,7 +497,7 @@ carnet, import, cahier de texte et avancement, pages publiques des liens, tablea
     attendus par `messageResponseSchema` → 500 (`src/lib/server/validation/messages.ts:55`).
   - En prod : 3 messages privés, le dernier en octobre 2025.
 
-## 13. PR 5 : images — phase 0 (2026-11-22, branche `feat/seed-complet-images`, **à valider par David**)
+## 13. PR 5 : images — phase 0 (2026-11-22, branche `feat/seed-complet-images`, **validée par David le 2026-11-22 : « je valide »**)
 
 **Mesures** (prod en lecture seule, des comptes seulement) :
 
@@ -532,8 +531,30 @@ qu'il n'a pas déjà. Les 4 autres (pièces jointes, captures, documents de chap
 
 Puis, dans la même PR ou la suivante : doc (`docs/systeme/` de la base locale) et versement du journal.
 
+## 14. PR 5 : images (2026-11-22, branche `feat/seed-complet-images`)
+
+- **Messagerie privée cassée (§ 12)** : David, le 2026-11-22 : « oui on répare dans une PR à part ».
+  Hors de cette PR ; chantier à ouvrir.
+- **Code** : `scripts/db-seed-riche/images.ts` (pur, tests `scripts/__tests__/db-seed-images.test.ts`,
+  13 cas) ; `index.ts` copie les fichiers après la validation du contenu, réécrit les adresses dans la
+  copie du contenu. `SEED_RICHE_API_URL` pour viser une copie isolée.
+- **Écart au plan, imposé par une mesure** : les 95 images d'exercices sont rangées sous le dossier du
+  prof de la prod (son identifiant). Le contenu copié le remplace déjà par le prof local : les chemins
+  des fichiers suivent la même règle (`cheminLocal`), et un chemin qui garderait un identifiant de la
+  prod est écarté. Premier passage sans cette règle : 85 liens d'exercices en 404.
+- **Preuve** (copie isolée `ubumaths-essai`, ports 544xx, avec le stockage) : 1er passage 394 fichiers
+  copiés ; relance : 0 téléchargé, 394 déjà là, autres nombres identiques. En base : 0 adresse de la
+  prod restante (exercices, cartes VIP), 50 exercices et 45 cartes vers le stockage local ; liens
+  vérifiés un par un : exercices 85/85, cartes 44/45 (`2048-bomb-3`, carte inactive : fichier absent
+  en prod aussi, limite prévue). Par le relais du serveur de dev (chemin du tailnet) : 200 pour une
+  image de chaque compartiment. Pages (`pnpm voir`) : presques-évaluations, démineur, admin des
+  cartes VIP, sans requête en échec liée aux images.
+- **Trouvé, hors PR** : 4 cartes Mathémo citent `/images/vip-cards/mathemo-*.webp`, absents de
+  `static/` → 404 (pas lié au stockage).
+
 ## 6. Historique
 
+- **2026-11-22** : PR 5 (images), § 13-14.
 - **2026-11-22** : PR 4 (échanges et famille), § 11-12.
 
 - **2026-11-22** : #2981, compteurs de « Mes révisions » (trouvé grâce au seed).

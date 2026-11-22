@@ -242,6 +242,18 @@ pour les élèves fictifs) ou `JAMAIS` (traces, secrets, liens vers l'extérieur
 n'est dans aucune liste, ou quand une table copiée pointe vers une table qui ne l'est pas : **après un
 `pnpm db:types` qui amène une table nouvelle, la classer** (dans le doute : `JAMAIS`). Après la copie,
 le seed vérifie lui-même chaque lien des tables copiées : une ligne orpheline annule toute la copie.
+
+**Images du contenu** (`scripts/db-seed-riche/images.ts`) : les fichiers des 4 compartiments publics
+du contenu (`question-images`, `exercise-images`, `vip-card-images`, `parody-evaluations`, ~15 Mo)
+sont copiés dans le stockage local, et l'adresse de la prod écrite dans le contenu copié (exercices,
+cartes VIP) devient l'adresse locale : aucune page locale ne lit une image sur la prod. Le dossier du
+prof de la prod devient celui du prof local ; un chemin qui garderait un identifiant de la prod n'est
+pas copié. Une relance ne retélécharge que les fichiers absents ou de taille différente. Les pièces
+jointes, captures de signalements et documents de chapitre (`COMPARTIMENTS_JAMAIS`) restent vides ;
+`scripts/__tests__/db-seed-images.test.ts` échoue quand un compartiment créé par le dépôt n'est dans
+aucune des deux listes. Copie isolée de la pile : `SEED_RICHE_API_URL` (adresse de son API) à côté de
+`SEED_RICHE_PG_URL`.
+
 **Ce que font les élèves fictifs** : ils sont rangés dans les classes de l'année en cours (6 par
 classe), avec le niveau de leur classe sur leur profil, et leur activité est inventée par quatre plans
 purs, testés sans base : `activite.ts` (fiches assignées, Gidouilles, discussion, amitiés),

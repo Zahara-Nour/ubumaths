@@ -16,6 +16,9 @@
  * 5. Génère leur activité (./activite.ts), déclencheurs ACTIFS : l'historique
  *    des récompenses se remplit comme si l'app avait tout fait.
  *
+ * 5 bis. Copie les fichiers des compartiments publics du contenu (./images.ts) dans le
+ *    stockage local, et réécrit dans le contenu copié l'adresse de la prod en adresse locale.
+ *
  * 6. Met d'abord la base à jour de ses migrations (../db-a-jour), puis la marque
  *    « contenu de la prod » : `pnpm db:a-jour` sait alors qu'une migration de
  *    contenu déjà faite en prod n'a rien à faire ici.
@@ -26,7 +29,7 @@
  * sous le verrou Supabase : `pnpm db:seed-riche`.
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { parse } from 'dotenv';
 import { randomInt } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -55,6 +58,13 @@ import {
 	planEchanges,
 	PREFIXE_ECHANGES
 } from './echanges';
+import {
+	cheminLocal,
+	COMPARTIMENTS_COPIES,
+	fichiersATelecharger,
+	reecrireAdresses,
+	type Fichier
+} from './images';
 import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
 
@@ -1028,16 +1038,96 @@ async function ecrireMathoux(db: pg.Client, maintenant: Date): Promise<number> {
 	return total;
 }
 
+/** Fichiers d'un compartiment de la prod, dossiers parcourus (la liste ne descend pas seule). */
+async function fichiersDeProd(prod: SupabaseClient, compartiment: string): Promise<Fichier[]> {
+	const fichiers: Fichier[] = [];
+	const dossiers = [''];
+	while (dossiers.length > 0) {
+		const dossier = dossiers.shift() as string;
+		for (let debut = 0; ; debut += PAGE) {
+			const { data, error } = await prod.storage
+				.from(compartiment)
+				.list(dossier, { limit: PAGE, offset: debut, sortBy: { column: 'name', order: 'asc' } });
+			if (error) throw new Error(`liste de ${compartiment}/${dossier} : ${error.message}`);
+			for (const entree of data ?? []) {
+				const chemin = dossier ? `${dossier}/${entree.name}` : entree.name;
+				// Un dossier n'a ni identifiant ni métadonnées
+				if (entree.id === null) dossiers.push(chemin);
+				else if (entree.name !== '.emptyFolderPlaceholder') {
+					fichiers.push({ chemin, taille: Number(entree.metadata?.size ?? -1) });
+				}
+			}
+			if (!data || data.length < PAGE) break;
+		}
+	}
+	return fichiers;
+}
+
+/**
+ * Copie les fichiers des compartiments publics du contenu dans le stockage local. Un
+ * fichier déjà là, de même taille, n'est pas retéléchargé ; un fichier que la prod ne
+ * rend pas est sauté et compté.
+ */
+async function copierImages(
+	prod: SupabaseClient,
+	local: SupabaseClient,
+	db: pg.Client,
+	correspondance: ReadonlyMap<string, string>,
+	interdits: { ids: readonly string[]; noms: readonly string[] }
+): Promise<{ copies: number; deja: number; ecartes: number; sautes: string[] }> {
+	const bilan = { copies: 0, deja: 0, ecartes: 0, sautes: [] as string[] };
+	for (const compartiment of COMPARTIMENTS_COPIES) {
+		const enProd: (Fichier & { source: string })[] = [];
+		for (const f of await fichiersDeProd(prod, compartiment)) {
+			const chemin = cheminLocal(f.chemin, correspondance, interdits);
+			if (chemin === null) bilan.ecartes++;
+			else enProd.push({ chemin, taille: f.taille, source: f.chemin });
+		}
+		const presents = await db.query(
+			`select name, coalesce((metadata->>'size')::bigint, -1) taille
+			   from storage.objects where bucket_id = $1`,
+			[compartiment]
+		);
+		const aCopier = fichiersATelecharger(
+			enProd,
+			presents.rows.map((r) => ({ chemin: r.name as string, taille: Number(r.taille) }))
+		);
+		bilan.deja += enProd.length - aCopier.length;
+		for (const f of aCopier) {
+			const { data, error } = await prod.storage.from(compartiment).download(f.source);
+			if (error || !data) {
+				// Chemin LOCAL dans le message : jamais d'identifiant de la prod à l'écran
+				bilan.sautes.push(`${compartiment}/${f.chemin}`);
+				continue;
+			}
+			const envoi = await local.storage
+				.from(compartiment)
+				.upload(f.chemin, data, { upsert: true, contentType: data.type || undefined });
+			if (envoi.error) {
+				throw new Error(`envoi de ${compartiment}/${f.chemin} en local : ${envoi.error.message}`);
+			}
+			bilan.copies++;
+		}
+		console.log(
+			`  ${compartiment.padEnd(38)} ${String(enProd.length).padStart(5)} fichier(s), ${aCopier.length} téléchargé(s)`
+		);
+	}
+	return bilan;
+}
+
 async function main() {
 	const envProd = parse(readFileSync('.env'));
 	const envLocal = parse(readFileSync('.env.local'));
 	const source = envProd.PUBLIC_SUPABASE_URL;
 	const cle = envProd.SUPABASE_SERVICE_ROLE_KEY;
-	const cible = envLocal.PUBLIC_SUPABASE_URL;
+	// Copie isolée de la pile (ports 544xx) : son adresse, comme SEED_RICHE_PG_URL pour Postgres
+	const cible = process.env.SEED_RICHE_API_URL ?? envLocal.PUBLIC_SUPABASE_URL;
+	const cleLocale = envLocal.SUPABASE_SERVICE_ROLE_KEY;
 	const pgUrl =
 		process.env.SEED_RICHE_PG_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres';
 	verifierCibles({ source, cible, pg: pgUrl });
 	if (!cle) throw new Error('SUPABASE_SERVICE_ROLE_KEY absente de .env');
+	if (!cleLocale) throw new Error('SUPABASE_SERVICE_ROLE_KEY absente de .env.local');
 
 	const prod = createClient(source, cle, { auth: { persistSession: false } });
 
@@ -1132,7 +1222,10 @@ async function main() {
 				await colonnesUtilisateur(db, table),
 				correspondance
 			);
-			const lignes = gardees.map((l, i) => neutraliser(table, remplacerIds(l, correspondance), i));
+			// Images : l'adresse de la prod devient celle du stockage local (copié plus bas)
+			const lignes = gardees.map((l, i) =>
+				neutraliser(table, reecrireAdresses(remplacerIds(l, correspondance), source, cible), i)
+			);
 			for (const ligne of lignes) {
 				const fuite = detecterFuite(ligne, interdits);
 				if (fuite) throw new Error(`${table} : une ligne contient ${fuite}. Rien n’est écrit.`);
@@ -1154,6 +1247,11 @@ async function main() {
 		}
 		console.log(`  ${liens.verifies} liens vérifiés, aucune ligne orpheline.`);
 		await db.query('commit');
+
+		// Fichiers des images, après le contenu qui les cite : une image manquante ne casse
+		// qu'une image, jamais la copie.
+		const local = createClient(cible, cleLocale, { auth: { persistSession: false } });
+		const images = await copierImages(prod, local, db, correspondance, interdits);
 
 		// Rejoué après la copie : la classe et la configuration de dev, effacées par
 		// le remplacement des tables, reviennent (on conflict do nothing).
@@ -1189,6 +1287,9 @@ async function main() {
 			}
 		);
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
+		console.log(
+			`✅ Images : ${images.copies} fichier(s) copié(s), ${images.deja} déjà là${images.ecartes ? `, ${images.ecartes} écarté(s) (dossier d’un autre utilisateur)` : ''}${images.sautes.length ? `, ${images.sautes.length} absent(s) de la prod, sauté(s) : ${images.sautes.join(', ')}` : ''}.`
+		);
 		console.log(
 			`✅ ${NB_ELEVES} élèves fictifs répartis dans ${nbClasses} classe(s), plus un hors classe : eleve01…eleve${NB_ELEVES + 1}@local.test / local-eleve`
 		);
