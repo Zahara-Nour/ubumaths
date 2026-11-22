@@ -1048,7 +1048,8 @@ async function fichiersDeProd(prod: SupabaseClient, compartiment: string): Promi
 			const { data, error } = await prod.storage
 				.from(compartiment)
 				.list(dossier, { limit: PAGE, offset: debut, sortBy: { column: 'name', order: 'asc' } });
-			if (error) throw new Error(`liste de ${compartiment}/${dossier} : ${error.message}`);
+			// Compartiment seul dans le message : un dossier peut porter l'identifiant d'un utilisateur
+			if (error) throw new Error(`liste du compartiment ${compartiment} : ${error.message}`);
 			for (const entree of data ?? []) {
 				const chemin = dossier ? `${dossier}/${entree.name}` : entree.name;
 				// Un dossier n'a ni identifiant ni métadonnées
@@ -1066,7 +1067,8 @@ async function fichiersDeProd(prod: SupabaseClient, compartiment: string): Promi
 /**
  * Copie les fichiers des compartiments publics du contenu dans le stockage local. Un
  * fichier déjà là, de même taille, n'est pas retéléchargé ; un fichier que la prod ne
- * rend pas est sauté et compté.
+ * rend pas, ou que le stockage local refuse, est sauté et compté avec sa raison : une
+ * image ne fait jamais échouer le seed.
  */
 async function copierImages(
 	prod: SupabaseClient,
@@ -1074,8 +1076,18 @@ async function copierImages(
 	db: pg.Client,
 	correspondance: ReadonlyMap<string, string>,
 	interdits: { ids: readonly string[]; noms: readonly string[] }
-): Promise<{ copies: number; deja: number; ecartes: number; sautes: string[] }> {
-	const bilan = { copies: 0, deja: 0, ecartes: 0, sautes: [] as string[] };
+): Promise<{
+	copies: number;
+	deja: number;
+	ecartes: number;
+	sautes: { chemin: string; raison: string }[];
+}> {
+	const bilan = {
+		copies: 0,
+		deja: 0,
+		ecartes: 0,
+		sautes: [] as { chemin: string; raison: string }[]
+	};
 	for (const compartiment of COMPARTIMENTS_COPIES) {
 		const enProd: (Fichier & { source: string })[] = [];
 		for (const f of await fichiersDeProd(prod, compartiment)) {
@@ -1097,14 +1109,21 @@ async function copierImages(
 			const { data, error } = await prod.storage.from(compartiment).download(f.source);
 			if (error || !data) {
 				// Chemin LOCAL dans le message : jamais d'identifiant de la prod à l'écran
-				bilan.sautes.push(`${compartiment}/${f.chemin}`);
+				bilan.sautes.push({
+					chemin: `${compartiment}/${f.chemin}`,
+					raison: `prod : ${error?.message ?? 'réponse vide'}`
+				});
 				continue;
 			}
 			const envoi = await local.storage
 				.from(compartiment)
 				.upload(f.chemin, data, { upsert: true, contentType: data.type || undefined });
 			if (envoi.error) {
-				throw new Error(`envoi de ${compartiment}/${f.chemin} en local : ${envoi.error.message}`);
+				bilan.sautes.push({
+					chemin: `${compartiment}/${f.chemin}`,
+					raison: `local : ${envoi.error.message}`
+				});
+				continue;
 			}
 			bilan.copies++;
 		}
@@ -1128,6 +1147,11 @@ async function main() {
 	verifierCibles({ source, cible, pg: pgUrl });
 	if (!cle) throw new Error('SUPABASE_SERVICE_ROLE_KEY absente de .env');
 	if (!cleLocale) throw new Error('SUPABASE_SERVICE_ROLE_KEY absente de .env.local');
+	// La clé locale ouvre le stockage où l'on écrit : celle de la prod ici serait une erreur de
+	// configuration qui permettrait d'écrire en prod par un tunnel
+	if (cleLocale === cle) {
+		throw new Error('.env.local porte la clé de service de la prod : refus d’écrire.');
+	}
 
 	const prod = createClient(source, cle, { auth: { persistSession: false } });
 
@@ -1248,11 +1272,6 @@ async function main() {
 		console.log(`  ${liens.verifies} liens vérifiés, aucune ligne orpheline.`);
 		await db.query('commit');
 
-		// Fichiers des images, après le contenu qui les cite : une image manquante ne casse
-		// qu'une image, jamais la copie.
-		const local = createClient(cible, cleLocale, { auth: { persistSession: false } });
-		const images = await copierImages(prod, local, db, correspondance, interdits);
-
 		// Rejoué après la copie : la classe et la configuration de dev, effacées par
 		// le remplacement des tables, reviennent (on conflict do nothing).
 		await db.query(readFileSync('supabase/seed/dev_accounts.sql', 'utf8'));
@@ -1286,10 +1305,25 @@ async function main() {
 				);
 			}
 		);
+		// Fichiers des images, en dernier : contenu, élèves et activité sont déjà écrits, une
+		// image manquante ne casse qu'une image.
+		const local = createClient(cible, cleLocale, { auth: { persistSession: false } });
+		const images = await copierImages(prod, local, db, correspondance, interdits).catch(
+			(e: unknown) => {
+				throw new Error(
+					`Contenu, élèves et activité sont écrits, mais la copie des images s’est arrêtée (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` : les fichiers déjà copiés ne sont pas retéléchargés.`
+				);
+			}
+		);
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
 		console.log(
-			`✅ Images : ${images.copies} fichier(s) copié(s), ${images.deja} déjà là${images.ecartes ? `, ${images.ecartes} écarté(s) (dossier d’un autre utilisateur)` : ''}${images.sautes.length ? `, ${images.sautes.length} absent(s) de la prod, sauté(s) : ${images.sautes.join(', ')}` : ''}.`
+			`✅ Images : ${images.copies} fichier(s) copié(s), ${images.deja} déjà là${images.ecartes ? `, ${images.ecartes} écarté(s) (chemin avec un identifiant de la prod)` : ''}.`
 		);
+		if (images.sautes.length > 0) {
+			// Une coupure réseau saute tout ce qui reste : on le dit, sans dérouler des centaines de lignes
+			console.log(`⚠️  ${images.sautes.length} image(s) non copiée(s), par exemple :`);
+			for (const x of images.sautes.slice(0, 5)) console.log(`     ${x.chemin} — ${x.raison}`);
+		}
 		console.log(
 			`✅ ${NB_ELEVES} élèves fictifs répartis dans ${nbClasses} classe(s), plus un hors classe : eleve01…eleve${NB_ELEVES + 1}@local.test / local-eleve`
 		);

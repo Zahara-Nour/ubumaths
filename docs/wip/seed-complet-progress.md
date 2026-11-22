@@ -549,6 +549,16 @@ Puis, dans la même PR ou la suivante : doc (`docs/systeme/` de la base locale) 
   en prod aussi, limite prévue). Par le relais du serveur de dev (chemin du tailnet) : 200 pour une
   image de chaque compartiment. Pages (`pnpm voir`) : presques-évaluations, démineur, admin des
   cartes VIP, sans requête en échec liée aux images.
+- **Relectures** : `code-reviewer` et `security-auditor`, aucun bloquant. Corrigé : copie des images
+  déplacée en DERNIER (un échec ne laisse plus la base sans élèves) ; un fichier refusé par la prod ou
+  par le stockage local est sauté avec sa raison, jamais d'arrêt, et le compte rendu en montre 5 au
+  plus ; message de liste sans dossier (identifiant du prof de prod) ; taille inconnue = retéléchargé ;
+  `cheminLocal` sans la garde d'e-mail (`logo@hd.webp` n'en est pas une) mais refusant tout
+  identifiant qui n'est pas un compte local ; refus si `.env.local` porte la clé de la prod. Audit :
+  les 4 compartiments ne reçoivent de dépôt que du prof, de l'admin ou de la clé de service, donc
+  aucun fichier d'élève possible. Laissé : adresses `/render/image/` ou signées non réécrites (aucune
+  mesurée, compartiments publics). Preuve refaite sur une copie neuve : mêmes nombres, 129/130 liens
+  en 200 (le 130e : `2048-bomb-3`).
 - **Trouvé, hors PR** : 4 cartes Mathémo citent `/images/vip-cards/mathemo-*.webp`, absents de
   `static/` → 404 (pas lié au stockage).
 

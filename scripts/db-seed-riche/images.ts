@@ -14,7 +14,7 @@
  * Module pur (testé sans réseau ni base : scripts/__tests__/db-seed-images.test.ts).
  */
 
-import { detecterFuite, remplacerIds } from './regles';
+import { remplacerIds } from './regles';
 
 /** Compartiments publics du contenu : copiés fichier par fichier, même chemin. */
 export const COMPARTIMENTS_COPIES: readonly string[] = [
@@ -40,28 +40,39 @@ export interface Fichier {
 
 /**
  * Fichiers à télécharger : ceux de la prod absents en local, ou présents avec
- * une autre taille. Une relance ne retélécharge rien de ce qui est déjà là.
+ * une autre taille. Une relance ne retélécharge rien de ce qui est déjà là. Une
+ * taille inconnue (négative), d'un côté ou de l'autre : téléchargé.
  */
 export function fichiersATelecharger<T extends Fichier>(
 	prod: readonly T[],
 	local: readonly Fichier[]
 ): T[] {
 	const tailles = new Map(local.map((f) => [f.chemin, f.taille]));
-	return prod.filter((f) => tailles.get(f.chemin) !== f.taille);
+	return prod.filter((f) => {
+		const locale = tailles.get(f.chemin);
+		return f.taille < 0 || locale === undefined || locale < 0 || locale !== f.taille;
+	});
 }
 
 /**
  * Chemin local d'un fichier de la prod : identifiants du prof et de l'admin remplacés
  * par ceux des comptes locaux. `null` si le chemin garde un identifiant de la prod
- * (un autre utilisateur) ou une adresse : le fichier n'est pas copié.
+ * (un autre utilisateur), ou tout autre identifiant que celui d'un compte local : le
+ * fichier n'est pas copié. Pas de garde d'adresse e-mail
+ * ici : `logo@hd.webp` n'en est pas une.
  */
 export function cheminLocal(
 	chemin: string,
 	correspondance: ReadonlyMap<string, string>,
-	interdits: { ids: readonly string[]; noms: readonly string[] }
+	interdits: { ids: readonly string[] }
 ): string | null {
 	const local = remplacerIds(chemin, correspondance);
-	return detecterFuite({ chemin: local }, interdits) ? null : local;
+	if (interdits.ids.some((id) => local.includes(id))) return null;
+	// Défense en profondeur : un identifiant qui n'est pas celui d'un compte local (compte
+	// supprimé, absent des profils) n'est pas copié non plus
+	const comptesLocaux = new Set(correspondance.values());
+	const uuids = local.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi) ?? [];
+	return uuids.every((u) => comptesLocaux.has(u.toLowerCase())) ? local : null;
 }
 
 function prefixe(base: string, compartiment: string): string {

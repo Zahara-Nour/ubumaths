@@ -68,6 +68,15 @@ describe('fichiersATelecharger', () => {
 		expect(fichiersATelecharger(prod, prod)).toEqual([]);
 	});
 
+	it('taille inconnue d’un côté ou de l’autre : téléchargé', () => {
+		expect(
+			fichiersATelecharger([{ chemin: 'a.png', taille: -1 }], [{ chemin: 'a.png', taille: -1 }])
+		).toHaveLength(1);
+		expect(
+			fichiersATelecharger([{ chemin: 'a.png', taille: 10 }], [{ chemin: 'a.png', taille: -1 }])
+		).toHaveLength(1);
+	});
+
 	it('taille différente : retéléchargé ; absent : téléchargé', () => {
 		const local = [
 			{ chemin: 'a.png', taille: 10 },
@@ -141,6 +150,16 @@ describe('cheminLocal', () => {
 		expect(cheminLocal('super-bonus@0.5x.webp', correspondance, interdits)).toBe(
 			'super-bonus@0.5x.webp'
 		);
+	});
+
+	it('identifiant inconnu des profils (compte supprimé) : jamais copié', () => {
+		expect(
+			cheminLocal('bbbbbbbb-0000-4000-8000-000000000009/x.png', correspondance, interdits)
+		).toBeNull();
+	});
+
+	it('un « @ » de nom de fichier n’est pas une adresse : copié', () => {
+		expect(cheminLocal('logo@hd.webp', correspondance, interdits)).toBe('logo@hd.webp');
 	});
 
 	it('dossier d’un autre utilisateur de la prod : jamais copié', () => {
