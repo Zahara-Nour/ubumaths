@@ -10,8 +10,8 @@ _Mis à jour le 2026-11-22, après #2990._
 
 - **État** : idées 1 à 4 terminées (pas en prod). Idée 4 : PR 1 à 4 mergées (#2979, #2983, #2987,
   #2990 : case « En QCM » par variation dans le panier et l'éditeur de série).
-- **Prochaine action** : idée 5 (coup de pouce), phase 0 à écrire et à faire valider par David
-  (aucune question encore posée ; texte de l'idée : `idees-format-exercices.md`, idée 5).
+- **Prochaine action** : idée 5 (coup de pouce) : phase 0 écrite, quatre questions posées à David
+  (§ Idée 5 — phase 0) ; rien à coder avant ses réponses.
 - **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
   en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2).
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod`
@@ -255,6 +255,37 @@ validé (Q1 C : case par variation, absente sans erreur prévue, à plusieurs ca
   dialogue : « si un tirage ne le permet pas, reste en saisie », titre « Réponse en QCM » pour un
   modèle à une variation. Faux : « seule l'évaluation tire en QCM » (`automaths/test` aussi). Laissé :
   un élève qui ouvre le lien du prof garde son QCM sans le voir, comme les variations choisies.
+
+## Idée 5 — coup de pouce : phase 0 (2026-11-22, questions posées, sans réponse)
+
+Déjà tranché (`idees-format-exercices.md`, décisions de David, 2026-11-21) : coup de pouce **oui** ;
+masqué en évaluation notée (la question publique est une liste blanche : rien à retirer) ; indice
+ouvert puis réponse juste = **demi-réussite** pour la révision espacée (« Difficile »,
+`answerGrade`) ; piste : l'indice pourrait être la première étape de la correction.
+
+Mesure en prod (2026-11-22) : 2 644 modèles publiés, 2 567 avec correction écrite (7 685 variations),
+aucun avec étapes générées. Première étape inutilisable telle quelle comme indice : correction en une
+seule étape pour 991 variations, première étape qui affiche `{{solution}}` pour 635, et beaucoup
+d'autres calculent la réponse elles-mêmes (« Le double de $b$ est $2b$ car… »). Seule une lecture
+humaine dit si une première étape aide sans donner la réponse.
+
+Comportements proposés : bouton « Coup de pouce » sous l'énoncé, seulement si la variation a un
+indice ; un clic l'ouvre, il reste ouvert ; le chrono continue ; les variables de l'indice sont
+celles du tirage. À l'écriture, un indice qui contient la réponse attendue est refusé.
+
+Questions posées à David :
+
+- **Q1 — d'où vient l'indice ?** A : l'auteur l'écrit (champ neuf par variation) ; B : la première
+  étape de la correction, automatiquement ; C : A, et l'auteur peut cocher « la première étape de la
+  correction sert d'indice ». Recommandation : C (B donnerait la réponse trop souvent).
+- **Q2 — où l'élève le voit-il ?** Séries d'entraînement et révisions : oui. Course aux nombres
+  (chronométrée) et combats de la descente : recommandation non (vitesse, jeu).
+- **Q3 — le prof voit-il « avec indice » dans le bilan ?** Il faut alors une colonne de trace
+  (migration, comme `answered_as_choice` ; mêmes lignes, mêmes lecteurs : personne ne gagne d'accès).
+  Recommandation : oui.
+- **Q4 — modèles existants** : aucun n'a d'indice. Recommandation : le champ seulement, puis des
+  indices dans les nouveaux modèles et dans le lot « nombres et calculs » de Seconde (sa revue est
+  déjà au programme) ; pas de passe sur les 2 644.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
