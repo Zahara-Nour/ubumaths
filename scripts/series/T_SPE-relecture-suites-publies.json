@@ -1,0 +1,44 @@
+{
+	"id": "5189a0c6-3c03-4691-bfe4-4b729c855095",
+	"title": "Relecture — suites de Terminale, 6 modèles publiés complétés",
+	"grade": "T_SPE",
+	"description": "Relecture dans /dev/modeles des 6 modèles publiés de Tle spé auxquels le chantier idees-tle-suites a ajouté des variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Limites usuelles d'une suite",
+			"templateId": "3d7d1d25-98eb-47c1-9841-299b2d6666ae",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Évolution en pourcentage avec apport constant",
+			"templateId": "651907b3-cb88-498f-92a1-d782b0a3fa1d",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "uₙ₊₁ = f(uₙ) : conjecturer la limite sur l'escalier",
+			"templateId": "667a3618-fa5a-42bb-8541-046cf0e4ff03",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Limite infinie par comparaison : minoration, majoration",
+			"templateId": "7063979e-b3b5-4b12-8ff9-e6df2c05b23c",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Suite arithmético-géométrique : expression de uₙ en fonction de n",
+			"templateId": "9f14d672-e460-4161-a9bf-da2b06f734f3",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Récurrence sur une suite définie par une fonction croissante",
+			"templateId": "d1aee0b9-ccca-4e3b-bbeb-80d4fff6f53d",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
