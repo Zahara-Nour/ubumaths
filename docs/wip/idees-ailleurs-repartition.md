@@ -70,7 +70,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session     |
 | ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ------------------- |
 | Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`  |
-| Limites de fonctions                                                           | TSA2        | 18        | prise (2026-11-22)   | `idees-tle-limites` |
+| Limites de fonctions                                                           | TSA2        | 18        | phase 0              | `idees-tle-limites` |
 | Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre                |                     |
 | Continuité des fonctions                                                       | TSA4        | 6         | libre                |                     |
 | Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                     |
@@ -179,5 +179,9 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   suite définie par une fonction homographique avec l'étude de f (TSA1-44) → rubrique
   « compléments sur la dérivation » ; suites avec ln, uₙ₊₁ = ln(1 + uₙ) (TSA1-48) → rubrique
   « logarithme » ; suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration ».
+- `idees-tle-limites` (2026-11-22, au programme, pour la session de chaque rubrique) : limite de
+  ln(axⁿ + k) par composition (TSA2-35) → rubrique « logarithme » ; variations d'une fonction
+  homographique et fonction auxiliaire g(x) = eˣ − (ax + b) (TSA2-34, TSA2-52) → rubrique
+  « compléments sur la dérivation ».
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
