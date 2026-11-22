@@ -1,4 +1,5 @@
 {
+	"id": "1b97da49-7eda-4b32-aa3b-21b0c07bfd90",
 	"title": "Conjecturer la limite en +∞ d'une fonction sur sa courbe",
 	"description": "Lecture graphique de la limite en +∞ : limite finie (palier, cloche), infinie, ou pas de limite (oscillation) (pièges : f(0), bord de la fenêtre, oscillation amortie)",
 	"grades": ["T_SPE"],

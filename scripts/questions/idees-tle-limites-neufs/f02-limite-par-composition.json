@@ -1,4 +1,5 @@
 {
+	"id": "a1e540c9-041f-4c68-9c7b-75b8c11fa950",
 	"title": "Limite d'une fonction par composition",
 	"description": "Poser X = u(x), chercher la limite de X, puis celle de la fonction de référence : e^(kx), e^(axⁿ + k), √(axᵐ + k), (ax + k)ᵖ, √(e^(kx) + m²) (pièges : signe de xⁿ en −∞, exponentielle vers −∞ ou vers 1, racine oubliée)",
 	"grades": ["T_SPE"],
