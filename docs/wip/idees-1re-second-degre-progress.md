@@ -8,9 +8,9 @@ Idées reprises d'ailleurs, rubrique « Fonctions polynomiales de degré 2 » de
 
 _Mis à jour le 2026-11-22, rubrique prise._
 
-- **État** : relevé écrit, phase 0 publiée (page à cocher, 16 fiches) · **Prochaine action** :
-  lire les verdicts (`ArtifactData list verdicts` sur https://claude.ai/artifact/JeWK9CeELHWtAMj2fkmzBy),
-  puis écrire le gros lot · **En attente de David** : F1 à F15 et Q1 · **Pièges en cours** : aucun ·
+- **État** : phase 0 tranchée (toutes mes recommandations) · **Prochaine action** :
+  écrire le gros lot (7 modèles neufs, 13 variations de 9 publiés), puis PR · **En attente de
+  David** : rien · **Pièges en cours** : aucun ·
   **Worktree / branche** : `../ubumaths-wt-idees-1re-second-degre`, `docs/idees-1re-second-degre`
   (pas encore de commit ; la branche servira au lot).
 
@@ -41,3 +41,9 @@ _Mis à jour le 2026-11-22, rubrique prise._
   1SPE-386 possible.
 - Question d'accès : personne (rangement de modèles, variations ajoutées).
 - Questions ouvertes, sans réponse = non tranchées : F1 à F15, Q1.
+
+### 2026-11-22 — phase 0 tranchée
+
+- David : « je valide tes recos ». Donc F1 à F14 oui comme décrits, F15 rien ; F3 rangé sur
+  1SPE-246 ; Q1 : outil n° 51 de `outils-manquants.md`, aucune variation « pas factorisable ».
+- Les 9 modèles publiés à compléter sont réservés dans le tableau de répartition.
