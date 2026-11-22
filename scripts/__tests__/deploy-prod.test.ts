@@ -17,6 +17,9 @@
  *   sans rien créer ; l'essai, lui, n'est pas bloqué ;
  * - avant toute création : une migration du commit à livrer pas encore jouée en
  *   prod arrête tout, sauf nommée par `--migration-apres` ; prod illisible → arrêt ;
+ * - avant toute création aussi : le schéma de la prod doit être celui du `database.ts`
+ *   du commit à livrer (« prod = dépôt ») ; sauté avec `--migration-apres` ou
+ *   `--sans-controle-types` ;
  * - après la mise en prod : construction de Vercel attendue, puis le site doit
  *   servir la nouvelle construction et ses pages publiques répondre ; un échec
  *   sort en erreur sans rien défaire ; `--verifier` rejoue ce contrôle seul.
@@ -77,6 +80,8 @@ function env(): NodeJS.ProcessEnv {
 		DEPLOY_PROD_ATTENTE_MAX: '0',
 		DEPLOY_PROD_ATTENTE_SITE_MAX: '0',
 		DEPLOY_PROD_MIGRATIONS_PROD: `bash ${join(racine, 'bin/migrations-prod')}`,
+		DEPLOY_PROD_TYPES_PROD: `bash ${join(racine, 'bin/types-prod')}`,
+		TYPES_PROD_APPELS: join(racine, 'types-prod-appels'),
 		DEPLOY_PROD_SANTE: `bash ${join(racine, 'bin/sante')}`,
 		DEPLOY_PROD_SITE: 'https://site.test',
 		MIGRATIONS_JOUEES: join(racine, 'migrations-prod'),
@@ -237,6 +242,20 @@ if grep -qx panne "$MIGRATIONS_JOUEES" 2>/dev/null; then echo "failed to connect
 printf '{"migrations":['
 while read -r m; do [ -n "$m" ] && printf '{"local":"%s","remote":"%s","time":"x"},' "$m" "$m"; done < <(cat "$MIGRATIONS_JOUEES" 2>/dev/null)
 printf '{"local":"20990101000000","remote":"","time":"x"}]}\n'
+`
+	);
+	// Bouchon du contrôle « prod = dépôt » (scripts/db-types/prod.ts) : note le commit
+	// comparé dans $TYPES_PROD_APPELS ; $TYPES_PROD_ETAT = ecart → la prod diffère du dépôt.
+	writeFileSync(
+		join(racine, 'bin/types-prod'),
+		`#!/bin/bash
+echo "$1" >>"$TYPES_PROD_APPELS"
+if [ "\${TYPES_PROD_ETAT:-}" = ecart ]; then
+	echo "⛔ Le schéma public de la prod n'est pas celui de database.ts." >&2
+	echo "   Tables.classes.Row.couleur" >&2
+	exit 1
+fi
+echo "✅ prod = dépôt : le schéma public de la prod est celui de database.ts (3 éléments comparés)."
 `
 	);
 	// Bouchon de curl, pour le site : la construction en ligne suit la branche
@@ -786,6 +805,73 @@ describe('deploy-prod.sh — avant : les migrations jouées en prod', () => {
 		expect(r.sortie).toContain('failed to connect');
 		expect(git(local, 'tag')).toBe('');
 		expect(production()).toBeNull();
+	});
+});
+
+/** Les commits passés au contrôle « prod = dépôt », dans l'ordre. */
+function typesCompares(): string[] {
+	const f = join(racine, 'types-prod-appels');
+	return existsSync(f) ? readFileSync(f, 'utf8').trim().split('\n') : [];
+}
+
+describe('deploy-prod.sh — avant : la prod est la base que le dépôt décrit', () => {
+	it('même schéma : une ligne le dit, c’est le commit à livrer qui est comparé', () => {
+		const vert = pousser('success', 'src/a.ts');
+		pousser(null, 'docs/apres.md');
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('✅ prod = dépôt');
+		expect(typesCompares()).toEqual([vert]);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('écart : arrêt avant la version, l’écart est montré', () => {
+		pousser('success', 'src/a.ts');
+		decor = { TYPES_PROD_ETAT: 'ecart' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('Tables.classes.Row.couleur');
+		expect(r.sortie).toContain('Contrôle « prod = dépôt »');
+		expect(r.sortie).toContain('pnpm db:types:prod');
+		expect(git(local, 'tag')).toBe('');
+		expect(production()).toBeNull();
+	});
+
+	it('--essai fait le même contrôle', () => {
+		pousser('success', 'src/a.ts');
+		decor = { TYPES_PROD_ETAT: 'ecart' };
+		const r = deployer('--essai');
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('Tables.classes.Row.couleur');
+	});
+
+	it('une migration pas jouée arrête d’abord : le schéma n’est pas comparé', () => {
+		pousserMigrations(['20260102000000'], []);
+		decor = { TYPES_PROD_ETAT: 'ecart' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('ne sont pas jouées en prod');
+		expect(typesCompares()).toEqual([]);
+	});
+
+	it('--migration-apres : écart attendu, contrôle sauté et dit, rappel de le rejouer', () => {
+		pousserMigrations(['20260102000000'], []);
+		decor = { TYPES_PROD_ETAT: 'ecart' };
+		const r = deployer('--migration-apres', '20260102000000');
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toMatch(/« prod = dépôt » sauté.*20260102000000.*pnpm db:types:prod/);
+		expect(typesCompares()).toEqual([]);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('--sans-controle-types : sauté et dit, la livraison se fait', () => {
+		pousser('success', 'src/a.ts');
+		decor = { TYPES_PROD_ETAT: 'ecart' };
+		const r = deployer('--sans-controle-types');
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('sauté (--sans-controle-types)');
+		expect(typesCompares()).toEqual([]);
+		expect(production()).toBe(version().sha);
 	});
 });
 
