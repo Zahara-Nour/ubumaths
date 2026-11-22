@@ -200,6 +200,9 @@ cookie `Secure`, Supabase local, limiteur de connexion).
 **Voir une page sans écran** : [voir-une-page.md](voir-une-page.md) (`pnpm voir <page>` : image au
 format iPhone, erreurs de console, requêtes en échec, dans `.captures/voir/`).
 
+**Retour envoyé depuis la page** : [signaler-depuis-la-page.md](signaler-depuis-la-page.md) (bouton
+« Signaler » du serveur de dev, lu par `pnpm retours` : note, page, écran, compte, erreurs de console).
+
 **Supabase local.** Deux piles pour tout le dépôt : celle de **dev** (ports 54321-54329, `project_id`
 `ubumaths`, verrou `supabase`) et celle de **test** (ports 5532x, `project_id` `ubumaths-test`, verrou
 `supabase-test`). `pnpm test:integration [fichier]`, `test:integration:watch` et `test:definer-guard`
