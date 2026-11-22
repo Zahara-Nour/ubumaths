@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-22, après #3010._
   rangés, 3 tags, +15 variations sur les 7 publiés) · **Prochaine action** : relecture dans
   `/dev/modeles` (brouillons : `?noeud=` Limites de fonctions ; publiés : série de relecture,
   `scripts/series/creer-serie.ts`), puis corrections et `publier-lot.ts` · **En attente de
-  David** : F3 (a, b ou c, voir Historique « lot écrit ») · **Pièges en cours** : `{{e}}` interdit
-  (Euler) · **Worktree / branche** : aucun (retiré après #3010).
+  David** : rien · **Pièges en cours** : `{{e}}` interdit (Euler) ; F3 attend l'outil n° 50 de
+  `outils-manquants.md` · **Worktree / branche** : aucun (retiré après #3010).
 
 ## Historique
 
@@ -88,3 +88,10 @@ _Mis à jour le 2026-11-22, après #3010._
 - David : « je suis tes recos » (rangement). `security-auditor` : aucun bloquant (mineur : la
   migration de contenu change `updated_at` des publiés, voulu). CI verte, merge,
   `migration list --linked` (seules les deux du lot en attente), `db:migrate` ; état vérifié en prod.
+
+### 2026-11-22 — F3 tranché : attendre l'outil
+
+- Reco : (b). Sans le tableau, F3 se réduit à quatre limites d'une homographique déjà entraînées
+  (04ec9518, variation (x + b)/(x − a) en un point ; 7844be9a, quotients en ±∞) ; le geste neuf
+  est de placer les limites dans le tableau. David : « je suis tes recos ». F3 sera écrit quand
+  l'outil n° 50 (cacher une limite infinie dans un tableau de variations) existera.
