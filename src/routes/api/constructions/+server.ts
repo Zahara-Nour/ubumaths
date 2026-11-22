@@ -161,7 +161,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			description: description ?? null,
 			format,
 			// `script` est une colonne jsonb : conversion explicite plutôt que cast.
-			script: toJson(format === 'json' ? script : {}),
+			// Le schéma exige `script` pour le format json : `{}` ne sert qu'au format dsl.
+			script: toJson(format === 'json' ? (script ?? {}) : {}),
 			dsl_script: format === 'dsl' ? (dsl_script ?? null) : null,
 			is_public
 		} satisfies TablesInsert<'constructions'>)

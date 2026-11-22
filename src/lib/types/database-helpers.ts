@@ -619,9 +619,21 @@ export type JournalEntryPoint = Omit<Tables<'journal_entry_points'>, 'source'> &
  * would perform anyway: `undefined` fields disappear, `Date` becomes a string,
  * and a cyclic structure throws here rather than at the network boundary.
  */
-export function toJson<T>(value: T): Json {
-	return JSON.parse(JSON.stringify(value ?? null)) as Json;
+export function toJson<T>(value: T): JsonDe<T> {
+	return JSON.parse(JSON.stringify(value ?? null)) as JsonDe<T>;
 }
+
+/**
+ * Valeur d'une colonne jsonb obligatoire (`NOT NULL`) : tout JSON sauf `null`. C'est le type que
+ * `pnpm db:types` donne à ces colonnes.
+ */
+export type JsonRequis = NonNullable<Json>;
+
+/**
+ * Ce que `toJson` rend pour une valeur de type `T` : `JsonRequis` quand `T` ne peut être ni `null`
+ * ni `undefined` (la conversion ne fabrique pas de `null`), `Json` sinon, et pour `unknown`.
+ */
+export type JsonDe<T> = unknown extends T ? Json : T extends null | undefined ? Json : JsonRequis;
 
 // =============================================================================
 // RPC PARAMETERS

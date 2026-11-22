@@ -773,8 +773,8 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   `!inner` qui efface la ligne parente ; policies permissives combinées en OU). Tout est dans
   [rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md) : à lire avant d'écrire **ou de
   retirer** une policy.
-- **`pnpm db:types` génère depuis la PRODUCTION.** Une fonction pas encore en prod n'existe pas dans
-  `database.ts` : migration d'abord (PR, `db:migrate`, `db:types`), code qui l'appelle ensuite. Ne
+- **`pnpm db:types` génère depuis les migrations du dépôt**, jamais depuis la prod : migration,
+  `pnpm db:types` et code qui l'appelle dans la même PR ; la CI régénère et compare. Ne
   jamais éditer `database.ts` ; les alias vont dans `src/lib/types/database-helpers.ts`.
 - **Le baseline local ≠ la prod pour le schéma `auth`.** `20260616220000_baseline_schema.sql` crée
   le trigger `on_auth_user_created` sur `auth.users`, mais le baseline n'est jamais appliqué à la prod :

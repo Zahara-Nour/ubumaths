@@ -450,8 +450,8 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
 - Migrations dans `supabase/migrations/`, poussées par `pnpm db:migrate` aux **quatre conditions** de
   CLAUDE.md ; une migration destructive ne passe **jamais** sans David. Additive : au merge ;
   destructive : après le `deploy:prod` qui livre le code qui n'en dépend plus.
-- `pnpm db:types` génère `database.ts` **depuis la production** : une fonction SQL et le code qui
-  l'appelle demandent deux PR.
+- `pnpm db:types` génère `database.ts` **depuis les migrations de la branche** (pile de test, jamais
+  la prod) : une fonction SQL et le code qui l'appelle tiennent dans la même PR.
 - Interroger la prod : MCP Supabase en **lecture seule**.
 - Détail : [base-de-donnees.md](base-de-donnees.md), [rls-echecs-silencieux.md](rls-echecs-silencieux.md),
   [procedure-restauration.md](procedure-restauration.md).

@@ -731,7 +731,7 @@ async function restoreExercises(
 						// et une sauvegarde ne coche jamais Google implicitement.
 						search_indexed: consistentSearchIndexed(record.is_public, record.search_indexed),
 						distribution_mode: record.distribution_mode,
-						variables: record.variables as Json,
+						variables: record.variables as NonNullable<Json>,
 						variations: record.variations as Json | null,
 						shared: record.shared as Json | null,
 						resources: record.resources as Json | null,
@@ -843,7 +843,7 @@ async function restoreTemplates(
 					.update({
 						title: record.title,
 						description: record.description,
-						template_data: record.template_data as Json,
+						template_data: record.template_data as NonNullable<Json>,
 						is_system: record.is_system,
 						updated_at: new Date().toISOString()
 					})

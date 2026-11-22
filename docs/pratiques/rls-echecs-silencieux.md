@@ -171,20 +171,17 @@ paquet assigné passe déjà par le client service). La séquence a suivi l'ordr
 ci-dessus : code déployé, PUIS migration. Preuve :
 `tests/integration/paquet-programme-rempli-par-le-serveur.test.ts`.
 
-## La contrainte d'ordre : `db:types` génère depuis la PRODUCTION
+## Les types suivent les migrations de la branche, plus la prod
 
-`pnpm db:types` interroge le projet distant. Une RPC qui n'est pas encore en
-production n'existe pas dans `database.ts`, donc **tout code qui l'appelle ne
-peut pas typechecker**.
+`pnpm db:types` génère `database.ts` depuis une base locale qui porte exactement
+les migrations de la branche (la pile de test). Une nouvelle fonction SQL et le
+code qui l'appelle tiennent donc dans **une seule PR** : migration, `pnpm db:types`,
+code. La CI régénère le fichier et le compare (`pnpm db:types:verifier`).
 
-Conséquence : livrer une nouvelle fonction SQL et le code qui l'utilise demande
-**deux PR**, dans cet ordre :
-
-1. la migration seule → merge → `db:migrate` → `db:types` ;
-2. le code qui l'appelle.
-
-Rencontré trois fois dans la même session. Un test peut contourner
-(`const F = 'ma_fonction' as never`), du code de production ne devrait pas.
+Jusqu'au 2026-11-22, les types venaient de la production, et il fallait deux PR
+(migration, `db:migrate`, `db:types`, puis le code). Les tests d'intégration
+écrits alors contournent encore (`const F = 'ma_fonction' as never`, client non
+typé) : ce n'est plus nécessaire.
 
 ⚠️ Si une migration doit partir AVANT d'autres déjà écrites, `pnpm db:migrate`
 (`supabase db push`) les pousse toutes. Les déplacer temporairement hors de `supabase/migrations/`

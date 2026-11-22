@@ -81,18 +81,18 @@ Architecture des tests : [tests.md](tests.md).
 
 ## Base de données (Supabase)
 
-| Commande                              | Effet                                                                | Notes                                  |
-| ------------------------------------- | -------------------------------------------------------------------- | -------------------------------------- |
-| `pnpm db:start` / `db:stop`           | Supabase local (Docker)                                              |                                        |
-| `pnpm db:reset`                       | Recrée la base locale depuis le baseline                             | Verrouillé                             |
-| `pnpm db:a-jour`                      | Base de dev : joue les migrations en attente, sans rien effacer      | Auto avant `pnpm dev`                  |
-| `pnpm db:test:stop` / `db:test:reset` | Pile de test : l'arrêter / la reconstruire                           |                                        |
-| `pnpm db:seed-riche`                  | Contenu de la prod + 30 élèves fictifs (`eleveNN@local.test`)        | Après `db:reset`                       |
-| `pnpm db:neuf`                        | Remise à neuf : `db:reset` puis `db:seed-riche`, sous un seul verrou | Rare ; demande « oui » (`--oui`)       |
-| `pnpm db:dev-accounts`                | Comptes de dev locaux                                                |                                        |
-| `pnpm db:migrate`                     | `supabase db push` vers la base **EU de production**                 | Conditions : CLAUDE.md §Migrations     |
-| `pnpm db:types`                       | Régénère `src/lib/types/database.ts` **depuis la production**        | Une RPC pas encore en prod n'y est pas |
-| `pnpm db:link` / `db:status`          | Lie le projet / compte les profils manquants                         |                                        |
+| Commande                              | Effet                                                                                       | Notes                                                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `pnpm db:start` / `db:stop`           | Supabase local (Docker)                                                                     |                                                                                              |
+| `pnpm db:reset`                       | Recrée la base locale depuis le baseline                                                    | Verrouillé                                                                                   |
+| `pnpm db:a-jour`                      | Base de dev : joue les migrations en attente, sans rien effacer                             | Auto avant `pnpm dev`                                                                        |
+| `pnpm db:test:stop` / `db:test:reset` | Pile de test : l'arrêter / la reconstruire                                                  |                                                                                              |
+| `pnpm db:seed-riche`                  | Contenu de la prod + 30 élèves fictifs (`eleveNN@local.test`)                               | Après `db:reset`                                                                             |
+| `pnpm db:neuf`                        | Remise à neuf : `db:reset` puis `db:seed-riche`, sous un seul verrou                        | Rare ; demande « oui » (`--oui`)                                                             |
+| `pnpm db:dev-accounts`                | Comptes de dev locaux                                                                       |                                                                                              |
+| `pnpm db:migrate`                     | `supabase db push` vers la base **EU de production**                                        | Conditions : CLAUDE.md §Migrations                                                           |
+| `pnpm db:types`                       | Régénère `src/lib/types/database.ts` depuis les **migrations de la branche** (pile de test) | À commiter avec la migration ; `pnpm db:types:verifier` compare sans écrire (garde de la CI) |
+| `pnpm db:link` / `db:status`          | Lie le projet / compte les profils manquants                                                |                                                                                              |
 
 Pratiques : [base-de-donnees.md](base-de-donnees.md) · schéma : [../systeme/base-de-donnees.md](../systeme/base-de-donnees.md).
 

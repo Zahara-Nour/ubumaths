@@ -330,36 +330,39 @@ export interface Schema {
 	vues: Set<string>;
 }
 
-/** Noms et lignes du bloc `    <titre>: { … }` qui suit la ligne `debut`. */
+/**
+ * Lignes du bloc `<titre>: { … }` (deux tabulations) qui suit la ligne `debut`. Le format lu est
+ * celui que `pnpm db:types` écrit : tabulations, points-virgules, guillemets simples.
+ */
 function bloc(lignes: string[], debut: number, titre: string): string[] {
-	const ouverture = lignes.findIndex((l, i) => i > debut && l === `    ${titre}: {`);
-	const fermeture = lignes.findIndex((l, i) => i > ouverture && l === '    }');
+	const ouverture = lignes.findIndex((l, i) => i > debut && l === `\t\t${titre}: {`);
+	const fermeture = lignes.findIndex((l, i) => i > ouverture && l === '\t\t};');
 	return ouverture >= 0 && fermeture >= 0 ? lignes.slice(ouverture + 1, fermeture) : [];
 }
 
 /** Tables, liens et vues du schéma `public`, lus dans le texte de `src/lib/types/database.ts`. */
 export function lireSchema(texte: string): Schema {
 	const lignes = texte.split('\n');
-	const debutPublic = lignes.findIndex((l) => l === '  public: {');
+	const debutPublic = lignes.findIndex((l) => l === '\tpublic: {');
 	const tables = new Map<string, Lien[]>();
 	const vues = new Set<string>();
 	if (debutPublic >= 0) {
 		let liens: Lien[] = [];
 		let colonnes: string[] = [];
 		for (const ligne of bloc(lignes, debutPublic, 'Tables')) {
-			const table = /^ {6}(\w+): \{$/.exec(ligne);
+			const table = /^\t{3}(\w+): \{$/.exec(ligne);
 			if (table) {
 				liens = [];
 				tables.set(table[1], liens);
 				continue;
 			}
-			const cols = /^ {12}columns: \[(.*)\]$/.exec(ligne);
-			if (cols) colonnes = cols[1].split(',').map((c) => c.trim().replace(/"/g, ''));
-			const vers = /^ {12}referencedRelation: "(\w+)"$/.exec(ligne);
+			const cols = /^\t{6}columns: \[(.*)\];$/.exec(ligne);
+			if (cols) colonnes = cols[1].split(',').map((c) => c.trim().replace(/'/g, ''));
+			const vers = /^\t{6}referencedRelation: '(\w+)';$/.exec(ligne);
 			if (vers) liens.push({ colonnes, vers: vers[1] });
 		}
 		for (const ligne of bloc(lignes, debutPublic, 'Views')) {
-			const vue = /^ {6}(\w+): \{$/.exec(ligne);
+			const vue = /^\t{3}(\w+): \{$/.exec(ligne);
 			if (vue) vues.add(vue[1]);
 		}
 	}

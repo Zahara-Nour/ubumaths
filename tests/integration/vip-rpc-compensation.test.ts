@@ -109,7 +109,7 @@ async function poserInventaire(id: string, cartes: Inventaire): Promise<void> {
 	await service.from('marketplace_locked_cards').delete().eq('student_id', id);
 	const { error } = await service
 		.from('profiles')
-		.update({ vip_cards: cartes as unknown as Json, vip_cards_history: {} })
+		.update({ vip_cards: cartes as unknown as NonNullable<Json>, vip_cards_history: {} })
 		.eq('id', id);
 	if (error) throw new Error(error.message);
 }

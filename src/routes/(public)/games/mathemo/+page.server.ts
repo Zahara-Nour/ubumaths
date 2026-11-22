@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		supabase.from('profiles').select('vip_cards, gidouilles').eq('id', user.id).single()
 	]);
 
-	const vipCards = (profileResult.data?.vip_cards as StudentVipCards | null) ?? {};
+	const vipCards = (profileResult.data?.vip_cards as StudentVipCards | undefined) ?? {};
 	const gidouilles = (profileResult.data?.gidouilles as number) ?? 0;
 
 	return {

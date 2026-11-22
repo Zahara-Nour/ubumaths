@@ -216,7 +216,7 @@ personne n'écrit directement dans l'historique.
 - **Activer les mots cliquables dans un nouveau cadre** : appeler `provideLexicon` (ou
   `provideQuestionLexicon`) pendant l'initialisation du composant ; ne pas passer le niveau de
   composant en composant.
-- **Nouvelle colonne** : migration additive, puis `db:types` (génère depuis la prod : deux PR),
+- **Nouvelle colonne** : migration additive, puis `pnpm db:types` (même PR),
   `DICTIONARY_COLUMNS` et `dictionaryRowSchema` dans `entry-schema.ts`, `MathTerm` dans `model.ts`.
 
 ## Tests

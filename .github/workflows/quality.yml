@@ -574,6 +574,8 @@ jobs:
   # d'intégration complète (qui reste dans nightly-integration.yml).
   # Pas de filtre de chemins : un check obligatoire qui ne tourne pas bloque la PR.
   # Local : `pnpm test:definer-guard` (démarre la pile de test, scripts/pile-de-test.sh).
+  # Le même job vérifie que `database.ts` est celui que les migrations produisent
+  # (`pnpm db:types:verifier`) : la base est déjà là, migrations appliquées.
   definer-guard:
     name: Garde SECURITY DEFINER
     needs: version
@@ -614,7 +616,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: /tmp/supabase-db-images.tar.zst
-          key: supabase-db-images-v1-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
+          key: supabase-db-images-v2-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
 
       - name: Load Supabase DB images
         if: steps.supabase-images.outputs.cache-hit == 'true'
@@ -622,6 +624,15 @@ jobs:
 
       - name: Start Postgres only (applies migrations)
         run: pnpm exec supabase db start
+
+      # `src/lib/types/database.ts` est généré depuis les migrations du dépôt
+      # (`pnpm db:types`), plus depuis la prod. La base de ce job porte exactement
+      # les migrations de la PR : on régénère et on compare. Rouge = migration
+      # ajoutée sans `pnpm db:types`, ou fichier retouché à la main.
+      # Avant la sauvegarde des images : le générateur (postgres-meta) est tiré
+      # ici, et doit entrer dans le cache comme les autres (quota de public.ecr.aws).
+      - name: Types de la base à jour (database.ts = migrations)
+        run: pnpm db:types:verifier
 
       - name: Save Supabase DB images
         if: steps.supabase-images.outputs.cache-hit != 'true'
@@ -640,7 +651,10 @@ jobs:
           path: /tmp/supabase-db-images.tar.zst
           key: ${{ steps.supabase-images.outputs.cache-primary-key }}
 
+      # `!cancelled()` : des types périmés (étape plus haut) ne doivent pas cacher
+      # un défaut de la garde dans le même tour de CI.
       - name: Run the SECURITY DEFINER guard
+        if: ${{ !cancelled() }}
         run: pnpm test:definer-guard
 
       - name: Stop Supabase

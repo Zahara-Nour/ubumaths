@@ -1,7 +1,7 @@
 # Base de données — tables par domaine (généré)
 
 > ⚠️ **Fichier généré** par `scripts/generate-db-doc.ts` depuis `src/lib/types/database.ts`
-> (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
+> (`pnpm db:types` régénère les deux, depuis les **migrations du dépôt**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
 234 tables · 24 vues · 350 fonctions. Colonne suivie de `?` : peut être nulle.

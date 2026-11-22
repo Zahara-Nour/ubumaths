@@ -40,7 +40,7 @@ function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow & { tags
 		distribution_mode: 'on_demand',
 		is_public: true,
 		search_indexed: true,
-		variables: null,
+		variables: [],
 		resources: null,
 		generic_functions: null,
 		shared: null,
