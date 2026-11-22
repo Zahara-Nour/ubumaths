@@ -6,17 +6,18 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, page de phase 0 publiée._
+_Mis à jour le 2026-11-22, lot écrit (PR à venir)._
 
-- **État** : relevé complet (55 lignes, § « Verdicts » : 18 ✅, 35 dans F1 à F12, 6N2A-2 et 6N2autoB-2 en
-  questions) ; page à cocher publiée : https://claude.ai/artifact/RB9aMR1HFa8uG5wrPUG1T3 (F1 à F11,
-  F12a, F12b, Q1 à Q3, F8 posée en question) · **Prochaine action** : lire les réponses (ArtifactData,
-  collection `verdicts`, 17 attendues) puis écrire le gros lot · **En attente de David** : ses réponses
-  dans la page.
-- **Pièges en cours** : F7, vérifier que le bloc `operation` pose décimal × décimal avant d'écrire ; F4
-  ajoute le niveau 6 à 590169c4 (CM2-043) ; e3d87166 est sur 6-116, pas 6-115.
-- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux` (`docs/idees-6e-decimaux`, en retard sur
-  main) ; il ne servira qu'à la PR des migrations.
+- **État** : lot écrit, 6 modèles neufs (14 variations) et 16 variations de 10 modèles publiés ;
+  `question:specs` vert sur les 16 fichiers ; `create-questions` en simulation vert ; `migration-contenu`
+  accepte les 10 publiés · **Prochaine action** : PR du lot mergée → David lance `create-questions
+--publier` sur `scripts/questions/idees-6e-decimaux-neufs/` ; puis PR des migrations (rangement des
+  6 neufs, niveau 6 ajouté à 590169c4, contenu des publiés régénéré) · **En attente de David** : le
+  `--publier` des brouillons.
+- **Pièges en cours** : la migration de contenu générée par l'agent (`20261122182230_…`) reste hors de
+  la PR du lot (non suivie dans le worktree), à régénérer à la PR des migrations ; ni essai en base
+  locale ni jeu dans l'aperçu pour l'instant.
+- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux`, `feat/idees-6e-decimaux`.
 
 ## Décisions de David (2026-11-22)
 
@@ -70,3 +71,10 @@ tableau. Q3 : migration de rangement sans accès nouveau. 10 modèles publiés r
 - 2026-11-22 : recompte, sondage B et C, relevé de nos modèles (6e, CM1, CM2) ; verdicts esquissés.
 - 2026-11-22 : 6N2autoB et 6N2K-4 ajoutés au relevé, verdicts versés (6N2C-3 rangé en F4) ; page de
   phase 0 publiée (F12 coupée en F12a 6-123 et F12b 6-124).
+- 2026-11-22 : lot écrit par deux agents, relu par specs. Scripts `docs/wip/questions/idees-6e-decimaux-neufs.py`
+  et `-publies.py`. Neufs : F2 (3 var.), F3 (2), F5 (2), F7 (1, bloc `operation` décimal × décimal
+  vérifié dans le code, `factorsInPlace`), F8 (2), F12a (3). Publiés : 2c5bae8f +1, 819df2a9 +2,
+  590169c4 +2, 571ca739 +1, ddbce820 +2, 7deff4e0 +1, 32b7a9bc +1, 87cfa41b +2, 3f4bacc6 +3, b586bdf8 +1.
+  Écarts à la fiche : F2c toujours avec retenue ; F12a c impose quotient < reste < diviseur (sinon
+  l'égalité se lit aussi comme division par le quotient) ; Q1 sommes sous 710 environ. Erreurs prévues
+  non inventées : 1 ou 2 seulement pour F4, F6, Q1, F10 case 2. Lettres `e`, `i` réservées.
