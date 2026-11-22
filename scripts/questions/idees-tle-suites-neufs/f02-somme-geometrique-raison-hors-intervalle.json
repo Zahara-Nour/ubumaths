@@ -1,4 +1,5 @@
 {
+	"id": "df02afc2-a3a5-4a11-92aa-6c7880b4952a",
 	"title": "Limite de la somme 1 + q + … + qⁿ quand q ⩾ 2 ou q ⩽ −1",
 	"description": "q de 2 à 5 → +∞ (saisie) ; q = −1 ou q ⩽ −2 → pas de limite (choix). Spécialité seule : la complémentaire s'arrête à 0 ⩽ q < 1",
 	"grades": ["T_SPE"],
