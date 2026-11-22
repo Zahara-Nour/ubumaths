@@ -17,6 +17,8 @@
 -- Ce qui est perdu : les variations 5 et 6 de ces deux modèles, présentes en prod depuis moins
 -- d'une heure. Réponses d'élèves sur ces deux modèles depuis leur ajout (skill_attempts,
 -- srs_cards, test_answers, evaluation_attempt_questions) : 0, relevé du 2026-11-22.
+-- ⚠️ Le rollback de 20261122112639 ne passe plus tel quel (sa garde attend 6 variations sur ces
+-- deux modèles) : pour défaire 112639, jouer d'ABORD le rollback ci-dessous, PUIS celui de 112639.
 -- Fichier produit par genererMigration (scripts/lib/migration-contenu.ts), avant et après
 -- inversés par un script ponctuel ; en-tête réécrit à la main.
 --
