@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR 4 en cours._
+_Mis à jour le 2026-11-22, après #2985._
 
-- **État** : PR 1 à 3b mergées et en prod ; reprise appliquée par David, **vérifiée en prod le 2026-11-22** (49/49 : catégorie et notions conformes aux réponses, titres composés avec la branche, titres libres gardés) · **Prochaine action** : PR 4 (les 9 scripts `create-automatismes-*` posent catégorie + notions) → CI, revue, merge ; puis clôture du chantier (versement, archivage du journal) · **En attente de David** : rien · **Pièges en cours** : échapper `/` dans `escapeTypst` (faible, PR à part) · **Worktree** : `ubumaths-wt-categorie-fiche`, branche `feat/categorie-fiche-automatismes`
+- **État** : tout le découpage est mergé (PR 1 à 4 ; #2985 = les 9 scripts `create-automatismes-*` posent catégorie + notions) ; reprise des 49 fiches vérifiée en prod le 2026-11-22 · **Prochaine action** : clôture du chantier — recompter le découpage contre les PR et le code, verser le durable dans `docs/systeme/` (ADR 0041 déjà là), archiver ce journal · **En attente de David** : son accord pour clore · **Pièges en cours** : échapper `/` dans `escapeTypst` (faible, PR à part) ; #2985 n'est pas en prod (scripts seulement, rien à déployer pour les élèves) · **Worktree** : aucun
 
 ### 2026-11-22 — reprise vérifiée, PR 4
 
@@ -86,7 +86,7 @@ _Mis à jour le 2026-11-22, PR 4 en cours._
    titre libre, majuscule en tête de chaque notion (`notionLabel`), ADR 0041 amendé.
    **PR 3b — reprise des 50 fiches** : page à cocher (relevé en bas du journal), écriture en
    prod par David, après le `deploy:prod`.
-4. **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions (en cours, 2026-11-22).
+4. ✅ **PR 4 — script des automatismes** (ADR 0011) : pose catégorie + notions (#2985, mergée le 2026-11-22).
 
 ## L'idée (David, 2026-11-19)
 
