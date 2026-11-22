@@ -118,6 +118,7 @@ on:
       - 'src/lib/stores/toaster.svelte.ts'
       - 'src/lib/stores/tradeRealtime.svelte.ts'
       - 'src/lib/types/evaluation.ts'
+      - 'src/lib/types/evaluation-attempt.ts'
       - 'src/lib/types/evaluation-breakdown.ts'
       - 'src/lib/types/duration-signals.ts'
       - 'src/lib/types/question-template.ts'
