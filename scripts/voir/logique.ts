@@ -169,8 +169,10 @@ export const ENV_FILES = ['.env.local', '.env.development', '.env.development.lo
  * @param envFiles contenu des fichiers de `ENV_FILES` qui existent
  * @param serverEnv environnement du process serveur (`ps eww`) : une variable
  *   posée au lancement (`PUBLIC_SUPABASE_URL=… pnpm dev`) passe devant les fichiers
+ * @param alsoLocal adresses (origines) qui mènent aussi à la base locale : le
+ *   lien du tailnet vers Supabase local, pour `pnpm lien`. Vide pour `pnpm voir`.
  */
-export function isLocalEnv(envFiles: string[], serverEnv = ''): boolean {
+export function isLocalEnv(envFiles: string[], serverEnv = '', alsoLocal: string[] = []): boolean {
 	const inFiles = envFiles.flatMap((content) =>
 		[...content.matchAll(/^\s*(?:export\s+)?(?:PUBLIC_)?SUPABASE_URL\s*=(.*)$/gm)].map((m) =>
 			(m[1] ?? '').trim().replace(/^["']|["']$/g, '')
@@ -185,7 +187,8 @@ export function isLocalEnv(envFiles: string[], serverEnv = ''): boolean {
 	);
 	return [...inFiles, ...inProcess].every((raw) => {
 		try {
-			return LOCAL_HOSTS.has(new URL(raw).hostname);
+			const url = new URL(raw);
+			return LOCAL_HOSTS.has(url.hostname) || alsoLocal.includes(url.origin);
 		} catch {
 			return false;
 		}
