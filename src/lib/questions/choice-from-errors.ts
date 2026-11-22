@@ -33,6 +33,8 @@ import { isBlankValueCorrect } from '#lib/utils/answer-validator.ts';
 import { serializeChoiceBlock } from '#lib/ubumark/parser/choix-parser.ts';
 import { createRandomSource, shuffled } from '#lib/utils/random.ts';
 import { resolvedMarkdown } from '#lib/ubumark/types/template.ts';
+import { evaluateExpression } from '#lib/math/index.ts';
+import { roundToPrecision, type RoundingPrecision } from './rounding';
 import type { InstanceBlank, InstanceExpectedError, QuestionInstance } from './types';
 
 // Constantes
@@ -100,12 +102,15 @@ function sameValue(
  * Erreurs prévues proposées en choix : ni la valeur de la bonne réponse, ni
  * celle d'une erreur déjà gardée ; les `MAX_CHOICE_ERRORS` premières.
  */
-function usableErrors(blank: InstanceBlank, instance: QuestionInstance): InstanceExpectedError[] {
+function usableErrors(
+	blank: InstanceBlank,
+	instance: QuestionInstance,
+	correct: string,
+	correctLatex: string
+): InstanceExpectedError[] {
 	const kept: InstanceExpectedError[] = [];
 	for (const error of blank.expectedErrors ?? []) {
 		if (kept.length === MAX_CHOICE_ERRORS) break;
-		const correct = blank.expectedAnswer;
-		const correctLatex = blank.expectedAnswerLatex ?? correct;
 		// Même écriture : deux choix identiques à l'écran, même si le juge n'a pas su comparer
 		const shown = [correctLatex, ...kept.map((other) => other.answerLatex)];
 		if (shown.includes(error.answerLatex)) continue;
@@ -127,15 +132,56 @@ function isEligible(instance: QuestionInstance): boolean {
 		// Case d'un bloc ```operation : sa réponse s'écrit autrement que les erreurs
 		// prévues (`toFrenchDecimal`), la bonne se reconnaîtrait à sa forme
 		blank.operation !== true &&
-		// Case à arrondir (décimales, chiffres significatifs, tolérance) : l'attendu n'est
-		// pas arrondi, la bonne réponse se reconnaîtrait à sa forme → reste en saisie
-		// (en attendant le choix de David : arrondir la bonne réponse affichée ?)
-		(blank.precision === undefined || blank.precision.type === 'none') &&
+		// Ordre de grandeur, tolérance : pas UN arrondi à montrer → reste en saisie
+		(blank.precision === undefined ||
+			blank.precision.type === 'none' ||
+			isRounding(blank.precision)) &&
 		blank.neverChoice !== true &&
 		(blank.expectedErrors?.length ?? 0) > 0 &&
 		blank.expressionName === undefined &&
 		String(instance.statement).split('\\placeholder[0]{}').length === 2
 	);
+}
+
+function isRounding(
+	precision: NonNullable<InstanceBlank['precision']>
+): precision is RoundingPrecision {
+	return precision.type === 'decimal' || precision.type === 'significant';
+}
+
+/** Écriture de l'arrondi, zéros finaux compris (`1.40` au centième) */
+function roundedWriting(value: number, precision: RoundingPrecision): string {
+	const rounded = roundToPrecision(value, precision);
+	if (precision.type === 'decimal')
+		return precision.digits >= 0 ? rounded.toFixed(precision.digits) : String(rounded);
+	const text = rounded.toPrecision(precision.digits);
+	return text.includes('e') ? String(rounded) : text;
+}
+
+/**
+ * La bonne réponse telle qu'on la montre. Case à arrondir (choix de David,
+ * 2026-11-22) : l'attendu du modèle est la valeur EXACTE (√2), le juge arrondit
+ * lui-même ; le choix montre donc l'arrondi demandé (`1.41`), à condition que
+ * le juge de la case le trouve juste (sinon `null` : la question reste en saisie).
+ */
+function correctAnswerShown(
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): { answer: string; latex: string } | null {
+	const exact = {
+		answer: blank.expectedAnswer,
+		latex: blank.expectedAnswerLatex ?? blank.expectedAnswer
+	};
+	if (!blank.precision || !isRounding(blank.precision)) return exact;
+	const value = evaluateExpression(blank.expectedAnswer);
+	if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+	const writing = roundedWriting(value, blank.precision);
+	try {
+		if (!isBlankValueCorrect(writing, blank, instance)) return null;
+	} catch {
+		return null;
+	}
+	return { answer: writing, latex: writing };
 }
 
 /**
@@ -150,10 +196,12 @@ export function asChoiceInstance(
 ): QuestionInstance | null {
 	if (!isEligible(instance)) return null;
 	const blank = (instance.blanks ?? [])[0];
-	const errors = usableErrors(blank, instance);
+	const correct = correctAnswerShown(blank, instance);
+	if (!correct) return null;
+	const errors = usableErrors(blank, instance, correct.answer, correct.latex);
 	if (errors.length === 0) return null;
 
-	const correctLatex = blank.expectedAnswerLatex ?? blank.expectedAnswer;
+	const correctLatex = correct.latex;
 	const choices = [correctLatex, ...errors.map((error) => error.answerLatex)].map(
 		(latex) => `$${latex}$`
 	);

@@ -169,9 +169,50 @@ describe('case → choix au tirage', () => {
 		expect(instance.blanks?.[0].expectedErrors?.map((e) => e.answer)).toEqual(['150[m]']);
 	});
 
-	it('case à arrondir → reste en saisie (bonne réponse non arrondie)', () => {
-		const t = addition(THREE_ERRORS, { precision: { type: 'decimal', digits: 2 } });
-		expect(asChoiceInstance(generate(t), 1)).toBeNull();
+	it('case à arrondir : la bonne réponse montrée est l’arrondi demandé, jugé juste', () => {
+		const t = template('Arrondis $\\sqrt{2}$ au centième : $?$', [
+			{
+				expectedAnswer: '{{eval:sqrt(2)}}',
+				precision: { type: 'decimal', digits: 2 },
+				expectedErrors: [
+					{ answer: '1.41', message: 'Égale à l’arrondi : jamais un choix.' },
+					{ answer: '1.42', message: 'Tu as arrondi au-dessus.' },
+					{ answer: '1.4', message: 'Un seul chiffre après la virgule.' }
+				]
+			}
+		]);
+		const instance = asChoice(t);
+		expect(choicesOf(instance)).toEqual(['$1.41$', '$1.42$', '$1.4$']);
+		expect(validateAnswer(['0'], instance).isCorrect).toBe(true);
+	});
+
+	it('case à arrondir : zéros finaux gardés (`1.40` au centième de 1.4)', () => {
+		const t = template('$?$', [
+			{
+				expectedAnswer: '1.4',
+				precision: { type: 'decimal', digits: 2 },
+				expectedErrors: [{ answer: '1.5', message: 'Non.' }]
+			}
+		]);
+		expect(choicesOf(asChoice(t))[0]).toBe('$1.40$');
+	});
+
+	it('chiffres significatifs : l’arrondi à 3 chiffres', () => {
+		const t = template('$?$', [
+			{
+				expectedAnswer: '2/3',
+				precision: { type: 'significant', digits: 3 },
+				expectedErrors: [{ answer: '0.666', message: 'Tronqué.' }]
+			}
+		]);
+		expect(choicesOf(asChoice(t))).toEqual(['$0.667$', '$0.666$']);
+	});
+
+	it('tolérance, ordre de grandeur : pas un arrondi à montrer → reste en saisie', () => {
+		const tolerance = addition(THREE_ERRORS, {
+			precision: { type: 'tolerance', tolerance: 0.5, mode: 'absolute' }
+		});
+		expect(asChoiceInstance(generate(tolerance), 1)).toBeNull();
 	});
 
 	it('Q2 : une seule erreur prévue utilisable → deux choix', () => {

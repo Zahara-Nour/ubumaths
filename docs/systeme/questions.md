@@ -1386,7 +1386,11 @@ coche une variation « en QCM » sur une ligne de série (`choiceVariations`, [e
 `asChoiceInstance(instance, seed)` transforme la question **tirée** (le générateur n'y est pour rien :
 mêmes nombres en saisie et en QCM). Seulement pour une question à **une seule case** `math`, avec
 des erreurs prévues, sans veto de l'auteur (`neverChoice`, case « Jamais en QCM » d'`ExpectedErrorsEditor`),
-ni case d'opération posée, ni précision à arrondir (l'attendu non arrondi se reconnaîtrait à sa forme).
+ni case d'opération posée, ni précision « ordre de grandeur » ou « tolérance » (pas un arrondi
+unique à montrer). Case à arrondir (décimales, chiffres significatifs) : l'attendu du modèle est la
+valeur exacte, la bonne réponse montrée est son arrondi (`roundToPrecision`, zéros finaux gardés :
+`1.40`), seulement si le juge de la case le trouve juste ; une erreur prévue égale à cet arrondi est
+retirée (choix de David, 2026-11-22).
 La case devient une case choix : bonne réponse à l'indice d'origine 0, puis jusqu'à **trois**
 erreurs prévues, dans l'ordre de l'auteur, sans doublon de valeur (même juge que l'erreur prévue,
 l'erreur lue sous son LaTeX puis sous sa forme interne : `1.5 km` vaut `1500 m`) ni d'écriture,

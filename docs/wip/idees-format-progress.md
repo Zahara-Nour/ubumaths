@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-22, PR 2 de l'idée 4 en cours._
 - **Prochaine action** : merger la PR 2, puis PR 3 (`pnpm db:types` d'abord ; demi-réussite FSRS,
   trace, bilan « en QCM », statistiques rejouées en QCM), puis PR 4 (case « en QCM » dans le panier
   et l'éditeur de série).
-- **En attente de David** : case à arrondir en QCM (§ Idée 4, PR 2) ; trois choix d'affichage signalés.
+- **En attente de David** : rien (trois choix d'affichage signalés, § Idée 4, PR 2).
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le
   `deploy:prod` de #2962 ; export RGPD (`api/account/export`) à compléter de la colonne en PR 3 ;
   statistiques rejouées en saisie tant que la PR 3 n'est pas faite.
@@ -197,11 +197,10 @@ Le lien de série porte le JSON de la ligne : `choiceVariations` y passe sans ri
 - Relectures : `security-auditor` (Opus) aucun bloquant ; `code-reviewer` (Opus) : corrigés,
   comparaison de valeur aveugle aux unités (l'erreur lue aussi sous son LaTeX), veto gardé par
   « Retirer » ; ajoutés, cases d'opération exclues, choix de même écriture écartés, test du trajet
-  serveur (positions affichées → indices d'origine → message). ⚠️ **Question à David** : case à
-  arrondir (`precision` ≠ `none`) : l'attendu n'est pas arrondi, la bonne réponse se reconnaîtrait
-  (`\sqrt{2}` parmi `1.41`, `1.42`) → pour l'instant elle reste en saisie ; l'arrondir à
-  l'affichage ?
-- Tests : `choice-from-errors.test.ts` (23), `series-draw.test.ts` (+3), `series.test.ts`
+  serveur (positions affichées → indices d'origine → message). **Case à arrondir → B (David, 2026-11-22)** :
+  la bonne réponse montrée est l'arrondi demandé (`roundToPrecision`, jugé juste par la case) ;
+  ordre de grandeur et tolérance restent en saisie.
+- Tests : `choice-from-errors.test.ts` (26), `series-draw.test.ts` (+3), `series.test.ts`
   (+2), `AnswerEditor-jamais-en-qcm.svelte.test.ts` (3).
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
