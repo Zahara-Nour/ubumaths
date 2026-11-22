@@ -6,16 +6,17 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2964._
+_Mis à jour le 2026-11-22, après #2979._
 
-- **État** : idées 1, 2 et 3 terminées (idée 3 : moteur #2962, éditeur #2963, types d'erreur côté
-  prof #2964), pas encore en prod.
-- **Prochaine action** : idée 4 (case ou QCM à partir des erreurs prévues), **phase 0** à poser à
-  David (cf. `idees-format-exercices.md`, décision 4 : variations pour les deux formes ?).
-- **En attente de David** : rien (pas de `deploy:prod` demandé).
+- **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : phase 0 et découpage validés ; PR 1
+  (#2979, colonne `answered_as_choice`) mergée et migrée en prod (vérifié).
+- **Prochaine action** : PR 2 (moteur) : nouveau worktree, `pnpm db:types` d'abord (la colonne
+  n'est pas encore dans `database.ts`), puis veto de l'auteur, variations « en QCM » de la ligne,
+  case → choix au tirage.
+- **En attente de David** : rien.
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le
-  `deploy:prod` de #2962 ; intégration locale bloquée par une autre session, la CI fait foi.
-- **Worktree / branche** : aucun ; à créer pour l'idée 4.
+  `deploy:prod` de #2962 ; export RGPD (`api/account/export`) à compléter de la colonne en PR 3.
+- **Worktree / branche** : aucun ; à créer pour la PR 2.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -151,6 +152,25 @@ modèle n'a d'erreurs prévues (#2962 pas livré).
 - **Révision espacée en saisie** : jamais décidée (héritage du premier SRS, oct. 2025) ; David →
   **chantier à part, futur** (mémoire `archives.md`), l'idée 4 reste sur les séries.
 - Usage mesuré en prod (90 jours) : 101 traces, 2 élèves, aucune avec lieu → rien à en tirer.
+- **Q5 → A** : la trace garde « répondu en QCM » (colonne de `skill_attempts`) ; personne ne gagne
+  d'accès (mêmes lignes, mêmes lecteurs).
+
+**Découpage validé (David, 2026-11-22)** : PR 1 migration (colonne `answered_as_choice`) · PR 2
+moteur (veto « jamais en QCM » de l'auteur, variations « en QCM » de la ligne, case → choix au
+tirage, 2 à 4 choix, message, correction en contrôle) · PR 3 demi-réussite (FSRS) + trace + bilan
+« en QCM » · PR 4 case « en QCM » par variation dans le panier et l'éditeur de série. Limite
+assumée : en série libre, le navigateur dit « en QCM » (même enjeu que « Réussi » en flash-card) ;
+en contrôle, le serveur le sait par la série.
+
+## Idée 4, PR 1 — trace « répondu en QCM » (2026-11-22)
+
+Branche `feat/idees-format-qcm-trace`. Migration `20261121234509_trace_repondu_en_qcm.sql` :
+`skill_attempts.answered_as_choice boolean not null default false` ; CHECK : vrai seulement en
+`source = 'auto'` et lieu Saisie, Contrôle blanc, Course aux nombres ou contrôle (ni Flash-cards,
+ni révision, ni Descente). Aucune policy touchée. Test `trace-repondu-en-qcm.test.ts` (13, rouges
+sans la migration : colonne inconnue ; témoin « en saisie » pour chaque refus) ; suites voisines
+des traces vertes (98). Relecture `security-auditor` : aucun finding. Mergée (#2979), `db:migrate`
+le 2026-11-22 (seule migration en attente), colonne vérifiée en prod.
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
