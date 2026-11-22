@@ -119,8 +119,13 @@ Tout le lot part d'un coup, pas un cycle par modèle (mémoire `feedback_gros-lo
   Chaque modèle et chaque variation ajoutée a ses **`testSpecs`** : des réponses justes sous
   plusieurs écritures (acceptées) **et** les erreurs typiques des élèves (refusées), comme dans
   `couvrir-un-niveau.md` § 5, et ces erreurs typiques deviennent des **erreurs prévues** de la
-  case (réponse + message à l'élève, même §), que le prof complète ensuite. Une variation sans
-  spec ne part pas. `create-questions` en
+  case (réponse + message à l'élève, même §), que le prof complète ensuite : **trois par case**
+  visées (QCM possible), message écrit sous sa forme réécrite (`$10^3$`, `$b - a$`). Chaque
+  variation a son **coup de pouce** (`hint`, ou `hintFromFirstStep`), qui ne donne jamais la
+  réponse ; ⚠️ `hint` n'est lu par la prod qu'après le `deploy:prod` qui livre #2991 : pas de
+  brouillons en prod avant (le dire à David). Forme : faits vérifiés du même § (motif qui compare
+  deux parties, case unique, pas de Oui / Non au hasard, consigne qui dit ce qu'elle refuse,
+  réglages du modèle fixés dès la création). Une variation sans spec ne part pas. `create-questions` en
   simulation, `question:specs`, puis essai dans la base **locale**, modèle joué dans l'aperçu
   (réponse juste acceptée, erreur typique refusée).
   ⚠️ `--publier` en local écrit les ids locaux dans les fichiers : les restaurer (`git restore`)
