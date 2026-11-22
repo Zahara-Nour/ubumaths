@@ -35,6 +35,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'errorMonitoring.ts',
 	// Mesures de performance : table écrite par le serveur seul, sans compte
 	'lib/server/web-vitals/reception.ts',
+	// Relevé des mesures : lecture pour le calcul du p75, derrière un jeton dédié
+	'lib/server/web-vitals/releve.ts',
 	// Notifications système : la base les refuse aux comptes connectés
 	'lib/server/notifications.ts',
 	'serviceRoleClient.ts',
