@@ -5,19 +5,17 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Première spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3006._
+_Mis à jour le 2026-11-22, migrations écrites (PR à ouvrir)._
 
-- **État** : fichiers du lot sur `main` (#3006) : 4 nouveaux modèles (`scripts/questions/1re-suites-a/`)
-  et 26 variations de 14 modèles publiés (`scripts/questions/1re-suites-publies/`), essayés en local
-  et validés par David. Rien en prod encore. · **Prochaine action** : David lance, depuis le dépôt
-  principal à jour, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1re-suites-a --publier`
-  (brouillons en prod, ids écrits en tête des 4 fichiers) ; puis, dans un nouveau worktree : commit
-  des ids, migration de rangement (nœud + tag) des 4 et migration de contenu des 14
-  (`migration-contenu.ts --dir scripts/questions/1re-suites-publies`, régénérée à ce moment, prod
-  relue) ; relecture dans `/dev/modeles`. · **En attente de David** : le `--publier` en prod. ·
-  **Pièges en cours** : `lot-1re-suites-publies.py` repart de l'export 2a85b7b809 (le relancer
-  réécrit les ajouts, ne les double pas) ; en base locale, les 14 publiés sont des brouillons neufs
-  (ids locaux ≠ prod). · **Worktree / branche** : aucun (`ubumaths-wt-idees-1re-suites` retiré).
+- **État** : 4 brouillons en prod (David, `create-questions --publier`), ids commités. Migrations
+  écrites sur `feat/idees-1re-suites-prod` : `20261122163253_…_rangement_tags` (4 nœuds + tags)
+  et `20261122163231_…_publies_contenu` (26 variations sur 14 publiés) ; tests d'intégration
+  verts, rouges sans les migrations. · **Prochaine action** : `security-auditor`, PR, CI, merge,
+  `db:migrate` (4 conditions réunies si l'audit est sans bloquant) ; puis relecture dans
+  `/dev/modeles` (brouillons : `?point=` ; publiés : série de relecture). · **En attente de
+  David** : rien. · **Pièges en cours** : `migration list --linked` avant `db:migrate` (une autre
+  migration en attente → stop). · **Worktree / branche** : `ubumaths-wt-idees-1re-suites-prod`,
+  `feat/idees-1re-suites-prod`.
 
 ## Historique
 
@@ -74,3 +72,14 @@ _Mis à jour le 2026-11-22, après #3006._
   = ids seuls) ; les 14 publiés absents de la base locale : créés en brouillon depuis une copie sans
   id, hors dépôt. Aperçu joué par David à distance (lien Tailscale, `pnpm lien`) : « je valide
   tout ».
+
+### 2026-11-22 — brouillons en prod, migrations
+
+- David a lancé `create-questions --publier` : 4 brouillons en prod (b2aead94, 2938b16b, cdb5a1cf,
+  63791bb6), vérifiés par MCP lecture seule.
+- Rangement proposé (voisins publiés) : b2aead94 → représentation graphique, 1SPE-221 ; 2938b16b →
+  Suites géométriques, 1SPE-229 ; cdb5a1cf et 63791bb6 → sens de variation, 1SPE-219. Question
+  d'accès posée (« personne ne gagne ni ne perd d'accès »). David : « je suis tes recos » (réponse
+  aux deux questions).
+- Migration de contenu régénérée (prod relue) : 14 migrés, +26 variations, 0 corrigée. Tests
+  d'intégration : 47 verts ; sans les migrations, 10 rouges.
