@@ -6,18 +6,19 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, phase 0 validée, lot en écriture (aucune PR)._
+_Mis à jour le 2026-11-22, lot écrit, PR des fichiers en cours._
 
-- **État** : phase 0 validée par David (toutes les recommandations). Les 3 modèles publiés sont réservés
-  au tableau et exportés de prod dans `scripts/questions/6e-entiers-publies/` (identiques à la prod).
-  Lot en cours d'écriture : `docs/wip/questions/lot-6e-entiers-a.py` → `scripts/questions/6e-entiers-a/`
-  (F1, F5, F2) et `lot-6e-entiers-publies.py` (F3, F4, F7).
-- **Prochaine action** : simulation `create-questions` verte sur les deux dossiers, tirages lus ;
-  essai en base locale ; migration de contenu des publiés (`migration-contenu.ts`) ; PR.
-- **En attente de David** : rien. À lui dire : le titre de b9677e1f (« … d'un produit ») ne peut pas
-  changer par `migration-contenu` (titre comparé à la prod) ; le renommer dans l'éditeur s'il le veut.
-- **Pièges en cours** : case Texte tolérante → bloc trous ; `?` dans un `array` = une case (4b080eed) ;
-  le hook pre-commit laisse l'index avec une vieille copie (`git diff HEAD` vide → `git restore --staged`).
+- **État** : lot commité (d6a626d60). 3 modèles neufs dans `scripts/questions/6e-entiers-a/` (F1, F5, F2),
+  variations ajoutées en fin de 98f558e4, b9677e1f, d793de49 dans `6e-entiers-publies/`. Simulation et
+  specs vertes. Brouillons créés en base LOCALE (0f60e07e, e30d9b3b, 082bd126), ids restaurés dans les
+  fichiers. Aperçu local pas vu : le Chrome connecté n'atteint pas `[::1]:5178` (serveur du worktree).
+- **Prochaine action** : PR des fichiers, CI, merge ; puis David lance `create-questions --publier` en
+  prod sur `6e-entiers-a` ; migrations de rangement (nœud + tag : CM2-065 ×2, CM2-003) et de contenu
+  (`migration-contenu.ts --dir scripts/questions/6e-entiers-publies`), tests d'intégration, `security-auditor`.
+- **En attente de David** : question d'accès des migrations ; regard sur l'aperçu (grille Yohaku avec
+  `\hline`, bloc trous) ; titre de b9677e1f à renommer dans l'éditeur s'il le veut.
+- **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; hook pre-commit laisse
+  l'index avec une vieille copie (`git diff HEAD` vide → `git restore --staged`) ; zsh ne découpe pas `$F`.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers`, `docs/idees-6e-entiers`.
 
 ## Historique
@@ -38,3 +39,10 @@ David : « je valide tes recommandations dans la page à cocher » (la base de l
 Donc Q1 oui (CM2 + 6, point du CM), fiches 1, 2, 3, 4, 5, 7 oui, fiche 6 (rose) plus tard : rien dans
 `outils-manquants.md`, idée notée dans « Idées en attente » du tableau. Modèles réservés : 98f558e4,
 b9677e1f, d793de49 (commit sur `main`) ; export de prod commité (c7a1a87ab).
+
+## 2026-11-22 — lot écrit
+
+Agent `pedagogy-expert` : 3 modèles neufs (22, 7, 33 specs) et variations des 3 publiés (16, 12, 16 specs).
+Relu dans les tirages. Corrigé : tranche vide « $000$ (pas de mille) » ; grille Yohaku avec `\hline` et double
+trait avant les sommes (`\hline` déjà utilisé par `6-nombres/04-grands-nombres.json`). V2, V3, V4 de l'égalité :
+deux erreurs prévues seulement (pas de troisième erreur réelle). Yohaku : une erreur prévue (cases échangées).
