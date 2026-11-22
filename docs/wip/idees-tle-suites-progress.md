@@ -7,8 +7,10 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 _Mis à jour le 2026-11-22, rubrique prise._
 
-- **État** : relevé en cours (lecture seule) · **Prochaine action** : phase 0, une fiche par idée,
-  page à cocher · **En attente de David** : rien encore · **Pièges en cours** : `hint` lu par la
+- **État** : relevé fait (26 : ✅ 8 · 🟡 17 · ❌ 1), phase 0 publiée (14 fiches) · **Prochaine
+  action** : lire les verdicts (ArtifactData, collection `verdicts`), réserver les modèles publiés,
+  écrire le gros lot · **En attente de David** : verdicts de la page à cocher
+  https://claude.ai/artifact/TAe8JNJyzAsp3Qyv3uZq6q · **Pièges en cours** : `hint` lu par la
   prod seulement après le `deploy:prod` qui livre #2991 (pas de brouillons en prod avant) ; la
   rubrique suites de Première (`idees-1re-suites`) tourne en parallèle : ne pas toucher aux
   modèles 1SPE qu'elle réserve · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
@@ -23,3 +25,12 @@ _Mis à jour le 2026-11-22, rubrique prise._
 - Existant en prod relevé (MCP lecture seule) : une trentaine de modèles publiés sur les points
   de suites de Tle spé (TSPE-378 à 402, 432, 576 à 579), plus deux modèles arithmético-géométriques
   tagués TCOMP. Liste dans le relevé.
+
+### 2026-11-22 — relevé et phase 0
+
+- Relevé par deux agents (Sonnet), verdicts « à vérifier » relus dans nos variations en base :
+  [idees-tle-suites-releve.md](idees-tle-suites-releve.md).
+- Phase 0 : 14 fiches (8 variations de modèles publiés, 4 modèles neufs, 2 outils manquants, idées
+  laissées), page à cocher https://claude.ai/artifact/TAe8JNJyzAsp3Qyv3uZq6q. Question d'accès :
+  personne (rangement de modèles).
+- Questions ouvertes, sans réponse = non tranchées : chaque fiche F1 à F14.
