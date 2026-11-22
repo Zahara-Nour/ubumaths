@@ -61,6 +61,8 @@ on:
       - 'scripts/check-migrations-de-donnees.ts'
       # générateur des migrations de contenu de publiés, rejoué par la suite
       - 'scripts/lib/migration-contenu.ts'
+      # générateur des migrations « nœud et tag », rejoué par la suite
+      - 'scripts/lib/migration-rangement.ts'
       # mise à jour de la base locale, jouée sur une vraie base par tests/integration/db-a-jour.test.ts
       - 'scripts/db-a-jour/**'
       # pile de test locale : le global-setup de la suite en importe les règles
