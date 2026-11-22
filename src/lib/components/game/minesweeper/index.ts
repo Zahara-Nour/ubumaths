@@ -12,5 +12,4 @@ export { default as LeaderboardPreview } from './LeaderboardPreview.svelte';
 export { default as AchievementBadge } from './AchievementBadge.svelte';
 export { default as AchievementShowcase } from './AchievementShowcase.svelte';
 export { default as AchievementToast } from './AchievementToast.svelte';
-export { default as AchievementsWidget } from './AchievementsWidget.svelte';
 export { default as UndoConfirmModal } from './UndoConfirmModal.svelte';
