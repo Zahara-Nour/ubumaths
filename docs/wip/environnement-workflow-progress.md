@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, avant toute PR._
+_Mis à jour le 2026-11-22, après #2995._
 
-- **État** : bilan mesuré le 2026-11-22, rien de modifié dans le code. **Phase 0 des outils à distance validée par David (« oui à tout », 2026-11-22)** : Q1 Safari au format iPhone par défaut ; Q2 bouton « signaler » sur toutes les pages en dev ; Q3 pas d'image de l'écran en première version ; Q4 ordre `voir`, `lien`, « signaler », une PR chacun. **Lot A validé aussi** (points 1 à 4, une petite PR, plus les deux réglages GitHub).
-- **Prochaine action** : worktree `outils-a-distance` (`feat/outils-a-distance-voir`) → `pnpm voir` (R4), tests d'abord ; puis `pnpm lien` (R1), puis le bouton « signaler » (R7). Lot A : worktree à part `ci-rouges-evitables`, une session à part.
-- **En attente de David** : ce qui échoue exactement avec Claude dans Chrome à distance (non diagnostiqué, non bloquant) ; les points 8 à 11 et R3 restent à trancher, rien n'est lancé dessus.
-- **Pièges en cours** : Tailscale Serve porte déjà 4 liens d'autres sessions (443, 8443, 8444, 10000) : ne jamais faire `tailscale serve reset` ; réglages GitHub du lot A = écriture hors du dépôt, les annoncer avant de les faire ; R7 touche une route d'API (Zod, revue `code-reviewer` + `security-auditor`) ; chiffres de l'intégration à remesurer vers le 2026-11-29.
-- **Worktree / branche** : aucun pour l'instant (dépôt principal, doc seule).
+- **État** : phase 0 des outils à distance validée par David (« oui à tout », 2026-11-22) : Q1 Safari au format iPhone par défaut ; Q2 bouton « signaler » sur toutes les pages en dev ; Q3 pas d'image de l'écran en première version ; Q4 ordre `voir`, `lien`, « signaler », une PR chacun. **`pnpm voir` (R4) mergé (#2995)**, doc `docs/pratiques/voir-une-page.md`. **Lot A validé aussi** (points 1 à 4, une petite PR, plus les deux réglages GitHub), pas commencé.
+- **Prochaine action** : `pnpm lien` (R1), tests d'abord, nouveau worktree `outils-a-distance-lien` (`feat/outils-a-distance-lien`) ; puis le bouton « signaler » (R7). Lot A : worktree à part `ci-rouges-evitables`, une session à part.
+- **En attente de David** : ce qui échoue exactement avec Claude dans Chrome à distance (non diagnostiqué, non bloquant) ; les points 8 à 11 et R3 restent à trancher, rien n'est lancé dessus ; captures d'essai laissées dans `ubumaths-wt-outils-a-distance/.captures/voir/` si le worktree existe encore (suppression bloquée par une garde).
+- **Pièges en cours** : Tailscale Serve porte déjà 4 liens d'autres sessions (443, 8443, 8444, 10000) : ne jamais faire `tailscale serve reset` ; réglages GitHub du lot A = écriture hors du dépôt, les annoncer avant de les faire ; R7 touche une route d'API (Zod, revue `code-reviewer` + `security-auditor`) ; chiffres de l'intégration à remesurer vers le 2026-11-29 ; l'appli défile dans un cadre intérieur (`h-screen`), une « page entière » de Playwright s'arrête à l'écran ; la base locale n'a `eleveNN@local.test` qu'après `pnpm db:neuf` ; **`pnpm voir --compte` refuse un serveur lancé avec l'adresse de Supabase du tailnet** (garde : toutes les adresses locales) : `pnpm lien` devra en tenir compte ; restes mineurs de la revue de #2995 non traités (hauteur non remesurée après agrandissement, Ctrl-C laisse le navigateur, pas de refus d'office dans le dépôt principal).
+- **Worktree / branche** : aucun (celui de #2995 retiré après le merge).
 
 ## Mesures du 2026-11-22
 
@@ -101,3 +101,8 @@ Briques déjà là : Playwright avec Chromium et WebKit installés ; `pnpm test:
 - **Q2 — R7, où est le bouton** : sur toutes les pages en dev (reco), ou seulement quand la page est ouverte par un lien du tailnet (invisible sur le Mac mini) ?
 - **Q3 — R7, image de l'écran** : s'en passer en première version (reco), ou essayer tout de suite une capture faite par la page (lourde, infidèle sur les formules) ?
 - **Q4 — ordre** : R4, puis R1, puis R7 (reco : R4 sert à vérifier les deux autres) ?
+
+## Journal
+
+- **2026-11-22 — `pnpm voir` (R4)** : `scripts/voir/` (logique testée, 17 tests ; pilotage vérifié en vrai sur `/atelier`, `/shtam`, `/glossaire`, `/dashboard` avec les trois comptes, WebKit et Chromium, téléphone et grand écran). Écarts avec la phase 0, assumés : image en tranches de 1 600 px en plus de l'image entière (une image haute est illisible une fois réduite) ; fenêtre agrandie pour capturer le cadre qui défile ; `--port` ajouté ; élève = `eleve01`, à défaut `student@local.test`. WebKit de Playwright réinstallé (2388, la version installée ne suivait plus Playwright 1.65). Doc : `docs/pratiques/voir-une-page.md`.
+- **2026-11-22 — #2995 mergée** : revue `code-reviewer`, un finding important corrigé avant merge (la garde de `--compte` ne lisait que la première ligne `PUBLIC_SUPABASE_URL` de `.env.local` ; elle exige maintenant toutes les adresses locales, fichiers `.env` de dev et environnement du process serveur) ; navigation hors du serveur local coupée. 20 tests.

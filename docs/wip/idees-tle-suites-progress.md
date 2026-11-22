@@ -7,7 +7,7 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 _Mis à jour le 2026-11-22, après #2993._
 
-- **État** : lot mergé (#2993) : 15 variations sur 8 publiés, 5 modèles neufs, rien en prod ·
+- **État** : lot mergé (#2993) : 11 variations sur 8 publiés, 5 modèles neufs, rien en prod ·
   **Prochaine action** : après la création des brouillons, commiter les ids écrits dans les
   fichiers, puis PR de rangement (nœud + tag des 5 neufs, TSPE-385 ×2, 386, 392, 577) et
   migration de contenu des 8 publiés (`migration-contenu.ts`) · **En attente de David** : lancer
