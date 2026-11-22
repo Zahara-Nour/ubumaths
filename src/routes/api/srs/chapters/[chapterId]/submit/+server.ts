@@ -17,6 +17,8 @@
  *   sur l'entrée dans le paquet Programme.
  * - Ce circuit n'ajoute RIEN au paquet Programme (pas d'`ensureProgrammeDeckCard`,
  *   L6 : une question de cours n'y entre jamais).
+ * - Coup de pouce ouvert (`withHelp`, idée 5 du chantier `idees-format`) :
+ *   « Réussi » devient « Difficile » (`helpedGrade`), trace « avec indice ».
  */
 
 import { error } from '@sveltejs/kit';
@@ -28,6 +30,7 @@ import { chapterDeckParamsSchema, chapterReviewSubmitSchema } from '#lib/server/
 import { loadChapterDeck, type ChapterDeck } from '#lib/server/srs/chapter-deck.ts';
 import { applyFsrsReview } from '#lib/server/srs/fsrs-actions.ts';
 import { recordSrsReviewAttempt } from '#lib/server/srs/srs-attempt.ts';
+import { helpedGrade } from '#lib/server/srs/answer-grade.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/chapters/[chapterId]/submit/+server');
@@ -53,7 +56,9 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	const { chapterId } = paramsValidation.data;
-	const { templateId, grade, timeSpent } = bodyValidation.data;
+	const { templateId, timeSpent, withHelp } = bodyValidation.data;
+	// Coup de pouce ouvert : demi-réussite (« Difficile »), jamais une note plus haute
+	const grade = helpedGrade(bodyValidation.data.grade, withHelp);
 	const supabase = locals.supabase;
 	const now = new Date();
 
@@ -89,7 +94,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// Toutes les réponses laissent une trace, même celles que `bestOfDay` n'a pas
 	// retenues pour la planification (ADR 0016)
-	const attemptRecorded = await recordSrsReviewAttempt(supabase, user.id, templateId, grade);
+	const attemptRecorded = await recordSrsReviewAttempt(
+		supabase,
+		user.id,
+		templateId,
+		grade,
+		withHelp
+	);
 
 	return Response.json({
 		success: true,

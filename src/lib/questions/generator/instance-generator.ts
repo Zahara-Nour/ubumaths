@@ -226,6 +226,14 @@ function expectedErrorsSeed(seed: number): number {
 	return Math.imul(seed ^ 0x9e3779b9, 0x85ebca6b) >>> 0;
 }
 
+/**
+ * Graine de la source du coup de pouce (idée 5) : même raison que
+ * `expectedErrorsSeed`, autre mélange (les deux sources restent indépendantes).
+ */
+function hintSeed(seed: number): number {
+	return Math.imul(seed ^ 0x7f4a7c15, 0xc2b2ae35) >>> 0;
+}
+
 /** Erreurs d'un bloc robot qui tiennent au tirage (`robotSceneImpossible`) */
 const ROBOT_TIRAGE_ERRORS = [/aucun code de/, /l’arrivée est le départ/, /est sur une case grise/];
 
@@ -402,7 +410,11 @@ function resolveVariationWithShared(
 		blankDefaults: variation.blankDefaults ?? shared.blankDefaults,
 
 		// answerFormats: per-variation overrides shared
-		answerFormats: variation.answerFormats ?? shared.answerFormats
+		answerFormats: variation.answerFormats ?? shared.answerFormats,
+
+		// Coup de pouce : par variation seulement
+		hint: variation.hint,
+		hintFromFirstStep: variation.hintFromFirstStep
 	};
 }
 
@@ -1774,6 +1786,26 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
+		// 7 ter. Coup de pouce (idée 5) : la première étape déjà résolue, ou l'indice
+		// écrit résolu comme le corrigé, sur sa propre source de hasard
+		let hint: ResolvedMarkdown | undefined;
+		if (resolvedVariation.hintFromFirstStep) {
+			hint = resolvedCorrection?.steps?.[0];
+		} else if (resolvedVariation.hint) {
+			hint = resolveCorrectionContent(
+				resolvedVariation.hint,
+				resolvedVariables,
+				buildCorrectionContext(resolvedBlanks, resolvedVariables),
+				createRandomSource(seed === undefined ? undefined : hintSeed(seed)),
+				genericFunctions,
+				cleanCoefficients,
+				capitalPairs
+			);
+		}
+
+		// Résolu en vide (`{{if:…}}` faux) : pas de coup de pouce plutôt qu'un bouton vide
+		if (hint !== undefined && String(hint).trim() === '') hint = undefined;
+
 		// 8. Construct instance
 		const instance: QuestionInstance = {
 			templateId: template.id,
@@ -1787,6 +1819,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			level: template.level,
 			delay: template.delay,
 			correction: resolvedCorrection,
+			...(hint !== undefined && { hint }),
 			blanks: resolvedBlanks,
 			expressions: expressionsArray,
 			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, random),

@@ -54,7 +54,9 @@ export const submitReviewSchema = z.object({
 	cardId: z.string().uuid(),
 	deckId: z.string().uuid(),
 	grade: z.number().int().min(1).max(4),
-	timeSpent: z.number().int().nonnegative().max(3600).optional()
+	timeSpent: z.number().int().nonnegative().max(3600).optional(),
+	/** Coup de pouce ouvert (idée 5) : une réussite devient « Difficile » */
+	withHelp: z.boolean().default(false)
 });
 
 /** Paquet calculé d'un chapitre : identifiant du chapitre (paramètre de route). */
@@ -71,7 +73,9 @@ export const chapterReviewSubmitSchema = z.object({
 	templateId: z.string().uuid('Question invalide'),
 	// Littéraux : le type `Grade` (1 | 2 | 3 | 4) sort du schéma, sans transtypage
 	grade: z.literal([1, 2, 3, 4], { error: 'Note invalide (1 à 4)' }),
-	timeSpent: z.number().int().nonnegative().max(3600).optional()
+	timeSpent: z.number().int().nonnegative().max(3600).optional(),
+	/** Coup de pouce ouvert (idée 5) : une réussite devient « Difficile » */
+	withHelp: z.boolean().default(false)
 });
 
 /**

@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-20 : la proposition 3 est en cours (`diaporama-reglages`, #2936)._
+_Mis à jour le 2026-11-22 : la proposition 3 est livrée (chantier `diaporama-reglages` clos : #2936, #2984, #2988)._
 
-- **État** : 9 propositions passées avec David. **5 retenues** : 4 livrée (chantier `lecture-facilitee`), **5 livrée** (chantier `memes-nombres`, #2922), **3 en cours** (chantier `diaporama-reglages`, PR 1 #2936 mergée) ; restent 2, 10. **3 gardées pour plus tard** (7, 8, 9), **2 mises de côté** (1, 6).
-- **Prochaine action** : finir `diaporama-reglages` (PR 2 : autres formes) ; puis 2 (multivue, après la 3 : même fichier `ClassroomSeries`), puis 10 (course de chevaux, gros chantier temps réel).
+- **État** : 9 propositions passées avec David. **5 retenues** : 4 livrée (chantier `lecture-facilitee`), **5 livrée** (chantier `memes-nombres`, #2922), **3 livrée** (chantier `diaporama-reglages`, #2936, #2984, #2988) ; restent 2, 10. **3 gardées pour plus tard** (7, 8, 9), **2 mises de côté** (1, 6).
+- **Prochaine action** : la 2 (multivue, même fichier `ClassroomSeries` que la 3), puis 10 (course de chevaux, gros chantier temps réel).
 - **En attente de David** : rien sur ce chantier.
 - **Pièges en cours** : le bouton « Export PDF » de `/automaths/panier` n'est qu'une alerte « Fonctionnalité à venir » (`handleExportPDF`) : il n'existe aucun PDF de série.
 - **Worktree / branche** : aucun.

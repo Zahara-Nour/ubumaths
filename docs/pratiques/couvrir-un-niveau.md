@@ -228,8 +228,30 @@ d'additionner.", "label": "Soustraction au lieu d'addition"}]`. `answer` s'écri
    a sa spec `incorrect` qui nomme son message (`"expected": {"status": "incorrect",
 "expectedErrorMessage": "Tu as soustrait au lieu d'additionner."}`, message tel que résolu
    pour les variables de la spec). Le rejeu de `checkTemplate` répond chaque erreur prévue sur
-   ses tirages et refuse le modèle si elle ne déclenche pas son message. ⚠️ La prod ne lit ce
-   champ qu'après le `deploy:prod` qui le livre.
+   ses tirages et refuse le modèle si elle ne déclenche pas son message.
+   Viser **trois** erreurs prévues par case (jusqu'à cinq), de vraies erreurs d'élèves : une
+   variation à une seule case qui en a trois peut se poser en QCM (le prof coche « en QCM »,
+   idée 4) ; ne pas inventer une valeur au hasard pour atteindre trois. Le juge compare la
+   **valeur** : une écriture fausse de même valeur (`2^3` pour `8`) n'est pas une erreur prévue.
+   ⚠️ Le message est réécrit à la résolution (`$10^{3}$` → `$10^3$`, `$b-a$` → `$b - a$`) :
+   l'écrire, et l'écrire dans la spec, sous sa forme réécrite, sinon la spec est rouge.
+   **Coup de pouce** (idée 5, décision de David du 2026-11-22) : chaque variation en a un.
+   `"hint"` (gabarit markdown, variables du tirage permises, jamais `{{solution}}`) donne une
+   piste, une méthode ou un rappel de propriété, en une ou deux phrases, **sans donner ni calculer
+   la réponse** ; ou `"hintFromFirstStep": true` quand la première étape de la correction est
+   une vraie piste (jamais si elle affiche ou calcule la réponse). L'élève l'ouvre en Saisie,
+   Flash-cards et révision, jamais en évaluation. La prod lit `hint` et `expectedErrors` depuis
+   la 0.101.0 (2026-11-22).
+   **Forme** (revue du lot de Seconde, 2026-11-22, faits vérifiés) : un motif de `requiredForm`
+   sait comparer deux de ses parties (`e:integer + p:integer & gte(0) & lt(w) / w:integer` exige
+   une fraction plus petite que 1 ; `{{b}}*k:integer + r:integer & gte(0) & lt({{b}})` un reste
+   plus petit que le diviseur) ; une case unique vaut souvent mieux que deux (écriture plus
+   naturelle, QCM possible) ; pas de Oui / Non qui laisse une chance sur deux au hasard (choix
+   multiple « coche les… » ou une saisie) ; la consigne dit ce que la forme exigée refuse
+   (« une puissance de $(-3)$ », « en écriture décimale ») : une bonne réponse refusée sans que
+   la consigne l'ait demandé est un défaut. **Régler le modèle entier dès sa création** (espaces
+   des grands nombres, remarque « produits », zéros) : sur un modèle publié,
+   `migration-contenu.ts` ne change que variations, specs et description.
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
    `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
    Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire

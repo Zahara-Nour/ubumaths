@@ -1,0 +1,313 @@
+{
+	"id": "5bf5b452-1039-4139-aff0-ed5224050761",
+	"title": "Comparaison et encadrement pour les fonctions",
+	"description": "À savoir : f ≥ g et g → +∞ ⟹ f → +∞ ; encadrement g ≤ f ≤ h, même limite ; piège : f ≤ g et g → +∞ ne dit rien de f",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\geqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n- On ne peut rien conclure.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître (théorème de comparaison) : si $f(x)\\geqslant g(x)$ pour $x$ assez grand et si $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$, alors $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$, $g$ et $h$ trois fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $g(x)\\leqslant f(x)\\leqslant h(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=2$ et $\\lim\\limits_{x\\to+\\infty}h(x)=2$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=2$\n- $f$ a une limite finie en $+\\infty$, mais pas forcément $2$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=4$\n- On ne peut rien conclure.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître (théorème d'encadrement, ou « des gendarmes ») : si $g(x)\\leqslant f(x)\\leqslant h(x)$ pour $x$ assez grand, et si $g$ et $h$ ont la même limite finie $\\ell$ en $+\\infty$, alors $f$ a aussi pour limite $\\ell$.",
+					"Ici $\\ell=2$, donc $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=2}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\leqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Que peut-on dire de la limite de $f$ en $+\\infty$ ?\n\n```choix\n- On ne peut rien conclure.\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître : la comparaison pousse vers $+\\infty$ la fonction la plus GRANDE.",
+					"Ici, c'est la plus grande, $g$, qui tend vers $+\\infty$ : cela ne dit rien de $f$. Par exemple $g(x)=x$ avec $f(x)=1$, ou avec $f(x)=-x$. Donc $\\textcolor{{{color:primary.0}}}{\\text{on ne peut rien conclure}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une fonction $f$ définie sur $\\mathbb{R}$ vérifie, pour tout réel $x$ :\n\n$${{if:m==0|{{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}\\leqslant f(x)|f(x)\\leqslant {{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}}}$$\n\nQuelle limite de $f$ cette inégalité permet-elle d'affirmer ?\n\n```choix\nmelanger: non\n- $\\displaystyle\\lim_{x\\to-\\infty}f(x)={{if:m==0|+|-}}\\infty$\n- $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{if:m==0|+|-}}\\infty$\n- $\\displaystyle\\lim_{x\\to {{x0}}}f(x)={{eval:a*x0+c}}$\n- Cette inégalité ne permet d'affirmer aucune de ces limites.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "m",
+					"expression": "0|1"
+				},
+				{
+					"name": "x0",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==0|3|{{if:a*(1-2*m)>0|1|0}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:a==0|La fonction est seulement {{if:m==0|minorée|majorée}} par une constante : cela ne donne aucune limite.|${{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}$ tend vers ${{if:m==0|+|-}}\\infty$ en ${{if:a*(1-2*m)>0|+|-}}\\infty$, et $f$ est {{if:m==0|au-dessus|au-dessous}}.}}",
+					"{{if:a==0|$\\textcolor{{{color:primary.0}}}{\\text{Aucune limite}}$ ne peut être affirmée.|Par comparaison, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\lim_{x\\to{{if:a*(1-2*m)>0|+|-}}\\infty}f(x)={{if:m==0|+|-}}\\infty}$.}}",
+					"Une inégalité ne donne jamais la limite en un réel $x_0$ : $f$ peut valoir n'importe quoi {{if:m==0|au-dessus|au-dessous}} de la droite."
+				]
+			},
+			"hint": "Un théorème de comparaison demande une fonction {{if:m==0|minorée|majorée}} par une fonction qui tend vers ${{if:m==0|+|-}}\\infty$ : de quel côté la droite $y={{if:a==0|{{c}}|{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{c;+}}}}$ le fait-elle ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "f → +∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : −∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : limite finie",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : rien",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "f → 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : limite finie quelconque",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : somme 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : rien",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "rien",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : +∞ (sens inversé)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : −∞",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : limite finie",
+			"variationIndex": 2
+		},
+		{
+			"description": "F7 : 2x − 1 ⩽ f(x) → +∞ en +∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "-1",
+				"m": "0",
+				"x0": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F7 : 2x − 1 ⩽ f(x), côté inversé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "-1",
+				"m": "0",
+				"x0": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F7 : 2x − 1 ⩽ f(x), leurre en x₀",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "-1",
+				"m": "0",
+				"x0": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F7 : −3x + 2 ⩽ f(x) → +∞ en −∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-3",
+				"c": "2",
+				"m": "0",
+				"x0": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F7 : f(x) ⩽ x + 4 → −∞ en −∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"c": "4",
+				"m": "1",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F7 : f(x) ⩽ −2x + 1 → −∞ en +∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"c": "1",
+				"m": "1",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F7 : 5 ⩽ f(x), aucune",
+			"variationIndex": 3,
+			"variables": {
+				"a": "0",
+				"c": "5",
+				"m": "0",
+				"x0": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F7 : 5 ⩽ f(x), +∞ à tort",
+			"variationIndex": 3,
+			"variables": {
+				"a": "0",
+				"c": "5",
+				"m": "0",
+				"x0": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		}
+	]
+}

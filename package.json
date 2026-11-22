@@ -1,7 +1,7 @@
 {
 	"name": "chiphre",
 	"private": true,
-	"version": "0.100.0",
+	"version": "0.101.0",
 	"type": "module",
 	"imports": {
 		"#lib/*": "./src/lib/*",
@@ -113,7 +113,10 @@
 		"garde:donnees": "tsx scripts/garde-donnees-sensibles.ts",
 		"openapi:generate": "npx tsx scripts/generate-openapi.ts",
 		"migrate:sanitize": "tsx scripts/sanitize-existing-notifications.ts",
-		"math": "tsx src/lib/mathAST/cli/cli.ts"
+		"math": "tsx src/lib/mathAST/cli/cli.ts",
+		"lien": "tsx scripts/lien/index.ts",
+		"retours": "tsx scripts/retours/index.ts",
+		"voir": "tsx scripts/voir/index.ts"
 	},
 	"devDependencies": {
 		"@asteasolutions/zod-to-openapi": "^8.5.0",

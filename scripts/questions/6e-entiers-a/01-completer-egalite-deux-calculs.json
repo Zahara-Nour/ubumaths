@@ -1,0 +1,635 @@
+{
+	"id": "818d5e6b-1268-44f0-841f-4a0241f3069f",
+	"title": "Compléter une égalité : un calcul de chaque côté",
+	"description": "Trouver le nombre manquant d'une égalité entre deux calculs : a × b = ? × c, a − ? = b × c, a + ? = b × c, a × b = ? + c, a × b = c − ?, a × b = c × ? (pièges : résultat du côté complet recopié, opération inverse ratée)",
+	"grades": ["CM2", "6"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète l'égalité.\n\n${{a}} \\times {{b}} = ? \\times {{c}}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:a*b"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p/c"
+				}
+			],
+			"conditions": ["mod(a*b,c) == 0", "c != a", "c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as écrit le résultat de ${{a}} \\times {{b}}$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi ${{p}}$.",
+							"label": "Résultat du côté complet recopié"
+						},
+						{
+							"answer": "{{eval:p*c}}",
+							"message": "Tu as multiplié ${{p}}$ par ${{c}}$ : pour trouver le nombre qui, multiplié par ${{c}}$, donne ${{p}}$, on divise ${{p}}$ par ${{c}}$.",
+							"label": "Multiplié au lieu de diviser"
+						},
+						{
+							"answer": "{{eval:p-c}}",
+							"message": "Tu as soustrait ${{c}}$ : le nombre manquant est multiplié par ${{c}}$, il faut donc diviser ${{p}}$ par ${{c}}$.",
+							"label": "Soustrait au lieu de diviser"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le côté complet.** ${{a}} \\times {{b}} = {{p}}$.",
+					"**Le nombre manquant.** $\\square \\times {{c}} = {{p}}$, donc le nombre manquant est ${{p}} \\div {{c}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{x}} \\times {{c}} = {{p}}$."
+				]
+			},
+			"hint": "Calcule d'abord le côté de l'égalité qui n'a pas de case vide : les deux côtés doivent donner le même nombre."
+		},
+		{
+			"statement": "Complète l'égalité.\n\n${{a}} - ? = {{b}} \\times {{c}}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:b*c"
+				},
+				{
+					"name": "x",
+					"expression": "5..120"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+x"
+				}
+			],
+			"conditions": ["a <= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as écrit le résultat de ${{b}} \\times {{c}}$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi ${{p}}$.",
+							"label": "Résultat du côté complet recopié"
+						},
+						{
+							"answer": "{{eval:a+p}}",
+							"message": "Tu as additionné ${{a}}$ et ${{p}}$ : on cherche ce qu'il faut enlever à ${{a}}$ pour obtenir ${{p}}$, c'est-à-dire ${{a}} - {{p}}$.",
+							"label": "Additionné au lieu de soustraire"
+						},
+						{
+							"answer": "{{eval:a-b-c}}",
+							"message": "Tu as additionné ${{b}}$ et ${{c}}$ au lieu de les multiplier : ${{b}} \\times {{c}} = {{p}}$.",
+							"label": "Produit lu comme une somme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le côté complet.** ${{b}} \\times {{c}} = {{p}}$.",
+					"**Le nombre manquant.** ${{a}} - \\square = {{p}}$ : on enlève à ${{a}}$ ce qu'il faut pour arriver à ${{p}}$, donc le nombre manquant est ${{a}} - {{p}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{a}} - {{x}} = {{p}}$."
+				]
+			},
+			"hint": "Calcule d'abord le côté de l'égalité qui n'a pas de case vide : les deux côtés doivent donner le même nombre."
+		},
+		{
+			"statement": "Complète l'égalité.\n\n${{a}} + ? = {{b}} \\times {{c}}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:b*c"
+				},
+				{
+					"name": "x",
+					"expression": "2..60"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p-x"
+				}
+			],
+			"conditions": ["a >= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as écrit le résultat de ${{b}} \\times {{c}}$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi ${{p}}$.",
+							"label": "Résultat du côté complet recopié"
+						},
+						{
+							"answer": "{{eval:p+a}}",
+							"message": "Tu as additionné ${{p}}$ et ${{a}}$ : on cherche ce qu'il faut ajouter à ${{a}}$ pour obtenir ${{p}}$, c'est-à-dire ${{p}} - {{a}}$.",
+							"label": "Additionné au lieu de soustraire"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le côté complet.** ${{b}} \\times {{c}} = {{p}}$.",
+					"**Le nombre manquant.** ${{a}} + \\square = {{p}}$, donc le nombre manquant est ${{p}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{a}} + {{x}} = {{p}}$."
+				]
+			},
+			"hint": "Calcule d'abord le côté de l'égalité qui n'a pas de case vide : les deux côtés doivent donner le même nombre."
+		},
+		{
+			"statement": "Complète l'égalité.\n\n${{a}} \\times {{b}} = ? + {{c}}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:a*b"
+				},
+				{
+					"name": "c",
+					"expression": "5..90"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p-c"
+				}
+			],
+			"conditions": ["c <= p - 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as écrit le résultat de ${{a}} \\times {{b}}$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi ${{p}}$.",
+							"label": "Résultat du côté complet recopié"
+						},
+						{
+							"answer": "{{eval:p+c}}",
+							"message": "Tu as additionné ${{p}}$ et ${{c}}$ : on cherche ce qu'il faut ajouter à ${{c}}$ pour obtenir ${{p}}$, c'est-à-dire ${{p}} - {{c}}$.",
+							"label": "Additionné au lieu de soustraire"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le côté complet.** ${{a}} \\times {{b}} = {{p}}$.",
+					"**Le nombre manquant.** $\\square + {{c}} = {{p}}$, donc le nombre manquant est ${{p}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{x}} + {{c}} = {{p}}$."
+				]
+			},
+			"hint": "Calcule d'abord le côté de l'égalité qui n'a pas de case vide : les deux côtés doivent donner le même nombre."
+		},
+		{
+			"statement": "Complète l'égalité.\n\n${{a}} \\times {{b}} = {{c}} - ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:a*b"
+				},
+				{
+					"name": "c",
+					"expression": "20..200"
+				},
+				{
+					"name": "x",
+					"expression": "eval:c-p"
+				}
+			],
+			"conditions": ["c >= p + 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as écrit le résultat de ${{a}} \\times {{b}}$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi ${{p}}$.",
+							"label": "Résultat du côté complet recopié"
+						},
+						{
+							"answer": "{{eval:c+p}}",
+							"message": "Tu as additionné ${{c}}$ et ${{p}}$ : on cherche ce qu'il faut enlever à ${{c}}$ pour obtenir ${{p}}$, c'est-à-dire ${{c}} - {{p}}$.",
+							"label": "Additionné au lieu de soustraire"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le côté complet.** ${{a}} \\times {{b}} = {{p}}$.",
+					"**Le nombre manquant.** ${{c}} - \\square = {{p}}$ : on enlève à ${{c}}$ ce qu'il faut pour arriver à ${{p}}$, donc le nombre manquant est ${{c}} - {{p}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{c}} - {{x}} = {{p}}$."
+				]
+			},
+			"hint": "Calcule d'abord le côté de l'égalité qui n'a pas de case vide : les deux côtés doivent donner le même nombre."
+		},
+		{
+			"statement": "Complète l'égalité.\n\n${{a}} \\times {{b}} = {{c}} \\times ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:a*b"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p/c"
+				}
+			],
+			"conditions": ["mod(a*b,c) == 0", "c != a", "c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as écrit le résultat de ${{a}} \\times {{b}}$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi ${{p}}$.",
+							"label": "Résultat du côté complet recopié"
+						},
+						{
+							"answer": "{{eval:p*c}}",
+							"message": "Tu as multiplié ${{p}}$ par ${{c}}$ : pour trouver le nombre qui, multiplié par ${{c}}$, donne ${{p}}$, on divise ${{p}}$ par ${{c}}$.",
+							"label": "Multiplié au lieu de diviser"
+						},
+						{
+							"answer": "{{eval:p-c}}",
+							"message": "Tu as soustrait ${{c}}$ : le nombre manquant est multiplié par ${{c}}$, il faut donc diviser ${{p}}$ par ${{c}}$.",
+							"label": "Soustrait au lieu de diviser"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le côté complet.** ${{a}} \\times {{b}} = {{p}}$.",
+					"**Le nombre manquant.** ${{c}} \\times \\square = {{p}}$, donc le nombre manquant est ${{p}} \\div {{c}} = \\textcolor{{{color:primary.0}}}{{{x}}}$.",
+					"**Vérification.** ${{c}} \\times {{x}} = {{p}}$."
+				]
+			},
+			"hint": "Calcule d'abord le côté de l'égalité qui n'a pas de case vide : les deux côtés doivent donner le même nombre."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6 × 8 = ? × 4 : 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "8",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur prévue : 48 recopié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "8",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le résultat de $6 \\times 8$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi $48$."
+			},
+			"answers": ["48"]
+		},
+		{
+			"description": "Erreur prévue : 48 × 4 = 192",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "8",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $48$ par $4$ : pour trouver le nombre qui, multiplié par $4$, donne $48$, on divise $48$ par $4$."
+			},
+			"answers": ["192"]
+		},
+		{
+			"description": "Erreur prévue : 48 − 4 = 44",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "8",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait $4$ : le nombre manquant est multiplié par $4$, il faut donc diviser $48$ par $4$."
+			},
+			"answers": ["44"]
+		},
+		{
+			"description": "9 × 4 = ? × 6 : 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "9",
+				"b": "4",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "178 − ? = 6 × 8 : 130",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"c": "8",
+				"x": "130"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["130"]
+		},
+		{
+			"description": "Erreur prévue : 48 recopié",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"c": "8",
+				"x": "130"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le résultat de $6 \\times 8$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi $48$."
+			},
+			"answers": ["48"]
+		},
+		{
+			"description": "Erreur prévue : 178 + 48",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"c": "8",
+				"x": "130"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné $178$ et $48$ : on cherche ce qu'il faut enlever à $178$ pour obtenir $48$, c'est-à-dire $178 - 48$."
+			},
+			"answers": ["226"]
+		},
+		{
+			"description": "Erreur prévue : 178 − (6 + 8)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"c": "8",
+				"x": "130"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné $6$ et $8$ au lieu de les multiplier : $6 \\times 8 = 48$."
+			},
+			"answers": ["164"]
+		},
+		{
+			"description": "35 + ? = 7 × 9 : 28",
+			"variationIndex": 2,
+			"variables": {
+				"b": "7",
+				"c": "9",
+				"x": "28"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "Erreur prévue : 63 recopié",
+			"variationIndex": 2,
+			"variables": {
+				"b": "7",
+				"c": "9",
+				"x": "28"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le résultat de $7 \\times 9$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi $63$."
+			},
+			"answers": ["63"]
+		},
+		{
+			"description": "Erreur prévue : 63 + 35",
+			"variationIndex": 2,
+			"variables": {
+				"b": "7",
+				"c": "9",
+				"x": "28"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné $63$ et $35$ : on cherche ce qu'il faut ajouter à $35$ pour obtenir $63$, c'est-à-dire $63 - 35$."
+			},
+			"answers": ["98"]
+		},
+		{
+			"description": "9 × 6 = ? + 20 : 34",
+			"variationIndex": 3,
+			"variables": {
+				"a": "9",
+				"b": "6",
+				"c": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["34"]
+		},
+		{
+			"description": "Erreur prévue : 54 recopié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "9",
+				"b": "6",
+				"c": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le résultat de $9 \\times 6$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi $54$."
+			},
+			"answers": ["54"]
+		},
+		{
+			"description": "Erreur prévue : 54 + 20",
+			"variationIndex": 3,
+			"variables": {
+				"a": "9",
+				"b": "6",
+				"c": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné $54$ et $20$ : on cherche ce qu'il faut ajouter à $20$ pour obtenir $54$, c'est-à-dire $54 - 20$."
+			},
+			"answers": ["74"]
+		},
+		{
+			"description": "8 × 7 = 100 − ? : 44",
+			"variationIndex": 4,
+			"variables": {
+				"a": "8",
+				"b": "7",
+				"c": "100"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["44"]
+		},
+		{
+			"description": "Erreur prévue : 56 recopié",
+			"variationIndex": 4,
+			"variables": {
+				"a": "8",
+				"b": "7",
+				"c": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le résultat de $8 \\times 7$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi $56$."
+			},
+			"answers": ["56"]
+		},
+		{
+			"description": "Erreur prévue : 100 + 56",
+			"variationIndex": 4,
+			"variables": {
+				"a": "8",
+				"b": "7",
+				"c": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné $100$ et $56$ : on cherche ce qu'il faut enlever à $100$ pour obtenir $56$, c'est-à-dire $100 - 56$."
+			},
+			"answers": ["156"]
+		},
+		{
+			"description": "5 × 12 = 6 × ? : 10",
+			"variationIndex": 5,
+			"variables": {
+				"a": "5",
+				"b": "12",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur prévue : 60 recopié",
+			"variationIndex": 5,
+			"variables": {
+				"a": "5",
+				"b": "12",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le résultat de $5 \\times 12$ : il faut chercher le nombre qui, dans l'autre calcul, donne aussi $60$."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "Erreur prévue : 60 × 6",
+			"variationIndex": 5,
+			"variables": {
+				"a": "5",
+				"b": "12",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $60$ par $6$ : pour trouver le nombre qui, multiplié par $6$, donne $60$, on divise $60$ par $6$."
+			},
+			"answers": ["360"]
+		},
+		{
+			"description": "Erreur prévue : 60 − 6",
+			"variationIndex": 5,
+			"variables": {
+				"a": "5",
+				"b": "12",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait $6$ : le nombre manquant est multiplié par $6$, il faut donc diviser $60$ par $6$."
+			},
+			"answers": ["54"]
+		}
+	]
+}

@@ -39,6 +39,8 @@ export type StudentTracePlace = z.infer<typeof studentTracePlaceSchema>;
 
 /** Formes chronométrées : durée de réponse, durée allouée et fin (N11). */
 const TIMED_PLACES: readonly StudentTracePlace[] = ['mock_test', 'number_race'];
+/** Lieux qui montrent le bouton « Coup de pouce » (idée 5) */
+const HINT_PLACES: readonly StudentTracePlace[] = ['typing', 'flash_cards'];
 
 /** Formes où l'on tape sa réponse : réponse et verdict par case (N10). */
 const ANSWERED_PLACES: readonly StudentTracePlace[] = ['typing', 'mock_test', 'number_race'];
@@ -60,7 +62,9 @@ function emptyToNull<T>(list: T[] | null | undefined): T[] | null {
  *
  * - `template_id`: the question_template UUID whose skills will be looked up
  * - `success`: outcome of local answer validation
- * - `with_help`: stored for analytics, not used in acquisition rule (decision 58)
+ * - `with_help` : coup de pouce ouvert (idée 5) ; Saisie et Flash-cards seulement
+ *   (lieux qui montrent le bouton) ; demi-réussite pour la révision espacée, sans
+ *   effet sur l'acquisition (décision 58)
  * - `phase_blocage`: optional diagnostic phase when the student failed (decision 30)
  * - `answered_as_choice` : question posée en QCM depuis ses erreurs prévues
  *   (idée 4) ; formes où l'on tape seulement (CHECK de la base) ; demi-réussite
@@ -112,6 +116,9 @@ export const skillAttemptInputSchema = z
 			ctx.addIssue({ code: 'custom', message: 'answer_parts and part_verdicts go together' });
 		} else if (parts && verdicts && parts.length !== verdicts.length) {
 			ctx.addIssue({ code: 'custom', message: 'one verdict per answer part' });
+		}
+		if (body.with_help && !HINT_PLACES.includes(body.place)) {
+			ctx.addIssue({ code: 'custom', message: `no hint for place ${body.place}` });
 		}
 		if (body.answered_as_choice && !ANSWERED_PLACES.includes(body.place)) {
 			ctx.addIssue({ code: 'custom', message: `no choice answer for place ${body.place}` });

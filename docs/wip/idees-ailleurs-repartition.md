@@ -3,9 +3,9 @@
 Ce tableau coordonne les sessions du skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md),
 qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèle publié réservé.
 
-- ⏸️ **En pause (David, 2026-11-21)** : on ne prend pas de nouvelle rubrique avant d'avoir fini le
-  chantier `idees-format` ([idées de format](idees-format-exercices.md), idées 1 à 5) et vérifié le
-  lot « nombres et calculs » de Seconde avec ces critères.
+- **Pause levée (David, 2026-11-22)** : on prend de nouvelles rubriques sans attendre la fin de la
+  vérification du lot « nombres et calculs » de Seconde. Chaque lot neuf applique les critères
+  d'[idées de format](idees-format-exercices.md) (coup de pouce, erreurs prévues).
 - **Réserver** : `git pull --rebase`, modifier la ligne, commit direct sur `main`, push aussitôt. Si
   le push est refusé : pull, relire, et changer de ligne si elle a été prise entre-temps.
 - **États** : libre → prise (sujet, date) → phase 0 → écrite → en prod → publiée.
@@ -25,35 +25,156 @@ qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèl
 | Algorithmique et programmation                | 2I             | 10        | libre                                                      |                 |
 | Sujets d'automatismes (mélange des rubriques) | 2A             | 13        | libre ; **à faire en dernier**, après les autres rubriques |                 |
 
+## Première
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils ne sont pas repris.
+
+### Spécialité
+
+| Rubrique                          | Codes | Exercices | État                 | Sujet / session    |
+| --------------------------------- | ----- | --------- | -------------------- | ------------------ |
+| Suites numériques                 | 1AL1  | 19        | phase 0 (2026-11-22) | `idees-1re-suites` |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | libre                |                    |
+| Dérivation                        | 1AN1  | 12        | libre                |                    |
+| Variations                        | 1AN2  | 5         | libre                |                    |
+| Fonction exponentielle            | 1AN3  | 11        | libre                |                    |
+| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                    |
+| Produit scalaire                  | 1G1   | 10        | libre                |                    |
+| Géométrie repérée                 | 1G2   | 5         | libre                |                    |
+| Probabilités conditionnelles      | 1P1   | 8         | libre                |                    |
+| Variables aléatoires réelles      | 1P2   | 1         | libre                |                    |
+
+### Automatismes de l'épreuve anticipée
+
+| Rubrique                                     | Codes | Exercices | État                                                       | Sujet / session |
+| -------------------------------------------- | ----- | --------- | ---------------------------------------------------------- | --------------- |
+| Calcul numérique et algébrique               | 1A-C  | 127       | libre                                                      |                 |
+| Proportions et pourcentages                  | 1A-R  | 19        | libre                                                      |                 |
+| Évolutions et variations                     | 1A-E  | 22        | libre                                                      |                 |
+| Fonctions et représentations                 | 1A-F  | 58        | libre                                                      |                 |
+| Géométrie                                    | 1A-G  | 29        | libre                                                      |                 |
+| Statistiques                                 | 1A-S  | 36        | libre                                                      |                 |
+| Probabilités                                 | 1A-P  | 27        | libre                                                      |                 |
+| Annales (sujets 2026, mélange des rubriques) | 1A-A  | 14        | libre ; **à faire en dernier**, après les autres rubriques |                 |
+
+## Terminale
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Les rubriques sans exercice (sinus et cosinus `TSA6`, nombres premiers `TEA3`,
+complexes et polynômes `TEC4`, toutes les `TCA` sauf `TCA7`, `TCP`, les `TT` sauf `TTE`) ne
+figurent pas. Les deux fichiers `TA` ne sont pas repris.
+
+### Spécialité
+
+| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session     |
+| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ------------------- |
+| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`  |
+| Limites de fonctions                                                           | TSA2        | 18        | phase 0 validée      | `idees-tle-limites` |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre                |                     |
+| Continuité des fonctions                                                       | TSA4        | 6         | libre                |                     |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                     |
+| Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                     |
+| Intégration                                                                    | TSA8        | 5         | libre                |                     |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                     |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                     |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                |                     |
+
+### Maths expertes
+
+| Rubrique                                              | Codes       | Exercices | État  | Sujet / session |
+| ----------------------------------------------------- | ----------- | --------- | ----- | --------------- |
+| Nombres complexes (algèbre, géométrie, trigonométrie) | TEC1 à TEC3 | 56        | libre |                 |
+| Arithmétique (divisibilité, PGCD, Bézout, Gauss)      | TEA1, TEA2  | 24        | libre |                 |
+| Matrices                                              | TEM1        | 13        | libre |                 |
+| Graphes                                               | TEG1        | 2         | libre |                 |
+
+### Technologique
+
+| Rubrique | Codes | Exercices | État  | Sujet / session |
+| -------- | ----- | --------- | ----- | --------------- |
+| Analyse  | TTE   | 12        | libre |                 |
+
+## Sixième
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repris pour l'instant.
+
+| Rubrique                           | Codes | Exercices | État                 | Sujet / session     |
+| ---------------------------------- | ----- | --------- | -------------------- | ------------------- |
+| Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`  |
+| Nombres entiers et décimaux        | 6N1   | 38        | libre                |                     |
+| Nombres décimaux                   | 6N2   | 55        | prise (2026-11-22)   | `idees-6e-decimaux` |
+| Fractions                          | 6N3   | 53        | libre                |                     |
+| Algèbre                            | 6N4   | 9         | libre                |                     |
+| Résolution de problèmes            | 6N5   | 24        | libre                |                     |
+| Longueurs                          | 6M1   | 16        | libre                |                     |
+| Aires                              | 6M2   | 17        | libre                |                     |
+| Volumes                            | 6M3   | 3         | libre                |                     |
+| Durées                             | 6M4   | 11        | libre                |                     |
+| Géométrie de base                  | 6G0   | 10        | libre                |                     |
+| Distances                          | 6G1   | 6         | libre                |                     |
+| Cercles et disques                 | 6G2   | 9         | libre                |                     |
+| Médiatrices                        | 6G3   | 5         | libre                |                     |
+| Angles                             | 6G4   | 12        | libre                |                     |
+| Bissectrices                       | 6G5   | 3         | libre                |                     |
+| Triangles                          | 6G6   | 16        | libre                |                     |
+| Symétrie axiale                    | 6G7   | 13        | libre                |                     |
+| Espace                             | 6G8   | 4         | libre                |                     |
+| Organisation et gestion de données | 6P1   | 6         | libre                |                     |
+| Probabilités                       | 6P2   | 3         | libre                |                     |
+| Proportionnalité                   | 6P3   | 16        | libre                |                     |
+| Pensée informatique                | 6I1   | 10        | libre                |                     |
+
 ## Autres niveaux
 
-Aucune rubrique relevée pour l'instant. La première session qui prend un niveau liste son dossier
-dans la copie locale (`extern/banque-exercices/src/exercices/`) et ajoute ici une section pour ce
-niveau.
+La première session qui prend un niveau liste son dossier dans la copie locale
+(`extern/banque-exercices/src/exercices/`) et ajoute ici une section pour ce niveau.
 
 ## Modèles publiés réservés
 
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                                                | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 04b1cc7f Puissance d'un produit                                                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie                                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée                                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ?                            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                                                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence                                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                                                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue                                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 19961e67 Valeur renvoyée par une fonction Python de seuil                               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 44b32cad Somme de termes consécutifs d'une suite arithmétique                           | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 45da9678 De l'énoncé à l'expression de la suite                                         | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 5042401b Sens de variation d'une suite géométrique de raison positive                   | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 65e96f31 Terme général d'une suite arithmétique                                         | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 7703e625 Calculer un terme                                                              | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 727fb88a Calculer un terme d'une suite géométrique                                      | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 84114cb2 Reconnaître une suite géométrique à partir de sa forme explicite               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 85afd455 Déterminer la raison d'une suite géométrique                                   | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| b72fae4a Somme de termes consécutifs d'une suite géométrique                            | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| cea65372 Reconnaître une suite géométrique à partir de sa relation de récurrence        | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| cf51cb93 Calculer un terme d'une suite géométrique                                      | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| d2943133 Reconnaître une suite arithmétique à partir de sa forme explicite              | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| e67b1cbd Terme général d'une suite géométrique                                          | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| a4d8dc52 Asymptote parallèle à un axe : équation à partir d'une limite                  | `idees-tle-limites`                                         | 2026-11-22 |                                      |
+| 04ec9518 Limite en un point : dénominateur qui tend vers 0                              | `idees-tle-limites`                                         | 2026-11-22 |                                      |
+| 5bf5b452 Comparaison et encadrement pour les fonctions                                  | `idees-tle-limites`                                         | 2026-11-22 |                                      |
+| b97dabe1 Croissances comparées : exponentielle et puissances                            | `idees-tle-limites`                                         | 2026-11-22 |                                      |
+| ae70373c Limite d'une fonction par comparaison ou encadrement                           | `idees-tle-limites`                                         | 2026-11-22 |                                      |
+| 806c10f4 Limite d'une fonction par opérations, sans forme indéterminée                  | `idees-tle-limites`                                         | 2026-11-22 |                                      |
+| 7844be9a Limite d'une fonction : lever une forme indéterminée par le terme prépondérant | `idees-tle-limites`                                         | 2026-11-22 |                                      |
 
 ## Idées en attente
 
@@ -61,3 +182,13 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
+- `idees-tle-suites` (reportées le 2026-11-22, au programme, pour la session de chaque rubrique) :
+  suite définie par une fonction homographique avec l'étude de f (TSA1-44) → rubrique
+  « compléments sur la dérivation » ; suites avec ln, uₙ₊₁ = ln(1 + uₙ) (TSA1-48) → rubrique
+  « logarithme » ; suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration ».
+- `idees-tle-limites` (2026-11-22, au programme, pour la session de chaque rubrique) : limite de
+  ln(axⁿ + k) par composition (TSA2-35) → rubrique « logarithme » ; variations d'une fonction
+  homographique et fonction auxiliaire g(x) = eˣ − (ax + b) (TSA2-34, TSA2-52) → rubrique
+  « compléments sur la dérivation ».
+- `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
+  « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).

@@ -369,6 +369,22 @@ jobs:
           fi
           echo "::notice::light-dark() intact dans le CSS construit"
 
+      # Le bouton « signaler » et sa route n'existent que sur le serveur de dev
+      # (docs/pratiques/signaler-depuis-la-page.md) : ni le composant ni l'adresse de la
+      # route ne doivent se retrouver dans le build, client comme serveur.
+      - name: Bouton signaler absent du build
+        run: |
+          if [ ! -d .svelte-kit/output/client ] || [ ! -d .svelte-kit/output/server ]; then
+            echo "::error::Sortie du build introuvable (.svelte-kit/output) : la garde ne vérifie rien."
+            exit 1
+          fi
+          bad=$(grep -rlE -- '__dev/retours|signaler-dev|__devFeedbackBuffer' .svelte-kit/output || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Le bouton « signaler » du serveur de dev est dans le build : $bad"
+            exit 1
+          fi
+          echo "::notice::Bouton « signaler » absent du build"
+
   # Server tests (node env): the real regression gate — fast, deterministic,
   # no browser. Sharded for parallelism.
   # PR de contenu : les 4 jobs restent (checks exigés par la protection de main),

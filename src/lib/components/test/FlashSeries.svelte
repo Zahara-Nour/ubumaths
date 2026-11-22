@@ -21,6 +21,8 @@
 	- traceRecorder: élève connecté → une trace par carte du premier tour, envoyée
 	  au clic « Réussi / Pas réussi » (lieu `flash_cards`, trace « déclarée »,
 	  ADR 0038) ; `null` → rien (visiteur, vitrine). « Revoir » n'en laisse pas.
+	  Coup de pouce ouvert (idée 5 du chantier `idees-format`) : la trace dit
+	  « avec indice » ; « Réussi » devient alors « Difficile » pour la révision.
 -->
 
 <script lang="ts">
@@ -75,6 +77,8 @@
 	let isFirstRound = $state(true);
 	// Force un nouveau FlashCard (au recto) à chaque carte, même si une carte revient
 	let cardKey = $state(0);
+	// Coup de pouce ouvert sur la carte affichée (idée 5)
+	let helped = $state(false);
 
 	let seriesStart = Date.now();
 	let cardStart = Date.now();
@@ -126,6 +130,7 @@
 			const trace = buildSeriesTrace({
 				place: 'flash_cards',
 				instance: currentInstance,
+				withHelp: helped,
 				answer: {
 					value: isCorrect ? 'knew' : 'did_not_know',
 					isCorrect,
@@ -153,6 +158,7 @@
 
 	function showNextCard() {
 		revealed = false;
+		helped = false;
 		cardKey += 1;
 		cardStart = Date.now();
 		void focusIn('.flip-card-front [aria-label="Voir la correction"]');
@@ -244,7 +250,14 @@
 
 		<div data-testid="flash-card">
 			{#key cardKey}
-				<FlashCard instance={currentInstance} interactive={false} size="lg" onFlip={handleFlip} />
+				<FlashCard
+					instance={currentInstance}
+					interactive={false}
+					size="lg"
+					showHint
+					onHintOpen={() => (helped = true)}
+					onFlip={handleFlip}
+				/>
 			{/key}
 		</div>
 

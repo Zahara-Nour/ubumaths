@@ -44,6 +44,7 @@ export interface AttemptInput {
 	studentId: string;
 	templateId: string;
 	success: boolean;
+	/** Coup de pouce ouvert (idée 5) : demi-réussite pour FSRS, trace « avec indice » */
 	withHelp: boolean;
 	phaseBlocage?: PhaseBlocage;
 	place: RecordedAttemptPlace;
@@ -100,11 +101,12 @@ export async function recordStudentAttempt(
 	// fiche au MEILLEUR résultat du jour (décision de David, 2026-09-30).
 	const selfAssessed =
 		input.place === 'flash_cards' || attemptSourceForTemplate(templateRow) === 'student_self';
-	// Réussi → Good, raté → Again (spec §1.1) ; réussi en QCM → Hard (idée 4).
+	// Réussi → Good, raté → Again (spec §1.1) ; réussi en QCM (idée 4) ou après un
+	// coup de pouce (idée 5) → Hard.
 	// Jamais « en QCM » pour une auto-évaluation (carte de cours) : la base le
 	// refuse (source `student_self`), et FSRS serait écrit avant une trace refusée.
 	const answeredAsChoice = input.answeredAsChoice === true && !selfAssessed;
-	const grade: Grade = answerGrade(success, answeredAsChoice);
+	const grade: Grade = answerGrade(success, answeredAsChoice || input.withHelp);
 	try {
 		if (selfAssessed) {
 			await applyFsrsReview(

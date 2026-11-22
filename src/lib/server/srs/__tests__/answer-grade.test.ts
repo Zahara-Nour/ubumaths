@@ -6,7 +6,7 @@
  * tôt qu'après une bonne réponse tapée. Un échec reste un échec.
  */
 import { describe, it, expect } from 'vitest';
-import { answerGrade } from '../answer-grade';
+import { answerGrade, helpedGrade } from '../answer-grade';
 import { Grade } from '#lib/srs/types.ts';
 
 describe('answerGrade', () => {
@@ -17,5 +17,23 @@ describe('answerGrade', () => {
 		[false, true, Grade.AGAIN]
 	] as const)('réussi %s, en QCM %s → %s', (success, asChoice, grade) => {
 		expect(answerGrade(success, asChoice)).toBe(grade);
+	});
+});
+
+/**
+ * Coup de pouce (idée 5) : en révision, l'élève choisit lui-même sa note
+ * (« Réussi » = Bien) ; un indice ouvert la ramène à « Difficile ». Un échec
+ * reste un échec, et sans indice rien ne change.
+ */
+describe('helpedGrade', () => {
+	it.each([
+		[Grade.GOOD, true, Grade.HARD],
+		[Grade.EASY, true, Grade.HARD],
+		[Grade.HARD, true, Grade.HARD],
+		[Grade.AGAIN, true, Grade.AGAIN],
+		[Grade.GOOD, false, Grade.GOOD],
+		[Grade.AGAIN, false, Grade.AGAIN]
+	] as const)('note %s, indice %s → %s', (grade, withHelp, expected) => {
+		expect(helpedGrade(grade, withHelp)).toBe(expected);
 	});
 });

@@ -96,17 +96,20 @@ export function submitRequest(
 	card: SessionCard,
 	/** Again (1) ou Good (3) : deux boutons « Pas réussi / Réussi » */
 	grade: 1 | 3,
-	timeSpent: number
+	timeSpent: number,
+	/** Coup de pouce ouvert (idée 5) : le serveur ramène « Réussi » à « Difficile » */
+	withHelp = false
 ): { url: string; body: Record<string, unknown> } {
+	const help = withHelp ? { withHelp: true } : {};
 	if (source.kind === 'chapter') {
 		return {
 			url: `/api/srs/chapters/${encodeURIComponent(source.chapterId)}/submit`,
-			body: { templateId: card.key, grade, timeSpent }
+			body: { templateId: card.key, grade, timeSpent, ...help }
 		};
 	}
 	return {
 		url: '/api/srs/review/submit',
-		body: { cardId: card.key, deckId: source.deckId, grade, timeSpent }
+		body: { cardId: card.key, deckId: source.deckId, grade, timeSpent, ...help }
 	};
 }
 

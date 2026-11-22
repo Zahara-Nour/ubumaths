@@ -6,18 +6,19 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2990._
+_Mis à jour le 2026-11-22, après #2992._
 
-- **État** : idées 1 à 4 terminées (pas en prod). Idée 4 : PR 1 à 4 mergées (#2979, #2983, #2987,
-  #2990 : case « En QCM » par variation dans le panier et l'éditeur de série).
-- **Prochaine action** : idée 5 (coup de pouce), phase 0 à écrire et à faire valider par David
-  (aucune question encore posée ; texte de l'idée : `idees-format-exercices.md`, idée 5).
+- **État** : idées 1 à 5 terminées (pas en prod). Idée 5 : moteur et éditeur (#2991), élève et prof
+  (#2992 : bouton « Coup de pouce » en Saisie, Flash-cards et révision, trace `with_help`,
+  « Difficile », « (avec indice) » côté prof).
+- **Prochaine action** : revue du lot « nombres et calculs » de Seconde (y écrire des indices).
 - **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
-  en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2).
-- **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod`
-  de #2962 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
-- **Worktree / branche** : `ubumaths-wt-idees-format` gardé pour l'essai (serveur 5176), à retirer
-  ensuite ; nouvelle branche pour l'idée 5.
+  en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2) ; essai du coup de pouce
+  (aucun modèle n'a d'indice : en écrire un dans l'éditeur ; serveur 5177).
+- **Pièges en cours** : `expectedErrors` et `hint` refusés ou retirés en prod avant le
+  `deploy:prod` qui livre #2962 et #2991 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
+- **Worktree / branche** : `ubumaths-wt-idees-format` (essai « En QCM », 5176) et
+  `ubumaths-wt-idees-format-indice-eleve` (essai du coup de pouce, 5177), à retirer après les essais.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -255,6 +256,107 @@ validé (Q1 C : case par variation, absente sans erreur prévue, à plusieurs ca
   dialogue : « si un tirage ne le permet pas, reste en saisie », titre « Réponse en QCM » pour un
   modèle à une variation. Faux : « seule l'évaluation tire en QCM » (`automaths/test` aussi). Laissé :
   un élève qui ouvre le lien du prof garde son QCM sans le voir, comme les variations choisies.
+
+## Idée 5 — coup de pouce : phase 0 (2026-11-22)
+
+Déjà tranché (`idees-format-exercices.md`, décisions de David, 2026-11-21) : coup de pouce **oui** ;
+masqué en évaluation notée (la question publique est une liste blanche : rien à retirer) ; indice
+ouvert puis réponse juste = **demi-réussite** pour la révision espacée (« Difficile »,
+`answerGrade`) ; piste : l'indice pourrait être la première étape de la correction.
+
+Mesure en prod (2026-11-22) : 2 644 modèles publiés, 2 567 avec correction écrite (7 685 variations),
+aucun avec étapes générées. Première étape inutilisable telle quelle comme indice : correction en une
+seule étape pour 991 variations, première étape qui affiche `{{solution}}` pour 635, et beaucoup
+d'autres calculent la réponse elles-mêmes (« Le double de $b$ est $2b$ car… »). Seule une lecture
+humaine dit si une première étape aide sans donner la réponse.
+
+Comportements proposés : bouton « Coup de pouce » sous l'énoncé, seulement si la variation a un
+indice ; un clic l'ouvre, il reste ouvert ; le chrono continue ; les variables de l'indice sont
+celles du tirage. À l'écriture, un indice qui contient la réponse attendue est refusé.
+
+Questions posées à David :
+
+- **Q1 — d'où vient l'indice ?** A : l'auteur l'écrit (champ neuf par variation) ; B : la première
+  étape de la correction, automatiquement ; C : A, et l'auteur peut cocher « la première étape de la
+  correction sert d'indice ». Recommandation : C (B donnerait la réponse trop souvent).
+- **Q2 — où l'élève le voit-il ?** Séries d'entraînement et révisions : oui. Course aux nombres
+  (chronométrée) et combats de la descente : recommandation non (vitesse, jeu).
+- **Q3 — le prof voit-il « avec indice » dans le bilan ?** Il faut alors une colonne de trace
+  (migration, comme `answered_as_choice` ; mêmes lignes, mêmes lecteurs : personne ne gagne d'accès).
+  Recommandation : oui.
+- **Q4 — modèles existants** : aucun n'a d'indice. Recommandation : le champ seulement, puis des
+  indices dans les nouveaux modèles et dans le lot « nombres et calculs » de Seconde (sa revue est
+  déjà au programme) ; pas de passe sur les 2 644.
+
+**Réponse de David (2026-11-22) : « je te suis »**, aux quatre questions, chacune posée avec sa
+recommandation : **Q1 → C** (champ « indice » écrit par l'auteur, ou case « la première étape de la
+correction sert d'indice ») · **Q2** : bouton en séries d'entraînement et en révisions, jamais en
+course aux nombres ni en combat · **Q3 → oui** (« avec indice » dans le bilan, colonne de trace ;
+question d'accès : personne ne gagne d'accès) · **Q4** : le champ seulement, indices dans les
+nouveaux modèles et le lot de Seconde.
+
+Lieux de trace (lecture du code) : `typing` (Saisie), `flash_cards` (Flash-cards) et `review`
+(révision) montrent le bouton. Rien en Contrôle blanc
+(`mock_test`), comme en évaluation — **confirmé par David le 2026-11-22** (« non, on ne le met pas »).
+En Flash-cards et en révision (auto-évaluées), « Je savais » après un indice ouvert donne
+« Difficile » au lieu de « Bien ».
+
+**Colonne de trace (David, 2026-11-22, « je te suis » à la recommandation)** : `skill_attempts.with_help`
+réutilisée (prévue en juin pour un tuteur jamais construit, jamais écrite à vrai, 101 traces en prod
+toutes fausses ; décision 58 : marqueur sans pénalité pour l'acquisition, toujours vraie : la
+demi-réussite ne touche que la date de révision). **Pas de migration.**
+
+**Découpage** : PR moteur et éditeur (champ `hint` et case « première étape » par variation, refus
+d'un indice qui donne la réponse, résolution au tirage) ; PR élève et prof (bouton, trace
+`with_help`, demi-réussite, bilan « avec indice »).
+
+## Idée 5, PR moteur — coup de pouce : schéma, tirage, éditeur (2026-11-22)
+
+Branche `feat/idees-format-indice-moteur` (worktree `ubumaths-wt-idees-format-indice`).
+
+- `hint.ts` : `hintSchema` (texte non vide, 1 000 caractères), `hintIssues` / `refineHints`
+  (contrôles croisés), branchés sur le schéma strict et la route d'écriture (objet non strict : sans
+  les champs, il les RETIRAIT).
+- Tirage : `hint` et `hintFromFirstStep` passent par `resolveVariationWithShared` (et son double de
+  `test-instance-builder.ts`) ; `instance.hint` = première étape résolue, ou indice résolu sur sa
+  source `hintSeed` (aucun tirage décalé, vérifié sur 5 graines).
+- Formulaire : carte « Coup de pouce » (MyCheckbox + MarkdownEditor), `setHint` /
+  `setHintFromFirstStep`, `buildTemplate` et la duplication les gardent.
+- Tests : `coup-de-pouce.test.ts` (17, 12 rouges avant le code), `QuestionTemplateForm-coup-de-pouce`
+  (5, 4 rouges sans le formulaire) ; suites `questions` et `validation` vertes (8 552).
+- Relecture `code-reviewer` (Sonnet). Corrigé (tests rouges puis verts) : `\b` laissait passer
+  `{{solution_0}}` / `{{answer_1}}` (regex `(?![A-Za-z])`) ; l'instantané du formulaire ignorait le
+  coup de pouce (« Modifications non sauvegardées » muet) ; indice résolu en vide → aucun indice.
+  Laissé : une variable qui vaut la réponse (`{{b2}}`) ne se voit pas (dit dans la doc) ; le texte
+  écrit revient si on décoche la case. Note pour la PR élève : `{{if:…}}` est rendu côté navigateur,
+  l'indice doit passer par le même rendu que les étapes de correction.
+
+## Idée 5, PR élève et prof — bouton, trace, demi-réussite, « avec indice » (2026-11-22)
+
+Branche `feat/idees-format-indice-eleve` (worktree `ubumaths-wt-idees-format-indice-eleve`).
+
+- Carte (`FlashCard`, `showHint` / `onHintOpen`) : bouton « Coup de pouce » sous l'énoncé si la
+  variation a un indice (jamais carte de cours) ; ouvert pour de bon, rattaché à l'instance ; rendu
+  `MarkdownRenderer` de la version détaillée (`splitCorrectionDetail`) ; bouton retiré après
+  « Valider » s'il n'a pas servi. `showHint` passé par Saisie, Flash-cards et `ReviewSession` (paquet
+  et chapitre) seulement.
+- Trace : `buildSeriesTrace({ withHelp })` → `with_help` en `typing` / `flash_cards` ; Zod de
+  `api/skill-attempts` refuse `with_help` en `mock_test` / `number_race`. Révision : `withHelp` dans
+  `submitRequest`, schémas `submitReviewSchema` / `chapterReviewSubmitSchema` (défaut faux).
+- Note : `answerGrade(success, enQcm || avecIndice)` ; `helpedGrade` en révision (3-4 → 2, 1 reste 1) ;
+  `recordSrsReviewAttempt(…, withHelp)`. Statistiques de séance de révision : note choisie par l'élève.
+- Prof : `point-errors.ts` lit `with_help`, nom suivi de « (avec indice) ».
+- Tests : `answer-grade` (+6), Zod (+5), `series-trace` (+5), `review-source` (+2), `point-errors` (+3),
+  routes de révision (`coup-de-pouce.test.ts` ×2, 7), `FlashCard-coup-de-pouce` (5, 2 rouges avant),
+  Saisie / Flash-cards / révision (+3, rouges sans le branchement), intégration
+  `skill-attempts-endpoint` (+1).
+- Doc : `questions.md`, `srs.md` (note ⁵), `analytique-prof.md`.
+- Relectures : `security-auditor` (Opus) aucun bloquant (le champ ne peut que baisser la note ;
+  le prof lisait déjà la colonne ; `hint` absent de la question publique). `code-reviewer` (Sonnet) :
+  corrigé, `withHelp` sur une carte personnelle baissait la note FSRS sans trace → ignoré (test).
+  Laissé : `with_help` accepté sur une carte de cours par un appel direct (ne peut que baisser la
+  note) ; aucun CHECK en base pour les lieux (règle dans le Zod) ; « (avec indice) » collé au nom
+  (aucun dédoublonnage par nom aujourd'hui).
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 

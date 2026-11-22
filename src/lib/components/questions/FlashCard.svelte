@@ -18,6 +18,13 @@
 	(`series-trace.ts`, ADR 0038). `flipOnSubmit` (forme Saisie) : la carte se
 	retourne d'elle-même après « Valider », juste ou faux.
 
+	Coup de pouce (idée 5 du chantier `idees-format`) : `showHint` (Saisie,
+	Flash-cards, révision ; jamais en évaluation, Contrôle blanc, Course aux
+	nombres ni combat) montre le bouton « Coup de pouce » sous l'énoncé quand la
+	variation a un indice (`instance.hint`, hors carte de cours). Un clic l'ouvre,
+	il reste ouvert ; `onHintOpen` prévient la forme (trace « avec indice »,
+	demi-réussite). Rendu comme une étape de correction, version détaillée.
+
 	Props:
 	- interactive: boolean (default: false) - Enable answer validation
 	- instance: QuestionInstance (pre-generated)
@@ -52,7 +59,8 @@
 	} from '#lib/components/markdown/content-digit-grouping.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
-	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
+	import { RotateCw, Check, X, AlertCircle, TriangleAlert, Lightbulb } from '@lucide/svelte';
+	import { splitCorrectionDetail } from '#lib/questions/correction-detail.ts';
 	import { cn } from '#lib/utils.ts';
 	import FlipCard from '#lib/components/FlipCard.svelte';
 
@@ -92,6 +100,10 @@
 		startFlipped?: boolean;
 		/** Forme Saisie : la carte se retourne après « Valider », juste ou faux (N2) */
 		flipOnSubmit?: boolean;
+		/** Bouton « Coup de pouce » permis par la forme (idée 5) ; défaut : non */
+		showHint?: boolean;
+		/** Coup de pouce ouvert (une fois par question) */
+		onHintOpen?: () => void;
 	}
 
 	let {
@@ -108,7 +120,9 @@
 		height = undefined,
 		flippable = true,
 		startFlipped = false,
-		flipOnSubmit = false
+		flipOnSubmit = false,
+		showHint = false,
+		onHintOpen
 	}: Props = $props();
 
 	// Mots cliquables dans l'énoncé du recto ; le verso n'en a aucun (R2, `LexiconOff`)
@@ -150,6 +164,9 @@
 	// régénéré) retrouve un verso sans réponse (R9). `raw` : comparée par identité
 	// à l'instance reçue (un proxy profond ne lui serait jamais égal)
 	let submitted = $state.raw<{ instance: QuestionInstance; answer: StudentAnswer } | null>(null);
+	// Coup de pouce ouvert, rattaché à SON instance (comme `submitted`) : une autre
+	// question repart fermée
+	let hintOpenedFor = $state.raw<QuestionInstance | null>(null);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -176,6 +193,12 @@
 
 	// Carte de cours (#617) : recto = énoncé, verso = correction, pas de réponse
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
+
+	// Coup de pouce (idée 5) : version détaillée, comme une étape de correction
+	const hintMarkdown = $derived(
+		showHint && !isCourseCard && instance.hint ? splitCorrectionDetail(instance.hint).detailed : ''
+	);
+	const hintOpen = $derived(hintOpenedFor !== null && hintOpenedFor === instance);
 
 	// Résultat attendu du verso (R14) : avec la réponse validée s'il y en a une
 	const studentAnswer = $derived(
@@ -337,6 +360,12 @@
 		}
 	}
 
+	function handleHintOpen() {
+		if (hintOpen) return;
+		hintOpenedFor = instance;
+		onHintOpen?.();
+	}
+
 	function handleFlip() {
 		isFlipped = !isFlipped;
 		onFlip?.(isFlipped);
@@ -416,6 +445,31 @@
 								{/if}
 							</div>
 						</div>
+
+						<!-- Coup de pouce (idée 5) : fermé au départ, ouvert pour de bon -->
+						{#if hintMarkdown}
+							{#if hintOpen}
+								<div class="hint" data-testid="hint">
+									<p class="hint-heading">
+										<Lightbulb class="h-4 w-4" aria-hidden="true" />
+										Coup de pouce
+									</p>
+									<MarkdownRenderer content={hintMarkdown} {genericFunctions} />
+								</div>
+							{:else if !isSubmitted}
+								<div class="flex justify-center">
+									<Button
+										variant="outline"
+										size="sm"
+										onclick={handleHintOpen}
+										data-testid="hint-button"
+									>
+										<Lightbulb class="h-4 w-4" aria-hidden="true" />
+										Coup de pouce
+									</Button>
+								</div>
+							{/if}
+						{/if}
 
 						<!-- Interactive controls (une carte de cours n'a rien à valider) -->
 						{#if interactive && !isCourseCard}
@@ -653,6 +707,20 @@
 	 * CONTENT SECTIONS
 	 * ============================================================================ */
 
+	/* Coup de pouce : un filet d'accent à gauche, pas un encadré */
+	.hint {
+		border-left: 3px solid var(--color-primary);
+		padding-left: 0.75rem;
+	}
+	.hint-heading {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		margin-bottom: 0.25rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--color-muted-foreground);
+	}
 	/* Séparation résultat attendu / correction : un filet discret, pas un encadré */
 	.correction-separator {
 		border: none;

@@ -300,6 +300,56 @@ describe('ReviewSession — deux boutons « Pas réussi / Réussi » (formes-de-
 	});
 });
 
+describe('ReviewSession — coup de pouce (idée 5)', () => {
+	const deck = { kind: 'deck', deckId: 'd1' } as const;
+	const instance = (n: number) => ({
+		templateId: `t${n}`,
+		statement: `Question ${n}`,
+		hint: `Indice ${n}`,
+		grades: ['6'],
+		level: 1,
+		generatedAt: new Date().toISOString(),
+		correction: { steps: [`Correction ${n}`] }
+	});
+	const dueBody = {
+		cards: [1, 2].map((n) => ({
+			cardId: `k${n}`,
+			cardType: 'template',
+			templateId: `t${n}`,
+			instance: instance(n)
+		})),
+		skipped: 0
+	};
+
+	it('indice ouvert : le corps dit withHelp ; la carte suivante repart sans', async () => {
+		const bodies: Record<string, unknown>[] = [];
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (url: string, init?: RequestInit) => {
+				if (url.startsWith('/api/srs/review/due')) return respond(200, dueBody);
+				if (url === '/api/srs/review/submit') {
+					bodies.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
+					return respond(200, { success: true });
+				}
+				return respond(404, {});
+			})
+		);
+		await render(ReviewSession, { source: deck });
+
+		await page.getByRole('button', { name: 'Coup de pouce' }).click();
+		await expect.element(page.getByText('Indice 1')).toBeVisible();
+		await page.getByRole('button', { name: 'Voir la correction' }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
+		await expect.poll(() => bodies.length).toBe(1);
+		expect(bodies[0]).toMatchObject({ cardId: 'k1', grade: 3, withHelp: true });
+
+		await page.getByRole('button', { name: 'Voir la correction' }).click();
+		await page.getByRole('button', { name: 'Réussi', exact: true }).click();
+		await expect.poll(() => bodies.length).toBe(2);
+		expect(bodies[1]).not.toHaveProperty('withHelp');
+	});
+});
+
 describe('ReviewSession — réactions du Palotin (chantier palotins, partie C)', () => {
 	const deck = { kind: 'deck', deckId: 'd1' } as const;
 	const customCards = (count: number) =>

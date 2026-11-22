@@ -4,13 +4,11 @@ Proposition 3 du chantier `inspiration` (cf. `docs/wip/inspiration-progress.md`)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2988._
+_Chantier CLOS le 2026-11-22._
 
-- **État** : PR 1 (#2936), PR 2a (#2984) et PR 2b (#2988, page d'attente des contrôles assignés) **mergées**, pas encore en prod. Le découpage de la phase 0 est fait (Flash-cards et Saisie : pas de page d'attente, phase 0 de la PR 2).
-- **Prochaine action** : clôture du chantier si David la valide → versement du durable (déjà dans `docs/systeme/evaluations.md`) et archivage du journal.
-- **En attente de David** : ses essais de #2936, #2984 et #2988 (cf. `verifications-manuelles.md`) ; le go pour clore.
-- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`). Branches `feat/diaporama-reglages` et `feat/diaporama-attente-libres` mergées, encore locales (suppression = liste `ask`).
-- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` (sur `feat/diaporama-attente-libres` mergée, gardé pour le serveur de test 5177 ; à mettre à jour sur `main` pour essayer #2988).
+- **État** : livré en trois PR, #2936 (En classe), #2984 (entraînements libres), #2988 (contrôles assignés) ; pas encore en prod à la clôture. Flash-cards et Saisie : pas de page d'attente (phase 0 de la PR 2).
+- **Durable** : `docs/systeme/evaluations.md` (formes de série, page d'attente, réglages, pièges du `Deck`).
+- **Reste** : les essais de David (`docs/wip/verifications-manuelles.md`).
 
 ## Phase 0 (validée par David le 2026-11-20)
 
@@ -102,3 +100,7 @@ Phase 0 discutée et validée avec David (réglages avant ET pendant, page d'att
 - Tests : route (8, rouges sans le module), intégration (7 : aucune séance créée, reprise et temps restant, archivé/brouillon → 404, date limite → 403, aperçu du prof), page (6 nouveaux, rouges sans le code ; les 8 existants passent la page d'attente).
 - Relecture : `code-reviewer` (Sonnet) et `security-auditor` (Opus), aucun bloquant (aucun accès élargi : la route rend un sous-ensemble de ce que `start` rendait au même appelant ; service_role borné à la tentative trouvée sous RLS). Corrigés : nombre de questions par tirage à blanc (`drawSeriesQuestions`, l'épuisement des variantes en retire ; test rouge avec l'ancien décompte), aucune question → 409 dès la page d'attente ; Course reprise sans temps limite → repli commun `DEFAULT_COURSE_TIME_LIMIT_SECONDS` (plus « temps écoulé » à tort) ; échec au clic → retour à la page d'attente (test) ; « Quitter » d'un aperçu vers l'espace prof ; tests d'intégration Q37 (tentative en cours après la date limite → reprise) et élève hors classe → 404 (page d'attente et `start`) ; journal si une tentative ouverte n'a aucune question. Gardé : réponse non validée par Zod côté navigateur (notre serveur, titre échappé par Svelte).
 - Mergée (#2988) après un premier rouge de CI : `types/evaluation-attempt.ts` exporte maintenant une constante lue par le serveur, il manquait au filtre `paths` de la suite d'intégration (`nightly-integration.yml`).
+
+### 2026-11-22 — clôture
+
+- PR 2b livrée par #2988 (route `GET /api/evaluations/assignments/[id]`, revues code et sécurité sans bloquant). Pièges versés dans `evaluations.md`, journal archivé, worktree retiré.

@@ -1,0 +1,378 @@
+{
+	"id": "535f9f8e-989d-4b76-9934-7c180c69269b",
+	"title": "Démontrer une forme explicite par récurrence : l'hérédité",
+	"description": "Hérédité d'une formule explicite : uₖ₊₁ sous la forme de la formule au rang k + 1 (arithmético-géométrique, uₙ₊₁ = uₙ/(buₙ + 1)), forme imposée ; vₙ = 1/uₙ arithmétique",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:l+c}}$ et, pour tout entier naturel $n$, $u_{n+1}={{r}}u_n{{eval:l*(1-r);+}}$. On veut démontrer par récurrence que, pour tout entier naturel $n$, $u_n={{l}}{{c;+}}\\times{{r}}^{n}$.\n\nHérédité : on suppose $u_k={{l}}{{c;+}}\\times{{r}}^{k}$ pour un entier naturel $k$. Écris $u_{k+1}$ en fonction de $k$, sous la forme de la formule au rang $k+1$. Une expression de même valeur écrite autrement (développée, par exemple) est refusée.\n\n$u_{k+1}=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "l",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{l}}{{c;+}}\\times{{r}}^{k+1}",
+					"expectedErrors": [
+						{
+							"answer": "{{l}}{{c;+}}\\times{{r}}^{k}",
+							"message": "Tu as recopié la formule au rang $k$ : au rang $k + 1$, l'exposant devient $k + 1$.",
+							"label": "Formule au rang k"
+						},
+						{
+							"answer": "{{eval:r*l}}{{c;+}}\\times{{r}}^{k+1}",
+							"message": "Tu as multiplié $u_k$ par ${{r}}$ sans ajouter ensuite le terme constant de la relation.",
+							"label": "Terme constant oublié"
+						},
+						{
+							"answer": "{{eval:l*(2-r)}}{{c;+}}\\times{{r}}^{k+1}",
+							"message": "Tu n'as multiplié par ${{r}}$ que le terme en puissance : c'est tout $u_k$ qu'il faut multiplier.",
+							"label": "Multiplication partielle"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{k+1}={{r}}u_k{{eval:l*(1-r);+}}={{r}}\\left({{l}}{{c;+}}\\times{{r}}^{k}\\right){{eval:l*(1-r);+}}$.",
+					"$u_{k+1}={{eval:r*l}}{{eval:l*(1-r);+}}{{c;+}}\\times{{r}}\\times{{r}}^{k}=\\textcolor{{{color:primary.0}}}{ {{l}}{{c;+}}\\times{{r}}^{k+1} }$ : c'est la formule au rang $k+1$.",
+					"Avec l'initialisation ($u_0={{eval:l+c}}={{l}}{{c;+}}\\times{{r}}^{0}$), la formule est vraie pour tout entier naturel $n$."
+				]
+			},
+			"hint": "Remplace $u_k$ par la formule dans $u_{k+1}={{r}}u_k{{eval:l*(1-r);+}}$, développe, puis utilise ${{r}}\\times{{r}}^{k}={{r}}^{k+1}$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0=\\dfrac{1}{{{a}}}$ et, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{u_n}{{{b}}u_n+1}$ ; ses termes sont strictement positifs. On veut démontrer par récurrence que, pour tout entier naturel $n$, $u_n=\\dfrac{1}{{{b}}n+{{a}}}$.\n\nHérédité : on suppose $u_k=\\dfrac{1}{{{b}}k+{{a}}}$ pour un entier naturel $k$. Écris $u_{k+1}$ en fonction de $k$, sous la forme de la formule au rang $k+1$. Une expression de même valeur écrite autrement (développée, par exemple) est refusée.\n\n$u_{k+1}=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{b}}(k+1)+{{a}}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{1}{{{b}}k+{{eval:a+1}}}",
+							"message": "Au rang $k + 1$, on remplace $k$ par $k + 1$ : le dénominateur augmente de ${{b}}$, pas de $1$.",
+							"label": "Dénominateur augmenté de 1"
+						},
+						{
+							"answer": "{{b}}(k+1)+{{a}}",
+							"message": "Tu as donné l'inverse de $u_{k + 1}$.",
+							"label": "Inverse"
+						},
+						{
+							"answer": "\\frac{1}{{{b}}}",
+							"message": "Le dénominateur de la relation est ${{b}}u_k + 1$ : n'oublie pas d'ajouter $1$.",
+							"label": "+1 oublié au dénominateur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{k+1}=\\dfrac{u_k}{{{b}}u_k+1}=\\dfrac{\\dfrac{1}{{{b}}k+{{a}}}}{\\dfrac{{{b}}}{{{b}}k+{{a}}}+1}$.",
+					"On multiplie le numérateur et le dénominateur par ${{b}}k+{{a}}$ : $u_{k+1}=\\dfrac{1}{{{b}}+{{b}}k+{{a}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{b}}(k+1)+{{a}}}}$ : c'est la formule au rang $k+1$.",
+					"Avec l'initialisation ($u_0=\\dfrac{1}{{{a}}}=\\dfrac{1}{{{b}}\\times0+{{a}}}$), la formule est vraie pour tout entier naturel $n$."
+				]
+			},
+			"hint": "Remplace $u_k$ par $\\dfrac{1}{{{b}}k+{{a}}}$ dans la relation, puis multiplie le numérateur et le dénominateur par ${{b}}k+{{a}}$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0=1$ et, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{u_n}{1+{{a}}u_n}$ ; ses termes sont strictement positifs. On pose, pour tout entier naturel $n$, $v_n=\\dfrac{1}{u_n}$.\n\nCalcule $v_{n+1}-v_n$.\n\n$v_{n+1}-v_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "-{{a}}",
+							"message": "Tu as calculé $v_n - v_{n + 1}$, l'opposé de la différence demandée.",
+							"label": "Différence inversée"
+						},
+						{
+							"answer": "{{eval:a+1}}",
+							"message": "On ne simplifie pas une somme par $u_n$ : $\\frac{1 + {{a}}u_n}{u_n} = \\frac{1}{u_n} + {{a}}$.",
+							"label": "Simplification abusive"
+						},
+						{
+							"answer": "\\frac{1}{{{a}}}",
+							"message": "Tu as inversé ${{a}}$ : $\\frac{1 + {{a}}u_n}{u_n} = \\frac{1}{u_n} + {{a}}$.",
+							"label": "Inverse de a"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$v_{n+1}=\\dfrac{1}{u_{n+1}}=\\dfrac{1+{{a}}u_n}{u_n}=\\dfrac{1}{u_n}+{{a}}=v_n+{{a}}$.",
+					"Donc $v_{n+1}-v_n=\\textcolor{{{color:primary.0}}}{{{a}}}$ : la suite $(v_n)$ est arithmétique de raison ${{a}}$."
+				]
+			},
+			"hint": "Écris $v_{n+1}=\\dfrac{1}{u_{n+1}}$ en inversant la fraction $\\dfrac{u_n}{1+{{a}}u_n}$, puis coupe la fraction obtenue en deux."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : formule au rang k + 1",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3+4\\times2^{k+1}"]
+		},
+		{
+			"description": "a : point de multiplication",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3+4\\cdot2^{k+1}"]
+		},
+		{
+			"description": "a : 8×2^k, forme refusée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3+8\\times2^{k}"]
+		},
+		{
+			"description": "a : relation recopiée, forme refusée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["2(3+4\\times2^{k})-3"]
+		},
+		{
+			"description": "a : formule au rang k",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié la formule au rang $k$ : au rang $k + 1$, l'exposant devient $k + 1$."
+			},
+			"answers": ["3+4\\times2^{k}"]
+		},
+		{
+			"description": "a : terme constant oublié",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $u_k$ par $2$ sans ajouter ensuite le terme constant de la relation."
+			},
+			"answers": ["6+4\\times2^{k+1}"]
+		},
+		{
+			"description": "a : multiplication partielle",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"l": "5",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as multiplié par $3$ que le terme en puissance : c'est tout $u_k$ qu'il faut multiplier."
+			},
+			"answers": ["-5-2\\times3^{k+1}"]
+		},
+		{
+			"description": "a : ordre inversé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4\\times2^{k+1}+3"]
+		},
+		{
+			"description": "a : c négatif",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"l": "5",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5-2\\times3^{k+1}"]
+		},
+		{
+			"description": "b : formule au rang k + 1",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{2(k+1)+3}"]
+		},
+		{
+			"description": "b : 1/(2k+5), forme refusée",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{1}{2k+5}"]
+		},
+		{
+			"description": "b : dénominateur + 1",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au rang $k + 1$, on remplace $k$ par $k + 1$ : le dénominateur augmente de $2$, pas de $1$."
+			},
+			"answers": ["\\frac{1}{2k+4}"]
+		},
+		{
+			"description": "b : inverse",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'inverse de $u_{k + 1}$."
+			},
+			"answers": ["2(k+1)+3"]
+		},
+		{
+			"description": "b : +1 oublié",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur de la relation est $2 u_k + 1$ : n'oublie pas d'ajouter $1$."
+			},
+			"answers": ["\\frac{1}{2}"]
+		},
+		{
+			"description": "c : a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "c : opposé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $v_n - v_{n + 1}$, l'opposé de la différence demandée."
+			},
+			"answers": ["-4"]
+		},
+		{
+			"description": "c : 1 + a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne simplifie pas une somme par $u_n$ : $\\frac{1 + 4u_n}{u_n} = \\frac{1}{u_n} + 4$."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "c : 1/a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé $4$ : $\\frac{1 + 4u_n}{u_n} = \\frac{1}{u_n} + 4$."
+			},
+			"answers": ["\\frac{1}{4}"]
+		}
+	]
+}

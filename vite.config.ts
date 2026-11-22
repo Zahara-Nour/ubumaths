@@ -9,6 +9,8 @@ import { Features } from 'lightningcss';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { baseTestConfig } from './vitest.base.config';
 import { moduleSideEffects } from './scripts/side-effect-modules';
+import { retoursDev } from './scripts/retours/plugin.ts';
+import { supabaseRelay } from './scripts/relais/plugin.ts';
 
 // Read version from package.json at build time
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
@@ -69,6 +71,10 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 	return {
 		plugins: [
 			mathliveFontDisplay(),
+			// Route du bouton « signaler » : serveur de dev seulement (jamais dans le build)
+			retoursDev(),
+			// Supabase local relayé sous /__dev/supabase : serveur de dev et base locale seulement
+			supabaseRelay(),
 			tailwindcss(),
 			sveltekit({
 				// Consult https://svelte.dev/docs/kit/integrations

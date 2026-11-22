@@ -397,6 +397,23 @@ describe('POST /api/skill-attempts — comportement', () => {
 		expect(row.grade).toBe(1);
 	});
 
+	it('coup de pouce (idée 5) : réussite avec indice en Saisie → « Difficile » (2), trace « avec indice »', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const request = buildRequest({ template_id: templateId, success: true, with_help: true });
+		const response = await POST({ request, locals } as never);
+		expect(response.status).toBe(200);
+
+		const { data: rows } = await service
+			.from('skill_attempts')
+			.select('success, with_help, grade, place')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect(rows).toEqual([{ success: true, with_help: true, grade: 2, place: 'typing' }]);
+	});
+
 	it('ADR 0038 : écrit lieu, graine, durées, fin, réponse et verdict par case (CHECK de la base passés)', async () => {
 		const student = await TestData.profile().withRole('student').create();
 		const templateId = await createFakeTemplate(service, student.id);

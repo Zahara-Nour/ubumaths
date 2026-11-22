@@ -1,0 +1,569 @@
+{
+	"id": "44b32cad-1803-4ff2-a649-4c502610b43c",
+	"title": "Somme de termes consécutifs d'une suite arithmétique",
+	"description": "Nombre de termes × (premier + dernier) / 2 : depuis u₀, u₁ ou un rang p, ou somme écrite en entier",
+	"grades": ["1_SPE", "T_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "8..20"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+n*r"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(n+1)*(a+l)/2"
+				}
+			],
+			"conditions": ["l != 0", "s != 0", "a+l != 0"],
+			"correction": {
+				"steps": [
+					"De $u_0$ à $u_{ {{n}} }$, il y a $\\mathbf{ {{eval:n+1}} }$ termes (et non ${{n}}$).",
+					"Dernier terme : $u_{ {{n}} }=u_0+{{n}}r={{a}}+{{n}}\\times{{eval:r;()}}={{l}}$.",
+					"Chaque terme s'écrit $u_k=u_0+k\\,r$ : $S$ compte ${{eval:n+1}}$ fois $u_0$, plus $r$ fois $1+2+\\cdots+{{n}}$. $$S={{eval:n+1}}\\times{{eval:a;()}}+{{eval:r;()}}\\times(1+2+\\cdots+{{n}})={{eval:n+1}}\\times{{eval:a;()}}+{{eval:r;()}}\\times{{eval:n*(n+1)/2}}={{s}}$$",
+					"Ce calcul se range en une règle, plus rapide :",
+					"$$S=\\text{nombre de termes}\\times\\dfrac{\\text{premier}+\\text{dernier}}{2}$$",
+					"$$S={{eval:n+1}}\\times\\dfrac{ {{a}}{{eval:l;+}} }{2}={{eval:n+1}}\\times\\dfrac{ {{eval:a+l}} }{2}={{s}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "8..20"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a+r"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+n*r"
+				},
+				{
+					"name": "s",
+					"expression": "eval:n*(f+l)/2"
+				}
+			],
+			"conditions": ["f != 0", "l != 0", "s != 0", "f+l != 0"],
+			"correction": {
+				"steps": [
+					"La somme commence à $u_1$ : de $u_1$ à $u_{ {{n}} }$, il y a $\\mathbf{ {{n}} }$ termes (et non ${{eval:n+1}}$).",
+					"Premier terme : $u_1=u_0+r={{a}}{{eval:r;+}}={{f}}$. Dernier terme : $u_{ {{n}} }=u_0+{{n}}r={{a}}+{{n}}\\times{{eval:r;()}}={{l}}$.",
+					"Chaque terme s'écrit $u_k=u_0+k\\,r$ : $S$ compte ${{n}}$ fois $u_0$, plus $r$ fois $1+2+\\cdots+{{n}}$. $$S={{n}}\\times{{eval:a;()}}+{{eval:r;()}}\\times(1+2+\\cdots+{{n}})={{n}}\\times{{eval:a;()}}+{{eval:r;()}}\\times{{eval:n*(n+1)/2}}={{s}}$$",
+					"Ce calcul se range en une règle, plus rapide :",
+					"$$S=\\text{nombre de termes}\\times\\dfrac{\\text{premier}+\\text{dernier}}{2}$$",
+					"$$S={{n}}\\times\\dfrac{ {{f}}{{eval:l;+}} }{2}={{n}}\\times\\dfrac{ {{eval:f+l}} }{2}={{s}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(nn-1)*(f+l)/2}}",
+							"message": "De $u_{ {{p}} }$ à $u_{ {{m}} }$, il y a ${{nn}}$ termes, et non ${{eval:nn-1}}$.",
+							"label": "Un terme de moins"
+						},
+						{
+							"answer": "{{eval:nn*(f+l)}}",
+							"message": "Tu as oublié de diviser par $2$.",
+							"label": "Division par 2 oubliée"
+						},
+						{
+							"answer": "{{eval:nn*(a+l)/2}}",
+							"message": "La somme commence à $u_{ {{p}} }$ : le premier terme est $u_{ {{p}} }$, pas $u_0$.",
+							"label": "u₀ pris pour premier terme"
+						}
+					]
+				}
+			],
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nCalcule $S=u_{ {{p}} }+u_{ {{eval:p+1}} }+\\cdots+u_{ {{m}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "5..50"
+				},
+				{
+					"name": "nn",
+					"expression": "8..20"
+				},
+				{
+					"name": "m",
+					"expression": "eval:p+nn-1"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a+p*r"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+m*r"
+				},
+				{
+					"name": "s",
+					"expression": "eval:nn*(f+l)/2"
+				}
+			],
+			"conditions": ["s != 0", "f+l != 0", "abs(s) < 10000", "f != 0", "l != 0"],
+			"correction": {
+				"steps": [
+					"De $u_{ {{p}} }$ à $u_{ {{m}} }$, il y a ${{m}}-{{p}}+1=\\mathbf{ {{nn}} }$ termes.",
+					"Premier terme : $u_{ {{p}} }=u_0+{{p}}r={{a}}+{{p}}\\times{{eval:r;()}}={{f}}$. Dernier terme : $u_{ {{m}} }=u_0+{{m}}r={{a}}+{{m}}\\times{{eval:r;()}}={{l}}$.",
+					"$$S=\\text{nombre de termes}\\times\\dfrac{\\text{premier}+\\text{dernier}}{2}$$",
+					"$$S={{nn}}\\times\\dfrac{ {{f}}{{eval:l;+}} }{2}={{nn}}\\times\\dfrac{ {{eval:f+l}} }{2}=\\textcolor{{{color:primary.0}}}{{{s}}}$$"
+				]
+			},
+			"hint": "Compte les termes de la somme, puis calcule son premier et son dernier terme."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(nn-1)*(f+l)/2}}",
+							"message": "Il y a ${{nn}}$ termes : $\\dfrac{ {{l}}-{{f}} }{ {{r}} }$ compte les écarts, il faut ajouter $1$.",
+							"label": "Un terme de moins"
+						},
+						{
+							"answer": "{{eval:nn*(f+l)}}",
+							"message": "Tu as oublié de diviser par $2$.",
+							"label": "Division par 2 oubliée"
+						},
+						{
+							"answer": "{{eval:nn*(l-f)/2}}",
+							"message": "On ajoute le premier et le dernier terme, on ne les soustrait pas.",
+							"label": "Dernier moins premier"
+						}
+					]
+				}
+			],
+			"statement": "Les termes de la somme ci-dessous sont des termes consécutifs d'une suite arithmétique.\n\n$$S={{f}}+{{eval:f+r}}+{{eval:f+2*r}}+\\cdots+{{l}}$$\n\nCalcule $S$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..20"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "nn",
+					"expression": "10..25"
+				},
+				{
+					"name": "l",
+					"expression": "eval:f+(nn-1)*r"
+				},
+				{
+					"name": "s",
+					"expression": "eval:nn*(f+l)/2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La raison est $r={{eval:f+r}}-{{f}}={{r}}$.",
+					"Nombre de termes : de ${{f}}$ à ${{l}}$, on ajoute $\\dfrac{ {{l}}-{{f}} }{ {{r}} }={{eval:nn-1}}$ fois la raison, donc il y a ${{eval:nn-1}}+1=\\mathbf{ {{nn}} }$ termes.",
+					"$$S=\\text{nombre de termes}\\times\\dfrac{\\text{premier}+\\text{dernier}}{2}={{nn}}\\times\\dfrac{ {{f}}+{{l}} }{2}=\\textcolor{{{color:primary.0}}}{{{s}}}$$"
+				]
+			},
+			"hint": "Trouve la raison, puis le nombre de termes : combien de fois ajoute-t-on la raison pour aller de ${{f}}$ à ${{l}}$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["220"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "u0=5, r=3, jusqu'à u10 : 11×(5+35)/2 = 220",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["288"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-12",
+				"l": "48",
+				"n": "15",
+				"r": "4",
+				"s": "288"
+			},
+			"description": "u0=−12, r=4, jusqu'à u15 : 16×(−12+48)/2 = 288",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-200"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"l": "-47",
+				"n": "9",
+				"r": "-6",
+				"s": "-200"
+			},
+			"description": "u0=7, r=−6, jusqu'à u9 : -200",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "piège : 10 termes au lieu de 11 → 200",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["440"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "oubli de la division par 2 → 440",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["236{,}5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "dernier terme pris égal à u11 = 38 → 236,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11\\times20"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "5",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "220"
+			},
+			"description": "calcul non effectué : 11×20",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["215"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "u0=5, r=3, de u1 à u10 : 10×(8+35)/2 = 215",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-426"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"f": "-8",
+				"l": "-63",
+				"n": "12",
+				"r": "-5",
+				"s": "-426"
+			},
+			"description": "u0=−3, r=−5, de u1 à u12 : -426",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["236{,}5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "piège : 11 termes au lieu de 10 → 236,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "premier terme pris égal à u0 : 10×(5+35)/2 = 200",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["220"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "somme de u0 à u10 (= 220) au lieu de u1 à u10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5\\times43"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "5",
+				"f": "8",
+				"l": "35",
+				"n": "10",
+				"r": "3",
+				"s": "215"
+			},
+			"description": "calcul non effectué : 5×43",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["455"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"r": "3",
+				"p": "10",
+				"nn": "10"
+			},
+			"description": "u0 = 2, r = 3, de u10 à u19 : 455",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-112"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"r": "-2",
+				"p": "6",
+				"nn": "8"
+			},
+			"description": "u0 = 5, r = −2, de u6 à u13 : 8 × (−7 − 21)/2 = −112",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5\\times91"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"r": "3",
+				"p": "10",
+				"nn": "10"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["409{,}5"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "De $u_{10}$ à $u_{19}$, il y a $10$ termes, et non $9$."
+			},
+			"variables": {
+				"a": "2",
+				"r": "3",
+				"p": "10",
+				"nn": "10"
+			},
+			"description": "9 termes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["910"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de diviser par $2$."
+			},
+			"variables": {
+				"a": "2",
+				"r": "3",
+				"p": "10",
+				"nn": "10"
+			},
+			"description": "sans /2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["305"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La somme commence à $u_{10}$ : le premier terme est $u_{10}$, pas $u_0$."
+			},
+			"variables": {
+				"a": "2",
+				"r": "3",
+				"p": "10",
+				"nn": "10"
+			},
+			"description": "u0 premier",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["874"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"f": "5",
+				"r": "3",
+				"nn": "23"
+			},
+			"description": "5 + 8 + … + 71 = 874",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["836"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $23$ termes : $\\dfrac{71 - 5}{3}$ compte les écarts, il faut ajouter $1$."
+			},
+			"variables": {
+				"f": "5",
+				"r": "3",
+				"nn": "23"
+			},
+			"description": "22 termes",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1\\,748"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de diviser par $2$."
+			},
+			"variables": {
+				"f": "5",
+				"r": "3",
+				"nn": "23"
+			},
+			"description": "sans /2",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["759"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ajoute le premier et le dernier terme, on ne les soustrait pas."
+			},
+			"variables": {
+				"f": "5",
+				"r": "3",
+				"nn": "23"
+			},
+			"description": "71 − 5",
+			"variationIndex": 3
+		}
+	]
+}

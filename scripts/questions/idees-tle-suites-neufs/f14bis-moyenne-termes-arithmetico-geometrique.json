@@ -1,0 +1,330 @@
+{
+	"id": "2e10cd76-822d-4cb9-9ce8-f791fb9a8a50",
+	"title": "Moyenne des premiers termes d'une suite arithmético-géométrique",
+	"description": "uₙ = ℓ + c·qⁿ : Sₙ = u₀ + … + uₙ₋₁ en fonction de n (somme géométrique), puis limite de Sₙ/n (q = 1/2, q = k/10)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{l}}{{c;+}}\\times\\left(\\dfrac{1}{2}\\right)^{n}$. Pour tout entier $n\\geqslant1$, on note $S_n=u_0+u_1+\\cdots+u_{n-1}$ (somme des $n$ premiers termes).\n\n1. Exprime $S_n$ en fonction de $n$.\n\n$S_n=?$\n\n2. Détermine la limite de $\\dfrac{S_n}{n}$ quand $n$ tend vers $+\\infty$.\n\n$\\lim\\limits_{n\\to+\\infty}\\dfrac{S_n}{n}=?$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["2*c != l"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{l}}n{{eval:2*c;+}}\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)",
+					"expectedErrors": [
+						{
+							"answer": "{{l}}(n+1){{eval:2*c;+}}\\left(1-\\left(\\frac{1}{2}\\right)^{n+1}\\right)",
+							"message": "$S_n$ compte $n$ termes, de $u_0$ à $u_{n - 1}$ : tu en as pris un de trop.",
+							"label": "Un terme de trop"
+						},
+						{
+							"answer": "{{l}}{{eval:2*c;+}}\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)",
+							"message": "Chacun des $n$ termes contient ${{l}}$ : ce nombre compte $n$ fois dans la somme.",
+							"label": "ℓ compté une fois"
+						},
+						{
+							"answer": "{{l}}n{{c;+}}\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)",
+							"message": "Dans la somme géométrique, tu as oublié de diviser par $1 - q$.",
+							"label": "Division par 1 − q oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{l}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:l>0|+\\infty|-\\infty}}",
+							"message": "C'est la limite de $S_n$ ; on demande celle de $\\frac{S_n}{n}$.",
+							"label": "Limite de Sₙ"
+						},
+						{
+							"answer": "0",
+							"message": "Le terme ${{l}}$ de $\\frac{S_n}{n}$ ne dépend pas de $n$ : il ne tend pas vers $0$.",
+							"label": "Tout tend vers 0"
+						},
+						{
+							"answer": "{{eval:2*c}}",
+							"message": "Tu as donné la limite de la partie géométrique de $S_n$, pas celle de $\\frac{S_n}{n}$.",
+							"label": "Limite de la partie géométrique"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$S_n=\\underbrace{ {{l;()}}+\\cdots+{{l;()}} }_{n\\text{ fois}}{{c;+}}\\left(1+\\left(\\dfrac{1}{2}\\right)+\\cdots+\\left(\\dfrac{1}{2}\\right)^{n-1}\\right)={{l}}n{{c;+}}\\times\\dfrac{1-\\left(\\dfrac{1}{2}\\right)^{n}}{1-\\left(\\dfrac{1}{2}\\right)}$.",
+					"Donc $S_n=\\textcolor{{{color:primary.0}}}{ {{l}}n{{eval:2*c;+}}\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right) }$.",
+					"$\\dfrac{S_n}{n}={{l}}{{eval:2*c;+}}\\times\\dfrac{1-\\left(\\dfrac{1}{2}\\right)^{n}}{n}$ ; comme $0<1-\\left(\\dfrac{1}{2}\\right)^{n}<1$, ce quotient tend vers $0$.",
+					"Donc $\\lim\\limits_{n\\to+\\infty}\\dfrac{S_n}{n}=\\textcolor{{{color:primary.0}}}{{{l}}}$ : la moyenne des premiers termes tend vers la limite de la suite."
+				]
+			},
+			"hint": "Sépare $S_n$ en deux sommes : $n$ fois le nombre ${{l}}$, et ${{c}}$ fois la somme géométrique $1+q+\\cdots+q^{n-1}$, avec $q=\\dfrac{1}{2}$."
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par $u_n={{l}}{{c;+}}\\times{{eval:k/10;d}}^{n}$. Pour tout entier $n\\geqslant1$, on note $S_n=u_0+u_1+\\cdots+u_{n-1}$ (somme des $n$ premiers termes).\n\n1. Exprime $S_n$ en fonction de $n$.\n\n$S_n=?$\n\n2. Détermine la limite de $\\dfrac{S_n}{n}$ quand $n$ tend vers $+\\infty$.\n\n$\\lim\\limits_{n\\to+\\infty}\\dfrac{S_n}{n}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..9"
+				},
+				{
+					"name": "j",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "l",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "eval:j*(10-k)"
+				}
+			],
+			"conditions": ["c != 1", "c != -1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{l}}n{{eval:10*j;+}}\\left(1-{{eval:k/10;d}}^{n}\\right)",
+					"expectedErrors": [
+						{
+							"answer": "{{l}}(n+1){{eval:10*j;+}}\\left(1-{{eval:k/10;d}}^{n+1}\\right)",
+							"message": "$S_n$ compte $n$ termes, de $u_0$ à $u_{n - 1}$ : tu en as pris un de trop.",
+							"label": "Un terme de trop"
+						},
+						{
+							"answer": "{{l}}{{eval:10*j;+}}\\left(1-{{eval:k/10;d}}^{n}\\right)",
+							"message": "Chacun des $n$ termes contient ${{l}}$ : ce nombre compte $n$ fois dans la somme.",
+							"label": "ℓ compté une fois"
+						},
+						{
+							"answer": "{{l}}n{{c;+}}\\left(1-{{eval:k/10;d}}^{n}\\right)",
+							"message": "Dans la somme géométrique, tu as oublié de diviser par $1 - q$.",
+							"label": "Division par 1 − q oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{l}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:l>0|+\\infty|-\\infty}}",
+							"message": "C'est la limite de $S_n$ ; on demande celle de $\\frac{S_n}{n}$.",
+							"label": "Limite de Sₙ"
+						},
+						{
+							"answer": "0",
+							"message": "Le terme ${{l}}$ de $\\frac{S_n}{n}$ ne dépend pas de $n$ : il ne tend pas vers $0$.",
+							"label": "Tout tend vers 0"
+						},
+						{
+							"answer": "{{eval:10*j}}",
+							"message": "Tu as donné la limite de la partie géométrique de $S_n$, pas celle de $\\frac{S_n}{n}$.",
+							"label": "Limite de la partie géométrique"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$S_n=\\underbrace{ {{l;()}}+\\cdots+{{l;()}} }_{n\\text{ fois}}{{c;+}}\\left(1+{{eval:k/10;d}}+\\cdots+{{eval:k/10;d}}^{n-1}\\right)={{l}}n{{c;+}}\\times\\dfrac{1-{{eval:k/10;d}}^{n}}{1-{{eval:k/10;d}}}$.",
+					"Donc $S_n=\\textcolor{{{color:primary.0}}}{ {{l}}n{{eval:10*j;+}}\\left(1-{{eval:k/10;d}}^{n}\\right) }$.",
+					"$\\dfrac{S_n}{n}={{l}}{{eval:10*j;+}}\\times\\dfrac{1-{{eval:k/10;d}}^{n}}{n}$ ; comme $0<1-{{eval:k/10;d}}^{n}<1$, ce quotient tend vers $0$.",
+					"Donc $\\lim\\limits_{n\\to+\\infty}\\dfrac{S_n}{n}=\\textcolor{{{color:primary.0}}}{{{l}}}$ : la moyenne des premiers termes tend vers la limite de la suite."
+				]
+			},
+			"hint": "Sépare $S_n$ en deux sommes : $n$ fois le nombre ${{l}}$, et ${{c}}$ fois la somme géométrique $1+q+\\cdots+q^{n-1}$, avec $q={{eval:k/10;d}}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : juste",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3n+8\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)", "3"]
+		},
+		{
+			"description": "a : 0,5ⁿ développé",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3n+8-8\\times0.5^{n}", "3"]
+		},
+		{
+			"description": "a : quotient de la formule, × devant la fraction perfectible",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			},
+			"answers": ["3n+4\\times\\frac{1-\\frac{1}{2^n}}{1-\\frac{1}{2}}", "3"]
+		},
+		{
+			"description": "a : un terme de trop",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$S_n$ compte $n$ termes, de $u_0$ à $u_{n - 1}$ : tu en as pris un de trop."
+			},
+			"answers": ["3(n+1)+8\\left(1-\\left(\\frac{1}{2}\\right)^{n+1}\\right)", "3"]
+		},
+		{
+			"description": "a : ℓ une fois",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chacun des $n$ termes contient $3$ : ce nombre compte $n$ fois dans la somme."
+			},
+			"answers": ["3+8\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)", "3"]
+		},
+		{
+			"description": "a : division oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la somme géométrique, tu as oublié de diviser par $1 - q$."
+			},
+			"answers": ["3n+4\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)", "3"]
+		},
+		{
+			"description": "a : limite de Sₙ",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la limite de $S_n$ ; on demande celle de $\\frac{S_n}{n}$."
+			},
+			"answers": ["3n+8\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)", "+\\infty"]
+		},
+		{
+			"description": "a : tout tend vers 0",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le terme $3$ de $\\frac{S_n}{n}$ ne dépend pas de $n$ : il ne tend pas vers $0$."
+			},
+			"answers": ["3n+8\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)", "0"]
+		},
+		{
+			"description": "a : partie géométrique",
+			"variationIndex": 0,
+			"variables": {
+				"l": "3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la limite de la partie géométrique de $S_n$, pas celle de $\\frac{S_n}{n}$."
+			},
+			"answers": ["3n+8\\left(1-\\left(\\frac{1}{2}\\right)^{n}\\right)", "8"]
+		},
+		{
+			"description": "b : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"j": "2",
+				"l": "-5",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5n+20\\left(1-0.8^{n}\\right)", "-5"]
+		},
+		{
+			"description": "b : développé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"j": "2",
+				"l": "-5",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["20-5n-20\\times0.8^{n}", "-5"]
+		},
+		{
+			"description": "b : division oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"j": "2",
+				"l": "-5",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la somme géométrique, tu as oublié de diviser par $1 - q$."
+			},
+			"answers": ["-5n+4\\left(1-0.8^{n}\\right)", "-5"]
+		},
+		{
+			"description": "b : limite de Sₙ (−∞)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"j": "2",
+				"l": "-5",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la limite de $S_n$ ; on demande celle de $\\frac{S_n}{n}$."
+			},
+			"answers": ["-5n+20\\left(1-0.8^{n}\\right)", "-\\infty"]
+		}
+	]
+}
