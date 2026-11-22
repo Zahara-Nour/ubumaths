@@ -6,25 +6,28 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, avant la phase 0 (aucune PR)._
+_Mis à jour le 2026-11-22, phase 0 envoyée (aucune PR)._
 
-- **État** : les 18 exercices 6N0 sont lus et décrits dans le relevé, en face de nos modèles en prod
-  (niveaux CE2 à 5e). Il reste à poser les verdicts ✅ / 🟡 / ❌.
-- **Prochaine action** : (1) poser les verdicts en lisant les variations des modèles cités en prod :
-  à vérifier en priorité, le tableau des produits partiels (6N0A-12), les égalités avec une opération
-  de chaque côté du signe = (6N0A-14) et le dernier chiffre d'une somme ou d'une différence (b9677e1f :
-  produit seul) ; (2) rédiger les fiches de phase 0 sur une page à cocher. Pistes neuves : écrire un
-  nombre en lettres et en chiffres au CM2 (rien chez nous au-delà du CE2), rose et Yohaku, vocabulaire
-  des opérations au CM, nature d'un calcul.
-- **En attente de David** : rien.
-- **Pièges en cours** : le programme de 6e n'a **aucun point** sur les entiers seuls, les faits
-  numériques ni le vocabulaire des opérations. Ces notions sont des points de CM1/CM2 (répertoires,
-  encadrer, intercaler, ranger, comparer, demi-droite graduée, distributivité, égalités à trous).
-  Une idée de cette rubrique ira donc le plus souvent au CM (`grades` CM2 + 6, point du CM2), ou
-  bien elle sera rangée sans point. À trancher en phase 0.
+- **État** : verdicts posés dans le relevé (11 ✅, 3 🟡, 4 ❌). Sept fiches publiées sur la page à
+  cocher https://claude.ai/artifact/Qyqb6DkxdqZDZNV1k316cr (base `verdicts`, vide à l'envoi).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), les consigner ici, puis
+  écrire le gros lot : F1 égalités avec un calcul de chaque côté (CM2-065), F5 Yohaku (CM2-065), F2
+  grand nombre en lettres et en chiffres (CM2-003, bloc trous), nouveaux modèles CM2 + 6 ; variations
+  de b9677e1f (F3), d793de49 (F4), 98f558e4 (F7), à réserver dans le tableau d'abord.
+- **En attente de David** : les 7 réponses de la page (dont Q1, rangement CM2 + 6 au point du CM).
+- **Pièges en cours** : la case Texte tolère une lettre d'écart (vingt / vingts) → bloc trous à
+  étiquettes. `hint` est lu en prod (#2991 dans `production`). Un `?` dans un `array` fait une case
+  (4b080eed). La rose (F6) ira à `outils-manquants.md` seulement si David dit oui.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers`, `docs/idees-6e-entiers`.
 
 ## Historique
 
 - 2026-11-22 : section Sixième ajoutée au tableau (23 rubriques), 6N0 réservée (commit sur `main`).
   Worktree créé. Relevé commencé.
+
+## 2026-11-22 — verdicts et phase 0
+
+Variations relues en prod pour les trois priorités. **6N0A-14** : aucune égalité d'entiers n'a de calcul
+des deux côtés du signe =, sauf la commutativité (b2a4a178, CE1) ; le BO du CM2 cite « 178 – … = 6 × 8 ».
+**6N0A-12** : d793de49 décompose dans le corrigé seulement. **6N0A-5** : b9677e1f, un produit seul.
+Lettres : rien au-delà du CP. Verdicts détaillés dans le relevé ; fiches F1 à F7 et Q1 sur la page à cocher.

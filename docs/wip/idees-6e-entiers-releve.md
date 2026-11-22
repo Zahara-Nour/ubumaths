@@ -2,7 +2,7 @@
 
 Chantier [`idees-6e-entiers`](idees-6e-entiers-progress.md). Ce relevé porte sur les 18 exercices 6N0
 de l'autre plateforme, lus dans leur code source (copie locale). Ils sont comparés à nos modèles des
-niveaux CE2 à 5e en prod. Les ids sont ceux de la plateforme. **Brouillon : les 18 exercices sont lus, les verdicts restent à poser.**
+niveaux CE2 à 5e en prod. Les ids sont ceux de la plateforme. Les verdicts ont été posés le 2026-11-22 après lecture des variations en prod (§ Verdicts).
 
 ## Programme
 
@@ -42,3 +42,30 @@ utilise un barème partiel.
 
 Détail du lot B (agent) : la rose et le Yohaku acceptent toute solution juste, recalculée ; 6N0A-14 vise
 explicitement le sens du signe = ; 6N0B-2 a deux formes (nommer le nombre, ou calculer « la somme de… »).
+
+## Verdicts (2026-11-22, variations relues en prod)
+
+| Id         | Verdict | Pourquoi (vérifié en prod)                                                                                                                                                                                                             | Fiche |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| 6N0A-1     | ✅      | Tables, terme manquant et additions à trou du CP au CM2                                                                                                                                                                                | —     |
+| 6N0A-2     | ❌      | Aucune rose. Notre format ne sait pas poser des cases dans une figure, et deux de leurs quatre types demandent d'accepter toute solution juste                                                                                         | F6    |
+| 6N0A-3     | ❌      | Aucun Yohaku. Sur une grille 2 × 2, une case donnée suffit à rendre la solution unique : les cases se posent dans un tableau `array`                                                                                                   | F5    |
+| 6N0A-4     | ✅      | 4643ed4a (CM2-046), e765013f, 59b781cc (CM1)                                                                                                                                                                                           | —     |
+| 6N0A-5     | 🟡      | b9677e1f n'a qu'une variation : le produit d'un nombre de 2 chiffres par un nombre de 3 chiffres. Ni somme ni différence                                                                                                               | F3    |
+| 6N0A-6 / 7 | ❌      | En lettres, rien au-delà du CP (92c8e499, QCM jusqu'à 50). En chiffres, 3dd3b738 (CE2, 22 nombres jusqu'à 10 000) et 8d7edbde (6-103, milliards écrits en chiffres et en mots)                                                         | F2    |
+| 6N0A-8     | ✅      | 4241d466 (CM1-143), 455b9748 (CE2), CM2-129                                                                                                                                                                                            | —     |
+| 6N0A-9     | ✅      | 2953c9c0 (CM2-127), 178730c2, 41dd05bc                                                                                                                                                                                                 | —     |
+| 6N0A-10    | ✅      | 7d258acc (CM2-006, bloc `ranger`), d7df43c4                                                                                                                                                                                            | —     |
+| 6N0A-11    | ✅      | d6466135 (CM2-005), 0021eee7                                                                                                                                                                                                           | —     |
+| 6N0A-12    | 🟡      | d793de49 (CM2 + 6, « Calculer un produit d'entiers ») décompose déjà b selon ses rangs, mais seulement dans le corrigé ; l'élève ne saisit que le résultat. Les 9 modèles CM2-047 portent sur la distributivité du type 4 × a + 6 × a  | F4    |
+| 6N0A-13    | ✅      | 8390762c (CM1-040, multiplication) ; de15a4b0 (CM2-043 : entier de 1 à 4 chiffres divisé par 1 000), a94ddf87, 590169c4 ; 819df2a9 (CM2-042)                                                                                           | —     |
+| 6N0A-14    | ❌      | Recherche faite sur toutes les égalités à trou en prod. Les entiers n'ont jamais d'opération des deux côtés du signe =, sauf la commutativité g × p = p × ? (b2a4a178, CE1). Le BO du CM2 donne pourtant l'exemple « 178 – … = 6 × 8 » | F1    |
+| 6N0B-1     | ✅      | 1076ebed « La somme de deux ou trois nombres », c9bd997c « Le produit de deux nombres » (CE2) ; d9811133 (5e)                                                                                                                          | —     |
+| 6N0B-2     | ✅      | 0ada6949, baec0070, 3d4c45e5 (CE2) ; 8df8ba2b (5e). Le vocabulaire n'est pas un point du CM                                                                                                                                            | —     |
+| 6N0B-3     | ✅      | Nature d'un calcul numérique : déjà vue au CE2 (mêmes modèles) ; ee9256c0 (5e, expressions littérales)                                                                                                                                 | —     |
+| 6N0B-4     | 🟡      | 98f558e4 (CM1-062) : N × k + a, k × (a + N), symboles. c4011427 (CM1, schéma en barres) : × puis +, × puis −. **Aucun enchaînement avec une division**                                                                                 | F7    |
+
+Ce que leur format fait et que le nôtre ne sait pas faire :
+
+- **Une grille ou une figure jugée par ses contraintes**, où toute solution juste est acceptée (Yohaku sans case donnée, rose « retrouve les cases »). C'est une idée d'outil, à ajouter à `outils-manquants.md` si David le veut (fiche F6).
+- **La saisie libre d'un nombre en lettres** : notre case « Texte » tolère une lettre d'écart dès 5 lettres. Elle laisserait donc passer « quatre-vingt » pour « quatre-vingts », qui est justement l'erreur visée. Notre bloc ` ```trous ` à étiquettes, jugé strictement, fait mieux (fiche F2).
