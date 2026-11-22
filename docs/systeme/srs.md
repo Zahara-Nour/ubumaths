@@ -177,13 +177,13 @@ s'affichait « toutes capacités ».
 
 ### Note ↔ réussite
 
-| Chemin                                          | Note FSRS                                             | Trace `skill_attempts`                 |
-| ----------------------------------------------- | ----------------------------------------------------- | -------------------------------------- |
-| Question interactive (`api/skill-attempts`)     | juste → Good (3), faux → Again (1)                    | `success`, source `auto`               |
-| Carte de cours, lieu `flash_cards` (même route) | idem, **meilleur du jour**                            | source `student_self` (toutes gardées) |
-| Révision d'un paquet / d'un chapitre            | Réussi → Good (3), Pas réussi → Again (1)             | `student_self`, lieu `review` (¹)      |
-| Évaluation (`recordSeriesReviews`)              | juste → Good, faux → Again ; carte = meilleur du jour | `auto`, lieu `evaluation` (²)          |
-| Combat de la Descente (`recordCombatAnswer`)    | juste → Good (3), faux → Again (1)                    | `auto`, lieu `descente` (³)            |
+| Chemin                                          | Note FSRS                                                 | Trace `skill_attempts`                 |
+| ----------------------------------------------- | --------------------------------------------------------- | -------------------------------------- |
+| Question interactive (`api/skill-attempts`)     | juste → Good (3), faux → Again (1) (⁴)                    | `success`, source `auto`               |
+| Carte de cours, lieu `flash_cards` (même route) | idem, **meilleur du jour**                                | source `student_self` (toutes gardées) |
+| Révision d'un paquet / d'un chapitre            | Réussi → Good (3), Pas réussi → Again (1)                 | `student_self`, lieu `review` (¹)      |
+| Évaluation (`recordSeriesReviews`)              | juste → Good, faux → Again ; carte = meilleur du jour (⁴) | `auto`, lieu `evaluation` (²)          |
+| Combat de la Descente (`recordCombatAnswer`)    | juste → Good (3), faux → Again (1)                        | `auto`, lieu `descente` (³)            |
 
 (¹) `success = note ≥ 2`, note gardée dans `grade` (`recordSrsReviewAttempt`). Avant l'ADR 0038, la
 révision écrivait la source `srs` ; ces anciennes traces se lisent « déclaré », sans réécriture.
@@ -198,6 +198,14 @@ et fin calculées par `evaluationTraceOf` ([evaluations.md](evaluations.md), env
 (la policy élève refuse `descente`) ; graine, réponse et verdict par case, sans durée
 ([descente.md](descente.md), combat).
 
+(⁴) Question posée **en QCM** depuis ses erreurs prévues (chantier `idees-format`, idée 4,
+[questions.md](questions.md)) : juste → **Hard (2)**, demi-réussite, la question revient plus tôt ;
+faux → Again (1). `answerGrade` (`src/lib/server/srs/answer-grade.ts`), commun aux deux chemins ; la
+trace porte `answered_as_choice` (CHECK : source `auto`, lieux `typing`, `mock_test`, `number_race`,
+`evaluation`). En série libre, le navigateur le déclare (même limite que « Réussi » en Flash-cards) ;
+en contrôle, le serveur le lit sur la copie figée. `success` reste vrai : le suivi des points du
+programme compte la réussite (décision Q1 du 2026-11-22).
+
 **Contenu d'une trace posée par `api/skill-attempts`** (ADR 0038) : le **lieu** est exigé
 (`flash_cards`, `typing` = Saisie, `mock_test` = Contrôle blanc, `number_race` = Course aux nombres ;
 jamais `evaluation`, `review` ni `descente` — combat de la Descente de la Vistule —, écrits par le
@@ -205,7 +213,8 @@ serveur ; la policy d'insertion de l'élève refuse `evaluation` et `descente`),
 réponse, durée allouée et fin (`validated` / `timeout`) seulement en formes chronométrées
 (`mock_test`, `number_race`) ; réponse case par case (`answer_parts`) et verdict par case
 (`part_verdicts`) seulement là où l'on tape (`typing`, `mock_test`, `number_race`), autant de verdicts
-que de cases, aucune case → NULL. Le Zod (`skillAttemptInputSchema`) reprend les CHECK de la base
+que de cases, aucune case → NULL ; « répondu en QCM » (`answered_as_choice`, défaut faux) aux mêmes lieux
+seulement. Le Zod (`skillAttemptInputSchema`) reprend les CHECK de la base
 (50 cases, 2 000 caractères par case, 10 000 en tout) : un corps hors règle rend 400, pas 500.
 `answer_parts` est du texte libre de mineur, toujours affiché échappé.
 

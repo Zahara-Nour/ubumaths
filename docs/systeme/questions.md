@@ -1399,6 +1399,11 @@ mélangé sur une source de hasard à part. Dans l'énoncé, la case devient `\l
 suit. Aucune erreur prévue utilisable sur ce tirage → `null`, la question reste en saisie. Cocher
 une erreur prévue : `expectedErrorOf` rend son erreur, le résultat attendu affiche son message sous
 le bloc (une case choix n'a jamais d'autre remarque) et le prof la compte sous son nom.
+Repère : la case choix porte `fromExpectedErrors: true` ; `isAnsweredAsChoice(instance)` le lit (instance
+relue en base comprise ; un QCM écrit par l'auteur : non). La trace d'une série libre le transmet
+(`buildSeriesTrace` → `answered_as_choice`, formes où l'on tape, réponse donnée ou non) ; en contrôle, le
+serveur le lit sur la copie figée. Réussite en QCM = demi-réussite pour la révision espacée
+([srs.md](srs.md)) ; le suivi des points du programme la compte comme une réussite (Q1, 2026-11-22).
 Gardes : `choice-from-errors.test.ts`, `AnswerEditor-jamais-en-qcm.svelte.test.ts`.
 
 Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en

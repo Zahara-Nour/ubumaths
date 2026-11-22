@@ -23,6 +23,8 @@
  *   compte les cases fausses par type, chaque élève du groupe compté une fois.
  *   Une erreur prévue par l'auteur (chantier `idees-format`, idée 3) compte sous
  *   son nom, à côté des types devinés ; deux types de même nom font un compte.
+ * - **En QCM** (idée 4) : un groupe posé en QCM depuis ses erreurs prévues le
+ *   dit (`asChoice`), mention « en QCM » pour le professeur.
  *
  * Tout se lit avec le client du professeur, sous la RLS existante. Une lecture
  * en échec rend une erreur propre au panneau, jamais une exception.
@@ -47,6 +49,7 @@ import {
 	answerErrorKinds,
 	type BlankErrorKind
 } from '#lib/questions/error-kinds.ts';
+import { isAnsweredAsChoice } from '#lib/questions/choice-from-errors.ts';
 import { detailsWithinBudget, type DetailBudget } from './corrected-detail';
 import {
 	BreakdownReadError,
@@ -228,7 +231,8 @@ export function computeQuestionErrors(
 				status,
 				verdict: detail,
 				students: [row.studentName],
-				errorKinds: kinds.kinds
+				errorKinds: kinds.kinds,
+				asChoice: isAnsweredAsChoice(instance)
 			});
 		}
 	});

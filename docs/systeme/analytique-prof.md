@@ -111,7 +111,11 @@ contrôle (`QuestionErrorsPanel.svelte`, partagé avec [evaluations.md](evaluati
   par `generateInstance(modèle, graine)` (une génération par graine) ; trace réussie = juste, ratée =
   faux ; verdict par case = `part_verdicts` stocké, jamais recalculé (longueur différente des réponses →
   détail indisponible) ; rien de tapé = sans réponse. Les `POINT_ERRORS_TRACE_CAP` (200) traces les plus
-  récentes par modèle, plafond posé par la base (tri `created_at` décroissant, `range`).
+  récentes par modèle, plafond posé par la base (tri `created_at` décroissant, `range`). Trace « répondu en
+  QCM » (`answered_as_choice`, chantier `idees-format`, idée 4) : rejouée en QCM (`asChoiceInstance`, même
+  graine, mêmes choix dans le même ordre) ; un tirage qui ne se pose plus en QCM est écarté. Traces en saisie
+  et en QCM d'un même modèle mêlées, chaque groupe posé en QCM porte la mention « en QCM » (`asChoice`,
+  décision Q3 du 2026-11-22).
 - **Budget de temps** (`REQUEST_BUDGET_MS`, 5 s) partagé par toute la requête : rejeu des énoncés et verdicts
   recalculés des contrôles. Au-delà : plus aucun énoncé rejoué, verdict « indisponible ». Un modèle dont des
   traces ne sont pas montrées (plafond ou budget) le dit (« seules les réponses les plus récentes »).

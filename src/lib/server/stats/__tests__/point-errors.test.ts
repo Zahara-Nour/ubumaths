@@ -11,7 +11,9 @@ import {
 } from '../point-errors';
 import type { QuestionErrorAnswer } from '../../evaluation-question-errors';
 import { POINT_ERRORS_MESSAGE, POINT_ERRORS_TRACE_CAP } from '#lib/types/point-errors.ts';
-import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { isAnsweredAsChoice } from '#lib/questions/choice-from-errors.ts';
 import {
 	called,
 	createFakeSupabase,
@@ -44,6 +46,7 @@ function trace(overrides: Partial<SeriesTraceRow> = {}): SeriesTraceRow {
 		answer_parts: ['8'],
 		part_verdicts: [false],
 		created_at: '2026-11-13T10:00:00Z',
+		answered_as_choice: false,
 		...overrides
 	};
 }
@@ -130,6 +133,47 @@ describe('seriesTraceAnswer', () => {
 	it('graine absente ou énoncé impossible à rejouer : trace écartée', () => {
 		expect(seriesTraceAnswer(trace({ seed: null }), 'Ada', replayAny)).toBeNull();
 		expect(seriesTraceAnswer(trace(), 'Ada', () => null)).toBeNull();
+	});
+});
+
+describe('seriesTraceAnswer — trace « en QCM » (idée 4, PR 3)', () => {
+	const ADDITION = {
+		id: 't',
+		level: 1,
+		grades: ['6'],
+		title: 't',
+		variations: [
+			{
+				statement: '$8+4=?$',
+				variables: [],
+				blanks: [
+					{ expectedAnswer: '12', expectedErrors: [{ answer: '4', message: 'Tu as soustrait.' }] }
+				]
+			}
+		]
+	} as unknown as QuestionTemplate;
+	const replayAddition = (seed: number) => {
+		const r = generateInstance(ADDITION, seed);
+		return r.success ? r.instance : null;
+	};
+
+	it('rejouée en QCM : mêmes choix que ceux qu’a vus l’élève', () => {
+		const row = seriesTraceAnswer(
+			trace({ answered_as_choice: true, answer_parts: ['1'], part_verdicts: [false] }),
+			'Ada',
+			replayAddition
+		);
+		expect(isAnsweredAsChoice(row?.instance)).toBe(true);
+		expect(row).toMatchObject({ status: 'incorrect', userAnswer: { value: ['1'] } });
+	});
+
+	it('trace en saisie du même modèle : rejouée en saisie', () => {
+		const row = seriesTraceAnswer(trace({ answer_parts: ['4'] }), 'Ada', replayAddition);
+		expect(isAnsweredAsChoice(row?.instance)).toBe(false);
+	});
+
+	it('« en QCM » mais le tirage ne se pose plus en QCM : trace écartée', () => {
+		expect(seriesTraceAnswer(trace({ answered_as_choice: true }), 'Ada', replayAny)).toBeNull();
 	});
 });
 
@@ -264,6 +308,8 @@ describe('getClassPointErrors', () => {
 		expect(called(query, 'in', 'place', ['typing', 'mock_test', 'number_race'])).toBe(true);
 		expect(called(query, 'not', 'seed', 'is', null)).toBe(true);
 		expect(called(query, 'gt', 'created_at', UPDATED_AT)).toBe(true);
+		const select = query.calls.find((c) => c.method === 'select');
+		expect(String(select?.args[0])).toContain('answered_as_choice');
 	});
 
 	it('contrôles : copies des élèves de la classe seulement, séances de contrôle seulement', async () => {

@@ -15,7 +15,9 @@
  *   modèle** (graine + modèle modifié = relecture fausse, décision du
  *   2026-11-11). L'énoncé est rejoué par `generateInstance` ; réussie = juste,
  *   ratée = faux ; verdict par case = celui stocké (`part_verdicts`), jamais
- *   recalculé. Trace sans réponse tapée = sans réponse. Les
+ *   recalculé. Trace sans réponse tapée = sans réponse. Trace « répondu en QCM »
+ *   (idée 4 du chantier `idees-format`) : rejouée en QCM (`asChoiceInstance`,
+ *   même graine, mêmes choix) ; un tirage qui ne se pose plus en QCM est écarté. Les
  *   `POINT_ERRORS_TRACE_CAP` traces les plus récentes par modèle seulement.
  *
  * Anciennes séries libres (`test_answers` d'une séance sans contrôle) : exclues
@@ -34,6 +36,7 @@ import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts
 import type { CorrectedDetail } from '#lib/types/evaluation-attempt.ts';
 import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { asChoiceInstance } from '#lib/questions/choice-from-errors.ts';
 import {
 	POINT_ERRORS_MESSAGE,
 	POINT_ERRORS_TRACE_CAP,
@@ -70,6 +73,8 @@ export interface SeriesTraceRow {
 	answer_parts: string[] | null;
 	part_verdicts: boolean[] | null;
 	created_at: string;
+	/** Posée en QCM depuis ses erreurs prévues (idée 4) : rejouée en QCM */
+	answered_as_choice: boolean;
 }
 
 interface ControlSessionRow extends SessionRow {
@@ -132,7 +137,10 @@ export function seriesTraceAnswer(
 	replay: (seed: number) => QuestionInstance | null
 ): QuestionErrorAnswer | null {
 	if (trace.seed === null) return null;
-	const instance = replay(trace.seed);
+	const replayed = replay(trace.seed);
+	if (!replayed) return null;
+	// Idée 4 : la question vue en QCM, mêmes choix dans le même ordre (même graine)
+	const instance = trace.answered_as_choice ? asChoiceInstance(replayed, trace.seed) : replayed;
 	if (!instance) return null;
 	const parts = trace.answer_parts;
 	// Rien de tapé : sans réponse, comme une question de contrôle laissée vide
@@ -306,7 +314,9 @@ async function readSeriesTraces(
 		const batch = studentIds.slice(start, start + STUDENT_BATCH_SIZE);
 		let query = supabase
 			.from('skill_attempts')
-			.select('id, student_id, template_id, success, seed, answer_parts, part_verdicts, created_at')
+			.select(
+				'id, student_id, template_id, success, seed, answer_parts, part_verdicts, created_at, answered_as_choice'
+			)
 			.eq('template_id', template.id)
 			.in('student_id', batch)
 			.in('place', ANSWERED_PLACES)

@@ -86,7 +86,14 @@ async function copy(
 	student: Person,
 	grade: number,
 	completedAt: string,
-	answers: Array<{ templateId: string; status: string; points: number; timeSpent?: number }>
+	answers: Array<{
+		templateId: string;
+		status: string;
+		points: number;
+		timeSpent?: number;
+		/** Posée en QCM depuis les erreurs prévues (idée 4) : repère de la copie figée */
+		asChoice?: boolean;
+	}>
 ): Promise<void> {
 	const sessionId = await insertId('test_sessions', {
 		user_id: student.id,
@@ -103,7 +110,12 @@ async function copy(
 		answers.map((a, position) => ({
 			test_session_id: sessionId,
 			template_id: a.templateId,
-			question_instance: { __position: position },
+			question_instance: a.asChoice
+				? {
+						__position: position,
+						blanks: [{ type: 'choice', expectedAnswer: '0', fromExpectedErrors: true }]
+					}
+				: { __position: position },
 			status: a.status,
 			points: a.points,
 			is_correct: a.status === 'correct',
@@ -206,7 +218,7 @@ describe('bilan d’un contrôle lu par le professeur (RLS réelle)', () => {
 
 		// Ada : deux copies, la meilleure (15) compte ; Bob : une copie en retard
 		await copy(ada, 15, '2026-11-10T10:00:00Z', [
-			{ templateId: T_FRACTIONS, status: 'correct', points: 1 },
+			{ templateId: T_FRACTIONS, status: 'correct', points: 1, asChoice: true },
 			{ templateId: T_FRACTIONS, status: 'unoptimal_form', points: 0.5, timeSpent: 12 },
 			// Chrono écoulé sans rien répondre (P7) : temps déclaré = durée
 			{ templateId: T_RELATIFS, status: 'empty', points: 0, timeSpent: 20 }
@@ -251,6 +263,8 @@ describe('bilan d’un contrôle lu par le professeur (RLS réelle)', () => {
 			{ delaySeconds: 20, students: 1, unansweredInTime: 0, tooShort: false },
 			{ delaySeconds: 20, students: 1, unansweredInTime: 1, tooShort: false }
 		]);
+		// Idée 4 : le repère « en QCM » se lit dans la copie figée, par PostgREST
+		expect(result.questions.map((q) => q.choiceAnswers)).toEqual([1, 0]);
 	});
 
 	it('un élève ne lit pas les copies des autres : son bilan ne compte que la sienne', async () => {

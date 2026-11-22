@@ -514,3 +514,31 @@ describe('getEvaluationQuestionErrors', () => {
 		).toBe(true);
 	});
 });
+
+describe('computeQuestionErrors — réponse en QCM (idée 4, PR 3)', () => {
+	const enQcm = {
+		templateId: TEMPLATE,
+		statement: 'Calcule $8+4=\\ldots$',
+		blanks: [
+			{
+				type: 'choice',
+				expectedAnswer: '0',
+				choice: { choices: ['$12$', '$4$'], order: [1, 0], multiple: false },
+				expectedErrors: [{ answer: '4', answerLatex: '4', message: 'Tu as soustrait.' }],
+				fromExpectedErrors: true
+			}
+		],
+		generatedAt: '2026-11-10T10:00:00Z'
+	} as unknown as QuestionInstance;
+
+	it('chaque groupe dit s’il a été répondu en QCM', () => {
+		const result = computeQuestionErrors(
+			[row('Ada', 'incorrect', ['1'], enQcm), row('Bob', 'incorrect', ['9'])],
+			{ validate }
+		);
+		if (result.status !== 'ok') throw new Error('erreur');
+		const byStudent = new Map(result.groups.map((g) => [g.students[0], g.asChoice]));
+		expect(byStudent.get('Ada')).toBe(true);
+		expect(byStudent.get('Bob')).toBe(false);
+	});
+});
