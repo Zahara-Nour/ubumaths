@@ -6,19 +6,18 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2987._
+_Mis à jour le 2026-11-22, après #2990._
 
-- **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : PR 1 (#2979), PR 2 (#2983) et PR 3
-  (#2987 : demi-réussite FSRS, trace `answered_as_choice`, bilan et erreurs « en QCM », rejeu QCM,
-  export) mergées.
-- **Prochaine action** : PR 4, dans un nouveau worktree : case « en QCM » par variation dans le
-  panier et l'éditeur de série (le panier perd aujourd'hui `choiceVariations` à la fusion). Puis
-  idée 5 (coup de pouce).
-- **En attente de David** : rien (trois choix d'affichage signalés, § Idée 4, PR 2).
+- **État** : idées 1 à 4 terminées (pas en prod). Idée 4 : PR 1 à 4 mergées (#2979, #2983, #2987,
+  #2990 : case « En QCM » par variation dans le panier et l'éditeur de série).
+- **Prochaine action** : idée 5 (coup de pouce), phase 0 à écrire et à faire valider par David
+  (aucune question encore posée ; texte de l'idée : `idees-format-exercices.md`, idée 5).
+- **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
+  en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2).
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod`
-  de #2962 ; dédoublonnage du tirage aveugle à la forme (même question en QCM et en saisie
-  possible, § Idée 4, PR 3).
-- **Worktree / branche** : aucun ; à créer pour la PR 4.
+  de #2962 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
+- **Worktree / branche** : `ubumaths-wt-idees-format` gardé pour l'essai (serveur 5176), à retirer
+  ensuite ; nouvelle branche pour l'idée 5.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
