@@ -6,18 +6,19 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR 2 de l'idée 4 en cours._
+_Mis à jour le 2026-11-22, après #2983._
 
 - **État** : idées 1 à 3 terminées (pas en prod). Idée 4 : PR 1 (#2979, colonne
-  `answered_as_choice`) mergée et migrée ; PR 2 (moteur, branche `feat/idees-format-qcm`) en revue.
-- **Prochaine action** : merger la PR 2, puis PR 3 (`pnpm db:types` d'abord ; demi-réussite FSRS,
-  trace, bilan « en QCM », statistiques rejouées en QCM), puis PR 4 (case « en QCM » dans le panier
-  et l'éditeur de série).
+  `answered_as_choice`, migrée) et PR 2 (#2983, moteur : case → QCM au tirage, veto, arrondis)
+  mergées.
+- **Prochaine action** : PR 3, dans un nouveau worktree : `pnpm db:types` d'abord, puis
+  demi-réussite FSRS, trace `answered_as_choice`, bilan « en QCM », statistiques rejouées en QCM
+  (`server/stats/point-errors.ts`), export RGPD de la colonne. Puis PR 4 (case « en QCM » dans le
+  panier et l'éditeur de série ; le panier perd aujourd'hui `choiceVariations` à la fusion).
 - **En attente de David** : rien (trois choix d'affichage signalés, § Idée 4, PR 2).
 - **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le
-  `deploy:prod` de #2962 ; export RGPD (`api/account/export`) à compléter de la colonne en PR 3 ;
-  statistiques rejouées en saisie tant que la PR 3 n'est pas faite.
-- **Worktree / branche** : `ubumaths-wt-idees-format`, `feat/idees-format-qcm`.
+  `deploy:prod` de #2962 ; statistiques rejouées en saisie tant que la PR 3 n'est pas faite.
+- **Worktree / branche** : aucun ; à créer pour la PR 3.
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
