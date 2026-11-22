@@ -5,15 +5,16 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, lot écrit._
+_Mis à jour le 2026-11-22, PR du lot._
 
-- **État** : lot écrit et commité (8 publiés : 15 variations ajoutées ; 5 modèles neufs),
-  simulation et specs vertes, 5 neufs créés en base **locale** (ids restaurés) · **Prochaine
-  action** : jouer les neufs dans l'aperçu local (serveur 5178), puis PR des fichiers · **En
-  attente de David** : rien · **Pièges en cours** : `hint` lu par la
-  prod seulement après le `deploy:prod` qui livre #2991 (pas de brouillons en prod avant) ; la
-  rubrique suites de Première (`idees-1re-suites`) tourne en parallèle : ne pas toucher aux
-  modèles 1SPE qu'elle réserve · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
+- **État** : lot écrit, simulation et specs vertes ; essai dans l'aperçu local passé (David :
+  le Chrome relié n'atteint pas le serveur du Mac mini ; la relecture dans `/dev/modeles` le
+  remplace) · **Prochaine action** : PR des fichiers, merge, puis David lance
+  `create-questions --dir scripts/questions/idees-tle-suites-neufs --publier` (brouillons en
+  prod) ; ensuite rangement (nœud + tag) et migration de contenu des 8 publiés · **En attente de
+  David** : rien avant le merge · **Pièges en cours** : `hint` et `expectedErrors` lus par
+  la prod depuis la 0.101.0 (plus de blocage) ; ne pas toucher aux modèles 1SPE réservés par
+  `idees-1re-suites` · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
   `docs/idees-tle-suites`.
 
 ## Historique
