@@ -28,6 +28,8 @@ const MODELE = '44444444-4444-4444-8444-444444444444';
 /** Le modèle lié à la carte, tel que la RLS le rend à l'élève (null = caché). */
 /** Lignes envoyées à `skill_attempts` */
 let traces: Record<string, unknown>[] = [];
+/** Type de la carte révisée */
+let typeCarte: 'template' | 'custom' = 'template';
 
 let modeleLu: {
 	options: unknown;
@@ -46,8 +48,8 @@ function fauxSupabase() {
 								data: {
 									id: CARTE,
 									deck_id: PAQUET,
-									card_type: 'template',
-									template_id: MODELE,
+									card_type: typeCarte,
+									template_id: typeCarte === 'template' ? MODELE : null,
 									question_templates: modeleLu
 								},
 								error: null
@@ -106,6 +108,7 @@ async function reviser(corps: Record<string, unknown>) {
 describe('POST /api/srs/review/submit — coup de pouce', () => {
 	beforeEach(() => {
 		traces = [];
+		typeCarte = 'template';
 		modeleLu = { options: null, status: 'published', question_template_points: [] };
 		applyFsrsReview.mockReset().mockResolvedValue({
 			difficulty: 5,
@@ -136,6 +139,13 @@ describe('POST /api/srs/review/submit — coup de pouce', () => {
 		await reviser({ grade: 3 });
 		expect(applyFsrsReview.mock.calls[0][5]).toBe(3);
 		expect(traces).toEqual([expect.objectContaining({ grade: 3, with_help: false })]);
+	});
+
+	it('carte personnelle : « avec indice » ignoré (ni indice ni trace), note gardée', async () => {
+		typeCarte = 'custom';
+		await reviser({ grade: 3, withHelp: true });
+		expect(applyFsrsReview.mock.calls[0][5]).toBe(3);
+		expect(traces).toEqual([]);
 	});
 
 	it('refuse un « avec indice » qui n’est pas un booléen', async () => {

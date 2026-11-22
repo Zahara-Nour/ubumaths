@@ -47,8 +47,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const body = validation.data;
-		// Coup de pouce ouvert : demi-réussite (« Difficile »), jamais une note plus haute
-		const grade = helpedGrade(body.grade, body.withHelp);
 
 		// Récupération carte + deck (auth ownership)
 		// Refactor 2026-06-10 (code-quality #2.3) : nested select sur
@@ -90,6 +88,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return Response.json({ error: 'Référence de carte invalide' }, { status: 400 });
 		}
 
+		// Coup de pouce ouvert : demi-réussite (« Difficile »), jamais une note plus haute.
+		// Carte personnelle : pas d'indice ni de trace, `withHelp` ignoré.
+		const withHelp = cardReferenceType === 'template' && body.withHelp;
+		const grade = helpedGrade(body.grade, withHelp);
+
 		// FSRS toujours instancié avec la config par défaut (PO 2026-06-10 :
 		// la config FSRS n'est plus customisable, même via deck.config).
 		const fsrs = new FSRS();
@@ -120,7 +123,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				user.id,
 				card.template_id,
 				grade,
-				body.withHelp
+				withHelp
 			);
 
 			// Non bloquant : la review FSRS reste enregistrée.

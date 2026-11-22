@@ -351,6 +351,12 @@ Branche `feat/idees-format-indice-eleve` (worktree `ubumaths-wt-idees-format-ind
   Saisie / Flash-cards / révision (+3, rouges sans le branchement), intégration
   `skill-attempts-endpoint` (+1).
 - Doc : `questions.md`, `srs.md` (note ⁵), `analytique-prof.md`.
+- Relectures : `security-auditor` (Opus) aucun bloquant (le champ ne peut que baisser la note ;
+  le prof lisait déjà la colonne ; `hint` absent de la question publique). `code-reviewer` (Sonnet) :
+  corrigé, `withHelp` sur une carte personnelle baissait la note FSRS sans trace → ignoré (test).
+  Laissé : `with_help` accepté sur une carte de cours par un appel direct (ne peut que baisser la
+  note) ; aucun CHECK en base pour les lieux (règle dans le Zod) ; « (avec indice) » collé au nom
+  (aucun dédoublonnage par nom aujourd'hui).
 
 ## PR 1 — tirage (#2954, mergée le 2026-11-21)
 
