@@ -1,4 +1,5 @@
 {
+	"id": "818d5e6b-1268-44f0-841f-4a0241f3069f",
 	"title": "Compléter une égalité : un calcul de chaque côté",
 	"description": "Trouver le nombre manquant d'une égalité entre deux calculs : a × b = ? × c, a − ? = b × c, a + ? = b × c, a × b = ? + c, a × b = c − ?, a × b = c × ? (pièges : résultat du côté complet recopié, opération inverse ratée)",
 	"grades": ["CM2", "6"],

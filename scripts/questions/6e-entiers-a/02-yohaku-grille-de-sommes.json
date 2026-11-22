@@ -1,4 +1,5 @@
 {
+	"id": "ba899229-5d76-48dc-a3b1-6d3b5cee38e0",
 	"title": "Yohaku : compléter une grille de sommes",
 	"description": "Grille 2 × 2 de nombres de 1 à 10 dont on connaît les sommes des lignes et des colonnes : un coin donné (trois cases à trouver) ou une diagonale donnée (deux cases)",
 	"grades": ["CM2", "6"],
