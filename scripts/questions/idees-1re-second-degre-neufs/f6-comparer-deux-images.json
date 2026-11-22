@@ -1,4 +1,5 @@
 {
+	"id": "6ea9ece7-5713-404f-b53b-499ea186fb76",
 	"title": "Comparer deux images d'une fonction du second degré",
 	"description": "f(x) = a(x − α)² + β : comparer deux images par la symétrie de la parabole ou le sens de variation, sans les calculer",
 	"grades": ["1_SPE"],

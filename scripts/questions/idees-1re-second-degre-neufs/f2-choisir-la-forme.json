@@ -1,4 +1,5 @@
 {
+	"id": "9e5c79e3-b684-4ad7-9e21-bc5fcb044789",
 	"title": "Résoudre en choisissant la forme adaptée",
 	"description": "Trois formes d'une fonction du second degré données ; résoudre f(x) = 0, f(x) = c, f(x) = β, f(x) = R ou f(x) < β avec la forme qui rend le calcul immédiat",
 	"grades": ["1_SPE"],

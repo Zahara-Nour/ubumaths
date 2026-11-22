@@ -1,4 +1,5 @@
 {
+	"id": "f199b3c7-fa23-426e-ac6d-a66f75dff0c5",
 	"title": "Résoudre une équation par la forme canonique",
 	"description": "x² + bx + c (b pair) : forme canonique par complétion du carré, puis ensemble des solutions, sans discriminant",
 	"grades": ["1_SPE"],
