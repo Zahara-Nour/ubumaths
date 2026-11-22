@@ -6,19 +6,21 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR moteur de l'idée 5 en cours._
+_Mis à jour le 2026-11-22, après #2991._
 
-- **État** : idées 1 à 4 terminées (pas en prod). Idée 5 (coup de pouce) : phase 0 validée,
-  colonne de trace = `with_help` (pas de migration) ; PR moteur et éditeur ouverte.
-- **Prochaine action** : merger la PR moteur, puis PR élève et prof (bouton en Saisie, Flash-cards
-  et révision ; trace `with_help` ; « Difficile » au lieu de « Bien » ; bilan « avec indice »).
+- **État** : idées 1 à 4 terminées (pas en prod). Idée 5 (coup de pouce) : PR moteur et éditeur
+  mergée (#2991 : `hint` / `hintFromFirstStep` par variation, refus d'un indice qui donne la
+  réponse, `instance.hint`, carte de l'éditeur). Trace = `with_help` (pas de migration).
+- **Prochaine action** : PR élève et prof, nouvelle branche : bouton « Coup de pouce » en Saisie,
+  Flash-cards et révision (jamais en évaluation, Contrôle blanc, course aux nombres ni combat) ;
+  rendu comme les étapes de correction (`{{if:…}}` est rendu côté navigateur) ; trace `with_help` ;
+  « Difficile » au lieu de « Bien » ; bilan « avec indice ».
 - **En attente de David** : essai de la case « En QCM » (aucun modèle local n'a d'erreurs prévues :
   en ajouter une) ; trois choix d'affichage signalés (§ Idée 4, PR 2).
-- **Pièges en cours** : fichiers de lot avec `expectedErrors` refusés en prod avant le `deploy:prod`
-  de #2962 (de même pour `hint` avant le déploiement de la PR moteur) ; dédoublonnage du tirage
-  aveugle à la forme (§ Idée 4, PR 3) ; Contrôle blanc sans bouton = défaut de Claude, non tranché.
-- **Worktree / branche** : `ubumaths-wt-idees-format-indice`, `feat/idees-format-indice-moteur` ;
-  `ubumaths-wt-idees-format` gardé pour l'essai de la case « En QCM » (serveur 5176).
+- **Pièges en cours** : `expectedErrors` et `hint` refusés ou retirés en prod avant le
+  `deploy:prod` qui livre #2962 et #2991 ; dédoublonnage du tirage aveugle à la forme (§ Idée 4, PR 3).
+- **Worktree / branche** : aucun pour l'idée 5 (à créer) ; `ubumaths-wt-idees-format` gardé pour
+  l'essai de la case « En QCM » (serveur 5176).
 
 ## Idée 1 — phase 0 validée (David, 2026-11-21)
 
@@ -296,8 +298,8 @@ question d'accès : personne ne gagne d'accès) · **Q4** : le champ seulement, 
 nouveaux modèles et le lot de Seconde.
 
 Lieux de trace (lecture du code) : `typing` (Saisie), `flash_cards` (Flash-cards) et `review`
-(révision) montrent le bouton. **Défaut de Claude, non tranché** : rien en Contrôle blanc
-(`mock_test`), comme en évaluation (cas non posé à David ; le choix qui ne montre rien de neuf).
+(révision) montrent le bouton. Rien en Contrôle blanc
+(`mock_test`), comme en évaluation — **confirmé par David le 2026-11-22** (« non, on ne le met pas »).
 En Flash-cards et en révision (auto-évaluées), « Je savais » après un indice ouvert donne
 « Difficile » au lieu de « Bien ».
 
