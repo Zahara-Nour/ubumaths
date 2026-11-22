@@ -5,17 +5,15 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3008._
+_Mis à jour le 2026-11-22, PR #3010 ouverte._
 
-- **État** : #3008 mergée (fichiers du lot : 4 modèles neufs, 15 variations de 7 publiés), rien en
-  base · **Prochaine action** : David lance depuis le dépôt principal
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-limites-neufs --publier`
-  (brouillons en prod) ; puis nouveau worktree `ubumaths-wt-idees-tle-limites-migrations` : commit
-  des ids, migration de rangement + tag des neufs (F1 → TSPE-397 / TSPE-572, F2 → TSPE-581, Q2 sans
-  point), migration de contenu des publiés (`migration-contenu.ts`) · **En attente de David** : la
-  création en prod ; F3 (a, b ou c, voir Historique « lot écrit ») · **Pièges en cours** : règles du
-  tag à vérifier en base ; niveaux numérotés à relever juste avant ; `{{e}}` interdit (Euler) ·
-  **Worktree / branche** : aucun (retiré après #3008).
+- **État** : 4 brouillons en prod (créés par David) ; #3010 ouverte (ids, migration de rangement,
+  migration de contenu des 7 publiés, +15 variations) ; intégration 53 verts, 11 rouges sans ·
+  **Prochaine action** : réponse de David sur le rangement → merge, `migration list --linked`,
+  `db:migrate` ; puis relecture dans `/dev/modeles` · **En attente de David** : rangement de F1
+  (notion seule) ; F3 (a, b ou c) · **Pièges en cours** : ne pas merger avant la réponse (le
+  `db push` d'une autre session jouerait la migration) ; `{{e}}` interdit (Euler) ·
+  **Worktree / branche** : `ubumaths-wt-idees-tle-limites-migrations`, `feat/idees-tle-limites-migrations`.
 
 ## Historique
 
@@ -72,3 +70,16 @@ _Mis à jour le 2026-11-22, après #3008._
   infinie (`variation-table-parser.ts`) ; trois des quatre le sont. Ajouté à `outils-manquants.md`
   (n° 50). Choix possibles : (a) tableau affiché sans limites et quatre cases sous le tableau ;
   (b) attendre l'outil (n° 50) ; (c) laisser F3. Sans réponse, rien n'est écrit.
+
+### 2026-11-22 — brouillons en prod, migrations (#3010)
+
+- David a lancé `create-questions --publier` : 1b97da49, 5ab2aee2, a1e540c9, ec040806 en `draft`
+  (MCP lecture seule). Ids commités sur la branche, dépôt principal remis propre.
+- Relevé : TSPE-397, 572, 581 sont posés sur la notion « Fonctions > Limites de fonctions » (7
+  sous-notions : asymptotes, comparaison et encadrement, croissances comparées, formes
+  indéterminées, limite en un point, limites usuelles, opérations). Niveaux : ex aequo courants en
+  prod (461 nœuds), niveaux des fichiers gardés.
+- Rangement proposé : F1 (+∞, −∞) → la notion elle-même (aucune sous-notion de lecture graphique ;
+  210 modèles en prod sont rangés sur une notion qui a des sous-notions) ; F2 → opérations ; Q2 →
+  formes indéterminées, sans point. Question posée à David.
+- Migration de contenu : 7 migrés, +15 variations, 0 corrigée. `security-auditor` lancé.

@@ -5,14 +5,13 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Première spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après la série de relecture (5cbf5d65) et la relecture de David._
+_Mis à jour le 2026-11-22, chantier clos._
 
-- **État** : relecture faite, David : « je valide tout » (4 brouillons et 14 publiés complétés,
-  aucun verdict saisi en base). `publier-lot.ts` en simulation : 4 brouillons passent le contrôle.
-  · **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/1re-suites-a
---publier` ; ensuite clore le chantier (versement, archive du journal). · **En attente de
-  David** : la publication. · **Pièges en cours** : aucun. · **Worktree / branche** :
-  `ubumaths-wt-idees-1re-suites-serie`, `chore/idees-1re-suites-serie-relecture`.
+- **État** : rubrique **publiée** : les 4 modèles neufs sont publiés et validés par David ; les 26
+  variations des 14 publiés aussi ; journal archivé · **Prochaine action** : aucune · **En attente
+  de David** : rien · **Pièges retenus** : le juge refuserait peut-être
+  `\frac{(n+2)4^n}{4^{n+1}(n+1)}` (non vérifié, ligne dans `docs/wip/verifications-manuelles.md`)
+  · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -94,3 +93,11 @@ _Mis à jour le 2026-11-22, après la série de relecture (5cbf5d65) et la relec
 - David, le 2026-11-22 : « je valide tout » (brouillons par `?point=` et série). Aucun verdict
   « À revoir » en base (table des relectures vide pour les 18 modèles).
 - `publier-lot.ts --dir scripts/questions/1re-suites-a` en simulation : 4 brouillons passent.
+
+### 2026-11-22 — publication, chantier clos
+
+- David a lancé `publier-lot.ts --dir scripts/questions/1re-suites-a --publier` : les 4 modèles
+  neufs sont publiés (vérifié par MCP lecture seule). #3009 mergée (série de relecture, journal).
+- Clôture : journal et relevé archivés dans `docs/archive/wip/idees-1re-suites/`, rubrique 1AL1
+  « publiée » dans `idees-ailleurs-repartition.md`, les 14 réservations retirées ; le doute sur le
+  juge (`\frac{(n+2)4^n}{…}`) est noté dans `verifications-manuelles.md`.
