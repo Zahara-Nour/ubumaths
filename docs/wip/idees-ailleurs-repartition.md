@@ -32,18 +32,18 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 
 ### Spécialité
 
-| Rubrique                          | Codes | Exercices | État               | Sujet / session    |
-| --------------------------------- | ----- | --------- | ------------------ | ------------------ |
-| Suites numériques                 | 1AL1  | 19        | prise (2026-11-22) | `idees-1re-suites` |
-| Fonctions polynomiales de degré 2 | 1AL2  | 22        | libre              |                    |
-| Dérivation                        | 1AN1  | 12        | libre              |                    |
-| Variations                        | 1AN2  | 5         | libre              |                    |
-| Fonction exponentielle            | 1AN3  | 11        | libre              |                    |
-| Fonctions trigonométriques        | 1AN4  | 6         | libre              |                    |
-| Produit scalaire                  | 1G1   | 10        | libre              |                    |
-| Géométrie repérée                 | 1G2   | 5         | libre              |                    |
-| Probabilités conditionnelles      | 1P1   | 8         | libre              |                    |
-| Variables aléatoires réelles      | 1P2   | 1         | libre              |                    |
+| Rubrique                          | Codes | Exercices | État                 | Sujet / session    |
+| --------------------------------- | ----- | --------- | -------------------- | ------------------ |
+| Suites numériques                 | 1AL1  | 19        | phase 0 (2026-11-22) | `idees-1re-suites` |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | libre                |                    |
+| Dérivation                        | 1AN1  | 12        | libre                |                    |
+| Variations                        | 1AN2  | 5         | libre                |                    |
+| Fonction exponentielle            | 1AN3  | 11        | libre                |                    |
+| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                    |
+| Produit scalaire                  | 1G1   | 10        | libre                |                    |
+| Géométrie repérée                 | 1G2   | 5         | libre                |                    |
+| Probabilités conditionnelles      | 1P1   | 8         | libre                |                    |
+| Variables aléatoires réelles      | 1P2   | 1         | libre                |                    |
 
 ### Automatismes de l'épreuve anticipée
 
@@ -136,24 +136,38 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                                         | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 04b1cc7f Puissance d'un produit                                                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée                                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ?                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence                               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                                               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 19961e67 Valeur renvoyée par une fonction Python de seuil                        | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 44b32cad Somme de termes consécutifs d'une suite arithmétique                    | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 45da9678 De l'énoncé à l'expression de la suite                                  | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 5042401b Sens de variation d'une suite géométrique de raison positive            | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 65e96f31 Terme général d'une suite arithmétique                                  | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 7703e625 Calculer un terme                                                       | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 727fb88a Calculer un terme d'une suite géométrique                               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 84114cb2 Reconnaître une suite géométrique à partir de sa forme explicite        | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| 85afd455 Déterminer la raison d'une suite géométrique                            | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| b72fae4a Somme de termes consécutifs d'une suite géométrique                     | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| cea65372 Reconnaître une suite géométrique à partir de sa relation de récurrence | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| cf51cb93 Calculer un terme d'une suite géométrique                               | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| d2943133 Reconnaître une suite arithmétique à partir de sa forme explicite       | `idees-1re-suites`                                          | 2026-11-22 |                                      |
+| e67b1cbd Terme général d'une suite géométrique                                   | `idees-1re-suites`                                          | 2026-11-22 |                                      |
 
 ## Idées en attente
 
