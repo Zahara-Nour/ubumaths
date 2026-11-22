@@ -6,7 +6,7 @@ Chantier `idees-1re-suites`, fiches 3, 11, 12, 13 de la phase 0, validées par D
 fichier) :
 
   01 Placer les premiers termes d'une suite             1SPE-221   level 3
-  02 Sens de variation d'une géométrique de raison < 0  1SPE-229   level 4
+  02 Sens de variation d'une suite géométrique (toutes raisons) 1SPE-229   level 4
   03 Sens de variation par le quotient u(n+1)/u(n)      1SPE-219   level 5
   04 Rang à partir duquel une suite est monotone        1SPE-219   level 6
 
@@ -15,8 +15,9 @@ Décisions :
   (u₀ à u₃), repère fixe n ∈ [−1 ; 4], y ∈ [−10 ; 10] gradué de 1 en 1, chaque terme tenu
   dans [−9 ; 9] par `conditions`, suite non constante sur u₀..u₃. Pas d'erreur prévue (geste).
 - 02 : choix à 4 options sans mélange (croissante, décroissante, constante, ni l'une ni
-  l'autre). La raison est toujours négative (forme imposée) : la bonne réponse est donc
-  toujours « ni croissante, ni décroissante » (à signaler à David). q = −1 inclus en v0 et v1,
+  l'autre). v0-v2 raison négative (ni l'une ni l'autre) ; v3-v7 raison positive ou égale à 1
+  (David, 2026-11-22 : mêler les raisons, sinon la réponse serait toujours la même), réponse
+  fixe par variation. q = −1 inclus en v0 et v1,
   exclu de v2 (« −1u_n »). Raison tirée en dixièmes (`q10`) puis affichée par `;d`.
 - 03 : v0-v2 = calculer le quotient (case, expression en n), v3-v5 = conclure du quotient
   donné (choix à 3 options comme ecba8a9e, sans mélange). Termes toujours positifs.
@@ -247,7 +248,7 @@ M1 = modele(
     3, 120, [M1_V0, M1_V1, M1_V2, M1_V3, M1_V4], M1_SPECS,
     shared={'cleanCoefficients': True})
 
-# --- 02 · 1SPE-229 · Sens de variation d'une géométrique de raison négative ------------------
+# --- 02 · 1SPE-229 · Sens de variation d'une suite géométrique, toutes raisons ---------------
 # Réponse du choix (sans mélange) : 0 croissante, 1 décroissante, 2 constante, 3 ni l'une ni
 # l'autre. La raison est négative : toujours 3.
 
@@ -270,7 +271,8 @@ M2_FIN = [
 M2_RAPPEL = ('La raison $q={{eval:q10/10;d}}$ est **négative** : multiplier par $q$ change le signe '
              'du terme à chaque rang.')
 
-M2_HINT = 'Calcule les trois premiers termes et regarde leur signe.'
+M2_HINT = ('Regarde d\'abord le signe de la raison $q$ ; si elle est positive, compare-la à $1$ '
+           'et tiens compte du signe de $u_0$.')
 
 M2_V0 = variation(
     'La suite $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison '
@@ -294,6 +296,51 @@ M2_V2 = variation(
      'géométrique de raison $q={{eval:q10/10;d}}$, un nombre **négatif**, qui change le signe '
      'du terme à chaque rang.'] + M2_FIN, hint=M2_HINT)
 
+# Raisons positives (décision de David, 2026-11-22) : sans elles, la réponse serait toujours
+# « ni croissante, ni décroissante ». Une variation par cas, réponse fixe par variation.
+Q_SUP1 = '12|15|20|25|30'
+Q_INF1 = '2|4|5|8|9'
+
+def M2_POS(enonce, a, q, rep, etapes):
+    return variation(enonce + '\n\nQuel est son sens de variation ?\n\n' + CHOIX_SENS4,
+                     [var('a', a), var('q10', q)], [blank(rep)], etapes, hint=M2_HINT)
+
+M2_V3 = M2_POS(
+    'La suite $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison '
+    '$q={{eval:q10/10;d}}$.', '1..9', Q_SUP1, '0',
+    ['La raison $q={{eval:q10/10;d}}$ est plus grande que $1$ et $u_0={{a}}>0$ : chaque terme est '
+     'plus grand que le précédent ($u_{n+1}-u_n=u_n(q-1)>0$).',
+     'La suite est $' + coul('\\text{croissante}') + '$.'])
+
+M2_V4 = M2_POS(
+    'La suite $(u_n)$ est définie, pour tout entier naturel $n$, par '
+    '$u_n=-{{a}}\\times{{eval:q10/10;d}}^n$.', '2..9', Q_INF1, '0',
+    ['$(u_n)$ est géométrique, de premier terme $u_0=-{{a}}<0$ et de raison '
+     '$q={{eval:q10/10;d}}$, comprise entre $0$ et $1$.',
+     '$u_{n+1}-u_n=u_n(q-1)$ : produit de deux nombres négatifs, donc positif. La suite est $'
+     + coul('\\text{croissante}') + '$.'])
+
+M2_V5 = M2_POS(
+    'La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$, '
+    '$u_{n+1}={{eval:q10/10;d}}u_n$.', '1..9', Q_INF1, '1',
+    ['On passe d\'un terme au suivant en multipliant par ${{eval:q10/10;d}}$ : la suite est '
+     'géométrique de raison $q={{eval:q10/10;d}}$, comprise entre $0$ et $1$, et $u_0={{a}}>0$.',
+     '$u_{n+1}-u_n=u_n(q-1)<0$ : la suite est $' + coul('\\text{décroissante}') + '$.'])
+
+M2_V6 = M2_POS(
+    'La suite $(u_n)$ est géométrique, de premier terme $u_0=-{{a}}$ et de raison '
+    '$q={{eval:q10/10;d}}$.', '1..9', Q_SUP1, '1',
+    ['La raison $q={{eval:q10/10;d}}$ est plus grande que $1$ et $u_0=-{{a}}<0$ : '
+     '$u_{n+1}-u_n=u_n(q-1)$ est le produit d\'un nombre négatif et d\'un nombre positif.',
+     'La suite est $' + coul('\\text{décroissante}') + '$.'])
+
+M2_V7 = variation(
+    'La suite $(u_n)$ est géométrique, de premier terme $u_0={{a}}$ et de raison $q=1$.'
+    '\n\nQuel est son sens de variation ?\n\n' + CHOIX_SENS4,
+    [var('a', '1..9;±')], [blank('2')],
+    ['Avec $q=1$, chaque terme est égal au précédent : $u_n={{a}}$ pour tout $n$.',
+     'La suite est $' + coul('\\text{constante}') + '$.'], hint=M2_HINT)
+
 M2_SPECS = [
     spec('u₀ = 3, q = −2 : ni l\'une ni l\'autre', 0, {'a': '3', 'q10': '-20'}, 'correct', ['3']),
     spec('Erreur : décroissante parce que q < 0', 0, {'a': '3', 'q10': '-20'}, 'incorrect',
@@ -311,14 +358,26 @@ M2_SPECS = [
     spec('u₀ = 5, u(n+1) = −2,5 u(n) : ni l\'une ni l\'autre', 2, {'a': '5', 'q10': '-25'},
          'correct', ['3']),
     spec('Erreur : décroissante (−2,5 < 0)', 2, {'a': '5', 'q10': '-25'}, 'incorrect', ['1']),
+    spec('u₀ = 4, q = 1,5 : croissante', 3, {'a': '4', 'q10': '15'}, 'correct', ['0']),
+    spec('Erreur : ni l\'une ni l\'autre', 3, {'a': '4', 'q10': '15'}, 'incorrect', ['3']),
+    spec('−3 × 0,5ⁿ : croissante', 4, {'a': '3', 'q10': '5'}, 'correct', ['0']),
+    spec('Erreur : décroissante (q < 1, signe de u₀ oublié)', 4, {'a': '3', 'q10': '5'},
+         'incorrect', ['1']),
+    spec('u₀ = 6, u(n+1) = 0,8 u(n) : décroissante', 5, {'a': '6', 'q10': '8'}, 'correct', ['1']),
+    spec('Erreur : croissante', 5, {'a': '6', 'q10': '8'}, 'incorrect', ['0']),
+    spec('u₀ = −2, q = 3 : décroissante', 6, {'a': '2', 'q10': '30'}, 'correct', ['1']),
+    spec('Erreur : croissante (q > 1, signe de u₀ oublié)', 6, {'a': '2', 'q10': '30'},
+         'incorrect', ['0']),
+    spec('q = 1 : constante', 7, {'a': '5'}, 'correct', ['2']),
+    spec('Erreur : croissante', 7, {'a': '5'}, 'incorrect', ['0']),
 ]
 
 M2 = modele(
-    'Sens de variation d\'une suite géométrique de raison négative',
-    'Suite géométrique de raison négative (entière ou décimale, −1 compris) donnée par u₀ et q, '
-    'par a × qⁿ ou par u(n+1) = q u(n) : ni croissante, ni décroissante (piège : « q < 0 donc '
-    'décroissante »)',
-    4, 45, [M2_V0, M2_V1, M2_V2], M2_SPECS, shared={'cleanCoefficients': True})
+    'Sens de variation d\'une suite géométrique, quelle que soit sa raison',
+    'Suite géométrique donnée par u₀ et q, par a × qⁿ ou par u(n+1) = q u(n) : raison négative '
+    '(ni croissante, ni décroissante ; piège « q < 0 donc décroissante »), raison positive selon '
+    'q et le signe de u₀, raison 1 (constante)',
+    4, 45, [M2_V0, M2_V1, M2_V2, M2_V3, M2_V4, M2_V5, M2_V6, M2_V7], M2_SPECS, shared={'cleanCoefficients': True})
 
 # --- 03 · 1SPE-219 · Sens de variation par le quotient u(n+1)/u(n) ---------------------------
 
@@ -651,7 +710,7 @@ M4 = modele(
 
 FICHIERS = [
     ('01-placer-premiers-termes-suite.json', M1),
-    ('02-sens-variation-geometrique-raison-negative.json', M2),
+    ('02-sens-variation-geometrique.json', M2),
     ('03-sens-variation-quotient.json', M3),
     ('04-rang-suite-monotone.json', M4),
 ]

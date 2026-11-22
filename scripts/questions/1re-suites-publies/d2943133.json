@@ -1,7 +1,7 @@
 {
 	"id": "d2943133-ebf7-424d-946a-8fed6cfa76be",
 	"title": "Reconnaître une suite arithmétique à partir de sa forme explicite",
-	"description": "u(n) = an + b, ou non : u(n) = u(0) × qⁿ, n² + c, kⁿ + c",
+	"description": "u(n) = an + b ou (an² + bn)/n, ou non : u(n) = u(0) × qⁿ, n² + c, kⁿ + c",
 	"grades": ["1_SPE", "1_TECHNO"],
 	"level": 3,
 	"delay": 30,
@@ -185,6 +185,31 @@
 					"La différence **dépend de $n$** : la suite n'est **pas arithmétique**."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n\\geqslant1$, par :\n\n$$u_n=\\dfrac{ {{a}}n^2{{eval:b;+}}n}{n}$$\n\nCette suite est-elle arithmétique ?\n\n```choix\nmelanger: non\n- Oui, elle est arithmétique.\n- Non, elle n'est pas arithmétique.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $n\\geqslant1$, $n\\neq0$ : on simplifie par $n$. $$u_n=\\dfrac{n\\left({{a}}n{{eval:b;+}}\\right)}{n}={{a}}n{{eval:b;+}}$$",
+					"$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-\\left({{a}}n{{eval:b;+}}\\right)=\\textcolor{{{color:primary.0}}}{{{a}}}$ : la différence ne dépend pas de $n$, la suite est **arithmétique**, de raison $r={{a}}$ et de premier terme $u_1={{eval:a+b}}$."
+				]
+			},
+			"hint": "Simplifie d'abord la fraction : c'est possible car $n\\neq0$."
 		}
 	],
 	"testSpecs": [
@@ -341,6 +366,30 @@
 			},
 			"description": "v5 : « oui » refusé",
 			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "(3n² + 5n)/n : « oui » accepté",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "(3n² + 5n)/n : « non » refusé",
+			"variationIndex": 6
 		}
 	]
 }

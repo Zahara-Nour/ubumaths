@@ -1,7 +1,7 @@
 {
 	"id": "cea65372-59a4-48b7-adeb-ffd56d6cf8d1",
 	"title": "Reconnaître une suite géométrique à partir de sa relation de récurrence",
-	"description": "u(n+1) = q u(n) ou u(n)/k, ou non : u(n) + r, p u(n) + b, u(n) + kn",
+	"description": "u(n+1) = q u(n), u(n)/k ou u(n) ± p % de u(n), ou non : u(n) + r, p u(n) + b, u(n) + kn",
 	"grades": ["1_SPE"],
 	"level": 9,
 	"delay": 30,
@@ -157,6 +157,35 @@
 					"$\\dfrac{u_1}{u_0}={{eval:(u1)/(a)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : la suite n'est **pas géométrique**."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n{{if:sg>0|+|-}}{{eval:p/100;d}}\\,u_n$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "5|10|20|30|40|50|60"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On factorise par $u_n$ : $u_{n+1}=\\left(1{{if:sg>0|+|-}}{{eval:p/100;d}}\\right)u_n=\\textcolor{{{color:primary.0}}}{{{eval:1+sg*p/100;d}}}\\times u_n$.",
+					"On passe d'un terme au suivant en multipliant toujours par le même nombre : la suite est **géométrique**, de raison $q={{eval:1+sg*p/100;d}}$ et de premier terme $u_0={{a}}$."
+				]
+			},
+			"hint": "Factorise le membre de droite par $u_n$."
 		}
 	],
 	"testSpecs": [
@@ -289,6 +318,45 @@
 			},
 			"description": "v4 : « oui » refusé",
 			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"p": "40",
+				"sg": "1"
+			},
+			"description": "u(n+1) = u(n) + 0,4 u(n) : « oui » accepté",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"p": "40",
+				"sg": "1"
+			},
+			"description": "« non » refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"p": "20",
+				"sg": "-1"
+			},
+			"description": "u(n+1) = u(n) − 0,2 u(n) : « oui » accepté",
+			"variationIndex": 5
 		}
 	]
 }

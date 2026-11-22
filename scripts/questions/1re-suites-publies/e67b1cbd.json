@@ -1,7 +1,7 @@
 {
 	"id": "e67b1cbd-3a00-4379-bb4c-5a39ddff360f",
 	"title": "Terme général d'une suite géométrique",
-	"description": "À partir de u_0 et de la raison",
+	"description": "À partir de u_0 et de la raison, ou de la relation de récurrence u(n+1) = q u(n)",
 	"grades": ["1_SPE"],
 	"level": 1,
 	"delay": 30,
@@ -67,6 +67,48 @@
 					"Ici $u_0={{a}}$ et $q=\\textcolor{{{color:primary.0}}}{{{q}}}$, donc $u_n={{a}}\\times\\textcolor{{{color:primary.0}}}{\\left({{q}}\\right)}^n$."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}*{{eval:q;()}}^n",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}*{{eval:q;()}}^{n-1}",
+							"message": "Le premier terme est $u_0$ : $u_n=u_0\\times q^n$, sans $n-1$.",
+							"label": "Formule de u₁"
+						},
+						{
+							"answer": "{{eval:a*q}}^n",
+							"message": "Seule la raison est élevée à la puissance $n$ : $u_0\\times q^n$, pas $(u_0\\times q)^n$.",
+							"label": "Coefficient dans la puissance"
+						},
+						{
+							"answer": "{{a}}{{eval:q;+}}n",
+							"message": "On multiplie par la même raison à chaque rang : la suite est géométrique, pas arithmétique.",
+							"label": "Confusion avec l'arithmétique"
+						}
+					]
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}={{q}}u_n$$\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque rang, on multiplie par le même nombre $\\textcolor{{{color:primary.0}}}{{{q}}}$ : $(u_n)$ est géométrique, de raison $q={{q}}$ et de premier terme $u_0={{a}}$.",
+					"$u_n=u_0\\times q^n={{a}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}^n$"
+				]
+			},
+			"hint": "Quelle est la nature de la suite ? Repère son premier terme et sa raison."
 		}
 	],
 	"testSpecs": [
@@ -330,6 +372,93 @@
 			},
 			"description": "v0 : u_0=−1, q=4 : (−4)^n faux",
 			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\times2^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "u0 = 3, u(n+1) = 2u(n) : 3 × 2ⁿ",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2^n\\times3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "ordre inversé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-5\\times(-3)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-5",
+				"q": "-3"
+			},
+			"description": "u0 = −5, q = −3",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-5\\times3^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-5",
+				"q": "-3"
+			},
+			"description": "parenthèses oubliées",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\times2^{n-1}"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier terme est $u_0$ : $u_n=u_0\\times q^n$, sans $n - 1$."
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "formule de u1",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["6^n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Seule la raison est élevée à la puissance $n$ : $u_0\\times q^n$, pas $(u_0\\times q)^n$."
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "6ⁿ",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3+2n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On multiplie par la même raison à chaque rang : la suite est géométrique, pas arithmétique."
+			},
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"description": "arithmétique",
+			"variationIndex": 2
 		}
 	]
 }

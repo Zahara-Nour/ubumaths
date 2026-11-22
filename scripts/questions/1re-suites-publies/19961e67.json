@@ -1,7 +1,7 @@
 {
 	"id": "19961e67-88c4-43bf-a76b-6a2af61dedf3",
 	"title": "Valeur renvoyée par une fonction Python de seuil",
-	"description": "Boucle while : premier rang où la condition devient fausse",
+	"description": "Boucle while : premier rang où la condition devient fausse ; compléter la condition du while",
 	"grades": ["1_SPE", "1_TECHNO"],
 	"level": 2,
 	"delay": 90,
@@ -105,6 +105,58 @@
 					"$u_{ {{eval:N-1}} }={{eval:a+r*(N-1)}}<{{A}}$ et $u_{ {{N}} }={{eval:a+r*N}}\\geqslant{{A}}$ : la fonction renvoie $\\mathbf{ {{N}} }$."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "La suite $(u_n)$ définie par $u_0={{a}}$ et $u_{n+1}=0{,}{{kq}}\\,u_n$ est décroissante.\n\n```python\ndef seuil(A):\n    n = 0\n    u = {{a}}\n    while ........ :\n        n = n + 1\n        u = 0.{{kq}} * u\n    return n\n```\n\nQuelle condition faut-il écrire à la place des pointillés pour que `seuil(A)` renvoie le plus petit entier $n$ tel que $u_n<A$ ?\n\n```choix\n- `u < A`\n- `u > A`\n- `u >= A`\n- `u <= A`\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "200..900"
+				},
+				{
+					"name": "kq",
+					"expression": "5..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle `while` tourne **tant que** sa condition est vraie, et s'arrête dès qu'elle devient fausse.",
+					"On veut s'arrêter au premier $n$ tel que $u_n<A$ : la boucle doit continuer tant que $u_n\\geqslant A$.",
+					"La condition est donc `u >= A`."
+				]
+			},
+			"hint": "La boucle `while` continue tant que sa condition est vraie : quelle condition doit rester vraie tant que le seuil n'est pas atteint ?"
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"statement": "La suite $(u_n)$ définie par $u_0={{a}}$ et $u_{n+1}=1{,}{{kq}}\\,u_n$ est croissante.\n\n```python\ndef seuil(A):\n    n = 0\n    u = {{a}}\n    while ........ :\n        n = n + 1\n        u = 1.{{kq}} * u\n    return n\n```\n\nQuelle condition faut-il écrire à la place des pointillés pour que `seuil(A)` renvoie le plus petit entier $n$ tel que $u_n>A$ ?\n\n```choix\n- `u < A`\n- `u > A`\n- `u >= A`\n- `u <= A`\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "kq",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle `while` tourne **tant que** sa condition est vraie, et s'arrête dès qu'elle devient fausse.",
+					"On veut s'arrêter au premier $n$ tel que $u_n>A$ : la boucle doit continuer tant que $u_n\\leqslant A$.",
+					"La condition est donc `u <= A`."
+				]
+			},
+			"hint": "La boucle `while` continue tant que sa condition est vraie : quelle condition doit rester vraie tant que le seuil n'est pas atteint ?"
 		}
 	],
 	"testSpecs": [
@@ -303,6 +355,78 @@
 			},
 			"description": "valeur de u au lieu de n : 202",
 			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "500",
+				"kq": "9"
+			},
+			"description": "décroissante, u < A visé : `u >= A`",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "500",
+				"kq": "9"
+			},
+			"description": "`u < A` refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "500",
+				"kq": "9"
+			},
+			"description": "`u > A` refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"kq": "2"
+			},
+			"description": "croissante, u > A visé : `u <= A`",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"kq": "2"
+			},
+			"description": "`u > A` refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"kq": "2"
+			},
+			"description": "`u < A` refusé",
+			"variationIndex": 4
 		}
 	]
 }

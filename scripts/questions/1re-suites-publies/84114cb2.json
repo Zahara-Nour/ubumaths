@@ -1,7 +1,7 @@
 {
 	"id": "84114cb2-cb00-4526-a9d3-a03a3a15976b",
 	"title": "Reconnaître une suite géométrique à partir de sa forme explicite",
-	"description": "u(n) = u(0) × qⁿ, ou non : u(n) = an + b, n² + c, kⁿ + c",
+	"description": "u(n) = u(0) × qⁿ (q entier, décimal ou négatif), a/qⁿ, ou non : u(n) = an + b, n² + c, kⁿ + c",
 	"grades": ["1_SPE"],
 	"level": 8,
 	"delay": 30,
@@ -185,6 +185,56 @@
 					"Attention : à cause du « $+{{c}}$ », ce n'est pas la forme $u_0\\times q^n$. La suite n'est **pas géométrique**."
 				]
 			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=\\dfrac{ {{a}} }{ {{q}}^n}$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout entier naturel $n$, $u_n={{a}}\\times\\dfrac{1}{ {{q}}^n}={{a}}\\times\\textcolor{{{color:primary.0}}}{\\left(\\dfrac{1}{ {{q}} }\\right)}^n$.",
+					"C'est la forme $u_0\\times q^n$ : la suite est **géométrique**, de raison $q=\\dfrac{1}{ {{q}} }$ et de premier terme $u_0={{a}}$."
+				]
+			},
+			"hint": "Essaie d'écrire $u_n$ sous la forme $u_0\\times q^n$."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}\\times\\left({{eval:-k/10;d}}\\right)^n$$\n\nCette suite est-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle est géométrique.\n- Non, elle n'est pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{u_{n+1}}{u_n}=\\dfrac{ {{a}}\\times\\left({{eval:-k/10;d}}\\right)^{n+1} }{ {{a}}\\times\\left({{eval:-k/10;d}}\\right)^n}=\\textcolor{{{color:primary.0}}}{{{eval:-k/10;d}}}$.",
+					"On passe d'un terme au suivant en multipliant toujours par ${{eval:-k/10;d}}$ : la suite est **géométrique**, de raison $q={{eval:-k/10;d}}$ et de premier terme $u_0={{a}}$."
+				]
+			},
+			"hint": "Compare $u_n$ à la forme $u_0\\times q^n$ : une raison peut être négative."
 		}
 	],
 	"testSpecs": [
@@ -341,6 +391,54 @@
 			},
 			"description": "v5 : « oui » refusé",
 			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"q": "4"
+			},
+			"description": "6/4ⁿ : « oui » accepté",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"q": "4"
+			},
+			"description": "6/4ⁿ : « non » refusé",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"k": "3"
+			},
+			"description": "5 × (−0,3)ⁿ : « oui » accepté",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"k": "3"
+			},
+			"description": "5 × (−0,3)ⁿ : « non » refusé",
+			"variationIndex": 7
 		}
 	]
 }
