@@ -28,6 +28,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { parse } from 'dotenv';
+import { randomInt } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import pg from 'pg';
 import {
@@ -47,6 +48,13 @@ import { ECRITURE_SUIVI, planSuivi, PREFIXE_SUIVI } from './suivi';
 import { creerMoteur } from './moteur';
 import { devinetteInventee, ECRITURE_JEUX, planJeux, PREFIXE_JEUX, type Difficulte } from './jeux';
 import { memoireMathoux, type EtatPoint } from './mathoux';
+import {
+	CARACTERES_LIEN,
+	ECRITURE_ECHANGES,
+	NETTOYAGE_ECHANGES,
+	planEchanges,
+	PREFIXE_ECHANGES
+} from './echanges';
 import type { QuestionTemplateRow } from '#lib/types/question-template.ts';
 import { marquerContenuDeProd, mettreAJour } from '../db-a-jour/appliquer';
 
@@ -221,13 +229,16 @@ async function creerEleves(db: pg.Client): Promise<number> {
 			// status explicite : le trigger crée un compte sans code « en attente » (B7).
 			// Prénom et nom : sans eux, les listes du prof affichent « Élève sans nom ». L'école est
 			// celle de la classe (classements et échanges s'arrêtent à l'école), le niveau aussi : sans
-			// lui, la chatterie et les Mathoux restent vides.
+			// lui, la chatterie et les Mathoux restent vides. Le nom complet est repris aussi : le
+			// profil créé par le déclencheur du compte n'en a pas, et l'index de recherche des messages
+			// privés l'exige de l'expéditeur.
 			`insert into public.profiles (id, email, role, full_name, status, firstname, lastname, school_id, grade)
 			 values ($1, $2, 'student', $3, 'approved', $4, $5, $6, $7)
 			 -- Délai de consentement parental renouvelé à chaque passage : échu (création il y a plus
 			 -- de 30 jours), il mettrait l'élève en lecture seule et les gardes d'écriture refuseraient
 			 -- ses parties inventées.
-			 on conflict (id) do update set status = 'approved', firstname = excluded.firstname,
+			 on conflict (id) do update set status = 'approved', full_name = excluded.full_name,
+			   firstname = excluded.firstname,
 			   lastname = excluded.lastname, school_id = excluded.school_id, grade = excluded.grade,
 			   consent_grace_period_ends = case when profiles.consent_required
 			     and profiles.consent_granted_at is null then now() + interval '30 days'
@@ -774,6 +785,175 @@ async function genererJeux(
 }
 
 /**
+ * Échanges et famille (./echanges.ts), déclencheurs ACTIFS. Puis ce que la base fait elle-même :
+ * l'accord des consentements (`grant_parental_consent`) et les échanges entre amis conclus
+ * (`execute_trade`, qui déplace les cartes). Rien n'est envoyé : aucune fonction de courriel.
+ */
+async function genererEchanges(
+	db: pg.Client,
+	activite: Awaited<ReturnType<typeof genererActivite>>,
+	jeux: Awaited<ReturnType<typeof genererJeux>>,
+	maintenant: Date
+) {
+	const ids = async (sql: string, params: unknown[] = []) =>
+		(await db.query(sql, params)).rows.map((x) => x.id as string);
+	const infos = new Map(
+		(
+			await db.query('select id, school_id, grade from public.classes where id = any($1::uuid[])', [
+				activite.classes.map((k) => k.id)
+			])
+		).rows.map((k) => [k.id as string, k as { school_id: string | null; grade: string | null }])
+	);
+	const points: Record<string, string[]> = {};
+	for (const k of activite.classes) {
+		points[k.id] = await ids(
+			`select id from public.curriculum_points where grade = $1 and archived_at is null
+			  order by id limit 12`,
+			[infos.get(k.id)?.grade ?? null]
+		);
+	}
+	const conversation = activite.plan.conversations[0];
+
+	// --- Un passage précédent est effacé d'abord : relancer ne double rien ------------------------
+	await db.query('begin');
+	const invente = `id::text like '${PREFIXE_ECHANGES}-%'`;
+	// Échanges créés par les fonctions de l'appli (ventes conclues) : sans préfixe, effacés par élève.
+	await db.query(
+		`delete from public.marketplace_trades where initiator_id::text like ${FICTIFS} or partner_id::text like ${FICTIFS}`
+	);
+	// Les tables filles partent avec leurs parents (suppression en cascade).
+	for (const table of NETTOYAGE_ECHANGES) {
+		await db.query(`delete from public."${table}" where ${invente}`);
+	}
+	await db.query(
+		`delete from public.student_carnet_opt_outs where student_id::text like ${FICTIFS}`
+	);
+	// Accords d'un passage précédent défaits : l'élève redevient soumis au consentement, délai
+	// renouvelé (comme `creerEleves`).
+	await db.query(
+		`update public.profiles set consent_granted_at = null, consent_grace_period_ends = now() + interval '30 days'
+		  where id::text like ${FICTIFS} and consent_required and consent_granted_at is not null`
+	);
+
+	const plan = planEchanges({
+		prof: PROF_LOCAL,
+		admin: ADMIN_LOCAL,
+		// Les classes sans élève fictif n'ont rien à montrer : ni annonce, ni cahier, ni marché.
+		classes: activite.classes
+			.filter((k) => k.eleves.length > 0)
+			.map((k) => ({
+				...k,
+				ecole: infos.get(k.id)?.school_id ?? null,
+				niveau: infos.get(k.id)?.grade ?? null
+			})),
+		horsClasse: `5eed0000-0000-4000-8000-0000000000${String(NB_ELEVES + 1).padStart(2, '0')}`,
+		maintenant,
+		graine: 20261124,
+		discussion: conversation
+			? {
+					conversation: conversation.id,
+					messages: activite.plan.messages
+						.filter((m) => m.conversation_id === conversation.id)
+						.map((m) => ({ id: m.id, auteur: m.sender_id, date: m.created_at }))
+				}
+			: null,
+		mains: jeux.plan.cartesProfils.map(({ student_id, vip_cards }) => ({
+			eleve: student_id,
+			cartes: Object.entries(vip_cards)
+				.filter(([, k]) => !k.usedAt && !k.activationRequestedAt)
+				.map(([instance, k]) => ({ instance, modele: String(k.cardId) }))
+		})),
+		amis: activite.plan.amities
+			.filter((a) => a.status === 'accepted')
+			.map((a) => [a.requester_id, a.addressee_id] as [string, string]),
+		soumisAuConsentement: await ids(
+			`select id from public.profiles where id::text like ${FICTIFS} and consent_required order by id`
+		),
+		points,
+		exercices: await ids('select id from public.exercises order by id limit 4'),
+		// Jetons des liens de partage au hasard cryptographique (jamais recalculables du dépôt).
+		jetonDePartage: () =>
+			Array.from({ length: 32 }, () => CARACTERES_LIEN[randomInt(CARACTERES_LIEN.length)]).join('')
+	});
+
+	// --- Écriture, dans l'ordre des liens ---------------------------------------------------------
+	// Réglages ajoutés à ceux copiés de la prod (qui n'en a pour aucune classe active).
+	for (const m of plan.marcheReglages) {
+		await db.query(
+			`insert into public.marketplace_config (id, class_id, enabled_globally, enabled_for_class,
+			   max_listings_per_student, max_trades_per_day, listing_duration_days, updated_by)
+			 values ($1, $2, $3, $4, $5, $6, $7, $8)
+			 on conflict (class_id) do update set enabled_for_class = true`,
+			[
+				m.id,
+				m.class_id,
+				m.enabled_globally,
+				m.enabled_for_class,
+				m.max_listings_per_student,
+				m.max_trades_per_day,
+				m.listing_duration_days,
+				m.updated_by
+			]
+		);
+	}
+	for (const k of plan.carnetReglages) {
+		await db.query(
+			`insert into public.class_carnet_settings (class_id, enabled, evaluation_missed_alert,
+			   overdue_reviews_days, inactivity_days, quarterly_message, updated_by)
+			 values ($1, $2, $3, $4, $5, $6, $7)
+			 on conflict (class_id) do update set enabled = true`,
+			[
+				k.class_id,
+				k.enabled,
+				k.evaluation_missed_alert,
+				k.overdue_reviews_days,
+				k.inactivity_days,
+				k.quarterly_message,
+				k.updated_by
+			]
+		);
+	}
+	for (const { partie, table, tableaux } of ECRITURE_ECHANGES) {
+		await ajouter(db, table, plan[partie], tableaux);
+	}
+
+	// Accords des parents : la fonction du lien envoyé au parent (preuve fictive).
+	for (const { jeton, ip } of plan.consentementsAccordes) {
+		const res = (
+			await db.query('select public.grant_parental_consent($1, $2::inet, $3) r', [
+				jeton,
+				ip,
+				'Navigateur fictif (base locale)'
+			])
+		).rows[0].r as { success: boolean; message?: string };
+		if (!res.success) throw new Error(`consentement refusé : ${res.message}`);
+	}
+	// Échanges entre amis conclus par la fonction de l'appli, au nom de l'initiateur.
+	for (const { echange, initiateur } of plan.echangesAConclure) {
+		await db.query(`select set_config('request.jwt.claims', $1, true)`, [
+			JSON.stringify({ sub: initiateur, role: 'authenticated' })
+		]);
+		const res = (await db.query('select public.execute_trade($1) r', [echange])).rows[0].r as {
+			success: boolean;
+			error?: string;
+		};
+		if (!res.success) throw new Error(`échange refusé : ${res.error}`);
+	}
+	// Ventes conclues : la fonction d'acceptation de l'appli (rôle service, au nom du vendeur), qui
+	// crée l'échange, le conclut et déplace carte et Gidouilles.
+	await db.query(`select set_config('request.jwt.claims', '{"role":"service_role"}', true)`);
+	for (const { proposition, vendeur } of plan.propositionsAAccepter) {
+		const res = (
+			await db.query('select public.accept_proposal_atomic($1, $2) r', [proposition, vendeur])
+		).rows[0].r as { success: boolean; error?: string };
+		if (!res.success) throw new Error(`vente refusée : ${res.error}`);
+	}
+	await db.query(`select set_config('request.jwt.claims', '', true)`);
+	await db.query('commit');
+	return { plan };
+}
+
+/**
  * Mémoire des Mathoux de chaque élève fictif qui a un niveau, chargée comme
  * `#lib/server/mathoux/collection.ts` : parcours (le niveau et ses niveaux antérieurs), points
  * tagués par un modèle publié, arbre des notions, états des points. Rend le nombre de lignes.
@@ -1000,6 +1180,14 @@ async function main() {
 				`Contenu, élèves, activité et suivi sont écrits, mais les jeux sont annulés (${e instanceof Error ? e.message : String(e)}). Relancer \`pnpm db:seed-riche\` après correction.`
 			);
 		});
+		const echanges = await genererEchanges(db, activite, jeux, new Date()).catch(
+			async (e: unknown) => {
+				await db.query('rollback').catch(() => {});
+				throw new Error(
+					`Contenu, élèves, activité, suivi et jeux sont écrits, mais les échanges sont annulés (${e instanceof Error ? e.message : String(e)}). Une ligne faite à la main en local peut bloquer : un lien de partage actif d'une classe, une séance du cahier de texte à la même date, un élève en attente à la même adresse. Relancer \`pnpm db:seed-riche\` après correction.`
+				);
+			}
+		);
 		console.log(`\n✅ ${total} lignes de contenu copiées.`);
 		console.log(
 			`✅ ${NB_ELEVES} élèves fictifs répartis dans ${nbClasses} classe(s), plus un hors classe : eleve01…eleve${NB_ELEVES + 1}@local.test / local-eleve`
@@ -1023,6 +1211,13 @@ async function main() {
 		const j = jeux.plan;
 		console.log(
 			`✅ Jeux : ${j.parties.length} parties de démineur (${j.succesDemineur.length} succès), ${j.partiesTournoi.length} parties de tournoi, ${j.scores2048.length} scores de 2048, ${j.scoresMathemo.length} de Mathémo, ${j.succes.length} succès, ${j.palotins.length} Palotins, ${j.cartesActivite.length} mouvements de cartes VIP, ${jeux.mathoux} Mathoux, ${jeux.decorations} décoration(s) achetée(s).`
+		);
+		const x = echanges.plan;
+		console.log(
+			`✅ Échanges : ${x.messagesPrives.length} messages privés, ${x.reactions.length} réactions, ${x.signalementsMessages.length} signalement(s) de message, ${x.restrictions.length} restriction(s), ${x.tuteurConversations.length} conversations avec le tuteur, ${x.notifications.length} annonces, ${x.annonces.length} annonces du marché, ${x.echanges.length} échanges entre amis (${x.echangesAConclure.length} conclu(s)), ${x.propositionsAAccepter.length} vente(s) conclue(s).`
+		);
+		console.log(
+			`✅ Famille et classe : ${x.consentements.length} demande(s) de consentement (${x.consentementsAccordes.length} accordée(s)), ${x.parents.length} parent(s) au carnet, ${x.enAttente.length} élève(s) en attente, ${x.seances.length} séances au cahier de texte, ${x.liensCours.length + x.liensCahier.length + x.liensExercice.length} liens de partage, ${x.cartesTaches.length} tâches, ${x.bugs.length} signalements de bug.`
 		);
 		const etat = await db.query(
 			`select (select count(*)::int from supabase_migrations.schema_migrations) migrations,

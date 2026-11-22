@@ -185,6 +185,8 @@ export const INVENTE: readonly string[] = [
 	'conversation_participants',
 	'messages',
 	'private_messages',
+	// Boîte de réception : remplie par la fonction d'envoi, pas calculée.
+	'message_inbox',
 	'message_reactions',
 	'message_reports',
 	'message_drafts',
@@ -195,7 +197,6 @@ export const INVENTE: readonly string[] = [
 	'tutor_messages',
 	'user_restrictions',
 	'moderation_logs',
-	'message_moderation_logs',
 	// Modèles de messages et leurs favoris : aucun en prod le 2026-11-21, les copier viderait
 	// ceux de la base locale.
 	'message_templates',
@@ -205,19 +206,15 @@ export const INVENTE: readonly string[] = [
 	'marketplace_listings',
 	'marketplace_proposals',
 	'marketplace_trades',
-	'marketplace_trade_offers',
 	'marketplace_locked_cards',
 	'marketplace_chat_messages',
-	'marketplace_listing_views',
 	// Famille et inscription
 	'parental_consents',
 	'parent_contacts',
 	'parent_carnet_links',
 	'parent_notifications',
-	'parent_exception_episodes',
 	'student_carnet_opt_outs',
 	'pending_students',
-	'terms_acceptances',
 	// Cahier de texte : jamais copié (2026-10-10), inventé (2026-11-21)
 	'class_journal_entries',
 	'journal_entry_activities',
@@ -226,7 +223,14 @@ export const INVENTE: readonly string[] = [
 	// Liens de partage : de faux liens pour ouvrir les pages publiques
 	'class_course_share_tokens',
 	'class_journal_share_tokens',
-	'exercise_share_tokens'
+	'exercise_share_tokens',
+	// Tableau de tâches du prof et signalements de bug : inventés (tranché le 2026-11-21)
+	'kanban_boards',
+	'kanban_columns',
+	'kanban_cards',
+	'kanban_card_tags',
+	'kanban_tags',
+	'bug_reports'
 ];
 
 /** Tables ni copiées ni inventées : elles restent vides en local. */
@@ -250,7 +254,6 @@ export const JAMAIS: readonly string[] = [
 	'welcome_emails_sent',
 	// Calculées ou éphémères
 	'message_search_index',
-	'message_inbox',
 	'user_presence',
 	'minesweeper_multiplayer_queue',
 	'minesweeper_multiplayer_matches',
@@ -281,14 +284,17 @@ export const JAMAIS: readonly string[] = [
 	'shared_coursework_students',
 	'message_attachments',
 	'message_attachments_v2',
-	// Pas encore tranché par David (inventer ou laisser vide) : vides en attendant.
-	'bug_reports',
-	'kanban_boards',
-	'kanban_columns',
-	'kanban_cards',
+	// Échanges et famille (PR 4 du chantier seed-complet, 2026-11-22) : aucune page ne les lit
+	// (acceptation des conditions, vues d'annonces, journal de modération des messages, offres
+	// d'un ancien circuit d'échange : 0 ligne en prod pour 158 échanges), ou l'envoi des courriels
+	// du carnet les tient seul (épisodes d'exception).
+	'terms_acceptances',
+	'marketplace_listing_views',
+	'message_moderation_logs',
+	'marketplace_trade_offers',
+	'parent_exception_episodes',
+	// Tableau de tâches : personne d'autre que le prof n'y est assigné.
 	'kanban_card_assignees',
-	'kanban_card_tags',
-	'kanban_tags',
 	// Jeux et récompenses (PR 3 du chantier seed-complet, 2026-11-22) : aucune page ne les lit
 	// (file d'événements, résumés et récompenses hebdomadaires des tâches planifiées, classements
 	// et succès de Navadra jamais branchés, tentatives de défi écrites seulement), ou la base les

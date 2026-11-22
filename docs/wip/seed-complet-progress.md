@@ -2,22 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2986 et #2989._
+_Mis à jour le 2026-11-22, PR 4 en cours (branche `feat/seed-complet-echanges`)._
 
-- **État** : PR 1 (#2977), PR 2 (#2980), #2981 et **PR 3 jeux et récompenses (#2986, § 9-10)** mergées.
-  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
-  (pas lancé).
-- **Prochaine action** : PR 4, échanges et famille (§ 5), par sa **phase 0** à faire valider : messages
-  privés, tuteur, notifications, marché, modération, parents, inscriptions, cahier de texte et liens
-  de partage (§ 4), tableau de tâches du prof et signalements de bug (inventés, tranché), modèles de
-  messages (voir si le seed les recrée). Même méthode qu'aux § 8 et § 10.
-- **En attente de David** : rien. Les deux pannes trouvées en PR 3 (§ 10) sont corrigées par #2989
-  (Palotins du prof lus à travers le profil ; requête et widget morts des succès retirés, choix de
-  David : retirer plutôt que réafficher).
+- **État** : PR 1 à 3 mergées (#2977, #2980, #2981, #2986, #2989). **PR 4 échanges et famille (§ 11-12)** :
+  codée, relue (aucun bloquant), prouvée sur copie isolée ; PR à ouvrir puis merger CI verte.
+  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`.
+- **Prochaine action** : après le merge de la PR 4, PR 5 images (§ 5 : celles du contenu, jamais les
+  pièces jointes), puis doc et versement.
+- **En attente de David** : la messagerie privée de l'appli est cassée (§ 12, « trouvé grâce au
+  seed ») : PR à part pour la réparer, ou seulement la noter ?
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
-  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev. Élèves soumis au
-  consentement : délai renouvelé par le seed (sinon lecture seule). Arrondis : `centiemes()` comme
-  `ROUND` de Postgres. Nouveau worktree à créer pour la PR 4 (`feat/seed-complet-echanges`).
+  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev ; serveur de test par
+  `pnpm exec vite dev` (pas `pnpm dev`, qui met à jour la base de dev), à relancer après un merge de
+  `main` (sinon 401 partout). Lignes d'une même table : mêmes colonnes (`uniformiser`).
 
 ---
 
@@ -395,7 +392,114 @@ Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
   - **bloc « succès » de l'accueil élève mort** : la requête vise `game_achievements` (Navadra) au lieu
     d'`achievements`, et la page ne l'affiche pas (`dashboard/+page.server.ts:230`).
 
+## 11. PR 4 : échanges et famille — phase 0 (2026-11-22, branche `feat/seed-complet-echanges`, **validée par David le 2026-11-22 : « je valide », carnet activé sur une classe et réponses du tuteur écrites à l’avance compris**)
+
+**Mesures** (prod en lecture seule, des comptes de lignes ; lecteurs relevés dans `src/`). Messagerie
+du prof (`/messages`) : 3 messages privés en prod, la boîte lit `message_inbox`, que la fonction d'envoi
+remplit (pas calculée : elle sort de `JAMAIS`). Discussion de classe : 284 messages, 27 réactions,
+4 signalements, 2 restrictions, 2 actions de modération. Tuteur : 652 conversations, 304 messages, lus
+par la page « statistiques du tuteur » du prof et l'historique de l'élève. Notifications : 7 (récompenses
+de la semaine), 0 lecture. Marché : 59 annonces, 31 propositions, 158 échanges, 10 cartes bloquées ;
+ouvert seulement pour deux classes (réglage par classe). Famille : 1 consentement, **aucune classe n'a le
+carnet de liaison activé**, 0 parent, 0 élève en attente d'activation. Cahier de texte : 2 séances,
+2 devoirs. Liens de partage : 2 + 2 + 9. Tâches du prof : 2 tableaux, 3 cartes. Signalements de bug : 245.
+Modèles de messages : 0 en prod ; **les 13 de la base locale viennent de `supabase/seed/default_message_templates.sql`**,
+rejoué à chaque `db:neuf` : rien à faire.
+
+**Inventé (plan pur testé sans base, comme `jeux.ts`)** :
+
+1. **Messagerie du prof** : une dizaine de messages entre le prof et des élèves (questions sur un devoir,
+   une absence, un merci), quelques-uns lus, un archivé, un brouillon du prof. Écrits par la vraie
+   fonction d'envoi, pour que la boîte de réception, les envoyés et le fil se remplissent ensemble.
+2. **Discussion de classe** : des réactions sur les messages déjà inventés, un message signalé (en
+   attente) et un traité, une restriction finie et une en cours sur un élève, et leur trace de modération
+   → page « modération » du prof.
+3. **Tuteur** : 1 à 3 conversations pour la moitié des élèves, avec des réponses écrites à l'avance
+   (aucun appel à l'IA) → statistiques du prof et historique de l'élève.
+4. **Notifications** : 3 ou 4 annonces du prof à ses classes, lues par une partie des élèves.
+5. **Marché** : ouvert pour les classes actives (comme le tournoi : ajouté aux réglages copiés) ;
+   des annonces de cartes VIP prises dans les cartes de la PR 3, des propositions, quelques échanges
+   faits et un en cours avec ses messages, les cartes proposées bloquées en face.
+6. **Consentements** : pour les élèves qui y sont soumis, des accords donnés, des demandes en attente,
+   un refus. Preuve fictive (adresse IP de documentation `192.0.2.x`).
+7. **Carnet de liaison** : activé sur une classe, de faux parents (adresses `@example.test`), quelques
+   envois déjà partis dans l'historique, un élève qui s'est retiré. **Rien n'est envoyé** : le seed
+   écrit les lignes, n'appelle jamais l'envoi des courriels.
+8. **Élèves en attente d'activation** : 3 élèves importés pas encore activés → page d'import de l'admin.
+9. **Cahier de texte** : 4 à 6 séances par classe active sur les dernières semaines, chacune avec ses
+   points du programme et une activité, des devoirs (dont un à rendre la semaine prochaine) → cahier
+   du prof, cahier de l'élève, page « avancement ».
+10. **Liens de partage** : un lien de cours et un lien de cahier de texte par classe active, un lien
+    d'exercice, dont un expiré.
+11. **Tâches du prof** : un tableau de trois colonnes, une dizaine de cartes avec étiquettes.
+12. **Signalements de bug** : une dizaine (élèves et prof), états variés (en attente, pris en compte,
+    résolu, doublon), **sans capture d'écran** → page de l'élève et page de l'admin.
+
+**Pas inventé, et pourquoi** (→ `JAMAIS`) : `terms_acceptances` (écrite à l'inscription, aucune page ne
+la lit), `marketplace_listing_views` et `message_moderation_logs` (aucun lecteur),
+`marketplace_trade_offers` (0 ligne pour 158 échanges : ancien circuit, à confirmer en codant), `parent_exception_episodes` (tenue par l'envoi des courriels).
+
+**Preuve** : même méthode qu'aux § 8 et § 10 (copie isolée, seed rejoué trois fois, pages ouvertes en
+élève, prof et admin : messagerie, modération, tuteur, notifications, marché et un échange, consentements,
+carnet, import, cahier de texte et avancement, pages publiques des liens, tableau de tâches, signalements).
+
+## 12. PR 4 : échanges et famille (2026-11-22, branche `feat/seed-complet-echanges`)
+
+- **Un plan pur de plus**, `scripts/db-seed-riche/echanges.ts` (tests : `scripts/__tests__/db-seed-echanges.test.ts`,
+  46 cas, sans base), écrit dans 35 tables (`ECRITURE_ECHANGES`), plus les réglages du marché et du carnet
+  ajoutés aux réglages copiés. Liste de nettoyage exportée (`NETTOYAGE_ECHANGES`) : un test exige que
+  chaque table écrite y soit, ou parte avec son parent par cascade.
+- **Fait par la base, pas écrit** : accord des consentements (`grant_parental_consent`), échange entre
+  amis conclu (`execute_trade`), ventes conclues (`accept_proposal_atomic`, rôle service, au nom du
+  vendeur : l'échange naît conclu, carte et Gidouilles déplacées), nombre de messages du tuteur et de
+  propositions d'une annonce, index de recherche des messages, révocation du lien de l'élève qui a
+  arrêté le carnet.
+- **Écarts au plan, chacun imposé par une mesure** :
+  - messages privés écrits par la règle recopiée de `send_private_message`, pas par la fonction : elle
+    date tout de `now()` ;
+  - pas de « refus » de consentement (l'état n'existe pas) : demandes **échues** à la place ;
+  - l'élève hors classe n'a pas de demande de consentement (le plan l'écarte) ;
+  - `message_inbox` sort de `JAMAIS` (remplie à l'envoi) ; passent dans `JAMAIS`, sans lecteur :
+    `terms_acceptances`, `marketplace_listing_views`, `message_moderation_logs`,
+    `marketplace_trade_offers`, `parent_exception_episodes`, `kanban_card_assignees` ;
+  - `creerEleves` reprend le nom complet (« Élève NN ») : sans lui, l'index de recherche refuse le
+    message d'un élève ;
+  - les jetons des liens de partage sont tirés au hasard cryptographique par `index.ts` (audit : tirés
+    de la graine publique, ils se recalculaient depuis le dépôt).
+- **Preuve** (copie isolée `ubumaths-essai`, ports 544xx, services compris ; serveur du worktree
+  branché dessus) : seed rejoué trois fois après les corrections de relecture et la mise à jour depuis
+  `main`, mêmes nombres : 22 messages privés (27 lignes de boîte), 9 réactions, 2 signalements, 2
+  restrictions, 32 conversations du tuteur (192 messages), 11 annonces du prof (36 lectures), 29
+  annonces du marché, 6 échanges conclus (1 entre amis, 5 ventes) et 1 en cours, 12 demandes de
+  consentement (4 accordées), 5 parents au carnet, 3 élèves en attente, 22 séances, 12 liens, 10
+  tâches, 10 signalements de bug ; nombres des PR 2 et 3 inchangés d'un passage à l'autre. Pages lues
+  connecté : élève (annonces, échanges, cahier de texte, carnet, signalements, inventaire après
+  échange), prof (modération et signalements, statistiques du tuteur, consentements, carnet de la
+  classe, cahier de texte d'une séance, avancement, tableau de tâches), admin (import, signalements),
+  pages publiques (cours, cahier de texte, exercice partagé ; le lien expiré est refusé).
+- **Relectures** : `security-auditor`, aucun bloquant ; corrigé : jetons de partage (ci-dessus).
+  Écartés : `detecterFuite` sur l'inventé (tout y est constant), réglage du marché qui resterait (la
+  copie vide la table à chaque passage). `code-reviewer`, rien de bloquant ; corrigé : ventes conclues
+  par la vraie fonction (le plan écrivait un état que l'appli ne produit jamais), réactions et
+  signalements datés après leur message, auteur d'un contact parent saisi par l'élève, absent qui
+  reçoit le message de sa classe (en-tête et test), tests circulaires retirés, message d'erreur qui
+  nomme les lignes faites à la main qui bloquent une relance.
+- **Limites connues** : l'historique du tuteur côté élève se lit par exercice, et les conversations
+  inventées n'en ont pas (visibles dans les statistiques du prof seulement) ; la page publique du
+  carnet ne s'ouvre pas (la base ne garde que l'empreinte des liens) ; dates de mise à jour et de fin
+  écrites par les déclencheurs à l'heure du seed (aucune page ne les lit).
+- **Trouvé grâce au seed, hors PR** — **messagerie privée cassée dans l'appli**, quelles que soient
+  les données, sur `main` aussi :
+  - boîte de réception : l'appli appelle `/api/messages/inbox?status=inbox` sans dossier, et le schéma
+    refuse `folderId` nul → 400 (`src/routes/api/messages/inbox/+server.ts:22`) ;
+  - envoyés : l'appli appelle `/api/messages/sent` sans `limit` → 400 (« doit être > 0 ») ; avec
+    `limit`, la réponse de `get_user_sent_messages` n'a ni `id`, ni `sender_name`, ni `created_at`
+    attendus par `messageResponseSchema` → 500 (`src/lib/server/validation/messages.ts:55`).
+  - En prod : 3 messages privés, le dernier en octobre 2025.
+
 ## 6. Historique
+
+- **2026-11-22** : PR 4 (échanges et famille), § 11-12.
 
 - **2026-11-22** : #2981, compteurs de « Mes révisions » (trouvé grâce au seed).
 - **2026-11-22** : PR 2 (suivi et travail scolaire), § 8.
