@@ -439,9 +439,8 @@ rejoué à chaque `db:neuf` : rien à faire.
     résolu, doublon), **sans capture d'écran** → page de l'élève et page de l'admin.
 
 **Pas inventé, et pourquoi** (→ `JAMAIS`) : `terms_acceptances` (écrite à l'inscription, aucune page ne
-la lit), `marketplace_listing_views` et `message_moderation_logs` (aucun lecteur), `notification_reads`
-`marketplace_trade_offers` (0 ligne pour 158 échanges : ancien
-circuit, à confirmer en codant), `parent_exception_episodes` (tenue par l'envoi des courriels).
+la lit), `marketplace_listing_views` et `message_moderation_logs` (aucun lecteur),
+`marketplace_trade_offers` (0 ligne pour 158 échanges : ancien circuit, à confirmer en codant), `parent_exception_episodes` (tenue par l'envoi des courriels).
 
 **Preuve** : même méthode qu'aux § 8 et § 10 (copie isolée, seed rejoué trois fois, pages ouvertes en
 élève, prof et admin : messagerie, modération, tuteur, notifications, marché et un échange, consentements,
