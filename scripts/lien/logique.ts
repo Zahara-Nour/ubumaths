@@ -306,3 +306,32 @@ export function relayState(status: number | null): RelayState {
 	if (status === null || status === 502) return 'supabase-arrete';
 	return status === 200 || status === 401 ? 'ok' : 'sans-relais';
 }
+
+/** Clé publique de Supabase local, lue dans les fichiers d'environnement de dev. */
+export function anonKey(envFiles: string[]): string | null {
+	for (const content of envFiles) {
+		const match = /^\s*(?:export\s+)?PUBLIC_SUPABASE_ANON_KEY\s*=(.*)$/m.exec(content);
+		const key = match?.[1]?.trim().replace(/^["']|["']$/g, '');
+		if (key) return key;
+	}
+	return null;
+}
+
+/**
+ * Le rappel des comptes fictifs : pour chaque rôle, le premier compte qui se
+ * connecte vraiment (`eleveNN@local.test` n'existe qu'après `pnpm db:neuf`).
+ *
+ * @param signsIn le compte se connecte-t-il ? `null` : impossible de le savoir
+ *   (Supabase arrêté, relais absent), le premier compte est alors donné tel quel
+ */
+export function accountLines(
+	accounts: Record<string, { email: string; password: string }[]>,
+	signsIn: ((account: { email: string; password: string }) => boolean) | null
+): string[] {
+	return Object.entries(accounts).map(([role, list]) => {
+		const label = `  ${role.padEnd(5)} : `;
+		const account = signsIn ? list.find(signsIn) : list[0];
+		if (!account) return `${label}aucun compte ne se connecte (pnpm db:neuf les crée)`;
+		return `${label}${account.email} / ${account.password}${signsIn ? '' : ' (non vérifié)'}`;
+	});
+}

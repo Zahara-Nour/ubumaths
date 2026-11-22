@@ -12,6 +12,8 @@
 import { describe, it, expect } from 'vitest';
 import {
 	LienError,
+	accountLines,
+	anonKey,
 	SUPABASE_HTTPS_PORT,
 	chantierName,
 	isMainRepo,
@@ -321,5 +323,40 @@ describe('lien — relais de Supabase', () => {
 		expect(relayState(404)).toBe('sans-relais');
 		expect(relayState(303)).toBe('sans-relais');
 		expect(relayState(403)).toBe('sans-relais');
+	});
+});
+
+describe('lien — comptes fictifs', () => {
+	const accounts = {
+		prof: [{ email: 'teacher@local.test', password: 'local-teacher' }],
+		eleve: [
+			{ email: 'eleve01@local.test', password: 'local-eleve' },
+			{ email: 'student@local.test', password: 'local-student' }
+		]
+	};
+
+	it('donne le premier compte qui se connecte vraiment', () => {
+		const lines = accountLines(accounts, (account) => account.email !== 'eleve01@local.test');
+		expect(lines).toEqual([
+			'  prof  : teacher@local.test / local-teacher',
+			'  eleve : student@local.test / local-student'
+		]);
+	});
+
+	it('aucun compte du rôle ne se connecte : le dit, sans en inventer', () => {
+		expect(accountLines(accounts, () => false)[1]).toBe(
+			'  eleve : aucun compte ne se connecte (pnpm db:neuf les crée)'
+		);
+	});
+
+	it('impossible de vérifier (Supabase arrêté) : le premier compte, marqué non vérifié', () => {
+		expect(accountLines(accounts, null)[1]).toBe(
+			'  eleve : eleve01@local.test / local-eleve (non vérifié)'
+		);
+	});
+
+	it('clé publique de Supabase local lue dans les fichiers d’environnement', () => {
+		expect(anonKey(['A=1\nPUBLIC_SUPABASE_ANON_KEY="cle-fictive"\n'])).toBe('cle-fictive');
+		expect(anonKey(['A=1\n'])).toBeNull();
 	});
 });

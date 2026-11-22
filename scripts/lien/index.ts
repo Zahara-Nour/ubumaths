@@ -27,6 +27,8 @@ import { listDevServers, readEnvFiles, readServerEnv, worktreeRoot } from '../vo
 import { SUPABASE_RELAY_PATH } from '../../src/lib/dev/supabase-relay.ts';
 import {
 	LienError,
+	accountLines,
+	anonKey,
 	isMainRepo,
 	lastSync,
 	linkUrl,
@@ -206,6 +208,37 @@ function relayStatus(port: number): number | null {
 	}
 }
 
+/** Le compte fictif se connecte-t-il à Supabase local, à travers le relais ? */
+function signsIn(port: number, key: string, account: { email: string; password: string }): boolean {
+	try {
+		const code = execFileSync(
+			'curl',
+			[
+				'-s',
+				'-o',
+				'/dev/null',
+				'-m',
+				String(RELAY_TIMEOUT_SECONDS),
+				'-w',
+				'%{http_code}',
+				'-X',
+				'POST',
+				'-H',
+				`apikey: ${key}`,
+				'-H',
+				'content-type: application/json',
+				'-d',
+				JSON.stringify(account),
+				`http://localhost:${port}${SUPABASE_RELAY_PATH}/auth/v1/token?grant_type=password`
+			],
+			{ encoding: 'utf8' }
+		);
+		return code === '200';
+	} catch {
+		return false;
+	}
+}
+
 function publish(wantedPort: number | null): void {
 	refuseMainRepo();
 	const root = worktreeRoot();
@@ -257,9 +290,11 @@ function publish(wantedPort: number | null): void {
 		);
 
 	const url = linkUrl(hostname, httpsPort);
-	const accounts = Object.entries(ACCOUNTS)
-		.map(([name, list]) => `  ${name.padEnd(5)} : ${list[0]?.email} / ${list[0]?.password}`)
-		.join('\n');
+	const key = relay === 'ok' ? anonKey(readEnvFiles(root)) : null;
+	const accounts = accountLines(
+		ACCOUNTS,
+		key === null ? null : (account) => signsIn(port, key, account)
+	).join('\n');
 	console.log(
 		[
 			`${existing ? 'Lien (déjà publié)' : 'Lien'} : ${url}`,
