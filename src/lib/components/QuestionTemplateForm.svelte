@@ -591,7 +591,10 @@
 				...(sourceVariation.blankDefaults
 					? ($state.snapshot(sourceVariation.blankDefaults) as BlankDefaults)
 					: {})
-			}
+			},
+			// Coup de pouce (idée 5)
+			...(sourceVariation.hint !== undefined && { hint: sourceVariation.hint }),
+			...(sourceVariation.hintFromFirstStep && { hintFromFirstStep: true })
 		};
 
 		// Replace the current variation with the duplicated content
@@ -601,6 +604,16 @@
 			i === currentVariationIndex ? { ...variationExtras[duplicateSourceIndex] } : extra
 		);
 		showDuplicateDialog = false;
+	}
+
+	// Coup de pouce (idée 5) : texte de l'indice, vide = pas d'indice
+	function setHint(index: number, text: string) {
+		variations[index].hint = text === '' ? undefined : templateMarkdown(text);
+	}
+
+	// Coup de pouce = première étape de la correction (le texte écrit est gardé, ignoré)
+	function setHintFromFirstStep(index: number, checked: boolean) {
+		variations[index].hintFromFirstStep = checked ? true : undefined;
 	}
 
 	// Build template object
@@ -632,6 +645,12 @@
 					? { blanks: variation.blanks }
 					: {}),
 				...(cleanedBlankDefaults ? { blankDefaults: cleanedBlankDefaults } : {}),
+				// Coup de pouce (idée 5) : la case « première étape » l'emporte sur un texte resté
+				...(variation.hintFromFirstStep
+					? { hintFromFirstStep: true }
+					: variation.hint?.trim()
+						? { hint: templateMarkdown(variation.hint.trim()) }
+						: {}),
 				correction: stringToCorrection(
 					extra.correctionString,
 					variation.correction
@@ -1162,7 +1181,9 @@
 			variations: variations.map((v) => ({
 				statement: v.statement,
 				variables: v.variables?.length,
-				blanks: v.blanks?.length
+				blanks: v.blanks?.length,
+				hint: v.hint,
+				hintFromFirstStep: v.hintFromFirstStep
 			})),
 			sharedVariables: sharedVariables.length,
 			variationExtras,
@@ -1894,6 +1915,38 @@
 									</Collapsible.Root>
 								</Card.Header>
 							</Card.Root>
+
+							<!-- Coup de pouce (idée 5) : indice que l'élève ouvre s'il est bloqué -->
+							{#if questionType === 'fill_in_blanks'}
+								<Card.Root>
+									<Card.Header>
+										<Card.Title>Coup de pouce (optionnel)</Card.Title>
+										<Card.Description id="hint-help-{index}">
+											Un indice que l’élève ouvre s’il est bloqué, jamais en évaluation. Il ne donne
+											pas la réponse : {'{{solution}}'} y est refusé.
+										</Card.Description>
+									</Card.Header>
+									<Card.Content class="space-y-3">
+										<MyCheckbox
+											bind:checked={
+												() => variation.hintFromFirstStep === true,
+												(checked) => setHintFromFirstStep(index, checked)
+											}
+											label="La première étape de la correction sert de coup de pouce"
+											aria-describedby="hint-help-{index}"
+										/>
+										{#if !variation.hintFromFirstStep}
+											<MarkdownEditor
+												bind:value={() => variation.hint ?? '', (text) => setHint(index, text)}
+												showParameterization={true}
+												variables={variation.variables}
+												placeholder="Indice (optionnel) : par exemple « Pense à la table de {'{{a}}'}. »"
+												rows={3}
+											/>
+										{/if}
+									</Card.Content>
+								</Card.Root>
+							{/if}
 
 							<!-- Per-variation overrides -->
 							<Card.Root>

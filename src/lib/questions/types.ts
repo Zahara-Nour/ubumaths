@@ -472,6 +472,15 @@ export interface QuestionVariation {
 	 * @example { requiredForm: 'fraction' } // Answer must be a/b
 	 */
 	requiredForm?: RequiredForm;
+
+	/**
+	 * Coup de pouce (idée 5) : indice que l'élève ouvre s'il est bloqué, jamais en
+	 * évaluation. Gabarit comme une étape de correction, sans `{{solution}}` (cf. `hint.ts`).
+	 */
+	hint?: TemplateMarkdown;
+
+	/** Coup de pouce = première étape de la correction (exclusif de `hint`) */
+	hintFromFirstStep?: boolean;
 }
 
 /**
@@ -998,6 +1007,9 @@ export interface QuestionInstance {
 	 * All placeholders are resolved to final values.
 	 */
 	correction?: ResolvedCorrection;
+
+	/** Coup de pouce résolu (valeurs du tirage) ; absent si la variation n'en a pas */
+	hint?: ResolvedMarkdown;
 
 	// ---- Fill-in-blanks (resolved) ----
 

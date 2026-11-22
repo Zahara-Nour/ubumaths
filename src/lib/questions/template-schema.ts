@@ -28,6 +28,7 @@ import {
 } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 import { capitalPairsSchema } from './capital-pairs';
+import { hintSchema, refineHints } from './hint';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -690,7 +691,10 @@ const variationStrictZ = z
 		answerFormats: z.record(z.string(), z.string()).optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		requiredForm: requiredFormStrictZ.optional(),
-		conditions: z.array(z.string()).optional()
+		conditions: z.array(z.string()).optional(),
+		// Coup de pouce (idée 5) : indice écrit, ou première étape de la correction
+		hint: hintSchema.optional(),
+		hintFromFirstStep: z.boolean().optional()
 	})
 	.strict();
 
@@ -735,6 +739,8 @@ export const questionTemplateSchema = z
 	)
 	// Hypothèse de l'énoncé posée sur une variable tirée : refusée
 	.superRefine(refineAssumptionCollisions)
+	// Coup de pouce qui donnerait la réponse : refusé (cf. hint.ts)
+	.superRefine(refineHints)
 	.superRefine((data, ctx) => {
 		// rulesSuffice sans aucune règle : toute réponse serait juste
 		data.variations.forEach((variation, variationIndex) => {

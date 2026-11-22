@@ -54,7 +54,9 @@ function resolveVariationWithShared(
 		conditions: variation.conditions ?? shared.conditions,
 		blanks: variation.blanks,
 		blankDefaults: variation.blankDefaults ?? shared.blankDefaults,
-		answerFormats: variation.answerFormats ?? shared.answerFormats
+		answerFormats: variation.answerFormats ?? shared.answerFormats,
+		hint: variation.hint,
+		hintFromFirstStep: variation.hintFromFirstStep
 	};
 }
 
