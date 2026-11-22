@@ -639,7 +639,9 @@ class MinesweeperStore {
 	 * GridStateDTO.adjacentCounts (Record<string, number>) is not directly
 	 * assignable to Json, so we spread through a Json-typed structure.
 	 */
-	private gridStateToJson(dto: import('#lib/types/minesweeper.ts').GridStateDTO): Json {
+	private gridStateToJson(
+		dto: import('#lib/types/minesweeper.ts').GridStateDTO
+	): NonNullable<Json> {
 		const { adjacentCounts, ...rest } = dto;
 		const jsonCounts: { [key: string]: Json } = {};
 		for (const [k, v] of Object.entries(adjacentCounts)) {
@@ -1887,7 +1889,7 @@ class MinesweeperStore {
 					// Build update payload (exclude time_seconds - it's server-controlled)
 					// The complete_minesweeper_game() function sets time_seconds when game ends
 					const updatePayload: {
-						grid_state: Json;
+						grid_state: NonNullable<Json>;
 						status: DatabaseGameStatus;
 						flags_used: number;
 						cells_revealed: number;

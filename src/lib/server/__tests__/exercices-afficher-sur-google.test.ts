@@ -67,7 +67,7 @@ function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow {
 		distribution_mode: 'on_demand',
 		is_public: true,
 		search_indexed: true,
-		variables: null,
+		variables: [],
 		resources: null,
 		generic_functions: null,
 		shared: null,
@@ -265,7 +265,14 @@ describe('updateExercise : search_indexed', () => {
 			{ data: { ...existing, title: 'Nouveau titre' }, error: null }
 		]);
 		const parsed = updateExerciseSchema.parse({ title: 'Nouveau titre' });
-		await updateExercise(client, EXERCISE_ID, parsed, TEACHER_ID);
+		// Même pont que la route (api/exercises/[id]) : le schéma accepte `variables: null`, que
+		// `updateExercise` ramène à une liste vide avant d'écrire.
+		await updateExercise(
+			client,
+			EXERCISE_ID,
+			parsed as Parameters<typeof updateExercise>[2],
+			TEACHER_ID
+		);
 		const payload = query.update.mock.calls[0][0] as Record<string, unknown>;
 		expect(payload).not.toHaveProperty('is_public');
 		expect(payload).not.toHaveProperty('search_indexed');

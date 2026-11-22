@@ -27,7 +27,7 @@ Pas pour : schéma, migrations, policies RLS (`supabase-expert`) ; feature de bo
 ## Pièges serveur
 
 - `fail()` répond HTTP 200 ; `HttpError` n'étend pas `Error` (ne pas l'attraper comme une `Error`).
-- Une RPC nouvelle n'existe dans `database.ts` qu'après `db:migrate` + `db:types` (générés depuis la prod) : migration et code appelant = deux PR.
+- `database.ts` est généré depuis les migrations du dépôt : après une migration, `pnpm db:types` (pile de test locale), et le code appelant part dans la **même PR**. La CI refuse un `database.ts` qui n'est pas celui des migrations.
 - Client service-role : seulement depuis un chemin de `ALLOWED_SERVICE_ROLE_PATHS`.
 
 ## Vérifier

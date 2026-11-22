@@ -26,7 +26,8 @@ pnpm types:cliquet                  # types des tests (--maj après corrections)
 pnpm lint:fast                      # lint rapide
 pnpm format <ses fichiers>          # prettier --write, jamais de glob ni format:all
 pnpm test:server <path> / test:client <path> / test:integration
-pnpm db:start / db:reset / db:migrate / db:types
+pnpm db:start / db:reset / db:migrate
+pnpm db:types                       # database.ts depuis les migrations de la BRANCHE (pile de test), à commiter avec la migration
 pnpm db:test:stop / db:test:reset   # pile de TEST (démarrée et mise à jour seule par test:integration ; jamais la base de dev)
 pnpm db:a-jour                      # base LOCALE : migrations en attente, sans rien effacer (auto avant `pnpm dev`)
 pnpm db:neuf                        # base locale EFFACÉE puis remplie (eleveNN@local.test / local-eleve) ; rare, demande « oui »
@@ -111,7 +112,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 - **Horodatage = `pnpm migration:horodatage`**, jamais un nombre rond. Avant `gh pr merge` d'une PR de migration : `pnpm check:migrations --pr <n>`.
 - CLI Supabase = devDependency : `pnpm exec supabase …` (jamais `supabase …` ni `npx supabase`).
 - **Tests d'intégration locaux OBLIGATOIRES** pour RLS / `SECURITY DEFINER` / trigger / policy. **Jamais** de smoke-test `auth.uid()` NULL (faux positif).
-- Prod : MCP Supabase **read-only**. `db:types` génère **depuis la prod** → fonction SQL + code qui l'appelle = **deux PR** (migration, `db:migrate`, `db:types`, puis le code).
+- Prod : MCP Supabase **read-only**. `db:types` génère **depuis les migrations de la branche**, jamais depuis la prod → migration, `pnpm db:types` et code qui l'appelle dans **la même PR** ; la CI refuse un `database.ts` qui n'est pas celui des migrations (`pnpm db:types:verifier`).
 
 ### ⚠️ La RLS échoue en SILENCE — [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)
 

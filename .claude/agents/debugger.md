@@ -20,7 +20,7 @@ Pas pour : relire du code sans bug (`code-reviewer`), une lenteur (`performance-
 ## Pièges connus de ce dépôt (détail dans les docs citées)
 
 - **RLS silencieuse** : un refus rend **zéro ligne, sans erreur** ; une absence ressemble à un vide légitime ; `!inner` efface la ligne parente → [rls-echecs-silencieux.md](../../docs/pratiques/rls-echecs-silencieux.md).
-- **Base locale** : sign-in en erreur vide → `pnpm db:stop` puis `pnpm db:start`. `db:types` génère depuis la **prod** : une RPC pas encore poussée n'existe pas dans `database.ts`.
+- **Base locale** : sign-in en erreur vide → `pnpm db:stop` puis `pnpm db:start`. `db:types` génère depuis les **migrations du dépôt** (pile de test locale) : une RPC absente de `database.ts` = `pnpm db:types` pas relancé après la migration.
 - **SvelteKit** : `fail()` répond HTTP 200 ; `HttpError` n'étend pas `Error` ; `structuredClone` sur un `$state` → `$state.snapshot()`.
 - **Safari TDZ** : import statique lourd dans `+layout.ts` → [safari-webkit-tdz.md](../../docs/pratiques/safari-webkit-tdz.md).
 - **vitest 4 / vitest-browser-svelte** : `render` non attendu, mock appelé avec `new` écrit en flèche → [tests.md](../../docs/pratiques/tests.md) § Pièges.

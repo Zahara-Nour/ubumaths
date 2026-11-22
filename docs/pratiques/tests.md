@@ -270,8 +270,8 @@ par `createAuthenticatedClient`.
 - **Base partagée, séquentielle** : nettoyer avant et après (`cleanupAllTestData`), emails en
   `@test.com` (c'est ce que le nettoyage purge). Une transaction ouverte par un test (`pg`) se
   termine par `ROLLBACK`, jamais `COMMIT`.
-- **`db:types` génère depuis la production** : une RPC pas encore migrée en prod n'est pas typée
-  (cf. CLAUDE.md §Base de données).
+- **`db:types` génère depuis les migrations de la branche** (sur cette même pile de test) : après
+  une migration, `pnpm db:types` type la nouvelle RPC, sans attendre la prod (cf. CLAUDE.md §Base de données).
 - **Sign-in local en erreur vide** : GoTrue dégradé → dans la suite d'intégration, `pnpm db:test:stop` puis relancer les tests ; sur le serveur de dev, `pnpm db:stop` puis `pnpm db:start`.
 
 ---

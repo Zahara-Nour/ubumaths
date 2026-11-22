@@ -103,7 +103,8 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		return error(400, validation.error);
 	}
 
-	const updates: Partial<typeof existingTemplate> = validation.data;
+	// `search_vector` est calculée par la base : elle ne s'écrit pas.
+	const updates: Partial<Omit<typeof existingTemplate, 'search_vector'>> = validation.data;
 
 	// Teachers cannot change scope to system
 	if (updates.scope === 'system' && !isAdmin) {

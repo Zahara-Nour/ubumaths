@@ -154,8 +154,9 @@ laisse pas passer deux détenteurs.
 - **Un refus s'attend, il ne se contourne pas.** Il n'y a pas de `FORCE=1` sur
   ces verrous, et c'est délibéré.
 
-**Ce qu'ils ne couvrent pas** : `db:migrate` et `db:types`, qui visent la
-**production** et se lancent depuis `main` après merge ; `db:status` (lecture
+**Ce qu'ils ne couvrent pas** : `db:migrate`, qui vise la **production** et se
+lance depuis `main` après merge (`db:types`, lui, lit la pile de test sous le
+verrou `supabase-test`, depuis le worktree) ; `db:status` (lecture
 seule) ; et les serveurs de dev (règle 5).
 
 **Pourquoi la sentinelle de ré-exécution est un argument, pas une variable
