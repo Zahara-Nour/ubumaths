@@ -473,3 +473,23 @@ d'essayer de mettre des erreurs prévues ».
   ne sont plus à relancer.
 - ⚠️ Livraison : `hint` (#2991) n'est pas en prod ; la migration de contenu ne se joue qu'après le
   `deploy:prod` qui livre #2991 (les erreurs prévues, #2962, y sont déjà).
+
+### Passe 1 : erreurs prévues, coups de pouce, specs (commit `1caca9d636`, pas de PR)
+
+Cinq agents (`pedagogy-expert`), un par dossier. 189 variations, toutes avec un coup de pouce
+(114 écrits, 75 « première étape ») ; 435 erreurs prévues ; 277 specs ajoutées ; contrôle
+`create-questions` sans ⛔ sur les 52, specs vertes à 300-400 tirages. Seuls `variations`
+(erreurs prévues, indice) et `testSpecs` changent (vérifié par script contre HEAD).
+Pas de PR : David (2026-11-22) rappelle que la revue doit **garder l'idée et revoir la forme**
+(bon type de case, outils existants ou à créer) ; la passe 1 l'avait interdit aux agents (modèles
+publiés). Une nouvelle forme peut rendre des erreurs prévues caduques : PR après la passe 2.
+Remarques de la passe 1 à reprendre : indice de « (√a)² » qui souffle presque la réponse
+(c2/03 v0) ; décimaux écrits avec un point dans la correction de 3b0a04c0 v3 et a692569a v3, v5
+(`toFrenchDecimal` au rendu : à vérifier à l'écran) ; 03 b v1 permet b = 1 (« 5 ÷ 7/1 ») ;
+02 c1 v1 toujours « négatif ».
+
+### Passe 2 : forme (2026-11-22, en cours)
+
+Trois agents en lecture seule (a + publiés, b, c1 + c2) : idée de chaque modèle, meilleure forme,
+outil existant ou à créer, voie (variation ajoutée, modifiée, nouveau modèle). → page à cocher pour
+David (phase 0), rien n'est réécrit avant.
