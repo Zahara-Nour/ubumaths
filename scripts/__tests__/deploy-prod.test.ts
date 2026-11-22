@@ -14,7 +14,12 @@
  * - rien de nouveau → ni version, ni prod ; jamais de force-push ;
  * - `--essai` ne crée rien ;
  * - un second deploy:prod pendant le premier (verrou « deploy ») sort en exit 2
- *   sans rien créer ; l'essai, lui, n'est pas bloqué.
+ *   sans rien créer ; l'essai, lui, n'est pas bloqué ;
+ * - avant toute création : une migration du commit à livrer pas encore jouée en
+ *   prod arrête tout, sauf nommée par `--migration-apres` ; prod illisible → arrêt ;
+ * - après la mise en prod : construction de Vercel attendue, puis le site doit
+ *   servir la nouvelle construction et ses pages publiques répondre ; un échec
+ *   sort en erreur sans rien défaire ; `--verifier` rejoue ce contrôle seul.
  *
  * Dépôts jetables (un dépôt nu tient lieu de GitHub) et `gh` remplacé par un
  * bouchon qui lit l'état de la CI de chaque commit dans un fichier ; `pnpm
@@ -48,6 +53,8 @@ let local: string;
 let etats: string;
 let numero = 0;
 let ciVersion = 'success';
+/** Variables d'un test : état de Vercel, du site, des pages (cf. les bouchons). */
+let decor: Record<string, string> = {};
 
 function env(): NodeJS.ProcessEnv {
 	return {
@@ -66,7 +73,14 @@ function env(): NodeJS.ProcessEnv {
 		DEPLOY_PROD_RELEASE: `bash ${join(racine, 'bin/release')}`,
 		DEPLOY_PROD_PAUSE: '0',
 		DEPLOY_PROD_ATTENTE_MAX: '0',
-		CI_VERSION: ciVersion
+		DEPLOY_PROD_ATTENTE_SITE_MAX: '0',
+		DEPLOY_PROD_MIGRATIONS_PROD: `bash ${join(racine, 'bin/migrations-prod')}`,
+		DEPLOY_PROD_SANTE: `bash ${join(racine, 'bin/sante')}`,
+		DEPLOY_PROD_SITE: 'https://site.test',
+		MIGRATIONS_JOUEES: join(racine, 'migrations-prod'),
+		GITHUB_NU: github,
+		CI_VERSION: ciVersion,
+		...decor
 	};
 }
 
@@ -120,6 +134,7 @@ beforeEach(() => {
 	local = join(racine, 'local');
 	etats = join(racine, 'etats-ci');
 	writeFileSync(etats, '');
+	decor = {};
 	mkdirSync(github);
 	mkdirSync(local);
 	mkdirSync(join(racine, 'bin'));
@@ -147,6 +162,11 @@ case "$1 $2" in
 	exit 0 ;;
 "run view") sha="$3" ;;
 "run list") sha=$(printf '%s\\n' "$@" | grep -A1 -x -- '--commit' | tail -1) ;;
+"api "*/status)
+	# Statut « Vercel » du commit : $VERCEL (vert par défaut) ; « absent » = rien de posé.
+	echo "$2" >> "$ETATS_CI.vercel"
+	case "\${VERCEL:-success}" in absent) echo absent ;; *) echo "\${VERCEL:-success} https://vercel.test/construction" ;; esac
+	exit 0 ;;
 *) sha=$(printf '%s\\n' "$@" | grep -oE 'commits/[0-9a-f]+' | head -1 | cut -d/ -f2) ;;
 esac
 etat=$(grep "^$sha " "$ETATS_CI" | tail -1 | cut -d' ' -f2)
@@ -205,6 +225,49 @@ esac
 `
 	);
 	chmodSync(join(racine, 'bin/gh'), 0o755);
+	// Bouchon de la lecture des migrations de la prod : les horodatages de
+	// $MIGRATIONS_JOUEES (un par ligne), au format JSON de la CLI ; « panne » = prod illisible.
+	writeFileSync(
+		join(racine, 'bin/migrations-prod'),
+		`#!/bin/bash
+echo "Connecting to remote database..." >&2
+if grep -qx panne "$MIGRATIONS_JOUEES" 2>/dev/null; then echo "failed to connect to postgres" >&2; exit 1; fi
+printf '{"migrations":['
+while read -r m; do [ -n "$m" ] && printf '{"local":"%s","remote":"%s","time":"x"},' "$m" "$m"; done < <(cat "$MIGRATIONS_JOUEES" 2>/dev/null)
+printf '{"local":"20990101000000","remote":"","time":"x"}]}\n'
+`
+	);
+	// Bouchon de curl, pour le site : la construction en ligne suit la branche
+	// production du faux GitHub (elle change quand production avance), sauf
+	// $BUILD_FIGE (le domaine n'a pas basculé) ; la page d'accueil répond $ACCUEIL.
+	writeFileSync(
+		join(racine, 'bin/curl'),
+		`#!/bin/bash
+case "$*" in
+*version.json*)
+	[ -n "\${BUILD_FIGE:-}" ] && { echo '{"version":"111"}'; exit 0; }
+	p=$(git --git-dir "$GITHUB_NU" rev-parse -q --verify refs/heads/production | tr -dc 0-9 | cut -c1-9)
+	echo "{\\"version\\":\\"1\${p:-0}\\"}" ;;
+*) printf '%s' "\${ACCUEIL:-200}" ;;
+esac
+`
+	);
+	chmodSync(join(racine, 'bin/curl'), 0o755);
+	// Bouchon du contrôle des pages publiques : $PAGES_ROUGES le fait échouer.
+	writeFileSync(
+		join(racine, 'bin/sante'),
+		`#!/bin/bash
+echo "Contrôle de 3 chemins publics sur $1"
+echo "  OK    /                            200"
+if [ -n "\${PAGES_ROUGES:-}" ]; then
+	echo "  ÉCHEC /automaths                   500"
+	echo "1 chemin(s) en échec :"
+	echo "  /automaths → 500"
+	exit 1
+fi
+echo "Tout répond (3 chemins)."
+`
+	);
 	// Bouchon de `pnpm release` : un commit de version tagué, et l'état de sa CI.
 	writeFileSync(
 		join(racine, 'bin/release'),
@@ -628,5 +691,179 @@ describe('deploy-prod.sh — un seul déploiement à la fois (verrou « deploy �
 		} finally {
 			premier.kill('SIGKILL');
 		}
+	});
+});
+
+/** Un commit vert qui apporte ces migrations ; `jouees` = celles déjà en prod. */
+function pousserMigrations(migrations: string[], jouees: string[]): string {
+	writeFileSync(join(racine, 'migrations-prod'), jouees.map((m) => `${m}\n`).join(''));
+	return pousser('success', ...migrations.map((m) => `supabase/migrations/${m}_exemple.sql`));
+}
+
+describe('deploy-prod.sh — avant : les migrations jouées en prod', () => {
+	it('toutes jouées : une ligne le dit, la livraison se fait', () => {
+		pousserMigrations(['20260101000000', '20260102000000'], ['20260101000000', '20260102000000']);
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('✅ migrations : les 2 du commit à livrer sont jouées en prod');
+		expect(production()).toBe(version().sha);
+	});
+
+	it('une migration pas jouée : arrêt avant la version, en nommant le fichier', () => {
+		pousserMigrations(['20260101000000', '20260102000000'], ['20260101000000']);
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('1 migration(s) du commit à livrer ne sont pas jouées en prod');
+		expect(r.sortie).toContain('   supabase/migrations/20260102000000_exemple.sql');
+		expect(r.sortie).not.toContain('   supabase/migrations/20260101000000_exemple.sql');
+		expect(git(local, 'tag')).toBe('');
+		expect(production()).toBeNull();
+	});
+
+	it('--essai fait le même contrôle', () => {
+		pousserMigrations(['20260102000000'], []);
+		const r = deployer('--essai');
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('   supabase/migrations/20260102000000_exemple.sql');
+	});
+
+	it('--migration-apres laisse passer celle qu’il nomme, et rappelle de la jouer à la fin', () => {
+		pousserMigrations(['20260101000000', '20260102000000'], ['20260101000000']);
+		const r = deployer('--migration-apres', '20260102000000');
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('sauf 20260102000000');
+		expect(production()).toBe(version().sha);
+		expect(r.sortie.indexOf('Reste à jouer en prod')).toBeGreaterThan(r.sortie.indexOf('en ligne'));
+		expect(r.sortie).toContain('20260102000000 (pnpm db:migrate)');
+	});
+
+	it('--migration-apres ne couvre que celle qu’il nomme', () => {
+		pousserMigrations(['20260102000000', '20260103000000'], []);
+		const r = deployer('--migration-apres', '20260102000000');
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('   supabase/migrations/20260103000000_exemple.sql');
+		expect(r.sortie).not.toContain('   supabase/migrations/20260102000000_exemple.sql');
+		expect(production()).toBeNull();
+	});
+
+	it('--migration-apres sur une migration déjà jouée (faute de frappe) : arrêt', () => {
+		pousserMigrations(['20260101000000'], ['20260101000000']);
+		const r = deployer('--migration-apres', '20260101000000');
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain("n'est pas en attente");
+		expect(git(local, 'tag')).toBe('');
+	});
+
+	it('--migration-apres sans horodatage, ou avec autre chose : refusé', () => {
+		pousser('success', 'src/a.ts');
+		for (const args of [['--migration-apres'], ['--migration-apres', '--essai']]) {
+			const r = deployer(...args);
+			expect(r.status, r.sortie).toBe(1);
+			expect(r.sortie).toContain('14 chiffres');
+		}
+		expect(git(local, 'tag')).toBe('');
+	});
+
+	it('prod en avance sur le commit : signalé, la livraison se fait', () => {
+		pousserMigrations(['20260101000000'], ['20260101000000', '20260105000000']);
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toMatch(/absente\(s\) du commit à livrer.*20260105000000/);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('prod illisible : contrôle non fait, donc rien n’est créé', () => {
+		pousserMigrations(['20260101000000'], ['panne']);
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('Impossible de lire les migrations jouées en prod');
+		expect(r.sortie).toContain('failed to connect');
+		expect(git(local, 'tag')).toBe('');
+		expect(production()).toBeNull();
+	});
+});
+
+describe('deploy-prod.sh — après : la construction de Vercel et le site', () => {
+	it('construction réussie, nouvelle construction servie, pages vertes', () => {
+		pousser('success', 'src/a.ts');
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toMatch(/✅ v0\.\d+\.0 en ligne\. Tout répond \(3 chemins\)\./);
+		// Vercel est interrogé sur le commit de version, pas sur son parent
+		expect(readFileSync(`${etats}.vercel`, 'utf8')).toContain(`commits/${version().sha}/status`);
+	});
+
+	it('construction en échec : erreur, lien donné, production reste avancée', () => {
+		pousser('success', 'src/a.ts');
+		decor = { VERCEL: 'failure' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain("a échoué : l'ancienne version reste en ligne");
+		expect(r.sortie).toContain('https://vercel.test/construction');
+		expect(r.sortie).not.toContain('Tout répond');
+		expect(production()).toBe(version().sha); // rien n'est défait
+	});
+
+	it.each(['pending', 'absent'])('construction pas finie (%s) à la fin de l’attente', (etat) => {
+		pousser('success', 'src/a.ts');
+		decor = { VERCEL: etat };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain("n'a pas fini de construire");
+		expect(r.sortie).toContain('pnpm deploy:prod --verifier');
+	});
+
+	it('construit, mais le domaine sert encore l’ancienne construction', () => {
+		pousser('success', 'src/a.ts');
+		decor = { BUILD_FIGE: '1' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain("sert encore l'ancienne construction");
+		expect(r.sortie).not.toContain('Tout répond');
+	});
+
+	it('une page publique ne répond pas : erreur, la page est nommée, rien n’est défait', () => {
+		pousser('success', 'src/a.ts');
+		decor = { PAGES_ROUGES: '1' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('/automaths → 500');
+		expect(r.sortie).toContain('Aucun retour arrière automatique');
+		expect(r.sortie).not.toContain('  OK ');
+		expect(production()).toBe(version().sha);
+	});
+
+	it('mode maintenance : dit, pages non vérifiées, pas une panne', () => {
+		pousser('success', 'src/a.ts');
+		decor = { ACCUEIL: '503', PAGES_ROUGES: '1' };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('mode maintenance est actif');
+		expect(r.sortie).not.toContain('/automaths');
+	});
+
+	it('rien à livrer, ou --essai : aucune vérification du site', () => {
+		pousser('success', 'src/a.ts');
+		expect(deployer('--essai').sortie).not.toContain('Vérification des pages');
+		deployer();
+		rmSync(`${etats}.vercel`);
+		const r = deployer();
+		expect(r.sortie).toContain('rien à livrer');
+		expect(existsSync(`${etats}.vercel`)).toBe(false);
+	});
+
+	it('--verifier : rejoue le contrôle sur production, sans rien créer', () => {
+		pousser('success', 'src/a.ts');
+		decor = { PAGES_ROUGES: '1' };
+		expect(deployer().status).toBe(1);
+		const v = version();
+		const tags = git(local, 'tag');
+		decor = {};
+		pousser('success', 'src/b.ts'); // main a avancé : --verifier ne livre pas pour autant
+		const r = deployer('--verifier');
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toMatch(/✅ v0\.\d+\.0 en ligne/);
+		expect(production()).toBe(v.sha);
+		expect(git(local, 'tag')).toBe(tags);
 	});
 });
