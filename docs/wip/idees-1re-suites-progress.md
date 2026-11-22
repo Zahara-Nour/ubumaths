@@ -5,13 +5,18 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Première spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, rubrique prise._
+_Mis à jour le 2026-11-22, lot écrit (pas encore de PR)._
 
-- **État** : relevé fait, phase 0 publiée (page à cocher
-  https://claude.ai/artifact/6ijd2FYjXxh9xx6dszdKnx, Q1-Q3 et fiches 1-16) · **Prochaine action** :
-  lire les verdicts (`ArtifactData list verdicts`), puis écrire le lot · **En attente de David** :
-  verdicts de la phase 0 · **Pièges en cours** : aucun sur `hint` / `expectedErrors` : #2962 et #2991 sont en prod (0.101.0, déployée le 2026-11-22, vérifié) · **Worktree / branche** : `ubumaths-wt-idees-1re-suites`,
-  `feat/idees-1re-suites`.
+- **État** : lot écrit et poussé sur `feat/idees-1re-suites` : 4 nouveaux modèles
+  (`scripts/questions/1re-suites-a/`, `create-questions` simulation 4 ✓, 88 specs) et 26
+  variations ajoutées à 14 modèles publiés (`scripts/questions/1re-suites-publies/`, 303 specs
+  vertes, `migration-contenu` 14/14 acceptés, migration non gardée). · **Prochaine action** :
+  essai en base locale (`.env.local`, `create-questions --publier` en local, puis `git restore`
+  des ids) et modèles joués dans l'aperçu admin ; puis PR des fichiers (revue : aucune, contenu).
+  · **En attente de David** : rien. · **Pièges en cours** : `lot-1re-suites-publies.py` repart de
+  l'export 2a85b7b809 (le relancer réécrit les ajouts, ne les double pas) ; la migration de contenu
+  se régénère juste avant sa PR (prod relue à ce moment). · **Worktree / branche** :
+  `ubumaths-wt-idees-1re-suites`, `feat/idees-1re-suites`.
 
 ## Historique
 
@@ -47,3 +52,17 @@ _Mis à jour le 2026-11-22, rubrique prise._
 - Lot : `scripts/questions/1re-suites-a/` (4 nouveaux modèles : fiches 3, 11, 12, 13, script
   `docs/wip/questions/lot-1re-suites-a.py`) et variations ajoutées à la fin des 14 fichiers publiés
   (fiches 1, 2, 4 à 10, 14).
+
+### 2026-11-22 — lot écrit
+
+- Deux agents (pedagogy-expert) ; fichiers relus : anciennes variations des 14 publiés identiques,
+  seuls variations, specs et description changent ; chaque nouvelle variation a son `hint`.
+- Modèle 02 : la fiche 11 (« raison négative ») donnait toujours la même réponse. David, le
+  2026-11-22 : mêler les raisons. Devenu « Sens de variation d'une suite géométrique, quelle que
+  soit sa raison » (8 variations : 3 négatives, 4 positives selon q et u₀, q = 1).
+- Signalé par l'agent, **non vérifié** : le juge refuse `\frac{(n+2)4^n}{4^{n+1}(n+1)}` (produit
+  collé derrière une puissance) alors que la valeur est juste ; les specs « non simplifié » de 03
+  sont écrites avec ×. À vérifier dans l'Atelier avant de le classer comme bogue de mathAST.
+- Limites assumées : deux erreurs prévues (pas trois) sur la 2e case des variations à deux cases
+  de 45da9678 ; dans 7703e625, `14/12` reste « forme non optimale » (réglage du modèle, que
+  `migration-contenu` ne change pas) ; 01 v3 (u² − c) n'a que 6 tirages différents.
