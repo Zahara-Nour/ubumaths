@@ -34,11 +34,17 @@ import type { EvaluationWithSeries } from '#lib/types/evaluation.ts';
 import type {
 	CorrectedAnswer,
 	CorrectedQuestion,
+	EvaluationOverviewResponse,
 	EvaluationSubmitResponse
 } from '#lib/types/evaluation-attempt.ts';
 import { getAttemptsRemaining } from '#lib/types/evaluation.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
-import { drawSeriesQuestions, MAX_QUESTION_SEED } from '#lib/questions/series-items.ts';
+import {
+	DEFAULT_QUESTION_DELAY_SECONDS,
+	drawSeriesQuestions,
+	MAX_QUESTION_SEED
+} from '#lib/questions/series-items.ts';
+import { isCourseCard } from '#lib/questions/types.ts';
 import {
 	gestureAnswerLeaks,
 	toPublicQuestion,
@@ -115,6 +121,9 @@ export type StartResult =
 			questions: PublicQuestion[];
 	  };
 
+/** Page d'attente d'un contrôle assigné (`readEvaluationOverview`) */
+export type EvaluationOverview = EvaluationOverviewResponse;
+
 export interface SubmitInput {
 	answers: Array<
 		SubmittedAnswer & {
@@ -131,6 +140,9 @@ export type SubmitResult = EvaluationSubmitResponse;
 // Constantes
 /** Tolérance réseau après la fin du chrono d'une Course (Q37) */
 export const COURSE_GRACE_SECONDS = 30;
+
+/** Temps d'une Course sans temps limite enregistré (même repli que la page) */
+const DEFAULT_COURSE_TIME_LIMIT = 300;
 
 const VALIDATION_STATUSES: readonly ValidationStatus[] = [
 	'correct',
@@ -333,8 +345,20 @@ function toPublicQuestions(
 	);
 }
 
+/** Tentative en cours : de quoi la reprendre et calculer son temps restant */
+interface OpenAttempt {
+	id: string;
+	mode: string;
+	time_limit: number | null;
+	created_at: string | null;
+}
+
 /** Tentative en cours de l'élève (la plus ANCIENNE s'il y en a plusieurs) */
-async function findOpenAttempt(userClient: Db, evaluationId: string, userId: string) {
+async function findOpenAttempt(
+	userClient: Db,
+	evaluationId: string,
+	userId: string
+): Promise<OpenAttempt | null> {
 	const { data, error } = await userClient
 		.from('test_sessions')
 		.select('id, mode, time_limit, created_at')
@@ -354,6 +378,133 @@ async function findOpenAttempt(userClient: Db, evaluationId: string, userId: str
 }
 
 /**
+ * Droits sur une assignation, communs au démarrage et à la page d'attente.
+ * Lectures sous RLS seulement (client de l'utilisateur), aucune écriture.
+ *
+ * - propriétaire ou admin non destinataire → aperçu ;
+ * - destinataire, évaluation publiée → sa tentative en cours (Q34 : elle se
+ *   reprend, même après la date limite, Q37) ou, sans elle, le droit d'en
+ *   commencer une (date limite, tentatives restantes, Q33).
+ *
+ * @throws EvaluationError 404 (introuvable, non destinataire, brouillon,
+ *   membre archivé), 403 (date limite passée, tentatives épuisées), 500
+ */
+async function resolveAssignmentAccess(
+	actors: AttemptActors,
+	assignmentId: string
+): Promise<
+	| { kind: 'preview'; evaluation: EvaluationWithSeries }
+	| {
+			kind: 'recipient';
+			evaluation: EvaluationWithSeries;
+			open: OpenAttempt | null;
+	  }
+> {
+	const { userClient, userId } = actors;
+
+	const found = await getAssignmentWithEvaluation(userClient, assignmentId);
+	if (!found) throw new EvaluationError(404, 'Contrôle introuvable');
+	const { assignment, evaluation } = found;
+
+	const recipient = await isAssignmentRecipient(userClient, assignment, userId);
+	if (!recipient) {
+		// Aperçu : propriétaire ou admin, questions générées par le navigateur,
+		// rien n'est rattaché à l'évaluation (une séance rattachée verrouille la série)
+		if (
+			actors.role === 'admin' ||
+			(actors.role === 'teacher' && evaluation.created_by === userId)
+		) {
+			return { kind: 'preview', evaluation };
+		}
+		throw new EvaluationError(404, 'Contrôle introuvable');
+	}
+	if (evaluation.status !== 'published') throw new EvaluationError(404, 'Contrôle introuvable');
+
+	const open = await findOpenAttempt(userClient, evaluation.id, userId);
+	if (open) return { kind: 'recipient', evaluation, open };
+
+	if (isDeadlinePassed(evaluation.deadline)) {
+		throw new EvaluationError(403, 'La date limite est dépassée');
+	}
+	// Q33 : toute séance compte, abandonnée comprise
+	const attempts = await countAttempts(userClient, evaluation.id, userId);
+	const remaining = getAttemptsRemaining(attempts, evaluation.max_attempts);
+	if (remaining !== null && remaining <= 0) {
+		throw new EvaluationError(403, 'Nombre maximal de tentatives atteint');
+	}
+	return { kind: 'recipient', evaluation, open: null };
+}
+
+/**
+ * Page d'attente d'un contrôle assigné (chantier `diaporama-reglages`, PR 2b) :
+ * ce que l'élève voit AVANT de démarrer. Lecture SEULE : mêmes droits et mêmes
+ * refus que `startEvaluationAttempt`, aucune séance créée, rien d'écrit.
+ *
+ * - tentative en cours : ses questions (comptées en service_role, la table est
+ *   fermée aux élèves ; seules les durées sont lues) et son temps RESTANT ;
+ * - sinon (aperçu compris) : les lignes de la série dont le modèle est publié et
+ *   n'est pas une carte de cours, comme au tirage. Une génération impossible au
+ *   démarrage peut en retirer une : le nombre est celui que le tirage vise.
+ *
+ * @throws EvaluationError comme `startEvaluationAttempt` (404, 403, 500)
+ */
+export async function readEvaluationOverview(
+	actors: AttemptActors,
+	assignmentId: string
+): Promise<EvaluationOverview> {
+	const now = actors.now ?? (() => new Date());
+	const access = await resolveAssignmentAccess(actors, assignmentId);
+	const { evaluation } = access;
+	const isCourse = evaluation.form === 'course';
+
+	if (access.kind === 'recipient' && access.open) {
+		const { open } = access;
+		const { data, error } = await actors.service
+			.from('evaluation_attempt_questions')
+			.select('delay_seconds')
+			.eq('test_session_id', open.id);
+		if (error) {
+			logger.error('[evaluation-attempts] Questions de la tentative illisibles :', error);
+			throw new EvaluationError(
+				500,
+				'Impossible de préparer le contrôle, réessayer dans un instant'
+			);
+		}
+		const delays = (data ?? []).map((row) => row.delay_seconds);
+		return {
+			preview: false,
+			evaluation: summary(evaluation),
+			questionCount: delays.length,
+			durationSeconds: isCourse
+				? (remainingSeconds(open, now()) ?? 0)
+				: delays.reduce((sum, delay) => sum + delay, 0),
+			resumed: true
+		};
+	}
+
+	const items = evaluation.series.items;
+	const templates = await loadSeriesTemplates(actors.userClient, items);
+	const drawable = new Set(
+		templates.filter((template) => !isCourseCard(template)).map((template) => template.id)
+	);
+	const counted = items.filter((item) => drawable.has(item.templateId));
+	const questionCount = counted.reduce((sum, item) => sum + item.quantity, 0);
+	const totalDelay = counted.reduce(
+		(sum, item) =>
+			sum +
+			item.quantity * (item.delay && item.delay > 0 ? item.delay : DEFAULT_QUESTION_DELAY_SECONDS),
+		0
+	);
+	return {
+		preview: access.kind === 'preview',
+		evaluation: summary(evaluation),
+		questionCount,
+		durationSeconds: isCourse ? (evaluation.time_limit ?? DEFAULT_COURSE_TIME_LIMIT) : totalDelay,
+		resumed: false
+	};
+}
+
+/**
  * Démarrer (ou reprendre) une tentative. `assignmentId` : identifiant de
  * l'ASSIGNATION (liens `/automaths/test?assignment=<id>`).
  *
@@ -369,30 +520,16 @@ export async function startEvaluationAttempt(
 	const now = actors.now ?? (() => new Date());
 	const randomInt = actors.randomInt ?? cryptoRandomInt;
 
-	const found = await getAssignmentWithEvaluation(userClient, assignmentId);
-	if (!found) throw new EvaluationError(404, 'Contrôle introuvable');
-	const { assignment, evaluation } = found;
-
-	const recipient = await isAssignmentRecipient(userClient, assignment, userId);
-	if (!recipient) {
-		// Aperçu : propriétaire ou admin, questions générées par le navigateur,
-		// rien n'est rattaché à l'évaluation (une séance rattachée verrouille la série)
-		if (
-			actors.role === 'admin' ||
-			(actors.role === 'teacher' && evaluation.created_by === userId)
-		) {
-			return {
-				kind: 'preview',
-				evaluation: { ...summary(evaluation), items: evaluation.series.items }
-			};
-		}
-		throw new EvaluationError(404, 'Contrôle introuvable');
+	const access = await resolveAssignmentAccess(actors, assignmentId);
+	if (access.kind === 'preview') {
+		const { evaluation } = access;
+		return {
+			kind: 'preview',
+			evaluation: { ...summary(evaluation), items: evaluation.series.items }
+		};
 	}
-	if (evaluation.status !== 'published') throw new EvaluationError(404, 'Contrôle introuvable');
+	const { evaluation, open } = access;
 
-	// Q34 : une tentative en cours se reprend, sans en compter une nouvelle (même
-	// après la date limite : commencée avant, elle peut finir après, Q37)
-	const open = await findOpenAttempt(userClient, evaluation.id, userId);
 	if (open) {
 		const questions = await regenerateAttempt(service, open.id);
 		return {
@@ -403,16 +540,6 @@ export async function startEvaluationAttempt(
 			remainingSeconds: remainingSeconds(open, now()),
 			questions: toPublicQuestions(questions)
 		};
-	}
-
-	if (isDeadlinePassed(evaluation.deadline)) {
-		throw new EvaluationError(403, 'La date limite est dépassée');
-	}
-	// Q33 : toute séance compte, abandonnée comprise
-	const attempts = await countAttempts(userClient, evaluation.id, userId);
-	const remaining = getAttemptsRemaining(attempts, evaluation.max_attempts);
-	if (remaining !== null && remaining <= 0) {
-		throw new EvaluationError(403, 'Nombre maximal de tentatives atteint');
 	}
 
 	// Tirage : même règle que `buildSeriesItems` (cartes de cours exclues)

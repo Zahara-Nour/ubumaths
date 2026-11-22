@@ -28,3 +28,39 @@ export function seriesSummary(
 	const duration = formatDuration(seconds, approximate);
 	return `${questions} · ${approximate ? 'environ ' : ''}${duration}`;
 }
+
+/** Nom de la forme d'un contrôle assigné, tel que l'élève le lit */
+const EVALUATION_FORM_LABELS = {
+	interactive: 'Contrôle blanc',
+	course: 'Course aux nombres'
+} as const;
+
+/**
+ * Résumé de la page d'attente d'un contrôle assigné (PR 2b) :
+ * « Course aux nombres · 15 questions · 10 min », « Contrôle blanc · 10
+ * questions · environ 4 min » ; tentative commencée : « Tu reprends ton
+ * contrôle : il te reste 6 min » (Course) ou « … : 10 questions, réponses à
+ * retaper » (Contrôle blanc, chaque question a son propre chrono).
+ */
+export function evaluationSummary(overview: {
+	evaluation: { form: keyof typeof EVALUATION_FORM_LABELS };
+	questionCount: number;
+	durationSeconds: number;
+	resumed: boolean;
+}): string {
+	const { form } = overview.evaluation;
+	const isCourse = form === 'course';
+	if (overview.resumed) {
+		if (!isCourse) {
+			const questions = `${overview.questionCount} ${overview.questionCount > 1 ? 'questions' : 'question'}`;
+			return `Tu reprends ton contrôle : ${questions}, réponses à retaper`;
+		}
+		return overview.durationSeconds > 0
+			? `Tu reprends ton contrôle : il te reste ${formatDuration(overview.durationSeconds, false)}`
+			: 'Tu reprends ton contrôle : le temps est écoulé, ta copie va partir';
+	}
+	const series = seriesSummary(overview.questionCount, overview.durationSeconds, {
+		approximate: !isCourse
+	});
+	return `${EVALUATION_FORM_LABELS[form]} · ${series}`;
+}

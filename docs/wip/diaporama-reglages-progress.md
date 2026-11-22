@@ -4,13 +4,13 @@ Proposition 3 du chantier `inspiration` (cf. `docs/wip/inspiration-progress.md`)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2984._
+_Mis à jour le 2026-11-22 : PR 2b écrite, en revue._
 
-- **État** : PR 1 (En classe, #2936) et PR 2a (page d'attente du Contrôle blanc et de la Course aux nombres en entraînement libre, #2984) **mergées**, pas encore en prod.
-- **Prochaine action** : PR 2b — page d'attente des contrôles assignés, AVANT que le serveur démarre la tentative (appel serveur en lecture seule : titre, forme, nombre de questions, temps ; reprise → « il te reste 6 min ») ; revue de sécurité (cf. § Phase 0 de la PR 2). Nouvelle branche depuis `origin/main`.
-- **En attente de David** : ses essais de #2936 et #2984 (serveur 5177 du worktree, cf. `verifications-manuelles.md`).
-- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : changer la liste des diapositives = remonter le `Deck`. `TestInteractive` / `TestCourse` sont montés aussi par `/demo/questions`, `memes-nombres` et `QuestionPreviewTabs-units` (tests) : tout changement de démarrage s'y voit. Branches `feat/diaporama-reglages` et `feat/diaporama-attente-libres` mergées, encore locales (suppression = liste `ask`).
-- **Worktree / branche** : `../ubumaths-wt-diaporama-reglages` (sur `feat/diaporama-attente-libres` mergée, gardé pour le serveur de test 5177).
+- **État** : PR 1 (#2936) et PR 2a (#2984) mergées, pas encore en prod. PR 2b (page d'attente des contrôles assignés) écrite sur `feat/diaporama-attente-controles` : tests verts (route, intégration, page).
+- **Prochaine action** : revues `code-reviewer` + `security-auditor` (API, données d'élèves), corrections, CI verte, merge. Ensuite : chantier fini côté découpage (PR 1, 2a, 2b) → versement et archivage du journal.
+- **En attente de David** : ses essais de #2936 et #2984 (serveur 5177 du worktree `diaporama-reglages`, cf. `verifications-manuelles.md`).
+- **Pièges en cours** : un `onkeydown` Svelte est délégué à la racine : pour arrêter une touche avant le `Deck`, écouteur natif (action `settingsPanel`). `Slide` prend son index par ordre de montage (`claimNextH`) : changer la liste des diapositives = remonter le `Deck`. `TestInteractive` / `TestCourse` sont montés aussi par `/demo/questions`, `memes-nombres` et `QuestionPreviewTabs-units` (tests). Branches `feat/diaporama-reglages` et `feat/diaporama-attente-libres` mergées, encore locales (suppression = liste `ask`).
+- **Worktree / branche** : `../ubumaths-wt-diaporama-controles` · `feat/diaporama-attente-controles` (le worktree `../ubumaths-wt-diaporama-reglages` reste pour le serveur de test 5177).
 
 ## Phase 0 (validée par David le 2026-11-20)
 
@@ -93,3 +93,10 @@ Phase 0 discutée et validée avec David (réglages avant ET pendant, page d'att
 - Tests : 8 nouveaux (page d'attente, durée tracée depuis le clic — vérifiés rouges sans la remise à zéro —, contrôle sans page d'attente) ; les tests existants passent la page d'attente (`startSeries`, `renderCourse`).
 - Relecture (`code-reviewer`, Sonnet) : pas de bloquant. Corrigés : la durée de série envoyée à `/api/tests/save` partait de l'ouverture (`onStart` → la page remet `testSession.startTime`) ; test ajouté pour « Recommencer » sur place d'une course sans `onRestart` (vérifié rouge).
 - Mergée (#2984) après un premier rouge de CI : trois fichiers de test montaient ces formes sans passer la page d'attente (`memes-nombres`, `page-demo-questions`, `QuestionPreviewTabs-units`) ; `Doc-inchangée:` pour `questions.md` (couvre la page `automaths/test` sans décrire le lancement des formes).
+
+### 2026-11-22 — PR 2b écrite
+
+- Worktree à part (`ubumaths-wt-diaporama-controles`) : celui du chantier garde le serveur de test 5177 de David.
+- Serveur : `GET /api/evaluations/assignments/[id]` → `readEvaluationOverview` (lecture seule). Les droits de `startEvaluationAttempt` (destinataire, publiée, tentative ouverte, date limite, tentatives) sont sortis dans `resolveAssignmentAccess`, partagé : mêmes refus, aucune écriture. Questions comptées : tentative ouverte → ses lignes (service_role, durées seules) ; sinon lignes dont le modèle est publié et n'est pas une carte de cours (nombre visé par le tirage, une génération impossible peut en retirer une).
+- Page : `SeriesStartScreen` avant `start` ; « Reprendre » si tentative commencée ; refus affiché dès la page d'attente ; bouton désactivé pendant le démarrage.
+- Tests : route (8, rouges sans le module), intégration (7 : aucune séance créée, reprise et temps restant, archivé/brouillon → 404, date limite → 403, aperçu du prof), page (6 nouveaux, rouges sans le code ; les 8 existants passent la page d'attente).

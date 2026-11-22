@@ -34,12 +34,25 @@
 		/** Page à laquelle « Quitter » ramène */
 		quitHref: string;
 		onstart: () => void;
+		/** Texte du bouton (« Reprendre » pour une tentative commencée) */
+		startLabel?: string;
+		/** Démarrage en cours : bouton inactif (pas de double démarrage) */
+		starting?: boolean;
 		/** Réglages de la forme */
 		settings?: Snippet;
 	}
 
 	// Props
-	let { title, summary, hints, quitHref, onstart, settings }: Props = $props();
+	let {
+		title,
+		summary,
+		hints,
+		quitHref,
+		onstart,
+		startLabel = "C'est parti !",
+		starting = false,
+		settings
+	}: Props = $props();
 </script>
 
 <div class="mx-auto flex max-w-2xl flex-col gap-6 py-6">
@@ -74,9 +87,9 @@
 	{/if}
 
 	<div class="flex justify-center">
-		<Button size="lg" class="h-14 px-10 text-xl" onclick={onstart}>
+		<Button size="lg" class="h-14 px-10 text-xl" onclick={onstart} disabled={starting}>
 			<Play class="mr-2 h-6 w-6" />
-			C'est parti !
+			{startLabel}
 		</Button>
 	</div>
 </div>

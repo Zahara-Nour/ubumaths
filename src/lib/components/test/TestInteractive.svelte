@@ -15,8 +15,9 @@
 
 	Entraînement libre : page d'attente d'abord (`SeriesStartScreen`, « 10
 	questions · environ 4 min ») ; le chrono de la question 1 part au clic sur
-	« C'est parti ! ». Contrôle assigné : pas de page d'attente ici (le serveur a
-	déjà démarré la tentative ; chantier `diaporama-reglages`, PR 2b).
+	« C'est parti ! ». Contrôle assigné : pas de page d'attente ici (la page
+	`automaths/test` affiche la sienne AVANT que le serveur démarre la tentative ;
+	chantier `diaporama-reglages`, PR 2b).
 
 	Props:
 	- items: ClassroomItem[] - Questions de la série, chacune avec sa durée

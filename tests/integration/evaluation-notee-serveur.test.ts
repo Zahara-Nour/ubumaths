@@ -29,6 +29,7 @@ import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import {
 	AttemptAlreadySubmittedError,
+	readEvaluationOverview,
 	readSubmittedCopy,
 	startEvaluationAttempt,
 	submitEvaluationAttempt,
@@ -1294,6 +1295,88 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			});
 			const result = await submitEvaluationAttempt(actors(cubesStudent), attempt.attemptId, body);
 			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+		});
+	});
+	describe('Page d’attente : lecture seule, avant le démarrage (diaporama-reglages, PR 2b)', () => {
+		let reader: Person;
+		let assignmentId: string;
+		let evaluationId: string;
+
+		beforeAll(async () => {
+			reader = await person('student');
+			const { error } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: reader.id, status: 'active' });
+			expect(error, 'décor : inscription').toBeNull();
+			({ assignmentId, evaluationId } = await createEvaluation({
+				form: 'course',
+				time_limit: 600
+			}));
+		});
+
+		async function sessionsOf(who: Person): Promise<number> {
+			const { count } = await service
+				.from('test_sessions')
+				.select('id', { count: 'exact', head: true })
+				.eq('evaluation_id', evaluationId)
+				.eq('user_id', who.id);
+			return count ?? -1;
+		}
+
+		it('avant le démarrage : titre, forme, 3 questions, 10 min ; AUCUNE séance créée', async () => {
+			const overview = await readEvaluationOverview(actors(reader), assignmentId);
+			expect(overview).toEqual({
+				preview: false,
+				evaluation: {
+					id: evaluationId,
+					form: 'course',
+					time_limit: 600,
+					title: 'Éval serveur ZZ'
+				},
+				questionCount: 3,
+				durationSeconds: 600,
+				resumed: false
+			});
+			expect(await sessionsOf(reader)).toBe(0);
+		});
+
+		it('tentative commencée : reprise, questions de la tentative, temps RESTANT ; rien de plus', async () => {
+			const attempt = await start(reader, assignmentId);
+			const later = () => new Date(Date.now() + 240_000);
+			const overview = await readEvaluationOverview(actors(reader, { now: later }), assignmentId);
+			expect(overview.resumed).toBe(true);
+			expect(overview.questionCount).toBe(attempt.questions.length);
+			expect(overview.durationSeconds).toBeGreaterThanOrEqual(358);
+			expect(overview.durationSeconds).toBeLessThanOrEqual(360);
+			expect(await sessionsOf(reader)).toBe(1);
+		});
+
+		it('Contrôle blanc : durée = somme des chronos (20 + 20 + 15 s)', async () => {
+			const { assignmentId: blank } = await createEvaluation({ form: 'interactive' });
+			const overview = await readEvaluationOverview(actors(reader), blank);
+			expect(overview).toMatchObject({ questionCount: 3, durationSeconds: 55, resumed: false });
+		});
+
+		it('membre archivé de la classe → 404', async () => {
+			expect(await statusOf(readEvaluationOverview(actors(archived), assignmentId))).toBe(404);
+		});
+
+		it('brouillon → 404 pour l’élève', async () => {
+			const { assignmentId: draft } = await createEvaluation({ status: 'draft' });
+			expect(await statusOf(readEvaluationOverview(actors(reader), draft))).toBe(404);
+		});
+
+		it('date limite passée, aucune tentative en cours → 403', async () => {
+			const { assignmentId: late } = await createEvaluation({
+				deadline: '2020-01-01T00:00:00Z'
+			});
+			expect(await statusOf(readEvaluationOverview(actors(reader), late))).toBe(403);
+		});
+
+		it('prof propriétaire : aperçu, aucune séance', async () => {
+			const overview = await readEvaluationOverview(actors(teacher), assignmentId);
+			expect(overview).toMatchObject({ preview: true, questionCount: 3, durationSeconds: 600 });
+			expect(await sessionsOf(teacher)).toBe(0);
 		});
 	});
 });
