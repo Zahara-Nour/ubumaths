@@ -1,4 +1,5 @@
 {
+	"id": "67954fbb-d89f-4893-a2a0-30d393e979c5",
 	"title": "Par combien multiplier ou diviser pour changer le rang d'un chiffre",
 	"description": "Trouver le nombre (10, 100 ou 1 000) par lequel multiplier ou diviser pour qu'un chiffre passe d'un rang à un autre, en général ou dans un nombre décimal donné (4,567 : le 6 devient le chiffre des unités) (pièges : un rang de trop ou de moins)",
 	"grades": ["6"],

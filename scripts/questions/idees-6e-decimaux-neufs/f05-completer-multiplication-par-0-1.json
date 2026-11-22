@@ -1,4 +1,5 @@
 {
+	"id": "44d352a2-579c-44cc-b804-43bbcec8da4e",
 	"title": "Compléter une multiplication par 0,1, 0,01 ou 0,001",
 	"description": "Égalité à trou : le facteur manquant (… × 0,01 = 0,47) ou le coefficient manquant (36 × … = 0,036) (pièges : multiplier encore au lieu de chercher le facteur, 1 000 au lieu de 0,001, un rang de trop ou de moins)",
 	"grades": ["6"],

@@ -1,4 +1,5 @@
 {
+	"id": "33ff7000-4605-4e22-81db-6e2307cd6291",
 	"title": "Dernier chiffre et décimales d'un produit de décimaux",
 	"description": "Sans calculer le produit de deux décimaux : son dernier chiffre (0,3 × 0,7 → 1) ou son nombre de chiffres après la virgule (pièges : produit des derniers chiffres non réduit, chiffres additionnés, décimales comptées comme pour une addition)",
 	"grades": ["6"],

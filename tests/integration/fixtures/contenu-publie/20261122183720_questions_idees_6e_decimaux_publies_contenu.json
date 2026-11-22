@@ -1,0 +1,5832 @@
+{
+	"migration": "supabase/migrations/20261122183720_questions_idees_6e_decimaux_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "2c5bae8f-03e3-44c6-9dbd-6849c7177ceb",
+			"title": "Liens entre les unités de numération",
+			"fichier": "2c5bae8f.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^p}}"
+							}
+						],
+						"statement": "Complète.\n\n$$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$",
+						"variables": [
+							{
+								"name": "u",
+								"expression": "1..6"
+							},
+							{
+								"name": "w",
+								"expression": "0..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:u-w"
+							}
+						],
+						"conditions": ["p>=1", "p<=4"],
+						"correction": {
+							"steps": [
+								"**Unités de numération.** D'un rang au rang juste à sa droite, on multiplie par $10$ : $1$ millier $= 10$ centaines, $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes…",
+								"Du rang des {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} au rang des {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:k*10^p}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "u",
+								"expression": "1..6"
+							},
+							{
+								"name": "w",
+								"expression": "0..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:u-w"
+							}
+						],
+						"conditions": ["p>=1", "p<=3"],
+						"correction": {
+							"steps": [
+								"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$.",
+								"$${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}} = {{k}} \\times {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{k}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{eval:k*10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = ?~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}}$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "u",
+								"expression": "1..6"
+							},
+							{
+								"name": "w",
+								"expression": "0..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:u-w"
+							}
+						],
+						"conditions": ["p>=1", "p<=3"],
+						"correction": {
+							"steps": [
+								"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$ : on cherche combien de fois ${{eval:10^p}}$ dans ${{eval:k*10^p}}$.",
+								"$${{eval:k*10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^(-m);d}}"
+							}
+						],
+						"statement": "Écris ce nombre sous forme décimale.\n\n$$\\frac{1}{{{eval:10^m}}} = ?$$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "1..3"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\frac{1}{{{eval:10^m}}}$, c'est un {{if:m==1|dixième|{{if:m==2|centième|millième}}}} : le chiffre $1$ se place au rang des {{if:m==1|dixièmes|{{if:m==2|centièmes|millièmes}}}}.",
+								"$$\\frac{1}{{{eval:10^m}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^(b-a)}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\frac{?}{{{eval:10^b}}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..2"
+							},
+							{
+								"name": "b",
+								"expression": "1..3"
+							}
+						],
+						"conditions": ["b>a"],
+						"correction": {
+							"steps": [
+								"{{if:a==0|$1$ unité|$\\frac{1}{{{eval:10^a}}}$}} $= {{eval:10^(b-a)}}$ fois $\\frac{1}{{{eval:10^b}}}$ : chaque rang vers la droite multiplie par $10$.",
+								"$${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{{{eval:10^b}}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1\\,000"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "3",
+							"u": "5",
+							"w": "2"
+						},
+						"description": "1 centaine = 1 000 dixièmes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["100"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "3",
+							"u": "5",
+							"w": "2"
+						},
+						"description": "Erreur : un zéro de moins (100)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,001"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "3",
+							"u": "5",
+							"w": "2"
+						},
+						"description": "Erreur : rapport inversé (0,001)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["400"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"p": "2",
+							"u": "2",
+							"w": "0"
+						},
+						"description": "4 dixièmes = 400 millièmes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"p": "2",
+							"u": "2",
+							"w": "0"
+						},
+						"description": "Erreur : 40",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"p": "2",
+							"u": "3",
+							"w": "1"
+						},
+						"description": "300 centièmes = 3 unités",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["30\\,000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"p": "2",
+							"u": "3",
+							"w": "1"
+						},
+						"description": "Erreur : 30 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0,01"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "2"
+						},
+						"description": "1/100 = 0,01",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0,1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "2"
+						},
+						"description": "Erreur : 0,1",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2"
+						},
+						"description": "1/10 = 10/100",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2"
+						},
+						"description": "Erreur : 1",
+						"variationIndex": 4
+					}
+				],
+				"description": "Relations entre millier, centaine, dizaine, unité, dixième, centième, millième ; 1/10 = 0,1, 1/100 = 0,01, 1/1 000 = 0,001"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^p}}"
+							}
+						],
+						"statement": "Complète.\n\n$$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$",
+						"variables": [
+							{
+								"name": "u",
+								"expression": "1..6"
+							},
+							{
+								"name": "w",
+								"expression": "0..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:u-w"
+							}
+						],
+						"conditions": ["p>=1", "p<=4"],
+						"correction": {
+							"steps": [
+								"**Unités de numération.** D'un rang au rang juste à sa droite, on multiplie par $10$ : $1$ millier $= 10$ centaines, $1$ unité $= 10$ dixièmes, $1$ dixième $= 10$ centièmes…",
+								"Du rang des {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} au rang des {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:k*10^p}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}} = ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "u",
+								"expression": "1..6"
+							},
+							{
+								"name": "w",
+								"expression": "0..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:u-w"
+							}
+						],
+						"conditions": ["p>=1", "p<=3"],
+						"correction": {
+							"steps": [
+								"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$.",
+								"$${{k}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}} = {{k}} \\times {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{k}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{eval:k*10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = ?~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}}$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "u",
+								"expression": "1..6"
+							},
+							{
+								"name": "w",
+								"expression": "0..5"
+							},
+							{
+								"name": "p",
+								"expression": "eval:u-w"
+							}
+						],
+						"conditions": ["p>=1", "p<=3"],
+						"correction": {
+							"steps": [
+								"$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = {{eval:10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}}$ : on cherche combien de fois ${{eval:10^p}}$ dans ${{eval:k*10^p}}$.",
+								"$${{eval:k*10^p}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^(-m);d}}"
+							}
+						],
+						"statement": "Écris ce nombre sous forme décimale.\n\n$$\\frac{1}{{{eval:10^m}}} = ?$$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "1..3"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\frac{1}{{{eval:10^m}}}$, c'est un {{if:m==1|dixième|{{if:m==2|centième|millième}}}} : le chiffre $1$ se place au rang des {{if:m==1|dixièmes|{{if:m==2|centièmes|millièmes}}}}.",
+								"$$\\frac{1}{{{eval:10^m}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^(b-a)}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\frac{?}{{{eval:10^b}}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..2"
+							},
+							{
+								"name": "b",
+								"expression": "1..3"
+							}
+						],
+						"conditions": ["b>a"],
+						"correction": {
+							"steps": [
+								"{{if:a==0|$1$ unité|$\\frac{1}{{{eval:10^a}}}$}} $= {{eval:10^(b-a)}}$ fois $\\frac{1}{{{eval:10^b}}}$ : chaque rang vers la droite multiplie par $10$.",
+								"$${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{{{eval:10^b}}}$$"
+							]
+						}
+					},
+					{
+						"statement": "Complète.\n\n$${{if:s==0|{{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = ? \\times \\frac{1}{{{eval:10^b}}}|\\frac{1}{{{eval:10^b}}} = {{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} \\div ?}}$$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0..1"
+							},
+							{
+								"name": "a",
+								"expression": "0..2"
+							},
+							{
+								"name": "b",
+								"expression": "1..3"
+							}
+						],
+						"conditions": ["b>a"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^(b-a)}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:10^(a-b);d}}",
+										"message": "{{if:s==0|Il faut plusieurs fois $\\frac{1}{{{eval:10^b}}}$ pour faire ${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}}$ : le nombre cherché est plus grand que $1$.|Diviser par un nombre plus petit que $1$ agrandit : ici, on partage ${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}}$ en parts égales.}}",
+										"label": "Rapport lu à l'envers"
+									},
+									{
+										"answer": "{{eval:10^b}}",
+										"message": "Tu as recopié le dénominateur : compte plutôt de combien de rangs on passe de ${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}}$ à $\\frac{1}{{{eval:10^b}}}$.",
+										"label": "Dénominateur recopié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Unités de numération.** D'un rang au rang juste à sa droite, on divise par $10$. Entre ${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}}$ et $\\frac{1}{{{eval:10^b}}}$, il y a ${{eval:b-a}}$ rang{{if:b-a>1|s|}} : ${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = {{eval:10^(b-a)}} \\times \\frac{1}{{{eval:10^b}}}${{if:s==1|, donc partager ${{if:a==0|1|\\frac{1}{{{eval:10^a}}}}}$ en ${{eval:10^(b-a)}}$ parts égales donne $\\frac{1}{{{eval:10^b}}}$|}}.",
+								"$${{if:s==0|{{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times \\frac{1}{{{eval:10^b}}}|\\frac{1}{{{eval:10^b}}} = {{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} \\div \\textcolor{{{color:primary.0}}}{{{solution}}}}}$$"
+							]
+						},
+						"hint": "Compte de combien de rangs on se déplace entre les deux nombres : chaque rang vers la droite, c'est une division par $10$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1\\,000"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "3",
+							"u": "5",
+							"w": "2"
+						},
+						"description": "1 centaine = 1 000 dixièmes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["100"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "3",
+							"u": "5",
+							"w": "2"
+						},
+						"description": "Erreur : un zéro de moins (100)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,001"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "3",
+							"u": "5",
+							"w": "2"
+						},
+						"description": "Erreur : rapport inversé (0,001)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["400"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"p": "2",
+							"u": "2",
+							"w": "0"
+						},
+						"description": "4 dixièmes = 400 millièmes",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"p": "2",
+							"u": "2",
+							"w": "0"
+						},
+						"description": "Erreur : 40",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"p": "2",
+							"u": "3",
+							"w": "1"
+						},
+						"description": "300 centièmes = 3 unités",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["30\\,000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"p": "2",
+							"u": "3",
+							"w": "1"
+						},
+						"description": "Erreur : 30 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0,01"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"m": "2"
+						},
+						"description": "1/100 = 0,01",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["0,1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"m": "2"
+						},
+						"description": "Erreur : 0,1",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2"
+						},
+						"description": "1/10 = 10/100",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "2"
+						},
+						"description": "Erreur : 1",
+						"variationIndex": 4
+					},
+					{
+						"description": "F1 : 1/10 = 10 × 1/100",
+						"variationIndex": 5,
+						"variables": {
+							"s": "0",
+							"a": "1",
+							"b": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["10"]
+					},
+					{
+						"description": "F1 : rapport à l'envers (0,1)",
+						"variationIndex": 5,
+						"variables": {
+							"s": "0",
+							"a": "1",
+							"b": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Il faut plusieurs fois $\\frac{1}{100}$ pour faire $\\frac{1}{10}$ : le nombre cherché est plus grand que $1$."
+						},
+						"answers": ["0{,}1"]
+					},
+					{
+						"description": "F1 : dénominateur recopié (100)",
+						"variationIndex": 5,
+						"variables": {
+							"s": "0",
+							"a": "1",
+							"b": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as recopié le dénominateur : compte plutôt de combien de rangs on passe de $\\frac{1}{10}$ à $\\frac{1}{100}$."
+						},
+						"answers": ["100"]
+					},
+					{
+						"description": "F1 : 1 = 1 000 × 1/1 000",
+						"variationIndex": 5,
+						"variables": {
+							"s": "0",
+							"a": "0",
+							"b": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1\\,000"]
+					},
+					{
+						"description": "F1 : 1000 sans espace",
+						"variationIndex": 5,
+						"variables": {
+							"s": "0",
+							"a": "0",
+							"b": "3"
+						},
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"answers": ["1000"]
+					},
+					{
+						"description": "F1 : 1/1 000 = 1/100 ÷ 10",
+						"variationIndex": 5,
+						"variables": {
+							"s": "1",
+							"a": "2",
+							"b": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["10"]
+					},
+					{
+						"description": "F1 : division, rapport à l'envers (0,1)",
+						"variationIndex": 5,
+						"variables": {
+							"s": "1",
+							"a": "2",
+							"b": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Diviser par un nombre plus petit que $1$ agrandit : ici, on partage $\\frac{1}{100}$ en parts égales."
+						},
+						"answers": ["0{,}1"]
+					}
+				],
+				"description": "Relations entre millier, centaine, dizaine, unité, dixième, centième, millième ; 1/10 = 0,1, 1/100 = 0,01, 1/1 000 = 0,001"
+			},
+			"changements": {
+				"ajoutees": [6],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "32b7a9bc-300c-44a1-af0d-a811ca688eb2",
+			"title": "Problèmes de produits décimaux",
+			"fichier": "32b7a9bc.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(2*j+1)*k/20;d}}"
+							}
+						],
+						"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Léa en achète ${{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "h",
+								"expression": "6..29"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "j",
+								"expression": "0..3"
+							},
+							{
+								"name": "m",
+								"expression": "eval:j+0.5;d"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+								"De tête : {{if:j==0|la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$|${{j}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$, plus la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$}}.",
+								"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}$$",
+								"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}~\\unit{€}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:L*P/100;d}}"
+							}
+						],
+						"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "P",
+								"expression": "160..199"
+							},
+							{
+								"name": "t",
+								"expression": "1..4"
+							},
+							{
+								"name": "L",
+								"expression": "eval:10*t"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ nombre de litres $\\times$ prix d'un litre.",
+								"De tête : $10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:P/10;d}}${{if:t>1|, puis $\\times {{t}}$|}}.",
+								"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:m*k/100;d}}"
+							}
+						],
+						"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Inès en achète $0.{{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "h",
+								"expression": "6..49"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "sm",
+								"expression": "0..1"
+							},
+							{
+								"name": "m",
+								"expression": "{{if:sm==0|2|5}}"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
+								"{{if:sm==0|$0.2$ kg, c'est le cinquième d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 5$.|$0.5$ kg, c'est la moitié d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 2$.}}",
+								"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
+								"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3,6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "1,5 kg à 2,40 € : 3,6 €",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,60"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "3,60 € accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : addition (3,9)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : 1 kg seulement (2,4)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["37"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "20 L à 1,85 € : 37 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["370"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "Erreur : virgule (370)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "0,5 kg à 4,80 € : 2,4 €",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2,40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "2,40 € accepté",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : 24",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5,3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : addition (5,3)",
+						"variationIndex": 2
+					}
+				],
+				"description": "Prix à payer, calculs de tête : masse × prix au kilo (1,5 kg à 2,40 €), 10, 20, 30 ou 40 litres × prix du litre, 0,2 ou 0,5 kg (le produit est plus petit)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(2*j+1)*k/20;d}}"
+							}
+						],
+						"statement": "Au marché, les {{if:f==0|pommes coûtent|{{if:f==1|poires coûtent|cerises coûtent}}}} ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Léa en achète ${{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "h",
+								"expression": "6..29"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "j",
+								"expression": "0..3"
+							},
+							{
+								"name": "m",
+								"expression": "eval:j+0.5;d"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+								"De tête : {{if:j==0|la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$|${{j}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$, plus la moitié de ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}$}}.",
+								"$${{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}$$",
+								"Léa paie $\\textcolor{{{color:primary.0}}}{{{eval:floor(((2*j+1)*k*5)/100)}}.{{eval:floor(mod(((2*j+1)*k*5),100)/10)}}{{eval:mod(((2*j+1)*k*5),10)}}}~\\unit{€}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:L*P/100;d}}"
+							}
+						],
+						"statement": "Le litre d'essence coûte ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$. Malik met ${{L}}$ litres dans sa voiture. Combien paie-t-il ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "P",
+								"expression": "160..199"
+							},
+							{
+								"name": "t",
+								"expression": "1..4"
+							},
+							{
+								"name": "L",
+								"expression": "eval:10*t"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ nombre de litres $\\times$ prix d'un litre.",
+								"De tête : $10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:P/10;d}}${{if:t>1|, puis $\\times {{t}}$|}}.",
+								"$${{L}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((L*P)/100)}}.{{eval:floor(mod((L*P),100)/10)}}{{eval:mod((L*P),10)}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:m*k/100;d}}"
+							}
+						],
+						"statement": "Le fromage coûte ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$ le kilogramme. Inès en achète $0.{{m}}~\\unit{kg}$. Combien paie-t-elle ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "h",
+								"expression": "6..49"
+							},
+							{
+								"name": "k",
+								"expression": "eval:2*h"
+							},
+							{
+								"name": "pk",
+								"expression": "eval:10*k"
+							},
+							{
+								"name": "sm",
+								"expression": "0..1"
+							},
+							{
+								"name": "m",
+								"expression": "{{if:sm==0|2|5}}"
+							}
+						],
+						"conditions": ["mod(k,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme, même quand la masse est plus petite que $1$ kg.",
+								"{{if:sm==0|$0.2$ kg, c'est le cinquième d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 5$.|$0.5$ kg, c'est la moitié d'un kilogramme : ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} \\div 2$.}}",
+								"$$0.{{m}} \\times {{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((m*k)/100)}}.{{eval:floor(mod((m*k),100)/10)}}{{eval:mod((m*k),10)}}}$$",
+								"Elle achète moins d'un kilogramme : elle paie moins que ${{eval:floor(pk/100)}}.{{eval:floor(mod(pk,100)/10)}}{{eval:mod(pk,10)}}~\\unit{€}$."
+							]
+						}
+					},
+					{
+						"statement": "Au marché, les {{if:f==0|pommes|{{if:f==1|tomates|oranges}}}} coûtent ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$ le kilogramme.\n\nCombien coûtent $10~\\unit{kg}$ ? $?~\\text{€}$\n\nCombien coûtent $100~\\unit{kg}$ ? $?~\\text{€}$",
+						"variables": [
+							{
+								"name": "f",
+								"expression": "0..2"
+							},
+							{
+								"name": "P",
+								"expression": "101..599"
+							}
+						],
+						"conditions": ["mod(P,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:P/10;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:P/100;d}}",
+										"message": "Écrire un $0$ à la fin de ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}$ ne change pas sa valeur : multiplier par $10$ fait glisser chaque chiffre d'un rang vers la gauche.",
+										"label": "Zéro ajouté à la fin"
+									},
+									{
+										"answer": "{{eval:P/1000;d}}",
+										"message": "Tu as divisé par $10$ : $10~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$.",
+										"label": "Division au lieu de multiplication"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{P}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:P/100;d}}",
+										"message": "Écrire des $0$ à la fin de ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}$ ne change pas sa valeur : multiplier par $100$ fait glisser chaque chiffre de deux rangs vers la gauche.",
+										"label": "Zéros ajoutés à la fin"
+									},
+									{
+										"answer": "{{eval:P/10000;d}}",
+										"message": "Tu as divisé par $100$ : $100~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$.",
+										"label": "Division au lieu de multiplication"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Prix à payer** $=$ masse $\\times$ prix d'un kilogramme.",
+								"$$10 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:P/10;d}}}$$",
+								"$$100 \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = \\textcolor{{{color:primary.0}}}{{{P}}}$$"
+							]
+						},
+						"hint": "Multiplier par $10$ ou par $100$ fait glisser les chiffres vers la gauche dans le tableau de numération."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["3,6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "1,5 kg à 2,40 € : 3,6 €",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,60"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "3,60 € accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3,9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : addition (3,9)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"f": "0",
+							"h": "12",
+							"j": "1",
+							"k": "24",
+							"m": "1.5",
+							"pk": "240"
+						},
+						"description": "Erreur : 1 kg seulement (2,4)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["37"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "20 L à 1,85 € : 37 €",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["370"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "20",
+							"P": "185",
+							"t": "2"
+						},
+						"description": "Erreur : virgule (370)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2,4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "0,5 kg à 4,80 € : 2,4 €",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2,40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "2,40 € accepté",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["24"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : 24",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5,3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "24",
+							"k": "48",
+							"m": "5",
+							"pk": "480",
+							"sm": "1"
+						},
+						"description": "Erreur : addition (5,3)",
+						"variationIndex": 2
+					},
+					{
+						"description": "F11a : 2,35 € le kg",
+						"variationIndex": 3,
+						"variables": {
+							"f": "0",
+							"P": "235"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["23{,}5", "235"]
+					},
+					{
+						"description": "F11a : 23,50 accepté",
+						"variationIndex": 3,
+						"variables": {
+							"f": "0",
+							"P": "235"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["23{,}50", "235"]
+					},
+					{
+						"description": "F11a : zéro ajouté à la fin",
+						"variationIndex": 3,
+						"variables": {
+							"f": "0",
+							"P": "235"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Écrire un $0$ à la fin de $2.35$ ne change pas sa valeur : multiplier par $10$ fait glisser chaque chiffre d'un rang vers la gauche."
+						},
+						"answers": ["2{,}350", "235"]
+					},
+					{
+						"description": "F11a : division par 100",
+						"variationIndex": 3,
+						"variables": {
+							"f": "0",
+							"P": "235"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as divisé par $100$ : $100~\\unit{kg}$ coûtent plus cher qu'$1~\\unit{kg}$."
+						},
+						"answers": ["23{,}5", "0{,}0235"]
+					},
+					{
+						"description": "F11a : 100 kg à 23,5",
+						"variationIndex": 3,
+						"variables": {
+							"f": "0",
+							"P": "235"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["23{,}5", "2\\,350"]
+					}
+				],
+				"description": "Prix à payer, calculs de tête : masse × prix au kilo (1,5 kg à 2,40 €), 10, 20, 30 ou 40 litres × prix du litre, 0,2 ou 0,5 kg (le produit est plus petit)"
+			},
+			"changements": {
+				"ajoutees": [4],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "3f4bacc6-2ee4-48c7-8ea4-e5ac52af62d4",
+			"title": "Problèmes de division euclidienne",
+			"fichier": "3f4bacc6.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{q}}"
+							},
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "On range ${{N}}$ œufs dans des boîtes de ${{d}}$. Combien de boîtes pleines obtient-on ? Combien d'œufs reste-t-il ?\n\n$$?~\\text{boîtes pleines et}~?~\\text{œufs restants}$$",
+						"variables": [
+							{
+								"name": "sd",
+								"expression": "0..2"
+							},
+							{
+								"name": "d",
+								"expression": "{{if:sd==0|6|{{if:sd==1|10|12}}}}"
+							},
+							{
+								"name": "q",
+								"expression": "3..15"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:d-1}}"
+							},
+							{
+								"name": "N",
+								"expression": "eval:d*q+r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+								"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"On obtient $\\textcolor{{{color:primary.0}}}{{{q}}}$ boîtes pleines et il reste $\\textcolor{{{color:primary.1}}}{{{r}}}$ œuf{{if:r>1|s|}}."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:q+1}}"
+							}
+						],
+						"statement": "${{E}}$ élèves partent en sortie. Un car a ${{c}}$ places. Combien de cars faut-il, au minimum, pour transporter tous les élèves ?\n\n$$?~\\text{cars}$$",
+						"variables": [
+							{
+								"name": "sc",
+								"expression": "0..4"
+							},
+							{
+								"name": "c",
+								"expression": "{{if:sc==0|30|{{if:sc==1|40|{{if:sc==2|45|{{if:sc==3|50|60}}}}}}}}"
+							},
+							{
+								"name": "q",
+								"expression": "2..9"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:c-1}}"
+							},
+							{
+								"name": "E",
+								"expression": "eval:c*q+r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+								"$${{E}} = ({{c}} \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"${{q}}$ cars pleins ne suffisent pas : il reste ${{r}}$ élève{{if:r>1|s|}}. Il faut un car de plus : $\\textcolor{{{color:primary.0}}}{{{solution}}}$ cars."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{q}}"
+							},
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = ?~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~?~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}}$$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0..2"
+							},
+							{
+								"name": "d",
+								"expression": "{{if:s==0|7|{{if:s==1|24|60}}}}"
+							},
+							{
+								"name": "q",
+								"expression": "2..10"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:d-1}}"
+							},
+							{
+								"name": "N",
+								"expression": "eval:d*q+r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une {{if:s==0|semaine|{{if:s==1|journée|heure}}}} compte ${{d}}$ {{if:s==0|jours|{{if:s==1|heures|minutes}}}} : on fait la division euclidienne de ${{N}}$ par ${{d}}$.",
+								"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = \\textcolor{{{color:primary.0}}}{{{q}}}~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~\\textcolor{{{color:primary.1}}}{{{r}}}~\\text{{{if:s==0|jour|{{if:s==1|heure|minute}}}}{{if:r>1|s|}}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["8", "7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "103",
+							"d": "12",
+							"q": "8",
+							"r": "7",
+							"sd": "2"
+						},
+						"description": "103 œufs, boîtes de 12 : 8 et 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7", "8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "103",
+							"d": "12",
+							"q": "8",
+							"r": "7",
+							"sd": "2"
+						},
+						"description": "Erreur : quotient et reste échangés",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8,58", "7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "103",
+							"d": "12",
+							"q": "8",
+							"r": "7",
+							"sd": "2"
+						},
+						"description": "Erreur : quotient décimal (8,58)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"E": "230",
+							"c": "45",
+							"q": "5",
+							"r": "5",
+							"sc": "2"
+						},
+						"description": "230 élèves, 45 places : 6 cars",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"E": "230",
+							"c": "45",
+							"q": "5",
+							"r": "5",
+							"sc": "2"
+						},
+						"description": "Erreur : le reste oublié (5)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5,1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"E": "230",
+							"c": "45",
+							"q": "5",
+							"r": "5",
+							"sc": "2"
+						},
+						"description": "Erreur : quotient décimal (5,1)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9", "3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "66",
+							"d": "7",
+							"q": "9",
+							"r": "3",
+							"s": "0"
+						},
+						"description": "66 jours = 9 semaines 3 jours",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9,4", "0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "66",
+							"d": "7",
+							"q": "9",
+							"r": "3",
+							"s": "0"
+						},
+						"description": "Erreur : 9,4 semaines",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2", "30"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "150",
+							"d": "60",
+							"q": "2",
+							"r": "30",
+							"s": "2"
+						},
+						"description": "150 min = 2 h 30 min",
+						"variationIndex": 2
+					}
+				],
+				"description": "Interpréter le quotient et le reste, calculs de tête : boîtes pleines et reste (boîtes de 6, 10, 12), nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{q}}"
+							},
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "On range ${{N}}$ œufs dans des boîtes de ${{d}}$. Combien de boîtes pleines obtient-on ? Combien d'œufs reste-t-il ?\n\n$$?~\\text{boîtes pleines et}~?~\\text{œufs restants}$$",
+						"variables": [
+							{
+								"name": "sd",
+								"expression": "0..2"
+							},
+							{
+								"name": "d",
+								"expression": "{{if:sd==0|6|{{if:sd==1|10|12}}}}"
+							},
+							{
+								"name": "q",
+								"expression": "3..15"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:d-1}}"
+							},
+							{
+								"name": "N",
+								"expression": "eval:d*q+r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+								"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"On obtient $\\textcolor{{{color:primary.0}}}{{{q}}}$ boîtes pleines et il reste $\\textcolor{{{color:primary.1}}}{{{r}}}$ œuf{{if:r>1|s|}}."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:q+1}}"
+							}
+						],
+						"statement": "${{E}}$ élèves partent en sortie. Un car a ${{c}}$ places. Combien de cars faut-il, au minimum, pour transporter tous les élèves ?\n\n$$?~\\text{cars}$$",
+						"variables": [
+							{
+								"name": "sc",
+								"expression": "0..4"
+							},
+							{
+								"name": "c",
+								"expression": "{{if:sc==0|30|{{if:sc==1|40|{{if:sc==2|45|{{if:sc==3|50|60}}}}}}}}"
+							},
+							{
+								"name": "q",
+								"expression": "2..9"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:c-1}}"
+							},
+							{
+								"name": "E",
+								"expression": "eval:c*q+r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+								"$${{E}} = ({{c}} \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"${{q}}$ cars pleins ne suffisent pas : il reste ${{r}}$ élève{{if:r>1|s|}}. Il faut un car de plus : $\\textcolor{{{color:primary.0}}}{{{solution}}}$ cars."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{q}}"
+							},
+							{
+								"expectedAnswer": "{{r}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = ?~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~?~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}}$$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0..2"
+							},
+							{
+								"name": "d",
+								"expression": "{{if:s==0|7|{{if:s==1|24|60}}}}"
+							},
+							{
+								"name": "q",
+								"expression": "2..10"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:d-1}}"
+							},
+							{
+								"name": "N",
+								"expression": "eval:d*q+r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une {{if:s==0|semaine|{{if:s==1|journée|heure}}}} compte ${{d}}$ {{if:s==0|jours|{{if:s==1|heures|minutes}}}} : on fait la division euclidienne de ${{N}}$ par ${{d}}$.",
+								"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = \\textcolor{{{color:primary.0}}}{{{q}}}~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~\\textcolor{{{color:primary.1}}}{{{r}}}~\\text{{{if:s==0|jour|{{if:s==1|heure|minute}}}}{{if:r>1|s|}}}$$"
+							]
+						}
+					},
+					{
+						"statement": "Zoé a ${{N}}$ perles. Elle fait des colliers de ${{d}}$ perles chacun. Combien de perles lui manque-t-il pour faire un collier de plus ?\n\n$$?~\\text{perles}$$",
+						"variables": [
+							{
+								"name": "d",
+								"expression": "8..15"
+							},
+							{
+								"name": "q",
+								"expression": "3..12"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:d-1}}"
+							},
+							{
+								"name": "N",
+								"expression": "eval:d*q+r"
+							}
+						],
+						"conditions": ["d != 2*r", "q+1 != d-r", "r != q+1", "d != q+1"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:d-r}}",
+								"expectedErrors": [
+									{
+										"answer": "{{r}}",
+										"message": "Tu as donné le reste : ce sont les perles qui restent, pas celles qui manquent.",
+										"label": "Reste au lieu du complément"
+									},
+									{
+										"answer": "{{eval:q+1}}",
+										"message": "Tu as compté des colliers : on demande un nombre de perles.",
+										"label": "Nombre de colliers"
+									},
+									{
+										"answer": "{{d}}",
+										"message": "Un collier entier demande ${{d}}$ perles, mais il en reste déjà quelques-unes après les colliers complets.",
+										"label": "Collier entier"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+								"$${{N}} = ({{d}} \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"Zoé fait ${{q}}$ colliers et il lui reste ${{r}}$ perle{{if:r>1|s|}}. Pour un collier de plus, il lui manque ${{d}} - {{r}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$ perle{{if:d-r>1|s|}}."
+							]
+						},
+						"hint": "Cherche d'abord combien de colliers complets Zoé peut faire et combien de perles il lui reste."
+					},
+					{
+						"statement": "Avec ${{N}}$ perles, Zoé fait des colliers de ${{d}}$ perles chacun. Combien de colliers complets peut-elle faire ? Combien de perles lui reste-t-il ?\n\n$$?~\\text{colliers et}~?~\\text{perles restantes}$$",
+						"variables": [
+							{
+								"name": "d",
+								"expression": "8..15"
+							},
+							{
+								"name": "q",
+								"expression": "3..12"
+							},
+							{
+								"name": "r",
+								"expression": "1..{{eval:d-1}}"
+							},
+							{
+								"name": "N",
+								"expression": "eval:d*q+r"
+							}
+						],
+						"conditions": ["d != 2*r", "r != q+1", "r != q", "q != d-r"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{q}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:q+1}}",
+										"message": "Le dernier collier n'est pas complet : il lui manque des perles.",
+										"label": "Collier incomplet compté"
+									},
+									{
+										"answer": "{{r}}",
+										"message": "Tu as donné le reste : le nombre de colliers, c'est le quotient.",
+										"label": "Quotient et reste échangés"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{r}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:d-r}}",
+										"message": "Tu as compté les perles qui manquent pour un collier de plus : on demande celles qui restent.",
+										"label": "Complément au lieu du reste"
+									},
+									{
+										"answer": "{{q}}",
+										"message": "Tu as donné le nombre de colliers : le nombre de perles restantes, c'est le reste.",
+										"label": "Quotient et reste échangés"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+								"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"Zoé fait $\\textcolor{{{color:primary.0}}}{{{q}}}$ colliers et il lui reste $\\textcolor{{{color:primary.1}}}{{{r}}}$ perle{{if:r>1|s|}}."
+							]
+						},
+						"hint": "Cherche combien de fois ${{d}}$ perles tiennent dans ${{N}}$ perles."
+					},
+					{
+						"statement": "Aujourd'hui, nous sommes {{if:j==0|lundi|{{if:j==1|mardi|{{if:j==2|mercredi|{{if:j==3|jeudi|{{if:j==4|vendredi|{{if:j==5|samedi|dimanche}}}}}}}}}}}}. Quel jour serons-nous dans ${{N}}$ jours ?\n\n```choix\nmelanger: non\n- lundi\n- mardi\n- mercredi\n- jeudi\n- vendredi\n- samedi\n- dimanche\n```",
+						"variables": [
+							{
+								"name": "j",
+								"expression": "0..6"
+							},
+							{
+								"name": "N",
+								"expression": "50..150"
+							},
+							{
+								"name": "q",
+								"expression": "eval:floor(N/7)"
+							},
+							{
+								"name": "r",
+								"expression": "eval:mod(N,7)"
+							},
+							{
+								"name": "k",
+								"expression": "eval:mod(j+N,7)"
+							}
+						],
+						"conditions": ["r != 0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{k}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Une semaine compte $7$ jours : on fait la division euclidienne de ${{N}}$ par $7$.",
+								"$${{N}} = (7 \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+								"Dans ${{eval:7*q}}$ jours, soit ${{q}}$ semaines, nous serons encore {{if:j==0|lundi|{{if:j==1|mardi|{{if:j==2|mercredi|{{if:j==3|jeudi|{{if:j==4|vendredi|{{if:j==5|samedi|dimanche}}}}}}}}}}}} ; ${{r}}$ jour{{if:r>1|s|}} plus tard, nous serons $\\textcolor{{{color:primary.0}}}{\\text{{{if:k==0|lundi|{{if:k==1|mardi|{{if:k==2|mercredi|{{if:k==3|jeudi|{{if:k==4|vendredi|{{if:k==5|samedi|dimanche}}}}}}}}}}}}}}$."
+							]
+						},
+						"hint": "Les jours reviennent dans le même ordre toutes les semaines, c'est-à-dire tous les $7$ jours."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["8", "7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "103",
+							"d": "12",
+							"q": "8",
+							"r": "7",
+							"sd": "2"
+						},
+						"description": "103 œufs, boîtes de 12 : 8 et 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7", "8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "103",
+							"d": "12",
+							"q": "8",
+							"r": "7",
+							"sd": "2"
+						},
+						"description": "Erreur : quotient et reste échangés",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8,58", "7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "103",
+							"d": "12",
+							"q": "8",
+							"r": "7",
+							"sd": "2"
+						},
+						"description": "Erreur : quotient décimal (8,58)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"E": "230",
+							"c": "45",
+							"q": "5",
+							"r": "5",
+							"sc": "2"
+						},
+						"description": "230 élèves, 45 places : 6 cars",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"E": "230",
+							"c": "45",
+							"q": "5",
+							"r": "5",
+							"sc": "2"
+						},
+						"description": "Erreur : le reste oublié (5)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5,1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"E": "230",
+							"c": "45",
+							"q": "5",
+							"r": "5",
+							"sc": "2"
+						},
+						"description": "Erreur : quotient décimal (5,1)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9", "3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "66",
+							"d": "7",
+							"q": "9",
+							"r": "3",
+							"s": "0"
+						},
+						"description": "66 jours = 9 semaines 3 jours",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9,4", "0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "66",
+							"d": "7",
+							"q": "9",
+							"r": "3",
+							"s": "0"
+						},
+						"description": "Erreur : 9,4 semaines",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2", "30"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "150",
+							"d": "60",
+							"q": "2",
+							"r": "30",
+							"s": "2"
+						},
+						"description": "150 min = 2 h 30 min",
+						"variationIndex": 2
+					},
+					{
+						"description": "F12b : 87 perles, colliers de 12",
+						"variationIndex": 3,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["9"]
+					},
+					{
+						"description": "F12b : le reste (3)",
+						"variationIndex": 3,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné le reste : ce sont les perles qui restent, pas celles qui manquent."
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F12b : nombre de colliers (8)",
+						"variationIndex": 3,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as compté des colliers : on demande un nombre de perles."
+						},
+						"answers": ["8"]
+					},
+					{
+						"description": "F12b : collier entier (12)",
+						"variationIndex": 3,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Un collier entier demande $12$ perles, mais il en reste déjà quelques-unes après les colliers complets."
+						},
+						"answers": ["12"]
+					},
+					{
+						"description": "F12b : 87 perles, 7 colliers et 3 perles",
+						"variationIndex": 4,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["7", "3"]
+					},
+					{
+						"description": "F12b : collier incomplet compté",
+						"variationIndex": 4,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le dernier collier n'est pas complet : il lui manque des perles."
+						},
+						"answers": ["8", "3"]
+					},
+					{
+						"description": "F12b : complément au lieu du reste",
+						"variationIndex": 4,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as compté les perles qui manquent pour un collier de plus : on demande celles qui restent."
+						},
+						"answers": ["7", "9"]
+					},
+					{
+						"description": "F12b : quotient décimal",
+						"variationIndex": 4,
+						"variables": {
+							"d": "12",
+							"q": "7",
+							"r": "3",
+							"N": "87"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["7{,}25", "3"]
+					},
+					{
+						"description": "F12b : mardi + 100 jours = jeudi",
+						"variationIndex": 5,
+						"variables": {
+							"j": "1",
+							"N": "100"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F12b : mardi + 100 jours, même jour",
+						"variationIndex": 5,
+						"variables": {
+							"j": "1",
+							"N": "100"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F12b : mardi + 100 jours, un jour de moins",
+						"variationIndex": 5,
+						"variables": {
+							"j": "1",
+							"N": "100"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F12b : dimanche + 60 jours = jeudi",
+						"variationIndex": 5,
+						"variables": {
+							"j": "6",
+							"N": "60"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3"]
+					}
+				],
+				"description": "Interpréter le quotient et le reste, calculs de tête : boîtes pleines et reste (boîtes de 6, 10, 12), nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures"
+			},
+			"changements": {
+				"ajoutees": [4, 5, 6],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "571ca739-e3be-47de-b431-e888a9e46f18",
+			"title": "Calculer un produit",
+			"fichier": "571ca739.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c*b;d}}"
+							}
+						],
+						"statement": "Sachant que ${{eval:a;d}} * {{eval:b;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{eval:a*c;d}}* {{b}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+								"donc le résultat de ${{eval:a*c;d}} \\times {{eval:b;d}}$ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:a;d}}\\times{{eval:b;d}}$,",
+								" c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c*b;d}}"
+							}
+						],
+						"statement": "Sachant que ${{eval:b;d}} * {{eval:a;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{b}}*{{eval:a*c;d}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+								"donc le résultat de ${{eval:b;d}} \\times {{eval:a*c;d}} $ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:b;d}} \\times {{eval:a;d}}$,",
+								"c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["8\\,197{,}48"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "183,8 × 44,6 = 8 197,48",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8197{,}48"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "8197,48 sans espace : perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8\\,197{,}48"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "44,6 × 183,8 = 8 197,48",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["81\\,974{,}8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "mauvais décalage : 81 974,8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5\\,830\\,400"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "1000",
+							"b1": "91",
+							"b2": "1",
+							"ad1": "1",
+							"ad2": "1",
+							"ai1": "1",
+							"ai2": "64",
+							"a_dec": "0",
+							"a_int": "2"
+						},
+						"description": "64 000 × 91,1 = 5 830 400",
+						"variationIndex": 0
+					}
+				],
+				"description": "Déterminer un produit à partir d'un autre"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c*b;d}}"
+							}
+						],
+						"statement": "Sachant que ${{eval:a;d}} * {{eval:b;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{eval:a*c;d}}* {{b}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+								"donc le résultat de ${{eval:a*c;d}} \\times {{eval:b;d}}$ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:a;d}}\\times{{eval:b;d}}$,",
+								" c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c*b;d}}"
+							}
+						],
+						"statement": "Sachant que ${{eval:b;d}} * {{eval:a;d}}={{eval:a*b;d}}$, calcule :\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{b}}*{{eval:a*c;d}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{eval:a*c;d}}$ est $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que ${{eval:a;d}}$,",
+								"donc le résultat de ${{eval:b;d}} \\times {{eval:a*c;d}} $ est  $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\text{ fois}}$ plus grand que celui de ${{eval:b;d}} \\times {{eval:a;d}}$,",
+								"c'est-à-dire $\\textcolor{{{color:primary.0}}}{{{eval:c}}\\times} {{eval:a*b;d}} = {{solution}}$"
+							]
+						}
+					},
+					{
+						"statement": "Sachant que ${{A}} \\times {{B}} = {{eval:A*B}}$, calcule :\n\n$${{x}} \\times {{y}} = ?$$",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "11..99"
+							},
+							{
+								"name": "B",
+								"expression": "11..99"
+							},
+							{
+								"name": "u",
+								"expression": "1..2"
+							},
+							{
+								"name": "v",
+								"expression": "1..2"
+							},
+							{
+								"name": "x",
+								"expression": "eval:A/10^u;d"
+							},
+							{
+								"name": "y",
+								"expression": "eval:B/10^v;d"
+							},
+							{
+								"name": "M",
+								"expression": "{{if:u>=v|{{u}}|{{v}}}}"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(A*B,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:A*B/10^(u+v);d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:A*B/10^M;d}}",
+										"message": "Tu n'as compté les décimales que d'un seul facteur : ${{x}}$ en a ${{u}}$ et ${{y}}$ en a ${{v}}$.",
+										"label": "Décimales d'un seul facteur"
+									},
+									{
+										"answer": "{{eval:A*B}}",
+										"message": "Les deux facteurs sont plus petits que ${{A}}$ et ${{B}}$ : le produit est plus petit que ${{eval:A*B}}$.",
+										"label": "Produit des entiers recopié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"${{x}}$ est ${{eval:10^u}}$ fois plus petit que ${{A}}$, et ${{y}}$ est ${{eval:10^v}}$ fois plus petit que ${{B}}$.",
+								"Donc ${{x}} \\times {{y}}$ est ${{eval:10^u}} \\times {{eval:10^v}} = {{eval:10^(u+v)}}$ fois plus petit que ${{A}} \\times {{B}}$ : $\\textcolor{{{color:primary.0}}}{{{u}}+{{v}}={{eval:u+v}}\\text{ décimales}}$.",
+								"$${{x}} \\times {{y}} = {{eval:A*B}} \\div {{eval:10^(u+v)}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						},
+						"hint": "Compare chaque facteur à ${{A}}$ et à ${{B}}$ : combien de fois est-il plus petit ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["8\\,197{,}48"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "183,8 × 44,6 = 8 197,48",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8197{,}48"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "8197,48 sans espace : perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8\\,197{,}48"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "44,6 × 183,8 = 8 197,48",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["81\\,974{,}8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "10",
+							"b1": "44",
+							"b2": "6",
+							"ad1": "1",
+							"ad2": "38",
+							"ai1": "1",
+							"ai2": "18",
+							"a_dec": "2",
+							"a_int": "2"
+						},
+						"description": "mauvais décalage : 81 974,8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5\\,830\\,400"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "1000",
+							"b1": "91",
+							"b2": "1",
+							"ad1": "1",
+							"ad2": "1",
+							"ai1": "1",
+							"ai2": "64",
+							"a_dec": "0",
+							"a_int": "2"
+						},
+						"description": "64 000 × 91,1 = 5 830 400",
+						"variationIndex": 0
+					},
+					{
+						"description": "F6 : 2,3 × 0,47 = 1,081",
+						"variationIndex": 2,
+						"variables": {
+							"A": "23",
+							"B": "47",
+							"u": "1",
+							"v": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1{,}081"]
+					},
+					{
+						"description": "F6 : point décimal accepté",
+						"variationIndex": 2,
+						"variables": {
+							"A": "23",
+							"B": "47",
+							"u": "1",
+							"v": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1.081"]
+					},
+					{
+						"description": "F6 : décimales d'un seul facteur",
+						"variationIndex": 2,
+						"variables": {
+							"A": "23",
+							"B": "47",
+							"u": "1",
+							"v": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu n'as compté les décimales que d'un seul facteur : $2.3$ en a $1$ et $0.47$ en a $2$."
+						},
+						"answers": ["10{,}81"]
+					},
+					{
+						"description": "F6 : produit des entiers recopié",
+						"variationIndex": 2,
+						"variables": {
+							"A": "23",
+							"B": "47",
+							"u": "1",
+							"v": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Les deux facteurs sont plus petits que $23$ et $47$ : le produit est plus petit que $1081$."
+						},
+						"answers": ["1\\,081"]
+					},
+					{
+						"description": "F6 : 0,23 × 0,47 = 0,108 1",
+						"variationIndex": 2,
+						"variables": {
+							"A": "23",
+							"B": "47",
+							"u": "2",
+							"v": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}108\\,1"]
+					},
+					{
+						"description": "F6 : 0,1081 sans espace",
+						"variationIndex": 2,
+						"variables": {
+							"A": "23",
+							"B": "47",
+							"u": "2",
+							"v": "2"
+						},
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"answers": ["0{,}1081"]
+					},
+					{
+						"description": "F6 : 0,23 × 0,47, une seule fois deux décimales",
+						"variationIndex": 2,
+						"variables": {
+							"A": "23",
+							"B": "47",
+							"u": "2",
+							"v": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu n'as compté les décimales que d'un seul facteur : $0.23$ en a $2$ et $0.47$ en a $2$."
+						},
+						"answers": ["10{,}81"]
+					}
+				],
+				"description": "Déterminer un produit à partir d'un autre"
+			},
+			"changements": {
+				"ajoutees": [3],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "590169c4-e51d-4ea1-adaa-1cc38093442f",
+			"title": "Calculer un quotient",
+			"fichier": "590169c4.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "0..3"
+							},
+							{
+								"name": "q",
+								"expression": "0..1"
+							},
+							{
+								"name": "a",
+								"expression": "digits:m.q"
+							},
+							{
+								"name": "expression1",
+								"expression": "a:100"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Diviser par $10$, $100$, $1000$.** Diviser par $10$ rend chaque chiffre $10$ fois plus petit : dans le tableau de numération, chaque chiffre glisse d'un rang vers la droite. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides entre la virgule et le premier chiffre reçoivent un $0$.",
+								"{{if:a>=10000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a>=1000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a>=100|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a>=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.}}}}}}}}}}",
+								"$$\\begin{align} {{a}} \\div 100 &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["4{,}321"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "432.1",
+							"m": "3",
+							"q": "1"
+						},
+						"description": "432,1 : 100",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4.321"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "432.1",
+							"m": "3",
+							"q": "1"
+						},
+						"description": "point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}070"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["zeros"]
+						},
+						"variables": {
+							"a": "7",
+							"m": "1",
+							"q": "0"
+						},
+						"description": "0,070 : zéro inutile",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"m": "1",
+							"q": "0"
+						},
+						"description": "7 : 100",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"m": "1",
+							"q": "0"
+						},
+						"description": "mauvais décalage",
+						"variationIndex": 0
+					}
+				],
+				"description": "Diviser par $100$"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "0..3"
+							},
+							{
+								"name": "q",
+								"expression": "0..1"
+							},
+							{
+								"name": "a",
+								"expression": "digits:m.q"
+							},
+							{
+								"name": "expression1",
+								"expression": "a:100"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Diviser par $10$, $100$, $1000$.** Diviser par $10$ rend chaque chiffre $10$ fois plus petit : dans le tableau de numération, chaque chiffre glisse d'un rang vers la droite. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides entre la virgule et le premier chiffre reçoivent un $0$.",
+								"{{if:a>=10000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a>=1000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a>=100|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a>=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.}}}}}}}}}}",
+								"$$\\begin{align} {{a}} \\div 100 &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"statement": "Complète.\n\n$$? \\div {{eval:10^k}} = {{Q}}$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "m",
+								"expression": "1..3"
+							},
+							{
+								"name": "q",
+								"expression": "0..1"
+							},
+							{
+								"name": "a",
+								"expression": "digits:m.q"
+							},
+							{
+								"name": "Q",
+								"expression": "eval:a/10^k;d"
+							}
+						],
+						"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)", "q+k<=3"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a/10^(2*k);d}}",
+										"message": "Tu as divisé ${{Q}}$ par ${{eval:10^k}}$ : le nombre cherché est ${{eval:10^k}}$ fois plus grand que ${{Q}}$.",
+										"label": "Décalage dans le mauvais sens"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Diviser par $10$, $100$, $1000$** fait glisser chaque chiffre vers la droite. Pour retrouver le nombre de départ, on fait l'inverse : on multiplie ${{Q}}$ par ${{eval:10^k}}$, chaque chiffre glisse de ${{k}}$ rang{{if:k>1|s|}} vers la gauche.",
+								"$${{Q}} \\times {{eval:10^k}} = {{solution}}$$",
+								"$$\\textcolor{{{color:primary.0}}}{{{solution}}} \\div {{eval:10^k}} = {{Q}}$$"
+							]
+						},
+						"hint": "Le nombre cherché, divisé par ${{eval:10^k}}$, donne ${{Q}}$ : quelle opération fait le chemin inverse ?"
+					},
+					{
+						"statement": "Complète avec $10$, $100$ ou $1\\,000$.\n\n$${{a}} \\div ? = {{Q}}$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "1..3"
+							},
+							{
+								"name": "m",
+								"expression": "1..3"
+							},
+							{
+								"name": "q",
+								"expression": "0..1"
+							},
+							{
+								"name": "a",
+								"expression": "digits:m.q"
+							},
+							{
+								"name": "Q",
+								"expression": "eval:a/10^k;d"
+							}
+						],
+						"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)", "q+k<=3"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^k}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:10^(-k);d}}",
+										"message": "Le quotient est plus petit que ${{a}}$ : on a divisé par un nombre plus grand que $1$.",
+										"label": "Rapport inversé"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Diviser par $10$, $100$, $1000$.** Diviser par $10$ fait glisser chaque chiffre d'un rang vers la droite ; par $100$, de deux rangs ; par $1000$, de trois rangs.",
+								"De ${{a}}$ à ${{Q}}$, chaque chiffre a glissé de ${{k}}$ rang{{if:k>1|s|}} vers la droite.",
+								"$${{a}} \\div \\textcolor{{{color:primary.0}}}{{{solution}}} = {{Q}}$$"
+							]
+						},
+						"hint": "Repère un chiffre de ${{a}}$ dans ${{Q}}$ : de combien de rangs a-t-il glissé vers la droite ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["4{,}321"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "432.1",
+							"m": "3",
+							"q": "1"
+						},
+						"description": "432,1 : 100",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4.321"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "432.1",
+							"m": "3",
+							"q": "1"
+						},
+						"description": "point",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}070"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["zeros"]
+						},
+						"variables": {
+							"a": "7",
+							"m": "1",
+							"q": "0"
+						},
+						"description": "0,070 : zéro inutile",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"m": "1",
+							"q": "0"
+						},
+						"description": "7 : 100",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"m": "1",
+							"q": "0"
+						},
+						"description": "mauvais décalage",
+						"variationIndex": 0
+					},
+					{
+						"description": "F4 : … ÷ 100 = 0,52",
+						"variationIndex": 1,
+						"variables": {
+							"k": "2",
+							"m": "2",
+							"q": "0",
+							"a": "52"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["52"]
+					},
+					{
+						"description": "F4 : décalage dans le mauvais sens",
+						"variationIndex": 1,
+						"variables": {
+							"k": "2",
+							"m": "2",
+							"q": "0",
+							"a": "52"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as divisé $0.52$ par $100$ : le nombre cherché est $100$ fois plus grand que $0.52$."
+						},
+						"answers": ["0{,}0052"]
+					},
+					{
+						"description": "F4 : un rang de moins (5,2)",
+						"variationIndex": 1,
+						"variables": {
+							"k": "2",
+							"m": "2",
+							"q": "0",
+							"a": "52"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["5{,}2"]
+					},
+					{
+						"description": "F4 : … ÷ 1 000 = 0,317",
+						"variationIndex": 1,
+						"variables": {
+							"k": "3",
+							"m": "3",
+							"q": "0",
+							"a": "317"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["317"]
+					},
+					{
+						"description": "F4 : 6,4 ÷ 100 = 0,064",
+						"variationIndex": 2,
+						"variables": {
+							"k": "2",
+							"m": "1",
+							"q": "1",
+							"a": "6.4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["100"]
+					},
+					{
+						"description": "F4 : rapport inversé (0,01)",
+						"variationIndex": 2,
+						"variables": {
+							"k": "2",
+							"m": "1",
+							"q": "1",
+							"a": "6.4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le quotient est plus petit que $6.4$ : on a divisé par un nombre plus grand que $1$."
+						},
+						"answers": ["0{,}01"]
+					},
+					{
+						"description": "F4 : 10 au lieu de 100",
+						"variationIndex": 2,
+						"variables": {
+							"k": "2",
+							"m": "1",
+							"q": "1",
+							"a": "6.4"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["10"]
+					},
+					{
+						"description": "F4 : 1000 au lieu de 100",
+						"variationIndex": 2,
+						"variables": {
+							"k": "2",
+							"m": "1",
+							"q": "1",
+							"a": "6.4"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1000"]
+					}
+				],
+				"description": "Diviser par $100$"
+			},
+			"changements": {
+				"ajoutees": [2, 3],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
+			"title": "Contrôler par un ordre de grandeur",
+			"fichier": "7deff4e0.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} \\times {{b}}$ ?\n\n```choix\n- ${{eval:P/1000;d}}$\n- ${{eval:P/100;d}}$\n- ${{eval:P/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "101..999"
+							},
+							{
+								"name": "B",
+								"expression": "11..99"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/10;d"
+							},
+							{
+								"name": "P",
+								"expression": "eval:A*B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/10)}}$, donc ${{a}} \\times {{b}} \\approx {{eval:round(A/10)*round(B/10)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:P/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} + {{b}}$ ?\n\n```choix\n- ${{eval:S/1000;d}}$\n- ${{eval:S/100;d}}$\n- ${{eval:S/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "B",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/100;d"
+							},
+							{
+								"name": "S",
+								"expression": "eval:10*A+B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(S,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/100)}}$, donc ${{a}} + {{b}} \\approx {{eval:round(A/10)+round(B/100)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:S/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Quel est un ordre de grandeur de ${{a}} \\times {{n}}$ ?\n\n```choix\n- ${{eval:10*p*q}}$\n- ${{eval:100*p*q}}$\n- ${{eval:1000*p*q}}$\n```",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "2..9"
+							},
+							{
+								"name": "dl",
+								"expression": "-9..9"
+							},
+							{
+								"name": "A",
+								"expression": "eval:100*p+dl"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "q",
+								"expression": "1..9"
+							},
+							{
+								"name": "el",
+								"expression": "-2..2"
+							},
+							{
+								"name": "n",
+								"expression": "eval:10*q+el"
+							}
+						],
+						"conditions": ["dl!=0", "el!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:10*p}}$ et ${{n}} \\approx {{eval:10*q}}$, donc ${{a}} \\times {{n}} \\approx {{eval:10*p}} \\times {{eval:10*q}} = \\textcolor{{{color:primary.0}}}{{{eval:100*p*q}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "48,7 × 3,1 = 150,97",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "Erreur : 15,097",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "398,6 + 51,25 = 449,85",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "Erreur : 4 498,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "49,8 × 21 ≈ 1 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "Erreur : 10 000",
+						"variationIndex": 2
+					}
+				],
+				"description": "Choisir le bon résultat d'un produit ou d'une somme de décimaux (mêmes chiffres, virgule déplacée) ; choisir un ordre de grandeur d'un produit"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} \\times {{b}}$ ?\n\n```choix\n- ${{eval:P/1000;d}}$\n- ${{eval:P/100;d}}$\n- ${{eval:P/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "101..999"
+							},
+							{
+								"name": "B",
+								"expression": "11..99"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/10;d"
+							},
+							{
+								"name": "P",
+								"expression": "eval:A*B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(P,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/10)}}$, donc ${{a}} \\times {{b}} \\approx {{eval:round(A/10)*round(B/10)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:P/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Sans poser le calcul, quel est le résultat de ${{a}} + {{b}}$ ?\n\n```choix\n- ${{eval:S/1000;d}}$\n- ${{eval:S/100;d}}$\n- ${{eval:S/10;d}}$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "B",
+								"expression": "1001..9999"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "b",
+								"expression": "eval:B/100;d"
+							},
+							{
+								"name": "S",
+								"expression": "eval:10*A+B"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(S,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/100)}}$, donc ${{a}} + {{b}} \\approx {{eval:round(A/10)+round(B/100)}}$.",
+								"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:S/100;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "1"
+							}
+						],
+						"statement": "Quel est un ordre de grandeur de ${{a}} \\times {{n}}$ ?\n\n```choix\n- ${{eval:10*p*q}}$\n- ${{eval:100*p*q}}$\n- ${{eval:1000*p*q}}$\n```",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "2..9"
+							},
+							{
+								"name": "dl",
+								"expression": "-9..9"
+							},
+							{
+								"name": "A",
+								"expression": "eval:100*p+dl"
+							},
+							{
+								"name": "a",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "q",
+								"expression": "1..9"
+							},
+							{
+								"name": "el",
+								"expression": "-2..2"
+							},
+							{
+								"name": "n",
+								"expression": "eval:10*q+el"
+							}
+						],
+						"conditions": ["dl!=0", "el!=0"],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+								"${{a}} \\approx {{eval:10*p}}$ et ${{n}} \\approx {{eval:10*q}}$, donc ${{a}} \\times {{n}} \\approx {{eval:10*p}} \\times {{eval:10*q}} = \\textcolor{{{color:primary.0}}}{{{eval:100*p*q}}}$."
+							]
+						}
+					},
+					{
+						"statement": "On cherche un ordre de grandeur de ${{x}} \\times {{y}}$.\n\nArrondi de ${{x}}$ à la dizaine : $?$\n\nArrondi de ${{y}}$ à l'unité : $?$\n\nOrdre de grandeur du produit : $?$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "1..9"
+							},
+							{
+								"name": "dl",
+								"expression": "-29..29"
+							},
+							{
+								"name": "x",
+								"expression": "eval:(100*p+dl)/10;d"
+							},
+							{
+								"name": "q",
+								"expression": "2..9"
+							},
+							{
+								"name": "t",
+								"expression": "-4..4"
+							},
+							{
+								"name": "y",
+								"expression": "eval:(10*q+t)/10;d"
+							}
+						],
+						"conditions": ["mod(dl,10)!=0", "t!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10*p}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:10*floor((100*p+dl)/100)}}",
+										"message": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : ${{x}}$ est plus près de la dizaine supérieure.",
+										"label": "Troncature"
+									},
+									{
+										"answer": "{{eval:round((100*p+dl)/10)}}",
+										"message": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine.",
+										"label": "Arrondi à l'unité"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{q}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:floor((10*q+t)/10)}}",
+										"message": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : ${{y}}$ est plus près de l'unité supérieure.",
+										"label": "Troncature"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:10*p*q}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:round((100*p+dl)*(10*q+t)/100)}}",
+										"message": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs.",
+										"label": "Produit exact arrondi"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Ordre de grandeur.** On remplace chaque facteur par un nombre proche, simple à calculer de tête.",
+								"${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:10*p}}}$ (à la dizaine) et ${{y}} \\approx \\textcolor{{{color:primary.0}}}{{{q}}}$ (à l'unité).",
+								"${{x}} \\times {{y}} \\approx {{eval:10*p}} \\times {{q}} = \\textcolor{{{color:primary.0}}}{{{eval:10*p*q}}}$."
+							]
+						},
+						"hint": "Pour arrondir à la dizaine, regarde le chiffre des unités ; à l'unité, le chiffre des dixièmes. Puis multiplie les deux arrondis."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "48,7 × 3,1 = 150,97",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "487",
+							"B": "31",
+							"P": "15097",
+							"a": "48.7",
+							"b": "3.1"
+						},
+						"description": "Erreur : 15,097",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "398,6 + 51,25 = 449,85",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "3986",
+							"B": "5125",
+							"S": "44985",
+							"a": "398.6",
+							"b": "51.25"
+						},
+						"description": "Erreur : 4 498,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "49,8 × 21 ≈ 1 000",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "498",
+							"a": "49.8",
+							"n": "21",
+							"p": "5",
+							"q": "2",
+							"dl": "-2",
+							"el": "1"
+						},
+						"description": "Erreur : 10 000",
+						"variationIndex": 2
+					},
+					{
+						"description": "F10 : 19,8 × 5,1",
+						"variationIndex": 3,
+						"variables": {
+							"p": "2",
+							"dl": "-2",
+							"q": "5",
+							"t": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["20", "5", "100"]
+					},
+					{
+						"description": "F10 : produit exact arrondi",
+						"variationIndex": 3,
+						"variables": {
+							"p": "2",
+							"dl": "-2",
+							"q": "5",
+							"t": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+						},
+						"answers": ["20", "5", "101"]
+					},
+					{
+						"description": "F10 : troncature de 19,8",
+						"variationIndex": 3,
+						"variables": {
+							"p": "2",
+							"dl": "-2",
+							"q": "5",
+							"t": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : $19.8$ est plus près de la dizaine supérieure."
+						},
+						"answers": ["10", "5", "100"]
+					},
+					{
+						"description": "F10 : 31,7 × 4,8",
+						"variationIndex": 3,
+						"variables": {
+							"p": "3",
+							"dl": "17",
+							"q": "5",
+							"t": "-2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["30", "5", "150"]
+					},
+					{
+						"description": "F10 : arrondi à l'unité (32)",
+						"variationIndex": 3,
+						"variables": {
+							"p": "3",
+							"dl": "17",
+							"q": "5",
+							"t": "-2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+						},
+						"answers": ["32", "5", "150"]
+					},
+					{
+						"description": "F10 : troncature de 4,8",
+						"variationIndex": 3,
+						"variables": {
+							"p": "3",
+							"dl": "17",
+							"q": "5",
+							"t": "-2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : $4.8$ est plus près de l'unité supérieure."
+						},
+						"answers": ["30", "4", "150"]
+					}
+				],
+				"description": "Choisir le bon résultat d'un produit ou d'une somme de décimaux (mêmes chiffres, virgule déplacée) ; choisir un ordre de grandeur d'un produit"
+			},
+			"changements": {
+				"ajoutees": [4],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "819df2a9-5dd9-40c5-9525-c68e626c04b6",
+			"title": "Calculer un produit",
+			"fichier": "819df2a9.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{eval:10^a}}*{{b}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+								"{{if:b>=10000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.}}}}|{{if:b>=1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.}}}}|{{if:b>=100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.}}}}|{{if:b>=10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.}}}}|{{if:b>=1|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.}}}}|{{if:b>=1/10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.}}}}|{{if:b>=1/100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}|{{if:b>=1/1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.}}}}|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.}}}}}}}}}}}}}}}}}}}}",
+								"$$\\begin{align} {{eval:10^a}} \\times {{b}} &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{b}}*{{eval:10^a}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+								"{{if:b>=10000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.}}}}|{{if:b>=1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.}}}}|{{if:b>=100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.}}}}|{{if:b>=10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.}}}}|{{if:b>=1|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.}}}}|{{if:b>=1/10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.}}}}|{{if:b>=1/100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}|{{if:b>=1/1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.}}}}|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.}}}}}}}}}}}}}}}}}}}}",
+								"$$\\begin{align} {{b}} \\times {{eval:10^a}} &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["4\\,683"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4.683",
+							"p": "1",
+							"q": "3"
+						},
+						"description": "1000 × 4,683",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "0.7",
+							"p": "0",
+							"q": "1"
+						},
+						"description": "10 × 0,7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4\\,496{,}83"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "449.683",
+							"p": "3",
+							"q": "3"
+						},
+						"description": "v1 449,683 × 10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["325"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3.25",
+							"p": "1",
+							"q": "2"
+						},
+						"description": "v1 point",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4683"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "4.683",
+							"p": "1",
+							"q": "3"
+						},
+						"description": "sans espace",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "0.7",
+							"p": "0",
+							"q": "1"
+						},
+						"description": "division au lieu de multiplication",
+						"variationIndex": 1
+					}
+				],
+				"description": "Multiplier par $10$, $100$ ou $1000$"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{eval:10^a}}*{{b}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+								"{{if:b>=10000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.}}}}|{{if:b>=1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.}}}}|{{if:b>=100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.}}}}|{{if:b>=10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.}}}}|{{if:b>=1|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.}}}}|{{if:b>=1/10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.}}}}|{{if:b>=1/100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}|{{if:b>=1/1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.}}}}|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.}}}}}}}}}}}}}}}}}}}}",
+								"$$\\begin{align} {{eval:10^a}} \\times {{b}} &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{b}}*{{eval:10^a}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+								"{{if:b>=10000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.}}}}|{{if:b>=1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.}}}}|{{if:b>=100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.}}}}|{{if:b>=10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.}}}}|{{if:b>=1|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.}}}}|{{if:b>=1/10|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.}}}}|{{if:b>=1/100|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}|{{if:b>=1/1000|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*1000+1/100000)}}}$, est au rang des millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.}}}}|{{if:a=1|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.|{{if:a=2|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b*10000+1/100000)}}}$, est au rang des dix-millièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.}}}}}}}}}}}}}}}}}}}}",
+								"$$\\begin{align} {{b}} \\times {{eval:10^a}} &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"statement": "Complète avec $10$, $100$ ou $1\\,000$.\n\n$${{b}} \\times ? = {{P}}$$",
+						"variables": [
+							{
+								"name": "P",
+								"expression": "eval:b*10^a;d"
+							}
+						],
+						"conditions": ["mod(b*10^q,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10^a}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:10^(-a);d}}",
+										"message": "Le produit est plus grand que ${{b}}$ : on a multiplié par un nombre plus grand que $1$.",
+										"label": "Rapport inversé"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ fait glisser chaque chiffre d'un rang vers la gauche ; par $100$, de deux rangs ; par $1000$, de trois rangs.",
+								"De ${{b}}$ à ${{P}}$, chaque chiffre a glissé de ${{a}}$ rang{{if:a>1|s|}} vers la gauche.",
+								"$${{b}} \\times \\textcolor{{{color:primary.0}}}{{{solution}}} = {{P}}$$"
+							]
+						},
+						"hint": "Repère un chiffre de ${{b}}$ dans ${{P}}$ : de combien de rangs a-t-il glissé vers la gauche ?"
+					},
+					{
+						"statement": "Complète.\n\n$$? \\times {{eval:10^a}} = {{P}}$$",
+						"variables": [
+							{
+								"name": "P",
+								"expression": "eval:b*10^a;d"
+							}
+						],
+						"conditions": ["mod(b*10^q,10)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:b*10^(2*a);d}}",
+										"message": "Tu as multiplié ${{P}}$ par ${{eval:10^a}}$ : le nombre cherché est ${{eval:10^a}}$ fois plus petit que ${{P}}$.",
+										"label": "Décalage dans le mauvais sens"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Multiplier par $10$, $100$, $1000$** fait glisser chaque chiffre vers la gauche. Pour retrouver le nombre de départ, on fait l'inverse : on divise ${{P}}$ par ${{eval:10^a}}$, chaque chiffre glisse de ${{a}}$ rang{{if:a>1|s|}} vers la droite.",
+								"$${{P}} \\div {{eval:10^a}} = {{solution}}$$",
+								"$$\\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^a}} = {{P}}$$"
+							]
+						},
+						"hint": "Le nombre cherché, multiplié par ${{eval:10^a}}$, donne ${{P}}$ : quelle opération fait le chemin inverse ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["4\\,683"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4.683",
+							"p": "1",
+							"q": "3"
+						},
+						"description": "1000 × 4,683",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "0.7",
+							"p": "0",
+							"q": "1"
+						},
+						"description": "10 × 0,7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4\\,496{,}83"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "449.683",
+							"p": "3",
+							"q": "3"
+						},
+						"description": "v1 449,683 × 10",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["325"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3.25",
+							"p": "1",
+							"q": "2"
+						},
+						"description": "v1 point",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["4683"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "4.683",
+							"p": "1",
+							"q": "3"
+						},
+						"description": "sans espace",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}07"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "0.7",
+							"p": "0",
+							"q": "1"
+						},
+						"description": "division au lieu de multiplication",
+						"variationIndex": 1
+					},
+					{
+						"description": "F4 : 3,7 × 100 = 370",
+						"variationIndex": 2,
+						"variables": {
+							"a": "2",
+							"p": "1",
+							"q": "1",
+							"b": "3.7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["100"]
+					},
+					{
+						"description": "F4 : rapport inversé (0,01)",
+						"variationIndex": 2,
+						"variables": {
+							"a": "2",
+							"p": "1",
+							"q": "1",
+							"b": "3.7"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le produit est plus grand que $3.7$ : on a multiplié par un nombre plus grand que $1$."
+						},
+						"answers": ["0{,}01"]
+					},
+					{
+						"description": "F4 : 10 au lieu de 100",
+						"variationIndex": 2,
+						"variables": {
+							"a": "2",
+							"p": "1",
+							"q": "1",
+							"b": "3.7"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["10"]
+					},
+					{
+						"description": "F4 : 0,045 × 1 000 = 45",
+						"variationIndex": 2,
+						"variables": {
+							"a": "3",
+							"p": "0",
+							"q": "3",
+							"b": "0.045"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1\\,000"]
+					},
+					{
+						"description": "F4 : 1000 sans espace",
+						"variationIndex": 2,
+						"variables": {
+							"a": "3",
+							"p": "0",
+							"q": "3",
+							"b": "0.045"
+						},
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"answers": ["1000"]
+					},
+					{
+						"description": "F4 : … × 1 000 = 45",
+						"variationIndex": 3,
+						"variables": {
+							"a": "3",
+							"p": "0",
+							"q": "3",
+							"b": "0.045"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}045"]
+					},
+					{
+						"description": "F4 : point décimal accepté",
+						"variationIndex": 3,
+						"variables": {
+							"a": "3",
+							"p": "0",
+							"q": "3",
+							"b": "0.045"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0.045"]
+					},
+					{
+						"description": "F4 : décalage dans le mauvais sens",
+						"variationIndex": 3,
+						"variables": {
+							"a": "3",
+							"p": "0",
+							"q": "3",
+							"b": "0.045"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as multiplié $45$ par $1000$ : le nombre cherché est $1000$ fois plus petit que $45$."
+						},
+						"answers": ["45\\,000"]
+					},
+					{
+						"description": "F4 : … × 10 = 46,83",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1",
+							"p": "1",
+							"q": "3",
+							"b": "4.683"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["4{,}683"]
+					},
+					{
+						"description": "F4 : un rang de trop (0,468 3)",
+						"variationIndex": 3,
+						"variables": {
+							"a": "1",
+							"p": "1",
+							"q": "3",
+							"b": "4.683"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0{,}468\\,3"]
+					}
+				],
+				"description": "Multiplier par $10$, $100$ ou $1000$"
+			},
+			"changements": {
+				"ajoutees": [3, 4],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "87cfa41b-cd8c-4b53-9150-78f91dd71702",
+			"title": "Problèmes de partage décimal",
+			"fichier": "87cfa41b.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:j/10;d}}"
+							}
+						],
+						"statement": "${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$ en parts égales. Combien chacun reçoit-il ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "o",
+								"expression": "0..1"
+							},
+							{
+								"name": "n",
+								"expression": "2..9"
+							},
+							{
+								"name": "j",
+								"expression": "5..49"
+							},
+							{
+								"name": "C",
+								"expression": "eval:10*n*j"
+							}
+						],
+						"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
+								"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+								"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:q/10;d}}"
+							}
+						],
+						"statement": "On coupe un ruban de ${{L}}~\\unit{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la longueur d'un morceau ?\n\n$$?~\\text{m}$$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "2..9"
+							},
+							{
+								"name": "q",
+								"expression": "1..15"
+							},
+							{
+								"name": "L",
+								"expression": "eval:n*q/10;d"
+							}
+						],
+						"conditions": ["mod(n*q,10)!=0", "n*q<=99", "mod(q,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Partager en parts égales**, c'est diviser : longueur d'un morceau $=$ longueur du ruban $\\div$ nombre de morceaux.",
+								"De tête : ${{eval:n*q}}$ dixièmes de mètre $\\div {{n}} = {{q}}$ dixièmes.",
+								"$${{L}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:j/10;d}}"
+							}
+						],
+						"statement": "${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "o",
+								"expression": "0..1"
+							},
+							{
+								"name": "n",
+								"expression": "2..9"
+							},
+							{
+								"name": "j",
+								"expression": "5..49"
+							},
+							{
+								"name": "C",
+								"expression": "eval:10*n*j"
+							}
+						],
+						"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix d'un objet** $=$ prix total $\\div$ nombre d'objets.",
+								"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+								"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2,5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "7,50 € entre 3 : 2,5 €",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2,50"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "2,50 € accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["22,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "Erreur : multiplié (22,5)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "Erreur : 25",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "4.2",
+							"n": "6",
+							"q": "7"
+						},
+						"description": "4,2 m en 6 : 0,7 m",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "4.2",
+							"n": "6",
+							"q": "7"
+						},
+						"description": "Erreur : 7",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0,07"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "4.2",
+							"n": "6",
+							"q": "7"
+						},
+						"description": "Erreur : 0,07",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1,90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "760",
+							"j": "19",
+							"n": "4",
+							"o": "0"
+						},
+						"description": "7,60 € pour 4 : 1,90 €",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1,9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "760",
+							"j": "19",
+							"n": "4",
+							"o": "0"
+						},
+						"description": "1,9 € accepté",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1,15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "760",
+							"j": "19",
+							"n": "4",
+							"o": "0"
+						},
+						"description": "Erreur : 1,15 (7 ÷ 4 = 1 reste 3, puis 60 ÷ 4)",
+						"variationIndex": 2
+					}
+				],
+				"description": "Diviser de tête une somme, une longueur, un prix total par un entier d'un chiffre (7,50 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:j/10;d}}"
+							}
+						],
+						"statement": "${{n}}$ amis partagent {{if:o==0|un gain de|une cagnotte de}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$ en parts égales. Combien chacun reçoit-il ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "o",
+								"expression": "0..1"
+							},
+							{
+								"name": "n",
+								"expression": "2..9"
+							},
+							{
+								"name": "j",
+								"expression": "5..49"
+							},
+							{
+								"name": "C",
+								"expression": "eval:10*n*j"
+							}
+						],
+						"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
+								"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+								"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:q/10;d}}"
+							}
+						],
+						"statement": "On coupe un ruban de ${{L}}~\\unit{m}$ en ${{n}}$ morceaux de même longueur. Quelle est la longueur d'un morceau ?\n\n$$?~\\text{m}$$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "2..9"
+							},
+							{
+								"name": "q",
+								"expression": "1..15"
+							},
+							{
+								"name": "L",
+								"expression": "eval:n*q/10;d"
+							}
+						],
+						"conditions": ["mod(n*q,10)!=0", "n*q<=99", "mod(q,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Partager en parts égales**, c'est diviser : longueur d'un morceau $=$ longueur du ruban $\\div$ nombre de morceaux.",
+								"De tête : ${{eval:n*q}}$ dixièmes de mètre $\\div {{n}} = {{q}}$ dixièmes.",
+								"$${{L}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:j/10;d}}"
+							}
+						],
+						"statement": "${{n}}$ {{if:o==0|cahiers identiques coûtent|stylos identiques coûtent}} ${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}}~\\unit{€}$. Combien coûte un {{if:o==0|cahier|stylo}} ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "o",
+								"expression": "0..1"
+							},
+							{
+								"name": "n",
+								"expression": "2..9"
+							},
+							{
+								"name": "j",
+								"expression": "5..49"
+							},
+							{
+								"name": "C",
+								"expression": "eval:10*n*j"
+							}
+						],
+						"conditions": ["mod(j,10)!=0", "n*j<=99", "mod(n*j,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Prix d'un objet** $=$ prix total $\\div$ nombre d'objets.",
+								"De tête : ${{eval:n*j}}$ dixièmes $\\div {{n}} = {{j}}$ dixièmes.",
+								"$${{eval:floor(C/100)}}.{{eval:floor(mod(C,100)/10)}}{{eval:mod(C,10)}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((10*j)/100)}}.{{eval:floor(mod((10*j),100)/10)}}{{eval:mod((10*j),10)}}}$$"
+							]
+						}
+					},
+					{
+						"statement": "On partage ${{eval:Lt/10;d}}~\\unit{L}$ de jus de fruits entre ${{n}}$ verres, de façon égale. Combien de centilitres y a-t-il dans chaque verre, arrondi au centilitre ?\n\n$$?~\\text{cL}$$",
+						"variables": [
+							{
+								"name": "Lt",
+								"expression": "10..25"
+							},
+							{
+								"name": "n",
+								"expression": "6..12"
+							}
+						],
+						"conditions": ["mod(20*Lt,n)!=0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:round(10*Lt/n)}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:floor(10*Lt/n)}}",
+										"message": "Tu as gardé la partie entière : pour arrondir au centilitre, regarde le chiffre des dixièmes.",
+										"label": "Troncature"
+									},
+									{
+										"answer": "{{eval:round(10*Lt/n)/100;d}}",
+										"message": "Tu as donné la réponse en litres : on la demande en centilitres.",
+										"label": "Réponse en litres"
+									},
+									{
+										"answer": "{{eval:round(Lt/n)}}",
+										"message": "$1~\\unit{L} = 100~\\unit{cL}$ : convertis d'abord la quantité de jus en centilitres.",
+										"label": "Conversion fausse"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Partager en parts égales**, c'est diviser. On convertit d'abord : ${{eval:Lt/10;d}}~\\unit{L} = {{eval:10*Lt}}~\\unit{cL}$.",
+								"${{eval:10*Lt}} \\div {{n}} \\approx {{eval:floor(100*Lt/n)/10;d}}$ : le chiffre des dixièmes est ${{eval:mod(floor(100*Lt/n),10)}}$, on arrondit {{if:mod(floor(100*Lt/n),10)>=5|à l'unité supérieure|à l'unité inférieure}}.",
+								"Chaque verre contient environ $\\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{cL}$."
+							]
+						},
+						"hint": "Convertis d'abord la quantité de jus en centilitres, puis partage. Pour arrondir à l'unité, regarde le chiffre des dixièmes."
+					},
+					{
+						"statement": "${{n}}$ amis partagent ${{S}}~\\unit{€}$ en parts égales. Quelle est la part de chacun, arrondie au centime **par excès** ?\n\n$$?~\\text{€}$$",
+						"variables": [
+							{
+								"name": "S",
+								"expression": "10..99"
+							},
+							{
+								"name": "n",
+								"expression": "3..9"
+							}
+						],
+						"conditions": ["mod(100*S,n)!=0", "S>=n"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:ceil(100*S/n)/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:floor(100*S/n)/100;d}}",
+										"message": "Tu as arrondi par défaut : par excès, on prend le centime au-dessus.",
+										"label": "Arrondi par défaut"
+									},
+									{
+										"answer": "{{eval:floor(S/n)+mod(S,n)/10;d}}",
+										"message": "Le reste de la division euclidienne n'est pas la partie décimale : continue la division après la virgule.",
+										"label": "Reste écrit après la virgule"
+									},
+									{
+										"answer": "{{eval:floor(S/n)}}",
+										"message": "Tu as gardé la partie entière : continue la division jusqu'aux centimes.",
+										"label": "Partie entière seulement"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Partager en parts égales**, c'est diviser : part $=$ somme $\\div$ nombre de parts.",
+								"${{S}} \\div {{n}} = {{eval:floor(1000*S/n)/1000;d}}\\ldots$ : la division ne tombe pas juste.",
+								"Par excès, on prend le centime au-dessus : chacun reçoit $\\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{€}$."
+							]
+						},
+						"hint": "Pose la division jusqu'aux millièmes, puis arrondis au centime supérieur."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2,5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "7,50 € entre 3 : 2,5 €",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2,50"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "2,50 € accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["22,5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "Erreur : multiplié (22,5)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "750",
+							"j": "25",
+							"n": "3",
+							"o": "0"
+						},
+						"description": "Erreur : 25",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"L": "4.2",
+							"n": "6",
+							"q": "7"
+						},
+						"description": "4,2 m en 6 : 0,7 m",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "4.2",
+							"n": "6",
+							"q": "7"
+						},
+						"description": "Erreur : 7",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0,07"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"L": "4.2",
+							"n": "6",
+							"q": "7"
+						},
+						"description": "Erreur : 0,07",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1,90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "760",
+							"j": "19",
+							"n": "4",
+							"o": "0"
+						},
+						"description": "7,60 € pour 4 : 1,90 €",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1,9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "760",
+							"j": "19",
+							"n": "4",
+							"o": "0"
+						},
+						"description": "1,9 € accepté",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1,15"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "760",
+							"j": "19",
+							"n": "4",
+							"o": "0"
+						},
+						"description": "Erreur : 1,15 (7 ÷ 4 = 1 reste 3, puis 60 ÷ 4)",
+						"variationIndex": 2
+					},
+					{
+						"description": "F11b : 1,5 L entre 8 verres",
+						"variationIndex": 3,
+						"variables": {
+							"Lt": "15",
+							"n": "8"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["19"]
+					},
+					{
+						"description": "F11b : troncature (18)",
+						"variationIndex": 3,
+						"variables": {
+							"Lt": "15",
+							"n": "8"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé la partie entière : pour arrondir au centilitre, regarde le chiffre des dixièmes."
+						},
+						"answers": ["18"]
+					},
+					{
+						"description": "F11b : en litres (0,19)",
+						"variationIndex": 3,
+						"variables": {
+							"Lt": "15",
+							"n": "8"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as donné la réponse en litres : on la demande en centilitres."
+						},
+						"answers": ["0{,}19"]
+					},
+					{
+						"description": "F11b : 1 L = 10 cL (2)",
+						"variationIndex": 3,
+						"variables": {
+							"Lt": "15",
+							"n": "8"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$1~\\unit{L} = 100~\\unit{cL}$ : convertis d'abord la quantité de jus en centilitres."
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F11b : 25 € entre 3",
+						"variationIndex": 4,
+						"variables": {
+							"S": "25",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["8{,}34"]
+					},
+					{
+						"description": "F11b : par défaut (8,33)",
+						"variationIndex": 4,
+						"variables": {
+							"S": "25",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as arrondi par défaut : par excès, on prend le centime au-dessus."
+						},
+						"answers": ["8{,}33"]
+					},
+					{
+						"description": "F11b : reste après la virgule (8,1)",
+						"variationIndex": 4,
+						"variables": {
+							"S": "25",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le reste de la division euclidienne n'est pas la partie décimale : continue la division après la virgule."
+						},
+						"answers": ["8{,}1"]
+					},
+					{
+						"description": "F11b : partie entière (8)",
+						"variationIndex": 4,
+						"variables": {
+							"S": "25",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé la partie entière : continue la division jusqu'aux centimes."
+						},
+						"answers": ["8"]
+					},
+					{
+						"description": "F11b : 50 € entre 6, 8,34",
+						"variationIndex": 4,
+						"variables": {
+							"S": "50",
+							"n": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["8{,}34"]
+					}
+				],
+				"description": "Diviser de tête une somme, une longueur, un prix total par un entier d'un chiffre (7,50 € entre 3 ; 4,2 m en 6 ; 4 cahiers pour 7,60 €)"
+			},
+			"changements": {
+				"ajoutees": [4, 5],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "b586bdf8-0b7b-452b-9fe5-a7f3d6da456a",
+			"title": "Additionner des nombres décimaux",
+			"fichier": "b586bdf8.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(10*A+B)/100;d}}"
+							}
+						],
+						"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{x}} + {{y}} = ?$$",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "11..999"
+							},
+							{
+								"name": "B",
+								"expression": "101..999"
+							},
+							{
+								"name": "x",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "y",
+								"expression": "eval:B/100;d"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+								"${{x}} = {{x}}0$ : c'est ${{eval:10*A}}$ centièmes ; ${{y}}$, c'est ${{B}}$ centièmes. En tout : ${{eval:10*A}} + {{B}} = {{eval:10*A+B}}$ centièmes.",
+								"$${{x}} + {{y}} = {{x}}0 + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n+Y/100;d}}"
+							}
+						],
+						"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{n}} + {{y}} = ?$$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "2..99"
+							},
+							{
+								"name": "Y",
+								"expression": "1..999"
+							},
+							{
+								"name": "y",
+								"expression": "eval:Y/100;d"
+							}
+						],
+						"conditions": ["mod(Y,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+								"${{n}}$ est un entier : ${{n}} = {{n}}.00$. On ajoute ses unités aux unités de ${{y}}$, les dixièmes et les centièmes ne changent pas.",
+								"$${{n}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["16,55"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "127",
+							"B": "385",
+							"x": "12.7",
+							"y": "3.85"
+						},
+						"description": "12,7 + 3,85 = 16,55",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5,12"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "127",
+							"B": "385",
+							"x": "12.7",
+							"y": "3.85"
+						},
+						"description": "Erreur : chiffres alignés à droite (5,12)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["15,55"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "127",
+							"B": "385",
+							"x": "12.7",
+							"y": "3.85"
+						},
+						"description": "Erreur : retenue des dixièmes oubliée (15,55)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7,35"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"Y": "35",
+							"n": "7",
+							"y": "0.35"
+						},
+						"description": "7 + 0,35 = 7,35",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0,42"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"Y": "35",
+							"n": "7",
+							"y": "0.35"
+						},
+						"description": "Erreur : 7 ajouté aux centièmes (0,42)",
+						"variationIndex": 1
+					}
+				],
+				"description": "Somme de deux décimaux de longueurs différentes (12,7 + 3,85), entier + décimal (7 + 0,35) ; calcul posé au brouillon si besoin"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(10*A+B)/100;d}}"
+							}
+						],
+						"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{x}} + {{y}} = ?$$",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "11..999"
+							},
+							{
+								"name": "B",
+								"expression": "101..999"
+							},
+							{
+								"name": "x",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "y",
+								"expression": "eval:B/100;d"
+							}
+						],
+						"conditions": ["mod(A,10)!=0", "mod(B,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+								"${{x}} = {{x}}0$ : c'est ${{eval:10*A}}$ centièmes ; ${{y}}$, c'est ${{B}}$ centièmes. En tout : ${{eval:10*A}} + {{B}} = {{eval:10*A+B}}$ centièmes.",
+								"$${{x}} + {{y}} = {{x}}0 + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n+Y/100;d}}"
+							}
+						],
+						"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{n}} + {{y}} = ?$$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "2..99"
+							},
+							{
+								"name": "Y",
+								"expression": "1..999"
+							},
+							{
+								"name": "y",
+								"expression": "eval:Y/100;d"
+							}
+						],
+						"conditions": ["mod(Y,10)!=0"],
+						"correction": {
+							"steps": [
+								"**Additionner des décimaux.** On additionne les chiffres de même rang : unités avec unités, dixièmes avec dixièmes, centièmes avec centièmes. Pour ne pas se tromper, on écrit les deux nombres avec autant de chiffres après la virgule.",
+								"${{n}}$ est un entier : ${{n}} = {{n}}.00$. On ajoute ses unités aux unités de ${{y}}$, les dixièmes et les centièmes ne changent pas.",
+								"$${{n}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						}
+					},
+					{
+						"statement": "Calcule. Pose l'opération sur ton brouillon si besoin.\n\n$${{n}} + {{x}} + {{y}}{{if:w==1| + {{z}}|}} = ?$$",
+						"variables": [
+							{
+								"name": "w",
+								"expression": "0..1"
+							},
+							{
+								"name": "n",
+								"expression": "12..499"
+							},
+							{
+								"name": "A",
+								"expression": "11..999"
+							},
+							{
+								"name": "B",
+								"expression": "101..9999"
+							},
+							{
+								"name": "D",
+								"expression": "11..999"
+							},
+							{
+								"name": "x",
+								"expression": "eval:A/10;d"
+							},
+							{
+								"name": "y",
+								"expression": "eval:B/100;d"
+							},
+							{
+								"name": "z",
+								"expression": "eval:D/100;d"
+							},
+							{
+								"name": "S",
+								"expression": "eval:100*n+10*A+B+w*D"
+							}
+						],
+						"conditions": [
+							"mod(A,10)!=0",
+							"mod(B,10)!=0",
+							"mod(D,10)!=0",
+							"mod(B+w*D,10)!=0",
+							"mod(A,10)*10+mod(B,100)+w*mod(D,100)>=100"
+						],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:S/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(S-100*floor((mod(A,10)*10+mod(B,100)+w*mod(D,100))/100))/100;d}}",
+										"message": "Tu as oublié la retenue : les chiffres après la virgule donnent plus d'une unité, elle s'ajoute aux unités.",
+										"label": "Retenue oubliée"
+									},
+									{
+										"answer": "{{eval:(S-100*n+n)/100;d}}",
+										"message": "${{n}}$ est un entier : ses chiffres se placent à gauche de la virgule.",
+										"label": "Entier aligné à droite"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Additionner des décimaux.** On écrit tous les nombres avec autant de chiffres après la virgule (ici deux), on aligne les virgules, puis on additionne colonne par colonne, de droite à gauche, en reportant les retenues.",
+								"${{n}} = {{n}}.00$ et ${{x}} = {{x}}0$.",
+								"$${{n}} + {{x}} + {{y}}{{if:w==1| + {{z}}|}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+							]
+						},
+						"hint": "Écris tous les nombres avec deux chiffres après la virgule, puis aligne les virgules en colonnes."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["16,55"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"A": "127",
+							"B": "385",
+							"x": "12.7",
+							"y": "3.85"
+						},
+						"description": "12,7 + 3,85 = 16,55",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5,12"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "127",
+							"B": "385",
+							"x": "12.7",
+							"y": "3.85"
+						},
+						"description": "Erreur : chiffres alignés à droite (5,12)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["15,55"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"A": "127",
+							"B": "385",
+							"x": "12.7",
+							"y": "3.85"
+						},
+						"description": "Erreur : retenue des dixièmes oubliée (15,55)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7,35"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"Y": "35",
+							"n": "7",
+							"y": "0.35"
+						},
+						"description": "7 + 0,35 = 7,35",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0,42"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"Y": "35",
+							"n": "7",
+							"y": "0.35"
+						},
+						"description": "Erreur : 7 ajouté aux centièmes (0,42)",
+						"variationIndex": 1
+					},
+					{
+						"description": "Q1 : 345 + 78,4 + 56,78 + 2,35",
+						"variationIndex": 2,
+						"variables": {
+							"w": "1",
+							"n": "345",
+							"A": "784",
+							"B": "5678",
+							"D": "235"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["482{,}53"]
+					},
+					{
+						"description": "Q1 : retenue oubliée",
+						"variationIndex": 2,
+						"variables": {
+							"w": "1",
+							"n": "345",
+							"A": "784",
+							"B": "5678",
+							"D": "235"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as oublié la retenue : les chiffres après la virgule donnent plus d'une unité, elle s'ajoute aux unités."
+						},
+						"answers": ["481{,}53"]
+					},
+					{
+						"description": "Q1 : entier aligné à droite",
+						"variationIndex": 2,
+						"variables": {
+							"w": "1",
+							"n": "345",
+							"A": "784",
+							"B": "5678",
+							"D": "235"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$345$ est un entier : ses chiffres se placent à gauche de la virgule."
+						},
+						"answers": ["140{,}98"]
+					},
+					{
+						"description": "Q1 : 3 termes, 128 + 47,6 + 9,85",
+						"variationIndex": 2,
+						"variables": {
+							"w": "0",
+							"n": "128",
+							"A": "476",
+							"B": "985",
+							"D": "11"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["185{,}45"]
+					},
+					{
+						"description": "Q1 : 3 termes, point décimal",
+						"variationIndex": 2,
+						"variables": {
+							"w": "0",
+							"n": "128",
+							"A": "476",
+							"B": "985",
+							"D": "11"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["185.45"]
+					}
+				],
+				"description": "Somme de deux décimaux de longueurs différentes (12,7 + 3,85), entier + décimal (7 + 0,35) ; calcul posé au brouillon si besoin"
+			},
+			"changements": {
+				"ajoutees": [3],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		},
+		{
+			"id": "ddbce820-5e75-4a7a-832e-33980cd4b43a",
+			"title": "Calculer un produit",
+			"fichier": "ddbce820.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..2"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "d",
+								"expression": "1..2"
+							},
+							{
+								"name": "expression1",
+								"expression": "{{eval:a*10^(-b);d}}*{{eval:c*10^(-d);d}}"
+							}
+						],
+						"conditions": ["mod(a*c,10)!=0"],
+						"correction": {
+							"steps": [
+								"$${{a}}\\times {{c}}={{eval:a*c}}$$",
+								"donc :",
+								"${{eval:a*10^(-b);d}} \\times {{eval:c*10^(-d);d}}={{solution}}$ ($\\textcolor{{{color:primary.0}}}{{{b}}+{{d}}={{eval:b+d}}\\text{ décimales}}$)."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0{,}006\\,3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "2",
+							"c": "9",
+							"d": "2"
+						},
+						"description": "0,07 × 0,09 = 0,006 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}0063"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"a": "7",
+							"b": "2",
+							"c": "9",
+							"d": "2"
+						},
+						"description": "0,0063 sans espace : perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}063"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "2",
+							"c": "9",
+							"d": "2"
+						},
+						"description": "décimales mal comptées : 0,063",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}027"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "1",
+							"c": "3",
+							"d": "2"
+						},
+						"description": "0,9 × 0,03 = 0,027",
+						"variationIndex": 0
+					}
+				],
+				"description": "Multiplier deux nombres décimaux inférieurs à $1$"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..2"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "d",
+								"expression": "1..2"
+							},
+							{
+								"name": "expression1",
+								"expression": "{{eval:a*10^(-b);d}}*{{eval:c*10^(-d);d}}"
+							}
+						],
+						"conditions": ["mod(a*c,10)!=0"],
+						"correction": {
+							"steps": [
+								"$${{a}}\\times {{c}}={{eval:a*c}}$$",
+								"donc :",
+								"${{eval:a*10^(-b);d}} \\times {{eval:c*10^(-d);d}}={{solution}}$ ($\\textcolor{{{color:primary.0}}}{{{b}}+{{d}}={{eval:b+d}}\\text{ décimales}}$)."
+							]
+						}
+					},
+					{
+						"statement": "On considère les nombres ${{x}}$ et ${{y}}$.\n\nLeur somme : $?$\n\nLeur produit : $?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "x",
+								"expression": "eval:a/10;d"
+							},
+							{
+								"name": "y",
+								"expression": "eval:c/10;d"
+							}
+						],
+						"conditions": ["a*c != a+c"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(a+c)/10;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*c/100;d}}",
+										"message": "Tu as calculé le produit : la somme, c'est ${{x}} + {{y}}$.",
+										"label": "Produit au lieu de somme"
+									},
+									{
+										"answer": "{{eval:(a+c)/100;d}}",
+										"message": "Une somme de dixièmes s'écrit en dixièmes : le résultat n'a qu'une décimale.",
+										"label": "Dixièmes écrits en centièmes"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:a*c/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*c/10;d}}",
+										"message": "Tu as gardé une seule décimale : dans un produit, on additionne les nombres de décimales des deux facteurs.",
+										"label": "Décimales mal comptées"
+									},
+									{
+										"answer": "{{eval:(a+c)/10;d}}",
+										"message": "Tu as calculé la somme : le produit, c'est ${{x}} \\times {{y}}$.",
+										"label": "Somme au lieu de produit"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Somme** : on additionne les dixièmes, ${{a}}$ dixièmes $+ {{c}}$ dixièmes $= {{eval:a+c}}$ dixièmes : ${{x}} + {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:(a+c)/10;d}}}$.",
+								"**Produit** : ${{a}} \\times {{c}} = {{eval:a*c}}$, et le produit a $1 + 1 = 2$ décimales : ${{x}} \\times {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:a*c/100;d}}}$."
+							]
+						},
+						"hint": "La somme, c'est le résultat d'une addition ; le produit, celui d'une multiplication. Compte bien les décimales dans chaque cas."
+					},
+					{
+						"statement": "On considère les nombres ${{x}}$ et ${{y}}$.\n\nLeur somme : $?$\n\nLeur produit : $?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "C",
+								"expression": "11..99"
+							},
+							{
+								"name": "x",
+								"expression": "eval:a/10;d"
+							},
+							{
+								"name": "y",
+								"expression": "eval:C/100;d"
+							}
+						],
+						"conditions": ["mod(C,10)!=0", "mod(a*C,10)!=0", "a*C != 10*a+C"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(10*a+C)/100;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*C/1000;d}}",
+										"message": "Tu as calculé le produit : la somme, c'est ${{x}} + {{y}}$.",
+										"label": "Produit au lieu de somme"
+									},
+									{
+										"answer": "{{eval:(a+C)/100;d}}",
+										"message": "Tu as aligné les derniers chiffres : on aligne les virgules, dixièmes sous dixièmes.",
+										"label": "Chiffres alignés à droite"
+									}
+								]
+							},
+							{
+								"expectedAnswer": "{{eval:a*C/1000;d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*C/100;d}}",
+										"message": "Dans un produit, on additionne les nombres de décimales des deux facteurs : ${{x}}$ en a une, ${{y}}$ en a deux.",
+										"label": "Décimales mal comptées"
+									},
+									{
+										"answer": "{{eval:(10*a+C)/100;d}}",
+										"message": "Tu as calculé la somme : le produit, c'est ${{x}} \\times {{y}}$.",
+										"label": "Somme au lieu de produit"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Somme** : on aligne les virgules, ${{x}} = {{x}}0$, donc ${{x}} + {{y}} = {{x}}0 + {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:(10*a+C)/100;d}}}$.",
+								"**Produit** : ${{a}} \\times {{C}} = {{eval:a*C}}$, et le produit a $1 + 2 = 3$ décimales : ${{x}} \\times {{y}} = \\textcolor{{{color:primary.0}}}{{{eval:a*C/1000;d}}}$."
+							]
+						},
+						"hint": "La somme, c'est le résultat d'une addition ; le produit, celui d'une multiplication. Compte bien les décimales dans chaque cas."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0{,}006\\,3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "2",
+							"c": "9",
+							"d": "2"
+						},
+						"description": "0,07 × 0,09 = 0,006 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}0063"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["spaces"]
+						},
+						"variables": {
+							"a": "7",
+							"b": "2",
+							"c": "9",
+							"d": "2"
+						},
+						"description": "0,0063 sans espace : perfectible",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}063"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "2",
+							"c": "9",
+							"d": "2"
+						},
+						"description": "décimales mal comptées : 0,063",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}027"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "1",
+							"c": "3",
+							"d": "2"
+						},
+						"description": "0,9 × 0,03 = 0,027",
+						"variationIndex": 0
+					},
+					{
+						"description": "F9a : 0,4 et 0,5",
+						"variationIndex": 1,
+						"variables": {
+							"a": "4",
+							"c": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}9", "0{,}2"]
+					},
+					{
+						"description": "F9a : 0,20 accepté pour le produit",
+						"variationIndex": 1,
+						"variables": {
+							"a": "4",
+							"c": "5"
+						},
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["zeros"]
+						},
+						"answers": ["0{,}9", "0{,}20"]
+					},
+					{
+						"description": "F9a : produit 2",
+						"variationIndex": 1,
+						"variables": {
+							"a": "4",
+							"c": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as gardé une seule décimale : dans un produit, on additionne les nombres de décimales des deux facteurs."
+						},
+						"answers": ["0{,}9", "2"]
+					},
+					{
+						"description": "F9a : produit à la place de la somme",
+						"variationIndex": 1,
+						"variables": {
+							"a": "4",
+							"c": "5"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as calculé le produit : la somme, c'est $0.4 + 0.5$."
+						},
+						"answers": ["0{,}2", "0{,}2"]
+					},
+					{
+						"description": "F9a : 0,7 + 0,8 = 1,5",
+						"variationIndex": 1,
+						"variables": {
+							"a": "7",
+							"c": "8"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1{,}5", "0{,}56"]
+					},
+					{
+						"description": "F9a : 0,7 + 0,8 = 0,15",
+						"variationIndex": 1,
+						"variables": {
+							"a": "7",
+							"c": "8"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Une somme de dixièmes s'écrit en dixièmes : le résultat n'a qu'une décimale."
+						},
+						"answers": ["0{,}15", "0{,}56"]
+					},
+					{
+						"description": "F9b : 0,3 et 0,25",
+						"variationIndex": 2,
+						"variables": {
+							"a": "3",
+							"C": "25"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0{,}55", "0{,}075"]
+					},
+					{
+						"description": "F9b : alignés à droite",
+						"variationIndex": 2,
+						"variables": {
+							"a": "3",
+							"C": "25"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as aligné les derniers chiffres : on aligne les virgules, dixièmes sous dixièmes."
+						},
+						"answers": ["0{,}28", "0{,}075"]
+					},
+					{
+						"description": "F9b : produit 0,75",
+						"variationIndex": 2,
+						"variables": {
+							"a": "3",
+							"C": "25"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Dans un produit, on additionne les nombres de décimales des deux facteurs : $0.3$ en a une, $0.25$ en a deux."
+						},
+						"answers": ["0{,}55", "0{,}75"]
+					},
+					{
+						"description": "F9b : somme au lieu de produit",
+						"variationIndex": 2,
+						"variables": {
+							"a": "3",
+							"C": "25"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as calculé la somme : le produit, c'est $0.3 \\times 0.25$."
+						},
+						"answers": ["0{,}55", "0{,}55"]
+					}
+				],
+				"description": "Multiplier deux nombres décimaux inférieurs à $1$"
+			},
+			"changements": {
+				"ajoutees": [2, 3],
+				"corrigees": [],
+				"specs": true,
+				"description": false
+			}
+		}
+	]
+}
