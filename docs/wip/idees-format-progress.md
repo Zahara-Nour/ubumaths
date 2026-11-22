@@ -8,22 +8,14 @@ Mettre en œuvre les idées retenues dans [idees-format-exercices.md](idees-form
 
 _Mis à jour le 2026-11-22, avant /clear ; revue du lot de Seconde en cours (pas de PR)._
 
-- **État** : idées 1 à 5 terminées (pas en prod). Revue du lot « nombres et calculs » de Seconde :
-  passe 1 (erreurs prévues, coups de pouce, specs) commitée sur `feat/idees-format-revue-2de` ;
-  passe 2 (forme) : 68 propositions + 16 questions sur la page à cocher
-  https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af (réponses dans sa base, collection `reponses`).
-- **Prochaine action (David, 2026-11-22)** : (1) `deploy:prod` lancé par David (migrations
-  vérifiées : 631/631 jouées en prod ; livre idées 1 à 5, dont `hint`) ; (2) expliquer à David
-  comment lancer `/idees-rubrique` pour la Première et la Terminale, une session par rubrique
-  (skill `.claude/skills/idees-rubrique/SKILL.md`, tableau `docs/wip/idees-ailleurs-repartition.md`) ;
-  skills de lot mis à jour sur main (`41e1628cb` : coup de pouce, 3 erreurs prévues, faits de forme).
-  Puis : lire les réponses de David (`ArtifactData list reponses`, compter avant de
-  dire « tout est relu »), puis réécrire les modèles retenus, ajouter les outils retenus à
-  `docs/wip/outils-manquants.md`, une PR.
-- **En attente de David** : la page à cocher ; essais « En QCM » et coup de pouce (§ Idée 4, 5).
-- **Pièges en cours** : `hint` pas en prod → migration de contenu seulement après le `deploy:prod`
-  qui livre #2991 ; `migration-contenu.ts` refuse les réglages du modèle (options) ; dédoublonnage
-  du tirage aveugle à la forme.
+- **État** : idées 1 à 5 sur main. Revue de Seconde : passe 1 (erreurs prévues, coups de pouce,
+  specs) commitée ; passe 2 (forme) sur la page à cocher https://claude.ai/artifact/NzDUsxMUyjn8Ke1rSJf2Af
+  (collection `reponses`) ; skills de lot à jour (`41e1628cb`).
+- **Prochaine action** : (1) `deploy:prod` par David (631/631 migrations jouées) ; (2) lui dire
+  comment lancer `/idees-rubrique` en Première et Terminale, une session par rubrique
+  (`docs/wip/idees-ailleurs-repartition.md`) ; (3) lire ses réponses (les compter), réécrire, PR.
+- **En attente de David** : la page à cocher ; essais « En QCM » et coup de pouce.
+- **Pièges** : `migration-contenu.ts` refuse les réglages du modèle ; dédoublonnage aveugle à la forme.
 - **Worktree / branche** : `ubumaths-wt-idees-format-revue-2de` (`feat/idees-format-revue-2de`) ;
   `ubumaths-wt-idees-format` et `-indice-eleve` à retirer après les essais.
 
