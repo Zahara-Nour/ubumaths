@@ -170,6 +170,16 @@ de contenu appliquée en prod.
 | 18e26873 Déterminer les racines d'un polynôme du second degré                           | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
 | 56b1803f Déterminer les coordonnées du sommet                                           | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
 | a9aece33 Calculer la forme canonique                                                    | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
+| 2c5bae8f Liens entre les unités de numération                                           | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| 819df2a9 Calculer un produit (CM2-042)                                                  | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| 590169c4 Calculer un quotient (CM2-043)                                                 | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| 571ca739 Calculer un produit (6-118)                                                    | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| ddbce820 Calculer un produit (6-118)                                                    | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| 7deff4e0 Contrôler par un ordre de grandeur                                             | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| 32b7a9bc Problèmes de produits décimaux                                                 | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| 87cfa41b Problèmes de partage décimal                                                   | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| 3f4bacc6 Problèmes de division euclidienne                                              | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
+| b586bdf8 Additionner des nombres décimaux                                               | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
 
 ## Idées en attente
 
@@ -187,3 +197,5 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   « compléments sur la dérivation ».
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
+- `idees-6e-decimaux` (plus tard, David, 2026-11-22) : le matériel décimal, cube, plaque, barre, petit cube
+  (6N2autoB-2), en attente d'un bloc `collection` qui représente les décimaux.

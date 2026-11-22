@@ -18,6 +18,13 @@ _Mis à jour le 2026-11-22, page de phase 0 publiée._
 - **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux` (`docs/idees-6e-decimaux`, en retard sur
   main) ; il ne servira qu'à la PR des migrations.
 
+## Décisions de David (2026-11-22)
+
+« je valide tes recos » : toutes les recommandations de la page de phase 0 sont validées.
+F1 à F7, F9 à F11, F12a, F12b : oui. F8 : un seul modèle, sur le produit (6-118). Q1 : variation de
+b586bdf8 à 3 ou 4 termes. Q2 (matériel décimal) : plus tard, noté dans « Idées en attente » du
+tableau. Q3 : migration de rangement sans accès nouveau. 10 modèles publiés réservés dans le tableau.
+
 ## Verdicts esquissés (2026-11-22, reportés dans le relevé)
 
 - ✅ rien : 6N2A-1, 6N2A-4, 6N2A (CM1 39e7d0a5, 1ed5202f, 613817ea ; 6e b586bdf8, 4b0b03b7) ;
