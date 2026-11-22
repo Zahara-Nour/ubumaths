@@ -6,19 +6,18 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3014._
+_Mis à jour le 2026-11-22, PR des migrations ouverte._
 
-- **État** : lot écrit, 6 modèles neufs (14 variations) et 16 variations de 10 modèles publiés ;
-  `question:specs` vert sur les 16 fichiers ; `create-questions` en simulation vert ; `migration-contenu`
-  accepte les 10 publiés · **Prochaine action** : lot mergé (#3014) ; David lance `create-questions
---publier` sur `scripts/questions/idees-6e-decimaux-neufs/` ; puis PR des migrations (rangement des
-  6 neufs, niveau 6 ajouté à 590169c4, contenu des publiés régénéré) · **En attente de David** : le
-  `--publier` des brouillons.
-- **Pièges en cours** : la migration de contenu générée par l'agent (`20261122182230_…`) reste hors de
-  la PR du lot (non suivie dans le worktree), à régénérer à la PR des migrations ; ni essai en base
-  locale ni jeu dans l'aperçu pour l'instant.
-- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux` gardé (il porte la migration non suivie),
-  branche `feat/idees-6e-decimaux` mergée ; la PR des migrations partira d'une branche neuve.
+- **État** : 6 brouillons publiés par David (ids dans `scripts/questions/idees-6e-decimaux-neufs/`) ;
+  PR des migrations : rangement `20261122183733_…` (6 nœuds + 6 points, niveau 6 ajouté à 590169c4)
+  et contenu `20261122183720_…` (10 publiés, régénérée) ; tests verts, rouges sans les migrations ·
+  **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions) → relecture dans
+  `/dev/modeles` (brouillons par `?point=`, série de relecture pour les 10 publiés) · **En attente de
+  David** : rien avant la relecture.
+- **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu pour l'instant ; l'ancien worktree
+  `ubumaths-wt-idees-6e-decimaux` porte une migration de contenu périmée (`20261122182230_…`), à
+  ne pas pousser (à jeter avec le worktree, avec l'accord de David).
+- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux-migrations`, `feat/idees-6e-decimaux-migrations`.
 
 ## Décisions de David (2026-11-22)
 
@@ -79,3 +78,7 @@ tableau. Q3 : migration de rangement sans accès nouveau. 10 modèles publiés r
   Écarts à la fiche : F2c toujours avec retenue ; F12a c impose quotient < reste < diviseur (sinon
   l'égalité se lit aussi comme division par le quotient) ; Q1 sommes sous 710 environ. Erreurs prévues
   non inventées : 1 ou 2 seulement pour F4, F6, Q1, F10 case 2. Lettres `e`, `i` réservées.
+- 2026-11-22 : brouillons publiés par David (a2ae7206 F2, 67954fbb F3, 44d352a2 F5, a29bf7c7 F7,
+  33ff7000 F8, c04b78f8 F12a). Relevé en prod : sans nœud ni tag ; 6-106 posé sur la notion
+  « Décimaux : numération » (voisins sur « forme fractionnaire »), les autres sur leur sous-notion ;
+  590169c4 à {CM2}. Migrations de rangement et de contenu écrites, tests verts et rouges sans elles.
