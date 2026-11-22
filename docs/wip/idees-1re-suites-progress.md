@@ -5,19 +5,19 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Première spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, essai local validé par David, PR des fichiers ouverte._
+_Mis à jour le 2026-11-22, après #3006._
 
-- **État** : 4 nouveaux modèles (`scripts/questions/1re-suites-a/`) et 26 variations de 14 modèles
-  publiés (`scripts/questions/1re-suites-publies/`) essayés en base locale ; David : « je valide
-  tout ». PR des fichiers ouverte (contenu, aucune revue). · **Prochaine action** : après merge,
-  David lance `create-questions --dir scripts/questions/1re-suites-a --publier` (brouillons en
-  prod) ; je commite les ids ; puis migrations de rangement (nœud + tag) et de contenu
-  (`migration-contenu.ts --dir scripts/questions/1re-suites-publies`, régénérée à ce moment). ·
-  **En attente de David** : le `--publier` en prod. · **Pièges en cours** :
-  `lot-1re-suites-publies.py` repart de l'export 2a85b7b809 (le relancer réécrit les ajouts, ne
-  les double pas) ; base locale : les 14 publiés y sont des brouillons neufs (ids locaux
-  différents de la prod). · **Worktree / branche** : `ubumaths-wt-idees-1re-suites`,
-  `feat/idees-1re-suites`.
+- **État** : fichiers du lot sur `main` (#3006) : 4 nouveaux modèles (`scripts/questions/1re-suites-a/`)
+  et 26 variations de 14 modèles publiés (`scripts/questions/1re-suites-publies/`), essayés en local
+  et validés par David. Rien en prod encore. · **Prochaine action** : David lance, depuis le dépôt
+  principal à jour, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1re-suites-a --publier`
+  (brouillons en prod, ids écrits en tête des 4 fichiers) ; puis, dans un nouveau worktree : commit
+  des ids, migration de rangement (nœud + tag) des 4 et migration de contenu des 14
+  (`migration-contenu.ts --dir scripts/questions/1re-suites-publies`, régénérée à ce moment, prod
+  relue) ; relecture dans `/dev/modeles`. · **En attente de David** : le `--publier` en prod. ·
+  **Pièges en cours** : `lot-1re-suites-publies.py` repart de l'export 2a85b7b809 (le relancer
+  réécrit les ajouts, ne les double pas) ; en base locale, les 14 publiés sont des brouillons neufs
+  (ids locaux ≠ prod). · **Worktree / branche** : aucun (`ubumaths-wt-idees-1re-suites` retiré).
 
 ## Historique
 
