@@ -6,23 +6,24 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2994._
+_Mis à jour le 2026-11-22, après #2994 et la création des brouillons en prod._
 
-- **État** : #2994 mergée (fichiers seuls) : 3 modèles neufs dans `scripts/questions/6e-entiers-a/`
-  (égalité deux calculs, Yohaku, grand nombre en lettres), variations ajoutées en fin de 98f558e4,
-  b9677e1f, d793de49 dans `scripts/questions/6e-entiers-publies/`. Rien en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/6e-entiers-a --publier` (brouillons en prod) ; je commite les ids. Puis, nouveau
-  worktree `ubumaths-wt-idees-6e-entiers-rangement` : migration de rangement (nœud + tag : 01 et 02 →
-  CM2-065, 03 → CM2-003 ; règles du tag vérifiées en base) et migration de contenu
-  (`migration-contenu.ts --dir scripts/questions/6e-entiers-publies`), tests d'intégration rouges sans
-  elles, `security-auditor`, `db:migrate` (4 conditions, `migration list --linked` d'abord).
-- **En attente de David** : question d'accès (ma réponse : personne) ; brouillons en prod ; regard sur
-  l'aperçu local non vu (grille Yohaku `\hline`, bloc trous) ; titre de b9677e1f dans l'éditeur s'il veut.
+- **État** : #2994 mergée. Brouillons créés en prod par David : 818d5e6b (égalité deux calculs),
+  ba899229 (Yohaku), e76ab26f (lettres et chiffres) ; ids commités sur `feat/idees-6e-entiers-rangement`
+  (ac9d1c7c65, poussé). Variations des publiés (98f558e4, b9677e1f, d793de49) dans
+  `scripts/questions/6e-entiers-publies/`, pas encore migrées.
+- **Prochaine action** : dans `../ubumaths-wt-idees-6e-entiers-rangement` (`cp .env .env.local`,
+  `pnpm install`) : migration de rangement (nœud + tag : 818d5e6b et ba899229 → CM2-065, e76ab26f →
+  CM2-003 ; règles du tag vérifiées en base) et migration de contenu (`migration-contenu.ts --dir
+scripts/questions/6e-entiers-publies`) ; tests d'intégration rouges sans elles ; `security-auditor` ;
+  PR ; `db:migrate` (4 conditions, `migration list --linked` d'abord). Puis relecture dans `/dev/modeles`.
+- **En attente de David** : regard sur l'aperçu (grille Yohaku `\hline`, bloc trous), possible en prod
+  sur les brouillons ; titre de b9677e1f dans l'éditeur s'il veut. **Question d'accès tranchée**
+  (David, 2026-11-22) : personne ne gagne d'accès.
 - **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; le hook pre-commit
   laisse l'index avec une vieille copie (`git diff HEAD` vide → `git restore --staged`) ; zsh ne découpe
   pas `$F` ; le Chrome connecté n'atteint pas `[::1]:<port>` du Mac mini.
-- **Worktree / branche** : aucun (worktree de #2994 retiré).
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers-rangement`, `feat/idees-6e-entiers-rangement`.
 
 ## Historique
 
@@ -49,3 +50,9 @@ Agent `pedagogy-expert` : 3 modèles neufs (22, 7, 33 specs) et variations des 3
 Relu dans les tirages. Corrigé : tranche vide « $000$ (pas de mille) » ; grille Yohaku avec `\hline` et double
 trait avant les sommes (`\hline` déjà utilisé par `6-nombres/04-grands-nombres.json`). V2, V3, V4 de l'égalité :
 deux erreurs prévues seulement (pas de troisième erreur réelle). Yohaku : une erreur prévue (cases échangées).
+
+## 2026-11-22 — question d'accès, brouillons en prod
+
+David confirme : les migrations de rangement et de contenu ne donnent aucun accès nouveau (« je confirme
+pour la question d'accès »). Condition (1) de `db:migrate` remplie. Brouillons créés en prod par David
+(818d5e6b, ba899229, e76ab26f), ids vérifiés par MCP (draft, CM2 + 6).
