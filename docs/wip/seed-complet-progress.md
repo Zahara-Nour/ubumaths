@@ -395,7 +395,7 @@ Palotins, journal des récompenses, gamification du prof, tournoi côté prof).
   - **bloc « succès » de l'accueil élève mort** : la requête vise `game_achievements` (Navadra) au lieu
     d'`achievements`, et la page ne l'affiche pas (`dashboard/+page.server.ts:230`).
 
-## 11. PR 4 : échanges et famille — phase 0 (2026-11-22, branche `feat/seed-complet-echanges`, **à valider**)
+## 11. PR 4 : échanges et famille — phase 0 (2026-11-22, branche `feat/seed-complet-echanges`, **validée par David le 2026-11-22 : « je valide », carnet activé sur une classe et réponses du tuteur écrites à l’avance compris**)
 
 **Mesures** (prod en lecture seule, des comptes de lignes ; lecteurs relevés dans `src/`). Messagerie
 du prof (`/messages`) : 3 messages privés en prod, la boîte lit `message_inbox`, que la fonction d'envoi
