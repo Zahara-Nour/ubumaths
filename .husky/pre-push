@@ -1,4 +1,7 @@
-bash scripts/garde-deploy-en-cours.sh push
+# Les refs poussées arrivent sur l'entrée standard, lisible une seule fois : gardées ici
+# pour la garde du déploiement et, plus bas, pour « code modifié ⇒ doc modifiée ».
+refs_poussees="$(cat)"
+printf '%s\n' "$refs_poussees" | bash scripts/garde-deploy-en-cours.sh push || exit 1
 # Fichiers SUIVIS uniquement (cf. scripts/format-check-tracked.sh) : la CI voit un
 # clone frais, donc un fichier non commité ne peut pas la faire rougir. Vérifier
 # tout l'arbre bloquait des push pour le brouillon non suivi d'une autre session,
@@ -53,8 +56,15 @@ fi
 # Code modifié ⇒ doc modifiée, ou `Doc-inchangée:` / `Doc-reportée:` dans un commit.
 # Bloquant depuis le 2026-11-22 (avertissement avant) : 18 des 29 CI rouges de la
 # semaine venaient de cette garde, vue seulement 7 min après le push.
-if ! pnpm docs:check-a-jour --depuis origin/main; then
-	exit 1
+# Seulement quand le push emporte le commit courant : la garde lit HEAD, et une suppression
+# de branche, un tag ou une autre branche ne doivent pas être refusés pour la doc de HEAD.
+# `origin/main` vient d'être relu par la garde des horodatages ci-dessus.
+if printf '%s\n' "$refs_poussees" | grep -q " $(git rev-parse HEAD) "; then
+	if ! pnpm docs:check-a-jour --depuis origin/main; then
+		exit 1
+	fi
+else
+	echo "pre-push : le commit courant ne part pas, « code modifié ⇒ doc modifiée » non vérifié."
 fi
 
 # Filtre de chemins de la suite d'intégration : 13 des 20 rouges de la semaine (~2 s).

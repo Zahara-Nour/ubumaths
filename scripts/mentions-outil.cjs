@@ -13,7 +13,7 @@ const MENTIONS = [
 	{ nom: 'Co-Authored-By', motif: /^\s*co-authored-by:.*(claude|anthropic)/im },
 	{ nom: 'Claude-Session', motif: /^\s*claude-session\s*:/im },
 	{ nom: 'lien claude.ai', motif: /claude\.ai\//i },
-	{ nom: 'Generated with', motif: /generated with\b.*claude/i },
+	{ nom: 'Generated with', motif: /generated (with|by)\b.*claude/i },
 	{ nom: 'adresse anthropic.com', motif: /@anthropic\.com/i }
 ];
 
