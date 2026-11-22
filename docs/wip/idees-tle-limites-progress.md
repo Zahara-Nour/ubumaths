@@ -5,15 +5,14 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, PR #3010 ouverte._
+_Mis à jour le 2026-11-22, après #3010._
 
-- **État** : 4 brouillons en prod (créés par David) ; #3010 ouverte (ids, migration de rangement,
-  migration de contenu des 7 publiés, +15 variations) ; intégration 53 verts, 11 rouges sans ·
-  **Prochaine action** : réponse de David sur le rangement → merge, `migration list --linked`,
-  `db:migrate` ; puis relecture dans `/dev/modeles` · **En attente de David** : rangement de F1
-  (notion seule) ; F3 (a, b ou c) · **Pièges en cours** : ne pas merger avant la réponse (le
-  `db push` d'une autre session jouerait la migration) ; `{{e}}` interdit (Euler) ·
-  **Worktree / branche** : `ubumaths-wt-idees-tle-limites-migrations`, `feat/idees-tle-limites-migrations`.
+- **État** : #3010 mergée, migrations de rangement et de contenu en prod (vérifié : 4 brouillons
+  rangés, 3 tags, +15 variations sur les 7 publiés) · **Prochaine action** : relecture dans
+  `/dev/modeles` (brouillons : `?noeud=` Limites de fonctions ; publiés : série de relecture,
+  `scripts/series/creer-serie.ts`), puis corrections et `publier-lot.ts` · **En attente de
+  David** : F3 (a, b ou c, voir Historique « lot écrit ») · **Pièges en cours** : `{{e}}` interdit
+  (Euler) · **Worktree / branche** : aucun (retiré après #3010).
 
 ## Historique
 
@@ -83,3 +82,9 @@ _Mis à jour le 2026-11-22, PR #3010 ouverte._
   210 modèles en prod sont rangés sur une notion qui a des sous-notions) ; F2 → opérations ; Q2 →
   formes indéterminées, sans point. Question posée à David.
 - Migration de contenu : 7 migrés, +15 variations, 0 corrigée. `security-auditor` lancé.
+
+### 2026-11-22 — #3010 mergée, migrations en prod
+
+- David : « je suis tes recos » (rangement). `security-auditor` : aucun bloquant (mineur : la
+  migration de contenu change `updated_at` des publiés, voulu). CI verte, merge,
+  `migration list --linked` (seules les deux du lot en attente), `db:migrate` ; état vérifié en prod.
