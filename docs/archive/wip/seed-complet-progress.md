@@ -2,19 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3012._
+_Mis à jour le 2026-11-22 : **chantier CLOS**, journal archivé._
 
-- **État** : les 5 PR du découpage sont mergées (#2977, #2980, #2981, #2986, #2989, #3011,
-  **#3012 images, § 13-14**). La base de dev partagée ne reçoit le tout qu'au prochain
-  `pnpm db:neuf` ou `pnpm db:seed-riche` (pas lancé).
-- **Prochaine action** : versement du chantier (doc déjà dans `docs/pratiques/environnement-de-dev.md` ;
-  reste à vérifier le découpage du § 5 contre les PR, puis archiver ce journal).
-- **En attente de David** : rien. Décidé : la messagerie privée cassée (§ 12) se répare dans une PR
-  à part, chantier à ouvrir (§ 14).
-- **Worktree / branche** : aucun.
-- **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
-  (`supabase --workdir <copie> start`, ports 544xx ; `SEED_RICHE_PG_URL` + `SEED_RICHE_API_URL`),
-  jamais la base de dev.
+- **État** : clos. Découpage du § 5 recompté contre les PR : PR 1 #2977, PR 2 #2980, PR 3 #2986,
+  PR 4 #3011, PR 5 #3012, plus deux correctifs trouvés grâce au seed (#2981 révisions, #2989 Palotins).
+- **Durable** : `docs/pratiques/environnement-de-dev.md` (classement des tables, images, ce que font
+  les élèves fictifs) ; pages à ouvrir dans `docs/wip/verifications-manuelles.md` (#2977 à #3012).
+- **Suites, hors chantier** : messagerie privée cassée (`docs/systeme/messagerie-et-moderation.md`
+  § Écarts connus, PR à part décidée par David) ; 4 cartes Mathémo sans image
+  (`docs/systeme/jeux-et-economie.md` § Doutes).
+- **Non fait** : la base de dev partagée n'a pas encore reçu le tout (prochain `pnpm db:neuf` ou
+  `pnpm db:seed-riche`, à la main).
 
 ---
 
@@ -564,6 +562,7 @@ Puis, dans la même PR ou la suivante : doc (`docs/systeme/` de la base locale) 
 
 ## 6. Historique
 
+- **2026-11-22** : clôture, découpage recompté, journal archivé.
 - **2026-11-22** : PR 5 (images), § 13-14.
 - **2026-11-22** : PR 4 (échanges et famille), § 11-12.
 

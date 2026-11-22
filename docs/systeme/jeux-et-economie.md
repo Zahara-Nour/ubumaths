@@ -421,6 +421,9 @@ s'affichait en erreur).
 
 ## Doutes (constatés le 2026-10-10, non corrigés)
 
+- **Images de 4 cartes Mathémo absentes** (constaté le 2026-11-22, chantier `seed-complet`) : 4 modèles
+  de cartes VIP en prod citent `/images/vip-cards/mathemo-*.webp`, qui n'existe pas dans `static/` →
+  404, en prod comme en local (rien à voir avec le stockage Supabase).
 - ✅ **`gidouilles_history` (corrigé le 2026-10-10, migration `20261014120000_gidouilles_history_e19`)** :
   `finalize_tournament`, `redistribute_tournament_rewards`, `complete_multiplayer_match` et
   `abandon_multiplayer_match` ne plantent plus (tournois : journal dans `gidouilles_activity` ;
