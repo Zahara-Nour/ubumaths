@@ -10,9 +10,7 @@ _Mis à jour le 2026-11-22, rubrique prise._
 - **État** : relevé fait, phase 0 publiée (page à cocher
   https://claude.ai/artifact/6ijd2FYjXxh9xx6dszdKnx, Q1-Q3 et fiches 1-16) · **Prochaine action** :
   lire les verdicts (`ArtifactData list verdicts`), puis écrire le lot · **En attente de David** :
-  verdicts de la phase 0 · **Pièges en cours** : `hint` et
-  `expectedErrors` lus par la prod seulement après le `deploy:prod` qui livre #2962 et #2991 (pas
-  de brouillons en prod avant) · **Worktree / branche** : `ubumaths-wt-idees-1re-suites`,
+  verdicts de la phase 0 · **Pièges en cours** : aucun sur `hint` / `expectedErrors` : #2962 et #2991 sont en prod (0.101.0, déployée le 2026-11-22, vérifié) · **Worktree / branche** : `ubumaths-wt-idees-1re-suites`,
   `feat/idees-1re-suites`.
 
 ## Historique
