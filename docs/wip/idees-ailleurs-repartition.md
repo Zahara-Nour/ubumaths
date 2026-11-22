@@ -3,9 +3,9 @@
 Ce tableau coordonne les sessions du skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md),
 qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèle publié réservé.
 
-- ⏸️ **En pause (David, 2026-11-21)** : on ne prend pas de nouvelle rubrique avant d'avoir fini le
-  chantier `idees-format` ([idées de format](idees-format-exercices.md), idées 1 à 5) et vérifié le
-  lot « nombres et calculs » de Seconde avec ces critères.
+- **Pause levée (David, 2026-11-22)** : on prend de nouvelles rubriques sans attendre la fin de la
+  vérification du lot « nombres et calculs » de Seconde. Chaque lot neuf applique les critères
+  d'[idées de format](idees-format-exercices.md) (coup de pouce, erreurs prévues).
 - **Réserver** : `git pull --rebase`, modifier la ligne, commit direct sur `main`, push aussitôt. Si
   le push est refusé : pull, relire, et changer de ligne si elle a été prise entre-temps.
 - **États** : libre → prise (sujet, date) → phase 0 → écrite → en prod → publiée.
@@ -25,11 +25,43 @@ qui travaillent en parallèle. On y voit une rubrique par ligne et chaque modèl
 | Algorithmique et programmation                | 2I             | 10        | libre                                                      |                 |
 | Sujets d'automatismes (mélange des rubriques) | 2A             | 13        | libre ; **à faire en dernier**, après les autres rubriques |                 |
 
+## Première
+
+Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-22, sans les
+anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils ne sont pas repris.
+
+### Spécialité
+
+| Rubrique                          | Codes | Exercices | État  | Sujet / session |
+| --------------------------------- | ----- | --------- | ----- | --------------- |
+| Suites numériques                 | 1AL1  | 19        | libre |                 |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | libre |                 |
+| Dérivation                        | 1AN1  | 12        | libre |                 |
+| Variations                        | 1AN2  | 5         | libre |                 |
+| Fonction exponentielle            | 1AN3  | 11        | libre |                 |
+| Fonctions trigonométriques        | 1AN4  | 6         | libre |                 |
+| Produit scalaire                  | 1G1   | 10        | libre |                 |
+| Géométrie repérée                 | 1G2   | 5         | libre |                 |
+| Probabilités conditionnelles      | 1P1   | 8         | libre |                 |
+| Variables aléatoires réelles      | 1P2   | 1         | libre |                 |
+
+### Automatismes de l'épreuve anticipée
+
+| Rubrique                                     | Codes | Exercices | État                                                       | Sujet / session |
+| -------------------------------------------- | ----- | --------- | ---------------------------------------------------------- | --------------- |
+| Calcul numérique et algébrique               | 1A-C  | 127       | libre                                                      |                 |
+| Proportions et pourcentages                  | 1A-R  | 19        | libre                                                      |                 |
+| Évolutions et variations                     | 1A-E  | 22        | libre                                                      |                 |
+| Fonctions et représentations                 | 1A-F  | 58        | libre                                                      |                 |
+| Géométrie                                    | 1A-G  | 29        | libre                                                      |                 |
+| Statistiques                                 | 1A-S  | 36        | libre                                                      |                 |
+| Probabilités                                 | 1A-P  | 27        | libre                                                      |                 |
+| Annales (sujets 2026, mélange des rubriques) | 1A-A  | 14        | libre ; **à faire en dernier**, après les autres rubriques |                 |
+
 ## Autres niveaux
 
-Aucune rubrique relevée pour l'instant. La première session qui prend un niveau liste son dossier
-dans la copie locale (`extern/banque-exercices/src/exercices/`) et ajoute ici une section pour ce
-niveau.
+La première session qui prend un niveau liste son dossier dans la copie locale
+(`extern/banque-exercices/src/exercices/`) et ajoute ici une section pour ce niveau.
 
 ## Modèles publiés réservés
 
