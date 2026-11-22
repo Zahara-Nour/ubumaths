@@ -5,17 +5,18 @@ Idées reprises d'ailleurs, rubrique « Suites numériques » de Terminale spéc
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2996._
+_Mis à jour le 2026-11-22, après #2999._
 
-- **État** : #2996 mergée et `db:migrate` fait (5 neufs rangés, 11 variations sur 8 publiés).
-  Puis bornes TCOMP ratées : F2 (708f8a08, TCOMP-210) et F3 (98ba277c, TCOMP-205) hors bornes de
-  complémentaire → **décision de David : déplacer vers 2 neufs**. Branche en cours : migration de
-  retour `20261122115203` (variations 5 et 6 retirées des 2 publiés, 0 réponse d'élève) + 2 neufs
-  `f02-…`, `f03-…` · **Prochaine action** : test rouge/vert, `security-auditor`, PR ; ⛔ merge et
-  `db:migrate` seulement après le « oui » de David (retrait = destructif) · **En attente de David** :
-  ce « oui » · **Pièges en cours** : vérifier les bornes de **tous** les points d'un publié (autres
-  niveaux compris) avant d'y ajouter une variation · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
-  `feat/idees-tle-suites-hors-tcomp`.
+- **État** : #2999 mergée et appliquée (`db push --include-all`, une migration plus récente d'une
+  autre session était passée avant) : 708f8a08 et 98ba277c revenus à 4 variations ; en prod, 5
+  neufs rangés en brouillon, 9 variations ajoutées à 6 publiés · **Prochaine action** : commiter
+  les ids des 2 nouveaux brouillons (`f02-…`, `f03-…`), puis PR de rangement (TSPE-383 et
+  TSPE-578, nœuds des publiés voisins) ; ensuite relecture dans `/dev/modeles` (brouillons par
+  `?point=`, série de relecture pour les 6 publiés complétés) · **En attente de David** : lancer
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-suites-neufs --publier`
+  depuis le worktree `ubumaths-wt-idees-tle-suites` · **Pièges en cours** : vérifier les bornes de
+  **tous** les points d'un publié (autres niveaux compris) avant d'y ajouter une variation · **Worktree / branche** : `ubumaths-wt-idees-tle-suites`,
+  `feat/idees-tle-suites-rangement-2`.
 
 ## Historique
 
@@ -77,3 +78,9 @@ _Mis à jour le 2026-11-22, après #2996._
 - David : déplacer les 4 variations vers 2 modèles neufs de spécialité. Migration de retour générée
   par `genererMigration` avec avant / après inversés (script ponctuel), en-tête réécrit ; fichiers
   des 2 publiés rendus à leur export de prod (bb833432aa).
+
+### 2026-11-22 — #2999 mergée et appliquée
+
+- Oui de David au retrait. `db:migrate` refusé (« inserted before » : une autre session avait
+  appliqué une migration plus récente) ; `db push --dry-run --include-all` ne listait que la nôtre,
+  appliquée par `--include-all`. Vérifié en prod : 4 variations, 17 et 16 specs.
