@@ -14,6 +14,7 @@ import {
 	feedbackSchema,
 	formatFeedback,
 	latestFeedbackFiles,
+	printable,
 	type StoredFeedback
 } from './logique.ts';
 
@@ -47,9 +48,7 @@ function main(): number {
 			const summary = feedback
 				? `${new URL(feedback.url).pathname} — ${feedback.note.trim().split('\n')[0]?.slice(0, 80) || '(sans note)'} — ${feedback.errors.length} erreur(s)`
 				: '(fichier illisible)';
-			console.log(
-				`${index + 1}. ${file.slice(0, 19)} ${summary.replace(/[\u0000-\u001f\u007f-\u009f]/g, '')}`
-			);
+			console.log(`${index + 1}. ${file.slice(0, 19)} ${printable(summary)}`);
 		});
 		if (files.length > LIST_LENGTH) console.log(`… et ${files.length - LIST_LENGTH} plus anciens`);
 		return 0;

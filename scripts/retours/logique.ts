@@ -125,7 +125,7 @@ export function latestFeedbackFiles(dir: string): string[] {
 }
 
 /** Retire les caractères de contrôle (séquences du terminal) d'un texte venu de la page. */
-function printable(text: string): string {
+export function printable(text: string): string {
 	// eslint-disable-next-line no-control-regex
 	return text.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '');
 }
