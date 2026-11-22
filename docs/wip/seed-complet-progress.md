@@ -2,19 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3011._
+_Mis à jour le 2026-11-22, après #3012._
 
-- **État** : PR 1 à 4 mergées (#2977, #2980, #2981, #2986, #2989, **#3011 échanges et famille, § 11-12**).
-  La base de dev partagée ne reçoit le tout qu'au prochain `pnpm db:neuf` ou `pnpm db:seed-riche`
-  (pas lancé).
-- **Prochaine action** : PR 5 images ouverte (§ 13-14) ; après merge : versement du chantier
-  (journal archivé). Messagerie privée : réparation décidée, PR à part (§ 14).
-- **En attente de David** : rien.
-- **Worktree / branche** : `ubumaths-wt-seed-complet-images` · `feat/seed-complet-images`.
+- **État** : les 5 PR du découpage sont mergées (#2977, #2980, #2981, #2986, #2989, #3011,
+  **#3012 images, § 13-14**). La base de dev partagée ne reçoit le tout qu'au prochain
+  `pnpm db:neuf` ou `pnpm db:seed-riche` (pas lancé).
+- **Prochaine action** : versement du chantier (doc déjà dans `docs/pratiques/environnement-de-dev.md` ;
+  reste à vérifier le découpage du § 5 contre les PR, puis archiver ce journal).
+- **En attente de David** : rien. Décidé : la messagerie privée cassée (§ 12) se répare dans une PR
+  à part, chantier à ouvrir (§ 14).
+- **Worktree / branche** : aucun.
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local**. Essais sur copie isolée
-  (`supabase --workdir <copie> start`, ports 544xx), jamais la base de dev ; serveur de test par
-  `pnpm exec vite dev` (pas `pnpm dev`, qui met à jour la base de dev), à relancer après un merge de
-  `main` (sinon 401 partout). Lignes d'une même table : mêmes colonnes (`uniformiser`).
+  (`supabase --workdir <copie> start`, ports 544xx ; `SEED_RICHE_PG_URL` + `SEED_RICHE_API_URL`),
+  jamais la base de dev.
 
 ---
 
