@@ -6,24 +6,19 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2994 et la création des brouillons en prod._
+_Mis à jour le 2026-11-22, après #2998 et son `db:migrate`._
 
-- **État** : #2994 mergée. Brouillons créés en prod par David : 818d5e6b (égalité deux calculs),
-  ba899229 (Yohaku), e76ab26f (lettres et chiffres) ; ids commités sur `feat/idees-6e-entiers-rangement`
-  (ac9d1c7c65, poussé). Variations des publiés (98f558e4, b9677e1f, d793de49) dans
-  `scripts/questions/6e-entiers-publies/`, pas encore migrées.
-- **Prochaine action** : dans `../ubumaths-wt-idees-6e-entiers-rangement` (`cp .env .env.local`,
-  `pnpm install`) : migration de rangement (nœud + tag : 818d5e6b et ba899229 → CM2-065, e76ab26f →
-  CM2-003 ; règles du tag vérifiées en base) et migration de contenu (`migration-contenu.ts --dir
-scripts/questions/6e-entiers-publies`) ; tests d'intégration rouges sans elles ; `security-auditor` ;
-  PR ; `db:migrate` (4 conditions, `migration list --linked` d'abord). Puis relecture dans `/dev/modeles`.
-- **En attente de David** : regard sur l'aperçu (grille Yohaku `\hline`, bloc trous), possible en prod
-  sur les brouillons ; titre de b9677e1f dans l'éditeur s'il veut. **Question d'accès tranchée**
-  (David, 2026-11-22) : personne ne gagne d'accès.
-- **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; le hook pre-commit
-  laisse l'index avec une vieille copie (`git diff HEAD` vide → `git restore --staged`) ; zsh ne découpe
-  pas `$F` ; le Chrome connecté n'atteint pas `[::1]:<port>` du Mac mini.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers-rangement`, `feat/idees-6e-entiers-rangement`.
+- **État** : #2998 mergée, migrations jouées en prod (vérifié par MCP). 818d5e6b et ba899229 sur
+  « égalités à trous » (CM2-065), e76ab26f sur « écritures » (CM2-003), brouillons. Variations ajoutées
+  aux publiés : 98f558e4 (6), b9677e1f (3), d793de49 (3). Worktree `rangement` supprimé.
+- **Prochaine action** : relecture par David dans `/dev/modeles` (série de relecture des 3 neufs et des
+  variations ajoutées), puis publication des 3 brouillons par David.
+- **En attente de David** : relecture (grille Yohaku `\hline`, bloc trous) ; titre de b9677e1f dans
+  l'éditeur s'il veut ; confirmer que les prénoms d'énoncé (Chloé, Léo, Malo, Rose) ne sont pas ceux
+  d'élèves réels (remarque du `security-auditor`).
+- **Pièges en cours** : migration-contenu refuse un titre différent de la prod ; zsh ne découpe pas `$F` ;
+  le Chrome connecté n'atteint pas `[::1]:<port>` du Mac mini.
+- **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -56,3 +51,9 @@ deux erreurs prévues seulement (pas de troisième erreur réelle). Yohaku : une
 David confirme : les migrations de rangement et de contenu ne donnent aucun accès nouveau (« je confirme
 pour la question d'accès »). Condition (1) de `db:migrate` remplie. Brouillons créés en prod par David
 (818d5e6b, ba899229, e76ab26f), ids vérifiés par MCP (draft, CM2 + 6).
+
+## 2026-11-22 — rangement et contenu en prod (#2998)
+
+Migrations `20261122115157` (rangement + tags des 3 neufs) et `20261122115342` (contenu des 3 publiés).
+Tests rouges sans elles (6 et 5 échecs), verts avec (11/11, 24/24). `security-auditor` : aucun finding
+bloquant. `db:migrate` joué depuis `main` (seules ces deux migrations en attente).
