@@ -26,6 +26,7 @@ import {
 	remplacerIds,
 	filtrerLignes,
 	neutraliser,
+	requeteOrphelins,
 	valeurPg,
 	verifierCibles
 } from '../db-seed-riche/regles';
@@ -416,5 +417,57 @@ describe('classement de toutes les tables (copier, inventer, jamais)', () => {
 	it('les sections de paquets de révision suivent les paquets : inventées, pas copiées', () => {
 		expect(INVENTE).toContain('srs_decks');
 		expect(INVENTE).toContain('srs_deck_sections');
+	});
+});
+
+describe('requeteOrphelins (liens vérifiés après la copie)', () => {
+	it('compte les lignes dont la cible manque, pour un lien simple', () => {
+		const sql = requeteOrphelins({
+			table: 'worksheet_exercises',
+			colonnes: ['worksheet_id'],
+			schemaCible: 'public',
+			cible: 'worksheets',
+			colonnesCible: ['id']
+		});
+		expect(sql).toBe(
+			'select count(*)::int n from public."worksheet_exercises" e ' +
+				'where e."worksheet_id" is not null ' +
+				'and not exists (select 1 from "public"."worksheets" c where c."id" = e."worksheet_id")'
+		);
+	});
+
+	it('lien composé : une colonne vide suffit à ne pas vérifier la ligne (MATCH SIMPLE)', () => {
+		const sql = requeteOrphelins({
+			table: 'srs_cards',
+			colonnes: ['section_id', 'deck_id'],
+			schemaCible: 'public',
+			cible: 'srs_deck_sections',
+			colonnesCible: ['id', 'deck_id']
+		});
+		expect(sql).toContain('where e."section_id" is not null and e."deck_id" is not null');
+		expect(sql).toContain('c."id" = e."section_id" and c."deck_id" = e."deck_id"');
+	});
+
+	it('une cible hors du schéma public (comptes) garde son schéma', () => {
+		const sql = requeteOrphelins({
+			table: 'profiles',
+			colonnes: ['id'],
+			schemaCible: 'auth',
+			cible: 'users',
+			colonnesCible: ['id']
+		});
+		expect(sql).toContain('from "auth"."users" c');
+	});
+
+	it('refuse un lien dont les colonnes ne se correspondent pas une à une', () => {
+		expect(() =>
+			requeteOrphelins({
+				table: 't',
+				colonnes: ['a', 'b'],
+				schemaCible: 'public',
+				cible: 'u',
+				colonnesCible: ['id']
+			})
+		).toThrow(/colonnes/);
 	});
 });

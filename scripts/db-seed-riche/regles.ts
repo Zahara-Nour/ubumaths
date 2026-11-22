@@ -121,7 +121,6 @@ export const INVENTE: readonly string[] = [
 	'worksheet_assignment_classes',
 	'worksheet_assignment_students',
 	'worksheet_assignment_exercise_settings',
-	'worksheet_instances',
 	'worksheet_error_reports',
 	'exercise_assignments',
 	'exercise_completions',
@@ -296,7 +295,10 @@ export const JAMAIS: readonly string[] = [
 	'kanban_cards',
 	'kanban_card_assignees',
 	'kanban_card_tags',
-	'kanban_tags'
+	'kanban_tags',
+	// Sans lecteur ni écrivain dans l'appli (ADR 0023 : la copie d'une fiche se recalcule à chaque
+	// ouverture), suppression prévue : rien à inventer.
+	'worksheet_instances'
 ];
 
 /**
@@ -355,6 +357,34 @@ export function lireSchema(texte: string): Schema {
 		throw new Error('lireSchema : aucune table trouvée, le format de database.ts a changé.');
 	}
 	return { tables, vues };
+}
+
+export interface LienEnBase {
+	table: string;
+	colonnes: string[];
+	schemaCible: string;
+	cible: string;
+	colonnesCible: string[];
+}
+
+/**
+ * Requête qui compte les lignes de `table` dont le lien ne mène nulle part.
+ * Le contenu est écrit déclencheurs suspendus : Postgres ne vérifie alors aucun lien, et une
+ * ligne écartée par le filtre d'auteur peut laisser derrière elle une ligne qui la désignait.
+ * Comme Postgres (MATCH SIMPLE), une ligne dont une colonne du lien est vide n'est pas vérifiée.
+ */
+export function requeteOrphelins(lien: LienEnBase): string {
+	if (lien.colonnes.length === 0 || lien.colonnes.length !== lien.colonnesCible.length) {
+		throw new Error(`${lien.table} : colonnes du lien et de sa cible en nombre différent`);
+	}
+	const remplies = lien.colonnes.map((c) => `e."${c}" is not null`).join(' and ');
+	const egales = lien.colonnes
+		.map((c, i) => `c."${lien.colonnesCible[i]}" = e."${c}"`)
+		.join(' and ');
+	return (
+		`select count(*)::int n from public."${lien.table}" e where ${remplies} ` +
+		`and not exists (select 1 from "${lien.schemaCible}"."${lien.cible}" c where ${egales})`
+	);
 }
 
 /** Refuse tout ce qui n'est pas « source distante → cible locale ». */

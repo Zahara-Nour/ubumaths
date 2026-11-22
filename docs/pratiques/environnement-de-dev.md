@@ -231,7 +231,19 @@ restent utilisables seuls. La pile de test n'est pas concernée.
 pour les élèves fictifs) ou `JAMAIS` (traces, secrets, liens vers l'extérieur : laissé vide). Le test
 `scripts/__tests__/db-seed-riche.test.ts` lit `src/lib/types/database.ts` et échoue quand une table
 n'est dans aucune liste, ou quand une table copiée pointe vers une table qui ne l'est pas : **après un
-`pnpm db:types` qui amène une table nouvelle, la classer** (dans le doute : `JAMAIS`).
+`pnpm db:types` qui amène une table nouvelle, la classer** (dans le doute : `JAMAIS`). Après la copie,
+le seed vérifie lui-même chaque lien des tables copiées : une ligne orpheline annule toute la copie.
+**Ce que font les élèves fictifs** : ils sont rangés dans les classes de l'année en cours (6 par
+classe) et leur activité est inventée par deux plans purs, testés sans base : `activite.ts` (fiches
+assignées, Gidouilles, discussion, amitiés) et `suivi.ts` (évaluations passées, entraînement,
+révisions, Python, devinettes, signalements, exercices, compétences). Les copies d'évaluation et les
+réponses saisies sont de **vraies questions**, tirées et corrigées par le moteur de l'appli
+(`moteur.ts`). L'état des points du programme et la maîtrise Python ne sont pas écrits : la base les
+calcule à l'insertion, comme en vrai. Trois élèves servent de repères : le premier de la classe la
+plus remplie réussit tout, le dernier de cette classe n'a rien fait (dernière visite il y a plus de
+trois semaines), et l'élève hors classe n'a qu'une fiche à son nom. Relancer le seed remplace tout ce
+que le prof local a assigné (fiches, exercices, Python, devinettes) ; ses paquets de révision faits à
+la main restent.
 `pnpm db:a-jour` joue les migrations qui manquent à la base locale **sans rien effacer** ; `pnpm dev`
 le fait tout seul avant de démarrer (`scripts/db-a-jour-auto.sh` : migrations d'`origin/main`
 seulement, jamais bloquant). `db:seed-riche` met la base à jour avant de copier et la marque

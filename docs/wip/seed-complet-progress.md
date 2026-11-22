@@ -2,25 +2,25 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-21, après #2977._
+_Mis à jour le 2026-11-22, PR 2 ouverte (#2980)._
 
-- **État** : PR 1 mergée (#2977) : les 234 tables classées (`COPIE` 78, `INVENTE` 107,
-  `JAMAIS` 49), garde en place, 21 tables de contenu de plus copiées (§ 7). La base de dev
-  partagée ne reçoit ce contenu qu'au prochain `pnpm db:seed-riche` (pas encore lancé).
-- **Prochaine action** : PR 2, suivi et travail scolaire (§ 5) : évaluations passées, tests,
-  fiches et exercices assignés, Python, devinettes, révisions. Règles testées sans base (comme
-  `activite.ts`), preuve sur copie isolée, pages à ouvrir notées. Y ajouter la vérification des
-  liens orphelins après la copie, dans le seed lui-même (§ 7, relectures).
-- **En attente de David** : (1) tableau de tâches du prof (`kanban_*`) et signalements de bug
-  (`bug_reports`) : en inventer, ou laisser vide ? (vides en attendant) ; (2) modèles de messages :
-  aucun en prod, non copiés (§ 7) : en inventer en PR 4, ou laisser tels quels ?
+- **État** : PR 1 mergée (#2977). PR 2 (#2980, branche `feat/seed-complet-suivi`) : suivi et travail
+  scolaire inventés (§ 8), liens vérifiés après la copie, élèves rangés dans les classes de l'année
+  en cours. Prouvée sur copie isolée, pages ouvertes en prof et en élève.
+- **Prochaine action** : merger la PR 2 (CI + relectures), puis PR 3, jeux et récompenses (§ 5) :
+  jeux, succès, récompenses, boutique, Mathoux et Palotins. Même méthode : plan pur testé sans base,
+  preuve sur copie isolée, pages ouvertes.
+- **En attente de David** : (1) la prod n'a qu'UNE devinette, en brouillon : la page des devinettes
+  de l'élève reste vide tant qu'aucune n'est publiée (en publier une en prod, ou en inventer une ?) ;
+  (2) lancer `pnpm db:neuf` (ou `db:seed-riche`) sur la base de dev partagée pour recevoir le tout.
+- **Tranché le 2026-11-22** (« je te suis ») : tableau de tâches du prof et signalements de bug
+  **inventés, en PR 4** ; modèles de messages : regarder d'abord si le seed existant les recrée
+  après un `db:neuf`, sinon en inventer cinq ou six **en PR 4**.
 - **Pièges en cours** : RGPD, **jamais de donnée d'élève en local** : une table d'activité
-  s'INVENTE, elle ne se copie pas. Avant d'ajouter une table à `COPIE` : chercher une colonne
-  d'identifiants SANS clé étrangère ou un texte libre (les gardes ne voient ni l'un ni un prénom
-  seul), et regarder la base de dev (une table vide en prod vide la table locale). Essais sur une
-  copie isolée (`docs/archive/wip/base-locale-progress.md` § 9.1), jamais la base de dev partagée.
-- **Worktree / branche** : aucun (retirés après #2977) ; à recréer pour la PR 2 :
-  `../ubumaths-wt-seed-complet`, branche `feat/seed-complet-suivi`.
+  s'INVENTE, elle ne se copie pas. Essais sur une copie isolée (§ 8, « Méthode »), jamais la base de
+  dev partagée. Un remplacement de texte par script dans `index.ts` : vérifier que le motif est
+  unique (`ajouter(db, 'evaluation_assignments'…` existe dans deux fonctions).
+- **Worktree / branche** : `../ubumaths-wt-seed-complet`, `feat/seed-complet-suivi`.
 
 ---
 
@@ -229,6 +229,78 @@ Classement (§ 3) et découpage (§ 5) validés par David le 2026-11-21 (« go �
   11 classes) : à reprendre en PR 4. Tous les admins de prod deviennent le même compte local : une
   table à une ligne par utilisateur casserait le seed le jour où la prod a deux admins.
 
+## 8. PR 2 : suivi et travail scolaire (2026-11-22, #2980)
+
+- **Un plan pur de plus**, `scripts/db-seed-riche/suivi.ts` (tests :
+  `scripts/__tests__/db-seed-suivi.test.ts`, 43 cas, sans base ni moteur de questions), écrit dans
+  26 tables ; `ECRITURE_SUIVI` dit quelle partie va dans quelle table, dans l'ordre des liens (un
+  test vérifie que chaque table est bien dans `INVENTE`). Ce qui est inventé :
+  - **évaluations passées** : une copie par élève des deux classes les plus remplies (l'étoile a
+    20, un élève a deux tentatives, un autre une copie commencée non rendue), questions tirées
+    (`evaluation_attempt_questions`), réponses (`test_answers`) et traces ;
+  - **entraînement** : 5 à 7 jours actifs par élève sur les quatre dernières semaines, 6 à 12
+    réponses par jour, sur les modèles du niveau de sa classe (saisie, chronométré, cartes
+    retournées, révision) ;
+  - **révisions** : une fiche de mémorisation par modèle travaillé (d'accord avec les traces), le
+    paquet « Programme » de chaque élève, deux paquets du prof copiés chez les élèves assignés,
+    une séance par jour de révision ;
+  - **Python** : exercices assignés (classe et élève), soumissions justes et fausses, un fichier,
+    un carnet partagé et ses points de contrôle ;
+  - **devinettes** : assignée à deux classes, une réponse validée, une refusée, deux en attente ;
+  - **fiches** : deux élèves nommés (dont l'élève hors classe), corrigé réglé par exercice, trois
+    signalements (en attente, corrigé, refusé), réglages d'impression de deux élèves ;
+  - **exercices hors fiche** : classe, élève, « pour tous », vus et terminés ;
+  - **compétences** : niveau et observables de chaque élève des deux classes ; **dernières visites**.
+- **Vraies questions** (`moteur.ts`) : les copies sont tirées par `drawSeriesQuestions` et corrigées
+  par `gradeWithinBudget`, les réponses saisies d'entraînement viennent de `generateInstance`. Le
+  détail d'une copie et les erreurs d'une classe rejouent donc ce que le seed a écrit.
+- **Calculé par la base, pas écrit** : `student_point_state` (déclencheur des traces) et
+  `python_exercise_mastery` (déclencheur des soumissions).
+- **Liens vérifiés dans le seed** (reste de la PR 1) : après la copie, chaque clé étrangère des
+  tables copiées est contrôlée (`requeteOrphelins`, 115 liens) ; une ligne orpheline annule toute la
+  copie. Vérifié rouge sur un lien cassé exprès.
+- **Écarts au plan, chacun imposé par une mesure** :
+  - **élèves rangés dans les classes actives** (5 classes, 6 élèves chacune) au lieu des 11 classes
+    copiées : la moitié des élèves étaient dans des classes archivées, invisibles dans les pages de
+    suivi, et 3 élèves par classe ne passaient aucun seuil (« au moins 5 élèves »). Les élèves ont
+    aussi un prénom et un nom (« Élève 08 » au lieu de « Élève sans nom ») et l'école de leur classe ;
+  - le seed part des **classes les plus remplies** (amitiés : 3 au lieu de 0, vu en PR 1) ;
+  - `worksheet_instances` passe dans `JAMAIS` : aucun code ne la lit ni ne l'écrit (ADR 0023) ;
+  - `show_corrections` à vrai sur les fiches assignées : sans lui l'élève ne voyait aucun corrigé ;
+  - **rien d'inventé**, faute de contenu en prod : `student_checklist_progress` (aucun objectif à
+    cocher dans les chapitres) ; séances de test hors évaluation (plus aucune page ne les lit).
+  - deux modèles par point du programme : un point ne s'acquiert « par diversité » qu'avec deux
+    modèles différents réussis (sinon aucun point acquis, progression vide).
+- **Méthode de preuve** : copie isolée (§ 9.1 de `base-locale-progress.md`), cette fois avec ses
+  services (`supabase --workdir <copie> start -x studio,…` après un `stop` qui garde les données),
+  serveur du worktree branché dessus (`PUBLIC_SUPABASE_URL=http://127.0.0.1:54421 SUPABASE_URL=…
+pnpm dev --port 5176 --strictPort`), pages lues connecté (jeton pris à l'API d'auth locale, posé
+  en cookie `sb-127-auth-token`).
+- **Preuve** : seed rejoué trois fois de suite, mêmes nombres : 12 copies d'évaluation
+  (44 réponses), 1 642 traces → 535 états de points (102 acquis, 128 à remédier, 305 en cours),
+  43 paquets, 724 cartes, 726 fiches de mémorisation, 137 séances, 32 soumissions Python →
+  19 maîtrises, 37 points de contrôle, 4 tentatives de devinette, 3 signalements, 66 niveaux de
+  compétence. Pages ouvertes et remplies : élève (contrôles et résultats, révisions, paquet
+  Programme, progression, compétence, mon travail, corvées, Python, carnets), prof (résultats du
+  contrôle avec bilan par question, analytics de la classe : grille, points à remédier, taux de
+  réussite, régularité, compétences ; suivi d'un élève ; paquets et attributions ; résultats Python
+  et carnet ; validations de devinettes ; avancement d'une fiche).
+- **Relectures** : `security-auditor`, aucun finding. `code-reviewer`, rien de bloquant ; corrigé :
+  une copie n'est plus datée avant que sa classe ait reçu l'évaluation, une question sans réponse en
+  texte (choix, geste) est écartée du tirage (sinon l'étoile n'avait pas 20), copie toujours rendue
+  dans le passé et dans le délai de chaque question, visites datées du jour de Paris, liens « non
+  validés » exclus du contrôle, message clair si le suivi échoue après l'activité ; 8 tests de plus
+  (clé unique de chaque partie du plan, demi-point, tirage vide, classes d'un et de deux élèves).
+  Laissé tel quel, et écrit dans la doc : relancer le seed remplace tout ce que le prof local a
+  assigné (exercices, Python, devinettes), comme il le faisait déjà pour les fiches.
+- **Trouvé grâce au seed, hors PR** : sur « Mes révisions » de l'élève, les compteurs « À réviser »
+  et « Nouvelles » valent toujours 0 : la page lit `stats.due_cards` / `new_cards`, le serveur rend
+  `due_count` / `new_count` (`dashboard/revisions/+page.svelte:46`). Petite PR à part.
+- **Vu en passant** : quelques élèves ont 0 Gidouille (somme négative ramenée à 0 par `activite.ts`) ;
+  la page prof des paquets affiche « Decks attribués 0 » (elle compte les paquets du prof marqués
+  assignés, or seules les copies des élèves le sont).
+
 ## 6. Historique
 
+- **2026-11-22** : PR 2 (suivi et travail scolaire), § 8.
 - **2026-11-21** : ouverture, à la clôture du chantier `base-locale` (#2970 : `pnpm db:neuf`).
