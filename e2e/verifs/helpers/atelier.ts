@@ -20,8 +20,8 @@ export interface Answer {
 const HIDE_REPORT_BUTTON = 'button[aria-controls="signaler-dev"] { display: none !important; }';
 
 export async function openAtelier(page: Page): Promise<void> {
-	// Posé à chaque chargement de la page (rechargement compris)
-	await page.addInitScript((css) => {
+	// Posé à chaque chargement, sur toutes les pages du contexte (lien ouvert, fenêtre de Python)
+	await page.context().addInitScript((css) => {
 		addEventListener('DOMContentLoaded', () => {
 			const style = document.createElement('style');
 			style.textContent = css;
@@ -335,19 +335,30 @@ export async function readClipboard(page: Page): Promise<string> {
 		return page.evaluate(() => navigator.clipboard.readText());
 	}
 	const focused = await page.evaluateHandle(() => document.activeElement);
-	await page.evaluate(() => {
-		const field = document.createElement('textarea');
-		field.id = 'verifs-presse-papiers';
-		field.style.position = 'fixed';
-		field.style.inset = '0 auto auto 0';
-		document.body.append(field);
-		field.focus();
-	});
-	await page.keyboard.press('ControlOrMeta+V');
-	const text = await page.locator('#verifs-presse-papiers').inputValue();
-	await page.evaluate((element) => {
-		document.getElementById('verifs-presse-papiers')?.remove();
-		if (element instanceof HTMLElement) element.focus();
-	}, focused);
-	return text;
+	const field = page.locator('#verifs-presse-papiers');
+	try {
+		await page.evaluate(() => {
+			const relay = document.createElement('textarea');
+			relay.id = 'verifs-presse-papiers';
+			relay.style.position = 'fixed';
+			relay.style.inset = '0 auto auto 0';
+			document.body.append(relay);
+		});
+		// Le collage arrive après coup : coller dans un champ vide jusqu'à lire quelque chose
+		let text = '';
+		await expect(async () => {
+			await field.fill('');
+			await field.focus();
+			await page.keyboard.press('ControlOrMeta+V');
+			text = await field.inputValue();
+			expect(text).not.toBe('');
+		}).toPass({ timeout: 5000 });
+		return text;
+	} finally {
+		// ⚠️ Le focus quitte la page un instant : une carte en cours de frappe serait rangée
+		await page.evaluate((element) => {
+			document.getElementById('verifs-presse-papiers')?.remove();
+			if (element instanceof HTMLElement) element.focus();
+		}, focused);
+	}
 }

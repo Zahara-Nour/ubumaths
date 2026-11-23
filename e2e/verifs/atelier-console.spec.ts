@@ -453,44 +453,42 @@ async function expectNotCovered(button: Locator): Promise<void> {
 	).toBe(true);
 }
 
-test(
-	'#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’icônes, défile à 8 objets',
-	{ tag: '@bureau' },
-	async ({ page }) => {
-		leavePanelAlone(page);
-		await page.setViewportSize({ width: 390, height: 844 });
-		await page.reload();
-		const panel = page.locator('aside.panneau');
-		const scrolls = () =>
-			panel.evaluate((element) =>
-				[element, ...element.querySelectorAll('*')].some(
-					(node) =>
-						node.scrollHeight > node.clientHeight + 1 &&
-						['auto', 'scroll'].includes(getComputedStyle(node).overflowY)
-				)
-			);
-		for (const name of ['a', 'b']) await calc(page, `${name} = 1`);
-		await consoleButton(page).click();
-		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-		// Replié au téléphone depuis #1546 (plus récent que la ligne) : on le déplie
-		await expect(panel).toHaveClass(/replie/);
-		await panel.locator('button.replier').click();
-		await expect(panel.locator('.compte')).toHaveText(/2\s+objets/);
-		// Contre-épreuve : avec 2 objets, rien ne défile
-		expect(await scrolls()).toBe(false);
-		for (const name of ['c', 'k', 's', 'p', 'q', 'r']) await calc(page, `${name} = 1`);
-		await consoleButton(page).click();
-		await expect(panel.locator('.compte')).toHaveText(/8\s+objets/);
-		// Ni le panneau ni ses boutons « + Fonction… » ne passent sous « Partager », « Réglages »
-		for (const name of ['Partager', 'Réglages']) {
-			await expectNotCovered(page.getByRole('button', { name, exact: true }));
-		}
-		await expectNotCovered(panel.getByRole('button', { name: '+ Fonction' }));
-		// Avec 8 objets, le panneau défile
-		expect(await scrolls()).toBe(true);
-		// Reste à la main : la vue Graphe utilisable à 390 px
+test('#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’icônes, défile à 8 objets', async ({
+	page
+}) => {
+	leavePanelAlone(page);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.reload();
+	const panel = page.locator('aside.panneau');
+	const scrolls = () =>
+		panel.evaluate((element) =>
+			[element, ...element.querySelectorAll('*')].some(
+				(node) =>
+					node.scrollHeight > node.clientHeight + 1 &&
+					['auto', 'scroll'].includes(getComputedStyle(node).overflowY)
+			)
+		);
+	for (const name of ['a', 'b']) await calc(page, `${name} = 1`);
+	await consoleButton(page).click();
+	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+	// Replié au téléphone depuis #1546 (plus récent que la ligne) : on le déplie
+	await expect(panel).toHaveClass(/replie/);
+	await panel.locator('button.replier').click();
+	await expect(panel.locator('.compte')).toHaveText(/2\s+objets/);
+	// Contre-épreuve : avec 2 objets, rien ne défile
+	expect(await scrolls()).toBe(false);
+	for (const name of ['c', 'k', 's', 'p', 'q', 'r']) await calc(page, `${name} = 1`);
+	await consoleButton(page).click();
+	await expect(panel.locator('.compte')).toHaveText(/8\s+objets/);
+	// Ni le panneau ni ses boutons « + Fonction… » ne passent sous « Partager », « Réglages »
+	for (const name of ['Partager', 'Réglages']) {
+		await expectNotCovered(page.getByRole('button', { name, exact: true }));
 	}
-);
+	await expectNotCovered(panel.getByRole('button', { name: '+ Fonction' }));
+	// Avec 8 objets, le panneau défile
+	expect(await scrolls()).toBe(true);
+	// Reste à la main : la vue Graphe utilisable à 390 px
+});
 
 test('#1692 — tableur V4 retiré : /spreadsheet mène à l’atelier', async ({ page }) => {
 	for (const address of ['/spreadsheet', '/spreadsheet/00000000-0000-0000-0000-000000000000']) {

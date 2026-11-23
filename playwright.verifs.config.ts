@@ -44,10 +44,13 @@ const remoteURL = process.env.VERIFS_URL;
 // `--project` et `VERIFS_TOUT`), puis passent aux workers par l'environnement :
 // un worker relit cette config sans les arguments et doit y trouver la même
 // liste de projets.
-process.env.VERIFS_PROJETS ??= activeProjects(process.argv, process.env.VERIFS_TOUT === '1').join(
-	','
-);
-const active = process.env.VERIFS_PROJETS.split(',');
+if (process.env.TEST_WORKER_INDEX === undefined) {
+	// Processus principal : toujours recalculé (une variable restée dans le shell ne compte pas)
+	process.env.VERIFS_PROJETS = activeProjects(process.argv, process.env.VERIFS_TOUT === '1').join(
+		','
+	);
+}
+const active = (process.env.VERIFS_PROJETS ?? '').split(',');
 const selected = VERIFS_PROJECTS.filter((project) => active.includes(project.name));
 
 const ENGINES = { chromium, webkit, firefox } as const;

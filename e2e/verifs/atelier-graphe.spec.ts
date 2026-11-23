@@ -29,18 +29,21 @@ async function plotZoomedOut(page: Page, definition: string): Promise<void> {
 	await setConsole(page, false);
 	const zoomOut = page.getByRole('button', { name: 'Zoom arrière' });
 	for (let click = 0; click < ZOOM_OUT_CLICKS; click++) await zoomOut.click();
-	// Le dézoom a eu lieu : une graduation de l'axe des x atteint 400 (au téléphone,
-	// graduées de 200 en 200, la plus grande sous ±577 est 400 tout juste)
+	// Le dézoom a eu lieu : la plus grande graduation de l'axe des x dépasse 400. Au
+	// téléphone, graduées de 200 en 200, la plus grande sous ±577 est 400 tout juste
 	const ticks = page.locator('.x-axis-ticks .axis-label');
-	await expect
-		.poll(async () =>
-			Math.max(
-				...(await ticks.allTextContents()).map((tick) =>
-					Math.abs(Number(tick.replace(/\s/g, '').replace('−', '-').replace(',', '.')))
+	const largest = () =>
+		ticks
+			.allTextContents()
+			.then((labels) =>
+				Math.max(
+					...labels.map((tick) =>
+						Math.abs(Number(tick.replace(/\s/g, '').replace('−', '-').replace(',', '.')))
+					)
 				)
-			)
-		)
-		.toBeGreaterThanOrEqual(400);
+			);
+	if (isNarrow(page)) await expect.poll(largest).toBeGreaterThanOrEqual(400);
+	else await expect.poll(largest).toBeGreaterThan(400);
 }
 
 /** Les asymptotes verticales dessinées (un tracé non vide) */
