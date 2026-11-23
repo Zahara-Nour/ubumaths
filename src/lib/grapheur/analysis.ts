@@ -1752,6 +1752,30 @@ export interface IntegralResult {
 const INTEGRAL_SAMPLES = 200;
 
 /**
+ * Pourquoi `integralUnder` n'a pas d'aire sur `[from ; to]` : le refus de
+ * `integrateDefinite` (un pôle entre les bornes, une intégrale qui diverge),
+ * ou `null` s'il n'en donne pas. E2 (2026-11-23) : la carte n'affichait que
+ * « aire = — ».
+ */
+export function integralRefusal(
+	func: ExplicitFunction,
+	from: number,
+	to: number,
+	bindings: VariableBindings = {}
+): string | null {
+	if (!func.ast || !Number.isFinite(from) || !Number.isFinite(to) || from === to) return null;
+	const [lower, upper] = from < to ? [from, to] : [to, from];
+	const bound = bindParameters(func.ast, bindings);
+	if (!bound) return null;
+	try {
+		const result = integrateDefinite(bound, numericNode(lower), numericNode(upper));
+		return result.value === null && result.error ? `${result.error}.` : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
  * Compute the signed area between `f` and the axis, over `[from ; to]`.
  *
  * The value comes from `integrateDefinite` of mathAST — exact when an

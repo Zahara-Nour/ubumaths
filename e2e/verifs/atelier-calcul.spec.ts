@@ -560,6 +560,8 @@ test('#1333 — grapheur : aire sous une courbe avec un pôle dans l’intervall
 	const pole = await areaOf('f');
 	await expect(pole.getByRole('spinbutton', { name: /borne inférieure/ })).toHaveValue('-5');
 	await expect(pole).toContainText('aire = —');
+	// E2 : la carte dit pourquoi (le pôle), comme la console
+	await expect(pole).toContainText('singularité en x ≈ 1,26');
 	// Témoin : sans pôle, la même fenêtre donne l'aire
 	const witness = await areaOf('g');
 	await expect(witness).toContainText('aire = 83,33');

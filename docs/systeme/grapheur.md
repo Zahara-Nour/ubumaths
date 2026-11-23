@@ -265,6 +265,10 @@ Les **étiquettes** (`asymptote-labels.ts`) : une horizontale, oblique ou polyno
 verticale, `valueLatex` écrit l'abscisse ou l'ordonnée calculée comme en classe — `e`, un
 multiple simple de π (`x = \frac{\pi}{2}`, dénominateurs 1, 2, 3, 4, 6), un entier, sinon
 4 chiffres significatifs avec la **virgule** décimale (`2{,}5`). Avant le 2026-10-26 : `x=2.718`.
+L'anti-chevauchement compare les boîtes **affichées** (`label-box.ts`, partagé avec
+`GraphLabel.svelte`) : largeur, hauteur d'une fraction, bascule à gauche près du bord droit et
+passage sous le point près du bord haut. Avant E6 (2026-11-23), il supposait la boîte à droite
+du point : `x = 5π/2` retournée se posait sur `x = 3π/2`.
 
 ### Styles et couleurs du thème
 

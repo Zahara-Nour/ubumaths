@@ -678,7 +678,9 @@ de la carte garde ce que l'élève a écrit. `.résoudre g(x)=5` et `.résoudre 
 tous deux 2. `g(x) = f(2x)` hérite de {x : 2x ∈ I} (`citedIntervals` rend aussi les **conditions**, rangées dans `FunctionObject.inheritedConditions`, jamais sauvegardées) : `.domaine g` dit « (ensemble hérité : 2x doit être dans [0 ; +∞[) » (Q2 du chantier composees). `g(x) = f(x^2)` (u non affine) ou un héritage vide passent g en **erreur**, en français.
 **e)** `.variations … dans [a;b]` inchangé. **f)** Dans « Sur le graphique » (`CurveSettings`),
 une tangente hors de l'ensemble (une borne fermée est dedans) et une aire dont [a ; b] sort
-sont refusées, le refus écrit sous le réglage (`tangentRefusal`, `areaRefusal`) ; `plot-sync`
+sont refusées, le refus écrit sous le réglage (`tangentRefusal`, `areaRefusal`) ; une aire que le
+calcul refuse (un pôle entre les bornes) dit pourquoi sous « aire = — » (`integralRefusal` de
+`grapheur/analysis.ts`, le refus d'`integrateDefinite` : « … singularité en x ≈ 1,26 », E2, 2026-11-23) ; `plot-sync`
 ne les dessine pas (`allowedDisplay`). **g)** Le lien `?f=x^2 sur [0;+∞[` lit « sur »
 (`atelierFromCurves`, `splitInterval`).
 
@@ -2325,7 +2327,8 @@ Lot 1 de la refonte de l'interface (`docs/archive/wip/atelier-refonte-interface-
 David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
 (`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
 l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
-droite **Console**, **Partager**, **Réglages** et **Plein écran**.
+droite **Console**, **Partager**, **Réglages** et **Plein écran**. Sous 480 px, les marges se
+resserrent (boutons de 40 px gardés) : les neuf tiennent à 375 px (E7, 2026-11-23).
 
 **Plein écran** (chantier `atelier-plein-ecran`, 2026-11-15) : tout l'atelier recouvre la fenêtre
 (classe `plein-ecran` : `position: fixed`, `inset: 0`, comme le graphe agrandi), sans l'en-tête

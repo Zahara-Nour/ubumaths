@@ -2,20 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, lot écrit (aucune PR encore)._
+_Mis à jour le 2026-11-23, après #3049 ; #3051 ouverte._
 
-- **État** : lot écrit et commité sur `feat/idees-1re-derivation` (2 commits) : F1, F2 neufs
-  (`scripts/questions/idees-1re-derivation-neufs/`, avec `rangement`) ; 13 variations sur 7
-  publiés (`…-publies/`) ; migration de contenu `20261123165942_…_publies_contenu.sql` + fixture.
-  Simulation verte, sonde des courbes 0 problème, formules valides, rendu vu à l'écran.
-- **Prochaine action** : après les brouillons en prod, commiter les ids, `migration-rangement.ts
---dir …-neufs`, merger `origin/main` (branche en retard), revue (`security-auditor`), PR.
-- **En attente de David** : `create-questions --publier` des 2 neufs en PROD (commande dans le
-  dernier message de la session).
-- **Pièges en cours** : 46913a48, d58208eb, 1666b8e9 aussi en 1re techno (l1t-7) ; messages
-  d'erreur prévue réécrits à la résolution (pas de parenthèses autour d'une variable) ; `{{e}}`
-  interdit ; migration de contenu déjà jouée en base LOCALE (`db:a-jour`).
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-derivation`, `feat/idees-1re-derivation`.
+- **État** : #3049 en prod (rangement + contenu). Série de relecture enregistrée par David
+  (`1cea2ab1`), id commité, PR #3051 ouverte (CI à suivre puis `pnpm pr:merger 3051`). David a
+  validé les 9 modèles dans le chat (« je valide les modèles », 2026-11-23 ; aucun verdict en base).
+  `publier-lot.ts` en simulation : les 2 brouillons passent le contrôle.
+- **Prochaine action** : merger #3051 ; donner à David
+  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-1re-derivation-neufs --publier`
+  (depuis le dépôt principal à jour) ; vérifier en prod ; tableau de répartition : rubrique
+  « publiée » ; clôture (versement du journal).
+- **En attente de David** : la commande `publier-lot … --publier`.
+- **Pièges en cours** : base LOCALE : migration de contenu jouée sous l'ancien nom `20261123165942`.
+- **Worktree / branche** : `../ubumaths-wt-idees-1re-derivation-serie`, `chore/idees-1re-derivation-serie` (retiré par `pr:merger`).
 
 ## Journal
 
@@ -52,3 +51,17 @@ _Mis à jour le 2026-11-23, lot écrit (aucune PR encore)._
   courbe de degré 3, pente 1/3.
 - Rangement : F1 « Fonctions > Dérivation > nombre dérivé », 1SPE-260, niveau 2 ; F2
   « … > tangente », 1SPE-272, niveau 3 (niveaux relevés en prod).
+
+### 2026-11-23 — #3049 mergée, migrations en prod
+
+- Brouillons créés en prod par David (ids commités). Migration de rangement générée ; migration de
+  contenu re-horodatée (`165942` → `173052`) : trois migrations d'autres sessions étaient déjà en
+  prod après `165942`. `security-auditor` : aucun finding bloquant (notes : texte commun « niveaux »
+  de l'en-tête du rangement, sans effet). Tests d'intégration des deux fixtures verts.
+- CI verte, merge par `pr:merger`, `migration list --linked` (seules les deux du lot en attente),
+  `db:migrate`, état vérifié par le MCP.
+
+### 2026-11-23 — relecture validée
+
+- Série de relecture `1cea2ab1` enregistrée par David ; PR #3051 pour l'id. David : « je valide les
+  modèles ». `publier-lot.ts` en simulation : 2 brouillons passent le contrôle.

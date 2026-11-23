@@ -13,6 +13,7 @@ import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcSession } from '../calcul';
 import { parseDefinition, type Provenance } from '../parse';
+import { bareFunctionRefusal } from '#lib/mathAST/cli/core/variable-argument.ts';
 
 function session(...setup: string[]): CalcSession {
 	const s: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
@@ -337,6 +338,52 @@ describe('un nombre collé suivi d’une commande ou d’une parenthèse', () =>
 		['atanx', '« tanx » : écris tan(x) avec des parenthèses.']
 	])('« %s » : lettre devant lue comme un coefficient', (text, message) => {
 		expect(refusalOf(text)).toBe(message);
+	});
+});
+
+// E1 (2026-11-23) : le clavier MathLive écrit `\cos2\pi` ; le nombre seul
+// devenait l'argument (π·cos(2), sin(2)·x), sans refus
+describe('touche de fonction suivie d’un nombre puis d’un facteur', () => {
+	it.each([
+		['\\cos2\\pi', '« cos 2π » : écris cos(…) avec des parenthèses.'],
+		['\\cos 2\\pi', '« cos 2π » : écris cos(…) avec des parenthèses.'],
+		['\\sin2x', '« sin 2x » : écris sin(…) avec des parenthèses.'],
+		['\\sin 2x', '« sin 2x » : écris sin(…) avec des parenthèses.'],
+		['\\ln2x', '« ln 2x » : écris ln(…) avec des parenthèses.'],
+		['\\sin2\\theta', '« sin 2θ » : écris sin(…) avec des parenthèses.'],
+		['\\sin2(x)', '« sin 2 » : écris sin(…) avec des parenthèses.'],
+		['\\sin 2\\left(x\\right)', '« sin 2 » : écris sin(…) avec des parenthèses.'],
+		['\\ln 2\\sqrt{x}', '« ln 2 » : écris ln(…) avec des parenthèses.'],
+		['1+\\tan 0,5x', '« tan 0,5x » : écris tan(…) avec des parenthèses.']
+	])('« %s »', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	// Le nombre seul, ou suivi d'un produit écrit, reste l'argument
+	it.each([
+		['\\cos2', 'cos(2)'],
+		['\\cos 2', 'cos(2)'],
+		['\\cos2+1', '1+cos(2)'],
+		['x\\cos 2', 'cos(2)x'],
+		['\\cos2\\cdot x', 'cos(2)x'],
+		['\\cos\\pi', '-1'],
+		['\\sin x', 'sin(x)'],
+		['\\cos\\left(2\\pi\\right)', '1']
+	])('« %s » reste lu', (text, output) => {
+		const result = runInput(session(), text);
+		expect(result.kind === 'calcul' && result.output).toBe(output);
+	});
+
+	// Revue : une relation, un espace ou un texte après le nombre n'est pas un facteur
+	it.each([
+		'\\ln 2 \\approx 0,69',
+		'\\log 2 \\leqslant 1',
+		'\\cos 2 \\geqslant 0',
+		'\\ln 2 \\quad x',
+		'\\exp 2 \\text{ cm}',
+		'\\cos 2 \\ldots'
+	])('« %s » n’est pas refusé comme fonction collée', (text) => {
+		expect(bareFunctionRefusal(text)).toBeNull();
 	});
 });
 

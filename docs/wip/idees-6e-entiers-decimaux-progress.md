@@ -6,17 +6,15 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3047._
+_Mis à jour le 2026-11-23, après #3048 (rubrique publiée)._
 
-- **État** : #3047 mergé (ids des 6 brouillons, migrations de rangement et de contenu, N5 en égalités) ; seules
-  ces 2 migrations sont en attente en prod (`--dry-run --include-all` vérifié) · **Prochaine action** (David) :
-  `pnpm exec supabase db push --include-all` (horodatages antérieurs à une migration déjà en prod), puis
-  `create-questions --dir scripts/questions/idees-6e-entiers-decimaux-neufs-b --publier --mettre-a-jour`
-  (contenu de N5) ; ensuite je vérifie en base et prépare la relecture dans `/dev/modeles` (6 brouillons :
-  `?point=6-101` et `?point=6-106` ; 13 publiés : série de relecture) · **Ensuite** : outils n° 54 et n° 53 ·
-  **En attente de David** : les deux commandes ci-dessus ; titre de N5 (plus de tableau) à changer dans
-  l'éditeur s'il le veut · **Pièges en cours** : relancer un `*.py` du lot → réinjecter id et `rangement`,
-  puis `pnpm format` · **Worktree / branche** : aucun ; branche `docs/idees-6e-entiers-decimaux` à supprimer.
+- **État** : rubrique 6N1 PUBLIÉE (6 neufs, 23 variations sur 13 publiés, relecture validée) ; branche
+  `docs/idees-6e-entiers-decimaux` supprimée · **Prochaine action** (validée par David le 2026-11-23) : outil
+  n° 54 de `outils-manquants.md` (droite graduée avec zoom, 6N1H-3 / 6N1H-4), chantier d'outil : phase 0 d'abord
+  (comportements en français, attendre la validation), worktree neuf ; puis outil n° 53 (labyrinthe) de même ;
+  puis verser ce journal en archive · **En attente de David** : renommer N5 (c178356b) dans l'éditeur en
+  « Écrire un nombre en décimal, en fraction et en pourcentage » (écriture en prod, la sienne) ·
+  **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -175,3 +173,8 @@ des modèles de questions.
   31 verts) et contenu (intégration 76 verts), garde des niveaux sans écart.
 - 2026-11-23 : #3047 mergé. `db:migrate` refusé (« inserted before the last migration on remote ») ;
   `--dry-run --include-all` : seules nos 2 migrations ; le push réel est laissé à David (écriture en prod).
+- 2026-11-23 : migrations poussées par David (`db push --include-all`), vérifiées en base ; série de relecture
+  f9db7096 enregistrée par David (#3048) ; relecture validée ; 6 neufs publiés par David (`publier-lot.ts`),
+  vérifiés en base (6 `published`). Rubrique passée à « publiée » dans le tableau.
+- 2026-11-23 : #3048 mergé. David suit les recos : outils 54 puis 53 ; titre de N5 proposé ; branche de la
+  phase 0 supprimée (contenu identique sur main).

@@ -29,7 +29,7 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 
 ### Commandes sur une expression
 
-Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1`) est refusée avant toute lecture, avec le fragment tapé : « « ln x » : écris ln(x) avec des parenthèses. » (`bareFunctionRefusal`, détail : [atelier.md](atelier.md)). Collée à son argument aussi : `lnx`, `sinx`, `cost`, `ln2x` → « « ln2x » : écris ln(2x) avec des parenthèses. » ; `sinus`, `lnxy`, `sinh` ne sont pas visés.
+Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1`) est refusée avant toute lecture, avec le fragment tapé : « « ln x » : écris ln(x) avec des parenthèses. » (`bareFunctionRefusal`, détail : [atelier.md](atelier.md)). Collée à son argument aussi : `lnx`, `sinx`, `cost`, `ln2x` → « « ln2x » : écris ln(2x) avec des parenthèses. » ; touche de fonction du clavier MathLive suivie d'un nombre puis d'un facteur (`\cos2\pi`, `\sin 2x`, lus π·cos(2), sin(2)·x avant E1, 2026-11-23) → « « cos 2π » : écris cos(…) avec des parenthèses. » (`LATEX_FUNCTION_NUMBER`, facteur en liste blanche : lettres, lettre grecque, `(`, `\left`, `\sqrt`, `\frac`) ; `\cos 2` seul, `\cos2\cdot x`, une relation (`\ln 2 \approx 0,69`), un espace ou un `\text` après le nombre restent lus ; `sinus`, `lnxy`, `sinh` ne sont pas visés.
 
 | Commande                        | Nouvelle écriture                                         | Exemple                                                       |
 | ------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------- |
