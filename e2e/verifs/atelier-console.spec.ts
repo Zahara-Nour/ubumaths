@@ -17,7 +17,8 @@ import {
 	steps,
 	stepsAs,
 	typeInCard,
-	type Answer
+	type Answer,
+	allowClipboard
 } from './helpers/atelier';
 import { openView, readCell, typeCell } from './helpers/grille';
 
@@ -273,7 +274,7 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 
 	// Le lien de partage : les cartes, pas la console. La page du lien partage le stockage de
 	// celle-ci (même contexte) : f visible et aucune ligne prouvent que le lien a été lu
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await allowClipboard(page);
 	await page.getByRole('button', { name: 'Partager', exact: true }).click();
 	await expect(page.getByLabel('Lien de partage')).toHaveValue(/\?a=/);
 	const link = await page.getByLabel('Lien de partage').inputValue();

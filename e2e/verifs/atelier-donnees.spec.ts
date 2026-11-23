@@ -1,5 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
-import { calc, card, cardLocator, normalizeLatex, openAtelier } from './helpers/atelier';
+import {
+	calc,
+	card,
+	cardLocator,
+	normalizeLatex,
+	openAtelier,
+	allowClipboard
+} from './helpers/atelier';
 import {
 	cellLocator,
 	hintWhileTyping,
@@ -583,7 +590,7 @@ async function chooseFormat(page: Page, format: string): Promise<void> {
 
 /** Le lien de « Partager », lu dans sa fenêtre (une grille seule se partage) */
 async function shareLink(page: Page): Promise<string> {
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await allowClipboard(page);
 	await page.getByRole('button', { name: 'Partager', exact: true }).click();
 	const field = page.getByLabel('Lien de partage');
 	await expect(field).toHaveValue(/\?/);
@@ -657,7 +664,7 @@ test('#1412 — Ctrl+Z / Ctrl+Maj+Z dans la grille, boutons grisés, carte rendu
 
 	// Taper, coller un tableau (titres compris), effacer une zone
 	await typeCell(page, 'A1', '5');
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await allowClipboard(page);
 	await page.evaluate(() => navigator.clipboard.writeText('taille\tmasse\n150\t40\n160\t52'));
 	await selectCell(page, 'C1');
 	await page.keyboard.press('ControlOrMeta+V');

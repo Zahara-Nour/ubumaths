@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 /**
  * La console de l'Atelier (`/atelier`), pilotée comme un élève : on tape une
@@ -245,4 +245,43 @@ export async function retypeCard(page: Page, name: string, keys: string): Promis
 /** Le LaTeX que montre le champ d'une carte */
 export async function fieldValue(page: Page, name: string): Promise<string> {
 	return normalizeLatex(await mathValue(cardLocator(page, name).locator('math-field')));
+}
+
+/**
+ * Le presse-papiers lu et écrit par le test, selon le moteur : Chromium veut
+ * les deux permissions ; WebKit et Firefox ne les connaissent pas
+ * (`grantPermissions` refuse, « Unknown permission ») et laissent la page s'en
+ * servir sans elles.
+ */
+export async function allowClipboard(page: Page): Promise<void> {
+	if (test.info().project.use.defaultBrowserType === 'chromium') {
+		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	}
+}
+
+/**
+ * Le texte du presse-papiers. Chromium le rend à `readText()` ; WebKit refuse
+ * `readText()` hors d'un geste de l'utilisateur : on colle (⌘/Ctrl+V) dans un
+ * champ provisoire, comme un élève, puis on le retire et on rend le focus.
+ */
+export async function readClipboard(page: Page): Promise<string> {
+	if (test.info().project.use.defaultBrowserType === 'chromium') {
+		return page.evaluate(() => navigator.clipboard.readText());
+	}
+	const focused = await page.evaluateHandle(() => document.activeElement);
+	await page.evaluate(() => {
+		const field = document.createElement('textarea');
+		field.id = 'verifs-presse-papiers';
+		field.style.position = 'fixed';
+		field.style.inset = '0 auto auto 0';
+		document.body.append(field);
+		field.focus();
+	});
+	await page.keyboard.press('ControlOrMeta+V');
+	const text = await page.locator('#verifs-presse-papiers').inputValue();
+	await page.evaluate((element) => {
+		document.getElementById('verifs-presse-papiers')?.remove();
+		if (element instanceof HTMLElement) element.focus();
+	}, focused);
+	return text;
 }

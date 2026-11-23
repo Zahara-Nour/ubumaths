@@ -17,7 +17,9 @@ import {
 	openAtelier,
 	steps,
 	stepsAs,
-	type Answer
+	type Answer,
+	allowClipboard,
+	readClipboard
 } from './helpers/atelier';
 
 /**
@@ -1340,8 +1342,8 @@ test('#1404 — conversions, intégrales refusées, réciproque à paramètres',
 });
 
 test('#1417 — Copier, Copier en LaTeX, valeur approchée copiée', async ({ page }) => {
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-	const clipboard = () => page.evaluate(() => navigator.clipboard.readText());
+	await allowClipboard(page);
+	const clipboard = () => readClipboard(page);
 	const notice = page.locator('p.retour');
 
 	const developed = await calc(page, '.développer (2x-1)(x+3)');

@@ -1,4 +1,7 @@
-import { devices, type PlaywrightTestOptions } from '@playwright/test';
+import { mkdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { devices, type LaunchOptions, type PlaywrightTestOptions } from '@playwright/test';
 
 /**
  * Navigateurs de `pnpm test:verifs` (R6 du chantier `verifs-auto`)
@@ -19,7 +22,10 @@ export type Engine = 'chromium' | 'webkit' | 'firefox';
 export interface VerifsProject {
 	name: string;
 	engine: Engine;
-	use: Partial<PlaywrightTestOptions> & { defaultBrowserType?: Engine };
+	use: Partial<PlaywrightTestOptions> & {
+		defaultBrowserType?: Engine;
+		launchOptions?: LaunchOptions;
+	};
 	/** Téléphone : les tests `@bureau` sont sautés */
 	phone: boolean;
 	/** Sous-ensemble joué (`grep`), sinon toute la suite */
@@ -33,17 +39,32 @@ export interface VerifsProject {
 /** Le projet du jour : `pnpm test:verifs` sans `--project` */
 export const DEFAULT_PROJECT = 'ordi-chrome';
 
+/**
+ * Firefox sur macOS 27 : il lit `~/Library/Application Support/Firefox` même
+ * avec le profil que lui donne Playwright, macOS le lui refuse (confidentialité)
+ * et il s'arrête au départ (« Could not find profile folder »). Un dossier
+ * personnel à lui (`CFFIXED_USER_HOME`) l'en détourne ; ailleurs, rien.
+ */
+function firefoxLaunchOptions(): LaunchOptions {
+	if (process.platform !== 'darwin') return {};
+	const home = join(tmpdir(), 'chiphre-verifs-firefox-home');
+	mkdirSync(home, { recursive: true });
+	return { env: { ...process.env, CFFIXED_USER_HOME: home } };
+}
+
+const firefoxDesktop = { ...devices['Desktop Firefox'], launchOptions: firefoxLaunchOptions() };
+
 export const VERIFS_PROJECTS: readonly VerifsProject[] = [
 	{ name: 'ordi-chrome', engine: 'chromium', use: devices['Desktop Chrome'], phone: false },
 	{ name: 'ordi-safari', engine: 'webkit', use: devices['Desktop Safari'], phone: false },
-	{ name: 'ordi-firefox', engine: 'firefox', use: devices['Desktop Firefox'], phone: false },
+	{ name: 'ordi-firefox', engine: 'firefox', use: firefoxDesktop, phone: false },
 	{ name: 'iphone', engine: 'webkit', use: devices['iPhone 15'], phone: true },
 	{ name: 'android', engine: 'chromium', use: devices['Pixel 7'], phone: true },
 	{
 		name: 'firefox-390',
 		engine: 'firefox',
 		// Firefox ne connaît pas `isMobile` : la largeur d'un téléphone seulement
-		use: { ...devices['Desktop Firefox'], viewport: { width: 390, height: 844 } },
+		use: { ...firefoxDesktop, viewport: { width: 390, height: 844 } },
 		phone: true,
 		// Graphiques, constructions, clavier MathLive (grep : fichier, titres, étiquettes)
 		only: /atelier-graphe|atelier-geometrie|@clavier-mathlive/
