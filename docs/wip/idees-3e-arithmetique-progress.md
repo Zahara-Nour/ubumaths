@@ -5,16 +5,16 @@ skill `idees-rubrique`. Relevé : [idees-3e-arithmetique-releve.md](idees-3e-ari
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, lot écrit, PR des fichiers à ouvrir._
+_Mis à jour le 2026-11-23, après #3035._
 
-- **État** : lot écrit et vert (`question:specs`, `create-questions` en simulation, aperçu local
-  vu) : 6 modèles neufs (F1, F3 à F7, 16 variations) + 3 variations de 90dca27a (F2) · **Prochaine
-  action** : PR des fichiers, puis David lance `create-questions --publier` (neufs) ; migrations
-  de rangement (F1 → 3-010 ; F3 à F7 sans point) et de contenu (90dca27a) · **En attente de
-  David** : Q3 (F1 en modèle neuf au lieu de 77ab770d, puissances exigées) · **Pièges en cours** :
-  réservation de 77ab770d à lever si Q3 = oui ; id locaux retirés des fichiers après l'essai
-  local · **Worktree / branche** : `../ubumaths-wt-idees-3e-arithmetique`,
-  `feat/idees-3e-arithmetique`.
+- **État** : lot mergé (#3035, fichiers seuls) : 6 modèles neufs dans
+  `scripts/questions/idees-3e-arithmetique-neufs/` + 3 variations de 90dca27a dans `-publies/` ;
+  rien en prod · **Prochaine action** : David lance `create-questions --dir
+scripts/questions/idees-3e-arithmetique-neufs --publier` (brouillons), je commite les id ; puis
+  migrations de rangement (F1 → 3-010, F3 à F7 sans point) et de contenu (90dca27a) ·
+  **En attente de David** : Q3 (F1 en modèle neuf au lieu de 77ab770d, puissances exigées) ·
+  **Pièges en cours** : réservation de 77ab770d à lever si Q3 = oui · **Worktree / branche** :
+  aucun (retiré) ; nouveau worktree sur `origin/main` pour la PR suivante.
 
 ## Historique
 
