@@ -6,7 +6,7 @@
  * étape 2). La série reste celle du professeur : le lien la SUIT (Q125), son
  * titre et sa composition sont relus à chaque chargement. L'élève la lance dans
  * la forme choisie au rattachement (Q124 a), sans note : le lien est celui de
- * l'entraînement libre (`/automaths/test?categories=…&mode=…`).
+ * l'entraînement libre (`/automaths/test?modeles=…&mode=…`).
  *
  * ⚠️ Toutes ces fonctions passent par le client de la requête, donc SOUS RLS.
  * La RLS échoue en silence (docs/pratiques/rls-echecs-silencieux.md) : chaque
@@ -16,12 +16,18 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { ChapterSeriesForm, ChapterSeriesRow } from '$lib/types/database-helpers';
-import { chapterIdOf, type ChapterSeries } from '$lib/types/chapters';
-import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
-import { isDeadlinePassed } from '$lib/utils/dates';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import type { ChapterSeriesForm, ChapterSeriesRow } from '#lib/types/database-helpers.ts';
+import { chapterIdOf, type ChapterSeries } from '#lib/types/chapters.ts';
+import {
+	buildSeriesLink,
+	seriesItemsSchema,
+	totalQuestions,
+	type SeriesItem
+} from '#lib/validation/series.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
+import { isDeadlinePassed } from '#lib/utils/dates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
 import { placementColumns, type SectionPlacement } from './chapters';
 
@@ -62,17 +68,16 @@ function toForm(value: string): ChapterSeriesForm {
 	return value === 'interactive' ? 'interactive' : 'flash';
 }
 
-/** Ligne de base + série relue → vue applicative, avec son lien de lancement. */
+/**
+ * Ligne de base + série relue → vue applicative, avec son lien de lancement.
+ * `items` : composition relue (`server/series-lines`), `null` si illisible.
+ */
 export function toChapterSeries(
 	row: ChapterSeriesRow,
-	series: { title: string; categories: unknown } | undefined
+	series: { title: string; items: SeriesItem[] | null } | undefined
 ): ChapterSeries {
 	const form = toForm(row.form);
-	const categories = series ? seriesCategoriesSchema.safeParse(series.categories) : null;
-	if (categories && !categories.success) {
-		logger.error('[chapter-series] Composition illisible pour la série', row.series_id);
-	}
-	const lisible = categories?.success ? categories.data : null;
+	const lisible = series?.items && series.items.length > 0 ? series.items : null;
 
 	return {
 		id: row.id,
@@ -123,7 +128,7 @@ export async function listChapterSeries(
 	const seriesIds = [...new Set(links.map((l) => l.series_id))];
 	const { data: series, error: seriesError } = await supabase
 		.from('series')
-		.select('id, title, categories')
+		.select('id, title, items')
 		.in('id', seriesIds);
 
 	if (seriesError) {
@@ -139,7 +144,15 @@ export async function listChapterSeries(
 		logger.error('[listChapterSeries] Séries rattachées mais illisibles :', manquantes);
 	}
 
-	return { data: links.map((l) => toChapterSeries(l, parId.get(l.series_id))), error: null };
+	const read = readStoredSeriesMany(series ?? []);
+
+	return {
+		data: links.map((l) => {
+			const s = parId.get(l.series_id);
+			return toChapterSeries(l, s ? { title: s.title, items: read.get(s.id) ?? null } : undefined);
+		}),
+		error: null
+	};
 }
 
 /** Les séries enregistrées du professeur, pour le sélecteur de rattachement. */
@@ -149,7 +162,7 @@ export async function listAvailableSeries(
 ): Promise<Result<AvailableSeries[]>> {
 	const { data, error } = await supabase
 		.from('series')
-		.select('id, title, categories')
+		.select('id, title, items')
 		.eq('created_by', teacherId)
 		.order('updated_at', { ascending: false })
 		.limit(AVAILABLE_SERIES_LIMIT);
@@ -161,11 +174,11 @@ export async function listAvailableSeries(
 
 	return {
 		data: (data ?? []).map((s) => {
-			const categories = seriesCategoriesSchema.safeParse(s.categories);
+			const lines = seriesItemsSchema.safeParse(s.items);
 			return {
 				id: s.id,
 				title: s.title,
-				questionCount: categories.success ? totalQuestions(categories.data) : 0
+				questionCount: lines.success ? totalQuestions(lines.data) : 0
 			};
 		}),
 		error: null

@@ -1,0 +1,96 @@
+name: Lint nocturne
+
+# Le job `Lint` de quality.yml ne relit, sur une PR, que les fichiers de la PR
+# (scripts/ci-lint-fichiers.sh). Ce workflow relit TOUT l'arbre chaque nuit sur
+# main : le filet pour ce que cette sélection laisserait passer.
+#
+# Il enregistre aussi le cache ESLint sur main : une PR ne peut restaurer que le
+# cache de sa propre branche ou de main, et main ne lance pas le Lint (CI allégée
+# sur push). Sans ce run, une PR qui relit tout l'arbre (config ESLint, lockfile)
+# partait d'un cache périmé : 19 à 24 min.
+#
+# Même chose pour le cache Prettier (même clé que le job `Lint`, cf.
+# scripts/ci-cle-prettier.sh) : sans lui sur main, la première CI de chaque PR
+# revérifie tout l'arbre, ~270 s au lieu de ~30 s (2026-11-23). Prettier tourne
+# après ESLint, même si ESLint échoue, et son cache s'enregistre dans tous les cas.
+#
+# Pas un check obligatoire (il ne tourne pas sur les PR).
+
+on:
+  schedule:
+    # 03:41 UTC : minute non ronde (GitHub retarde les tâches à l'heure pile),
+    # hors du créneau de nightly-integration (02:17).
+    - cron: '41 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  eslint:
+    name: ESLint, tout l'arbre
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Mêmes clés que le job `Lint` de quality.yml : les PR restaurent ce cache.
+      # restore + save séparés : le cache s'enregistre même si main a une erreur
+      # ESLint (`actions/cache` seul n'enregistre qu'après un job réussi).
+      - name: Restore ESLint cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .eslintcache
+          key: eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-${{ github.sha }}
+          restore-keys: |
+            eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-
+            eslint-content-${{ runner.os }}-
+
+      - name: Run ESLint
+        run: pnpm eslint . --cache --cache-strategy content
+
+      - name: Save ESLint cache
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: .eslintcache
+          key: eslint-content-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.*') }}-${{ github.sha }}
+
+      - name: Clé du cache Prettier
+        id: prettier-cle
+        if: always()
+        run: echo "versions=$(bash scripts/ci-cle-prettier.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Prettier cache
+        if: always()
+        uses: actions/cache/restore@v6
+        with:
+          path: .prettier-cache
+          key: prettier-${{ runner.os }}-${{ steps.prettier-cle.outputs.versions }}-${{ hashFiles('.prettierrc', '.prettierignore') }}-${{ github.sha }}
+          restore-keys: |
+            prettier-${{ runner.os }}-${{ steps.prettier-cle.outputs.versions }}-${{ hashFiles('.prettierrc', '.prettierignore') }}-
+
+      - name: Run Prettier check
+        if: always()
+        run: pnpm prettier --check . --cache --cache-strategy content --cache-location .prettier-cache
+
+      - name: Save Prettier cache
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: .prettier-cache
+          key: prettier-${{ runner.os }}-${{ steps.prettier-cle.outputs.versions }}-${{ hashFiles('.prettierrc', '.prettierignore') }}-${{ github.sha }}

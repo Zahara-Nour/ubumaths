@@ -43,9 +43,6 @@
 			}
 		],
 		"grades": ["1_SPE"],
-		"theme": "Suites",
-		"domain": "Suites arithmétiques",
-		"subdomain": "Determiner la raison",
 		"level": 1,
 		"status": "draft",
 		"delay": 30,

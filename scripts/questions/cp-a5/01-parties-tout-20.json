@@ -1,10 +1,8 @@
 {
+	"id": "da6e20cd-31f3-4be1-b2c7-180bdd0b482d",
 	"title": "Problèmes parties-tout (jusqu'à 20)",
 	"description": "Chercher le tout ou une partie : réunion, ajout, retrait (8 oiseaux, 5 arrivent)",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Problèmes",
-	"subdomain": "Parties-tout",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

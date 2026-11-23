@@ -34,13 +34,13 @@ const POSTGREST_MAX_ROWS = 1000;
 // HELPERS
 // ============================================================================
 
-function row(index: number, status: string, theme: string, overrides: Row = {}): Row {
+/** `groupe` : étiquette de test qui distingue les lignes entre elles (champ propre au faux) */
+function row(index: number, status: string, groupe: string, overrides: Row = {}): Row {
 	return {
-		id: `${status}-${theme}-${String(index).padStart(5, '0')}`,
+		id: `${status}-${groupe}-${String(index).padStart(5, '0')}`,
 		status,
-		theme,
-		domain: 'Additionner',
-		subdomain: null,
+		groupe,
+		classification_node_id: null,
 		level: 1,
 		type: 'fill_in_blanks',
 		grades: ['CE1'],
@@ -50,8 +50,24 @@ function row(index: number, status: string, theme: string, overrides: Row = {}):
 	};
 }
 
-function rows(count: number, status: string, theme: string, overrides: Row = {}): Row[] {
-	return Array.from({ length: count }, (_, index) => row(index, status, theme, overrides));
+function rows(count: number, status: string, groupe: string, overrides: Row = {}): Row[] {
+	return Array.from({ length: count }, (_, index) => row(index, status, groupe, overrides));
+}
+
+/** Motif ILIKE de Postgres (`%`, `_`, échappement par `\`) → expression régulière */
+function likeToRegExp(pattern: string): RegExp {
+	const literal = (char: string) => char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	let source = '';
+	for (let index = 0; index < pattern.length; index++) {
+		const char = pattern[index];
+		if (char === '\\' && index + 1 < pattern.length) {
+			index++;
+			source += literal(pattern[index]);
+		} else if (char === '%') source += '.*';
+		else if (char === '_') source += '.';
+		else source += literal(char);
+	}
+	return new RegExp(`^${source}$`, 'is');
 }
 
 /** Constructeur de requête minimal, à la manière de PostgREST (1000 lignes max) */
@@ -85,9 +101,26 @@ function fakeQuery(table: Row[]) {
 			);
 			return builder;
 		},
+		ilike: (column: string, pattern: string) => {
+			filters.push((candidate) => likeToRegExp(pattern).test(String(candidate[column] ?? '')));
+			return builder;
+		},
+		// Recherche : `title.ilike.*terme*,and(id.gte.<uuid>,id.lte.<uuid>)` (terme hexadécimal)
 		// `or('type.eq.course_card,options->>courseQuestion.eq.true')` : liste de
 		// `colonne.eq.valeur`, colonne jsonb lue en texte via `->>`, comme PostgREST
 		or: (expression: string) => {
+			const search = /^title\.ilike\.\*(.*)\*,and\(id\.gte\.([^,]+),id\.lte\.([^)]+)\)$/.exec(
+				expression
+			);
+			if (search) {
+				const [, term, low, high] = search;
+				filters.push((candidate) => {
+					const id = String(candidate.id);
+					const title = String(candidate.title ?? '').toLowerCase();
+					return title.includes(term.toLowerCase()) || (id >= low && id <= high);
+				});
+				return builder;
+			}
 			const clauses = expression.split(',').map((clause) => {
 				const [path, operator, ...rest] = clause.split('.');
 				if (operator !== 'eq') throw new Error(`opérateur non simulé : ${operator}`);
@@ -106,6 +139,14 @@ function fakeQuery(table: Row[]) {
 					return text !== undefined && text !== null && String(text) === value;
 				})
 			);
+			return builder;
+		},
+		in: (column: string, values: unknown[]) => {
+			filters.push((candidate) => values.includes(candidate[column]));
+			return builder;
+		},
+		is: (column: string, value: null) => {
+			filters.push((candidate) => (candidate[column] ?? null) === value);
 			return builder;
 		},
 		gte: (column: string, value: number) => {
@@ -129,13 +170,29 @@ function fakeQuery(table: Row[]) {
 	return builder;
 }
 
+const B_CALC = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+const B_GEO = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+const N_FRAC = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1';
+const N_DEC = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2';
+const S_ADD = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
+
+const NODES: Row[] = [
+	{ id: B_CALC, kind: 'branch', name: 'Calcul', parent_id: null, position: 0 },
+	{ id: B_GEO, kind: 'branch', name: 'Géométrie', parent_id: null, position: 1 },
+	{ id: N_FRAC, kind: 'notion', name: 'Fractions', parent_id: B_CALC, position: 0 },
+	{ id: N_DEC, kind: 'notion', name: 'Décimaux', parent_id: B_CALC, position: 1 },
+	{ id: S_ADD, kind: 'subnotion', name: 'Additionner', parent_id: N_FRAC, position: 0 }
+];
+
 async function loadPage(table: Row[], query = ''): Promise<LoadResult> {
 	const event = {
 		url: new URL(`http://localhost/dashboard/admin/questions${query}`),
 		locals: {
 			user: { id: USER_ID },
 			profile: { role: 'admin' },
-			supabase: { from: () => fakeQuery(table) }
+			supabase: {
+				from: (name: string) => fakeQuery(name === 'classification_nodes' ? NODES : table)
+			}
 		}
 	} as unknown as LoadEvent;
 	return (await load(event)) as LoadResult;
@@ -146,12 +203,64 @@ async function loadPage(table: Row[], query = ''): Promise<LoadResult> {
 // ============================================================================
 
 describe('page admin des modèles — filtres communs aux deux onglets', () => {
-	it('filtre les brouillons par thème, comme les publiés', async () => {
+	it('filtre les brouillons par notion (sous-notions comprises), comme les publiés', async () => {
+		const table = [
+			...rows(2, 'draft', 'Entiers', { classification_node_id: N_FRAC }),
+			...rows(1, 'draft', 'Entiers', { classification_node_id: S_ADD }),
+			...rows(4, 'draft', 'Fractions', { classification_node_id: N_DEC })
+		];
+
+		const result = await loadPage(table, `?branche=${B_CALC}&notion=${N_FRAC}`);
+
+		expect(result.drafts).toHaveLength(3);
+	});
+
+	it('filtre par branche seule : toutes ses notions, pas une autre branche', async () => {
+		const table = [
+			...rows(2, 'draft', 'a', { classification_node_id: N_FRAC }),
+			...rows(3, 'draft', 'b', { classification_node_id: N_DEC }),
+			...rows(5, 'draft', 'c', { classification_node_id: B_GEO })
+		];
+
+		const result = await loadPage(table, `?branche=${B_CALC}`);
+
+		expect(result.drafts).toHaveLength(5);
+	});
+
+	it('« Non rangés » : seulement les modèles sans nœud', async () => {
+		const table = [
+			...rows(2, 'draft', 'a', { classification_node_id: N_FRAC }),
+			...rows(3, 'draft', 'b'),
+			...rows(4, 'published', 'c')
+		];
+
+		const result = await loadPage(table, '?nonRanges=1');
+
+		expect(result.drafts).toHaveLength(3);
+		expect(result.publishedIds).toHaveLength(4);
+		expect(result.filters.nonRanges).toBe(true);
+	});
+
+	it('ignore les anciens paramètres theme / domain / subdomain', async () => {
 		const table = [...rows(3, 'draft', 'Entiers'), ...rows(4, 'draft', 'Fractions')];
 
-		const result = await loadPage(table, '?theme=Entiers');
+		const result = await loadPage(table, '?theme=Entiers&domain=Additionner&subdomain=x');
 
-		expect(result.drafts.map((draft) => draft.theme)).toEqual(['Entiers', 'Entiers', 'Entiers']);
+		expect(result.drafts).toHaveLength(7);
+	});
+
+	it('un identifiant de branche mal formé est ignoré, pas une erreur', async () => {
+		const table = rows(3, 'draft', 'Entiers');
+
+		const result = await loadPage(table, '?branche=pas-un-uuid');
+
+		expect(result.drafts).toHaveLength(3);
+	});
+
+	it('rend les nœuds de l’arbre pour les filtres et les chemins', async () => {
+		const result = await loadPage(rows(1, 'draft', 'Entiers'));
+
+		expect(result.nodes.map((node) => node.id)).toContain(S_ADD);
 	});
 
 	it('filtre les brouillons par niveau scolaire (chevauchement)', async () => {
@@ -174,9 +283,12 @@ describe('page admin des modèles — filtres communs aux deux onglets', () => {
 	});
 
 	it('rend les identifiants de TOUS les publiés filtrés, au-delà de la page de 50', async () => {
-		const table = [...rows(228, 'published', 'Entiers'), ...rows(10, 'published', 'Fractions')];
+		const table = [
+			...rows(228, 'published', 'Entiers', { classification_node_id: N_FRAC }),
+			...rows(10, 'published', 'Fractions')
+		];
 
-		const result = await loadPage(table, '?theme=Entiers');
+		const result = await loadPage(table, `?notion=${N_FRAC}`);
 
 		expect(result.templates).toHaveLength(50);
 		expect(result.total).toBe(228);
@@ -230,7 +342,7 @@ describe('page admin des modèles — filtre « Questions de cours »', () => {
 	it('avec le filtre : questions de cours et cartes de cours, dans les deux onglets', async () => {
 		const result = await loadPage(catalogue(), '?courseQuestion=1');
 
-		expect(result.drafts.map((draft) => draft.theme).sort()).toEqual([
+		expect(result.drafts.map((draft) => draft.groupe).sort()).toEqual([
 			'Fonctions',
 			'Polynômes',
 			'Polynômes'
@@ -242,10 +354,10 @@ describe('page admin des modèles — filtre « Questions de cours »', () => {
 	});
 
 	it('se combine avec les autres filtres', async () => {
-		const result = await loadPage(catalogue(), '?courseQuestion=1&theme=Fonctions');
+		const result = await loadPage(catalogue(), '?courseQuestion=1&nonRanges=1');
 
-		expect(result.drafts).toHaveLength(1);
-		expect(result.publishedIds).toHaveLength(0);
+		expect(result.drafts).toHaveLength(3);
+		expect(result.publishedIds).toHaveLength(5);
 	});
 
 	it('valeur inattendue du paramètre → filtre inactif', async () => {
@@ -253,5 +365,112 @@ describe('page admin des modèles — filtre « Questions de cours »', () => {
 
 		expect(result.drafts).toHaveLength(6);
 		expect(result.filters.courseQuestion).toBe(false);
+	});
+});
+
+describe('page admin des modèles — recherche par titre ou début d’identifiant', () => {
+	function catalogue(): Row[] {
+		return [
+			row(0, 'published', 'A', {
+				id: '7f82d15a-0000-4000-8000-000000000001',
+				title: 'Lire un tableau de variations'
+			}),
+			row(1, 'published', 'B', {
+				id: '7f83aaaa-0000-4000-8000-000000000002',
+				title: 'Dériver un polynôme'
+			}),
+			row(2, 'draft', 'C', {
+				id: '12345678-0000-4000-8000-000000000003',
+				title: 'Variations d’une fonction affine'
+			}),
+			row(3, 'published', 'D', {
+				id: 'abcdef01-0000-4000-8000-000000000004',
+				title: 'Taux de 100 % et 50_50'
+			})
+		];
+	}
+
+	it('sans recherche : tout', async () => {
+		const result = await loadPage(catalogue());
+
+		expect(result.publishedIds).toHaveLength(3);
+		expect(result.drafts).toHaveLength(1);
+	});
+
+	it('par un mot du titre, sans la casse, dans les deux onglets', async () => {
+		const result = await loadPage(catalogue(), '?search=VARIATIONS');
+
+		expect(result.publishedIds).toEqual(['7f82d15a-0000-4000-8000-000000000001']);
+		expect(result.drafts.map((draft) => draft.groupe)).toEqual(['C']);
+		expect(result.total).toBe(1);
+		expect(result.filters.search).toBe('VARIATIONS');
+	});
+
+	it('par le début de l’identifiant (8 caractères, comme dans la liste)', async () => {
+		const result = await loadPage(catalogue(), '?search=7f82d15a');
+
+		expect(result.publishedIds).toEqual(['7f82d15a-0000-4000-8000-000000000001']);
+		expect(result.drafts).toHaveLength(0);
+	});
+
+	it('par un début d’identifiant de 8 caractères au moins, sans la casse', async () => {
+		expect((await loadPage(catalogue(), '?search=7F82D15A')).publishedIds).toEqual([
+			'7f82d15a-0000-4000-8000-000000000001'
+		]);
+		expect((await loadPage(catalogue(), '?search=7f83aaaa-00')).publishedIds).toEqual([
+			'7f83aaaa-0000-4000-8000-000000000002'
+		]);
+		// Moins de 8 caractères (« 2024 », « face ») : seulement le titre
+		expect((await loadPage(catalogue(), '?search=7f82')).publishedIds).toHaveLength(0);
+		expect((await loadPage(catalogue(), '?search=7f82d15')).publishedIds).toHaveLength(0);
+	});
+
+	it('tirets hors de leur place : pas un identifiant, seulement le titre', async () => {
+		expect((await loadPage(catalogue(), '?search=7f82-d15a')).publishedIds).toHaveLength(0);
+		expect((await loadPage(catalogue(), '?search=7f82d15a00')).publishedIds).toEqual([
+			'7f82d15a-0000-4000-8000-000000000001'
+		]);
+	});
+
+	it('se combine avec le filtre des questions de cours (deux `or`)', async () => {
+		const result = await loadPage(catalogue(), '?search=7f82d15a&courseQuestion=1');
+
+		expect(result.publishedIds).toHaveLength(0);
+	});
+
+	it('par un identifiant complet, tirets compris', async () => {
+		const result = await loadPage(catalogue(), '?search=12345678-0000-4000-8000-000000000003');
+
+		expect(result.drafts.map((draft) => draft.groupe)).toEqual(['C']);
+	});
+
+	it('les caractères % et _ du terme sont cherchés tels quels', async () => {
+		expect((await loadPage(catalogue(), '?search=100%20%25')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=%25')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=50_50')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=50_5_')).publishedIds).toHaveLength(0);
+		// `*` (joker de PostgREST) : un seul caractère, jamais une suite
+		expect((await loadPage(catalogue(), '?search=50*50')).publishedIds).toHaveLength(1);
+		expect((await loadPage(catalogue(), '?search=Taux*50')).publishedIds).toHaveLength(0);
+	});
+
+	it('se combine avec les autres filtres', async () => {
+		const result = await loadPage(catalogue(), '?search=variations&grades=1_SPE');
+
+		expect(result.publishedIds).toHaveLength(0);
+		expect(result.drafts).toHaveLength(0);
+	});
+
+	it('espaces autour ignorés ; terme vide = pas de recherche', async () => {
+		expect((await loadPage(catalogue(), '?search=%20%20polyn%C3%B4me%20')).publishedIds).toEqual([
+			'7f83aaaa-0000-4000-8000-000000000002'
+		]);
+		expect((await loadPage(catalogue(), '?search=%20%20')).publishedIds).toHaveLength(3);
+	});
+
+	it('terme trop long → 400', async () => {
+		await expect(loadPage(catalogue(), `?search=${'a'.repeat(101)}`)).rejects.toMatchObject({
+			status: 400
+		});
 	});
 });

@@ -14,39 +14,46 @@
  * @module atelier/solve-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { EquationStep } from '$lib/mathAST/pedagogical-solve';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { EquationStep } from '#lib/mathAST/pedagogical-solve/index.ts';
+import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
 import type {
 	PedagogicalRenderOptions,
 	SchoolLevel,
 	StepRenderer
-} from '$lib/mathAST/common/step-renderer-base';
+} from '#lib/mathAST/common/step-renderer-base.ts';
 import {
 	AbsoluteValueEquationRenderer,
 	generateEquationSteps,
 	generateInequalitySteps,
 	LinearEquationRenderer,
 	QuadraticEquationRenderer
-} from '$lib/mathAST/pedagogical-solve';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
-import { stepsAsShown } from '$lib/mathAST/pedagogical-solve/shown-steps';
+} from '#lib/mathAST/pedagogical-solve/index.ts';
+import { generateRemarkableValueSteps } from '#lib/mathAST/pedagogical-simplify/pipeline.ts';
+import { PedagogicalSimplifyRenderer } from '#lib/mathAST/pedagogical-simplify/renderer.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { exactValueToShow } from '#lib/mathAST/eval/exact-value.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { hasDecimalLiteral } from '#lib/mathAST/tidy/decimal.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { degreeSignWritten } from '#lib/mathAST/cli/core/degrees.ts';
+import type { SolutionWriting } from '#lib/mathAST/cli/commands/solve-latex.ts';
+import { stepsAsShown } from '#lib/mathAST/pedagogical-solve/shown-steps.ts';
 import {
 	DEFAULT_VARIABLE,
 	splitVariableArgument,
 	variableNameOf
-} from '$lib/mathAST/cli/core/variable-argument';
+} from '#lib/mathAST/cli/core/variable-argument.ts';
 import { astOf, variablesOf } from './parse';
+import { radiansInTrigonometry } from './angle-radians';
+import { anglesAsTyped } from '#lib/mathAST/cli/core/angle-radians.ts';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
 import { summaryOf } from './steps-summary';
-import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { evaluate } from '$lib/mathAST/eval';
-import { intervalText } from './interval';
+import { approximateSolutionsLatex } from '#lib/mathAST/cli/approximation.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { conditionText, intervalText, type ComposedCondition } from './interval';
 
 // =============================================================================
 // Constantes
@@ -81,9 +88,6 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 	// dégénérées tombent alors dans `isSolvedForm`, qui les rejette. Le défaut
 	// est versé au lot mathAST.
 ]);
-
-/** Des lettres qui ne sont pas des paramètres : e (Euler), i, π. */
-const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
 /**
  * Ce qu'une résolution donne à afficher : la réponse pour la ligne, les étapes
@@ -196,8 +200,44 @@ function answerFor(step: EquationStep, rendered: RenderedStep): string | null {
  *   `docs/archive/wip/atelier-intervalle-phase0.md`) : les étapes résolvent sur ℝ, puis
  *   une dernière ne garde que les solutions de l'ensemble. Seulement pour une
  *   équation qui conclut sur des solutions isolées ; sinon, repli (`null`).
+ * @param conditions - Les composées traduites (`f(2x)`, chantier composees,
+ *   Q3) : une première étape par composée dit l'ensemble de l'inconnue.
  */
-export function solveSteps(argument: string, within?: Domain): SolvedSteps | null {
+export function solveSteps(
+	argument: string,
+	within?: Domain,
+	conditions: readonly ComposedCondition[] = []
+): SolvedSteps | null {
+	const solved = solvedSteps(argument, within, conditions);
+	return solved === null ? null : withUnitsShown(solved);
+}
+
+/**
+ * Les angles en degrés écrits pour l'écran, comme la réponse de `.simplifier` :
+ * `20~\unit{°}` → `20{}^{\circ}` (PR 2c : les étapes gardent les degrés tapés).
+ */
+function withUnitsShown(solved: SolvedSteps): SolvedSteps {
+	const shown = (latex: string) => degreeSignWritten(displayUnitsInLatex(latex));
+	const step = (s: RenderedStep): RenderedStep => ({
+		...s,
+		title: shown(s.title),
+		...(s.explanation !== undefined && { explanation: shown(s.explanation) }),
+		...(s.expressionLatex !== undefined && { expressionLatex: shown(s.expressionLatex) }),
+		...(s.subSteps !== undefined && { subSteps: s.subSteps.map(step) })
+	});
+	return {
+		...solved,
+		steps: solved.steps.map(step),
+		...(solved.summary !== undefined && { summary: solved.summary.map(step) }),
+		answer: shown(solved.answer)
+	};
+}
+
+function solvedSteps(
+	argument: string,
+	within: Domain | undefined,
+	conditions: readonly ComposedCondition[]
+): SolvedSteps | null {
 	try {
 		// ⚠️ **On lit l'argument comme des MATHÉMATIQUES, pas comme une ligne de
 		// commande.** Le moteur, lui, appliquait deux conventions de terminal qui
@@ -224,12 +264,25 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		// Une autre lettre que l'inconnue (`b*x+5=14`, ou `3 = 2t` résolue en x) :
 		// équation à paramètre, repli sur le moteur (L3)
 		// `x_1` est une autre lettre que x (`variablesOf`) : une équation à paramètre
-		const others = [...variablesOf(node, undefined)].filter(
-			(name) => name !== variable && !CONSTANT_NAMES.has(name)
-		);
+		const others = [...variablesOf(node, undefined)].filter((name) => name !== variable);
 		if (others.length > 0) return null;
 
-		const relation: RelationNode = node;
+		const typedRelation: RelationNode = node;
+		// La valeur d'abord, avec son étape (David, 2026-10-27, chantier
+		// valeurs-remarquables) : `cos(π/3)x = 1` se résout comme `½x = 1`, et
+		// « On divise par 1/2 » dit ce que montre la ligne
+		const remarkable = generateRemarkableValueSteps(typedRelation, { schoolLevel: 'lycee' });
+		// Un angle en degrés sans valeur remarquable (`cos(20°)`) se résout en
+		// radians, exact (`cos(π/9)`), comme avant : le solveur ne lit pas les unités
+		const solvable = radiansInTrigonometry(remarkable.result);
+		// … et s'écrit en degrés, comme tapé (Q1 de la PR 2c, David, 2026-11-09) :
+		// étapes et réponse disent `cos(20°)`, comme le registre et `.simplifier`
+		const angles = anglesAsTyped(remarkable.result);
+		if (solvable.type !== 'relation') return null;
+		const relation: RelationNode = solvable;
+		const valueRenderer = new PedagogicalSimplifyRenderer();
+		const valuesIn = (verbosity: 'detailed' | 'summarized') =>
+			valueRenderer.renderAll(remarkable.steps, { schoolLevel: 'lycee', verbosity });
 		const steps =
 			relation.relation === '='
 				? generateEquationSteps(relation, { level: 'college', variable })
@@ -250,8 +303,11 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		const { renderer, schoolLevel } = rendererFor(kind);
 		// Les étapes écrites comme la réponse (lot 5f-4) ; `steps` garde les
 		// valeurs du calcul, lues par le garde-fou et la réponse
-		const shown = stepsAsShown(steps, relation);
-		const rendered = renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' });
+		const shown = stepsAsShown(steps, relation, angles);
+		const rendered = numbered([
+			...valuesIn('detailed'),
+			...renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' })
+		]);
 
 		// Sans réponse affichable, la ligne n'aurait RIEN à montrer : une zone
 		// mathématique vide, et le texte du moteur jamais affiché.
@@ -262,29 +318,41 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		// ⚠️ **Garde-fou : la conclusion est vérifiée contre le moteur.** Mesuré
 		// le 2026-10-08 — `(2x-4)=0` concluait `x = 0` (le moteur : x = 2). Une
 		// conclusion que les nombres démentent n'est jamais montrée : repli.
-		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
+		// Contre l'équation TAPÉE (degrés en radians), pas celle que les valeurs
+		// remarquables ont réduite : une valeur fausse de la table serait rattrapée
+		const typedSolvable = radiansInTrigonometry(typedRelation);
+		if (typedSolvable.type !== 'relation') return null;
+		if (!conclusionAgrees(typedSolvable, variable, steps[steps.length - 1])) return null;
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
-		const summarized = renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' });
-		const decimal = hasDecimalLiteral(relation);
+		const summarized = numbered([
+			...valuesIn('summarized'),
+			...renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' })
+		]);
+		const writing: SolutionWriting = { decimal: hasDecimalLiteral(typedRelation), angles };
 		if (within !== undefined) {
 			return solutions === null
 				? null
-				: restrictedSteps(rendered, summarized, solutions, variable, within, decimal);
+				: restrictedSteps(rendered, summarized, solutions, variable, within, writing, conditions);
 		}
-		const approximate =
-			solutions === null
-				? null
-				: approximateSolutionsLatex(variable, solutions, answer.trimStart().startsWith('S'));
-		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
-		const summary = summaryOf(rendered, summarized);
 		const values =
 			relation.relation !== '='
 				? null
 				: (solutions ?? solvedValue(steps[steps.length - 1].after, variable));
+		const ordered = values === null ? null : ascending(values);
+		// L'ensemble des solutions, toujours (registre-reference, Q2) : les étapes
+		// passent par `x = 3` ou `x < 3`, et concluent sur S
+		const line =
+			ordered !== null
+				? shownAnswer(answer, ordered, writing)
+				: (inequalitySet(shown[shown.length - 1].after, variable) ?? answer);
+		const approximate = solutions === null ? null : approximateSolutionsLatex(ascending(solutions));
+		const detailed = concludedOn(rendered, line, 'detailed');
+		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
+		const summary = summaryOf(detailed, concludedOn(summarized, line, 'summarized'));
 		return {
-			steps: rendered,
-			answer: values === null ? answer : shownAnswer(answer, values, variable, decimal),
+			steps: detailed,
+			answer: line,
 			...(summary !== undefined && { summary }),
 			...(approximate !== null && { approximate })
 		};
@@ -295,6 +363,79 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		// qui refuse ce qu'on lui donne.
 		return null;
 	}
+}
+
+/** Les étapes numérotées dans l'ordre : le dépliage les clé par `id`. */
+function numbered(steps: readonly RenderedStep[]): RenderedStep[] {
+	return steps.map((step, index) => ({ ...step, id: index + 1 }));
+}
+
+/**
+ * Les solutions dans l'ordre croissant de leur valeur ; une solution sans
+ * valeur (paramètre) garde l'ordre du calcul pour toutes (R-ordre, David,
+ * 2026-11-01) — `(x − 1)(x + 2) = 0` concluait `{1 ; −2}`.
+ */
+function ascending(values: readonly MathNode[]): readonly MathNode[] {
+	const numeric = values.map((value) => ({ value, at: numericValueOf(value) }));
+	if (numeric.some(({ at }) => at === null)) return values;
+	return [...numeric].sort((a, b) => (a.at ?? 0) - (b.at ?? 0)).map(({ value }) => value);
+}
+
+/**
+ * L'ensemble des solutions d'une inéquation du premier degré résolue
+ * (`x < 3` → `S = ]-\infty ; 3[`), sur l'arbre de la dernière étape montrée,
+ * écrite comme elle (`x < 0,3`, Q50) ; `null` si elle n'a pas cette forme.
+ */
+function inequalitySet(after: MathNode, variable: string): string | null {
+	if (after.type !== 'relation' || after.left.type !== 'variable') return null;
+	if (after.left.name !== variable || getVariables(after.right).size > 0) return null;
+	const bound = toLatex(after.right);
+	switch (after.relation) {
+		case '<':
+			return `S = ]-\\infty ; ${bound}[`;
+		case '<=':
+			return `S = ]-\\infty ; ${bound}]`;
+		case '>':
+			return `S = ]${bound} ; +\\infty[`;
+		case '>=':
+			return `S = [${bound} ; +\\infty[`;
+		case '!=':
+			return `S = \\mathbb{R} \\setminus \\left\\{ ${bound} \\right\\}`;
+		default:
+			return null;
+	}
+}
+
+/**
+ * Les étapes qui concluent sur la réponse : déjà le cas, ou la conclusion
+ * réécrite dans l'ordre de la réponse (le même ensemble, R-ordre), ou une
+ * étape de plus quand la dernière dit `x = 3` ou `x < 3` (Q2).
+ */
+function concludedOn(
+	steps: readonly RenderedStep[],
+	line: string,
+	verbosity: 'detailed' | 'summarized'
+): readonly RenderedStep[] {
+	const last = steps[steps.length - 1];
+	if (last === undefined || last.expressionLatex === line) return steps;
+	if (!line.trimStart().startsWith('S')) return steps;
+	if (last.expressionLatex?.trimStart().startsWith('S') === true) {
+		return [...steps.slice(0, -1), { ...last, expressionLatex: line }];
+	}
+	return numbered([
+		...steps,
+		{
+			id: 0,
+			rule: 'solution-set',
+			title: 'L’ensemble des solutions',
+			// La version résumée n'a pas de « pourquoi »
+			...(verbosity === 'detailed' && {
+				explanation: 'On donne l’ensemble des solutions sous la forme $S = \\ldots$.'
+			}),
+			expressionLatex: line,
+			...(last.schoolLevel !== undefined && { schoolLevel: last.schoolLevel })
+		}
+	]);
 }
 
 /**
@@ -310,30 +451,25 @@ function solvedValue(after: MathNode, variable: string): readonly MathNode[] | n
 /**
  * La ligne de réponse écrite depuis les valeurs (lot 5c, Q26) : chaque solution
  * passe par la valeur exacte à afficher commune — `−√2/2`, `(1 − √5)/2`, et le
- * registre décimal de l'équation (`2x = 0,6` → `x = 0,3`). La forme (`x = …`
- * ou `S = {…}`) est celle de la conclusion ; les étapes suivent la même règle
+ * registre décimal de l'équation (`2x = 0,6` → `S = {0,3}`). La forme est
+ * l'ensemble des solutions (Q2) ; les étapes suivent la même écriture
  * (`stepsAsShown`, lot 5f-4).
  */
 function shownAnswer(
 	answer: string,
 	values: readonly MathNode[],
-	variable: string,
-	decimal: boolean
+	writing: SolutionWriting
 ): string {
 	if (values.length === 0) return answer;
-	return solutionsLine(values, variable, decimal, answer.trimStart().startsWith('S'));
+	return solutionsLine(values, writing);
 }
 
-/** `S = ∅`, `x = …` ou `S = {… ; …}`, chaque valeur écrite pour être lue. */
-function solutionsLine(
-	values: readonly MathNode[],
-	variable: string,
-	decimal: boolean,
-	asSet: boolean
-): string {
+/** `S = ∅` ou `S = {… ; …}`, chaque valeur écrite pour être lue (Q2 : une solution comprise). */
+function solutionsLine(values: readonly MathNode[], writing: SolutionWriting): string {
 	if (values.length === 0) return 'S = \\emptyset';
-	const written = values.map((value) => toLatex(exactValueToShow(value, { decimal })));
-	if (written.length === 1 && !asSet) return `${variable} = ${written[0]}`;
+	const written = values.map((value) =>
+		toLatex(exactValueToShow(writing.angles(value), { decimal: writing.decimal }))
+	);
 	return `S = \\left\\{ ${written.join(' \\,;\\, ')} \\right\\}`;
 }
 
@@ -347,7 +483,8 @@ function restrictedSteps(
 	solutions: readonly MathNode[],
 	variable: string,
 	within: Domain,
-	decimal: boolean
+	writing: SolutionWriting,
+	conditions: readonly ComposedCondition[]
 ): SolvedSteps | null {
 	const kept: MathNode[] = [];
 	for (const solution of solutions) {
@@ -355,16 +492,25 @@ function restrictedSteps(
 		if (value === null) return null;
 		if (containsValue(within, value)) kept.push(solution);
 	}
-	const answer = solutionsLine(kept, variable, decimal, false);
+	const answer = solutionsLine(ascending(kept), writing);
 	const last = (steps: readonly RenderedStep[]): RenderedStep => ({
 		id: steps.length,
 		rule: 'keep-in-interval',
 		title: `On ne garde que les solutions qui sont dans ${intervalText(within)}`,
 		expressionLatex: answer
 	});
-	const detailed = [...rendered, last(rendered)];
-	const summary = summaryOf(detailed, [...summarized, last(summarized)]);
-	const approximate = approximateSolutionsLatex(variable, kept, kept.length > 1);
+	// Q3 : « 2x doit être dans [0 ; +∞[, donc x est dans [0 ; +∞[ » en tête
+	const first: RenderedStep[] = conditions.map((condition) => ({
+		id: 0,
+		rule: 'composed-condition',
+		title: `${conditionText(condition)}, donc ${variable} est dans ${intervalText(condition.within)}`
+	}));
+	// Renumérotées à partir de 1 : la dernière reprenait l'id de la précédente (revue)
+	const numbered = (steps: readonly RenderedStep[]): RenderedStep[] =>
+		steps.map((step, i) => ({ ...step, id: i + 1 }));
+	const detailed = numbered([...first, ...rendered, last(rendered)]);
+	const summary = summaryOf(detailed, numbered([...first, ...summarized, last(summarized)]));
+	const approximate = approximateSolutionsLatex(ascending(kept));
 	return {
 		steps: detailed,
 		answer,

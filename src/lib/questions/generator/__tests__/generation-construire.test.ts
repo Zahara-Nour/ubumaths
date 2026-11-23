@@ -10,9 +10,9 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import { assignBlankIndices } from '../assign-blank-indices';
 import { validateTemplate } from '../../validators/template-validator';
-import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import type { ConstraintOptions, QuestionTemplate, QuestionVariation } from '../../types';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {
@@ -21,8 +21,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CP'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }
@@ -140,7 +138,7 @@ describe('bloc ```collection à construire : la case et sa réponse', () => {
 		const result = generateInstance(template({ statement: block('construire: 0') }), 42);
 		expect(result.success).toBe(false);
 		if (result.success) return;
-		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc collection\).*1 à 100/);
+		expect(result.errors.join(' ')).toMatch(/Case 1 \(bloc collection\).*1 à 9 999/);
 	});
 
 	// Revue de la PR 1 : le bloc se délimite comme le parseur (ligne vide gardée si la
@@ -319,4 +317,39 @@ describe('bloc à construire illisible à l’écran : refusé', () => {
 			expect(result.success).toBe(false);
 		});
 	}
+});
+
+// Chantier monnaie-centimes, revue (B1, C1) : la somme posée passe au juge ordinaire,
+// sans « zéros inutiles » ni « mal espacé » pour un montant que l'élève n'a pas tapé
+describe('bloc ```monnaie à construire : centimes et milliers jugés justes', () => {
+	const judged = (build: string, constraints?: ConstraintOptions) => {
+		const instance = generate({
+			...template({ statement: coins(`construire: ${build}`) }),
+			options: { constraints }
+		});
+		const answer = instance.blanks?.[0].expectedAnswer ?? '';
+		return { answer, status: validateAnswer(answer, instance, answer).status };
+	};
+
+	for (const [build, answer] of [
+		['2,20', '2,2'],
+		['0,50', '0,5'],
+		['1,10', '1,1'],
+		['3,45', '3,45'],
+		['0,05', '0,05'],
+		['35', '35']
+	] as const) {
+		it(`construire: ${build} → ${answer}, correct (zéros par défaut puis stricts)`, () => {
+			expect(judged(build)).toEqual({ answer, status: 'correct' });
+			expect(judged(build, { zeros: 'strict' })).toEqual({ answer, status: 'correct' });
+		});
+	}
+
+	it('construire: 1000 → 1 000, correct avec ou sans espaces dès 4 chiffres', () => {
+		expect(judged('1000')).toEqual({ answer: '1 000', status: 'correct' });
+		expect(judged('1000', { spacesFromFourDigits: true })).toEqual({
+			answer: '1 000',
+			status: 'correct'
+		});
+	});
 });

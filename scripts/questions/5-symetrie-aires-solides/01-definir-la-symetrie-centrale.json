@@ -1,0 +1,153 @@
+{
+	"id": "017b381a-9ecf-451d-a4b5-3713260102ed",
+	"title": "Définir la symétrie centrale",
+	"description": "Le symétrique de M par rapport à O : O est le milieu de [MM'] (demi-tour autour de O)",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que :\n\n```choix\n- $O$ est le milieu du segment $[MM']$\n- $OM = OM'$\n- $M'$ est sur la droite $(OM)$\n- $(MM')$ est perpendiculaire à une droite passant par $O$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+					"$OM = OM'$ seul ne suffit pas (tous les points d'un cercle de centre $O$) ; être sur $(OM)$ seul non plus. Il faut **les deux** : c'est dire que $O$ est le milieu.",
+					"La réponse est donc $\\textcolor{{{color:primary.0}}}{\\text{O est le milieu de [MM']}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le point $O$, le point $M$ et quatre autres points.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ndescription: Les points O et M, et quatre points E, F, G, H autour de O.\n---\n{{if:k==1|O = point(5, 4, etiquette=\"bas\")\nM = point(2, 5, etiquette=\"haut-gauche\")\nE = point(8, 3, etiquette=\"bas-droite\")\nF = point(6.5, 3.5, etiquette=\"bas-droite\")\nG = point(4, 1, etiquette=\"bas-gauche\")\nH = point(8, 5, etiquette=\"haut-droite\")|{{if:k==2|O = point(5, 4, etiquette=\"bas\")\nM = point(4, 1, etiquette=\"bas-gauche\")\nF = point(6, 7, etiquette=\"haut-droite\")\nH = point(5.5, 5.5, etiquette=\"haut-droite\")\nE = point(8, 3, etiquette=\"bas-droite\")\nG = point(6, 1, etiquette=\"bas-droite\")|O = point(5, 4, etiquette=\"bas\")\nM = point(1.5, 3, etiquette=\"bas-gauche\")\nG = point(8.5, 5, etiquette=\"haut-droite\")\nE = point(6.75, 4.5, etiquette=\"haut-droite\")\nH = point(6, 0.5, etiquette=\"bas-droite\")\nF = point(8.5, 3, etiquette=\"bas-droite\")}}}}\n```\n\nQuel point est le symétrique de $M$ par rapport à $O$ ?\n\n```choix\nmelanger: non\n- $E$\n- $F$\n- $G$\n- $H$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition.** Le symétrique du point $M$ par rapport au point $O$ est le point $M'$ tel que $O$ soit le **milieu** du segment $[MM']$ : on fait un **demi-tour** autour de $O$.",
+					"Les points trop près de $O$, ou à la bonne distance mais hors de la droite $(OM)$, ne conviennent pas ; le symétrique par rapport à une **droite** non plus.",
+					"On prolonge $[MO]$ de la même longueur : on arrive en {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{E}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{F}}$|$\\textcolor{{{color:primary.0}}}{\\text{G}}$}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Définition : O milieu",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : OM = OM' seulement",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sur la droite (OM) seulement",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Figure 1 : E",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Figure 1 : erreur, mauvaise distance",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Figure 2 : F",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Figure 2 : erreur, symétrique axial",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Figure 3 : G",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Figure 3 : erreur, quart de tour",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

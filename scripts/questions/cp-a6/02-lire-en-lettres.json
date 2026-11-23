@@ -1,10 +1,8 @@
 {
+	"id": "54ea05d7-c160-4803-a440-d583a6c4fe10",
 	"title": "Lire un nombre écrit en lettres (jusqu'à cinquante)",
 	"description": "Écrire en chiffres un nombre donné en lettres : trente-sept → 37",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ecriture",
 	"level": 14,
 	"delay": 30,
 	"status": "draft",

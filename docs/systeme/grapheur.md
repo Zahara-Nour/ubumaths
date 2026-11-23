@@ -79,19 +79,19 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 
 ### Composants — `src/lib/components/grapheur/`
 
-| Composant                                                                                                               | Rôle                                                                                                                                                                                                                                |
-| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GrapheurContainer.svelte`                                                                                              | Conteneur ; props `store` (fournie par contexte) et `panel`                                                                                                                                                                         |
-| `GraphSVG.svelte`                                                                                                       | Le SVG : taille, glisser (`pan`, `scale-x`, `scale-y`), couches, survol et clics                                                                                                                                                    |
-| `GridLines.svelte`, `AxisLines.svelte`                                                                                  | Grille et axes gradués, pas tiré de `computeGridStep` (geometry-core)                                                                                                                                                               |
-| `FunctionCurve.svelte`, `IntegralArea.svelte`                                                                           | Courbe d'une fonction (300 points, 100 pendant un geste) ; aire sous la courbe                                                                                                                                                      |
-| `SequencePlot.svelte`, `ScatterPlot.svelte`                                                                             | Suite (rangs ou escalier) ; nuage de points                                                                                                                                                                                         |
-| `AsymptoteLines.svelte`, `SpecialPoints.svelte`, `IntersectionPoints.svelte`                                            | Couches d'analyse                                                                                                                                                                                                                   |
-| `CurveHover.svelte`, `GraphLabel.svelte`                                                                                | Survol aimanté et étiquettes (exacte au survol, cycle au clic)                                                                                                                                                                      |
-| `ImageReadings.svelte`, `ReadingSliders.svelte`                                                                         | Lecture graphique de l'image : pointillés (couche SVG) ; point glissant (curseur ARIA en HTML, hors de l'image)                                                                                                                     |
-| `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté par aucune page** depuis le retrait de `/calc` (tests seuls)                                                                                                                                            |
-| `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par une carte de l'atelier (`CurveSettings`)                                                                                                                                                          |
-| `ViewportControls.svelte`, `ExportButton.svelte`, `CoordinatesDisplay.svelte`, `KeyboardHandler.svelte`                 | Zoom, vue de départ (icône maison), export, « Agrandir le graphe » (⤢, seulement si l'appelant donne `onToggleExpanded`), coordonnées, raccourcis clavier (`+ - flèches Échap g 0`), sauf touche déjà prise ou zone `data-own-keys` |
+| Composant                                                                                                               | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GrapheurContainer.svelte`                                                                                              | Conteneur ; props `store` (fournie par contexte) et `panel`                                                                                                                                                                                                                                                                                                                                                                                     |
+| `GraphSVG.svelte`                                                                                                       | Le SVG : taille, glisser (`pan`, `scale-x`, `scale-y`), couches, survol et clics                                                                                                                                                                                                                                                                                                                                                                |
+| `GridLines.svelte`, `AxisLines.svelte`                                                                                  | Grille et axes gradués, pas tiré de `computeGridStep` (geometry-core)                                                                                                                                                                                                                                                                                                                                                                           |
+| `FunctionCurve.svelte`, `IntegralArea.svelte`                                                                           | Courbe d'une fonction (300 points, 100 pendant un geste) ; aire sous la courbe                                                                                                                                                                                                                                                                                                                                                                  |
+| `SequencePlot.svelte`, `ScatterPlot.svelte`                                                                             | Suite (rangs ou escalier) ; nuage de points                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `AsymptoteLines.svelte`, `SpecialPoints.svelte`, `IntersectionPoints.svelte`                                            | Couches d'analyse                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `CurveHover.svelte`, `GraphLabel.svelte`                                                                                | Survol aimanté et étiquettes (exacte au survol, cycle au clic)                                                                                                                                                                                                                                                                                                                                                                                  |
+| `ImageReadings.svelte`, `ReadingSliders.svelte`                                                                         | Lecture graphique de l'image : pointillés (couche SVG) ; point glissant (curseur ARIA en HTML, hors de l'image)                                                                                                                                                                                                                                                                                                                                 |
+| `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté par aucune page** depuis le retrait de `/calc` (tests seuls)                                                                                                                                                                                                                                                                                                                                                        |
+| `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par une carte de l'atelier (`CurveSettings`)                                                                                                                                                                                                                                                                                                                                                                      |
+| `ViewportControls.svelte`, `ExportButton.svelte`, `CoordinatesDisplay.svelte`, `KeyboardHandler.svelte`                 | Zoom, vue de départ (icône maison), export, « Agrandir le graphe » (⤢, seulement si l'appelant donne `onToggleExpanded`) ; ces icônes se replient derrière un bouton ‹ / › (dépliées par défaut, choix gardé en `localStorage`, clé `grapheur-outils-replies`, lu au montage), « Réduire » restant visible si le graphe est agrandi ; coordonnées, raccourcis clavier (`+ - flèches Échap g 0`), sauf touche déjà prise ou zone `data-own-keys` |
 
 Branchement avec l'atelier : `src/lib/atelier/plot-sync.ts` (`syncPlots`) et
 `src/lib/components/atelier/AtelierContainer.svelte` — décrits dans [atelier.md](atelier.md).
@@ -178,7 +178,11 @@ Lecture d'un terme : le survol montre la **valeur exacte** (`exact.ts`, plafonds
 `décimale → exacte → disparue`. Les étiquettes figées ne sont **jamais sérialisées**.
 
 Le moteur de suites sert aussi le bloc ubumark ` ```courbe ` (`src/lib/ubumark/parser/courbe-parser.ts`,
-`src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc.
+`src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc. Ce bloc a aussi son
+geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`, combinaison `u + v` comprise), ses vecteurs donnés (`vecteurs:`, flèches de la scène, `scene.vectors`), sa courbe de données (`données:`, ligne brisée de la scène, `scene.data`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
+le pas de grille automatique (`courbeGridSteps`) y est partagé par la scène, le parseur et l'écran.
+En évaluation notée, `placer: A=? ; B=?` (coordonnées masquées) se lit aussi : point de remplacement,
+ni nœud ni fenêtre vérifiés ([ubumark](ubumark.md), invariant 12).
 
 ### Échantillonnage et fidélité du tracé
 
@@ -196,9 +200,23 @@ avec `courbe()` du DSL de géométrie. Trois corrections de septembre 2026, tout
   de Fritsch-Carlson pour un graphe de fonction (abscisses strictement monotones) — Catmull-Rom
   faisait des crochets à côté des valeurs écrêtées.
 
-Pendant un geste (`isInteracting`), `FunctionCurve` passe à 100 points et à une polyligne.
-`sampleCached` et le cache d'analyse (`analyzeAllFunctions`) évitent de tout recalculer à chaque
-mouvement du curseur de tangente ; chaque cache se vide au-delà de 200 fenêtres par expression.
+Pendant un geste (`isInteracting`), `FunctionCurve` passe à 100 points et à une polyligne, et les
+couches d'analyse (zéros, extremums, asymptotes, intersections, survol) dorment : elles ne tournent
+qu'une fois, à la fin du geste. Glisser marque le geste de l'appui au relâchement. Les **gestes
+brefs** — cran de molette, boutons « Zoom avant/arrière », touches `+` `=` `-` et flèches — le
+marquent jusqu'à 150 ms après le dernier (`briefGesture()` du magasin, `BRIEF_GESTURE_DELAY`) :
+une touche tenue ou des clics enchaînés n'analysent qu'une fois. Un geste bref ne clôt pas un
+glisser en cours (`setInteracting` le tient) ; un démontage du graphe clôt le geste bref en cours
+(`endBriefGesture()`). Comme pendant un glisser,
+les points remarquables et les étiquettes épinglées disparaissent le temps du geste (choix assumé :
+les garder imposerait l'analyse à chaque cran). Sans cela, chaque cran ou appui relançait toutes les analyses : ~150 ms par cran avec dix
+courbes sur un processeur bridé ×6 (mesures du 2026-11-11).
+
+`sampleCached`, le cache d'analyse (`analyzeAllFunctions`) et celui des intersections
+(`findIntersections`, par paire d'expressions et par fenêtre) évitent de tout recalculer à chaque
+mouvement du curseur de tangente ; deux couches (`IntersectionPoints`, `CurveHover`) lisent les mêmes
+intersections, et une courbe ajoutée ne calcule que ses paires nouvelles. Chaque cache se vide
+au-delà de 200 fenêtres par expression (par paire pour les intersections).
 
 ### Analyse : zéros, extremums, asymptotes
 
@@ -370,7 +388,6 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 
 ## Écarts connus
 
-- **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
 - Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne

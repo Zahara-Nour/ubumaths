@@ -8,9 +8,9 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
-import { requiresParentalConsent } from '$lib/utils/consent';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { requiresParentalConsent } from '#lib/utils/consent.ts';
 
 const logger = createServerLogger('(public)/consent/[token]/+page.server');
 

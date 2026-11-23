@@ -9,7 +9,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import type { StudentWorksheetView } from '#lib/types/worksheets.ts';
 
 const FR = 'Chaque élève a sa propre version : consulte ta correction personnelle.';
 const EN = 'Each student has their own version: check your personal correction.';

@@ -15,17 +15,17 @@ export { generateInstance, generateMultipleInstances } from './generator/instanc
 
 export { resolveVariables, resolveVariableExpression } from './generator/variable-resolver';
 
-export { resolveExpression, resolveSolution } from './generator/content-resolver';
+export { resolveExpression } from './generator/content-resolver';
 
 export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler';
 
 // Validators
 export { validateTemplate, isValidTemplate } from './validators/template-validator';
 
-export { detectCircularDependencies } from '$lib/ubumark';
+export { detectCircularDependencies } from '#lib/ubumark/index.ts';
 
-// Calcul mathAST (réexporté de $lib/math)
-export { evaluateExpression, areEquivalent, isValidLatex } from '$lib/math';
+// Calcul mathAST (réexporté de #lib/math)
+export { evaluateExpression, areEquivalent, isValidLatex } from '#lib/math/index.ts';
 
 // Validation Rule Evaluator
 export {

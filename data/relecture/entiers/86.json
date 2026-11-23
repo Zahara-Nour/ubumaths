@@ -61,9 +61,6 @@
 			}
 		],
 		"grades": ["CP"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Somme astucieuse",
 		"level": 1,
 		"status": "draft",
 		"delay": 10,

@@ -3,10 +3,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, type ListNode } from '$lib/ubumark';
-import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
-import { resolveText } from '$lib/ubumark/parameterization/resolver/text-resolver';
-import type { HorlogeNode } from '$lib/ubumark/types/horloge';
+import { parseMarkdown, type ListNode } from '#lib/ubumark/index.ts';
+import { parseHorlogeContent } from '#lib/ubumark/parser/horloge-parser.ts';
+import { resolveText } from '#lib/ubumark/parameterization/resolver/text-resolver.ts';
+import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
 
 const doc = (...lines: string[]) => parseMarkdown(lines.join('\n')).children;
 
@@ -145,7 +145,7 @@ describe('bloc ```horloge — erreurs (le nœud reste, avec son message)', () =>
 		expect(messages(node)).toEqual([expect.stringContaining('de 0 à 59')]);
 	});
 
-	it.each(['9,5 h', 'neuf heures', '9:30', '9 h 30 min', '9', '{{h}} h', ''])(
+	it.each(['9,5 h', 'neuf heures', '9:30', '9 h 40 s', '9', '{{h}} h', ''])(
 		'heure illisible : « %s » (comportements 20, 21)',
 		(text) => {
 			const node = parse(`heure: ${text}`);

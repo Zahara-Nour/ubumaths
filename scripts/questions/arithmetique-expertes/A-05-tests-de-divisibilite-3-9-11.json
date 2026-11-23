@@ -1,10 +1,8 @@
 {
+	"id": "411abdf2-13ff-459c-a961-5fb67658bd0c",
 	"title": "Tests de divisibilité par 3, 9 et 11",
 	"description": "Utiliser les critères de divisibilité par 3, 9 et 11 (somme des chiffres, somme alternée) : chiffre manquant, reste modulo 9 (pièges : somme des chiffres non réduite, somme alternée lue dans le mauvais sens)",
 	"grades": ["T_EXP"],
-	"theme": "Arithmétique",
-	"domain": "Divisibilité",
-	"subdomain": "Divisibilité",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

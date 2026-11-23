@@ -12,7 +12,7 @@
 
 import { vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { Mock } from 'vitest';
 
 // ============================================================================

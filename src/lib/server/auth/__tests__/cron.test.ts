@@ -15,10 +15,10 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { verifyCronAuth, generateCronSecret } from '../cron';
-import * as envModule from '$lib/server/env';
+import * as envModule from '#lib/server/env.ts';
 
 // Mock getEnv to control CRON_SECRET value
-vi.mock('$lib/server/env', () => ({
+vi.mock('#lib/server/env.ts', () => ({
 	getEnv: vi.fn()
 }));
 

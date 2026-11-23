@@ -12,7 +12,7 @@
  * cellule, comme la case texte. Hors tableau, rien ne change.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { generateTypst, processTableCellContent } from '../typst-generator';
 
 const typst = (md: string) =>

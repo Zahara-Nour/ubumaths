@@ -7,8 +7,8 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import QrCodeButton from '../QrCodeButton.svelte';
-import { QR_BORDER, encodeQr, qrSvg } from '$lib/qr/qr-code';
-import { decodeBlob } from '$lib/qr/__tests__/decode-qr';
+import { QR_BORDER, encodeQr, qrSvg } from '#lib/qr/qr-code.ts';
+import { decodeBlob } from '#lib/qr/__tests__/decode-qr.ts';
 
 async function settle() {
 	await tick();
@@ -152,7 +152,7 @@ describe('la fenêtre', () => {
 
 	it('refuse un lien trop long, sans QR illisible', async () => {
 		await openFor({
-			url: `/automaths/test?categories=${'%2522x'.repeat(200)}`,
+			url: `/automaths/test?modeles=${'%2522x'.repeat(200)}`,
 			label: 'la série'
 		});
 		expect(dialog().textContent).toContain('Ce lien est trop long pour un QR code lisible');
@@ -163,7 +163,7 @@ describe('la fenêtre', () => {
 });
 
 describe('l’adresse fabriquée à l’ouverture (lien court, docs/archive/wip/liens-courts-phase0.md)', () => {
-	const LONG = `/automaths/test?categories=${'%2522x'.repeat(200)}`;
+	const LONG = `/automaths/test?modeles=${'%2522x'.repeat(200)}`;
 
 	it('porte l’adresse COURTE, canonique, dans le QR et en clair', async () => {
 		const resolveUrl = vi.fn(async () => '/l/Xk7pQ2mZ');

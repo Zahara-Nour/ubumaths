@@ -14,7 +14,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { Profile } from '../../middleware/auth';
 import { verifyTeacherStudent, verifyTeacherStudentWithRole } from '../student-access';
 
@@ -97,7 +97,9 @@ const mockTeacherProfile: Profile = {
 	consent_grace_period_ends: null,
 	age_declaration: null,
 	age_declared_at: null,
-	consent_rule_pending: false
+	consent_rule_pending: false,
+	google_avatar_url: null,
+	worn_avatar: null
 };
 
 const mockAdminProfile: Profile = {

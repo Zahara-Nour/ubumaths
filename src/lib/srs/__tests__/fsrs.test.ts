@@ -287,26 +287,34 @@ describe('FSRS Card State Transitions', () => {
 		});
 	});
 
-	describe('Learning → Learning (stays in learning)', () => {
-		it('should stay in learning state on second GOOD review', () => {
-			// First review: new → learning
-			const firstReview = fsrs.reviewCard(newCard, Grade.GOOD);
+	// `learning` ne dure qu'une révision, comme `relearning` (chantier `fsrs`, Q5) :
+	// le badge du programme lit `learning` comme un échec (« à remédier » une fois due)
+	describe('Learning → Review on success', () => {
+		const DAY = 24 * 60 * 60 * 1000;
+		const start = new Date('2026-03-02T11:00:00Z');
+		const later = new Date(start.getTime() + 2 * DAY);
+
+		it('should move from learning to review on second GOOD review', () => {
+			const firstReview = fsrs.reviewCard(newCard, Grade.GOOD, undefined, start);
 			expect(firstReview.state).toBe('learning');
 
-			// Simulate time passing
-			const secondCard = {
-				...firstReview,
-				lastReview: new Date(Date.now() - 1000 * 60 * 60).toISOString() // 1 hour ago
-			};
-
-			// Second review: learning → still learning (FSRS keeps in learning)
-			const secondReview = fsrs.reviewCard(secondCard, Grade.GOOD);
-			expect(secondReview.state).toBe('learning');
+			const secondReview = fsrs.reviewCard(firstReview, Grade.GOOD, undefined, later);
+			expect(secondReview.state).toBe('review');
 			expect(secondReview.totalReviews).toBe(2);
 		});
 
-		it('should transition from learning to review only when already in review state', () => {
-			// Manually set card to review state
+		it('should move from learning to review on HARD and EASY too', () => {
+			const firstReview = fsrs.reviewCard(newCard, Grade.GOOD, undefined, start);
+			expect(fsrs.reviewCard(firstReview, Grade.HARD, undefined, later).state).toBe('review');
+			expect(fsrs.reviewCard(firstReview, Grade.EASY, undefined, later).state).toBe('review');
+		});
+
+		it('should move from relearning to review on success', () => {
+			const failed = fsrs.reviewCard(newCard, Grade.AGAIN, undefined, start);
+			expect(fsrs.reviewCard(failed, Grade.GOOD, undefined, later).state).toBe('review');
+		});
+
+		it('should stay in review on success', () => {
 			const reviewCard = { ...newCard, state: 'review' as const };
 			const reviewed = fsrs.reviewCard(reviewCard, Grade.GOOD);
 
@@ -339,32 +347,43 @@ describe('FSRS Difficulty Updates', () => {
 		newCard = fsrs.initCard('user-123', 'template', 'template-456');
 	});
 
-	it('should decrease difficulty on EASY grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.EASY);
+	// FSRS-6 : ΔD = −w[6]·(note − 3), amorti ; on part d'une fiche déjà révisée (Bien)
+	const DAY = 24 * 60 * 60 * 1000;
+	const start = new Date('2026-03-02T11:00:00Z');
+	const later = new Date(start.getTime() + 2 * DAY);
+	const reviewedOnce = () => fsrs.reviewCard(newCard, Grade.GOOD, undefined, start);
 
-		// EASY (grade 4) should decrease difficulty
-		expect(reviewed.difficulty).toBeLessThan(newCard.difficulty);
+	it('should set the initial difficulty of the first grade (w[4] − e^(w[5]·(G − 1)) + 1)', () => {
+		const reviewed = reviewedOnce();
+		expect(reviewed.difficulty).toBeCloseTo(6.4133 - Math.exp(0.8334 * 2) + 1, 6);
 	});
 
-	it('should slightly decrease difficulty on GOOD grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.GOOD);
+	it('should decrease difficulty on EASY grade', () => {
+		const base = reviewedOnce();
+		expect(fsrs.reviewCard(base, Grade.EASY, undefined, later).difficulty).toBeLessThan(
+			base.difficulty
+		);
+	});
 
-		// GOOD (grade 3) should keep difficulty stable (grade - 3 = 0)
-		expect(Math.abs(reviewed.difficulty - newCard.difficulty)).toBeLessThan(0.1);
+	it('should keep difficulty almost unchanged on GOOD grade', () => {
+		const base = reviewedOnce();
+		const reviewed = fsrs.reviewCard(base, Grade.GOOD, undefined, later);
+		expect(Math.abs(reviewed.difficulty - base.difficulty)).toBeLessThan(0.01);
 	});
 
 	it('should increase difficulty on HARD grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.HARD);
-
-		// HARD (grade 2) should increase difficulty
-		expect(reviewed.difficulty).toBeGreaterThan(newCard.difficulty);
+		const base = reviewedOnce();
+		expect(fsrs.reviewCard(base, Grade.HARD, undefined, later).difficulty).toBeGreaterThan(
+			base.difficulty
+		);
 	});
 
 	it('should increase difficulty more on AGAIN grade', () => {
-		const reviewed = fsrs.reviewCard(newCard, Grade.AGAIN);
-
-		// AGAIN (grade 1) should increase difficulty the most
-		expect(reviewed.difficulty).toBeGreaterThan(newCard.difficulty);
+		const base = reviewedOnce();
+		const hard = fsrs.reviewCard(base, Grade.HARD, undefined, later);
+		const again = fsrs.reviewCard(base, Grade.AGAIN, undefined, later);
+		expect(again.difficulty).toBeGreaterThan(hard.difficulty);
+		expect(again.difficulty).toBeLessThan(10);
 	});
 
 	it('should clamp difficulty to minimum of 1', () => {
@@ -846,7 +865,7 @@ describe('FSRS Integration Scenarios', () => {
 		card = fsrs.reviewCard(card, Grade.GOOD);
 		expect(card.state).toBe('learning');
 
-		// Day 2: Second review - Good (stays in learning)
+		// Day 2: Second review - Good (learning lasts one review)
 		card = fsrs.reviewCard(
 			{
 				...card,
@@ -854,9 +873,9 @@ describe('FSRS Integration Scenarios', () => {
 			},
 			Grade.GOOD
 		);
-		expect(card.state).toBe('learning'); // Still learning in FSRS
+		expect(card.state).toBe('review');
 
-		// Day 5: Third review - Easy (still learning, but with higher stability)
+		// Day 5: Third review - Easy (stays in review, higher stability)
 		card = fsrs.reviewCard(
 			{
 				...card,
@@ -864,7 +883,7 @@ describe('FSRS Integration Scenarios', () => {
 			},
 			Grade.EASY
 		);
-		expect(card.state).toBe('learning'); // Remains in learning
+		expect(card.state).toBe('review');
 
 		// Stability should increase over time
 		expect(card.stability).toBeGreaterThan(1);
@@ -883,7 +902,7 @@ describe('FSRS Integration Scenarios', () => {
 			},
 			Grade.GOOD
 		);
-		expect(card.state).toBe('learning');
+		expect(card.state).toBe('review');
 
 		const stabilityBeforeFailure = card.stability;
 
@@ -903,7 +922,7 @@ describe('FSRS Integration Scenarios', () => {
 			Grade.GOOD
 		);
 
-		// From relearning state, successful review (not new/learning) goes to review
+		// From relearning state, a successful review goes to review
 		expect(card.state).toBe('review');
 	});
 });

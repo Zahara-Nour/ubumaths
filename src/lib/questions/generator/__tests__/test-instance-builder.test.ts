@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstanceWithFixedVariables, getRootVariableNames } from '../test-instance-builder';
 import type { QuestionTemplate, QuestionVariation, QuestionVariable } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 function makeTemplate(
 	variation: QuestionVariation,
@@ -20,8 +20,6 @@ function makeTemplate(
 		status: 'draft',
 		variations: [variation],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};
@@ -45,25 +43,6 @@ describe('generateInstanceWithFixedVariables', () => {
 		expect(result.instance.statement).toContain('3');
 		expect(result.instance.statement).toContain('7');
 		expect(result.instance.blanks?.[0]?.expectedAnswer).toBe('10');
-	});
-
-	it('should generate a QCM instance with fixed variables', () => {
-		const template = makeTemplate({
-			statement: templateMarkdown('$2 \\times 3$ vaut ?'),
-			correctChoiceIndex: '1',
-			choices: [
-				{ content: templateMarkdown('5'), isCorrect: false },
-				{ content: templateMarkdown('6'), isCorrect: true },
-				{ content: templateMarkdown('7'), isCorrect: false }
-			]
-		});
-
-		const result = generateInstanceWithFixedVariables(template, {});
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(result.instance.choices).toBeDefined();
-		expect(result.instance.choices![1].isCorrect).toBe(true);
 	});
 
 	it('should return error for out-of-range variation index', () => {
@@ -112,8 +91,6 @@ describe('generateInstanceWithFixedVariables', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 
@@ -141,8 +118,6 @@ describe('generateInstanceWithFixedVariables', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 

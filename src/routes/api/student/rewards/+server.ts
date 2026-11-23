@@ -39,26 +39,18 @@
  * ```
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { StudentRewards } from '$lib/types/student-cache';
-import { asStudentVipCards } from '$lib/types/vip-card';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { StudentRewards } from '#lib/types/student-cache.ts';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/rewards/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Auth check: Must be logged in
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// Auth check: Must be a student
-	if (profile.role !== 'student') {
-		throw error(403, 'This endpoint is only accessible to students');
-	}
+	const { user } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	try {
 		// Fetch student rewards from profiles table
@@ -88,7 +80,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			vip_cards: vipCards
 		};
 
-		return json({ rewards });
+		return Response.json({ rewards });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

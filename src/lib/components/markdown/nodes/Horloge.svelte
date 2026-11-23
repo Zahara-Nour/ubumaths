@@ -4,10 +4,11 @@
 
 	Cadran à aiguilles (CP-046, CP-047, puis les minutes au CE1 / CE2 ; phase 0 :
 	`docs/wip/horloge-progress.md`). Dessiné depuis `buildHorlogeScene`, la même
-	scène que le PDF.
+	scène que le PDF. Horloge à placer (`placer:`) : `HorlogePlacer.svelte`.
 
 	- Une seule couleur d'accent (la petite aiguille) ; les aiguilles se
-	  distinguent aussi par leur forme. Couleurs du thème uniquement.
+	  distinguent aussi par leur forme (trotteuse fine à contrepoids, dessinée
+	  seulement quand des secondes sont écrites). Couleurs du thème uniquement.
 	- Nom accessible « Horloge à aiguilles » : JAMAIS l'heure (ni texte, ni
 	  attribut), sinon un lecteur d'écran donnerait la réponse.
 	- Largeur : `taille:` du bloc, sinon `--horloge-taille` (3 cm dans un choix
@@ -21,14 +22,15 @@
 		HORLOGE_ARIA_LABEL,
 		HORLOGE_UNAVAILABLE,
 		type HorlogeNode
-	} from '$lib/ubumark/types/horloge';
+	} from '#lib/ubumark/types/horloge.ts';
 	import {
 		buildHorlogeScene,
 		HORLOGE_FONT,
 		HORLOGE_STROKE,
 		HORLOGE_VIEW
-	} from '$lib/ubumark/utils/horloge-scene';
+	} from '#lib/ubumark/utils/horloge-scene.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import HorlogePlacer from './HorlogePlacer.svelte';
 
 	interface Props {
 		node: HorlogeNode;
@@ -76,6 +78,9 @@
 			{HORLOGE_UNAVAILABLE}
 		</div>
 	{/if}
+{:else if node.spec.placer}
+	<!-- Horloge à placer hors question (aperçu, cours) : le geste, rien de jugé -->
+	<HorlogePlacer {node} class={className} />
 {:else}
 	<div class="horloge-bloc my-2 flex flex-wrap items-start justify-center gap-4 {className}">
 		{#each clocks as clock, i (i)}
@@ -121,14 +126,27 @@
 							stroke-width={HORLOGE_STROKE.minuteHand}
 						/>
 					{/if}
-					<line
-						class="horloge-aiguille horloge-aiguille-heures"
-						x1="0"
-						y1="0"
-						x2={clock.scene.hourHand.x}
-						y2={clock.scene.hourHand.y}
-						stroke-width={HORLOGE_STROKE.hourHand}
-					/>
+					{#if clock.scene.hourHand}
+						<line
+							class="horloge-aiguille horloge-aiguille-heures"
+							x1="0"
+							y1="0"
+							x2={clock.scene.hourHand.x}
+							y2={clock.scene.hourHand.y}
+							stroke-width={HORLOGE_STROKE.hourHand}
+						/>
+					{/if}
+					{#if clock.scene.secondHand && clock.scene.secondTail}
+						<!-- Trotteuse (secondes écrites) : fine, avec son contrepoids -->
+						<line
+							class="horloge-aiguille horloge-aiguille-secondes"
+							x1={clock.scene.secondTail.x}
+							y1={clock.scene.secondTail.y}
+							x2={clock.scene.secondHand.x}
+							y2={clock.scene.secondHand.y}
+							stroke-width={HORLOGE_STROKE.secondHand}
+						/>
+					{/if}
 					<circle class="horloge-axe" r={HORLOGE_STROKE.center} />
 				</svg>
 				{#if clock.caption}
@@ -182,6 +200,11 @@
 	/* La seule couleur d'accent : la petite aiguille */
 	.horloge-aiguille-heures {
 		stroke: var(--color-primary);
+	}
+
+	/* Trotteuse : reconnue à sa forme, pas à une couleur de plus */
+	.horloge-aiguille-secondes {
+		stroke: var(--color-foreground);
 	}
 
 	.horloge-axe {

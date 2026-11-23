@@ -9,9 +9,9 @@
 
 import type { GeoValue, ScalarParam } from './geo-value';
 import type { GeoPoint } from './primitives';
-import type { MathNode } from '$lib/mathAST/types';
-import type { CompiledFn } from '$lib/mathAST/eval/compile';
-import type { EndpointType } from '$lib/math/intervals/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import type { EndpointType } from '#lib/math/intervals/types.ts';
 
 // =============================================================================
 // Style

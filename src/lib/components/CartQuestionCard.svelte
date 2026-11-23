@@ -1,20 +1,32 @@
 <script lang="ts">
 	/**
-	 * Tuile d'une catégorie du panier (panier Automaths, création d'évaluation)
+	 * Tuile d'un modèle du panier Automaths
 	 *
 	 * Décision de David (2026-09-29) : la tuile EST la flash-card de la question
-	 * (non interactive, avec son bouton de retournement), sous l'intitulé
-	 * « Thème / Domaine ». En dessous : la durée et le nombre de répétitions,
+	 * (non interactive, avec son bouton de retournement), sous le titre du
+	 * modèle. Modèle retiré (plus publié, ADR 0035 Q7) : la tuile le dit et
+	 * propose de le retirer du panier. En dessous : la durée et le nombre de répétitions,
 	 * toujours visibles ; leurs boutons − / + n'apparaissent qu'au survol (ou au
 	 * focus clavier, ou toujours sur écran tactile). Un clic sur la tuile ne fait
-	 * rien : tout est déjà dans la flash-card.
+	 * rien : tout est déjà dans la flash-card. Sous la durée : la marque « Durée
+	 * sans doute trop courte » à cette durée (prof, chantier `durees-trop-courtes`),
+	 * puis la durée observée chez ses élèves, à appliquer (chantier `durees-ajustees`).
+	 * Plus de répétitions que de questions différentes (chantier `idees-format`) :
+	 * la tuile le dit et propose d'abaisser (une série ne répète jamais une question).
+	 * Prof seulement : le choix des variations de la ligne (idée 2), sous les réglages.
 	 */
-	import { Button } from '$lib/components/ui/button';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
-	import { Clock, Minus, Plus, Repeat } from '@lucide/svelte';
-	import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
-	import type { QuestionInstance } from '$lib/questions/types';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import { TILE_CARD_HEIGHT } from '#lib/components/questions/tile-card.ts';
+	import { Clock, CopyX, Minus, Plus, Repeat } from '@lucide/svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { convertLegacyLatexToMarkdown } from '#lib/utils/latex-syntax-adapter.ts';
+	import type { SeriesItem } from '#lib/validation/series.ts';
+	import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+	import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
+	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
+	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
+	import VariationPicker from '#lib/components/series/VariationPicker.svelte';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
@@ -28,38 +40,75 @@
 
 	let {
 		item,
+		template,
 		instance,
 		onIncrementQuantity,
 		onDecrementQuantity,
-		onUpdateDelay
+		onUpdateQuantity,
+		onUpdateDelay,
+		onRemove,
+		onUpdateVariations,
+		onUpdateChoiceVariations,
+		tooShort = null,
+		observedDelay = null,
+		distinctMax = null
 	}: {
-		item: CartItem;
+		item: SeriesItem;
+		/** Absent : le modèle n'est plus publié */
+		template?: QuestionTemplate;
 		instance?: QuestionInstance;
-		onIncrementQuantity: (category: QuestionCategory) => void;
-		onDecrementQuantity: (category: QuestionCategory) => void;
-		onUpdateDelay: (category: QuestionCategory, delay: number) => void;
+		onIncrementQuantity: (templateId: string) => void;
+		onDecrementQuantity: (templateId: string) => void;
+		onUpdateQuantity: (templateId: string, quantity: number) => void;
+		onUpdateDelay: (templateId: string, delay: number) => void;
+		onRemove: (templateId: string) => void;
+		/** Choix des variations (prof seulement) ; absent : rien */
+		onUpdateVariations?: (templateId: string, variations: number[] | undefined) => void;
+		/** Variations en QCM (prof seulement, idée 4) ; absent : pas de case « En QCM » */
+		onUpdateChoiceVariations?: (templateId: string, choiceVariations: number[] | undefined) => void;
+		/** Durée courante signalée trop courte (prof seulement) ; null : rien */
+		tooShort?: QuestionTiming | null;
+		/** Durée observée à suggérer (prof seulement) ; null : rien */
+		observedDelay?: number | null;
+		/** Questions différentes du modèle, quand la quantité les dépasse ; null : rien */
+		distinctMax?: number | null;
 	} = $props();
 
 	function handleIncrementDelay() {
 		const newDelay = item.delay + DELAY_STEP;
-		if (newDelay <= DELAY_MAX) onUpdateDelay(item.category, newDelay);
+		if (newDelay <= DELAY_MAX) onUpdateDelay(item.templateId, newDelay);
 	}
 
 	function handleDecrementDelay() {
 		const newDelay = item.delay - DELAY_STEP;
-		if (newDelay >= DELAY_MIN) onUpdateDelay(item.category, newDelay);
+		if (newDelay >= DELAY_MIN) onUpdateDelay(item.templateId, newDelay);
 	}
 </script>
 
 <div class="group flex flex-col gap-3">
-	<!-- Intitulé -->
-	<p class="text-sm font-medium">
-		{item.category.theme}
-		<span class="text-muted-foreground"> / {item.category.domain}</span>
-	</p>
+	<!-- Intitulé : titre et niveau du modèle -->
+	{#if template}
+		<div class="flex items-start justify-between gap-2 text-sm font-medium">
+			<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
+			<span class="shrink-0 text-xs text-muted-foreground" title="Niveau">{template.level}</span>
+		</div>
+	{:else}
+		<p class="text-sm font-medium text-muted-foreground">Modèle retiré</p>
+	{/if}
 
 	<!-- La flash-card elle-même -->
-	{#if instance}
+	{#if !template}
+		<div
+			class="flex flex-col items-center gap-3 rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground"
+			role="status"
+			data-modele-retire
+		>
+			Ce modèle n'est plus publié : il sera sauté.
+			<Button size="sm" variant="outline" onclick={() => onRemove(item.templateId)}>
+				Retirer de ma série
+			</Button>
+		</div>
+	{:else if instance}
 		<FlashCard {instance} interactive={false} size="sm" height={TILE_CARD_HEIGHT} />
 	{:else}
 		<div
@@ -106,7 +155,7 @@
 				size="icon"
 				variant="ghost"
 				class="h-6 w-6 text-primary-foreground hover:bg-primary-foreground/20 {revealOnHover}"
-				onclick={() => onDecrementQuantity(item.category)}
+				onclick={() => onDecrementQuantity(item.templateId)}
 				aria-label="Diminuer le nombre de répétitions"
 			>
 				<Minus class="h-3 w-3" />
@@ -122,7 +171,7 @@
 				size="icon"
 				variant="ghost"
 				class="h-6 w-6 text-primary-foreground hover:bg-primary-foreground/20 {revealOnHover}"
-				onclick={() => onIncrementQuantity(item.category)}
+				onclick={() => onIncrementQuantity(item.templateId)}
 				disabled={item.quantity >= QUANTITY_MAX}
 				aria-label="Augmenter le nombre de répétitions"
 			>
@@ -130,4 +179,48 @@
 			</Button>
 		</div>
 	</div>
+
+	{#if template && onUpdateVariations}
+		<VariationPicker
+			{template}
+			selected={item.variations}
+			onchange={(variations) => onUpdateVariations(item.templateId, variations)}
+			choiceSelected={item.choiceVariations}
+			onchoicechange={onUpdateChoiceVariations
+				? (choiceVariations) => onUpdateChoiceVariations(item.templateId, choiceVariations)
+				: undefined}
+		/>
+	{/if}
+
+	{#if distinctMax !== null}
+		<!-- Couleur d'accent sur l'icône seule : le texte garde son contraste -->
+		<p
+			class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm"
+			role="status"
+			data-trop-de-repetitions
+		>
+			<CopyX class="h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+			<span>
+				{distinctMax === 1
+					? "Ce modèle n'a qu'une question."
+					: `Ce modèle n'a que ${distinctMax} questions différentes.`}
+			</span>
+			<Button
+				type="button"
+				size="sm"
+				variant="outline"
+				class="h-7 px-2"
+				aria-label="Passer à {distinctMax} {distinctMax === 1 ? 'répétition' : 'répétitions'}"
+				onclick={() => onUpdateQuantity(item.templateId, distinctMax)}
+			>
+				Passer à {distinctMax}
+			</Button>
+		</p>
+	{/if}
+
+	<TooShortMark timing={tooShort} />
+	<ObservedDelayHint
+		seconds={observedDelay}
+		onapply={(seconds) => onUpdateDelay(item.templateId, seconds)}
+	/>
 </div>

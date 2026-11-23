@@ -5,9 +5,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { CronJobRun, CronJobsStats } from '$lib/server/validation/cron';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import type { CronJobRun, CronJobsStats } from '#lib/server/validation/cron.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/cron/+page.server');
 

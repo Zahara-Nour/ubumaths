@@ -133,7 +133,7 @@ Page **`/dev/structure`** (ex-`/test-structure`), réservée à l'admin depuis l
 de démo (chantier demo-debug, 2026-10-24) ; la formule seule (`StructureField`, sans corpus ni
 réglages) est publique dans la vitrine **`/demo/structure`** (PR 6a). Rien n'est enregistré ; niveau
 lu par `readReaderGrade()` (`profiles.grade`). Les fiches du dictionnaire suivent ce niveau, 5e pour
-un visiteur (`$lib/components/structure/structure-lexicon.svelte.ts`, partagé par les deux pages).
+un visiteur (`#lib/components/structure/structure-lexicon.svelte.ts`, partagé par les deux pages).
 
 Points proposés par Claude et acceptés : « x puissance 4 » (B9) ; survol de « sin » = la fonction
 appliquée (A8) ; cadres englobants en pointillés gris (A10).
@@ -183,7 +183,7 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
 
 ## Le champ de formule (glisser-déposer, lot 2, 2026-10-14)
 
-`$lib/components/structure/StructureField.svelte` : une seule formule, qu'on écrit et qu'on
+`#lib/components/structure/StructureField.svelte` : une seule formule, qu'on écrit et qu'on
 manipule, réutilisable (l'outil `/dev/structure` d'abord, l'Atelier ensuite). Spécification F
 et décisions G1-G11 : [structure-glisser-deposer-progress.md](../../wip/structure-glisser-deposer-progress.md).
 

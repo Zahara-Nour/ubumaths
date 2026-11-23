@@ -16,9 +16,9 @@
 
 import type { BaseNode } from './ast';
 import type { CourbeColor, CourbeSize } from './courbe';
-import type { NamedColor } from '$lib/theme/named-colors';
-import type { LawIndicator } from '$lib/statistics/format';
-import type { VariableChange } from '$lib/statistics/variable-change';
+import type { NamedColor } from '#lib/theme/named-colors.ts';
+import type { LawIndicator } from '#lib/statistics/format.ts';
+import type { VariableChange } from '#lib/statistics/variable-change.ts';
 
 // ============================================================================
 // VALEURS
@@ -34,7 +34,8 @@ export const STAT_CHART_KINDS = [
 	'loi',
 	'simulation',
 	'effectifs',
-	'nuage'
+	'nuage',
+	'boite-a-moustaches'
 ] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
 
@@ -285,6 +286,42 @@ export interface ScatterData {
 	transformedCloud: boolean;
 }
 
+/**
+ * Une boîte à moustaches (```boite-a-moustaches, palier 1) : ses cinq valeurs dans
+ * l'ordre minimum, Q1, médiane, Q3, maximum (déjà vérifié : croissant)
+ */
+export interface BoxPlotBox {
+	/** null : boîte sans nom (`= 28 ; 30 ; …`, ou `données:`) */
+	name: string | null;
+	values: [number, number, number, number, number];
+	/** Ligne du bloc où la boîte est écrite */
+	line: number;
+	/**
+	 * Valeurs `?` (énoncé d'évaluation masqué, palier 2) : `values` ne valent rien
+	 * (le bas de l'axe), la boîte est à construire et jamais dessinée juste
+	 */
+	masked?: true;
+}
+
+/** Bloc ```boite-a-moustaches : boîtes horizontales empilées, un seul axe en bas */
+export interface BoxPlotData {
+	/** Dans l'ordre de l'auteur, de haut en bas */
+	boxes: BoxPlotBox[];
+	/** `axe: 25 à 60, de 5 en 5` ; null : calculé sur les valeurs */
+	axis: { min: number; max: number; step: number } | null;
+	/** `titre:` : le titre de l'axe (« temps (en s) ») */
+	axisTitle: string | null;
+	/** `valeurs: oui` : les cinq valeurs écrites sous chaque boîte */
+	showValues: boolean;
+	/** `données:` : une boîte calculée par `describe.ts` */
+	fromData: boolean;
+	/**
+	 * Boîtes à construire par l'élève (`placer:`, palier 2) : leurs rangs dans
+	 * `boxes`, dans l'ordre des boîtes du bloc ; absent ou null : boîtes à lire
+	 */
+	toPlace?: number[] | null;
+}
+
 /** Indicateurs affichables sous la figure (Q28) */
 export const STAT_CHART_INDICATORS = [
 	'effectif',
@@ -393,6 +430,29 @@ export interface StatChartSpec {
 	} | null;
 	/** Bloc ```nuage (manche 15) : les deux séries et les options, sinon null */
 	scatter: ScatterData | null;
+	/** Bloc ```boite-a-moustaches : les boîtes et l'axe ; absent ou null ailleurs */
+	boxPlot?: BoxPlotData | null;
+	/**
+	 * Barres : axe vertical écrit par le prof (`axe: 0 à 20, de 2 en 2`), depuis 0 ;
+	 * absent ou null : calculé sur les données
+	 */
+	axis?: StatChartAxis | null;
+	/**
+	 * Barres à construire par l'élève (`placer:`) : leurs rangs dans `data`, dans
+	 * l'ordre des données ; absent ou null : diagramme à lire
+	 */
+	toPlace?: number[] | null;
+	/**
+	 * Barres : `axe: à choisir`, l'élève choisit ce que vaut une graduation
+	 * (`axis` reste null : l'axe a 10 graduations sans nombres)
+	 */
+	chooseScale?: boolean;
+}
+
+/** Axe vertical d'un diagramme en barres, de 0 à `max`, gradué de `step` en `step` */
+export interface StatChartAxis {
+	max: number;
+	step: number;
 }
 
 // ============================================================================
@@ -426,6 +486,11 @@ export interface StatChartNode extends BaseNode {
 	spec: StatChartSpec | null;
 	errors: StatChartIssue[];
 	warnings: StatChartIssue[];
+	/**
+	 * Diagramme en barres à construire, dans une question : numéro de la case de
+	 * la première barre (`case: N`, posé par le générateur) ; une case par barre
+	 */
+	caseIndex?: number;
 }
 
 export interface StatChartBlockRange {
@@ -469,12 +534,21 @@ export const STAT_CHART_LIMITS = {
 	twoSeriesCategories: 15,
 	/** Valeurs affichées d'une loi binomiale : au-delà, pas de tableau (Q138) */
 	binomialTableValues: 30,
+	/** Boîtes d'un bloc ```boite-a-moustaches (lisibles sur un téléphone) */
+	boxPlots: 4,
 	/** Points d'un nuage (Q167) */
 	scatterPoints: { min: 2, max: 100 },
 	/** Prévisions d'un nuage (`prévoir:`) */
 	scatterPredictions: 20,
 	/** Valeurs d'une série brute (`données:`, Q101) */
 	rawValues: 500,
+	/** Graduations de l'axe vertical écrit (`axe:`) */
+	axisTicks: 40,
+	/**
+	 * Haut de l'axe d'un diagramme à construire (`placer:`) : au-delà, l'unité ne se
+	 * vise plus au doigt (Q19 du chantier « réponses à placer »)
+	 */
+	placeAxisMax: 100,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */

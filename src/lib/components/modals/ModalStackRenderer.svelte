@@ -22,7 +22,7 @@
 -->
 
 <script lang="ts">
-	import { modalStack, type ModalEntry } from '$lib/stores/modalStack.svelte';
+	import { modalStack, type ModalEntry } from '#lib/stores/modalStack.svelte.ts';
 	import { fade } from 'svelte/transition';
 
 	const isOpen = $derived(modalStack.depth > 0);

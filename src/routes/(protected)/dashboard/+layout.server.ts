@@ -19,10 +19,10 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import { toPataphysicalDate } from '$lib/almanach/calendar';
-import { countPendingActivationRequests } from '$lib/server/vip-card-queries';
-import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { toPataphysicalDate } from '#lib/almanach/calendar.ts';
+import { countPendingActivationRequests } from '#lib/server/vip-card-queries.ts';
+import { isMarketplaceEnabled } from '#lib/server/marketplace/helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/+layout.server');
 

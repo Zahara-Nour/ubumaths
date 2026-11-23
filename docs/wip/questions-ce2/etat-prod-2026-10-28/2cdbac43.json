@@ -1,0 +1,141 @@
+{
+	"id": "2cdbac43-8e03-461b-8307-60232192f890",
+	"title": "Les décompositions de $60$",
+	"description": "1 × 60, 2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Décomposition",
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60/k}}"
+				}
+			],
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|3|4|5|6|10|12|15|20|30|60"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{k}}*?=60"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les décompositions de $60$ à connaître : $1\\times 60$, $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
+					"$${{k}}\\times {{eval:60/k}}=60$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60/k}}"
+				}
+			],
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|3|4|5|6|10|12|15|20|30|60"
+				},
+				{
+					"name": "expression1",
+					"expression": "60=?*{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les décompositions de $60$ à connaître : $1\\times 60$, $2\\times 30$, $3\\times 20$, $4\\times 15$, $5\\times 12$, $6\\times 10$.",
+					"$${{k}}\\times {{eval:60/k}}=60$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "4 × ? = 60 : 15",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "Erreur : 4 × ? = 60 → 14",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4"
+			},
+			"description": "Erreur : 4 × ? = 60 → 56 (on a soustrait)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "12"
+			},
+			"description": "12 × ? = 60 : 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "borne : 1 × ? = 60 : 60",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "60 = ? × 3 : 20",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "Erreur : 60 = ? × 3 → 30",
+			"variationIndex": 1
+		}
+	]
+}

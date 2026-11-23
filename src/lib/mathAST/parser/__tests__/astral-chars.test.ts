@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseCustomSafe, parseLatexSafe, toLatex } from '$lib/mathAST';
+import { parseCustomSafe, parseLatexSafe, toLatex } from '#lib/mathAST/index.ts';
 
 const roundTrip = (parse: typeof parseCustomSafe, input: string) => {
 	const result = parse(input);

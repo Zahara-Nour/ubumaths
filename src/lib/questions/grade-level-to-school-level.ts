@@ -20,8 +20,8 @@
  * @module questions/grade-level-to-school-level
  */
 
-import { GRADES, type GradeCode } from '$lib/types/grades';
-import type { SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
+import { GRADES, type GradeCode } from '#lib/types/grades.ts';
+import type { SchoolLevel } from '#lib/mathAST/common/step-renderer-base.ts';
 
 // =============================================================================
 // Mapping

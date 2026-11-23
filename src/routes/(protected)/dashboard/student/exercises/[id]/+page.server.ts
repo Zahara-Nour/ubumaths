@@ -1,9 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { toExercise } from '$lib/types/exercise-row';
-import { fetchResourceTagNames } from '$lib/server/resource-tags';
-import { createServerLogger } from '$lib/utils/logger';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { toExercise } from '#lib/types/exercise-row.ts';
+import { fetchResourceTagNames } from '#lib/server/resource-tags.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/exercises/[id]/+page.server');
 

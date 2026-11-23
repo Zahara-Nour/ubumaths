@@ -5,8 +5,8 @@
 -->
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import { DECK_CONTEXT_KEY } from '$lib/slides';
-	import type { DeckContext } from '$lib/slides';
+	import { DECK_CONTEXT_KEY } from '#lib/slides/index.ts';
+	import type { DeckContext } from '#lib/slides/index.ts';
 
 	// Variables
 	const deck = getContext<DeckContext | undefined>(DECK_CONTEXT_KEY);

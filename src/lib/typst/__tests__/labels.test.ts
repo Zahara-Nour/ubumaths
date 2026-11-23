@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { documentLabels, labelPlaceholders } from '../labels';
-import { CONTENT_LOCALES } from '$lib/types/locale';
+import { CONTENT_LOCALES } from '#lib/types/locale.ts';
 
 describe('documentLabels()', () => {
 	it('gives every locale the same set of labels', () => {

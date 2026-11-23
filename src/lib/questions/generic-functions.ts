@@ -20,7 +20,7 @@ import { z } from 'zod';
 import {
 	DEFAULT_GENERIC_FUNCTION_NAMES,
 	type GenericFunctionConfig
-} from '$lib/mathAST/parser/types';
+} from '#lib/mathAST/parser/types.ts';
 
 // Constantes
 

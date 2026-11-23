@@ -15,7 +15,7 @@
  */
 
 import type { BaseNode } from './ast';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // ============================================================================
 // VALUE TYPES
@@ -65,11 +65,12 @@ export interface NumberLinePoint {
 }
 
 /**
- * A segment (interval) on the number line
+ * A segment (interval) on the number line, borné ou non (demi-droite)
  *
- * Uses French mathematical notation for open/closed endpoints:
- * - [ = closed (filled circle)
- * - ] = open (empty circle)
+ * Notation française, extrémités dessinées en crochets :
+ * - [ au début, ] à la fin = borne comprise (becs vers l'intérieur)
+ * - ] au début, [ à la fin = borne exclue (becs vers l'extérieur)
+ * - `-inf` / `+inf` (ou ∞, \infty) : borne infinie, toujours exclue
  *
  * @example
  * ```typescript
@@ -88,6 +89,13 @@ export interface NumberLineSegment {
 	startOpen: boolean;
 	/** true = open endpoint ([ in French notation) */
 	endOpen: boolean;
+	/**
+	 * Borne de gauche infinie (`]-inf, 3]`) : `start` vaut alors le début de la
+	 * fenêtre, le trait va jusqu'au bout gauche de la droite, sans crochet.
+	 */
+	startInfinite?: boolean;
+	/** Borne de droite infinie (`[2, +inf[`) : `end` vaut la fin de la fenêtre */
+	endInfinite?: boolean;
 	/** Couleur de la palette (français ou anglais) ou hex ; résolue par `resolveNumberLineColors` */
 	color?: string;
 }
@@ -123,9 +131,29 @@ export interface NumberLineConfig {
 	scale: NumberLineScale;
 }
 
+/**
+ * Droite à représenter (`representer: [2, +inf[`) : l'intervalle que l'élève
+ * dessine (chantier `docs/archive/wip/demi-droite-progress.md`). `bounded` dit le geste :
+ * deux bornes (intervalle borné) ou une borne et un côté (demi-droite).
+ * `interval` null : valeur masquée (`representer: ?`, `? ; ?`), énoncé envoyé.
+ */
+export interface NumberLineRepresenter {
+	bounded: boolean;
+	interval: NumberLineSegment | null;
+}
+
 // ============================================================================
 // AST NODE
 // ============================================================================
+
+/**
+ * Point d'une droite à placer : `A=3` dans `placer: A=3 ; B=7`. Nom vide pour
+ * un point seul écrit sans nom (`placer: 7`).
+ */
+export interface NumberLineTarget {
+	name: string;
+	value: NumberLineValue;
+}
 
 /**
  * Number Line AST Node
@@ -165,6 +193,18 @@ export interface NumberLineNode extends BaseNode {
 	points: NumberLinePoint[];
 	/** Segments (intervals) on the line */
 	segments: NumberLineSegment[];
+	/**
+	 * Droite à placer (`placer:`) : les points que l'élève doit poser, dans l'ordre
+	 * écrit (chantier `docs/wip/reponses-a-placer-progress.md`). Jamais dessinés.
+	 */
+	placer?: NumberLineTarget[];
+	/** Droite à représenter (`representer:`) : l'intervalle de l'élève. Jamais dessiné. */
+	representer?: NumberLineRepresenter;
+	/**
+	 * Première case d'une droite à placer dans une question (`case: N`, posée par
+	 * le générateur) : le point k a la case N + k
+	 */
+	caseIndex?: number;
 	/**
 	 * Texte source du bloc ```line, sans les délimiteurs.
 	 *

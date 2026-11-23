@@ -914,7 +914,7 @@ class RDParser {
 		}
 
 		// Tokens that CAN trigger implicit multiplication:
-		// LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt)
+		// LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \imaginaryI, \exponentialE)
 		return (
 			token.type === 'LETTER' ||
 			token.type === 'LPAREN' ||
@@ -926,7 +926,9 @@ class RDParser {
 					token.value === 'dfrac' ||
 					BINOM_COMMANDS.has(token.value) ||
 					token.value === 'sqrt' ||
-					token.value === 'left'))
+					token.value === 'left' ||
+					token.value === 'imaginaryI' ||
+					token.value === 'exponentialE'))
 		);
 	}
 
@@ -1080,6 +1082,16 @@ class RDParser {
 
 			case 'lceil':
 				return this.parseFloorCeil('ceil', 'rceil');
+
+			case 'imaginaryI':
+				// \imaginaryI (MathLive) : l'unité imaginaire, comme le parseur pratt
+				this.advance();
+				return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
+
+			case 'exponentialE':
+				// \exponentialE (MathLive) : le nombre d'Euler, comme le parseur pratt
+				this.advance();
+				return this.applyColor(euler());
 
 			default:
 				this.error(`Unknown command: \\${cmd}`, token.position, token.length, 'UNKNOWN_COMMAND');

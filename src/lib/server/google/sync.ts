@@ -18,14 +18,14 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { GoogleClassroomClient } from './classroom-api';
 import { GoogleDriveClient } from './drive-api';
 import { GoogleNotConnectedError } from './errors';
 import { decryptToken, encryptToken } from './encryption';
 import { refreshAccessToken, shouldRefreshToken } from './oauth';
 import { parseGoogleDateTime, extractMaterialData } from './utils';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/google/sync');
 // Error types imported for future use

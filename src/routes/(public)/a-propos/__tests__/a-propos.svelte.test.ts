@@ -35,7 +35,8 @@ describe('page « Chiphre, c’est quoi ? »', () => {
 		'Le voyage Chiphre',
 		'Est-ce vraiment sérieux ?',
 		/Ce que Chiphre n[’']est pas/,
-		'Ce que Chiphre propose'
+		'Ce que Chiphre propose',
+		'Polices'
 	] as (string | RegExp)[])('affiche la section « %s »', async (titre) => {
 		await render(APropos, { target: mainElement() });
 		await expect.element(page.getByRole('heading', { level: 2, name: titre })).toBeVisible();

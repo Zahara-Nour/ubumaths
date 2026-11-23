@@ -219,3 +219,31 @@ describe('x^n = c avec coefficient : chemin de la racine n-ième, pas Cardano', 
 		expect(compile(result.solutions[0].value)({})).toBeCloseTo(Math.cbrt(1 / Math.E), 12);
 	});
 });
+
+/**
+ * V42 : un décalage paramétré (`a` dans `\ln(2x+a)=1`) n'a pas de valeur
+ * numérique. Il valait 0 dans un `catch`, et la solution portait la valeur
+ * approchée de e/2 : fausse dès que a ≠ 0. Sans valeur numérique, pas
+ * d'`approximate`.
+ */
+describe('Décalage paramétré : pas de valeur approchée inventée (V42)', () => {
+	it.each([
+		['\\ln(2x+a)=1', 1],
+		['\\ln(x+a)=1', 1],
+		['e^{2x+a}=3', 1],
+		['\\sin(3x+a)=0', 2],
+		['\\cos(2x+a)=1', 1]
+	])('%s : solution exprimée avec a, sans approximate', (latex, count) => {
+		const result = solveX(latex);
+		expect(result.solutions).toHaveLength(count);
+		for (const s of result.solutions) {
+			expect(toLatex(s.value)).toContain('a');
+			expect(s.approximate).toBeUndefined();
+		}
+	});
+
+	it('\\ln(2x+\\pi)=1 : décalage constant, valeur approchée juste', () => {
+		const [s] = solveX('\\ln(2x+\\pi)=1').solutions;
+		expect(s.approximate).toBeCloseTo((Math.E - Math.PI) / 2, 12);
+	});
+});

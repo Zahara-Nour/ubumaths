@@ -48,6 +48,13 @@ beforeEach(() => {
 		join(dir, 'bin/vercel'),
 		`#!/bin/bash
 echo "$*" >> "${join(dir, 'appels.log')}"
+# Draine stdin avant de sortir : les branches on/off alimentent 'env add' par un
+# tube (printf 'true' | vercel env add …). Si le bouchon sort sans lire, printf
+# écrit dans un tube sans lecteur, reçoit SIGPIPE et sort en 141 ; sous le
+# 'set -o pipefail' du script, ce 141 devient le code du pipeline et 'set -e'
+# avorte tout — échec CI intermittent (runs 40322042928, 40396152065). Le vrai
+# CLI lit toujours cette valeur, donc le drain ne fait que refléter son comportement.
+cat >/dev/null 2>&1 || true
 if [ "$1" = "ls" ]; then
 	case " $* " in
 	*" READY "*) echo "${PRET}" ;;

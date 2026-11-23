@@ -25,43 +25,55 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { toJson } from '$lib/types/database-helpers';
-import type { CartItem } from '$lib/stores/questionCart.svelte';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
-import type { EvaluationWithSeries } from '$lib/types/evaluation';
+import type { Database } from '#lib/types/database.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import type { EvaluationWithSeries } from '#lib/types/evaluation.ts';
 import type {
 	CorrectedAnswer,
 	CorrectedQuestion,
+	EvaluationOverviewResponse,
 	EvaluationSubmitResponse
-} from '$lib/types/evaluation-attempt';
-import { getAttemptsRemaining } from '$lib/types/evaluation';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { drawSeriesQuestions, MAX_QUESTION_SEED } from '$lib/questions/series-items';
-import { toPublicQuestion, type PublicQuestion } from '$lib/questions/public-question';
+} from '#lib/types/evaluation-attempt.ts';
+import { DEFAULT_COURSE_TIME_LIMIT_SECONDS } from '#lib/types/evaluation-attempt.ts';
+import { getAttemptsRemaining } from '#lib/types/evaluation.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { drawSeriesQuestions, MAX_QUESTION_SEED } from '#lib/questions/series-items.ts';
+import {
+	gestureAnswerLeaks,
+	toPublicQuestion,
+	type PublicQuestion
+} from '#lib/questions/public-question.ts';
 import {
 	gradeOutOf20,
 	isKnownForSrs,
 	type QuestionVerdict,
 	type SubmittedAnswer
-} from '$lib/questions/grading';
-import { gradeWithinBudget, type GradingBudget } from '$lib/server/grading-budget';
-import { toOriginalChoiceValues } from '$lib/questions/choice-case';
-import { detailsWithinBudget, submittedCopyDetails } from '$lib/server/corrected-detail';
-import type { ValidationStatus } from '$lib/questions/types';
-import type { SeriesReview } from '$lib/server/srs/record-series-reviews';
-import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import { isDeadlinePassed } from '$lib/utils/dates';
+} from '#lib/questions/grading.ts';
+import { gradeWithinBudget, type GradingBudget } from '#lib/server/grading-budget.ts';
+import { toOriginalChoiceValues } from '#lib/questions/choice-case.ts';
+import { detailsWithinBudget, submittedCopyDetails } from '#lib/server/corrected-detail.ts';
+import type { ValidationStatus } from '#lib/questions/types.ts';
+import type { SeriesReview } from '#lib/server/srs/record-series-reviews.ts';
+import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
+import { isDeadlinePassed } from '#lib/utils/dates.ts';
 import {
 	countAttempts,
 	EvaluationError,
 	getAssignmentWithEvaluation,
 	isAssignmentRecipient
-} from '$lib/server/evaluations';
-import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
-import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/evaluations.ts';
+import { recordSeriesReviews } from '#lib/server/srs/record-series-reviews.ts';
+import { isAnsweredAsChoice } from '#lib/questions/choice-from-errors.ts';
+import {
+	evaluationTraceOf,
+	type EvaluationEndReason,
+	type EvaluationTraceColumns
+} from '#lib/server/evaluation-trace.ts';
+import { addBuddyXpFromTest } from '#lib/server/buddy-xp-service.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/evaluation-attempts');
 
@@ -94,7 +106,7 @@ interface EvaluationSummary {
 export type StartResult =
 	| {
 			kind: 'preview';
-			evaluation: EvaluationSummary & { categories: CartItem[] };
+			evaluation: EvaluationSummary & { items: SeriesItem[] };
 	  }
 	| {
 			kind: 'attempt';
@@ -106,8 +118,17 @@ export type StartResult =
 			questions: PublicQuestion[];
 	  };
 
+/** Page d'attente d'un contrôle assigné (`readEvaluationOverview`) */
+export type EvaluationOverview = EvaluationOverviewResponse;
+
 export interface SubmitInput {
-	answers: Array<SubmittedAnswer & { position: number; timeSpent?: number }>;
+	answers: Array<
+		SubmittedAnswer & {
+			position: number;
+			timeSpent?: number;
+			endReason?: EvaluationEndReason;
+		}
+	>;
 }
 
 export type { CorrectedQuestion };
@@ -143,13 +164,17 @@ export class AttemptAlreadySubmittedError extends EvaluationError {
  * `is_correct` qu'à 1 point.
  */
 export function srsReviewsOf(
-	questions: ReadonlyArray<{ status: ValidationStatus; partial: boolean }>,
-	templateIds: readonly string[]
+	questions: ReadonlyArray<{ status: ValidationStatus; partial: boolean; instance?: unknown }>,
+	templateIds: readonly string[],
+	traces?: readonly EvaluationTraceColumns[]
 ): SeriesReview[] {
 	return questions.map((question, index) => ({
 		templateId: templateIds[index],
 		success: isKnownForSrs(question),
-		selfAssessed: false
+		selfAssessed: false,
+		...(traces?.[index] && { trace: traces[index] }),
+		// Idée 4 : lu sur la copie figée par le serveur (demi-réussite, trace « en QCM »)
+		...(isAnsweredAsChoice(question.instance) && { answeredAsChoice: true })
 	}));
 }
 
@@ -206,18 +231,16 @@ function remainingSeconds(
 /** Modèles de la série (publiés, lus sous RLS par l'élève) */
 async function loadSeriesTemplates(
 	userClient: Db,
-	categories: readonly CartItem[]
+	items: readonly SeriesItem[]
 ): Promise<QuestionTemplate[]> {
-	const themes = [...new Set(categories.map((c) => c.category.theme))];
-	const domains = [...new Set(categories.map((c) => c.category.domain))];
-	if (themes.length === 0) return [];
+	const ids = [...new Set(items.map((item) => item.templateId))];
+	if (ids.length === 0) return [];
 
 	const { data, error } = await userClient
 		.from('question_templates')
 		.select('*')
 		.eq('status', 'published')
-		.in('theme', themes)
-		.in('domain', domains);
+		.in('id', ids);
 
 	if (error) {
 		logger.error('[evaluation-attempts] Modèles illisibles :', error);
@@ -231,7 +254,6 @@ interface StoredQuestion {
 	template_id: string;
 	seed: number;
 	delay_seconds: number;
-	category_key: string;
 }
 
 /** Instance figée lue en base (objet JSON écrit par le serveur au démarrage) */
@@ -259,7 +281,7 @@ async function regenerateAttempt(
 ): Promise<Array<{ stored: StoredQuestion; instance: QuestionInstance }>> {
 	const { data: rows, error } = await service
 		.from('evaluation_attempt_questions')
-		.select('position, template_id, seed, delay_seconds, category_key, instance')
+		.select('position, template_id, seed, delay_seconds, instance')
 		.eq('test_session_id', attemptId)
 		.order('position', { ascending: true });
 
@@ -319,8 +341,20 @@ function toPublicQuestions(
 	);
 }
 
+/** Tentative en cours : de quoi la reprendre et calculer son temps restant */
+interface OpenAttempt {
+	id: string;
+	mode: string;
+	time_limit: number | null;
+	created_at: string | null;
+}
+
 /** Tentative en cours de l'élève (la plus ANCIENNE s'il y en a plusieurs) */
-async function findOpenAttempt(userClient: Db, evaluationId: string, userId: string) {
+async function findOpenAttempt(
+	userClient: Db,
+	evaluationId: string,
+	userId: string
+): Promise<OpenAttempt | null> {
 	const { data, error } = await userClient
 		.from('test_sessions')
 		.select('id, mode, time_limit, created_at')
@@ -340,6 +374,145 @@ async function findOpenAttempt(userClient: Db, evaluationId: string, userId: str
 }
 
 /**
+ * Droits sur une assignation, communs au démarrage et à la page d'attente.
+ * Lectures sous RLS seulement (client de l'utilisateur), aucune écriture.
+ *
+ * - propriétaire ou admin non destinataire → aperçu ;
+ * - destinataire, évaluation publiée → sa tentative en cours (Q34 : elle se
+ *   reprend, même après la date limite, Q37) ou, sans elle, le droit d'en
+ *   commencer une (date limite, tentatives restantes, Q33).
+ *
+ * @throws EvaluationError 404 (introuvable, non destinataire, brouillon,
+ *   membre archivé), 403 (date limite passée, tentatives épuisées), 500
+ */
+async function resolveAssignmentAccess(
+	actors: AttemptActors,
+	assignmentId: string
+): Promise<
+	| { kind: 'preview'; evaluation: EvaluationWithSeries }
+	| {
+			kind: 'recipient';
+			evaluation: EvaluationWithSeries;
+			open: OpenAttempt | null;
+	  }
+> {
+	const { userClient, userId } = actors;
+
+	const found = await getAssignmentWithEvaluation(userClient, assignmentId);
+	if (!found) throw new EvaluationError(404, 'Contrôle introuvable');
+	const { assignment, evaluation } = found;
+
+	const recipient = await isAssignmentRecipient(userClient, assignment, userId);
+	if (!recipient) {
+		// Aperçu : propriétaire ou admin, questions générées par le navigateur,
+		// rien n'est rattaché à l'évaluation (une séance rattachée verrouille la série)
+		if (
+			actors.role === 'admin' ||
+			(actors.role === 'teacher' && evaluation.created_by === userId)
+		) {
+			return { kind: 'preview', evaluation };
+		}
+		throw new EvaluationError(404, 'Contrôle introuvable');
+	}
+	if (evaluation.status !== 'published') throw new EvaluationError(404, 'Contrôle introuvable');
+
+	const open = await findOpenAttempt(userClient, evaluation.id, userId);
+	if (open) return { kind: 'recipient', evaluation, open };
+
+	if (isDeadlinePassed(evaluation.deadline)) {
+		throw new EvaluationError(403, 'La date limite est dépassée');
+	}
+	// Q33 : toute séance compte, abandonnée comprise
+	const attempts = await countAttempts(userClient, evaluation.id, userId);
+	const remaining = getAttemptsRemaining(attempts, evaluation.max_attempts);
+	if (remaining !== null && remaining <= 0) {
+		throw new EvaluationError(403, 'Nombre maximal de tentatives atteint');
+	}
+	return { kind: 'recipient', evaluation, open: null };
+}
+
+/**
+ * Page d'attente d'un contrôle assigné (chantier `diaporama-reglages`, PR 2b) :
+ * ce que l'élève voit AVANT de démarrer. Lecture SEULE : mêmes droits et mêmes
+ * refus que `startEvaluationAttempt`, aucune séance créée, rien d'écrit.
+ *
+ * - tentative en cours : ses questions (comptées en service_role, la table est
+ *   fermée aux élèves ; seules les durées sont lues) et son temps RESTANT ;
+ * - sinon (aperçu compris) : un tirage à blanc, comme au démarrage (cartes de
+ *   cours exclues, modèles aux questions épuisées, énoncés qui fuient écartés) ;
+ *   aucune question → 409 dès la page d'attente.
+ *
+ * @throws EvaluationError comme `startEvaluationAttempt` (404, 403, 500)
+ */
+export async function readEvaluationOverview(
+	actors: AttemptActors,
+	assignmentId: string
+): Promise<EvaluationOverview> {
+	const now = actors.now ?? (() => new Date());
+	const access = await resolveAssignmentAccess(actors, assignmentId);
+	const { evaluation } = access;
+	const isCourse = evaluation.form === 'course';
+
+	if (access.kind === 'recipient' && access.open) {
+		const { open } = access;
+		const { data, error } = await actors.service
+			.from('evaluation_attempt_questions')
+			.select('delay_seconds')
+			.eq('test_session_id', open.id);
+		if (error) {
+			logger.error('[evaluation-attempts] Questions de la tentative illisibles :', error);
+			throw new EvaluationError(
+				500,
+				'Impossible de préparer le contrôle, réessayer dans un instant'
+			);
+		}
+		const delays = (data ?? []).map((row) => row.delay_seconds);
+		if (delays.length === 0) {
+			// Une tentative ouverte a toujours ses questions (écrites au démarrage)
+			logger.error('[evaluation-attempts] Tentative en cours sans questions :', open.id);
+		}
+		return {
+			preview: false,
+			evaluation: summary(evaluation),
+			questionCount: delays.length,
+			durationSeconds: isCourse
+				? (remainingSeconds(open, now()) ??
+					evaluation.time_limit ??
+					DEFAULT_COURSE_TIME_LIMIT_SECONDS)
+				: delays.reduce((sum, delay) => sum + delay, 0),
+			resumed: true
+		};
+	}
+
+	// Même tirage qu'au démarrage, à blanc (rien n'est gardé) : une ligne dont le
+	// modèle n'a pas assez de questions distinctes en rend moins que demandé
+	const items = evaluation.series.items;
+	const templates = await loadSeriesTemplates(actors.userClient, items);
+	const draws = drawSeriesQuestions(items, templates, {
+		excludeCourseCards: true,
+		choiceCases: true,
+		nextSeed: () => (actors.randomInt ?? cryptoRandomInt)(MAX_QUESTION_SEED),
+		onGenerationFailure: () => {}
+	}).filter((draw) => gestureAnswerLeaks(draw.instance).length === 0);
+	if (draws.length === 0) {
+		throw new EvaluationError(
+			409,
+			"Ce contrôle n'a aucune question disponible, à signaler au professeur"
+		);
+	}
+	const totalDelay = draws.reduce((sum, draw) => sum + draw.delaySeconds, 0);
+	return {
+		preview: access.kind === 'preview',
+		evaluation: summary(evaluation),
+		questionCount: draws.length,
+		durationSeconds: isCourse
+			? (evaluation.time_limit ?? DEFAULT_COURSE_TIME_LIMIT_SECONDS)
+			: totalDelay,
+		resumed: false
+	};
+}
+
+/**
  * Démarrer (ou reprendre) une tentative. `assignmentId` : identifiant de
  * l'ASSIGNATION (liens `/automaths/test?assignment=<id>`).
  *
@@ -355,30 +528,16 @@ export async function startEvaluationAttempt(
 	const now = actors.now ?? (() => new Date());
 	const randomInt = actors.randomInt ?? cryptoRandomInt;
 
-	const found = await getAssignmentWithEvaluation(userClient, assignmentId);
-	if (!found) throw new EvaluationError(404, 'Contrôle introuvable');
-	const { assignment, evaluation } = found;
-
-	const recipient = await isAssignmentRecipient(userClient, assignment, userId);
-	if (!recipient) {
-		// Aperçu : propriétaire ou admin, questions générées par le navigateur,
-		// rien n'est rattaché à l'évaluation (une séance rattachée verrouille la série)
-		if (
-			actors.role === 'admin' ||
-			(actors.role === 'teacher' && evaluation.created_by === userId)
-		) {
-			return {
-				kind: 'preview',
-				evaluation: { ...summary(evaluation), categories: evaluation.series.categories }
-			};
-		}
-		throw new EvaluationError(404, 'Contrôle introuvable');
+	const access = await resolveAssignmentAccess(actors, assignmentId);
+	if (access.kind === 'preview') {
+		const { evaluation } = access;
+		return {
+			kind: 'preview',
+			evaluation: { ...summary(evaluation), items: evaluation.series.items }
+		};
 	}
-	if (evaluation.status !== 'published') throw new EvaluationError(404, 'Contrôle introuvable');
+	const { evaluation, open } = access;
 
-	// Q34 : une tentative en cours se reprend, sans en compter une nouvelle (même
-	// après la date limite : commencée avant, elle peut finir après, Q37)
-	const open = await findOpenAttempt(userClient, evaluation.id, userId);
 	if (open) {
 		const questions = await regenerateAttempt(service, open.id);
 		return {
@@ -391,32 +550,27 @@ export async function startEvaluationAttempt(
 		};
 	}
 
-	if (isDeadlinePassed(evaluation.deadline)) {
-		throw new EvaluationError(403, 'La date limite est dépassée');
-	}
-	// Q33 : toute séance compte, abandonnée comprise
-	const attempts = await countAttempts(userClient, evaluation.id, userId);
-	const remaining = getAttemptsRemaining(attempts, evaluation.max_attempts);
-	if (remaining !== null && remaining <= 0) {
-		throw new EvaluationError(403, 'Nombre maximal de tentatives atteint');
-	}
-
 	// Tirage : même règle que `buildSeriesItems` (cartes de cours exclues)
-	const categories = evaluation.series.categories;
-	const templates = await loadSeriesTemplates(userClient, categories);
-	const draws = drawSeriesQuestions(categories, templates, {
+	const items = evaluation.series.items;
+	const templates = await loadSeriesTemplates(userClient, items);
+	const draws = drawSeriesQuestions(items, templates, {
 		excludeCourseCards: true,
+		// Idée 4 : variations « en QCM » ; l'instance figée (Q42) garde la forme QCM
+		choiceCases: true,
 		nextSeed: () => randomInt(MAX_QUESTION_SEED),
-		pickIndex: (count) => randomInt(count - 1)
+		onGenerationFailure: (templateId, errors) =>
+			logger.error('[evaluation-attempts] Génération impossible :', templateId, errors)
 	});
 	const generated: Array<{ stored: StoredQuestion; instance: QuestionInstance }> = [];
+	// Une génération impossible est déjà omise par le tirage (journalisée ci-dessus)
 	for (const draw of draws) {
-		const result = generateInstance(draw.template, draw.seed);
-		if (!result.success) {
+		// Énoncé masqué qui dirait encore la réponse (masque cassé) : écarté, jamais envoyé
+		const leaks = gestureAnswerLeaks(draw.instance);
+		if (leaks.length > 0) {
 			logger.error(
-				'[evaluation-attempts] Génération impossible :',
+				'[evaluation-attempts] Énoncé masqué qui dirait la réponse :',
 				draw.template.id,
-				result.errors
+				leaks
 			);
 			continue;
 		}
@@ -425,10 +579,9 @@ export async function startEvaluationAttempt(
 				position: generated.length,
 				template_id: draw.template.id,
 				seed: draw.seed,
-				delay_seconds: draw.delaySeconds,
-				category_key: draw.categoryKey
+				delay_seconds: draw.delaySeconds
 			},
-			instance: result.instance
+			instance: draw.instance
 		});
 	}
 	if (generated.length === 0) {
@@ -444,7 +597,7 @@ export async function startEvaluationAttempt(
 			user_id: userId,
 			evaluation_id: evaluation.id,
 			mode: evaluation.form,
-			categories: toJson(categories),
+			items: toJson(items),
 			total_questions: generated.length,
 			time_limit: evaluation.form === 'course' ? evaluation.time_limit : null,
 			completed_at: null
@@ -516,7 +669,7 @@ export async function startEvaluationAttempt(
 /** Réponse enregistrée : au format `AnswerData` que lisent les corrections */
 /**
  * Réponse enregistrée : au format `AnswerData` que lisent les corrections
- * (QCM : indices d'ORIGINE, comme partout). En plus, de quoi reconstruire la
+ * (case choix : indices d'ORIGINE, comme partout). En plus, de quoi reconstruire la
  * copie à l'identique (409) : message et nature du ½ point.
  */
 function storedUserAnswer(
@@ -526,7 +679,7 @@ function storedUserAnswer(
 ): (AnswerData & { feedback?: string; partial: boolean }) | null {
 	if (!question.answer) return null;
 	return {
-		value: question.answer.choiceIndexes ?? question.answer.values ?? [],
+		value: question.answer.values ?? [],
 		isCorrect: question.isCorrect,
 		timeSpent: timeSpent ?? 0,
 		attempts: 1,
@@ -617,7 +770,9 @@ export async function submitEvaluationAttempt(
 		// D18 : la graine ne quitte jamais le serveur, ni dans la réponse ni dans
 		// `test_answers.question_instance` (lisible par l'élève et le prof)
 		const { seed: _seed, ...instance } = full;
-		const sent = late ? null : (answersByPosition.get(stored.position) ?? null);
+		const received = late ? null : (answersByPosition.get(stored.position) ?? null);
+		// Question vide (fin et durée seules, PR 4 bis) : jugée vide, comme sans réponse
+		const sent = received?.values ? received : null;
 		// Cases choix : positions AFFICHÉES reçues → indices d'origine (corrigés et
 		// enregistrés) ; illisibles → refus de l'envoi, rien n'est écrit
 		let answer = sent;
@@ -642,13 +797,7 @@ export async function submitEvaluationAttempt(
 		return {
 			position,
 			instance,
-			// QCM : indices d'ORIGINE calculés par le barème (ce que lit CorrectionCard)
-			answer: answer
-				? {
-						...(answer.values && { values: answer.values }),
-						...(verdict.choiceIndexes && { choiceIndexes: verdict.choiceIndexes })
-					}
-				: null,
+			answer: answer ? { ...(answer.values && { values: answer.values }) } : null,
 			status: verdict.status,
 			points: verdict.points,
 			isCorrect: verdict.isCorrect,
@@ -722,15 +871,26 @@ export async function submitEvaluationAttempt(
 
 	if (!late) {
 		// Q39 : le verdict du SERVEUR alimente le SRS (révision corrigée par
-		// l'application : ni meilleur-du-jour ni auto-évaluation, ADR 0016)
+		// l'application : ni meilleur-du-jour ni auto-évaluation, ADR 0016).
+		// PR 4 bis : traces au lieu `evaluation`, écrites au client service (la
+		// policy élève refuse ce lieu) ; FSRS et paquet au client de l'élève.
+		const form = session.mode === 'course' ? 'course' : 'interactive';
 		await recordSeriesReviews(
 			userClient,
 			userId,
 			srsReviewsOf(
 				corrected,
-				questions.map(({ stored }) => stored.template_id)
+				questions.map(({ stored }) => stored.template_id),
+				questions.map(({ stored }) =>
+					evaluationTraceOf({
+						form,
+						delaySeconds: stored.delay_seconds,
+						timeLimitSeconds: session.time_limit,
+						sent: answersByPosition.get(stored.position) ?? null
+					})
+				)
 			),
-			{ logLabel: '[evaluation-attempts]' }
+			{ logLabel: '[evaluation-attempts]', attemptsClient: service }
 		);
 		try {
 			await addBuddyXpFromTest(
@@ -760,9 +920,6 @@ export async function submitEvaluationAttempt(
 function correctedAnswerOf(userAnswer: unknown): CorrectedAnswer | null {
 	if (!userAnswer || typeof userAnswer !== 'object' || !('value' in userAnswer)) return null;
 	const value = (userAnswer as { value: unknown }).value;
-	if (Array.isArray(value) && value.every((v) => typeof v === 'number')) {
-		return { choiceIndexes: value as number[] };
-	}
 	if (Array.isArray(value)) return { values: value.map(String) };
 	return null;
 }

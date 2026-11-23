@@ -21,18 +21,21 @@
 	```
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { ContentLocale } from '$lib/types/locale';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { ContentLocale } from '#lib/types/locale.ts';
 	import { Loader2, Save, Star } from '@lucide/svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import type { WorksheetExerciseWithExercise, WorksheetSectionRow } from '$lib/types/worksheets';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import type {
+		WorksheetExerciseWithExercise,
+		WorksheetSectionRow
+	} from '#lib/types/worksheets.ts';
 
 	// Types
 	interface Props {

@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown, type BlockNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode } from '#lib/ubumark/index.ts';
 
 const children = (markdown: string) => parseMarkdown(markdown).children as BlockNode[];
 const types = (markdown: string) => children(markdown).map((c) => c.type);
@@ -25,9 +25,12 @@ describe('Q66 — un ``` lointain ne ferme pas un bloc séparé par du texte', (
 		['trig', '```trig\npreset: quarters'],
 		['line', '```line\nstart: 0\nend: 5'],
 		['horloge', '```horloge\nheure: 9 h'],
+		['partage', '```partage\nforme: bande 8'],
+		['cubes', '```cubes\nhauteurs: 2 1'],
 		['operation', '```operation\ncalcul: 45 + 37'],
 		['collection', '```collection\nunités: 9'],
-		['monnaie', '```monnaie\nbillets: 10']
+		['monnaie', '```monnaie\nbillets: 10'],
+		['schema-barres', '```schema-barres\nOr : ? (4)']
 	])('%s : le texte intermédiaire est un paragraphe', (_, block) => {
 		const md = `${block}\n\nVoici le texte qui suit le bloc\n\n\`\`\`\n\nfin`;
 		const nodes = children(md);
@@ -49,9 +52,12 @@ describe('une faute de frappe dans un bloc fermé : la suite du document intacte
 		['trig', '```trig\npreset: quarters\n\npreset all\n```'],
 		['line', '```line\nstart: 0\nend: 5\n\narrows true\n```'],
 		['horloge', '```horloge\nheure: 9 h\n\nchiffres quarts\n```'],
+		['partage', '```partage\nforme: bande 8\n\ngris 3\n```'],
+		['cubes', '```cubes\nhauteurs: 2 1\n\nvue face\n```'],
 		['operation', '```operation\ncalcul: 45 + 37\n\ncases aucune\n```'],
 		['collection', '```collection\nunités: 9\n\ndessin paquets\n```'],
 		['monnaie', '```monnaie\nbillets: 10\n\ndisposition mélangé\n```'],
+		['schema-barres', '```schema-barres\nOr : ? (4)\n\nArgent 5\n```'],
 		['probtree', '```probtree\nRouge:1/2\n\nBoule rouge 3/5\n```'],
 		['variation', '```variation\nvariable: x\ndomain: -inf, +inf\n\nsign f de x\n```']
 	])('%s', (_, block) => {

@@ -23,7 +23,7 @@ import {
 	getCurrentSchoolYear,
 	buildGlobalContext
 } from '../templateEngine';
-import type { MessageTemplate, TemplateContext } from '$lib/types/messageTemplates';
+import type { MessageTemplate, TemplateContext } from '#lib/types/messageTemplates.ts';
 
 // ============================================================================
 // TEST DATA FIXTURES

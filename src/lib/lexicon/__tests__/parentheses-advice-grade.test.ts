@@ -4,7 +4,7 @@
  * `docs/systeme/mathast/structure-expression.md`).
  */
 import { describe, expect, it } from 'vitest';
-import { GRADE_CODES } from '$lib/types/grades';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 import { needsParenthesesAdvice } from '../parentheses-advice-grade';
 
 // Constantes

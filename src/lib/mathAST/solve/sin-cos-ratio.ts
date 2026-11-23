@@ -18,7 +18,7 @@ import type { MathNode, RelationNode } from '../types';
 import type { SolveOptions, SolveResult } from './types';
 import { isSolverFailure } from './types';
 import { divide, equals, func, number, opposite } from '../factory';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { getVariables } from '../eval/substitute';
 import { computeNumericValue } from '../eval/numeric-value';
 import { flattenSumShallow, type SignedTerm } from '../flatten';
@@ -91,9 +91,7 @@ export function trySinCosRatio(
 	if (!nonZero(sine.coefficient) || !nonZero(cosine.coefficient)) return null;
 
 	// tan(u) = −b/a
-	const ratio = denormalize(
-		normalize(divide(opposite(cosine.coefficient), sine.coefficient, 'fraction'))
-	);
+	const ratio = canonicalForm(divide(opposite(cosine.coefficient), sine.coefficient, 'fraction'));
 	const reduced = equals(func('tan', [sine.argument]), ratio);
 	const result = solveFn(reduced, { variable, verbosity: options.verbosity });
 	if (isSolverFailure(result)) return null;

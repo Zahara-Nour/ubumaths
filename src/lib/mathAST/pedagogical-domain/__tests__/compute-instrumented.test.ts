@@ -11,9 +11,13 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseLatex } from '$lib/mathAST/parser';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { computeDomain, createDomainStepRecorder, getNullRecorder } from '$lib/mathAST/domain';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import {
+	computeDomain,
+	createDomainStepRecorder,
+	getNullRecorder
+} from '#lib/mathAST/domain/index.ts';
 
 describe('compute.ts instrumentation — sqrt_constraint', () => {
 	it('emits a sqrt_constraint step for √(x-2)', () => {

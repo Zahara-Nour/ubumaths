@@ -5,12 +5,12 @@
  * Validates win condition server-side, distributes rewards, updates ELO
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { completeMatchSchema } from '$lib/server/validation/minesweeper-multiplayer';
-import { sanitizeRPCError } from '$lib/server/utils/error-handler';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { completeMatchSchema } from '#lib/server/validation/minesweeper-multiplayer.ts';
+import { sanitizeRPCError } from '#lib/server/utils/error-handler.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 /**
  * Complete a multiplayer match with server-side win validation
@@ -43,5 +43,5 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		sanitizeRPCError(rpcError, 'complete_multiplayer_match');
 	}
 
-	return json(data);
+	return Response.json(data);
 };

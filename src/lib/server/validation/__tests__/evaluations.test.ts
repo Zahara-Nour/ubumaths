@@ -13,7 +13,7 @@ import {
 } from '../evaluations';
 
 const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	templateId: '4d5e6f70-4444-4444-8444-444444444444',
 	quantity: 4,
 	delay: 20
 };
@@ -21,7 +21,7 @@ const SERIES_ID = '5b1f6a2e-3c4d-4e8f-9a0b-1c2d3e4f5a6b';
 const CLASS_ID = '6c2a7b3f-4d5e-4f90-8b1c-2d3e4f5a6b7c';
 
 describe('createSeriesSchema (B11)', () => {
-	const valid = { title: '  Tables de 7  ', grade: '6', categories: [ITEM] };
+	const valid = { title: '  Tables de 7  ', grade: '6', items: [ITEM] };
 
 	it('accepte un panier et nettoie le titre', () => {
 		const result = createSeriesSchema.safeParse(valid);
@@ -40,22 +40,22 @@ describe('createSeriesSchema (B11)', () => {
 		expect(createSeriesSchema.safeParse({ ...valid, title: undefined }).success).toBe(false);
 	});
 
-	it('catégories : 1 à 50, quantités et durées bornées', () => {
-		expect(createSeriesSchema.safeParse({ ...valid, categories: [] }).success).toBe(false);
+	it('modèles : 1 à 50, quantités et durées bornées', () => {
+		expect(createSeriesSchema.safeParse({ ...valid, items: [] }).success).toBe(false);
+		expect(createSeriesSchema.safeParse({ ...valid, items: Array(51).fill(ITEM) }).success).toBe(
+			false
+		);
 		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: Array(51).fill(ITEM) }).success
+			createSeriesSchema.safeParse({ ...valid, items: [{ ...ITEM, quantity: 100 }] }).success
 		).toBe(false);
 		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, quantity: 100 }] }).success
-		).toBe(false);
-		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, delay: 4000 }] }).success
+			createSeriesSchema.safeParse({ ...valid, items: [{ ...ITEM, delay: 4000 }] }).success
 		).toBe(false);
 	});
 
-	it('99 questions pour une catégorie (plafond du panier) : enregistrable', () => {
+	it('99 questions pour un modèle (plafond du panier) : enregistrable', () => {
 		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, quantity: 99 }] }).success
+			createSeriesSchema.safeParse({ ...valid, items: [{ ...ITEM, quantity: 99 }] }).success
 		).toBe(true);
 	});
 
@@ -115,7 +115,7 @@ describe('evaluationSettingsSchema (B13, Q30)', () => {
 		}
 	});
 
-	it('Entraînement : aucun temps limite', () => {
+	it('Contrôle blanc : aucun temps limite', () => {
 		const ok = evaluationSettingsSchema.safeParse({ form: 'interactive' });
 		expect(ok.success).toBe(true);
 		if (ok.success) expect(ok.data.time_limit).toBeNull();
@@ -123,7 +123,7 @@ describe('evaluationSettingsSchema (B13, Q30)', () => {
 		const ko = evaluationSettingsSchema.safeParse({ form: 'interactive', time_limit_minutes: 5 });
 		expect(ko.success).toBe(false);
 		if (!ko.success)
-			expect(ko.error.issues[0].message).toBe("Un Entraînement n'a pas de temps limite");
+			expect(ko.error.issues[0].message).toBe("Un Contrôle blanc n'a pas de temps limite");
 	});
 
 	it('forme inconnue (flash) : refusée', () => {
@@ -197,22 +197,22 @@ describe('assignations', () => {
 });
 
 describe('submitAttemptSchema (C10)', () => {
-	it('accepte cases, choix et temps par question', () => {
+	it('accepte cases (case choix comprise) et temps par question', () => {
 		const result = submitAttemptSchema.safeParse({
 			answers: [
 				{ position: 0, values: ['7', ''], timeSpent: 12 },
-				{ position: 1, choices: [0, 2] }
+				{ position: 1, values: ['0;2'] }
 			]
 		});
 		expect(result.success).toBe(true);
 	});
 
-	it('QCM à plusieurs réponses (V5) : plusieurs choix cochés, dans le désordre', () => {
+	it('positions cochées d’un ancien QCM (`choices`) : jamais lues (QCM retiré, ADR 0033)', () => {
 		const result = submitAttemptSchema.safeParse({
 			answers: [{ position: 0, choices: [3, 0, 2] }]
 		});
 		expect(result.success).toBe(true);
-		if (result.success) expect(result.data.answers[0].choices).toEqual([3, 0, 2]);
+		if (result.success) expect(result.data.answers[0]).not.toHaveProperty('choices');
 	});
 
 	it('retire tout verdict envoyé par le navigateur', () => {
@@ -249,13 +249,6 @@ describe('submitAttemptSchema (C10)', () => {
 		['deux réponses à la même question', { answers: [{ position: 0 }, { position: 0 }] }],
 		['case trop longue', { answers: [{ position: 0, values: ['x'.repeat(2001)] }] }],
 		['trop de cases', { answers: [{ position: 0, values: Array(51).fill('1') }] }],
-		['indice de QCM hors bornes', { answers: [{ position: 0, choices: [50] }] }],
-		['indice de QCM non entier', { answers: [{ position: 0, choices: [0.5] }] }],
-		['même choix coché deux fois (V5)', { answers: [{ position: 0, choices: [1, 1] }] }],
-		[
-			'trop de choix cochés',
-			{ answers: [{ position: 0, choices: Array.from({ length: 51 }, (_, i) => i) }] }
-		],
 		['temps négatif', { answers: [{ position: 0, timeSpent: -1 }] }],
 		['temps fabriqué', { answers: [{ position: 0, timeSpent: 86_401 }] }],
 		['trop de réponses', { answers: Array.from({ length: 501 }, (_, i) => ({ position: i })) }]
@@ -271,7 +264,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 		const result = createSeriesSchema.safeParse({
 			title: 'T',
 			grade: '6',
-			categories: [item(1, 601)]
+			items: [item(1, 601)]
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) expect(result.error.issues[0].message).toMatch(/600 s au plus/);
@@ -281,7 +274,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 		const result = createSeriesSchema.safeParse({
 			title: 'T',
 			grade: '6',
-			categories: Array.from({ length: 6 }, () => item(99))
+			items: Array.from({ length: 6 }, () => item(99))
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) {
@@ -292,7 +285,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 
 	it('modification : même borne', () => {
 		const result = updateSeriesSchema.safeParse({
-			categories: Array.from({ length: 6 }, () => item(99))
+			items: Array.from({ length: 6 }, () => item(99))
 		});
 		expect(result.success).toBe(false);
 	});
@@ -302,7 +295,7 @@ describe('bornes d’une série enregistrée (alignées sur la base et l’envoi
 			createSeriesSchema.safeParse({
 				title: 'T',
 				grade: '6',
-				categories: [...Array.from({ length: 5 }, () => item(99, 600)), item(5)]
+				items: [...Array.from({ length: 5 }, () => item(99, 600)), item(5)]
 			}).success
 		).toBe(true);
 	});

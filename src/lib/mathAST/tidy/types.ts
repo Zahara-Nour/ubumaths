@@ -72,10 +72,11 @@ export type TidyTerm = {
 	/**
 	 * L'unité « écrite » d'une grandeur, pour `unitChoice: 'written'` : chaque
 	 * dimension de base y prend la première unité écrite (`7[mm]·5[cm]` → `mm^2`,
-	 * `120[km]/2[h]` → `km/h`). Dans une somme, c'est celle du premier terme du
-	 * groupe. `null` hors de ce mode, ou si aucune écriture ne s'en déduit.
+	 * `120[km]/2[h]` → `km/h`). Dans une somme, celles de chaque terme du groupe,
+	 * dans l'ordre d'écriture et sans doublon (`1[km]-999[m]` → `km`, `m`). Vide
+	 * hors de ce mode, ou si aucune écriture ne s'en déduit.
 	 */
-	readonly written: Unit | null;
+	readonly written: readonly Unit[];
 };
 
 /**

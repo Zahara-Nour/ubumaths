@@ -1,11 +1,9 @@
 {
+	"id": "a86fc757-1639-4b22-84bd-af5abcf2b9e0",
 	"title": "Extremum de x ↦ (x + a)eˣ",
 	"description": "Dérivée (x + a + 1)eˣ, signe, abscisse et valeur exacte de l'extremum (−e^(−a−1))",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
 	"status": "draft",
-	"subdomain": "Variations",
 	"level": 3,
 	"delay": 120,
 	"variations": [

@@ -64,26 +64,25 @@ Quand on a des éléments SVG interactifs (handles de redimensionnement, points 
 
 ### Fichiers avec dette a11y suppressée
 
-| Fichier                                                     | Type d'éléments                     |
-| ----------------------------------------------------------- | ----------------------------------- |
-| `src/lib/components/geometry/GeometryCanvas.svelte`         | 11 SVG handles draggables           |
-| `src/lib/whiteboard/components/SelectionLayer.svelte`       | 7 hit areas resize/rotate           |
-| `src/lib/whiteboard/components/AnnotationLayer.svelte`      | Resize/rotate handles               |
-| `src/lib/whiteboard/components/ImageLayer.svelte`           | Image + handles                     |
-| `src/lib/whiteboard/components/WhiteboardCanvas.svelte`     | SVG racine                          |
-| `src/lib/whiteboard/components/InstrumentLayer.svelte`      | `<g>` pointer events                |
-| `src/lib/whiteboard/components/PageThumbnails.svelte`       | Drag-to-reorder                     |
-| `src/lib/whiteboard/components/DraggablePanel.svelte`       | Drag handle                         |
-| `src/lib/components/markdown/nodes/ProbabilityTree.svelte`  | Click sur SVG / labels              |
-| `src/lib/components/Wheel.svelte`                           | Texte cliquable SVG                 |
-| `src/lib/components/question-inputs/NumberLineInput.svelte` | SVG slider tabindex                 |
-| `src/lib/components/rich-text/RichTextEditor.svelte`        | TipTap container + resize separator |
-| `src/lib/components/bug-reports/BugReportCard.svelte`       | Checkbox stopPropagation            |
-| `src/lib/slides/core/Deck.svelte`                           | Wrapper deck tabindex               |
-| `src/lib/slides/components/SlideAnnotationToolbar.svelte`   | Color palette                       |
-| `src/lib/games/evoland/components/EvolandGame.svelte`       | Container `role="application"`      |
-| `src/routes/(public)/games/2048/Game2048.svelte`            | Game board touch handlers           |
-| `src/routes/(public)/games/2048/Tile2048.svelte`            | Tile tabindex                       |
+| Fichier                                                    | Type d'éléments                     |
+| ---------------------------------------------------------- | ----------------------------------- |
+| `src/lib/components/geometry/GeometryCanvas.svelte`        | 11 SVG handles draggables           |
+| `src/lib/whiteboard/components/SelectionLayer.svelte`      | 7 hit areas resize/rotate           |
+| `src/lib/whiteboard/components/AnnotationLayer.svelte`     | Resize/rotate handles               |
+| `src/lib/whiteboard/components/ImageLayer.svelte`          | Image + handles                     |
+| `src/lib/whiteboard/components/WhiteboardCanvas.svelte`    | SVG racine                          |
+| `src/lib/whiteboard/components/InstrumentLayer.svelte`     | `<g>` pointer events                |
+| `src/lib/whiteboard/components/PageThumbnails.svelte`      | Drag-to-reorder                     |
+| `src/lib/whiteboard/components/DraggablePanel.svelte`      | Drag handle                         |
+| `src/lib/components/markdown/nodes/ProbabilityTree.svelte` | Click sur SVG / labels              |
+| `src/lib/components/Wheel.svelte`                          | Texte cliquable SVG                 |
+| `src/lib/components/rich-text/RichTextEditor.svelte`       | TipTap container + resize separator |
+| `src/lib/components/bug-reports/BugReportCard.svelte`      | Checkbox stopPropagation            |
+| `src/lib/slides/core/Deck.svelte`                          | Wrapper deck tabindex               |
+| `src/lib/slides/components/SlideAnnotationToolbar.svelte`  | Color palette                       |
+| `src/lib/games/evoland/components/EvolandGame.svelte`      | Container `role="application"`      |
+| `src/routes/(public)/games/2048/Game2048.svelte`           | Game board touch handlers           |
+| `src/routes/(public)/games/2048/Tile2048.svelte`           | Tile tabindex                       |
 
 (Plus quelques fichiers pré-existants : `MarkdownRaw`, `TrigCircle`, `PythonSplitter`, `VipCard`, `ElementPopover`.)
 

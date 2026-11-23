@@ -1,0 +1,613 @@
+---
+couvre:
+  - scripts/create-questions.ts
+  - scripts/questions/page-a-cocher.ts
+  - scripts/questions/page-a-cocher.html
+  - scripts/questions/publier-lot.ts
+  - scripts/questions/sonde-courbes.ts
+  - scripts/questions/sonde-figures.ts
+  - scripts/questions/sonde-cubes.ts
+  - scripts/questions/sonde-collections.ts
+  - scripts/lib/page-a-cocher.ts
+  - scripts/lib/lot-questions.ts
+  - scripts/lib/migration-contenu.ts
+  - scripts/questions/migration-contenu.ts
+  - scripts/lib/migration-rangement.ts
+  - scripts/questions/migration-rangement.ts
+  - scripts/lib/template-file.ts
+  - scripts/lib/niveaux-des-tags.ts
+  - scripts/questions/garde-niveaux-tags.ts
+  - scripts/series/creer-serie.ts
+  - scripts/lib/serie-fichier.ts
+---
+
+# Couvrir un niveau en modèles de questions — démarche, choix et pièges
+
+> Rédigé le 2026-10-26, après le chantier « questions » du CP (journal
+> [questions-progress.md](../wip/questions-progress.md)) : 84 points, 9 lots (A1-A6, H, B1-B3,
+> M, C), 72 modèles publiés. Skill : `couvrir-niveau` ([.claude/skills/couvrir-niveau/](../../.claude/skills/couvrir-niveau/SKILL.md)).
+
+**But** : que chaque point du programme d'un niveau ait au moins un modèle de question juste,
+dans ses bornes, rangé sur le nœud de son point et tagué de ce point. Vocabulaire :
+[CONTEXT.md](../../CONTEXT.md) (branche → notion → sous-notion ; point ; modèle ; variation).
+
+Un modèle se fabrique **hors de l'application** : fichier JSON écrit par un script Python de
+lot, vérifié (`checkTemplate`), joué en base locale, créé en **brouillon** en prod par David,
+rangé et tagué par **migration**, relu sur une **page à cocher**, puis publié par David.
+
+---
+
+## 1. Relevé (lecture seule, MCP Supabase prod)
+
+Trois relevés, collés dans le journal du chantier (`docs/wip/<sujet>-progress.md`) :
+
+```sql
+-- Points du niveau et nombre de modèles tagués
+select p.code, p.name, count(q.template_id) as modeles
+  from public.curriculum_points p
+  left join public.question_template_points q on q.point_id = p.id
+ where p.grade = '<niveau>' and p.archived_at is null
+ group by p.code, p.name, p.display_order
+ order by p.display_order;
+
+-- Modèles du niveau : statut, nœud, tags
+select left(t.id::text, 8) as id, t.title, t.status, t.level, t.classification_node_id is not null as range,
+       array_agg(p.code) filter (where p.code is not null) as points
+  from public.question_templates t
+  left join public.question_template_points q on q.template_id = t.id
+  left join public.curriculum_points p on p.id = q.point_id
+ where '<niveau>' = any(t.grades)
+ group by t.id order by t.title;
+```
+
+Les **bornes** de chaque point (plages, formats, exemples de réussite du BO) :
+`docs/systeme/programmes/bornes/` — `cycle2.json` (CP, CE1, CE2), `cycle3.json` (CM1, CM2, 6),
+`cycle4.json` (5, 4, 3) sous `[niveau].points[code]` ; lycée sous `bornes/lycee/`. Elles font foi
+pour les plages des variables **et** pour le corrigé.
+
+## 2. Vérifier l'existant
+
+**D'abord la passe déjà faite** : le chantier « arbre des notions » a jugé chaque modèle du primaire
+et du collège contre les bornes de son niveau (2026-10-18 → 20) —
+`docs/archive/wip/arbre-notions/analyse/<lot>.csv` (`cycle2`, `cm`, `sixieme`, `cycle4`) et leurs
+`*-notes.md`, avec les décisions de David. Ses verdicts font foi ; on ne revérifie que ce qu'elle
+n'a pas tranché. Ses `HORS_PROGRAMME` restent sans tag, et leur **changement de niveau** (« à part »)
+n'a jamais été fait : il se règle dans le chantier du niveau.
+
+Pour chaque modèle du niveau : chaque variation contre les bornes de son point (plages tirées,
+notions du corrigé — un « × » dans un corrigé de CP est hors programme). `pnpm question:specs
+--template <uuid> --apercu 5` montre des tirages réels.
+
+Modèles non tagués : un point du niveau, d'un niveau **suivant** (permis), ou aucun (à dire à
+David). Les corrections passent avant les lots neufs (§ 7).
+
+## 3. Classer les points sans modèle
+
+| Classe | Sens                                       | Suite                                           |
+| ------ | ------------------------------------------ | ----------------------------------------------- |
+| A      | Texte / formule seuls                      | lots de texte, sans outil                       |
+| B      | Outil existant (`figure`, `line`, tableau) | lots, en vérifiant le rendu du bloc             |
+| C      | Outil neuf (bloc à créer)                  | **chantier à part**, puis lot de modèles        |
+| D      | Non évaluable dans l'appli                 | David tranche : hors appli, ou outil à inventer |
+
+Puis **questions à David** (ordre des outils, points à trancher, corrections) et découpage en
+lots de 3 à 10 modèles, un thème par lot.
+
+## 3 bis. Les outils qui existent déjà
+
+À relire **avant** de classer un point en C ou de proposer un outil : un point classé C à tort
+coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../systeme/ubumark.md#blocs-spéciaux)
+(syntaxe, rendu écran, PDF), qui fait foi si la liste ci-dessous a vieilli.
+
+**Afficher** (blocs ubumark, dans l'énoncé, le corrigé ou un choix de QCM) :
+
+| Bloc                                                                                                                           | Ce qu'il montre                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| ` ```variation `                                                                                                               | tableau de variations (et de signes)                                                    |
+| ` ```trig `                                                                                                                    | cercle trigonométrique                                                                  |
+| ` ```courbe `                                                                                                                  | courbe de fonction, moteur du grapheur ([grapheur.md](../systeme/grapheur.md))          |
+| ` ```line `                                                                                                                    | droite graduée                                                                          |
+| ` ```probtree `                                                                                                                | arbre de probabilités                                                                   |
+| ` ```barres `, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | statistiques (`stat-chart`) ; `tableau-croise` à trous pour compléter                   |
+| ` ```figure `                                                                                                                  | figure de géométrie (DSL `geometry-core`, [geometrie/](../systeme/geometrie/README.md)) |
+| ` ```horloge `                                                                                                                 | cadran                                                                                  |
+| ` ```operation `                                                                                                               | opération posée (addition, soustraction, multiplication, division)                      |
+| ` ```collection `                                                                                                              | jetons, cubes, barres de dix, paquets                                                   |
+| ` ```monnaie `                                                                                                                 | pièces et billets en euros                                                              |
+| tableau markdown, image, ` ```qr `                                                                                             | tableaux, images fixes, QR code                                                         |
+
+**Répondre** (ce que l'élève saisit ou fait) :
+
+**Liste complète** : table « Natures de réponse » de [questions.md § 4](../systeme/questions.md)
+(à relire avant de dire qu'une forme n'existe pas ; complétée ici le 2026-11-21, il manquait les
+gestes `tracer:` / `representer:`, les blocs à associer, à trous, les tableaux à compléter, les
+programmes et les natures d'une case).
+
+- **case** (MathLive, jugée par le juge ordinaire), plusieurs cases, case dans un tableau (`$?$`) ;
+- **natures d'une case** : texte (`[_]` hors formule), grandeur avec unité (`unit`), ensemble en
+  intervalles, équation de droite ou de cercle, vecteur, matrice, primitive ou solution d'équation
+  différentielle (`answerKind`) ; forme exigée (`requiredForm`), règles de validation, précision ;
+- **QCM = case choix** (bloc ` ```choix `, [ADR 0033](../adr/0033-le-qcm-est-une-case.md)), en
+  texte ou en dessins, mêlable à d'autres cases. Le type `multiple_choice` n'existe plus depuis le
+  2026-10-28 : les anciens champs (`choices`, `correctChoiceIndex`…) sont refusés à l'enregistrement
+  ([questions.md](../systeme/questions.md)). Plusieurs bonnes réponses : `plusieurs: oui` (§ 9) ;
+- **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
+- **construire** : `construire:` dans ` ```collection ` ou ` ```monnaie ` (la valeur posée est la réponse) ;
+- **placer, ranger, colorier** : point sur une droite graduée (` ```line `), points dans un repère
+  (` ```courbe `), points sur le cercle trigonométrique (` ```trig `), aiguilles et trotteuse
+  (` ```horloge `), toutes avec `placer:` ; barres et boîte à moustaches à construire ; étiquettes à
+  ranger (` ```ranger `) ; parts à colorier (` ```partage colorier:`) ; vues et faces (` ```cubes `,
+  ` ```patron `) ;
+- **tracer, représenter** : droite ou vecteur dans un repère (` ```courbe ` `tracer:`, somme
+  `tracer: vecteur u + v`), vecteur sur un solide (` ```solide `), intervalle sur une droite graduée
+  (` ```line ` `representer:`) ;
+- **associer, texte à trous** : ` ```associer ` (`- élément -> étiquette`, intrus) et ` ```trous `
+  (`[étiquette]`, `intrus:`), étiquettes glissées ;
+- **tableau à compléter** : ` ```variation ` avec des cases `?` (valeur, signe, marque, flèche) :
+  tableau de signes ou de variations ;
+- **programmes** : programme tortue (` ```tortue `), programme de calcul (` ```calcul `), robot à
+  produire (` ```robot ` `produire: oui`), rejoués pour juger ;
+- **figure à compléter** (` ```figure-a-completer `, case « figure » : objets de l'élève retrouvés
+  sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée) ; figure d'énoncé
+  à manipuler (` ```figure ` + `deplacable: oui`, rien de noté).
+
+**Hors questions, réutilisables comme briques** : le grapheur (`/grapheur`), l'Atelier,
+les constructions animées (`constructions-v2` : règle, compas, équerre, rapporteur), le champ
+glisser-déposer `StructureField` (en prod, mais pas encore branché aux questions), Blockly (à
+venir comme vraie fonctionnalité).
+
+⚠️ **Géométrie en refonte** (2026-10) : case « figure », figure de travail, QCM en cases et
+`deplacable:` bougent dans le chantier `figure-et-choix`. Lire son
+« Reprendre ici » (`docs/wip/`) avant de proposer un modèle ou un outil de géométrie.
+
+**Manquent encore** : **une seule liste, [outils-manquants.md](../wip/outils-manquants.md)** (gestes à
+créer, transformations géométriques, points à trancher). La lire avant de classer un point en C ;
+un point classé C s'y ajoute, au geste qui le couvre.
+
+## 3 ter. Créer l'outil qui manque (classe C)
+
+Couvrir un niveau, c'est aussi **inventer les outils** que ses points demandent : au CP, les
+blocs ` ```horloge `, ` ```collection `, ` ```monnaie `, ` ```operation ` (opérations posées), le
+geste « construire » (l'élève pose barres, cubes, pièces), la case « figure » sont nés ainsi.
+Un point de classe C n'est pas laissé sans modèle : je propose l'outil.
+
+1. **Proposer à David** l'outil, ce qu'il couvre (liste des points, de ce niveau et des
+   suivants : les minutes de l'horloge au CE1), sa forme (affichage seul, QCM de dessins, geste
+   de réponse) et sa place dans l'ordre des lots. Jamais d'architecture décidée seul : une
+   décision durable → ADR (skill `domain-modeling`).
+2. **Chantier à part** : son worktree, son journal (`docs/wip/<outil>-progress.md`), sa
+   phase 0 (syntaxe du bloc écrite en exemples, comportements nominal / limite / erreur, tirés des
+   « exemples de réussite » du BO dans les bornes), validée avant tout code.
+3. **Recette technique** : [ubumark.md § Comment étendre — nouveau bloc spécial](../systeme/ubumark.md#comment-étendre--nouveau-bloc-spécial)
+   (type, parseur, branchements, scène pure partagée écran / PDF, composant, Typst, éditeur
+   riche, batterie de tests). Patrons récents : `monnaie` (scène, QCM de dessins), `collection`
+   (barres de dix), `MonnaieConstruire` / `CollectionConstruire` (geste de réponse : la case
+   porte la valeur posée, jugée par le juge ordinaire ; la correction montre une construction
+   juste).
+4. **Par paliers** : d'abord l'affichage (le bloc se lit, les modèles « lire / comparer »
+   peuvent partir), puis le geste (« construire », « placer »). Chaque palier = une PR, une page
+   de démo pour David.
+5. **En prod** : les modèles qui utilisent le bloc restent en **brouillon** jusqu'au
+   `deploy:prod` qui livre le bloc ; le lot de modèles suit la démarche normale (§ 4 à 8).
+
+Outils encore à créer : [outils-manquants.md](../wip/outils-manquants.md).
+
+## 4. Phase 0 d'un lot
+
+Pour chaque modèle, proposer à David, en français et sans écrire de fichier :
+
+- son **point** (un seul : [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md)) et sa **sous-notion** (le nœud du point) ;
+- ses **variations** (une par difficulté ou par forme), leurs **plages**, leurs **niveaux**
+  (numérotés dès l'écriture) ;
+- la forme de réponse : case, QCM **ou** cases (pas les deux ; QCM en réécriture, § 3 bis), bloc à construire ;
+- la **question d'accès** de la migration, posée AVANT le SQL : « qui pourra lire quoi, qu'il ne
+  pouvait pas lire avant ? » (pour un lot de modèles neufs en brouillon : personne).
+
+Les décisions vont dans le journal, section « Lot X : décisions (David, date) ».
+
+## 5. Écrire le lot
+
+Dans un worktree (`git worktree add -b feat/questions-<lot> ../ubumaths-wt-questions origin/main`) :
+
+1. `docs/wip/questions/lot-<x>.py <dossier>` écrit les JSON de
+   `scripts/questions/<niveau>-<lot>/` (gabarit : `lot-c.py`, fonctions `modele`, `var`, `spec`,
+   `bloc`). Le script porte en commentaire les décisions et les pièges du lot. Un fichier ne porte
+   **ni `theme`, ni `domain`, ni `subdomain`** (ancien quadruplet, ADR 0035 : refusés à la
+   lecture) ; le `modele()` des anciens scripts de lot les écrit encore, à retirer en copiant le
+   gabarit. Il ne porte pas d'`id` tant que le modèle n'est pas créé.
+2. Chaque modèle a des `testSpecs` : un juste par variation, et les **erreurs typiques** de
+   l'élève en `incorrect`.
+   **Erreurs prévues** (chantier `idees-format`, idée 3 ; décision de David du 2026-11-21) : le
+   script **propose déjà** les erreurs typiques d'une case avec leur message à l'élève ; le prof
+   les modifie ou les complète ensuite dans l'éditeur. Dans la case (écriture mathématique
+   ordinaire seulement : ni choix, ni geste, ni figure, ni primitive, ni solution d'équation
+   différentielle, ni `rulesSuffice`, ni `orderIndependent`) :
+   `"expectedErrors": [{"answer": "{{eval:a-b}}", "message": "Tu as soustrait au lieu
+d'additionner.", "label": "Soustraction au lieu d'addition"}]`. `answer` s'écrit comme la
+   réponse attendue (variables permises) ; `message` (variables, `$…$`) parle à l'élève de **son**
+   erreur, en une phrase, au tutoiement ; `label` (facultatif, ≤ 80 caractères) nomme l'erreur
+   pour le prof. L'élève dont la réponse a la **même valeur** reçoit le message (`8/6` pour `4/3`) ;
+   une erreur prévue qui tombe sur la bonne réponse d'un tirage est ignorée. Chaque erreur prévue
+   a sa spec `incorrect` qui nomme son message (`"expected": {"status": "incorrect",
+"expectedErrorMessage": "Tu as soustrait au lieu d'additionner."}`, message tel que résolu
+   pour les variables de la spec). Le rejeu de `checkTemplate` répond chaque erreur prévue sur
+   ses tirages et refuse le modèle si elle ne déclenche pas son message.
+   Viser **trois** erreurs prévues par case (jusqu'à cinq), de vraies erreurs d'élèves : une
+   variation à une seule case qui en a trois peut se poser en QCM (le prof coche « en QCM »,
+   idée 4) ; ne pas inventer une valeur au hasard pour atteindre trois. Le juge compare la
+   **valeur** : une écriture fausse de même valeur (`2^3` pour `8`) n'est pas une erreur prévue.
+   ⚠️ Le message est réécrit à la résolution (`$10^{3}$` → `$10^3$`, `$b-a$` → `$b - a$`) :
+   l'écrire, et l'écrire dans la spec, sous sa forme réécrite, sinon la spec est rouge.
+   **Coup de pouce** (idée 5, décision de David du 2026-11-22) : chaque variation en a un.
+   `"hint"` (gabarit markdown, variables du tirage permises, jamais `{{solution}}`) donne une
+   piste, une méthode ou un rappel de propriété, en une ou deux phrases, **sans donner ni calculer
+   la réponse** ; ou `"hintFromFirstStep": true` quand la première étape de la correction est
+   une vraie piste (jamais si elle affiche ou calcule la réponse). L'élève l'ouvre en Saisie,
+   Flash-cards et révision, jamais en évaluation. La prod lit `hint` et `expectedErrors` depuis
+   la 0.101.0 (2026-11-22).
+   **Forme** (revue du lot de Seconde, 2026-11-22, faits vérifiés) : un motif de `requiredForm`
+   sait comparer deux de ses parties (`e:integer + p:integer & gte(0) & lt(w) / w:integer` exige
+   une fraction plus petite que 1 ; `{{b}}*k:integer + r:integer & gte(0) & lt({{b}})` un reste
+   plus petit que le diviseur) ; une case unique vaut souvent mieux que deux (écriture plus
+   naturelle, QCM possible) ; pas de Oui / Non qui laisse une chance sur deux au hasard (choix
+   multiple « coche les… » ou une saisie) ; la consigne dit ce que la forme exigée refuse
+   (« une puissance de $(-3)$ », « en écriture décimale ») : une bonne réponse refusée sans que
+   la consigne l'ait demandé est un défaut. **Régler le modèle entier dès sa création** (espaces
+   des grands nombres, remarque « produits », zéros) : sur un modèle publié,
+   `migration-contenu.ts` ne change que variations, specs et description.
+3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
+   `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
+   Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire
+   chaque modèle 300 fois et passe chaque bloc ``courbe (énoncé et corrigé) au parseur →
+**0 problème** avant la page à cocher ; `--montre <fichier.json> <graine>` affiche la variation
+fautive.
+Lot qui dessine des figures : `pnpm tsx scripts/questions/sonde-figures.ts --dir …`, même
+principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
+   `buildFigureScene`) → **0 problème** avant la page à cocher (erreurs de construction et textes
+   refusés, `mtexte()` par exemple, qu'aucune spec ne voit).
+   Lot de cubes ou de solides : `pnpm tsx scripts/questions/sonde-cubes.ts --dir …`, même principe,
+   chaque bloc `cubes, `solide et ``patron (énoncé, options d'un choix, corrigé) passé à
+   `parseEspaceContent` avec son genre → **0 problème** (un bloc d'affichage en erreur, « Solide
+   indisponible », échappe aux specs).
+   Lot de matériel multibase : `pnpm tsx scripts/questions/sonde-collections.ts --dir …`, même
+   principe, chaque bloc ` ```collection ` passé à `parseCollectionContent` → **0 problème** (plafond
+   d'un grand bloc dépassé, valeur au-delà de 9 999 : les specs ne le voient pas). Une case à
+   `construire:` est jugée sur sa seule valeur, écrite par le composant (#2495) : « Espaces dès 4
+   chiffres » n'y change rien, l'élève ne tape pas le nombre. Écrire le nombre de l'énoncé groupé à
+   la main (`{{m}}\,{{c}}{{d}}{{u}}`) : la formule `${{n}}$` ne met pas l'espace.
+   Lot d'horloges ou de droites graduées : `pnpm tsx scripts/questions/sonde-horloges.ts --dir …`, même
+   principe, chaque bloc ` ```horloge ` et ` ```line ` (énoncé, corrigé, horloges d'un choix) passé à son
+   parseur → **0 problème** (heure refusée, point hors de la droite : les specs ne le voient pas).
+   Lot de formules (lycée) : passer chaque formule `$…$` des aperçus (`question:specs --apercu 40`) à
+   `validateLatex` de `mathlive/ssr` **et** compter les accolades : `validateLatex` ne signale que les
+   commandes inconnues et les environnements mal fermés, pas `\frac{1` ni `\sqrt{2}}` (vu le 2026-11-02,
+   lot formules de 1re spé) → **0 problème**.
+4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
+   (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
+   (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,
+   la correction. Ouvrir le serveur par `http://[::1]:<port>`, pas `localhost` : les cookies de
+   `localhost` sont partagés entre les ports, donc avec la session de David sur 5173 (2026-11-15).
+5. PR des fichiers seuls (« revue : aucune, contenu » ; `Doc-inchangée: contenu`), CI verte,
+   merge.
+
+## 6. En prod : brouillons, rangement, tags
+
+1. Si le lot utilise un bloc pas encore en prod : attendre le `deploy:prod` (David seul).
+2. **David** lance `create-questions --dir … --publier` (l'écriture en prod est refusée au mode
+   auto) : les modèles arrivent en **brouillon**, sans nœud ni tag. Le script écrit l'`id` de
+   chaque modèle **en tête de son fichier** (le reste intact) : commiter ces fichiers, c'est par
+   cet id que page à cocher, publication et corrections retrouvent le modèle ; relancer ne crée
+   rien. Un fichier sans id dont le titre et le niveau existent déjà en base **bloque le lot**
+   avant toute écriture (`--malgre-homonyme` pour un homonyme voulu).
+3. Migration nœud + tag : **générée** pour tout le lot, jamais écrite à la main (depuis le
+   2026-11-22). Écrire dans chaque fichier du lot le champ `rangement` (le nœud et le point
+   restent une décision de la session, prise en phase 0 du lot), puis lancer :
+
+   ```bash
+   pnpm tsx scripts/questions/migration-rangement.ts --dir scripts/questions/<lot>   # lit la PROD (.env)
+   ```
+
+   ```json
+   "rangement": { "noeud": "Nombres et calculs > Décimaux : calculs > multiplication", "point": "6-115" }
+   "rangement": { "niveauxAjoutes": ["6"] }
+   ```
+
+   Première forme : modèle neuf (la sous-notion du chemin est facultative ; `"point": null` =
+   rangé sans tag, à écrire en clair). Seconde forme : modèle déjà rangé qui gagne un niveau. Le
+   champ n'est pas un champ du modèle : `create-questions` l'ignore et ne l'écrit jamais en base.
+   Plusieurs `--dir` = une seule migration (modèles neufs et publiés d'un même chantier) ; le
+   lot porte le nom du premier dossier, ou `--nom <lot>`.
+   Le script relève en prod (lecture seule) chaque modèle du lot, apparié par l'`id` de son
+   fichier (titre et niveau concordants), l'arbre des notions et les points. Modèle neuf sans
+   nœud ni tag → rangé ; déjà exactement sur ce nœud avec ce seul point → ignoré (relancer ne
+   refait rien) ; fichier sans `rangement` d'un modèle déjà rangé → ignoré. **Un refus refuse
+   tout le lot, rien n'est écrit** : fichier sans id, id absent de la prod, titre ou niveau
+   différents, `rangement` illisible, chemin ou point introuvable, nœud archivé, point ni sur le
+   nœud ni sur sa notion, modèle déjà rangé ou tagué autrement, modèle sans nœud dont le fichier
+   n'a pas de `rangement` (modèle oublié), `niveauxAjoutes` sur un modèle sans nœud ou avec un
+   niveau inconnu, deux fichiers de même nom dans le lot.
+   Sortie : `supabase/migrations/<horodatage>_questions_<lot>_rangement_tags.sql` (l'heure
+   réelle, prise par le script ; réponse à la question d'accès écrite en en-tête ; nœud résolu
+   strictement par son chemin, gardes « encore sans nœud ni tag » et « niveaux exactement ceux
+   du relevé », tout ou rien, `updated_at` préservé, modèle absent toléré, rollback en
+   commentaire, gardé lui aussi : il ne retire le nœud et ne rend les niveaux que s'ils sont
+   encore ceux posés par la migration) et sa fixture `tests/integration/fixtures/rangement-tags/<même nom>.json`,
+   rejouée par `tests/integration/migrations-rangement-tags.test.ts` : **aucun test à écrire**.
+   Règles : `scripts/lib/migration-rangement.ts`.
+   **PR de rangement courte** : si elle ne contient que la migration **ajoutée**, sa fixture
+   **ajoutée** du même nom, les JSON du lot et la doc, la CI d'intégration ne lance que ce test
+   (~1 min au lieu de ~19 min de suite complète, `scripts/ci-integration-ciblee.sh`) ; la suite
+   complète repasse chaque nuit. Tout autre fichier (un `.ts`, une migration ou une fixture
+   modifiée, une fixture sans sa migration, un helper) relance la suite complète : ne rien
+   glisser d'autre dans cette PR.
+   Les migrations de rangement écrites à la main avant le générateur gardent leur test propre
+   (`tests/integration/questions-*-rangement-tags.test.ts`, mention `@migration-de-donnees`).
+   Cas que le générateur ne couvre pas (retrait de tag, changement de nœud, statut) : migration à
+   la main, § 7.
+
+4. `security-auditor` (sans finding bloquant), CI verte, `pnpm check:migrations --pr <n>`, merge,
+   `pnpm db:migrate` depuis le dépôt
+   principal (les 4 conditions de `CLAUDE.md`), puis vérifier en prod : nœud, un tag, brouillon.
+
+## 7. Corriger un modèle déjà en prod
+
+Relevé MCP (contenu complet, md5, nœuds, points, tags, **0 donnée d'élève**) ; instantané dans
+`docs/wip/<chantier>/etat-prod-<date>/` (ses md5 = prod) ; nouveau contenu écrit par le script
+de lot, `checkTemplate` vert ; **David** lance `create-questions --publier --mettre-a-jour`
+(remplace contenu, description et délai). Le script de lot réécrit les fichiers **sans leur `id`** :
+le remettre (`git diff`) avant de lancer, sinon le lot est bloqué (homonyme en base). Niveau **ajouté** à un modèle déjà rangé → `rangement: { niveauxAjoutes }` et la migration générée du § 6 ; retrait de tag ou de niveau → migration à la main.
+
+Modèle **publié** (`--mettre-a-jour` ne le touche pas) : **contenu** (variations, specs,
+description) → migration **générée** pour tout le lot, jamais écrite à la main :
+
+```bash
+pnpm tsx scripts/questions/migration-contenu.ts --dir scripts/questions/<lot>   # lit la PROD (.env)
+```
+
+Partir du fichier exporté de la prod (`scripts/export-question-templates.ts`), le modifier,
+lancer. Le script relève chaque modèle du dossier en prod (apparié par l'`id` du fichier, titre et
+niveau concordants) : brouillon → ignoré ; publié identique → rien ; publié qui diffère → migré.
+Variation **ajoutée à la fin** ou **corrigée** (signalée en en-tête) : acceptée ; variation
+**retirée ou déplacée** : refus (les réponses des élèves gardent l'indice de leur variation) ;
+autre champ différent de la prod, `checkTemplate` rouge : refus, rien n'est écrit. Sortie :
+`supabase/migrations/<horodatage>_questions_<lot>_contenu.sql` (un seul bloc, tout ou rien ;
+garde = contenu exact relevé ; modèle absent → rien ; rollback gardé en commentaire) et sa
+fixture `tests/integration/fixtures/contenu-publie/`, rejouée par
+`tests/integration/migrations-contenu-publie.test.ts` (la CI ciblée ne lance que lui). Règles :
+`scripts/lib/migration-contenu.ts`.
+
+Changement de nœud, retrait de tag ou de niveau, statut d'un publié (ce que la migration générée du § 6 ne fait pas) → migration à la main, gabarit du lot 0 du CE1
+(`20261027000100_questions_ce1_rangement_tags.sql` et son test). Le
+rollback écrit **garde l'état laissé par la migration** (nœud, niveaux, statut, tags) : sans
+cette garde, une saisie faite depuis serait écrasée en silence. Copies de test publiées : un
+niveau chacune (`idx_question_templates_unique_category`).
+
+## 8. Relecture dans `/dev/modeles`, puis publication
+
+**La vérification de David se fait dans `/dev/modeles`** (vraie appli : modèles joués, blocs dessinés,
+réponses jugées), demandé le 2026-11-20 après un lot validé sur la seule page à cocher. Lui donner
+l'adresse qui montre tout le lot : brouillons → filtre nœud ou point (`?noeud=`, `?point=`) ; modèles
+publiés → série de relecture `scripts/series/<niveau>-relecture-<lot>.json` (50 modèles au plus par
+série), simulée par `scripts/series/creer-serie.ts` puis enregistrée par David (`--publier`), ouverte
+par `/dev/modeles?serie=<id>`. Les choix de jugement à trancher (forme refusée, demi-point) s'y testent
+en jouant le modèle.
+
+**Les verdicts se lisent en base**, et seulement là : table `question_template_reviews` (un verdict
+par modèle, « À revoir » + commentaire ; ne compter que ceux dont `reviewed_at` suit l'écriture du
+lot). Harmonisé le 2026-11-21 avec le skill `idees-rubrique` : un seul endroit pour les verdicts.
+
+La **page à cocher** décrite ci-dessous sert désormais à la **phase 0** (trancher les fiches avant
+d'écrire, verdicts dans la base de l'artefact) ou à une vue d'ensemble d'un lot ; elle ne remplace
+plus la relecture dans `/dev/modeles`.
+
+1. **Page à cocher** (phase 0, vue d'ensemble) :
+   ```bash
+   pnpm tsx scripts/questions/page-a-cocher.ts --dir scripts/questions/<niveau>-<lot> \
+     --titre "Relecture CP — lot C" --intro "<une phrase : ce que le lot apporte>" \
+     --sortie <scratchpad>/relecture-<niveau>-<lot>.html
+   ```
+   Une fiche par fichier du lot, **un exemple par variation tiré par le vrai générateur**
+   (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
+   `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
+   réserve, plan vide, et la construction juste à part) ; un bloc `figure-a-completer` montre la
+   figure de départ, et à part la construction juste en vert, calculée par les fonctions de la
+   correction de l'appli (`solutionLines`, `solutionPoints`) pour trois vérifications : droite à
+   construire (`droite p = perpendiculaire(A, d)`, `parallele`…), `symetrique par d` et
+   `point A' = …` ; pour une autre vérification, la figure de départ seule et une alerte (la
+   solution se voit dans l'aperçu) ; les blocs `solide` (arêtes cachées en tirets,
+   faces marquées, section) et `cubes` (trois teintes ; un geste `dessiner:` / `retrouver:` est signalé,
+   la perspective seule dessinée) le sont par `buildSolideScene` et `buildEspaceScene` ; un bloc `variation` (tableau de signes ou
+   de variations) est lu par le parseur de l'appli et dessiné comme `VariationTable.svelte` (valeurs
+   en KaTeX, zéros, double barre, flèches) ; les blocs `histogramme`, `frequences-cumulees` (lignes
+   de lecture), `barres`, `boite-a-moustaches`, `tableau-croise` (cases `?` ou masquées vides) et
+   `simulation` en tirages sont dessinés depuis `buildStatChartScene` (la scène de l'écran), `probtree`
+   d'après la mise en page de `ProbabilityTree.svelte` (formules en KaTeX), `line` comme
+   `NumberLine.svelte` (graduations, crochets et couleurs de `number-line-render`, nombres en KaTeX ;
+   `placer:` et `representer:` : la droite nue, et la construction juste à part — points posés ou
+   intervalle tracé), `schema-barres` depuis `buildSchemaBarresScene` (segments sur fond discret, parties
+   manquantes en pointillés, accolades) ; une scène statistique que
+   la page ne dessine pas encore (`loi`, `nuage`, `circulaire`, `effectifs`) est montrée par sa source
+   et signalée ; un bloc en erreur arrête la page ; un bloc `python` est montré tel quel ;
+   un autre bloc (`operation`…) est montré par sa source et signalé. Les formules restent en texte quand elles n'ont que des nombres et des signes (CP) ; au-delà
+   (fractions, `\left`, exposants), KaTeX les rend en MathML (cdnjs, sans feuille de style), y compris
+   la réponse attendue, le libellé du point, ses bornes et les réponses des specs ; un bloc `$$…$$` est
+   rendu en mode bloc (`align`), ℝ, ℕ, ℤ, ℚ, ℂ en caractères Unicode (le MathML de Chrome ignore
+   `double-struck`) ; une formule que KaTeX refuse revient au rendu texte. L'id, le statut, le nœud et
+   les points sont **lus en base** (lecture seule, `.env` = prod), avec les bornes de chaque
+   point (`docs/systeme/programmes/bornes/`). Alertes en tête de fiche : sans point, deux points
+   d'un même programme (1SPE-224 avec 1TECHNO-037 est permis, ADR 0020), sans nœud, niveau en base
+   différent du fichier, point absent des bornes, bloc non dessiné. Chaque fichier est retrouvé en
+   base par **son `id`** (écrit par `create-questions --publier`, ou posé une fois pour tous les
+   lots existants, 2026-11-04) ; un fichier
+   sans id, un id absent ou un titre changé en base font refuser le lot, et le message dit ce qui
+   diffère. Le niveau n'a pas à concorder pour la page : les anciens lots ont été renumérotés en
+   base après coup (CP B1, B3, H).
+   **Brouillons déjà en base** dont le fichier n'est plus à jour : partir d'un instantané,
+   `pnpm tsx scripts/export-question-templates.ts --dir
+scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte son `id`. Le même
+   dossier sert aux corrections (§ 7, `--mettre-a-jour`) et à la publication.
+   Gabarit : `scripts/questions/page-a-cocher.html` (collection `verdicts`, « OK / À revoir » +
+   commentaire, filtre « Ce qui reste » par défaut, file d'écriture unique, nouvel essai
+   automatique, bandeau tant qu'une réponse attend). Publier la page en artefact avec la capacité
+   `db` ; vérifier le rendu à 390 px.
+2. David relit dans `/dev/modeles` ; lire `question_template_reviews` (MCP en lecture seule) et
+   **compter** les verdicts du lot avant de dire « tout est relu ». Un « À revoir » → corriger
+   (§ 7 pour un publié, `--mettre-a-jour` pour un brouillon), puis David rejoue le modèle et
+   renouvelle son verdict. En phase 0, les réponses de la page à cocher se lisent par
+   `ArtifactData list verdicts`.
+3. **Publication** :
+   ```bash
+   pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/<niveau>-<lot>   # simulation
+   ```
+   Retrouve chaque fichier en base par son `id` (titre et niveau doivent concorder), un modèle
+   par fichier, et joue les **contrôles de la publication**
+   (`publishTemplates` en simulation : contrôle de l'admin, collisions de catégorie). Un seul
+   refus, et rien n'est écrit. **David** le lance avec `--publier`, puis le statut `published`
+   est relu en base. Un modèle déjà publié est laissé tel quel : relancer reprend une
+   publication interrompue. Il **alerte** (sans bloquer) si un tag d'un modèle du lot a un niveau
+   absent de ses `grades`.
+4. **Garde des niveaux**, après la migration de rangement et avant la publication :
+   `pnpm tsx scripts/questions/garde-niveaux-tags.ts` (lecture seule, toute la base) liste les
+   modèles tagués d'un point dont le niveau manque à `grades`, et sort en code 1 s'il y en a.
+
+## 8 bis. Une série de modèles publiés
+
+Une série validée avec David (des modèles, chacun avec un nombre de questions et une durée,
+[ADR 0035](../adr/0035-une-serie-enregistre-des-modeles.md)) s'écrit dans un fichier
+`scripts/series/<niveau>-<sujet>.json`, sans passer par le panier d'Automaths :
+
+```json
+{
+	"title": "La médiatrice",
+	"grade": "6",
+	"description": "…",
+	"items": [
+		{
+			"modele": "Définition de la médiatrice d'un segment",
+			"templateId": "<uuid>",
+			"quantity": 2,
+			"delay": 60
+		}
+	]
+}
+```
+
+`modele` sert seulement à relire le fichier ; `delay: 0` prend la durée du modèle.
+
+```bash
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json              # simulation
+pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/<nom>.json --publier    # David
+```
+
+- **Simulation** : le fichier est validé avec les bornes de l'appli (50 modèles, 500 questions,
+  600 s par question, un modèle une seule fois), et chaque modèle est cherché en base : il doit
+  exister, être **publié** (un brouillon est invisible aux élèves) et être **du niveau** de la série.
+  Un seul refus, et rien n'est écrit.
+- **`--publier`** : la série est enregistrée au nom de l'unique professeur, et son `id` est écrit
+  en tête du fichier : **commiter le fichier**.
+- **Fichier qui porte un `id`** : jamais recréé ; `--publier --mettre-a-jour` remplace le titre,
+  le niveau, la description et les modèles. Une série verrouillée (un élève l'a commencée) est
+  refusée par la base, et le script le dit.
+
+## 9. Pièges
+
+- **Un point par modèle** (ADR 0020) ; deux points → deux modèles.
+  une case dans un tableau s'écrit `$?$`.
+- **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** : passer par une variable.
+- Jamais de variable `e` (Euler) ; lettres parlantes, jamais P / E / V.
+- Prénoms écrits dans le texte ; montants en `$n~\unit{€}$`, jamais « : » juste après un montant
+  ([notation-unites.md](notation-unites.md)).
+- **Niveaux numérotés dès l'écriture** (pas de migration de niveaux après coup) :
+  `--mettre-a-jour` ne change pas le niveau ; corriger après coup = migration + fichiers (CE1
+  lot 1, 2026-10-27). Un modèle créé sans thème ni domaine (depuis le 2026-11-04) n'entre plus
+  dans l'index d'unicité de l'ancienne catégorie (`idx_question_templates_unique_category`,
+  retiré au lot 4b d'`automaths-arbre`) ; seuls les anciens modèles y restent soumis.
+- Modèle tagué d'un point d'un autre niveau (1TECHNO, 1GEN compris) : `grades` porte les **deux** niveaux (`['2', '1_SPE']`), le
+  cahier de texte filtrant `grades` par égalité exacte.
+- **Réponses refusées en `bad_form` sans erreur de l'élève** (1re spé) : décimal sans
+  `blankDefaults.acceptDecimal` (qui ne vaut que pour un nombre seul : `1 + 0,5h` → `form: off`) ;
+  intervalle sans `answerKind: intervalles` ; forme non normalisée (`u₁ + (n − 1)r`, `(n² + n)/2`) →
+  `requiredForm: {pattern: 'u'}`. Une spec `incorrect` à réponse décimale échoue aussi sans
+  `acceptDecimal`. Une spec `unoptimal_form` nomme sa contrainte (`constraintViolations: ['signs']`).
+- **Noms de variables** : ni `e` (Euler : `checkTemplate` la refuse depuis le 2026-11-16) ni `i`
+  (imaginaire, « Complex numbers not supported »).
+  `eval:` ne connaît ni `==` ni `>` → indicatrices `min(max(x-s,0),1)`, `1-min(abs(r-k),1)` ; dans une
+  variable, `eval:…` sans accolades et `{{if:}}` sur un seul niveau.
+- **Rendu** : `cleanCoefficients` lit `\sigma(X)` comme σ·(X) (« σX ») → option retirée ; `-E(X)^2` →
+  `{E(X)}^2` ; tableau de variations à borne ouverte : `domain: ]0, [a, [+inf[` (le parseur ne coupe
+  qu'avant un crochet). Les choix sont mélangés à l'affichage : le corrigé nomme la bonne réponse,
+  jamais son rang.
+- **Rendu, suite** (Tle spé) : `cleanCoefficients` ne nettoie que les formules que le moteur sait
+  analyser (`(E) : y′ = …`, `x ↦ …` gardent « +-2x », « 1x³ ») → signes écrits par le gabarit
+  (`coef()`, `terme()` de `docs/wip/questions/lot-tspe-integrales-primitives.py`) ; il réécrit
+  `P_{A}(B)` en « P_A B » et `(E)` en « E » → phrase sans formule. `!=` dans `$…$` est lu « ≠ »
+  (`3!=6` → « 3 ≠ 6 ») : écrire `3!\,=6`. Couleur toujours dans `$…$`. `|x|` dans un `{{if:}}`
+  coupe la condition → `\lvert x\rvert`. `{{eval:…}}` peut rendre `\dfrac{1}{2}`, illisible dans un
+  ` ```courbe ` ; `round(…, 1)` est refusé par `eval`. `$i$` nu est rendu `\imaginaryI`. Sur le cercle
+  ` ```trig `, `{{p}}*pi/6` s'affiche sans simplification (précalculer la fraction). Étiquette de
+  ` ```probtree ` : `G_1` s'écrit tel quel (indicé à l'écran et dans le PDF depuis le 2026-11-05) ;
+  `\mathrm{G}_1` reste juste.
+- **`sonde-courbes` ne voit pas les courbes d'une case choix** : les relire dans l'aperçu.
+- **Pièges vus au CM1** (2026-10-27 au 2026-11-19) : ` ```tableau-croise ` affiche ses totaux par défaut →
+  `totaux: non` dès que le total donne la réponse ; une case à « 04 » (minutes) est jugée « forme non optimale » par
+  la règle `zeros` → `constraints.zeros: off` ; une plage négative (`-12..12`) ne se tire pas → tirer `x0`, puis
+  `eval:x0-12` ; dans un ` ```figure `, `{{eval:a/2}}` sort `\dfrac{27}{5}`, refusé par le moteur → `{{eval:a/2;d}}`
+  (`evd` de `lot-cm1-5d.py`) ; une `validationRules` custom à `{{if:}}` imbriqué juge fausse la bonne réponse → la
+  retirer ; deux figures côte à côte donnent des carreaux de 13 px à 390 px → les empiler.
+- **Pièges vus au CE1** (2026-10-26 au 2026-11-20) : un `{{if:}}` dont la condition contient un `{{eval:}}` (ou
+  un `||`) n'est pas résolu et les specs restent vertes → relire les blocs rendus (`--apercu`) ; une case
+  d'opération posée n'a pas d'`expectedAnswer` (le bloc la calcule) ; un point nommé `e` casse une figure sans que
+  simulation ni specs ne le voient → noms `abcdfghj` ; un corrigé ne nomme jamais un point invisible à l'écran ; la
+  droite de l'équerre `droite(A ; A + AB tourné d'un quart de tour)` s'oriente d'après $[AB]$ (avec $B$ à gauche de
+  $A$, elle part vers le bas) ; un modèle publié d'avant le chantier resté sans tag se retrouve au recompte de
+  clôture → trancher les « non tagués » du relevé dès la phase 0.
+- **Pièges vus au CM2** (2026-10-27 au 2026-11-20) : les réponses des specs dès 4 chiffres s'écrivent avec espaces
+  (`1\,000`, `\frac{207}{1\,000}`), sinon `unoptimal_form` ; une droite **à placer** passe la réponse au juge de forme
+  sans espaces → `spaces: off` dès 5 chiffres ; un énoncé sans `?` → « Blank count mismatch » ; un quotient décimal
+  s'écrit `{{eval:n/4;d}}` (sinon `bad_form`) ; nombres décimaux tirés en entiers (millièmes) puis affichés par
+  `;d`, pas de flottants ; en case « choix » `plusieurs: oui`, un bon choix oublié vaut ½ point (`unoptimal_form`) ;
+  une spec qui recalcule la donnée par la formule du modèle ne la vérifie pas (bug de parenthèses de `posee()` passé
+  vert) → contrôler l'invariant sur des milliers de tirages ; la page à cocher ne dessine ni ` ```patron ` ni les
+  figures d'un choix → les relire dans l'aperçu.
+- **Pièges vus au CE2** (2026-10-27 au 2026-11-19) : la page à cocher n'affiche pas l'italique `_…_` (l'appli oui) ;
+  la sonde ne passe pas les figures d'un choix → les relire dans l'aperçu ; `{{if}}` autour d'un bloc `choix` est
+  refusé (« bloc non fermé ») → faire varier le contenu d'une figure, jamais le bloc ; un dessin dans un choix est
+  rapetissé (le code de l'angle droit y disparaît) → une seule figure aux objets numérotés ; `sonde-figures` exige
+  une fenêtre de rapport hauteur / largeur ≥ 1/4 (règle graduée : hauteur 3,6) ; coordonnées calculées en
+  flottants → toujours arrondies (`0.20000000000000018` a fait dépasser la limite de longueur des réponses du
+  corpus) ; contour `gris` invisible sur fond sombre.
+- **Modèle commun à deux niveaux qu'un autre chantier couvre** (CM1 + CM2) : `grades` des deux niveaux, tag des deux
+  points, et prévenir la session de l'autre niveau (message, plus une ligne dans son journal) pour qu'elle retire
+  ces points de ses lots.
+- **Tag : le point doit être sur le nœud du modèle OU sur sa notion** (`question_template_points_check_rules`) :
+  une migration de tags écrite sans cette règle a vu 8 tags sur 13 refusés (Tle spé, Q3). Relever les
+  nœuds avec `archived_at is null`. Modèle rangé sur une notion : la garde « notion sans
+  sous-notion » liste les sous-notions admises (`sous_notions_admises`, migration
+  `20261102181059`).
+- **Niveau qui chevauche** (`T_SPE` + `T_COMP`, 81 modèles) : tirer contre les **deux** bornes.
+- Migration de données : la garde de doc veut `Doc-inchangée: migration de données, aucun code
+couvert` dans un **commit** de la PR, pas dans son corps.
+- **Droite à tracer** (` ```courbe tracer:`) : attendue en **forme réduite** (`(s)*x+(p)`), car le message
+  d'erreur et le corrigé l'affichent telle quelle (`s*(x-a)+b` → « y = 2 + (1 − x)/2 », « y = 1, soit y = 1 ») ;
+  une tangente à tracer : **jamais** la clé `tangente:` dans l'énoncé (elle dessinerait la réponse), la courbe
+  `f(x) = …` peut, elle, partager le bloc avec `tracer:` (1SPE-271).
+- **Points jumeaux** (1SPE / 1GEN / 1TECHNO, même libellé, même nœud) : au relevé, chercher les
+  points du même `node_id` et du même `name` dans les autres programmes, et trancher en phase 0 quels
+  tags poser (un par programme, ADR 0020). 1SPE-433 : phase 0 « seul », puis les trois (#2279).
+- Garde « déjà tagué » d'une migration de rangement : un trigger interdit un tag sur un modèle sans
+  nœud (« il ne peut pas perdre son rangement »), donc l'état « tagué sans nœud » ne se fabrique pas ;
+  un modèle tagué à la main est arrêté par la garde « déjà rangé » (test de #2279).
+- Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`#lib` introuvable).
+- **Réponse attendue trop imbriquée** : la liste blanche des réponses (`student-answer-safety.render.test.ts`,
+  CI) passe chaque `expectedAnswer` du dépôt et plafonne la profondeur des accolades (12) : un `{{if:}}`
+  imbriqué sur plus de ~6 cas la dépasse. Calculer la réponse par `eval` (`floor`, indicatrices) et garder les
+  `selon` longs pour l'énoncé et le corrigé (2de lot 9 C, #2321).
+- **`placer:` et fraction négative** : le geste écrit `-5/3`, que la contrainte de forme refuse (`bad_form`) ;
+  une droite à placer avec des fractions négatives prend `constraints.form: off` (2de lot 9 C).
+- Brouillons déjà en base : `export-question-templates.ts --dir … --ids …` (un id par fichier) ; les
+  anciens dossiers `scripts/questions/` ne concordent plus forcément avec la base.
+- Migration qui change l'arbre ou les points : `LATER` + copies figées dans le test.
+- `gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le **run**.
+- Écriture en prod (`create-questions --publier`, publication) : **David** la lance (`!`), je
+  vérifie ensuite en base.
+- Cas réels des élèves d'abord : pas de chasse aux cas exotiques.

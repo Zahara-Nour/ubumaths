@@ -11,14 +11,14 @@ import { parseLatex } from '../../parser';
 import { inferType, clearAllTypeCache } from '../infer';
 import { getBoundsType, isInRangeType } from '../predicates';
 import type { TypeContext } from '../types';
-import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
+import type { IntervalDomain, EndpointType } from '#lib/math/intervals/types.ts';
 import {
 	intervalSet,
 	interval,
 	endpointToNumber,
 	isPositiveInfinityEndpoint,
 	isNegativeInfinityEndpoint
-} from '$lib/math/intervals';
+} from '#lib/math/intervals/index.ts';
 import { infinity } from '../../factory';
 import { numericNode } from '../../common/numeric';
 

@@ -1,0 +1,68 @@
+[
+	{
+		"id": "0a470416-e296-4f2b-b11d-dee7150ebc7a",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > blocs personnalisés",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-050"]
+	},
+	{
+		"id": "1bd7378d-e2e3-4c28-af26-16fa904e58dd",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Indicateurs > boîte à moustaches",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-062"]
+	},
+	{
+		"id": "4ce8eb3c-e00a-4a26-adf7-d4f215b8cc3b",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Boucles > boucle non bornée",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-049"]
+	},
+	{
+		"id": "962da675-6cde-45c9-9ba4-56d96a2be9c6",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > variables et affectation",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-047"]
+	},
+	{
+		"id": "9a9026fc-8baf-4d1f-b1ff-0d6758de63fe",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Indicateurs > boîte à moustaches",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-030"]
+	},
+	{
+		"id": "9f9bddbd-19cc-43cc-90b9-e67c9058468d",
+		"noeudAvant": null,
+		"noeudApres": "Algorithmique > Variables et instructions > instructions conditionnelles",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-048"]
+	}
+]

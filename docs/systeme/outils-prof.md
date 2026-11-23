@@ -112,27 +112,28 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
 
 ### Carte du code
 
-| Fichier                                          | Rôle                                                                                          |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…             |
-| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions                                  |
-| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                        |
-| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                               |
-| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                           |
-| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                        |
-| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                |
-| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`) |
-| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                            |
+| Fichier                                          | Rôle                                                                                                                                          |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…                                                             |
+| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions ; `holdOnExpire` : à la fin du compte d'une diapositive, pause au lieu d'avancer |
+| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                                                                        |
+| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                                                                               |
+| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                                                                           |
+| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                                                                        |
+| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                                                                |
+| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`)                                                 |
+| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                                                                            |
 
 ### Consommateurs (seuls points d'entrée)
 
 - `src/lib/components/notebook/presentation/NotebookPresentation.svelte` — mode présentation
   du notebook Python (`/python-notebook/[id]/present`) : `Deck`, `Slide`, `UbuMarkSlide`.
 - `src/lib/components/test/ClassroomSeries.svelte` — série de questions projetée en classe,
-  montée par `QuestionPreviewTabs.svelte` et `/automaths/test`.
+  montée par `QuestionPreviewTabs.svelte` et `/automaths/test` ; se sert de `holdOnExpire` pour
+  « Pause à la fin du temps » (cf. `docs/systeme/evaluations.md`).
 - `/dev/diaporama` (`src/routes/(protected)/dev/diaporama/`, admin seul, ex-`/slides/demo`,
   `/slides/demo-embedded` et `/slides/test-transitions`) — `DemoDeck.svelte` démontre tout le
-  moteur (transitions, fragments, arrière-plans, code, UbuMark, QCM en `FlashCard`, annotation,
+  moteur (transitions, fragments, arrière-plans, code, UbuMark, case choix en `FlashCard`, annotation,
   tableau blanc), affiché en plein écran (conteneur fixe) ou dans un cadre de 4 tailles
   (`fullscreen: false`, `minScale: 0.5`) ; `TransitionsDeck.svelte`, une diapositive par
   transition. Pas de `+layout@` : il sauterait le `+layout.server.ts` de `/dev`, donc la garde en
@@ -383,12 +384,10 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
    Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test
    `src/lib/whiteboard/__tests__/panneau-sans-google.svelte.test.ts`). Un tableau partagé en direct
    pour les élèves (chat, visio) serait une autre fonctionnalité, à penser avec le projet visio.
-4. **Google** : `class_google_classroom_links` n'est lue nulle part dans `src/` et compte 0
-   ligne en prod (mesuré le 2026-10-13) ; la supprimer serait une migration destructive, à
-   décider par David. Le drapeau, lui, est testé par toutes les routes `/api/google/**` (B8,
+4. **Google** : `class_google_classroom_links` (lue nulle part, 0 ligne) est supprimée (M11,
+   2026-11-03, décision de David). Le drapeau, lui, est testé par toutes les routes `/api/google/**` (B8,
    `src/routes/api/google/__tests__/interrupteur-google.test.ts` : 403 pour chaque méthode, sauf
    `auth/disconnect` et `auth/status`).
-5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
-6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
+5. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
    n'est montée que par la démo `/dev/diaporama` (remise en place le 2026-10-11) ;
    la brancher dans les carnets ou les séries en classe serait un choix de produit.

@@ -717,9 +717,9 @@ export class LatexGenerator {
 
 			case 'superscript':
 				// Base à parenthéser (somme, opposé, quotient, grandeur) : voir generateSuperscript
-				if (needsParenthesesAsPowerBase(node.base)) this.emit('\\left( ', node.metadata);
+				if (wrapsAsLatexPowerBase(node.base)) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.base);
-				if (needsParenthesesAsPowerBase(node.base)) this.emit(' \\right)', node.metadata);
+				if (wrapsAsLatexPowerBase(node.base)) this.emit(' \\right)', node.metadata);
 				this.emit('^', node.metadata);
 				this.emit('{', node.metadata);
 				this.visitWithSpans(node.superscript);
@@ -1742,7 +1742,8 @@ export class LatexGenerator {
 		// Une grandeur aussi : `3~\unit{m^2}^2` empilerait deux exposants.
 		// Un opposé ou un quotient aussi : `-2^x` se relit −(2^x), pas (−2)^x
 		// (voir common/sign-parentheses.ts)
-		const wrappedBase = needsParenthesesAsPowerBase(node.base) ? `\\left( ${base} \\right)` : base;
+		// Un logarithme aussi : `\\ln\\left( 5 \\right)^2` se lit ln(5²) (V39)
+		const wrappedBase = wrapsAsLatexPowerBase(node.base) ? `\\left( ${base} \\right)` : base;
 
 		return `${wrappedBase}^${wrappedSuperscript}`;
 	}
@@ -1984,6 +1985,24 @@ export function juxtaposesDigits(node: MultiplicationNode): boolean {
 		((endsWithNumber(node.left) || endsWithFunctionCall(node.left) || limitWrapped) &&
 			startsWithNumber(node.right)) ||
 		startsWithNumericPower(node.right)
+	);
+}
+
+/**
+ * La base d'une puissance à parenthéser en LaTeX : celles de `needsParenthesesAsPowerBase`, plus
+ * un logarithme (écart V39). `\\ln\\left( 5 \\right)^2` vaut (ln 5)² mais se lit ln(5²) ; on écrit
+ * `\\left( \\ln\\left( 5 \\right) \\right)^2`. Propre au LaTeX : l'écriture de la console
+ * (`custom-generator`) ne change pas. Les autres fonctions (`\\sin\\left( x \\right)^2`) restent
+ * telles quelles : `\\sin^2 x` ou `\\left( \\sin x \\right)^2`, choix non tranché.
+ */
+function wrapsAsLatexPowerBase(base: MathNode): boolean {
+	if (needsParenthesesAsPowerBase(base)) return true;
+	return (
+		base.type === 'function' &&
+		(base.name === 'ln' || base.name === 'log') &&
+		!base.power &&
+		!base.derivativeOrder &&
+		!base.isInverse
 	);
 }
 

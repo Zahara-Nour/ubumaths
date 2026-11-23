@@ -1,8 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { redirect, error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
-import { listWorksheetStyles } from '$lib/server/worksheets/worksheet-styles';
+import { fetchWorksheetCitations } from '#lib/server/worksheets/citations.ts';
+import { listWorksheetStyles } from '#lib/server/worksheets/worksheet-styles.ts';
+import { loadActiveNodes } from '#lib/server/classification-nodes.ts';
 
 // UUID validation schema
 const uuidSchema = z.string().uuid();
@@ -43,7 +44,11 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	// Les styles de l'AUTEUR de la fiche : l'admin qui ouvre la fiche du prof
 	// voit le style qu'elle porte, comme le PDF.
-	const styles = await listWorksheetStyles(locals.supabase, data.worksheet.created_by);
+	const [styles, nodes] = await Promise.all([
+		listWorksheetStyles(locals.supabase, data.worksheet.created_by),
+		// L'arbre des notions, pour les notions de la fiche (ADR 0041)
+		loadActiveNodes(locals.supabase)
+	]);
 
 	return {
 		worksheet: data.worksheet,
@@ -56,6 +61,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		citations,
 		// Le menu « Style » : ceux de Chiphre, puis ceux du prof (lot 3b)
 		styles,
+		nodes,
 		user
 	};
 };

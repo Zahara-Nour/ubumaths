@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import QuestionPreviewBaseCard from '$lib/components/questions/QuestionPreviewBaseCard.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { resolvedMarkdown } from '$lib/ubumark';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import QuestionPreviewBaseCard from '#lib/components/questions/QuestionPreviewBaseCard.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 	// ============================================================================
 	// SAMPLE DATA
@@ -49,9 +49,6 @@
 			}
 		},
 		grades: ['4', '3', '2'],
-		theme: 'Algèbre',
-		domain: 'Équations',
-		subdomain: 'Quadratiques',
 		level: 3,
 		delay: 120,
 		precision: { type: 'none' },
@@ -62,20 +59,23 @@
 
 	const sampleQCMInstance: DebugInstance = {
 		templateId: 'qcm-001-abc-def',
-		type: 'multiple_choice',
+		type: 'fill_in_blanks',
 		title: 'Identifier les nombres premiers',
-		statement: resolvedMarkdown('Parmi les nombres suivants, lesquels sont premiers ?'),
-		solution: ['1', '3'], // Indices of correct choices
-		shuffledChoices: [
-			{ content: resolvedMarkdown('$$15$$'), originalIndex: 0 },
-			{ content: resolvedMarkdown('$$17$$'), originalIndex: 1 },
-			{ content: resolvedMarkdown('$$21$$'), originalIndex: 2 },
-			{ content: resolvedMarkdown('$$23$$'), originalIndex: 3 }
+		statement: resolvedMarkdown(
+			'Parmi les nombres suivants, lesquels sont premiers ?\n\n```choix\ncase: 0\nplusieurs: oui\n- $$15$$\n- $$17$$\n- $$21$$\n- $$23$$\n```'
+		),
+		blanks: [
+			{
+				expectedAnswer: '1;3',
+				type: 'choice',
+				choice: {
+					choices: ['$$15$$', '$$17$$', '$$21$$', '$$23$$'],
+					order: [0, 1, 2, 3],
+					multiple: true
+				}
+			}
 		],
-		multipleAnswers: true,
 		grades: ['6', '5'],
-		theme: 'Arithmétique',
-		domain: 'Nombres premiers',
 		level: 2,
 		generatedAt: new Date().toISOString(),
 		seed: 123,
@@ -95,9 +95,6 @@
 		solution: '3x^2 - 3x - 8',
 		resolvedVariables: [],
 		grades: ['4', '3'],
-		theme: 'Algèbre',
-		domain: 'Calcul littéral',
-		subdomain: 'Développement',
 		level: 4,
 		generatedAt: new Date().toISOString(),
 		seed: 789
@@ -198,7 +195,7 @@
 
 		<!-- Example 2: QCM with Multiple Answers -->
 		<div class="space-y-2">
-			<h2 class="text-xl font-semibold">Exemple 2: QCM avec réponses multiples</h2>
+			<h2 class="text-xl font-semibold">Exemple 2: case choix à plusieurs réponses</h2>
 			<QuestionPreviewBaseCard
 				instance={sampleQCMInstance}
 				{showMetadata}

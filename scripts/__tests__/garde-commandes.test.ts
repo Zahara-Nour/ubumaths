@@ -74,6 +74,32 @@ describe('garde-commandes — refusé, avec la raison', () => {
 		refuse('npx supabase status', /pnpm exec supabase/);
 	});
 
+	it('la pile de dev démarrée, arrêtée ou reconstruite sans passer par pnpm db:*', () => {
+		// Lancée ainsi dans le dépôt principal, la CLI impose les versions de la prod (supabase/.temp).
+		refuse('pnpm exec supabase start', /pnpm db:start/);
+		refuse('pnpm exec supabase start -x studio', /pnpm db:start/);
+		refuse('pnpm exec supabase stop', /pnpm db:stop/);
+		refuse('pnpm exec supabase db reset', /pnpm db:reset/);
+		refuse('pnpm exec supabase db reset --debug', /pnpm db:reset/);
+		// Les mêmes, écrites autrement.
+		refuse('pnpm exec supabase --debug start', /pnpm db:start/);
+		refuse('pnpm supabase start', /pnpm db:start/);
+		refuse('pnpm exec -- supabase stop', /pnpm db:stop/);
+		refuse('node_modules/.bin/supabase start', /pnpm db:start/);
+		refuse('./node_modules/.bin/supabase db reset', /pnpm db:reset/);
+		refuse('pnpm --filter x exec supabase start', /pnpm db:start/);
+		// `--workdir` vers le dépôt lui-même : c'est toujours la pile de dev.
+		refuse('pnpm exec supabase start --workdir .', /pnpm db:start/);
+		refuse('pnpm exec supabase --workdir=supabase/ stop', /pnpm db:stop/);
+	});
+
+	it('db reset --linked : la prod, avec un message qui ne renvoie pas vers pnpm db:reset', () => {
+		const r = hook('pnpm exec supabase db reset --linked');
+		expect(r.status).toBe(2);
+		expect(r.stderr).toMatch(/PROD/);
+		expect(r.stderr).not.toMatch(/pnpm db:reset/);
+	});
+
 	it('push sans les hooks, release seule, git -C vide', () => {
 		refuse('git push --no-verify origin main', /--no-verify/);
 		refuse('pnpm release', /deploy:prod/);
@@ -126,6 +152,33 @@ describe('garde-commandes — git : enchaînements et options qui perdent du tra
 	});
 });
 
+describe('garde-commandes — merger par l’API : jamais, `gh pr merge` est la voie gardée', () => {
+	// `gh api …/merge` merge comme `gh pr merge`, mais le hook ne le voyait pas :
+	// il passait pendant un deploy:prod (diagnostic du 2026-11-01).
+	it('les formes qui mergent sont refusées', () => {
+		refuse('gh api -X PUT repos/{owner}/{repo}/pulls/12/merge', /gh pr merge/);
+		refuse('gh api --method=PUT "repos/o/r/pulls/12/merge" -f merge_method=merge', /gh pr merge/);
+		refuse('gh api repos/o/r/pulls/12/merge -f merge_method=merge', /gh pr merge/);
+		refuse('gh api repos/o/r/merges -f base=main -f head=feat/x', /gh pr merge/);
+		refuse('gh api repos/o/r/pulls/5/merge -fmerge_method=merge', /gh pr merge/);
+		refuse('gh api repos/o/r/pulls/5/merge -Fmerge_method=merge', /gh pr merge/);
+		refuse(
+			`gh api graphql -f query='mutation { mergePullRequest(input: {pullRequestId: "x"}) { clientMutationId } }'`,
+			/gh pr merge/
+		);
+		refuse('cd /tmp && gh api -X PUT /repos/o/r/pulls/12/merge', /gh pr merge/);
+	});
+
+	it('les lectures passent', () => {
+		passe('gh api repos/o/r/pulls/12/merge'); // GET : la PR est-elle mergée ?
+		passe('gh api repos/o/r/pulls/12 --jq .merged');
+		passe('gh api -X get repos/o/r/pulls/12/merge');
+		passe('gh api "repos/Zahara-Nour/ubumaths/activity?ref=refs/heads/main"');
+		passe(`gh api graphql -f query='{ repository(owner: "o", name: "r") { mergeCommitAllowed } }'`);
+		passe('git commit -m "refuser gh api -X PUT …/pulls/12/merge" -- docs/x.md');
+	});
+});
+
 describe('garde-commandes — la mise en prod passe (décision de David, 2026-10-10)', () => {
 	it('pnpm deploy:prod et son essai passent sans demande', () => {
 		passe('pnpm deploy:prod');
@@ -173,6 +226,15 @@ describe('garde-commandes — le reste passe sans bruit', () => {
 		passe('pnpm dev --port 5177 --strictPort');
 		passe('pnpm kill:servers');
 		passe('pnpm exec supabase migration list');
+		passe('pnpm exec supabase status');
+		passe('pnpm exec supabase db dump --local -f x.sql');
+		passe('pnpm exec supabase --workdir /tmp/copie start'); // copie isolée de la pile
+		passe('pnpm exec supabase --workdir /tmp/copie db start');
+		passe('pnpm exec supabase migration list --local');
+		passe('pnpm exec supabase db push --dry-run');
+		passe('pnpm exec supabase services');
+		passe('pnpm db:start');
+		passe('pnpm db:reset');
 		passe('pnpm db:migrate');
 		passe('git push origin main');
 		passe('git -C /tmp/x status');

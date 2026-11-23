@@ -81,9 +81,6 @@
 			}
 		},
 		"grades": ["5"],
-		"theme": "Relatifs",
-		"domain": "Additionner et soustraire",
-		"subdomain": "Sur la droite graduée",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

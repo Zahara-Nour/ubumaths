@@ -3,16 +3,16 @@
  * POST - Bulk resolve error reports based on filters
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	getErrorOccurrences,
 	resolveErrorBySignature,
 	type ErrorFilters
-} from '$lib/server/errorMonitoring';
-import { bulkResolveErrorsSchema } from '$lib/server/validation/errors';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/errorMonitoring.ts';
+import { bulkResolveErrorsSchema } from '#lib/server/validation/errors.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/errors/bulk-resolve/+server');
 
@@ -41,7 +41,8 @@ const logger = createServerLogger('api/errors/bulk-resolve/+server');
  * }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	try {
 		// SECURITY: Validate request body with Zod schema
@@ -66,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		};
 
 		// Fetch all error occurrences matching the filters
-		const occurrencesResult = await getErrorOccurrences(locals.supabase, filters);
+		const occurrencesResult = await getErrorOccurrences(supabase, filters);
 
 		if (!occurrencesResult.success) {
 			throw error(500, occurrencesResult.error || 'Failed to fetch error occurrences');
@@ -76,7 +77,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// If no occurrences match, return early with zero counts
 		if (occurrences.length === 0) {
-			return json({
+			return Response.json({
 				success: true,
 				resolved_count: 0,
 				affected_occurrences: 0
@@ -89,9 +90,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		for (const occurrence of occurrences) {
 			const resolveResult = await resolveErrorBySignature(
-				locals.supabase,
+				supabase,
 				occurrence.error_signature,
-				user.id,
+				adminUserId,
 				notes
 			);
 
@@ -107,7 +108,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			resolved_count: totalResolvedCount,
 			affected_occurrences: affectedOccurrences

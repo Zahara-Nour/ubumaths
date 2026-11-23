@@ -1,0 +1,602 @@
+{
+	"id": "0a155341-edd0-4255-97c7-b1b2e7e676af",
+	"title": "Reconnaître le patron d'un pavé",
+	"description": "Se plie-t-il en pavé ? (11 patrons, 8 faux) ; le patron d'un pavé coté parmi trois ; combien de faces de ces mesures ? ; la face opposée",
+	"grades": ["CM2"],
+	"level": 7,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On découpe cet assemblage de $6$ rectangles et on le plie le long des traits. Obtient-on un pavé ?\n\n```patron\nsolide: pave {{if:d==1|4 2 3|{{if:d==2|5 3 2|{{if:d==3|5 2 4|{{if:d==4|4 3 2|3 2 5}}}}}}}}\nforme: {{if:v==1|{{k}}|faux {{j}}}}\ntourner: {{eval:90*t}}\nretourner: {{if:r==1|oui|non}}\n```\n\n```choix\nmelanger: non\n- Oui, il se plie en pavé.\n- Non, il ne se plie pas en pavé.\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "v",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "j",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On imagine une face posée au sol, puis on relève les autres autour d'elle.",
+					"{{if:v==1|Chaque rectangle vient sur une face différente, sans trou ni face en double : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, c'est un patron de pavé.|Deux rectangles arrivent au même endroit, et il reste un trou : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, ce n'est pas un patron de pavé.}}"
+				]
+			}
+		},
+		{
+			"statement": "Voici un pavé.\n\n```solide\nforme: pave {{if:d==1|4 2 3|{{if:d==2|5 3 2|{{if:d==3|5 2 4|{{if:d==4|4 3 2|3 2 5}}}}}}}}\ncotes: cm\n```\n\nLequel de ces assemblages est un patron de ce pavé ?\n\n````choix\n- ```patron\n  solide: pave {{if:d==1|4 2 3|{{if:d==2|5 3 2|{{if:d==3|5 2 4|{{if:d==4|4 3 2|3 2 5}}}}}}}}\n  forme: {{k}}\n  ```\n- ```patron\n  solide: pave {{if:d==1|4 2 5|{{if:d==2|5 3 4|{{if:d==3|3 2 4|{{if:d==4|4 3 4|3 4 5}}}}}}}}\n  forme: {{a}}\n  ```\n- ```patron\n  solide: pave {{if:d==1|4 2 3|{{if:d==2|5 3 2|{{if:d==3|5 2 4|{{if:d==4|4 3 2|3 2 5}}}}}}}}\n  forme: faux {{j}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "j",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un patron de ce pavé a $6$ faces, deux à deux identiques, $\\textcolor{{{color:primary.0}}}{\\text{de la forme des faces}}$ du pavé : un rectangle long et fin reste long et fin sur le patron.",
+					"Un des assemblages a des faces d'une autre forme : c'est le patron d'un autre pavé ; un autre ne se plie pas : deux faces arriveraient au même endroit. Il reste $\\textcolor{{{color:primary.0}}}{\\text{le patron du pavé}}$."
+				]
+			}
+		},
+		{
+			"statement": "Cet assemblage se plie en pavé.\n\n```patron\nsolide: pave {{if:q==1|3 3 5|{{if:q==2|2 2 4|{{if:q==3|4 4 2|{{if:q==4|5 5 3|{{if:q==5|3 3 5|{{if:q==6|4 2 3|{{if:q==7|5 3 2|4 4 2}}}}}}}}}}}}}}\nforme: {{k}}\ncotes: cm\ntourner: {{eval:90*t}}\n```\n\nCombien de faces de ce pavé mesurent {{if:q==1|$3$ cm sur $5$ cm|{{if:q==2|$2$ cm sur $4$ cm|{{if:q==3|$4$ cm sur $2$ cm|{{if:q==4|$5$ cm sur $3$ cm|{{if:q==5|$3$ cm sur $3$ cm|{{if:q==6|$4$ cm sur $3$ cm|{{if:q==7|$3$ cm sur $2$ cm|$4$ cm sur $4$ cm}}}}}}}}}}}}}} ? $?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:2+2*floor((8-q)/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un pavé a $6$ faces rectangulaires, $\\textcolor{{{color:primary.0}}}{\\text{deux à deux identiques}}$ : le dessus et le dessous, le devant et le derrière, la gauche et la droite.",
+					"{{if:n==4|Ici, deux mesures du pavé sont égales : quatre faces ont la même forme. On en compte $\\textcolor{{{color:primary.0}}}{4}$.|On repère les faces de ces mesures sur le patron : il y en a $\\textcolor{{{color:primary.0}}}{2}$, l'une en face de l'autre une fois le pavé fermé.}}"
+				]
+			}
+		},
+		{
+			"statement": "On plie ce patron pour fabriquer un pavé. Touche la face qui sera **en face** de la face grise, une fois le pavé fermé.\n\n```patron\nsolide: pave {{if:d==1|4 2 3|{{if:d==2|5 3 2|{{if:d==3|5 2 4|{{if:d==4|4 3 2|3 2 5}}}}}}}}\nforme: {{k}}\nmarquer: face {{m}}\ndesigner: opposee\ntourner: {{eval:90*t}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..11"
+				},
+				{
+					"name": "m",
+					"expression": "1..6"
+				},
+				{
+					"name": "t",
+					"expression": "0..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fois le pavé fermé, la face opposée à la face grise ne la touche pas, même par un coin.",
+					"Elle a $\\textcolor{{{color:primary.0}}}{\\text{la même forme et les mêmes mesures}}$ que la face grise."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Vrai patron : oui",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1",
+				"v": "1",
+				"k": "1",
+				"j": "1",
+				"t": "0",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Patron 11 tourné, retourné : oui",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"v": "1",
+				"k": "11",
+				"j": "2",
+				"t": "1",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Faux patron : non",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"v": "0",
+				"k": "3",
+				"j": "4",
+				"t": "2",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : faux patron pris pour un patron",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"v": "0",
+				"k": "3",
+				"j": "4",
+				"t": "2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : patron tourné refusé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"v": "1",
+				"k": "8",
+				"j": "1",
+				"t": "3",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le patron du pavé",
+			"variationIndex": 1,
+			"variables": {
+				"d": "1",
+				"k": "2",
+				"a": "5",
+				"j": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le patron d'un autre pavé",
+			"variationIndex": 1,
+			"variables": {
+				"d": "1",
+				"k": "2",
+				"a": "5",
+				"j": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le faux patron",
+			"variationIndex": 1,
+			"variables": {
+				"d": "5",
+				"k": "9",
+				"a": "1",
+				"j": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faces 3 sur 5 : 4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1",
+				"k": "7",
+				"t": "0",
+				"n": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 au lieu de 4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1",
+				"k": "7",
+				"t": "0",
+				"n": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faces 4 sur 2 : 4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3",
+				"k": "7",
+				"t": "0",
+				"n": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 au lieu de 4",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3",
+				"k": "7",
+				"t": "0",
+				"n": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faces 3 sur 3 : 2",
+			"variationIndex": 2,
+			"variables": {
+				"q": "5",
+				"k": "7",
+				"t": "0",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 au lieu de 2",
+			"variationIndex": 2,
+			"variables": {
+				"q": "5",
+				"k": "7",
+				"t": "0",
+				"n": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Faces 4 sur 3 : 2",
+			"variationIndex": 2,
+			"variables": {
+				"q": "6",
+				"k": "7",
+				"t": "0",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 au lieu de 2",
+			"variationIndex": 2,
+			"variables": {
+				"q": "6",
+				"k": "7",
+				"t": "0",
+				"n": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule face comptée",
+			"variationIndex": 2,
+			"variables": {
+				"q": "6",
+				"k": "7",
+				"t": "0",
+				"n": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé 4 2 3, patron 1, face 2 : la face 4",
+			"variationIndex": 3,
+			"variables": {
+				"d": "1",
+				"k": "1",
+				"m": "2",
+				"t": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 3,
+			"variables": {
+				"d": "1",
+				"k": "1",
+				"m": "2",
+				"t": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une autre face (1)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "1",
+				"k": "1",
+				"m": "2",
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé 5 3 2, patron 7, face 1 : la face 4",
+			"variationIndex": 3,
+			"variables": {
+				"d": "2",
+				"k": "7",
+				"m": "1",
+				"t": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 3,
+			"variables": {
+				"d": "2",
+				"k": "7",
+				"m": "1",
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une autre face (2)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "2",
+				"k": "7",
+				"m": "1",
+				"t": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé 5 2 4, patron 11, face 4 : la face 6",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"k": "11",
+				"m": "4",
+				"t": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"k": "11",
+				"m": "4",
+				"t": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une autre face (1)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"k": "11",
+				"m": "4",
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé 4 3 2, patron 4, face 6 : la face 1",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"k": "4",
+				"m": "6",
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"k": "4",
+				"m": "6",
+				"t": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une autre face (2)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "4",
+				"k": "4",
+				"m": "6",
+				"t": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé 3 2 5, patron 9, face 3 : la face 5",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"k": "9",
+				"m": "3",
+				"t": "0"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la face grise elle-même",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"k": "9",
+				"m": "3",
+				"t": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une autre face (1)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "5",
+				"k": "9",
+				"m": "3",
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

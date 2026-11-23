@@ -19,6 +19,9 @@
  * - `ln(eᵃ)` → `a` ;
  * - `e^{ln a}` → `a` (même convention que `exp(ln a)` dans `normalize` : le
  *   domaine a > 0 est celui de l'expression de départ) ;
+ * - `e^{k ln a + c}` → `aᵏ·e^{c}` pour k et a > 0 rationnels (`e^{2 ln 3}` →
+ *   `9`, `e^{1 + ln 2}` → `2e`), comme `exp(k ln a + c)` : sans ça, `e^{2 ln 3}`
+ *   et `9` avaient deux formes normales (tidy-conditions, L6) ;
  * - `(eᵃ)ⁿ` → `e^{an}` ;
  * - `eᵃ·eᵇ` → `e^{a+b}` dans un même produit (un `e` seul compte pour `e¹`) ;
  * - `e⁰` → `1` est déjà fait par la normalisation des puissances.
@@ -55,6 +58,14 @@ export interface EulerIdentitiesContext {
 	 * Fournie par `normalize`, que ce module ne peut pas importer sans cycle.
 	 */
 	readonly canonicalExponent: (exponent: MathNode) => MathNode;
+	/**
+	 * Sépare d'un exposant ses termes `k ln a` (k et a > 0 rationnels) :
+	 * `power` = Π aᵏ, `remainder` = le reste (`null` s'il est nul). `null` sans
+	 * tel terme. Fournie par `normalize`, pour la même raison.
+	 */
+	readonly splitRationalLogs: (
+		exponent: MathNode
+	) => { power: MathNode; remainder: MathNode | null } | null;
 }
 
 /** Le contenu sous des parenthèses de groupement, sinon le nœud lui-même. */
@@ -93,7 +104,7 @@ function reduceLnOfEulerPower(node: MathNode): MathNode | null {
 	return power === null ? null : power.exponent;
 }
 
-/** `e^{ln a}` → `a`, `(eᵃ)ⁿ` → `e^{an}`. */
+/** `e^{ln a}` → `a`, `e^{k ln a + c}` → `aᵏ·e^{c}`, `(eᵃ)ⁿ` → `e^{an}`. */
 function reduceEulerPower(node: MathNode, ctx: EulerIdentitiesContext): MathNode | null {
 	if (!isSuperscript(node)) return null;
 
@@ -107,7 +118,10 @@ function reduceEulerPower(node: MathNode, ctx: EulerIdentitiesContext): MathNode
 		) {
 			return exponent.args[0];
 		}
-		return null;
+		const split = ctx.splitRationalLogs(node.superscript);
+		if (split === null) return null;
+		if (split.remainder === null) return split.power;
+		return multiply(split.power, superscript(node.base, split.remainder), 'implicit');
 	}
 
 	const inner = asEulerPower(node.base);

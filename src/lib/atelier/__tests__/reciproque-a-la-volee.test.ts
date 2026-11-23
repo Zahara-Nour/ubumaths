@@ -15,7 +15,7 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { runInput } from '../calcul';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 
 // =============================================================================
 // Décor
@@ -200,7 +200,8 @@ describe('les refus', () => {
 
 describe('x^-1, 2^-1, a^-1, f(x)^-1 restent des puissances', () => {
 	it.each([
-		['x^-1', 'x^{-1}'],
+		// La puissance, rangée comme à l'écran (décision D du lot 2 de `registre-reference`)
+		['x^-1', '1/x'],
 		['2^-1', '1/2']
 	])('%s → %s', (input, text) => {
 		const desk = deskWith('f(x) = 2x+3', input);

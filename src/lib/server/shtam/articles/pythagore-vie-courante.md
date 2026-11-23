@@ -5,6 +5,8 @@ author: merdranpo
 lede: Après onze ans de recherches, un Polonais d'Empoche-les-Bains affirme avoir utilisé le théorème hors d'une salle de classe. Ses voisins restent prudents.
 ---
 
+![Dans un salon au plafond bas, un jeune homme en bretelles, ému aux larmes, brandit une ardoise où est tracé un triangle rectangle, devant une grande armoire couchée sur le dos ; un arc en pointillé montre que son coin toucherait le plafond, et deux voisins en bonnet de nuit l’observent, sceptiques, depuis la porte.](/shtam/pythagore-vie-courante.webp){size=large}
+
 Il l'attendait depuis la Quatr'esme. Mardi dernier, vers seize heures, un habitant d'Empoche-les-Bains a annoncé avoir « enfin » eu besoin du théorème de Pythagore, sans contrôle, sans exercice, et sans personne pour le lui demander.
 
 « Je voulais savoir si ma nouvelle armoire, livrée couchée sur le dos, pourrait être relevée sans toucher le plafond », raconte-t-il, encore ému. « J'ai mesuré, j'ai calculé ~a^2+b^2~, j'ai pris la racine… et elle touchait. Mais je l'ai su *avant* de la soulever. » Pour l'instant, l'armoire reste couchée au milieu du salon, dans l'attente de lui trouver un endroit adapté.

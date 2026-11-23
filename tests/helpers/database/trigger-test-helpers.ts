@@ -5,7 +5,7 @@
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { deleteTestAuthUsers, closePostgresClient, getPostgresClient } from './postgres-client';
 import { purgeTemplatesOf } from './purge-modeles';
 

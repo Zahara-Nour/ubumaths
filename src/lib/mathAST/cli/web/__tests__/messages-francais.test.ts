@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '../web-repl-engine';
 
 const ENGLISH =
-	/\b(Unexpected|Expected|Unknown|Missing|Invalid|Cannot|Empty|Failed|Could not|Division by|Indeterminate|Consecutive|Parse error|Error \[)/;
+	/\b(Unexpected|Expected|Unknown|Missing|Invalid|Cannot|Empty|Failed|Could not|Division by|Indeterminate|Consecutive|Parse error|Error \[|Mismatched|got)\b/;
 
 function run(input: string) {
 	return new WebReplEngine().execute(input);
@@ -38,7 +38,14 @@ describe('les erreurs de lecture courantes, en français', () => {
 		['\\begin{foo}', /Environnement inconnu : foo/],
 		["f'(2)", /f'/],
 		['2|x', /Valeur absolue non fermée/],
-		['| 2 + 3', /Valeur absolue non fermée/]
+		['| 2 + 3', /Valeur absolue non fermée/],
+		// V44 : restaient en anglais (2026-10-13)
+		[
+			'\\begin{matrix}1\\end{pmatrix}',
+			/Environnements différents : \\begin\{matrix\} fermé par \\end\{pmatrix\}/
+		],
+		['\\left(2\\right]', /Il manque « \) » après \\right : « \] » trouvé/],
+		['\\left 2', /\\left/]
 	])('%s', (input, expected) => {
 		const line = run(input);
 
@@ -163,5 +170,19 @@ describe('les refus de .integrate, en français', () => {
 		expect(line.success).toBe(false);
 		expect(all).not.toMatch(ENGLISH);
 		expect(all).not.toMatch(INTEGRATION_ENGLISH);
+	});
+});
+
+// V46 (2026-10-13) : une expression bien lue mais que `.variations` ne sait pas dériver
+// répondait « Écriture non reconnue », qui fait croire à une faute de saisie
+describe('.variations refuse sans accuser la saisie', () => {
+	it.each(['.variations \\frac{1}{|x|-2}', '.variations |x^2-1|'])('%s', (input) => {
+		const line = run(input);
+
+		expect(line.success).toBe(false);
+		expect(line.error?.message).toBe(
+			'Je ne sais pas encore dériver cette fonction : son sens de variation n’est pas étudié'
+		);
+		expect(`${line.output}\n${line.error?.message ?? ''}`).not.toMatch(/non reconnue/);
 	});
 });

@@ -10,8 +10,8 @@
 	 * (`aria-disabled`, posé APRÈS les props de bits-ui, qui l'écraseraient) et
 	 * sa raison est sa description ; le choisir ne fait rien (revue de #1488).
 	 */
-	import type { ObjectAction } from '$lib/atelier/actions';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import type { ObjectAction } from '#lib/atelier/actions.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 
 	interface Props {
 		actions: readonly ObjectAction[];

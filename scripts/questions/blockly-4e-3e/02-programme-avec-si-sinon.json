@@ -1,0 +1,241 @@
+{
+	"id": "81ab97a2-6bfc-496b-a089-15164dc22da1",
+	"title": "Programme avec « si … sinon »",
+	"description": "Écrire en blocs un programme à deux cas : tarif de groupe, distance à un nombre, impair.",
+	"grades": ["4"],
+	"level": 1,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Au cinéma, une place coûte ${{p}}$ € ; à partir de ${{s}}$ places achetées ensemble, chaque place ne coûte plus que ${{q}}$ €.\n\nLe nombre choisi est le nombre de places. Écris un programme qui affiche le prix à payer.\n\n```calcul\nniveau: 4e\nattendu: si nombre < {{s}} alors [ afficher nombre × {{p}} ] sinon [ afficher nombre × {{q}} ]\nessais: 1 ; 2 ; {{t}} ; {{s}} ; {{u}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "8..12"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p-d"
+				},
+				{
+					"name": "s",
+					"expression": "5..10"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s-1"
+				},
+				{
+					"name": "u",
+					"expression": "eval:s+3"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Deux cas : moins de ${{s}}$ places, ou au moins ${{s}}$ places.",
+					"Condition : nombre $< {{s}}$. Si elle est vraie, le prix est nombre $\\times {{p}}$.",
+					"**Sinon** (${{s}}$ places ou plus), le prix est nombre $\\times {{q}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui suit ces règles :\n\n- si le nombre choisi est plus grand que ${{a}}$, il affiche nombre $-\\ {{a}}$ ;\n- sinon, il affiche ${{a}} -$ nombre.\n\n```calcul\nniveau: 4e\nattendu: si nombre > {{a}} alors [ afficher nombre − {{a}} ] sinon [ afficher {{a}} − nombre ]\nessais: 0 ; 2 ; {{a}} ; {{b}} ; 20\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+2"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La condition est nombre $> {{a}}$.",
+					"Dans « alors » : afficher nombre $-\\ {{a}}$ ; dans « sinon » : afficher ${{a}} -$ nombre.",
+					"Le programme affiche ainsi la **distance** entre le nombre choisi et ${{a}}$ : elle n'est jamais négative."
+				]
+			}
+		},
+		{
+			"statement": "Écris un programme qui affiche le nombre choisi ; mais si ce nombre est **impair**, il lui ajoute d'abord ${{a}}$.\n\n```calcul\nniveau: 4e\nattendu: mettre valeur à nombre ; si reste de nombre par 2 = 1 alors [ ajouter {{a}} à valeur ] ; afficher valeur\nessais: 1 ; 2 ; 3 ; 4 ; 7 ; 10\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Un nombre est impair quand le reste de sa division par $2$ vaut $1$.",
+					"On range le nombre choisi dans une variable, on lui ajoute ${{a}}$ **seulement si** il est impair (un « si » sans « sinon »), puis on affiche la variable.",
+					"Autre écriture juste : si le nombre est pair, afficher nombre ; sinon, afficher nombre $+\\ {{a}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Tarif : référence",
+			"variationIndex": 0,
+			"variables": {
+				"p": "9",
+				"d": "2",
+				"q": "7",
+				"s": "6",
+				"t": "5",
+				"u": "9"
+			},
+			"answers": ["si nombre < 6 alors [ afficher nombre × 9 ] sinon [ afficher nombre × 7 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Tarif : condition ≥, branches échangées",
+			"variationIndex": 0,
+			"variables": {
+				"p": "9",
+				"d": "2",
+				"q": "7",
+				"s": "6",
+				"t": "5",
+				"u": "9"
+			},
+			"answers": ["si nombre ≥ 6 alors [ afficher nombre × 7 ] sinon [ afficher nombre × 9 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : strictement plus de 6 places",
+			"variationIndex": 0,
+			"variables": {
+				"p": "9",
+				"d": "2",
+				"q": "7",
+				"s": "6",
+				"t": "5",
+				"u": "9"
+			},
+			"answers": ["si nombre > 6 alors [ afficher nombre × 7 ] sinon [ afficher nombre × 9 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : prix échangés",
+			"variationIndex": 0,
+			"variables": {
+				"p": "9",
+				"d": "2",
+				"q": "7",
+				"s": "6",
+				"t": "5",
+				"u": "9"
+			},
+			"answers": ["si nombre < 6 alors [ afficher nombre × 7 ] sinon [ afficher nombre × 9 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Distance : référence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "9"
+			},
+			"answers": ["si nombre > 7 alors [ afficher nombre − 7 ] sinon [ afficher 7 − nombre ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Distance : condition nombre < 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "9"
+			},
+			"answers": ["si nombre < 7 alors [ afficher 7 − nombre ] sinon [ afficher nombre − 7 ]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul cas",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "9"
+			},
+			"answers": ["afficher nombre − 7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Impair : référence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": [
+				"mettre valeur à nombre ; si reste de nombre par 2 = 1 alors [ ajouter 4 à valeur ] ; afficher valeur"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Impair : si … sinon",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": [
+				"si reste de nombre par 2 = 0 alors [ afficher nombre ] sinon [ afficher nombre + 4 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajoute toujours",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["afficher nombre + 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ajoute aux pairs",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": [
+				"mettre valeur à nombre ; si reste de nombre par 2 = 0 alors [ ajouter 4 à valeur ] ; afficher valeur"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

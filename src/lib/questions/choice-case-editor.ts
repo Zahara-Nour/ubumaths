@@ -20,7 +20,7 @@ import {
 	CHOICE_BLOCK_UNCLOSED_MESSAGE,
 	parseChoiceBody,
 	serializeTemplateChoiceBlock
-} from '$lib/ubumark/parser/choix-parser';
+} from '#lib/ubumark/parser/choix-parser.ts';
 import { parseChoiceAnswer } from './choice-case';
 
 // Types
@@ -39,10 +39,93 @@ export interface EditableChoiceCase extends ChoiceCaseDraft {
 	rewritable: boolean;
 }
 
+// Constantes
+/** Ce que le générateur résout avant de compter les cases */
+const UNRESOLVED_MARKERS = /\{\{|<<expr:/;
+
 // Functions
 /** Genre de chaque case de l'énoncé, dans l'ordre des cases (`blanks[i]`) */
 export function statementCaseKinds(statement: string): AssignedBlankType[] {
 	return assignBlankIndices(statement).blankTypes;
+}
+
+/**
+ * `blanks[]` qui omet les cases des blocs (```operation, ```figure-a-completer,
+ * ```figure-de-travail, ```collection / ```monnaie à construire), comme le permet
+ * le générateur : la liste remise à une entrée par case, `empty()` au rang de
+ * chaque case de bloc, les autres entrées dans l'ordre — le sens que leur donne
+ * le générateur. `null` si la liste n'omet pas exactement ces cases.
+ */
+export function withBlockCases<T>(
+	blanks: readonly T[],
+	statement: string,
+	empty: () => T
+): T[] | null {
+	const result = assignBlankIndices(statement);
+	if (!countsLikeResolved(statement, result)) return null;
+	const blockCases = new Set(
+		[
+			result.operationBlanks,
+			result.constructionBlanks,
+			result.workFigureBlanks,
+			result.buildBlanks,
+			result.variationBlanks
+		].flatMap((map) => Object.keys(map ?? {}).map(Number))
+	);
+	if (blockCases.size === 0 || blanks.length !== result.totalBlanks - blockCases.size) return null;
+	const others = [...blanks];
+	return Array.from({ length: result.totalBlanks }, (_, index) =>
+		blockCases.has(index) ? empty() : others.shift()!
+	);
+}
+
+/**
+ * L'énoncé brut compte-t-il les cases comme l'énoncé résolu ? Le générateur les
+ * compte APRÈS les variables (`{{a}}`, `{{if:…}}`) et les expressions
+ * (`<<expr:…>>`). Une variable dans un ```operation peut en changer le nombre
+ * (`{{a}} ÷ 7` : deux cases) ; ailleurs, seule une variable qui porte une case
+ * (`{{if:k==1|[_]|…}}`) le fait : vue en comptant aussi l'énoncé où chacune vaut
+ * `1` — même genre de cases dans le même ordre, sinon on ne sait pas. Une
+ * expression peut porter des cases par son format de réponse (`?/?`), que
+ * l'éditeur ne connaît pas : jamais réalignée.
+ */
+function countsLikeResolved(
+	statement: string,
+	raw: ReturnType<typeof assignBlankIndices>
+): boolean {
+	if (!UNRESOLVED_MARKERS.test(statement)) return true;
+	if (statement.includes('<<expr:')) return false;
+	if (Object.values(raw.operationBlanks ?? {}).some((source) => UNRESOLVED_MARKERS.test(source))) {
+		return false;
+	}
+	const neutral = assignBlankIndices(withVariablesAsOne(statement));
+	return (
+		neutral.totalBlanks === raw.totalBlanks &&
+		neutral.blankTypes.every((kind, index) => kind === raw.blankTypes[index])
+	);
+}
+
+/**
+ * Chaque `{{…}}` (imbriqués compris) remplacé par `1`. Une accolade LaTeX collée
+ * (`\frac{a}{{{b}}}`) peut laisser une `}` orpheline : sans effet sur le compte
+ * (seuls `?`, `[_]` et les blocs comptent) ; au pire les comptes diffèrent → rien.
+ */
+function withVariablesAsOne(text: string): string {
+	let out = '';
+	let depth = 0;
+	for (let i = 0; i < text.length; i++) {
+		if (text.startsWith('{{', i)) {
+			if (depth === 0) out += '1';
+			depth++;
+			i++;
+		} else if (depth > 0 && text.startsWith('}}', i)) {
+			depth--;
+			i++;
+		} else if (depth === 0) {
+			out += text[i];
+		}
+	}
+	return out;
 }
 
 /** Le bloc choix de rang `ordinal` (0 = le premier), ou `null` s'il n'existe pas */

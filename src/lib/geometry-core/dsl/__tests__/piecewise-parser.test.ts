@@ -5,8 +5,8 @@
 import { describe, it, expect } from 'vitest';
 import { parsePiecewise, isPiecewiseRhs } from '../piecewise-parser';
 import { SymbolTable } from '../symbol-table';
-import { isPiecewise } from '$lib/mathAST';
-import { compile } from '$lib/mathAST/eval/compile';
+import { isPiecewise } from '#lib/mathAST/index.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 
 describe('isPiecewiseRhs', () => {
 	it('detects a piecewise rhs', () => {

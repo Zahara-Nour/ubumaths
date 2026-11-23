@@ -19,7 +19,7 @@
 
 import { COURBE_COLORS, type CourbeSize } from '../types/courbe';
 import { PIE_COLOR_SEQUENCE, type StatChartNode } from '../types/stat-chart';
-import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
+import { namedColorTable, namedColorTypst } from '#lib/theme/named-colors.ts';
 import { WIDTH_CM } from './courbe-typst';
 import { STAT_TEXT } from '../utils/stat-chart-text';
 import {
@@ -27,6 +27,7 @@ import {
 	STAT_CHART_ASPECT_RATIO,
 	buildStatChartScene,
 	type BarScene,
+	type BoxPlotScene,
 	type CrossTableScene,
 	type CumulativeScene,
 	type HistogramScene,
@@ -147,6 +148,8 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 	}
 
 	for (const bar of scene.bars) {
+		// Barre à construire (`placer:`) : sur la fiche, l'enfant la dessine
+		if (bar.toPlace) continue;
 		lines.push('  // barre');
 		lines.push(
 			bar.series === 1 && second !== null
@@ -194,7 +197,11 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		scene.indicatorTable === null
 			? ''
 			: `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`;
-	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
+	// Échelle à choisir : l'enfant l'écrit, puis numérote l'axe
+	const scale = scene.scaleToChoose
+		? `#block(text(size: 9pt)[Une graduation vaut : #box(width: 2cm, stroke: (bottom: 0.5pt))])\n`
+		: '';
+	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(scale + headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
 }
 
 // ============================================================================
@@ -563,6 +570,81 @@ function scatterTypst(scene: ScatterScene, size: CourbeSize): string {
 }
 
 // ============================================================================
+// BOÎTE À MOUSTACHES
+// ============================================================================
+
+/**
+ * Boîtes à moustaches : le dessin de l'écran (bandes de la scène, en px), mis à
+ * l'échelle de la largeur du PDF. Quadrillage léger à chaque graduation, boîte de
+ * Q1 à Q3, médiane épaisse, moustaches terminées par un petit trait ; noms au-dessus
+ * à gauche, un seul axe en bas (boîte à construire : son nom seul, l'élève dessine).
+ */
+function boxPlotTypst(scene: BoxPlotScene, size: CourbeSize): string {
+	const W = WIDTH_CM[size];
+	const k = W / scene.pixelSize.width;
+	const H = scene.pixelSize.height * k;
+	const X = (x: number) => fmt(((x - scene.xMin) / (scene.xMax - scene.xMin || 1)) * W);
+	// Ordonnées de la scène : px depuis le haut du cadre
+	const Y = (py: number) => fmt(H - py * k);
+	const color = TYPST_COLORS[scene.color];
+	const lines: string[] = ['  import cetz.draw: *'];
+	for (const tick of scene.xTicks) {
+		const x = X(tick.value);
+		lines.push(
+			'  // graduation',
+			`  line((${x}, 0), (${x}, ${fmt(H)}), stroke: 0.3pt + luma(215))`,
+			`  line((${x}, -0.06), (${x}, 0), stroke: 0.5pt)`,
+			`  content((${x}, -0.1), anchor: "north", text(size: 6.5pt)[${tick.label}])`
+		);
+	}
+	scene.boxes.forEach((box, i) => {
+		const band = scene.bands[i];
+		const [min, q1, median, q3, max] = box.values.map(X);
+		const top = Y(band.top);
+		const bottom = Y(band.bottom);
+		const middle = Y((band.top + band.bottom) / 2);
+		const capTop = Y(band.top + (band.bottom - band.top) * 0.25);
+		const capBottom = Y(band.bottom - (band.bottom - band.top) * 0.25);
+		const whisker = `stroke: 0.8pt + ${color}`;
+		if (box.name !== null && band.nameY !== null) {
+			lines.push(
+				'  // nom',
+				`  content((0, ${Y(band.nameY)}), anchor: "south-west", text(size: 7pt, weight: "bold")${textContent(box.name)})`
+			);
+		}
+		// Boîte à construire (`placer:`) : l'axe et le nom seuls, l'élève dessine
+		if (box.toPlace) return;
+		lines.push(
+			'  // moustache',
+			`  line((${min}, ${middle}), (${q1}, ${middle}), ${whisker})`,
+			`  line((${min}, ${capTop}), (${min}, ${capBottom}), ${whisker})`,
+			'  // moustache',
+			`  line((${q3}, ${middle}), (${max}, ${middle}), ${whisker})`,
+			`  line((${max}, ${capTop}), (${max}, ${capBottom}), ${whisker})`,
+			'  // boîte',
+			`  rect((${q1}, ${bottom}), (${q3}, ${top}), fill: ${color}.lighten(75%), stroke: 0.8pt + ${color})`,
+			'  // médiane',
+			`  line((${median}, ${bottom}), (${median}, ${top}), stroke: 1.8pt + ${color})`
+		);
+		if (scene.showValues) {
+			box.values.forEach((value, j) => {
+				lines.push(
+					'  // valeur',
+					`  content((${X(value)}, ${Y(band.valueY[box.valueRows[j]])}), anchor: "south", text(size: 6.5pt)[${box.labels[j]}])`
+				);
+			});
+		}
+	});
+	lines.push('  // axe', `  line((0, 0), (${fmt(W)}, 0), stroke: 0.6pt)`);
+	if (scene.axisTitle !== null) {
+		lines.push(
+			`  content((${fmt(W / 2)}, -0.5), anchor: "north", text(size: 7pt)${textContent(scene.axisTitle)})`
+		);
+	}
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
+}
+
+// ============================================================================
 // TABLEAU CROISÉ
 // ============================================================================
 
@@ -778,6 +860,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return densityTypst(scene, size);
 		case 'nuage':
 			return scatterTypst(scene, size);
+		case 'boite-a-moustaches':
+			return boxPlotTypst(scene, size);
 	}
 }
 

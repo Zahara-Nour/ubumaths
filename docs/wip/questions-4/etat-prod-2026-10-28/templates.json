@@ -1,0 +1,1281 @@
+[
+	{
+		"id": "17f3dfcd-01e4-460f-9b94-40be348c2ed7",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Puissance de puissance",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^{a})^{b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{{a}}}\\right)^{{{b}}} &= 10^{{{a}} \\times {{b}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^{a})^{b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{{a}}}\\right)^{{{b}}} &= 10^{{{a}} \\times ({{b}})} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Puissance d'une puissance de $10$",
+		"description": "Exposants relatifs",
+		"shared": {
+			"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+			"answerFormats": {
+				"expression1": "10^?"
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "(10^-5)^3 : -15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "-2"
+				},
+				"description": "(10^5)^-2 : -10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-9",
+					"b": "-9"
+				},
+				"description": "(10^-9)^-9 : 81",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-81"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-9",
+					"b": "-9"
+				},
+				"description": "signe refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "6dc85352-4b5c-43cf-9cfa-2b9654f97129"
+	},
+	{
+		"id": "2158a2fc-df19-4455-a96a-765b22a797db",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Puissance de puissance",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^a)^b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{a}}\\right)^{{b}} &= 10^{{{a}} \\times {{b}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Puissance d'une puissance de $10$",
+		"description": "Exposants positifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "(10^7)^9 : 63",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "bornes (10^2)^2 : 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "6dc85352-4b5c-43cf-9cfa-2b9654f97129"
+	},
+	{
+		"id": "294c4316-d2c9-4894-9c3c-c2b24fdffc99",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}+{{a}}*{{c}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} + {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}+{{a}}*{{c}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans ${{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} + {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}+{{c}}*{{a}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$ et dans ${{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} + {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}+{{c}}*{{a}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans ${{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$ et dans ${{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} + {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} + {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}-{{a}}*{{c}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} - {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}-{{a}}*{{c}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans ${{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} - {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}-{{c}}*{{a}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$ et dans ${{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} - {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}-{{c}}*{{a}}$$\n\nUn facteur commun est $?$.",
+				"correction": {
+					"steps": [
+						"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+						"Dans ${{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$ et dans ${{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+						"$$\\begin{align} {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} - {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} - {{c}} \\right) \\end{align}$$",
+						"Un facteur commun est donc ${{solution}}$ (tout diviseur de ${{a}}$ autre que $1$ convient aussi)."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver un facteur commun",
+		"description": "Facteur commun numérique apparent ",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,cd(b)"
+				}
+			],
+			"validationRules": [
+				{
+					"type": "custom",
+					"expression": "answer != 1",
+					"description": "Legacy testAnswer: &answer !=1"
+				},
+				{
+					"type": "divisor",
+					"dividend": "{{a}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v3 bonne réponse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v4 bonne réponse",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v5 bonne réponse",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v6 bonne réponse",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v7 bonne réponse",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "7×9+7×4 : 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "6×5−6×7 : 2 diviseur de 6 accepté",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "1 refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "9 n'est pas commun",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "2c0359a2-edd8-4827-9dcc-b36e5de3d43f"
+	},
+	{
+		"id": "2de1b93d-925e-40f7-a074-f8d7de584d04",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b+a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}+\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a+a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}+\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a*b+c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} +  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} +  \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}+{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "b*a+c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} + {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}+{{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a*b-a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "b*a-a*c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a*b-c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} -  {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} -  \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}({{b}}-{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "b*a-c*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               {{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} + {{c}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}}  \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Factoriser",
+		"description": "Facteur commun apparent",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,cd(b)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v3 bonne réponse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v4 bonne réponse",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v5 bonne réponse",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v6 bonne réponse",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v7 bonne réponse",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7(9+4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "7(9+4)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7(4+9)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "ordre inversé dans la parenthèse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["91"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "calculé : pas factorisé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7(9-4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "7(9−4)",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7\\times5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "7×5 : parenthèse calculée",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": "2c0359a2-edd8-4827-9dcc-b36e5de3d43f"
+	},
+	{
+		"id": "419887ff-ab39-43fb-8e5c-953822088459",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Q$$",
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*a/c}}"
+					}
+				],
+				"statement": "Résous cette équation.\n\n$${{b}}/x={{c}}/{{a}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{{{b}}}{x}=\\frac{{{c}}}{{{a}}}               & \\quad \\lrArr \\quad \\frac{x}{\\textcolor{{{color:primary.0}}}{{{b}}}} = \\frac{{{a}}}{{{c}}} \\\\               & \\quad \\lrArr \\quad x = \\frac{{{a}}}{{{c}}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\\\               & \\quad \\lrArr \\quad x = \\frac{{{a}} \\times {{b}}}{{{c}}} \\\\               {{if:gcd({{b}}*{{a}}, {{c}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{eval:b*a}}}{{{c}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				],
+				"statement": "Résous cette équation.\n\n$${{b}}/x={{a}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}                 \\frac{{{b}}}{x}={{a}}               & \\quad \\lrArr \\quad \\frac{x}{\\textcolor{{{color:primary.0}}}{{{b}}}} = \\frac{1}{{{a}}} \\\\               & \\quad \\lrArr \\quad x = \\frac{1}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{b}}} \\\\               {{if:gcd({{a}}, {{b}}) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}|& \\quad \\lrArr \\quad  x= \\frac{{{b}}}{{{a}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}              \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Division (2)",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["21"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"description": "bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{63}{3}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"description": "non simplifiée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{21}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "3"
+				},
+				"description": "inverse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{9}{7}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "b/x=a",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "inverse",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "78b687d6-deb3-4c7d-9d4a-2400e903386e"
+	},
+	{
+		"id": "a1ae1558-89ca-4a60-8704-8e7e4ebc23ad",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Puissance de puissance",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*c}}"
+					}
+				],
+				"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a^b)^c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left({{a}}^{{b}}\\right)^{{c}} &= {{a}}^{{{b}} \\times {{c}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "{{a}}^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Puissance d'une puissance",
+		"description": "Exposants positifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "(6^9)^9 : 81",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "y|y",
+					"b": "2",
+					"c": "5"
+				},
+				"description": "(y^2)^5 : 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "y|y",
+					"b": "2",
+					"c": "5"
+				},
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "6dc85352-4b5c-43cf-9cfa-2b9654f97129"
+	},
+	{
+		"id": "b0ef6947-e4b9-478e-825b-bc7a2756e222",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Dans $$\\Z$$",
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Résous cette équation.\n\n$${{{eval:a*(b)}}}/x={{b}}$$\n\n$x=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Pour $x \\neq 0$, ",
+						"$$\\begin{align}                 \\frac{{{eval:a*(b)}}}{x}={{b}}                & \\quad \\lrArr \\quad {{eval:a*(b)}} = {{b}} \\times x \\\\               & \\quad \\lrArr \\quad x= \\frac {{{eval:a*(b)}}}{{{b}}} \\\\               & \\quad \\lrArr \\quad  x= {{solution:0}}                \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Division (2) $a/x=b$",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "-9"
+				},
+				"description": "bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-5"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "-9"
+				},
+				"description": "signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "-3",
+					"b": "4"
+				},
+				"description": "a négatif",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "78b687d6-deb3-4c7d-9d4a-2400e903386e"
+	}
+]

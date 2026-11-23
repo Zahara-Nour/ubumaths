@@ -5,7 +5,7 @@
 <script lang="ts">
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import { provideLexicon } from '../lexicon-context';
-	import type { GradeCode } from '$lib/types/grades';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	interface Props {
 		content: string;

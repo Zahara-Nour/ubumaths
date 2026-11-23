@@ -1,0 +1,1318 @@
+[
+	{
+		"templateId": "0140fdfa-1066-4885-b0ab-c597ff503283",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:47:11.449Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "05387201-2403-409a-8ebe-5898b6e77e3c",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:47:44.912Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "15d3aaa0-5eef-4c08-a38c-5b5c8d5ed6e1",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:48:26.363Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "1666b8e9-8225-4e66-8b8c-4d5190806ed1",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:48:39.612Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "46913a48-c97f-4f00-9cdc-b98214b8420b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:49:02.013Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "496f958d-4733-45a2-be3c-243dc9f7dd66",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:50:01.362Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "8997f7c6-4a99-44e0-bd03-e76c7e69c596",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:49:18.746Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "9755a856-1059-40aa-abf7-cb531d85cebc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:50:08.546Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "9765d776-cc70-4472-95e9-1c0d05396584",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:49:48.079Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "cda8e0d2-366c-482f-8cf3-2564b4b7083d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:50:23.229Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "cffdd283-49ee-4292-b8ca-b6096b8b1ae2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:50:37.147Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "d58208eb-48f8-4a77-b5bb-55cddcd845ab",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:50:56.063Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "ed8444bb-dfa3-4b6c-8414-27afb3066d2b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:51:17.547Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "f1440b52-5a2b-4e6a-a112-7182b029d023",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:51:26.279Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "f52395d1-31ca-4bdb-be8f-723c5d96d2ac",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T22:51:36.063Z",
+		"source": "Relecture 1re spé — dérivation (brouillons)"
+	},
+	{
+		"templateId": "09432575-000f-41be-b50a-99b9e938d136",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T08:47:51.076Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "227f2c9c-3494-412d-bf88-e9b2c48c01a6",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T08:48:02.459Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "245b4eb1-11fc-497a-b4cd-0a8934719d2c",
+		"etat": "revoir",
+		"commentaire": "pour decroissante : il faut un qcm, pas une case ou il faut entrer le mot décroissante. ",
+		"le": "2026-10-28T08:49:25.761Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "6137a555-a62d-4382-b509-4a6f7cbd346b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T08:49:27.125Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "68166a11-b481-44cc-b881-07252a6fb98f",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T08:49:47.258Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T08:50:05.507Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "6fe11613-789b-43c1-a38b-0d72bcb0d44e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:19:14.726Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "7179a3b5-580a-4696-a22e-cd5f89c32c29",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:19:24.307Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "9a4592bf-5e79-4a4a-bb1a-698a715a4a34",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:19:34.433Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "a4272b10-cb61-42d1-8127-6c0224fc1d9b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:19:46.031Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "ac3e6395-2d00-4ef5-a23e-50819afd7e50",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:19:58.522Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "bd45ed7f-0e09-4777-9f66-1b932cd087d0",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:20:10.553Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "ca8f40c2-bcb9-4f1d-8647-53e84a04ed79",
+		"etat": "revoir",
+		"commentaire": "ce n'est pas ça le lien avec l'exponentielle : il faut voir que le quotient de 2 nombres distants de 1 est constant",
+		"le": "2026-10-28T11:21:51.745Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "d73d7929-fd39-4234-963c-80038c22f5a3",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:21:52.632Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "e6b429b4-e6b4-41a1-b25b-57b66c989ce4",
+		"etat": "revoir",
+		"commentaire": "la variation 3 n'a que peu d'interet.",
+		"le": "2026-10-28T11:22:30.728Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "f40e8a4a-bddc-43aa-8c2c-ccf7cb5d4ae6",
+		"etat": "revoir",
+		"commentaire": "J'écrirais plutot comme consigne :\nLa fonction f s'écrit avec une exponentielle . Que semble être l'expression de f(x) ?",
+		"le": "2026-10-28T11:24:36.132Z",
+		"source": "Relecture 1re spé — exponentielle"
+	},
+	{
+		"templateId": "08c059b8-2efc-483e-9a7d-cdb9d146c9f9",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:11:50.595Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "17809937-5109-4af9-87a6-988f33bb33fc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T10:49:42.363Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "406fd9a8-ad71-4c24-ab35-5029ddc1b18b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T10:49:55.127Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "7efd2e76-f27c-4b9c-b8f0-71dfa86265e2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:11:44.482Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "9c4f6b4f-5ad7-4f63-9c6c-de8cb229d8ce",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:11:49.279Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "a55ad3b4-6013-455d-83a5-7ee32516c374",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:11:46.496Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "b807cc6c-a78e-4f28-94b1-afa99517d179",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:11:47.345Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "cbf00ce7-71c1-4bec-9dc8-7ae53972cbeb",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:11:48.296Z",
+		"source": "Relecture 2de — lecture graphique (lot A)"
+	},
+	{
+		"templateId": "29d74cf6-a8bc-4545-b83c-d772ec6e3f0f",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:22:05.457Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "4563f7c5-b7bb-4c0d-bc39-6be10205f6c4",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:05:58.349Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "58984eff-03a7-4cf6-9050-a486e7eefee9",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:05:51.768Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "75439740-73da-4257-8896-6b64a9332e21",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:22:29.274Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "834c734f-7887-4b08-8758-9f5002011f3f",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:21:40.026Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "ac9579d6-7d48-4b88-8d2f-e8c5319867db",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:21:53.340Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "bb3b8e76-e6de-4987-94c4-207e4f5acec0",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:22:15.825Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "bb5fa6ef-004d-4828-8277-a2aa3a2a6eba",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:22:37.492Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "cf796fab-520e-4d68-9d6f-756e7c2afaa9",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:21:58.158Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "e8ce1278-4f9c-4be5-9e45-e6323239a42b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:06:06.967Z",
+		"source": "Relecture 2de — équations et inéquations"
+	},
+	{
+		"templateId": "2f1657b0-0ccd-4f68-93b5-0c6256a0e6e6",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:01:31.804Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "5007877e-3abe-4cbf-ba69-0d48e78b31b3",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:06:21.849Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "7b08589b-c870-4632-9f36-50d6c441b15b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:03:00.575Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "8df8ba2b-a492-47be-a5a4-e1da13f4eba7",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:01:45.064Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "8e571049-5485-4812-bdbd-3ae0b2b0942b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:05:59.035Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "9d9b2301-700d-4613-bba3-5c62017fb193",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T14:06:05.394Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "be35cd63-cbd3-4a8e-9171-77c5b2b8f3c6",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:02:47.420Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "faf57d3b-a954-4a3e-bd80-5ce4f5ee908c",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:02:20.808Z",
+		"source": "Relecture 5e — lot 1 « Calcul »"
+	},
+	{
+		"templateId": "030e3554-0a49-4a22-9931-bebd2a8cb227",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:10:06.781Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "2c5bae8f-03e3-44c6-9dbd-6849c7177ceb",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:07:54.408Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "2e982062-0fc9-473f-8aa2-affaf55c567d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:10:01.613Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "36991abb-b704-4c0f-9165-c5de5e18f70b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:09:36.313Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "4bcbbaae-a01d-43c2-903c-1b365a438761",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:07:31.276Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "4d825d44-928a-4461-9df0-3b3c3fdc74fc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:07:15.693Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "8d7edbde-d1d0-4a9d-bb6e-7e516ef1381d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:10:12.197Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "a1b46489-4566-449e-a4e9-e1e144a0b11d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:08:36.861Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "d7781eed-7930-4619-9b00-caade882a637",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:08:10.226Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "e75cb1a3-56f6-4498-b6bf-06e852b3252d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:09:57.063Z",
+		"source": "Relecture 6e — lot 2 Nombres"
+	},
+	{
+		"templateId": "26aceb03-fb1c-4088-9bf3-f4754fc2d1aa",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T13:28:28.395Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "32b7a9bc-300c-44a1-af0d-a811ca688eb2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:26:14.893Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "3c9284c5-2277-4b95-956e-c2d287b9d077",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:27:17.427Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "3f4bacc6-2ee4-48c7-8ea4-e5ac52af62d4",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:27:28.227Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "4b0b03b7-3b46-4531-aaca-44ab04b13d1c",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T13:25:38.811Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "6adcd053-17ce-40f7-9da7-92ab8d2d27e0",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:27:34.277Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T13:27:50.428Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "85c1b573-a1f7-438f-966b-f43dc34f32e4",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:27:51.111Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "87cfa41b-cd8c-4b53-9150-78f91dd71702",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:26:59.877Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "a2ba4759-4bfb-419c-92d3-7f4b5411982c",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:27:44.961Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "b586bdf8-0b7b-452b-9fe5-a7f3d6da456a",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:26:01.443Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "e3d87166-f0cb-4a9a-ab24-6377e612cfeb",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T13:26:59.794Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "f5651c7d-363a-48fa-bf62-3cff037076ef",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T13:27:29.979Z",
+		"source": "Relecture 6e — lot 3 Calcul décimal"
+	},
+	{
+		"templateId": "378aa770-4d92-4c21-aa2f-05d8f9cc4fb4",
+		"etat": "revoir",
+		"commentaire": "Il y a plusieurs méthodes pour multiplier une fraction par un entier. un modèle pour chaque méthode ?",
+		"le": "2026-10-28T10:41:53.865Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "5077e030-ab90-4660-91a7-25cb48281445",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T10:33:35.593Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "5cd25c2b-1def-492c-a81f-998255ea4f1d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T10:45:09.106Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "7ff1ac44-8099-472a-b688-a331f91be9c5",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T10:42:38.339Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "83c835bb-5534-4b1a-afc2-2d3430622f9e",
+		"etat": "revoir",
+		"commentaire": "outil étiquettes à placer au bon endroit ?",
+		"le": "2026-10-28T10:43:19.919Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "afebbb91-4d08-46f0-8640-77fe4e6f4e62",
+		"etat": "revoir",
+		"commentaire": "séparer les méthodes en plusieurs modèles ?",
+		"le": "2026-10-28T10:42:37.638Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "c360d588-3e4f-4ea5-8d27-1f671fe47bcd",
+		"etat": "revoir",
+		"commentaire": "même remarque que question précédente",
+		"le": "2026-10-28T10:43:42.975Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "c99be374-4d52-4a9c-bcd4-03b71f45f717",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T10:45:26.719Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "c9c3a8a3-575a-4d8d-b278-cc22d348f274",
+		"etat": "revoir",
+		"commentaire": "j'aurais séparé la variation 1 du reste : la définition séparée du calcul. ",
+		"le": "2026-10-28T10:40:56.056Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "ddf5d292-d792-41d9-9136-2018e73cff9d",
+		"etat": "ok",
+		"commentaire": "je séparerais la variation 4 du reste",
+		"le": "2026-10-28T10:45:28.131Z",
+		"source": "Relecture 6e — lot 4 Fractions"
+	},
+	{
+		"templateId": "03675b9b-030e-46f5-9316-abfd55cbc2a2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:29:41.336Z",
+		"source": "Relecture CE1 — lot 1"
+	},
+	{
+		"templateId": "0b490331-eda5-4201-b4be-a77e5ebe2229",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:29:16.468Z",
+		"source": "Relecture CE1 — lot 1"
+	},
+	{
+		"templateId": "240bb640-0548-4ff2-ac47-1b182ca3fcc2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:28:56.735Z",
+		"source": "Relecture CE1 — lot 1"
+	},
+	{
+		"templateId": "b2a4a178-ee4f-431f-aaef-baf1224910c9",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:29:54.387Z",
+		"source": "Relecture CE1 — lot 1"
+	},
+	{
+		"templateId": "cb08bf78-8c21-4c48-83da-8214dbc2d7a2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:29:02.918Z",
+		"source": "Relecture CE1 — lot 1"
+	},
+	{
+		"templateId": "ebfa8511-8282-4247-9027-452ecb734c20",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T11:29:31.935Z",
+		"source": "Relecture CE1 — lot 1"
+	},
+	{
+		"templateId": "0e60a71e-0267-4c02-a242-36820362b5f0",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:31:07.928Z",
+		"source": "Relecture CE1 — lot 2"
+	},
+	{
+		"templateId": "29cb38fb-bdb6-4473-9fe1-10cf02bfbd80",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:31:30.411Z",
+		"source": "Relecture CE1 — lot 2"
+	},
+	{
+		"templateId": "8cd98206-8da7-4209-a574-ef85826b9720",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:30:15.296Z",
+		"source": "Relecture CE1 — lot 2"
+	},
+	{
+		"templateId": "949ba026-2f6e-47e7-98e5-bc49a28bf25e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:32:48.195Z",
+		"source": "Relecture CE1 — lot 2"
+	},
+	{
+		"templateId": "be6f0f5f-da09-44b6-81e2-e53daa1bb2cc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:31:16.496Z",
+		"source": "Relecture CE1 — lot 2"
+	},
+	{
+		"templateId": "c4d4bf70-6496-4772-a146-569ab0aaa176",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:30:53.862Z",
+		"source": "Relecture CE1 — lot 2"
+	},
+	{
+		"templateId": "f0a879d2-c78d-42ea-b569-5b9bc6d4332f",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-27T23:30:29.145Z",
+		"source": "Relecture CE1 — lot 2"
+	},
+	{
+		"templateId": "14dfdd8c-751c-46e1-8dea-6ae9c9ae9bba",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:14:59.977Z",
+		"source": "Relecture CE1 — lot 2 bis"
+	},
+	{
+		"templateId": "2dec5c08-d8b8-4e0d-8239-ef8f549156ee",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:15:22.982Z",
+		"source": "Relecture CE1 — lot 2 bis"
+	},
+	{
+		"templateId": "50d9118b-8b76-4a21-9be0-6db6d6eb39ca",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:14:35.857Z",
+		"source": "Relecture CE1 — lot 2 bis"
+	},
+	{
+		"templateId": "8471f4b3-f3d9-44c3-a46e-7800d133cd55",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:15:11.061Z",
+		"source": "Relecture CE1 — lot 2 bis"
+	},
+	{
+		"templateId": "8e9c0137-ece7-4ad6-9ca0-bb343cb34955",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:14:31.538Z",
+		"source": "Relecture CE1 — lot 2 bis"
+	},
+	{
+		"templateId": "e54c58f0-9d59-4552-b8f7-3c7d4072d9ce",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:15:58.778Z",
+		"source": "Relecture CE1 — lot 2 bis"
+	},
+	{
+		"templateId": "ef446e9b-66fb-4c89-b3ad-cda9c34f4d91",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T11:15:43.783Z",
+		"source": "Relecture CE1 — lot 2 bis"
+	},
+	{
+		"templateId": "0c9071d1-e498-4c1b-913f-6c7753416a49",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T01:18:44.382Z",
+		"source": "Relecture CE2 — lot 1"
+	},
+	{
+		"templateId": "e7763a96-991f-49d4-8e13-08dcbd109eea",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T01:18:49.862Z",
+		"source": "Relecture CE2 — lot 1"
+	},
+	{
+		"templateId": "01729e6e-7fe0-4708-a130-236faf9bd1f3",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T15:12:06.119Z",
+		"source": "Relecture CM1 — lot 1, calcul mental"
+	},
+	{
+		"templateId": "8fee3492-87df-4227-a6f5-77d70a715b77",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T15:11:51.061Z",
+		"source": "Relecture CM1 — lot 1, calcul mental"
+	},
+	{
+		"templateId": "b6b1cae5-f2a2-40c3-996b-b5e2e22aaf21",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T15:12:22.619Z",
+		"source": "Relecture CM1 — lot 1, calcul mental"
+	},
+	{
+		"templateId": "f24bb468-6194-4dfa-b9b8-3eeb29086adc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-28T15:11:55.214Z",
+		"source": "Relecture CM1 — lot 1, calcul mental"
+	},
+	{
+		"templateId": "7eb376bf",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T00:25:07.265Z",
+		"source": "Relecture CP — lot A1"
+	},
+	{
+		"templateId": "85f93a6e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T00:25:28.910Z",
+		"source": "Relecture CP — lot A1"
+	},
+	{
+		"templateId": "87a869c2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T00:25:38.090Z",
+		"source": "Relecture CP — lot A1"
+	},
+	{
+		"templateId": "882c436f",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T00:25:46.310Z",
+		"source": "Relecture CP — lot A1"
+	},
+	{
+		"templateId": "eccf910b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T00:26:08.989Z",
+		"source": "Relecture CP — lot A1"
+	},
+	{
+		"templateId": "ee822bbc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T00:25:56.030Z",
+		"source": "Relecture CP — lot A1"
+	},
+	{
+		"templateId": "1bd1f044",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T06:44:19.563Z",
+		"source": "Relecture CP — lot A2"
+	},
+	{
+		"templateId": "23acfcd1",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T06:44:09.603Z",
+		"source": "Relecture CP — lot A2"
+	},
+	{
+		"templateId": "73bb66e4",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T06:43:12.905Z",
+		"source": "Relecture CP — lot A2"
+	},
+	{
+		"templateId": "78a6ba79",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T06:43:48.169Z",
+		"source": "Relecture CP — lot A2"
+	},
+	{
+		"templateId": "b19dfc8e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T06:43:27.489Z",
+		"source": "Relecture CP — lot A2"
+	},
+	{
+		"templateId": "b831b7b8",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T06:42:53.943Z",
+		"source": "Relecture CP — lot A2"
+	},
+	{
+		"templateId": "dc95f4f6",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T06:43:58.773Z",
+		"source": "Relecture CP — lot A2"
+	},
+	{
+		"templateId": "0559204d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T15:11:41.648Z",
+		"source": "Relecture CP — lot A3"
+	},
+	{
+		"templateId": "10226cae",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T15:11:16.439Z",
+		"source": "Relecture CP — lot A3"
+	},
+	{
+		"templateId": "62ae6847",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T15:11:26.328Z",
+		"source": "Relecture CP — lot A3"
+	},
+	{
+		"templateId": "7dc1629e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T15:10:58.347Z",
+		"source": "Relecture CP — lot A3"
+	},
+	{
+		"templateId": "c3b236fc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T15:11:47.835Z",
+		"source": "Relecture CP — lot A3"
+	},
+	{
+		"templateId": "d437959a",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T15:10:43.784Z",
+		"source": "Relecture CP — lot A3"
+	},
+	{
+		"templateId": "3bde8d25",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:01:23.709Z",
+		"source": "Relecture CP — lot A4"
+	},
+	{
+		"templateId": "6e712e78",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:02:14.392Z",
+		"source": "Relecture CP — lot A4"
+	},
+	{
+		"templateId": "a59fba89",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:00:49.831Z",
+		"source": "Relecture CP — lot A4"
+	},
+	{
+		"templateId": "b873739e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:02:22.829Z",
+		"source": "Relecture CP — lot A4"
+	},
+	{
+		"templateId": "c342f32e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:01:40.989Z",
+		"source": "Relecture CP — lot A4"
+	},
+	{
+		"templateId": "c4644788",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:01:42.711Z",
+		"source": "Relecture CP — lot A4"
+	},
+	{
+		"templateId": "f7463b7d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:01:57.171Z",
+		"source": "Relecture CP — lot A4"
+	},
+	{
+		"templateId": "5c6999c6",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:47:33.344Z",
+		"source": "Relecture CP — lot A5"
+	},
+	{
+		"templateId": "87460358",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:47:45.839Z",
+		"source": "Relecture CP — lot A5"
+	},
+	{
+		"templateId": "a1c5da8b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:47:18.649Z",
+		"source": "Relecture CP — lot A5"
+	},
+	{
+		"templateId": "da6e20cd",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T08:47:03.613Z",
+		"source": "Relecture CP — lot A5"
+	},
+	{
+		"templateId": "192f52f3",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:00:18.796Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "35426707",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:01:39.978Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "39dfd0cc",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:00:26.823Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "54ea05d7",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T13:59:44.297Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "7e11b651",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:00:44.988Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "92c8e499",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:22:11.539Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "9ee150a2",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:02:12.889Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "e9e9970b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:00:56.230Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "fc63fdf0",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:01:57.663Z",
+		"source": "Relecture CP — lot A6"
+	},
+	{
+		"templateId": "55662eef",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T17:26:47.104Z",
+		"source": "Relecture CP — lot B1"
+	},
+	{
+		"templateId": "76d14aa6",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T17:26:32.053Z",
+		"source": "Relecture CP — lot B1"
+	},
+	{
+		"templateId": "7752c23e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T17:26:07.319Z",
+		"source": "Relecture CP — lot B1"
+	},
+	{
+		"templateId": "2fc01600",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:24:58.859Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "7093b797",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:25:53.461Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "91012bab",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:24:03.979Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "9d6bc8b3",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:23:52.949Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "b5389494",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:24:16.482Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "c85626fa",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:23:59.757Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "d50c6e21",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:25:35.699Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "d5a36be9",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:24:20.252Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "e7453c9b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:25:17.158Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "f7167af7",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T18:25:25.168Z",
+		"source": "Relecture CP — lot B2"
+	},
+	{
+		"templateId": "12482155",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T19:35:06.966Z",
+		"source": "Relecture CP — lot B3"
+	},
+	{
+		"templateId": "3e9a610e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T19:35:21.735Z",
+		"source": "Relecture CP — lot B3"
+	},
+	{
+		"templateId": "5592a129",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T19:35:35.295Z",
+		"source": "Relecture CP — lot B3"
+	},
+	{
+		"templateId": "74d6b4f3",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T19:35:29.625Z",
+		"source": "Relecture CP — lot B3"
+	},
+	{
+		"templateId": "7e7e2968",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T19:35:11.369Z",
+		"source": "Relecture CP — lot B3"
+	},
+	{
+		"templateId": "8e207417",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T19:35:26.670Z",
+		"source": "Relecture CP — lot B3"
+	},
+	{
+		"templateId": "b556f617",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T19:35:40.412Z",
+		"source": "Relecture CP — lot B3"
+	},
+	{
+		"templateId": "541b3209",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T17:37:50.307Z",
+		"source": "Relecture CP — lot C"
+	},
+	{
+		"templateId": "7be00c4a",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T17:38:00.568Z",
+		"source": "Relecture CP — lot C"
+	},
+	{
+		"templateId": "8f587948",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T17:38:05.954Z",
+		"source": "Relecture CP — lot C"
+	},
+	{
+		"templateId": "ded05f7c",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T17:37:36.418Z",
+		"source": "Relecture CP — lot C"
+	},
+	{
+		"templateId": "0f7381e6",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:59:21.942Z",
+		"source": "Relecture CP — lot H"
+	},
+	{
+		"templateId": "9780d3c1",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:58:02.385Z",
+		"source": "Relecture CP — lot H"
+	},
+	{
+		"templateId": "f1759d81",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-25T14:58:32.997Z",
+		"source": "Relecture CP — lot H"
+	},
+	{
+		"templateId": "0f4a530e",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T07:12:15.258Z",
+		"source": "Relecture CP — lot M"
+	},
+	{
+		"templateId": "45a90289",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T07:12:38.057Z",
+		"source": "Relecture CP — lot M"
+	},
+	{
+		"templateId": "8e54475b",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T07:12:23.942Z",
+		"source": "Relecture CP — lot M"
+	},
+	{
+		"templateId": "93760337",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T07:12:59.643Z",
+		"source": "Relecture CP — lot M"
+	},
+	{
+		"templateId": "9592804d",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T07:12:57.152Z",
+		"source": "Relecture CP — lot M"
+	},
+	{
+		"templateId": "b81c8cf4",
+		"etat": "ok",
+		"commentaire": "",
+		"le": "2026-10-26T07:12:48.587Z",
+		"source": "Relecture CP — lot M"
+	}
+]

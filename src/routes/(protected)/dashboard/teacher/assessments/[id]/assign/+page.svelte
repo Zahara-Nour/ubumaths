@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { Users, Check, X } from '@lucide/svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction, refreshPageData } from '$lib/utils/form-action';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction, refreshPageData } from '#lib/utils/form-action.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

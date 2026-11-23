@@ -15,7 +15,7 @@
  * `core/variable-argument.ts`, décision de David du 2026-10-06).
  */
 
-import chalk from 'chalk';
+import { colors } from '../core/terminal-colors';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { parse } from '../core/pipeline';
@@ -29,6 +29,7 @@ import {
 import { computeDomain } from '../../domain/compute';
 import { formatDomainInterval, formatDomainCondition } from '../../domain/format';
 import { toCustom } from '../../custom-generator';
+import { domainToLatex } from '../../pedagogical-domain/renderer';
 
 // =============================================================================
 // Domain Command
@@ -159,27 +160,28 @@ export class DomainCommand extends BaseCommand {
 			const lines: string[] = [];
 
 			// Expression header
-			lines.push(chalk.bold('Expression :') + ' ' + chalk.cyan(exprCustom));
+			lines.push(colors.bold('Expression :') + ' ' + colors.cyan(exprCustom));
 			lines.push('');
 
 			// Show steps if available
 			if (result.steps && result.steps.length > 0) {
-				lines.push(chalk.bold('Contraintes :'));
+				lines.push(colors.bold('Contraintes :'));
 				for (const step of result.steps) {
-					lines.push(chalk.dim('  • ') + step);
+					lines.push(colors.dim('  • ') + step);
 				}
 				lines.push('');
 			}
 
 			// Final domain
-			lines.push(chalk.bold('Domaine :') + ' ' + chalk.green(intervalStr));
-			lines.push(chalk.bold('Condition :') + ' ' + chalk.green(conditionStr));
+			lines.push(colors.bold('Domaine :') + ' ' + colors.green(intervalStr));
+			lines.push(colors.bold('Condition :') + ' ' + colors.green(conditionStr));
 			if (hint !== null) lines.push(hint);
 
 			return {
 				success: true,
 				output: lines.join('\n'),
-				ast: parseResult.ast
+				ast: parseResult.ast,
+				answer: `D = ${domainToLatex(result.domain)}`
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Erreur lors du calcul du domaine';

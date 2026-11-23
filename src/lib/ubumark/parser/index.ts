@@ -129,6 +129,13 @@ export type { NumberLineBlockRange } from '../types/number-line';
 
 // Bloc ```qr
 export { parseQr, parseQrContent, findQrBlocks, isQrBlockStart } from './qr-parser';
+// Bloc ```scratch
+export {
+	parseScratch,
+	parseScratchContent,
+	findScratchBlocks,
+	isScratchBlockStart
+} from './scratch-parser';
 
 // Bloc ```horloge
 export {
@@ -137,6 +144,41 @@ export {
 	findHorlogeBlocks,
 	isHorlogeBlockStart
 } from './horloge-parser';
+
+// Bloc ```tortue
+export {
+	parseTortue,
+	parseTortueContent,
+	findTortueBlocks,
+	isTortueBlockStart
+} from './tortue-parser';
+
+// Bloc ```calcul
+export {
+	parseCalcul,
+	parseCalculContent,
+	findCalculBlocks,
+	isCalculBlockStart
+} from './calcul-parser';
+
+// Bloc ```robot
+export { parseRobot, parseRobotContent, findRobotBlocks, isRobotBlockStart } from './robot-parser';
+
+// Bloc ```partage
+export {
+	parsePartage,
+	parsePartageContent,
+	findPartageBlocks,
+	isPartageBlockStart
+} from './partage-parser';
+
+// Blocs d'espace (```cubes)
+export {
+	parseEspace,
+	parseEspaceContent,
+	findEspaceBlocks,
+	isEspaceBlockStart
+} from './espace-parser';
 
 // Bloc ```operation
 export {
@@ -161,6 +203,14 @@ export {
 	findMonnaieBlocks,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+
+// Bloc ```schema-barres
+export {
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	findSchemaBarresBlocks,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
 
 // Bloc ```courbe
 export {

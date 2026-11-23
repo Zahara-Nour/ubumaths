@@ -23,15 +23,17 @@
 
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { generateShareTokenString } from '$lib/server/exercise-share-tokens';
+import type { Database } from '#lib/types/database.ts';
+import { generateShareTokenString } from '#lib/server/exercise-share-tokens.ts';
 import {
 	endOfSchoolYear,
 	type JournalShareToken,
 	type PublicWorksheet
-} from '$lib/server/journal-share-tokens';
-import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/journal-share-tokens.ts';
+import { buildSeriesLink, seriesItemsSchema, totalQuestions } from '#lib/validation/series.ts';
+import { readStoredSeriesMany } from '#lib/server/series-lines.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { withBranches } from '#lib/server/worksheets/worksheet-classification.ts';
 
 const logger = createServerLogger('server/course-share-tokens');
 
@@ -108,9 +110,9 @@ const publicSeriesSchema = z.object({
 	series_id: z.string(),
 	title: z.string(),
 	description: z.string().nullable(),
-	// Validée plus loin, série par série : une composition abîmée ne doit pas
-	// rendre tout le cours illisible.
-	categories: z.unknown(),
+	// Relue plus loin (`resolveCourseShareToken`), série par série : une
+	// composition abîmée ne doit pas rendre tout le cours illisible.
+	items: z.unknown(),
 	form: z.enum(['flash', 'interactive']),
 	...placement
 });
@@ -144,6 +146,22 @@ const publicWorksheetSchema = z.object({
 	config: z.unknown(),
 	status: z.string(),
 	grades: z.array(z.string()).nullable(),
+	// Catégorie, titre libre et notions (ADR 0041) : le PDF du lien est celui de
+	// la classe ; sans ces clés, le schéma les retire
+	category: z.string().nullable().optional(),
+	custom_title: z.boolean().optional(),
+	classifications: z
+		.array(
+			z.object({
+				node_id: z.string().uuid(),
+				name: z.string(),
+				kind: z.string().optional(),
+				branch: z.string().nullable().optional(),
+				position: z.number().int()
+			})
+		)
+		.max(1000)
+		.optional(),
 	translations: z.unknown(),
 	total_points: z.number().nullable(),
 	estimated_duration_minutes: z.number().nullable(),
@@ -242,11 +260,9 @@ export function safeExternalUrl(raw: string | null): string | null {
 }
 
 function toPublicSeries(s: PublicCourseChapter['series'][number]): PublicCourseSeries {
-	const categories = seriesCategoriesSchema.safeParse(s.categories);
-	if (!categories.success) {
-		logger.error('[course-share] Composition illisible pour la série', s.series_id);
-	}
-	const lisible = categories.success ? categories.data : null;
+	// `items` a été relue dans la nouvelle forme par `resolveCourseShareToken`
+	const items = seriesItemsSchema.safeParse(s.items);
+	const lisible = items.success ? items.data : null;
 	return {
 		title: s.title,
 		form: s.form,
@@ -475,6 +491,12 @@ export async function resolveCourseShareToken(
 		logger.error('[course-share] cours de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
+
+	// Compositions relues dans la nouvelle forme (ADR 0035) ; une composition
+	// illisible laisse la série sans lien, pas le cours illisible
+	const allSeries = parsed.data.chapters.flatMap((chapter) => chapter.series);
+	const read = readStoredSeriesMany(allSeries.map((s) => ({ id: s.id, items: s.items })));
+	for (const s of allSeries) s.items = read.get(s.id) ?? null;
 	return parsed.data;
 }
 
@@ -503,7 +525,10 @@ export async function resolveCourseWorksheetByShareToken(
 		logger.error('[course-share] fiche de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
-	return parsed.data;
+	// Branche des notions, pour le titre imprimé (ADR 0041) : lue dans l'arbre, public
+	const { classifications } = parsed.data;
+	if (!classifications) return parsed.data;
+	return { ...parsed.data, classifications: await withBranches(supabase, classifications) };
 }
 
 /**

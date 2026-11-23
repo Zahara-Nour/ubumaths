@@ -1,0 +1,461 @@
+{
+	"id": "e41081cc-c3ef-4881-a781-558d86142e2b",
+	"title": "∈, ∉, ⊂ ou ⊄ ?",
+	"description": "Choisir parmi ∈, ∉, ⊂, ⊄ : 7 … {3 ; 7 ; 12}, {3 ; 13} … {3 ; 7 ; 12}, −4 … ℕ, √5 … ℚ, ℤ … ℕ, ℚ … 𝔻 (piège : ∈ et ⊂ échangés)",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète par $\\in$, $\\notin$, $\\subset$ ou $\\not\\subset$.\n\n$${{x}}\\;\\ldots\\;\\{ {{a}};{{b}};{{c}} \\}$$\n\n```choix\nmelanger: non\n- $\\in$\n- $\\notin$\n- $\\subset$\n- $\\not\\subset$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(u)"
+				},
+				{
+					"name": "w",
+					"expression": "4..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(b)+(w)"
+				},
+				{
+					"name": "z",
+					"expression": "0|1"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(z)*(b)+(1-(z))*((b)+2)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:1-(z)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\in$ et $\\notin$ relient un **élément** à un ensemble ; $\\subset$ et $\\not\\subset$ relient deux **ensembles** : $A\\subset B$ quand **tout** élément de $A$ est dans $B$, $A\\not\\subset B$ dès qu'un élément de $A$ n'est pas dans $B$.",
+					"${{x}}$ est un **nombre**, un élément : on choisit entre $\\in$ et $\\notin$.",
+					"{{if:z==1|${{x}}$ est dans l'ensemble : $\\textcolor{{{color:primary.0}}}{{{x}}\\in\\{ {{a}};{{b}};{{c}} \\}}$.|${{x}}$ n'est pas dans l'ensemble : $\\textcolor{{{color:primary.0}}}{{{x}}\\notin\\{ {{a}};{{b}};{{c}} \\}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète par $\\in$, $\\notin$, $\\subset$ ou $\\not\\subset$.\n\n$$\\{ {{a}};{{y}} \\}\\;\\ldots\\;\\{ {{a}};{{b}};{{c}} \\}$$\n\n```choix\nmelanger: non\n- $\\in$\n- $\\notin$\n- $\\subset$\n- $\\not\\subset$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(u)"
+				},
+				{
+					"name": "w",
+					"expression": "4..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(b)+(w)"
+				},
+				{
+					"name": "z",
+					"expression": "0|1"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(z)*(c)+(1-(z))*((c)+1)"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:3-(z)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\in$ et $\\notin$ relient un **élément** à un ensemble ; $\\subset$ et $\\not\\subset$ relient deux **ensembles** : $A\\subset B$ quand **tout** élément de $A$ est dans $B$, $A\\not\\subset B$ dès qu'un élément de $A$ n'est pas dans $B$.",
+					"$\\{ {{a}};{{y}} \\}$ est un **ensemble** : on choisit entre $\\subset$ et $\\not\\subset$.",
+					"{{if:z==1|${{a}}$ et ${{y}}$ sont tous deux dans $\\{ {{a}};{{b}};{{c}} \\}$ : $\\textcolor{{{color:primary.0}}}{\\{ {{a}};{{y}} \\}\\subset\\{ {{a}};{{b}};{{c}} \\}}$.|${{y}}$ n'est pas dans $\\{ {{a}};{{b}};{{c}} \\}$ : $\\textcolor{{{color:primary.0}}}{\\{ {{a}};{{y}} \\}\\not\\subset\\{ {{a}};{{b}};{{c}} \\}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète par $\\in$, $\\notin$, $\\subset$ ou $\\not\\subset$.\n\n$${{if:t==0|-{{a}}|{{if:t==1|-{{a}}|{{if:t==2|\\dfrac{1}{ {{q}} }|{{if:t==3|\\sqrt{ {{k}} }|\\dfrac{ {{a}} }{ {{q}} }}}}}}}}}\\;\\ldots\\;{{if:t==0|\\mathbb{N}|{{if:t==1|\\mathbb{Z}|{{if:t==2|𝔻|{{if:t==3|\\mathbb{Q}|\\mathbb{Q}}}}}}}}}$$\n\n```choix\nmelanger: non\n- $\\in$\n- $\\notin$\n- $\\subset$\n- $\\not\\subset$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "3|7|9"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|5|7|11"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:1-(1-min(abs((t)-(1)),1))-(1-min(abs((t)-(4)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\in$ et $\\notin$ relient un **élément** à un ensemble ; $\\subset$ et $\\not\\subset$ relient deux **ensembles** : $A\\subset B$ quand **tout** élément de $A$ est dans $B$, $A\\not\\subset B$ dès qu'un élément de $A$ n'est pas dans $B$.",
+					"À gauche, un **nombre** : on choisit entre $\\in$ et $\\notin$.",
+					"{{if:t==0|$-{{a}}$ est négatif, ce n'est pas un entier naturel : $\\textcolor{{{color:primary.0}}}{-{{a}}\\notin\\mathbb{N}}$.|{{if:t==1|$-{{a}}$ est un entier relatif : $\\textcolor{{{color:primary.0}}}{-{{a}}\\in\\mathbb{Z}}$.|{{if:t==2|$\\dfrac{1}{ {{q}} }$ a une écriture décimale qui ne s'arrête pas : $\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{q}} }\\notin𝔻}$.|{{if:t==3|${{k}}$ n'est pas un carré parfait, $\\sqrt{ {{k}} }$ n'est pas rationnel : $\\textcolor{{{color:primary.0}}}{\\sqrt{ {{k}} }\\notin\\mathbb{Q}}$.|$\\dfrac{ {{a}} }{ {{q}} }$ est un quotient d'entiers : $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{a}} }{ {{q}} }\\in\\mathbb{Q}}$.}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète par $\\in$, $\\notin$, $\\subset$ ou $\\not\\subset$.\n\n$${{if:t==0|\\mathbb{N}|{{if:t==1|\\mathbb{Z}|{{if:t==2|𝔻|{{if:t==3|\\mathbb{R}|\\mathbb{Q}}}}}}}}}\\;\\ldots\\;{{if:t==0|\\mathbb{Z}|{{if:t==1|\\mathbb{N}|{{if:t==2|\\mathbb{Q}|{{if:t==3|\\mathbb{Q}|𝔻}}}}}}}}$$\n\n```choix\nmelanger: non\n- $\\in$\n- $\\notin$\n- $\\subset$\n- $\\not\\subset$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				},
+				{
+					"name": "rep",
+					"expression": "eval:3-(1-min(abs((t)-(0)),1))-(1-min(abs((t)-(2)),1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\in$ et $\\notin$ relient un **élément** à un ensemble ; $\\subset$ et $\\not\\subset$ relient deux **ensembles** : $A\\subset B$ quand **tout** élément de $A$ est dans $B$, $A\\not\\subset B$ dès qu'un élément de $A$ n'est pas dans $B$.",
+					"À gauche, un **ensemble** : on choisit entre $\\subset$ et $\\not\\subset$.",
+					"{{if:t==0|Tout entier naturel est un entier relatif : $\\textcolor{{{color:primary.0}}}{\\mathbb{N}\\subset\\mathbb{Z}}$.|{{if:t==1|$-1$ est un entier relatif mais pas un entier naturel : $\\textcolor{{{color:primary.0}}}{\\mathbb{Z}\\not\\subset\\mathbb{N}}$.|{{if:t==2|Tout décimal s'écrit $\\dfrac{a}{10^n}$, quotient d'entiers : $\\textcolor{{{color:primary.0}}}{𝔻\\subset\\mathbb{Q}}$.|{{if:t==3|$\\sqrt{2}$ est réel mais pas rationnel : $\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\not\\subset\\mathbb{Q}}$.|$\\dfrac{1}{3}$ est rationnel mais pas décimal : $\\textcolor{{{color:primary.0}}}{\\mathbb{Q}\\not\\subset𝔻}$.}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 ∈ {3 ; 7 ; 12}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"u": "4",
+				"b": "7",
+				"w": "5",
+				"c": "12",
+				"z": "1",
+				"x": "7",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ⊂ pour un élément",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"u": "4",
+				"b": "7",
+				"w": "5",
+				"c": "12",
+				"z": "1",
+				"x": "7",
+				"rep": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 ∉ {3 ; 7 ; 12}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"u": "4",
+				"b": "7",
+				"w": "5",
+				"c": "12",
+				"z": "0",
+				"x": "9",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "{3 ; 12} ⊂ {3 ; 7 ; 12}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"u": "4",
+				"b": "7",
+				"w": "5",
+				"c": "12",
+				"z": "1",
+				"y": "12",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∈ pour un ensemble",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"u": "4",
+				"b": "7",
+				"w": "5",
+				"c": "12",
+				"z": "1",
+				"y": "12",
+				"rep": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "{3 ; 13} ⊄ {3 ; 7 ; 12}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"u": "4",
+				"b": "7",
+				"w": "5",
+				"c": "12",
+				"z": "0",
+				"y": "13",
+				"rep": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ⊂ alors que 13 manque",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"u": "4",
+				"b": "7",
+				"w": "5",
+				"c": "12",
+				"z": "0",
+				"y": "13",
+				"rep": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−4 ∉ ℕ",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"a": "4",
+				"q": "3",
+				"k": "5",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −4 ∈ ℕ",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"a": "4",
+				"q": "3",
+				"k": "5",
+				"rep": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−4 ∈ ℤ",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"q": "3",
+				"k": "5",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√5 ∉ ℚ",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3",
+				"a": "4",
+				"q": "3",
+				"k": "5",
+				"rep": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4/3 ∈ ℚ",
+			"variationIndex": 2,
+			"variables": {
+				"t": "4",
+				"a": "4",
+				"q": "3",
+				"k": "5",
+				"rep": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ⊂ pour un nombre",
+			"variationIndex": 2,
+			"variables": {
+				"t": "4",
+				"a": "4",
+				"q": "3",
+				"k": "5",
+				"rep": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ℕ ⊂ ℤ",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ℤ ⊄ ℕ",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"rep": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℤ ⊂ ℕ",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"rep": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "𝔻 ⊂ ℚ",
+			"variationIndex": 3,
+			"variables": {
+				"t": "2",
+				"rep": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ℚ ⊄ 𝔻",
+			"variationIndex": 3,
+			"variables": {
+				"t": "4",
+				"rep": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∉ pour un ensemble",
+			"variationIndex": 3,
+			"variables": {
+				"t": "4",
+				"rep": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,10 +1,8 @@
 {
+	"id": "d50c6e21-627f-45eb-9ca1-9dcfa6757563",
 	"title": "Mesure avec la règle",
 	"description": "Lire la longueur d'un segment (2 à 12 cm) posé sur une règle, le 0 au début",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Longueurs",
-	"subdomain": "Comparaison et mesure",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

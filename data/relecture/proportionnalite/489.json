@@ -80,9 +80,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Proportionnalité",
-		"domain": "Tableaux de proportionnalité",
-		"subdomain": "Calculer une quatrième proportionnelle",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

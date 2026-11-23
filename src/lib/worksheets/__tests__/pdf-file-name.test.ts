@@ -5,7 +5,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect } from 'vitest';
-import { sanitizeForFileName, worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
+import { sanitizeForFileName, worksheetPdfFileName } from '#lib/worksheets/pdf-file-name.ts';
 
 describe('sanitizeForFileName', () => {
 	it('retire les accents au lieu de remplacer la lettre', () => {
@@ -37,5 +37,15 @@ describe('worksheetPdfFileName : trois PDF, trois noms', () => {
 		expect(worksheetPdfFileName('Fiche 1', 'answers', 'Dupont Léa')).toBe(
 			'Fiche_1_Dupont_Lea - Réponses.pdf'
 		);
+	});
+
+	it('la version anglaise garde le titre français et finit par _EN', () => {
+		expect(worksheetPdfFileName('Équations', 'worksheet', undefined, 'en')).toBe(
+			'Equations_EN.pdf'
+		);
+		expect(worksheetPdfFileName('Équations', 'correction', 'Dupont Léa', 'en')).toBe(
+			'Equations_Dupont_Lea - Corrigé_EN.pdf'
+		);
+		expect(worksheetPdfFileName('Équations', 'worksheet', undefined, 'fr')).toBe('Equations.pdf');
 	});
 });

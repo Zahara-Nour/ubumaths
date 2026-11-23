@@ -82,22 +82,22 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { studentJournalHref } from '$lib/navigation/return-links';
-	import * as Table from '$lib/components/ui/table';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { StudentWarningCounts } from '$lib/server/warnings';
-	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
-	import { openBonusReasonModal } from '$lib/utils/bonus-modals';
+	import { lore } from '#lib/config/lore.ts';
+	import { studentJournalHref } from '#lib/navigation/return-links.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { StudentWarningCounts } from '#lib/server/warnings.ts';
+	import { openVipCardsModal } from '#lib/utils/vip-card-modals.ts';
+	import { openBonusReasonModal } from '#lib/utils/bonus-modals.ts';
 	import { onDestroy } from 'svelte';
 	import { Star, Loader2, ScrollText } from '@lucide/svelte';
-	import gidouilleImg from '$lib/assets/images/gidouille.png';
-	import type { StudentVipCards } from '$lib/types/vip-card';
-	import { getTotalUnusedCards } from '$lib/utils/vip-cards';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { WARNING_TYPE_LABELS, type WarningType } from '$lib/types/warnings';
+	import gidouilleImg from '#lib/assets/images/gidouille.png';
+	import type { StudentVipCards } from '#lib/types/vip-card.ts';
+	import { getTotalUnusedCards } from '#lib/utils/vip-cards.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+	import { WARNING_TYPE_LABELS, type WarningType } from '#lib/types/warnings.ts';
 
 	// ============================================================================
 	// PROPS

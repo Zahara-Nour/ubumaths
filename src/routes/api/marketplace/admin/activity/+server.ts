@@ -1,7 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/admin/activity/+server');
 
@@ -25,26 +26,7 @@ const activityQuerySchema = z.object({
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
-
-	// Get user profile to determine role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, school_id')
-		.eq('id', userId)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(404, 'Profil non trouvé');
-	}
-
-	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Accès réservé aux enseignants et administrateurs');
-	}
+	const { profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// Validate query parameters
 	const queryValidation = activityQuerySchema.safeParse({
@@ -128,7 +110,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (studentIds.length === 0) {
 		// Return empty activity
-		return json({ activities: [] });
+		return Response.json({ activities: [] });
 	}
 
 	// Fetch recent activities from different tables
@@ -328,5 +310,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Limit to requested amount
 	const limitedActivities = activities.slice(0, limit);
 
-	return json({ activities: limitedActivities });
+	return Response.json({ activities: limitedActivities });
 };

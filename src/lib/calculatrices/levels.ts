@@ -6,7 +6,7 @@
  * l'adresse.
  */
 
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // ===== Types =====
 

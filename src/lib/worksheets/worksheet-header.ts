@@ -30,7 +30,7 @@ import {
 	type CalculatorRule,
 	type WorksheetConfig,
 	type WorksheetType
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 /** Les options qu'un type propose, dans `worksheets.config` */
 export type TypeOptionKey =

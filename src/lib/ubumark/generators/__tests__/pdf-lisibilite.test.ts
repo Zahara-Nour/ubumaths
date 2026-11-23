@@ -13,7 +13,7 @@
  *    de base) : `enum` de Typst le colle en haut d'un premier item haut.
  */
 import { describe, it, expect } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 import { generateTypst } from '../typst-generator';
 
 const typst = (md: string) => generateTypst(parseMarkdown(md), { includeSetup: false });

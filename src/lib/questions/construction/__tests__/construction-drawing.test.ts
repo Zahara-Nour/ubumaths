@@ -1,11 +1,12 @@
 /**
  * Tracé de l'élève (toucher A puis B, aimantation, Effacer) : comportements
- * validés par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
+ * validés par David le 2026-10-25 (`docs/archive/wip/geometrie-validation-progress.md` § 5).
  */
 import { describe, it, expect } from 'vitest';
 import {
 	addTap,
 	canErase,
+	cancelPending,
 	clipLineToWindow,
 	eraseLast,
 	snapTap,
@@ -25,7 +26,7 @@ const POINTS = new Map([
 	['B', { x: 7, y: 2 }],
 	['C', { x: 4, y: 5 }]
 ]);
-const EMPTY: Drawing = { lines: [], start: null };
+const EMPTY: Drawing = { objects: [], start: null };
 
 describe('aimantation', () => {
 	it('près d’un point : sa position exacte', () => {
@@ -53,17 +54,17 @@ describe('aimantation', () => {
 describe('toucher A puis B', () => {
 	it('premier toucher : un départ, aucune droite', () => {
 		const d = addTap(EMPTY, { x: 1, y: 2 });
-		expect(d).toEqual({ lines: [], start: { x: 1, y: 2 } });
+		expect(d).toEqual({ objects: [], start: { x: 1, y: 2 } });
 	});
 
 	it('second toucher : la droite par les deux, jugée juste', () => {
 		const d = addTap(addTap(EMPTY, { x: 1, y: 2 }), { x: 7, y: 2 });
 		expect(d.start).toBeNull();
-		expect(d.lines).toEqual([{ kind: 'droite', x1: 1, y1: 2, x2: 7, y2: 2 }]);
+		expect(d.objects).toEqual([{ kind: 'droite', x1: 1, y1: 2, x2: 7, y2: 2 }]);
 		const checks = [
 			{ kind: 'droite_par' as const, points: ['A', 'B'] as [string, string], line: 1 }
 		];
-		expect(judgeConstruction(checks, POINTS, serializeConstructionAnswer(d.lines))).toEqual({
+		expect(judgeConstruction(checks, POINTS, serializeConstructionAnswer(d.objects))).toEqual({
 			status: 'correct'
 		});
 	});
@@ -78,9 +79,9 @@ describe('toucher A puis B', () => {
 		for (let i = 0; i < CONSTRUCTION_ANSWER_LIMITS.objects + 3; i++) {
 			d = addTap(addTap(d, { x: 0, y: i }), { x: 1, y: i + 0.5 });
 		}
-		expect(d.lines).toHaveLength(CONSTRUCTION_ANSWER_LIMITS.objects);
+		expect(d.objects).toHaveLength(CONSTRUCTION_ANSWER_LIMITS.objects);
 		expect(d.start).toBeNull();
-		expect(parseConstructionAnswer(serializeConstructionAnswer(d.lines))).not.toBeNull();
+		expect(parseConstructionAnswer(serializeConstructionAnswer(d.objects))).not.toBeNull();
 	});
 
 	it('positions longues (tiers) : jamais au-delà de la longueur lisible', () => {
@@ -88,10 +89,10 @@ describe('toucher A puis B', () => {
 		for (let i = 0; i < CONSTRUCTION_ANSWER_LIMITS.objects; i++) {
 			d = addTap(addTap(d, { x: 1 / 3, y: i / 7 }), { x: 2 / 3, y: i / 11 + 1 / 3 });
 		}
-		expect(serializeConstructionAnswer(d.lines).length).toBeLessThanOrEqual(
+		expect(serializeConstructionAnswer(d.objects).length).toBeLessThanOrEqual(
 			CONSTRUCTION_ANSWER_LIMITS.chars
 		);
-		expect(parseConstructionAnswer(serializeConstructionAnswer(d.lines))).not.toBeNull();
+		expect(parseConstructionAnswer(serializeConstructionAnswer(d.objects))).not.toBeNull();
 	});
 });
 
@@ -165,8 +166,11 @@ describe('segments sur quadrillage (CP-060, § 9)', () => {
 	it('toucher un nœud puis un autre : un segment, qui s’arrête à ses deux bouts', () => {
 		const one = addTap(EMPTY, { x: 5, y: 3 }, 'segment');
 		const two = addTap(one, { x: 5, y: 6 }, 'segment');
-		expect(two).toEqual({ lines: [{ kind: 'segment', x1: 5, y1: 3, x2: 5, y2: 6 }], start: null });
-		expect(serializeConstructionAnswer(two.lines)).toBe('segment(5;3;5;6)');
+		expect(two).toEqual({
+			objects: [{ kind: 'segment', x1: 5, y1: 3, x2: 5, y2: 6 }],
+			start: null
+		});
+		expect(serializeConstructionAnswer(two.objects)).toBe('segment(5;3;5;6)');
 	});
 
 	const SQUARE_POINTS = new Map([
@@ -226,4 +230,70 @@ describe('segments sur quadrillage (CP-060, § 9)', () => {
 			status: 'correct'
 		});
 	});
+});
+
+describe('Report (lot 4) : prendre un écartement, piquer ailleurs', () => {
+	const a = { x: 1, y: 8 };
+	const b = { x: 5, y: 8 };
+	const c = { x: 2, y: 2 };
+	const d = { x: 8, y: 2 };
+
+	it('deux touchers : l’écartement, rien dans la réponse', () => {
+		const once = addTap(EMPTY, a, 'report');
+		expect(once.start).toEqual(a);
+		const twice = addTap(once, b, 'report');
+		expect(twice.objects).toEqual([]);
+		expect(twice.start).toBeNull();
+		expect(twice.span).toEqual({ a, b });
+	});
+
+	it('chaque toucher suivant : un cercle de ce rayon, l’écartement gardé', () => {
+		let drawing = addTap(addTap(EMPTY, a, 'report'), b, 'report');
+		drawing = addTap(drawing, c, 'report');
+		drawing = addTap(drawing, d, 'report');
+		expect(drawing.objects).toEqual([
+			{ kind: 'report', cx: 2, cy: 2, ax: 1, ay: 8, bx: 5, by: 8 },
+			{ kind: 'report', cx: 8, cy: 2, ax: 1, ay: 8, bx: 5, by: 8 }
+		]);
+		expect(drawing.span).toEqual({ a, b });
+	});
+
+	it('écartement nul (même point deux fois) : rien', () => {
+		const once = addTap(EMPTY, a, 'report');
+		expect(addTap(once, a, 'report')).toEqual(once);
+	});
+
+	it('changer d’outil : l’écartement est lâché', () => {
+		const drawing = addTap(addTap(EMPTY, a, 'report'), b, 'report');
+		expect(cancelPending(drawing).span).toBeUndefined();
+	});
+
+	it('Effacer sans cercle : lâche l’écartement ; après un cercle : le cercle, l’écartement reste', () => {
+		const spanned = addTap(addTap(EMPTY, a, 'report'), b, 'report');
+		expect(canErase(spanned)).toBe(true);
+		expect(eraseLast(spanned)).toEqual({ objects: [], start: null });
+		const drawn = addTap(spanned, c, 'report');
+		const erased = eraseLast(drawn);
+		expect(erased.objects).toEqual([]);
+		expect(erased.span).toEqual({ a, b });
+	});
+});
+
+describe('réponse `report(cx;cy;ax;ay;bx;by)`', () => {
+	it('se lit et s’écrit', () => {
+		const text = 'report(2;2;1;8;5;8)|segment(2;2;5;3)';
+		const objects = parseConstructionAnswer(text);
+		expect(objects).toEqual([
+			{ kind: 'report', cx: 2, cy: 2, ax: 1, ay: 8, bx: 5, by: 8 },
+			{ kind: 'segment', x1: 2, y1: 2, x2: 5, y2: 3 }
+		]);
+		expect(serializeConstructionAnswer(objects ?? [])).toBe(text);
+	});
+
+	it.each(['report(2;2;1;8;1;8)', 'report(2;2;1;8;5)', 'report(1e7;2;1;8;5;8)'])(
+		'illisible : %s',
+		(text) => {
+			expect(parseConstructionAnswer(text)).toBeNull();
+		}
+	);
 });

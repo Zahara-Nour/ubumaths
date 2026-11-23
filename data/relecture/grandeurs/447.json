@@ -247,9 +247,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Aires",
-		"subdomain": "Aire d'un parallélogramme",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

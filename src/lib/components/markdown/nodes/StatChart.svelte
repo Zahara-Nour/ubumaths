@@ -1,6 +1,6 @@
 <!--
-	StatChart — blocs ```barres et ```circulaire
-	============================================
+	StatChart — blocs statistiques (```barres, ```circulaire… ```boite-a-moustaches)
+	=================================================================================
 
 	Diagramme statistique STATIQUE : SVG sans store ni interaction, dessiné
 	depuis la scène pure `buildStatChartScene` (la même que le PDF Typst).
@@ -12,23 +12,27 @@
 	  `aria-labelledby` / `aria-describedby` ; la description énumère les données.
 	- Erreur (Q48) : message situé pour le prof, cadre neutre « Figure
 	  indisponible » pour l'élève.
+	- Diagramme en barres à construire (`placer:`) : `BarresPlacer.svelte`.
 
 	@module components/markdown/nodes/StatChart
 -->
 <script lang="ts">
-	import { COURBE_COLORS } from '$lib/ubumark/types/courbe';
-	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
+	import { COURBE_COLORS } from '#lib/ubumark/types/courbe.ts';
+	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
 	import {
 		PIE_MARKER_PX,
 		STAT_CHART_CHAR_PX,
 		buildStatChartScene,
 		type ScenePoint,
 		type StatChartScene
-	} from '$lib/ubumark/utils/stat-chart-scene';
+	} from '#lib/ubumark/utils/stat-chart-scene.ts';
 	import { readContentLocale } from '../content-locale';
-	import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
+	import { STAT_TEXT } from '#lib/ubumark/utils/stat-chart-text.ts';
 	import StatChart from './StatChart.svelte';
+	import BarresPlacer from './BarresPlacer.svelte';
+	import BoxPlotChart from './BoxPlotChart.svelte';
+	import BoxPlotPlacer from './BoxPlotPlacer.svelte';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
@@ -130,6 +134,7 @@
 	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
 	let density = $derived(scene?.kind === 'densite' ? scene : null);
 	let scatter = $derived(scene?.kind === 'nuage' ? scene : null);
+	let boxPlot = $derived(scene?.kind === 'boite-a-moustaches' ? scene : null);
 	/** Histogramme, polygone, moyenne selon n, densité, nuage : abscisses continues, axe vertical gradué */
 	let classChart = $derived(histogram ?? cumulative ?? mean ?? density ?? scatter);
 	/** Haut de l'axe vertical : carreaux / effectif (histogramme), 100 % (polygone), moyenne, densité, nuage */
@@ -219,7 +224,13 @@
 	}
 </script>
 
-{#if scene}
+{#if node?.spec?.toPlace && scene}
+	<!-- Diagramme à construire hors question (aperçu, cours) : le geste, rien de jugé -->
+	<BarresPlacer {node} class={className} />
+{:else if node?.spec?.boxPlot?.toPlace && scene}
+	<!-- Boîte à moustaches à construire hors question : le geste, rien de jugé -->
+	<BoxPlotPlacer {node} class={className} />
+{:else if scene}
 	<figure class="stat-figure {className}">
 		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
 		{#if scene.title && !crossTable && !law && !simulation && !comparison && !frequencyTable}
@@ -468,6 +479,9 @@
 					</tbody>
 				</table>
 			</div>
+		{:else if boxPlot}
+			<!-- Boîtes à moustaches : composant à part, mêmes title / desc reliés -->
+			<BoxPlotChart scene={boxPlot} {titleId} {descId} />
 		{:else if bars}
 			<svg
 				role="img"

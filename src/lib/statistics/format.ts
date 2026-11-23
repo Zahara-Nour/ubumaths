@@ -6,7 +6,7 @@
  * (chantier outils statistiques, Q38) : mêmes libellés accentués, même ordre,
  * même règle d'arrondi.
  *
- * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ * ⚠️ Aucun import `#lib` : voir `statistics/describe`.
  *
  * @module statistics/format
  */

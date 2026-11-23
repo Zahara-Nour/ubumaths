@@ -7,13 +7,13 @@
  * chapitre : elle se masque. Son fichier, celui du modèle, n'est jamais touché.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { updateChapterDocument, deleteChapterDocument } from '$lib/server/chapters';
-import { updateDocumentSchema } from '$lib/server/validation/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { updateChapterDocument, deleteChapterDocument } from '#lib/server/chapters.ts';
+import { updateDocumentSchema } from '#lib/server/validation/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapters/[id]/documents/[docId]/+server');
 
@@ -105,7 +105,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to update document');
 	}
 
-	return json({ document: result.data });
+	return Response.json({ document: result.data });
 };
 
 /**
@@ -144,5 +144,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to delete document');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

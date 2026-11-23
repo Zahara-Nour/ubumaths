@@ -28,9 +28,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Proportionnalité",
-		"domain": "Pourcentages",
-		"subdomain": "Calculer",
 		"level": 6,
 		"status": "draft",
 		"delay": 10,

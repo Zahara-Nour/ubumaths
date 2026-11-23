@@ -14,10 +14,10 @@
  */
 
 import { createSystemNotification } from './notifications';
-import { escapeHtml } from '$lib/utils/html-escape';
-import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
-import type { NotificationTargetType } from '$lib/types/notification';
-import { createServerLogger } from '$lib/utils/logger';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
+import { exerciseAnchorHash } from '#lib/worksheets/exercise-anchor.ts';
+import type { NotificationTargetType } from '#lib/types/notification.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/auto-notifications');
 

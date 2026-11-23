@@ -1,0 +1,233 @@
+{
+	"id": "ebefd0a9-b634-487f-b811-ee5abcff763c",
+	"title": "Quotient de puissances (exposants relatifs)",
+	"description": "a^x / a^y = a^(x−y) : exposant négatif au résultat, au dénominateur ; 1 / a^y",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris sous la forme d'une seule puissance : $\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }$.\n\n$\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "0.5|1|1.5|2"
+				},
+				{
+					"name": "p",
+					"expression": "2.5|3|3.5|4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m-p;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tous réels $x$ et $y$ : $\\dfrac{a^x}{a^y}=a^{x-y}$. On **soustrait** les exposants (celui du numérateur moins celui du dénominateur).",
+					"$\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }={{a}}^{ {{m}}-{{p}} }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m-p;d}} }}$ : l'exposant est négatif, car le dénominateur l'emporte."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance : $\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }$.\n\n$\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "m",
+					"expression": "0.5|1|1.5|2|2.5"
+				},
+				{
+					"name": "p",
+					"expression": "-0.5|-1|-1.5|-2"
+				}
+			],
+			"conditions": ["m-p != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ {{eval:m-p;d}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et tous réels $x$ et $y$ : $\\dfrac{a^x}{a^y}=a^{x-y}$. On **soustrait** les exposants (celui du numérateur moins celui du dénominateur). Ces propriétés valent pour tous les réels $x$ et $y$, **positifs ou négatifs**, comme pour les puissances entières.",
+					"$\\dfrac{ {{a}}^{ {{m}} } }{ {{a}}^{ {{p}} } }={{a}}^{ {{m}}-({{p}}) }=\\textcolor{{{color:primary.0}}}{{{a}}^{ {{eval:m-p;d}} }}$ : soustraire un nombre négatif revient à ajouter son opposé."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une seule puissance : $\\dfrac{1}{ {{a}}^{ {{p}} } }$.\n\n$\\dfrac{1}{ {{a}}^{ {{p}} } }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|1.5"
+				},
+				{
+					"name": "p",
+					"expression": "0.5|1.5|2|2.5|3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{ -{{p}} }",
+					"requiredForm": "power"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1={{a}}^0$, donc $\\dfrac{1}{ {{a}}^{ {{p}} } }=\\dfrac{ {{a}}^0}{ {{a}}^{ {{p}} } }$.",
+					"Pour $a>0$ et tous réels $x$ et $y$ : $\\dfrac{a^x}{a^y}=a^{x-y}$. On **soustrait** les exposants (celui du numérateur moins celui du dénominateur).",
+					"$\\dfrac{1}{ {{a}}^{ {{p}} } }={{a}}^{0-{{p}} }=\\textcolor{{{color:primary.0}}}{{{a}}^{ -{{p}} }}$. C'est la définition : $a^{-x}=\\dfrac{1}{a^x}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2^1 / 2^3 = 2^-2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1",
+				"p": "3"
+			},
+			"answers": ["2^{-2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2^2 (ordre inversé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1",
+				"p": "3"
+			},
+			"answers": ["2^{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 1/4 au lieu d'une puissance",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"m": "1",
+				"p": "3"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "1,5^0,5 / 1,5^3,5 = 1,5^-3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1.5",
+				"m": "0.5",
+				"p": "3.5"
+			},
+			"answers": ["1,5^{-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3^1,5 / 3^-2 = 3^3,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "1.5",
+				"p": "-2"
+			},
+			"answers": ["3^{3,5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3^-0,5 (on soustrait mal)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "1.5",
+				"p": "-2"
+			},
+			"answers": ["3^{-0,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3^-3 (exposants multipliés)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"m": "1.5",
+				"p": "-2"
+			},
+			"answers": ["3^{-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 / 5^2,5 = 5^-2,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"p": "2.5"
+			},
+			"answers": ["5^{-2,5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5^2,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"p": "2.5"
+			},
+			"answers": ["5^{2,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −5^2,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"p": "2.5"
+			},
+			"answers": ["-5^{2,5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

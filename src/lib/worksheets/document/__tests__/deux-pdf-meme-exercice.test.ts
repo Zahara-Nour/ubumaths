@@ -10,16 +10,16 @@
  * type de la fiche décide des points et la numérotation est en chiffres arabes.
  */
 import { describe, it, expect } from 'vitest';
-import { generateWorksheetTypst } from '$lib/typst/generators/worksheet-generator';
-import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
-import { DEFAULT_TEMPLATES } from '$lib/typst/templates/default-templates';
+import { generateWorksheetTypst } from '#lib/typst/generators/worksheet-generator.ts';
+import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
+import { DEFAULT_TEMPLATES } from '#lib/typst/templates/default-templates.ts';
 import type {
 	InstanceData,
 	StudentWorksheetView,
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetTemplateRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // FIXTURES : une même fiche, vue par le prof et par l'élève

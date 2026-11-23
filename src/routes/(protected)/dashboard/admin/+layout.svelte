@@ -18,10 +18,10 @@
 
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, refreshAll } from '$app/navigation';
 	import { LogOut, ShieldCheck } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import type { LayoutData } from './$types';
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
@@ -68,7 +68,7 @@
 			}
 			// Re-run server loads so the dropped cookie is reflected, then leave the
 			// admin section (we can no longer access it without re-elevating).
-			await invalidateAll();
+			await refreshAll();
 			await goto('/dashboard');
 		} catch {
 			toaster.error('Erreur réseau. Réessayez.');

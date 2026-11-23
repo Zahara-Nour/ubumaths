@@ -5,7 +5,7 @@
  * une même entrée est un nombre aux deux endroits, ou un mot aux deux (Q92 :
  * une entrée qui se lit comme un nombre n'est jamais un mot).
  *
- * ⚠️ Pas d'import `$lib` dans ce module (cf. v1) : chemins relatifs.
+ * ⚠️ Pas d'import `#lib` dans ce module (cf. v1) : chemins relatifs.
  *
  * @module statistics/read-value
  */

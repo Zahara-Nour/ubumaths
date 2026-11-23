@@ -1,11 +1,9 @@
 {
+	"id": "f69a6e9e-28cf-46e3-b823-5712a2e028d9",
 	"title": "Calculer les racines avec le discriminant (Δ carré parfait)",
 	"description": "Racines entières ou fractionnaires par la formule",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Polynôme du second degré",
 	"status": "draft",
-	"subdomain": "Discriminant",
 	"level": 3,
 	"delay": 60,
 	"options": {

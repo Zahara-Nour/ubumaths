@@ -26,7 +26,7 @@ import {
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 describe('Kanban RLS - Integration Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
@@ -204,28 +204,6 @@ describe('Kanban RLS - Integration Tests', () => {
 				.select('id')
 				.eq('id', column!.id);
 			expect(stillThere).toHaveLength(1);
-		});
-
-		// Obsolete under the single-teacher model (refactor mono-professeur): there is
-		// no second teacher to test cross-teacher isolation against, and creating one is
-		// blocked by the enforce_single_teacher trigger.
-		it.skip('a teacher of another class cannot see the board', async () => {
-			const teacherA = await TestData.profile().withRole('teacher').create();
-			const teacherB = await TestData.profile().withRole('teacher').create();
-			const klass = await TestData.class(teacherA.id).create();
-
-			const { data: board } = await serviceClient
-				.from('kanban_boards')
-				.insert({ owner_id: teacherA.id, class_id: klass.id, title: 'Private to A' })
-				.select()
-				.single();
-
-			const teacherBClient = await createAuthenticatedClient(teacherB.email);
-			const { data: bView } = await teacherBClient
-				.from('kanban_boards')
-				.select('id')
-				.eq('id', board!.id);
-			expect(bView).toHaveLength(0);
 		});
 	});
 

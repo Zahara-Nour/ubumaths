@@ -1,0 +1,356 @@
+{
+	"id": "0369c9ac-5e72-4175-b40b-a23617f23615",
+	"title": "Calculer avec des puissances de 10",
+	"description": "Calculer 10³ + 10², 10⁵ × 10⁻³ / 10², 4,57 × 10³, et trouver un exposant manquant (pièges : 10³ + 10² = 10⁵, signe d'un exposant négatif, exposants multipliés)",
+	"grades": ["2"],
+	"level": 11,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$10^{ {{a}} }+10^{ {{b}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "A",
+					"expression": "eval:10^(a)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:10^(b)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10^(a)+10^(b)"
+				}
+			],
+			"conditions": ["b < a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissances de 10** : $10^{n}=1\\underbrace{0\\cdots0}_{n}$ ; $10^{m}\\times10^{n}=10^{m+n}$ ; $\\dfrac{10^{m}}{10^{n}}=10^{m-n}$ ; $10^{0}=1$. Il n'y a **pas** de règle pour une somme : on calcule chaque puissance.",
+					"$10^{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{A}}}$ et $10^{ {{b}} }=\\textcolor{{{color:primary.1}}}{{{B}}}$.",
+					"$$10^{ {{a}} }+10^{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{A}}}+\\textcolor{{{color:primary.1}}}{{{B}}}=\\textcolor{{{color:primary.2}}}{{{r}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une puissance de $10$.\n\n$$\\dfrac{10^{ {{a}} }\\times10^{ {{b}} } }{10^{ {{c}} } }=10^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..7"
+				},
+				{
+					"name": "b",
+					"expression": "-6..-1"
+				},
+				{
+					"name": "c",
+					"expression": "-4..5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)+(b)-(c)"
+				}
+			],
+			"conditions": ["c != 0", "c != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissances de 10** : $10^{n}=1\\underbrace{0\\cdots0}_{n}$ ; $10^{m}\\times10^{n}=10^{m+n}$ ; $\\dfrac{10^{m}}{10^{n}}=10^{m-n}$ ; $10^{0}=1$.",
+					"Au numérateur : $10^{ {{a}} }\\times10^{ {{b}} }=10^{ {{a}}+({{b}})}=10^{ {{eval:(a)+(b)}} }$.",
+					"$$\\dfrac{10^{ {{eval:(a)+(b)}} } }{10^{ {{c}} } }=10^{ {{eval:(a)+(b)}}-{{if:c<0|({{c}})|{{c}}}} }=\\textcolor{{{color:primary.0}}}{10^{ {{k}} }}{{if:k==0|=1|}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne l'écriture décimale de ce nombre.\n\n$${{eval:(M)/100;d}}\\times10^{ {{p}} }=?$$",
+			"variables": [
+				{
+					"name": "M",
+					"expression": "101..999!m(10)"
+				},
+				{
+					"name": "p",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(M)*10^((p)-2);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $10^{ {{p}} }$, c'est multiplier par ${{eval:10^(p)}}$ : la virgule avance de ${{p}}$ rangs vers la droite, on complète par des zéros si besoin.",
+					"$${{eval:(M)/100;d}}\\times10^{ {{p}} }=\\textcolor{{{color:primary.0}}}{{{eval:(M)*10^((p)-2);d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$10^{ {{a}} }\\times10^{?}=10^{ {{c}} }$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..7"
+				},
+				{
+					"name": "c",
+					"expression": "-6..8"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(c)-(a)"
+				}
+			],
+			"conditions": [
+				"a != 0",
+				"a != 1",
+				"c != 0",
+				"c != 1",
+				"k != 0",
+				"k != 1",
+				"a < 0 or c < 0 or k < 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissances de 10** : $10^{n}=1\\underbrace{0\\cdots0}_{n}$ ; $10^{m}\\times10^{n}=10^{m+n}$ ; $\\dfrac{10^{m}}{10^{n}}=10^{m-n}$ ; $10^{0}=1$.",
+					"Les exposants s'additionnent : ${{a}}+?={{c}}$, donc $?={{c}}-{{if:a<0|({{a}})|{{a}}}}$.",
+					"$$10^{ {{a}} }\\times10^{\\textcolor{{{color:primary.0}}}{{{k}}}}=10^{ {{c}} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "10³ + 10² = 1 100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1\\,100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10³ + 10² = 1100 (sans espace, 4 chiffres)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10³ + 10² = 10⁵ = 100 000",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["100\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10³ + 10² = 10⁵",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["10^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10⁴ + 10³ = 11 000",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["11\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10⁵ × 10⁻³ / 10² = 10⁰",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (5 + 3 − 2 = 6)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposants multipliés (5 × (−3) × 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "2"
+			},
+			"answers": ["-30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10⁴ × 10⁻² / 10⁻³ = 10⁵",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 − 2 − 3 = −1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4,5 × 10³ = 4 500",
+			"variationIndex": 2,
+			"variables": {
+				"M": "450",
+				"p": "3"
+			},
+			"answers": ["4\\,500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,5 × 10³ = 4,5000",
+			"variationIndex": 2,
+			"variables": {
+				"M": "450",
+				"p": "3"
+			},
+			"answers": ["4,5000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4,5 × 10³ = 45 000",
+			"variationIndex": 2,
+			"variables": {
+				"M": "450",
+				"p": "3"
+			},
+			"answers": ["45\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,27 × 10² = 327",
+			"variationIndex": 2,
+			"variables": {
+				"M": "327",
+				"p": "2"
+			},
+			"answers": ["327"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10³ × 10^? = 10⁻² : ? = −5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10³ × 10^? = 10⁻² : ? = 5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −2 + 3 au lieu de −2 − 3 (? = 1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

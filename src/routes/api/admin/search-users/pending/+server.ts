@@ -10,10 +10,10 @@
  * @module api/admin/search-users/pending
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/search-users/pending/+server');
 
@@ -50,7 +50,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				: []
 		}));
 
-		return json({ users: usersWithClasses });
+		return Response.json({ users: usersWithClasses });
 	} catch (err) {
 		logger.error('Error in GET /api/admin/search-users/pending:', err);
 

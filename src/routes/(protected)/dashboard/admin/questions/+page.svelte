@@ -6,7 +6,7 @@
 	 * Features:
 	 * - List all question templates with pagination
 	 * - Server-side sorting (Created date, Last updated date, Question type)
-	 * - Server-side full-text search with PostgreSQL (French config)
+	 * - Recherche côté serveur par titre ou début d'identifiant
 	 * - Filter by type and grade level (multi-select)
 	 * - Debounced search input (500ms delay)
 	 * - View mode toggle (Table / Card grid)
@@ -31,33 +31,33 @@
 	 */
 
 	import type { PageData } from './$types';
-	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
-	import { goto, invalidateAll } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
-	import type { GradeCode } from '$lib/types/grades';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
+	import { goto, refreshAll } from '$app/navigation';
+	import { browser } from '$app/env';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import QuestionTemplateCard from '#lib/components/QuestionTemplateCard.svelte';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { childrenOf, indexNodes, nodePathLabel } from '#lib/questions/classification-tree.ts';
 	import BulkStatusReport from './BulkStatusReport.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import {
 		BulkStatusError,
 		changeTemplatesStatus,
 		type BulkStatusSummary,
-		templateCategoryKey,
 		type BulkTemplateStatus
-	} from '$lib/questions/bulk-status';
+	} from '#lib/questions/bulk-status.ts';
 	import {
 		Plus,
 		Eye,
@@ -77,6 +77,9 @@
 		Send,
 		Undo2
 	} from '@lucide/svelte';
+
+	/** Valeur du filtre « Branche » qui retient les modèles sans nœud (`?nonRanges=1`) */
+	const UNRANKED_FILTER = 'non-ranges';
 
 	let { data }: { data: PageData } = $props();
 
@@ -99,9 +102,11 @@
 			? initialData.filters.grades.split(',').map((g) => g.trim())
 			: []) as GradeCode[]
 	);
-	let selectedTheme = $state<string>(initialData.filters.theme || 'all'); // Filter by theme
-	let selectedDomain = $state<string>(initialData.filters.domain || 'all'); // Filter by domain
-	let selectedSubdomain = $state<string>(initialData.filters.subdomain || 'all'); // Filter by subdomain
+	// Filtre par l'arbre des notions : une branche (ou « Non rangés »), puis une notion
+	let selectedBranch = $state<string>(
+		initialData.filters.nonRanges ? UNRANKED_FILTER : initialData.filters.branche || 'all'
+	);
+	let selectedNotion = $state<string>(initialData.filters.notion || 'all');
 	let minLevel = $state<number | undefined>(
 		initialData.filters.minLevel ? parseInt(initialData.filters.minLevel) : undefined
 	); // Minimum difficulty level
@@ -121,6 +126,27 @@
 	let filtersOpen = $state(true); // Filters section collapsible state
 
 	// Publication par lot
+	const nodesById = $derived(indexNodes(data.nodes));
+	const branchItems = $derived([
+		{ value: 'all', label: 'Toutes les branches' },
+		{ value: UNRANKED_FILTER, label: 'Non rangés' },
+		...childrenOf(data.nodes, null, 'branch').map((node) => ({ value: node.id, label: node.name }))
+	]);
+	const notionItems = $derived([
+		{ value: 'all', label: 'Toutes les notions' },
+		...(selectedBranch === 'all' || selectedBranch === UNRANKED_FILTER
+			? []
+			: childrenOf(data.nodes, selectedBranch, 'notion').map((node) => ({
+					value: node.id,
+					label: node.name
+				})))
+	]);
+
+	/** Chemin dans l'arbre d'un modèle ; rien si son nœud n'est pas dans l'arbre lu */
+	function pathOf(template: { classification_node_id: string | null }): string | null {
+		return nodePathLabel(template.classification_node_id, nodesById);
+	}
+
 	const selectedDraftIds = new SvelteSet<string>(); // Brouillons cochés
 	const selectedPublishedIds = new SvelteSet<string>(); // Publiés cochés (toutes pages)
 	let bulkProgress = $state<{ done: number; total: number } | null>(null); // Paquets envoyés
@@ -132,7 +158,6 @@
 	const questionTypes: { value: string; label: string }[] = [
 		{ value: 'all', label: 'Tous les types' },
 		{ value: 'fill_in_blanks', label: 'À trous' },
-		{ value: 'multiple_choice', label: 'QCM' },
 		{ value: 'course_card', label: 'Carte de cours' }
 	];
 
@@ -317,16 +342,11 @@
 			params.set('grades', selectedGradesList.join(','));
 		}
 
-		if (selectedTheme && selectedTheme !== 'all') {
-			params.set('theme', selectedTheme);
-		}
-
-		if (selectedDomain && selectedDomain !== 'all') {
-			params.set('domain', selectedDomain);
-		}
-
-		if (selectedSubdomain && selectedSubdomain !== 'all') {
-			params.set('subdomain', selectedSubdomain);
+		if (selectedBranch === UNRANKED_FILTER) {
+			params.set('nonRanges', '1');
+		} else if (selectedBranch !== 'all') {
+			params.set('branche', selectedBranch);
+			if (selectedNotion !== 'all') params.set('notion', selectedNotion);
 		}
 
 		if (minLevel !== undefined && minLevel > 0) {
@@ -364,9 +384,8 @@
 		selectedPublishedIds.clear();
 		selectedType = 'all';
 		selectedGradesList = [];
-		selectedTheme = 'all';
-		selectedDomain = 'all';
-		selectedSubdomain = 'all';
+		selectedBranch = 'all';
+		selectedNotion = 'all';
 		minLevel = undefined;
 		maxLevel = undefined;
 		onlyCourseQuestions = false;
@@ -430,12 +449,11 @@
 
 			if (result.success) {
 				// Invalidate caches to force refresh
-				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
 				toaster.success('Modèle dupliqué avec succès');
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
+				goto('/dashboard/admin/questions', { refreshAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la duplication : ' + result.errors.join(', '));
 			}
@@ -471,14 +489,13 @@
 
 			if (result.success) {
 				// Invalidate caches to force refresh
-				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
 				toaster.success('Modèle supprimé avec succès');
 				deleteConfirmOpen = false;
 				templateToDelete = null;
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
+				goto('/dashboard/admin/questions', { refreshAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la suppression');
 			}
@@ -535,24 +552,14 @@
 	 */
 	async function runBulkStatusChange(ids: string[], status: BulkTemplateStatus) {
 		if (ids.length === 0 || isBulkRunning) return;
-		// Publication : les rivaux d'une même catégorie doivent partir dans le même paquet
-		const categoryById = new Map(
-			data.drafts.map((template) => [template.id, templateCategoryKey(template)])
-		);
-		const groupOf = (id: string) => categoryById.get(id) ?? id;
 		bulkSummary = null;
 		bulkError = null;
 		bulkProgress = { done: 0, total: ids.length };
 		let succeeded = false;
 		try {
-			bulkSummary = await changeTemplatesStatus(
-				ids,
-				status,
-				(done, total) => {
-					bulkProgress = { done, total };
-				},
-				status === 'published' ? groupOf : undefined
-			);
+			bulkSummary = await changeTemplatesStatus(ids, status, (done, total) => {
+				bulkProgress = { done, total };
+			});
 			succeeded = true;
 		} catch (err) {
 			console.error('Bulk status error:', err);
@@ -569,10 +576,9 @@
 		}
 		// Après le nettoyage des sélections : la notification peut effacer le compte rendu
 		if (succeeded && bulkSummary) notifyBulkResult(bulkSummary);
-		questionCategoriesCache.invalidate();
 		questionTemplatesCache.invalidate();
 		try {
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			console.error('Reload after bulk status change failed:', err);
 			toaster.error(
@@ -674,14 +680,14 @@
 											class="absolute top-2.5 right-2 h-4 w-4 animate-spin text-muted-foreground"
 										/>
 									{/if}
-									<!-- Désactivée : le serveur ne filtre pas encore sur le texte (index
-									     tsvector à créer). Active, elle laisserait croire que
-									     « Tout cocher (filtrés) » ne coche que les résultats. -->
+									<!-- Filtrée par le serveur, dans les deux onglets : « Tout cocher
+									     (filtrés) » ne coche que les résultats. -->
 									<Input
 										value={searchTerm}
 										oninput={(e) => handleSearchInput(e.currentTarget.value)}
-										placeholder="Recherche indisponible pour l'instant"
-										disabled
+										placeholder="Titre ou début d'identifiant"
+										aria-label="Rechercher un modèle par titre ou début d'identifiant"
+										maxlength={100}
 										class="pr-8 pl-8"
 									/>
 								</div>
@@ -690,46 +696,27 @@
 
 						<!-- Second row: Category filters -->
 						<div class="mt-4 grid gap-4 md:grid-cols-4">
-							<!-- Theme filter -->
+							<!-- Filtre par l'arbre des notions : branche, ou « Non rangés » -->
 							<div class="space-y-2">
-								<Label class="text-sm font-medium">Thème</Label>
-								<select
-									bind:value={selectedTheme}
-									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-								>
-									<option value="all">Tous les thèmes</option>
-									{#each data.categories.themes as theme (theme)}
-										<option value={theme}>{theme}</option>
-									{/each}
-								</select>
+								<Label class="text-sm font-medium">Branche</Label>
+								<MySelect
+									items={branchItems}
+									bind:value={selectedBranch}
+									onValueChange={() => (selectedNotion = 'all')}
+									placeholder="Branche"
+									triggerAriaLabel="Filtrer par branche"
+								/>
 							</div>
 
-							<!-- Domain filter -->
 							<div class="space-y-2">
-								<Label class="text-sm font-medium">Domaine</Label>
-								<select
-									bind:value={selectedDomain}
-									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-								>
-									<option value="all">Tous les domaines</option>
-									{#each data.categories.domains as domain (domain)}
-										<option value={domain}>{domain}</option>
-									{/each}
-								</select>
-							</div>
-
-							<!-- Subdomain filter -->
-							<div class="space-y-2">
-								<Label class="text-sm font-medium">Sous-domaine</Label>
-								<select
-									bind:value={selectedSubdomain}
-									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-								>
-									<option value="all">Tous les sous-domaines</option>
-									{#each data.categories.subdomains as subdomain (subdomain)}
-										<option value={subdomain}>{subdomain}</option>
-									{/each}
-								</select>
+								<Label class="text-sm font-medium">Notion</Label>
+								<MySelect
+									items={notionItems}
+									bind:value={selectedNotion}
+									disabled={selectedBranch === 'all' || selectedBranch === UNRANKED_FILTER}
+									placeholder="Notion"
+									triggerAriaLabel="Filtrer par notion"
+								/>
 							</div>
 
 							<!-- Level range filter -->
@@ -927,8 +914,9 @@
 															<Badge variant="outline" title="Question de cours">Cours</Badge>
 														{/if}
 														<Badge class="bg-warning/10 text-warning">Brouillon</Badge>
-														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
-														<Badge variant="outline" class="text-xs">{template.domain}</Badge>
+														{#if pathOf(template)}
+															<Badge variant="outline" class="text-xs">{pathOf(template)}</Badge>
+														{/if}
 													</div>
 												</td>
 
@@ -1025,6 +1013,7 @@
 								/>
 								<QuestionTemplateCard
 									{template}
+									path={pathOf(template)}
 									onPreview={handlePreview}
 									onEdit={handleEdit}
 									onDuplicate={handleDuplicate}
@@ -1133,8 +1122,9 @@
 														{#if isCourseQuestion(template)}
 															<Badge variant="outline" title="Question de cours">Cours</Badge>
 														{/if}
-														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
-														<Badge variant="outline" class="text-xs">{template.domain}</Badge>
+														{#if pathOf(template)}
+															<Badge variant="outline" class="text-xs">{pathOf(template)}</Badge>
+														{/if}
 													</div>
 												</td>
 
@@ -1232,6 +1222,7 @@
 								/>
 								<QuestionTemplateCard
 									{template}
+									path={pathOf(template)}
 									onPreview={handlePreview}
 									onEdit={handleEdit}
 									onDuplicate={handleDuplicate}

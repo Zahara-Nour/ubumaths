@@ -1,0 +1,255 @@
+{
+	"id": "25991652-9717-4890-bf23-68ee672a913b",
+	"title": "Spirale avec une variable",
+	"description": "Faire tracer à la tortue une spirale ou un escalier qui grandit, avec une variable qui augmente à chaque tour.",
+	"grades": ["4"],
+	"level": 2,
+	"delay": 300,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Fais tracer à la tortue la spirale dessinée en gris : ${{n}}$ traits, le premier mesure ${{a}}$ {{if:a==1|carreau|carreaux}} et chaque trait est plus long de ${{p}}$ que le précédent.\n\nUtilise une variable **côté** : au plus $5$ blocs.\n\n```tortue\nniveau: 4e\nattendu: mettre côté à {{a}} ; répéter {{n}} [ avancer côté ; tourner à gauche 90 ; ajouter {{p}} à côté ]\nmontrer: oui\nblocs: 5\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "n",
+					"expression": "6..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une variable **côté** garde la longueur du trait à tracer : au départ, elle vaut ${{a}}$.",
+					"À chaque tour : avancer de côté, tourner d'un quart de tour à gauche, puis ajouter ${{p}}$ à côté.",
+					"Un programme juste : mettre côté à ${{a}}$ ; répéter ${{n}}$ [ avancer côté ; tourner à gauche $90$ ; ajouter ${{p}}$ à côté ]."
+				]
+			}
+		},
+		{
+			"statement": "Fais tracer à la tortue l'escalier dessiné en gris : ${{n}}$ marches de ${{l}}$ {{if:l==1|carreau|carreaux}} de large ; la première marche a $1$ carreau de haut, et chaque marche est plus haute de $1$ que la précédente.\n\nUtilise une variable **h** pour la hauteur : au plus $7$ blocs.\n\n```tortue\nniveau: 4e\nattendu: mettre h à 1 ; répéter {{n}} [ tourner à gauche 90 ; avancer h ; tourner à droite 90 ; avancer {{l}} ; ajouter 1 à h ]\nmontrer: oui\nblocs: 7\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..4"
+				},
+				{
+					"name": "l",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Une marche : monter (tourner à gauche, avancer de h), puis aller vers la droite (tourner à droite, avancer de ${{l}}$).",
+					"La variable **h** vaut $1$ au départ ; on lui ajoute $1$ après chaque marche.",
+					"Un programme juste : mettre h à $1$ ; répéter ${{n}}$ [ tourner à gauche $90$ ; avancer h ; tourner à droite $90$ ; avancer ${{l}}$ ; ajouter $1$ à h ]."
+				]
+			}
+		},
+		{
+			"statement": "Le programme posé dans l'espace de travail devrait tracer la spirale dessinée en gris, mais tous ses traits ont la même longueur : il trace un carré.\n\nComplète-le pour que chaque trait soit plus long de ${{p}}$ que le précédent (au plus $5$ blocs).\n\n```tortue\nniveau: 4e\nattendu: mettre côté à 1 ; répéter {{n}} [ avancer côté ; tourner à gauche 90 ; ajouter {{p}} à côté ]\ndépart: mettre côté à 1 ; répéter {{n}} [ avancer côté ; tourner à gauche 90 ]\nmontrer: oui\nblocs: 5\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..2"
+				},
+				{
+					"name": "n",
+					"expression": "6..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La variable **côté** ne change jamais : chaque trait mesure $1$.",
+					"Il faut l'augmenter de ${{p}}$ après chaque trait, dans la répétition : ajouter ${{p}}$ à côté.",
+					"Un programme juste : mettre côté à $1$ ; répéter ${{n}}$ [ avancer côté ; tourner à gauche $90$ ; ajouter ${{p}}$ à côté ]."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Spirale : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"n": "6"
+			},
+			"answers": [
+				"mettre côté à 1 ; répéter 6 [ avancer côté ; tourner à gauche 90 ; ajouter 2 à côté ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Spirale : juste, ajouter avant de tourner",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"n": "6"
+			},
+			"answers": [
+				"mettre côté à 1 ; répéter 6 [ avancer côté ; ajouter 2 à côté ; tourner à gauche 90 ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans variable, trop de blocs",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"n": "6"
+			},
+			"answers": [
+				"avancer 1 ; tourner à gauche 90 ; avancer 3 ; tourner à gauche 90 ; avancer 5 ; tourner à gauche 90 ; avancer 7 ; tourner à gauche 90 ; avancer 9 ; tourner à gauche 90 ; avancer 11 ; tourner à gauche 90"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : variable augmentée de 1 au lieu de 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"n": "6"
+			},
+			"answers": [
+				"mettre côté à 1 ; répéter 6 [ avancer côté ; tourner à gauche 90 ; ajouter 1 à côté ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ajouter avant d'avancer",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"n": "6"
+			},
+			"answers": [
+				"mettre côté à 1 ; répéter 6 [ ajouter 2 à côté ; avancer côté ; tourner à gauche 90 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tourner à droite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"n": "6"
+			},
+			"answers": [
+				"mettre côté à 1 ; répéter 6 [ avancer côté ; tourner à droite 90 ; ajouter 2 à côté ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Escalier : juste",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"l": "2"
+			},
+			"answers": [
+				"mettre h à 1 ; répéter 4 [ tourner à gauche 90 ; avancer h ; tourner à droite 90 ; avancer 2 ; ajouter 1 à h ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hauteur qui ne change pas",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"l": "2"
+			},
+			"answers": [
+				"répéter 4 [ tourner à gauche 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ]"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans variable, trop de blocs",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"l": "2"
+			},
+			"answers": [
+				"tourner à gauche 90 ; avancer 1 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 2 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 3 ; tourner à droite 90 ; avancer 2 ; tourner à gauche 90 ; avancer 4 ; tourner à droite 90 ; avancer 2"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Spirale à compléter : juste",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"n": "8"
+			},
+			"answers": [
+				"mettre côté à 1 ; répéter 8 [ avancer côté ; tourner à gauche 90 ; ajouter 1 à côté ]"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : départ non modifié",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"n": "8"
+			},
+			"answers": ["mettre côté à 1 ; répéter 8 [ avancer côté ; tourner à gauche 90 ]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ajouter hors de la répétition",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"n": "8"
+			},
+			"answers": [
+				"mettre côté à 1 ; répéter 8 [ avancer côté ; tourner à gauche 90 ] ; ajouter 1 à côté"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

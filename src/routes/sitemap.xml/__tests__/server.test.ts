@@ -1,8 +1,9 @@
+import { CITIES } from '#lib/kingdom-tour/cities.ts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Articles du test : un paru, un futur, un brouillon
-vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/server/shtam/articles')>();
+vi.mock('#lib/server/shtam/articles.ts', async (importOriginal) => {
+	const original = await importOriginal<typeof import('#lib/server/shtam/articles.ts')>();
 	const raw = (date: string, draft = false) =>
 		`---\ntitle: T\ndate: ${date}\nauthor: pile\nlede: C.\n${draft ? 'draft: true\n' : ''}---\n\nCorps.\n\n## Le vrai du faux\n\nFait.\n`;
 	const articles = original.parseArticles({
@@ -20,7 +21,7 @@ const exercisesQuery = {
 	filters: [] as [string, unknown][]
 };
 
-vi.mock('$lib/server/anonymous-supabase', () => ({
+vi.mock('#lib/server/anonymous-supabase.ts', () => ({
 	createAnonymousSupabase: () => ({
 		from: () => {
 			const chain = {
@@ -40,6 +41,11 @@ vi.mock('$lib/server/anonymous-supabase', () => ({
 			return chain;
 		}
 	})
+}));
+
+// Glossaire : sa lecture a son propre test (sitemap-glossary.test.ts)
+vi.mock('#lib/server/sitemap-glossary.ts', () => ({
+	fetchGlossaryPages: async () => [{ path: '/glossaire/base-puissance', lastmod: '2026-10-11' }]
 }));
 
 const { GET } = await import('../+server');
@@ -82,6 +88,20 @@ describe('sitemap.xml', () => {
 		const xml = await sitemapAt('2026-10-05T10:00:00Z');
 		expect(xml).not.toContain('/shtam/futur');
 		expect(xml).not.toContain('/shtam/brouillon');
+	});
+
+	it('liste les pages du glossaire, datées de leur dernière modification', async () => {
+		const xml = await sitemapAt('2026-10-29T08:00:00Z');
+		expect(xml).toMatch(
+			/<loc>https:\/\/www\.chiph\.re\/glossaire\/base-puissance<\/loc>\s*<lastmod>2026-10-11<\/lastmod>/
+		);
+	});
+
+	it('liste la page de chaque ville du Royaume', async () => {
+		const xml = await sitemapAt('2026-11-01T08:00:00Z');
+		for (const city of CITIES) {
+			expect(xml).toContain(`<loc>https://www.chiph.re/royaume/${city.slug}</loc>`);
+		}
 	});
 
 	it('ne date pas les pages fixes du jour de la requête', async () => {

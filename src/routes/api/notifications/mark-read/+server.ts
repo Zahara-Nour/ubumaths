@@ -4,12 +4,12 @@
  * Mark a specific notification as read
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { markAsRead } from '$lib/server/notifications';
-import { markNotificationReadSchema, validateRequest } from '$lib/server/validation';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { checkNotificationMarkRateLimit } from '$lib/server/rateLimiter';
+import { markAsRead } from '#lib/server/notifications.ts';
+import { markNotificationReadSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { checkNotificationMarkRateLimit } from '#lib/server/rateLimiter.ts';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user } = await requireAuth(locals);
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// ====================================================================
 	const rateLimitResult = await checkNotificationMarkRateLimit(user.id);
 	if (!rateLimitResult.allowed) {
-		return json(
+		return Response.json(
 			{ error: rateLimitResult.message },
 			{
 				status: 429,
@@ -52,5 +52,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, result.error || 'Erreur lors de la mise à jour');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -1,0 +1,224 @@
+{
+	"id": "54d77552-9438-40f3-8773-e3d848a5e219",
+	"title": "Relecture — nombres et calculs, 36 nouveaux modèles",
+	"grade": "2",
+	"description": "Relecture dans /dev/modeles des 36 modèles du gros lot « nombres et calculs » de Seconde.",
+	"items": [
+		{
+			"modele": "Arrondir un nombre décimal",
+			"templateId": "10a51999-6d45-41fb-80db-03b70dfeecb8",
+			"quantity": 1,
+			"delay": 40
+		},
+		{
+			"modele": "Ordre de grandeur : est-ce vraisemblable ?",
+			"templateId": "ca1a1201-e819-4ad2-8237-dd61c3d1dbc2",
+			"quantity": 1,
+			"delay": 30
+		},
+		{
+			"modele": "Comparer une fraction à 1, un entier et une fraction, ranger",
+			"templateId": "51f08367-a8db-4714-a119-821107398cdb",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Compter les entiers d'un intervalle",
+			"templateId": "c6634cf8-b7d9-42f6-b12d-a504fd32bc34",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Distance entre deux nombres",
+			"templateId": "a0018475-8694-4bfb-8823-b722394687d0",
+			"quantity": 1,
+			"delay": 40
+		},
+		{
+			"modele": "Résoudre |x − a| > r",
+			"templateId": "37b3a637-bd6e-46ae-bf85-a19175d41c9a",
+			"quantity": 1,
+			"delay": 75
+		},
+		{
+			"modele": "Calculer avec plusieurs valeurs absolues",
+			"templateId": "896125d8-9c88-44e3-a1eb-9cf070077634",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Somme et différence de fractions",
+			"templateId": "aece0612-6686-46f6-883f-7326cfecd506",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Produit de fractions, en simplifiant avant",
+			"templateId": "3e4a8f6c-55fe-49d1-bf7d-0ae352e1451a",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Quotient de fractions",
+			"templateId": "7b4a0268-8d79-455c-b8f4-0af1b84a96f3",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Entier + fraction plus petite que 1",
+			"templateId": "9882dc64-40cd-48ce-9681-4e7a3be923c8",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculs de fractions avec priorités",
+			"templateId": "a5f9a809-4f1e-4b40-a340-13540500cf3f",
+			"quantity": 1,
+			"delay": 120
+		},
+		{
+			"modele": "Problème : fraction faite, fraction restante",
+			"templateId": "502e4f97-26fa-42e1-b247-e9c57b96f664",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Problème : une fraction du reste",
+			"templateId": "46b95c39-fc13-4e8d-a013-50799dbfd666",
+			"quantity": 1,
+			"delay": 120
+		},
+		{
+			"modele": "Comparer deux fractions",
+			"templateId": "3326ea25-4329-40a9-a3e9-536de7abbb47",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Valeur décimale d'une fraction simple",
+			"templateId": "a1a20304-015a-4c63-807e-aa69a58cbb7d",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Division euclidienne",
+			"templateId": "2be2c495-9f07-4d76-8e21-65e189c8345d",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Critères de divisibilité",
+			"templateId": "943033bf-3420-4660-8941-14bf2c2030d9",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Nombre premier, décomposition en facteurs premiers",
+			"templateId": "73bceb97-6f47-4e93-97c4-70606e8813a7",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Problèmes de PGCD et de PPCM",
+			"templateId": "0bd51758-ede5-4969-b76a-a6608f4a4df1",
+			"quantity": 1,
+			"delay": 120
+		},
+		{
+			"modele": "Valeur d'une puissance",
+			"templateId": "8fb1a23a-6e98-4b58-8745-caf5fec3dc88",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Signe d'une puissance",
+			"templateId": "f6d63dfa-94a6-4be7-b19e-367405c574b6",
+			"quantity": 1,
+			"delay": 30
+		},
+		{
+			"modele": "Notation puissance",
+			"templateId": "f8736002-2920-444f-973f-b365e1c429d5",
+			"quantity": 1,
+			"delay": 30
+		},
+		{
+			"modele": "Écrire un nombre comme une puissance",
+			"templateId": "747d5773-0e0d-4094-9c3b-11daef5e2463",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Puissances : bases cachées",
+			"templateId": "fa0dd978-a74e-4488-bcfd-026aef0288cc",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Priorités avec des puissances",
+			"templateId": "fbb2d0da-e126-41ec-b8d1-f0e97bf4f974",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Écriture scientifique",
+			"templateId": "a80f1a52-d7ad-414e-ad42-6f0f2fe4e761",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer avec des puissances de 10",
+			"templateId": "0369c9ac-5e72-4175-b40b-a23617f23615",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Préfixes et puissances de 10",
+			"templateId": "204ac445-03a6-4c17-b4a3-67704cf664fd",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Une racine carrée existe-t-elle ?",
+			"templateId": "516273a4-899d-4e12-8fe6-6cc1fa055442",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Racine d'un carré parfait",
+			"templateId": "5ddd58db-f08b-44d4-bc9c-67ee47250ace",
+			"quantity": 1,
+			"delay": 30
+		},
+		{
+			"modele": "Calculs directs avec des racines",
+			"templateId": "4c79b893-f663-4e49-9e33-9fd3bacb7e3b",
+			"quantity": 1,
+			"delay": 45
+		},
+		{
+			"modele": "Développer avec des racines",
+			"templateId": "db1834a6-3374-47bd-94c9-87c9aa263604",
+			"quantity": 1,
+			"delay": 90
+		},
+		{
+			"modele": "Encadrer entre deux puissances de 10",
+			"templateId": "9f01ca57-6330-40b6-a423-997ff357a6f3",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Ranger des carrés et des cubes",
+			"templateId": "c7840c10-3e06-4aa7-ab97-257f80cd16d2",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Rationaliser un dénominateur",
+			"templateId": "96ede34c-259b-43f0-b920-d9e90003576e",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

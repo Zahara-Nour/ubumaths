@@ -1,0 +1,217 @@
+{
+	"id": "5f2c283f-244d-413a-bfc1-3f0a4479eb1e",
+	"title": "Nommer une figure : du triangle à l'hexagone",
+	"description": "Triangles, quadrilatère, carré, rectangle, losange, trapèze, trapèze rectangle, pentagone, hexagone : nom le plus précis d'après les codes, d'après la définition ; polygones à compter",
+	"grades": ["CM2"],
+	"level": 13,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "D'après ses codes, quel est le nom le plus précis de cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure avec ses codes.\n---\n{{if:k==0|{{if:o==0|p0 = point(2.3, 2.0, visible=faux)\np1 = point(8.7, 2.0, visible=faux)\np2 = point(1.3, 5.0, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(3.68, 1.71, visible=faux)\np1 = point(8.8, 5.29, visible=faux)\np2 = point(1.2, 3.55, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|p0 = point(7.92, 3.97, visible=faux)\np1 = point(2.08, 6.1, visible=faux)\np2 = point(7.84, 0.9, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)}}}}|{{if:k==1|{{if:o==0|p0 = point(2.2, 1.8, visible=faux)\np1 = point(7.8, 1.8, visible=faux)\np2 = point(2.2, 5.2, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.68, 1.89, visible=faux)\np1 = point(8.27, 5.11, visible=faux)\np2 = point(1.73, 4.68, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")|p0 = point(7.63, 4.14, visible=faux)\np1 = point(2.37, 6.06, visible=faux)\np2 = point(6.47, 0.94, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nangle(p2, p0, p1, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==2|{{if:o==0|p0 = point(3.1, 1.2, visible=faux)\np1 = point(6.9, 1.2, visible=faux)\np2 = point(5.0, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(3.98, 1.07, visible=faux)\np1 = point(7.1, 3.25, visible=faux)\np2 = point(2.9, 5.93, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(6.79, 4.69, visible=faux)\np1 = point(3.21, 5.99, visible=faux)\np2 = point(3.43, 1.01, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==3|{{if:o==0|p0 = point(5.0, 5.53, visible=faux)\np1 = point(2.66, 1.48, visible=faux)\np2 = point(7.34, 1.47, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|{{if:o==1|p0 = point(2.88, 5.83, visible=faux)\np1 = point(3.29, 1.17, visible=faux)\np2 = point(7.12, 3.85, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)|p0 = point(3.61, 1.2, visible=faux)\np1 = point(7.2, 4.2, visible=faux)\np2 = point(2.8, 5.8, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p0)}}}}|{{if:k==4|{{if:o==0|p0 = point(1.7, 2.05, visible=faux)\np1 = point(8.3, 1.65, visible=faux)\np2 = point(5.5, 5.35, visible=faux)\np3 = point(3.6, 4.95, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(2.24, 1.06, visible=faux)\np1 = point(7.87, 4.52, visible=faux)\np2 = point(3.46, 5.94, visible=faux)\np3 = point(2.13, 4.52, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|p0 = point(8.03, 3.22, visible=faux)\np1 = point(1.97, 5.85, visible=faux)\np2 = point(3.33, 1.42, visible=faux)\np3 = point(5.26, 1.15, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)}}}}|{{if:k==5|{{if:o==0|p0 = point(3.0, 1.5, visible=faux)\np1 = point(7.0, 1.5, visible=faux)\np2 = point(7.0, 5.5, visible=faux)\np3 = point(3.0, 5.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(4.54, 0.9, visible=faux)\np1 = point(7.6, 3.04, visible=faux)\np2 = point(5.46, 6.1, visible=faux)\np3 = point(2.4, 3.96, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(7.56, 4.7, visible=faux)\np1 = point(3.8, 6.06, visible=faux)\np2 = point(2.44, 2.3, visible=faux)\np3 = point(6.2, 0.94, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==6|{{if:o==0|p0 = point(1.8, 1.8, visible=faux)\np1 = point(8.2, 1.8, visible=faux)\np2 = point(8.2, 5.2, visible=faux)\np3 = point(1.8, 5.2, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|{{if:o==1|p0 = point(3.67, 0.9, visible=faux)\np1 = point(7.9, 3.86, visible=faux)\np2 = point(6.33, 6.1, visible=faux)\np3 = point(2.1, 3.14, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")|p0 = point(8.47, 3.99, visible=faux)\np1 = point(2.66, 6.1, visible=faux)\np2 = point(1.53, 3.01, visible=faux)\np3 = point(7.34, 0.9, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nangle(p3, p0, p1, marque=\"carre\", couleur=\"noir\")\nangle(p0, p1, p2, marque=\"carre\", couleur=\"noir\")\nangle(p1, p2, p3, marque=\"carre\", couleur=\"noir\")\nangle(p2, p3, p0, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==7|{{if:o==0|p0 = point(5.0, 1.6, visible=faux)\np1 = point(8.2, 3.5, visible=faux)\np2 = point(5.0, 5.4, visible=faux)\np3 = point(1.8, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|{{if:o==1|p0 = point(6.09, 1.94, visible=faux)\np1 = point(7.62, 5.34, visible=faux)\np2 = point(3.91, 5.06, visible=faux)\np3 = point(2.38, 1.66, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)|p0 = point(5.65, 5.29, visible=faux)\np1 = point(1.99, 4.59, visible=faux)\np2 = point(4.35, 1.71, visible=faux)\np3 = point(8.01, 2.41, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)\nmarque_segment(p0, p1)\nmarque_segment(p1, p2)\nmarque_segment(p2, p3)\nmarque_segment(p3, p0)}}}}|{{if:k==8|{{if:o==0|A = point(1.7, 1.75, etiquette=\"bas-gauche\")\nB = point(8.3, 1.75, etiquette=\"droite\")\nC = point(5.3, 5.25, etiquette=\"haut\")\nD = point(3.7, 5.25, etiquette=\"haut-gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)|{{if:o==1|A = point(2.48, 1.03, etiquette=\"bas\")\nB = point(7.89, 4.82, etiquette=\"droite\")\nC = point(3.42, 5.97, etiquette=\"haut\")\nD = point(2.11, 5.05, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)|A = point(8.1, 3.67, etiquette=\"droite\")\nB = point(1.9, 5.93, etiquette=\"haut-gauche\")\nC = point(3.52, 1.62, etiquette=\"bas-gauche\")\nD = point(5.02, 1.07, etiquette=\"bas\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)}}}}|{{if:k==9|{{if:o==0|A = point(1.8, 1.8, etiquette=\"bas-gauche\")\nB = point(8.2, 1.8, etiquette=\"droite\")\nC = point(5.6, 5.2, etiquette=\"haut-droite\")\nD = point(1.8, 5.2, etiquette=\"haut-gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nangle(D, A, B, marque=\"carre\", couleur=\"noir\")\nangle(C, D, A, marque=\"carre\", couleur=\"noir\")|{{if:o==1|A = point(3.35, 1.02, etiquette=\"bas\")\nB = point(8.6, 4.69, etiquette=\"droite\")\nC = point(4.52, 5.98, etiquette=\"haut\")\nD = point(1.4, 3.8, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nangle(D, A, B, marque=\"carre\", couleur=\"noir\")\nangle(C, D, A, marque=\"carre\", couleur=\"noir\")|A = point(7.9, 3.99, etiquette=\"droite\")\nB = point(2.1, 6.1, etiquette=\"haut-gauche\")\nC = point(3.33, 2.16, etiquette=\"bas-gauche\")\nD = point(6.78, 0.9, etiquette=\"bas-droite\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)\nangle(D, A, B, marque=\"carre\", couleur=\"noir\")\nangle(C, D, A, marque=\"carre\", couleur=\"noir\")}}}}|{{if:k==10|{{if:o==0|p0 = point(2.9, 1.1, visible=faux)\np1 = point(6.9, 1.3, visible=faux)\np2 = point(7.9, 4.4, visible=faux)\np3 = point(5.7, 5.9, visible=faux)\np4 = point(2.1, 3.2, visible=faux)\npolygone(p0, p1, p2, p3, p4, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(4.39, 0.9, visible=faux)\np1 = point(7.34, 3.19, visible=faux)\np2 = point(6.45, 6.1, visible=faux)\np3 = point(3.96, 6.07, visible=faux)\np4 = point(2.66, 2.08, visible=faux)\npolygone(p0, p1, p2, p3, p4, couleur=\"bleu\", epaisseur=2)|p0 = point(7.9, 4.69, visible=faux)\np1 = point(4.07, 5.87, visible=faux)\np2 = point(2.07, 3.3, visible=faux)\np3 = point(3.62, 1.13, visible=faux)\np4 = point(7.93, 2.44, visible=faux)\npolygone(p0, p1, p2, p3, p4, couleur=\"bleu\", epaisseur=2)}}}}|{{if:o==0|p0 = point(2.45, 1.29, visible=faux)\np1 = point(6.78, 0.9, visible=faux)\np2 = point(8.32, 3.21, visible=faux)\np3 = point(7.36, 4.75, visible=faux)\np4 = point(4.47, 6.1, visible=faux)\np5 = point(1.68, 3.5, visible=faux)\npolygone(p0, p1, p2, p3, p4, p5, couleur=\"bleu\", epaisseur=2)|{{if:o==1|p0 = point(4.14, 0.9, visible=faux)\np1 = point(7.61, 2.89, visible=faux)\np2 = point(7.55, 5.45, visible=faux)\np3 = point(6.01, 6.1, visible=faux)\np4 = point(3.12, 5.59, visible=faux)\np5 = point(2.39, 2.16, visible=faux)\npolygone(p0, p1, p2, p3, p4, p5, couleur=\"bleu\", epaisseur=2)|p0 = point(7.83, 4.41, visible=faux)\np1 = point(4.22, 6.1, visible=faux)\np2 = point(2.17, 4.59, visible=faux)\np3 = point(2.52, 2.97, visible=faux)\np4 = point(4.58, 0.9, visible=faux)\np5 = point(7.8, 2.26, visible=faux)\npolygone(p0, p1, p2, p3, p4, p5, couleur=\"bleu\", epaisseur=2)}}}}}}}}}}}}}}}}}}}}}}}}}}\n```{{if:k==0||{{if:k==1||{{if:k==2||{{if:k==3||{{if:k==4||{{if:k==5||{{if:k==6||{{if:k==7||{{if:k==8|\n\nOn sait que $(AB) \\parallel (CD)$.|{{if:k==9|\n\nOn sait que $(AB) \\parallel (CD)$.|{{if:k==10||}}}}}}}}}}}}}}}}}}}}}}\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n- trapèze\n- trapèze rectangle\n- pentagone\n- hexagone\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..11"
+				},
+				{
+					"name": "o",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les côtés, puis on lit les codes : petits traits (côtés de même longueur), petits carrés (angles droits), et ce que dit le texte (côtés parallèles).",
+					"C'est {{if:k==0|un polygone qui a trois côtés|{{if:k==1|un triangle qui a un angle droit|{{if:k==2|un triangle qui a deux côtés de la même longueur|{{if:k==3|un triangle qui a ses trois côtés de la même longueur|{{if:k==4|un polygone qui a quatre côtés|{{if:k==5|un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|un quadrilatère qui a quatre angles droits|{{if:k==7|un quadrilatère qui a quatre côtés de la même longueur|{{if:k==8|un quadrilatère qui a deux côtés opposés parallèles|{{if:k==9|un trapèze qui a un angle droit|{{if:k==10|un polygone qui a cinq côtés|un polygone qui a six côtés}}}}}}}}}}}}}}}}}}}}}} : $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\text{triangle}|{{if:k==1|\\text{triangle rectangle}|{{if:k==2|\\text{triangle isocèle}|{{if:k==3|\\text{triangle équilatéral}|{{if:k==4|\\text{quadrilatère}|{{if:k==5|\\text{carré}|{{if:k==6|\\text{rectangle}|{{if:k==7|\\text{losange}|{{if:k==8|\\text{trapèze}|{{if:k==9|\\text{trapèze rectangle}|{{if:k==10|\\text{pentagone}|\\text{hexagone}}}}}}}}}}}}}}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Comment s'appelle {{if:k==0|un polygone qui a trois côtés|{{if:k==1|un triangle qui a un angle droit|{{if:k==2|un triangle qui a deux côtés de la même longueur|{{if:k==3|un triangle qui a ses trois côtés de la même longueur|{{if:k==4|un polygone qui a quatre côtés|{{if:k==5|un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|un quadrilatère qui a quatre angles droits|{{if:k==7|un quadrilatère qui a quatre côtés de la même longueur|{{if:k==8|un quadrilatère qui a deux côtés opposés parallèles|{{if:k==9|un trapèze qui a un angle droit|{{if:k==10|un polygone qui a cinq côtés|un polygone qui a six côtés}}}}}}}}}}}}}}}}}}}}}} ?\n\n```choix\nmelanger: non\n- triangle\n- triangle rectangle\n- triangle isocèle\n- triangle équilatéral\n- quadrilatère\n- carré\n- rectangle\n- losange\n- trapèze\n- trapèze rectangle\n- pentagone\n- hexagone\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..11"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On relit la définition de chaque figure.",
+					"{{if:k==0|Un polygone qui a trois côtés|{{if:k==1|Un triangle qui a un angle droit|{{if:k==2|Un triangle qui a deux côtés de la même longueur|{{if:k==3|Un triangle qui a ses trois côtés de la même longueur|{{if:k==4|Un polygone qui a quatre côtés|{{if:k==5|Un quadrilatère qui a quatre angles droits et quatre côtés de la même longueur|{{if:k==6|Un quadrilatère qui a quatre angles droits|{{if:k==7|Un quadrilatère qui a quatre côtés de la même longueur|{{if:k==8|Un quadrilatère qui a deux côtés opposés parallèles|{{if:k==9|Un trapèze qui a un angle droit|{{if:k==10|Un polygone qui a cinq côtés|Un polygone qui a six côtés}}}}}}}}}}}}}}}}}}}}}}, c'est un $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\text{triangle}|{{if:k==1|\\text{triangle rectangle}|{{if:k==2|\\text{triangle isocèle}|{{if:k==3|\\text{triangle équilatéral}|{{if:k==4|\\text{quadrilatère}|{{if:k==5|\\text{carré}|{{if:k==6|\\text{rectangle}|{{if:k==7|\\text{losange}|{{if:k==8|\\text{trapèze}|{{if:k==9|\\text{trapèze rectangle}|{{if:k==10|\\text{pentagone}|\\text{hexagone}}}}}}}}}}}}}}}}}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien de côtés a ce polygone ? Quel est son nom ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un polygone sans code.\n---\n{{if:k==0|{{if:o==0|p0 = point(2.5, 1.37, visible=faux)\np1 = point(7.5, 3.96, visible=faux)\np2 = point(2.91, 5.63, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)|p0 = point(6.92, 4.53, visible=faux)\np1 = point(1.28, 2.47, visible=faux)\np2 = point(8.72, 2.52, visible=faux)\npolygone(p0, p1, p2, couleur=\"bleu\", epaisseur=2)}}|{{if:k==1|{{if:o==0|p0 = point(2.1, 0.94, visible=faux)\np1 = point(4.61, 3.16, visible=faux)\np2 = point(7.9, 2.49, visible=faux)\np3 = point(3.84, 6.06, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)|p0 = point(7.2, 5.98, visible=faux)\np1 = point(1.67, 4.81, visible=faux)\np2 = point(4.11, 1.02, visible=faux)\np3 = point(8.33, 4.05, visible=faux)\npolygone(p0, p1, p2, p3, couleur=\"bleu\", epaisseur=2)}}|{{if:k==2|{{if:o==0|p0 = point(3.1, 0.92, visible=faux)\np1 = point(7.93, 2.22, visible=faux)\np2 = point(6.9, 6.08, visible=faux)\np3 = point(5.05, 3.31, visible=faux)\np4 = point(2.07, 4.78, visible=faux)\npolygone(p0, p1, p2, p3, p4, couleur=\"bleu\", epaisseur=2)|p0 = point(6.29, 6.04, visible=faux)\np1 = point(2.14, 5.16, visible=faux)\np2 = point(2.17, 1.56, visible=faux)\np3 = point(5.8, 0.96, visible=faux)\np4 = point(7.86, 4.06, visible=faux)\npolygone(p0, p1, p2, p3, p4, couleur=\"bleu\", epaisseur=2)}}|{{if:o==0|p0 = point(3.15, 1.06, visible=faux)\np1 = point(7.98, 2.36, visible=faux)\np2 = point(7.47, 4.29, visible=faux)\np3 = point(4.96, 3.62, visible=faux)\np4 = point(4.33, 5.94, visible=faux)\np5 = point(2.02, 5.31, visible=faux)\npolygone(p0, p1, p2, p3, p4, p5, couleur=\"bleu\", epaisseur=2)|p0 = point(6.7, 6.1, visible=faux)\np1 = point(3.12, 5.59, visible=faux)\np2 = point(1.96, 2.79, visible=faux)\np3 = point(3.84, 0.9, visible=faux)\np4 = point(6.88, 1.81, visible=faux)\np5 = point(8.04, 4.61, visible=faux)\npolygone(p0, p1, p2, p3, p4, p5, couleur=\"bleu\", epaisseur=2)}}}}}}}}\n```\n\n```choix\nmelanger: non\n- triangle\n- quadrilatère\n- pentagone\n- hexagone\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:k+3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les côtés un par un, en partant d'un sommet et en faisant le tour (même quand la figure a un creux).",
+					"Il a ${{n}}$ côtés : c'est un $\\textcolor{{{color:primary.0}}}{{{if:k==0|\\text{triangle}|{{if:k==1|\\text{quadrilatère}|{{if:k==2|\\text{pentagone}|\\text{hexagone}}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Trapèze",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"o": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trapèze dit quadrilatère",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"o": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trapèze rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"o": "0"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré dit rectangle",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"o": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Hexagone",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11",
+				"o": "2"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Définition du trapèze",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Définition du pentagone",
+			"variationIndex": 1,
+			"variables": {
+				"k": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 côtés dit hexagone",
+			"variationIndex": 1,
+			"variables": {
+				"k": "10"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pentagone creux",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"o": "0",
+				"n": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pentagone dit hexagone",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"o": "0",
+				"n": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Hexagone en L",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"o": "0",
+				"n": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

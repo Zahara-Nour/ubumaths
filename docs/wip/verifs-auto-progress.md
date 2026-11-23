@@ -155,3 +155,25 @@ Captures : Atelier (#1315, #1328, #1338, #1634, #1630, #1617, #1313/#1318, #1362
 - **Bug trouvé** : « Comment ? » de `.dériver (e^x)^2` (et `.dériver x*e^x` seul) ne s'ouvre pas, `each_key_duplicate` (deux étapes de même `id`) dans `GeneratedStepsCorrection`. Chantier à part (David) ; test #1674 laissé rouge.
 - **Prod** : la suite tourne contre chiph.re (`VERIFS_URL`), mais la prod n'a pas encore `data-latex` → 19 rouges « réponse en texte », textes visibles conformes. Ligne ajoutée en tête de `verifications-manuelles.md`.
 - `playwright.config.ts` ignore `verifs/**` (`pnpm test:e2e` ne les lance pas) ; la CI ne lance aucun e2e.
+
+## Recommandations venues d'`environnement-workflow` (2026-11-23)
+
+Écrites à la demande de David (« oui fais le ») à la clôture du chantier `environnement-workflow`
+([journal archivé](../archive/environnement-workflow-progress.md)). Ce sont des recommandations de
+cette session-là, que David a acceptées d'y voir notées ; le découpage reste à valider par lui à la
+reprise.
+
+- **Consigne de David du 2026-11-23** : limiter le plus possible les vérifications à la main ; la
+  session vérifie elle-même ([tests.md](../pratiques/tests.md#vérifier-à-lécran-soi-même-avant-de-demander-à-david)).
+  `docs/wip/verifications-manuelles.md` compte 418 lignes non cochées ce jour-là.
+- **R6 — format iPhone et moteur de Safari dans `pnpm test:verifs`** : aujourd'hui un seul projet,
+  Chrome sur grand écran (`playwright.verifs.config.ts`). Beaucoup de lignes disent « téléphone puis
+  ordinateur » : sans ce format, leur moitié « téléphone » reste à David. WebKit est déjà installé
+  (`pnpm voir` s'en sert).
+- **R13 — vérifier la prod après chaque `pnpm deploy:prod`** : rejouer les tests sur `chiph.re`
+  (`VERIFS_URL` existe déjà), résultat envoyé à David. Pages publiques seulement : une session
+  n'entre aucun mot de passe réel.
+- **R12 — notifications** (petite, peut se faire à part) : seulement ce qui demande un geste de
+  David (« lien prêt », « question en attente ») ; pas « CI verte », la session merge seule.
+- **Essayé à distance le 2026-11-23** : `VERIFS_PORT=<port> pnpm test:verifs` (barre de l'Atelier et
+  carnet, 5 verts) depuis un worktree neuf, base locale remplie par `pnpm db:seed-riche`.

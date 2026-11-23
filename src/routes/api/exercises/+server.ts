@@ -4,23 +4,23 @@
  * POST - Create new exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getExercises, createExercise, type ExerciseFilters } from '$lib/server/exercises';
-import type { Database } from '$lib/types/database';
+import { getExercises, createExercise, type ExerciseFilters } from '#lib/server/exercises.ts';
+import type { Database } from '#lib/types/database.ts';
 import {
 	validateListExercisesQuery,
 	validateCreateExercise,
 	exerciseListResponseSchema,
 	createExerciseResponseSchema
-} from '$lib/server/validation';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireRole } from '$lib/server/middleware/auth';
+} from '#lib/server/validation/index.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	isSearchIndexedViolation
-} from '$lib/server/exercise-search-indexed';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/exercise-search-indexed.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/+server');
 
@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		'GET /api/exercises'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -144,5 +144,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		'POST /api/exercises'
 	);
 
-	return json(validated, { status: 201 });
+	return Response.json(validated, { status: 201 });
 };

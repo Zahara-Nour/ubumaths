@@ -5,7 +5,7 @@
  */
 
 import { describe, test, expect } from 'vitest';
-import { areEquivalent } from '$lib/math';
+import { areEquivalent } from '#lib/math/index.ts';
 
 describe('`e` (lettre) ≡ `\\exponentialE` (commande)', () => {
 	test.each([

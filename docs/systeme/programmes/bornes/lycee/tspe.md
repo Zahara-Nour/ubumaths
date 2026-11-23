@@ -41,7 +41,46 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 
 - **TSPE-444** : le BO dit « de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme, et la partie exponentielle n'a aucun point en terminale.
 
-## Terminale spécialité (325 points, 318 avec une borne propre)
+## Couverture en modèles de questions (prod, 2026-11-14)
+
+Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
+2026-11-03 ; journaux dans `docs/archive/wip/questions-tspe*-progress.md` (index + sous-chantiers `proba`,
+`espace`, `restes`, `lot9`) ; 334 couvert ensuite par les chantiers `solide-vecteur` et `tetraedre-vue` ; les
+points P par `questions-tspe-demonstrations` (2026-11-11 au 2026-11-14, journal
+`docs/archive/wip/questions-tspe-demonstrations-progress.md`).
+
+- **342 modèles publiés** de niveau `T_SPE`, aucun brouillon ; **295 points sur 326** ont au moins un modèle publié
+  (relevé MCP du 2026-11-14).
+- **Points P** : tous couverts (20 démonstrations, 22 algorithmes, 36 savoir-faire d'approfondissement). Les 68 qui
+  n'avaient pas de modèle l'ont reçu de `questions-tspe-demonstrations`, un modèle par point, tagué sur son point
+  (ADR 0020), en 15 lots :
+  - **19 démonstrations** (lots 1-4 : 321, 548, 359, 373, 388-391, 405, 421, 448, 449, 471, 472, 494, 495, 512,
+    528, 623) : démonstration à trous (étape clé en case, ou justification en case choix à 4 propositions), plus une
+    variation « étapes à ranger » (bloc ` ```ranger `, `signe: aucun`) ; 321 et 548 en deux modèles distincts.
+  - **18 algorithmes** (lots 5-8) : programme Python à lire, compléter ou corriger (forme D9 de la 1re), jamais
+    de programme aléatoire à faire tourner (table de valeurs donnée pour 514 et 534) ; 393 en un modèle (√2, φ, e).
+  - **31 approfondissements** (lots 9-15) : preuves traitées comme les démonstrations, le reste en exercices
+    d'application à valeurs tirées. Sous-notions posées par migration : « récurrence linéaire d'ordre 2 » (Suites
+    récurrentes, 395) et « loi de Poisson » (Autres lois, 517).
+- **31 points sans modèle, tous voulus** :
+  - **Couverts par leur voisin** (31) — même savoir-faire sur deux lignes du BO, ou notion dont le savoir-faire
+    voisin est la seule épreuve : 301, 540 → 306 ; 544 → 541 ; 547 → 316 ; 317 → 318 ; 326, 327, 328, 330 → 550,
+    333 ; 342 → 345 ; 348 → 357 ; 349 → 565 ; 560 → 367 ; 350 → 370 ; 561 → 369 ; 363 → 365 ; 397, 572, 573 → 415 ;
+    398 → 404 ; 399, 574, 575 → 403 ; 581 → 415 ; 427 → 432 ; 453 → 597-601 ; 477 → 487 ; 608 → 489 ; 503, 504 →
+    508 ; 523 → 524. Les faits « à connaître » des points « = » ont, eux, leur modèle « à savoir » (26, sous-domaine
+    « À savoir » de chaque domaine).
+- **Figures de l'espace** (lot 9, publié le 2026-11-03) : 335-339, 551-553 ont chacun un modèle sur un cube ou un
+  pavé nommé (bloc ` ```solide `), vecteurs et droites écrits dans l'énoncé ; sous-domaines « Sur une figure » et
+  « Positions relatives » ; 339 rangé sur la notion « Espace ».
+- **Vecteurs sur un solide** (334, publié le 2026-11-06) : « Espace : tracer une combinaison linéaire de vecteurs »
+  (`7ce9936b`), réponse = geste ` ```solide ` `tracer: vecteur …` ; cube (origine imposée ou libre, milieux), pavé
+  droit (centres de faces) et tétraèdre (milieux, centre de gravité).
+- Chevauchement avec maths complémentaires : les modèles qui portent aussi `T_COMP` ont été tirés contre les deux
+  bornes (`tcomp.json`, plus étroites).
+- 1cfc575d (modèle de niveau `2`, tagué TSPE-616, publié depuis ; constaté en prod le 2026-11-11) reste tel quel :
+  son tag ne vaut pas couverture, 616 a son modèle `T_SPE` (ea48f760).
+
+## Terminale spécialité (326 points, 319 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
 
@@ -490,6 +529,9 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
   - ⚠ libellé : le BO dit « Utiliser l'équation fonctionnelle de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme et aucun point de Tle spé ne porte la partie exponentielle (elle existe en 1re spé).
   - → David (2026-10-23) : **laisser**
   - → David (2026-10-23) : point neuf à créer à côté — « Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture »
+- **TSPE-626** — Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture
+  - Transformer une écriture avec exp par l'équation fonctionnelle (exp(a + b) = exp(a)·exp(b) et ses conséquences : exp(−a) = 1/exp(a), exp(na) = exp(a)ⁿ) : factoriser, réduire au même dénominateur, diviser par eˣ. — _BO Tle spé p.10_ (BO)
+  - Point neuf, coupé de TSPE-444 (2026-10-23) ; borne écrite le 2026-11-02 (questions-tspe, Q6). La simple réduction d'un exposant est de 1re spé (1SPE-294).
 - **TSPE-445** — Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation
   - Résoudre une équation par l'équation fonctionnelle de l'exponentielle. — _BO Tle spé p.10_ (BO)
   - Équations, inéquations et écritures où intervient exp ou ln, traitées par l'équation fonctionnelle. — _BO Tle spé p.10_ (BO)

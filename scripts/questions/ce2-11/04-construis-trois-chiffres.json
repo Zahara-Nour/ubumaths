@@ -1,0 +1,197 @@
+{
+	"id": "2fafe84d-219d-4298-a212-9f393339f43e",
+	"title": "Construire un nombre de 100 à 999 avec le matériel",
+	"description": "Construire avec plaques, barres et cubes ; avec un zéro (305, 470)",
+	"grades": ["CE2"],
+	"level": 10,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis ${{n}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+10*d+1*u"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{c}}$ {{if:c<=1|centaine|centaines}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
+					"On pose ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+				]
+			}
+		},
+		{
+			"statement": "Construis ${{n}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+1*u"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{c}}$ {{if:c<=1|centaine|centaines}} et ${{u}}$ {{if:u<=1|unité|unités}}, aucune dizaine.",
+					"On pose ${{c}}$ {{if:c<=1|plaque|plaques}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+				]
+			}
+		},
+		{
+			"statement": "Construis ${{n}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+10*d"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{c}}$ {{if:c<=1|centaine|centaines}} et ${{d}}$ {{if:d<=1|dizaine|dizaines}}, aucune unité.",
+					"On pose ${{c}}$ {{if:c<=1|plaque|plaques}} et ${{d}}$ {{if:d<=1|barre|barres}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "347 construit",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"u": "7",
+				"n": "347"
+			},
+			"answers": ["347"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 374 construit",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"u": "7",
+				"n": "347"
+			},
+			"answers": ["374"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 barres au lieu de 3 plaques (77)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"u": "7",
+				"n": "347"
+			},
+			"answers": ["77"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 999 construit",
+			"variationIndex": 0,
+			"variables": {
+				"c": "9",
+				"d": "9",
+				"u": "9",
+				"n": "999"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "305 construit",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"u": "5",
+				"n": "305"
+			},
+			"answers": ["305"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 construit (zéro oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"u": "5",
+				"n": "305"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "470 construit",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"d": "7",
+				"n": "470"
+			},
+			"answers": ["470"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 47 construit",
+			"variationIndex": 2,
+			"variables": {
+				"c": "4",
+				"d": "7",
+				"n": "470"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,101 @@
+[
+	{
+		"id": "0b7c4059-9ab3-48f0-86a8-1731ac53965b",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-060"]
+	},
+	{
+		"id": "28cbee57-88e6-4180-a537-443b4963cc36",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-132"]
+	},
+	{
+		"id": "2b80162e-94fd-48ec-afa9-d4018564113d",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-063"]
+	},
+	{
+		"id": "500804ed-d34a-4a3a-b21a-a7d8de298b3b",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-064"]
+	},
+	{
+		"id": "80bfd3d6-4812-4624-8b45-7017a0470aa8",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-062"]
+	},
+	{
+		"id": "9dc37ad2-1b22-40dc-ade2-8b486328a66b",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-131"]
+	},
+	{
+		"id": "a69eb7f7-599b-4962-9751-5be7b8cd850d",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > perpendiculaires et parallèles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-057"]
+	},
+	{
+		"id": "aac77fdb-a502-41a2-9937-0d7042129cab",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > perpendiculaires et parallèles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-057"]
+	},
+	{
+		"id": "d8991c01-e90b-482e-8daf-3b19cd623248",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Figures planes > triangles",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-066"]
+	}
+]

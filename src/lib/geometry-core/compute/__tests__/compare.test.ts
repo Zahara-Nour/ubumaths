@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { geoEqual, geoIsZero, geoLessThan, geoApproxEqual } from '../compare';
 import { geoFromNumber, geoFromFraction, geoSub, geoMul, geoAdd } from '../geo-arithmetic';
 import { exact, numeric } from '../../types/geo-value';
-import { number, add, subtract, sqrt, multiply, fraction, opposite } from '$lib/mathAST';
+import { number, add, subtract, sqrt, multiply, fraction, opposite } from '#lib/mathAST/index.ts';
 
 // =============================================================================
 // geoEqual - exact values (algebraic equivalence via normalize)

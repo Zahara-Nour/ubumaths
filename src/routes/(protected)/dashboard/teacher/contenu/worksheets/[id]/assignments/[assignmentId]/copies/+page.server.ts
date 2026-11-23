@@ -11,8 +11,8 @@
 
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { sortCopyRecipients } from '$lib/worksheets/student-copies';
-import { loadTextSizes } from '$lib/server/worksheets/print-settings';
+import { sortCopyRecipients } from '#lib/worksheets/student-copies.ts';
+import { loadPrintSettingsMany } from '#lib/server/worksheets/print-settings.ts';
 import type { PageServerLoad } from './$types';
 
 const paramsSchema = z.object({
@@ -65,14 +65,16 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		throw error(500, 'Impossible de charger les élèves de l’affectation');
 	}
 
-	// La taille du texte de chaque élève (accessibilité) : sa copie sort à sa taille
-	const sizes = await loadTextSizes(
+	// Les réglages de chaque élève (accessibilité) : sa copie sort à sa taille,
+	// en lecture facilitée s'il l'a
+	const settings = await loadPrintSettingsMany(
 		locals.supabase,
 		body.data.students.map((student) => student.id)
 	);
 	const students = body.data.students.map((student) => ({
 		...student,
-		text_size: sizes.get(student.id) ?? 'normal'
+		text_size: settings.get(student.id)?.textSize ?? 'normal',
+		easy_reading: settings.get(student.id)?.easyReading ?? false
 	}));
 
 	return {

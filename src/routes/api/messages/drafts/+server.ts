@@ -1,7 +1,7 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/drafts/+server');
 
@@ -24,7 +24,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw error(500, 'Erreur lors de la récupération des brouillons');
 		}
 
-		return json({ drafts: drafts || [] });
+		return Response.json({ drafts: drafts || [] });
 	} catch (err) {
 		logger.error('Error in drafts API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		// ✅ SECURITY: Validate input with Zod
 		const bodyRaw = await request.json();
-		const { saveDraftSchema } = await import('$lib/server/validation/messages');
+		const { saveDraftSchema } = await import('#lib/server/validation/messages.ts');
 		const validation = saveDraftSchema.safeParse(bodyRaw);
 
 		if (!validation.success) {
@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(500, 'Erreur lors de la mise à jour du brouillon');
 			}
 
-			return json({ draft });
+			return Response.json({ draft });
 		} else {
 			// Create new draft
 			const { data: draft, error: createError } = await locals.supabase
@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(500, 'Erreur lors de la création du brouillon');
 			}
 
-			return json({ draft });
+			return Response.json({ draft });
 		}
 	} catch (err) {
 		logger.error('Error in save draft API:', err);

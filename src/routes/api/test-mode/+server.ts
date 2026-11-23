@@ -6,12 +6,12 @@
  * Called when teacher toggles test mode in UI.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { setTeacherTestMode } from '$lib/server/test-mode';
-import { testModeSchema } from '$lib/server/validation/common';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { setTeacherTestMode } from '#lib/server/test-mode.ts';
+import { testModeSchema } from '#lib/server/validation/common.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/test-mode/+server');
 
@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Failed to update test mode preference');
 		}
 
-		return json({ success: true, enabled });
+		return Response.json({ success: true, enabled });
 	} catch (err) {
 		logger.error('Error updating test mode:', err);
 		throw error(500, 'Failed to update test mode');

@@ -19,12 +19,13 @@ import {
 	courseCardBackParts,
 	courseCardFront,
 	excludeCourseCards,
-	isCourseCard
+	isCourseCard,
+	seriesFormExcludesCourseCards
 } from '../course-card';
-import { questionTypeSchema } from '$lib/server/validation/questions';
-import { checkTemplate } from '$lib/migration/review/check-template';
-import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
-import { templateMarkdown } from '$lib/ubumark';
+import { questionTypeSchema } from '#lib/server/validation/questions.ts';
+import { checkTemplate } from '#lib/questions/review/check-template.ts';
+import { toTemplateInsertRow } from '#lib/questions/review/template-insert-row.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -46,8 +47,6 @@ function card(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 			}
 		],
 		grades: ['2'],
-		theme: 'Fonctions',
-		domain: 'Généralités',
 		level: 1,
 		...overrides
 	};
@@ -65,8 +64,6 @@ function blankQuestion(overrides: Partial<QuestionTemplate> = {}): QuestionTempl
 			}
 		],
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Multiplier',
 		level: 1,
 		...overrides
 	};
@@ -87,11 +84,6 @@ describe('type course_card', () => {
 		expect(getQuestionType({ options: { courseCard: false } })).toBe('fill_in_blanks');
 		expect(getQuestionType({ options: {} })).toBe('fill_in_blanks');
 		expect(getQuestionType({ options: null })).toBe('fill_in_blanks');
-	});
-
-	it('laisse inchangée l’inférence QCM', () => {
-		expect(getQuestionType({ choices: [{}, {}] })).toBe('multiple_choice');
-		expect(getQuestionType({ shared: { choices: [{}] } })).toBe('multiple_choice');
 	});
 
 	it('isCourseCard ne répond vrai qu’au booléen true', () => {
@@ -164,7 +156,6 @@ describe('validation d’une carte', () => {
 		const { instance } = result;
 		expect(getQuestionType(instance)).toBe('course_card');
 		expect(instance.blanks).toBeUndefined();
-		expect(instance.choices).toBeUndefined();
 		// La forme LaTeX exacte appartient au moteur ; la variable est résolue
 		expect(courseCardFront(instance)).toMatch(/^Que fait-on en premier/);
 		expect(courseCardFront(instance)).not.toContain('{{');
@@ -275,5 +266,19 @@ describe('verso en étapes générées (generatedSteps)', () => {
 		});
 		expect(parts.text).toBe('Écrit');
 		expect(parts.generatedSteps).toBeUndefined();
+	});
+});
+
+describe('formes de série qui retirent les cartes de cours', () => {
+	// Règle de David (2026-11-09) : une carte non évaluable n'est retirée que
+	// des formes qui corrigent les réponses.
+	it('les retire des formes qui corrigent : Entraînement, Course aux nombres', () => {
+		expect(seriesFormExcludesCourseCards('interactive')).toBe(true);
+		expect(seriesFormExcludesCourseCards('course')).toBe(true);
+	});
+
+	it('les garde dans les formes sans correction : Flash-cards, En classe', () => {
+		expect(seriesFormExcludesCourseCards('flash')).toBe(false);
+		expect(seriesFormExcludesCourseCards('display')).toBe(false);
 	});
 });

@@ -40,7 +40,7 @@ import {
 	power,
 	subtract
 } from '../factory';
-import { normalize, denormalize, exactRational } from '../normal';
+import { exactRational, canonicalForm } from '../normal';
 import { differentiate } from '../differentiation';
 import { substitute } from '../eval/substitute';
 import { mapNode } from '../transforms';
@@ -309,10 +309,8 @@ export function absProductForm(expr: MathNode, variable: string): MathNode | nul
 	const hash = hashMathNode(first);
 	if (absNodes.some((n) => hashMathNode(n) !== hash)) return null;
 
-	const u = denormalize(normalize(first.args[0]));
-	const ratio = denormalize(
-		normalize(divide(expr, multiply(u, func('abs', [u]), 'implicit'), 'fraction'))
-	);
+	const u = canonicalForm(first.args[0]);
+	const ratio = canonicalForm(divide(expr, multiply(u, func('abs', [u]), 'implicit'), 'fraction'));
 	const k = extractExactRational(ratio);
 	if (k === null || k.n === 0n) return null;
 
@@ -587,7 +585,7 @@ export function exponentialFactorForm(expr: MathNode, variable: string): MathNod
 	let cofactor: MathNode;
 	let slope: MathNode;
 	try {
-		cofactor = denormalize(normalize(divide(expr, e, 'fraction')));
+		cofactor = canonicalForm(divide(expr, e, 'fraction'));
 		if (!containsVariable(cofactor, variable)) return null;
 		slope = differentiate(cofactor, { variable });
 	} catch {

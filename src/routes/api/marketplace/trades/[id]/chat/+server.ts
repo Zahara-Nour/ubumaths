@@ -1,9 +1,10 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { chatMessageSchema } from '$lib/server/marketplace/validation';
+import { chatMessageSchema } from '#lib/server/marketplace/validation.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/[id]/chat/+server');
 
@@ -16,11 +17,8 @@ const idSchema = z.string().uuid("ID d'échange invalide");
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate trade ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -67,7 +65,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des messages');
 	}
 
-	return json(messages || []);
+	return Response.json(messages || []);
 };
 
 /**
@@ -76,11 +74,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate request body
 	const body = await request.json().catch(() => ({}));
@@ -143,5 +138,5 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// In Phase 5, we'll broadcast this via Supabase Realtime
 	// For now, the other user will see it when they refresh
 
-	return json(chatMessage, { status: 201 });
+	return Response.json(chatMessage, { status: 201 });
 };

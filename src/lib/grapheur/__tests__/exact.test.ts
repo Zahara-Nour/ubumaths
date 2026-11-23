@@ -7,12 +7,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { computeSequenceTerms, parseSequence } from '$lib/grapheur/sequence';
-import { exactTermValue, exactTermValues } from '$lib/grapheur/exact';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { parseLatex } from '$lib/mathAST/parser';
-import type { MathNode } from '$lib/mathAST/types';
+import { computeSequenceTerms, parseSequence } from '#lib/grapheur/sequence.ts';
+import { exactTermValue, exactTermValues } from '#lib/grapheur/exact.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { evaluate, evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 
 // =============================================================================
 // Helper Functions

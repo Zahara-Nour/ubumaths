@@ -30,7 +30,7 @@ async function insertAsStudent(email: string, userId: string, mode: string) {
 			user_id: userId,
 			// Valeur hors du type généré tant que db:types n'a pas tourné
 			mode: mode as 'interactive',
-			categories: [],
+			items: [],
 			score: 5,
 			total_questions: 4,
 			completed_at: new Date().toISOString()
@@ -138,7 +138,7 @@ describe("séances de flash-cards (mode 'flash')", () => {
 			.insert({
 				title: 'Évaluation test',
 				grade: '6',
-				categories: [{ category: 'entiers/1', quantity: 1, delay: 20 }],
+				items: [{ category: 'entiers/1', quantity: 1, delay: 20 }],
 				created_by: teacher.id
 			})
 			.select('id')
@@ -167,7 +167,7 @@ describe("séances de flash-cards (mode 'flash')", () => {
 		const { error: studentError } = await client.from('test_sessions').insert({
 			user_id: student.id,
 			mode: 'flash' as 'interactive',
-			categories: [],
+			items: [],
 			total_questions: 4,
 			evaluation_id: evaluation!.id
 		});
@@ -178,7 +178,7 @@ describe("séances de flash-cards (mode 'flash')", () => {
 			.insert({
 				user_id: student.id,
 				mode: 'flash' as 'interactive',
-				categories: [],
+				items: [],
 				score: 10,
 				total_questions: 4,
 				evaluation_id: evaluation!.id,
@@ -196,7 +196,7 @@ describe("séances de flash-cards (mode 'flash')", () => {
 			.insert({
 				user_id: student.id,
 				mode: 'interactive',
-				categories: [],
+				items: [],
 				score: 10,
 				total_questions: 4,
 				evaluation_id: evaluation!.id,

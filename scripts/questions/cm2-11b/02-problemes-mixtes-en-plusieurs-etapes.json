@@ -1,0 +1,288 @@
+{
+	"id": "da63ec7b-3968-4e1c-b5a7-f2e2b980c618",
+	"title": "Problèmes mixtes en plusieurs étapes",
+	"description": "Les quatre opérations dans un même problème : un prix à l'unité retrouvé à partir de la monnaie rendue (trois pains, sept chaussons, un billet de 20 €), un achat partagé entre amis, une recette moins des frais",
+	"grades": ["CM2"],
+	"level": 13,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Romy achète ${{n}}$ pains aux raisins à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ l'un et ${{m}}$ chaussons aux pommes. Elle donne un billet de $20~\\unit{€}$ au boulanger, qui lui rend ${{eval:floor((2000-n*p-m*u)/100)}}.{{eval:floor(mod(2000-n*p-m*u,100)/10)}}{{eval:mod(2000-n*p-m*u,10)}}~\\unit{€}$.\n\nQuel est le prix d'un chausson aux pommes ?\n\nUn chausson coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "3..8"
+				},
+				{
+					"name": "pE",
+					"expression": "1..2"
+				},
+				{
+					"name": "pC",
+					"expression": "1..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*pE+pC"
+				},
+				{
+					"name": "uE",
+					"expression": "1..2"
+				},
+				{
+					"name": "uC",
+					"expression": "1..99"
+				},
+				{
+					"name": "u",
+					"expression": "eval:100*uE+uC"
+				}
+			],
+			"conditions": ["2000 - n * p - m * u >= 100", "p != u"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(u)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que Romy a dépensé.** $20 - {{eval:floor((2000-n*p-m*u)/100)}}.{{eval:floor(mod(2000-n*p-m*u,100)/10)}}{{eval:mod(2000-n*p-m*u,10)}} = {{eval:floor((n*p+m*u)/100)}}.{{eval:floor(mod(n*p+m*u,100)/10)}}{{eval:mod(n*p+m*u,10)}}$.",
+					"**Les pains.** ${{n}} \\times {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} = {{eval:floor((n*p)/100)}}.{{eval:floor(mod(n*p,100)/10)}}{{eval:mod(n*p,10)}}$.",
+					"**Les chaussons ensemble.** ${{eval:floor((n*p+m*u)/100)}}.{{eval:floor(mod(n*p+m*u,100)/10)}}{{eval:mod(n*p+m*u,10)}} - {{eval:floor((n*p)/100)}}.{{eval:floor(mod(n*p,100)/10)}}{{eval:mod(n*p,10)}} = {{eval:floor((m*u)/100)}}.{{eval:floor(mod(m*u,100)/10)}}{{eval:mod(m*u,10)}}$.\n\n```schema-barres\nChaussons : ? ; ?{{if:m>2| ; ?|}}{{if:m>3| ; ?|}}{{if:m>4| ; ?|}}{{if:m>5| ; ?|}}{{if:m>6| ; ?|}}{{if:m>7| ; ?|}} = {{eval:floor((m*u)/100)}},{{eval:floor(mod((m*u),100)/10)}}{{eval:mod((m*u),10)}} €\n```",
+					"**Un chausson.** Les ${{m}}$ chaussons coûtent tous le même prix : ${{eval:floor((m*u)/100)}}.{{eval:floor(mod(m*u,100)/10)}}{{eval:mod(m*u,10)}} \\div {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}}}$.",
+					"Un chausson aux pommes coûte ${{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "${{m}}$ amis achètent ensemble ${{k}}$ boîtes de jeux à ${{eval:floor((m*t)/100)}}.{{eval:floor(mod(m*t,100)/10)}}{{eval:mod(m*t,10)}}~\\unit{€}$ la boîte. Ils partagent la dépense en parts égales.\n\nCombien chaque ami paie-t-il ?\n\nChacun paie $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "3..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "70..450"
+				}
+			],
+			"conditions": ["mod(t,5) == 0", "k != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k*t)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La dépense totale.** ${{k}} \\times {{eval:floor((m*t)/100)}}.{{eval:floor(mod(m*t,100)/10)}}{{eval:mod(m*t,10)}} = {{eval:floor((k*m*t)/100)}}.{{eval:floor(mod(k*m*t,100)/10)}}{{eval:mod(k*m*t,10)}}$.",
+					"**Le partage.** On partage en ${{m}}$ parts égales : ${{eval:floor((k*m*t)/100)}}.{{eval:floor(mod(k*m*t,100)/10)}}{{eval:mod(k*m*t,10)}} \\div {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((k*t)/100)}}.{{eval:floor(mod(k*t,100)/10)}}{{eval:mod(k*t,10)}}}$.",
+					"Chaque ami paie ${{eval:floor((k*t)/100)}}.{{eval:floor(mod(k*t,100)/10)}}{{eval:mod(k*t,10)}}~\\unit{€}$.",
+					"On vérifie : ${{m}} \\times {{eval:floor((k*t)/100)}}.{{eval:floor(mod(k*t,100)/10)}}{{eval:mod(k*t,10)}} = {{eval:floor((k*m*t)/100)}}.{{eval:floor(mod(k*m*t,100)/10)}}{{eval:mod(k*m*t,10)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour financer une sortie, la classe vend ${{n}}$ gâteaux à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ le gâteau. Les ingrédients ont coûté ${{eval:F}}~\\unit{€}$.\n\nCombien d'argent reste-t-il pour la sortie ?\n\nIl reste $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "40..360"
+				},
+				{
+					"name": "F",
+					"expression": "35..480"
+				},
+				{
+					"name": "pE",
+					"expression": "1..4"
+				},
+				{
+					"name": "pC",
+					"expression": "1..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*pE+pC"
+				}
+			],
+			"conditions": ["n * p - 100 * F >= 2000", "mod(p,10) != 0", "mod(n,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n*p-100*F)/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La recette.** ${{n}} \\times {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} = {{eval:floor((n*p)/100)}}.{{eval:floor(mod(n*p,100)/10)}}{{eval:mod(n*p,10)}}$.",
+					"**On retire les frais.** ${{eval:floor((n*p)/100)}}.{{eval:floor(mod(n*p,100)/10)}}{{eval:mod(n*p,10)}} - {{F}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((n*p-100*F)/100)}}.{{eval:floor(mod(n*p-100*F,100)/10)}}{{eval:mod(n*p-100*F,10)}}}$.",
+					"Il reste ${{eval:floor((n*p-100*F)/100)}}.{{eval:floor(mod(n*p-100*F,100)/10)}}{{eval:mod(n*p-100*F,10)}}~\\unit{€}$ pour la sortie.",
+					"On vérifie : ${{eval:floor((n*p-100*F)/100)}}.{{eval:floor(mod(n*p-100*F,100)/10)}}{{eval:mod(n*p-100*F,10)}} + {{F}} = {{eval:floor((n*p)/100)}}.{{eval:floor(mod(n*p,100)/10)}}{{eval:mod(n*p,10)}}$ ; on retrouve la recette."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Romy : 3 × 1,35 et 7 chaussons, rendu 7,90 → 1,15 €",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"m": "7",
+				"pE": "1",
+				"pC": "35",
+				"p": "135",
+				"uE": "1",
+				"uC": "15",
+				"u": "115"
+			},
+			"answers": ["1,15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Romy, les pains oubliés ((20 − 7,90) ÷ 7 ≈ 1,73)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"m": "7",
+				"pE": "1",
+				"pC": "35",
+				"p": "135",
+				"uE": "1",
+				"uC": "15",
+				"u": "115"
+			},
+			"answers": ["1,73"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Romy, les sept chaussons ensemble (8,05)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"m": "7",
+				"pE": "1",
+				"pC": "35",
+				"p": "135",
+				"uE": "1",
+				"uC": "15",
+				"u": "115"
+			},
+			"answers": ["8,05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "amis : 3 × 12,60 ÷ 4 = 9,45 €",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"k": "3",
+				"t": "315"
+			},
+			"answers": ["9,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : amis, une boîte partagée (3,15)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"k": "3",
+				"t": "315"
+			},
+			"answers": ["3,15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : amis, sans partager (37,80)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"k": "3",
+				"t": "315"
+			},
+			"answers": ["37,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "gâteaux : 125 × 1,50 − 65 = 122,50 €",
+			"variationIndex": 2,
+			"variables": {
+				"n": "125",
+				"F": "65",
+				"pE": "1",
+				"pC": "50",
+				"p": "150"
+			},
+			"answers": ["122,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : gâteaux, la recette seulement (187,50)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "125",
+				"F": "65",
+				"pE": "1",
+				"pC": "50",
+				"p": "150"
+			},
+			"answers": ["187,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : gâteaux, frais ajoutés (252,50)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "125",
+				"F": "65",
+				"pE": "1",
+				"pC": "50",
+				"p": "150"
+			},
+			"answers": ["252,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

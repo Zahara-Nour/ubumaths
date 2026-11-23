@@ -18,8 +18,8 @@
 -->
 
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Undo2, X, Clock } from '@lucide/svelte';
 	import { onMount, onDestroy } from 'svelte';
 

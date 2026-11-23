@@ -27,6 +27,7 @@ Il rassemble la documentation existante **et** confronte l'audit RGPD historique
 | `registre-sous-traitants.md` | Sous-traitants & DPA (Art. 28)                   | 2026-01-16 — **daté**   |
 | `consentement-parental.md`   | Doc d'implémentation consentement (Art. 8)       | 2026-01-16 — **daté**   |
 | `audit-trail.md`             | Schéma de l'audit trail                          | 2026-01-16 — **daté**   |
+| `violation-de-donnees.md`    | Procédure de violation de données (Art. 33-34)   | 2026-11-03 (brouillon)  |
 
 **Pages publiques liées** : `src/routes/(public)/legal/{mentions-legales,confidentialite,cgu}/+page.svelte`.
 
@@ -51,17 +52,18 @@ sous-traitants **incomplet** (IA tierce non listée) + des **docts datés** à r
 
 ### 1. Rétention des données (`run_cleanup_expired_data()`, cron `rgpd-retention-cleanup`, dim. 03:00 UTC)
 
-| Donnée                                  | Doc janv.             | **Code actuel** | Drift                                       |
-| --------------------------------------- | --------------------- | --------------- | ------------------------------------------- |
-| error_logs                              | 90 j (resolved)       | **30 j (tous)** | modifié (24/05)                             |
-| user_presence                           | 30 j                  | 30 j            | ✓                                           |
-| friendships (rejected)                  | 2 ans                 | 2 ans           | ✓                                           |
-| messages                                | 3 ans (hard delete)   | 3 ans           | ✓                                           |
-| private_messages                        | 3 ans                 | 3 ans           | ✓                                           |
-| audit_logs                              | —                     | **60 j**        | ajouté (24/05)                              |
-| error_occurrences                       | —                     | **30 j**        | ajouté                                      |
-| background_job_runs                     | —                     | **7 j**         | ajouté                                      |
-| **student_attempts / student_progress** | 5 ans + inactif 2 ans | **🔴 RETIRÉS**  | tables « mortes », cleanup supprimé (24/05) |
+| Donnée                                       | Doc janv.             | **Code actuel**                                    | Drift                                          |
+| -------------------------------------------- | --------------------- | -------------------------------------------------- | ---------------------------------------------- |
+| error_logs                                   | 90 j (resolved)       | **30 j (tous)**                                    | modifié (24/05)                                |
+| user_presence                                | 30 j                  | 30 j                                               | ✓                                              |
+| friendships (rejected)                       | 2 ans                 | 2 ans                                              | ✓                                              |
+| messages                                     | 3 ans (hard delete)   | 3 ans                                              | ✓                                              |
+| private_messages                             | 3 ans                 | 3 ans                                              | ✓                                              |
+| audit_logs                                   | —                     | **60 j**                                           | ajouté (24/05)                                 |
+| error_occurrences                            | —                     | **30 j**                                           | ajouté                                         |
+| background_job_runs                          | —                     | **7 j**                                            | ajouté                                         |
+| **student_attempts / student_progress**      | 5 ans + inactif 2 ans | **🔴 RETIRÉS**                                     | tables « mortes », cleanup supprimé (24/05)    |
+| skill_attempts : réponse et verdict par case | —                     | **avant le 1er août de l'année scolaire en cours** | ajouté (L6, 2026-11-11, `purge_trace_answers`) |
 
 > 🔴 **Trou n°1 — rétention pédagogique non appliquée.** Le cron ne nettoie **plus aucune donnée
 > pédagogique**. Les tables ont été renommées (`exercise_completions`, `student_exercise_mastery`
@@ -117,6 +119,22 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > (`student_buddies`, décision de David) ; une lecture en échec rend 500, jamais un export
 > incomplet. `format_version` inchangé (`1.4`). Tableau des catégories : [rgpd.md § 7.3](rgpd.md).
 >
+> ➕ **2026-11-11.** `gaming.avatars` exporte la collection de la boutique d'avatars
+> (`student_avatars` : clé, prix payé, date) ; le profil exporté dit l'avatar porté
+> (`worn_avatar`) et la photo Google gardée (`google_avatar_url`). Une lecture en échec rend 500.
+> `format_version` inchangé (`1.4`).
+>
+> ➕ **2026-11-18.** `gaming.descente` exporte La Descente de la Vistule : les Bêtes de l'élève
+> (`student_beasts`, vivantes, reparties et vaincues, donc son carnet ; lues par pages, au-delà
+> du plafond de 1 000 lignes) et ses coups gagnés (`student_combat_moves`). Une lecture en échec
+> rend 500. `format_version` inchangé (`1.4`).
+>
+> ➕ **2026-11-22.** Les traces (`skill_attempts`) exportent aussi « répondu en QCM »
+> (`answered_as_choice`, chantier `idees-format`, idée 4). `format_version` inchangé.
+>
+> ➕ **2026-11-11.** Les traces (`skill_attempts`) exportent aussi lieu, durées, graine, réponse
+> tapée et verdict par case (ADR 0038, chantier `formes-de-serie`). `format_version` inchangé.
+>
 > ➕ **2026-10-22.** `gaming` exporte aussi la présence de l'élève (`student_last_visits` :
 > `dernier_passage`, jour de la dernière page vue, et `retour_a_feter`, retour après une longue
 > absence pas encore salué par le Palotin), lisible par le serveur seul. Décrite en
@@ -137,7 +155,7 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 | Élément                                 | Doc janv.              | **Code actuel**              | Drift                       |
 | --------------------------------------- | ---------------------- | ---------------------------- | --------------------------- |
 | Grades déclencheurs                     | 6,5,4,3,2 + défaut sûr | **tout sauf 1re/Tle** (base) | ⚠️ corrigé le 2026-10-10    |
-| **Période de grâce**                    | 30 jours               | **date fixe `2026-06-30`**   | ⏰ modifié (15/02)          |
+| **Période de grâce**                    | 30 jours               | **30 jours glissants**       | ✓ (date fixe retirée)       |
 | Service email                           | Gmail                  | **Brevo** (`email/brevo.ts`) | modifié                     |
 | Endpoints protégés                      | ~12                    | **21** (`requireConsent`)    | étendu (+jeux, marketplace) |
 | Tables / fonctions / mode lecture seule | présents               | présents                     | ✓                           |
@@ -152,9 +170,10 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > jamais soumis (33 en prod, archivés) : marqués `consent_rule_pending`, soumis à leur **retour en
 > classe** (migration `20261015090100`).
 
-> ⏰ **Attention calendaire (historique)** : la période de grâce expire le **2026-06-30** (dans ~2 semaines). Après
-> cette date, les élèves < 15 ans **sans consentement validé** repassent en **lecture seule**. À
-> anticiper (relancer les enseignants, ou repousser la date).
+> **Période de grâce (confirmée par David le 2026-11-03)** : **30 jours glissants**, comptés à la
+> création du compte, au passage dans un niveau soumis, ou au retour en classe d'un compte
+> `consent_rule_pending` (migrations `20261001210000`, `20261015090100`). L'ancienne date fixe du
+> 2026-06-30 n'existe plus. Sans consentement validé à l'échéance, l'élève passe en **lecture seule**.
 
 ### 5. Audit trail (Art. 5.2)
 
@@ -173,18 +192,21 @@ anonymise les emails avant insertion.
 
 ### 7. Sous-traitants (Art. 28)
 
-| Sous-traitant                        | Doc janv.                 | **Code actuel**                                                               | Drift             |
-| ------------------------------------ | ------------------------- | ----------------------------------------------------------------------------- | ----------------- |
-| Supabase                             | UE                        | **UE — France eu-west-3**                                                     | ✓ (migration)     |
-| Google (OAuth/Classroom/Drive/Gmail) | 7 scopes                  | **+`classroom.topics.readonly`, `courseworkmaterials`**                       | scopes élargis    |
-| Brevo                                | emails parents            | identique                                                                     | ✓                 |
-| Gmail API                            | emails élèves (scolaires) | identique (stratégie hybride)                                                 | ✓                 |
-| **Groq** (LLM tuteur/chat)           | « à vérifier »            | **🟠 actif en prod** (`/api/chat`, llama-3.3-70b ; msg élève dits anonymisés) | à documenter      |
-| **HuggingFace** (embeddings RAG)     | **absent**                | **🟠 actif en prod** (`multilingual-e5-large`)                                | **non documenté** |
-| Vercel Analytics / Speed Insights    | non détaillé              | **actifs, sans cookie**                                                       | à documenter      |
-| Sentry                               | non utilisé               | non utilisé                                                                   | ✓                 |
+| Sous-traitant                        | Doc janv.                 | **Code actuel**                                                               | Drift                    |
+| ------------------------------------ | ------------------------- | ----------------------------------------------------------------------------- | ------------------------ |
+| Supabase                             | UE                        | **UE — France eu-west-3**                                                     | ✓ (migration)            |
+| Google (OAuth/Classroom/Drive/Gmail) | 7 scopes                  | **+`classroom.topics.readonly`, `courseworkmaterials`**                       | scopes élargis           |
+| Brevo                                | emails parents            | + carnet de liaison (2026-11, politique v1.4)                                 | ✓ documenté (2026-11-17) |
+| Gmail API                            | emails élèves (scolaires) | identique (stratégie hybride)                                                 | ✓                        |
+| **Groq** (LLM tuteur/chat)           | « à vérifier »            | **🟠 actif en prod** (`/api/chat`, llama-3.3-70b ; msg élève dits anonymisés) | à documenter             |
+| **HuggingFace** (embeddings RAG)     | **absent**                | **non activé** (`HF_API_KEY` absente)                                         | ✓ documenté (2026-11-03) |
+| Vercel Analytics / Speed Insights    | non détaillé              | **actifs, sans cookie**                                                       | ✓ documenté (2026-11-03) |
+| Sentry                               | non utilisé               | non utilisé                                                                   | ✓                        |
 
-> 🟠 **Trou n°3 — registre des sous-traitants incomplet.** **HuggingFace** (RAG) manque totalement, et
+> ✅ **2026-11-03** : registre complété (HuggingFace non activé, Vercel Analytics). Reste ouvert :
+> Groq (CCT / zero-retention) et l'archivage des DPA (écart T15).
+>
+> 🟠 **Trou n°3 (historique) — registre des sous-traitants incomplet.** **HuggingFace** (RAG) manque totalement, et
 > **Groq** doit passer de « à vérifier » à « actif » (préférer un prestataire _zero-retention_ + CCT
 > pour ces deux IA US). À reporter dans `registre-traitements.md` (T6) et `registre-sous-traitants.md`.
 
@@ -192,15 +214,15 @@ anonymise les emails avant insertion.
 
 ## Écarts à traiter (priorisés)
 
-| #   | Écart                                                                                             | Priorité      | Article   | Piste                                                                                                                             |
-| --- | ------------------------------------------------------------------------------------------------- | ------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Rétention pédagogique non appliquée (cron ne couvre plus exercise_completions/mastery)            | 🔴 Haute      | 5.1.e     | Réintégrer au cron OU ajuster la politique                                                                                        |
-| 2   | ~~Export Art. 20 : tables inexistantes → données pédagogiques vides~~ ✅ **CORRIGÉ (2026-06-15)** | ✔️ Fait       | 20        | Repointé sur `exercise_completions`/`student_exercise_mastery`/`srs_decks` (+ private_messages/notifications/game_players) + test |
-| 3   | Registre sous-traitants : HuggingFace absent, Groq « à vérifier », Vercel Analytics non détaillé  | 🟠 Moyenne    | 28        | Compléter le registre + CCT/zero-retention                                                                                        |
-| 4   | Période de grâce consentement expire 2026-06-30                                                   | ⏰ Calendaire | 8         | Relancer ou repousser                                                                                                             |
-| 5   | Docs datées (hébergement US, email Gmail, durées)                                                 | 🟡 Basse      | —         | Bandeaux ajoutés ; rafraîchir au besoin                                                                                           |
-| 6   | `[A COMPLÉTER]` mentions légales (identité, statut, directeur publication)                        | 🟠 Moyenne    | LCEN      | Saisir les infos éditeur                                                                                                          |
-| 7   | AIPD à finaliser ; DSA (signalement) ; DPA signés                                                 | 🟠 Moyenne    | 35/DSA/28 | Cf. `aipd-dpia.md`                                                                                                                |
+| #   | Écart                                                                                                            | Priorité   | Article   | Piste                                                                                                                             |
+| --- | ---------------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Rétention pédagogique non appliquée (cron ne couvre plus exercise_completions/mastery)                           | 🔴 Haute   | 5.1.e     | Réintégrer au cron OU ajuster la politique                                                                                        |
+| 2   | ~~Export Art. 20 : tables inexistantes → données pédagogiques vides~~ ✅ **CORRIGÉ (2026-06-15)**                | ✔️ Fait    | 20        | Repointé sur `exercise_completions`/`student_exercise_mastery`/`srs_decks` (+ private_messages/notifications/game_players) + test |
+| 3   | Registre sous-traitants : ~~HuggingFace absent, Vercel Analytics non détaillé~~ ✅ 2026-11-03 ; reste Groq (CCT) | 🟠 Moyenne | 28        | Compléter le registre + CCT/zero-retention                                                                                        |
+| 4   | ~~Période de grâce consentement expire 2026-06-30~~ ✅ 30 jours glissants (confirmé 2026-11-03)                  | ✔️ Fait    | 8         | —                                                                                                                                 |
+| 5   | Docs datées (hébergement US, email Gmail, durées)                                                                | 🟡 Basse   | —         | Bandeaux ajoutés ; rafraîchir au besoin                                                                                           |
+| 6   | `[A COMPLÉTER]` mentions légales (identité, statut, directeur publication)                                       | 🟠 Moyenne | LCEN      | Saisir les infos éditeur                                                                                                          |
+| 7   | AIPD à finaliser ; DSA (signalement) ; DPA signés                                                                | 🟠 Moyenne | 35/DSA/28 | Cf. `aipd-dpia.md`                                                                                                                |
 
 ---
 

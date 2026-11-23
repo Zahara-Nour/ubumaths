@@ -1,10 +1,8 @@
 {
+	"id": "ee822bbc-4f0d-4a1f-97ce-bab91719f14e",
 	"title": "Soustraire un nombre à un chiffre à des dizaines entières",
 	"description": "Exemple : 50 − 6",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Soustraire",
-	"subdomain": "Différence",
 	"level": 14,
 	"delay": 20,
 	"status": "draft",

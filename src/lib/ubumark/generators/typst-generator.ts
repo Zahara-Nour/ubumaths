@@ -50,22 +50,37 @@ import type {
 	CodeBlockNode,
 	TypstTranspilerOptions,
 	ResolvedTypstTranspilerOptions
-} from '$lib/exercises/types';
-import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
-import { expressionToRawLatex } from '$lib/components/markdown/utils/math-utils';
-import { unitWritingToTypst } from '$lib/mathAST/units/display';
-import { toLocaleDecimal } from '$lib/utils/french-math';
+} from '#lib/exercises/types.ts';
+import { getDimensionsForFormat } from '#lib/exercises/services/image-dimensions.ts';
+import { expressionToRawLatex } from '#lib/components/markdown/utils/math-utils.ts';
+import { unitWritingToTypst } from '#lib/mathAST/units/display.ts';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
+import { MOTIF_ECART } from '../utils/calcul-centre';
 import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';
+import type { RangerNode } from '../types/ranger';
+import { displayedLabels } from '../utils/ranger';
+import type { AssocierNode } from '../types/associer';
+import { displayedAssocierLabels } from '../utils/associer';
+import { associerItemHasBlock } from '../parser/associer-parser';
+import type { TrousNode } from '../types/trous';
+import { displayedTrousLabels, TROUS_RESERVE_COLUMNS } from '../utils/trous';
 import { generateQrTypst } from './qr-typst';
+import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
+import { generateTortueTypst } from './tortue-typst';
+import { generateRobotTypst } from './robot-typst';
+import { generateCalculTypst } from './calcul-typst';
+import { generatePartageTypst } from './partage-typst';
+import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
 import { generateCollectionTypst } from './collection-typst';
 import { generateMonnaieTypst } from './monnaie-typst';
+import { generateSchemaBarresTypst } from './schema-barres-typst';
 // Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
 import { renderFigureTypst } from './figure-typst-registry';
 import { parseMarkdown } from '../parser/markdown-parser';
@@ -73,9 +88,17 @@ import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
 import type { NumberLineNode } from '../types/number-line';
-import { createLogger } from '$lib/utils/logger';
-import { detailKindLabel, type CalloutKind, type DetailKind } from '../utils/detail-kinds';
-import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '$lib/typst/image-loader';
+import { createLogger } from '#lib/utils/logger.ts';
+import {
+	detailKindLabel,
+	maskSpans,
+	parseSpanClasses,
+	SPAN_MARK_REGEX,
+	type CalloutKind,
+	type DetailKind
+} from '../utils/detail-kinds';
+import { namedColorTypst, type NamedColor } from '#lib/theme/named-colors.ts';
+import { urlToVirtualPath, isExternalUrl as checkExternalUrl } from '#lib/typst/image-loader.ts';
 
 const logger = createLogger('typst-generator');
 
@@ -193,7 +216,11 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
 	const setup = opts.includeSetup ? generateSetup(opts) : '';
-	const body = generateBody(ast, opts);
+	const generated = generateBody(ast, opts);
+	// Après un titre d'exercice : bloc vide collé en tête (cf. `ubu-item`), pour
+	// qu'un dessin (`context`) qui part sur la page suivante emmène le titre
+	const body =
+		opts.chainedStart && generated.trim() ? `${CHAINED_START_TYPST}\n${generated}` : generated;
 
 	// Document vide : pas d'en-tête (rien à rendre lisible)
 	return setup + (body.trim() ? PDF_READABILITY_HEADER : '') + body;
@@ -213,12 +240,31 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
  *    `tete` = premier paragraphe collé au bloc qui le suit, numéro compris (sinon
  *    le numéro resterait seul sur sa ligne, au-dessus du bloc collé) ;
  *  - `ubu-item-bloc` : item qui commence par un bloc (formule centrée, cercle…),
- *    numéro à côté du bloc comme avant.
+ *    numéro posé (`place`) à gauche de ce bloc, à sa hauteur ;
+ *  - un titre d'exercice collé à l'énoncé ne suit le début de l'énoncé, parti sur
+ *    la page suivante, que si le premier morceau de l'énoncé est VIDE (Typst 0.13,
+ *    mesuré au compilateur de prod, chantier coupures-pdf § 5). Un `block` qui
+ *    enveloppe le contenu, ou un `context` (dessin `cetz` compris) devant un bloc
+ *    qui part en entier, y laissent une trace : le titre restait seul en bas de
+ *    page. D'où, pour les deux items : `context` puis `pad` (qui ne laisse pas de
+ *    trace), précédés d'un bloc vide collé (`sticky`) qui emmène avec lui la trace
+ *    du `context` ; l'espacement de l'item (1,5em, le plus grand l'emporte sur
+ *    celui du voisin, comme `block(spacing: 1.5em)`) porté par deux blocs vides de
+ *    hauteur nulle, `v(0pt, weak: true)` annulant l'espacement du gabarit entre
+ *    eux et le contenu. Rendu identique au point près (mesuré). La tête collée
+ *    (`tete`) reste dans le même `pad` que le corps, pour emmener un dessin ;
+ *  - `ubu-colle()` (dans un `context`) : un paragraphe d'introduction reste collé
+ *    au bloc qui le suit seulement si la coupure tomberait en fin de PAGE (chantier
+ *    coupures-pdf, David, 2026-11-09) : vrai quand le dernier marqueur de coupure
+ *    (`TYPST_BREAK_MARKER`, posé avant la chaîne collée) est dans la dernière
+ *    colonne de sa page — x + 2 × largeur dépasse la largeur de la page. Une seule
+ *    colonne : toujours vrai. Pas encore de marqueur (premier passage) : vrai.
  */
 const PDF_READABILITY_HEADER = [
 	'#show math.equation.where(block: false): set text(top-edge: "bounds", bottom-edge: "bounds")',
-	'#let ubu-item(num, body, w: "a)", tete: none) = context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; block(spacing: 1.5em, pad(left: n, if tete == none { ligne(body) } else { block(sticky: true, ligne(tete)); body })) }',
-	'#let ubu-item-bloc(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, grid(columns: (n, 1fr), box(width: n - 0.5em, align(end, num)), body)) }',
+	'#let ubu-colle() = { let m = query(selector(<ubu-coupure>).before(here())); if m.len() == 0 { return true }; let d = m.last(); let w = if page.flipped { page.height } else { page.width }; type(w) != length or d.location().position().x + 2 * d.value > w }',
+	'#let ubu-item(num, body, w: "a)", tete: none) = { block(sticky: true, above: 1.5em, below: 0pt); v(0pt, weak: true); context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; pad(left: n, if tete == none { ligne(body) } else { block(sticky: ubu-colle(), ligne(tete)); body }) }; v(0pt, weak: true); block(above: 0pt, below: 1.5em) }',
+	'#let ubu-item-bloc(num, body, w: "a)") = { block(sticky: true, above: 1.5em, below: 0pt); v(0pt, weak: true); context { let n = measure(w).width + 0.5em; pad(left: n, { block(sticky: true, above: 0pt, below: 0pt, place(top + left, dx: -n, box(width: n - 0.5em, align(end, num)))); v(0pt, weak: true); body }) }; v(0pt, weak: true); block(above: 0pt, below: 1.5em) }',
 	'// ubumark: fin de l’en-tête',
 	''
 ].join('\n');
@@ -297,7 +343,9 @@ function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions
 		const last = ast.children.length - 1;
 		return ast.children
 			.map((node, index) =>
-				index === last ? stickyBlock(node, options) : generateTopBlock(ast, index, options)
+				index === last
+					? stickyBlock(node, options, isChained(ast, index, options))
+					: generateTopBlock(ast, index, options)
 			)
 			.join('\n\n');
 	}
@@ -312,7 +360,14 @@ function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions
 			if (node.type !== 'list' || !node.ordered) return generateTopBlock(ast, index, options);
 			const first = questionIndex;
 			questionIndex += node.items.length;
-			return generateList(node, options, 0, (index) => afterQuestion(first + index));
+			return generateList(
+				node,
+				options,
+				0,
+				(index) => afterQuestion(first + index),
+				false,
+				isChained(ast, index, options)
+			);
 		})
 		.join('\n\n');
 }
@@ -324,8 +379,28 @@ function generateTopBlock(
 	options: ResolvedTypstTranspilerOptions
 ): string {
 	const node = ast.children[index];
+	const chained = isChained(ast, index, options);
+	if (node.type === 'list') return generateList(node, options, 0, undefined, false, chained);
 	const typst = generateBlock(node, options);
-	return keepsWithNext(node, ast.children[index + 1]) ? keepWithNext(typst) : typst;
+	// Titre : collé par Typst à ce qui le suit, il ouvre une chaîne → son marqueur
+	if (node.type === 'heading') return chained ? typst : `${TYPST_BREAK_MARKER}\n${typst}`;
+	return keepsWithNext(node, ast.children[index + 1]) ? keepWithNextOnPage(typst, chained) : typst;
+}
+
+/**
+ * Le bloc de premier niveau `index` continue-t-il une chaîne de blocs collés ?
+ * Après un titre (collé par Typst) ou un paragraphe collé à lui ; le premier bloc,
+ * si le document suit un titre d'exercice (`chainedStart`). Un bloc qui continue
+ * une chaîne n'a pas de marqueur de coupure : celui du début de la chaîne sert.
+ */
+function isChained(
+	ast: DocumentNode,
+	index: number,
+	options: ResolvedTypstTranspilerOptions
+): boolean {
+	if (index === 0) return options.chainedStart === true;
+	const previous = ast.children[index - 1];
+	return previous.type === 'heading' || keepsWithNext(previous, ast.children[index]);
 }
 
 /** Blocs qu'un paragraphe ne quitte pas en bas de page (décision de David, 2026-10-26) */
@@ -348,14 +423,49 @@ function keepsWithNext(
  * fin de colonne, le suivant (cadre de réponse) ne part pas seul. Une liste :
  * seul son dernier élément est collé, le reste peut se couper.
  */
-function stickyBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions): string {
-	if (node.type === 'list') return generateList(node, options, 0, undefined, true);
+function stickyBlock(
+	node: BlockNode,
+	options: ResolvedTypstTranspilerOptions,
+	chained: boolean
+): string {
+	if (node.type === 'list') return generateList(node, options, 0, undefined, true, chained);
 	return keepWithNext(generateBlock(node, options));
 }
 
 /** Typst collé à ce qui le suit */
 function keepWithNext(typst: string, spacing = ''): string {
 	return `#block(width: 100%, sticky: true${spacing})[\n${typst}\n]`;
+}
+
+/**
+ * Tête d'un énoncé qui suit un titre d'exercice (`chainedStart`) : bloc vide de
+ * hauteur nulle, collé à ce qui le suit. Si le premier bloc de l'énoncé part sur
+ * la page suivante, il l'emmène avec la trace d'un `context` (dessin `cetz`) qui
+ * le précède : le premier morceau de l'énoncé reste vide, le titre suit. `v(0pt,
+ * weak: true)` : l'espace au-dessus du premier bloc reste supprimé, comme en tête
+ * de l'énoncé.
+ */
+export const CHAINED_START_TYPST =
+	'#block(sticky: true, above: 0pt, below: 0pt)\n#v(0pt, weak: true)';
+
+/**
+ * Marqueur de coupure (chantier coupures-pdf) : posé AVANT une chaîne de blocs
+ * collés, il reste là où finit le contenu précédent, quoi que la chaîne devienne :
+ * `ubu-colle()` y lit la colonne (sans oscillation de la mise en page). Sa valeur :
+ * la largeur disponible. `place` sans alignement vertical : à la position courante,
+ * hors du flux — un bloc de hauteur nulle, premier bloc d'une colonne, empêchait
+ * Typst d'y supprimer l'espace au-dessus du titre (+ 18 pt en haut de chaque
+ * colonne, mesuré sur les fiches en base). Jamais entre deux blocs collés.
+ */
+export const TYPST_BREAK_MARKER = '#place(left, layout(r => [#metadata(r.width) <ubu-coupure>]))';
+
+/**
+ * Paragraphe d'introduction collé au bloc qui le suit, en fin de page seulement
+ * (`ubu-colle()`). Marqueur devant lui, sauf s'il continue une chaîne (`chained`).
+ */
+function keepWithNextOnPage(typst: string, chained: boolean): string {
+	const marker = chained ? '' : `${TYPST_BREAK_MARKER}\n`;
+	return `${marker}#context block(width: 100%, sticky: ubu-colle())[\n${typst}\n]`;
 }
 
 /** Espacement d'un élément de liste (celui de `ubu-item`), pour un élément enveloppé */
@@ -411,7 +521,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateTrigCircleTypst(node as unknown as TrigCircleNode);
 
 		case 'number-line':
-			return generateNumberLineTypst(node as unknown as NumberLineNode);
+			return generateNumberLineTypst(node as unknown as NumberLineNode, {
+				language: options.language
+			});
 
 		case 'courbe':
 			return generateCourbeTypst(node, { language: options.language });
@@ -424,14 +536,22 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'qr':
 			return generateQrTypst(node);
+		case 'scratch':
+			return generateScratchTypst(node);
 		case 'horloge':
 			return generateHorlogeTypst(node);
+		case 'partage':
+			return generatePartageTypst(node);
+		case 'espace':
+			return generateEspaceTypst(node);
 		case 'operation':
 			return generateOperationTypst(node);
 		case 'collection':
 			return generateCollectionTypst(node);
 		case 'monnaie':
 			return generateMonnaieTypst(node);
+		case 'schema-barres':
+			return generateSchemaBarresTypst(node);
 		case 'choice':
 			// Bloc ```choix (case « choix ») : « A) … » par choix, chaque choix rendu en markdown
 			return node.choices
@@ -442,6 +562,22 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 					return `*${String.fromCharCode(65 + index)})* ${body}`;
 				})
 				.join('\n\n');
+
+		case 'ranger':
+			return generateRangerTypst(node, options);
+		case 'associer':
+			return generateAssocierTypst(node, options);
+		case 'trous':
+			return generateTrousTypst(node, options);
+		case 'tortue':
+			// Programme tortue : la figure à reproduire (`montrer: oui`) et « À faire sur Chiphre »
+			return generateTortueTypst(node);
+		case 'calcul':
+			// Programme de calcul : « À faire sur Chiphre » (la consigne est dans l'énoncé)
+			return generateCalculTypst(node);
+		case 'robot':
+			// Robot : le quadrillage ; à produire, « Écris le code : » et 15 cases vides
+			return generateRobotTypst(node);
 
 		default:
 			return '';
@@ -487,10 +623,14 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			// qu'un `]` d'intervalle (`]2 ; 3[`) fermerait trop tôt
 			let text = escapeTypstBrackets(unescapedContent);
 			if (node.bold) text = `*${text}*`;
+			// Texte coloré `[…]{.orange}` (ADR 0042) : au plus près du texte, pour qu'il
+			// l'emporte sur le gris d'un calcul intermédiaire (comme à l'écran)
+			text = wrapInlineColor(text, node.color);
+			// `;` final : sans lui, un `(`, `[` ou `.lettre` collé après serait lu comme la suite de l'appel
 			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
-			if (node.italic) text = `#emph[${text}]`;
-			if (node.strikethrough) text = `#strike[${text}]`;
-			if (node.highlight) text = `#highlight[${text}]`;
+			if (node.italic) text = `#emph[${text}];`;
+			if (node.strikethrough) text = `#strike[${text}];`;
+			if (node.highlight) text = `#highlight[${text}];`;
 			return wrapInlineDetail(text, node.detail);
 		}
 
@@ -539,7 +679,7 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			//
 			// Future: When Typst fixes bug #4796, we can reconsider using box().
 			// ============================================================================
-			return wrapInlineDetail(`$${typstMath}$`, node.detail);
+			return wrapInlineDetail(wrapInlineColor(`$${typstMath}$`, node.color), node.detail);
 		}
 
 		case 'line-break':
@@ -660,7 +800,8 @@ function generateList(
 	options: ResolvedTypstTranspilerOptions,
 	enumerateDepth: number = 0,
 	afterItem?: (index: number) => string,
-	stickyLast = false
+	stickyLast = false,
+	chained = false
 ): string {
 	// Calculate new depth: only ordered lists increment enumerate depth
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
@@ -688,30 +829,43 @@ function generateList(
 			head ? { ...item, children: item.children.slice(1) } : item,
 			options,
 			newDepth,
-			after !== '' && !unbreakable
+			after !== '' && !unbreakable,
+			head !== ''
 		);
 		const content = after ? `${itemContent}\n${after}` : itemContent;
 		// Item qui commence par un bloc (formule centrée, cercle…) : numéro à côté du bloc
 		const helper =
 			item.children[0] && item.children[0].type !== 'paragraph' ? 'ubu-item-bloc' : 'ubu-item';
 		const sticky = stickyLast && index === node.items.length - 1;
-		return { helper, num: label + head, content, unbreakable, sticky };
+		// Numéro et première phrase collés au bloc qui suit (`tete`) : marqueur de
+		// coupure devant l'élément, sauf pour le premier d'une liste qui continue
+		// une chaîne (liste collée au paragraphe qui l'introduit)
+		const marker = head !== '' && !(index === 0 && chained);
+		return { helper, num: label + head, content, unbreakable, sticky, marker };
 	});
 
 	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
 	// répartit pas dans une page déjà en deux colonnes.
 	if (node.columns && node.columns > 1) {
-		const cells = items.map(({ helper, num, content }) => `${helper}(${num})[${content}]`);
+		// Marqueurs de coupure hors des cellules (largeur de cellule, pas de colonne) :
+		// un seul, avant la grille, si une cellule a un bloc collé en fin de page
+		const cells = items.map(({ helper, num, content }) =>
+			`${helper}(${num})[${content}]`.split(`${TYPST_BREAK_MARKER}\n`).join('')
+		);
 		const fractions = Array(node.columns).fill('1fr').join(', ');
 		const grid = `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
-		return stickyLast ? keepWithNext(grid) : grid;
+		const glued = cells.some((cell) => cell.includes('ubu-colle()') || cell.includes('tete: ['));
+		const marker = glued && !chained ? `${TYPST_BREAK_MARKER}\n` : '';
+		return marker + (stickyLast ? keepWithNext(grid) : grid);
 	}
 
 	return items
-		.map(({ helper, num, content, unbreakable, sticky }) => {
+		.map(({ helper, num, content, unbreakable, sticky, marker }) => {
 			const typst = `#${helper}(${num})[${content}]`;
-			if (unbreakable) return `#block(width: 100%, breakable: false${ITEM_SPACING})[${typst}]`;
-			return sticky ? keepWithNext(typst, ITEM_SPACING) : typst;
+			const before = marker ? `${TYPST_BREAK_MARKER}\n` : '';
+			if (unbreakable)
+				return `${before}#block(width: 100%, breakable: false${ITEM_SPACING})[${typst}]`;
+			return before + (sticky ? keepWithNext(typst, ITEM_SPACING) : typst);
 		})
 		.join('\n');
 }
@@ -723,7 +877,8 @@ function generateListItemContent(
 	item: ListItemNode,
 	options: ResolvedTypstTranspilerOptions,
 	currentDepth: number,
-	stickyLast = false
+	stickyLast = false,
+	afterHead = false
 ): string {
 	const blocks: string[] = [];
 
@@ -731,10 +886,17 @@ function generateListItemContent(
 		const child = item.children[i];
 		// Dernier bloc collé à ce qui suit l'élément (cadre de réponse)
 		const sticky = stickyLast && i === item.children.length - 1;
+		// Bloc qui continue une chaîne collée : après la tête de l'élément, un titre
+		// ou un paragraphe collé à lui (pas de marqueur de coupure à lui)
+		const previous = item.children[i - 1];
+		const chained =
+			i === 0 ? afterHead : previous.type === 'heading' || keepsWithNext(previous, child);
+
+		if (child.type === 'heading' && !chained) blocks.push(TYPST_BREAK_MARKER);
 
 		if (child.type === 'list') {
 			// Nested list - generate with current depth
-			const listContent = generateList(child, options, currentDepth, undefined, sticky);
+			const listContent = generateList(child, options, currentDepth, undefined, sticky, chained);
 			// Add blank line before nested list if there's content before it
 			if (blocks.length > 0) {
 				blocks.push('\n' + listContent);
@@ -744,8 +906,11 @@ function generateListItemContent(
 		} else {
 			// Regular block (paragraph, math, etc.)
 			const generated = generateBlock(child as BlockNode, options);
-			const blockContent =
-				sticky || keepsWithNext(child, item.children[i + 1]) ? keepWithNext(generated) : generated;
+			const blockContent = sticky
+				? keepWithNext(generated)
+				: keepsWithNext(child, item.children[i + 1])
+					? keepWithNextOnPage(generated, chained)
+					: generated;
 
 			// Add blank line between paragraphs to preserve line breaks
 			if (i > 0 && item.children[i - 1].type !== 'list') {
@@ -974,6 +1139,17 @@ function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspiler
 		return generateAlignedEquation(alignMatch[2]);
 	}
 
+	// Calcul centré de l'éditeur (`array{rcl}` : gauche, relation, droite) → la même
+	// grille, dont la colonne de la relation est déjà centrée. La 2e colonne y EST la
+	// relation, quelle qu'elle soit (`\approx`, `\subset`…) : prise telle quelle.
+	const centreMatch = latex.match(
+		/^\s*\\begin\s*\{array\}\s*\{\s*rcl\s*\}([\s\S]*)\\end\s*\{array\}\s*$/
+	);
+
+	if (centreMatch && !/\\begin\s*\{array\}/.test(centreMatch[1])) {
+		return generateAlignedEquation(centreMatch[1], true);
+	}
+
 	// Convert LaTeX math to Typst math syntax
 	const typstMath = convertLatexToTypstMath(latex);
 	// DEBUG LOG: Keep for Typst debugging - logs each block math conversion
@@ -995,9 +1171,11 @@ function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspiler
  * - Column 4: Explanatory text, left-aligned
  *
  * @param content - Content inside \begin{align}...\end{align}
+ * @param relationEnColonne - calcul centré (`array{rcl}`) : la 2e cellule de chaque
+ *   ligne est la relation, sans la reconnaître par motif
  * @returns Typst grid structure
  */
-function generateAlignedEquation(content: string): string {
+function generateAlignedEquation(content: string, relationEnColonne = false): string {
 	// Protect nested environments (cases, matrix, etc.) before splitting by \\
 	// These environments contain \\ that should NOT be treated as row separators
 	const nestedEnvs: string[] = [];
@@ -1012,6 +1190,8 @@ function generateAlignedEquation(content: string): string {
 	// Split by \\ to get rows
 	const rows = protectedContent
 		.split(/\\\\/)
+		// Écart entre deux lignes (`\\[6pt]` du calcul centré) : la grille a le sien
+		.map((row) => row.replace(MOTIF_ECART, ''))
 		.map(trimLatex)
 		.filter((row) => row.length > 0)
 		// Restore nested environments
@@ -1024,6 +1204,7 @@ function generateAlignedEquation(content: string): string {
 	// Check if this uses alignment symbols (implications, equivalences, equations, inequations)
 	const hasAlignmentSymbol = rows.some((row) => {
 		const parts = splitAlignCells(row);
+		if (relationEnColonne && parts.length >= 3 && parts[1] !== '') return true;
 		if (parts.length >= 2) {
 			const rightPart = parts[1];
 			return ALIGNMENT_SYMBOL_PATTERN.test(rightPart);
@@ -1032,7 +1213,7 @@ function generateAlignedEquation(content: string): string {
 	});
 
 	if (hasAlignmentSymbol) {
-		return generateAlignedGrid(rows);
+		return generateAlignedGrid(rows, relationEnColonne);
 	}
 
 	// Fallback to simple 2-column grid for other align environments
@@ -1042,7 +1223,7 @@ function generateAlignedEquation(content: string): string {
 /**
  * Generate 4-column grid for aligned equations (implications, equivalences, equations, inequations)
  */
-function generateAlignedGrid(rows: string[]): string {
+function generateAlignedGrid(rows: string[], relationEnColonne = false): string {
 	const gridRows: string[] = [];
 
 	for (const row of rows) {
@@ -1062,7 +1243,11 @@ function generateAlignedGrid(rows: string[]): string {
 			let col2 = '[]';
 			let restOfRight = rightPart;
 
-			if (symbolMatch) {
+			if (relationEnColonne && parts.length >= 3) {
+				// Calcul centré : la 2e cellule est la relation, telle quelle
+				if (parts[1]) col2 = `[$${convertLatexToTypstMath(parts[1])}$]`;
+				restOfRight = trimLatex(parts.slice(2).join(' '));
+			} else if (symbolMatch) {
 				const symbol = symbolMatch[0];
 				col2 = `[$${convertLatexToTypstMath(symbol)}$]`;
 				restOfRight = trimLatex(rightPart.slice(symbol.length));
@@ -1384,6 +1569,15 @@ function generateCallout(kind: CalloutKind, content: string, language?: string):
  * Typst comme la suite de l'appel, et toute la fiche échouerait (revue du
  * 2026-10-11, compilateur de la prod). Typst consomme le `;`.
  */
+/**
+ * Texte coloré `[…]{.orange}` (ADR 0042) : la variante claire du nom, celle des
+ * figures au PDF. Seul un nom de la palette arrive ici, jamais une chaîne d'auteur.
+ */
+function wrapInlineColor(content: string, color: NamedColor | undefined): string {
+	if (!color) return content;
+	return `#text(fill: ${namedColorTypst(color)})[${content}];`;
+}
+
 function wrapInlineDetail(content: string, kind: DetailKind | undefined): string {
 	if (!kind) return content;
 	if (kind === 'calculation') return `#text(fill: rgb("${CALCULATION_GRAY}"))[${content}];`;
@@ -3444,8 +3638,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/(bracket\.[lr])(?=[a-zA-Z0-9])/g, '$1 ');
 
 	// Restore content block brackets (from \textcolor conversion)
+	// `;` final (comme `wrapInlineDetail`) : sans lui, un `(` collé après le bloc
+	// (`\textcolor{…}{(x+3)}(4x-2)`) serait lu par Typst comme la suite de l'appel
+	// (« invalid number suffix: x ») et tout le PDF échouerait. Typst consomme le `;`,
+	// en math comme en texte (compilateur de la prod, lot « Calcul » d'automatismes-1spe).
 	result = result.replace(/<<<CONTENT_L>>>/g, '[');
-	result = result.replace(/<<<CONTENT_R>>>/g, ']');
+	result = result.replace(/<<<CONTENT_R>>>/g, '];');
 
 	// ========================================================================
 	// DOUBLE QUOTE AS DOUBLE PRIME (Step 2 of 2)
@@ -3572,6 +3770,92 @@ export function processTableCellContent(
 	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
 	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
 ): string {
+	const masked = maskSpans(content, [CELL_MATH_SPANS]);
+	if (!masked.includes(']{.')) {
+		return cellPlainContent(content, language, genericFunctions, capitalPairs);
+	}
+	// Gras autour d'un marquage (`**[a]{.orange}**`) : lu avant lui, sinon ses `**`
+	// tomberaient de part et d'autre du passage et s'imprimeraient tels quels. Les `**`
+	// hors marquage sont appariés deux par deux, de gauche à droite (jamais le fermant
+	// d'un gras avec l'ouvrant du suivant) ; ceux d'un passage sont lus avec lui.
+	const parts: string[] = [];
+	let lastIndex = 0;
+	for (const [open, close] of boldPairsAroundMarks(masked)) {
+		parts.push(
+			cellMarkedContent(content.slice(lastIndex, open), language, genericFunctions, capitalPairs)
+		);
+		const inner = content.slice(open + 2, close);
+		parts.push(
+			`#strong[${processTableCellContent(inner, language, genericFunctions, capitalPairs)}]`
+		);
+		lastIndex = close + 2;
+	}
+	parts.push(cellMarkedContent(content.slice(lastIndex), language, genericFunctions, capitalPairs));
+	return parts.join('');
+}
+
+/**
+ * Paires `**…**` hors marquage qui contiennent un marquage `[…]{.…}` entier :
+ * positions de l'ouvrant et du fermant, dans la cellule aux formules masquées.
+ */
+function boldPairsAroundMarks(masked: string): [number, number][] {
+	const marks = [...masked.matchAll(new RegExp(SPAN_MARK_REGEX.source, SPAN_MARK_REGEX.flags))].map(
+		(match) => [match.index, match.index + match[0].length] as const
+	);
+	const insideMark = (i: number) => marks.some(([start, end]) => i >= start && i < end);
+	const delimiters: number[] = [];
+	for (let i = masked.indexOf('**'); i >= 0; i = masked.indexOf('**', i + 2)) {
+		if (!insideMark(i)) delimiters.push(i);
+	}
+	const pairs: [number, number][] = [];
+	for (let k = 0; k + 1 < delimiters.length; k += 2) {
+		const [open, close] = [delimiters[k], delimiters[k + 1]];
+		if (marks.some(([start, end]) => start > open && end <= close)) pairs.push([open, close]);
+	}
+	return pairs;
+}
+
+/**
+ * Morceau de cellule à marquages `[texte]{.…}` (texte coloré, ADR 0042 ; détail,
+ * ADR 0017), cherchés hors formules ; chaque passage est rendu à son tour (il peut
+ * en contenir un autre).
+ */
+function cellMarkedContent(
+	content: string,
+	language?: string,
+	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
+	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
+): string {
+	const masked = maskSpans(content, [CELL_MATH_SPANS]);
+	const parts: string[] = [];
+	let lastIndex = 0;
+	for (const match of masked.matchAll(new RegExp(SPAN_MARK_REGEX.source, SPAN_MARK_REGEX.flags))) {
+		const start = match.index;
+		const inner = content.slice(start + 1, start + 1 + match[1].length);
+		const classes = parseSpanClasses(match[2]);
+		parts.push(
+			cellPlainContent(content.slice(lastIndex, start), language, genericFunctions, capitalPairs)
+		);
+		const rendered = processTableCellContent(inner, language, genericFunctions, capitalPairs);
+		// Classe inconnue : texte normal (le message au prof n'est qu'à l'écran)
+		parts.push(wrapInlineDetail(wrapInlineColor(rendered, classes.color), classes.detail));
+		lastIndex = start + match[0].length;
+	}
+	parts.push(cellPlainContent(content.slice(lastIndex), language, genericFunctions, capitalPairs));
+	return parts.join('');
+}
+
+/** Formules d'une cellule (`$…$`, `~…~`), masquées avant de chercher un marquage */
+const CELL_MATH_SPANS = /\$[^$\n]+\$|(?<![\\~])~(?!~)[^~\n]+~(?!~)/g;
+
+/** Morceau de cellule sans marquage `[…]{.…}` : texte échappé, formules converties. */
+function cellPlainContent(
+	content: string,
+	language?: string,
+	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
+	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
+): string {
+	if (content === '') return '';
 	// `$…$` ou `~…~` (sans retour à la ligne)
 	const parts: string[] = [];
 	let lastIndex = 0;
@@ -3680,10 +3964,169 @@ export async function markdownToTypst(
 	options: TypstTranspilerOptions = {}
 ): Promise<string> {
 	// Dynamic import to avoid circular dependency issues
-	const { parseMarkdown } = await import('$lib/ubumark/parser/markdown-parser');
+	const { parseMarkdown } = await import('#lib/ubumark/parser/markdown-parser.ts');
 	// Rendu réel des blocs ```figure, chargé À LA DEMANDE (import dynamique : il
 	// n'entre pas dans le chunk des pages Markdown — voir figure-typst-registry.ts)
 	await import('./figure-typst-setup');
 	const ast = parseMarkdown(markdown);
 	return generateTypst(ast, options);
+}
+
+/**
+ * Une ligne d'ubumark (étiquette, élément) en Typst, dans le texte courant. Une ligne
+ * que le parseur ne lit pas en paragraphe (`+`, `-`, `1.` : une liste ; `> 0` : une
+ * citation) sort en chaîne Typst, telle qu'écrite — comme le repli d'`InlineMarkdown`.
+ */
+function inlineUbumarkTypst(text: string, options: ResolvedTypstTranspilerOptions): string {
+	const blocks = parseMarkdown(text).children;
+	const paragraph = blocks[0];
+	if (paragraph?.type === 'paragraph' && blocks.length === 1) {
+		return paragraph.children.map((child) => generateInline(child, options)).join('');
+	}
+	return `#"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+/**
+ * Bloc ```associer : deux colonnes à relier au crayon. À gauche les éléments, un
+ * point « • » au bout de chacun ; à droite les étiquettes, dans l'ordre où l'élève
+ * les voit, un point devant chacune. Jamais la réponse (le corrigé d'une série
+ * d'automatismes remplace le bloc par la liste des bonnes associations).
+ */
+function generateAssocierTypst(
+	node: AssocierNode,
+	options: ResolvedTypstTranspilerOptions
+): string {
+	if (node.errors.length > 0) return '';
+	// Un élément contient un bloc (```courbe, lot 2) : éléments numérotés (le corrigé
+	// d'une série dit « 1 → étiquette »), courbe en petit
+	const numbered = node.items.some(associerItemHasBlock);
+	const items = node.items.map((item, k) => {
+		if (!numbered) return inlineUbumarkTypst(item, options);
+		const body = associerItemHasBlock(item)
+			? parseMarkdown(item)
+					.children.map((block) =>
+						generateBlock(
+							block.type === 'courbe' && block.spec
+								? { ...block, spec: { ...block.spec, size: 'petite' } }
+								: block,
+							options
+						)
+					)
+					.join('\n\n')
+			: inlineUbumarkTypst(item, options);
+		return `#grid(columns: 2, column-gutter: 0.4em, align: horizon, [*${k + 1}.*], [${body}])`;
+	});
+	const labels = displayedAssocierLabels(node).map((label) => inlineUbumarkTypst(label, options));
+	const rows = Math.max(items.length, labels.length);
+	const cells: string[] = [];
+	for (let k = 0; k < rows; k++) {
+		const item = items[k];
+		const label = labels[k];
+		cells.push(
+			item === undefined ? '[]' : `[${item}]`,
+			item === undefined ? '[]' : '[•]',
+			'[]',
+			label === undefined ? '[]' : '[•]',
+			label === undefined ? '[]' : `[${label}]`
+		);
+	}
+	return `#align(center, grid(columns: (auto, auto, 2.5cm, auto, auto), column-gutter: 0.4em, row-gutter: 0.9em, align: (right + horizon, center + horizon, center, center + horizon, left + horizon), ${cells.join(', ')}))`;
+}
+
+/** Largeur d'un trou (em) : celle de la plus longue étiquette, à peu près */
+function trousHoleWidth(labels: readonly string[]): number {
+	const visible = (label: string) =>
+		label
+			.replace(/\\[a-zA-Z]+/g, 'x')
+			.replace(/[$*_{}\\^]/g, '')
+			.trim().length;
+	const longest = Math.max(0, ...labels.map(visible));
+	return Math.min(14, Math.max(3, Math.ceil(longest * 0.6) + 1));
+}
+
+/**
+ * Un morceau de texte d'un bloc trous en Typst, ses espaces de bord gardés (le
+ * parseur les retirerait : « est » collerait au trou qui suit)
+ */
+function trousTextTypst(text: string, options: ResolvedTypstTranspilerOptions): string {
+	if (text.trim() === '') return text === '' ? '' : ' ';
+	const before = /^\s/.test(text) ? ' ' : '';
+	const after = /\s$/.test(text) ? ' ' : '';
+	return `${before}${inlineUbumarkTypst(text.trim(), options)}${after}`;
+}
+
+/**
+ * Bloc ```trous : la réserve encadrée (étiquettes dans l'ordre où l'élève les
+ * voit), puis le texte, chaque trou en pointillés de la largeur de la plus longue
+ * étiquette, numéroté (le corrigé d'une série d'automatismes dit « 1 → étiquette »).
+ * Jamais la réponse.
+ */
+function generateTrousTypst(node: TrousNode, options: ResolvedTypstTranspilerOptions): string {
+	if (node.errors.length > 0) return '';
+	const labels = displayedTrousLabels(node);
+	const reserve = labels
+		.map((label) => `trous-etiquette[${inlineUbumarkTypst(label, options)}]`)
+		.join(', ');
+	const lines = node.lines.map((line) =>
+		line
+			.map((segment) =>
+				segment.kind === 'text'
+					? trousTextTypst(segment.text, options)
+					: `#trous-trou(${segment.hole + 1});`
+			)
+			.join('')
+	);
+	return [
+		'#[',
+		// Pas de justification (les trous étireraient les espaces) ; de la place pour écrire
+		'#set par(justify: false, leading: 1.1em)',
+		'#let trous-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
+		`#let trous-trou(numero) = box[#text(size: 0.7em, baseline: -0.3em)[#numero]#box(width: ${trousHoleWidth(labels)}em, repeat[.])]`,
+		`#block(width: 100%, stroke: 0.6pt, inset: 8pt, radius: 3pt, align(center, grid(columns: ${Math.min(labels.length, TROUS_RESERVE_COLUMNS)}, column-gutter: 0.8em, row-gutter: 0.5em, align: horizon, ${reserve})))`,
+		'',
+		lines.join('\n\n'),
+		']'
+	].join('\n');
+}
+
+/**
+ * Bloc ```ranger : les étiquettes encadrées, dans l'ordre où l'élève les voit,
+ * puis une place vide (pointillés) par étiquette, séparées du signe ; l'enfant
+ * écrit. Signe en mode math : `<` seul ouvrirait une étiquette Typst. En étapes
+ * (`signe: aucun`) : étiquettes l'une sous l'autre, puis places numérotées sur
+ * toute la largeur, en colonne.
+ */
+function generateRangerTypst(node: RangerNode, options: ResolvedTypstTranspilerOptions): string {
+	if (node.errors.length > 0) return '';
+	const labels = displayedLabels(node).map((label) => {
+		const paragraph = parseMarkdown(label).children[0];
+		const body =
+			paragraph?.type === 'paragraph'
+				? paragraph.children.map((child) => generateInline(child, options)).join('')
+				: '';
+		return `ranger-etiquette[${body}]`;
+	});
+	if (node.sign === 'aucun') {
+		const steps = labels.map((_, k) => `ranger-etape(${k + 1})`).join(', ');
+		return [
+			'#[',
+			'#let ranger-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
+			'#let ranger-etape(numero) = grid(columns: (auto, 1fr), column-gutter: 0.5em, align: horizon, [#(str(numero) + ".")], box(width: 100%, height: 0.9cm, stroke: (paint: luma(120), dash: "dashed"), radius: 3pt))',
+			`#grid(columns: 1, row-gutter: 0.4em, ${labels.join(', ')})`,
+			'',
+			`#grid(columns: 1, row-gutter: 0.8em, ${steps})`,
+			']'
+		].join('\n');
+	}
+	const sign = node.sign === '>' ? ', $>$, ' : ', $<$, ';
+	// Grilles centrées en hauteur : signes au milieu des places, étiquettes alignées
+	return [
+		'#[',
+		'#let ranger-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
+		'#let ranger-place = box(width: 1.8cm, height: 0.9cm, stroke: (paint: luma(120), dash: "dashed"), radius: 3pt)',
+		`#align(center, grid(columns: ${labels.length}, column-gutter: 0.8em, align: horizon, ${labels.join(', ')}))`,
+		'',
+		`#align(center, grid(columns: ${2 * labels.length - 1}, column-gutter: 0.4em, align: horizon, ${labels.map(() => 'ranger-place').join(sign)}))`,
+		']'
+	].join('\n');
 }

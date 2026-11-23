@@ -6,11 +6,11 @@
  * et les intervalles de la première révision d'une carte neuve, calculés par le
  * vrai FSRS (chantier demo-debug, PR 6g).
  */
-import { createDefaultFSRS } from '$lib/srs/fsrs';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { GradeCode } from '$lib/types/grades';
-import type { ClassroomItem } from '$lib/types/test';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { createDefaultFSRS } from '#lib/srs/fsrs.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import type { ClassroomItem } from '#lib/types/test.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // Types
 interface DemoQuestion {
@@ -78,8 +78,6 @@ function toInstance(question: DemoQuestion): QuestionInstance {
 		],
 		correction: { steps: [resolvedMarkdown(question.correction)] },
 		grades: [question.grade],
-		theme: question.theme,
-		domain: question.domain,
 		level: 1,
 		generatedAt: '2026-10-25T00:00:00.000Z'
 	};
@@ -95,16 +93,17 @@ export function demoClassroomItems(): ClassroomItem[] {
 	return demoInstances().map((instance) => ({
 		instance,
 		delaySeconds: CLASSROOM_DELAY_SECONDS,
-		categoryKey: instance.templateId
+		templateId: instance.templateId
 	}));
 }
 
-/** Jours avant la prochaine révision d'une carte neuve, pour Encore, Difficile, Bien, Facile */
-export function firstReviewIntervals(): [number, number, number, number] {
+/**
+ * Jours avant la prochaine révision d'une carte neuve, pour « Pas réussi » (Again)
+ * et « Réussi » (Good) : les deux boutons de la révision
+ */
+export function firstReviewIntervals(): { missed: number; succeeded: number } {
 	const fsrs = createDefaultFSRS();
 	const card = fsrs.initCard('demo', 'template', 'demo');
-	const [again, hard, good, easy] = ([1, 2, 3, 4] as const).map((grade) =>
-		fsrs.calculateInterval(fsrs.reviewCard(card, grade).stability)
-	);
-	return [again, hard, good, easy];
+	const days = (grade: 1 | 3) => fsrs.calculateInterval(fsrs.reviewCard(card, grade).stability);
+	return { missed: days(1), succeeded: days(3) };
 }

@@ -1,0 +1,234 @@
+{
+	"id": "7a143d38-4674-4dec-b355-b2d3d00a5321",
+	"title": "Construire un carré ou un rectangle de dimensions données",
+	"description": "Papier uni, [AB] tracé : angles droits à l'équerre, longueurs à la règle graduée (carré de 4 à 8 cm ; rectangle, BC de 2 à 5 cm)",
+	"grades": ["CE2"],
+	"level": 5,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Avec l'équerre et la règle graduée, construis le $\\textcolor{{{color:primary.0}}}{\\text{carré}}$ $ABCD$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\nverifier: carre A ; B ; C ; D\n---\nA = point(2, 1)\nB = point({{eval:2+c}}, 1)\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec l'équerre, on trace en $B$ la droite qui $\\textcolor{{{color:primary.0}}}{\\text{coupe}}$ $[AB]$ à angle droit ; on fait de même en $A$.",
+					"Les quatre côtés d'un carré ont la même longueur : avec la règle graduée, son 0 en $B$, on place $C$ à {{c}} cm de $B$ ; son 0 en $A$, on place $D$ à {{c}} cm de $A$.",
+					"On trace $[BC]$, $[AD]$ et $[CD]$."
+				]
+			}
+		},
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Avec l'équerre et la règle graduée, construis le $\\textcolor{{{color:primary.0}}}{\\text{rectangle}}$ $ABCD$ dont le côté $[BC]$ mesure $\\textcolor{{{color:primary.0}}}{{{b}}\\text{ cm}}$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\nverifier: rectangle A ; B ; C ; D : BC = {{b}} cm\n---\nA = point(2, 1)\nB = point({{eval:2+a}}, 1)\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec l'équerre, on trace en $B$ la droite qui $\\textcolor{{{color:primary.0}}}{\\text{coupe}}$ $[AB]$ à angle droit ; on fait de même en $A$.",
+					"Avec la règle graduée, son 0 en $B$, on place $C$ à {{b}} cm de $B$ ; son 0 en $A$, on place $D$ à {{b}} cm de $A$ (les côtés opposés d'un rectangle ont la même longueur).",
+					"On trace $[BC]$, $[AD]$ et $[CD]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Construction juste",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;7)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;7)|segment(8;7;2;7)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans équerre, côtés tracés à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"regle(8;1;8;2;1)|segment(8;1;8;7)|regle(2;1;2;2;1)|segment(2;1;2;7)|segment(8;7;2;7)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans règle graduée, sommets placés à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"droite(8;1;8;7)|segment(8;1;8;7)|droite(2;1;2;7)|segment(2;1;2;7)|segment(8;7;2;7)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [BC] et [AD] trop longs d'1 cm",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;8)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;8)|segment(8;8;2;8)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [CD] manque",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;7)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;7)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Construction juste",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8"
+			},
+			"answers": [
+				"droite(10;1;10;9)|regle(10;1;10;2;1)|segment(10;1;10;9)|droite(2;1;2;9)|regle(2;1;2;2;1)|segment(2;1;2;9)|segment(10;9;2;9)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Construction juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4)|segment(9;4;2;4)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans équerre, côtés tracés à l'œil",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": [
+				"regle(9;1;9;2;1)|segment(9;1;9;4)|regle(2;1;2;2;1)|segment(2;1;2;4)|segment(9;4;2;4)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans règle graduée, sommets placés à l'œil",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|segment(9;1;9;4)|droite(2;1;2;8)|segment(2;1;2;4)|segment(9;4;2;4)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [BC] et [AD] trop longs d'1 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;5)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;5)|segment(9;5;2;5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [CD] manque",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Construction juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "5"
+			},
+			"answers": [
+				"droite(11;1;11;10)|regle(11;1;11;2;1)|segment(11;1;11;6)|droite(2;1;2;10)|regle(2;1;2;2;1)|segment(2;1;2;6)|segment(11;6;2;6)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

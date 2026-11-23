@@ -7,12 +7,12 @@
  * @module components/markdown/utils/math-utils
  */
 
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { toLatex, parseLatexSafe } from '$lib/mathAST';
-import { toLocaleDecimal } from '$lib/utils/french-math';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import type { MathNode } from '$lib/mathAST/types';
-import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { toLatex, parseLatexSafe } from '#lib/mathAST/index.ts';
+import { toLocaleDecimal } from '#lib/utils/french-math.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { CapitalPairs, GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 /**
  * Configuration du parseur à partir des fonctions déclarées par un exercice
@@ -61,8 +61,7 @@ export function expressionToLatex(
 	capitalPairs?: CapitalPairs,
 	minDigits?: number
 ): string {
-	// `\unit` (siunitx) n'existe ni dans MathLive ni dans le préambule de
-	// l'export `.tex` : on l'affiche en LaTeX de base.
+	// `\unit` (siunitx) n'existe pas dans MathLive : on l'affiche en LaTeX de base.
 	return displayUnitsInLatex(
 		expressionToRawLatex(expression, syntax, genericFunctions, locale, capitalPairs, minDigits)
 	);

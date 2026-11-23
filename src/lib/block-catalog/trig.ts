@@ -104,6 +104,18 @@ export const trigEntry: BlockCatalogEntry = {
 					description: 'Couleur du tracé.'
 				}
 			]
+		},
+		{
+			title: 'Dans une question : placer des points',
+			settings: [
+				{
+					key: 'placer',
+					values: 'M = 2*pi/3 ; N = -pi/4 (8 points au plus, séparés par « ; »)',
+					defaultValue: 'aucun',
+					description:
+						'L’élève touche le cercle pour y poser chaque point (il se pose sur la graduation la plus proche, une tous les π/12) : chaque point compte pour une case, juste s’il est sur son angle, à 2π près. Chaque angle doit être un multiple de π/12 (π/6, π/4, π/3…) et ne pas être déjà écrit sur le cercle (angles:, preset:, points:) ; les repères 0, π/2, π, 3π/2 restent. Pas avec mode: interactive, equation: ni un tableau. Jamais écrit à l’écran. Sur le PDF, le cercle gradué sans les points : l’élève fait sa croix.'
+				}
+			]
 		}
 	],
 	examples: [
@@ -218,6 +230,12 @@ export const trigEntry: BlockCatalogEntry = {
 			explanation: 'Projections, grille, axes, noms et valeurs réunis.'
 		},
 		{
+			title: 'Placer des points (question)',
+			source: fence('trig', 'placer: M = 2*pi/3 ; N = -pi/4'),
+			explanation:
+				'Dans une question, l’élève choisit l’étiquette M ou N sous le cercle, puis touche le cercle ; chaque point compte pour une case. La consigne (« Place les points associés à 2π/3 et −π/4 ») va dans l’énoncé, au-dessus.'
+		},
+		{
 			title: 'Équation avec tableau',
 			source: fence(
 				'trig',
@@ -231,6 +249,13 @@ export const trigEntry: BlockCatalogEntry = {
 		}
 	],
 	mistakes: [
+		{
+			title: 'Point à placer hors des graduations',
+			source: fence('trig', 'placer: M = pi/5'),
+			message: 'un point à placer tombe sur un multiple de π/12',
+			explanation:
+				'L’élève pose ses points sur une graduation, tous les π/12 : π/5 n’en est pas une.'
+		},
 		{
 			title: 'Préréglage inconnu',
 			source: fence('trig', 'preset: demi'),

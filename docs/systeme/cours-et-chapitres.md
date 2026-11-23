@@ -7,6 +7,7 @@ couvre:
   - 'src/lib/programmes/**'
   - 'static/programmes/**'
   - 'src/lib/components/{cours,journal,progression,programme}/**'
+  - 'src/lib/journal/**'
   - 'src/lib/components/templates/{Chapter,Template}*.svelte'
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
@@ -31,7 +32,7 @@ couvre:
 > [suivi du programme](../archive/wip/suivi-programme-progress.md),
 > [progression élève](../archive/wip/progression-eleve-progress.md)) et du chantier clos
 > [publication progressive](../wip/publication-progressive-progress.md).
-> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23.
+> Vérifié contre le code le 2026-10-10 ; lectures des points neufs (C5, étape 3, B1, B2 et D — progression élève) le 2026-10-21 ; filtres de l'ancienne génération retirés (C5, après l'étape 4) le 2026-10-22 ; vue « Carte » de la page Programme le 2026-10-23 ; liste des questions du cahier de texte (ADR 0035) le 2026-11-04 ; séries relues sans ancienne forme (lot 4a) le 2026-11-04 ; cahier de texte en ubumark (chantier cahier-ubumark, PR 1) le 2026-11-06 ; lecture HTML retirée (PR 3) le 2026-11-08.
 
 ## À quoi ça sert
 
@@ -177,7 +178,8 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 `delete`, `publish`) ; `src/routes/(protected)/dashboard/student/cahier-texte/` et
 `[entryId]/` ; `src/routes/(public)/cahier/[token]/` (sans compte). Composants :
 `src/lib/components/journal/` (`JournalWeekGrid`, `JournalEntryCard`, `HomeworkCard`,
-`JournalDatePicker`).
+`JournalDatePicker`, `JournalContent`). Format du texte : `src/lib/journal/content.ts`
+(`journalContentPreview`).
 
 ### Programme, couverture, progression
 
@@ -191,7 +193,7 @@ Pages : `src/routes/(protected)/dashboard/teacher/cahier-texte/` (semaine ; acti
 | `src/lib/programmes/official-programmes.ts`                 | `OFFICIAL_PROGRAMMES` : le texte officiel (BO) de chaque niveau — titre, PDF de `static/programmes/`, morceaux de transcription ; `null` pour la terminale générale (pas de maths au tronc commun). Un cycle = un PDF pour ses trois niveaux ; `cycleTranscription` liste les morceaux d'un niveau de cycle (domaines de `CYCLE_DOMAINS`, dans l'ordre du BO).                                                                                                                                                                                     |
 | `src/lib/server/programmes/transcriptions.ts`               | `getTranscription` : la transcription ubumark d'un niveau, morceaux de `transcriptions/**/*.md` mis bout à bout (un sous-dossier `cycle-N/` par cycle) ; `null` si un morceau manque. Tous les niveaux qui ont des maths sont transcrits. Texte du BO mot à mot ; prettier ignore le dossier (il abîme l'ubumark). Conventions : [transcriptions-du-bo.md](programmes/transcriptions-du-bo.md).                                                                                                                                                    |
 | `src/lib/components/programme/OfficialProgrammeView.svelte` | Le BO d'un niveau : PDF dans le lecteur du navigateur (`<iframe>` : la CSP `object-src 'none'` bloque `<embed>`), liens « Ouvrir le PDF dans un onglet » et « Télécharger » ; ou la transcription rendue par `MarkdownRenderer` (mots du lexique désactivés), titres `##` et `###` dans une seule couleur d'accent (`--color-curve-1`, filet sous `##`), les autres en couleur du texte.                                                                                                                                                           |
-| `src/lib/server/curriculum-coverage.ts`                     | `reconcileAutoCoverage` : recalcule la couverture **auto** d'une séance ; `evaluationCurriculumPoints`. Ne compte que les points **non archivés**.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `src/lib/server/curriculum-coverage.ts`                     | `reconcileAutoCoverage` : recalcule la couverture **auto** d'une séance ; `evaluationCurriculumPoints` (points des modèles publiés de la série du contrôle). Ne compte que les points **non archivés**.                                                                                                                                                                                                                                                                                                                                            |
 | `src/lib/server/curriculum-grade.ts`                        | `keepLinksOfGrade` : une carte rattachée à plusieurs niveaux ne compte que pour celui qu'on lit.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `src/lib/server/curriculum-point-status.ts`                 | `readPointStatus` et `keepCheckablePointIds` : le point est-il lisible et non archivé, demandé à la base avant d'écrire (un point archivé ne se coche ni ne se tague). Depuis l'étape 4 de la C5, tout point porte un nœud (`node_id` NOT NULL) — [ADR 0020](../adr/0020-arbre-central-programmes-pointeurs.md).                                                                                                                                                                                                                                   |
 | `src/lib/server/programme-tags.ts`                          | `loadTemplateProgrammeTags` : les choix de tags d'un modèle, un par programme, parmi les points de son nœud et de sa notion.                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -277,8 +279,10 @@ migration `supabase/migrations/20260915260000_chapter_sections.sql` (plus
 `20261002100000_series_de_chapitre.sql` pour les séries).
 
 Une **série** rattachée reste celle du prof : le lien la suit, son titre et sa composition sont
-relus à chaque chargement. L'élève la lance dans la **forme** choisie au rattachement
-(`setSeriesForm`), sans note, par le lien de l'entraînement libre (voir [questions.md](questions.md)).
+relus à chaque chargement (`readStoredSeriesMany` : des modèles, ADR
+0035 ; de même pour le cours partagé, `resolveCourseShareToken`). L'élève la lance dans la **forme**
+choisie au rattachement (`setSeriesForm`), sans note, par le lien de l'entraînement libre
+(`?modeles=…&mode=…`, voir [evaluations.md](evaluations.md#les-formes-dune-série)).
 
 ### Publier une fiche = la distribuer
 
@@ -396,9 +400,28 @@ Une séance (`class_journal_entries`) : une classe, une date, un texte, et `is_p
 Les **jours de cours** = jours de `class_schedules` moins les `school_holidays` de l'année
 scolaire de l'école (`getClassSessionCalendar`).
 
+**Format du texte** (séance et travaux) : **ubumark**, depuis le chantier cahier-ubumark
+(décision de David du 2026-10-25). L'éditeur de séance lit le markdown de chaque
+`RichTextEditor` **au moment de l'envoi** (`getMarkdown`, dans le `use:enhance`), pas par une
+liaison : la liaison markdown attend 150 ms après la dernière frappe. Tant qu'un éditeur n'est
+pas créé (`isReady()` faux : import de MathLive en cours ou échoué), c'est le contenu chargé qui
+part, inchangé — `getMarkdown()` rendrait `''` et effacerait la séance. Les champs cachés
+`lessonContent` / `homeworkItems` portent ce même contenu chargé (repli sans JavaScript). La lecture passe par
+`JournalContent` → `MarkdownRenderer` (jamais `{@html}`), avec le lecteur des références
+(`internalLinks` : `student` sur la page élève, `public` + jeton sur `/cahier/[token]`). Les
+aperçus (grille, cartes, liste élève) passent par `journalContentPreview` : texte brut, références
+réduites à leur libellé.
+
+Plus de lecture HTML : les 4 lignes écrites avant le chantier en HTML (TipTap) ont été
+converties le 2026-11-08 (migration `20261106164230_cahier_texte_conversion_ubumark.sql`), puis
+la branche HTML retirée (PR 3). Une balise saisie est du texte. Une vidéo dans une liste ou une
+citation passe par `VideoDisplay` comme au premier niveau : au cahier, un lien hors de notre
+stockage, jamais de lecteur tiers.
+
 **Activités** d'une séance (`journal_entry_activities`) : cinq sortes — `exercise`, `question`,
 `assessment`, `course`, `textbook`. Sur une séance neuve, la page les garde et les envoie avec le
-formulaire (`parsePendingActivities`).
+formulaire (`parsePendingActivities`). Dans la liste des questions à ajouter, un modèle se lit par son titre et
+son niveau (`Titre (niv. 2)`) : un modèle n'a plus de thème ni de domaine (ADR 0035).
 
 ### Couverture du programme
 
@@ -455,8 +478,13 @@ Ce que lit un visiteur sans compte, par trois portes seulement :
   révisions, progression.
 - `/cours/[token]/fiche/[id]` — RPC `get_course_worksheet_by_share_token` : fiche publiée dans un
   chapitre visible **et** distribuée à la classe ; PDF `reader`, sans correction, dans le style de
-  la fiche (lot 4b : `style_id`, mise en page d'un style de l'auteur ; voir
-  [fiches-et-pdf.md](fiches-et-pdf.md)).
+  la fiche (lot 4b : `style_id`, mise en page d'un style de l'auteur), avec son niveau, sa
+  catégorie, sa case « titre libre » et ses notions (ADR 0041 : `publicWorksheetSchema` les garde,
+  sinon le PDF du lien ne serait pas celui de la classe ; voir [fiches-et-pdf.md](fiches-et-pdf.md)).
+  La branche de chaque notion est ajoutée après la RPC (`withBranches`, lecture publique de
+  l'arbre ; en échec, les notions sans branche) : deux notions d'une même branche impriment la
+  branche en titre, comme le PDF de la classe. Même ajout pour la fiche du cahier de textes
+  (`resolveWorksheetByShareToken`).
 - `/cours/[token]/document/[id]` — RPC `get_course_document_by_share_token`, **réservée au service
   role** (le chemin de stockage ne sort jamais vers le navigateur) ; fichier → URL signée de
   **60 s** (téléchargement forcé hors PDF et images), Drive → l'URL Drive si elle est en `https:`.
@@ -613,3 +641,13 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
     le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
     ([journal](../archive/wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
     chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.
+12. _(Résolu le 2026-11-06, décision de David : au cahier, `JournalContent` passe
+    `projectMediaOnly` ; une vidéo hors de notre stockage — YouTube compris — devient un lien
+    « Vidéo : … », aucune requête tierce à l'affichage. Le reste de l'application est inchangé.)_
+    _(Même traitement pour les formules, décision de David du 2026-11-08 : une formule qui
+    porte une commande MathLive à attributs — `\htmlStyle`, `\href`, `\color`… — s'affiche en
+    texte ; un bloc spécial qui en porte une devient un bloc de code. Prod au 2026-11-08 :
+    aucune formule au cahier.)_
+    _(Et pour les images, décision de David du 2026-11-09 : une image hors de notre stockage
+    devient un lien « Image : … » (`ImageDisplay`). Un nom de fichier seul reste une image du
+    stockage des questions. Prod au 2026-11-09 : aucune image au cahier.)_

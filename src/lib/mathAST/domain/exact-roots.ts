@@ -25,7 +25,7 @@
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import type { Domain, Interval } from './types';
-import type { Endpoint } from '$lib/math/intervals/types';
+import type { Endpoint } from '#lib/math/intervals/types.ts';
 import {
 	ONE,
 	ZERO,

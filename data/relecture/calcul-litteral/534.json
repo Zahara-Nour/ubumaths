@@ -109,9 +109,6 @@
 			}
 		],
 		"grades": ["3"],
-		"theme": "Calcul littéral",
-		"domain": "Transformation",
-		"subdomain": "Développement",
 		"level": 5,
 		"status": "draft",
 		"delay": 40,

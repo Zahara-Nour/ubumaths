@@ -2,9 +2,9 @@
  * Évaluation notée, corrigée par le serveur (chantier 5, PR B) — intégration
  * ==========================================================================
  *
- * `$lib/server/evaluation-attempts` face à la VRAIE base : lectures de droits
+ * `#lib/server/evaluation-attempts.ts` face à la VRAIE base : lectures de droits
  * sous RLS (client de l'élève), écritures en service_role (Q38), avec de VRAIS
- * modèles publiés (TinyMath #314, QCM, et #142, question à case), posés dans
+ * modèles publiés (TinyMath #314, QCM migré en case choix, et #142, question à case), posés dans
  * des catégories propres au test.
  *
  * Ce que la spécification validée par David exige ici (D) : démarrer →
@@ -23,38 +23,40 @@
 import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import {
 	AttemptAlreadySubmittedError,
+	readEvaluationOverview,
 	readSubmittedCopy,
 	startEvaluationAttempt,
 	submitEvaluationAttempt,
 	type AttemptActors,
 	type StartResult
-} from '$lib/server/evaluation-attempts';
+} from '#lib/server/evaluation-attempts.ts';
 import {
 	getEvaluationResults,
 	getStudentAssignments,
 	getEvaluation
-} from '$lib/server/evaluations';
-import { EvaluationError } from '$lib/server/evaluations';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import { getQuestionType, type QuestionInstance } from '$lib/questions/types';
+} from '#lib/server/evaluations.ts';
+import { EvaluationError } from '#lib/server/evaluations.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { toQuestionTemplate, type QuestionTemplateRow } from '#lib/types/question-template.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import { parseChoiceAnswer } from '#lib/questions/choice-case.ts';
 import {
 	gradeQuestion,
 	statusFromBlankStatuses,
 	type SubmittedAnswer
-} from '$lib/questions/grading';
-import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
-import { submitAttemptSchema } from '$lib/server/validation/evaluations';
+} from '#lib/questions/grading.ts';
+import { isAnswerTooComplex } from '#lib/questions/answer-complexity.ts';
+import { submitAttemptSchema } from '#lib/server/validation/evaluations.ts';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
 	SUBMISSION_GRADING_BUDGET_MS
-} from '$lib/server/grading-budget';
+} from '#lib/server/grading-budget.ts';
 
 // Types
 type Client = SupabaseClient<Database>;
@@ -71,18 +73,18 @@ const SERVICE_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 const QCM_ID = '0a11f0e0-0000-4000-8000-00000000e601';
 const FILL_ID = '0a11f0e0-0000-4000-8000-00000000e602';
-/** QCM à plusieurs réponses (chantier 2, V5) : bonnes réponses 0 et 2 sur 4 */
+/** Case choix à plusieurs réponses (chantier 2, V5, repris du QCM) : bonnes réponses 0 et 2 sur 4 */
 const MULTI_ID = '0a11f0e0-0000-4000-8000-00000000e603';
 /** Question à case « choix » (bloc ```choix, plusieurs réponses, mélangée) : bonnes 0 et 2 */
 const CHOICE_ID = '0a11f0e0-0000-4000-8000-00000000e604';
-const THEME = 'ZZ Éval serveur';
-const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
-const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
-const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
-const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
+/** Droite à placer (chantier `fuite-enonce`) : l'énoncé envoyé ne dit pas où vont A et B */
+const GESTE_ID = '0a11f0e0-0000-4000-8000-00000000e605';
+/** Assemblage à retrouver (`fuite-enonce`, lot 2) : l'énoncé envoyé ne dit pas les hauteurs */
+const CUBES_ID = '0a11f0e0-0000-4000-8000-00000000e606';
+/** Composition par défaut : nouvelle forme, une ligne par modèle (ADR 0035) */
 const CATEGORIES = [
-	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
-	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
+	{ templateId: FILL_ID, quantity: 2, delay: 20 },
+	{ templateId: QCM_ID, quantity: 1, delay: 15 }
 ];
 /** Clés qui, présentes dans ce que reçoit l'élève, laisseraient tricher */
 const FORBIDDEN_KEYS = [
@@ -101,6 +103,7 @@ const FORBIDDEN_KEYS = [
 	'template',
 	'instance',
 	'shuffledChoices',
+	'order',
 	'validationRules'
 ];
 
@@ -150,7 +153,7 @@ async function createEvaluation(
 		max_attempts?: number | null;
 		deadline?: string | null;
 		status?: 'draft' | 'published';
-		categories?: typeof CATEGORIES;
+		items?: Json;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service
@@ -158,7 +161,7 @@ async function createEvaluation(
 		.insert({
 			title: 'Éval serveur ZZ',
 			grade: '6',
-			categories: settings.categories ?? CATEGORIES,
+			items: settings.items ?? CATEGORIES,
 			created_by: teacher.id
 		})
 		.select('id')
@@ -214,7 +217,7 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	const { data: templates } = await service
 		.from('question_templates')
 		.select('*')
-		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
+		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID, CUBES_ID]);
 	const byId = new Map(
 		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
 	);
@@ -227,25 +230,30 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	});
 }
 
+/**
+ * Réponse juste, telle que l'élève l'envoie : une valeur par case ; case choix =
+ * positions AFFICHÉES des bons choix (le serveur les ramène aux indices d'origine)
+ */
 function rightAnswer(instance: QuestionInstance): SubmittedAnswer {
-	if (getQuestionType(instance) === 'multiple_choice') {
-		const choices = (instance.shuffledChoices ?? []).flatMap((c, position) =>
-			instance.choices![c.originalIndex].isCorrect ? [position] : []
-		);
-		return { choices };
-	}
-	const values = (instance.blanks ?? []).map((b) => b.expectedAnswer);
+	const values = (instance.blanks ?? []).map((b) => {
+		if (!b.choice) return b.expectedAnswer;
+		const correct = parseChoiceAnswer(b.expectedAnswer, b.choice.choices.length) ?? [];
+		const order = b.choice.order;
+		return correct
+			.map((index) => order.indexOf(index))
+			.sort((x, y) => x - y)
+			.join(';');
+	});
 	return { values };
 }
 
+/** Réponse fausse : case math absurde ; case choix, un mauvais choix affiché */
 function wrongAnswer(instance: QuestionInstance): SubmittedAnswer {
-	if (getQuestionType(instance) === 'multiple_choice') {
-		const position = (instance.shuffledChoices ?? []).findIndex(
-			(c) => !instance.choices![c.originalIndex].isCorrect
-		);
-		return { choices: [position] };
-	}
-	const values = (instance.blanks ?? []).map(() => '987654');
+	const values = (instance.blanks ?? []).map((b) => {
+		if (!b.choice) return '987654';
+		const correct = parseChoiceAnswer(b.expectedAnswer, b.choice.choices.length) ?? [];
+		return String(b.choice.order.findIndex((index) => !correct.includes(index)));
+	});
 	return { values };
 }
 
@@ -317,9 +325,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		const { error: templatesError } = await service.from('question_templates').insert([
 			{
 				id: QCM_ID,
-				type: 'multiple_choice',
+				type: 'fill_in_blanks',
 				title: 'QCM ZZ éval serveur',
-				...QCM_CATEGORY,
+				level: 1,
 				grades: ['5'],
 				status: 'published',
 				shared: qcm.shared,
@@ -329,7 +337,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: FILL_ID,
 				type: 'fill_in_blanks',
 				title: 'Moitié ZZ éval serveur',
-				...FILL_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: fill.variations
@@ -343,7 +351,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		await service
 			.from('question_templates')
 			.delete()
-			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
+			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID, CUBES_ID]);
 	});
 
 	describe('Entraînement : démarrer → reprendre → envoyer (×2)', () => {
@@ -363,8 +371,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(first.questions.map((q) => q.type)).toEqual([
 				'fill_in_blanks',
 				'fill_in_blanks',
-				'multiple_choice'
+				'fill_in_blanks'
 			]);
+			expect(first.questions[2].blanks?.[0].type).toBe('choice');
 			expect(first.questions.map((q) => q.delaySeconds)).toEqual([20, 20, 15]);
 
 			const session = await sessionRow(first.attemptId);
@@ -462,8 +471,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			const instances = await oracle(first.attemptId);
 			const result = await submitEvaluationAttempt(actors(student), first.attemptId, {
 				answers: [
-					{ position: 0, ...rightAnswer(instances[0]) },
-					{ position: 1, ...wrongAnswer(instances[1]) },
+					// PR 4 bis : fin et durée de chaque question, pour sa trace
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 5, endReason: 'validated' },
+					{ position: 1, ...wrongAnswer(instances[1]), timeSpent: 99, endReason: 'timeout' },
 					{ position: 2, ...rightAnswer(instances[2]) }
 				]
 			});
@@ -513,14 +523,12 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 					[1, 'correct', true]
 				].sort((a, b) => String(a).localeCompare(String(b)))
 			);
-			// QCM : rangé et renvoyé en indices d'ORIGINE (ce que lit CorrectionCard), pas
-			// en positions affichées
-			const qcmOriginals = rightAnswer(instances[2]).choices!.map(
-				(p) => instances[2].shuffledChoices![p].originalIndex
-			);
-			expect(result.questions[2].answer).toEqual({ choiceIndexes: qcmOriginals });
+			// Case choix : rangée et renvoyée en indices d'ORIGINE (ce que lit CorrectionCard),
+			// pas en positions affichées
+			const qcmOriginals = [instances[2].blanks![0].expectedAnswer];
+			expect(result.questions[2].answer).toEqual({ values: qcmOriginals });
 			const qcmRow = answers.find((a) => a.template_id === QCM_ID);
-			expect((qcmRow!.user_answer as { value: number[] }).value).toEqual(qcmOriginals);
+			expect((qcmRow!.user_answer as { value: string[] }).value).toEqual(qcmOriginals);
 			// Position rangée avec l'instance : la copie reconstruite s'y apparie
 			expect(
 				answers
@@ -541,6 +549,39 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(traces).toHaveLength(3);
 			expect(traces!.every((t) => t.source === 'auto')).toBe(true);
 			expect(traces!.filter((t) => t.success)).toHaveLength(2);
+		});
+
+		it('PR 4 bis : traces au lieu « contrôle », avec durées, sans graine ni réponse', async () => {
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select(
+					'template_id, success, place, response_ms, allotted_ms, end_reason, seed, answer_parts, part_verdicts'
+				)
+				.eq('student_id', student.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed,
+					t.answer_parts,
+					t.part_verdicts
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Validée en 5 s sur 20 s allouées
+					[FILL_ID, true, 'evaluation', 5000, 20_000, 'validated', null, null, null],
+					// Temps écoulé : durée = durée allouée (99 s envoyées, ignorées)
+					[FILL_ID, false, 'evaluation', 20_000, 20_000, 'timeout', null, null, null],
+					// Ni fin ni durée envoyées : lieu seul
+					[QCM_ID, true, 'evaluation', null, null, null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
 		});
 
 		it('C11 : renvoyer une tentative terminée → 409 AVEC la copie déjà notée, rien d’écrit', async () => {
@@ -569,12 +610,10 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				[1, 'incorrect', 0],
 				[2, 'correct', 1]
 			]);
-			// Même réponse que la copie d'origine (QCM en indices d'origine), message compris
+			// Même réponse que la copie d'origine (case choix en indices d'origine), message compris
 			const original = await oracle(first.attemptId);
 			expect(copy!.questions[2].answer).toEqual({
-				choiceIndexes: rightAnswer(original[2]).choices!.map(
-					(p) => original[2].shuffledChoices![p].originalIndex
-				)
+				values: [original[2].blanks![0].expectedAnswer]
 			});
 			expect(copy!.questions[0].answer).toEqual({ values: rightAnswer(original[0]).values });
 			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
@@ -598,8 +637,8 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				if ((q.instance.blanks?.length ?? 0) === 0) return;
 				expect(statusFromBlankStatuses(details[i].blanks.map((b) => b.status))).toBe(q.status);
 			});
-			// QCM : les choix cochés (indices d'origine) avec leur issue
-			expect(details[2].choices?.filter((c) => c.checked).length).toBeGreaterThan(0);
+			// Case choix : son statut de case recalculé (juste)
+			expect(details[2].blanks[0].status).toBe('correct');
 			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
 		});
 
@@ -683,6 +722,68 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
 		});
+
+		it('PR 4 bis : Course — validée, vide au chrono, laissée par « Terminer »', async () => {
+			// Élève neuf : ses traces ne viennent que de cette copie
+			const racer = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: racer.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			const attempt = await start(racer, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			const result = await submitEvaluationAttempt(actors(racer), attempt.attemptId, {
+				answers: [
+					{ position: 0, ...rightAnswer(instances[0]), timeSpent: 12, endReason: 'validated' },
+					// Rien de tapé, chrono écoulé : fin et durée seules
+					{ position: 1, timeSpent: 60, endReason: 'timeout' }
+					// Position 2 : laissée par « Terminer », rien d'envoyé
+				]
+			});
+			expect(result.questions.map((q) => [q.status, q.points])).toEqual([
+				['correct', 1],
+				['empty', 0],
+				['empty', 0]
+			]);
+
+			// Question vide : jugée vide, sans réponse rangée, sa durée gardée
+			const { data: empty } = await service
+				.from('test_answers')
+				.select('status, points, user_answer, time_spent, question_instance')
+				.eq('test_session_id', attempt.attemptId);
+			const second = (empty ?? []).find(
+				(a) => (a.question_instance as { attemptPosition: number }).attemptPosition === 1
+			);
+			expect(second).toMatchObject({ status: 'empty', user_answer: null, time_spent: 60 });
+			expect(Number(second!.points)).toBe(0);
+
+			const { data: traces, error } = await service
+				.from('skill_attempts')
+				.select('template_id, success, place, response_ms, allotted_ms, end_reason, seed')
+				.eq('student_id', racer.id);
+			expect(error).toBeNull();
+			const shown = (traces ?? [])
+				.map((t) => [
+					t.template_id,
+					t.success,
+					t.place,
+					t.response_ms,
+					t.allotted_ms,
+					t.end_reason,
+					t.seed
+				])
+				.sort((a, b) => String(a).localeCompare(String(b)));
+			expect(shown).toEqual(
+				[
+					// Durée allouée = durée de la course (60 s)
+					[FILL_ID, true, 'evaluation', 12_000, 60_000, 'validated', null],
+					[FILL_ID, false, 'evaluation', 60_000, 60_000, 'timeout', null],
+					// « Terminer » : ratée, sans durée ni fin
+					[QCM_ID, false, 'evaluation', null, null, null, null]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
+		});
 	});
 
 	describe('Q59 : copie hostile, budget de correction de 5 s', () => {
@@ -692,7 +793,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 		beforeAll(async () => {
 			({ assignmentId } = await createEvaluation({
-				categories: [{ category: FILL_CATEGORY, quantity: QUESTIONS, delay: 20 }]
+				items: [{ templateId: FILL_ID, quantity: QUESTIONS, delay: 20 }]
 			}));
 		});
 
@@ -891,8 +992,6 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: '0a11f0e0-0000-4000-8000-00000000e603',
 				type: 'fill_in_blanks',
 				title: 'Tiré seulement ZZ',
-				theme: 'ZZ tiré',
-				domain: 'Tiré',
 				level: 1,
 				grades: ['6'],
 				status: 'draft',
@@ -905,7 +1004,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			.insert({
 				user_id: student.id,
 				mode: 'interactive',
-				categories: CATEGORIES,
+				items: CATEGORIES,
 				total_questions: 1
 			})
 			.select('id')
@@ -915,8 +1014,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			position: 0,
 			template_id: template!.id,
 			seed: 1,
-			delay_seconds: 20,
-			category_key: 'zz'
+			delay_seconds: 20
 		});
 		const { error } = await service.from('question_templates').delete().eq('id', template!.id);
 		expect(error?.code).toBe('23503');
@@ -924,15 +1022,14 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		await service.from('question_templates').delete().eq('id', template!.id);
 	});
 
-	describe('QCM à plusieurs réponses (chantier 2, V5) : barème de bout en bout', () => {
+	describe('case choix à plusieurs réponses (chantier 2, V5) : barème de bout en bout', () => {
 		let multiStudent: Person;
 		let assignmentId: string;
 
-		/** Positions AFFICHÉES de ces indices d'origine */
-		function positionsOf(instance: QuestionInstance, originals: number[]): number[] {
-			return originals.map((o) =>
-				(instance.shuffledChoices ?? []).findIndex((c) => c.originalIndex === o)
-			);
+		/** Positions AFFICHÉES de ces indices d'origine, au format de la case (« 1;3 ») */
+		function positionsOf(instance: QuestionInstance, originals: number[]): string {
+			const order = instance.blanks?.[0].choice?.order ?? [];
+			return originals.map((o) => order.indexOf(o)).join(';');
 		}
 
 		beforeAll(async () => {
@@ -945,22 +1042,16 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			await service.from('question_templates').delete().eq('id', MULTI_ID);
 			const { error } = await service.from('question_templates').insert({
 				id: MULTI_ID,
-				type: 'multiple_choice',
+				type: 'fill_in_blanks',
 				title: 'Pairs ZZ éval serveur',
-				...MULTI_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
-				multiple_answers: true,
 				variations: [
 					{
-						statement: 'Quels nombres sont pairs ?',
-						choices: [
-							{ content: '$4$', isCorrect: true },
-							{ content: '$7$', isCorrect: false },
-							{ content: '$10$', isCorrect: true },
-							{ content: '$13$', isCorrect: false }
-						],
-						correctChoiceIndex: ['0', '2']
+						statement:
+							'Quels nombres sont pairs ?\n\n```choix\nplusieurs: oui\n- $4$\n- $7$\n- $10$\n- $13$\n```',
+						blanks: [{ expectedAnswer: '0;2' }]
 					}
 				]
 			});
@@ -968,20 +1059,20 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ category: MULTI_CATEGORY, quantity: 1, delay: 20 }]
+				items: [{ templateId: MULTI_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
 		async function submitChoices(originals: number[]) {
 			const attempt = await start(multiStudent, assignmentId);
-			expect(attempt.questions[0]).toMatchObject({
-				type: 'multiple_choice',
-				multipleAnswers: true
+			expect(attempt.questions[0].blanks?.[0]).toMatchObject({
+				type: 'choice',
+				choice: { multiple: true }
 			});
 			const [instance] = await oracle(attempt.attemptId);
 			// Corps de l'envoi passé par le schéma Zod de la route : plusieurs choix acceptés
 			const body = submitAttemptSchema.parse({
-				answers: [{ position: 0, choices: positionsOf(instance, originals) }]
+				answers: [{ position: 0, values: [positionsOf(instance, originals)] }]
 			});
 			const result = await submitEvaluationAttempt(actors(multiStudent), attempt.attemptId, body);
 			const [row] = await answersOf(attempt.attemptId);
@@ -1013,7 +1104,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect([Number(row.points), row.status, row.is_correct]).toEqual([0, 'incorrect', false]);
 		});
 
-		it('SRS : seul le QCM complet est « su » (le ½ partiel est à revoir, Q40)', async () => {
+		it('SRS : seule la case choix complète est « sue » (le ½ partiel est à revoir, Q40)', async () => {
 			const { data: traces } = await service
 				.from('skill_attempts')
 				.select('success')
@@ -1039,7 +1130,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				id: CHOICE_ID,
 				type: 'fill_in_blanks',
 				title: 'Case choix ZZ éval serveur',
-				...CHOICE_CATEGORY,
+				level: 1,
 				grades: ['6'],
 				status: 'published',
 				variations: [
@@ -1054,7 +1145,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			({ assignmentId } = await createEvaluation({
 				max_attempts: 3,
-				categories: [{ category: CHOICE_CATEGORY, quantity: 1, delay: 20 }]
+				items: [{ templateId: CHOICE_ID, quantity: 1, delay: 20 }]
 			}));
 		}, 60_000);
 
@@ -1084,6 +1175,231 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
 			const [row] = await answersOf(attempt.attemptId);
 			expect((row.user_answer as { value: unknown }).value).toEqual(['0;2']);
+		});
+	});
+
+	describe('fuite-enonce : l’énoncé d’un bloc à geste part sans la réponse', () => {
+		let gestureStudent: Person;
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			gestureStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: gestureStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', GESTE_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: GESTE_ID,
+				type: 'fill_in_blanks',
+				title: 'Droite à placer ZZ éval serveur',
+				level: 1,
+				grades: ['6'],
+				status: 'published',
+				variations: [
+					{
+						statement:
+							'Place le point A, double de 6, et le point B, triple de 5.\n\n```line\nstart: 0\nend: 20\nstep: 1\nlabels: 0, 10, 20\nplacer: A=12 ; B=15\n```'
+					}
+				]
+			});
+			expect(error, 'décor : modèle à droite à placer').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 2,
+				items: [{ templateId: GESTE_ID, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		it('démarrer : ni A=12 ni B=15 dans ce que reçoit l’élève, les noms restent', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			const sent = JSON.stringify(attempt.questions);
+			expect(sent).not.toContain('A=12');
+			expect(sent).not.toContain('B=15');
+			expect(attempt.questions[0].statement).toContain('placer: A=? ; B=?');
+			// L'instance enregistrée, elle, garde la réponse (la correction en a besoin)
+			const [instance] = await oracle(attempt.attemptId);
+			expect(instance.statement).toContain('placer: A=12 ; B=15');
+		});
+
+		it('reprendre : le même énoncé masqué', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			expect(attempt.questions[0].statement).toContain('placer: A=? ; B=?');
+			expect(JSON.stringify(attempt.questions)).not.toContain('A=12');
+		});
+
+		it('la correction ne change pas : les deux points justes → 1 point', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			const [instance] = await oracle(attempt.attemptId);
+			const body = submitAttemptSchema.parse({
+				answers: [{ position: 0, ...rightAnswer(instance) }]
+			});
+			const result = await submitEvaluationAttempt(actors(gestureStudent), attempt.attemptId, body);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+			// Copie rendue après l'envoi : l'instance complète, réponse comprise
+			expect(result.questions[0].instance.statement).toContain('placer: A=12 ; B=15');
+		});
+	});
+
+	describe('fuite-enonce, lot 2 : un assemblage à retrouver part sans ses hauteurs', () => {
+		let cubesStudent: Person;
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			cubesStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: cubesStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', CUBES_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: CUBES_ID,
+				type: 'fill_in_blanks',
+				title: 'Assemblage à retrouver ZZ éval serveur',
+				level: 1,
+				grades: ['6'],
+				status: 'published',
+				variations: [
+					{
+						statement:
+							'Retrouve l’assemblage d’après ses vues.\n\n```cubes\nhauteurs: 1 1 2 / 3 0 2\nretrouver: face, droite\n```'
+					}
+				]
+			});
+			expect(error, 'décor : modèle à assemblage à retrouver').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 2,
+				items: [{ templateId: CUBES_ID, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		it('démarrer : pas les hauteurs, mais l’empreinte et les vues données', async () => {
+			const attempt = await start(cubesStudent, assignmentId);
+			const sent = JSON.stringify(attempt.questions);
+			expect(sent).not.toContain('1 1 2 / 3 0 2');
+			expect(sent).not.toMatch(/hauteurs: [^\\]*[1-9]/);
+			expect(attempt.questions[0].statement).toContain('hauteurs: ? ? ? / ? 0 ?');
+			expect(attempt.questions[0].statement).toContain('vues: face 3 1 2 ; droite 3 2');
+			const [instance] = await oracle(attempt.attemptId);
+			expect(instance.statement).toContain('hauteurs: 1 1 2 / 3 0 2');
+		});
+
+		it('la correction ne change pas : l’assemblage juste → 1 point', async () => {
+			const attempt = await start(cubesStudent, assignmentId);
+			// La saisie de l'élève : une hauteur par carreau de la vue de dessus
+			const body = submitAttemptSchema.parse({
+				answers: [{ position: 0, values: ['1 1 2 / 3 0 2'] }]
+			});
+			const result = await submitEvaluationAttempt(actors(cubesStudent), attempt.attemptId, body);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+		});
+	});
+	describe('Page d’attente : lecture seule, avant le démarrage (diaporama-reglages, PR 2b)', () => {
+		let reader: Person;
+		let assignmentId: string;
+		let evaluationId: string;
+
+		beforeAll(async () => {
+			reader = await person('student');
+			const { error } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: reader.id, status: 'active' });
+			expect(error, 'décor : inscription').toBeNull();
+			({ assignmentId, evaluationId } = await createEvaluation({
+				form: 'course',
+				time_limit: 600
+			}));
+		});
+
+		async function sessionsOf(who: Person): Promise<number> {
+			const { count } = await service
+				.from('test_sessions')
+				.select('id', { count: 'exact', head: true })
+				.eq('evaluation_id', evaluationId)
+				.eq('user_id', who.id);
+			return count ?? -1;
+		}
+
+		it('avant le démarrage : titre, forme, 3 questions, 10 min ; AUCUNE séance créée', async () => {
+			const overview = await readEvaluationOverview(actors(reader), assignmentId);
+			expect(overview).toEqual({
+				preview: false,
+				evaluation: {
+					id: evaluationId,
+					form: 'course',
+					time_limit: 600,
+					title: 'Éval serveur ZZ'
+				},
+				questionCount: 3,
+				durationSeconds: 600,
+				resumed: false
+			});
+			expect(await sessionsOf(reader)).toBe(0);
+		});
+
+		it('tentative commencée : reprise, questions de la tentative, temps RESTANT ; rien de plus', async () => {
+			const attempt = await start(reader, assignmentId);
+			const later = () => new Date(Date.now() + 240_000);
+			const overview = await readEvaluationOverview(actors(reader, { now: later }), assignmentId);
+			expect(overview.resumed).toBe(true);
+			expect(overview.questionCount).toBe(attempt.questions.length);
+			expect(overview.durationSeconds).toBeGreaterThanOrEqual(358);
+			expect(overview.durationSeconds).toBeLessThanOrEqual(360);
+			expect(await sessionsOf(reader)).toBe(1);
+		});
+
+		it('Contrôle blanc : durée = somme des chronos (20 + 20 + 15 s)', async () => {
+			const { assignmentId: blank } = await createEvaluation({ form: 'interactive' });
+			const overview = await readEvaluationOverview(actors(reader), blank);
+			expect(overview).toMatchObject({ questionCount: 3, durationSeconds: 55, resumed: false });
+		});
+
+		it('Q37 : tentative en cours, date limite passée ENTRE-TEMPS → reprise, pas 403', async () => {
+			const { assignmentId: closing, evaluationId: closingId } = await createEvaluation({
+				form: 'course',
+				time_limit: 600
+			});
+			await start(reader, closing);
+			const { error } = await service
+				.from('evaluations')
+				.update({ deadline: '2020-01-01T00:00:00Z' })
+				.eq('id', closingId)
+				.select('id');
+			expect(error, 'décor : date limite passée').toBeNull();
+			const overview = await readEvaluationOverview(actors(reader), closing);
+			expect(overview.resumed).toBe(true);
+		});
+
+		it('élève hors de la classe (lien copié) → 404, pour la page d’attente comme pour start', async () => {
+			const outsider = await person('student');
+			expect(await statusOf(readEvaluationOverview(actors(outsider), assignmentId))).toBe(404);
+			expect(await statusOf(startEvaluationAttempt(actors(outsider), assignmentId))).toBe(404);
+			expect(await sessionsOf(outsider)).toBe(0);
+		});
+
+		it('membre archivé de la classe → 404', async () => {
+			expect(await statusOf(readEvaluationOverview(actors(archived), assignmentId))).toBe(404);
+		});
+
+		it('brouillon → 404 pour l’élève', async () => {
+			const { assignmentId: draft } = await createEvaluation({ status: 'draft' });
+			expect(await statusOf(readEvaluationOverview(actors(reader), draft))).toBe(404);
+		});
+
+		it('date limite passée, aucune tentative en cours → 403', async () => {
+			const { assignmentId: late } = await createEvaluation({
+				deadline: '2020-01-01T00:00:00Z'
+			});
+			expect(await statusOf(readEvaluationOverview(actors(reader), late))).toBe(403);
+		});
+
+		it('prof propriétaire : aperçu, aucune séance', async () => {
+			const overview = await readEvaluationOverview(actors(teacher), assignmentId);
+			expect(overview).toMatchObject({ preview: true, questionCount: 3, durationSeconds: 600 });
+			expect(await sessionsOf(teacher)).toBe(0);
 		});
 	});
 });

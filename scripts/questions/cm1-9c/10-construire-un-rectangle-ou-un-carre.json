@@ -1,0 +1,181 @@
+{
+	"id": "82351474-f11f-430d-b74e-f850c00b684b",
+	"title": "Construire un rectangle ou un carré de dimensions données",
+	"description": "Construire sur papier uni, à l'équerre et à la règle graduée, un rectangle ou un carré dont un côté est tracé et les dimensions données en cm",
+	"grades": ["CM1", "CM2"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$, de ${{l}}\\,\\text{cm}$, est tracé. Construis le rectangle $ABCD$ tel que $BC = {{h}}\\,\\text{cm}$. Trace les angles droits avec l'équerre et prends les longueurs sur la règle graduée.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: rectangle A ; B ; C ; D : BC = {{h}} cm\n---\nA = point(2, 1, etiquette=\"bas\")\nB = point({{eval:2+l}}, 1, etiquette=\"bas\")\ns = segment(A, B)\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "6..9"
+				},
+				{
+					"name": "h",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**En $B$** : l'équerre le long de $[AB]$, l'angle droit en $B$ ; on trace la perpendiculaire. La règle posée avec son $0$ sur $B$ : $\\textcolor{{{color:primary.0}}}{C}$ est à ${{h}}\\,\\text{cm}$.",
+					"**En $A$** : de même, $\\textcolor{{{color:primary.0}}}{D}$ sur la perpendiculaire en $A$, à ${{h}}\\,\\text{cm}$. On trace $[BC]$, $[AD]$ et $[CD]$."
+				]
+			}
+		},
+		{
+			"statement": "Le côté $[AB]$, de ${{c}}\\,\\text{cm}$, est tracé. Construis le carré $ABCD$. Trace les angles droits avec l'équerre et prends les longueurs sur la règle graduée.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 9\nverifier: carre A ; B ; C ; D\n---\nA = point(2, 1, etiquette=\"bas\")\nB = point({{eval:2+c}}, 1, etiquette=\"bas\")\ns = segment(A, B)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..7"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les quatre côtés d'un carré ont la même longueur, ${{c}}\\,\\text{cm}$, et ses angles sont droits.",
+					"**En $B$** : l'équerre le long de $[AB]$, la perpendiculaire en $B$ ; la règle posée avec son $0$ sur $B$ : $\\textcolor{{{color:primary.0}}}{C}$ est à ${{c}}\\,\\text{cm}$. De même $\\textcolor{{{color:primary.0}}}{D}$ en $A$. On trace $[BC]$, $[AD]$ et $[CD]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle 7 × 3",
+			"variationIndex": 0,
+			"variables": {
+				"l": "7",
+				"h": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4)|segment(9;4;2;4)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle 9 × 5",
+			"variationIndex": 0,
+			"variables": {
+				"l": "9",
+				"h": "5"
+			},
+			"answers": [
+				"droite(11;1;11;10)|regle(11;1;11;2;1)|segment(11;1;11;6)|droite(2;1;2;10)|regle(2;1;2;2;1)|segment(2;1;2;6)|segment(11;6;2;6)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BC = 3,5 cm au lieu de 3 cm",
+			"variationIndex": 0,
+			"variables": {
+				"l": "7",
+				"h": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4.5)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4.5)|segment(9;4.5;2;4.5)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : BC = 7 cm (longueur de [AB])",
+			"variationIndex": 0,
+			"variables": {
+				"l": "7",
+				"h": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;8)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;8)|segment(9;8;2;8)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : côtés tracés sans équerre",
+			"variationIndex": 0,
+			"variables": {
+				"l": "7",
+				"h": "3"
+			},
+			"answers": ["segment(9;1;9.15;4)|segment(2;1;1.9;4)|segment(9.15;4;1.9;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : figure non fermée",
+			"variationIndex": 0,
+			"variables": {
+				"l": "7",
+				"h": "3"
+			},
+			"answers": [
+				"droite(9;1;9;8)|regle(9;1;9;2;1)|segment(9;1;9;4)|droite(2;1;2;8)|regle(2;1;2;2;1)|segment(2;1;2;4)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré de 6 cm",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;7)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;7)|segment(8;7;2;7)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré de 4 cm",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4"
+			},
+			"answers": [
+				"droite(6;1;6;5)|regle(6;1;6;2;1)|segment(6;1;6;5)|droite(2;1;2;5)|regle(2;1;2;2;1)|segment(2;1;2;5)|segment(6;5;2;5)"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côtés de 5 cm sur [AB] de 6 cm (rectangle)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;6)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;6)|segment(8;6;2;6)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [AD] plus long que [BC]",
+			"variationIndex": 1,
+			"variables": {
+				"c": "6"
+			},
+			"answers": [
+				"droite(8;1;8;7)|regle(8;1;8;2;1)|segment(8;1;8;7)|droite(2;1;2;7)|regle(2;1;2;2;1)|segment(2;1;2;7.4)|segment(8;7;2;7.4)"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

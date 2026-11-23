@@ -143,7 +143,7 @@ describe('runAntiFraudJob — activé sans données', () => {
 		expect(report.scanned_pairs).toBe(0);
 	});
 
-	it('retourne 0 flags si templates non-tagués famille A', async () => {
+	it('retourne 0 flags si templates sans point du programme', async () => {
 		const state: MockState = { insertedFlags: [] };
 		const reviews = Array.from({ length: 25 }, (_, i) => makeReview(i, 4));
 		const supabase = buildMock(

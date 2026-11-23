@@ -4,13 +4,13 @@
  * SECURITY: Prevents XSS (Cross-Site Scripting) attacks
  * - Uses DOMPurify for safe HTML sanitization
  * - Whitelist-based approach (only allowed tags/attributes)
- * - Supports math rendering (MathLive)
+ * - Aucune balise MathLive (2026-11-08) : une formule s'affiche par le markdown, pas par ce HTML
  * - Safe for user-generated content
  *
  * USAGE:
  * ```svelte
  * <script>
- *   import { sanitizeHtml } from '$lib/utils/sanitize';
+ *   import { sanitizeHtml } from '#lib/utils/sanitize.ts';
  *   let untrustedContent = '<script>alert("xss")</script><p>Safe text</p>';
  * </script>
  *
@@ -68,10 +68,9 @@ const ALLOWED_TAGS = [
 	'th',
 	'td',
 
-	// Math rendering (MathLive)
-	'math-field',
-	'math-inline',
-	'math-display',
+	// Pas de balise MathLive (`math-field`…) : MathLive lit leur texte comme du LaTeX, où
+	// `\htmlStyle`, `\class`, `\cssId`, `\href` posent style, classe ou lien ; aucun contenu
+	// passé ici n'en a besoin (2026-11-08)
 
 	// Structural
 	'div',
@@ -98,10 +97,6 @@ const ALLOWED_ATTR = [
 	'class',
 	'style',
 
-	// MathLive specific
-	'read-only',
-	'disabled',
-
 	// Table attributes
 	'colspan',
 	'rowspan',
@@ -127,40 +122,11 @@ export function sanitizeHtml(dirty: string): string {
 		ALLOWED_ATTR,
 		ALLOW_DATA_ATTR: false, // Prevent data-* attributes (potential XSS vector)
 		ALLOW_UNKNOWN_PROTOCOLS: false, // Only http:, https:, mailto:
-		SAFE_FOR_TEMPLATES: true, // Extra protection for template contexts
+		// Pas de `SAFE_FOR_TEMPLATES` : il efface tout de `{{` au dernier `}}` (formules, variables
+		// de modèles) et ne protège que d'un moteur de gabarits qui relirait le HTML dans le
+		// navigateur (Angular, Vue), absent ici — Svelte ne relit pas `{@html}` (2026-11-08)
 		KEEP_CONTENT: true, // Keep text content even if tags are removed
 		RETURN_TRUSTED_TYPE: false // Return string, not TrustedHTML
-	});
-}
-
-/**
- * Sanitize HTML with relaxed math field support
- * Use for rich text editors with MathLive integration
- *
- * @param dirty - Untrusted HTML with math content
- * @returns Sanitized HTML with math field support
- */
-export function sanitizeHtmlWithMath(dirty: string): string {
-	if (!dirty || typeof dirty !== 'string') {
-		return '';
-	}
-
-	return DOMPurify.sanitize(dirty, {
-		ALLOWED_TAGS: [...ALLOWED_TAGS, 'math-field'],
-		ALLOWED_ATTR: [
-			...ALLOWED_ATTR,
-			'read-only',
-			'value',
-			'mode',
-			// TipTap math extension attributes
-			'latex', // Formula content attribute
-			'data-math-inline', // Inline math marker
-			'data-math-block' // Block math marker
-		],
-		ALLOW_DATA_ATTR: false, // Keep false - we explicitly allow only data-math-* above
-		ALLOW_UNKNOWN_PROTOCOLS: false,
-		SAFE_FOR_TEMPLATES: true,
-		KEEP_CONTENT: true
 	});
 }
 
@@ -181,79 +147,6 @@ export function sanitizePlainText(dirty: string): string {
 		ALLOWED_ATTR: [],
 		KEEP_CONTENT: true // Keep text content
 	});
-}
-
-/**
- * Transform TipTap math HTML to renderable math-field elements
- *
- * TipTap serializes math nodes as:
- * - <span data-math-inline latex="x^2"></span>
- * - <div data-math-block latex="x^2"></div>
- *
- * This transforms them to MathLive elements:
- * - <span class="math-inline-wrapper"><math-field read-only>x^2</math-field></span>
- * - <div class="math-block-wrapper"><math-field read-only>x^2</math-field></div>
- *
- * @param html - HTML from RichTextEditor
- * @returns HTML with math-field elements for display
- */
-export function transformMathHtml(html: string): string {
-	if (!html || typeof html !== 'string') {
-		return '';
-	}
-
-	// First sanitize the HTML
-	let result = sanitizeHtmlWithMath(html);
-
-	// Transform inline math: <span data-math-inline latex="..."></span>
-	result = result.replace(
-		/<span\s+data-math-inline(?:\s+latex="([^"]*)")?[^>]*><\/span>/g,
-		(_match, latex) => {
-			const escapedLatex = (latex || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			return `<span class="math-inline-wrapper"><math-field read-only>${escapedLatex}</math-field></span>`;
-		}
-	);
-
-	// Transform block math: <div data-math-block latex="..."></div>
-	result = result.replace(
-		/<div\s+data-math-block(?:\s+latex="([^"]*)")?[^>]*><\/div>/g,
-		(_match, latex) => {
-			const escapedLatex = (latex || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			return `<div class="math-block-wrapper"><math-field read-only>${escapedLatex}</math-field></div>`;
-		}
-	);
-
-	return result;
-}
-
-/** Schémas d'URL autorisés dans un lien ; un lien relatif (sans schéma) passe aussi */
-const SAFE_URL_SCHEMES: ReadonlySet<string> = new Set(['http', 'https', 'mailto']);
-
-/**
- * Un lien sûr, ou '#' : schémas autorisés (`SAFE_URL_SCHEMES`) ou lien relatif.
- *
- * @param url - URL string to sanitize
- * @returns The URL unchanged if safe, '#' otherwise
- */
-export function sanitizeUrl(url: string | undefined): string {
-	if (!url || typeof url !== 'string') {
-		return '#';
-	}
-
-	// Ce que le NAVIGATEUR lira : il retire espaces et caractères de contrôle en
-	// tête, et tabulations / retours à la ligne partout (`java\nscript:` devient
-	// `javascript:`). On décide sur cette forme-là, pas sur la chaîne écrite.
-	// eslint-disable-next-line no-control-regex
-	const normalized = url.replace(/^[\u0000-\u0020]+/, '').replace(/[\t\n\r]/g, '');
-
-	// Un schéma explicite (`xxx:`) doit être dans la liste BLANCHE. Une liste
-	// noire (`javascript:`, `data:`…) laisse passer ce qu'on n'a pas prévu.
-	const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(normalized)?.[1].toLowerCase();
-	if (scheme !== undefined && !SAFE_URL_SCHEMES.has(scheme)) {
-		return '#';
-	}
-
-	return url;
 }
 
 /**

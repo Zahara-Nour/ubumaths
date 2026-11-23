@@ -17,7 +17,7 @@ Pas pour : une seule couche (`supabase-expert`, `backend-developer`, `frontend-d
 ## Déroulé propre à ce rôle (CLAUDE.md §Planning)
 
 1. **Phase 0** : comportements en français (nominal / limite / erreur) **validés par David** avant de coder. Une question d'architecture ouverte se pose, elle ne se tranche pas seul.
-2. **Base** : question d'accès posée à David avant tout SQL, puis le déroulé de `supabase-expert` (tests d'intégration d'abord, migration additive). Une nouvelle RPC = deux PR (migration → `db:migrate` + `db:types` → code).
+2. **Base** : question d'accès posée à David avant tout SQL, puis le déroulé de `supabase-expert` (tests d'intégration d'abord, migration additive). Une nouvelle RPC = une seule PR : migration, `pnpm db:types`, puis le code ; `db:migrate` au merge.
 3. **Serveur** : Zod sur toute entrée, autorisation côté serveur, `.select()` après écriture (règles de `backend-developer`).
 4. **Interface** : `MySelect`/`MyCheckbox`, runes, `pnpm svelte:autofix` (règles de `frontend-developer`).
 5. **Doc de progression** `docs/wip/<feature>-progress.md` tenue entre phases.

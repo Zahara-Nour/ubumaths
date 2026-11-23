@@ -10,9 +10,9 @@
  * @module dictionary/admin-draft
  */
 
-import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
-import { hasAccessToGrade } from '$lib/utils/grades';
-import type { Json } from '$lib/types/database';
+import { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
+import { hasAccessToGrade } from '#lib/utils/grades.ts';
+import type { Json } from '#lib/types/database.ts';
 import { normalizeName } from './consistency';
 import type { DictionaryEntryInput, DictionaryRow } from './entry-schema';
 import type { GradedField } from './model';

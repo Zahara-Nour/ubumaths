@@ -15,16 +15,16 @@ import type { Figure } from '../graph/figure';
 import type { ScalarParam } from '../types/geo-value';
 import { numeric } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
-import type { MathNode } from '$lib/mathAST';
-import { subtract } from '$lib/mathAST';
-import type { Discontinuity } from '$lib/mathAST/analysis';
+import type { MathNode } from '#lib/mathAST/index.ts';
+import { subtract } from '#lib/mathAST/index.ts';
+import type { Discontinuity } from '#lib/mathAST/analysis/index.ts';
 import { DslRuntimeError } from './errors';
 import {
 	warnIfSingularitySuspected,
 	getAllDiscontinuities
-} from '$lib/mathAST/analysis/singularity-warn';
+} from '#lib/mathAST/analysis/singularity-warn.ts';
 import type { ResolvedValue } from './builtins';
-import { PROBE_T_MAX } from '$lib/mathAST/integration/improper';
+import { PROBE_T_MAX } from '#lib/mathAST/integration/improper.ts';
 
 export type AreaBuiltinName = 'integrale' | 'aire' | 'aire_entre';
 

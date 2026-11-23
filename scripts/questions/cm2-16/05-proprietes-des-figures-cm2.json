@@ -1,0 +1,284 @@
+{
+	"id": "5c13d53e-acb3-40ac-8b63-9c07bb836c6a",
+	"title": "Côtés parallèles, côtés égaux, angles droits : les figures usuelles",
+	"description": "Propriétés des triangles particuliers, du carré, du rectangle, du losange, du trapèze et du trapèze rectangle : phrase vraie, côtés parallèles du trapèze, figures à cocher, angles droits",
+	"grades": ["CM2"],
+	"level": 14,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle phrase est vraie ?\n\n```choix\n- {{if:f==1|Les côtés opposés d'un rectangle sont parallèles.|{{if:f==2|Les côtés opposés d'un losange sont parallèles.|{{if:f==3|Un carré a ses côtés opposés parallèles, quatre côtés de la même longueur et quatre angles droits.|{{if:f==4|Les trois côtés d'un triangle équilatéral ont la même longueur.|{{if:f==5|Un triangle isocèle a deux côtés de la même longueur.|{{if:f==6|Un triangle rectangle a un angle droit.|{{if:f==7|Un trapèze a deux côtés opposés parallèles.|Un trapèze rectangle a deux angles droits.}}}}}}}}}}}}}}\n- {{if:f==1|Les quatre côtés d'un rectangle ont toujours la même longueur.|{{if:f==2|Un losange a quatre angles droits.|{{if:f==3|Un carré n'a aucun côté parallèle à un autre.|{{if:f==4|Un triangle équilatéral a un angle droit.|{{if:f==5|Un triangle isocèle a toujours un angle droit.|{{if:f==6|Un triangle rectangle a deux angles droits.|{{if:f==7|Un trapèze a toujours quatre angles droits.|Un trapèze rectangle a quatre angles droits.}}}}}}}}}}}}}}\n- {{if:f==1|Un rectangle a deux angles droits.|{{if:f==2|Un losange a seulement deux côtés de la même longueur.|{{if:f==3|Un carré a deux côtés longs et deux côtés courts.|{{if:f==4|Un triangle équilatéral a deux côtés parallèles.|{{if:f==5|Un triangle isocèle a deux côtés parallèles.|{{if:f==6|Un triangle rectangle a deux côtés parallèles.|{{if:f==7|Les quatre côtés d'un trapèze ont toujours la même longueur.|Un trapèze rectangle n'a aucun côté parallèle à un autre.}}}}}}}}}}}}}}\n- {{if:f==1|Deux côtés qui se suivent dans un rectangle sont parallèles.|{{if:f==2|Deux côtés qui se suivent dans un losange sont toujours perpendiculaires.|{{if:f==3|Un carré a un seul angle droit.|{{if:f==4|Un triangle équilatéral a seulement deux côtés de la même longueur.|{{if:f==5|Les trois côtés d'un triangle isocèle ont toujours des longueurs différentes.|{{if:f==6|Les trois côtés d'un triangle rectangle ont toujours la même longueur.|{{if:f==7|Un trapèze n'a aucun côté parallèle à un autre.|Un trapèze rectangle a un seul angle droit.}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:f==1|Un rectangle a quatre angles droits ; ses côtés opposés sont parallèles et de la même longueur.|{{if:f==2|Un losange a quatre côtés de la même longueur ; ses côtés opposés sont parallèles.|{{if:f==3|Un carré est à la fois un rectangle et un losange.|{{if:f==4|Un triangle équilatéral a trois côtés de la même longueur.|{{if:f==5|Un triangle isocèle a (au moins) deux côtés de la même longueur.|{{if:f==6|Un triangle rectangle a un angle droit, et un seul.|{{if:f==7|Un trapèze est un quadrilatère qui a deux côtés opposés parallèles.|Un trapèze rectangle est un trapèze qui a un angle droit ; ses deux côtés parallèles sont perpendiculaires au même côté, il a donc deux angles droits.}}}}}}}}}}}}}}",
+					"La phrase vraie : **{{if:f==1|Les côtés opposés d'un rectangle sont parallèles.|{{if:f==2|Les côtés opposés d'un losange sont parallèles.|{{if:f==3|Un carré a ses côtés opposés parallèles, quatre côtés de la même longueur et quatre angles droits.|{{if:f==4|Les trois côtés d'un triangle équilatéral ont la même longueur.|{{if:f==5|Un triangle isocèle a deux côtés de la même longueur.|{{if:f==6|Un triangle rectangle a un angle droit.|{{if:f==7|Un trapèze a deux côtés opposés parallèles.|Un trapèze rectangle a deux angles droits.}}}}}}}}}}}}}}**"
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un trapèze : deux de ses côtés sont parallèles. Quel côté est parallèle au côté ${{if:q==0|[AB]|{{if:q==1|[BC]|{{if:q==2|[CD]|[DA]}}}}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un trapèze ABCD.\n---\n{{if:v==0|{{if:o==0|A = point(1.7, 1.75, etiquette=\"bas-gauche\")\nB = point(8.3, 1.75, etiquette=\"droite\")\nC = point(5.3, 5.25, etiquette=\"haut\")\nD = point(3.7, 5.25, etiquette=\"haut-gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)|{{if:o==1|A = point(2.48, 1.03, etiquette=\"bas\")\nB = point(7.89, 4.82, etiquette=\"droite\")\nC = point(3.42, 5.97, etiquette=\"haut\")\nD = point(2.11, 5.05, etiquette=\"gauche\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)|A = point(8.1, 3.67, etiquette=\"droite\")\nB = point(1.9, 5.93, etiquette=\"haut-gauche\")\nC = point(3.52, 1.62, etiquette=\"bas-gauche\")\nD = point(5.02, 1.07, etiquette=\"bas\")\npolygone(A, B, C, D, couleur=\"bleu\", epaisseur=2)}}}}|{{if:v==1|{{if:o==0|B = point(1.7, 1.75, etiquette=\"bas-gauche\")\nC = point(8.3, 1.75, etiquette=\"droite\")\nD = point(5.3, 5.25, etiquette=\"haut\")\nA = point(3.7, 5.25, etiquette=\"haut-gauche\")\npolygone(B, C, D, A, couleur=\"bleu\", epaisseur=2)|{{if:o==1|B = point(2.48, 1.03, etiquette=\"bas\")\nC = point(7.89, 4.82, etiquette=\"droite\")\nD = point(3.42, 5.97, etiquette=\"haut\")\nA = point(2.11, 5.05, etiquette=\"gauche\")\npolygone(B, C, D, A, couleur=\"bleu\", epaisseur=2)|B = point(8.1, 3.67, etiquette=\"droite\")\nC = point(1.9, 5.93, etiquette=\"haut-gauche\")\nD = point(3.52, 1.62, etiquette=\"bas-gauche\")\nA = point(5.02, 1.07, etiquette=\"bas\")\npolygone(B, C, D, A, couleur=\"bleu\", epaisseur=2)}}}}|{{if:v==2|{{if:o==0|C = point(1.7, 1.75, etiquette=\"bas-gauche\")\nD = point(8.3, 1.75, etiquette=\"droite\")\nA = point(5.3, 5.25, etiquette=\"haut\")\nB = point(3.7, 5.25, etiquette=\"haut-gauche\")\npolygone(C, D, A, B, couleur=\"bleu\", epaisseur=2)|{{if:o==1|C = point(2.48, 1.03, etiquette=\"bas\")\nD = point(7.89, 4.82, etiquette=\"droite\")\nA = point(3.42, 5.97, etiquette=\"haut\")\nB = point(2.11, 5.05, etiquette=\"gauche\")\npolygone(C, D, A, B, couleur=\"bleu\", epaisseur=2)|C = point(8.1, 3.67, etiquette=\"droite\")\nD = point(1.9, 5.93, etiquette=\"haut-gauche\")\nA = point(3.52, 1.62, etiquette=\"bas-gauche\")\nB = point(5.02, 1.07, etiquette=\"bas\")\npolygone(C, D, A, B, couleur=\"bleu\", epaisseur=2)}}}}|{{if:o==0|D = point(1.7, 1.75, etiquette=\"bas-gauche\")\nA = point(8.3, 1.75, etiquette=\"droite\")\nB = point(5.3, 5.25, etiquette=\"haut\")\nC = point(3.7, 5.25, etiquette=\"haut-gauche\")\npolygone(D, A, B, C, couleur=\"bleu\", epaisseur=2)|{{if:o==1|D = point(2.48, 1.03, etiquette=\"bas\")\nA = point(7.89, 4.82, etiquette=\"droite\")\nB = point(3.42, 5.97, etiquette=\"haut\")\nC = point(2.11, 5.05, etiquette=\"gauche\")\npolygone(D, A, B, C, couleur=\"bleu\", epaisseur=2)|D = point(8.1, 3.67, etiquette=\"droite\")\nA = point(1.9, 5.93, etiquette=\"haut-gauche\")\nB = point(3.52, 1.62, etiquette=\"bas-gauche\")\nC = point(5.02, 1.07, etiquette=\"bas\")\npolygone(D, A, B, C, couleur=\"bleu\", epaisseur=2)}}}}}}}}}}\n```\n\n```choix\nmelanger: non\n- $[AB]$\n- $[BC]$\n- $[CD]$\n- $[DA]$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..7"
+				},
+				{
+					"name": "o",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(1-min(abs(c-0),1))*0+(1-min(abs(c-1),1))*0+(1-min(abs(c-2),1))*1+(1-min(abs(c-3),1))*1+(1-min(abs(c-4),1))*2+(1-min(abs(c-5),1))*2+(1-min(abs(c-6),1))*3+(1-min(abs(c-7),1))*3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(1-min(abs(c-0),1))*0+(1-min(abs(c-1),1))*2+(1-min(abs(c-2),1))*1+(1-min(abs(c-3),1))*3+(1-min(abs(c-4),1))*2+(1-min(abs(c-5),1))*0+(1-min(abs(c-6),1))*3+(1-min(abs(c-7),1))*1"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-min(abs(c-0),1))*2+(1-min(abs(c-1),1))*0+(1-min(abs(c-2),1))*3+(1-min(abs(c-3),1))*1+(1-min(abs(c-4),1))*0+(1-min(abs(c-5),1))*2+(1-min(abs(c-6),1))*1+(1-min(abs(c-7),1))*3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un trapèze, deux côtés **opposés** sont parallèles : l'écart entre eux reste le même partout. Les deux autres se rapprochent.",
+					"Le côté parallèle à ${{if:q==0|[AB]|{{if:q==1|[BC]|{{if:q==2|[CD]|[DA]}}}}}}$ est le côté opposé, $\\textcolor{{{color:primary.0}}}{{{if:z==0|[AB]|{{if:z==1|[BC]|{{if:z==2|[CD]|[DA]}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Coche **toutes** les figures qui {{if:k==0|ont leurs côtés opposés parallèles deux à deux|{{if:k==1|ont toujours au moins deux angles droits|ont toujours leurs quatre côtés de la même longueur}}}}.\n\n```choix\nplusieurs: oui\nmelanger: non\n- carré\n- rectangle\n- losange\n- trapèze\n- trapèze rectangle\n- quadrilatère\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(1-min(abs(k-0),1))*0+(1-min(abs(k-1),1))*0+(1-min(abs(k-2),1))*0"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(1-min(abs(k-0),1))*1+(1-min(abs(k-1),1))*1+(1-min(abs(k-2),1))*2"
+				},
+				{
+					"name": "w",
+					"expression": "eval:(1-min(abs(k-0),1))*2+(1-min(abs(k-1),1))*4+(1-min(abs(k-2),1))*2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u}};{{v}};{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|Le carré, le rectangle et le losange ont deux paires de côtés parallèles. Le trapèze n'en a qu'une à coup sûr.|{{if:k==1|Le carré et le rectangle ont quatre angles droits ; le trapèze rectangle en a deux. Le losange et le trapèze n'en ont pas forcément.|Le carré et le losange ont quatre côtés de la même longueur ; le rectangle a deux longueurs différentes.}}}}",
+					"Les figures à cocher : {{if:k==0|**carré** ; **rectangle** ; **losange**|{{if:k==1|**carré** ; **rectangle** ; **trapèze rectangle**|**carré** ; **losange**}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'angles droits a {{if:k==1|un trapèze rectangle|{{if:k==2|un rectangle|{{if:k==3|un carré|{{if:k==4|un triangle rectangle|un losange qui n'est pas un carré}}}}}}}} ?\n\nNombre d'angles droits : $?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "z",
+					"expression": "eval:(1-min(abs(k-1),1))*2+(1-min(abs(k-2),1))*4+(1-min(abs(k-3),1))*4+(1-min(abs(k-4),1))*1+(1-min(abs(k-5),1))*0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Un trapèze rectangle a un angle droit ; ses deux côtés parallèles sont perpendiculaires au même côté, ce qui fait deux angles droits.|{{if:k==2|Un rectangle a quatre angles droits.|{{if:k==3|Un carré est un rectangle : quatre angles droits.|{{if:k==4|Un triangle rectangle a un angle droit, un seul.|Un losange qui n'est pas un carré n'a aucun angle droit.}}}}}}}}",
+					"Nombre d'angles droits : $\\textcolor{{{color:primary.0}}}{{{z}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Phrase vraie du trapèze",
+			"variationIndex": 0,
+			"variables": {
+				"f": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le trapèze rectangle a 1 angle droit",
+			"variationIndex": 0,
+			"variables": {
+				"f": "8"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trapèze : parallèle à [AB] (v = 0)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"o": "0",
+				"v": "0",
+				"q": "0",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Trapèze : parallèle à [DA] (v = 1, w = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"o": "1",
+				"v": "1",
+				"q": "3",
+				"z": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côté consécutif",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"o": "0",
+				"v": "0",
+				"q": "0",
+				"z": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Côtés opposés parallèles deux à deux",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"u": "0",
+				"v": "1",
+				"w": "2"
+			},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le trapèze coché",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"u": "0",
+				"v": "1",
+				"w": "2"
+			},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au moins deux angles droits",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"u": "0",
+				"v": "1",
+				"w": "4"
+			},
+			"answers": ["0;1;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quatre côtés égaux",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"u": "0",
+				"v": "2",
+				"w": "2"
+			},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Trapèze rectangle : 2",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"z": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 angle droit au trapèze rectangle",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"z": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange : 0",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"z": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -8,10 +8,10 @@
  * remise à zéro.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { createFakeSupabase, type Call } from '$lib/server/__tests__/helpers/fake-supabase';
-import { utcDay, weekStartOf } from '$lib/utils/buddy-constance';
+import { createFakeSupabase, type Call } from '#lib/server/__tests__/helpers/fake-supabase.ts';
+import { utcDay, weekStartOf } from '#lib/utils/buddy-constance.ts';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn(async () => ({})) }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn(async () => ({})) }));
 
 import { load } from '../+page.server';
 
@@ -23,14 +23,20 @@ const TWO_WEEKS_AGO = utcDay(new Date(Date.parse(`${THIS_WEEK}T00:00:00Z`) - 14 
 function member(id: string, buddy: Record<string, unknown>) {
 	return {
 		student_id: id,
-		profiles: { full_name: `Élève ${id}`, firstname: null, lastname: null },
-		student_buddies: {
-			palotin_type: 'giron',
-			xp: 10,
-			level: 1,
-			longest_streak: 9,
-			last_activity_date: null,
-			...buddy
+		// Le Palotin arrive À TRAVERS le profil (forme de la requête, prouvée contre PostgREST
+		// dans tests/integration/palotins-vue-prof.test.ts)
+		profiles: {
+			full_name: `Élève ${id}`,
+			firstname: null,
+			lastname: null,
+			student_buddies: {
+				palotin_type: 'giron',
+				xp: 10,
+				level: 1,
+				longest_streak: 9,
+				last_activity_date: null,
+				...buddy
+			}
 		}
 	};
 }

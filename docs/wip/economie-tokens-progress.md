@@ -12,7 +12,7 @@ _Mis à jour le 2026-10-25, après les propositions 7-11 du premier passage de `
 
 - **État** : propositions 1-14 du premier passage appliquées. `MEMORY.md` est remonté à 16,5 Ko entre-temps (sessions des 19-25 octobre).
 - **Prochaine action** : trier les projets dont la clôture attend David, puis relancer `/menage-contexte` sur l'index qui a grossi.
-- **En attente de David** : quels projets sont clos parmi Mode décimal, Lexique, SEO, Cabinet Noir, Consentement parental, Refonte référentiel, Fiches 1re SPE, vitest 5, Monétisation, navadra.
+- **En attente de David** : vitest 5 n'est PAS fait (on est en 4.1.11, sur signal seulement) ; proposé : petite PR → vitest 4.1.12, qui ferme deux failles modérées de `@vitest/mocker` (`pnpm audit`), go à donner. Et : quels projets sont clos parmi Mode décimal, Lexique, SEO, Cabinet Noir, Consentement parental, Refonte référentiel, Fiches 1re SPE, vitest 5, Monétisation, navadra.
 - **Worktree / branche** : aucun — commits de doc directs sur `main`.
 
 ## Journal (2026-10-19)

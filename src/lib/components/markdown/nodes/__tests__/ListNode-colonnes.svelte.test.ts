@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ListNode from '../ListNode.svelte';
-import { parseMarkdown, type ListNode as ListAst } from '$lib/ubumark';
+import { parseMarkdown, type ListNode as ListAst } from '#lib/ubumark/index.ts';
 
 async function rendre(markdown: string) {
 	const list = parseMarkdown(markdown).children[0] as ListAst;

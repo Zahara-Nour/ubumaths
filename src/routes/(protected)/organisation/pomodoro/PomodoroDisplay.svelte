@@ -10,8 +10,8 @@
 -->
 
 <script lang="ts">
-	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
-	import type { PomodoroPhase } from '$lib/stores/pomodoro/logic';
+	import { pomodoroStore } from '#lib/stores/pomodoro/pomodoro.svelte.ts';
+	import type { PomodoroPhase } from '#lib/stores/pomodoro/logic.ts';
 
 	// ---------------------------------------------------------------------------
 	// Derived display values

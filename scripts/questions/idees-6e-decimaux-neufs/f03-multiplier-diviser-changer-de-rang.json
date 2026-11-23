@@ -1,0 +1,278 @@
+{
+	"id": "67954fbb-d89f-4893-a2a0-30d393e979c5",
+	"title": "Par combien multiplier ou diviser pour changer le rang d'un chiffre",
+	"description": "Trouver le nombre (10, 100 ou 1 000) par lequel multiplier ou diviser pour qu'un chiffre passe d'un rang à un autre, en général ou dans un nombre décimal donné (4,567 : le 6 devient le chiffre des unités) (pièges : un rang de trop ou de moins)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Par combien faut-il {{if:j1>j2|multiplier|diviser}} un nombre pour que son chiffre des {{if:j1==0|centaines|{{if:j1==1|dizaines|{{if:j1==2|unités|{{if:j1==3|dixièmes|{{if:j1==4|centièmes|millièmes}}}}}}}}}} devienne le chiffre des {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}} ?\n\nIl faut le {{if:j1>j2|multiplier|diviser}} par $?$.",
+			"variables": [
+				{
+					"name": "j1",
+					"expression": "0..5"
+				},
+				{
+					"name": "j2",
+					"expression": "0..5"
+				}
+			],
+			"conditions": ["j1 != j2", "abs(j1-j2) <= 3", "max(j1,j2) >= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(abs(j1-j2))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10^((abs(j1-j2))+1)}}",
+							"message": "Tu as compté un rang de trop : du chiffre des {{if:j1==0|centaines|{{if:j1==1|dizaines|{{if:j1==2|unités|{{if:j1==3|dixièmes|{{if:j1==4|centièmes|millièmes}}}}}}}}}} au chiffre des {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}}, il y a ${{eval:(abs(j1-j2))}}$ rang{{if:(abs(j1-j2))>1|s|}}.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:10^((abs(j1-j2))-1)}}",
+							"message": "Tu as compté un rang de moins : du chiffre des {{if:j1==0|centaines|{{if:j1==1|dizaines|{{if:j1==2|unités|{{if:j1==3|dixièmes|{{if:j1==4|centièmes|millièmes}}}}}}}}}} au chiffre des {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}}, il y a ${{eval:(abs(j1-j2))}}$ rang{{if:(abs(j1-j2))>1|s|}}.",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans l'écriture d'un nombre, chaque rang vaut $10$ fois celui qui est à sa droite. Du chiffre des {{if:j1==0|centaines|{{if:j1==1|dizaines|{{if:j1==2|unités|{{if:j1==3|dixièmes|{{if:j1==4|centièmes|millièmes}}}}}}}}}} au chiffre des {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}}, on {{if:j1>j2|monte|descend}} de ${{eval:(abs(j1-j2))}}$ rang{{if:(abs(j1-j2))>1|s|}}.",
+					"Il faut le {{if:j1>j2|multiplier|diviser}} par $\\textcolor{{{color:primary.0}}}{{{eval:10^(abs(j1-j2))}}}$."
+				]
+			},
+			"hint": "Écris les rangs dans l'ordre (centaines, dizaines, unités, dixièmes, centièmes, millièmes) et compte de combien de rangs le chiffre doit se déplacer."
+		},
+		{
+			"statement": "Par combien faut-il {{if:ji>j2|multiplier|diviser}} ${{eval:M/10^(4-ne);d}}$ pour que le chiffre ${{eval:mod(floor(M/10^(4-ic)),10)}}$ devienne le chiffre des {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}} ?\n\nIl faut le {{if:ji>j2|multiplier|diviser}} par $?$.",
+			"variables": [
+				{
+					"name": "g1",
+					"expression": "1..9"
+				},
+				{
+					"name": "g2",
+					"expression": "1..9"
+				},
+				{
+					"name": "g3",
+					"expression": "1..9"
+				},
+				{
+					"name": "g4",
+					"expression": "1..9"
+				},
+				{
+					"name": "M",
+					"expression": "eval:1000*g1+100*g2+10*g3+g4"
+				},
+				{
+					"name": "ne",
+					"expression": "1..3"
+				},
+				{
+					"name": "ic",
+					"expression": "1..4"
+				},
+				{
+					"name": "ji",
+					"expression": "eval:2-ne+ic"
+				},
+				{
+					"name": "j2",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [
+				"g1 != g2",
+				"g1 != g3",
+				"g1 != g4",
+				"g2 != g3",
+				"g2 != g4",
+				"g3 != g4",
+				"ji != j2",
+				"abs(ji-j2) <= 3",
+				"ne-4+ji-j2 >= -3"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(abs(ji-j2))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10^((abs(ji-j2))+1)}}",
+							"message": "Tu as compté un rang de trop : dans ${{eval:M/10^(4-ne);d}}$, ${{eval:mod(floor(M/10^(4-ic)),10)}}$ est le chiffre des {{if:ji==0|centaines|{{if:ji==1|dizaines|{{if:ji==2|unités|{{if:ji==3|dixièmes|{{if:ji==4|centièmes|millièmes}}}}}}}}}}, à ${{eval:(abs(ji-j2))}}$ rang{{if:(abs(ji-j2))>1|s|}} des {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}}.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:10^((abs(ji-j2))-1)}}",
+							"message": "Tu as compté un rang de moins : dans ${{eval:M/10^(4-ne);d}}$, ${{eval:mod(floor(M/10^(4-ic)),10)}}$ est le chiffre des {{if:ji==0|centaines|{{if:ji==1|dizaines|{{if:ji==2|unités|{{if:ji==3|dixièmes|{{if:ji==4|centièmes|millièmes}}}}}}}}}}, à ${{eval:(abs(ji-j2))}}$ rang{{if:(abs(ji-j2))>1|s|}} des {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}}.",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{eval:M/10^(4-ne);d}}$, ${{eval:mod(floor(M/10^(4-ic)),10)}}$ est le chiffre des {{if:ji==0|centaines|{{if:ji==1|dizaines|{{if:ji==2|unités|{{if:ji==3|dixièmes|{{if:ji==4|centièmes|millièmes}}}}}}}}}}.",
+					"Des {{if:ji==0|centaines|{{if:ji==1|dizaines|{{if:ji==2|unités|{{if:ji==3|dixièmes|{{if:ji==4|centièmes|millièmes}}}}}}}}}} aux {{if:j2==0|centaines|{{if:j2==1|dizaines|{{if:j2==2|unités|{{if:j2==3|dixièmes|{{if:j2==4|centièmes|millièmes}}}}}}}}}}, on {{if:ji>j2|monte|descend}} de ${{eval:(abs(ji-j2))}}$ rang{{if:(abs(ji-j2))>1|s|}} : il faut {{if:ji>j2|multiplier|diviser}} par $\\textcolor{{{color:primary.0}}}{{{eval:10^(abs(ji-j2))}}}$.",
+					"${{eval:M/10^(4-ne);d}}{{if:ji>j2|\\times|\\div}}{{eval:10^(abs(ji-j2))}}={{if:ji>j2|{{eval:M/10^(4-ne)*10^(abs(ji-j2));d}}|{{eval:M/10^(4-ne)/10^(abs(ji-j2));d}}}}$."
+				]
+			},
+			"hint": "Cherche d'abord le rang du chiffre ${{eval:mod(floor(M/10^(4-ic)),10)}}$ dans ${{eval:M/10^(4-ne);d}}$, puis compte de combien de rangs il doit se déplacer."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : unités → centièmes, diviser par 100",
+			"variationIndex": 0,
+			"variables": {
+				"j1": "2",
+				"j2": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "a : un rang de trop",
+			"variationIndex": 0,
+			"variables": {
+				"j1": "2",
+				"j2": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté un rang de trop : du chiffre des unités au chiffre des centièmes, il y a $2$ rangs."
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "a : un rang de moins",
+			"variationIndex": 0,
+			"variables": {
+				"j1": "2",
+				"j2": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté un rang de moins : du chiffre des unités au chiffre des centièmes, il y a $2$ rangs."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "a : millièmes → unités, multiplier par 1 000",
+			"variationIndex": 0,
+			"variables": {
+				"j1": "5",
+				"j2": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "a : 1000 sans espace",
+			"variationIndex": 0,
+			"variables": {
+				"j1": "5",
+				"j2": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["1000"]
+		},
+		{
+			"description": "a : dizaines → dixièmes",
+			"variationIndex": 0,
+			"variables": {
+				"j1": "1",
+				"j2": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "b : 4,567, le 6 aux unités → × 100",
+			"variationIndex": 1,
+			"variables": {
+				"g1": "4",
+				"g2": "5",
+				"g3": "6",
+				"g4": "7",
+				"ne": "1",
+				"ic": "3",
+				"j2": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "b : 4,567, un rang de moins",
+			"variationIndex": 1,
+			"variables": {
+				"g1": "4",
+				"g2": "5",
+				"g3": "6",
+				"g4": "7",
+				"ne": "1",
+				"ic": "3",
+				"j2": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté un rang de moins : dans $4.567$, $6$ est le chiffre des centièmes, à $2$ rangs des unités."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "b : 4,567, un rang de trop",
+			"variationIndex": 1,
+			"variables": {
+				"g1": "4",
+				"g2": "5",
+				"g3": "6",
+				"g4": "7",
+				"ne": "1",
+				"ic": "3",
+				"j2": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté un rang de trop : dans $4.567$, $6$ est le chiffre des centièmes, à $2$ rangs des unités."
+			},
+			"answers": ["1\\,000"]
+		},
+		{
+			"description": "b : 382,9, le 3 aux dixièmes → ÷ 1 000",
+			"variationIndex": 1,
+			"variables": {
+				"g1": "3",
+				"g2": "8",
+				"g3": "2",
+				"g4": "9",
+				"ne": "3",
+				"ic": "1",
+				"j2": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1\\,000"]
+		}
+	]
+}

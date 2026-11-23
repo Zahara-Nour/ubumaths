@@ -29,23 +29,30 @@ import { inDecimalRegister } from '../pedagogical-limits/decimal-register';
 import type { DecimalRegisterOptions } from '../pedagogical-limits/decimal-register';
 import { findNodes } from '../transforms';
 import { getVariables } from '../eval/substitute';
+import { nodesEqual } from '../normal/hash';
 
 // =============================================================================
 // Fonctions
 // =============================================================================
 
-/** Les étapes d'une équation ou d'une inéquation écrites comme sa réponse. */
+/**
+ * Les étapes d'une équation ou d'une inéquation écrites comme sa réponse.
+ *
+ * @param angles - L'écriture des angles (`anglesAsTyped` : `cos(π/9)` du calcul
+ *   réécrit `cos(20°)` quand l'élève a tapé des degrés — PR 2c de registre-reference)
+ */
 export function stepsAsShown(
 	steps: readonly EquationStep[],
-	equation: RelationNode
+	equation: RelationNode,
+	angles: (node: MathNode) => MathNode = (node) => node
 ): readonly EquationStep[] {
 	const decimal = hasDecimalLiteral(equation);
 	// L'écriture tapée reste, jusque dans les branches d'une valeur absolue
 	// (`\dfrac{x}{2} - 0,5 = 1`) : les pipelines y reprennent les nœuds tapés
 	const typed = new Set(findNodes(equation, () => true));
 	const options = { keep: (node: MathNode) => typed.has(node), roots: true };
-	const write = (node: MathNode): MathNode => (decimal ? inRegister(node, options) : node);
-	const value = (node: MathNode): MathNode => exactValueToShow(node, { decimal });
+	const write = (node: MathNode): MathNode => angles(decimal ? inRegister(node, options) : node);
+	const value = (node: MathNode): MathNode => exactValueToShow(angles(node), { decimal });
 
 	const rewrite = (step: EquationStep): EquationStep => ({
 		...step,
@@ -55,22 +62,35 @@ export function stepsAsShown(
 		...(step.subSteps && { subSteps: step.subSteps.map(rewrite) })
 	});
 	const shown = steps.map(rewrite);
-	if (equation.relation === '=' || shown.length === 0) return shown;
-	// Une inéquation du premier degré ne conclut pas : sa dernière étape finit
-	// sur la forme résolue `x < c`, dont c se lit comme une solution
-	// (`2x < √2` → `x < √2/2`, comme `2x = √2`)
+	if (shown.length === 0) return shown;
+	// Le premier degré ne conclut pas : sa dernière étape finit sur la forme
+	// résolue `x = c` ou `x < c`, dont c se lit comme une solution
+	// (`2x < √2` → `x < √2/2` ; V32 : `3x = −π` → `x = −π/3`, pas `−(1/3)π`)
 	const last = steps[steps.length - 1];
 	const solved = solvedBoundWritten(last.after, value);
 	if (solved === null) return shown;
-	return [...shown.slice(0, -1), { ...shown[shown.length - 1], after: solved }];
+	// La forme résolue paraît aussi dans l'`after` de l'étape qui l'obtient
+	// (« On divise… ») et dans le `before` de « Solution » (son rendu le lit).
+	// Jamais la première étape : elle montre l'équation TAPÉE, qui peut déjà
+	// être résolue (`x = \dfrac{6}{3}` reste écrit tel quel, revue de #2097)
+	const isSolved = (node: RelationNode): boolean => nodesEqual(node, last.after);
+	return shown.map((step, index) =>
+		index === 0
+			? step
+			: {
+					...step,
+					before: isSolved(steps[index].before) ? solved : step.before,
+					after: isSolved(steps[index].after) ? solved : step.after
+				}
+	);
 }
 
-/** `x ⋚ c` (c sans inconnue), c écrit par `value` ; sinon `null`. */
+/** `x = c` ou `x ⋚ c` (c sans inconnue), c écrit par `value` ; sinon `null`. */
 function solvedBoundWritten(
 	after: RelationNode,
 	value: (n: MathNode) => MathNode
 ): RelationNode | null {
-	if (after.relation === '=' || after.left.type !== 'variable') return null;
+	if (after.left.type !== 'variable') return null;
 	if (getVariables(after.right).size > 0) return null;
 	return { ...after, right: value(after.right) };
 }

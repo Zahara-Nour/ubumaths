@@ -1,0 +1,395 @@
+{
+	"id": "0f60db1a-077f-42a4-a3be-2306fb0d2cbd",
+	"title": "Qu'est-ce qui est le plus probable ?",
+	"description": "Comparer des probabilités dans des cas simples : deux sacs de même total, à « une chance sur deux » par la moitié, deux sacs de même nombre de rouges, une roue de 4 parts et une de 8, deux évènements d'un dé",
+	"grades": ["CM2"],
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Deux sacs contiennent chacun ${{T}}$ boules, rouges ou bleues. Le sac A a ${{x}}$ boules rouges, le sac B en a ${{y}}$. On tire une boule sans regarder.\n\nDans quel sac a-t-on le plus de chances de tirer une boule rouge ?\n\n```choix\nmelanger: non\n- dans le sac A\n- dans le sac B\n- autant dans les deux sacs\n```",
+			"variables": [
+				{
+					"name": "T",
+					"expression": "8..12"
+				},
+				{
+					"name": "x",
+					"expression": "1..{{eval:T-1}}"
+				},
+				{
+					"name": "y",
+					"expression": "1..{{eval:T-1}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-max(min(x-y,1),-1))/2"
+				}
+			],
+			"conditions": ["x != y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sac A : ${{x}}$ chances sur ${{T}}$ ; sac B : ${{y}}$ chances sur ${{T}}$.",
+					"Même nombre de boules dans les deux sacs : on compare les boules rouges, ${{x}}$ et ${{y}}$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{dans le sac {{if:r==0|A|B}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{T}}$ boules : ${{a}}$ rouges, les autres bleues. On tire une boule sans regarder.\n\nA-t-on plus d'une chance sur deux de tirer une boule rouge ?\n\n```choix\nmelanger: non\n- plus d'une chance sur deux\n- exactement une chance sur deux\n- moins d'une chance sur deux\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "4..10"
+				},
+				{
+					"name": "T",
+					"expression": "eval:2*h"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:T-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "eval:max(min(a-h,1),-1)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:1-s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a ${{a}}$ chances sur ${{T}}$ de tirer une boule rouge.",
+					"Une chance sur deux, ce serait la moitié des boules : ${{T}} \\div 2 = {{h}}$ boules rouges.",
+					"${{a}}$ {{if:s==1|est plus grand que|{{if:s==0|est égal à|est plus petit que}}}} ${{h}}$ : $\\textcolor{{{color:primary.0}}}{\\text{{{if:s==1|plus d'une chance sur deux|{{if:s==0|exactement une chance sur deux|moins d'une chance sur deux}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le sac A contient ${{x}}$ boules rouges et ${{a}}$ boules bleues. Le sac B contient ${{x}}$ boules rouges et ${{b}}$ boules bleues. On tire une boule sans regarder.\n\nDans quel sac a-t-on le plus de chances de tirer une boule rouge ?\n\n```choix\nmelanger: non\n- dans le sac A\n- dans le sac B\n- autant dans les deux sacs\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-max(min(b-a,1),-1))/2"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sac A : ${{x}}$ chances sur ${{eval:x+a}}$ ; sac B : ${{x}}$ chances sur ${{eval:x+b}}$.",
+					"Autant de boules rouges dans les deux sacs : celui qui a le moins de boules bleues donne le plus de chances.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{dans le sac {{if:r==0|A|B}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux roues sont partagées en parts égales : la roue A en $4$ parts, la roue B en $8$ parts.\n\nRoue A :\n\n```partage\nforme: disque 4\ngris: {{g}}\n```\n\nRoue B :\n\n```partage\nforme: disque 8\ngris: {{h}}\n```\n\nAvec quelle roue a-t-on le plus de chances que la flèche montre une part coloriée ?\n\n```choix\nmelanger: non\n- avec la roue A\n- avec la roue B\n- autant avec les deux roues\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "1..7"
+				},
+				{
+					"name": "s",
+					"expression": "eval:max(min(2*g-h,1),-1)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s*s*(1-s)/2+(1-s*s)*2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Roue A : ${{g}}$ chance{{if:g>1|s}} sur $4$ ; roue B : ${{h}}$ chance{{if:h>1|s}} sur $8$.",
+					"Une part de la roue A vaut deux parts de la roue B : ${{g}}$ chance{{if:g>1|s}} sur $4$, c'est ${{eval:2*g}}$ chances sur $8$.",
+					"On compare ${{eval:2*g}}$ et ${{h}}$ : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|avec la roue A|{{if:r==1|avec la roue B|autant avec les deux roues}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé à $6$ faces numérotées de $1$ à $6$.\n\nQu'est-ce qui a le plus de chances d'arriver ?\n\n```choix\nmelanger: non\n- obtenir un nombre pair\n- obtenir un nombre plus grand que ${{N}}$\n- les deux ont autant de chances\n```",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "eval:max(min(N-3,1),-1)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s*s*(1-s)/2+(1-s*s)*2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre pair : $2$, $4$, $6$, soit $3$ chances sur $6$.",
+					"Un nombre plus grand que ${{N}}$ : de ${{eval:N+1}}$ à $6$, soit ${{eval:6-N}}$ chances sur $6$.",
+					"On compare $3$ et ${{eval:6-N}}$ : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|obtenir un nombre pair|{{if:r==1|obtenir un nombre plus grand que {{N}}|les deux ont autant de chances}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "10 boules, A 3 rouges, B 7 : B",
+			"variationIndex": 0,
+			"variables": {
+				"T": "10",
+				"x": "3",
+				"y": "7",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A",
+			"variationIndex": 0,
+			"variables": {
+				"T": "10",
+				"x": "3",
+				"y": "7",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 rouges sur 12 : plus",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"T": "12",
+				"a": "7",
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6 rouges sur 12 : exactement",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"T": "12",
+				"a": "6",
+				"s": "0",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 sur 12, une chance sur deux",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"T": "12",
+				"a": "5",
+				"s": "-1",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 R + 2 B contre 3 R + 6 B : A",
+			"variationIndex": 2,
+			"variables": {
+				"x": "3",
+				"a": "2",
+				"b": "6",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B, le sac le plus plein",
+			"variationIndex": 2,
+			"variables": {
+				"x": "3",
+				"a": "2",
+				"b": "6",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : autant, même nombre de rouges",
+			"variationIndex": 2,
+			"variables": {
+				"x": "3",
+				"a": "2",
+				"b": "6",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 sur 4 contre 3 sur 8 : B",
+			"variationIndex": 3,
+			"variables": {
+				"g": "1",
+				"h": "3",
+				"s": "-1",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 sur 8 pris pour moins (1 sur 4 a la plus grande part)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "1",
+				"h": "3",
+				"s": "-1",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 sur 4 contre 4 sur 8 : autant",
+			"variationIndex": 3,
+			"variables": {
+				"g": "2",
+				"h": "4",
+				"s": "0",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 sur 4 contre 5 sur 8 : A",
+			"variationIndex": 3,
+			"variables": {
+				"g": "3",
+				"h": "5",
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pair contre plus grand que 4 : pair",
+			"variationIndex": 4,
+			"variables": {
+				"N": "4",
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pair contre plus grand que 3 : autant",
+			"variationIndex": 4,
+			"variables": {
+				"N": "3",
+				"s": "0",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pair contre plus grand que 1 : le second",
+			"variationIndex": 4,
+			"variables": {
+				"N": "1",
+				"s": "-1",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

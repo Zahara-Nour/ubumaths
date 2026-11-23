@@ -3,11 +3,12 @@
  * GET - Get submission results for an exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { exerciseIdParamSchema } from '$lib/server/validation/python-exercises';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { exerciseIdParamSchema } from '#lib/server/validation/python-exercises.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-exercises/[id]/results/+server');
 
@@ -32,11 +33,8 @@ const resultsQuerySchema = z.object({
  * @returns Array of submissions with student info
  */
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Validate ID parameter
 	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
@@ -45,17 +43,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	const exerciseId = params.id;
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
 
 	// Verify exercise exists and teacher has access
 	const { data: exercise, error: exerciseError } = await supabase
@@ -150,7 +137,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		}
 
 		if (!classMembers || classMembers.length === 0) {
-			return json({ results: [] });
+			return Response.json({ results: [] });
 		}
 
 		const studentIds = classMembers.map((cm) => cm.student_id);
@@ -189,10 +176,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				const studentIds = classMembers.map((cm) => cm.student_id);
 				query = query.in('student_id', studentIds);
 			} else {
-				return json({ results: [] });
+				return Response.json({ results: [] });
 			}
 		} else {
-			return json({ results: [] });
+			return Response.json({ results: [] });
 		}
 	}
 
@@ -270,7 +257,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		>
 	);
 
-	return json({
+	return Response.json({
 		results,
 		summary: Object.values(studentStats)
 	});

@@ -47,9 +47,10 @@
 <script lang="ts">
 	import { spring } from 'svelte/motion';
 	import { onMount } from 'svelte';
-	import type { VipCard } from '$lib/types/vip-card';
-	import { activeCard, orientation, resetBaseOrientation } from '$lib/stores/holo-card.svelte';
-	import { clamp, round, adjust } from '$lib/utils/holo-math';
+	import type { VipCard } from '#lib/types/vip-card.ts';
+	import { activeCard, orientation, resetBaseOrientation } from '#lib/stores/holo-card.svelte.ts';
+	import { clamp, round, adjust } from '#lib/utils/holo-math.ts';
+	import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 	interface Props {
 		card: VipCard;
@@ -97,7 +98,7 @@
 	const rarityInfo = card.rarity ? rarityColors[card.rarity] : rarityColors.common;
 
 	// Use imagePath from database (Supabase Storage URL)
-	const computedImagePath = $derived(card.imagePath ?? '');
+	const computedImagePath = $derived(toBrowserAddress(card.imagePath ?? ''));
 
 	// Random seed for cosmos effect positioning
 	const randomSeed = {

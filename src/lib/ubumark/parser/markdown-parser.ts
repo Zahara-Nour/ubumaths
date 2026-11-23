@@ -21,6 +21,7 @@ import type {
 	DocumentNode,
 	ParagraphNode,
 	InlineNode,
+	TextNode,
 	ParseOptions,
 	MathPlaceholder,
 	ImageNode,
@@ -36,8 +37,7 @@ import type {
 	HintReferenceNode,
 	LineBreakNode,
 	InternalLinkNode,
-	InternalLinkReferenceType,
-	LexiconMark
+	InternalLinkReferenceType
 } from '../types';
 import {
 	extractMathOutside,
@@ -65,10 +65,9 @@ import { dedentIndentedFences } from './indented-fences';
 import { blockLineRanges, isSpecialBlockEnd } from './block-ranges';
 import {
 	INLINE_CODE_REGEX,
-	INLINE_DETAIL_REGEX,
-	LEXICON_MARK_REGEX,
+	SPAN_MARK_REGEX,
 	maskSpans,
-	parseDetailKind
+	parseSpanClasses
 } from '../utils/detail-kinds';
 import {
 	findVariationBlocks,
@@ -92,11 +91,42 @@ import {
 } from './number-line-parser';
 import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
+	findScratchBlocks,
+	parseScratch,
+	parseScratchContent,
+	isScratchBlockStart
+} from './scratch-parser';
+import {
 	findHorlogeBlocks,
 	parseHorloge,
 	parseHorlogeContent,
 	isHorlogeBlockStart
 } from './horloge-parser';
+import {
+	findTortueBlocks,
+	parseTortue,
+	parseTortueContent,
+	isTortueBlockStart
+} from './tortue-parser';
+import {
+	findCalculBlocks,
+	parseCalcul,
+	parseCalculContent,
+	isCalculBlockStart
+} from './calcul-parser';
+import { findRobotBlocks, parseRobot, parseRobotContent, isRobotBlockStart } from './robot-parser';
+import {
+	findPartageBlocks,
+	parsePartage,
+	parsePartageContent,
+	isPartageBlockStart
+} from './partage-parser';
+import {
+	findEspaceBlocks,
+	parseEspace,
+	parseEspaceContent,
+	isEspaceBlockStart
+} from './espace-parser';
 import {
 	findOperationBlocks,
 	parseOperation,
@@ -115,7 +145,16 @@ import {
 	parseMonnaieContent,
 	isMonnaieBlockStart
 } from './monnaie-parser';
+import {
+	findSchemaBarresBlocks,
+	parseSchemaBarres,
+	parseSchemaBarresContent,
+	isSchemaBarresBlockStart
+} from './schema-barres-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
+import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
+import { findAssocierBlocks, parseAssocierBlock, parseAssocierContent } from './associer-parser';
+import { findTrousBlocks, parseTrousBlock, parseTrousContent } from './trous-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -493,12 +532,25 @@ function parseBlocks(
 	const trigCircleBlocks = findTrigCircleBlocks(lines);
 	const numberLineBlocks = findNumberLineBlocks(lines);
 	const qrBlocks = findQrBlocks(lines);
+	const scratchBlocks = findScratchBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
+	const tortueBlocks = findTortueBlocks(lines);
+	const calculBlocks = findCalculBlocks(lines);
+	const robotBlocks = findRobotBlocks(lines);
+	const partageBlocks = findPartageBlocks(lines);
+	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
+	const schemaBarresBlocks = findSchemaBarresBlocks(lines);
 	// Bloc ```choix (case « choix ») : ses choix restent du markdown, rendus un à un
 	const choiceBlocks = findChoiceBlocks(lines);
+	// Bloc ```ranger (étiquettes à ranger) : ses étiquettes restent du markdown
+	const rangerBlocks = findRangerBlocks(lines);
+	// Bloc ```associer (associer deux colonnes) : éléments et étiquettes restent du markdown
+	const associerBlocks = findAssocierBlocks(lines);
+	// Bloc ```trous (texte à trous à étiquettes) : le texte et les étiquettes restent du markdown
+	const trousBlocks = findTrousBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -514,11 +566,21 @@ function parseBlocks(
 		{ ranges: trigCircleBlocks, parse: parseTrigCircle, language: 'trig' },
 		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' },
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
+		{ ranges: scratchBlocks, parse: parseScratch, language: 'scratch' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
+		{ ranges: tortueBlocks, parse: parseTortue, language: 'tortue' },
+		{ ranges: calculBlocks, parse: parseCalcul, language: 'calcul' },
+		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
+		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
+		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
-		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' }
+		{ ranges: schemaBarresBlocks, parse: parseSchemaBarres, language: 'schema-barres' },
+		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' },
+		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' },
+		{ ranges: associerBlocks, parse: parseAssocierBlock, language: 'associer' },
+		{ ranges: trousBlocks, parse: parseTrousBlock, language: 'trous' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -581,11 +643,21 @@ function parseBlocks(
 			...trigCircleBlocks,
 			...numberLineBlocks,
 			...qrBlocks,
+			...scratchBlocks,
 			...horlogeBlocks,
+			...tortueBlocks,
+			...calculBlocks,
+			...robotBlocks,
+			...partageBlocks,
+			...espaceBlocks,
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
+			...schemaBarresBlocks,
 			...choiceBlocks,
+			...rangerBlocks,
+			...associerBlocks,
+			...trousBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -598,11 +670,21 @@ function parseBlocks(
 			...findTrigCircleBlocks(originalLines),
 			...findNumberLineBlocks(originalLines),
 			...findQrBlocks(originalLines),
+			...findScratchBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
+			...findTortueBlocks(originalLines),
+			...findCalculBlocks(originalLines),
+			...findRobotBlocks(originalLines),
+			...findPartageBlocks(originalLines),
+			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
+			...findSchemaBarresBlocks(originalLines),
 			...findChoiceBlocks(originalLines),
+			...findRangerBlocks(originalLines),
+			...findAssocierBlocks(originalLines),
+			...findTrousBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -993,6 +1075,7 @@ function parseInlineContent(
 			if (hasPlaceholders) {
 				// Split this text node by placeholders
 				const segments = splitTextWithPlaceholders(node.content, placeholders);
+				let unknownPlaced = false;
 
 				for (const segment of segments) {
 					if (typeof segment === 'string') {
@@ -1006,8 +1089,14 @@ function parseInlineContent(
 								...(node.code && { code: true }),
 								...(node.strikethrough && { strikethrough: true }),
 								...(node.highlight && { highlight: true }),
-								...(node.detail && { detail: node.detail })
+								...(node.detail && { detail: node.detail }),
+								...(node.lexicon && { lexicon: node.lexicon }),
+								...(node.color && { color: node.color }),
+								// Le message au prof ne se répète pas sur chaque morceau
+								...(node.unknownClasses &&
+									!unknownPlaced && { unknownClasses: node.unknownClasses })
 							});
+							if (node.unknownClasses) unknownPlaced = true;
 						}
 					} else {
 						// Math placeholder → inline math node
@@ -1019,8 +1108,9 @@ function parseInlineContent(
 							...(exprInfo.expressionName && {
 								expressionName: exprInfo.expressionName
 							}),
-							// Une formule dans un détail en ligne en hérite le type
-							...(node.detail && { detail: node.detail })
+							// Une formule dans un détail en ligne en hérite le type, et la couleur
+							...(node.detail && { detail: node.detail }),
+							...(node.color && { color: node.color })
 						});
 					}
 				}
@@ -1483,70 +1573,144 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
  * @returns Array of inline nodes (text, blank, hint-reference, internal-link, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
-	if (!text) return [];
+	// Étape 0 : marquages en ligne `[texte]{.classe …}` — détail de correction
+	// (ADR 0017), mot du dictionnaire, couleur (ADR 0042). Deux passes du même
+	// motif : la première lit le marquage extérieur, la seconde celui qu'il
+	// contient (`[le [grand]{.rouge} cône]{.bleu}`). Le texte suit ensuite le
+	// pipeline ordinaire, puis chaque nœud reçoit les marques.
+	return parseWithSpanMarks(text, SPAN_MARK_REGEX, OUTER_BOUNDS, parseInnerSpanMarks, spanMarkOf);
+}
 
-	// Étape 0 : détails en ligne `[texte]{.rappel}` (ADR 0017). Leur texte suit
-	// le même pipeline, puis chaque nœud texte est marqué du type de détail.
-	// Type inconnu : laissé littéral. Le code en ligne passe avant : on cherche
-	// dans un texte où il est masqué, on découpe l'original aux mêmes indices.
-	const nodes: InlineNode[] = [];
+/** Seconde passe de {@link parseTextFormatting} : le marquage intérieur. */
+function parseInnerSpanMarks(text: string): InlineNode[] {
+	return parseWithSpanMarks(
+		text,
+		SPAN_MARK_REGEX,
+		INNER_BOUNDS,
+		parseTextFormattingCore,
+		spanMarkOf
+	);
+}
+
+/**
+ * Marque d'un marquage `{.…}`. Une marque déjà posée par un marquage
+ * intérieur l'emporte (la couleur la plus proche gagne). Classe inconnue : le
+ * texte est gardé sans crochets ni marque, et le premier nœud du passage
+ * retient les classes inconnues pour le message au prof (Q1 du 2026-11-20).
+ */
+function spanMarkOf(match: RegExpExecArray): (node: TextNode) => TextNode {
+	const { detail, lexicon, color, unknown } = parseSpanClasses(match[2]);
+	let unknownPending = unknown.length > 0;
+	return (node) => {
+		const marked: TextNode = { ...node };
+		if (detail && !marked.detail) marked.detail = detail;
+		if (lexicon && !marked.lexicon) marked.lexicon = lexicon;
+		if (color && !marked.color) marked.color = color;
+		if (unknownPending) {
+			marked.unknownClasses = [...(marked.unknownClasses ?? []), ...unknown];
+			unknownPending = false;
+		}
+		return marked;
+	};
+}
+
+/**
+ * Plages de bornes (zone à usage privé d'Unicode), une par passe : un détail
+ * peut contenir un mot marqué, les deux passes s'imbriquent. Dans une plage,
+ * le premier code ferme, les suivants ouvrent (un par marquage).
+ */
+const OUTER_BOUNDS = 0xe000;
+const INNER_BOUNDS = 0xe800;
+const BOUNDS_SIZE = 0x800;
+
+/**
+ * Marquages `[texte]{.…}` lus SANS couper la mise en forme qui les entoure
+ * (L16 : `**un [mot]{.def} pair**` restait en `**` littéraux). Chaque
+ * marquage est remplacé par son texte entre deux bornes invisibles (zone à
+ * usage privé d'Unicode) ; `parse` lit la mise en forme sur le texte entier ;
+ * puis les nœuds texte sont redécoupés aux bornes et ceux du dedans reçoivent
+ * la marque. Le code en ligne est masqué : un marqueur n'y est jamais lu. Une
+ * borne restée dans un autre nœud (texte d'un lien) y est effacée.
+ */
+function parseWithSpanMarks(
+	text: string,
+	regex: RegExp,
+	bounds: number,
+	parse: (text: string) => InlineNode[],
+	markOf: (match: RegExpExecArray) => ((node: TextNode) => TextNode) | null
+): InlineNode[] {
+	if (!text) return [];
+	// Un caractère de la plage déjà présent dans la source serait pris pour une borne
+	text = text.replace(boundsRegex(bounds), '');
+
+	const marks: Array<(node: TextNode) => TextNode> = [];
 	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
-	const detailRegex = new RegExp(INLINE_DETAIL_REGEX.source, INLINE_DETAIL_REGEX.flags);
+	const markRegex = new RegExp(regex.source, regex.flags);
+	let withBounds = '';
 	let position = 0;
 	let match: RegExpExecArray | null;
-	while ((match = detailRegex.exec(masked)) !== null) {
-		const kind = parseDetailKind(match[2]);
-		if (!kind) continue;
-		if (match.index > position) {
-			nodes.push(...parseTextFormattingPipeline(text.slice(position, match.index)));
-		}
+	while ((match = markRegex.exec(masked)) !== null) {
+		const mark = markOf(match);
+		if (!mark || marks.length + 1 >= BOUNDS_SIZE) continue;
 		const inner = text.slice(match.index + 1, match.index + 1 + match[1].length);
-		for (const node of parseTextFormattingPipeline(inner)) {
-			nodes.push(node.type === 'text' ? { ...node, detail: kind } : node);
-		}
+		withBounds +=
+			text.slice(position, match.index) +
+			String.fromCharCode(bounds + 1 + marks.length) +
+			inner +
+			String.fromCharCode(bounds);
+		marks.push(mark);
 		position = match.index + match[0].length;
 	}
-	if (position < text.length) {
-		nodes.push(...parseTextFormattingPipeline(text.slice(position)));
+	if (marks.length === 0) return parse(text);
+	withBounds += text.slice(position);
+
+	const nodes: InlineNode[] = [];
+	let current: ((node: TextNode) => TextNode) | null = null;
+	for (const node of parse(withBounds)) {
+		if (node.type !== 'text') {
+			nodes.push(stripSpanBounds(node, bounds));
+			continue;
+		}
+		let segment = '';
+		const flush = () => {
+			if (segment.length === 0) return;
+			const piece: TextNode = { ...node, content: segment };
+			nodes.push(current ? current(piece) : piece);
+			segment = '';
+		};
+		for (const char of node.content) {
+			const code = char.charCodeAt(0);
+			if (code === bounds) {
+				flush();
+				current = null;
+			} else if (code > bounds && code < bounds + BOUNDS_SIZE) {
+				flush();
+				current = marks[code - bounds - 1] ?? null;
+			} else {
+				segment += char;
+			}
+		}
+		flush();
 	}
 	return nodes;
 }
 
-/**
- * Pipeline de {@link parseTextFormatting}, hors détails en ligne : d'abord les
- * mots du lexique marqués à la main (`[mot]{.def}`, `{.def=…}`, `{.nodef}`),
- * dont le texte suit le pipeline ordinaire puis reçoit la marque. Le code en
- * ligne est masqué : un marqueur n'y est jamais lu.
- */
-function parseTextFormattingPipeline(text: string): InlineNode[] {
-	if (!text) return [];
+/** Les caractères de la plage de bornes d'une passe. */
+function boundsRegex(bounds: number): RegExp {
+	const first = bounds.toString(16);
+	const last = (bounds + BOUNDS_SIZE - 1).toString(16);
+	return new RegExp(`[\\u{${first}}-\\u{${last}}]`, 'gu');
+}
 
-	const nodes: InlineNode[] = [];
-	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
-	const markRegex = new RegExp(LEXICON_MARK_REGEX.source, LEXICON_MARK_REGEX.flags);
-	let position = 0;
-	let match: RegExpExecArray | null;
-	while ((match = markRegex.exec(masked)) !== null) {
-		if (match.index > position) {
-			nodes.push(...parseTextFormattingCore(text.slice(position, match.index)));
-		}
-		const inner = text.slice(match.index + 1, match.index + 1 + match[1].length);
-		const target = match[3]?.trim();
-		const lexicon: LexiconMark =
-			match[2] === 'nodef'
-				? { mode: 'block' }
-				: target
-					? { mode: 'force', target }
-					: { mode: 'force' };
-		for (const node of parseTextFormattingCore(inner)) {
-			nodes.push(node.type === 'text' ? { ...node, lexicon } : node);
-		}
-		position = match.index + match[0].length;
+/** Efface les bornes d'une passe des chaînes d'un nœud non textuel. */
+function stripSpanBounds(node: InlineNode, bounds: number): InlineNode {
+	const own = boundsRegex(bounds);
+	if (!own.test(JSON.stringify(node))) return node;
+	const cleaned: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(node)) {
+		cleaned[key] = typeof value === 'string' ? value.replace(own, '') : value;
 	}
-	if (position < text.length) {
-		nodes.push(...parseTextFormattingCore(text.slice(position)));
-	}
-	return nodes;
+	return cleaned as unknown as InlineNode;
 }
 
 /**
@@ -1671,10 +1835,46 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'qr'
 	},
 	{
+		is: isScratchBlockStart,
+		find: findScratchBlocks,
+		parse: parseScratch,
+		language: 'scratch'
+	},
+	{
 		is: isHorlogeBlockStart,
 		find: findHorlogeBlocks,
 		parse: parseHorloge,
 		language: 'horloge'
+	},
+	{
+		is: isTortueBlockStart,
+		find: findTortueBlocks,
+		parse: parseTortue,
+		language: 'tortue'
+	},
+	{
+		is: isCalculBlockStart,
+		find: findCalculBlocks,
+		parse: parseCalcul,
+		language: 'calcul'
+	},
+	{
+		is: isRobotBlockStart,
+		find: findRobotBlocks,
+		parse: parseRobot,
+		language: 'robot'
+	},
+	{
+		is: isPartageBlockStart,
+		find: findPartageBlocks,
+		parse: parsePartage,
+		language: 'partage'
+	},
+	{
+		is: isEspaceBlockStart,
+		find: findEspaceBlocks,
+		parse: parseEspace,
+		language: 'cubes'
 	},
 	{
 		is: isOperationBlockStart,
@@ -1693,6 +1893,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findMonnaieBlocks,
 		parse: parseMonnaie,
 		language: 'monnaie'
+	},
+	{
+		is: isSchemaBarresBlockStart,
+		find: findSchemaBarresBlocks,
+		parse: parseSchemaBarres,
+		language: 'schema-barres'
 	}
 ] as const;
 
@@ -1902,12 +2108,42 @@ function parseContentWithCodeBlocks(
 			if (result.node) {
 				blocks.push(result.node);
 			}
+		} else if (language === 'line') {
+			// Droite graduée dans un item de liste (sinon : code brut à l'écran et dans le PDF) ;
+			// invalide : sa source, comme au premier niveau (Q64)
+			const restoredCode = restoreMathPlaceholders(code, placeholders);
+			const lines = ['```line', ...restoredCode.split('\n'), '```'];
+			const result = parseNumberLine(lines, 0, lines.length - 1);
+			blocks.push(
+				result.node ?? { type: 'code-block', language, code: restoreRawMath(code, placeholders) }
+			);
+		} else if (language === 'scratch') {
+			// Programme Scratch dans un item de liste : toujours un nœud, même en erreur
+			blocks.push(parseScratchContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'qr') {
 			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'tortue') {
+			// Programme tortue dans un item de liste : toujours un nœud, même en erreur (Q48) ;
+			// sans case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseTortueContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'calcul') {
+			// Programme de calcul dans un item de liste : toujours un nœud, même en erreur (Q48) ;
+			// sans case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseCalculContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'robot') {
+			// Robot dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans case
+			// (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseRobotContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'partage') {
+			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'cubes' || language === 'solide' || language === 'patron') {
+			// Assemblage de cubes dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseEspaceContent(restoreMathPlaceholders(code, placeholders), language));
 		} else if (language === 'operation') {
 			// Opération posée dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseOperationContent(restoreMathPlaceholders(code, placeholders)));
@@ -1917,6 +2153,17 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'monnaie') {
 			// Monnaie dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseMonnaieContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'schema-barres') {
+			// Schéma en barres dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseSchemaBarresContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'associer') {
+			// Éléments à associer dans un item de liste (énoncé d'une série d'automatismes,
+			// bloc sans case) : deux colonnes à relier, jamais du code
+			blocks.push(parseAssocierContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'trous') {
+			// Texte à trous dans un item de liste (énoncé d'une série d'automatismes, bloc
+			// sans case) : le texte et sa réserve, jamais du code
+			blocks.push(parseTrousContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

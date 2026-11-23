@@ -144,10 +144,14 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'quot-08 @ bouton':
 		'\\dfrac{2 \\left( \\sqrt{x} - \\dfrac{x}{2 \\sqrt{x}} \\right)}{\\sqrt{x}^2}',
 	'quot-08 @ carte': '\\dfrac{2 \\left( \\sqrt{x} - \\dfrac{x}{2 \\sqrt{x}} \\right)}{\\sqrt{x}^2}',
-	'quot-13 @ latex-péda': '\\dfrac{\\ln\\left( x \\right) - 1}{\\ln\\left( x \\right)^2}',
-	'quot-13 @ commande': '\\dfrac{\\ln\\left( x \\right) - 1}{\\ln\\left( x \\right)^2}',
-	'quot-13 @ bouton': '\\dfrac{\\ln\\left( x \\right) - 1}{\\ln\\left( x \\right)^2}',
-	'quot-13 @ carte': '\\dfrac{\\ln\\left( x \\right) - 1}{\\ln\\left( x \\right)^2}',
+	'quot-13 @ latex-péda':
+		'\\dfrac{\\ln\\left( x \\right) - 1}{\\left( \\ln\\left( x \\right) \\right)^2}',
+	'quot-13 @ commande':
+		'\\dfrac{\\ln\\left( x \\right) - 1}{\\left( \\ln\\left( x \\right) \\right)^2}',
+	'quot-13 @ bouton':
+		'\\dfrac{\\ln\\left( x \\right) - 1}{\\left( \\ln\\left( x \\right) \\right)^2}',
+	'quot-13 @ carte':
+		'\\dfrac{\\ln\\left( x \\right) - 1}{\\left( \\ln\\left( x \\right) \\right)^2}',
 	'comp-12 @ latex-péda': '\\dfrac{e^x}{1 + \\left( e^x \\right)^2}',
 	'comp-12 @ commande': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',
 	'comp-12 @ bouton': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',

@@ -28,29 +28,32 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import { isWorkFigureBlank } from '$lib/questions/graded-part';
-	import type { AnswerData } from '$lib/types/question-display';
-	import { validateAnswer } from '$lib/utils/answer-validator';
-	import { toOriginalChoiceIndexes } from '$lib/questions/choices';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
+	import { isWorkFigureBlank } from '#lib/questions/graded-part.ts';
+	import {
+		isIncompleteRepresentation,
+		isLineToRepresentBlank
+	} from '#lib/ubumark/utils/number-line-representer.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import { validateAnswer } from '#lib/utils/answer-validator.ts';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import {
 		digitGroupingOf,
 		provideDigitGrouping
-	} from '$lib/components/markdown/content-digit-grouping';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { cn } from '$lib/utils';
+	} from '#lib/components/markdown/content-digit-grouping.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { cn } from '#lib/utils.ts';
 
 	// Input components
-	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-	import { toFrenchDecimal } from '$lib/utils/french-math';
-	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
+	import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+	import { toFrenchDecimal } from '#lib/utils/french-math.ts';
 	import CourseCardView from './CourseCardView.svelte';
-	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
+	import { provideQuestionLexicon } from '#lib/components/markdown/lexicon-context.ts';
+	import LexiconToggle from './LexiconToggle.svelte';
 
 	// Props
 	interface Props {
@@ -73,10 +76,12 @@
 		unitKeys
 	}: Props = $props();
 
-	// Mots cliquables : jamais en évaluation notée (décision de David, 2026-10-08)
+	// Mots cliquables : jamais en évaluation notée (décision de David, 2026-10-08) ;
+	// question de cours : seuls les mots marqués `{.def}` (R4, chantier mots-cliquables)
 	provideQuestionLexicon(
 		() => instance.grades,
-		() => !collectOnly
+		() => !collectOnly,
+		() => isCourseQuestion(instance)
 	);
 
 	// ============================================================================
@@ -84,7 +89,7 @@
 	// ============================================================================
 
 	// Answer state
-	let userAnswer = $state<string | string[] | number | number[]>('');
+	let userAnswer = $state<string | string[]>('');
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
 
@@ -93,7 +98,6 @@
 	let attempts = $state(0);
 
 	// Type-specific state
-	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
 	let fillBlankValuesLatex = $state<string[]>([]);
 
@@ -144,10 +148,6 @@
 				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled, prefilledGrouping()) : ''
 			);
 		}
-
-		if (getQuestionType(instance) === 'multiple_choice' && instance.shuffledChoices) {
-			selectedChoices = [];
-		}
 	});
 
 	// ============================================================================
@@ -159,14 +159,15 @@
 	 */
 	function hasValidInput(): boolean {
 		switch (getQuestionType(instance)) {
-			// Une figure de travail, jamais notée, peut rester vide
+			// Une figure de travail, jamais notée, peut rester vide ; une droite à
+			// représenter sans côté ou sans seconde borne compte comme vide
 			case 'fill_in_blanks':
-				return fillBlankValues.every(
-					(v, index) => isWorkFigureBlank(instance.blanks?.[index]) || v.trim().length > 0
-				);
-
-			case 'multiple_choice':
-				return selectedChoices.length > 0;
+				return fillBlankValues.every((v, index) => {
+					const blank = instance.blanks?.[index];
+					if (isWorkFigureBlank(blank)) return true;
+					if (isLineToRepresentBlank(blank) && isIncompleteRepresentation(v)) return false;
+					return v.trim().length > 0;
+				});
 
 			default:
 				return false;
@@ -184,21 +185,8 @@
 	/**
 	 * Prepare answer value based on question type
 	 */
-	function prepareAnswerValue(): string | string[] | number | number[] {
-		switch (getQuestionType(instance)) {
-			case 'fill_in_blanks':
-				return fillBlankValues;
-
-			case 'multiple_choice': {
-				// Positions cliquées (ordre affiché, mélangé) → indices d'origine : ceux que
-				// compare `validateAnswer` et ceux qui sont enregistrés.
-				const originalIndexes = toOriginalChoiceIndexes(instance, selectedChoices);
-				return instance.multipleAnswers ? originalIndexes : originalIndexes[0];
-			}
-
-			default:
-				return userAnswer;
-		}
+	function prepareAnswerValue(): string | string[] {
+		return getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValues : userAnswer;
 	}
 
 	// ============================================================================
@@ -215,9 +203,6 @@
 				return fillBlankValues.some(
 					(value, index) => !instance.blanks?.[index]?.prefilled && value.trim().length > 0
 				);
-
-			case 'multiple_choice':
-				return selectedChoices.length > 0;
 
 			default:
 				return false;
@@ -289,9 +274,9 @@
 	}
 
 	/**
-	 * Carte de cours : l'auto-évaluation tient lieu de réponse (« Je savais » =
-	 * réussite). L'enregistrement (source `student_self`) est fait par
-	 * `/api/tests/save`, qui lit la nature « carte » en base.
+	 * Carte de cours : l'auto-évaluation tient lieu de réponse (« Réussi » =
+	 * réussite). La trace (source `student_self`) est envoyée par la forme de
+	 * série à `/api/skill-attempts`, qui lit la nature « carte » en base.
 	 */
 	function handleSelfAssess(knew: boolean) {
 		if (isSubmitted) return;
@@ -323,6 +308,9 @@
 	     ni intitulés « Énoncé » / « Votre réponse », ni encadré -->
 	<Card.Root class="h-full">
 		<Card.Content class="space-y-6">
+			<!-- Bouton « Mots du dictionnaire » (R6), avant l'énoncé dans l'ordre de tabulation ;
+			     carte de cours comprise : sans lui, ses mots masqués seraient hors d'atteinte au doigt -->
+			<LexiconToggle class="float-right -mt-2 -mr-2 ml-2" />
 			{#if getQuestionType(instance) === 'course_card'}
 				<!-- Carte de cours : recto → « Voir la réponse » → verso → auto-évaluation -->
 				<CourseCardView
@@ -364,15 +352,6 @@
 								{unitKeys}
 								{genericFunctions}
 								grades={instance.grades}
-							/>
-						{:else if getQuestionType(instance) === 'multiple_choice'}
-							<MultipleChoiceInput
-								choices={instance.shuffledChoices || []}
-								bind:selectedIndexes={selectedChoices}
-								multipleAnswers={instance.multipleAnswers}
-								disabled={isInputDisabled}
-								showValidation={false}
-								{genericFunctions}
 							/>
 						{/if}
 

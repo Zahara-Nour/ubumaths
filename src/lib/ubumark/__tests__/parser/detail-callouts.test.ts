@@ -4,8 +4,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import type { BlockquoteNode, InlineNode, ParagraphNode } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { BlockquoteNode, InlineNode, ParagraphNode } from '#lib/ubumark/index.ts';
 
 function firstBlock(md: string) {
 	return parseMarkdown(md).children[0];
@@ -88,10 +88,11 @@ describe('détail en ligne [texte]{.type}', () => {
 		expect(bold && bold.type === 'text' ? bold.detail : undefined).toBe('reminder');
 	});
 
-	it('type inconnu : texte littéral', () => {
+	it('type inconnu : texte normal, sans crochets (ADR 0042, Q1)', () => {
 		const children = paragraphChildren('A [x]{.truc} B');
 		const all = children.map((c) => (c.type === 'text' ? c.content : '')).join('');
-		expect(all).toContain('[x]{.truc}');
+		expect(all).toBe('A x B');
+		expect(children.some((c) => 'detail' in c && c.detail)).toBe(false);
 	});
 
 	it('un lien reste un lien', () => {
@@ -115,5 +116,19 @@ describe('détail en ligne — revue #636', () => {
 		expect(math && 'detail' in math ? math.detail : undefined).toBe('reminder');
 		const all = children.map((c) => (c.type === 'text' ? c.content : '')).join('');
 		expect(all).not.toContain('{.rappel}');
+	});
+});
+
+// L16 : un détail en ligne au milieu d'une mise en forme ne la coupe plus.
+describe('détail en ligne au milieu d’une mise en forme (L16)', () => {
+	it('**on [développe]{.rappel} tout** : tout est en gras, le détail est marqué', () => {
+		const children = paragraphChildren('**on [développe]{.rappel} tout**');
+		const texts = children.filter((c) => c.type === 'text');
+		expect(texts.map((c) => (c.type === 'text' ? c.content : '')).join('')).toBe(
+			'on développe tout'
+		);
+		expect(texts.every((c) => c.type === 'text' && c.bold)).toBe(true);
+		const detail = texts.find((c) => c.type === 'text' && c.content === 'développe');
+		expect(detail && detail.type === 'text' ? detail.detail : undefined).toBe('reminder');
 	});
 });

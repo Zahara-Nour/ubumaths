@@ -13,7 +13,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { getJournalEntriesForWeek } from '../journal';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 const CLASS_ID = '550e8400-e29b-41d4-a716-446655440020';
 /** Lundi 14 septembre 2026. */

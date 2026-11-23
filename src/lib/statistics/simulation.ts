@@ -9,7 +9,7 @@
  * chaque fois (Q70) — un atelier partagé par URL montre ce qu'a vu l'élève, et
  * un test vérifie une simulation au chiffre près.
  *
- * ⚠️ Pas d'import `$lib` dans ce module (cf. v1) : chemins relatifs.
+ * ⚠️ Pas d'import `#lib` dans ce module (cf. v1) : chemins relatifs.
  *
  * @module statistics/simulation
  */

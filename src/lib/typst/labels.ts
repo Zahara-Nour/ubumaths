@@ -14,8 +14,8 @@
  * Kept free of Typst syntax: these are words, the layout stays in the template.
  */
 
-import type { ContentLocale } from '$lib/types/locale';
-import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
 
 export interface DocumentLabels {
 	// --- Identity block -------------------------------------------------------

@@ -8,9 +8,9 @@
  * réponses) : seule une fraction simplifiable est signalée.
  */
 import { describe, it, expect } from 'vitest';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 import type { InstanceBlank, QuestionInstance, VectorMode } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function instanceWith(blanks: InstanceBlank[]): QuestionInstance {
 	return {
@@ -18,8 +18,6 @@ function instanceWith(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Donner un vecteur' as ResolvedMarkdown,
 		blanks,
 		grades: ['1_SPE'],
-		theme: 'Géométrie',
-		domain: 'Géométrie repérée',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};
@@ -99,5 +97,48 @@ describe('vecteurs dans le désordre (orderIndependent)', () => {
 		const result = validateAnswer(answers, instance, answers);
 		expect(result.isCorrect).toBe(true);
 		expect(result.status).toBe('unoptimal_form');
+	});
+});
+
+describe('acceptDecimal : attendue exacte, décimal exact juste dans chaque coordonnée', () => {
+	// Comme une case ordinaire `acceptDecimal` (et comme les coefficients d'une matrice)
+	function judgeDecimal(answer: string, expected: string) {
+		const blank: InstanceBlank = {
+			expectedAnswer: expected,
+			type: 'math',
+			answerKind: 'vecteur',
+			acceptDecimal: true
+		};
+		const result = validateAnswer([answer], instanceWith([blank]), [answer]);
+		return result.status ?? (result.isCorrect ? 'correct' : 'incorrect');
+	}
+
+	it.each([
+		['\\left(-2;0.5\\right)', '(-2;\\dfrac{1}{2})', 'correct'],
+		['\\left(-2;0{,}5\\right)', '(-2;\\dfrac{1}{2})', 'correct'],
+		['\\begin{pmatrix}-0.5\\\\3\\end{pmatrix}', '(-\\frac{1}{2};3)', 'correct'],
+		['\\left(-2;\\frac{1}{2}\\right)', '(-2;\\dfrac{1}{2})', 'correct'],
+		['\\left(-2;0.6\\right)', '(-2;\\dfrac{1}{2})', 'incorrect'],
+		['\\left(-2;0.33\\right)', '(-2;\\dfrac{1}{3})', 'incorrect']
+	] as const)('%s pour %s → %s', (answer, expected, status) => {
+		expect(judgeDecimal(answer, expected)).toBe(status);
+	});
+
+	it('sans l’option, le décimal reste une mauvaise forme', () => {
+		expect(judge('\\left(-2;0.5\\right)', '(-2;\\dfrac{1}{2})').status).toBe('bad_form');
+	});
+
+	it('colinéaire : un multiple en décimaux est juste, avec ou sans l’option (coordonnée libre)', () => {
+		const blank: InstanceBlank = {
+			expectedAnswer: '(2;1)',
+			type: 'math',
+			answerKind: 'vecteur',
+			vectorMode: 'colineaire',
+			acceptDecimal: true
+		};
+		const answer = '\\left(1;0.5\\right)';
+		const result = validateAnswer([answer], instanceWith([blank]), [answer]);
+		expect(result.status ?? (result.isCorrect ? 'correct' : 'incorrect')).toBe('correct');
+		expect(judge(answer, '(2;1)', 'colineaire').status).toBe('correct');
 	});
 });

@@ -46,7 +46,7 @@ export const DEMO_PAGES: DemoPage[] = [
 		path: '/demo/questions',
 		title: 'Les questions',
 		description:
-			'La même série de questions projetée en classe, en entraînement, en flash-cards, en course aux nombres et en révisions espacées.'
+			'La même série de questions projetée en classe, en contrôle blanc, en flash-cards, en saisie, en course aux nombres et en révisions espacées.'
 	},
 	{
 		path: '/demo/corriges',
@@ -122,5 +122,5 @@ export function demoPage(path: DemoPath): DemoPage {
 /** Les props de `SeoHead` d'une vitrine : `<SeoHead {...demoSeo('/demo/…')} />` */
 export function demoSeo(path: DemoPath): { title: string; description: string } {
 	const { title, description } = demoPage(path);
-	return { title: `${title} — Chiphre`, description };
+	return { title: `${title} | Chiphre`, description };
 }

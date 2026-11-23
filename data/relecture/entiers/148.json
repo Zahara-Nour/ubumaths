@@ -22,9 +22,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Quadruple et quart",
 		"level": 1,
 		"status": "draft",
 		"delay": 10,

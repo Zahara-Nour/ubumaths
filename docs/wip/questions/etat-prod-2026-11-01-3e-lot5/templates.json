@@ -1,0 +1,2329 @@
+[
+	{
+		"id": "302655b9-3be3-485c-9d68-0a5fcf49dad4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Probabilités",
+		"domain": "Simulation",
+		"subdomain": "Stabilisation",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On lance une punaise et on note si elle tombe **pointe en haut**. Voici la fréquence de « pointe en haut » selon le nombre de lancers.\n\n| Nombre de lancers | $10$ | $100$ | $1\\,000$ | $10\\,000$ |\n|---|---|---|---|---|\n| Fréquence | $0{,}{{F}}$ | $0{,}{{G}}$ | $0{,}{{H}}$ | $0{,}{{K}}$ |\n\nVers quelle valeur la fréquence semble-t-elle se stabiliser ?\n\n```choix\n- $0{,}{{P}}$\n- $0{,}{{F}}$\n- $0{,}5$\n- Elle ne se stabilise pas.\n```",
+				"variables": [
+					{
+						"name": "P",
+						"expression": "3|4|6|7"
+					},
+					{
+						"name": "a",
+						"expression": "-2|2"
+					},
+					{
+						"name": "b",
+						"expression": "2..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "3..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "4..19;±"
+					},
+					{
+						"name": "F",
+						"expression": "eval:P+a"
+					},
+					{
+						"name": "G",
+						"expression": "eval:10*P+b"
+					},
+					{
+						"name": "H",
+						"expression": "eval:100*P+c"
+					},
+					{
+						"name": "K",
+						"expression": "eval:1000*P+d"
+					}
+				],
+				"conditions": ["F!=5", "abs(d)!=10"],
+				"correction": {
+					"steps": [
+						"Quand le nombre de lancers augmente, la fréquence varie de moins en moins : $0{,}{{G}}$, puis $0{,}{{H}}$, puis $0{,}{{K}}$.",
+						"Elle se stabilise autour de $\\textcolor{{{color:primary.0}}}{0{,}{{P}}}$ : c'est une estimation de la probabilité que la punaise tombe pointe en haut.",
+						"Sur $10$ lancers seulement, la fréquence ($0{,}{{F}}$) fluctue trop pour conclure."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On lance une punaise et on note si elle tombe **pointe en haut**. Voici la fréquence de « pointe en haut » selon le nombre de lancers.\n\n| Nombre de lancers | $10$ | $100$ | $1\\,000$ | $10\\,000$ |\n|---|---|---|---|---|\n| Fréquence | $0{,}{{F}}$ | $0{,}{{G}}$ | $0{,}{{H}}$ | $0{,}{{K}}$ |\n\nQuelle fréquence donne la meilleure estimation de la probabilité que la punaise tombe pointe en haut ?\n\n```choix\n- Celle obtenue pour $10\\,000$ lancers.\n- Celle obtenue pour $10$ lancers.\n- Celle obtenue pour $100$ lancers.\n- Toutes se valent.\n```",
+				"variables": [
+					{
+						"name": "P",
+						"expression": "3|4|6|7"
+					},
+					{
+						"name": "a",
+						"expression": "-2|2"
+					},
+					{
+						"name": "b",
+						"expression": "2..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "3..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "4..19;±"
+					},
+					{
+						"name": "F",
+						"expression": "eval:P+a"
+					},
+					{
+						"name": "G",
+						"expression": "eval:10*P+b"
+					},
+					{
+						"name": "H",
+						"expression": "eval:100*P+c"
+					},
+					{
+						"name": "K",
+						"expression": "eval:1000*P+d"
+					}
+				],
+				"conditions": ["F!=5", "abs(d)!=10"],
+				"correction": {
+					"steps": [
+						"Plus on répète l'expérience, plus la fréquence observée se rapproche de la probabilité.",
+						"La meilleure estimation est donc la fréquence sur le plus grand nombre de lancers : \\textcolor{{{color:primary.0}}}{$0{,}{{K}}$}, pour $10\\,000$ lancers."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:m/100}}"
+					}
+				],
+				"statement": "On a lancé une punaise $5\\,000$ fois : elle est tombée ${{k}}$ fois pointe en haut.\n\nDonne une estimation de la probabilité qu'elle tombe pointe en haut.\n\n$?$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "30..70"
+					},
+					{
+						"name": "k",
+						"expression": "eval:50*m"
+					}
+				],
+				"conditions": ["m-10*floor(m/10)!=0"],
+				"correction": {
+					"steps": [
+						"Sur un grand nombre de lancers, la fréquence observée est une bonne estimation de la probabilité.",
+						"Fréquence de « pointe en haut » : $\\dfrac{ {{k}} }{5\\,000} = \\textcolor{{{color:primary.0}}}{0{,}{{m}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Stabilisation des fréquences",
+		"description": "Observer la stabilisation des fréquences quand le nombre de répétitions augmente ; estimer une probabilité par une fréquence",
+		"shared": {
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"P": "4",
+					"a": "2",
+					"b": "3",
+					"c": "-4",
+					"d": "7"
+				},
+				"description": "Stabilisation vers 0,4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"P": "4",
+					"a": "2",
+					"b": "3",
+					"c": "-4",
+					"d": "7"
+				},
+				"description": "Erreur : la fréquence sur 10 lancers",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"P": "4",
+					"a": "2",
+					"b": "3",
+					"c": "-4",
+					"d": "7"
+				},
+				"description": "Erreur : 0,5 (« une chance sur deux »)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"P": "6",
+					"a": "-2",
+					"b": "-3",
+					"c": "7",
+					"d": "-8"
+				},
+				"description": "Meilleure estimation : 10 000 lancers",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"P": "6",
+					"a": "-2",
+					"b": "-3",
+					"c": "7",
+					"d": "-8"
+				},
+				"description": "Erreur : 10 lancers",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}47"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "47"
+				},
+				"description": "2 350 sur 5 000 : 0,47",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{47}{100}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "47"
+				},
+				"description": "En fraction : 47/100",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2{,}35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "47"
+				},
+				"description": "Erreur : 2 350 / 1 000",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "6acde723-b599-40ec-99b5-eb22f3c578a4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Statistiques",
+		"domain": "Effectifs cumulés",
+		"subdomain": "Calculer",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{C2}}"
+					}
+				],
+				"statement": "On a demandé aux élèves d'une classe combien ils ont de frères et sœurs.\n\n```effectifs\ntitre: Nombre de frères et sœurs\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\nlignes: effectifs ; effectifs cumulés\nmasquer: 2/effectifs cumulés\n```\n\nQuel est l'effectif cumulé croissant de la valeur $2$ ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "1..9"
+					},
+					{
+						"name": "n1",
+						"expression": "1..9"
+					},
+					{
+						"name": "n2",
+						"expression": "1..9"
+					},
+					{
+						"name": "n3",
+						"expression": "1..9"
+					},
+					{
+						"name": "n4",
+						"expression": "1..9"
+					},
+					{
+						"name": "n5",
+						"expression": "1..9"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'effectif cumulé croissant de $2$ compte les élèves qui ont **au plus** $2$ frères et sœurs : $0$, $1$ ou $2$.",
+						"${{n0}} + {{n1}} + {{n2}} = \\textcolor{{{color:primary.0}}}{{{C2}}}$.",
+						"Autre chemin : l'effectif cumulé de $1$ plus l'effectif de $2$, ${{C1}} + {{n2}} = {{C2}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{C3}}"
+					}
+				],
+				"statement": "Voici les pointures des élèves d'un club de sport.\n\n```effectifs\ntitre: Pointure\n36 = {{n0}}\n37 = {{n1}}\n38 = {{n2}}\n39 = {{n3}}\n40 = {{n4}}\n41 = {{n5}}\nlignes: effectifs\n```\n\nQuel est l'effectif cumulé croissant de la pointure $39$ ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "1..9"
+					},
+					{
+						"name": "n1",
+						"expression": "1..9"
+					},
+					{
+						"name": "n2",
+						"expression": "1..9"
+					},
+					{
+						"name": "n3",
+						"expression": "1..9"
+					},
+					{
+						"name": "n4",
+						"expression": "1..9"
+					},
+					{
+						"name": "n5",
+						"expression": "1..9"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'effectif cumulé croissant de $39$ compte les élèves qui chaussent du $39$ **ou moins**.",
+						"${{n0}} + {{n1}} + {{n2}} + {{n3}} = \\textcolor{{{color:primary.0}}}{{{C3}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:N-C2}}"
+					}
+				],
+				"statement": "On a demandé aux élèves d'un collège combien de livres ils ont lus pendant les vacances.\n\n```effectifs\ntitre: Nombre de livres lus\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\nlignes: effectifs ; effectifs cumulés\n```\n\nCombien d'élèves ont lu **au moins** $3$ livres ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "2..12"
+					},
+					{
+						"name": "n1",
+						"expression": "2..12"
+					},
+					{
+						"name": "n2",
+						"expression": "2..12"
+					},
+					{
+						"name": "n3",
+						"expression": "2..12"
+					},
+					{
+						"name": "n4",
+						"expression": "2..12"
+					},
+					{
+						"name": "n5",
+						"expression": "2..12"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"« Au moins $3$ » : $3$, $4$ ou $5$ livres. Les autres en ont lu **au plus** $2$ : l'effectif cumulé de $2$, ${{C2}}$.",
+						"L'effectif total est ${{N}}$ : ${{N}} - {{C2}} = \\textcolor{{{color:primary.0}}}{{{eval:N-C2}}}$.",
+						"On vérifie : ${{n3}} + {{n4}} + {{n5}} = {{eval:N-C2}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Effectifs cumulés croissants",
+		"description": "Calculer un effectif cumulé croissant à partir d'un tableau d'effectifs ; « au moins » par le total moins un cumulé",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "5",
+					"n2": "7",
+					"n3": "4",
+					"n4": "2",
+					"n5": "1"
+				},
+				"description": "Cumulé de 2 : 15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "5",
+					"n2": "7",
+					"n3": "4",
+					"n4": "2",
+					"n5": "1"
+				},
+				"description": "Erreur : l'effectif de 2, 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["19"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "5",
+					"n2": "7",
+					"n3": "4",
+					"n4": "2",
+					"n5": "1"
+				},
+				"description": "Cumulé de 39 : 19",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "5",
+					"n2": "7",
+					"n3": "4",
+					"n4": "2",
+					"n5": "1"
+				},
+				"description": "Erreur : sans la pointure 39, 15",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "5",
+					"n2": "7",
+					"n3": "4",
+					"n4": "2",
+					"n5": "1"
+				},
+				"description": "Au moins 3 : 22 − 15 = 7",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["19"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "5",
+					"n2": "7",
+					"n3": "4",
+					"n4": "2",
+					"n5": "1"
+				},
+				"description": "Erreur : cumulé de 3, 19",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "5",
+					"n2": "7",
+					"n3": "4",
+					"n4": "2",
+					"n5": "1"
+				},
+				"description": "Erreur : 22 − 19 = 3 (sans les 3 livres)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "76f5f143-14c0-4181-8e8c-525aa4f99292",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 30,
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Coefficient",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1-t/100;d}}"
+					}
+				],
+				"statement": "Diminuer une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "5|10|15|20|25|30|40|50|75"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+						"$$1 - \\frac{{{t}}}{100} = 1 - {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:P*(1-t/100);d}}"
+					}
+				],
+				"statement": "Un article coûte ${{P}}~\\unit{€}$. Son prix baisse de ${{t}}~\\%$.\n\nCalcule le nouveau prix à l'aide du coefficient multiplicateur.\n\n$$?~\\text{€}$$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "10|20|30|5|15|25"
+					},
+					{
+						"name": "j",
+						"expression": "2..30"
+					},
+					{
+						"name": "P",
+						"expression": "eval:10*j"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+						"Le coefficient multiplicateur est $1 - \\frac{{{t}}}{100} = {{eval:1-t/100;d}}$.",
+						"$${{P}} \\times {{eval:1-t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-K}}"
+					}
+				],
+				"statement": "Multiplier une quantité par ${{x}}$, c'est la diminuer de :\n\n$$?~\\%$$",
+				"variables": [
+					{
+						"name": "K",
+						"expression": "97|92|85|80|75|65|60|40"
+					},
+					{
+						"name": "x",
+						"expression": "eval:K/100;d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Coefficient multiplicateur.** Diminuer de $t~\\%$, c'est multiplier par $1 - \\dfrac{t}{100}$.",
+						"$${{x}} = 1 - {{eval:(100-K)/100;d}} = 1 - \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{100}$$",
+						"C'est une diminution de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Diminution et coefficient multiplicateur",
+		"description": "Traduire une diminution de t % par le coefficient 1 − t/100 : − 20 % → × 0,8 ; 120 € diminué de 20 % ; × 0,85 → − 15 %",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0,8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "20"
+				},
+				"description": "− 20 % → × 0,8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1,2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "20"
+				},
+				"description": "Erreur : 1,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "20"
+				},
+				"description": "Erreur : 0,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,95"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "5"
+				},
+				"description": "− 5 % → × 0,95",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "5"
+				},
+				"description": "Erreur : − 5 % → 0,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["96"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"P": "120",
+					"j": "12",
+					"t": "20"
+				},
+				"description": "120 € − 20 % = 96 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"P": "120",
+					"j": "12",
+					"t": "20"
+				},
+				"description": "Erreur : 120 × 0,2 = 24",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "85",
+					"x": "0.85"
+				},
+				"description": "× 0,85 → − 15 %",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["85"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "85",
+					"x": "0.85"
+				},
+				"description": "Erreur : 85",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "60",
+					"x": "0.6"
+				},
+				"description": "× 0,6 → − 40 %",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "60",
+					"x": "0.6"
+				},
+				"description": "Erreur : × 0,6 → 60",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "4eb20dcf-a706-4d5b-a639-45816d694ef2"
+	},
+	{
+		"id": "96992ea8-a78f-433d-90e4-5824ed7afb45",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Statistiques",
+		"domain": "Indicateurs",
+		"subdomain": "Médiane à effectifs",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4+M}}"
+					}
+				],
+				"statement": "Voici les notes sur $10$ obtenues par les élèves d'une classe à un contrôle.\n\n```effectifs\ntitre: Note\n4 = {{n0}}\n5 = {{n1}}\n6 = {{n2}}\n7 = {{n3}}\n8 = {{n4}}\n9 = {{n5}}\nlignes: effectifs\n```\n\nQuelle est la médiane de cette série ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "1..9"
+					},
+					{
+						"name": "n1",
+						"expression": "1..9"
+					},
+					{
+						"name": "n2",
+						"expression": "1..9"
+					},
+					{
+						"name": "n3",
+						"expression": "1..9"
+					},
+					{
+						"name": "n4",
+						"expression": "1..9"
+					},
+					{
+						"name": "n5",
+						"expression": "1..9"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					},
+					{
+						"name": "M",
+						"expression": "{{if:2*C0>=N+1|0|{{if:2*C1>=N+1|1|{{if:2*C2>=N+1|2|{{if:2*C3>=N+1|3|{{if:2*C4>=N+1|4|5}}}}}}}}}}"
+					}
+				],
+				"conditions": ["N-2*floor(N/2)==1"],
+				"correction": {
+					"steps": [
+						"L'effectif total est ${{N}}$, impair : la médiane est la ${{eval:(N+1)/2}}^{\\text{e}}$ valeur de la série rangée, car $\\dfrac{ {{N}} + 1}{2} = {{eval:(N+1)/2}}$.",
+						"Effectifs cumulés croissants : $4$ → ${{C0}}$ ; $5$ → ${{C1}}$ ; $6$ → ${{C2}}$ ; $7$ → ${{C3}}$ ; $8$ → ${{C4}}$ ; $9$ → ${{C5}}$.",
+						"Le premier effectif cumulé qui atteint ${{eval:(N+1)/2}}$ est celui de $\\textcolor{{{color:primary.0}}}{{{eval:4+M}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{M}}"
+					}
+				],
+				"statement": "Le diagramme donne le nombre de buts marqués à chaque match d'un championnat.\n\n```barres\ntitre: Buts par match\naxes: Nombre de buts ; Nombre de matchs\naxe: 0 à 10, de 1 en 1\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\ndescription: Diagramme en barres des effectifs de chaque valeur, de 0 à 5.\n```\n\nQuelle est la médiane du nombre de buts par match ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "1..9"
+					},
+					{
+						"name": "n1",
+						"expression": "1..9"
+					},
+					{
+						"name": "n2",
+						"expression": "1..9"
+					},
+					{
+						"name": "n3",
+						"expression": "1..9"
+					},
+					{
+						"name": "n4",
+						"expression": "1..9"
+					},
+					{
+						"name": "n5",
+						"expression": "1..9"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					},
+					{
+						"name": "M",
+						"expression": "{{if:2*C0>=N+1|0|{{if:2*C1>=N+1|1|{{if:2*C2>=N+1|2|{{if:2*C3>=N+1|3|{{if:2*C4>=N+1|4|5}}}}}}}}}}"
+					}
+				],
+				"conditions": ["N-2*floor(N/2)==1"],
+				"correction": {
+					"steps": [
+						"L'effectif total est ${{N}}$, impair : la médiane est la ${{eval:(N+1)/2}}^{\\text{e}}$ valeur de la série rangée, car $\\dfrac{ {{N}} + 1}{2} = {{eval:(N+1)/2}}$.",
+						"Effectifs cumulés croissants : $0$ → ${{C0}}$ ; $1$ → ${{C1}}$ ; $2$ → ${{C2}}$ ; $3$ → ${{C3}}$ ; $4$ → ${{C4}}$ ; $5$ → ${{C5}}$.",
+						"Le premier effectif cumulé qui atteint ${{eval:(N+1)/2}}$ est celui de $\\textcolor{{{color:primary.0}}}{{{eval:0+M}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:12+M}}"
+					}
+				],
+				"statement": "Voici l'âge des adhérents d'un club de théâtre.\n\n```effectifs\ntitre: Âge (ans)\n12 = {{n0}}\n13 = {{n1}}\n14 = {{n2}}\n15 = {{n3}}\n16 = {{n4}}\n17 = {{n5}}\nlignes: effectifs\n```\n\nQuelle est la médiane de cette série ?\n\n$?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "1..9"
+					},
+					{
+						"name": "n1",
+						"expression": "1..9"
+					},
+					{
+						"name": "n2",
+						"expression": "1..9"
+					},
+					{
+						"name": "n3",
+						"expression": "1..9"
+					},
+					{
+						"name": "n4",
+						"expression": "1..9"
+					},
+					{
+						"name": "n5",
+						"expression": "1..9"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					},
+					{
+						"name": "M",
+						"expression": "{{if:2*C0>=N+1|0|{{if:2*C1>=N+1|1|{{if:2*C2>=N+1|2|{{if:2*C3>=N+1|3|{{if:2*C4>=N+1|4|5}}}}}}}}}}"
+					}
+				],
+				"conditions": ["N-2*floor(N/2)==0", "C0!=N/2", "C1!=N/2", "C2!=N/2", "C3!=N/2", "C4!=N/2"],
+				"correction": {
+					"steps": [
+						"L'effectif total est ${{N}}$, pair : la médiane est entre la ${{eval:N/2}}^{\\text{e}}$ et la ${{eval:N/2+1}}^{\\text{e}}$ valeur de la série rangée.",
+						"Effectifs cumulés croissants : $12$ → ${{C0}}$ ; $13$ → ${{C1}}$ ; $14$ → ${{C2}}$ ; $15$ → ${{C3}}$ ; $16$ → ${{C4}}$ ; $17$ → ${{C5}}$.",
+						"Les deux valeurs centrales sont égales : la médiane est $\\textcolor{{{color:primary.0}}}{{{eval:12+M}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Médiane d'une série à effectifs",
+		"description": "Donner la médiane d'une série donnée par un tableau d'effectifs ou un diagramme en barres, par les effectifs cumulés",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "6",
+					"n3": "5",
+					"n4": "4",
+					"n5": "1"
+				},
+				"description": "N = 21, rang 11 : note 6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "5",
+					"n1": "1",
+					"n2": "2",
+					"n3": "3",
+					"n4": "2",
+					"n5": "2"
+				},
+				"description": "N = 15, rang 8 : note 6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "5",
+					"n1": "1",
+					"n2": "2",
+					"n3": "3",
+					"n4": "2",
+					"n5": "2"
+				},
+				"description": "Erreur : la note la plus fréquente, 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6{,}5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "6",
+					"n3": "5",
+					"n4": "4",
+					"n5": "1"
+				},
+				"description": "Erreur : le milieu des valeurs, 6,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "6",
+					"n3": "5",
+					"n4": "4",
+					"n5": "1"
+				},
+				"description": "Barres, N = 21 : 2 buts",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "6",
+					"n3": "5",
+					"n4": "4",
+					"n5": "1"
+				},
+				"description": "Erreur : l'effectif le plus grand, 6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "1",
+					"n1": "4",
+					"n2": "3",
+					"n3": "6",
+					"n4": "5",
+					"n5": "1"
+				},
+				"description": "N = 20, rangs 10 et 11 : 15 ans",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "1",
+					"n1": "4",
+					"n2": "3",
+					"n3": "6",
+					"n4": "5",
+					"n5": "1"
+				},
+				"description": "Erreur : rang 10 lu comme 14 ans",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "acaa7317-3003-4b1a-bde4-ac95bcd3016c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Statistiques",
+		"domain": "Indicateurs",
+		"subdomain": "Quartiles",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{Q}}"
+					}
+				],
+				"statement": "Voici le nombre de jours d'absence des élèves d'un collège sur un trimestre.\n\n```effectifs\ntitre: Jours d'absence\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\nlignes: effectifs\n```\n\nDétermine le premier quartile $Q_1$ de cette série.\n\n$Q_1=?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "2..12"
+					},
+					{
+						"name": "n1",
+						"expression": "2..12"
+					},
+					{
+						"name": "n2",
+						"expression": "2..12"
+					},
+					{
+						"name": "n3",
+						"expression": "2..12"
+					},
+					{
+						"name": "n4",
+						"expression": "2..12"
+					},
+					{
+						"name": "n5",
+						"expression": "2..12"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					},
+					{
+						"name": "Q",
+						"expression": "{{if:4*C0>=N|0|{{if:4*C1>=N|1|{{if:4*C2>=N|2|{{if:4*C3>=N|3|{{if:4*C4>=N|4|5}}}}}}}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$Q_1$ est la plus petite valeur dont l'effectif cumulé atteint 25 % de l'effectif total.",
+						"Effectif total : ${{N}}$ ; 25 % de ${{N}}$ : $\\dfrac{ {{N}} }{4} = {{eval:floor(1*N/4)}}{{if:(1*N-4*floor(1*N/4))==1|{,}25|{{if:(1*N-4*floor(1*N/4))==2|{,}5|{{if:(1*N-4*floor(1*N/4))==3|{,}75|}}}}}}$.",
+						"Effectifs cumulés croissants : $0$ → ${{C0}}$ ; $1$ → ${{C1}}$ ; $2$ → ${{C2}}$ ; $3$ → ${{C3}}$ ; $4$ → ${{C4}}$ ; $5$ → ${{C5}}$.",
+						"$Q_1 = \\textcolor{{{color:primary.0}}}{{{eval:0+Q}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10+Q}}"
+					}
+				],
+				"statement": "Voici les notes sur $20$ obtenues par les élèves à un devoir commun.\n\n```effectifs\ntitre: Note\n10 = {{n0}}\n11 = {{n1}}\n12 = {{n2}}\n13 = {{n3}}\n14 = {{n4}}\n15 = {{n5}}\nlignes: effectifs\n```\n\nDétermine le troisième quartile $Q_3$ de cette série.\n\n$Q_3=?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "2..12"
+					},
+					{
+						"name": "n1",
+						"expression": "2..12"
+					},
+					{
+						"name": "n2",
+						"expression": "2..12"
+					},
+					{
+						"name": "n3",
+						"expression": "2..12"
+					},
+					{
+						"name": "n4",
+						"expression": "2..12"
+					},
+					{
+						"name": "n5",
+						"expression": "2..12"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					},
+					{
+						"name": "Q",
+						"expression": "{{if:4*C0>=3*N|0|{{if:4*C1>=3*N|1|{{if:4*C2>=3*N|2|{{if:4*C3>=3*N|3|{{if:4*C4>=3*N|4|5}}}}}}}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$Q_3$ est la plus petite valeur dont l'effectif cumulé atteint 75 % de l'effectif total.",
+						"Effectif total : ${{N}}$ ; 75 % de ${{N}}$ : $\\dfrac{3 \\times {{N}} }{4} = {{eval:floor(3*N/4)}}{{if:(3*N-4*floor(3*N/4))==1|{,}25|{{if:(3*N-4*floor(3*N/4))==2|{,}5|{{if:(3*N-4*floor(3*N/4))==3|{,}75|}}}}}}$.",
+						"Effectifs cumulés croissants : $10$ → ${{C0}}$ ; $11$ → ${{C1}}$ ; $12$ → ${{C2}}$ ; $13$ → ${{C3}}$ ; $14$ → ${{C4}}$ ; $15$ → ${{C5}}$.",
+						"$Q_3 = \\textcolor{{{color:primary.0}}}{{{eval:10+Q}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1+Q}}"
+					},
+					{
+						"expectedAnswer": "{{eval:1+R}}"
+					}
+				],
+				"statement": "Le diagramme donne le nombre de passagers dans les voitures passées à un péage.\n\n```barres\ntitre: Passagers par voiture\naxes: Nombre de personnes ; Nombre de voitures\naxe: 0 à 12, de 1 en 1\n1 = {{n0}}\n2 = {{n1}}\n3 = {{n2}}\n4 = {{n3}}\n5 = {{n4}}\n6 = {{n5}}\ndescription: Diagramme en barres des effectifs de chaque valeur, de 1 à 6.\n```\n\nDétermine le premier quartile $Q_1$ et le troisième quartile $Q_3$ de cette série.\n\n$Q_1=?$ et $Q_3=?$",
+				"variables": [
+					{
+						"name": "n0",
+						"expression": "2..12"
+					},
+					{
+						"name": "n1",
+						"expression": "2..12"
+					},
+					{
+						"name": "n2",
+						"expression": "2..12"
+					},
+					{
+						"name": "n3",
+						"expression": "2..12"
+					},
+					{
+						"name": "n4",
+						"expression": "2..12"
+					},
+					{
+						"name": "n5",
+						"expression": "2..12"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					},
+					{
+						"name": "Q",
+						"expression": "{{if:4*C0>=N|0|{{if:4*C1>=N|1|{{if:4*C2>=N|2|{{if:4*C3>=N|3|{{if:4*C4>=N|4|5}}}}}}}}}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{if:4*C0>=3*N|0|{{if:4*C1>=3*N|1|{{if:4*C2>=3*N|2|{{if:4*C3>=3*N|3|{{if:4*C4>=3*N|4|5}}}}}}}}}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$Q_1$ (et $Q_3$) est la plus petite valeur dont l'effectif cumulé atteint $25~\\%$ ($75~\\%$) de l'effectif total.",
+						"Effectif total : ${{N}}$ ; $\\dfrac{ {{N}} }{4} = {{eval:floor(1*N/4)}}{{if:(1*N-4*floor(1*N/4))==1|{,}25|{{if:(1*N-4*floor(1*N/4))==2|{,}5|{{if:(1*N-4*floor(1*N/4))==3|{,}75|}}}}}}$ et $\\dfrac{3 \\times {{N}} }{4} = {{eval:floor(3*N/4)}}{{if:(3*N-4*floor(3*N/4))==1|{,}25|{{if:(3*N-4*floor(3*N/4))==2|{,}5|{{if:(3*N-4*floor(3*N/4))==3|{,}75|}}}}}}$.",
+						"Effectifs cumulés croissants : $1$ → ${{C0}}$ ; $2$ → ${{C1}}$ ; $3$ → ${{C2}}$ ; $4$ → ${{C3}}$ ; $5$ → ${{C4}}$ ; $6$ → ${{C5}}$.",
+						"$Q_1 = \\textcolor{{{color:primary.0}}}{{{eval:1+Q}}}$ et $Q_3 = \\textcolor{{{color:primary.1}}}{{{eval:1+R}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Quartiles d'une série à effectifs",
+		"description": "Donner les quartiles d'une série donnée par un tableau d'effectifs ou un diagramme en barres, par les effectifs cumulés (convention du programme)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "2",
+					"n2": "2",
+					"n3": "5",
+					"n4": "4",
+					"n5": "4"
+				},
+				"description": "N = 20, 25 % = 5 : Q1 = 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1{,}5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "2",
+					"n2": "2",
+					"n3": "5",
+					"n4": "4",
+					"n5": "4"
+				},
+				"description": "Erreur : convention de calculatrice, 1,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "2",
+					"n2": "2",
+					"n3": "5",
+					"n4": "4",
+					"n5": "4"
+				},
+				"description": "Erreur : la médiane, 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "4",
+					"n3": "2",
+					"n4": "6",
+					"n5": "3"
+				},
+				"description": "N = 20, 75 % = 15 : Q3 = 14",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "4",
+					"n3": "2",
+					"n4": "6",
+					"n5": "3"
+				},
+				"description": "Erreur : la médiane, 13",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2", "5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "2",
+					"n2": "2",
+					"n3": "5",
+					"n4": "4",
+					"n5": "4"
+				},
+				"description": "Barres : Q1 = 2, Q3 = 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5", "2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "3",
+					"n1": "2",
+					"n2": "2",
+					"n3": "5",
+					"n4": "4",
+					"n5": "4"
+				},
+				"description": "Erreur : Q1 et Q3 inversés",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "c7928fc7-836c-4422-9972-ec3d0b567af1",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 75,
+		"theme": "Probabilités",
+		"domain": "Simulation",
+		"subdomain": "Deux épreuves",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "{{if:k==0|On veut simuler sur ordinateur le lancer de **deux dés** équilibrés à six faces et noter la **somme** obtenue.|On veut simuler sur ordinateur le lancer de **deux pièces** équilibrées et noter le **nombre de Pile** obtenu.}}\n\nQuelle instruction convient ?\n\n```choix\n- {{if:k==0|Tirer un entier au hasard entre $1$ et $6$, puis un autre entre $1$ et $6$, et les additionner.|Tirer au hasard $0$ ou $1$, puis encore $0$ ou $1$, et les additionner.}}\n- {{if:k==0|Tirer un entier au hasard entre $2$ et $12$.|Tirer un entier au hasard entre $0$ et $2$.}}\n- {{if:k==0|Tirer un entier au hasard entre $1$ et $6$, et le multiplier par $2$.|Tirer au hasard $0$ ou $1$, et le multiplier par $2$.}}\n- {{if:k==0|Tirer un entier au hasard entre $1$ et $12$.|Tirer un entier au hasard entre $1$ et $2$.}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Deux épreuves **indépendantes** : on simule {{if:k==0|chaque dé|chaque pièce}} séparément, puis on combine les résultats.",
+						"{{if:k==0|Un seul tirage entre $2$ et $12$ rendrait les onze sommes équiprobables : or la somme $7$ s'obtient de six façons et la somme $2$ d'une seule.|Un seul tirage entre $0$ et $2$ rendrait les trois résultats équiprobables : or « un Pile » s'obtient de deux façons (PF et FP).}}",
+						"Multiplier un seul tirage par $2$ revient à lancer {{if:k==0|un seul dé|une seule pièce}} : {{if:k==0|la somme serait toujours paire|on n'aurait jamais exactement un Pile}}."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Lina lance deux pièces équilibrées. Elle pense que la probabilité d'obtenir **deux Pile** est $\\dfrac{1}{3}$, car il y a trois résultats : deux Pile, deux Face, un Pile et un Face.\n\nElle simule $1\\,000$ lancers des deux pièces et obtient ${{n}}$ fois deux Pile.\n\nQuelle probabilité les résultats de la simulation confirment-ils ?\n\n```choix\n- $\\dfrac{1}{4}$\n- $\\dfrac{1}{3}$\n- $\\dfrac{1}{2}$\n```",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "232..268"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Fréquence observée de « deux Pile » : $\\dfrac{ {{n}} }{1\\,000} = 0{,}{{n}}$, proche de $0{,}25$.",
+						"L'arbre donne **quatre** issues équiprobables :",
+						"```probtree\noutcomes: true\n\nPile:1/2\n  Pile:1/2, PP\n  Face:1/2, PF\nFace:1/2\n  Pile:1/2, FP\n  Face:1/2, FF\n```",
+						"« Un Pile et un Face » regroupe deux issues (PF et FP) : $P(\\text{deux Pile}) = \\textcolor{{{color:primary.0}}}{\\dfrac{1}{4}}$, pas $\\dfrac{1}{3}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "On simule $3\\,600$ lancers de deux dés équilibrés à six faces, en notant la somme des deux dés. La somme ${{s}}$ est sortie ${{n}}$ fois.\n\nDe quelle probabilité la fréquence de la somme ${{s}}$ est-elle proche ?\n\n```choix\n- $\\dfrac{ {{m}} }{36}$\n- $\\dfrac{1}{11}$\n- $\\dfrac{1}{6}$\n- $\\dfrac{1}{12}$\n```",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "5|6|8|9"
+					},
+					{
+						"name": "m",
+						"expression": "eval:6-abs(s-7)"
+					},
+					{
+						"name": "n",
+						"expression": "{{eval:100*m-20}}..{{eval:100*m+20}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les $6 \\times 6 = 36$ couples de résultats sont équiprobables ; la somme ${{s}}$ en réunit ${{m}}$ : $P = \\textcolor{{{color:primary.0}}}{\\dfrac{ {{m}} }{36}}$.",
+						"Sur $3\\,600$ lancers, on attend donc environ $3\\,600 \\times \\dfrac{ {{m}} }{36} = {{eval:100*m}}$ fois la somme ${{s}}$ : la simulation en donne ${{n}}$, c'est cohérent.",
+						"Les onze sommes ne sont **pas** équiprobables : $\\dfrac{1}{11}$ ne convient pas (on attendrait environ $327$ fois chaque somme)."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Simuler deux épreuves indépendantes",
+		"description": "Simuler deux épreuves indépendantes (deux dés, deux pièces) et confronter les fréquences simulées à la probabilité donnée par un arbre ou un tableau",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0"
+				},
+				"description": "Deux dés : deux tirages additionnés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0"
+				},
+				"description": "Erreur : un tirage entre 2 et 12",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Deux pièces : deux tirages additionnés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : un tirage entre 0 et 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "251"
+				},
+				"description": "Deux Pile : 1/4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "251"
+				},
+				"description": "Erreur : 1/3 (trois résultats)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "507",
+					"s": "8"
+				},
+				"description": "Somme 8 : 5/36",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "507",
+					"s": "8"
+				},
+				"description": "Erreur : 1/11 (sommes équiprobables)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "ccb51039-cf8d-4edf-8d8e-9288e8fa11e2",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 30,
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Coefficient",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1+t/100;d}}"
+					}
+				],
+				"statement": "Augmenter une quantité de ${{t}}~\\%$, c'est la multiplier par :\n\n$$?$$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "5|7|10|15|20|25|40|50|100"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+						"$$1 + \\frac{{{t}}}{100} = 1 + {{eval:t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:P*(1+t/100);d}}"
+					}
+				],
+				"statement": "Un article coûte ${{P}}~\\unit{€}$. Son prix augmente de ${{t}}~\\%$.\n\nCalcule le nouveau prix à l'aide du coefficient multiplicateur.\n\n$$?~\\text{€}$$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "10|20|30|5|15|25"
+					},
+					{
+						"name": "j",
+						"expression": "2..30"
+					},
+					{
+						"name": "P",
+						"expression": "eval:10*j"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+						"Le coefficient multiplicateur est $1 + \\frac{{{t}}}{100} = {{eval:1+t/100;d}}$.",
+						"$${{P}} \\times {{eval:1+t/100;d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:K-100}}"
+					}
+				],
+				"statement": "Multiplier une quantité par ${{x}}$, c'est l'augmenter de :\n\n$$?~\\%$$",
+				"variables": [
+					{
+						"name": "K",
+						"expression": "103|108|112|115|125|135|140|160"
+					},
+					{
+						"name": "x",
+						"expression": "eval:K/100;d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Coefficient multiplicateur.** Augmenter de $t~\\%$, c'est multiplier par $1 + \\dfrac{t}{100}$.",
+						"$${{x}} = 1 + {{eval:(K-100)/100;d}} = 1 + \\frac{\\textcolor{{{color:primary.0}}}{{{solution}}}}{100}$$",
+						"C'est une augmentation de $\\textcolor{{{color:primary.0}}}{{{solution}}~\\%}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Augmentation et coefficient multiplicateur",
+		"description": "Traduire une augmentation de t % par le coefficient 1 + t/100 : + 15 % → × 1,15 ; 120 € augmenté de 20 % ; × 1,35 → + 35 %",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1,15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "15"
+				},
+				"description": "+ 15 % → × 1,15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0,15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "15"
+				},
+				"description": "Erreur : 0,15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1,05"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "5"
+				},
+				"description": "+ 5 % → × 1,05",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1,5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "5"
+				},
+				"description": "Erreur : + 5 % → 1,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "100"
+				},
+				"description": "+ 100 % → × 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["144"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"P": "120",
+					"j": "12",
+					"t": "20"
+				},
+				"description": "120 € + 20 % = 144 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"P": "120",
+					"j": "12",
+					"t": "20"
+				},
+				"description": "Erreur : 120 × 0,2 = 24 (la hausse seule)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["140"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"P": "120",
+					"j": "12",
+					"t": "20"
+				},
+				"description": "Erreur : 120 + 20 = 140",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["35"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "135",
+					"x": "1.35"
+				},
+				"description": "× 1,35 → + 35 %",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["135"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "135",
+					"x": "1.35"
+				},
+				"description": "Erreur : 135",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"K": "108",
+					"x": "1.08"
+				},
+				"description": "× 1,08 → + 8 %",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"K": "108",
+					"x": "1.08"
+				},
+				"description": "Erreur : × 1,08 → 80",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "4eb20dcf-a706-4d5b-a639-45816d694ef2"
+	},
+	{
+		"id": "cd2ffd9b-287b-4409-9384-9060b5ad3fe0",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"theme": "Probabilités",
+		"domain": "Évènements",
+		"subdomain": "Réunion et intersection",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:u/100}}"
+					}
+				],
+				"statement": "Lors d'une expérience aléatoire, $A$ et $B$ sont deux évènements tels que $P(A)=0{,}{{a}}$, $P(B)=0{,}{{b}}$ et $P(A \\cap B)=0{,}{{c}}$.\n\nCalcule $P(A \\cup B)$.\n\n$P(A \\cup B)=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "25..60"
+					},
+					{
+						"name": "b",
+						"expression": "25..60"
+					},
+					{
+						"name": "c",
+						"expression": "11..19"
+					},
+					{
+						"name": "u",
+						"expression": "eval:a+b-c"
+					}
+				],
+				"conditions": [
+					"c<a",
+					"c<b",
+					"u<=95",
+					"u>=20",
+					"a!=b",
+					"a-10*floor(a/10)!=0",
+					"b-10*floor(b/10)!=0",
+					"u-10*floor(u/10)!=0"
+				],
+				"correction": {
+					"steps": [
+						"On utilise la relation $P(A \\cup B) + P(A \\cap B) = P(A) + P(B)$, soit $P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$.",
+						"$P(A \\cup B) = 0{,}{{a}} + 0{,}{{b}} - 0{,}{{c}} = \\textcolor{{{color:primary.0}}}{0{,}{{u}}}$.",
+						"Les issues de $A \\cap B$ sont dans $A$ **et** dans $B$ : sans la soustraction, elles seraient comptées deux fois."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c/100}}"
+					}
+				],
+				"statement": "Lors d'une expérience aléatoire, $A$ et $B$ sont deux évènements tels que $P(A)=0{,}{{a}}$, $P(B)=0{,}{{b}}$ et $P(A \\cup B)=0{,}{{u}}$.\n\nCalcule $P(A \\cap B)$.\n\n$P(A \\cap B)=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "25..60"
+					},
+					{
+						"name": "b",
+						"expression": "25..60"
+					},
+					{
+						"name": "c",
+						"expression": "11..19"
+					},
+					{
+						"name": "u",
+						"expression": "eval:a+b-c"
+					}
+				],
+				"conditions": [
+					"c<a",
+					"c<b",
+					"u<=95",
+					"u>=20",
+					"a!=b",
+					"a-10*floor(a/10)!=0",
+					"b-10*floor(b/10)!=0",
+					"u-10*floor(u/10)!=0"
+				],
+				"correction": {
+					"steps": [
+						"On utilise la relation $P(A \\cup B) + P(A \\cap B) = P(A) + P(B)$.",
+						"Donc $P(A \\cap B) = P(A) + P(B) - P(A \\cup B) = 0{,}{{a}} + 0{,}{{b}} - 0{,}{{u}} = \\textcolor{{{color:primary.0}}}{0{,}{{c}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:({{if:j==0|6|{{if:j==1|3|{{if:j==2|5|5}}}}}}+{{if:j==0|4|{{if:j==1|4|{{if:j==2|6|6}}}}}}-{{if:j==0|2|{{if:j==1|1|{{if:j==2|2|4}}}}}})/12}}"
+					}
+				],
+				"statement": "On lance un dé équilibré à douze faces, numérotées de $1$ à $12$. On note $A$ l'évènement « {{if:j==0|obtenir un nombre pair|{{if:j==1|obtenir un multiple de $4$|{{if:j==2|obtenir un nombre inférieur ou égal à $5$|obtenir un nombre premier}}}}}} » et $B$ l'évènement « {{if:j==0|obtenir un multiple de $3$|{{if:j==1|obtenir un multiple de $3$|{{if:j==2|obtenir un nombre pair|obtenir un nombre impair}}}}}} ».\n\nCalcule la probabilité de l'évènement « $A$ ou $B$ ».\n\n$P(A \\cup B)=?$",
+				"variables": [
+					{
+						"name": "j",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les $12$ issues sont équiprobables.",
+						"$A$ : {{if:j==0|2, 4, 6, 8, 10, 12|{{if:j==1|4, 8, 12|{{if:j==2|1, 2, 3, 4, 5|2, 3, 5, 7, 11}}}}}}, donc $P(A)=\\dfrac{{{if:j==0|6|{{if:j==1|3|{{if:j==2|5|5}}}}}}}{12}$ ; $B$ : {{if:j==0|3, 6, 9, 12|{{if:j==1|3, 6, 9, 12|{{if:j==2|2, 4, 6, 8, 10, 12|1, 3, 5, 7, 9, 11}}}}}}, donc $P(B)=\\dfrac{{{if:j==0|4|{{if:j==1|4|{{if:j==2|6|6}}}}}}}{12}$.",
+						"$A \\cap B$ : {{if:j==0|6, 12|{{if:j==1|12|{{if:j==2|2, 4|3, 5, 7, 11}}}}}}, donc $P(A \\cap B)=\\dfrac{{{if:j==0|2|{{if:j==1|1|{{if:j==2|2|4}}}}}}}{12}$.",
+						"$P(A \\cup B) = P(A) + P(B) - P(A \\cap B) = \\dfrac{{{if:j==0|6|{{if:j==1|3|{{if:j==2|5|5}}}}}}+{{if:j==0|4|{{if:j==1|4|{{if:j==2|6|6}}}}}}-{{if:j==0|2|{{if:j==1|1|{{if:j==2|2|4}}}}}}}{12} = \\textcolor{{{color:primary.0}}}{{{solution}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:w/100}}"
+					}
+				],
+				"statement": "Lors d'une expérience aléatoire, $A$ et $B$ sont deux évènements tels que $P(A)=0{,}{{a}}$, $P(B)=0{,}{{b}}$ et $P(A \\cap B)=0{,}{{c}}$.\n\nCalcule la probabilité que $A$ **ou** $B$ soit réalisé, **mais pas les deux**.\n\n$P=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "25..60"
+					},
+					{
+						"name": "b",
+						"expression": "25..60"
+					},
+					{
+						"name": "c",
+						"expression": "11..19"
+					},
+					{
+						"name": "u",
+						"expression": "eval:a+b-c"
+					},
+					{
+						"name": "w",
+						"expression": "eval:u-c"
+					}
+				],
+				"conditions": [
+					"c<a",
+					"c<b",
+					"u<=95",
+					"u>=20",
+					"a!=b",
+					"a-10*floor(a/10)!=0",
+					"b-10*floor(b/10)!=0",
+					"u-10*floor(u/10)!=0",
+					"w>=11",
+					"w-10*floor(w/10)!=0"
+				],
+				"correction": {
+					"steps": [
+						"« $A$ ou $B$, mais pas les deux » : on retire $A \\cap B$ de $A \\cup B$.",
+						"$P(A \\cup B) = 0{,}{{a}} + 0{,}{{b}} - 0{,}{{c}} = 0{,}{{u}}$.",
+						"$P = P(A \\cup B) - P(A \\cap B) = 0{,}{{u}} - 0{,}{{c}} = \\textcolor{{{color:primary.0}}}{0{,}{{w}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Probabilité de A ou B, de A et B",
+		"description": "Appliquer la relation P(A ∪ B) + P(A ∩ B) = P(A) + P(B) : réunion, intersection, « ou » exclusif, en équiprobabilité",
+		"shared": {
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0{,}65"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "45",
+					"b": "35",
+					"c": "15"
+				},
+				"description": "0,45 + 0,35 − 0,15 = 0,65",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{13}{20}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "45",
+					"b": "35",
+					"c": "15"
+				},
+				"description": "En fraction : 13/20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "45",
+					"b": "35",
+					"c": "15"
+				},
+				"description": "Erreur : P(A) + P(B) = 0,8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "45",
+					"b": "35",
+					"c": "15"
+				},
+				"description": "0,45 + 0,35 − 0,65 = 0,15",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "45",
+					"b": "35",
+					"c": "15"
+				},
+				"description": "Erreur : P(A ∪ B) − P(A) = 0,2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "0"
+				},
+				"description": "Pair ou multiple de 3 : 8/12 = 2/3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{8}{12}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"j": "0"
+				},
+				"description": "8/12 non réduite (ambre)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{5}{6}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"j": "0"
+				},
+				"description": "Erreur : 10/12 (sans retirer 6 et 12)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{7}{12}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"j": "3"
+				},
+				"description": "Premier ou impair : 7/12",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}56"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "45",
+					"b": "41",
+					"c": "15"
+				},
+				"description": "« Ou » exclusif : 0,71 − 0,15 = 0,56",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0{,}71"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "45",
+					"b": "41",
+					"c": "15"
+				},
+				"description": "Erreur : P(A ∪ B) = 0,71",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{14}{25}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "45",
+					"b": "41",
+					"c": "15"
+				},
+				"description": "En fraction : 14/25",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]

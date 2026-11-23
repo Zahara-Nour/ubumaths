@@ -17,7 +17,7 @@
  */
 
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout } from 'mathlive';
-import type { GradeLevel } from '$lib/questions/types';
+import type { GradeLevel } from '#lib/questions/types.ts';
 
 // Constantes
 

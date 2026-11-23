@@ -1,10 +1,8 @@
 {
+	"id": "12482155-d91f-4744-bc43-fd0d9ff18f77",
 	"title": "Trouve le solide",
 	"description": "Reconnaître un cube, une boule, un cône, un cylindre ou un pavé parmi les cinq, dessinés",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Solides",
-	"subdomain": "Reconnaître et décrire",
 	"level": 1,
 	"delay": 45,
 	"status": "draft",

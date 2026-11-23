@@ -7,7 +7,7 @@ import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AlmanachConverter from '../AlmanachConverter.svelte';
-import { civilToPataphysical, formatMedium } from '$lib/almanach/calendar';
+import { civilToPataphysical, formatMedium } from '#lib/almanach/calendar.ts';
 
 async function renderConverter() {
 	// Aujourd'hui : 13 Lumenal An 130 (22 mai 2026)
@@ -21,7 +21,7 @@ function output(container: HTMLElement): string {
 }
 
 async function choosePeriod(name: string) {
-	await page.getByRole('button', { name: /^Mois ou jour hors-mois/ }).click();
+	await page.getByRole('combobox', { name: /^Mois ou jour hors-mois/ }).click();
 	await page.getByRole('option', { name }).click();
 }
 

@@ -1,0 +1,413 @@
+{
+	"id": "f900ea05-189f-4f48-b891-c815d5447b58",
+	"title": "Extremum d'une fonction du second degré sur un intervalle",
+	"description": "Minimum et maximum sur [p ; q], sommet dans l'intervalle ou non ; tableau de variations sur [p ; q] à compléter",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$.\n\nSur l'intervalle $\\left[{{p}}\\,;{{q}}\\right]$, le minimum de $f$ est $?$ et son maximum est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "be",
+					"expression": "-6..6"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "eval:al-d1"
+				},
+				{
+					"name": "q",
+					"expression": "eval:al+d2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*al"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*al^2+be"
+				}
+			],
+			"conditions": ["d1 != d2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{be}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*d1^2+be}}",
+							"message": "Le minimum n'est pas forcément en une borne : $f$ change de sens de variation en $\\alpha={{al}}$, qui est dans l'intervalle.",
+							"label": "Valeur en la borne gauche"
+						},
+						{
+							"answer": "{{al}}",
+							"message": "${{al}}$ est l'abscisse où le minimum est atteint ; le minimum est la valeur $f({{al}})$.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:d1>d2|{{eval:a*d1^2+be}}|{{eval:a*d2^2+be}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:d1>d2|{{eval:a*d2^2+be}}|{{eval:a*d1^2+be}}}}",
+							"message": "Le maximum est atteint en la borne la plus éloignée de $\\alpha={{al}}$.",
+							"label": "Borne la plus proche"
+						},
+						{
+							"answer": "{{be}}",
+							"message": "C'est le minimum : avec $a>0$, $f({{al}})$ est la plus petite valeur.",
+							"label": "Minimum donné"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\alpha=-\\dfrac{b}{2a}=-\\dfrac{ {{b}} }{ {{eval:2*a}} }={{al}}$ et $f({{al}})={{be}}$ ; comme $a={{a}}$ est {{if:a>0|positif|négatif}}, $f$ est {{if:a>0|décroissante|croissante}} puis {{if:a>0|croissante|décroissante}}.",
+					"${{al}}\\in\\left[{{p}}\\,;{{q}}\\right]$ : le minimum sur l'intervalle est $\\textcolor{{{color:primary.0}}}{ {{be}} }$.",
+					"$f({{p}})={{eval:a*d1^2+be}}$ et $f({{q}})={{eval:a*d2^2+be}}$ : le maximum est $\\textcolor{{{color:primary.0}}}{ {{if:d1>d2|{{eval:a*d1^2+be}}|{{eval:a*d2^2+be}}}} }$, en la borne la plus éloignée de ${{al}}$."
+				]
+			},
+			"hint": "Cherche d'abord l'abscisse du sommet $\\alpha=-\\dfrac{b}{2a}$ : est-elle dans l'intervalle ? Elle dit où $f$ change de sens de variation."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$.\n\nSur l'intervalle $\\left[{{p}}\\,;{{q}}\\right]$, le minimum de $f$ est $?$ et son maximum est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "al",
+					"expression": "-4..2"
+				},
+				{
+					"name": "be",
+					"expression": "-6..6"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "eval:al+d1"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+d2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*al"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*al^2+be"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|{{eval:a*d1^2+be}}|{{eval:a*(d1+d2)^2+be}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{be}}",
+							"message": "$\\beta={{be}}$ est atteint en $\\alpha={{al}}$, qui n'est pas dans $\\left[{{p}}\\,;{{q}}\\right]$ : sur cet intervalle, $f$ est monotone.",
+							"label": "Sommet hors de l'intervalle"
+						},
+						{
+							"answer": "{{if:a>0|{{eval:a*(d1+d2)^2+be}}|{{eval:a*d1^2+be}}}}",
+							"message": "Tu as échangé le minimum et le maximum : regarde si $f$ croît ou décroît sur $\\left[{{p}}\\,;{{q}}\\right]$.",
+							"label": "Min et max échangés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:a>0|{{eval:a*(d1+d2)^2+be}}|{{eval:a*d1^2+be}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{be}}",
+							"message": "$\\beta={{be}}$ est atteint en $\\alpha={{al}}$, qui n'est pas dans $\\left[{{p}}\\,;{{q}}\\right]$ : sur cet intervalle, $f$ est monotone.",
+							"label": "Sommet hors de l'intervalle"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\alpha=-\\dfrac{b}{2a}=-\\dfrac{ {{b}} }{ {{eval:2*a}} }={{al}}$ et $f({{al}})={{be}}$ ; comme $a={{a}}$ est {{if:a>0|positif|négatif}}, $f$ est {{if:a>0|décroissante|croissante}} puis {{if:a>0|croissante|décroissante}}.",
+					"${{al}}<{{p}}$ : sur $\\left[{{p}}\\,;{{q}}\\right]$, $f$ est {{if:a>0|croissante|décroissante}}.",
+					"$f({{p}})={{eval:a*d1^2+be}}$ et $f({{q}})={{eval:a*(d1+d2)^2+be}}$ : le minimum est $\\textcolor{{{color:primary.0}}}{ {{if:a>0|{{eval:a*d1^2+be}}|{{eval:a*(d1+d2)^2+be}}}} }$ et le maximum $\\textcolor{{{color:primary.0}}}{ {{if:a>0|{{eval:a*(d1+d2)^2+be}}|{{eval:a*d1^2+be}}}} }$."
+				]
+			},
+			"hint": "Cherche d'abord l'abscisse du sommet $\\alpha=-\\dfrac{b}{2a}$ : est-elle dans l'intervalle ? Elle dit où $f$ change de sens de variation."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$.\n\nComplète son tableau de variations sur $\\left[{{p}}\\,;{{q}}\\right]$.\n\n```variation\nvariable: x\ndomain: {{p}}, ?{{al}}, {{q}}\n\nvariation: f(x)\n  {{p}}: ?{{eval:a*d1^2+be}}, {{if:a>0|top|bottom}}\n  {{al}}: ?{{be}}, {{if:a>0|bottom|top}}\n  {{q}}: ?{{eval:a*d2^2+be}}, {{if:a>0|top|bottom}}\n  {{p}},{{al}}: ?flèche\n  {{al}},{{q}}: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "al",
+					"expression": "-3..3"
+				},
+				{
+					"name": "be",
+					"expression": "-6..6"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "eval:al-d1"
+				},
+				{
+					"name": "q",
+					"expression": "eval:al+d2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*al"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*al^2+be"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"$\\alpha=-\\dfrac{b}{2a}=-\\dfrac{ {{b}} }{ {{eval:2*a}} }={{al}}$ et $f({{al}})={{be}}$ ; comme $a={{a}}$ est {{if:a>0|positif|négatif}}, $f$ est {{if:a>0|décroissante|croissante}} puis {{if:a>0|croissante|décroissante}}.",
+					"$f({{p}})={{eval:a*d1^2+be}}$, $f({{al}})={{be}}$ et $f({{q}})={{eval:a*d2^2+be}}$."
+				]
+			},
+			"hint": "Cherche d'abord l'abscisse du sommet $\\alpha=-\\dfrac{b}{2a}$ : est-elle dans l'intervalle ? Elle dit où $f$ change de sens de variation."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² − 2x − 3 sur [0 ; 4]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"al": "1",
+				"be": "-4",
+				"d1": "1",
+				"d2": "3",
+				"p": "0",
+				"q": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4", "5"]
+		},
+		{
+			"description": "Min en la borne",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"al": "1",
+				"be": "-4",
+				"d1": "1",
+				"d2": "3",
+				"p": "0",
+				"q": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le minimum n'est pas forcément en une borne : $f$ change de sens de variation en $\\alpha = 1$, qui est dans l'intervalle."
+			},
+			"answers": ["-3", "5"]
+		},
+		{
+			"description": "Abscisse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"al": "1",
+				"be": "-4",
+				"d1": "1",
+				"d2": "3",
+				"p": "0",
+				"q": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$1$ est l'abscisse où le minimum est atteint ; le minimum est la valeur $f\\left( 1 \\right)$."
+			},
+			"answers": ["1", "5"]
+		},
+		{
+			"description": "Max en la borne proche",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"al": "1",
+				"be": "-4",
+				"d1": "1",
+				"d2": "3",
+				"p": "0",
+				"q": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le maximum est atteint en la borne la plus éloignée de $\\alpha = 1$."
+			},
+			"answers": ["-4", "-3"]
+		},
+		{
+			"description": "−x² + 5 sur [1 ; 3]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"al": "0",
+				"be": "5",
+				"d1": "1",
+				"d2": "2",
+				"p": "1",
+				"q": "3",
+				"b": "0",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4", "4"]
+		},
+		{
+			"description": "Sommet",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"al": "0",
+				"be": "5",
+				"d1": "1",
+				"d2": "2",
+				"p": "1",
+				"q": "3",
+				"b": "0",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\beta = 5$ est atteint en $\\alpha = 0$, qui n'est pas dans $\\left[1\\,;3\\right]$ : sur cet intervalle, $f$ est monotone."
+			},
+			"answers": ["-4", "5"]
+		},
+		{
+			"description": "Échangés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"al": "0",
+				"be": "5",
+				"d1": "1",
+				"d2": "2",
+				"p": "1",
+				"q": "3",
+				"b": "0",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé le minimum et le maximum : regarde si $f$ croît ou décroît sur $\\left[1\\,;3\\right]$."
+			},
+			"answers": ["4", "-4"]
+		},
+		{
+			"description": "Tableau de x² − 2x − 3 sur [0 ; 4]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"al": "1",
+				"be": "-4",
+				"d1": "1",
+				"d2": "3",
+				"p": "0",
+				"q": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "-3", "↘", "-4", "↗", "5"]
+		},
+		{
+			"description": "Flèches inversées",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"al": "1",
+				"be": "-4",
+				"d1": "1",
+				"d2": "3",
+				"p": "0",
+				"q": "4",
+				"b": "-2",
+				"c": "-3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1", "-3", "↗", "-4", "↘", "5"]
+		}
+	]
+}

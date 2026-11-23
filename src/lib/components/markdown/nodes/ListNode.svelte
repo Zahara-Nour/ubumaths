@@ -5,7 +5,7 @@
 	Renders an ordered or unordered list with support for:
 	- Nested lists (recursive rendering)
 	- Custom starting number for ordered lists
-	- Rich content in list items (paragraphs, nested lists, etc.)
+	- Rich content in list items (paragraphs, nested lists, images, videos, etc.)
 	- Configurable numbering schemes via CSS classes
 
 	The component handles recursive rendering by importing BlockRenderer
@@ -19,13 +19,14 @@
 	@see ExerciseDisplay.svelte for original renderList() implementation
 -->
 <script lang="ts">
-	import type { ListItemNode, ASTNode, InlineNode } from '$lib/ubumark';
-	import type { SchemeId } from '$lib/types/list-numbering';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
-	import type { ExerciseHint } from '$lib/exercises/types';
+	import type { ListItemNode, ASTNode, InlineNode } from '#lib/ubumark/index.ts';
+	import type { SchemeId } from '#lib/types/list-numbering.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import type { ExerciseHint } from '#lib/exercises/types.ts';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
+	import VideoDisplay from './VideoDisplay.svelte';
 	import HorizontalRule from './HorizontalRule.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import TableNode from './TableNode.svelte';
@@ -37,23 +38,31 @@
 	import FigureBlock from './FigureBlock.svelte';
 	import StatChart from './StatChart.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
+	import Partage from './Partage.svelte';
+	import Espace from './Espace.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
+	import SchemaBarres from './SchemaBarres.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
-	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
-	import type { ProbabilityTreeNode } from '$lib/ubumark/types/probability-tree';
-	import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
-	import type { CourbeNode } from '$lib/ubumark/types/courbe';
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import type { QrNode } from '$lib/ubumark/types/qr';
-	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
-	import type { OperationNode } from '$lib/ubumark/types/operation';
-	import type { CollectionNode } from '$lib/ubumark/types/collection';
-	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
+	import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
+	import type { ProbabilityTreeNode } from '#lib/ubumark/types/probability-tree.ts';
+	import type { TrigCircleNode } from '#lib/ubumark/types/trig-circle.ts';
+	import type { CourbeNode } from '#lib/ubumark/types/courbe.ts';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
+	import type { QrNode } from '#lib/ubumark/types/qr.ts';
+	import type { ScratchNode } from '#lib/ubumark/types/scratch.ts';
+	import type { HorlogeNode } from '#lib/ubumark/types/horloge.ts';
+	import type { PartageNode } from '#lib/ubumark/types/partage.ts';
+	import type { EspaceNode } from '#lib/ubumark/types/espace.ts';
+	import type { OperationNode } from '#lib/ubumark/types/operation.ts';
+	import type { CollectionNode } from '#lib/ubumark/types/collection.ts';
+	import type { MonnaieNode } from '#lib/ubumark/types/monnaie.ts';
+	import type { SchemaBarresNode } from '#lib/ubumark/types/schema-barres.ts';
 
 	interface Props {
 		ordered: boolean;
@@ -256,6 +265,13 @@
 	}
 
 	/**
+	 * Bloc ```scratch en retrait dans un item de liste
+	 */
+	function isScratchNode(node: ASTNode): node is ScratchNode {
+		return node.type === 'scratch';
+	}
+
+	/**
 	 * Bloc ```horloge en retrait dans un item de liste
 	 */
 	function isHorlogeNode(node: ASTNode): node is HorlogeNode {
@@ -284,6 +300,27 @@
 	}
 
 	/**
+	 * Bloc ```schema-barres en retrait dans un item de liste
+	 */
+	function isSchemaBarresNode(node: ASTNode): node is SchemaBarresNode {
+		return node.type === 'schema-barres';
+	}
+
+	/**
+	 * Bloc ```partage en retrait dans un item de liste
+	 */
+	function isPartageNode(node: ASTNode): node is PartageNode {
+		return node.type === 'partage';
+	}
+
+	/**
+	 * Bloc d'espace (```cubes) en retrait dans un item de liste
+	 */
+	function isEspaceNode(node: ASTNode): node is EspaceNode {
+		return node.type === 'espace';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -292,6 +329,7 @@
 			'code-block',
 			'list',
 			'image',
+			'video',
 			'table',
 			'horizontal-rule',
 			'variation-table',
@@ -301,10 +339,14 @@
 			'figure',
 			'stat-chart',
 			'qr',
+			'scratch',
 			'horloge',
+			'partage',
+			'espace',
 			'operation',
 			'collection',
-			'monnaie'
+			'monnaie',
+			'schema-barres'
 		].includes(node.type);
 	}
 
@@ -407,6 +449,20 @@
 							originalWidth={child.originalWidth}
 							originalHeight={child.originalHeight}
 						/>
+					{:else if child.type === 'video'}
+						<VideoDisplay
+							src={child.src}
+							alt={child.alt}
+							provider={child.provider}
+							videoId={child.videoId}
+							sizeClass={child.sizeClass}
+							widthPercent={child.widthPercent}
+							alignment={child.alignment}
+							controls={child.controls}
+							autoplay={child.autoplay}
+							loop={child.loop}
+							muted={child.muted}
+						/>
 					{:else if isTableNode(child)}
 						<TableNode
 							header={child.header}
@@ -431,14 +487,22 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isScratchNode(child)}
+						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isPartageNode(child)}
+						<Partage node={child} />
+					{:else if isEspaceNode(child)}
+						<Espace node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -499,6 +563,20 @@
 							originalWidth={child.originalWidth}
 							originalHeight={child.originalHeight}
 						/>
+					{:else if child.type === 'video'}
+						<VideoDisplay
+							src={child.src}
+							alt={child.alt}
+							provider={child.provider}
+							videoId={child.videoId}
+							sizeClass={child.sizeClass}
+							widthPercent={child.widthPercent}
+							alignment={child.alignment}
+							controls={child.controls}
+							autoplay={child.autoplay}
+							loop={child.loop}
+							muted={child.muted}
+						/>
 					{:else if isTableNode(child)}
 						<TableNode
 							header={child.header}
@@ -523,14 +601,22 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isScratchNode(child)}
+						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isPartageNode(child)}
+						<Partage node={child} />
+					{:else if isEspaceNode(child)}
+						<Espace node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
 						<Collection node={child} />
 					{:else if isMonnaieNode(child)}
 						<Monnaie node={child} />
+					{:else if isSchemaBarresNode(child)}
+						<SchemaBarres node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

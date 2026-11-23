@@ -23,6 +23,9 @@ Chapeau du chantier : [atelier-progress.md](../../wip/atelier-progress.md).
   jour : `solve(y = f(x), x)` sait faire les affines, homographiques, `x³`, `1/x`, `x²` (deux
   branches, sans condition sur y), mais répond **`no-solution`** (faux) pour `e^{2x+1}`, `ln(x−1)`,
   `√(x+2)`, `2^x`, `3eˣ−1` dès que le second membre est une lettre.
+  **→ Faite depuis** : commande `.réciproque f [sur I]` et carte `f⁻¹` de l'atelier, moteur
+  `mathAST/reciprocal/` — voir [reciproque.md](../../systeme/mathast/reciproque.md) et
+  [atelier-reciproque-phase0.md](atelier-reciproque-phase0.md).
 - **Les six autres commandes de noms** (`.poser`, `.définir`, `.effacer`, `.oublier`,
   `.oublier-fonction`, `.dérivée-de`) restent hors de l'atelier (2026-10-13) : le panneau fait la même
   chose. David (2026-10-13) : **elles ne doivent pas exister** dans l'atelier — pas de refus

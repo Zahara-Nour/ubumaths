@@ -1,8 +1,8 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { sanitizeRPCError, sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
 
 /**
  * UUID schema for path parameters
@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		// que personne ne l'ait vu.
 		const resultat = data?.[0];
 
-		return json({
+		return Response.json({
 			success: resultat?.success ?? false,
 			rewards_distributed: resultat?.rewards_distributed ?? 0,
 			reference_updates: resultat?.reference_updates ?? 0

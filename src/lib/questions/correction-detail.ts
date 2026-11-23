@@ -10,8 +10,10 @@
  *   `$…$`, `$$…$$` et autour de rangées entières d'un `align`.
  * - `> [!méthode]`, `> [!rappel]`, `> [!attention]` : concis → bloc entier
  *   retiré ; détaillé → gardé (ubumark le rend en encadré typé).
- * - `[texte]{.rappel}` (`.méthode`, `.attention`, `.calcul`) : concis → retiré ;
- *   détaillé → gardé (ubumark le met en valeur).
+ * - `[texte]{.rappel}` (`.méthode`, `.attention`, `.calcul`), éventuellement
+ *   avec une couleur (`{.rappel .vert}`) : concis → retiré ; détaillé → gardé
+ *   (ubumark le met en valeur). Les autres marquages (`{.def}`, `{.orange}`)
+ *   restent dans les deux versions.
  *
  * Les variables `{{a}}` ne sont jamais touchées : leurs accolades sont
  * équilibrées, la transformation marche donc avant comme après leur
@@ -27,12 +29,11 @@
 import {
 	CALLOUT_MARKER_REGEX,
 	INLINE_CODE_REGEX,
-	INLINE_DETAIL_REGEX,
+	SPAN_MARK_REGEX,
 	maskSpans,
 	parseCalloutKind,
-	parseDetailKind,
-	isLexiconMarkWord
-} from '$lib/ubumark/utils/detail-kinds';
+	parseSpanClasses
+} from '#lib/ubumark/utils/detail-kinds.ts';
 
 // ============================================================================
 // TYPES
@@ -325,7 +326,7 @@ const REMOVED = '';
 
 function transformInlineDetails(text: string, mode: Mode, ctx: Context): string {
 	const masked = maskSpans(text, [INLINE_CODE_REGEX, MATH_SPAN_REGEX]);
-	const regex = new RegExp(INLINE_DETAIL_REGEX.source, INLINE_DETAIL_REGEX.flags);
+	const regex = new RegExp(SPAN_MARK_REGEX.source, SPAN_MARK_REGEX.flags);
 	let out = '';
 	let last = 0;
 	let match: RegExpExecArray | null;
@@ -333,12 +334,12 @@ function transformInlineDetails(text: string, mode: Mode, ctx: Context): string 
 	while ((match = regex.exec(masked)) !== null) {
 		const start = match.index;
 		const end = start + match[0].length;
-		// `[mot]{.def}` marque un mot du lexique : il reste dans les deux versions
-		if (isLexiconMarkWord(match[2])) continue;
-		if (!parseDetailKind(match[2])) {
-			ctx.errors.push(
-				`Détail en ligne « {.${match[2]}} » : type inconnu. Types possibles : calcul, rappel, méthode, attention.`
-			);
+		// Sans type de détail (mot du dictionnaire, couleur, classe inconnue) : le
+		// marquage reste dans les deux versions ; une classe inconnue est signalée
+		// au rendu (ADR 0042), pas ici. Son contenu est relu : il peut contenir un
+		// détail (`[la règle [à retenir]{.rappel}]{.orange}`, revue #2933).
+		if (!parseSpanClasses(match[2]).detail) {
+			regex.lastIndex = start + 1;
 			continue;
 		}
 		ctx.found = true;

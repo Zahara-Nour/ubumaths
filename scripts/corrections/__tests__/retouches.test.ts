@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import type { QuestionInstance, QuestionTemplate } from '../../../src/lib/questions/types';
 import { generateInstance } from '../../../src/lib/questions/generator/instance-generator';
-import { checkTemplate } from '../../../src/lib/migration/review/check-template';
+import { checkTemplate } from '../../../src/lib/questions/review/check-template';
 import { readSnapshot } from '../lib/files';
 import {
 	changedColumns,

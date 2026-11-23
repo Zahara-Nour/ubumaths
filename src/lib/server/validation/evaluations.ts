@@ -1,23 +1,23 @@
 /**
  * Séries et évaluations : schémas Zod (chantier 4).
  *
- * Les bornes de la composition (catégories) sont partagées avec le navigateur :
- * `$lib/validation/series`.
+ * Les bornes de la composition (modèles) sont partagées avec le navigateur :
+ * `#lib/validation/series.ts`.
  */
 
 import { z } from 'zod';
 import { gradeSchema, uuidSchema } from './common';
-import { savedSeriesCategoriesSchema } from '$lib/validation/series';
+import { savedSeriesItemsSchema } from '#lib/validation/series.ts';
 import {
 	MAX_ANSWER_LENGTH,
 	MAX_ANSWER_PARTS,
 	MAX_ANSWER_SECONDS as MAX_SECONDS,
 	MAX_ATTEMPT_ANSWERS
-} from '$lib/questions/submission';
+} from '#lib/questions/submission.ts';
 import {
 	COURSE_TIME_LIMIT_MAX_MINUTES,
 	COURSE_TIME_LIMIT_MIN_MINUTES
-} from '$lib/types/evaluation';
+} from '#lib/types/evaluation.ts';
 
 // ============================================================================
 // SÉRIES (B11, B12)
@@ -43,7 +43,7 @@ export const createSeriesSchema = z.object({
 	title: seriesTitleSchema,
 	grade: gradeSchema,
 	description: seriesDescriptionSchema,
-	categories: savedSeriesCategoriesSchema
+	items: savedSeriesItemsSchema
 });
 
 export type CreateSeriesInput = z.infer<typeof createSeriesSchema>;
@@ -54,10 +54,10 @@ export const updateSeriesSchema = z
 		title: seriesTitleSchema.optional(),
 		grade: gradeSchema.optional(),
 		description: seriesDescriptionSchema,
-		categories: savedSeriesCategoriesSchema.optional()
+		items: savedSeriesItemsSchema.optional()
 	})
 	.refine(
-		(data) => data.title !== undefined || data.grade !== undefined || data.categories !== undefined,
+		(data) => data.title !== undefined || data.grade !== undefined || data.items !== undefined,
 		{ message: 'Rien à modifier' }
 	);
 
@@ -68,7 +68,7 @@ export type UpdateSeriesInput = z.infer<typeof updateSeriesSchema>;
 // ============================================================================
 
 export const evaluationFormSchema = z.enum(['interactive', 'course'], {
-	error: 'Forme inconnue : Entraînement ou Course aux nombres'
+	error: 'Forme inconnue : Contrôle blanc ou Course aux nombres'
 });
 
 export const evaluationStatusSchema = z.enum(['draft', 'published', 'archived']);
@@ -124,7 +124,7 @@ export const evaluationSettingsSchema = z
 			ctx.addIssue({
 				code: 'custom',
 				path: ['time_limit_minutes'],
-				message: "Un Entraînement n'a pas de temps limite"
+				message: "Un Contrôle blanc n'a pas de temps limite"
 			});
 		}
 	})
@@ -199,12 +199,12 @@ export const classIdsFieldSchema = z
 // ENVOI D'UNE TENTATIVE (chantier 5, C10)
 // ============================================================================
 
-// Bornes partagées avec la page, qui tronque avant d'envoyer ($lib/questions/submission)
+// Bornes partagées avec la page, qui tronque avant d'envoyer (#lib/questions/submission)
 const answerPartSchema = z.string().max(MAX_ANSWER_LENGTH, 'Réponse trop longue');
 
 /**
- * Réponse à UNE question : cases (valeurs, le LaTeX tapé) ou positions cochées d'un
- * QCM. Aucun verdict n'est lu : tout champ `isCorrect`, `points`, `score`… est
+ * Réponse à UNE question : une valeur par case (le LaTeX tapé ; case choix : indices
+ * d'origine « 0;2 »). Aucun verdict n'est lu : tout champ `isCorrect`, `points`, `score`… est
  * retiré par Zod (objet non strict) et le serveur corrige lui-même.
  */
 const submittedAnswerSchema = z.object({
@@ -214,19 +214,9 @@ const submittedAnswerSchema = z.object({
 		.min(0)
 		.max(MAX_ATTEMPT_ANSWERS - 1),
 	values: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
-	choices: z
-		.array(
-			z
-				.number()
-				.int()
-				.min(0)
-				.max(MAX_ANSWER_PARTS - 1)
-		)
-		.max(MAX_ANSWER_PARTS)
-		// QCM à plusieurs réponses (V5) : chaque choix coché une seule fois
-		.refine((choices) => new Set(choices).size === choices.length, 'Un choix est coché deux fois')
-		.optional(),
-	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional()
+	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional(),
+	/** Fin de la question, déclarée par la page (comme `timeSpent`), pour sa trace (PR 4 bis) */
+	endReason: z.enum(['validated', 'timeout']).optional()
 });
 
 export const submitAttemptSchema = z.object({

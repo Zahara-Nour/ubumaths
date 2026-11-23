@@ -9,7 +9,7 @@ import { buildFigureScene } from '../../utils/figure-scene';
 import { figureToSvg, type FigureShape } from '../../utils/figure-svg';
 import { generateFigureTypst } from '../../generators/figure-typst';
 import { localizeFigureText } from '../../utils/figure-text-locale';
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 
 type LabelShape = Extract<FigureShape, { kind: 'label' }>;
 

@@ -19,12 +19,12 @@ import type {
 	GenerationResult
 } from '../types';
 import { generateInstance } from './instance-generator';
-import { getVariableNames, templateMarkdown } from '$lib/ubumark';
+import { getVariableNames, templateMarkdown } from '#lib/ubumark/index.ts';
 import {
 	normalizeExpression,
 	tokenize,
 	parseEvalExpressionWithModifiers
-} from '$lib/ubumark/parameterization';
+} from '#lib/ubumark/parameterization/index.ts';
 
 /**
  * Merge shared defaults with variation-specific values.
@@ -47,16 +47,16 @@ function resolveVariationWithShared(
 
 	return {
 		statement: variation.statement || shared.statement || templateMarkdown(''),
-		correctChoiceIndex: variation.correctChoiceIndex ?? shared.correctChoiceIndex,
 		correction: variation.correction ?? shared.correction,
-		choices: variation.choices ?? shared.choices,
 		validationRules: variation.validationRules ?? shared.validationRules,
 		requiredForm: variation.requiredForm ?? shared.requiredForm,
 		variables: mergedVariables,
 		conditions: variation.conditions ?? shared.conditions,
 		blanks: variation.blanks,
 		blankDefaults: variation.blankDefaults ?? shared.blankDefaults,
-		answerFormats: variation.answerFormats ?? shared.answerFormats
+		answerFormats: variation.answerFormats ?? shared.answerFormats,
+		hint: variation.hint,
+		hintFromFirstStep: variation.hintFromFirstStep
 	};
 }
 

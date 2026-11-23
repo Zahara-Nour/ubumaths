@@ -28,7 +28,7 @@ import {
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -91,9 +91,6 @@ function question(id: string, title: string, status: 'published' | 'draft', crea
 		id,
 		type: 'fill_in_blanks',
 		title,
-		theme: 'Nombres',
-		domain: 'Fractions',
-		subdomain: 'Équivalence',
 		level: 1,
 		grades: ['6'],
 		status,
@@ -296,14 +293,6 @@ describe('vue resources + recherche globale', () => {
 		const ids = (data ?? []).map((r) => r.id);
 		// « ALGEBRE » doit trouver « Algèbre ».
 		expect(ids).toContain(EX_PUBLIC);
-	});
-
-	it('cherche aussi dans les métadonnées, pas seulement le titre', async () => {
-		// Le sous-titre d'une question est son quadruplet thème/domaine/sous-domaine.
-		const { data, error } = await teacher.rpc('search_resources', { p_query: 'equivalence' });
-
-		expect(error).toBeNull();
-		expect((data ?? []).map((r) => r.id)).toContain(Q_PUBLISHED);
 	});
 
 	it('filtre par type', async () => {

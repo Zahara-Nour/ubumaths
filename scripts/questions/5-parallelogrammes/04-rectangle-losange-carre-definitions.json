@@ -1,0 +1,110 @@
+{
+	"id": "a920904a-dc76-46fe-9c32-106bfbdf48d0",
+	"title": "Rectangle, losange, carré : définitions",
+	"description": "Définir le rectangle, le losange et le carré comme des parallélogrammes particuliers",
+	"grades": ["5"],
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un **{{if:k==1|rectangle|{{if:k==2|losange|carré}}}}** est un parallélogramme qui a :\n\n```choix\n- un angle droit\n- deux côtés consécutifs de même longueur\n- un angle droit et deux côtés consécutifs de même longueur\n- des diagonales qui se coupent en leur milieu\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définitions.** Un **rectangle** est un parallélogramme qui a un angle droit. Un **losange** est un parallélogramme qui a deux côtés consécutifs de même longueur. Un **carré** est à la fois un rectangle et un losange.",
+					"Un {{if:k==1|rectangle|{{if:k==2|losange|carré}}}} est donc un parallélogramme qui a {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{un angle droit}}$|{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{deux côtés consécutifs de même longueur}}$|$\\textcolor{{{color:primary.0}}}{\\text{un angle droit et deux côtés consécutifs de même longueur}}$}}}}.",
+					"Les diagonales qui se coupent en leur milieu : **tout** parallélogramme les a, ce n'est pas ce qui le rend particulier."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle : un angle droit",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle, deux côtés consécutifs égaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Losange : deux côtés consécutifs égaux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : losange, diagonales de même milieu",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré : les deux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré, un angle droit seulement",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

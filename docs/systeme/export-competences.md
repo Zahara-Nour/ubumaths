@@ -94,6 +94,4 @@ Rappeler au prof de supprimer le fichier de son poste une fois la saisie faite.
 
 ## Écarts connus
 
-- Les commentaires du code citent encore « famille B » : le terme reste juste (seule famille vivante,
-  [ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)), mais CONTEXT.md parle de
-  « compétences mathématiques ».
+Aucun.

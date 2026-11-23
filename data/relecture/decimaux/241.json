@@ -121,9 +121,6 @@
 			}
 		},
 		"grades": ["CM2"],
-		"theme": "Décimaux",
-		"domain": "Apprivoiser",
-		"subdomain": "Décomposition",
 		"level": 4,
 		"status": "draft",
 		"delay": 30,

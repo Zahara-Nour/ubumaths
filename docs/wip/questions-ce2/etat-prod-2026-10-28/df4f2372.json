@@ -1,0 +1,152 @@
+{
+	"id": "df4f2372-bce6-4480-a279-eb08ffb84ec7",
+	"title": "Multiplier par $4$",
+	"description": "Le double du double : 4 × 13, puis 4 × 37",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Quadruple et quart",
+	"level": 6,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*n}}"
+				}
+			],
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..19|21..24"
+				},
+				{
+					"name": "expression1",
+					"expression": "4*{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $4$, c'est prendre le double du double.",
+					"$$\\begin{align} 4\\times {{n}} &= 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{n}}}} \\\\ &= 2\\times {{eval:2*n}} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*n}}"
+				}
+			],
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "26..29|31..39|41..49|51..59|61..69|71..79|81..89|91..99"
+				},
+				{
+					"name": "expression1",
+					"expression": "4*{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $4$, c'est prendre le double du double.",
+					"$$\\begin{align} 4\\times {{n}} &= 2\\times \\bold{\\textcolor{{{color:primary.0}}}{2\\times {{n}}}} \\\\ &= 2\\times {{eval:2*n}} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["52"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "13"
+			},
+			"description": "4 × 13 = 52",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["44"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "11"
+			},
+			"description": "borne : 4 × 11 = 44",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "13"
+			},
+			"description": "Erreur : un seul double (26)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["148"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "37"
+			},
+			"description": "4 × 37 = 148",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["74"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "37"
+			},
+			"description": "Erreur : un seul double (74)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1228"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "37"
+			},
+			"description": "Erreur : 4 × 3 et 4 × 7 accolés (1 228)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "37"
+			},
+			"description": "Erreur : retenue oubliée (128)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["396"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "99"
+			},
+			"description": "borne : 4 × 99 = 396",
+			"variationIndex": 1
+		}
+	]
+}

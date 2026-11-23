@@ -1,0 +1,309 @@
+{
+	"id": "4c79b893-f663-4e49-9e33-9fd3bacb7e3b",
+	"title": "Calculs directs avec des racines",
+	"description": "Calculer (√7)², √7 × √7, 3√2 × 5√2, (2√3)², √5 + √5 (pièges : (2√3)² = 6, √a + √a = √(2a), (√7)² = 49)",
+	"grades": ["2"],
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$(\\sqrt{ {{a}} })^2=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $\\sqrt{ {{a}} }$ est le nombre positif dont le carré vaut ${{a}}$.",
+					"$(\\sqrt{ {{a}} })^2=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }=(\\sqrt{ {{a}} })^2$.",
+					"Le carré de $\\sqrt{ {{a}} }$ vaut ${{a}}$ : $\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{p}}\\sqrt{ {{a}} }\\times{{q}}\\sqrt{ {{a}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				},
+				{
+					"name": "p",
+					"expression": "2..6"
+				},
+				{
+					"name": "q",
+					"expression": "2..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*q*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regroupe les nombres et les racines : ${{p}}\\sqrt{ {{a}} }\\times{{q}}\\sqrt{ {{a}} }=({{p}}\\times{{q}})\\times(\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} })$.",
+					"$\\sqrt{ {{a}} }\\times\\sqrt{ {{a}} }={{a}}$, donc le produit vaut ${{eval:p*q}}\\times{{a}}=\\textcolor{{{color:primary.0}}}{{{eval:p*q*a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$({{p}}\\sqrt{ {{a}} })^2=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				},
+				{
+					"name": "p",
+					"expression": "2..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p^2*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le carré porte sur **les deux** facteurs : $({{p}}\\sqrt{ {{a}} })^2={{p}}^2\\times(\\sqrt{ {{a}} })^2$.",
+					"$={{eval:p^2}}\\times{{a}}=\\textcolor{{{color:primary.0}}}{{{eval:p^2*a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{if:p==1||{{p}}}}\\sqrt{ {{a}} }+{{if:q==1||{{q}}}}\\sqrt{ {{a}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p+q}}\\sqrt{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les $\\sqrt{ {{a}} }$, comme on écrirait ${{if:p==1||{{p}}}}x+{{if:q==1||{{q}}}}x={{eval:p+q}}x$.",
+					"${{if:p==1||{{p}}}}\\sqrt{ {{a}} }+{{if:q==1||{{q}}}}\\sqrt{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:p+q}}\\sqrt{ {{a}} }}$.",
+					"Attention : on n'additionne pas sous la racine, ${{if:p==1||{{p}}}}\\sqrt{ {{a}} }+{{if:q==1||{{q}}}}\\sqrt{ {{a}} }\\neq\\sqrt{ {{eval:(p+q)*a}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(√7)² = 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "Erreur : (√7)² = 49",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["49"]
+		},
+		{
+			"description": "Erreur : (√7)² = 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "√7 × √7 = 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "Perfectible : √7 × √7 = √49 (racine non simplifiée)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			},
+			"answers": ["\\sqrt{49}"]
+		},
+		{
+			"description": "3√2 × 5√2 = 30",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"q": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30"]
+		},
+		{
+			"description": "Erreur : 3√2 × 5√2 = 15√2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["15\\sqrt{2}"]
+		},
+		{
+			"description": "(2√3)² = 12",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur : (2√3)² = 6",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Erreur : (2√3)² = 36",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["36"]
+		},
+		{
+			"description": "√5 + √5 = 2√5",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"p": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\sqrt{5}"]
+		},
+		{
+			"description": "Erreur : √5 + √5 = √10",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"p": "1",
+				"q": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\sqrt{10}"]
+		},
+		{
+			"description": "2√3 + 3√3 = 5√3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"q": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5\\sqrt{3}"]
+		},
+		{
+			"description": "Erreur : 2√3 + 3√3 = 5√6",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"p": "2",
+				"q": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5\\sqrt{6}"]
+		}
+	]
+}

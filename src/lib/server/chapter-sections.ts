@@ -17,10 +17,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type { SectionContentKind } from './validation/chapter-sections';
 import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/chapter-sections');
 

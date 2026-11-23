@@ -1,0 +1,4371 @@
+[
+	{
+		"id": "15368b02-73cc-4f0d-b978-fa0d0848eb03",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{1}{{{a}}^{{{b}}}}"
+					}
+				],
+				"statement": "Écris la définition de cette puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a^{-b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+						"L’exposant $\\textcolor{{{color:primary.0}}}{-{{b}}}$ est négatif : ${{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}}$ est l’inverse de ${{a}}^{\\textcolor{{{color:primary.1}}}{{{b}}}}$.",
+						"$$\\begin{align} {{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}} &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Définition d'une puissance à exposant négatif",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{6^3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "1/6^3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{b^4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "b|b",
+					"b": "4"
+				},
+				"description": "lettre b avec exposant 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{216}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "valeur 1/216 : forme refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-6^3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "signe : -6^3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{6^{-3}}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "1/6^{-3}",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "9ab3a0d8-7a2c-4a7a-973f-92c9a6a757ab"
+	},
+	{
+		"id": "17f3dfcd-01e4-460f-9b94-40be348c2ed7",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Puissance de puissance",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^{a})^{b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{{a}}}\\right)^{{{b}}} &= 10^{{{a}} \\times {{b}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^{a})^{b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{{a}}}\\right)^{{{b}}} &= 10^{{{a}} \\times ({{b}})} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Puissance d'une puissance de $10$",
+		"description": "Exposants relatifs",
+		"shared": {
+			"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+			"answerFormats": {
+				"expression1": "10^?"
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "(10^-5)^3 : -15",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "-2"
+				},
+				"description": "(10^5)^-2 : -10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-9",
+					"b": "-9"
+				},
+				"description": "(10^-9)^-9 : 81",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-81"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-9",
+					"b": "-9"
+				},
+				"description": "signe refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "6dc85352-4b5c-43cf-9cfa-2b9654f97129"
+	},
+	{
+		"id": "1db08bdc-e262-464c-9a51-b77b281e0510",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Diviser",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a-b}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..10"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-2}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{10^a}/{10^b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{10^{{{a}}}}{10^{{{b}}}} &= 10^{{{a}}{{eval:-b;+}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Diviser $2$ puissances de $10$.",
+		"description": "Exposants positifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "6"
+				},
+				"description": "10^8/10^6 : 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "8"
+				},
+				"description": "borne 10/8 : 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "6"
+				},
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2"
+				},
+				"description": "exposants divisés refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "a32cbcaa-b2a3-47b5-bd41-186a634093dc"
+	},
+	{
+		"id": "290dcf6f-02ee-4c2b-a38f-fa4e860e601c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"subdomain": "Variations",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1+b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "10"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1+b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "20"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1+b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "50"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1+b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(1+b/100)}}"
+					}
+				],
+				"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "200"
+					}
+				]
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Augmentation",
+		"description": null,
+		"shared": {
+			"statement": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+			"correction": {
+				"steps": [
+					"L'augmentation est de ${{b}}\\% \\times {{eval:a}} = {{eval:b%*a}}$ Qr. Le nouveau prix est donc ${{eval:a}} + {{eval:b%*a}} = {{solution}}$ Qr. "
+				]
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["165"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "10",
+					"a1": "15"
+				},
+				"description": "v0 10 % de 150",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "10",
+					"a1": "2"
+				},
+				"description": "v0 10 % de 20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["220"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "10",
+					"a1": "20"
+				},
+				"description": "v0 10 % de 200",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["180"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "20",
+					"a1": "15"
+				},
+				"description": "v1 20 % de 150",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "20",
+					"a1": "2"
+				},
+				"description": "v1 20 % de 20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["240"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "20",
+					"a1": "20"
+				},
+				"description": "v1 20 % de 200",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["225"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "50",
+					"a1": "15"
+				},
+				"description": "v2 50 % de 150",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "50",
+					"a1": "2"
+				},
+				"description": "v2 50 % de 20",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "50",
+					"a1": "20"
+				},
+				"description": "v2 50 % de 200",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "100",
+					"a1": "15"
+				},
+				"description": "v3 100 % de 150",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "100",
+					"a1": "2"
+				},
+				"description": "v3 100 % de 20",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "100",
+					"a1": "20"
+				},
+				"description": "v3 100 % de 200",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["450"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "150",
+					"b": "200",
+					"a1": "15"
+				},
+				"description": "v4 200 % de 150",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"b": "200",
+					"a1": "2"
+				},
+				"description": "v4 200 % de 20",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["600"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "200",
+					"b": "200",
+					"a1": "20"
+				},
+				"description": "v4 200 % de 200",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "150",
+					"b": "10",
+					"a1": "15"
+				},
+				"description": "seulement la variation",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "200",
+					"b": "200",
+					"a1": "20"
+				},
+				"description": "augmentation seule",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": "4eb20dcf-a706-4d5b-a639-45816d694ef2"
+	},
+	{
+		"id": "2bdb3db6-8ef7-43af-aa7a-2332e34d2a01",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Equations",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)/(a)}}"
+					}
+				],
+				"statement": "Pour quelle valeur de $x$ la fonction $f$ s'annule-t-elle ?\n\n$$f(x)={{a}}x{{eval:b;+}}$$\n\n$f\\left(?\\right)=0$",
+				"correction": {
+					"steps": [
+						"**Racine d’une fonction affine.** $f(x) = ax + b$ (avec $a \\neq 0$) s’annule pour la solution de l’équation $ax + b = 0$, c’est-à-dire $x = -\\dfrac{b}{a}$.",
+						"On résout ${{a}}x{{eval:b;+}} = 0$ : on isole $\\textcolor{{{color:primary.0}}}{x}$.",
+						"$$\\begin{align} {{a}}x{{eval:b;+}} &= 0 \\\\ {{a}}\\textcolor{{{color:primary.0}}}{x} &= {{eval:-(b)}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= \\dfrac{{{eval:-(b)}}}{{{a}}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= {{solution}} \\end{align}$$",
+						"La fonction $f$ s’annule pour $\\textcolor{{{color:primary.2}}}{x = {{solution}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)/(a)}}"
+					}
+				],
+				"statement": "Pour quelle valeur de $x$ la fonction $f$ s'annule-t-elle ?\n\n$$f(x)={{b}}{{eval:a;+}}x$$\n\n$f\\left(?\\right)=0$",
+				"correction": {
+					"steps": [
+						"**Racine d’une fonction affine.** $f(x) = ax + b$ (avec $a \\neq 0$) s’annule pour la solution de l’équation $ax + b = 0$, c’est-à-dire $x = -\\dfrac{b}{a}$.",
+						"On résout ${{b}}{{eval:a;+}}x = 0$ : on isole $\\textcolor{{{color:primary.0}}}{x}$.",
+						"$$\\begin{align} {{b}}{{eval:a;+}}x &= 0 \\\\ {{a}}\\textcolor{{{color:primary.0}}}{x} &= {{eval:-(b)}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= \\dfrac{{{eval:-(b)}}}{{{a}}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= {{solution}} \\end{align}$$",
+						"La fonction $f$ s’annule pour $\\textcolor{{{color:primary.2}}}{x = {{solution}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Racine d'une fonction affine",
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-\\frac{9}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "racine fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{9}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{9}{5}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{18}{10}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "non réduite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "8"
+				},
+				"description": "racine entière",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}8"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "décimal exact -1,8 : juste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}9"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "décimal arrondi -1,9 : faux",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "4add3625-1672-4354-8e0c-8037eab0a4aa"
+	},
+	{
+		"id": "336451af-1329-4e38-adf3-01a857455c1d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 10,
+		"multiple_answers": null,
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Variations-Signe",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{a}}x{{eval:c;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles ont le même coefficient directeur ${{a}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{c}}{{eval:a;+}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles ont le même coefficient directeur ${{a}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{c}}x{{eval:b;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{b}}{{eval:c;+}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{eval:-(a)}}x{{eval:c;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expr1}}$$\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- parallèles\n- **non** parallèles\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expr2",
+						"expression": "g(x)={{c}}{{eval:-(a);+}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les droites représentatives des fonctions $f$ et $g$ sont {{solution:html}} car elles n'ont pas le même coefficient directeur."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Déterminer si deux fonctions affines ont des droites représentatives parallèles",
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±!a,b"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "-3"
+				},
+				"description": "v0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "-3"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "-3"
+				},
+				"description": "v2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "-3"
+				},
+				"description": "v3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "-3"
+				},
+				"description": "v4",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "-3"
+				},
+				"description": "v5",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "-3"
+				},
+				"description": "v2 parallèles refusé",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "e3f91bf9-e5d6-4edd-821c-ab6f973b7476"
+	},
+	{
+		"id": "54107079-218f-48dd-8df4-3cb4d1f5a801",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Développement",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*p}}{{eval:rs*p;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{p}}({{q}}{{eval:rs;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:rs*p}}{{eval:q*p;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{p}}({{eval:rs}}{{eval:q;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*(-p)}}{{eval:rs*(-p);+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "-{{p}}({{q}}{{eval:rs;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{p}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:rs*(-p)}}{{eval:q*(-p);+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "-{{p}}({{eval:rs}}{{eval:q;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{p}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*p}}{{eval:rs*p;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "({{q}}{{eval:rs;+}})*{{p}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:rs*p}}{{eval:q*p;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "({{eval:rs}}{{eval:q;+}})*{{p}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*(-p)}}{{eval:rs*(-p);+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "({{q}}{{eval:rs;+}})*(-{{p}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:rs*(-p)}}{{eval:q*(-p);+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "({{eval:rs}}{{eval:q;+}})*(-{{p}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qs}}{{eval:rs^2;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "{{s}}({{q}}{{eval:rs;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{s}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:rs^2}}{{eval:qs;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "{{s}}({{eval:rs}}{{eval:q;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{s}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qs}}{{eval:rs^2;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "({{q}}{{eval:rs;+}}){{s}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{{{s}}}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:rs^2}}{{eval:qs;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "({{eval:rs}}{{eval:q;+}}){{s}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{{{s}}}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*(-s)}}{{eval:-(r)s^2;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "-{{s}}({{q}}{{eval:rs;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{s}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(r)s^2}}{{eval:q*(-s);+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "-{{s}}({{eval:rs}}{{eval:q;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{s}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q*(-s)}}{{eval:-(r)s^2;+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "({{q}}{{eval:rs;+}})*(-{{s}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} \\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(r)s^2}}{{eval:q*(-s);+}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "({{eval:rs}}{{eval:q;+}})*(-{{s}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}\\\\               &= {{solution}}                \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Développer",
+		"description": "Coefficients relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±!p,{{eval:-(p)}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±!p,{{eval:-(p)}},q,{{eval:-(q)}}"
+				},
+				{
+					"name": "s",
+					"expression": "a|b|c|x|y|z"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-63-54x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -63-54x",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9(-7-6x)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée 9(-7-6x)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-54x-63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -54x-63",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9(-6x-7)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée 9(-6x-7)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["63+54x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 63+54x",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-9(-7-6x)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée -9(-7-6x)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["42x-63"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "42x-63",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["54x+63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 54x+63",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-9(-6x-7)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée -9(-6x-7)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-63-54x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -63-54x",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["(-7-6x)*9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-7-6x)*9",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["-54x-63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -54x-63",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["(-6x-7)*9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-6x-7)*9",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["63+54x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 63+54x",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["(-7-6x)*(-9)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "products", "form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-7-6x)*(-9)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["54x+63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 54x+63",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["(-6x-7)*(-9)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "products", "form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-6x-7)*(-9)",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["-7x-6x^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -7x-6x^2",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["x(-7-6x)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée x(-7-6x)",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["-6x^2-7x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -6x^2-7x",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["x(-6x-7)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée x(-6x-7)",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["-7x-6x^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -7x-6x^2",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["(-7-6x)x"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-7-6x)x",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["-6x^2-7x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse -6x^2-7x",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["(-6x-7)x"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-6x-7)x",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["7x+6x^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 7x+6x^2",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["-x(-7-6x)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée -x(-7-6x)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["6x^2+7x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 6x^2+7x",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["-x(-6x-7)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée -x(-6x-7)",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["7x+6x^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 7x+6x^2",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["(-7-6x)*(-x)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "products", "form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-7-6x)*(-x)",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["6x^2+7x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "bonne réponse 6x^2+7x",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["(-6x-7)*(-x)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "products", "form"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "-6",
+					"s": "x|x"
+				},
+				"description": "expression recopiée (-6x-7)*(-x)",
+				"variationIndex": 15
+			}
+		],
+		"classification_node_id": "f5dfa3d0-00e2-48aa-97ac-f4e20559e203"
+	},
+	{
+		"id": "5b627bb7-201f-4482-91e7-58b98604a4f9",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Multiplier",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+(b)}}"
+					}
+				],
+				"statement": "Écris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "10^{a}*10^{b}"
+					}
+				],
+				"conditions": ["abs(a+(b))>1"],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} 10^{{{a}}} \\times 10^{{{b}}} &= 10^{{{a}}{{eval:b;+}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Multiplier $2$ puissances de $10$",
+		"description": "Exposants relatifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "3 et 5 : exposant 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "-5"
+				},
+				"description": "bornes -5 et -5 : -10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "exposants multipliés refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "-5"
+				},
+				"description": "erreur de signe refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"description": "somme non calculée : forme",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "f713c47b-7fdc-4dc8-a683-fc5fc86a339d"
+	},
+	{
+		"id": "65110463-afc0-4dfd-91b3-977fd7402de7",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Inverse",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{{{a}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a^{-1}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+						"$\\textcolor{{{color:primary.0}}}{{{a}}}^{-1}$ est l’inverse de $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{-1} &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(1/a)^{-1}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+						"$\\left( \\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}} \\right)^{-1}$ est l’inverse de $\\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}}$ : diviser $1$ par une fraction, c’est multiplier par son inverse.",
+						"$$\\begin{align} \\left( \\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}} \\right)^{-1} &= \\dfrac{1}{\\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{b}}}{{{a}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(a/b)^{-1}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+						"$\\left( \\dfrac{{{a}}}{{{b}}} \\right)^{-1}$ est l’inverse de $\\dfrac{{{a}}}{{{b}}}$ : on échange le numérateur et le dénominateur.",
+						"$$\\begin{align} \\left( \\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{\\textcolor{{{color:primary.1}}}{{{b}}}} \\right)^{-1} &= \\dfrac{1}{\\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{\\textcolor{{{color:primary.1}}}{{{b}}}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer l'inverse d'un nombre",
+		"description": "Avec la notation puissance",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..19!cd(a)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 inverse d’un entier",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 opposé au lieu de l’inverse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7^{-1}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 écriture puissance",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{19}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "19",
+					"b": "3"
+				},
+				"description": "v1 borne",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v2 inverse de 1/a",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{7}{1}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v2 fraction non simplifiée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{3}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v3 inverse de a/b",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{7}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v3 même fraction",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{18}{19}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "19",
+					"b": "18"
+				},
+				"description": "v3 bornes",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "c3aa972a-deb8-48a7-897b-7bfde628714a"
+	},
+	{
+		"id": "743c0809-885f-4536-bad4-267cffbb1ae7",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Diviser",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a-(b)}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{10^{a}}/{10^{b}}"
+					}
+				],
+				"conditions": ["abs(a-(b))>1"],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{10^{{{a}}}}{10^{{{b}}}} &= 10^{{{a}}{{eval:-(b);+}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Diviser $2$ puissances de $10$.",
+		"description": "Exposants relatifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "-4"
+				},
+				"description": "10^5/10^-4 : 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "5"
+				},
+				"description": "bornes -5/5 : -10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "-4"
+				},
+				"description": "signe du dénominateur oublié refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "5"
+				},
+				"description": "ordre inversé refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "a32cbcaa-b2a3-47b5-bd41-186a634093dc"
+	},
+	{
+		"id": "7c0ee046-124a-4f90-a84a-9a41042804f7",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 10,
+		"multiple_answers": null,
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Variations-Signe",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "-1|1"
+					},
+					{
+						"name": "d",
+						"expression": "b*(c)"
+					},
+					{
+						"name": "expr1",
+						"expression": "f(x)={{a}}x{{eval:d;+}}"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car ${{a}}$ est positif."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "-1|1"
+					},
+					{
+						"name": "d",
+						"expression": "b*(c)"
+					},
+					{
+						"name": "expr2",
+						"expression": "f(x)=-{{a}}x{{eval:d;+}}"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car $-{{a}}$ est négatif."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "-1|1"
+					},
+					{
+						"name": "d",
+						"expression": "b*(c)"
+					},
+					{
+						"name": "expr3",
+						"expression": "f(x)={{eval:d}}+{{a}}x"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car ${{a}}$ est positif."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "-1|1"
+					},
+					{
+						"name": "d",
+						"expression": "b*(c)"
+					},
+					{
+						"name": "expr4",
+						"expression": "f(x)={{eval:d}}-{{a}}x"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car $-{{a}}$ est négatif."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "a/b"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "2..9!cd(d)"
+					},
+					{
+						"name": "g",
+						"expression": "-1|1"
+					},
+					{
+						"name": "h",
+						"expression": "g*d/f"
+					},
+					{
+						"name": "expr5",
+						"expression": "f(x)={{{c}}}x{{eval:h;+}}"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car ${{c}}$ est positif."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr6}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "a/b"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "2..9!cd(d)"
+					},
+					{
+						"name": "g",
+						"expression": "-1|1"
+					},
+					{
+						"name": "h",
+						"expression": "g*d/f"
+					},
+					{
+						"name": "expr6",
+						"expression": "f(x)={-{{c}}}x{{eval:h;+}}"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car $-{{c}}$ est négatif."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr7}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "a/b"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "2..9!cd(d)"
+					},
+					{
+						"name": "g",
+						"expression": "-1|1"
+					},
+					{
+						"name": "h",
+						"expression": "g*d/f"
+					},
+					{
+						"name": "expr7",
+						"expression": "f(x)={{eval:h}}+{{{c}}}x"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car ${{c}}$ est positif."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				],
+				"statement": "Quel est le sens de variation de cette fonction ?\n\n$${{expr8}}$$\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "a/b"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "2..9!cd(d)"
+					},
+					{
+						"name": "g",
+						"expression": "-1|1"
+					},
+					{
+						"name": "h",
+						"expression": "g*d/f"
+					},
+					{
+						"name": "expr8",
+						"expression": "f(x)={{eval:h}}-{{{c}}}x"
+					}
+				],
+				"correction": {
+					"steps": ["La fonction $f$ est {{solution:html}} car $-{{c}}$ est négatif."]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Déterminer le sens de variation d'une fonction affine",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "v0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "v2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "v3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "6",
+					"f": "7",
+					"g": "1"
+				},
+				"description": "v4",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "6",
+					"f": "7",
+					"g": "1"
+				},
+				"description": "v5",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "6",
+					"f": "7",
+					"g": "1"
+				},
+				"description": "v6",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "6",
+					"f": "7",
+					"g": "1"
+				},
+				"description": "v7",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "v1 croissante refusé",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "8e239f0a-1c56-4f29-a3cd-870cb2787f0c"
+	},
+	{
+		"id": "8ac99be4-a6be-4c89-90c8-c7d8974313f4",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Mixer tout ça",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b-c}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:a+b-2}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{10^a*10^b}/{10^c}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{10^{{{a}}}\\times 10^{{{b}}}}{10^{{{c}}}} &= 10^{{{a}}+{{b}}-{{c}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c-a-b}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+b+2}}..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "{10^c}/{10^a*10^b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{10^{{{c}}}}{10^{{{a}}} \\times 10^{{{b}}}} &= 10^{{{c}}-({{a}}+{{b}})} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression2": "10^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Multiplier et diviser des puissances de $10$.",
+		"description": "Exposants positifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "14"
+				},
+				"description": "10^7×10^9/10^14 : 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3",
+					"c": "9"
+				},
+				"description": "10^9/(10^4×10^3) : 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "14"
+				},
+				"description": "oubli de soustraire refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3",
+					"c": "9"
+				},
+				"description": "addition des 3 exposants refusée",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "0440f40d-9150-4dc7-915d-a473affcbcae"
+	},
+	{
+		"id": "953574d4-e345-4a5d-9435-7faecc3ff7ac",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Notation scientifique",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}.{{c}}"
+					},
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Écris ce nombre en notation scientifique.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}!m(10)"
+					},
+					{
+						"name": "d",
+						"expression": "2..4;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:(a*10^b+c)*10^(d-b);d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Notation scientifique.** Un nombre s’écrit $a \\times 10^n$ avec $1 \\leq a < 10$ et $n$ entier relatif. Quand la virgule se déplace de $k$ rangs vers la droite, $n = -k$ ; vers la gauche, $n = k$.",
+						"Le premier chiffre non nul est $\\textcolor{{{color:primary.0}}}{{{a}}}$ : la virgule se place juste après lui, ce qui donne la mantisse $m = \\textcolor{{{color:primary.0}}}{{{a}}{,}{{c}}}$, comprise entre $1$ et $10$. La virgule s’est déplacée de $\\textcolor{{{color:primary.1}}}{{{eval:abs(d)}}}$ rang{{if:abs(d)>1|s|}} vers la {{if:d<0|droite|gauche}} : l’exposant est $n = \\textcolor{{{color:primary.2}}}{{{d}}}$.",
+						"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}{,}{{c}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:10^d}}} \\\\ &= \\textcolor{{{color:primary.0}}}{{{a}}{,}{{c}}} \\times 10^{\\textcolor{{{color:primary.2}}}{{{d}}}} \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "?*10^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Écrire un nombre décimal à l'aide de la notation scientifique",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}735", "-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "3",
+					"c": "735",
+					"d": "-3"
+				},
+				"description": "0,008 735 = 8,735×10^-3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2{,}89", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "89",
+					"d": "4"
+				},
+				"description": "28 900 = 2,89×10^4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["28{,}9", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "89",
+					"d": "4"
+				},
+				"description": "mantisse ≥ 10 : 28,9×10^3 refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}735", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "3",
+					"c": "735",
+					"d": "-3"
+				},
+				"description": "signe de l'exposant oublié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}8735", "-2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "3",
+					"c": "735",
+					"d": "-3"
+				},
+				"description": "0,8735×10^-2 : mantisse < 1",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "1f0316af-18fd-40db-8c32-4f72e78d77f8"
+	},
+	{
+		"id": "9f380957-48db-4b31-9f28-61fc4bfb5420",
+		"type": "fill_in_blanks",
+		"options": {},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Notation scientifique",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}.{{c}}"
+					},
+					{
+						"expectedAnswer": "{{eval:d+(f)}}"
+					}
+				],
+				"statement": "Écris ce nombre en notation scientifique.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}!m(10)"
+					},
+					{
+						"name": "d",
+						"expression": "2..4;±"
+					},
+					{
+						"name": "f",
+						"expression": "2..4;±!{{eval:-(d)}}"
+					},
+					{
+						"name": "g",
+						"expression": "eval:(a*10^b+c)*10^(d-b);d"
+					},
+					{
+						"name": "m",
+						"expression": "eval:(a*10^b+c)*10^(-b);d"
+					},
+					{
+						"name": "expression1",
+						"expression": "g*10^{f}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{aligned} {{eval:g;d}} \\times 10^{{{f}}} &= {{eval:m;d}} \\times 10^{{{d}}} \\times 10^{{{f}}} \\\\ &= {{eval:m;d}} \\times 10^{{{eval:d+(f)}}} \\end{aligned}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "?*10^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Écrire un nombre écrit avec une puissance de $10$ à l'aide de la notation scientifique",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}9", "-1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "1",
+					"c": "9",
+					"d": "2",
+					"f": "-3"
+				},
+				"description": "890×10^-3 = 8,9×10^-1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}735", "1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "3",
+					"c": "735",
+					"d": "-3",
+					"f": "4"
+				},
+				"description": "0,008 735×10^4 = 8,735×10^1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}9", "-6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "1",
+					"c": "9",
+					"d": "2",
+					"f": "-3"
+				},
+				"description": "exposants multipliés au lieu d'additionnés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}9", "-3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "1",
+					"c": "9",
+					"d": "2",
+					"f": "-3"
+				},
+				"description": "décalage oublié : exposant d'origine gardé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["89", "-2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "1",
+					"c": "9",
+					"d": "2",
+					"f": "-3"
+				},
+				"description": "mantisse ≥ 10",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "1f0316af-18fd-40db-8c32-4f72e78d77f8"
+	},
+	{
+		"id": "ac5d0413-2eee-4bed-998b-d540701667a0",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Réduction",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qp+rp}}"
+					}
+				],
+				"statement": "Réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "a|b|c"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:qp}}{{eval:rp;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{expression1}} &= ({{q}}{{eval:r;+}}) \\times {{p}} \\\\ &= {{eval:q+r}} \\times {{p}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Réduire une somme",
+		"description": "Coefficients relatifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-13c"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6"
+				},
+				"description": "bonne réponse -13c",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7c-6c"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6"
+				},
+				"description": "expression recopiée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-c"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "-7",
+					"r": "-6"
+				},
+				"description": "signe faux -c",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2c"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "5",
+					"r": "-3"
+				},
+				"description": "bonne réponse 2c",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8c"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "5",
+					"r": "-3"
+				},
+				"description": "8c (signe de -3 ignoré)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "c|c",
+					"q": "5",
+					"r": "-5"
+				},
+				"description": "somme nulle : 0",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "59d5a739-5752-479f-a98d-221acc3ae3f6"
+	},
+	{
+		"id": "bb9cff7b-f2c7-40ce-af3c-249970ad0a9e",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["4"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Multiplier",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b+(c)}}"
+					}
+				],
+				"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..5;±!{{eval:-(b)}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "a^{b}*a^{c}"
+					}
+				],
+				"conditions": ["abs(b+(c))>1"],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{a}}^{{{b}}} \\times {{a}}^{{{c}}} &= {{a}}^{{{b}}{{eval:c;+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"answerFormats": {
+					"expression1": "{{a}}^?"
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Multiplier $2$ puissances d'un même nombre.",
+		"description": "Exposants relatifs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "c|c",
+					"b": "-5",
+					"c": "2"
+				},
+				"description": "c^-5 × c^2 : -3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "5",
+					"c": "3"
+				},
+				"description": "10^5 × 10^3 : 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "c|c",
+					"b": "-5",
+					"c": "2"
+				},
+				"description": "exposants multipliés refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "c|c",
+					"b": "-5",
+					"c": "2"
+				},
+				"description": "erreur de signe refusée",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "f713c47b-7fdc-4dc8-a683-fc5fc86a339d"
+	},
+	{
+		"id": "bba95c2d-033b-4648-944d-102a3c2c386d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Variations-Signe",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr1}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr1",
+						"expression": "f(x)=-6x+7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-6}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{7}{6}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{7}{6}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr2}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr2",
+						"expression": "f(x)=-9x-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-9}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{1}{9}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{1}{9}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr3}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr3",
+						"expression": "f(x)=-5x+9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-5}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{9}{5}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{9}{5}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr4}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr4",
+						"expression": "f(x)=3x+3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{3}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-1}$. À droite de $\\textcolor{{{color:primary.1}}}{-1}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr5}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr5",
+						"expression": "f(x)=7x-8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{7}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{8}{7}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{8}{7}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr6}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr6",
+						"expression": "f(x)=-2x-4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-2}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-2}$. À droite de $\\textcolor{{{color:primary.1}}}{-2}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr7}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr7",
+						"expression": "f(x)=6x+8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{6}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{4}{3}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{4}{3}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr8}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr8",
+						"expression": "f(x)=4x+9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{4}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{9}{4}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{9}{4}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr9}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr9",
+						"expression": "f(x)=-7x+2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-7}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{2}{7}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{2}{7}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr10}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr10",
+						"expression": "f(x)=2x+5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{2}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{5}{2}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{5}{2}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr11}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr11",
+						"expression": "f(x)=8x-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{8}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{1}{8}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{1}{8}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr12}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr12",
+						"expression": "f(x)=-4x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-4}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{0}$. À droite de $\\textcolor{{{color:primary.1}}}{0}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr13}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr13",
+						"expression": "f(x)=-5x-1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-5}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{1}{5}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{1}{5}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr14}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr14",
+						"expression": "f(x)=-x+7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-1}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{7}$. À droite de $\\textcolor{{{color:primary.1}}}{7}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr15}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr15",
+						"expression": "f(x)=x-8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{1}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{8}$. À droite de $\\textcolor{{{color:primary.1}}}{8}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr16}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr16",
+						"expression": "f(x)=-7x+6"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-7}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{6}{7}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{6}{7}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr17}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr17",
+						"expression": "f(x)=x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{1}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{0}$. À droite de $\\textcolor{{{color:primary.1}}}{0}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr18}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr18",
+						"expression": "f(x)=-3x+4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-3}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{4}{3}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{4}{3}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr19}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr19",
+						"expression": "f(x)=-5x-5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{-5}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-1}$. À droite de $\\textcolor{{{color:primary.1}}}{-1}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expr20}}$$\n\n```choix\n- ![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png)\n- ![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png)\n```",
+				"variables": [
+					{
+						"name": "expr20",
+						"expression": "f(x)=5x-7"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+						"Ici $a = \\textcolor{{{color:primary.0}}}{5}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{7}{5}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{7}{5}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+						"Le bon tableau est donc :\n\n{{solution}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Reconnaître le tableau de signe d'une fonction affine",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v12",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v16",
+				"variationIndex": 16
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "tableau inversé",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v4",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v5",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v6",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v7",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v8",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v9",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v10",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v11",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v13",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v14",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v15",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v17",
+				"variationIndex": 17
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v18",
+				"variationIndex": 18
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v19",
+				"variationIndex": 19
+			}
+		],
+		"classification_node_id": "8e239f0a-1c56-4f29-a3cd-870cb2787f0c"
+	},
+	{
+		"id": "c9d6c5db-e067-4056-9db9-4130485cb16a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["4"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Simplification",
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				],
+				"statement": "Simplifie le plus possible.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-{{eval:b*c}})/{{eval:a*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{-{{eval:b*c}}}{{{eval:a*c}}} &= -\\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				],
+				"statement": "Simplifie le plus possible.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:b*c}}/(-{{eval:a*c}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{eval:b*c}}}{-{{eval:a*c}}} &= -\\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{eval:b/gcd(a,b)}}}{{{eval:a/gcd(a,b)}}}"
+					}
+				],
+				"statement": "Simplifie le plus possible.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(-{{eval:b*c}})/(-{{eval:a*c}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{-{{eval:b*c}}}{-{{eval:a*c}}} &= \\dfrac{{{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{eval:c*gcd(a,b)}}}}{{{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div  {{eval:c*gcd(a,b)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Simplifier une fraction",
+		"description": "Simplifier le plus possible (avec signes)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!m(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "(-36)/54 → -2/3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{-36}{54}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "non simplifiée : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "signe perdu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "36/(-54) → -2/3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "(-36)/(-54) → 2/3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-\\frac{2}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "9"
+				},
+				"description": "(-36)/(-54) : signe faux",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3"
+	}
+]

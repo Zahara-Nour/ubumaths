@@ -32,33 +32,33 @@
  *   par les fonctions SQL elles-mêmes.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
 	exchangeCardsSchema,
 	type ExchangeCardsInput
-} from '$lib/server/validation/exchange-cards';
+} from '#lib/server/validation/exchange-cards.ts';
 import type {
 	ExchangeCardAction,
 	StudentVipCards,
 	VipCardAction,
 	VipCardRarity
-} from '$lib/types/vip-card';
-import { getRarityPoints } from '$lib/types/vip-card';
+} from '#lib/types/vip-card.ts';
+import { getRarityPoints } from '#lib/types/vip-card.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
-import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
-import { validateActivationContext } from '$lib/server/vip-card-context';
-import { asStudentVipCards } from '$lib/types/vip-card';
+import type { Database } from '#lib/types/database.ts';
+import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+import { getTemplateById, getTemplatesByRarity } from '#lib/server/vip-card-queries.ts';
+import { verifyTeacherStudentWithRole } from '#lib/server/middleware/student-access.ts';
+import { validateActivationContext } from '#lib/server/vip-card-context.ts';
+import { asStudentVipCards } from '#lib/types/vip-card.ts';
 import {
 	findLockedCardInstances,
 	grantVipCardsAfterAction,
 	restoreActionCard
-} from '$lib/server/vip-card-grants';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/vip-card-grants.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/vip-cards/exchange/+server');
 
@@ -279,7 +279,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const cardsReceived = await describeReceivedCards(supabase, plan, granted);
 
-	return json({
+	return Response.json({
 		cardsDiscarded,
 		cardsReceived,
 		actionCardUsed: {

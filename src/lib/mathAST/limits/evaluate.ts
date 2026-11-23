@@ -97,10 +97,18 @@ import {
 } from '../normal/rational';
 import type { Rational } from '../normal/types';
 import { rationalToNode } from '../common/numeric';
-import { rewriteIndeterminateSum } from './sum-reduction';
-import { classifyWithSign } from './sign-tracking';
+import { reciprocalByConjugate, rewriteIndeterminateSum } from './sum-reduction';
+import {
+	classifyWithSign,
+	isSignedInfinity,
+	isSignedZero,
+	mathNodeToSignedValue,
+	powerSign,
+	signedValueToInfinity
+} from './sign-tracking';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { oddDenominatorExponent } from '../eval/real-root';
 import { numericNode } from '../common/numeric';
 import { computeDomain } from '../domain/compute';
 import { containsValue } from '../domain/algebra';
@@ -255,11 +263,12 @@ function validateApproachInDomain(
 const INFINITY_PROBES = [0, 1, 2, 3, 4, 5, 6].map((step) => 1e6 + step);
 
 /**
- * Un ln ou une racine carrée de f a-t-il un argument STRICTEMENT négatif en
- * l'une des sondes vers ±∞ ? Seul un négatif prouve la sortie du domaine :
- * un argument nul vient d'un dépassement de capacité (e^{−x} en 10⁶), une
- * évaluation impossible ne dit rien. Les racines d'indice explicite (∛) sont
- * ignorées : définies sur ℝ pour un indice impair.
+ * Un ln, une racine carrée ou une puissance d'exposant non entier de f
+ * a-t-il un argument STRICTEMENT négatif en l'une des sondes vers ±∞ ? Seul
+ * un négatif prouve la sortie du domaine : un argument nul vient d'un
+ * dépassement de capacité (e^{−x} en 10⁶), une évaluation impossible ne dit
+ * rien. Les racines d'indice explicite (∛) et les exposants p/q de
+ * dénominateur impair sont ignorés : définis sur ℝ.
  */
 function undefinedTowardInfinity(
 	expr: MathNode,
@@ -268,14 +277,19 @@ function undefinedTowardInfinity(
 	direction: LimitDirection
 ): boolean {
 	const positive = isInfinity(approach) && approach.sign === 'positive';
-	const guardedArguments = findNodes(
-		expr,
-		(node) =>
-			isFunction(node) &&
-			node.args.length === 1 &&
-			(((node.name === 'ln' || node.name === 'log') && node.base === undefined) ||
-				(node.name === 'sqrt' && node.base === undefined))
-	).flatMap((node) => (isFunction(node) ? [node.args[0]] : []));
+	const guardedArguments = [
+		...findNodes(
+			expr,
+			(node) =>
+				isFunction(node) &&
+				node.args.length === 1 &&
+				(((node.name === 'ln' || node.name === 'log') && node.base === undefined) ||
+					(node.name === 'sqrt' && node.base === undefined))
+		).flatMap((node) => (isFunction(node) ? [node.args[0]] : [])),
+		...findNodes(expr, (node) => nonIntegerPowerBase(node, varName) !== null).flatMap(
+			(node) => nonIntegerPowerBase(node, varName) ?? []
+		)
+	];
 	// Un argument qui tend vers +∞ ou vers un réel > 0 est positif au
 	// voisinage : la sonde ne le juge pas (revue de #907 : ln(ln x − 20)
 	// n'est positif qu'au-delà de 4,8·10⁸)
@@ -295,6 +309,24 @@ function undefinedTowardInfinity(
 			}
 		});
 	});
+}
+
+/**
+ * Base de u^a, a constant NON entier hors du cas p/q de dénominateur impair
+ * (convention du lycée u^a = e^{a ln u}, celle de `computePowerDomain`) : u
+ * doit être ≥ 0. `(x − 3)^{3/2}` en −∞ rendait « non supportée » au lieu de
+ * « n'existe pas », comme √(x − 3) (V69). `null` pour tout autre nœud.
+ */
+function nonIntegerPowerBase(node: MathNode, varName: string): MathNode | null {
+	if (!isSuperscript(node) || containsVariable(node.superscript, varName)) return null;
+	if (oddDenominatorExponent(node.superscript) !== null) return null;
+	let exponent: number;
+	try {
+		exponent = evaluateNodeToApproximatedNumber(node.superscript);
+	} catch {
+		return null;
+	}
+	return Number.isFinite(exponent) && !Number.isInteger(exponent) ? node.base : null;
 }
 
 /** Écart au point pour sonder le domaine numériquement. */
@@ -795,6 +827,67 @@ function evaluateLimitExactForm(
 		);
 	}
 
+	// Stratégie 2.46 : uⁿ, n entier, u → ±∞, par
+	// composition. La continuité (2.45) s'arrête à une limite finie de u et la
+	// composition (2.5) ne connaît que xⁿ : (x − 3)² en +∞ n'avait pas de
+	// limite (V66). La limite de u vient du moteur entier, qui lève ses formes
+	// indéterminées : (x² − x)³ en +∞.
+	const powerLimit = tryPowerOfUnboundedLimit(expression, varName, approachPoint, dir, options);
+	if (powerLimit !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			powerLimit,
+			'summarized',
+			approachPoint,
+			'Composition : limite de uⁿ à partir de celle de u'
+		);
+		return createResult(
+			powerLimit,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(powerLimit) ? 'infinite' : 'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
+	// Stratégie 2.47 : a^u et exp u, u → ±∞, par composition. La composition
+	// (2.5) classe la limite de u en arithmétique exacte, qui ne lève pas
+	// +∞ − ∞ : e^{x² − x} en +∞ restait « non supportée » (V68). La limite de
+	// u vient du moteur entier.
+	const exponentialLimit = tryExponentialOfUnboundedLimit(
+		expression,
+		varName,
+		approachPoint,
+		dir,
+		options
+	);
+	if (exponentialLimit !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			exponentialLimit,
+			'summarized',
+			approachPoint,
+			'Composition : limite de eᵘ à partir de celle de u'
+		);
+		return createResult(
+			exponentialLimit,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(exponentialLimit) ? 'infinite' : 'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
 	// Strategy 2.5: Try composition limits (for infinity, function compositions, divisions by zero)
 	const compositionResult = tryCompositionLimit(expression, varName, approachPoint, dir, recorder);
 	if (compositionResult.success && compositionResult.value) {
@@ -1003,6 +1096,34 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+	}
+
+	// Stratégie 2.85 : inverse d'une somme ∞ − ∞ en ±∞, par la quantité
+	// conjuguée — 1/(√(x+1) − √x) = √(x+1) + √x. La somme tend vers 0 sans
+	// signe suivi : aucune stratégie ne concluait (V69).
+	const reciprocal = isInfinity(approachPoint)
+		? tryReciprocalByConjugate(expression, varName, approachPoint, dir, options)
+		: null;
+	if (reciprocal !== null) {
+		recorder.recordStepByRule(
+			'rationalization',
+			expression,
+			reciprocal.rewritten,
+			'summarized',
+			approachPoint,
+			'Multiplication par la quantité conjuguée'
+		);
+		return createResult(
+			reciprocal.value,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(reciprocal.value) ? 'infinite' : 'exact',
+			'none',
+			'rationalization',
+			recorder,
+			opts
+		);
 	}
 
 	// Detect indeterminate form for subsequent strategies
@@ -1214,6 +1335,38 @@ function evaluateLimitExactForm(
 	// `exp(1)`). Pas de boucle : la relecture ne contient plus de `e^u`.
 	if (containsEulerPower(expression)) {
 		return evaluateLimit(expandEulerPowers(expression), varName, approachPoint, dir, options);
+	}
+
+	// Stratégie 7.5 : u^{−n}, n entier, en un point fini : u^{−n} = 1/uⁿ, dont
+	// le signe est suivi. La substitution rendait « 1/0 » exact pour
+	// (cos x − 1)^{−1} en 0 (V70). En dernier recours : x^{−1}, x^{−2} en 0
+	// gardent leur analyse à gauche / à droite.
+	const negativePower = isInfinity(approachPoint)
+		? null
+		: tryNegativePowerAsReciprocal(expression, varName, approachPoint, dir, options);
+	if (negativePower !== null) {
+		const { result, rewritten } = negativePower;
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			rewritten,
+			'summarized',
+			approachPoint,
+			'Écriture en quotient : u^{-n} = 1/u^n'
+		);
+		return createResult(
+			result.value,
+			varName,
+			approachPoint,
+			dir,
+			result.status,
+			indeterminateForm,
+			'composition',
+			recorder,
+			opts,
+			result.error,
+			result.noLimitReason
+		);
 	}
 
 	// Seule une valeur approchée a été trouvée : rendue comme telle, jamais 'exact'
@@ -1497,6 +1650,91 @@ function tryLogarithmOfPositiveLimit(
 }
 
 /**
+ * uⁿ, n entier constant non nul, u → ±∞ : ±∞ (n > 0, signe selon la parité)
+ * ou 0 (n < 0). Une limite finie de u relève de la continuité ; u → 0 avec
+ * n < 0 est laissé aux autres stratégies — le suivi du signe suppose un signe
+ * constant près du point, faux pour sin(x)/x en +∞ ou x·sin(1/x) en 0 (revue
+ * de #1839) : `null`.
+ */
+function tryPowerOfUnboundedLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	const node = stripDelimiters(expression);
+	if (!isSuperscript(node) || !containsVariable(node.base, varName)) return null;
+	const exponent = literalNumberValue(node.superscript);
+	if (exponent === null || !Number.isInteger(exponent) || exponent === 0) return null;
+
+	const inner = evaluateLimit(node.base, varName, approach, dir, options);
+	// Une valeur approchée n'est pas une limite démontrée
+	if (inner.status !== 'infinite' || inner.value === null || !isInfinity(inner.value)) {
+		return null;
+	}
+
+	const result = powerSign(mathNodeToSignedValue(inner.value), exponent);
+	if (isSignedInfinity(result)) return signedValueToInfinity(result);
+	if (isSignedZero(result)) return number('0');
+	return null;
+}
+
+/**
+ * a^u (a > 0 constant, a ≠ 1, e compris) ou exp u, sous la forme
+ * { base, exponent } ; null sinon. `base` vaut null pour e et exp.
+ */
+function exponentialParts(
+	node: MathNode,
+	varName: string
+): { base: MathNode | null; baseValue: number; exponent: MathNode } | null {
+	if (isFunction(node) && node.name === 'exp' && node.args.length === 1) {
+		return { base: null, baseValue: Math.E, exponent: node.args[0] };
+	}
+	if (!isSuperscript(node) || containsVariable(node.base, varName)) return null;
+	if (!containsVariable(node.superscript, varName)) return null;
+	if (isEulerBase(node.base)) return { base: null, baseValue: Math.E, exponent: node.superscript };
+	// Base comparée à 1 en EXACT quand c'est possible ; sinon, un flottant
+	// proche de 1 est refusé : √3² − 2 vaut 1 mais s'évalue 0,9999999999999996,
+	// et (√3² − 2)^x en +∞ était rendu 0 (revue de #1852)
+	const exact = exactConstantRational(node.base);
+	if (exact !== null) {
+		if (exact.n <= 0n || exact.n === exact.d) return null;
+		return {
+			base: node.base,
+			baseValue: Number(exact.n) / Number(exact.d),
+			exponent: node.superscript
+		};
+	}
+	const baseValue = computeNumericValue(node.base);
+	if (baseValue === null || !(baseValue > 0) || Math.abs(baseValue - 1) < 1e-9) return null;
+	return { base: node.base, baseValue, exponent: node.superscript };
+}
+
+/**
+ * a^u ou exp u, u → ±∞ démontré par le moteur entier : +∞ ou 0 selon le
+ * signe de l'infini et a > 1 ou a < 1. Une limite finie de u relève de la
+ * continuité (2.45) ; une limite approchée ou absente ne conclut rien.
+ */
+function tryExponentialOfUnboundedLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	const parts = exponentialParts(stripDelimiters(expression), varName);
+	if (parts === null) return null;
+
+	const inner = evaluateLimit(parts.exponent, varName, approach, dir, options);
+	if (inner.status !== 'infinite' || inner.value === null || !isInfinity(inner.value)) {
+		return null;
+	}
+	const grows = (inner.value.sign === 'positive') === parts.baseValue > 1;
+	return grows ? positiveInfinity() : number('0');
+}
+
+/**
  * lim f(u) = f(L) quand u tend vers une limite EXACTE et finie L où f est
  * continue : √u et ⁿ√u d'indice pair (L > 0 ; L = 0 relève du côté 0⁺, laissé
  * à la composition), ⁿ√u d'indice impair, exp u, a^u (a > 0 constant, e
@@ -1775,7 +2013,9 @@ function tryProductOfLimits(
 				description: 'Limites à gauche et à droite égales'
 			};
 		}
-		const quotient = productAsQuotient(factors);
+		const quotient =
+			productAsQuotient(factors) ??
+			(zeroTimesInfinity ? productOverExponential(factors, limits, varName) : null);
 		if (quotient === null) return null;
 		const rewritten = evaluateLimit(quotient, varName, approach, dir, options);
 		if (rewritten.value === null || rewritten.value === undefined) return null;
@@ -1828,6 +2068,38 @@ function productAsQuotient(factors: readonly MathNode[]): MathNode | null {
 	});
 	const numerator = numeratorFactors.reduce((acc, f) => multiply(acc, f, 'dot'));
 	return divide(numerator, fraction.denominator, 'fraction');
+}
+
+/**
+ * f₁·…·a^u·…·fₙ, a^u → 0, réécrit (f₁·…·fₙ)/a^{−u} (identité : a > 0) sur le
+ * PREMIER facteur exponentiel de limite nulle. Le quotient ∞/∞ relève de
+ * L'Hôpital ou des croissances comparées : (x − 3)²·e^{−x} = (x − 3)²/eˣ
+ * (V68). Null sans un tel facteur.
+ */
+function productOverExponential(
+	factors: readonly MathNode[],
+	limits: readonly (FactorLimit | null)[],
+	varName: string
+): MathNode | null {
+	const index = factors.findIndex(
+		(f, i) => limits[i]?.kind === 'zero' && exponentialParts(stripDelimiters(f), varName) !== null
+	);
+	if (index === -1) return null;
+	const parts = exponentialParts(stripDelimiters(factors[index]), varName);
+	if (parts === null) return null;
+
+	const negated = isOpposite(parts.exponent) ? parts.exponent.operand : opposite(parts.exponent);
+	const denominator =
+		parts.base === null
+			? power(mathConstant('euler'), negated)
+			: power(
+					isNumber(parts.base) ? parts.base : parentheses(stripDelimiters(parts.base)),
+					negated
+				);
+	const numerator = factors
+		.filter((_, i) => i !== index)
+		.reduce((acc, f) => multiply(acc, f, 'dot'));
+	return divide(numerator, denominator, 'fraction');
 }
 
 // =============================================================================
@@ -2169,8 +2441,71 @@ function tryRewrittenSum(
 }
 
 /**
+ * u^{−n} (n entier ≥ 1) : limite de 1/uⁿ. « Pas de limite » (1/(x − sin x)
+ * en 0) est rendu tel quel ; une valeur approchée ne conclut pas.
+ */
+function tryNegativePowerAsReciprocal(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { result: LimitResult; rewritten: MathNode } | null {
+	if (!isSuperscript(expr) || !containsVariable(expr.base, varName)) return null;
+	const exponent = exactConstantRational(expr.superscript);
+	if (exponent === null || exponent.d !== 1n || exponent.n >= 0n) return null;
+	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
+	const rewritten = divide(
+		number('1'),
+		exponent.n === -1n ? expr.base : power(expr.base, number((-exponent.n).toString())),
+		'fraction'
+	);
+	nestedRewrites++;
+	try {
+		const result = evaluateLimit(rewritten, varName, approach, dir, options);
+		const concluded =
+			(result.status === 'exact' || result.status === 'infinite') && result.value !== null;
+		return concluded || result.status === 'does-not-exist' ? { result, rewritten } : null;
+	} finally {
+		nestedRewrites--;
+	}
+}
+
+/**
+ * N/(√A − B) ou (√A − B)^{−n} : limite de la réécriture par la quantité
+ * conjuguée (`reciprocalByConjugate`), ou null si elle ne conclut pas — une
+ * valeur approchée ne conclut pas.
+ */
+function tryReciprocalByConjugate(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; rewritten: MathNode } | null {
+	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
+	const rewritten = reciprocalByConjugate(expr);
+	if (rewritten === null) return null;
+	nestedRewrites++;
+	try {
+		const result = evaluateLimit(rewritten, varName, approach, dir, options);
+		if ((result.status === 'exact' || result.status === 'infinite') && result.value !== null) {
+			return { value: result.value, rewritten };
+		}
+		return null;
+	} finally {
+		nestedRewrites--;
+	}
+}
+
+/**
  * u est-il > 0 au voisinage du point, du côté demandé ? Limite +∞, réel > 0
  * ou 0⁺ prouvés ; −∞, réel < 0, 0 sans signe ou signe inconnu : non.
+ *
+ * Le suivi du signe ne lève pas les formes indéterminées : x² + x en −∞ est
+ * +∞ − ∞, « inconnu ». La limite du moteur entier, démontrée (+∞ ou réel
+ * > 0), prouve alors le signe : ln(x²) − ln(x² − x) en +∞ restait sans
+ * valeur, et en −∞ depuis que (−∞)² est calculé exactement (V67).
  */
 function isPositiveNear(
 	expr: MathNode,
@@ -2180,7 +2515,14 @@ function isPositiveNear(
 ): boolean {
 	const sign = classifyWithSign(expr, varName, approach, dir);
 	if (sign.type === 'pos-infinity' || sign.type === 'zero-plus') return true;
-	return sign.type === 'finite' && sign.value > 0;
+	if (sign.type !== 'unknown') return sign.type === 'finite' && sign.value > 0;
+	const limit = evaluateLimit(expr, varName, approach, dir);
+	if (limit.value === null) return false;
+	if (limit.status === 'infinite')
+		return isInfinity(limit.value) && limit.value.sign === 'positive';
+	if (limit.status !== 'exact') return false;
+	const value = computeNumericValue(limit.value);
+	return value !== null && value > 0;
 }
 
 /** L'expression contient-elle une puissance de la base d'Euler (`e^u`) ? */
@@ -2614,10 +2956,15 @@ function hasVanishingDenominator(
 ): boolean {
 	const inside = nodesInsideExponents(expr);
 	const denominators: MathNode[] = [];
-	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n))) {
+	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n) || isSuperscript(n))) {
 		if (inside.has(node) !== (where === 'inside-exponent')) continue;
 		if (isDivision(node)) denominators.push(node.denominator);
-		else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
+		// u^{−n} = 1/uⁿ : (cos x − 1)^{−1} en 0 rendait « 1/0 » exact (V70)
+		else if (isSuperscript(node)) {
+			if (containsVariable(node.superscript, varName)) continue;
+			const exponent = computeNumericValue(node.superscript);
+			if (exponent !== null && exponent < 0) denominators.push(node.base);
+		} else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
 			denominators.push(func('cos', [node.args[0]]));
 		}
 	}

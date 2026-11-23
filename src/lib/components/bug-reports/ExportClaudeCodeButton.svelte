@@ -5,9 +5,9 @@
 	 * Button for admins to export a bug report in Markdown format
 	 * optimized for Claude Code debugging.
 	 */
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Download, Copy, Loader2, FileText, Check } from '@lucide/svelte';
 
 	interface Props {

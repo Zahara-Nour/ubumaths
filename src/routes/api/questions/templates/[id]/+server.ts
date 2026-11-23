@@ -7,25 +7,25 @@
  * DELETE /api/questions/templates/[id] - Delete template
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
-import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-import { categoryTakenMessage, checkCategoryUniqueness } from '$lib/questions/category-validation';
-import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
-import { requireRoles, requireRole } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { toJson } from '$lib/types/database-helpers';
-import type { Database } from '$lib/types/database';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { withoutDbMetadata } from '$lib/server/questions-bulk-status';
-import { templatePublicationErrors } from '$lib/server/template-publication';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { getQuestionType, mapDbTemplateToForm } from '#lib/questions/types.ts';
+import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
+import { classificationNodeErrorMessage } from '#lib/server/classification-node-error.ts';
+import { updateQuestionTemplateSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { requireAdmin, requireRoles } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import type { Database } from '#lib/types/database.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { withoutDbMetadata } from '#lib/server/questions-bulk-status.ts';
+import { templatePublicationErrors } from '#lib/server/template-publication.ts';
 import {
 	assumptionCollisionMessage,
 	findAssumptionCollisions
-} from '$lib/questions/answer-assumptions';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/questions/answer-assumptions.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/questions/templates/[id]/+server');
 
@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Template not found');
 		}
 
-		return json(mapDbTemplateToForm(template as unknown as Record<string, unknown>));
+		return Response.json(mapDbTemplateToForm(template as unknown as Record<string, unknown>));
 	} catch (err) {
 		logger.error('Error fetching template:', err);
 
@@ -98,11 +98,7 @@ function buildTemplateUpdate(
 ): TemplateUpdate {
 	const update: TemplateUpdate = {};
 	if (TYPE_SOURCE_KEYS.some((key) => isProvided(data, key))) {
-		update.type = getQuestionType({
-			choices: merged.variations?.[0]?.choices,
-			shared: merged.shared,
-			options: merged.options
-		});
+		update.type = getQuestionType({ options: merged.options });
 	}
 	if (isProvided(data, 'title') && data.title !== undefined) update.title = data.title;
 	if (isProvided(data, 'description')) update.description = data.description || null;
@@ -115,14 +111,13 @@ function buildTemplateUpdate(
 		update.exercise_instruction = data.exerciseInstruction || null;
 	if (isProvided(data, 'options')) update.options = toJson(data.options ?? null);
 	if (isProvided(data, 'grades') && data.grades !== undefined) update.grades = data.grades;
-	// Catégorie : theme / domain / level requis, subdomain facultatif
-	if (isProvided(data, 'theme') && data.theme !== undefined) update.theme = data.theme;
-	if (isProvided(data, 'domain') && data.domain !== undefined) update.domain = data.domain;
-	if (isProvided(data, 'subdomain')) update.subdomain = data.subdomain || null;
+	// Rangement : nœud de l'arbre, `null` le vide. L'ancien quadruplet (thème, domaine,
+	// sous-domaine) n'est jamais écrit : il reste en base pour les anciens liens.
+	if (isProvided(data, 'classification_node_id'))
+		update.classification_node_id = data.classification_node_id ?? null;
 	if (isProvided(data, 'level') && data.level !== undefined) update.level = data.level;
 	if (isProvided(data, 'status') && data.status !== undefined) update.status = data.status;
 	if (isProvided(data, 'delay')) update.delay = data.delay || null;
-	if (isProvided(data, 'multipleAnswers')) update.multiple_answers = data.multipleAnswers ?? null;
 	if (isProvided(data, 'testSpecs')) update.test_specs = toJson(data.testSpecs ?? null);
 	return update;
 }
@@ -136,7 +131,8 @@ function buildTemplateUpdate(
  */
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	const id = validateUuidParam(params.id);
-	await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase } = await requireAdmin(locals);
 
 	try {
 		// ====================================================================
@@ -146,7 +142,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const validation = validateRequest(updateQuestionTemplateSchema, body);
 
 		if (!validation.success) {
-			return json(
+			return Response.json(
 				{
 					success: false,
 					errors: [validation.error]
@@ -155,14 +151,15 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			);
 		}
 
-		// `type` n'est jamais écrit tel quel : il est recalculé (getQuestionType)
+		// `type` n'est jamais écrit tel quel : il est recalculé (getQuestionType).
+		// L'ancien quadruplet d'un vieil onglet a déjà été retiré par le schéma (ADR 0035).
 		const { type: _ignoredType, ...provided } = validation.data;
 		const templateData = provided as Partial<QuestionTemplate>;
 
 		// ====================================================================
 		// Ligne actuelle : absente (ou masquée par la RLS, zéro ligne) → 404
 		// ====================================================================
-		const { data: currentRow, error: readError } = await locals.supabase
+		const { data: currentRow, error: readError } = await supabase
 			.from('question_templates')
 			.select('*')
 			.eq('id', id)
@@ -183,7 +180,10 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 		const update = buildTemplateUpdate(templateData, merged);
 		if (Object.keys(update).length === 0) {
-			return json({ success: false, errors: ['Aucun champ à mettre à jour'] }, { status: 400 });
+			return Response.json(
+				{ success: false, errors: ['Aucun champ à mettre à jour'] },
+				{ status: 400 }
+			);
 		}
 
 		// Hypothèses de l'énoncé (ADR 0012) : jamais sur une variable tirée,
@@ -191,19 +191,19 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		if (TYPE_SOURCE_KEYS.some((key) => isProvided(templateData, key))) {
 			const collisions = findAssumptionCollisions(merged.options?.answerAssumptions, merged);
 			if (collisions.length > 0) {
-				return json(
+				return Response.json(
 					{ success: false, errors: collisions.map(assumptionCollisionMessage) },
 					{ status: 400 }
 				);
 			}
 		}
 
-		// QCM (V1) : jamais plusieurs bonnes réponses sans « plusieurs réponses », même
+		// Case choix (V1) : jamais plusieurs bonnes réponses sans `plusieurs: oui`, même
 		// en brouillon ; « aucune » n'est refusée qu'à la publication (validateTemplate)
 		if (merged.status !== 'published') {
 			const countErrors = choiceAnswerCountErrors(merged, { draft: true });
 			if (countErrors.length > 0) {
-				return json({ success: false, errors: countErrors }, { status: 400 });
+				return Response.json({ success: false, errors: countErrors }, { status: 400 });
 			}
 		}
 
@@ -212,41 +212,13 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		if (merged.status === 'published') {
 			const errors = templatePublicationErrors(merged);
 			if (errors.length > 0) {
-				return json({ success: false, errors }, { status: 400 });
-			}
-
-			const categoryCheck = await checkCategoryUniqueness(
-				locals.supabase,
-				{
-					theme: merged.theme,
-					domain: merged.domain,
-					subdomain: merged.subdomain,
-					level: merged.level
-				},
-				id // Exclude current template from check
-			);
-
-			if (!categoryCheck.isUnique) {
-				return json(
-					{
-						success: false,
-						errors: [
-							categoryTakenMessage({
-								theme: merged.theme,
-								domain: merged.domain,
-								subdomain: merged.subdomain,
-								level: merged.level
-							})
-						]
-					},
-					{ status: 400 }
-				);
+				return Response.json({ success: false, errors }, { status: 400 });
 			}
 		}
 
 		// Écriture des seules colonnes envoyées ; zéro ligne rendue = refus RLS
 		// silencieux ou ligne disparue entre-temps → 404
-		const { data: template, error: updateError } = await locals.supabase
+		const { data: template, error: updateError } = await supabase
 			.from('question_templates')
 			.update(update)
 			.eq('id', id)
@@ -257,11 +229,16 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			throw error(404, 'Template not found');
 		}
 		if (updateError) {
+			// Nœud refusé par la base (branche, archivé, inexistant) : faute de saisie, pas panne
+			const nodeMessage = classificationNodeErrorMessage(updateError);
+			if (nodeMessage) {
+				return Response.json({ success: false, errors: [nodeMessage] }, { status: 400 });
+			}
 			logger.error('Error updating template:', updateError);
 			throw error(500, 'Failed to update template');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			template
 		});
@@ -272,7 +249,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			throw err;
 		}
 
-		return json({
+		return Response.json({
 			success: false,
 			errors: ['Internal server error']
 		});
@@ -286,11 +263,12 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const id = validateUuidParam(params.id);
-	await requireRole(locals, 'admin');
+	// Prof en mode administration, ou vrai compte admin : la RLS réserve l'écriture à l'admin
+	const { supabase } = await requireAdmin(locals);
 
 	try {
 		// Check if template exists first
-		const { data: existing, error: existingError } = await locals.supabase
+		const { data: existing, error: existingError } = await supabase
 			.from('question_templates')
 			.select('id')
 			.eq('id', id)
@@ -309,10 +287,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Delete template
-		const { error: deleteError } = await locals.supabase
+		// `.select()` : un refus RLS ne lève aucune erreur, il ne supprime rien
+		const { data: deleted, error: deleteError } = await supabase
 			.from('question_templates')
 			.delete()
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		// Modèle déjà servi à des élèves : la base refuse, on dit quoi faire.
 		// - 23503 : tiré dans une tentative d'évaluation (NO ACTION) ; sans lui, la
@@ -321,7 +301,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		//   NULL, ce que refuse `chk_attempt_regime`). Mesuré le 2026-10-01 : c'est
 		//   ce code qui sort dès qu'une tentative a été envoyée.
 		if (deleteError?.code === '23503' || deleteError?.code === '23514') {
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error:
@@ -334,8 +314,11 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			logger.error('Error deleting template:', deleteError);
 			throw error(500, 'Failed to delete template');
 		}
+		if (!deleted || deleted.length === 0) {
+			throw error(404, 'Template not found');
+		}
 
-		return json({ success: true }, { status: 200 });
+		return Response.json({ success: true }, { status: 200 });
 	} catch (err) {
 		logger.error('Error in DELETE /api/questions/templates/[id]:', err);
 
@@ -343,7 +326,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: 'Internal server error'

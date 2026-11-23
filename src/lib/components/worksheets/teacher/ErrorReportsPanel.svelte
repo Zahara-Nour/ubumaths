@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { AlertCircle, Loader2 } from '@lucide/svelte';
 	import ErrorReportCard from './ErrorReportCard.svelte';
-	import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
+	import type { TeacherErrorReportView, ErrorReportStatus } from '#lib/types/worksheets.ts';
 
 	// Extended report type for worksheet-wide view
 	interface WorksheetReportView extends TeacherErrorReportView {

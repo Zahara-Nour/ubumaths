@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExerciseList from '../ExerciseList.svelte';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 
 const LABEL = `Modifier la ${lore.learning.exercise}`;
 

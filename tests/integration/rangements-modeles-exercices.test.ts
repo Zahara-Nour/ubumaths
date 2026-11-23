@@ -17,6 +17,8 @@
  * transaction, le rollback écrit dans la migration de nettoyage (arbre .15 restauré).
  *
  * @vitest-environment node
+ *
+ * @migration-de-donnees : hors des PR, rejoué la nuit (scripts/ci-integration-exclusions.sh)
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -228,8 +230,8 @@ describe('Rangements : les branches d’échec de la migration', () => {
 			await pg.query(extractRollback(NETTOYAGE));
 			const presents = fixture.modeles.slice(1).map((m) => m.id);
 			await pg.query(
-				`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title)
-				 select unnest($1::uuid[]), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb, 'draft', 'copie de la prod'`,
+				`insert into public.question_templates (id, type, grades, level, variations, status, title)
+				 select unnest($1::uuid[]), 'numerical_exact', array['2'], 1, '[{}]'::jsonb, 'draft', 'copie de la prod'`,
 				[presents]
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
@@ -244,8 +246,8 @@ describe('Rangements : les branches d’échec de la migration', () => {
 		await pg.query('begin');
 		try {
 			await pg.query(
-				`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title, classification_node_id)
-				 values (gen_random_uuid(), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb, 'draft', 'déjà rangé',
+				`insert into public.question_templates (id, type, grades, level, variations, status, title, classification_node_id)
+				 values (gen_random_uuid(), 'numerical_exact', array['2'], 1, '[{}]'::jsonb, 'draft', 'déjà rangé',
 				         (select id from public.classification_nodes where kind = 'notion' and archived_at is null limit 1))`
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(

@@ -1,10 +1,8 @@
 {
+	"id": "1cf6eaa9-376d-43a1-a3e4-eb7d18c40099",
 	"title": "Termine le carré ou le rectangle sur le quadrillage",
 	"description": "Sur quadrillage, compléter un carré (un côté tracé) ou un rectangle (deux côtés consécutifs tracés), côtés suivant les lignes",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Tracés",
-	"subdomain": "Carrés et rectangles",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

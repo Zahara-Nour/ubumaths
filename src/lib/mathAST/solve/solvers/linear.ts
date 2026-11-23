@@ -18,7 +18,7 @@ import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
 import { computeNumericValue } from '../../eval/numeric-value';
 import { number, fraction, opposite, equals, variable as varNode } from '../../factory';
-import { preprocess, denormalize, normalize, normalFormsEquivalent } from '../../normal';
+import { preprocess, normalize, normalFormsEquivalent } from '../../normal';
 import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import { toLatex } from '../../latex-generator';
 import { describeSolution, describeCoefficients } from '../descriptions-fr';
@@ -170,9 +170,9 @@ export const linearSolver: EquationSolver = {
 		// divide-both-sides) is generated separately by
 		// `pedagogical-solve/linear`. The solver records ONLY the structural
 		// algorithmic step (identify above + isolate-variable here).
-		const negB = denormalize(normalize(opposite(b)));
+		const negB = canonicalForm(opposite(b));
 		const solution = fraction(negB, a);
-		const solutionSimplified = denormalize(normalize(solution));
+		const solutionSimplified = canonicalForm(solution);
 
 		recorder.recordStep(
 			'isolate-variable',

@@ -6,9 +6,9 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import WithAtelier from './harness/WithAtelier.svelte';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { runInput } from '$lib/atelier/calcul';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { runInput } from '#lib/atelier/calcul.ts';
 import { menuItemOf, openCardMenu } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 

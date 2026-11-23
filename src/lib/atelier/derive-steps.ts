@@ -12,19 +12,19 @@
  * @module atelier/derive-steps
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import type { MathNode } from '$lib/mathAST/types';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import {
 	generatePedagogicalDifferentiationSteps,
 	PedagogicalDifferentiationRenderer,
 	type PedagogicalDifferentiationStep,
 	withTidyStep
-} from '$lib/mathAST/pedagogical-differentiation';
+} from '#lib/mathAST/pedagogical-differentiation/index.ts';
 import {
 	DEFAULT_VARIABLE,
 	indexVariables,
 	variableNameOf
-} from '$lib/mathAST/cli/core/variable-argument';
+} from '#lib/mathAST/cli/core/variable-argument.ts';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
 

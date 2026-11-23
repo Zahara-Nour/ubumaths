@@ -30,8 +30,14 @@ import {
 	unitInterval
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
-import { isNumber, isInfinity, isMathConstant, isFunction, isDivision } from '$lib/mathAST/guards';
-import { number, opposite } from '$lib/mathAST/factory';
+import {
+	isNumber,
+	isInfinity,
+	isMathConstant,
+	isFunction,
+	isDivision
+} from '#lib/mathAST/guards.ts';
+import { number, opposite } from '#lib/mathAST/factory.ts';
 
 describe('bound value constructors', () => {
 	describe('number', () => {

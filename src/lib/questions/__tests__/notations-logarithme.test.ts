@@ -11,9 +11,9 @@
  * `\ln a-\ln b` (a ≠ 1), `\frac{\ln 3}{2}`, `\ln e^2`, un produit explicite.
  */
 import { describe, it, expect } from 'vitest';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import { checkForm } from '$lib/mathAST/cosmetic-transforms';
-import type { QuestionTemplate, RequiredForm } from '$lib/questions/types';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import { checkForm } from '#lib/mathAST/cosmetic-transforms.ts';
+import type { QuestionTemplate, RequiredForm } from '#lib/questions/types.ts';
 
 function verdicts(
 	expected: string,
@@ -25,8 +25,6 @@ function verdicts(
 		type: 'fill_in_blanks',
 		title: 't',
 		grades: ['T_SPE'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		delay: 20,
 		status: 'draft',

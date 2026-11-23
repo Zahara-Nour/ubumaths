@@ -3,12 +3,12 @@
  * ============================
  *
  * Provides validation functions for different question types,
- * en s'appuyant sur mathAST (`$lib/math`, `$lib/mathAST`) pour lire et comparer les expressions.
+ * en s'appuyant sur mathAST (`#lib/math/index.ts`, `#lib/mathAST/index.ts`) pour lire et comparer les expressions.
  *
  * @module utils/answer-validator
  */
 
-import { isCombinatorialNotationLatex } from '$lib/questions/combinatorial-notation';
+import { isCombinatorialNotationLatex } from '#lib/questions/combinatorial-notation.ts';
 import type {
 	QuestionInstance,
 	InstanceBlank,
@@ -19,17 +19,17 @@ import type {
 	ConstraintMode,
 	ConstraintOptions,
 	ValidationRule
-} from '$lib/questions/types';
+} from '#lib/questions/types.ts';
 import {
 	DEFAULT_CONSTRAINT_MODE,
 	DEFAULT_FORM_CONSTRAINT_MODE,
 	getQuestionType
-} from '$lib/questions/types';
-import type { ValidationResult } from '$lib/types/question-display';
-import { gradedPart } from '$lib/questions/graded-part';
-import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
-import { checkUnit } from '$lib/questions/constraint-validators';
-import { SUPERFLU_RULE_IDS } from '$lib/mathAST/superflu/rules';
+} from '#lib/questions/types.ts';
+import type { ValidationResult } from '#lib/types/question-display.ts';
+import { gradedPart } from '#lib/questions/graded-part.ts';
+import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '#lib/math/index.ts';
+import { checkUnit } from '#lib/questions/constraint-validators.ts';
+import { SUPERFLU_RULE_IDS } from '#lib/mathAST/superflu/rules.ts';
 import {
 	checkForm as checkFormUnified,
 	type CheckFormOptions,
@@ -41,49 +41,75 @@ import {
 	isQuantityValueLatex,
 	forgotPercentSign,
 	type ConstraintSeverity
-} from '$lib/mathAST/cosmetic-transforms';
-import { extractUnitFromLatex } from '$lib/questions/units/parser';
-import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
-import { studentValueLatex } from '$lib/questions/units/student-calculation';
+} from '#lib/mathAST/cosmetic-transforms.ts';
+import { extractUnitFromLatex } from '#lib/questions/units/parser.ts';
+import { normalizeStudentQuantity } from '#lib/questions/units/student-input.ts';
+import { studentValueLatex } from '#lib/questions/units/student-calculation.ts';
 import {
 	CONSTRAINT_FEEDBACK,
 	FORGOTTEN_PERCENT_SIGN,
 	MISSING_CHOICES_FEEDBACK
-} from '$lib/questions/feedback';
-import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
-import { readingOf, type FormulaReading } from '$lib/questions/formula-reading';
-import { choiceLetter, statusFromChoices, toDisplayedChoicePosition } from '$lib/questions/choices';
+} from '#lib/questions/feedback.ts';
+import { evaluateRule, type EvaluationContext } from '#lib/questions/validation-rule-evaluator.ts';
+import { readingOf, type FormulaReading } from '#lib/questions/formula-reading.ts';
+import { statusFromChoices } from '#lib/questions/choices.ts';
 import {
 	getRequiredFormFeedback,
 	REQUIRED_FORM_FEEDBACK,
 	requiredFormVerdict
-} from '$lib/questions/required-form-validator';
-import { validateQuantityAnswer } from '$lib/questions/units/validator';
-import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
-import { rulesDecide } from '$lib/questions/rules-suffice';
-import { matchesAngleModulo2Pi } from '$lib/questions/angle-modulo';
+} from '#lib/questions/required-form-validator.ts';
+import { validateQuantityAnswer } from '#lib/questions/units/validator.ts';
+import type { DurationFormIssue } from '#lib/questions/units/composite-duration.ts';
+import { rulesDecide } from '#lib/questions/rules-suffice.ts';
+import { matchesAngleModulo2Pi } from '#lib/questions/angle-modulo.ts';
 import {
 	judgeIntervalAnswer,
 	DEFAULT_INTERVAL_FORM_MODE
-} from '$lib/questions/intervals/interval-answer';
-import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
-import { coordinateTexts, judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
-import { judgeMatrixAnswer, matrixEntryTexts } from '$lib/questions/matrices/matrix-answer';
-import { judgePrimitiveAnswer } from '$lib/questions/calculus/primitive-answer';
-import { judgeDifferentialEquationAnswer } from '$lib/questions/calculus/differential-equation-answer';
-import type { CalculusVerdict } from '$lib/questions/calculus/calculus-reading';
-import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
-import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
-import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
-import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
-import { judgeConstruction } from '$lib/questions/construction/judge';
-import { constructionPositions } from '$lib/questions/construction/positions';
+} from '#lib/questions/intervals/interval-answer.ts';
+import { judgeEquationAnswer } from '#lib/questions/equations/equation-answer.ts';
+import { coordinateTexts, judgeVectorAnswer } from '#lib/questions/vectors/vector-answer.ts';
+import { judgeMatrixAnswer, matrixEntryTexts } from '#lib/questions/matrices/matrix-answer.ts';
+import { judgePrimitiveAnswer } from '#lib/questions/calculus/primitive-answer.ts';
+import { judgeDifferentialEquationAnswer } from '#lib/questions/calculus/differential-equation-answer.ts';
+import type { CalculusVerdict } from '#lib/questions/calculus/calculus-reading.ts';
+import { judgeRounding, roundingFeedback, roundToPrecision } from '#lib/questions/rounding.ts';
+import {
+	ANSWER_TOO_COMPLEX_FEEDBACK,
+	isAnswerTooComplex
+} from '#lib/questions/answer-complexity.ts';
+import { expectsValue, withoutVariablePrefix } from '#lib/questions/answer-variable-prefix.ts';
+import { expectsUnitlessValue, withoutDegreeSuffix } from '#lib/questions/answer-degree-suffix.ts';
+import { judgeConstruction } from '#lib/questions/construction/judge.ts';
+import { isPlacedTimeCorrect } from '#lib/ubumark/utils/horloge-placer.ts';
+import { isCourbeAnswerCorrect } from '#lib/ubumark/utils/courbe-tracer.ts';
+import { isPlacedAngleCorrect } from '#lib/ubumark/utils/trig-placer.ts';
+import { isTortueAnswerCorrect, tortueAnswerVerdict } from '#lib/ubumark/utils/tortue-answer.ts';
+import { calculAnswerVerdict, isCalculAnswerCorrect } from '#lib/ubumark/utils/calcul-answer.ts';
+import { isRobotAnswerCorrect, robotAnswerVerdict } from '#lib/ubumark/utils/robot-answer.ts';
+import {
+	isLineToRepresentBlank,
+	isRepresentedIntervalCorrect
+} from '#lib/ubumark/utils/number-line-representer.ts';
+import { isColoringCorrect } from '#lib/ubumark/utils/partage-colorier.ts';
+import { isCubesAnswerCorrect } from '#lib/ubumark/utils/cubes-gestes.ts';
+import { isPatronAnswerCorrect } from '#lib/ubumark/utils/patron-gestes.ts';
+import { isSolideAnswerCorrect } from '#lib/ubumark/utils/solide-gestes.ts';
+import {
+	constructionExpected,
+	constructionPositions,
+	constructionShapes
+} from '#lib/questions/construction/positions.ts';
 import {
 	correctChoiceIndexesOf,
 	displayedChoiceLetter,
 	isChoiceBlank,
 	parseChoiceAnswer
-} from '$lib/questions/choice-case';
+} from '#lib/questions/choice-case.ts';
+import {
+	infiniteCellVerdict,
+	isSignCellCorrect,
+	isSignTableCell
+} from '#lib/questions/sign-table-case.ts';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -443,14 +469,13 @@ function isFuzzyTextMatch(userAnswer: string, expected: string): boolean {
  * @returns Validation result with correctness and feedback
  */
 export function validateAnswer(
-	userAnswer: string | string[] | number | number[],
+	userAnswer: string | string[],
 	instance: QuestionInstance,
 	userAnswerLatex?: string | string[]
 ): ValidationResult {
 	const questionType = getQuestionType(instance);
 
 	// ---- COURSE_CARD : aucune réponse à valider (auto-évaluation de l'élève) ----
-	// Sans cette garde, la carte tomberait dans la branche QCM ci-dessous.
 	if (questionType === 'course_card') {
 		return {
 			isCorrect: false,
@@ -459,50 +484,23 @@ export function validateAnswer(
 	}
 
 	try {
-		// ---- FILL_IN_BLANKS: per-blank pipeline (return early) ----
+		// ---- FILL_IN_BLANKS: per-blank pipeline ----
 		// Global validationRules and requiredForm are NOT used here;
 		// each blank carries its own validation config.
-		if (questionType === 'fill_in_blanks') {
-			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
-			const latex = userAnswerLatex
-				? Array.isArray(userAnswerLatex)
-					? userAnswerLatex
-					: [userAnswerLatex]
-				: undefined;
+		const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
+		const latex = userAnswerLatex
+			? Array.isArray(userAnswerLatex)
+				? userAnswerLatex
+				: [userAnswerLatex]
+			: undefined;
 
-			if (!instance.blanks || instance.blanks.length === 0) {
-				return answers.length === 0
-					? { isCorrect: true }
-					: { isCorrect: false, message: 'Pas de blanks[] définis' };
-			}
-
-			return validateBlanks(answers, instance, latex);
+		if (!instance.blanks || instance.blanks.length === 0) {
+			return answers.length === 0
+				? { isCorrect: true }
+				: { isCorrect: false, message: 'Pas de blanks[] définis' };
 		}
 
-		// ---- MULTIPLE_CHOICE ----
-		const { correctChoiceIndex } = instance;
-
-		// Check custom validation rules first (testAnswers-style)
-		if (instance.validationRules && instance.validationRules.length > 0) {
-			const userAnswerStr = Array.isArray(userAnswer) ? String(userAnswer[0]) : String(userAnswer);
-			const ruleResult = evaluateValidationRules(instance.validationRules, userAnswerStr, instance);
-
-			if (ruleResult) return { isCorrect: false, feedback: ruleResult.feedback };
-			return { isCorrect: true };
-		}
-
-		// `userAnswer` : indices d'ORIGINE (cf. `toOriginalChoiceIndexes`). La lettre du
-		// message, elle, désigne la position AFFICHÉE : c'est celle que l'élève voit.
-		const result: ValidationResult = validateChoice(
-			userAnswer as number | number[],
-			correctChoiceIndex as string | string[],
-			instance.multipleAnswers,
-			(originalIndex) => choiceLetter(toDisplayedChoicePosition(instance, originalIndex))
-		);
-
-		// Un QCM ne juge pas d'écriture : l'élève coche, il n'écrit rien (aucun
-		// appelant ne passe de LaTeX pour un choix ; simplify-carte § 30)
-		return result;
+		return validateBlanks(answers, instance, latex);
 	} catch (error) {
 		return {
 			isCorrect: false,
@@ -832,6 +830,44 @@ function validateBlankValue(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): boolean {
+	// Droite à représenter : borne(s), côté et crochets
+	if (isLineToRepresentBlank(blank)) {
+		return isRepresentedIntervalCorrect(userAnswer, blank.expectedAnswer);
+	}
+	// Horloge à placer : la même lecture des aiguilles que la correction
+	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
+	// Repère : les coordonnées exactes du nœud posé, ou deux points distincts de la droite à tracer
+	if (blank.construire === 'courbe') return isCourbeAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Point du cercle trigonométrique : le même cran, modulo 2π
+	if (blank.construire === 'trig') return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer);
+	// Programme tortue : son tracé, rejoué par l'interpréteur, contre celui de l'attendu
+	if (blank.construire === 'tortue') return isTortueAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Programme de calcul : ses affichages, rejoués sur chaque essai, contre ceux de l'attendu
+	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
+	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
+	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
+	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
+	if (blank.construire === 'cubes') return isCubesAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Patron : mêmes faces, ou toute pose qui se plie en cube
+	if (blank.construire === 'patron') return isPatronAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Vecteur sur un solide : l'un des couples de points justes
+	if (blank.construire === 'solide') return isSolideAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
+	if (
+		blank.construire === 'ranger' ||
+		blank.construire === 'associer' ||
+		blank.construire === 'trous'
+	) {
+		return userAnswer.trim() === blank.expectedAnswer;
+	}
+	// Signe ou marque d'un tableau de signes : le même jeton
+	if (isSignTableCell(blank)) return isSignCellCorrect(userAnswer, blank.expectedAnswer);
+	// Limite infinie d'un tableau : le même infini, signe compris
+	const infinite = infiniteCellVerdict(blank, userAnswer);
+	if (infinite !== null) return infinite;
+
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
 		const { status } = judgeIntervalAnswer(
@@ -1119,7 +1155,9 @@ function vectorCoordinatesForm(
 	for (const [i, coordinate] of answers.entries()) {
 		const coordinateBlank: InstanceBlank = {
 			expectedAnswer: blank.vectorMode === 'colineaire' ? coordinate : expected[i],
-			type: 'math'
+			type: 'math',
+			// `acceptDecimal` de la case vaut pour chaque coordonnée (comme pour une matrice)
+			...(blank.acceptDecimal && { acceptDecimal: true })
 		};
 		const result = validateSingleBlank(coordinate, coordinateBlank, coordinate, instance);
 		if (result.status === 'bad_form') return result;
@@ -1234,14 +1272,20 @@ function constructionBlankResult(
 	construction: NonNullable<InstanceBlank['construction']>
 ): ReturnType<typeof validateSingleBlank> {
 	const points = constructionPositions(construction.source);
-	const { status, feedback } = judgeConstruction(construction.checks, points, answer);
+	const { status, feedback } = judgeConstruction(
+		construction.checks,
+		points,
+		answer,
+		constructionShapes(construction.source),
+		constructionExpected(construction.source)
+	);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
 	if (status === 'correct') return { isCorrect: true, status: 'correct' };
 	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
 }
 
 /**
- * Case « choix » (bloc ```choix) : même barème que le QCM (`statusFromChoices`),
+ * Case « choix » (bloc ```choix) : barème `statusFromChoices` (1 / ½ / 0, celui de l'ancien QCM),
  * réponse en indices d'ORIGINE (« 0;2 »). Bons choix seulement, pas tous : ½
  * (`unoptimal_form`, case acceptée ; la question n'est pas juste pour autant,
  * cf. `aggregateOrderedBlanks`). Réponse illisible : fausse.
@@ -1255,7 +1299,7 @@ function choiceBlankResult(
 		.map((index) => displayedChoiceLetter(blank, index))
 		.sort()
 		.join(', ');
-	// Mêmes messages que le QCM (`validateChoice`) : lettres AFFICHÉES
+	// Lettres AFFICHÉES : celles que l'élève voit
 	const wrong = {
 		isCorrect: false,
 		feedback: blank.choice.multiple
@@ -1300,6 +1344,111 @@ function validateSingleBlank(
 	// Case « figure » (bloc ```figure-a-completer) : chaîne à part, cf. questions/construction/
 	if (blank.construction) {
 		return constructionBlankResult(userAnswer, blank.construction);
+	}
+
+	// Droite à représenter : borne(s), côté et crochets, sans règle ni forme
+	if (isLineToRepresentBlank(blank)) {
+		return isRepresentedIntervalCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Horloge à placer : les deux aiguilles de l'élève, petite aiguille jugée sur son secteur
+	if (blank.construire === 'horloge') {
+		return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Repère : les coordonnées exactes du nœud posé, ou deux points distincts de la droite à tracer
+	if (blank.construire === 'courbe') {
+		return isCourbeAnswerCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Programme tortue : son tracé contre celui de l'attendu ; un programme qui ne se lit pas ou
+	// ne s'arrête pas dit pourquoi
+	if (blank.construire === 'tortue') {
+		const verdict = tortueAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Robot à produire : le code rejoué sur la scène ; faux, il dit pourquoi (sortie, case
+	// grise, arrivée manquée, instruction inconnue)
+	if (blank.construire === 'robot') {
+		const verdict = robotAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Programme de calcul : ses affichages sur chaque essai contre ceux de l'attendu ; un
+	// programme illisible, muet ou en erreur sur un essai dit pourquoi
+	if (blank.construire === 'calcul') {
+		const verdict = calculAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Point du cercle trigonométrique : le même cran, modulo 2π
+	if (blank.construire === 'trig') {
+		return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
+	if (blank.construire === 'partage') {
+		return isColoringCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
+	if (blank.construire === 'cubes') {
+		return isCubesAnswerCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Patron : mêmes faces, ou toute pose qui se plie en cube
+	if (blank.construire === 'patron') {
+		return isPatronAnswerCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Vecteur sur un solide : l'un des couples de points justes
+	if (blank.construire === 'solide') {
+		return isSolideAnswerCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Étiquettes à ranger, éléments à associer, texte à trous : l'étiquette posée (sa position
+	// affichée), jamais sa valeur
+	if (
+		blank.construire === 'ranger' ||
+		blank.construire === 'associer' ||
+		blank.construire === 'trous'
+	) {
+		return userAnswer.trim() === blank.expectedAnswer
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Signe ou marque d'un tableau de signes : le même jeton (`0` vaut `z`)
+	if (isSignTableCell(blank)) {
+		return isSignCellCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Limite infinie d'un tableau de variations : le même infini, signe compris (∞ seul : faux)
+	const infinite = infiniteCellVerdict(blank, userAnswerLatex || userAnswer);
+	if (infinite !== null) {
+		return infinite ? { isCorrect: true, status: 'correct' } : { isCorrect: false };
 	}
 
 	// Case « choix » (bloc ```choix) : indices cochés, barème du QCM
@@ -1425,6 +1574,11 @@ function validateSingleBlank(
 		}
 		return { isCorrect: false };
 	}
+
+	// Case à construire ou à placer (`construire:`, `placer:`) : la valeur est écrite
+	// par le composant (`4635`), jamais tapée ; sa forme n'est pas jugée (espaces dès
+	// 4 chiffres compris, outils-manquants n° 15)
+	if (blank.construire) return { isCorrect: true, status: 'correct' };
 
 	// 3. Required form check (per-blank)
 	const formVerdict =
@@ -1999,6 +2153,9 @@ function matchedAnswerForm(
 		};
 	}
 
+	// Case à construire appariée : valeur écrite par le composant, forme jamais jugée
+	if (blank.construire) return { status: 'correct', violations: [] };
+
 	// Case « intervalles » appariée (valeur déjà juste) : écriture jugée par son propre module,
 	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)
 	if (blank.answerKind === 'intervalles') {
@@ -2407,8 +2564,6 @@ export interface StudentAnswer {
 	values?: string[];
 	/** LaTeX tapé (MathLive), une entrée par case ; sert à juger la forme */
 	latex?: string[];
-	/** QCM : choix cochés, en indices d'ORIGINE (`choices[]`) */
-	choiceIndexes?: number[];
 }
 
 export interface BlankVerdict {
@@ -2425,24 +2580,11 @@ export interface BlankVerdict {
 	ungraded?: true;
 }
 
-/** Issue d'un choix de QCM : bon coché, faux coché, bon oublié, faux laissé */
-export type ChoiceOutcome = 'checked-correct' | 'checked-wrong' | 'missed' | 'unchecked';
-
-export interface ChoiceVerdict {
-	/** Indice d'origine (`choices[]`) */
-	originalIndex: number;
-	isCorrect: boolean;
-	checked: boolean;
-	outcome: ChoiceOutcome;
-}
-
 export interface DetailedVerdict {
 	/** Statut global : celui de `validateAnswer` (`status`, sinon juste / faux) */
 	status: ValidationStatus;
-	/** Une entrée par case (`orderIndependent` : par rang de saisie) ; `[]` pour un QCM */
+	/** Une entrée par case (`orderIndependent` : par rang de saisie) */
 	blanks: BlankVerdict[];
-	/** QCM seulement : une entrée par choix, dans l'ordre d'origine */
-	choices?: ChoiceVerdict[];
 	/** Message global de `validateAnswer`, s'il y en a un */
 	feedback?: string;
 }
@@ -2452,64 +2594,10 @@ function statusOfResult(result: ValidationResult): ValidationStatus {
 	return result.status ?? (result.isCorrect ? 'correct' : 'incorrect');
 }
 
-/** Indices d'origine des bons choix */
-function correctChoices(instance: QuestionInstance): Set<number> {
-	if (instance.choices && instance.choices.length > 0) {
-		return new Set(instance.choices.flatMap((c, i) => (c.isCorrect ? [i] : [])));
-	}
-	const raw = instance.correctChoiceIndex;
-	const list = Array.isArray(raw) ? raw : raw !== undefined ? [raw] : [];
-	return new Set(list.map(Number).filter((n) => Number.isInteger(n)));
-}
-
-/**
- * Bons choix d'un QCM à règles (`validationRules`) : ce sont les règles qui
- * jugent, choix par choix (même évaluation que `validateAnswer` sur un choix).
- */
-function choicesAcceptedByRules(instance: QuestionInstance, count: number): Set<number> {
-	const accepted = new Set<number>();
-	for (let i = 0; i < count; i++) {
-		if (validateAnswer(i, instance).isCorrect) accepted.add(i);
-	}
-	return accepted;
-}
-
-function detailChoices(instance: QuestionInstance, answer: StudentAnswer): DetailedVerdict {
-	const checked = answer.choiceIndexes ?? [];
-	const result = validateAnswer(
-		instance.multipleAnswers ? checked : (checked[0] ?? []),
-		instance,
-		answer.latex
-	);
-	const byRules = (instance.validationRules?.length ?? 0) > 0;
-	const declared = correctChoices(instance);
-	const count = Math.max(instance.choices?.length ?? 0, ...[...declared].map((i) => i + 1));
-	const good = byRules ? choicesAcceptedByRules(instance, count) : declared;
-	const chosen = new Set(checked);
-	const choices = Array.from({ length: count }, (_, i): ChoiceVerdict => {
-		const isCorrect = good.has(i);
-		const isChecked = chosen.has(i);
-		const outcome: ChoiceOutcome = isChecked
-			? isCorrect
-				? 'checked-correct'
-				: 'checked-wrong'
-			: isCorrect
-				? 'missed'
-				: 'unchecked';
-		return { originalIndex: i, isCorrect, checked: isChecked, outcome };
-	});
-	return {
-		status: statusOfResult(result),
-		blanks: [],
-		choices,
-		...(result.feedback && { feedback: result.feedback })
-	};
-}
-
 /**
  * Verdict d'une réponse avec le statut et les remarques de CHAQUE case (R11) :
  * même chaîne que `validateAnswer` (statut global identique), sans rien changer
- * à la notation. QCM : issue de chaque choix. Ne lève jamais.
+ * à la notation. Ne lève jamais.
  */
 export function validateAnswerDetailed(
 	instance: QuestionInstance,
@@ -2518,7 +2606,6 @@ export function validateAnswerDetailed(
 	try {
 		const type = getQuestionType(instance);
 		if (type === 'course_card') return { status: 'incorrect', blanks: [] };
-		if (type === 'multiple_choice') return detailChoices(instance, answer);
 
 		const blanks = instance.blanks ?? [];
 		const values = answer.values ?? blanks.map((b) => b.prefilled ?? '');
@@ -2550,49 +2637,4 @@ export function validateAnswerDetailed(
 			}))
 		};
 	}
-}
-
-// ============================================================================
-// MULTIPLE CHOICE VALIDATION
-// ============================================================================
-
-/**
- * Valide un QCM : même statut que la note du serveur (`statusFromChoices`, V4).
- * - toutes les bonnes, aucune mauvaise → correct ;
- * - une partie des bonnes, aucune mauvaise → unoptimal_form (½), « Il manque
- *   des réponses. », `isCorrect` faux (SRS : à revoir, Q40) ;
- * - une mauvaise cochée → incorrect ; rien coché → empty.
- *
- * @param userAnswer - Choix cochés (indices d'origine)
- * @param correctAnswer - Bons choix (indices d'origine) de l'instance
- * @param multipleAnswers - Plusieurs réponses attendues
- * @param letterOf - Lettre d'un indice d'origine dans le message (défaut : sans mélange)
- */
-export function validateChoice(
-	userAnswer: number | number[],
-	correctAnswer: string | string[],
-	multipleAnswers?: boolean,
-	letterOf: (originalIndex: number) => string = choiceLetter
-): ValidationResult {
-	// Indice illisible (aucun choix coché en réponse unique) : il ne désigne rien
-	const userIndexes = (Array.isArray(userAnswer) ? userAnswer : [userAnswer]).filter((index) =>
-		Number.isInteger(index)
-	);
-	const correctIndexes = (Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer]).map(
-		Number
-	);
-
-	const status = statusFromChoices(userIndexes, correctIndexes);
-	if (status === 'correct') return { isCorrect: true, status, message: 'Correct !' };
-	if (status === 'unoptimal_form') {
-		return { isCorrect: false, status, message: 'Incomplet', feedback: MISSING_CHOICES_FEEDBACK };
-	}
-	return {
-		isCorrect: false,
-		status,
-		message: 'Incorrect',
-		feedback: multipleAnswers
-			? `Les choix corrects sont: ${correctIndexes.map(letterOf).sort().join(', ')}`
-			: `Le choix correct est: ${letterOf(correctIndexes[0])}`
-	};
 }

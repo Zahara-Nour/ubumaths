@@ -1,8 +1,9 @@
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { GradeCode } from '$lib/types/grades';
-import { getTeacherExercises } from '$lib/server/exercises';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
+import { getTeacherExercises } from '#lib/server/exercises.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/exercises/+server');
 
@@ -24,12 +25,8 @@ const logger = createServerLogger('api/teacher/exercises/+server');
  * Security: Teacher role required
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user, profile, supabase } = locals;
-
-	// Security: Only teachers can access
-	if (!user || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden: Teacher role required');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	try {
 		// Parse query parameters
@@ -82,7 +79,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw error(500, 'Failed to load exercises');
 		}
 
-		return json({
+		return Response.json({
 			exercises: result.data || [],
 			pagination: {
 				page: result.page,

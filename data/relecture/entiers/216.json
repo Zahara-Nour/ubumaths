@@ -128,9 +128,6 @@
 			}
 		],
 		"grades": ["CM2"],
-		"theme": "Entiers",
-		"domain": "Diviser",
-		"subdomain": "Divisibilité",
 		"level": 8,
 		"status": "draft",
 		"delay": 15,

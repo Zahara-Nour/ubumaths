@@ -1,0 +1,197 @@
+{
+	"id": "2327bbef-c5d7-474e-ac8b-4a917f2ca2b4",
+	"title": "Fonction Python : somme des n premiers carrés",
+	"description": "Compléter l'accumulateur et les bornes de la boucle d'une fonction Python qui calcule la somme des n premiers carrés, puis la faire tourner",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La fonction `somme_carres` doit renvoyer $1^2+2^2+\\cdots+n^2$.\n\n```python\ndef somme_carres(n):\n    s = 0\n    for k in range(1, n + 1):\n        ...\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `s = k ** 2`\n- `s = s + k ** 2`\n- `s = s + k`\n- `s = s * k ** 2`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`s` sert d'accumulateur : il part de $0$ et, à chaque tour de boucle, on lui ajoute le terme du rang `k`.",
+					"Le terme du rang `k` est $k^2$, qui s'écrit `k ** 2` en Python.",
+					"Avec `s = k ** 2`, `s` ne garderait que le dernier carré ; avec `s = s + k`, on sommerait les entiers ; avec `s = s * k ** 2`, `s` resterait égal à $0$.",
+					"La ligne est donc `s = s + k ** 2`."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `somme_carres` doit renvoyer $1^2+2^2+\\cdots+n^2$.\n\n```python\ndef somme_carres(n):\n    s = 0\n    for k in range(...):\n        s = s + k ** 2\n    return s\n```\n\nQue faut-il écrire entre les parenthèses de `range` ?\n\n```choix\nmelanger: non\n- `n`\n- `1, n`\n- `1, n + 1`\n- `2, n + 1`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range(a, b)` donne les entiers de `a` à `b - 1` : il s'arrête **juste avant** `b`.",
+					"`k` doit prendre les valeurs $1$, $2$, …, $n$ : on écrit `range(1, n + 1)`.",
+					"`range(n)` et `range(1, n)` s'arrêtent à $n-1$ : ils oublient $n^2$. `range(2, n + 1)` oublie $1^2$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `somme_carres` doit renvoyer $1^2+2^2+\\cdots+n^2$.\n\n```python\ndef somme_carres(n):\n    s = 0\n    for k in range(1, n + 1):\n        s = s + k ** 2\n    return s\n```\n\nQue renvoie `somme_carres({{n}})` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n+1)*(2*n+1)/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`k` prend les valeurs $1$, $2$, …, ${{n}}$.",
+					"$1^2+2^2+3^2{{if:n>=4|+4^2|}}{{if:n>=5|+5^2|}}{{if:n>=6|+6^2|}}=1+4+9{{if:n>=4|+16|}}{{if:n>=5|+25|}}{{if:n>=6|+36|}}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n+1)*(2*n+1)/6}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix 0 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 1 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix 3 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 4 : 30",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans le carré (10)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernier terme (16)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4² oublié (14)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 6 : 91",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["91"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

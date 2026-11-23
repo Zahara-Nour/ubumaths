@@ -11,10 +11,10 @@
 import { describe, it, expect } from 'vitest';
 import { runDsl } from '../../dsl';
 import { numeric, type ScalarParam } from '../../types/geo-value';
-import type { MathNode } from '$lib/mathAST/types';
-import { parseCustom } from '$lib/mathAST/parser/custom';
-import { subtract } from '$lib/mathAST/factory';
-import { getAllDiscontinuities } from '$lib/mathAST/analysis/singularity-warn';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseCustom } from '#lib/mathAST/parser/custom/index.ts';
+import { subtract } from '#lib/mathAST/factory.ts';
+import { getAllDiscontinuities } from '#lib/mathAST/analysis/singularity-warn.ts';
 
 interface GeoIntegralAreaShape {
 	type: 'integralArea';

@@ -4,20 +4,20 @@
 	Spec : docs/archive/wip/srs-anti-fraud-spec-tdd.md §B9
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
+	import { lore } from '#lib/config/lore.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { CircleAlert, AlertTriangle, ShieldCheck, Eye } from '@lucide/svelte';
 	import FlagDetailsDialog from './FlagDetailsDialog.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	interface FlagListItem {
 		id: string;
 		student: { id: string; first_name: string | null; last_name: string | null };
-		capacity: { id: string; name: string } | null;
+		point: { id: string; name: string } | null;
 		flag_type: string;
 		severity: number;
 		score: number;
@@ -191,7 +191,7 @@
 								</Badge>
 							</div>
 							<p class="mt-1 text-xs text-muted-foreground">
-								{flag.capacity?.name ?? 'Toutes capacités'}
+								{flag.point?.name ?? 'Tous les points du programme'}
 								· score {Math.round(flag.score * 100)}/100 · {flag.sample_size} reviews
 							</p>
 						</div>

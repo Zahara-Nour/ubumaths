@@ -11,16 +11,16 @@ import * as submitHandler from '../[id]/submit/+server';
 import * as autoSelectHandler from '../auto-select-daily/+server';
 
 // Mock the utility functions
-vi.mock('$lib/utils/riddle-validator', () => ({
+vi.mock('#lib/utils/riddle-validator.ts', () => ({
 	validateRiddleAnswer: vi.fn()
 }));
 
-vi.mock('$lib/server/riddle-messages', () => ({
+vi.mock('#lib/server/riddle-messages.ts', () => ({
 	createRiddleValidationMessage: vi.fn(),
 	getRiddleTeacherId: vi.fn()
 }));
 
-vi.mock('$lib/server/riddle-auto-select', () => ({
+vi.mock('#lib/server/riddle-auto-select.ts', () => ({
 	checkAndAutoSelectToday: vi.fn()
 }));
 
@@ -29,16 +29,16 @@ vi.mock('$lib/server/riddle-auto-select', () => ({
 // `serviceFrom` sert `riddle_solutions` : la réponse attendue n'est lisible que par lui.
 const serviceRpc = vi.fn();
 const serviceFrom = vi.fn();
-vi.mock('$lib/server/serviceRoleClient', () => ({
+vi.mock('#lib/server/serviceRoleClient.ts', () => ({
 	createServiceRoleClient: () => ({ rpc: serviceRpc, from: serviceFrom })
 }));
 
-vi.mock('$lib/server/buddy-xp-service', () => ({
+vi.mock('#lib/server/buddy-xp-service.ts', () => ({
 	addBuddyXpFromExercise: vi.fn().mockResolvedValue(null)
 }));
 
-import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
-import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
+import { validateRiddleAnswer } from '#lib/utils/riddle-validator.ts';
+import { createRiddleValidationMessage, getRiddleTeacherId } from '#lib/server/riddle-messages.ts';
 
 describe('POST /api/riddles/[id]/submit', () => {
 	const RIDDLE_UUID = '12345678-1234-4234-8234-123456789012';

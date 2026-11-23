@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import type { StudentVipCards, VipCardInstance } from '$lib/types/vip-card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import Wheel from '$lib/components/Wheel.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import type { StudentVipCards, VipCardInstance } from '#lib/types/vip-card.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { teacherCache } from '#lib/stores/teacherDashboardCache.svelte.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import Wheel from '#lib/components/Wheel.svelte';
 	import { Target, ArrowLeft } from '@lucide/svelte';
 
 	let {

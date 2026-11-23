@@ -6,12 +6,9 @@
 	"template": {
 		"delay": 15,
 		"level": 8,
-		"theme": "Entiers",
 		"title": "Table d'addition'",
-		"domain": "Additionner",
 		"grades": ["CP"],
 		"status": "draft",
-		"subdomain": "Tables",
 		"testSpecs": [
 			{
 				"answers": ["9"],

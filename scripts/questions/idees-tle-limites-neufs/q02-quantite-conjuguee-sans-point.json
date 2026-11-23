@@ -1,0 +1,184 @@
+{
+	"id": "ec040806-37f0-45e1-9858-472a902d8f75",
+	"title": "Lever une forme indéterminée avec la quantité conjuguée",
+	"description": "Différence de deux racines carrées en l'infini (√(ax + b) − √(ax + d), √(x² + b) − √(x² + d)) : multiplier par la quantité conjuguée. Hors programme de Terminale (technique ni nommée ni illustrée au BO), rangé sans point (pièges : ∞ − ∞ pris pour +∞, dénominateur oublié)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)=\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{b}}}-\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{d}}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["b != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "+\\infty",
+							"message": "C'est une forme indéterminée « $\\infty - \\infty$ » : multiplie et divise par la quantité conjuguée avant de conclure.",
+							"label": "FI prise pour +∞"
+						},
+						{
+							"answer": "{{eval:b-d}}",
+							"message": "Tu as gardé le numérateur ${{b}} - {{d}}$ : le dénominateur, somme de deux racines, tend vers $+\\infty$.",
+							"label": "Dénominateur oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $+\\infty$, les deux racines tendent vers $+\\infty$ : forme indéterminée. On multiplie et on divise par la quantité conjuguée $\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{b}}}+\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{d}}}$.",
+					"$f(x)=\\dfrac{({{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{b}})-({{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{d}})}{\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{b}}}+\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{d}}}}=\\dfrac{ {{eval:b-d}} }{\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{b}}}+\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{d}}}}$.",
+					"Le dénominateur tend vers $+\\infty$, le numérateur est constant : $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			},
+			"hint": "Multiplie et divise $f(x)$ par $\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{b}}}+\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x+{{d}}}$, puis utilise $(A-B)(A+B)=A^{2}-B^{2}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{x^{2}+{{b}}}-\\sqrt{x^{2}+{{d}}}$.\n\nDétermine la limite de $f$ en ${{if:sg>0|+|-}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": ["b != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "+\\infty",
+							"message": "C'est une forme indéterminée « $\\infty - \\infty$ » : multiplie et divise par la quantité conjuguée avant de conclure.",
+							"label": "FI prise pour +∞"
+						},
+						{
+							"answer": "{{eval:b-d}}",
+							"message": "Tu as gardé le numérateur ${{b}} - {{d}}$ : le dénominateur, somme de deux racines, tend vers $+\\infty$.",
+							"label": "Dénominateur oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"En ${{if:sg>0|+|-}}\\infty$, $x^{2}$ tend vers $+\\infty$ : les deux racines tendent vers $+\\infty$, forme indéterminée. On multiplie et on divise par la quantité conjuguée.",
+					"$f(x)=\\dfrac{(x^{2}+{{b}})-(x^{2}+{{d}})}{\\sqrt{x^{2}+{{b}}}+\\sqrt{x^{2}+{{d}}}}=\\dfrac{ {{eval:b-d}} }{\\sqrt{x^{2}+{{b}}}+\\sqrt{x^{2}+{{d}}}}$.",
+					"Le dénominateur tend vers $+\\infty$, le numérateur est constant : $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			},
+			"hint": "Multiplie et divise $f(x)$ par $\\sqrt{x^{2}+{{b}}}+\\sqrt{x^{2}+{{d}}}$, puis utilise $(A-B)(A+B)=A^{2}-B^{2}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : √(2x+7) − √(2x+3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "7",
+				"d": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : FI prise pour +∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "7",
+				"d": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est une forme indéterminée « $\\infty - \\infty$ » : multiplie et divise par la quantité conjuguée avant de conclure."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "a : dénominateur oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "7",
+				"d": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé le numérateur $7 - 3$ : le dénominateur, somme de deux racines, tend vers $+\\infty$."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "b : √(x²+2) − √(x²+5) en −∞",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "5",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : dénominateur oublié",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "5",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé le numérateur $2 - 5$ : le dénominateur, somme de deux racines, tend vers $+\\infty$."
+			},
+			"answers": ["-3"]
+		},
+		{
+			"description": "b : FI prise pour +∞",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "5",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est une forme indéterminée « $\\infty - \\infty$ » : multiplie et divise par la quantité conjuguée avant de conclure."
+			},
+			"answers": ["+\\infty"]
+		}
+	]
+}

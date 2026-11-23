@@ -5,6 +5,8 @@ author: giron
 lede: Toutes les chambres étaient occupées. Pour loger le retardataire, le concierge a demandé à chaque client de se pousser d'une chambre. Personne n'a dormi dehors.
 ---
 
+![Dans un couloir d’hôtel sans fin, le concierge lance ses ordres dans un porte-voix ; une file de clients en chemise de nuit, valise à la main, passe chacun à la chambre suivante, et un voyageur trempé sourit devant la première chambre, enfin libre.](/shtam/yoyolande-hotel-de-l-infini.webp){size=large}
+
 Il était 23 heures quand un voyageur trempé a poussé la porte de l'Hôtel de l'Infini, le plus grand établissement de Sinusborg. Ses chambres sont numérotées 1, 2, 3, et ainsi de suite, sans fin. Ce soir-là, toutes étaient occupées. « Je me voyais déjà dormir dans ma charrette », raconte le voyageur.
 
 C'était compter sans le concierge, qui a pris son micro : « Que chaque client quitte sa chambre et s'installe dans la suivante. » Le client de la 1 est passé dans la 2, celui de la 2 dans la 3, celui de la 3 dans la 4, et ainsi de suite. Personne ne s'est retrouvé dans le couloir : après chaque chambre, il y en a toujours une autre. La chambre 1 s'est libérée, et le voyageur s'y est endormi aussitôt.

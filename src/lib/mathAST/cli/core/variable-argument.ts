@@ -28,15 +28,13 @@
 
 import type { MathNode } from '../../types';
 import { getVariables } from '../../eval/substitute';
-import { variable } from '../../factory';
-import { isEulerConstant, isGreek, isImaginaryUnit, isSubscript, isVariable } from '../../guards';
+import { indexVariables } from '../../eval/index-variables';
+import { isEulerConstant, isGreek, isImaginaryUnit, isVariable } from '../../guards';
 import {
 	EULER_NOT_A_VARIABLE,
 	IMAGINARY_NOT_A_VARIABLE,
 	reservedLetterMessage
 } from '../../common/reserved-letters';
-import { toLatex } from '../../latex-generator';
-import { mapNode } from '../../transforms';
 import { parse, type PipelineOptions } from './pipeline';
 
 // =============================================================================
@@ -50,13 +48,6 @@ import { parse, type PipelineOptions } from './pipeline';
  * texte (`variableNameOf`).
  */
 const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9+-]+\}))?$/;
-
-/**
- * Noms que l'expression contient mais qu'on ne propose pas comme autre
- * variable : `e` (Euler), `i` (imaginaire), `pi`. Nommer `e` ou `i` après `;`
- * est refusé : ce sont des constantes, jamais des variables de calcul.
- */
-const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
 /**
  * Une fonction usuelle écrite en lettres, sans antislash ni parenthèse :
@@ -198,7 +189,7 @@ export function otherVariableHint(
 ): string | null {
 	const variables = getVariables(node);
 	if (variables.has(DEFAULT_VARIABLE)) return null;
-	const excluded = new Set([...CONSTANT_NAMES, ...bound]);
+	const excluded = new Set(bound);
 	const candidates = [...variables].filter((name) => !excluded.has(name));
 	if (candidates.length === 0) return null;
 	const single = candidates.length === 1 ? candidates[0] : null;
@@ -334,36 +325,8 @@ export function isVariableHint(line: string): boolean {
 	return line.trim().startsWith(HINT_START);
 }
 
-/**
- * Les variables indicées (`x_1`, `x_{12}`) réécrites en variables simples,
- * nommées par leur LaTeX, et de quoi revenir en arrière.
- *
- * ⚠️ Le parseur lit `x_1` comme un INDICE de base `x`, que la dérivation
- * traite en constante : `.diff x_1^2, x_1` valait 0, et `getVariables` n'y
- * voyait que `x`. Un nom qui contient `_` ne peut pas être celui d'une
- * variable simple : pas de collision.
- */
-export function indexVariables(node: MathNode): {
-	node: MathNode;
-	restore: (indexed: MathNode) => MathNode;
-} {
-	const originals = new Map<string, MathNode>();
-	const flat = mapNode(node, (n) => {
-		if (!isSubscript(n) || !(isVariable(n.base) || isGreek(n.base))) return n;
-		// Sans espaces : `u_{n+1}`, pas `u_{n + 1}` — le nom se relit d'un seul
-		// mot après « pour », et s'affiche comme l'élève l'a tapé
-		const name = toLatex(n).replace(/\s+/g, '');
-		originals.set(name, n);
-		return variable(name);
-	});
-	return {
-		node: flat,
-		restore: (indexed) =>
-			originals.size === 0
-				? indexed
-				: mapNode(indexed, (n) => (isVariable(n) ? (originals.get(n.name) ?? n) : n))
-	};
-}
+// Déplacée dans `eval/index-variables.ts` : `solve` s'en sert aussi (V13)
+export { indexVariables };
 
 /**
  * Le nom de variable d'une variable explicite déjà LUE par le parseur de
@@ -877,7 +840,7 @@ export function writeCommandArguments(args: CommandArguments): string {
 }
 
 /**
- * Les lettres d'une expression autres que la variable, `e`, `i`, `pi` et les
+ * Les lettres d'une expression autres que la variable et les
  * noms liés (`.let a = 2`), triées : les PARAMÈTRES (`u_0`, `q` dans
  * `u_0·q^n = 10` résolue en n). Variables indicées réécrites ici.
  */
@@ -886,7 +849,7 @@ export function parameterLetters(
 	variable: string,
 	bound: Iterable<string> = []
 ): string[] {
-	const excluded = new Set([...CONSTANT_NAMES, ...bound, variable]);
+	const excluded = new Set([...bound, variable]);
 	return [...getVariables(indexVariables(node).node)].filter((name) => !excluded.has(name)).sort();
 }
 
@@ -905,7 +868,7 @@ export function guessedVariable(
 ): { ok: true; variable: string } | { ok: false; message: string } {
 	const variables = getVariables(indexVariables(node).node);
 	if (variables.has(DEFAULT_VARIABLE)) return { ok: true, variable: DEFAULT_VARIABLE };
-	const excluded = new Set([...CONSTANT_NAMES, ...bound]);
+	const excluded = new Set(bound);
 	const candidates = [...variables].filter((name) => !excluded.has(name)).sort();
 	if (candidates.length === 0) return { ok: true, variable: DEFAULT_VARIABLE };
 	if (candidates.length === 1) return { ok: true, variable: candidates[0] };

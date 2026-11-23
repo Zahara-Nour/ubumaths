@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { Atelier } from '../atelier.svelte';
 import { deriveSteps } from '../derive-steps';
 import { expressionOf } from '../engine';
@@ -23,7 +23,7 @@ describe('.diff (moteur)', () => {
 
 	it('x*e^x', () => {
 		expect(diff('x*e^x')).toBe(
-			'd/dx(x*e^x) = e^x+xe^x\nLaTeX: \\exponentialE^x + x \\exponentialE^x'
+			'd/dx(x*e^x) = (x+1)e^x\nLaTeX: \\left( x + 1 \\right) \\exponentialE^x'
 		);
 	});
 

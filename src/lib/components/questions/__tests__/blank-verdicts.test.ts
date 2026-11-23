@@ -8,8 +8,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { computeBlankColors, computeBlankVerdicts } from '../blank-verdicts';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function instance(blanks: InstanceBlank[]): QuestionInstance {
 	return {
@@ -17,8 +17,6 @@ function instance(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Trouve un diviseur de 12' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'Entiers',
-		domain: 'Diviser',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		resolvedVariables: [{ name: 'n', value: '12' }]

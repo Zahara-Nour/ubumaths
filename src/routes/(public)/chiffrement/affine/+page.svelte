@@ -1,13 +1,13 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import AffineAttack from '$lib/components/ciphers/AffineAttack.svelte';
-	import AlphabetStrip from '$lib/components/ciphers/AlphabetStrip.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import { ALPHABET } from '$lib/ciphers/alphabet';
-	import { VALID_A, affineCollisions, affineDecrypt, affineEncrypt } from '$lib/ciphers/affine';
-	import { inverseSearch } from '$lib/ciphers/modular';
-	import { attempt } from '$lib/ciphers/outcome';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import AffineAttack from '#lib/components/ciphers/AffineAttack.svelte';
+	import AlphabetStrip from '#lib/components/ciphers/AlphabetStrip.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import { ALPHABET } from '#lib/ciphers/alphabet.ts';
+	import { VALID_A, affineCollisions, affineDecrypt, affineEncrypt } from '#lib/ciphers/affine.ts';
+	import { inverseSearch } from '#lib/ciphers/modular.ts';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const PLAIN = 'Le Czar arrive par la Vistule avec trois cents cosaques.';
@@ -30,7 +30,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre affine : clé, inverse modulaire et décryptage — Chiphre"
+	title="Chiffre affine : clé, inverse modulaire et décryptage | Chiphre"
 	description="Le chiffre affine pas à pas : y = ax + b modulo 26, pourquoi a doit être premier avec 26, l’inverse modulaire pour déchiffrer, et l’attaque par deux lettres pour décrypter."
 />
 

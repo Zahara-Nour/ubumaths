@@ -2,14 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1830._
+_Mis à jour le 2026-11-19, après la publication de CP-058, 059, 060 et la clôture de `geometrie-validation`._
 
-- **État** : 68 modèles CP publiés. **Lot C** (construire, § 4 quindecies) : 4 modèles dans `scripts/questions/cp-c/` (#1830 mergée), `checkTemplate` vert (19 specs), joués dans l'aperçu en base locale (juste, faux, carte de correction). **Rien en prod.**
-- **Prochaine action** : après le `deploy:prod` qui livre les blocs à construire (#1812, #1820, #1825 ; lancé par David, refusé une 1re fois : CI de `main` en cours) → David crée les brouillons en prod (`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cp-c --publier`), je les vérifie, puis migration nœud + tag (C1 → CP-002 « dénombrement », C2 → CP-044, C4 → CP-045 « pièces et billets », C3 → CP-071 « rendre la monnaie » ; question d'accès déjà tranchée : personne), page à cocher, publication.
-- **En attente de David** : vérification manuelle #1702 ; le `deploy:prod`.
-- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées ; `create-questions` vise `.env` (prod) : pour la base locale, `set -a; . ./.env.local; set +a` avant ; 4 brouillons du lot C en base LOCALE (essais).
-- **Worktree / branche** : aucun (retiré après #1830).
-- **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
+- **État** : relevé prod du 2026-11-19 : **78 points CP sur 84** ont un modèle publié. Lot D (6 modèles, § 4 septdecies) **publié** par David (page à cocher : 6 OK, https://claude.ai/artifact/Jw3Uin7HLh73Ni4NUPthP9). CP-058, 059, 060 **publiés** par David (vérifié en prod le 2026-11-19, 21:03 UTC ; chantier `geometrie-validation` clos). Sans modèle : le groupe D seul (053, 063, 064, 065, 066, 074 : non évaluables à l'écran).
+- **`03` (CP-008) tranché le 2026-11-19** : la variation « 0 à 20 » devient « 0 à 10, seuls 0 et 10 écrits » (x de 2 à 8), car les graduations étaient à 12 px sur téléphone ; les nombres de 11 à 19 restent couverts par le morceau de dix (a = 1). Fichier `scripts/questions/cp-demi-droite/11a01460.json`, lot `cp-demi-droite` de `update-published-questions.ts` ; specs 8/8, 600 tirages.
+- **Lot `cp-demi-droite` écrit en prod** le 2026-11-19 par David : `11a01460` mis à jour (21:20 UTC), vérifié par MCP (description, 8 specs) et par simulation relancée (« identique »).
+- **Prochaine action** : aucune côté CP (reste le groupe D, non évaluable à l'écran) ; prochain niveau à couvrir avec la skill `couvrir-niveau`, au choix de David.
+- **En attente de David** : vérification manuelle #1702.
+- **Reste du CP après le lot D** : groupe D seul (074, 053, 063, 064, 065, 066 : non évaluables à l'écran).
+- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; montants en `$n~\unit{€}$` ; **écriture en prod : David la lance (`!`)** ; **`gh pr checks --watch` / `gh run watch` peuvent rendre la main avant la fin : suivre le statut du run** ; `create-questions` et les deux scripts visent `.env` (prod) : `set -a; . ./.env.local; set +a` pour la locale ; fichiers des anciens lots CP en retard sur la base (niveaux B1, B3, H renumérotés ; sous-domaines B2 changés) ; les 4 modèles C sont publiés en base LOCALE (essais).
+- **Worktree / branche** : aucun (retiré après #2918).
+- **But final** : skill réutilisable pour les autres niveaux (§ 5) — fait.
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
 
@@ -42,15 +45,15 @@ Non tagués CP (12) :
 
 ## 2 bis. Case « figure » → chantier à part
 
-Relevé, verdict du conseil et phase 0 de CP-059 : déplacés le 2026-10-25 dans [geometrie-validation](geometrie-validation-progress.md).
+Relevé, verdict du conseil et phase 0 de CP-059 : déplacés le 2026-10-25 dans [geometrie-validation](../archive/wip/geometrie-validation-progress.md).
 
 ## 3. Outils proposés
 
 1. Bloc `horloge` (cadran paramétrable ; CP heures entières, puis minutes CE1/CE2) — recommandé en premier.
 2. Bloc `collection` (vrac, barres de dix + cubes, groupements partiels).
 3. Bloc `monnaie` (pièces et billets d'euros).
-4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, [geometrie-validation](geometrie-validation-progress.md), suivi par David le 2026-10-25).
-5. **Case « figure »** ([geometrie-validation](geometrie-validation-progress.md), verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
+4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, [geometrie-validation](../archive/wip/geometrie-validation-progress.md), suivi par David le 2026-10-25).
+5. **Case « figure »** ([geometrie-validation](../archive/wip/geometrie-validation-progress.md), verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
 6. **Opérations posées** (demandé par David le 2026-10-24) : bloc « en colonnes » (addition au CP, CP-016 ; puis soustraction, multiplication, division aux niveaux suivants) — aucun rendu « posé » n'existe dans `ubumark`. Place dans l'ordre : à trancher.
 
 ## 4. Questions à David
@@ -132,7 +135,7 @@ David suit mes recommandations (« je te suis »).
 
 1. D'abord, ses relectures en attente (A3, `92c8e499`) puis la publication A1-A6 en un lot : elles orientent les lots suivants.
 2. **Lot H** (une PR) : modèles d'horloge CP-046 (lire) et CP-047 (positionner, en QCM d'horloges) + **CP-016** (addition posée, le lot 1 d'`operations-posees` est sur `main`). Les deux blocs ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
-3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil ([geometrie-validation](geometrie-validation-progress.md)), 2026-10-25.
+3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil ([geometrie-validation](../archive/wip/geometrie-validation-progress.md)), 2026-10-25.
 4. Puis case « figure » (chantier à part), collection, monnaie — inchangé (§ 4 bis).
 
 ## 4 decies. Lot H : décisions (David, 2026-10-25)
@@ -191,6 +194,42 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - Question d'accès : personne ne gagne ni ne perd d'accès (reco suivie par David, AVANT le SQL).
 - Phase 0 : je proposais « niveaux 1 à 3 » pour C1 en même temps que « 4 modèles » : C1 est UN modèle (niveau 1) à trois variations.
 
+## 4 sexdecies. Skill réutilisable : décisions (David, 2026-10-26)
+
+- Forme : skill `couvrir-niveau` (le déroulé) + doc `docs/pratiques/couvrir-un-niveau.md` (fait foi) ; 100 % doc, commit direct.
+- Les scripts de page à cocher et de publication deviennent réutilisables sous `scripts/questions/`, dans une PR à part, après la doc.
+- Le skill comprend la **création des outils qui manquent** (nouveaux blocs, gestes de réponse), en chantiers à part (question de David).
+- Vérifications manuelles reportées par David.
+
+## 4 septdecies. Lot D (collections, droite, longueurs, barres) : décisions (David, 2026-11-19)
+
+Relevé prod du 2026-11-19 : 70 points sur 84 ont un modèle publié. Sans modèle : 001, 070, 008, 033,
+072 (outils désormais en prod : `collection`, `line placer:`, `ranger`, `barres placer:`) ; 058, 059,
+060 en brouillon (chantier `geometrie-validation`, publication par David) ; groupe D (074, 053, 063 à 066).
+Correction : CP-072 n'attend aucun outil (barres à construire livrées le 2026-10-28).
+
+Phase 0 proposée, réponse de David : « je te suis », sur la phase 0 entière et ses trois questions
+(5 points et variations, deux modèles pour CP-033, axe de 0 à 10 pour CP-072).
+
+| Fichier                                   | Point  | Notion, niveau           | Variations                                                                                   |
+| ----------------------------------------- | ------ | ------------------------ | -------------------------------------------------------------------------------------------- |
+| 01 Combien de petits cubes ?              | CP-001 | dénombrement, 2          | vrac 6 à 20 ; barres et cubes 21 à 99 ; plus de dix cubes seuls (3 barres et 15 cubes)       |
+| 02 Quelle collection a le plus de cubes ? | CP-070 | ordre, 2                 | deux collections rangées ; piège du BO (A partiellement groupée), « autant » possible        |
+| 03 Place le nombre sur la demi-droite     | CP-008 | droite graduée, 1        | 0 à 10 ; 0 à 20 ; morceau de dix (10 à 100)                                                  |
+| 04 Quelle bandelette est la plus longue ? | CP-033 | comparaison et mesure, 1 | la plus longue ou la plus courte, 3 puis 4 bandelettes alignées, 2 carreaux d'écart au moins |
+| 05 Range les bandelettes                  | CP-033 | comparaison et mesure, 2 | 3, 4, 5 bandelettes, étiquettes à ranger                                                     |
+| 06 Construis le diagramme en barres       | CP-072 | diagrammes en barres, 1  | toutes les barres (3 fruits) ; deux barres sur quatre (sports) ; axe 0 à 10                  |
+
+- Collections dessinées seulement (le BO cite aussi les objets déplaçables).
+- Question d'accès de la migration nœud + tag : personne ne gagne ni ne perd d'accès (tags de classement).
+- Script : `docs/wip/questions/lot-cp-d.py` → `scripts/questions/cp-d/`. Simulation 6/6 verte ; sondes figures,
+  collections, droites : 0 problème ; créés en base locale le 2026-11-19.
+- Piège : les réponses d'un ` ```ranger ` sont des positions **affichées** ; le mélange d'une spec est fixe
+  et ne dépend que du nombre d'étiquettes (3 : 2,0,1 ; 4 : 3,0,1,2 ; 5 : 4,0,1,2,3), relevé par
+  `generateInstanceWithFixedVariables`. Une place vide y est jugée `unoptimal_form` (spec retirée).
+- Rendu non vu dans Chrome (le navigateur n'ouvrait pas `http://[::1]:5177`) : relu en texte
+  (`question:specs --apercu`) ; à voir sur la page à cocher.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -237,10 +276,10 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - 2026-10-25 : `db:migrate` lancé par David (demo_scripts + lot H), vérifié en prod : 3 modèles H sur leur sous-notion, 1 tag chacun ; 5 scripts de démo au prof, 0 à l'admin. Page à cocher H relue : 3/3 OK.
 - 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
-- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné ([geometrie-validation](geometrie-validation-progress.md)) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
-- 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon ([geometrie-validation](geometrie-validation-progress.md)), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
-- 2026-10-25 : phase 0 de CP-059 validée par David ([geometrie-validation](geometrie-validation-progress.md), 8 décisions) ; modèles 059/060 dans le chantier figure.
-- 2026-10-25 : § 2 bis / 2 ter (case « figure ») déplacés dans [geometrie-validation](geometrie-validation-progress.md).
+- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné ([geometrie-validation](../archive/wip/geometrie-validation-progress.md)) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
+- 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon ([geometrie-validation](../archive/wip/geometrie-validation-progress.md)), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
+- 2026-10-25 : phase 0 de CP-059 validée par David ([geometrie-validation](../archive/wip/geometrie-validation-progress.md), 8 décisions) ; modèles 059/060 dans le chantier figure.
+- 2026-10-25 : § 2 bis / 2 ter (case « figure ») déplacés dans [geometrie-validation](../archive/wip/geometrie-validation-progress.md).
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
 - 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
 - 2026-10-25 : #1763 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué, vérifié en prod (3 modèles B1 sur leur sous-notion, 1 tag chacun) ; page à cocher B1 publiée.
@@ -272,3 +311,9 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - 2026-10-26 : `deploy:prod` v0.50.0 (demandé par David) ; 6 brouillons M publiés (`publishTemplates`, script `publier-m.mts` du scratchpad, lancé par David), 0 refus, statut `published` relu en base : 68/68 CP publiés.
 - 2026-10-26 : lot C (construire), phase 0 validée (§ 4 quindecies) ; 4 brouillons « VERIF construire » de la base locale supprimés (go de David) ; worktree `../ubumaths-wt-questions` (`feat/questions-construire`) ; 4 modèles écrits, `checkTemplate` vert, créés en brouillon en base locale.
 - 2026-10-26 : #1830 mergée (fichiers du lot C ; CI verte ; revue : aucune, contenu) ; modèles joués dans l'aperçu admin en base locale, juste et faux, pour les 4.
+- 2026-10-26 : `deploy:prod` v0.51.0 (lancé par David) ; 4 brouillons C créés en prod (`create-questions --publier`, lancé par David : `ded05f7c`, `541b3209`, `8f587948`, `7be00c4a`), vérifiés : brouillon, sans nœud ni tag, niveaux 1, 6, 7 et 2 ; migration `20261026210000` nœud + tag et test, rouge (2/9) puis vert (9/9) ; #1832.
+- 2026-10-26 : #1832 mergée (CI verte au 2e essai : un job navigateur annulé ; audit sécurité sans bloquant) ; `db:migrate` joué depuis le dépôt principal, vérifié en prod : 4 modèles C sur leur sous-notion, 1 tag chacun, en brouillon, `updated_at` inchangé.
+- 2026-10-26 : page à cocher du lot C publiée : https://claude.ai/artifact/Ve9QRxVDiqSuYnbg3D12gp (collection `verdicts`) ; un exemple par variation (11), tiré par le vrai générateur ; réserve, plan vide et construction juste dessinés par les scènes `collection` / `monnaie` (script `page-c.mts` du scratchpad), relue à 390 px.
+- 2026-10-26 : page à cocher du lot C relue par David, 4/4 « ok », aucun commentaire ; 4 brouillons C publiés (`publishTemplates`, script `publier-c.mts` du scratchpad, lancé par David), 0 refus, statut `published` relu en base : 72 modèles CP publiés pour ce chantier.
+- 2026-10-26 : skill `couvrir-niveau` et doc `couvrir-un-niveau.md` écrits (§ 4 sexdecies), création d'outils comprise ; § 5 versé dans la doc.
+- 2026-10-26 : #1838 mergée : page à cocher et publication en scripts du dépôt (`scripts/questions/page-a-cocher.ts`, `publier-lot.ts`, logique dans `scripts/lib/`, 39 tests + 3 sur `publishTemplates` en simulation) ; page essayée sur les 13 lots CP (11 passent : `cp-figure` jamais créé, `cp-b2` refusé car deux sous-domaines changés en base) ; revue `code-reviewer` : publication partielle non reprenable → corrigé (simulation des contrôles, tout ou rien, reprise) ; vérifié en local (2 brouillons remis, 4/4 publiés).

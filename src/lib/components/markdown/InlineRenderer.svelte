@@ -17,12 +17,13 @@
 	@see ShapeLabel.svelte for primary usage
 -->
 <script lang="ts">
-	import type { InlineNode } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { InlineNode } from '#lib/ubumark/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import MathInline from './nodes/MathInline.svelte';
 	import TextNode from './nodes/TextNode.svelte';
+	import InlineColor from './nodes/InlineColor.svelte';
 	import { inlineDetailClass } from './detail-styles';
-	import { sanitizeUrl } from '$lib/utils/sanitize';
+	import { sanitizeUrl } from '#lib/utils/sanitize-url.ts';
 
 	interface Props {
 		/** Inline nodes to render */
@@ -78,20 +79,27 @@
 				italic={child.italic}
 				code={child.code}
 				detail={child.detail}
+				color={child.color}
+				unknownClasses={child.unknownClasses}
 				terms={child.terms}
 				termOffset={adjusted.hasLeadingSpace ? 1 : 0}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline' && child.detail}
 			<!-- Formule d'un détail en ligne `[…]{.rappel}` (ADR 0017) -->
 			<span class={inlineDetailClass(child.detail)}>
+				<InlineColor color={child.color}>
+					{#key child.expression}
+						<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
+					{/key}
+				</InlineColor>
+			</span>
+		{:else if child.type === 'math-inline'}
+			<!-- Formule d'un texte coloré `[…]{.orange}` (ADR 0042) -->
+			<InlineColor color={child.color}>
 				{#key child.expression}
 					<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
 				{/key}
-			</span>
-		{:else if child.type === 'math-inline'}
-			{#key child.expression}
-				<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
-			{/key}
+			</InlineColor>
 		{:else if child.type === 'link'}
 			<a
 				href={sanitizeUrl(child.url)}

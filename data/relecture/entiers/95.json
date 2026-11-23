@@ -64,9 +64,6 @@
 			}
 		],
 		"grades": ["CE2"],
-		"theme": "Entiers",
-		"domain": "Additionner",
-		"subdomain": "Somme astucieuse",
 		"level": 10,
 		"status": "draft",
 		"delay": 20,

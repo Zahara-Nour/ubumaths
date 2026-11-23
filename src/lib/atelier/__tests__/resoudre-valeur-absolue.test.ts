@@ -9,14 +9,14 @@
 
 import { describe, expect, it } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput } from '../calcul';
 import { rendererFor, solveSteps } from '../solve-steps';
 import {
 	AbsoluteValueEquationRenderer,
 	LinearEquationRenderer,
 	QuadraticEquationRenderer
-} from '$lib/mathAST/pedagogical-solve';
+} from '#lib/mathAST/pedagogical-solve/index.ts';
 
 describe('le renderer se choisit sans `else` fourre-tout', () => {
 	it("'absolute-value' prend le renderer de la valeur absolue", () => {

@@ -9,7 +9,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { InstanceData, WorksheetWithRelations } from '$lib/types/worksheets';
+import type { InstanceData, WorksheetWithRelations } from '#lib/types/worksheets.ts';
 import PdfPreview from '../PdfPreview.svelte';
 
 // ============================================================================
@@ -24,14 +24,14 @@ const captured = vi.hoisted(() => ({
 
 // Le « Typst » factice est le texte des énoncés : le SVG de l'aperçu le montre,
 // le test lit donc ce qui est RENDU, pas seulement la copie calculée.
-vi.mock('$lib/typst/generators', () => ({
+vi.mock('#lib/typst/generators/index.ts', () => ({
 	generateWorksheetTypst: (options: { instance: InstanceData }) => {
 		captured.instances.push(options.instance);
 		return options.instance.exercises.map((exercise) => exercise.statement).join(' | ');
 	}
 }));
 
-vi.mock('$lib/typst/compiler', () => ({
+vi.mock('#lib/typst/compiler/index.ts', () => ({
 	getTypstCompiler: async () => ({
 		svg: async ({ mainContent }: { mainContent: string }) => {
 			if (captured.gate) await captured.gate;
@@ -135,7 +135,7 @@ describe('PdfPreview — copie hors affectation', () => {
 		const preview = () => screen.container.querySelector('#pdf-svg-preview')?.textContent ?? '';
 		await expect.poll(preview).toMatch(/Guidé : calcule \d+ fois 3\./);
 
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Autonome' }).click();
 
 		await expect.poll(preview).toMatch(/Autonome : triple de \d+ \?/);
@@ -150,7 +150,7 @@ describe('PdfPreview — copie hors affectation', () => {
 		await expect.poll(preview).toMatch(/^Guidé/);
 
 		await page.getByRole('tab', { name: 'Lot' }).click();
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Autonome' }).click();
 		await page.getByRole('tab', { name: 'Apercu' }).click();
 
@@ -166,12 +166,12 @@ describe('PdfPreview — copie hors affectation', () => {
 		let release: () => void = () => {};
 		captured.gate = new Promise<void>((resolve) => (release = resolve));
 		const before = captured.instances.length;
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Intermédiaire' }).click();
 		await expect.poll(() => captured.instances.length).toBeGreaterThan(before);
 
 		// Changement pendant qu'elle tourne
-		await page.getByRole('button', { name: 'Niveau à imprimer' }).click();
+		await page.getByRole('combobox', { name: 'Niveau à imprimer' }).click();
 		await page.getByRole('option', { name: 'Autonome' }).click();
 		captured.gate = null;
 		release();

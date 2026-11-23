@@ -22,7 +22,14 @@ import type { TidyCondition } from './types';
 import { conditionKey, domainLoss, mergeConditions } from './conditions';
 
 export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
-export type { TermOrder, TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
+export type {
+	DurationWriting,
+	TermOrder,
+	TidyOptions,
+	TidyRule,
+	TidyStep,
+	UnitChoice
+} from './step-recorder';
 export type { TidyCondition } from './types';
 export {
 	avoidsPeriodicPoints,
@@ -105,7 +112,7 @@ export function tidyWithConditions(
  * `u′v − (uv′)` sans nœud de parenthèse : `tidy` y distribuait alors le signe
  * (`x(2x+1) − x² − x − 1`), ce que son contrat interdit pour `−(x+2)` écrit.
  */
-function withImpliedParentheses(node: MathNode): MathNode {
+export function withImpliedParentheses(node: MathNode): MathNode {
 	// Le cas courant n'en a aucune : on ne recopie pas l'arbre pour rien
 	if (findNodes(node, impliesParentheses).length === 0) return node;
 	return mapNode(node, (n) => {

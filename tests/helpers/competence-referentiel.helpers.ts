@@ -16,7 +16,7 @@ import { deleteTestAuthUsers } from './database/postgres-client';
 import { TestData } from './database/test-data-factory';
 import { createAuthenticatedClient } from './database/supabase-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 
 // ---------------------------------------------------------------------------
 // Type aliases for the new tables (not yet in generated database.ts)
@@ -405,11 +405,6 @@ export async function createFakeTemplate(
 	const { data, error } = await service
 		.from('question_templates')
 		.insert({
-			domain: 'test',
-			// UNIQUE idx_question_templates_unique_category (theme, domain, subdomain, level)
-			// WHERE published: keep domain='test' (cleanup marker) but vary theme per call
-			// so repeated createFakeTemplate() calls don't collide.
-			theme: `test-${crypto.randomUUID()}`,
 			title: `test-template-${crypto.randomUUID()}`,
 			// CHECK question_templates_type_check: valid types only (not 'direct').
 			type: 'numerical_exact',
@@ -547,10 +542,14 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 		.delete()
 		.not('id', 'is', null);
 
-	// Step 5: fake templates (domain = 'test') — scoped to test users to avoid
+	// Step 5: fake templates (titre `test-template-…`) — scoped to test users to avoid
 	// polluting parallel test sessions (B10: filter by created_by)
 	if (allIds.length > 0) {
-		await service.from('question_templates').delete().eq('domain', 'test').in('created_by', allIds);
+		await service
+			.from('question_templates')
+			.delete()
+			.like('title', 'test-template-%')
+			.in('created_by', allIds);
 	}
 
 	// Step 6: class membership + classes
@@ -618,7 +617,13 @@ export type SkillAttemptsEndpointResult = {
 export async function callSkillAttemptsEndpoint(
 	supabase: SupabaseClient<Database>,
 	user: import('@supabase/supabase-js').User,
-	body: { template_id: string; success: boolean; with_help?: boolean; phase_blocage?: string }
+	body: {
+		template_id: string;
+		success: boolean;
+		with_help?: boolean;
+		phase_blocage?: string;
+		place?: string;
+	}
 ): Promise<SkillAttemptsEndpointResult> {
 	const { vi } = await import('vitest');
 	const { POST } = await import('../../src/routes/api/skill-attempts/+server');
@@ -634,7 +639,8 @@ export async function callSkillAttemptsEndpoint(
 	const request = new Request('http://localhost/api/skill-attempts', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
+		// Lieu exigé par l'API (ADR 0038) : Flash-cards par défaut
+		body: JSON.stringify({ place: 'flash_cards', ...body })
 	});
 
 	try {
@@ -656,23 +662,16 @@ export async function callSkillAttemptsEndpoint(
  * was created by migration 20260609130000 — i.e., a real seeded 6e template
  * tagged to a real knowledge skill.
  *
- * Filters by the template's domain/subdomain to target a specific seed.
  * Returns null if the migration hasn't been applied yet.
  *
  * @param service - Service-role client
- * @param domain - Template domain to match (e.g. 'Fractions')
- * @param subdomain - Template subdomain to match (e.g. 'Addition')
  */
 export async function getTaggedKnowledgeTemplate(
-	service: SupabaseClient<Database>,
-	domain: string,
-	subdomain: string
+	service: SupabaseClient<Database>
 ): Promise<{ template_id: string; point_id: string } | null> {
 	const { data, error } = await service
 		.from('question_template_points' as never)
-		.select('template_id, point_id, question_templates!inner(domain, subdomain)')
-		.eq('question_templates.domain', domain)
-		.eq('question_templates.subdomain', subdomain)
+		.select('template_id, point_id')
 		.limit(1)
 		.maybeSingle();
 

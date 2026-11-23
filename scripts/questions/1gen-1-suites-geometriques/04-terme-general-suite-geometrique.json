@@ -1,0 +1,228 @@
+{
+	"id": "c4887e49-2337-4ac7-a2c9-369434868b65",
+	"title": "Terme général d'une suite géométrique à termes positifs",
+	"description": "À partir de $u_0$, de $u_1$ ou d'un placement à taux fixe",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\times{{q}}^n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme est $u_0$ : pour aller de $u_0$ à $u_n$, on multiplie $n$ fois par la raison. Donc $u_n=u_0\\times q^n$.",
+					"$u_n=\\textcolor{{{color:primary.0}}}{{{a}}\\times{{q}}^n}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_1={{a}}$ et de raison $q={{q}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\times{{q}}^{n-1}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme est $u_1$ : pour aller de $u_1$ à $u_n$, on multiplie $n-1$ fois par la raison. Donc $u_n=u_1\\times q^{n-1}$.",
+					"$u_n=\\textcolor{{{color:primary.0}}}{{{a}}\\times{{q}}^{n-1}}$."
+				]
+			}
+		},
+		{
+			"statement": "On place ${{c}}~\\unit{€}$ à ${{t}}~\\%$ d'intérêts composés par an. On note $u_n$ la somme disponible au bout de $n$ années, donc $u_0={{c}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "500|1000|2000"
+				},
+				{
+					"name": "t",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}\\times{{eval:1+t/100;d}}^n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, la somme augmente de ${{t}}~\\%$ : elle est multipliée par $1+\\dfrac{{{t}}}{100}={{eval:1+t/100;d}}$. La suite $(u_n)$ est géométrique de raison ${{eval:1+t/100;d}}$.",
+					"Son premier terme est $u_0={{c}}$, donc $u_n=\\textcolor{{{color:primary.0}}}{{{c}}\\times{{eval:1+t/100;d}}^n}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_0=3, q=2 : 3×2^n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"answers": ["3\\times2^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "écrit 3·2^n sans signe",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"answers": ["3\\cdot2^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (3×2)^n = 6^n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"answers": ["6^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arithmétique 3+2n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"answers": ["3+2n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2×3^n (inversé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"answers": ["2\\times3^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_1=5, q=3 : 5×3^(n−1)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q": "3"
+			},
+			"answers": ["5\\times3^{n-1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u_1 pris pour u_0 (5×3^n)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q": "3"
+			},
+			"answers": ["5\\times3^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposant n+1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q": "3"
+			},
+			"answers": ["5\\times3^{n+1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1000 € à 3 % : 1000×1,03^n",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1000",
+				"t": "3"
+			},
+			"answers": ["1000\\times1,03^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1000×0,03^n",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1000",
+				"t": "3"
+			},
+			"answers": ["1000\\times0,03^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : intérêts simples 1000+30n",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1000",
+				"t": "3"
+			},
+			"answers": ["1000+30n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

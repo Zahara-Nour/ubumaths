@@ -3,7 +3,11 @@
  *
  * These templates use Typst markup with placeholders in {{placeholder}} format.
  * Available placeholders:
- * - {{title}} - Worksheet title
+ * - {{title}} - Worksheet title as printed (ADR 0041: the notions, or the free title)
+ * - {{title_notions}} - Line under a title that is the notions' shared branch: the notions (empty otherwise)
+ * - {{title_sub}} - Small line under the title: category of a composed title (empty under a free title)
+ * - {{footer_title}} - Title at the foot of each page (notions · category, or free title)
+ * - {{level_badges}} - Level badges (short names, orange), Typst markup
  * - {{date}} - Current date or assignment date
  * - {{class}} - Class name
  * - {{student_name}} - Student's full name
@@ -24,9 +28,10 @@
  * - {{teacher_name}} - Teacher's name
  */
 
-import type { TemplatePlaceholder } from '$lib/types/worksheets';
-import { TYPST_LANGS } from '$lib/types/locale';
+import type { TemplatePlaceholder } from '#lib/types/worksheets.ts';
+import { TYPST_LANGS } from '#lib/types/locale.ts';
 import { labelPlaceholders } from '../labels';
+import { SITE_GIDOUILLE_TYPST, SITE_NAME, SITE_QR_TYPST } from './site-mark';
 
 export interface DefaultTemplate {
 	id: string;
@@ -1574,10 +1579,21 @@ const studentStyleCommon = (
     length: 100% - 3cm,
     stroke: 0.3pt + luma(75%)
   )),
+  // Badge du niveau puis titre de la fiche à gauche (notions et catégorie, ou
+  // titre libre, ADR 0041), pour retrouver la fiche d'une feuille imprimée ;
+  // numéro de page au centre ; gidouille + « chiph.re » à droite à partir de la
+  // page 2 (la page 1 a le QR de l'en-tête)
   footer: context [
-    #set align(center)
     #set text(size: 9pt, fill: gray)
-    #counter(page).display("1 / 1", both: true)
+    #grid(
+      columns: (1fr, auto, 1fr),
+      column-gutter: 1em,
+      // Centré en hauteur : le badge ne décale ni le titre ni « n / N »
+      align: (left + horizon, center + horizon, right + horizon),
+      [{{#if show_level}}{{level_badges}}#h(0.4em){{/if}}{{#if show_title}}{{footer_title}}{{/if}}],
+      counter(page).display("1 / 1", both: true),
+      if counter(page).get().first() > 1 [{{#if site_gidouille}}#{{site_gidouille}}#h(0.3em){{/if}}{{site_name}}]
+    )
   ]
 )
 
@@ -1609,8 +1625,27 @@ const studentStyleHeader = (
 // Le fond blanc masque le filet vertical derrière le bandeau.
 #place(top + center, scope: "parent", float: true)[
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
-${banner}    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
-    #v(0.4em){{/if}}
+${banner}    // Première ligne, trois colonnes de même largeur sur les côtés : badge du
+    // niveau à gauche, titre au CENTRE DE LA PAGE, QR du site à droite
+    // (« chiph.re » dessous). Dessous le titre, en petit gris : la catégorie d'un
+    // titre composé ; rien sous un titre libre (ADR 0041). Titre = branche commune
+    // des notions : les notions entre les deux.
+    #grid(
+      columns: (1fr, 3fr, 1fr),
+      column-gutter: 0.5em,
+      align: (left + horizon, center + horizon, right + horizon),
+      [{{#if show_level}}{{level_badges}}{{/if}}],
+      [{{#if show_title}}#text(size: 1.5em, weight: "bold")[{{title}}]{{#if show_title_notions}}
+        #v(0.2em, weak: true)
+        #text(size: 1.05em)[{{title_notions}}]{{/if}}{{#if show_title_sub}}
+        #v(0.2em, weak: true)
+        #text(size: 0.85em, style: "italic", fill: rgb("#5a5a5a"))[{{title_sub}}]{{/if}}{{/if}}],
+      [{{#if site_qr}}#box[#align(center)[#{{site_qr}}
+      #v(2pt, weak: true)
+      #text(size: 8pt, fill: gray)[{{site_name}}]]]{{/if}}]
+    )
+    #v(0.4em)
+    // Identité et notes sur toute la largeur
     {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
       align: (left, center, right),
@@ -1621,6 +1656,7 @@ ${banner}    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")
     #v(0.3em){{/if}}
     {{#if show_header_notes}}#text(size: 0.9em)[${HEADER_NOTES}]
     #v(0.3em){{/if}}
+    #v(0.3em)
     #line(length: 100%, stroke: 0.5pt + gray)
   ]
 ]
@@ -1768,10 +1804,22 @@ export const SAMPLE_PREVIEW_DATA = {
 	// French: the application UI is French, whatever a worksheet's own language.
 	...labelPlaceholders('fr'),
 	lang: TYPST_LANGS.fr,
+	// Chiphre : QR du site en tête de la page 1, nom du site en bas des suivantes
+	site_qr: SITE_QR_TYPST,
+	site_name: SITE_NAME,
+	site_gidouille: SITE_GIDOUILLE_TYPST,
+	level: '1ère spécialité maths',
+	level_short: '1ère Spé',
+	level_badges:
+		'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 0.4em, y: 0.25em), baseline: 0.25em)[#text(fill: white, weight: "bold")[1ère Spé]]',
+	title_sub: 'entraînement technique',
+	footer_title: 'Equations du premier degre · Entraînement technique',
 	// Display-option flags: previews always show every field, whatever a given
 	// worksheet's config says. Kept last so the editor's placeholder panel, which
 	// lists the first entries, keeps showing content fields.
 	show_title: 'true',
+	show_level: 'true',
+	show_title_sub: 'true',
 	show_identity: 'true',
 	show_date: 'true',
 	show_class: 'true',

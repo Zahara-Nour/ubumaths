@@ -7,7 +7,6 @@ import {
 	displayOptionsSchema,
 	variableSchema,
 	blankSchema,
-	choiceSchema,
 	optionsSchema,
 	generatedStepsSchema,
 	generatedStepsOptionsSchema
@@ -352,8 +351,6 @@ describe('questionTemplateSchema (strict)', () => {
 		title: 'Test',
 		variations: [{ statement: 'What is 1+1?' }],
 		grades: ['6e'],
-		theme: 'Calcul',
-		domain: 'Addition',
 		level: 1,
 		status: 'published' as const
 	};
@@ -405,11 +402,6 @@ describe('building blocks (non-strict)', () => {
 		expect(result).toEqual({ removeSpaces: true });
 	});
 
-	it('choiceSchema strips unknown keys', () => {
-		const result = choiceSchema.parse({ content: 'A', extra: 'x' });
-		expect(result).toEqual({ content: 'A' });
-	});
-
 	it('variableSchema strips unknown keys', () => {
 		const result = variableSchema.parse({ name: 'x', expression: '2', extra: true });
 		expect(result).toEqual({ name: 'x', expression: '2' });
@@ -421,8 +413,18 @@ describe('building blocks (non-strict)', () => {
 	});
 
 	it('optionsSchema strips unknown keys', () => {
-		const result = optionsSchema.parse({ shuffleChoices: true, extra: true });
-		expect(result).toEqual({ shuffleChoices: true });
+		const result = optionsSchema.parse({ orderIndependent: true, extra: true });
+		expect(result).toEqual({ orderIndependent: true });
+	});
+
+	it('optionsSchema refuse « mélanger les choix » du QCM retiré, admet null (éditeur ouvert avant)', () => {
+		expect(optionsSchema.safeParse({ shuffleChoices: false }).success).toBe(false);
+		expect(optionsSchema.safeParse({ shuffleChoices: null }).success).toBe(true);
+	});
+
+	it('champ du QCM retiré à null : admis mais jamais écrit (la clé disparaît au JSON)', () => {
+		const options = optionsSchema.parse({ orderIndependent: true, shuffleChoices: null });
+		expect(JSON.parse(JSON.stringify(options))).toEqual({ orderIndependent: true });
 	});
 });
 
@@ -434,8 +436,6 @@ describe('questionTemplateSchema refine', () => {
 	const base = {
 		title: 'Test',
 		grades: ['6e'],
-		theme: 'Calcul',
-		domain: 'Addition',
 		level: 1,
 		status: 'published' as const
 	};

@@ -8,7 +8,7 @@
  */
 import { PostgrestError } from '@supabase/supabase-js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 afterEach(() => {
 	vi.restoreAllMocks();

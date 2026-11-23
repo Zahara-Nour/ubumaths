@@ -1,12 +1,12 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	inboxMessagesResponseSchema,
 	inboxMessagesQuerySchema
-} from '$lib/server/validation/messages';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/messages.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/inbox/+server');
 
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			'GET /api/messages/inbox'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		logger.error('Error in inbox API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

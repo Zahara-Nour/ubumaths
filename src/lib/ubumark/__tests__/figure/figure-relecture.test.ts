@@ -14,10 +14,10 @@ import { parseFigureContent } from '../../parser/figure-parser';
 import { buildFigureScene } from '../../utils/figure-scene';
 import { figureToSvg } from '../../utils/figure-svg';
 import { generateFigureTypst } from '../../generators/figure-typst';
-import { resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
-import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
-import { templateMarkdown } from '$lib/ubumark';
-import { resolveNamedColor } from '$lib/theme/named-colors';
+import { resolveStyle } from '#lib/geometry-core/rendering/svg-primitives.ts';
+import { resolveMarkdownContent } from '#lib/questions/generator/content-resolver.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { resolveNamedColor } from '#lib/theme/named-colors.ts';
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 

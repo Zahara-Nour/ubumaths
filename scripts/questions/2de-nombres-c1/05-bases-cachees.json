@@ -1,0 +1,227 @@
+{
+	"id": "fa0dd978-a74e-4488-bcfd-026aef0288cc",
+	"title": "Puissances : bases cachées",
+	"description": "Écrire 8² × 4³ / 2⁵ ou 9⁴ / 27² comme une puissance de 2, 3 ou 5 en repérant 8 = 2³, 4 = 2² (pièges : exposants ajoutés sans convertir les bases, exposants additionnés au lieu de multipliés)",
+	"grades": ["2"],
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris sous la forme d'une puissance de ${{b}}$.\n\n$$\\dfrac{ {{A}}^{ {{m}} }\\times {{B}}^{ {{n}} } }{ {{b}}^{ {{r}} } }={{b}}^{?}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(b)^3"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(b)^2"
+				},
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:3*(m)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:2*(n)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:3*(m)+2*(n)-(r)"
+				}
+			],
+			"conditions": ["k >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Règles** : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$. Elles ne s'appliquent qu'à des puissances **d'un même nombre**.",
+					"On écrit chaque nombre comme une puissance de ${{b}}$ : ${{A}}=\\textcolor{{{color:primary.0}}}{{{b}}^{3}}$ et ${{B}}=\\textcolor{{{color:primary.1}}}{{{b}}^{2}}$.",
+					"$${{A}}^{ {{m}} }=\\left(\\textcolor{{{color:primary.0}}}{{{b}}^{3}}\\right)^{ {{m}} }={{b}}^{3\\times{{m}}}={{b}}^{ {{x}} }\\quad\\text{et}\\quad{{B}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.1}}}{{{b}}^{2}}\\right)^{ {{n}} }={{b}}^{2\\times{{n}}}={{b}}^{ {{y}} }$$",
+					"$$\\dfrac{ {{b}}^{ {{x}} }\\times{{b}}^{ {{y}} } }{ {{b}}^{ {{r}} } }={{b}}^{ {{x}}+{{y}}-{{r}} }=\\textcolor{{{color:primary.2}}}{{{b}}^{ {{k}} }}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une puissance de ${{b}}$.\n\n$$\\dfrac{ {{B}}^{ {{m}} } }{ {{A}}^{ {{n}} } }={{b}}^{?}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(b)^3"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(b)^2"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:2*(m)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:3*(n)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:2*(m)-3*(n)"
+				}
+			],
+			"conditions": ["k != 0", "k != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Règles** : $a^m\\times a^n=a^{m+n}$ ; $\\dfrac{a^m}{a^n}=a^{m-n}$ ; $(a^m)^n=a^{m\\times n}$. Elles ne s'appliquent qu'à des puissances **d'un même nombre**.",
+					"On écrit chaque nombre comme une puissance de ${{b}}$ : ${{B}}=\\textcolor{{{color:primary.0}}}{{{b}}^{2}}$ et ${{A}}=\\textcolor{{{color:primary.1}}}{{{b}}^{3}}$.",
+					"$${{B}}^{ {{m}} }=\\left(\\textcolor{{{color:primary.0}}}{{{b}}^{2}}\\right)^{ {{m}} }={{b}}^{ {{x}} }\\quad\\text{et}\\quad{{A}}^{ {{n}} }=\\left(\\textcolor{{{color:primary.1}}}{{{b}}^{3}}\\right)^{ {{n}} }={{b}}^{ {{y}} }$$",
+					"$$\\dfrac{ {{b}}^{ {{x}} } }{ {{b}}^{ {{y}} } }={{b}}^{ {{x}}-{{y}} }=\\textcolor{{{color:primary.2}}}{{{b}}^{ {{k}} }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8² × 4³ / 2⁵ = 2⁷",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bases non converties (2 + 3 − 5 = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (2³)² = 2⁵, exposants additionnés",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"m": "2",
+				"n": "3",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "27³ × 9² / 3⁴ = 3⁹",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"m": "3",
+				"n": "2",
+				"r": "4"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "25⁴ / 125² = 5²",
+			"variationIndex": 1,
+			"variables": {
+				"b": "5",
+				"m": "4",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "9² / 27³ = 3⁻⁵",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu (3⁵)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bases non converties (2 − 3 = −1)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"m": "2",
+				"n": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

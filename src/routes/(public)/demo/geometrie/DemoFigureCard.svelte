@@ -5,10 +5,10 @@
 	toile de `GeometryCanvas` a une largeur fixe, l'échelle suit la réduction.
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { runDsl } from '$lib/geometry-core/dsl';
+	import { browser } from '$app/env';
+	import GeometryCanvas from '#lib/components/geometry/GeometryCanvas.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { runDsl } from '#lib/geometry-core/dsl/index.ts';
 	import type { DemoFigure } from './figures';
 
 	// Types

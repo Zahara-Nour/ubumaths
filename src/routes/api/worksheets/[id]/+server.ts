@@ -5,20 +5,25 @@
  * DELETE - Delete worksheet (draft only)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { loadStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
-import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { loadStyleTemplate } from '#lib/server/worksheets/worksheet-styles.ts';
+import { fetchResourceTagNames, syncResourceTags } from '#lib/server/resource-tags.ts';
+import {
+	applyClassification,
+	loadWorksheetClassifications,
+	prepareClassification
+} from '#lib/server/worksheets/worksheet-classification.ts';
 import {
 	validateUpdateWorksheet,
 	worksheetDetailResponseSchema,
 	deleteWorksheetResponseSchema
-} from '$lib/server/validation/worksheets';
-import { uuidSchema } from '$lib/server/validation/common';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import type { TablesUpdate } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import type { TablesUpdate } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/+server');
 
@@ -128,6 +133,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		() => []
 	);
 
+	// Les notions de la fiche avec leur nom (ADR 0041) : l'éditeur et le PDF
+	const classifications = await loadWorksheetClassifications(locals.supabase, worksheet.id).catch(
+		(cause: unknown) => {
+			logger.error('Failed to fetch classifications:', cause);
+			throw error(500, 'Impossible de charger les notions de la fiche');
+		}
+	);
+
 	// Validate response
 	const validated = validateJsonResponse(
 		worksheetDetailResponseSchema,
@@ -135,6 +148,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			worksheet: {
 				...worksheet,
 				tags,
+				classifications,
 				sections: sections ?? [],
 				exercises: exercises ?? [],
 				template
@@ -143,7 +157,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		'GET /api/worksheets/[id]'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };
 
 /**
@@ -209,26 +223,83 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		}
 	}
 
+	// Catégorie, titre libre, notions (ADR 0041) : règle du nombre de notions
+	// et titre composé, décidés avant toute écriture
+	const plan = await prepareClassification(
+		locals.supabase,
+		{
+			id: existingWorksheet.id,
+			type: existingWorksheet.type,
+			category: existingWorksheet.category,
+			custom_title: existingWorksheet.custom_title
+		},
+		{
+			type: data.type,
+			category: data.category,
+			custom_title: data.custom_title,
+			notions: data.notions,
+			title: data.title
+		}
+	).catch((cause: unknown) => {
+		logger.error('Failed to prepare classification:', cause);
+		throw error(500, 'Impossible de lire les notions de la fiche');
+	});
+	if (!plan.ok) throw error(400, plan.message);
+	// Le titre composé remplace celui envoyé : sans titre libre, il fait foi
+	Object.assign(updateData, plan.update);
+
 	// Only proceed if there are fields to update
-	if (Object.keys(updateData).length === 0) {
+	if (Object.keys(updateData).length === 0 && plan.notions === null && data.tags === undefined) {
 		throw error(400, 'Aucune modification demandée');
 	}
 
-	// Update worksheet
-	const { data: worksheet, error: dbError } = await locals.supabase
-		.from('worksheets')
-		.update(updateData)
-		.eq('id', params.id)
-		.select()
-		.single();
-
-	if (dbError) {
-		// Trigger de `worksheets.style_id` : style d'un autre auteur
-		if (dbError.code === '42501') {
-			throw error(403, 'Ce style n’est pas disponible pour cette fiche');
+	// Deux mises à jour de la fiche : d'abord les champs sans rapport avec les
+	// notions (un refus, style d'un autre auteur par exemple, arrive AVANT que
+	// la moindre notion soit retirée) ; puis type, catégorie, case et titre
+	// composé, entre le retrait des notions en trop et l'écriture des nouvelles
+	// (l'ordre qui passe la garde de la base : une notion sauf Révisions /
+	// Automatismes). Trois requêtes, donc trois transactions : une fonction SQL
+	// les réunirait (écart connu, docs/systeme/fiches-et-pdf.md).
+	const CLASSIFICATION_FIELDS = ['type', 'category', 'custom_title', 'title'] as const;
+	const classificationUpdate: TablesUpdate<'worksheets'> = {};
+	const otherUpdate: TablesUpdate<'worksheets'> = { ...updateData };
+	for (const field of CLASSIFICATION_FIELDS) {
+		if (field in updateData) {
+			Object.assign(classificationUpdate, { [field]: updateData[field] });
+			delete otherUpdate[field];
 		}
-		logger.error('Failed to update worksheet:', dbError);
-		throw error(500, 'Impossible de modifier la fiche');
+	}
+
+	let worksheet: Awaited<ReturnType<typeof getWorksheetWithAuth>> = existingWorksheet;
+	async function writeWorksheet(fields: TablesUpdate<'worksheets'>): Promise<void> {
+		if (Object.keys(fields).length === 0) return;
+		const { data: updated, error: dbError } = await locals.supabase
+			.from('worksheets')
+			.update(fields)
+			.eq('id', params.id)
+			.select()
+			.single();
+
+		if (dbError || !updated) {
+			// Trigger de `worksheets.style_id` : style d'un autre auteur
+			if (dbError?.code === '42501') {
+				throw error(403, 'Ce style n’est pas disponible pour cette fiche');
+			}
+			logger.error('Failed to update worksheet:', dbError);
+			throw error(500, 'Impossible de modifier la fiche');
+		}
+		worksheet = updated;
+	}
+
+	await writeWorksheet(otherUpdate);
+	try {
+		await applyClassification(locals.supabase, params.id, plan, () =>
+			writeWorksheet(classificationUpdate)
+		);
+	} catch (cause) {
+		if (isHttpError(cause)) throw cause;
+		logger.error('Failed to save classification:', cause);
+		throw error(500, 'Impossible d’enregistrer les notions de la fiche');
 	}
 
 	// `undefined` signifie « champ absent de la requête » : on ne touche alors pas
@@ -238,8 +309,16 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	const tags = await fetchResourceTagNames(locals.supabase, 'worksheet', params.id).catch(() => []);
+	// Sans les notions relues, l'éditeur réafficherait celles d'avant : 500, le
+	// prof réenregistre (même résultat)
+	const classifications = await loadWorksheetClassifications(locals.supabase, params.id).catch(
+		(cause: unknown) => {
+			logger.error('Failed to reread classifications:', cause);
+			throw error(500, 'Fiche enregistrée, mais ses notions n’ont pas pu être relues');
+		}
+	);
 
-	return json({ worksheet: { ...worksheet, tags } });
+	return Response.json({ worksheet: { ...worksheet, tags, classifications } });
 };
 
 /**
@@ -285,5 +364,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		'DELETE /api/worksheets/[id]'
 	);
 
-	return json(validated);
+	return Response.json(validated);
 };

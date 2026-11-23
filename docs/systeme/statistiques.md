@@ -11,7 +11,7 @@ couvre:
 
 # Statistiques et probabilités (`src/lib/statistics/`)
 
-> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23. Usage dans l'atelier : [atelier.md](atelier.md)
+> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01, à construire le 2026-11-01. Usage dans l'atelier : [atelier.md](atelier.md)
 > (§ « Liens avec `mathAST` et `statistics` ») ; syntaxe des blocs statistiques :
 > [ubumark.md](ubumark.md) (genres de `stat-chart`). Cette doc ne décrit que le **calcul**.
 
@@ -64,7 +64,9 @@ Seul import hors du module : `RandomSource` de `src/lib/utils/random.ts` (chemin
 
 - `summarizeList(values)` → `Outcome<Summary> | null` : effectif, moyenne, médiane, min, max,
   étendue, variance, écart type, Q1, Q3, écart interquartile, D1, D9. `describeList` en est la
-  version sans message (`Summary | null`).
+  version sans message (`Summary | null`) ; le bloc ` ```boite-a-moustaches ` l'appelle pour sa
+  boîte `données:` (min, `q1`, `median`, `q3`, max), sans autre calcul de quartile — l'attendu
+  d'une boîte à construire avec `données:` aussi.
 - `summarizeTable(values, counts)` → `Outcome<FrequencyTable>` : lignes triées et **fusionnées**
   par valeur (fréquence, effectif cumulé, fréquences cumulées croissante et décroissante) + le
   `Summary`. Les effectifs peuvent être des pourcentages (seules les proportions comptent).
@@ -216,11 +218,21 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `src/lib/ubumark/utils/comparison-scene.ts`, `src/lib/ubumark/types/stat-chart.ts`.
   Détails : [ubumark.md](ubumark.md).
 - **Questions** : aucun import direct (`git grep` sur `src/lib/questions`, `src/lib/exercises`).
-  Une question qui affiche un bloc statistique passe par ubumark.
+  Une question qui affiche un bloc statistique passe par ubumark ; un diagramme en barres à
+  construire (`placer:`, `axe:` jusqu'à 100 au plus, `STAT_CHART_LIMITS.placeAxisMax`, ou
+  `axe: à choisir` : l'élève choisit l'échelle, case en plus — [ubumark.md](ubumark.md)) aussi : le
+  générateur lit ses barres par `parseStatChartContent` (`generator/build-answer.ts`), l'effectif
+  attendu est celui que le parseur a compté. Au premier niveau de l'énoncé seulement : en retrait,
+  cité ou ouvert sur la ligne d'un item (`- ```barres`), `findBarsToPlace` le marque imbriqué et le
+  générateur le refuse (règle commune, `ubumark/parser/nested-line.ts`). En évaluation notée,
+  l'effectif d'une barre à construire part masqué (`Natation = ?`, lu comme 0 ; [ubumark.md](ubumark.md),
+  invariant 12). Une boîte à moustaches à construire (` ```boite-a-moustaches ` + `placer:`) de même :
+  cinq cases par boîte, valeurs lues par `parseStatChartContent`, `findBoxPlotsToPlace`, énoncé
+  masqué `Notes = ? ; ? ; ? ; ? ; ?`.
 
 ## Invariants
 
-1. **Aucun import `$lib`** dans `src/lib/statistics/` : `mathAST` l'importe par chemin relatif
+1. **Aucun import `#lib`** dans `src/lib/statistics/` : `mathAST` l'importe par chemin relatif
    et `pnpm math` le fait tourner sous `tsx`, sans alias.
 2. **Une seule source** : un indicateur, une loi, un texte d'indicateurs ne se recalculent pas
    ailleurs ; l'atelier et les fiches montrent les mêmes nombres.
@@ -269,7 +281,8 @@ loi normale par `src/lib/atelier/__tests__/loi-normale.test.ts`.
 Aucune ADR. Décisions de David consignées dans les journaux archivés :
 [outils-statistiques](../archive/wip/outils-statistiques-progress.md) (quartiles du programme,
 médiane jamais « Q2 », arrondis d'affichage Q13, vocabulaire, boîte à moustaches hors
-périmètre), [v2](../archive/wip/outils-statistiques-v2-progress.md) (simulation à graine,
+périmètre — dessinée depuis par le bloc ` ```boite-a-moustaches `, chantier
+[boite-a-moustaches](../archive/wip/boite-a-moustaches-progress.md), 2026-11-01), [v2](../archive/wip/outils-statistiques-v2-progress.md) (simulation à graine,
 fractions de liste), [loi binomiale](../archive/wip/loi-binomiale-progress.md) (calcul exact,
 intervalle Q140, pas de liste créée par une loi — Q142),
 [lois discrètes](../archive/wip/lois-discretes-progress.md),
@@ -290,7 +303,7 @@ exacts, jamais les arrondis affichés). Variance de population : 2026-09-16.
   `Fraction` : l'appelant convertit.
 - La binomiale n'a pas d'échantillonneur propre : la scène la tire comme loi finie, avec les
   probabilités exactes de `binomialDistribution`.
-- `atMost`, `findThreshold` et `MAX_COMPUTED_VALUE` ne servent qu'à l'intérieur du module,
-  bien qu'exportés.
+- `atMost` et `findThreshold` ne servent qu'à l'intérieur du module (`binomial.ts`, `geometric.ts`),
+  bien qu'exportés ; `MAX_COMPUTED_VALUE` n'est plus exporté.
 
 Vérifié contre le code le 2026-10-10.

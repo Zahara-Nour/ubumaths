@@ -11,10 +11,11 @@
  *   - entity_id: Related entity ID (optional)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import type { TriggerType } from '$lib/types/messageTemplates';
-import { createServerLogger } from '$lib/utils/logger';
+import type { TriggerType } from '#lib/types/messageTemplates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/match/+server');
 
@@ -22,11 +23,9 @@ const logger = createServerLogger('api/messages/templates/match/+server');
 // GET - Find matching template
 // =====================================================
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	// Parse query parameters
 	const triggerType = url.searchParams.get('trigger_type') as TriggerType;
@@ -91,7 +90,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.single();
 
 		if (!classError && classTemplate) {
-			return json({
+			return Response.json({
 				template: {
 					...classTemplate,
 					class_name: classTemplate.classes?.name || null
@@ -114,7 +113,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		.single();
 
 	if (systemError || !systemTemplate) {
-		return json(
+		return Response.json(
 			{
 				template: null,
 				match_type: 'none',
@@ -124,7 +123,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		);
 	}
 
-	return json({
+	return Response.json({
 		template: systemTemplate,
 		match_type: 'system',
 		message: 'Template système trouvé'

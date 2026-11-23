@@ -15,13 +15,20 @@
 	- Diagonal hatches for forbidden zones (|h|)
 	- MathLive rendering for mathematical expressions
 	- Dark mode support via CSS variables
+	- Cellules cachées (`?`, tableau de signes à compléter) : case vide en pointillés
+	  (`hiddenCells="blank"`, défaut : la réponse ne s'affiche jamais par mégarde),
+	  remplie (`"filled"` : éditeur, bonne réponse), ou rendue par l'appelant
+	  (`cell`, saisie de l'élève)
 
 	@module components/markdown/nodes/VariationTable
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	import 'mathlive';
+	import type { Snippet } from 'svelte';
 	import type {
+		HiddenCell,
+		LimitSide,
 		VariationTableNode,
 		SignRow,
 		VariationRow,
@@ -29,15 +36,71 @@
 		VariationValue,
 		DomainPoint,
 		VariationMarker
-	} from '$lib/ubumark/types/variation-table';
-	import { withImplicitEndpoints } from '$lib/ubumark/parser/variation-table-parser';
+	} from '#lib/ubumark/types/variation-table.ts';
+	import {
+		variationRowForDisplay,
+		withImplicitEndpoints
+	} from '#lib/ubumark/parser/variation-table-parser.ts';
 
 	interface Props {
 		node: VariationTableNode;
 		class?: string;
+		/** Cellules cachées sans `cell` : vides (défaut) ou remplies de la réponse */
+		hiddenCells?: 'blank' | 'filled';
+		/** Contenu d'une cellule cachée (saisie de l'élève) ; prime sur `hiddenCells` */
+		cell?: Snippet<[HiddenCell]>;
+		/**
+		 * Réponses des cellules cachées pour `filled` (une par case, ordre de lecture) : celles
+		 * de la question, quand l'énoncé est masqué (`??n`, `?` seul : le nœud ne les a pas)
+		 */
+		answers?: readonly string[];
 	}
 
-	let { node, class: className = '' }: Props = $props();
+	let { node, class: className = '', hiddenCells = 'blank', cell, answers }: Props = $props();
+
+	/** Cellules cachées, par ligne (`'domain'` ou rang dans `rows`), clé et côté d'une limite */
+	let hiddenByKey = $derived(
+		new Map(
+			(node.cases ?? []).map((hidden) => [
+				`${hidden.row}|${hidden.key}|${hidden.side ?? ''}`,
+				hidden
+			])
+		)
+	);
+
+	/** Du tableau reste caché à gauche / à droite : ombre sur ce bord */
+	let hiddenLeft = $state(false);
+	let hiddenRight = $state(false);
+
+	/**
+	 * Attachement de la zone qui défile : relit ce qui dépasse de chaque côté au défilement
+	 * et quand la zone ou le tableau change de taille (écran tourné, MathLive chargé).
+	 * Marge d'un pixel : arrondis du navigateur.
+	 */
+	function watchOverflow(zone: HTMLDivElement) {
+		const update = () => {
+			const { scrollLeft, clientWidth, scrollWidth } = zone;
+			hiddenLeft = scrollLeft > 1;
+			hiddenRight = scrollLeft + clientWidth < scrollWidth - 1;
+		};
+		const observer = new ResizeObserver(update);
+		observer.observe(zone);
+		if (zone.firstElementChild) observer.observe(zone.firstElementChild);
+		zone.addEventListener('scroll', update, { passive: true });
+		update();
+		return () => {
+			observer.disconnect();
+			zone.removeEventListener('scroll', update);
+		};
+	}
+
+	/**
+	 * La cellule cachée de cette ligne et de cette clé, s'il y en a une ; `side` : une
+	 * limite cachée autour d'une double barre (`||, ?-inf, +inf`)
+	 */
+	function hiddenAt(row: 'domain' | number, key: string, side?: LimitSide): HiddenCell | undefined {
+		return hiddenByKey.get(`${row}|${key}|${side ?? ''}`);
+	}
 
 	/**
 	 * Unique ID for this component instance - CRITICAL for SVG markers.
@@ -74,13 +137,28 @@
 	}
 
 	// Separate sign rows from variation rows
-	let signRows = $derived(node.rows.filter((row): row is SignRow => row.type === 'sign'));
+	// Rang de chaque ligne dans `rows` gardé : il repère les cellules cachées
+	let signRows = $derived(
+		node.rows.flatMap((row, rowIndex) => (row.type === 'sign' ? [{ row, rowIndex }] : []))
+	);
 	// Bornes sans valeur (tableau de 1re, sans limites) : position déduite de la
 	// valeur voisine, sinon aucune flèche n'était dessinée vers ±∞
+	// Flèche cachée (saisie, case vide) : les valeurs qui l'encadrent au milieu, rien
+	// ne la dit ; cases remplies (bonne réponse) : le tableau juste
+	let showsAnswers = $derived(!cell && hiddenCells === 'filled');
 	let variationRows = $derived(
-		node.rows
-			.filter((row): row is VariationRow => row.type === 'variation')
-			.map((row) => withImplicitEndpoints(row, node.domain))
+		node.rows.flatMap((row, rowIndex) =>
+			row.type === 'variation'
+				? [
+						{
+							row: showsAnswers
+								? withImplicitEndpoints(row, node.domain)
+								: variationRowForDisplay(node, rowIndex),
+							rowIndex
+						}
+					]
+				: []
+		)
 	);
 
 	/**
@@ -254,205 +332,289 @@
 	}
 </script>
 
-<div class="variation-table {className}">
-	<table class="vt-grid" aria-label="Tableau de variations de {node.variable}">
-		<caption class="sr-only">Tableau de variations de la fonction {node.variable}</caption>
-		<!-- Header row with variable and domain points -->
-		<thead class="vt-header">
-			<tr>
-				<!-- Variable column -->
-				<th class="vt-variable-cell">
-					<math-span>{node.variable}</math-span>
-				</th>
-				<!-- Domain points - each point gets its own column -->
-				{#each node.domain as point, idx (idx)}
-					<th class="vt-domain-cell">
-						<span class="vt-domain-point" class:vt-open={point.open}>
-							<math-span>{toLatex(point.expression)}</math-span>
-						</span>
-					</th>
-					<!-- Interval columns between domain points -->
-					{#if idx < node.domain.length - 1}
-						<th class="vt-interval-header"></th>
-					{/if}
-				{/each}
-			</tr>
-		</thead>
+<!-- Cellule cachée : saisie de l'appelant, sinon case vide ou remplie de la réponse -->
+{#snippet hiddenCell(hidden: HiddenCell)}
+	{@const answer = answers?.[hidden.index] ?? hidden.answer}
+	<span
+		class="vt-case"
+		class:vt-case-vide={!cell && hiddenCells === 'blank'}
+		class:vt-case-remplie={!cell && hiddenCells === 'filled'}
+		data-vt-case={hidden.index}
+		aria-label={!cell && hiddenCells === 'blank' ? 'à compléter' : undefined}
+	>
+		{#if cell}
+			{@render cell(hidden)}
+		{:else if hiddenCells === 'filled' && answer !== ''}
+			{#if hidden.kind === 'valeur'}
+				<math-span>{toLatex(answer)}</math-span>
+			{:else if hidden.kind === 'fleche'}
+				<span class="vt-fleche" aria-label={answer === '↗' ? 'croissante' : 'décroissante'}>
+					{answer}
+				</span>
+			{:else if answer === 'z'}
+				<span class="vt-zero">0</span>
+			{:else if answer === '||'}
+				<span class="vt-asymptote-bar vt-asymptote-bar-sign" aria-label="double barre"></span>
+			{:else if answer === '+' || answer === '-'}
+				<span class="vt-sign-value vt-sign-{answer === '+' ? 'plus' : 'minus'}">
+					{answer}
+				</span>
+			{/if}
+		{/if}
+	</span>
+{/snippet}
 
-		<tbody>
-			<!-- Sign rows -->
-			{#each signRows as row, rowIdx (`sign-${rowIdx}`)}
-				<tr class="vt-sign-row">
-					<!-- Label column -->
-					<td class="vt-label-cell">
-						<math-span>{row.label}</math-span>
-					</td>
-					<!-- Value cells - alternating between point and interval -->
+<div
+	class="variation-table {className}"
+	data-deborde-gauche={hiddenLeft ? '' : undefined}
+	data-deborde-droite={hiddenRight ? '' : undefined}
+>
+	<div class="vt-defilement" data-vt-defilement {@attach watchOverflow}>
+		<table class="vt-grid" aria-label="Tableau de variations de {node.variable}">
+			<caption class="sr-only">Tableau de variations de la fonction {node.variable}</caption>
+			<!-- Header row with variable and domain points -->
+			<thead class="vt-header">
+				<tr>
+					<!-- Variable column -->
+					<th class="vt-variable-cell">
+						<math-span>{node.variable}</math-span>
+					</th>
+					<!-- Domain points - each point gets its own column -->
 					{#each node.domain as point, idx (idx)}
-						{@const pointValue = renderSignPointValue(row, point)}
-						{@const intervalData = getIntervalData(row, point, idx)}
-						<!-- Point cell (for markers like zero, asymptote) -->
-						<td class="vt-sign-point-cell">
-							{#if pointValue}
-								{#if pointValue.type === 'marker'}
-									<span class="vt-sign-marker {getMarkerClass(pointValue.marker)}">
-										{#if pointValue.marker === 'zero'}
-											<span class="vt-zero">0</span>
-										{:else if pointValue.marker === 'asymptote'}
-											<span class="vt-asymptote-bar vt-asymptote-bar-sign"></span>
-										{:else if pointValue.marker === 'forbidden'}
-											<span class="vt-hatch"></span>
-										{:else if pointValue.marker === 'discontinuity'}
-											<span class="vt-discontinuity">d</span>
-										{/if}
-									</span>
-								{:else}
-									<span class="vt-sign-value vt-sign-{pointValue.value === '+' ? 'plus' : 'minus'}">
-										{pointValue.value}
-									</span>
-								{/if}
+						{@const hiddenPoint = hiddenAt('domain', point.expression)}
+						<th class="vt-domain-cell">
+							{#if hiddenPoint}
+								{@render hiddenCell(hiddenPoint)}
+							{:else}
+								<span class="vt-domain-point" class:vt-open={point.open}>
+									<math-span>{toLatex(point.expression)}</math-span>
+								</span>
 							{/if}
+						</th>
+						<!-- Interval columns between domain points -->
+						{#if idx < node.domain.length - 1}
+							<th class="vt-interval-header"></th>
+						{/if}
+					{/each}
+				</tr>
+			</thead>
+
+			<tbody>
+				<!-- Sign rows -->
+				{#each signRows as { row, rowIndex }, rowIdx (`sign-${rowIdx}`)}
+					<tr class="vt-sign-row">
+						<!-- Label column -->
+						<td class="vt-label-cell">
+							<math-span>{row.label}</math-span>
 						</td>
-						<!-- Interval cell (for signs between points) -->
-						{#if intervalData}
-							<td class="vt-sign-interval-cell">
-								{#if intervalData.intervalValue}
-									{#if intervalData.intervalValue.type === 'sign'}
-										<span
-											class="vt-sign-value vt-sign-{intervalData.intervalValue.value === '+'
-												? 'plus'
-												: 'minus'}"
-										>
-											{intervalData.intervalValue.value}
+						<!-- Value cells - alternating between point and interval -->
+						{#each node.domain as point, idx (idx)}
+							{@const pointValue = renderSignPointValue(row, point)}
+							{@const intervalData = getIntervalData(row, point, idx)}
+							{@const hiddenPoint = hiddenAt(rowIndex, point.expression)}
+							<!-- Point cell (for markers like zero, asymptote) -->
+							<td class="vt-sign-point-cell">
+								{#if hiddenPoint}
+									{@render hiddenCell(hiddenPoint)}
+								{:else if pointValue}
+									{#if pointValue.type === 'marker'}
+										<span class="vt-sign-marker {getMarkerClass(pointValue.marker)}">
+											{#if pointValue.marker === 'zero'}
+												<span class="vt-zero">0</span>
+											{:else if pointValue.marker === 'asymptote'}
+												<span class="vt-asymptote-bar vt-asymptote-bar-sign"></span>
+											{:else if pointValue.marker === 'forbidden'}
+												<span class="vt-hatch"></span>
+											{:else if pointValue.marker === 'discontinuity'}
+												<span class="vt-discontinuity">d</span>
+											{/if}
 										</span>
-									{:else if intervalData.intervalValue.type === 'marker'}
-										{#if intervalData.intervalValue.marker === 'forbidden'}
-											<span class="vt-hatch vt-hatch-wide"></span>
-										{/if}
+									{:else}
+										<span
+											class="vt-sign-value vt-sign-{pointValue.value === '+' ? 'plus' : 'minus'}"
+										>
+											{pointValue.value}
+										</span>
 									{/if}
 								{/if}
 							</td>
-						{/if}
-					{/each}
-				</tr>
-			{/each}
-
-			<!-- Variation rows -->
-			{#each variationRows as row, rowIdx (`var-${rowIdx}`)}
-				<tr class="vt-variation-row">
-					<!-- Label column -->
-					<td class="vt-label-cell">
-						<math-span>{row.label}</math-span>
-					</td>
-					<!-- Value cells with arrows -->
-					{#each node.domain as point, idx (idx)}
-						{@const value = getVariationValue(row, point)}
-						{@const arrowData = getArrowData(row, point, idx)}
-						<!-- Value cell at domain point -->
-						<td class="vt-variation-value-cell">
-							{#if value}
-								{#if value.marker === 'asymptote' && value.limits}
-									<!-- Asymptote with two limits -->
-									<div class="vt-asymptote-limits">
-										<span
-											class="vt-limit vt-limit-left {getPositionClass(value.limits[0].position)}"
-										>
-											<math-span>{toLatex(value.limits[0].expression)}</math-span>
-										</span>
-										<span class="vt-asymptote-bar"></span>
-										<span
-											class="vt-limit vt-limit-right {getPositionClass(value.limits[1].position)}"
-										>
-											<math-span>{toLatex(value.limits[1].expression)}</math-span>
-										</span>
-									</div>
-								{:else if value.marker === 'asymptote' && value.limitSide === 'left'}
-									<!-- Asymptote with single limit on the left -->
-									<div class="vt-asymptote-limits vt-asymptote-single-left">
-										<span class="vt-limit vt-limit-left {getPositionClass(value.position)}">
-											<math-span>{toLatex(value.expression)}</math-span>
-										</span>
-										<span class="vt-asymptote-bar"></span>
-									</div>
-								{:else if value.marker === 'asymptote' && value.limitSide === 'right'}
-									<!-- Asymptote with single limit on the right -->
-									<div class="vt-asymptote-limits vt-asymptote-single-right">
-										<span class="vt-asymptote-bar"></span>
-										<span class="vt-limit vt-limit-right {getPositionClass(value.position)}">
-											<math-span>{toLatex(value.expression)}</math-span>
-										</span>
-									</div>
-								{:else if value.marker === 'forbidden'}
-									<div class="vt-forbidden-cell">
-										<span class="vt-hatch vt-hatch-tall"></span>
-									</div>
-								{:else}
-									<div class="vt-value-container {getPositionClass(value.position)}">
-										<math-span>{toLatex(value.expression)}</math-span>
-									</div>
-								{/if}
-							{/if}
-						</td>
-						<!-- Arrow cell between points -->
-						{#if arrowData}
-							<td class="vt-arrow-cell">
-								{#if !isForbiddenZone(arrowData.currentValue) && !isForbiddenZone(arrowData.nextValue) && arrowData.arrowDir}
-									<svg
-										class="vt-arrow vt-arrow-{arrowData.arrowDir}"
-										viewBox="0 0 100 60"
-										preserveAspectRatio="xMidYMid meet"
-										role="img"
-										aria-label={arrowData.arrowDir === 'up'
-											? 'Fonction croissante'
-											: 'Fonction décroissante'}
-									>
-										<defs>
-											<!-- Unique marker ID per component instance to avoid conflicts -->
-											<marker
-												id="vt-arrowhead-{instanceId}-{arrowData.arrowDir}"
-												viewBox="0 0 10 10"
-												refX="10"
-												refY="5"
-												markerWidth="8"
-												markerHeight="8"
-												orient="auto"
+							<!-- Interval cell (for signs between points) -->
+							{#if intervalData}
+								{@const hiddenInterval = hiddenAt(rowIndex, intervalData.intervalKey)}
+								<td class="vt-sign-interval-cell">
+									{#if hiddenInterval}
+										{@render hiddenCell(hiddenInterval)}
+									{:else if intervalData.intervalValue}
+										{#if intervalData.intervalValue.type === 'sign'}
+											<span
+												class="vt-sign-value vt-sign-{intervalData.intervalValue.value === '+'
+													? 'plus'
+													: 'minus'}"
 											>
-												<path d="M 0 0 L 10 5 L 0 10 z" class="vt-arrow-head" />
-											</marker>
-										</defs>
-										{#if arrowData.arrowDir === 'up'}
-											<!-- Ascending arrow (bottom-left to top-right) -->
-											<line
-												x1="5"
-												y1="55"
-												x2="95"
-												y2="5"
-												class="vt-arrow-line"
-												marker-end="url(#vt-arrowhead-{instanceId}-up)"
-											/>
-										{:else if arrowData.arrowDir === 'down'}
-											<!-- Descending arrow (top-left to bottom-right) -->
-											<line
-												x1="5"
-												y1="5"
-												x2="95"
-												y2="55"
-												class="vt-arrow-line"
-												marker-end="url(#vt-arrowhead-{instanceId}-down)"
-											/>
+												{intervalData.intervalValue.value}
+											</span>
+										{:else if intervalData.intervalValue.type === 'marker'}
+											{#if intervalData.intervalValue.marker === 'forbidden'}
+												<span class="vt-hatch vt-hatch-wide"></span>
+											{/if}
 										{/if}
-									</svg>
-								{:else if isForbiddenZone(arrowData.currentValue) || isForbiddenZone(arrowData.nextValue)}
-									<!-- No arrow for forbidden zones -->
-									<span class="vt-hatch vt-hatch-arrow"></span>
+									{/if}
+								</td>
+							{/if}
+						{/each}
+					</tr>
+				{/each}
+
+				<!-- Variation rows -->
+				{#each variationRows as { row, rowIndex }, rowIdx (`var-${rowIdx}`)}
+					<tr class="vt-variation-row">
+						<!-- Label column -->
+						<td class="vt-label-cell">
+							<math-span>{row.label}</math-span>
+						</td>
+						<!-- Value cells with arrows -->
+						{#each node.domain as point, idx (idx)}
+							{@const value = getVariationValue(row, point)}
+							{@const arrowData = getArrowData(row, point, idx)}
+							{@const hiddenValue = hiddenAt(rowIndex, point.expression)}
+							<!-- Value cell at domain point -->
+							<td class="vt-variation-value-cell">
+								{#if hiddenValue && value}
+									<!-- Valeur cachée : la case, à la hauteur affichée -->
+									<div class="vt-value-container {getPositionClass(value.position)}">
+										{@render hiddenCell(hiddenValue)}
+									</div>
+								{:else if value}
+									{#if value.marker === 'asymptote' && value.limits}
+										<!-- Asymptote with two limits -->
+										{@const hiddenLeft = hiddenAt(rowIndex, point.expression, 'left')}
+										{@const hiddenRight = hiddenAt(rowIndex, point.expression, 'right')}
+										<div class="vt-asymptote-limits">
+											<span
+												class="vt-limit vt-limit-left {getPositionClass(value.limits[0].position)}"
+											>
+												{#if hiddenLeft}
+													{@render hiddenCell(hiddenLeft)}
+												{:else}
+													<math-span>{toLatex(value.limits[0].expression)}</math-span>
+												{/if}
+											</span>
+											<span class="vt-asymptote-bar"></span>
+											<span
+												class="vt-limit vt-limit-right {getPositionClass(value.limits[1].position)}"
+											>
+												{#if hiddenRight}
+													{@render hiddenCell(hiddenRight)}
+												{:else}
+													<math-span>{toLatex(value.limits[1].expression)}</math-span>
+												{/if}
+											</span>
+										</div>
+									{:else if value.marker === 'asymptote' && value.limitSide === 'left'}
+										<!-- Asymptote with single limit on the left -->
+										{@const hiddenLimit = hiddenAt(rowIndex, point.expression, 'left')}
+										<div class="vt-asymptote-limits vt-asymptote-single-left">
+											<span class="vt-limit vt-limit-left {getPositionClass(value.position)}">
+												{#if hiddenLimit}
+													{@render hiddenCell(hiddenLimit)}
+												{:else}
+													<math-span>{toLatex(value.expression)}</math-span>
+												{/if}
+											</span>
+											<span class="vt-asymptote-bar"></span>
+										</div>
+									{:else if value.marker === 'asymptote' && value.limitSide === 'right'}
+										{@const hiddenLimit = hiddenAt(rowIndex, point.expression, 'right')}
+										<!-- Asymptote with single limit on the right -->
+										<div class="vt-asymptote-limits vt-asymptote-single-right">
+											<span class="vt-asymptote-bar"></span>
+											<span class="vt-limit vt-limit-right {getPositionClass(value.position)}">
+												{#if hiddenLimit}
+													{@render hiddenCell(hiddenLimit)}
+												{:else}
+													<math-span>{toLatex(value.expression)}</math-span>
+												{/if}
+											</span>
+										</div>
+									{:else if value.marker === 'forbidden'}
+										<div class="vt-forbidden-cell">
+											<span class="vt-hatch vt-hatch-tall"></span>
+										</div>
+									{:else}
+										<div class="vt-value-container {getPositionClass(value.position)}">
+											<math-span>{toLatex(value.expression)}</math-span>
+										</div>
+									{/if}
 								{/if}
 							</td>
-						{/if}
-					{/each}
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+							<!-- Arrow cell between points -->
+							{#if arrowData}
+								{@const hiddenArrow = hiddenAt(
+									rowIndex,
+									getIntervalKey(point, arrowData.nextPoint)
+								)}
+								<td class="vt-arrow-cell">
+									{#if hiddenArrow}
+										<!-- Flèche cachée : la case (choix ↗ / ↘), aucune flèche dessinée -->
+										{@render hiddenCell(hiddenArrow)}
+									{:else if !isForbiddenZone(arrowData.currentValue) && !isForbiddenZone(arrowData.nextValue) && arrowData.arrowDir}
+										<svg
+											class="vt-arrow vt-arrow-{arrowData.arrowDir}"
+											viewBox="0 0 100 60"
+											preserveAspectRatio="xMidYMid meet"
+											role="img"
+											aria-label={arrowData.arrowDir === 'up'
+												? 'Fonction croissante'
+												: 'Fonction décroissante'}
+										>
+											<defs>
+												<!-- Unique marker ID per component instance to avoid conflicts -->
+												<marker
+													id="vt-arrowhead-{instanceId}-{arrowData.arrowDir}"
+													viewBox="0 0 10 10"
+													refX="10"
+													refY="5"
+													markerWidth="8"
+													markerHeight="8"
+													orient="auto"
+												>
+													<path d="M 0 0 L 10 5 L 0 10 z" class="vt-arrow-head" />
+												</marker>
+											</defs>
+											{#if arrowData.arrowDir === 'up'}
+												<!-- Ascending arrow (bottom-left to top-right) -->
+												<line
+													x1="5"
+													y1="55"
+													x2="95"
+													y2="5"
+													class="vt-arrow-line"
+													marker-end="url(#vt-arrowhead-{instanceId}-up)"
+												/>
+											{:else if arrowData.arrowDir === 'down'}
+												<!-- Descending arrow (top-left to bottom-right) -->
+												<line
+													x1="5"
+													y1="5"
+													x2="95"
+													y2="55"
+													class="vt-arrow-line"
+													marker-end="url(#vt-arrowhead-{instanceId}-down)"
+												/>
+											{/if}
+										</svg>
+									{:else if isForbiddenZone(arrowData.currentValue) || isForbiddenZone(arrowData.nextValue)}
+										<!-- No arrow for forbidden zones -->
+										<span class="vt-hatch vt-hatch-arrow"></span>
+									{/if}
+								</td>
+							{/if}
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 <style>
@@ -487,11 +649,67 @@
 		--vt-variation-row-height: 4em;
 	}
 
-	/* Main container */
+	/* Main container : porte les ombres ; le tableau défile dans `.vt-defilement` */
 	.variation-table {
+		position: relative;
 		margin: 1rem 0;
-		overflow-x: auto;
 		font-size: inherit;
+	}
+
+	/* `relative` : un descendant absolu (libellé MathLive, `.sr-only`) reste dans la zone
+	   qui défile, au lieu d'élargir la page */
+	.vt-defilement {
+		position: relative;
+		overflow-x: auto;
+	}
+
+	/* Ombre du bord derrière lequel il reste du tableau (au téléphone : +∞ hors écran) */
+	.variation-table[data-deborde-gauche]::before,
+	.variation-table[data-deborde-droite]::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		z-index: 1;
+		width: 1rem;
+		pointer-events: none;
+	}
+
+	.variation-table[data-deborde-gauche]::before {
+		left: 0;
+		background: linear-gradient(
+			to right,
+			color-mix(in srgb, var(--color-foreground) 20%, transparent),
+			transparent
+		);
+	}
+
+	.variation-table[data-deborde-droite]::after {
+		right: 0;
+		background: linear-gradient(
+			to left,
+			color-mix(in srgb, var(--color-foreground) 20%, transparent),
+			transparent
+		);
+	}
+
+	/* Tableau à compléter sur écran étroit : marges de moitié, case MathLive moins rembourrée */
+	@media (max-width: 30rem) {
+		.variation-table:has(.vt-case) {
+			--vt-cell-padding: 0.25em;
+		}
+
+		.vt-case :global(math-field) {
+			padding: 2px 4px;
+		}
+	}
+
+	/* Écran tactile : pas de bouton clavier dans la case de valeur — la toucher ouvre le
+	   clavier, « Fermer le clavier » (MathKeyboardClose) le referme. Gagne 64 px par case. */
+	@media (pointer: coarse) {
+		.vt-case :global(math-field::part(virtual-keyboard-toggle)) {
+			display: none;
+		}
 	}
 
 	/* Table grid */
@@ -582,6 +800,38 @@
 	.vt-sign-plus,
 	.vt-sign-minus {
 		color: inherit;
+	}
+
+	/* Cellule cachée : case vide en pointillés, ou remplie (bordure pointillée gardée) */
+	.vt-case {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		vertical-align: middle;
+	}
+
+	.vt-case-vide,
+	.vt-case-remplie {
+		min-width: 1.75em;
+		min-height: 1.75em;
+		padding: 0 0.2em;
+		border: 1.5px dashed var(--color-muted-foreground);
+		border-radius: 0.25rem;
+	}
+
+	/* Flèche cachée remplie (bonne réponse) : la flèche en grand, comme celles dessinées */
+	.vt-fleche {
+		font-size: 1.6em;
+		line-height: 1;
+	}
+
+	/* Petite case MathLive de la valeur de x : sans menu, à la taille de la cellule */
+	.vt-case :global(math-field) {
+		min-width: 2.5em;
+	}
+
+	.vt-case :global(math-field::part(menu-toggle)) {
+		display: none;
 	}
 
 	/* Zero marker */

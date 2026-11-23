@@ -1,0 +1,267 @@
+{
+	"id": "6452c31c-e990-4e7d-b4a2-26b44bd98222",
+	"title": "Tracer la parallèle à une droite par un point",
+	"description": "Sur quadrillage, en suivant le même chemin de carreaux ou à l'équerre : droite horizontale ou verticale, en diagonale, oblique",
+	"grades": ["CM1", "CM2"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace la droite $p$, parallèle à la droite $d$ et qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = parallele(A, d)\n---\n{{if:k==1|m = point(0, 3, visible=faux)\nn = point(14, 3, visible=faux)\nd = droite(m, n)\ntexte(13.6, 3.4, \"d\")\nA = point(6, 7, etiquette=\"haut-gauche\")|{{if:k==2|m = point(4, 0, visible=faux)\nn = point(4, 10, visible=faux)\nd = droite(m, n)\ntexte(4.4, 9.5, \"d\")\nA = point(9, 6, etiquette=\"droite\")|{{if:k==3|m = point(0, 7, visible=faux)\nn = point(14, 7, visible=faux)\nd = droite(m, n)\ntexte(13.6, 7.4, \"d\")\nA = point(8, 2, etiquette=\"bas-droite\")|m = point(10, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\ntexte(10.4, 9.5, \"d\")\nA = point(4, 4, etiquette=\"gauche\")}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites $\\textcolor{{{color:primary.0}}}{\\text{parallèles}}$ ne se coupent jamais : elles gardent toujours le même écart.",
+					"Ici $d$ suit une ligne du quadrillage : la parallèle suit la ligne du quadrillage qui passe par $A$. À l'équerre : on trace la perpendiculaire à $d$ par $A$, puis la perpendiculaire à celle-ci, toujours par $A$."
+				]
+			}
+		},
+		{
+			"statement": "Trace la droite $p$, parallèle à la droite $d$ et qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = parallele(A, d)\n---\n{{if:k==1|m = point(0, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\ntexte(10.4, 9.5, \"d\")\nA = point(3, 7, etiquette=\"haut-gauche\")|{{if:k==2|m = point(1, 10, visible=faux)\nn = point(11, 0, visible=faux)\nd = droite(m, n)\ntexte(11.4, 0.4, \"d\")\nA = point(11, 7, etiquette=\"haut-droite\")|{{if:k==3|m = point(4, 0, visible=faux)\nn = point(14, 10, visible=faux)\nd = droite(m, n)\ntexte(13.6, 9.5, \"d\")\nA = point(11, 3, etiquette=\"bas-droite\")|m = point(1, 10, visible=faux)\nn = point(11, 0, visible=faux)\nd = droite(m, n)\ntexte(11.4, 0.4, \"d\")\nA = point(2, 2, etiquette=\"bas-gauche\")}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites $\\textcolor{{{color:primary.0}}}{\\text{parallèles}}$ ne se coupent jamais : elles gardent toujours le même écart.",
+					"Sur le quadrillage, la parallèle fait $\\textcolor{{{color:primary.0}}}{\\text{le même chemin de carreaux}}$ que $d$ : si $d$ avance de $a$ carreaux et monte de $b$, on part de $A$ et on avance de $a$, on monte de $b$. À l'équerre : deux perpendiculaires successives."
+				]
+			}
+		},
+		{
+			"statement": "Trace la droite $p$, parallèle à la droite $d$ et qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = parallele(A, d)\n---\n{{if:k==1|m = point(1, 2, visible=faux)\nn = point(13, 8, visible=faux)\nd = droite(m, n)\ntexte(12.6, 8.4, \"d\")\nA = point(3, 7, etiquette=\"haut\")|{{if:k==2|m = point(3, 0, visible=faux)\nn = point(8, 10, visible=faux)\nd = droite(m, n)\ntexte(8.4, 9.5, \"d\")\nA = point(10, 4, etiquette=\"droite\")|{{if:k==3|m = point(0, 3, visible=faux)\nn = point(12, 7, visible=faux)\nd = droite(m, n)\ntexte(12.4, 7.4, \"d\")\nA = point(2, 8, etiquette=\"haut\")|m = point(5, 10, visible=faux)\nn = point(10, 0, visible=faux)\nd = droite(m, n)\ntexte(10.4, 0.4, \"d\")\nA = point(11, 7, etiquette=\"droite\")}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux droites $\\textcolor{{{color:primary.0}}}{\\text{parallèles}}$ ne se coupent jamais : elles gardent toujours le même écart.",
+					"Sur le quadrillage, la parallèle fait $\\textcolor{{{color:primary.0}}}{\\text{le même chemin de carreaux}}$ que $d$ : si $d$ avance de $a$ carreaux et monte de $b$, on part de $A$ et on avance de $a$, on monte de $b$. À l'équerre : deux perpendiculaires successives."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "V1, 1 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(6;7;7;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1, 2 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(9;6;9;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1, 3 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(8;2;9;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1, 4 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(4;4;4;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V1 : la perpendiculaire par A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(6;7;6;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V1 : parallèle à d, pas par A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(6;8;7;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V2, 1 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;7;4;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2, 2 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(11;7;12;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2, 3 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(11;3;12;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2, 4 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(2;2;3;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V2 : la perpendiculaire par A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;7;2;8)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V2 : parallèle à d, pas par A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(2;8;3;9)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V3, 1 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;7;5;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3, 2 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(10;4;11;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3, 3 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(2;8;5;9)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3, 4 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(11;7;12;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V3 : la perpendiculaire par A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;7;2;9)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V3 : parallèle à d, pas par A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(2;9;4;10)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V3 : monte au lieu de descendre",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;7;5;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,10 +1,8 @@
 {
+	"id": "174e202b-7061-4d17-9f86-f38315571f3f",
 	"title": "Angles associés : simplifier une expression",
 	"description": "cos et sin de −x, π − x, π + x, π/2 − x, π/2 + x, x + 2kπ, réponse réduite",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Propriétés",
 	"level": 1,
 	"status": "draft",
 	"delay": 30,

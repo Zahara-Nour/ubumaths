@@ -40,10 +40,11 @@ import {
 	LibraryBig,
 	Shapes,
 	DatabaseCheck,
-	Cat
+	Cat,
+	NotebookText
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 
 export type DashboardNavLink = {
 	href: string;
@@ -96,6 +97,8 @@ export function getNavLinks(
 				label: 'Cahier de textes',
 				icon: BookOpen
 			},
+			// Ce que voient ses parents (ADR 0040, Q3) : toujours visible, même carnet fermé
+			{ href: '/dashboard/student/carnet', label: 'Carnet de liaison', icon: NotebookText },
 			{ href: '/dashboard/friends', label: lore.entities.friends, icon: Users },
 			{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle }
 		];

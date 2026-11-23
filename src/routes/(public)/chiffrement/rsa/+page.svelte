@@ -1,10 +1,10 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import RsaCrack from '$lib/components/ciphers/RsaCrack.svelte';
-	import { ALPHABET_SIZE, formatNumber, letterIndex, lettersOnly } from '$lib/ciphers/alphabet';
-	import { CipherInputError } from '$lib/ciphers/errors';
-	import { attempt, type CipherOutcome } from '$lib/ciphers/outcome';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import RsaCrack from '#lib/components/ciphers/RsaCrack.svelte';
+	import { ALPHABET_SIZE, formatNumber, letterIndex, lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import { CipherInputError } from '#lib/ciphers/errors.ts';
+	import { attempt, type CipherOutcome } from '#lib/ciphers/outcome.ts';
 	import {
 		RSA_PRIMES,
 		modPow,
@@ -13,9 +13,9 @@
 		rsaKeys,
 		validExponents,
 		type RsaKeys
-	} from '$lib/ciphers/rsa';
-	import { CZAR_RSA_KEY } from '$lib/ciphers/dispatches';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	} from '#lib/ciphers/rsa.ts';
+	import { CZAR_RSA_KEY } from '#lib/ciphers/dispatches.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Types
 	type KeysResult = { ok: true; keys: RsaKeys } | { ok: false; message: string };
@@ -76,7 +76,7 @@
 </script>
 
 <SeoHead
-	title="RSA de poche : clés, Euclide étendu et exponentiation rapide — Chiphre"
+	title="RSA de poche : clés, Euclide étendu et exponentiation rapide | Chiphre"
 	description="Le chiffrement RSA avec de petits nombres : fabriquer les clés avec l’algorithme d’Euclide étendu, chiffrer par exponentiation rapide, et décrypter en factorisant n."
 />
 

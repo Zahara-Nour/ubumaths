@@ -16,7 +16,7 @@
  * @module atelier/help
  */
 
-import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import type { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { AREA_PROBLEM_SETUP, commandCatalog, type HelpSection } from './commands';
 
 // =============================================================================

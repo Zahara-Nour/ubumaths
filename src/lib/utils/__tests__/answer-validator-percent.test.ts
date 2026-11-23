@@ -9,8 +9,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 	return {
@@ -18,8 +18,6 @@ function createInstance(blanks: InstanceBlank[]): QuestionInstance {
 		statement: 'Calcule' as ResolvedMarkdown,
 		blanks,
 		grades: ['5'],
-		theme: 'Nombres et calculs',
-		domain: 'Proportionnalité',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	};

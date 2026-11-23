@@ -11,7 +11,7 @@ import { buildExpectedResult, showsInstructionOnly } from '../expected-result';
 import { instructionOf } from '../correction-card-verdict';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 const MONNAIE = ['Paie le ballon à 35 €.', '', '```monnaie', 'construire: 35', '```'].join('\n');
 const COLLECTION = ['Construis 34.', '', '```collection', 'construire: 34', '```'].join('\n');
@@ -25,8 +25,6 @@ function instance(statement: string, blanks?: { expectedAnswer: string }[]): Que
 			type: 'fill_in_blanks',
 			variations: [{ statement: templateMarkdown(statement), ...(blanks && { blanks }) }],
 			grades: ['CP'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42
@@ -108,5 +106,91 @@ describe('résultat attendu : case à construire', () => {
 		expect(empty.map((l) => l.kind === 'empty' && l.text)).toEqual(["Tu n'as rien posé."]);
 		const kinds = lines.map((l) => l.kind);
 		expect(kinds.indexOf('build')).toBeLessThan(kinds.indexOf('empty'));
+	});
+});
+
+// Droite à placer (```line, `placer:`) : même ligne `build`, genre `line`
+// (chantier `docs/wip/reponses-a-placer-progress.md`)
+describe('résultat attendu : droite à placer', () => {
+	const LINE = [
+		'Place 7.',
+		'',
+		'```line',
+		'start: 0',
+		'end: 20',
+		'step: 1',
+		'placer: 7',
+		'```'
+	].join('\n');
+
+	it('faux : la droite de l’élève, sans le bloc dans la consigne', () => {
+		const { lines } = buildExpectedResult(instance(LINE), { values: ['9'] });
+		expect(lines).toEqual([
+			expect.objectContaining({
+				kind: 'build',
+				buildKind: 'line',
+				answer: '9',
+				status: 'incorrect'
+			})
+		]);
+		expect(instructionOf(String(instance(LINE).statement))).toBe('Place 7.');
+	});
+
+	it('juste : correct', () => {
+		const { status } = buildExpectedResult(instance(LINE), { values: ['7'] });
+		expect(status).toBe('correct');
+	});
+
+	it('vide : la droite juste, puis « Tu n’as rien placé. »', () => {
+		const { lines } = buildExpectedResult(instance(LINE), { values: [''] });
+		expect(lines.map((l) => l.kind)).toEqual(['build', 'empty']);
+		expect(lines[1]).toMatchObject({ text: "Tu n'as rien placé." });
+	});
+});
+
+// PR 2 : plusieurs points sur la même droite, une case par point
+describe('résultat attendu : droite à plusieurs points', () => {
+	const LINE = [
+		'Place A(3), B(7) et C(12).',
+		'',
+		'```line',
+		'start: 0',
+		'end: 20',
+		'step: 1',
+		'placer: A=3 ; B=7 ; C=12',
+		'```'
+	].join('\n');
+
+	it('une seule droite, la réponse et le statut de chaque point', () => {
+		const { status, lines } = buildExpectedResult(instance(LINE), { values: ['3', '9', ''] });
+		expect(status).not.toBe('correct');
+		expect(lines).toHaveLength(1);
+		expect(lines[0]).toMatchObject({
+			kind: 'build',
+			buildKind: 'line',
+			status: 'incorrect',
+			answers: [
+				{ answer: '3', status: 'correct' },
+				{ answer: '9', status: 'incorrect' },
+				{ answer: '', status: 'empty' }
+			]
+		});
+	});
+
+	it('tous justes : correct', () => {
+		const { status, lines } = buildExpectedResult(instance(LINE), { values: ['3', '7', '12'] });
+		expect(status).toBe('correct');
+		expect(lines[0]).toMatchObject({ kind: 'build', status: 'correct' });
+	});
+
+	it('aucun point : la droite juste, puis « Tu n’as rien placé. »', () => {
+		const { lines } = buildExpectedResult(instance(LINE), { values: ['', '', ''] });
+		expect(lines.map((l) => l.kind)).toEqual(['build', 'empty']);
+		expect(lines[0]).toMatchObject({ answer: null, status: 'solution' });
+	});
+
+	it('sans réponse (R9) : la droite juste seule', () => {
+		const { lines } = buildExpectedResult(instance(LINE));
+		expect(lines).toEqual([expect.objectContaining({ kind: 'build', answer: null })]);
 	});
 });

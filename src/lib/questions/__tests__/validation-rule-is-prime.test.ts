@@ -7,8 +7,8 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateRule, type EvaluationContext } from '../validation-rule-evaluator';
 import type { CustomExpressionRule, InstanceBlank, QuestionInstance } from '../types';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function custom(expression: string): CustomExpressionRule {
 	return { type: 'custom', expression };
@@ -85,8 +85,6 @@ describe('règle custom isPrime dans une case rulesSuffice', () => {
 		statement: 'Trouve n tel que n²+n+41 ne soit pas premier : $?$' as ResolvedMarkdown,
 		blanks: [blank],
 		grades: ['2'],
-		theme: 'Arithmétique',
-		domain: 'Arithmétique',
 		level: 2,
 		generatedAt: new Date().toISOString()
 	};

@@ -10,13 +10,14 @@
  * @module questions/required-form-validator
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { RequiredForm } from './types';
 import {
 	DEFAULT_GENERIC_FUNCTION_NAMES,
 	type CapitalPairs,
 	type GenericFunctionConfig
-} from '$lib/mathAST/parser';
+} from '#lib/mathAST/parser/index.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
 
 /** Lecture de la réponse : fonctions déclarées par le modèle (`C(2)`), défauts sinon */
 export interface RequiredFormOptions {
@@ -43,10 +44,10 @@ import {
 	stripUnnecessaryBrackets,
 	needsBracketsAsPowerBase,
 	mapNode
-} from '$lib/mathAST';
-import { P } from '$lib/mathAST/pattern/builder';
-import { matches, tryMatch } from '$lib/mathAST/pattern/match';
-import { isMathNodeBinding } from '$lib/mathAST/pattern/types';
+} from '#lib/mathAST/index.ts';
+import { P } from '#lib/mathAST/pattern/builder.ts';
+import { matches, tryMatch } from '#lib/mathAST/pattern/match.ts';
+import { isMathNodeBinding } from '#lib/mathAST/pattern/types.ts';
 import { EQUATION_FEEDBACK, matchesEquationForm } from './equations/equation-answer';
 import { COMPLEX_FORM_FEEDBACK, matchesComplexForm } from './complex-forms';
 
@@ -580,8 +581,12 @@ export function checkRequiredForm(
 		const latex = answersLatex[i];
 
 		try {
-			// Parse the LaTeX
-			const node = parseLatex(latex, {
+			// Virgule nue (`0,5n`) décimale, comme pour le juge de valeur (#520),
+			// sauf dans une écriture à virgule séparatrice (couple, liste…). Jugé sur la
+			// réponse, pas sur l'attendue comme le juge de valeur : aucun motif ne sait
+			// écrire un couple aujourd'hui ; à aligner si un jour il en arrive un.
+			const decimalLatex = expectsSeparatorComma(latex) ? latex : bareDecimalCommaToPoint(latex);
+			const node = parseLatex(decimalLatex, {
 				genericFunctions: options.genericFunctions,
 				capitalPairs: options.capitalPairs
 			});

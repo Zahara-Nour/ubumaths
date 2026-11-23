@@ -11,8 +11,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parse } from '$lib/geometry-core/dsl/parser';
-import type { DslExpr } from '$lib/geometry-core/dsl/types';
+import { parse } from '#lib/geometry-core/dsl/parser.ts';
+import type { DslExpr } from '#lib/geometry-core/dsl/types.ts';
 import { readConstruction, type ReadArgument, type ReadCall } from '../construction-read';
 
 // =============================================================================

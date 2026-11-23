@@ -20,7 +20,7 @@
 	Usage:
 	```svelte
 	<script>
-	  import AchievementNotifications from '$lib/components/achievements/AchievementNotifications.svelte';
+	  import AchievementNotifications from '#lib/components/achievements/AchievementNotifications.svelte';
 	  let { data } = $props();
 	</script>
 
@@ -30,10 +30,10 @@
 
 <script lang="ts">
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { Database } from '$lib/types/database';
+	import type { Database } from '#lib/types/database.ts';
 	import { onMount, onDestroy } from 'svelte';
-	import { achievementsRealtimeManager } from '$lib/stores/achievementsRealtime.svelte';
-	import { achievementsStore } from '$lib/stores/achievements.svelte';
+	import { achievementsRealtimeManager } from '#lib/stores/achievementsRealtime.svelte.ts';
+	import { achievementsStore } from '#lib/stores/achievements.svelte.ts';
 	import AchievementToast from './AchievementToast.svelte';
 
 	interface Props {

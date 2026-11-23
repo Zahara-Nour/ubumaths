@@ -15,7 +15,7 @@ export const probtreeEntry: BlockCatalogEntry = {
 	nodeType: 'probability-tree',
 	summary: 'Arbre pondéré à autant d’étapes que voulu, avec résultats au bout des branches.',
 	intro:
-		'Chaque ligne est une branche : « événement:probabilité ». Un niveau de plus se marque par 2 espaces de plus. Les probabilités s’écrivent en fraction (1/2), en décimal avec un point (0.5), en symbole (P(A)) ou en pointillés (...) pour un exercice à compléter.',
+		'Chaque ligne est une branche : « événement:probabilité ». Un niveau de plus se marque par 2 espaces de plus. Les probabilités s’écrivent en fraction (1/2), en décimal avec un point (0.5), en symbole (P(A)) ou en pointillés (...) pour un exercice à compléter. Un événement d’une lettre suivie de _ s’écrit indicé (G_1 donne G indice 1, G_{12} aussi) ; un mot garde son texte droit (Malade_1).',
 	settingGroups: [
 		{
 			settings: [
@@ -44,7 +44,7 @@ export const probtreeEntry: BlockCatalogEntry = {
 					values: 'fraction 1/2, \\frac{1}{3}, décimal 0.5, symbole P(A|B), ou ... ou ?',
 					defaultValue: null,
 					description:
-						'Une branche. Le libellé accepte du LaTeX entre dollars ($A \\cap B$). 2 espaces de plus que la ligne du dessus : c’est une branche de l’événement précédent.'
+						'Une branche. Le libellé accepte du LaTeX entre dollars ($A \\cap B$) et l’indice sans dollars (G_1). 2 espaces de plus que la ligne du dessus : c’est une branche de l’événement précédent.'
 				},
 				{
 					key: 'événement:probabilité, résultat',
@@ -104,6 +104,20 @@ export const probtreeEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Les événements sont du LaTeX entre dollars, les probabilités sont des décimaux écrits avec un point.'
+		},
+		{
+			title: 'Événements indicés',
+			source: fence(
+				'probtree',
+				'G_1:0.6',
+				'  G_2:0.7',
+				'  P_2:0.3',
+				'P_1:0.4',
+				'  G_2:0.4',
+				'  P_2:0.6'
+			),
+			explanation:
+				'G_1 s’affiche G indice 1, à l’écran comme sur la fiche PDF, sans dollars : « gagner la 1re partie », puis la 2e.'
 		},
 		{
 			title: 'Arbre à compléter',

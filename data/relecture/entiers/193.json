@@ -52,9 +52,6 @@
 			}
 		],
 		"grades": ["CM1"],
-		"theme": "Entiers",
-		"domain": "Multiplier",
-		"subdomain": "Distributivité",
 		"level": 11,
 		"status": "draft",
 		"delay": 20,

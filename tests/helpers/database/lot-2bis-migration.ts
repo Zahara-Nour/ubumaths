@@ -99,19 +99,13 @@ interface Modele {
 	tag_seul?: true;
 	avant: Contenu;
 	apres: Contenu;
-	/**
-	 * Catégorie relevée en prod (lot de scissions) : le modèle neuf la copie, sauf le niveau, et deux
-	 * modèles publiés ne partagent pas une catégorie (idx_question_templates_unique_category).
-	 */
+	/** Niveau et statut relevés en prod (lot de scissions) : le modèle neuf les copie, sauf le niveau. */
 	categorie?: Categorie;
 	/** Lot de scissions : les modèles neufs qui reçoivent les autres parties du contenu. */
 	neufs: Omit<Neuf, 'origine'>[];
 }
 
 interface Categorie {
-	theme: string;
-	domain: string;
-	subdomain: string | null;
 	level: number;
 	status: string;
 }
@@ -251,12 +245,11 @@ async function poserEtatProd(pg: Client, auteur: string, modeles: Modele[]): Pro
 		);
 		if (m.categorie) {
 			const c = m.categorie;
-			await pg.query(
-				`update public.question_templates
-				    set theme = $2, domain = $3, subdomain = $4, level = $5, status = $6
-				  where id = $1`,
-				[m.id, c.theme, c.domain, c.subdomain, c.level, c.status]
-			);
+			await pg.query(`update public.question_templates set level = $2, status = $3 where id = $1`, [
+				m.id,
+				c.level,
+				c.status
+			]);
 		}
 	}
 	await pg.query(
@@ -518,7 +511,8 @@ export function decrireLotModifier(lot: LotModifier): void {
 			}
 		}
 
-		it('TOUT ou RIEN : un modèle manquant fait échouer la migration', async () => {
+		// Lot d'un seul modèle : le retirer donne la base locale (0 présent), que la migration tolère.
+		it.runIf(n > 1)('TOUT ou RIEN : un modèle manquant fait échouer la migration', async () => {
 			await echoue(
 				() => pg.query('delete from public.question_templates where id = $1', [ids[0]]),
 				new RegExp(`identifiants partiellement présents : ${n - 1} modèle\\(s\\) sur ${n}`)
@@ -678,24 +672,6 @@ export function decrireLotModifier(lot: LotModifier): void {
 							[neufs[0].origine, neufs[0].id]
 						),
 					/identifiants des modèles neufs déjà pris : 1/
-				);
-			}
-		);
-
-		it.runIf(avecNeufs)(
-			'la catégorie d’un modèle neuf déjà prise par un modèle publié fait échouer la migration',
-			async () => {
-				await echoue(
-					() =>
-						pg.query(
-							`insert into public.question_templates
-							 select (jsonb_populate_record(null::public.question_templates,
-							         to_jsonb(q) || jsonb_build_object('id', gen_random_uuid(), 'level', $2::integer,
-							                                            'status', 'published'))).*
-							   from public.question_templates q where q.id = $1`,
-							[neufs[0].origine, neufs[0].niveau]
-						),
-					/catégories des modèles neufs déjà prises : 1/
 				);
 			}
 		);

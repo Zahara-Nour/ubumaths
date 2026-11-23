@@ -46,6 +46,9 @@ describe('la simplification que tidy refuse, avec sa condition', () => {
 		['(x-2)/(x-2)', '1', ['x ≠ 2']],
 		['(2x+1)/(2x+1)', '1', ['x ≠ −1/2']],
 		['(x+1)^2/(x+1)', 'x+1', ['x ≠ −1']],
+		// signes-06 (2026-11-02) : la somme réduite rejoint la base de l'autre côté
+		['(2x+2)/(4(x+1))', '1/2', ['x ≠ −1']],
+		['(0.5x+0.5)/(x+1)', '1/2', ['x ≠ −1']],
 		['x*(1/x)', '1', ['x ≠ 0']],
 		['y/y', '1', ['y ≠ 0']],
 		['(x^2-1)/(x^2-1)', '1', ['x^2−1 ≠ 0']],
@@ -249,8 +252,29 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 		expect(change(before, after)).toEqual(conditions);
 	});
 
-	it('plusieurs lettres, domaine rétréci : on ne voit pas s’il reste un point, null', () => {
-		expect(change('ln(x y)', 'ln(x)+ln(y)')).toBeNull();
+	// § 5, L5 : chaque condition d'après porte sur une lettre, celles d'avant
+	// s'en déduisent par les signes des facteurs (`xy > 0` ⇐ `x > 0 et y > 0`)
+	it.each([
+		['ln(x y)', 'ln(x)+ln(y)', ['x > 0', 'y > 0']],
+		['ln(x/y)', 'ln(x)-ln(y)', ['x > 0', 'y > 0']],
+		['sqrt(x y)', 'sqrt(x)sqrt(y)', ['x ≥ 0', 'y ≥ 0']],
+		['ln(x^2 y)', '2ln(x)+ln(y)', ['x > 0', 'y > 0']],
+		['ln(x y)+1/(y-1)', 'ln(x)+ln(y)+1/(y-1)', ['x > 0', 'y > 0']]
+	])('plusieurs lettres, %s → %s : « %s »', (before, after, conditions) => {
+		expect(change(before, after)).toEqual(conditions);
+	});
+
+	it.each([
+		// une condition d'après sur deux lettres : on ne voit pas s'il reste un point
+		['ln((x+y)z)', 'ln(x+y)+ln(z)'],
+		// `x > 0 et −y > 0` ne donne pas `xy > 0` : jamais une condition fausse
+		['ln(x y)', 'ln(x)+ln(-y)'],
+		// x > 0 et −x > 0 : plus aucun point
+		['ln(x y)+ln(-x)', 'ln(x)+ln(y)+ln(-x)'],
+		// revue Opus : y ≥ 0 ne garantit pas y ≠ 0 (seule garde du quotient)
+		['sqrt(x/y)', 'sqrt(x)sqrt(y)']
+	])('plusieurs lettres, %s → %s : null', (before, after) => {
+		expect(change(before, after)).toBeNull();
 	});
 
 	it('plusieurs lettres, domaine élargi : la perte, sans élagage', () => {

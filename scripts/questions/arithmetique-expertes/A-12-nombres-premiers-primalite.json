@@ -1,10 +1,8 @@
 {
+	"id": "b7304fcb-afc1-449b-90ce-57343621fbc0",
 	"title": "Nombres premiers : en trouver un, étudier la primalité",
 	"description": "Donner un nombre premier dans un intervalle (vérifié par isPrime), plus petit diviseur premier d'un produit de deux premiers, montrer que a² − b² n'est pas premier (pièges : impair pris pour premier, 1 compté comme diviseur premier)",
 	"grades": ["T_EXP"],
-	"theme": "Arithmétique",
-	"domain": "Nombres premiers",
-	"subdomain": "Nombres premiers",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

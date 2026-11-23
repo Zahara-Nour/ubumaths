@@ -11,18 +11,17 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { toQuestionTemplate } from '$lib/types/question-template';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import type { Tables } from '#lib/types/database.ts';
 import { argValue, createScriptClient } from './relecture/common';
 
-/** Ordre des clés du fichier, celui des instantanés déjà versionnés */
+/** Ordre des clés du fichier, celui des instantanés déjà versionnés ; sans l'ancien quadruplet
+ *  (thème, domaine, sous-domaine : ADR 0035), qu'un fichier de modèle ne porte plus */
 const KEYS = [
 	'id',
 	'title',
 	'description',
 	'grades',
-	'theme',
-	'domain',
-	'subdomain',
 	'level',
 	'delay',
 	'status',
@@ -31,6 +30,9 @@ const KEYS = [
 	'variations',
 	'testSpecs'
 ] as const;
+
+/** Lignes par lecture (le plafond de PostgREST) */
+const PAGE = 1000;
 
 async function main(): Promise<number> {
 	const dossier = argValue('--dir');
@@ -45,11 +47,21 @@ async function main(): Promise<number> {
 	console.log(`🔍 LECTURE — base ${target}\n`);
 	mkdirSync(dossier, { recursive: true });
 
-	const { data, error } = await supabase.from('question_templates').select('*');
-	if (error) throw error;
+	// Par pages : PostgREST plafonne une lecture à 1000 lignes, et la table en compte davantage
+	const data: Tables<'question_templates'>[] = [];
+	for (let debut = 0; ; debut += PAGE) {
+		const { data: page, error } = await supabase
+			.from('question_templates')
+			.select('*')
+			.order('id')
+			.range(debut, debut + PAGE - 1);
+		if (error) throw error;
+		data.push(...(page ?? []));
+		if ((page ?? []).length < PAGE) break;
+	}
 
 	for (const prefix of ids) {
-		const rows = (data ?? []).filter((r) => r.id.startsWith(prefix));
+		const rows = data.filter((r) => r.id.startsWith(prefix));
 		if (rows.length !== 1) {
 			console.error(`⛔ ${prefix} : ${rows.length} modèle(s) trouvé(s), 1 attendu`);
 			return 1;

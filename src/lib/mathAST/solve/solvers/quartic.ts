@@ -26,7 +26,6 @@ import { getPolynomialDegree } from '../classify';
 import { realQuarticRoots } from '../../common/quartic-roots';
 import { number, opposite, equals, variable as varNode, fraction } from '../../factory';
 import { numericNode } from '../../common/numeric';
-import { denormalize, normalize } from '../../normal';
 import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import {
 	describeSolution,
@@ -168,34 +167,34 @@ function solveQuarticNumeric(
  * Convert a numeric root into a symbolic MathNode.
  * Tries integer, then simple fraction, then decimal fallback.
  */
-function numericToSymbolic(value: number): MathNode {
+function numericToSymbolic(value: number): { node: MathNode; exact: boolean } {
 	// Integer check
 	const rounded = Math.round(value);
 	if (Math.abs(value - rounded) < EPSILON) {
-		return numericNode(rounded);
+		return { node: numericNode(rounded), exact: true };
 	}
 
 	// Simple fraction check
 	const frac = findSimpleFraction(value);
 	if (frac) {
-		if (frac.d === 1) return numericNode(frac.n);
+		if (frac.d === 1) return { node: numericNode(frac.n), exact: true };
 		if (frac.n < 0) {
-			return opposite(fraction(numericNode(-frac.n), numericNode(frac.d)));
+			return { node: opposite(fraction(numericNode(-frac.n), numericNode(frac.d))), exact: true };
 		}
-		return fraction(numericNode(frac.n), numericNode(frac.d));
+		return { node: fraction(numericNode(frac.n), numericNode(frac.d)), exact: true };
 	}
 
-	// Decimal fallback
-	return numericNode(value.toFixed(10));
+	// Valeur arrondie à 10 décimales : approchée, pas exacte (frère de L27)
+	return { node: numericNode(value.toFixed(10)), exact: false };
 }
 
 /**
  * Build a Solution from a numeric root value.
  */
 function buildSolution(value: number): Solution {
-	const node = numericToSymbolic(value);
-	const simplified = denormalize(normalize(node));
-	return { value: simplified, exact: true, approximate: value };
+	const { node, exact } = numericToSymbolic(value);
+	const simplified = canonicalForm(node);
+	return { value: simplified, exact, approximate: value };
 }
 
 // =============================================================================

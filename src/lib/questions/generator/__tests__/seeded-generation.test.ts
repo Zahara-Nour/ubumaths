@@ -14,7 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionInstance, QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // Aides
@@ -27,8 +27,6 @@ function makeTemplate(id: string, variations: QuestionVariation[]): QuestionTemp
 		status: 'draft' as const,
 		variations,
 		grades: ['6'],
-		theme: 'Arithmétique',
-		domain: 'Calcul',
 		level: 1,
 		created_at: '2026-01-01T00:00:00.000Z',
 		updated_at: '2026-01-01T00:00:00.000Z',
@@ -68,11 +66,11 @@ function withoutTimestamp(instance: QuestionInstance): Omit<QuestionInstance, 'g
 
 const SEEDS = (count: number) => Array.from({ length: count }, (_, i) => i * 37 + 1);
 
-/** Modèle riche : variations, variables, tirages en ligne, décimaux, couleurs, mélange d'affichage, QCM */
+/** Modèle riche : variations, variables, tirages en ligne, décimaux, couleurs, mélange d'affichage, case choix */
 const richTemplate = makeTemplate('rich', [
 	{
 		statement: templateMarkdown(
-			'Calcule ${{expr}}$ avec {{1..9}} et {{digits:1.2}} en \\textcolor{{{color:primary}}}{rouge}'
+			'Calcule ${{expr}}$ avec {{1..9}} et {{digits:1.2}} en \\textcolor{{{color:primary}}}{rouge}\n\n```choix\n- {{eval:a+b}}\n- {{eval:a+b+1}}\n- {{eval:a+b+2}}\n- {{eval:a+b+3}}\n```'
 		),
 		variables: [
 			{ name: 'a', expression: '{{1..9}}' },
@@ -84,22 +82,14 @@ const richTemplate = makeTemplate('rich', [
 				displayOptions: { shuffleTerms: true }
 			}
 		],
-		correctChoiceIndex: '0',
-		choices: [
-			{ content: templateMarkdown('{{eval:a+b}}'), isCorrect: true },
-			{ content: templateMarkdown('{{eval:a+b+1}}'), isCorrect: false },
-			{ content: templateMarkdown('{{eval:a+b+2}}'), isCorrect: false },
-			{ content: templateMarkdown('{{eval:a+b+3}}'), isCorrect: false }
-		]
+		blanks: [{ expectedAnswer: '0' }]
 	},
 	{
-		statement: templateMarkdown('Autre variation ${{a}}$'),
+		statement: templateMarkdown(
+			'Autre variation ${{a}}$\n\n```choix\n- {{a}}\n- {{eval:a+1}}\n```'
+		),
 		variables: [{ name: 'a', expression: '{{2..5}}' }],
-		correctChoiceIndex: '0',
-		choices: [
-			{ content: templateMarkdown('{{a}}'), isCorrect: true },
-			{ content: templateMarkdown('{{eval:a+1}}'), isCorrect: false }
-		]
+		blanks: [{ expectedAnswer: '0' }]
 	}
 ]);
 
@@ -199,27 +189,21 @@ describe('génération à graine : reproductibilité', () => {
 });
 
 // ============================================================================
-// (d) Mélange des choix QCM
+// (d) Mélange des choix (case choix)
 // ============================================================================
 
 describe('génération à graine : mélange des choix', () => {
 	const fourChoices = (id: string, variables: QuestionVariation['variables']) =>
 		makeTemplate(id, [
 			{
-				statement: templateMarkdown('Choisir'),
+				statement: templateMarkdown('Choisir\n\n```choix\n- A\n- B\n- C\n- D\n```'),
 				variables,
-				correctChoiceIndex: '0',
-				choices: [
-					{ content: templateMarkdown('A'), isCorrect: true },
-					{ content: templateMarkdown('B'), isCorrect: false },
-					{ content: templateMarkdown('C'), isCorrect: false },
-					{ content: templateMarkdown('D'), isCorrect: false }
-				]
+				blanks: [{ expectedAnswer: '0' }]
 			}
 		]);
 
 	function correctPosition(instance: QuestionInstance): number {
-		return instance.shuffledChoices?.findIndex((choice) => choice.originalIndex === 0) ?? -1;
+		return instance.blanks?.[0].choice?.order.indexOf(0) ?? -1;
 	}
 
 	it('sur 200 graines, la bonne réponse occupe chacune des 4 positions', () => {
@@ -235,7 +219,7 @@ describe('génération à graine : mélange des choix', () => {
 			{ name: 'b', expression: '{{1..9}}' }
 		]);
 		const permutation = (instance: QuestionInstance) =>
-			instance.shuffledChoices?.map((choice) => choice.originalIndex).join(',');
+			instance.blanks?.[0].choice?.order.join(',');
 		const differing = SEEDS(50).filter(
 			(seed) => permutation(generate(plain, seed)) !== permutation(generate(withDraws, seed))
 		).length;
@@ -260,11 +244,11 @@ describe('génération sans graine', () => {
 		expect(values.size).toBeGreaterThan(10);
 	});
 
-	it('mélange les choix d’un QCM', () => {
+	it('mélange les choix d’une case choix', () => {
 		const positions = new Set(
 			Array.from({ length: 60 }, () => {
 				const instance = generate(richTemplate);
-				return instance.shuffledChoices?.map((c) => c.originalIndex).join(',');
+				return instance.blanks?.[0].choice?.order.join(',');
 			})
 		);
 		expect(positions.size).toBeGreaterThan(2);

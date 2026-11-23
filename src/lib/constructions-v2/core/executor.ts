@@ -5,13 +5,13 @@
  * state, instructions, pause durations, and speed factors.
  */
 
-import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
-import type { DslStepper, DirectiveHandler } from '$lib/geometry-core/dsl';
-import type { DslStatement, DslFunctionCallExpr } from '$lib/geometry-core/dsl/types';
-import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
-import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
-import { Figure } from '$lib/geometry-core/graph/figure';
-import type { GeoElement } from '$lib/geometry-core/types/elements';
+import { parseDsl, createStepper } from '#lib/geometry-core/dsl/index.ts';
+import type { DslStepper, DirectiveHandler } from '#lib/geometry-core/dsl/index.ts';
+import type { DslStatement, DslFunctionCallExpr } from '#lib/geometry-core/dsl/types.ts';
+import { DslRuntimeError } from '#lib/geometry-core/dsl/errors.ts';
+import type { DslRuntimeErrorDetails } from '#lib/geometry-core/dsl/errors.ts';
+import { Figure } from '#lib/geometry-core/graph/figure.ts';
+import type { GeoElement } from '#lib/geometry-core/types/elements.ts';
 import {
 	isCircleByRadius,
 	isCircleByPoint,
@@ -21,16 +21,16 @@ import {
 	isLine,
 	isSegment,
 	isRay
-} from '$lib/geometry-core/types/elements';
-import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
-import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
+} from '#lib/geometry-core/types/elements.ts';
+import { SymbolTable } from '#lib/geometry-core/dsl/symbol-table.ts';
+import type { ResolvedArgs, ResolvedValue } from '#lib/geometry-core/dsl/builtins.ts';
 import type { InstrumentType, InstrumentState, InstrumentMove, InstrumentPose } from '../types';
 import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
 import { compassDrawAngle } from './render-helpers';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import type { ScalarParam } from '$lib/geometry-core/types/geo-value';
-import { isScalarRef, isInfinityParam } from '$lib/geometry-core/types/geo-value';
+import { geoToNumber } from '#lib/geometry-core/compute/to-number.ts';
+import type { ScalarParam } from '#lib/geometry-core/types/geo-value.ts';
+import { isScalarRef, isInfinityParam } from '#lib/geometry-core/types/geo-value.ts';
 import { resolveDecorators, lookupVoie, DecoratorResolveError } from './choreographies/resolve';
 import type {
 	DecoratorTriple,

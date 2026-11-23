@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ChapterSeriesCard from '../ChapterSeriesCard.svelte';
-import type { ChapterSeries } from '$lib/types/chapters';
+import type { ChapterSeries } from '#lib/types/chapters.ts';
 
 function serie(partiel: Partial<ChapterSeries> = {}): ChapterSeries {
 	return {
@@ -27,7 +27,7 @@ function serie(partiel: Partial<ChapterSeries> = {}): ChapterSeries {
 		hidden: false,
 		title: 'Étude de fonction — méthode',
 		questionCount: 4,
-		launchHref: '/automaths/test?categories=abc&mode=flash',
+		launchHref: '/automaths/test?modeles=abc&mode=flash',
 		...partiel
 	};
 }
@@ -39,16 +39,16 @@ describe('ChapterSeriesCard', () => {
 		const { container } = await render(ChapterSeriesCard, { series: serie() });
 		const lien = container.querySelector('a');
 		expect(lien?.textContent?.trim()).toBe('Étude de fonction — méthode');
-		expect(lien?.getAttribute('href')).toBe('/automaths/test?categories=abc&mode=flash');
+		expect(lien?.getAttribute('href')).toBe('/automaths/test?modeles=abc&mode=flash');
 		expect(texte(container as HTMLElement)).toContain('Flash-cards');
 		expect(texte(container as HTMLElement)).toContain('4 questions');
 	});
 
-	it('affiche « Entraînement » pour la forme interactive', async () => {
+	it('affiche « Contrôle blanc » pour la forme interactive', async () => {
 		const { container } = await render(ChapterSeriesCard, {
 			series: serie({ form: 'interactive', launchHref: '/automaths/test?mode=interactive' })
 		});
-		expect(texte(container as HTMLElement)).toContain('Entraînement');
+		expect(texte(container as HTMLElement)).toContain('Contrôle blanc');
 		expect(texte(container as HTMLElement)).not.toContain('Flash-cards');
 	});
 

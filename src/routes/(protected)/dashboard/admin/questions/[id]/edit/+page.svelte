@@ -22,32 +22,33 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { QuestionTemplate } from '$lib/questions/types';
-	import { toTemplatePutBody } from '$lib/questions/template-put-body';
-	import * as Card from '$lib/components/ui/card';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { QuestionTemplate } from '#lib/questions/types.ts';
+	import { toTemplatePutBody } from '#lib/questions/template-put-body.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Loader2, ListTodo } from '@lucide/svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
-	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { questionTemplatesCache } from '#lib/stores/questionTemplates.svelte.ts';
 	import { onMount } from 'svelte';
-	import { GRADES, isGradeCode } from '$lib/types/grades';
-	import TemplateFactSheet from '$lib/components/questions/TemplateFactSheet.svelte';
-	import { lowestGradeLabel } from '$lib/questions/template-fact-sheet';
+	import { GRADES, isGradeCode } from '#lib/types/grades.ts';
+	import TemplateFactSheet from '#lib/components/questions/TemplateFactSheet.svelte';
+	import { lowestGradeLabel } from '#lib/questions/template-fact-sheet.ts';
 
 	let { data }: { data: PageData } = $props();
 
 	let isSubmitting = $state(false);
+	// Raisons du dernier refus du serveur, affichées dans « Erreurs à corriger » du formulaire
+	let serverErrors = $state<string[]>([]);
 	let QuestionTemplateForm = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let isLoading = $state(true);
 
 	// Dynamically import QuestionTemplateForm to reduce initial bundle size
 	onMount(async () => {
-		const module = await import('$lib/components/QuestionTemplateForm.svelte');
+		const module = await import('#lib/components/QuestionTemplateForm.svelte');
 		QuestionTemplateForm = module.default;
 		isLoading = false;
 	});
@@ -57,6 +58,8 @@
 		options?: { silent?: boolean }
 	): Promise<boolean> {
 		isSubmitting = true;
+		// Les raisons d'un refus précédent ne valent que pour l'envoi qui les a reçues
+		serverErrors = [];
 
 		try {
 			const response = await fetch(`/api/questions/templates/${data.template.id}`, {
@@ -69,8 +72,8 @@
 			const result = await response.json();
 
 			if (result.success) {
+				serverErrors = [];
 				// Invalidate caches to force refresh
-				questionCategoriesCache.invalidate();
 				questionTemplatesCache.invalidate();
 
 				toaster.success('Question mise à jour avec succès');
@@ -81,6 +84,7 @@
 			}
 			// Raisons du refus (contrôle de publication : spec rouge, tirage en échec…)
 			const errors: string[] = Array.isArray(result.errors) ? result.errors : [];
+			serverErrors = errors;
 			toaster.error('Erreur lors de la mise à jour', {
 				description: errors.slice(0, 5).join('\n') || undefined
 			});
@@ -229,6 +233,8 @@
 					onSave={handleSave}
 					onCancel={handleCancel}
 					{isSubmitting}
+					{serverErrors}
+					nodes={data.nodes}
 				/>
 			{/if}
 		</Card.Content>

@@ -6,8 +6,8 @@ import { describe, it, expect } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import BlockHelpPage from '../BlockHelpPage.svelte';
-import { horlogeEntry } from '$lib/block-catalog/horloge';
-import { BLOCK_CATALOG } from '$lib/block-catalog';
+import { horlogeEntry } from '#lib/block-catalog/horloge.ts';
+import { BLOCK_CATALOG } from '#lib/block-catalog/index.ts';
 
 describe('BlockHelpPage', () => {
 	it('montre les réglages, un bouton Copier par exemple et les horloges', async () => {
@@ -16,7 +16,8 @@ describe('BlockHelpPage', () => {
 		await expect
 			.element(page.getByRole('heading', { level: 1, name: 'Horloge à aiguilles' }))
 			.toBeInTheDocument();
-		const keys = horlogeEntry.settingGroups[0].settings.length;
+		// Tous les groupes : réglages de l'horloge, puis `placer` d'une question
+		const keys = horlogeEntry.settingGroups.reduce((n, group) => n + group.settings.length, 0);
 		expect(screen.container.querySelectorAll('tbody tr').length).toBe(keys);
 		expect(page.getByRole('button', { name: 'Copier' }).elements()).toHaveLength(
 			horlogeEntry.examples.length

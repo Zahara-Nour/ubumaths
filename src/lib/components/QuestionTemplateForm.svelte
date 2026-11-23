@@ -5,7 +5,7 @@
 	Main orchestrator for creating/editing question templates.
 
 	FEATURES:
-	- Type selection (fill-in-blanks, QCM)
+	- Type selection (fill-in-blanks, course card ; un QCM est une case choix)
 	- Dynamic form fields based on question type
 	- Variable editor with syntax helpers
 	- Content field editor for statement/correction
@@ -16,13 +16,17 @@
 
 	PROPS:
 	- template?: QuestionTemplate (for editing)
-	- onSave: (template) => void
+	- onSave: (template) => void | Promise<boolean> (`false` = refusé par le serveur)
 	- onCancel: () => void
 	- isSubmitting: boolean
+	- serverErrors?: string[] (raisons du dernier refus, dans « Erreurs à corriger »)
+
+	BOUTONS : brouillon → « Enregistrer brouillon », « Publier » ; publié → « Enregistrer »
+	(reste publié, contrôle complet du serveur), « Repasser en brouillon » (confirmation).
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type {
 		QuestionTemplate,
 		QuestionVariation,
@@ -36,53 +40,55 @@
 		SharedVariationDefaults,
 		ConstraintMode,
 		TestSpec
-	} from '$lib/questions/types';
-	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
-	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
-	import { questionTemplateSchema } from '$lib/questions/template-schema';
+	} from '#lib/questions/types.ts';
+	import { COMPLEX_FORMS, EQUATION_FORMS, getQuestionType } from '#lib/questions/types.ts';
+	import type { DisplayOptions } from '#lib/ubumark/parameterization/display-options.ts';
+	import { questionTemplateSchema } from '#lib/questions/template-schema.ts';
 	import {
 		formatGenericFunctionNames,
 		genericFunctionNamesSchema,
 		parseGenericFunctionNames
-	} from '$lib/questions/generic-functions';
+	} from '#lib/questions/generic-functions.ts';
 	import {
 		capitalPairsChoiceItems,
+		capitalPairsContextOf,
+		capitalPairsToWrite,
 		capitalPairsChoiceOf,
 		type CapitalPairsChoice
-	} from '$lib/questions/capital-pairs';
-	import { figureNameWarnings } from '$lib/questions/figure-name-check';
-	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
+	} from '#lib/questions/capital-pairs.ts';
+	import { figureNameWarnings } from '#lib/questions/figure-name-check.ts';
+	import { CONSTRAINT_IDS } from '#lib/questions/constraint-constants.ts';
 	import {
 		ACCEPTABLE_PLACEHOLDER,
 		REQUIRED_FORM_OPTIONS,
 		acceptableOf,
 		customRequiredForm
-	} from '$lib/questions/form-options';
+	} from '#lib/questions/form-options.ts';
 	import {
 		applyCourseQuestionOption,
 		readCourseQuestionOption
-	} from '$lib/questions/course-question';
-	import { GRADE_CODES, GRADES } from '$lib/types/grades';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	} from '#lib/questions/course-question.ts';
+	import { GRADE_CODES, GRADES } from '#lib/types/grades.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 
 	import VariableEditor from './VariableEditor.svelte';
-	import { MarkdownEditor } from '$lib/components/markdown';
+	import { MarkdownEditor } from '#lib/components/markdown/index.ts';
 	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
-	import { templateMarkdown, type TemplateMarkdown } from '$lib/ubumark';
-	import QuestionCategoryFields from './QuestionCategoryFields.svelte';
-	import type { CategoryEntry } from '$lib/questions/category-options';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Collapsible from '$lib/components/ui/collapsible';
-	import { tick, onMount } from 'svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { templateMarkdown, type TemplateMarkdown } from '#lib/ubumark/index.ts';
+	import ClassificationNodePicker from './questions/ClassificationNodePicker.svelte';
+	import { indexNodes, placeOfNode, type TreeNode } from '#lib/questions/classification-tree.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import * as Collapsible from '#lib/components/ui/collapsible/index.ts';
+	import { onMount } from 'svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -107,7 +113,6 @@
 		Braces,
 		FlaskConical
 	} from '@lucide/svelte';
-	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import QuestionTemplateHelpDialogs from './QuestionTemplateHelpDialogs.svelte';
 	import DisplayOptionsEditor from './DisplayOptionsEditor.svelte';
 	import ValidationOptionsEditor from './ValidationOptionsEditor.svelte';
@@ -115,11 +120,10 @@
 	import {
 		calculusBlankDefaults,
 		calculusEditorState
-	} from '$lib/questions/calculus/calculus-editor';
+	} from '#lib/questions/calculus/calculus-editor.ts';
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
-	import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
-	import { keepFirstCorrectChoice, keepFirstDeclaredChoice } from '$lib/questions/single-answer';
+	import { choiceAnswerCountErrors } from '#lib/questions/validators/choice-answer-count.ts';
 	import {
 		assumptionsToRows,
 		duplicateAssumptionMessage,
@@ -127,7 +131,7 @@
 		templateDrawnVariableNames,
 		validateAssumptionRows,
 		type AnswerAssumptionRow
-	} from '$lib/questions/answer-assumptions';
+	} from '#lib/questions/answer-assumptions.ts';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -138,9 +142,13 @@
 		) => void | Promise<boolean>;
 		onCancel: () => void;
 		isSubmitting: boolean;
+		/** Nœuds non archivés de l'arbre des notions (champ « Rangé dans ») */
+		nodes?: TreeNode[];
+		/** Raisons du dernier refus du serveur (contrôle de publication), affichées avec les erreurs */
+		serverErrors?: string[];
 	}
 
-	let { template, onSave, onCancel, isSubmitting }: Props = $props();
+	let { template, onSave, onCancel, isSubmitting, nodes = [], serverErrors = [] }: Props = $props();
 
 	// Snapshot of the initial template prop for $state initializers.
 	// This form initializes once from the prop and then evolves independently;
@@ -151,13 +159,7 @@
 	// Shared configuration state
 	// Infer type from structure when editing existing template
 	let questionType = $state<QuestionType>(
-		initialTemplate
-			? getQuestionType({
-					choices: initialTemplate.variations?.[0]?.choices,
-					shared: initialTemplate.shared,
-					options: initialTemplate.options
-				})
-			: 'fill_in_blanks'
+		initialTemplate ? getQuestionType({ options: initialTemplate.options }) : 'fill_in_blanks'
 	);
 	let grades = $state<GradeLevel[]>(initialTemplate?.grades || []);
 	let delay = $state<number | undefined>(initialTemplate?.delay);
@@ -169,10 +171,10 @@
 	let title = $state<string>(initialTemplate?.title || '');
 	let description = $state<string>(initialTemplate?.description || '');
 
-	// Categorization fields (shared)
-	let theme = $state<string>(initialTemplate?.theme || '');
-	let domain = $state<string>(initialTemplate?.domain || '');
-	let subdomain = $state<string | undefined>(initialTemplate?.subdomain);
+	// Rangement : nœud de l'arbre des notions (notion ou sous-notion), facultatif.
+	let classificationNodeId = $state<string | null>(initialTemplate?.classification_node_id ?? null);
+	// Ancien thème / domaine d'un modèle existant : jamais modifiés ni envoyés (ils restent
+	// en base pour les anciens liens), mais le contexte de certaines aides en dépend encore.
 	let level = $state<number>(initialTemplate?.level || 1);
 	let status = $state<'draft' | 'published'>(initialTemplate?.status || 'draft');
 
@@ -180,15 +182,9 @@
 	let testSpecs = $state<TestSpec[]>(initialTemplate?.testSpecs ?? []);
 	let testSpecMode = $state(false);
 
-	// Category duplicate detection
-	let categoryDuplicate = $state<boolean>(false);
-	let suggestedLevel = $state<number | null>(null);
-
-	// Publish confirmation dialog
-	let showPublishDialog = $state(false);
-
-	// Catégories existantes (triplets thème / domaine / sous-domaine) pour filtrer les listes
-	let categoryEntries = $state<CategoryEntry[]>([]);
+	// Branche et notion du nœud choisi : contexte de la suggestion « n ∈ ℕ » (Suites)
+	const nodesById = $derived(indexNodes(nodes));
+	const chosenPlace = $derived(placeOfNode(classificationNodeId, nodesById));
 
 	// Lazy loading functions for heavy components
 	async function loadRichTextEditor() {
@@ -209,7 +205,7 @@
 
 	async function loadJsonEditor() {
 		if (!loadedComponents.jsonEditor) {
-			const module = await import('$lib/constructions/components/JsonEditor.svelte');
+			const module = await import('#lib/constructions/components/JsonEditor.svelte');
 			JsonEditorComponent = module.default;
 			loadedComponents.jsonEditor = true;
 		}
@@ -221,61 +217,10 @@
 	let jsonValid = $state(true);
 	let _jsonErrors = $state<string[]>([]);
 
-	// Load category cache, preview component, and category options on mount
-	onMount(async () => {
-		questionCategoriesCache.fetchCategories();
+	// Load preview component on mount
+	onMount(() => {
 		loadQuestionPreview();
-
-		// Fetch existing categories for autocomplete options
-		try {
-			const response = await fetch('/api/questions/categories');
-			if (response.ok) {
-				const data: { entries?: CategoryEntry[] } = await response.json();
-				// Valeurs courantes du modèle toujours proposées : géré par QuestionCategoryFields
-				categoryEntries = data.entries ?? [];
-			}
-		} catch (error) {
-			console.error('Error fetching categories:', error);
-		}
 	});
-
-	// Real-time category duplicate detection
-	$effect(() => {
-		// Only check if all required fields are filled
-		if (!theme || !domain || !level) {
-			categoryDuplicate = false;
-			suggestedLevel = null;
-			return;
-		}
-
-		// Check if category exists in cache
-		// Exclude current template ID if editing (to allow saving without changing category)
-		const exists = questionCategoriesCache.categoryExists(
-			{
-				theme,
-				domain,
-				subdomain: subdomain || null,
-				level
-			},
-			template?.id // Exclude current template from check when editing
-		);
-
-		categoryDuplicate = exists;
-
-		// Get suggested level if duplicate
-		if (exists) {
-			suggestedLevel = questionCategoriesCache.getNextAvailableLevel({
-				theme,
-				domain,
-				subdomain: subdomain || null
-			});
-		} else {
-			suggestedLevel = null;
-		}
-	});
-
-	// Type-specific fields (shared)
-	let multipleAnswers = $state<boolean | undefined>(initialTemplate?.multipleAnswers);
 
 	// Default display options state
 	let displayShuffleTerms = $state(initialTemplate?.defaultDisplayOptions?.shuffleTerms ?? false);
@@ -301,7 +246,6 @@
 
 	// Template options state
 	let optOrderIndependent = $state(initialTemplate?.options?.orderIndependent ?? false);
-	let optShuffleChoices = $state(initialTemplate?.options?.shuffleChoices ?? true);
 	// Question de cours (Q110 b) : marqueur d'intention, forcé pour une carte de cours
 	let optCourseQuestion = $state(readCourseQuestionOption(initialTemplate?.options));
 	let optAllowBracketsInFirstNegativeTerm = $state(
@@ -331,7 +275,6 @@
 		// Les specs doivent être jugées avec les hypothèses, comme les élèves
 		const answerAssumptions = rowsToAssumptions(assumptionRows);
 		if (answerAssumptions) opts.answerAssumptions = answerAssumptions;
-		if (!optShuffleChoices) opts.shuffleChoices = false;
 		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
 		for (const id of CONSTRAINT_IDS) {
 			if (constraintModes[id]) {
@@ -347,17 +290,10 @@
 	// Shared variables (resolved before per-variation variables)
 	let sharedVariables = $state<QuestionVariable[]>(initialTemplate?.shared?.variables || []);
 	let sharedStatement = $state(templateMarkdown(initialTemplate?.shared?.statement || ''));
-	let sharedCorrectChoiceIndex = $state<string | string[]>(
-		initialTemplate?.shared?.correctChoiceIndex || ''
-	);
 	let sharedCorrectionString = $state(correctionToString(initialTemplate?.shared?.correction));
 	// La correction partagée telle que chargée : ce que le formulaire n'édite pas
 	// (`feedback`, `generatedSteps`) est rendu tel quel à l'enregistrement
 	let sharedCorrectionLoaded: QuestionCorrection | undefined = initialTemplate?.shared?.correction;
-	let sharedChoices = $state(initialTemplate?.shared?.choices ?? []);
-	// Choix partagés réels : des choix aux libellés tous vides ne comptent pas,
-	// sinon ils écraseraient à l'enregistrement les choix propres aux variations
-	let hasSharedChoices = $derived(sharedChoices.some((c) => c.content.trim().length > 0));
 	let sharedRequiredFormSelect = $state<string>(
 		initialTemplate?.shared?.requiredForm
 			? typeof initialTemplate.shared.requiredForm === 'string'
@@ -443,8 +379,10 @@
 	let capitalPairsChoice = $state<CapitalPairsChoice>(
 		capitalPairsChoiceOf(initialTemplate?.shared?.capitalPairs)
 	);
-	// Options de la liste : la première dit ce que donne le contexte (thème courant)
-	let capitalPairsItems = $derived(capitalPairsChoiceItems(theme));
+	// Contexte : branche de « Rangé dans » (ADR 0035)
+	const capitalPairsContext = $derived(capitalPairsContextOf(chosenPlace?.branch.name));
+	// Options de la liste : la première dit ce que donne le contexte
+	let capitalPairsItems = $derived(capitalPairsChoiceItems(capitalPairsContext));
 	let genericFunctionsError = $derived.by(() => {
 		const result = genericFunctionNamesSchema.safeParse(
 			parseGenericFunctionNames(genericFunctionsText)
@@ -514,16 +452,13 @@
 			...v,
 			variables: v.variables || [],
 			blanks: v.blanks || [],
-			choices: v.choices || [],
 			correction: v.correction,
 			blankDefaults: { precision: { type: 'none' as const }, ...v.blankDefaults }
 		})) || [
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				correctChoiceIndex: '',
 				blanks: [],
-				choices: [],
 				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		]
@@ -531,8 +466,7 @@
 	// Garde auteur (Q-A) : un nom de figure attendu en mode longueur ne serait jamais accepté
 	let capitalPairsWarnings = $derived(
 		figureNameWarnings({
-			shared: capitalPairsChoice === 'auto' ? undefined : { capitalPairs: capitalPairsChoice },
-			theme,
+			shared: { capitalPairs: capitalPairsToWrite(capitalPairsChoice, capitalPairsContext) },
 			variations
 		})
 	);
@@ -579,12 +513,11 @@
 	let currentVariationIndex = $state(0);
 
 	// Available grade levels - use GRADE_CODES from unified system
-	// GRADE_CODES is already imported from '$lib/types/grades'
+	// GRADE_CODES is already imported from '#lib/types/grades.ts'
 
 	// Question type options
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
-		{ value: 'multiple_choice', label: 'QCM' },
 		{ value: 'course_card', label: 'Carte de cours' }
 	];
 
@@ -604,9 +537,7 @@
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				correctChoiceIndex: '',
 				blanks: [],
-				choices: [],
 				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		];
@@ -648,7 +579,6 @@
 			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
 			statement: templateMarkdown(sourceVariation.statement ?? ''),
 			variables: $state.snapshot(sourceVariation.variables ?? []) as QuestionVariable[],
-			correctChoiceIndex: sourceVariation.correctChoiceIndex,
 			// Les étapes viennent de variationExtras ; le reste de la correction est copié
 			correction: sourceVariation.correction
 				? ($state.snapshot(sourceVariation.correction) as QuestionCorrection)
@@ -656,13 +586,15 @@
 			blanks: sourceVariation.blanks
 				? ($state.snapshot(sourceVariation.blanks) as TemplateBlank[])
 				: [],
-			choices: sourceVariation.choices ? $state.snapshot(sourceVariation.choices) : [],
 			blankDefaults: {
 				precision: { type: 'none' as const },
 				...(sourceVariation.blankDefaults
 					? ($state.snapshot(sourceVariation.blankDefaults) as BlankDefaults)
 					: {})
-			}
+			},
+			// Coup de pouce (idée 5)
+			...(sourceVariation.hint !== undefined && { hint: sourceVariation.hint }),
+			...(sourceVariation.hintFromFirstStep && { hintFromFirstStep: true })
 		};
 
 		// Replace the current variation with the duplicated content
@@ -674,16 +606,14 @@
 		showDuplicateDialog = false;
 	}
 
-	// Derive correctChoiceIndex from isCorrect flags on choices
-	function deriveCorrectChoiceIndex(
-		choices: { content: unknown; isCorrect?: boolean }[]
-	): string | string[] | undefined {
-		const indexes = choices
-			.map((c, i) => (c.isCorrect ? String(i) : null))
-			.filter((i): i is string => i !== null);
-		if (indexes.length === 1) return indexes[0];
-		if (indexes.length > 1) return indexes;
-		return undefined;
+	// Coup de pouce (idée 5) : texte de l'indice, vide = pas d'indice
+	function setHint(index: number, text: string) {
+		variations[index].hint = text === '' ? undefined : templateMarkdown(text);
+	}
+
+	// Coup de pouce = première étape de la correction (le texte écrit est gardé, ignoré)
+	function setHintFromFirstStep(index: number, checked: boolean) {
+		variations[index].hintFromFirstStep = checked ? true : undefined;
 	}
 
 	// Build template object
@@ -711,26 +641,16 @@
 			const cleaned: QuestionVariation = {
 				...(variation.statement?.trim() ? { statement: variation.statement } : {}),
 				...(filteredVars && filteredVars.length > 0 ? { variables: filteredVars } : {}),
-				...(questionType === 'multiple_choice'
-					? hasSharedChoices
-						? // Shared choices: preserve per-variation correctChoiceIndex, no per-variation choices
-							variation.correctChoiceIndex &&
-							(!Array.isArray(variation.correctChoiceIndex) ||
-								variation.correctChoiceIndex.length > 0)
-							? { correctChoiceIndex: variation.correctChoiceIndex }
-							: {}
-						: // Per-variation choices: derive correctChoiceIndex from isCorrect flags
-							variation.choices?.length
-							? {
-									correctChoiceIndex: deriveCorrectChoiceIndex(variation.choices),
-									choices: variation.choices
-								}
-							: {}
-					: {}),
 				...(questionType === 'fill_in_blanks' && variation.blanks && variation.blanks.length > 0
 					? { blanks: variation.blanks }
 					: {}),
 				...(cleanedBlankDefaults ? { blankDefaults: cleanedBlankDefaults } : {}),
+				// Coup de pouce (idée 5) : la case « première étape » l'emporte sur un texte resté
+				...(variation.hintFromFirstStep
+					? { hintFromFirstStep: true }
+					: variation.hint?.trim()
+						? { hint: templateMarkdown(variation.hint.trim()) }
+						: {}),
 				correction: stringToCorrection(
 					extra.correctionString,
 					variation.correction
@@ -786,13 +706,8 @@
 			const filtered = sharedVariables.filter((v) => v.name && v.expression);
 			if (filtered.length > 0) shared.variables = filtered;
 		}
-		if (questionType === 'multiple_choice' && hasSharedChoices) {
-			const sharedDerived = deriveCorrectChoiceIndex(sharedChoices);
-			if (sharedDerived) shared.correctChoiceIndex = sharedDerived;
-		}
 		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString, sharedCorrectionLoaded);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
-		if (questionType === 'multiple_choice' && hasSharedChoices) shared.choices = sharedChoices;
 		if (sharedRequiredFormSelect) {
 			if (sharedRequiredFormSelect === 'custom' && sharedRequiredFormPattern.trim()) {
 				shared.requiredForm = customRequiredForm(
@@ -867,8 +782,10 @@
 		if (genericFunctionNames.length > 0) shared.genericFunctions = genericFunctionNames;
 		// Absente quand décochée : un modèle sans l'option reste identique
 		if (cleanCoefficients) shared.cleanCoefficients = true;
-		// Absente sur « selon le contexte » : le thème décide à la génération
-		if (capitalPairsChoice !== 'auto') shared.capitalPairs = capitalPairsChoice;
+		// « Selon le contexte » + contexte « produit » (branche Matrices, Graphes…) : déclaré
+		// explicitement, le générateur ne lit pas l'arbre. Sinon absente (longueur par défaut).
+		const capitalPairsWritten = capitalPairsToWrite(capitalPairsChoice, capitalPairsContext);
+		if (capitalPairsWritten) shared.capitalPairs = capitalPairsWritten;
 
 		// Build defaultDisplayOptions
 		const displayOpts: DisplayOptions = {};
@@ -885,7 +802,6 @@
 		// Build options
 		const options: QuestionTemplate['options'] = {};
 		if (optOrderIndependent) options.orderIndependent = true;
-		if (!optShuffleChoices) options.shuffleChoices = false;
 		// Build constraints
 		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
 		for (const id of CONSTRAINT_IDS) {
@@ -914,20 +830,13 @@
 			exerciseInstruction,
 			options: finalOptions,
 			grades,
-			theme,
-			domain,
-			subdomain,
+			classification_node_id: classificationNodeId,
 			level,
 			status,
 			delay,
 			// Une carte de cours n'a pas de réponse, donc pas de spec
 			testSpecs: questionType !== 'course_card' && testSpecs.length > 0 ? testSpecs : undefined
 		};
-
-		// Add type-specific shared fields
-		if (questionType === 'multiple_choice') {
-			return { ...base, multipleAnswers };
-		}
 
 		return base;
 	}
@@ -939,22 +848,15 @@
 		// Metadata
 		title = t.title || '';
 		description = t.description || '';
-		theme = t.theme || '';
-		domain = t.domain || '';
-		subdomain = t.subdomain;
+		classificationNodeId = t.classification_node_id ?? null;
 		level = t.level || 1;
 		status = t.status || 'draft';
 		grades = t.grades || [];
 		delay = t.delay;
 		exerciseInstruction = t.exerciseInstruction;
-		multipleAnswers = t.multipleAnswers;
 
 		// Type
-		questionType = getQuestionType({
-			choices: t.variations?.[0]?.choices,
-			shared: t.shared,
-			options: t.options
-		});
+		questionType = getQuestionType({ options: t.options });
 
 		// Display options
 		displayShuffleTerms = t.defaultDisplayOptions?.shuffleTerms ?? false;
@@ -968,7 +870,6 @@
 
 		// Validation options
 		optOrderIndependent = t.options?.orderIndependent ?? false;
-		optShuffleChoices = t.options?.shuffleChoices ?? true;
 		optCourseQuestion = readCourseQuestionOption(t.options);
 		optAllowBracketsInFirstNegativeTerm =
 			t.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false;
@@ -981,10 +882,8 @@
 		// Shared fields
 		sharedVariables = t.shared?.variables || [];
 		sharedStatement = templateMarkdown(t.shared?.statement || '');
-		sharedCorrectChoiceIndex = t.shared?.correctChoiceIndex || '';
 		sharedCorrectionString = correctionToString(t.shared?.correction);
 		sharedCorrectionLoaded = t.shared?.correction;
-		sharedChoices = t.shared?.choices ?? [];
 		sharedRequiredFormSelect = t.shared?.requiredForm
 			? typeof t.shared.requiredForm === 'string'
 				? t.shared.requiredForm
@@ -1032,16 +931,13 @@
 			statement: v.statement || templateMarkdown(''),
 			variables: v.variables || [],
 			blanks: v.blanks || [],
-			choices: v.choices || [],
 			correction: v.correction,
 			blankDefaults: { precision: { type: 'none' as const }, ...v.blankDefaults }
 		})) || [
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				correctChoiceIndex: '',
 				blanks: [],
-				choices: [],
 				blankDefaults: { precision: { type: 'none' as const } }
 			}
 		];
@@ -1114,20 +1010,6 @@
 		else v.statement = value;
 	}
 
-	// « Plusieurs réponses » coupé dans un éditeur (case ou « Vrai / Faux ») : le
-	// réglage vaut pour tout le modèle → chaque variation et le partagé ne gardent
-	// que leur première bonne réponse
-	function handleSingleAnswer() {
-		variations = variations.map((variation) => ({
-			...variation,
-			...(variation.choices ? { choices: keepFirstCorrectChoice(variation.choices) } : {}),
-			...(variation.correctChoiceIndex !== undefined
-				? { correctChoiceIndex: keepFirstDeclaredChoice(variation.correctChoiceIndex) }
-				: {})
-		}));
-		sharedChoices = keepFirstCorrectChoice(sharedChoices);
-	}
-
 	// Handle save
 
 	// Save as draft (no category validation)
@@ -1149,7 +1031,7 @@
 			return;
 		}
 		const templateData = buildTemplate();
-		// QCM (V1) : plusieurs bonnes réponses sans « plusieurs réponses » → refusé,
+		// Case choix (V1) : plusieurs bonnes réponses sans `plusieurs: oui` → refusé,
 		// même en brouillon (le serveur refuserait aussi)
 		// Toast même en silencieux : sinon la modification (ex. un test supprimé)
 		// n'est pas enregistrée et rien ne le dit
@@ -1184,6 +1066,82 @@
 		if (saved === false) status = previousStatus;
 	}
 
+	/**
+	 * « Enregistrer » d'un modèle publié : il reste publié, donc mêmes contrôles
+	 * que « Publier » (le serveur repasse le contrôle complet).
+	 */
+	function handleSavePublished() {
+		if (jsonMode) {
+			handleSaveDraft();
+			return;
+		}
+		hasAttemptedPublish = true;
+		if (!isValid) return;
+		// Doublon d'hypothèse : l'enregistrement perdrait la première ligne en silence
+		const duplicate = duplicateAssumptionMessage(assumptionRows);
+		if (duplicate) {
+			toaster.error(duplicate);
+			return;
+		}
+		onSave(buildTemplate());
+	}
+
+	// Même texte que la confirmation de la liste (onglet « Publiés »)
+	const UNPUBLISH_CONFIRM_TEXT =
+		'Ce modèle ne sera plus proposé aux élèves. Le republier repassera le contrôle complet.';
+	let showUnpublishDialog = $state(false);
+
+	/**
+	 * Repasse en brouillon, modifications en cours comprises ; on reste sur la page
+	 * (`silent`) pour voir le nouveau statut. Refus du serveur → le statut revient.
+	 */
+	async function confirmUnpublish() {
+		showUnpublishDialog = false;
+		if (jsonMode) {
+			let parsed: Parameters<typeof onSave>[0];
+			try {
+				parsed = JSON.parse(jsonString);
+			} catch {
+				_jsonErrors = ['JSON invalide'];
+				jsonValid = false;
+				return;
+			}
+			parsed.status = 'draft';
+			const saved = await onSave(parsed, { silent: true });
+			if (saved === false) return;
+			// Le JSON affiché dit le nouveau statut : repasser en mode formulaire le relit
+			jsonString = JSON.stringify(parsed, null, 2);
+			status = 'draft';
+			hasAttemptedPublish = false;
+			savedSnapshot = computeSnapshot();
+			return;
+		}
+		// Mêmes gardes qu'« Enregistrer brouillon » : sinon perte silencieuse ou refus sans raison
+		const duplicate = duplicateAssumptionMessage(assumptionRows);
+		if (duplicate) {
+			toaster.error(duplicate);
+			return;
+		}
+		status = 'draft';
+		const templateData = buildTemplate();
+		const countErrors = choiceAnswerCountErrors(templateData, { draft: true });
+		if (countErrors.length > 0) {
+			status = 'published';
+			toaster.error(countErrors[0]);
+			return;
+		}
+		// Instantané de ce qui part, pris avant l'envoi : une saisie faite pendant
+		// l'enregistrement reste « non sauvegardée »
+		const sentSnapshot = computeSnapshot();
+		const saved = await onSave(templateData, { silent: true });
+		if (saved === false) {
+			status = 'published';
+			return;
+		}
+		hasAttemptedPublish = false;
+		savedSnapshot = sentSnapshot;
+	}
+
 	// Publish question (with category validation)
 	function handlePublish() {
 		if (jsonMode) {
@@ -1199,28 +1157,10 @@
 		}
 		hasAttemptedPublish = true;
 		if (!isValid) return;
-		if (categoryDuplicate) {
-			// Show confirmation dialog
-			showPublishDialog = true;
-		} else {
-			// No duplicate, publish directly
-			publish();
-		}
+		publish();
 	}
 
-	// Confirm publication with adjusted level
-	async function confirmPublishWithAdjustedLevel() {
-		if (suggestedLevel) {
-			level = suggestedLevel;
-		}
-		showPublishDialog = false;
-
-		// Wait for next tick to let level update
-		await tick();
-		await publish();
-	}
-
-	// Memoize buildTemplate() for preview (avoid recalculating on every render)
+	// Memoize buildTemplate() for preview (avoid recalculating on every render).
 	let previewTemplate = $derived(buildTemplate());
 
 	// Dirty state: protect against accidental data loss
@@ -1228,9 +1168,7 @@
 		return JSON.stringify({
 			title,
 			description,
-			theme,
-			domain,
-			subdomain,
+			classificationNodeId,
 			level,
 			status,
 			grades,
@@ -1240,13 +1178,12 @@
 			genericFunctionsText,
 			cleanCoefficients,
 			capitalPairsChoice,
-			multipleAnswers,
 			variations: variations.map((v) => ({
 				statement: v.statement,
 				variables: v.variables?.length,
 				blanks: v.blanks?.length,
-				choices: v.choices?.length,
-				correctChoiceIndex: v.correctChoiceIndex
+				hint: v.hint,
+				hintFromFirstStep: v.hintFromFirstStep
 			})),
 			sharedVariables: sharedVariables.length,
 			variationExtras,
@@ -1255,9 +1192,10 @@
 	}
 
 	// Capture initial snapshot once (all $state vars are already initialized above)
-	const initialSnapshot = computeSnapshot();
+	// Repris après un enregistrement qui garde la page ouverte (retour en brouillon)
+	let savedSnapshot = $state(computeSnapshot());
 
-	let isDirty = $derived(computeSnapshot() !== initialSnapshot);
+	let isDirty = $derived(computeSnapshot() !== savedSnapshot);
 
 	// Warn before leaving with unsaved changes
 	$effect(() => {
@@ -1278,32 +1216,26 @@
 	let gradesError = $derived(
 		hasAttemptedPublish && grades.length === 0 ? 'Sélectionnez au moins un niveau scolaire' : ''
 	);
-	let themeError = $derived(hasAttemptedPublish && !theme.trim() ? 'Le thème est obligatoire' : '');
-	let domainError = $derived(
-		hasAttemptedPublish && !domain.trim() ? 'Le domaine est obligatoire' : ''
-	);
 	let levelError = $derived(
 		hasAttemptedPublish && level <= 0 ? 'Le niveau doit être supérieur à 0' : ''
 	);
 
+	// Pas de contrôle « réponse manquante » ici : les réponses peuvent être écrites dans
+	// le texte (`?4`, `?flèche`), que seul le serveur (`checkTemplate`) sait lire ; il
+	// refuse une version sans réponse et ses raisons arrivent par `serverErrors`.
 	function getVariationErrors(v: QuestionVariation, index: number): string[] {
 		if (!hasAttemptedPublish) return [];
 		const errors: string[] = [];
 		if (!(v.statement ?? '').trim() && !sharedStatement.trim())
 			errors.push(`Variation ${index + 1} : énoncé manquant`);
-		const hasAnswer =
-			(v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
-			(v.choices && v.choices.length > 0) ||
-			(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
-			(Array.isArray(v.correctChoiceIndex) && v.correctChoiceIndex.length > 0);
-		if (!hasAnswer) errors.push(`Variation ${index + 1} : réponse manquante`);
 		return errors;
 	}
-	// QCM (V1) : exactement une bonne réponse, au moins une avec « plusieurs réponses »
+	// Case choix (V1) : exactement une bonne réponse, au moins une avec `plusieurs: oui`
 	let answerCountErrors = $derived(choiceAnswerCountErrors(previewTemplate));
 	let variationErrors = $derived([
 		...variations.flatMap((v, i) => getVariationErrors(v, i)),
-		...(hasAttemptedPublish ? answerCountErrors : [])
+		...(hasAttemptedPublish ? answerCountErrors : []),
+		...serverErrors
 	]);
 
 	// Variables tirées (partagées + variations) : une hypothèse ne peut pas les viser
@@ -1321,16 +1253,9 @@
 		title.trim().length > 0 &&
 			variations.length > 0 &&
 			variations.every(
-				(v) =>
-					((v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0) &&
-					((v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
-						(v.choices && v.choices.length > 0) ||
-						(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
-						(Array.isArray(v.correctChoiceIndex) && v.correctChoiceIndex.length > 0))
+				(v) => (v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0
 			) &&
 			grades.length > 0 &&
-			theme.trim().length > 0 &&
-			domain.trim().length > 0 &&
 			level > 0 &&
 			assumptionsAreValid &&
 			answerCountErrors.length === 0
@@ -1442,9 +1367,7 @@
 			shared={sharedStatement || sharedVariables.length > 0
 				? {
 						statement: sharedStatement || undefined,
-						variables: sharedVariables.length > 0 ? sharedVariables : undefined,
-						choices:
-							questionType === 'multiple_choice' && hasSharedChoices ? sharedChoices : undefined
+						variables: sharedVariables.length > 0 ? sharedVariables : undefined
 					}
 				: undefined}
 			options={currentOptions}
@@ -1532,16 +1455,11 @@
 			isCourseCard={questionType === 'course_card'}
 		/>
 
-		<!-- Categorization Fields -->
+		<!-- Rangement -->
 		<!--
-		Category system allows organizing questions by:
-		- Theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
-		- Domain: Specific topic within theme (e.g., "Équations", "Polynômes") [required]
-		- Subdomain: Optional sub-topic (e.g., "Linéaires", "Quadratiques") [optional]
-		- Level: Difficulty as positive integer (1=easy, higher=harder) [required]
-
-		These fields are independent from grade levels (grades field).
-		Admins can add new categories on-the-fly via « Ajouter… » (QuestionCategoryFields).
+		Un modèle est rangé dans l'arbre des notions (« Rangé dans », facultatif) ;
+		le niveau ordonne les modèles d'une même rubrique. Plus de thème, domaine ni
+		sous-domaine (ADR 0035).
 	-->
 		<Card.Root>
 			<Card.Header>
@@ -1550,7 +1468,7 @@
 						class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
 					>
 						<Card.Title class="flex items-center gap-2">
-							Catégorisation
+							Rangement
 							<button
 								type="button"
 								onclick={(e) => {
@@ -1558,7 +1476,7 @@
 									categorizationHelpOpen = true;
 								}}
 								class="text-muted-foreground transition-colors hover:text-foreground"
-								aria-label="Aide sur la catégorisation"
+								aria-label="Aide sur le rangement"
 							>
 								<CircleQuestionMark class="h-5 w-5" />
 							</button>
@@ -1571,15 +1489,11 @@
 					</Collapsible.Trigger>
 					<Collapsible.Content>
 						<Card.Content class="space-y-4">
-							<!-- Thème / Domaine / Sous-domaine, listes filtrées les unes par les autres -->
-							<QuestionCategoryFields
-								entries={categoryEntries}
-								bind:theme
-								bind:domain
-								bind:subdomain={() => subdomain ?? '', (v) => (subdomain = v || undefined)}
-								{themeError}
-								{domainError}
-							/>
+							<!-- Rangé dans : branche → notion → sous-notion, tout facultatif -->
+							<div class="space-y-2">
+								<Label>Rangé dans</Label>
+								<ClassificationNodePicker {nodes} bind:value={classificationNodeId} />
+							</div>
 
 							<div class="grid gap-4 md:grid-cols-2">
 								<!-- Difficulty Level (Required, positive integer, no max) -->
@@ -1598,11 +1512,6 @@
 									/>
 									{#if levelError}
 										<p class="text-xs text-destructive">{levelError}</p>
-									{/if}
-									{#if categoryDuplicate && status === 'draft'}
-										<p class="text-xs text-amber-600 dark:text-amber-400">
-											⚠️ Cette catégorie existe déjà au niveau {level}. Niveau suggéré : {suggestedLevel}
-										</p>
 									{/if}
 								</div>
 							</div>
@@ -1682,8 +1591,8 @@
 			/>
 			<p id="capital-pairs-help" class="text-xs text-muted-foreground">
 				Lecture de AB dans les réponses (élève et attendue) : la longueur du segment [AB] (BA = AB,
-				AB² = BA²), ou le produit A × B (matrices, physique). Rien de déclaré : produit pour le
-				thème « Graphes et matrices » ou un thème de physique, longueur sinon.
+				AB² = BA²), ou le produit A × B (matrices, graphes). Rien de choisi : produit pour les
+				branches « Matrices » et « Graphes », longueur sinon.
 			</p>
 			{#each capitalPairsWarnings as warning (warning)}
 				<p class="text-xs text-destructive" role="alert">{warning}</p>
@@ -1721,32 +1630,24 @@
 		<AnswerAssumptionsEditor
 			bind:rows={assumptionRows}
 			drawnNames={drawnVariableNames}
-			{theme}
-			{domain}
+			branch={chosenPlace?.branch.name ?? ''}
+			notion={chosenPlace?.notion.name ?? ''}
 		/>
 
 		<!-- Options de validation -->
 		<ValidationOptionsEditor
 			bind:open={optionsSectionOpen}
 			bind:orderIndependent={optOrderIndependent}
-			bind:shuffleChoices={optShuffleChoices}
 			bind:allowBracketsInFirstNegativeTerm={optAllowBracketsInFirstNegativeTerm}
 			bind:spacesFromFourDigits={optSpacesFromFourDigits}
 			bind:constraintModes
-			{questionType}
 		/>
 
 		<!-- Champs partagés (shared defaults for all variations) -->
 		<SharedFieldsEditor
 			bind:open={sharedFieldsOpen}
-			{questionType}
-			bind:multipleAnswers
-			bind:shuffleChoices={optShuffleChoices}
-			onSingleAnswer={handleSingleAnswer}
 			bind:sharedStatement
 			bind:sharedVariables
-			bind:sharedCorrectChoiceIndex
-			bind:sharedChoices
 			bind:sharedCorrectionString
 			bind:sharedRequiredFormSelect
 			bind:sharedRequiredFormPattern
@@ -1952,18 +1853,13 @@
 												<Card.Content>
 													<AnswerEditor
 														{questionType}
-														bind:answer={variation.correctChoiceIndex}
 														bind:blanks={variation.blanks}
-														bind:choices={variation.choices}
-														bind:multipleAnswers
-														bind:shuffleChoices={optShuffleChoices}
 														bind:statement={
 															() => effectiveStatement(variation),
 															(v) => setEffectiveStatement(variation, v)
 														}
 														statementShared={!variation.statement?.trim() &&
 															sharedStatement.trim().length > 0}
-														onSingleAnswer={handleSingleAnswer}
 													/>
 												</Card.Content>
 											</Collapsible.Content>
@@ -2019,6 +1915,38 @@
 									</Collapsible.Root>
 								</Card.Header>
 							</Card.Root>
+
+							<!-- Coup de pouce (idée 5) : indice que l'élève ouvre s'il est bloqué -->
+							{#if questionType === 'fill_in_blanks'}
+								<Card.Root>
+									<Card.Header>
+										<Card.Title>Coup de pouce (optionnel)</Card.Title>
+										<Card.Description id="hint-help-{index}">
+											Un indice que l’élève ouvre s’il est bloqué, jamais en évaluation. Il ne donne
+											pas la réponse : {'{{solution}}'} y est refusé.
+										</Card.Description>
+									</Card.Header>
+									<Card.Content class="space-y-3">
+										<MyCheckbox
+											bind:checked={
+												() => variation.hintFromFirstStep === true,
+												(checked) => setHintFromFirstStep(index, checked)
+											}
+											label="La première étape de la correction sert de coup de pouce"
+											aria-describedby="hint-help-{index}"
+										/>
+										{#if !variation.hintFromFirstStep}
+											<MarkdownEditor
+												bind:value={() => variation.hint ?? '', (text) => setHint(index, text)}
+												showParameterization={true}
+												variables={variation.variables}
+												placeholder="Indice (optionnel) : par exemple « Pense à la table de {'{{a}}'}. »"
+												rows={3}
+											/>
+										{/if}
+									</Card.Content>
+								</Card.Root>
+							{/if}
 
 							<!-- Per-variation overrides -->
 							<Card.Root>
@@ -2113,7 +2041,7 @@
 	{/if}
 
 	<!-- Validation Errors Summary -->
-	{#if hasAttemptedPublish && variationErrors.length > 0}
+	{#if (hasAttemptedPublish || serverErrors.length > 0) && variationErrors.length > 0}
 		<div class="rounded-lg border border-destructive/50 bg-destructive/5 p-3">
 			<p class="mb-1 text-sm font-medium text-destructive">Erreurs à corriger :</p>
 			<ul class="space-y-1 text-xs text-destructive">
@@ -2135,26 +2063,62 @@
 			<Button variant="outline" onclick={handleCancel} disabled={isSubmitting}>
 				<X class="mr-2 h-4 w-4" />{lore.actions.cancel}</Button
 			>
-			<Button
-				variant="secondary"
-				onclick={handleSaveDraft}
-				disabled={isSubmitting || (jsonMode && !jsonValid)}
-				class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
-			>
-				<FileText class="mr-2 h-4 w-4" />
-				{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
-			</Button>
-			<Button
-				onclick={handlePublish}
-				disabled={isSubmitting || (jsonMode && !jsonValid)}
-				class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
-			>
-				<CheckCircle2 class="mr-2 h-4 w-4" />
-				{isSubmitting ? 'Publication...' : 'Publier'}
-			</Button>
+			{#if status === 'published'}
+				<Button
+					variant="secondary"
+					onclick={() => (showUnpublishDialog = true)}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					Repasser en brouillon
+				</Button>
+				<Button
+					onclick={handleSavePublished}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+				>
+					<CheckCircle2 class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+				</Button>
+			{:else}
+				<Button
+					variant="secondary"
+					onclick={() => handleSaveDraft()}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-900 dark:text-amber-100"
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Enregistrement...' : 'Enregistrer brouillon'}
+				</Button>
+				<Button
+					onclick={handlePublish}
+					disabled={isSubmitting || (jsonMode && !jsonValid)}
+					class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+				>
+					<CheckCircle2 class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Publication...' : 'Publier'}
+				</Button>
+			{/if}
 		</div>
 	</div>
 </div>
+
+<!-- Confirmation du retour en brouillon (même texte que la liste) -->
+<Dialog.Root bind:open={showUnpublishDialog}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Repasser en brouillon</Dialog.Title>
+			<Dialog.Description>{UNPUBLISH_CONFIRM_TEXT}</Dialog.Description>
+		</Dialog.Header>
+		<div class="flex justify-end gap-2">
+			<Button variant="outline" onclick={() => (showUnpublishDialog = false)}>Annuler</Button>
+			<Button variant="destructive" onclick={confirmUnpublish} disabled={isSubmitting}
+				>Repasser en brouillon</Button
+			>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
 
 <!-- Duplicate Variation Dialog -->
 <Dialog.Root bind:open={showDuplicateDialog}>
@@ -2209,52 +2173,3 @@
 	bind:answerHelpOpen
 	bind:correctionHelpOpen
 />
-
-<!-- Publish Confirmation Dialog -->
-<Dialog.Root bind:open={showPublishDialog}>
-	<Dialog.Content class="max-w-md">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center gap-2">
-				<CheckCircle2 class="h-5 w-5 text-amber-600" />
-				Publier avec ajustement de niveau
-			</Dialog.Title>
-			<Dialog.Description>
-				Cette catégorie existe déjà au niveau {level}.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="space-y-4">
-			<div class="rounded-lg bg-muted p-4">
-				<p class="text-sm font-medium">Catégorie :</p>
-				<ul class="mt-2 space-y-1 text-sm text-muted-foreground">
-					<li>• Thème : <strong>{theme}</strong></li>
-					<li>• Domaine : <strong>{domain}</strong></li>
-					{#if subdomain}
-						<li>• Sous-domaine : <strong>{subdomain}</strong></li>
-					{/if}
-					<li>
-						• Niveau : <strong class="text-destructive">{level}</strong>
-						→
-						<strong class="text-green-600">{suggestedLevel}</strong>
-					</li>
-				</ul>
-			</div>
-
-			<p class="text-sm text-muted-foreground">
-				Si tu confirmes, le niveau passera à <strong class="text-green-600">{suggestedLevel}</strong
-				>
-				pour éviter les doublons.
-			</p>
-		</div>
-
-		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (showPublishDialog = false)}
-				>{lore.actions.cancel}</Button
-			>
-			<Button onclick={confirmPublishWithAdjustedLevel} class="bg-green-600 hover:bg-green-700">
-				<CheckCircle2 class="mr-2 h-4 w-4" />
-				Publier au niveau {suggestedLevel}
-			</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>

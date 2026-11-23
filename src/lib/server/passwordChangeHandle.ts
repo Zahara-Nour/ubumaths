@@ -10,8 +10,9 @@
  * est levée, sans attendre le rafraîchissement du jeton.
  */
 
-import { json, redirect, type Handle } from '@sveltejs/kit';
-import { mustChangePassword } from '$lib/server/child-password';
+import { redirect } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { mustChangePassword } from '#lib/server/child-password.ts';
 
 // Constantes
 
@@ -19,7 +20,9 @@ import { mustChangePassword } from '$lib/server/child-password';
 const ROUTES_OUVERTES = new Set([
 	'/(public)/auth/update-password',
 	'/(public)/auth/logout',
-	'/api/errors/log'
+	'/api/errors/log',
+	// Mesures de performance, anonymes : la route ne se sert pas de la session
+	'/api/web-vitals'
 ]);
 
 const METHODES_LECTURE = new Set(['GET', 'HEAD', 'OPTIONS']);
@@ -34,7 +37,10 @@ export const passwordChangeHandle: Handle = async ({ event, resolve }) => {
 	if (!routeId || ROUTES_OUVERTES.has(routeId)) return resolve(event);
 
 	if (routeId.startsWith('/api/') || !METHODES_LECTURE.has(event.request.method)) {
-		return json({ message: 'Mot de passe provisoire : en choisir un nouveau' }, { status: 403 });
+		return Response.json(
+			{ message: 'Mot de passe provisoire : en choisir un nouveau' },
+			{ status: 403 }
+		);
 	}
 	throw redirect(303, '/auth/update-password');
 };

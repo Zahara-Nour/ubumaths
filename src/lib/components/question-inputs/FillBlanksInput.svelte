@@ -10,6 +10,8 @@
 	- Expression convention (expressionName + answerFormat)
 	- Case « choix » (bloc ```choix) : MultipleChoiceInput à l'endroit du bloc ; valeur
 	  de la case = indices d'origine cochés (`formatChoiceAnswer`, « 0;2 »)
+	- Tableau de signes à compléter (```variation à `?`) : une case par cellule cachée,
+	  valeur de x = petite case MathLive, signe / marque = SignCellPicker
 	- Validation state display (correct/incorrect)
 
 	Architecture:
@@ -33,12 +35,12 @@
 -->
 
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import { parseMarkdown } from '$lib/ubumark';
-	import { lexiconRuntime, loadLexiconRuntime } from '$lib/lexicon/runtime-store.svelte';
-	import { readLexicon } from '$lib/components/markdown/lexicon-context';
-	import type { ResolvedMarkdown } from '$lib/ubumark';
-	import type { GradeLevel, InstanceBlank, QuestionInstance } from '$lib/questions/types';
+	import '#lib/utils/mathlive-styles.ts';
+	import { parseMarkdown } from '#lib/ubumark/index.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { readLexicon } from '#lib/components/markdown/lexicon-context.ts';
+	import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
+	import type { GradeLevel, InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
 	import type { MathfieldElement } from 'mathlive';
 	import {
 		hasPrompts,
@@ -46,49 +48,74 @@
 		expressionToLatex,
 		replacePromptsWithValues,
 		replacePromptsWithPrefilled
-	} from '$lib/components/markdown/utils/math-utils';
-	import { toFrenchDecimal } from '$lib/utils/french-math';
-	import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
-	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
-	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
-	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
-	import { buildMatricesKeyboardLayout } from '$lib/questions/matrices/keyboard-matrices';
+	} from '#lib/components/markdown/utils/math-utils.ts';
+	import { toFrenchDecimal } from '#lib/utils/french-math.ts';
+	import { operationCaseCount } from '#lib/ubumark/utils/operation-division-answer.ts';
+	import { barsCaseCount } from '#lib/ubumark/utils/barres-placer.ts';
+	import { boxPlotCaseCount } from '#lib/ubumark/utils/boxplot-placer.ts';
+	import { buildUnitsKeyboardLayout, unitKeysFor } from '#lib/questions/units/keyboard-units.ts';
+	import { buildIntervalsKeyboardLayout } from '#lib/questions/intervals/keyboard-intervals.ts';
+	import { buildVectorsKeyboardLayout } from '#lib/questions/vectors/keyboard-vectors.ts';
+	import { buildMatricesKeyboardLayout } from '#lib/questions/matrices/keyboard-matrices.ts';
 	import {
 		buildCombinatoricsKeyboardLayout,
 		hasCombinatoricsKeyboard
-	} from '$lib/questions/combinatorics/keyboard-combinatorics';
-	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
+	} from '#lib/questions/combinatorics/keyboard-combinatorics.ts';
+	import type { BlockNode, InlineNode, TableCellNode } from '#lib/ubumark/index.ts';
 	import type { Snippet } from 'svelte';
-	import type { GenericFunctionConfig } from '$lib/mathAST';
-	import type { CapitalPairs } from '$lib/mathAST/parser/types';
+	import type { GenericFunctionConfig } from '#lib/mathAST/index.ts';
+	import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
 
 	// Node components (reuse from MarkdownRenderer)
-	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
-	import MathBlock from '$lib/components/markdown/nodes/MathBlock.svelte';
-	import MathPrompt from '$lib/components/markdown/nodes/MathPrompt.svelte';
-	import HeadingNode from '$lib/components/markdown/nodes/HeadingNode.svelte';
-	import StaticBlockNode from '$lib/components/markdown/nodes/StaticBlockNode.svelte';
-	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
-	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
-	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
-	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
-	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
-	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
-	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
-	import ChoiceBlock from '$lib/components/markdown/nodes/ChoiceBlock.svelte';
+	import ParagraphNode from '#lib/components/markdown/nodes/ParagraphNode.svelte';
+	import MathBlock from '#lib/components/markdown/nodes/MathBlock.svelte';
+	import MathPrompt from '#lib/components/markdown/nodes/MathPrompt.svelte';
+	import HeadingNode from '#lib/components/markdown/nodes/HeadingNode.svelte';
+	import StaticBlockNode from '#lib/components/markdown/nodes/StaticBlockNode.svelte';
+	import TableNode from '#lib/components/markdown/nodes/TableNode.svelte';
+	import ImageDisplay from '#lib/components/markdown/nodes/ImageDisplay.svelte';
+	import Operation from '#lib/components/markdown/nodes/Operation.svelte';
+	import Collection from '#lib/components/markdown/nodes/Collection.svelte';
+	import NumberLine from '#lib/components/markdown/nodes/NumberLine.svelte';
+	import Courbe from '#lib/components/markdown/nodes/Courbe.svelte';
+	import HorlogePlacer from '#lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import TrigPlacer from '#lib/components/markdown/nodes/TrigPlacer.svelte';
+	import BarresPlacer from '#lib/components/markdown/nodes/BarresPlacer.svelte';
+	import BoxPlotPlacer from '#lib/components/markdown/nodes/BoxPlotPlacer.svelte';
+	import RangerPlacer from '#lib/components/markdown/nodes/RangerPlacer.svelte';
+	import AssocierPlacer from '#lib/components/markdown/nodes/AssocierPlacer.svelte';
+	import TrousEtiquettes from '#lib/components/markdown/nodes/TrousEtiquettes.svelte';
+	import TortueProgramme from '#lib/components/markdown/nodes/TortueProgramme.svelte';
+	import RobotCode from '#lib/components/markdown/nodes/RobotCode.svelte';
+	import CalculProgramme from '#lib/components/markdown/nodes/CalculProgramme.svelte';
+	import PartageColorier from '#lib/components/markdown/nodes/PartageColorier.svelte';
+	import CubesGeste from '#lib/components/markdown/nodes/CubesGeste.svelte';
+	import PatronGeste from '#lib/components/markdown/nodes/PatronGeste.svelte';
+	import SolideGeste from '#lib/components/markdown/nodes/SolideGeste.svelte';
+	import Monnaie from '#lib/components/markdown/nodes/Monnaie.svelte';
+	import BuildAnswer from '#lib/components/questions/BuildAnswer.svelte';
+	import FigureBlock from '#lib/components/markdown/nodes/FigureBlock.svelte';
+	import ChoiceBlock from '#lib/components/markdown/nodes/ChoiceBlock.svelte';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
+	import SignCellPicker from './SignCellPicker.svelte';
+	import type { HiddenCell, VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
-	import type { ChoiceNode } from '$lib/ubumark/types/choix';
+	import type { ChoiceNode } from '#lib/ubumark/types/choix.ts';
 	import {
 		correctChoiceIndexesOf,
 		formatChoiceAnswer,
 		parseChoiceAnswer
-	} from '$lib/questions/choice-case';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	} from '#lib/questions/choice-case.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import {
 		provideCapitalPairs,
 		readCapitalPairs
-	} from '$lib/components/markdown/content-capital-pairs';
-	import { readDigitGrouping } from '$lib/components/markdown/content-digit-grouping';
+	} from '#lib/components/markdown/content-capital-pairs.ts';
+	import { readDigitGrouping } from '#lib/components/markdown/content-digit-grouping.ts';
+	import {
+		isIncompleteRepresentation,
+		isLineToRepresentBlank
+	} from '#lib/ubumark/utils/number-line-representer.ts';
 
 	// Utility functions
 	import {
@@ -184,6 +211,13 @@
 	// When showing correct answers, force disabled
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
 
+	/**
+	 * Au moins une case à écrire (texte, formule, grille d'opération) : seule elle
+	 * justifie « Remplissez les blancs » ; un choix, une figure ou une collection
+	 * à construire ont leur propre consigne
+	 */
+	let hasWrittenBlank = $derived(blanks.some((b) => !b.choice && !b.construction && !b.construire));
+
 	/** Check if a block node contains blanks or math prompts */
 	function nodeHasBlanks(node: BlockNode): boolean {
 		if (node.type === 'paragraph') {
@@ -199,10 +233,31 @@
 		}
 		if (node.type === 'operation') return node.caseIndex !== undefined;
 		if (node.type === 'collection') return node.caseIndex !== undefined;
+		if (node.type === 'number-line') return node.caseIndex !== undefined;
+		if (node.type === 'horloge') return node.caseIndex !== undefined;
+		if (node.type === 'courbe') return node.caseIndex !== undefined;
+		if (node.type === 'trig-circle') return node.caseIndex !== undefined;
+		if (node.type === 'partage') return node.caseIndex !== undefined;
+		if (node.type === 'espace') return node.caseIndex !== undefined;
+		if (node.type === 'stat-chart') return node.caseIndex !== undefined;
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
+		if (node.type === 'ranger') return node.caseIndex !== undefined;
+		if (node.type === 'associer') return node.caseIndex !== undefined;
+		if (node.type === 'trous') return node.caseIndex !== undefined;
+		if (node.type === 'tortue') return node.caseIndex !== undefined;
+		if (node.type === 'calcul') return node.caseIndex !== undefined;
+		if (node.type === 'robot') return node.caseIndex !== undefined;
+		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
+	}
+
+	/** Tableau de signes à compléter : des cellules cachées et leur première case posée */
+	function isTableToFill(node: VariationTableNode): node is VariationTableNode & {
+		caseIndex: number;
+	} {
+		return node.caseIndex !== undefined && (node.cases?.length ?? 0) > 0;
 	}
 
 	/** Filter paragraph children to only keep sentences containing blanks */
@@ -271,9 +326,11 @@
 	// Mots repérés en dernier : les positions portent sur le texte affiché (après le
 	// découpage en phrases de `onlyBlanks`)
 	let augmentedAST = $derived.by(() => {
-		const grade = lexicon();
+		const reading = lexicon();
 		const runtime = lexiconRuntime();
-		return grade && runtime ? runtime.linkDocument(structuredAST, grade) : structuredAST;
+		return reading && runtime
+			? runtime.linkDocument(structuredAST, reading.linkGrade, reading.link)
+			: structuredAST;
 	});
 
 	// Build InputState[] from blanks + validationResults (or correction mode)
@@ -438,13 +495,14 @@
 	/**
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
-	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire
+	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire,
+	 * ou droite ou horloge à placer, ou diagramme en barres à construire, ou figure à colorier
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
 		| { input: HTMLInputElement }
 		| { operation: HTMLElement; index: number }
-		| { build: HTMLElement; index: number };
+		| { build: HTMLElement; index: number; count: number };
 
 	/**
 	 * Cases dans l'ordre du DOM, qui est l'ordre visuel : un tableau `:table-h` est
@@ -459,7 +517,8 @@
 		return [...elements].flatMap((element): Slot[] => {
 			if (element instanceof HTMLInputElement) return element.disabled ? [] : [{ input: element }];
 			if (element.dataset.construireCase !== undefined) {
-				return [{ build: element, index: Number(element.dataset.construireCase) }];
+				const index = Number(element.dataset.construireCase);
+				return [{ build: element, index, count: Number(element.dataset.construireCases ?? 1) }];
 			}
 			if (element.dataset.operationCase !== undefined) {
 				return [{ operation: element, index: Number(element.dataset.operationCase) }];
@@ -472,15 +531,29 @@
 	}
 
 	function slotValue(slot: Slot): string {
-		if ('operation' in slot || 'build' in slot) return values[slot.index] ?? '';
+		if ('build' in slot) {
+			// Droite à plusieurs points : vide tant qu'un point manque
+			const cases = Array.from({ length: slot.count }, (_, k) => values[slot.index + k] ?? '');
+			if (cases.some((value) => value === '')) return '';
+			// Droite à représenter : vide tant que le côté ou la seconde borne manque
+			if (isLineToRepresentBlank(blanks[slot.index]) && isIncompleteRepresentation(cases[0])) {
+				return '';
+			}
+			return cases.join(' ');
+		}
+		if ('operation' in slot) return values[slot.index] ?? '';
 		return 'input' in slot ? slot.input.value : (slot.field.getPromptValue(slot.promptId) ?? '');
 	}
 
 	/** Curseur dans la case */
 	function focusSlot(slot: Slot) {
 		if ('build' in slot) {
-			// Plan vide : le premier bouton de la réserve
-			slot.build.querySelector<HTMLButtonElement>('.construire-ajouter:not(:disabled)')?.focus();
+			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
+			slot.build
+				.querySelector<HTMLElement>(
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), [data-associer-focus]:not(:disabled), [data-trous-focus]:not(:disabled), [data-tortue-focus]:not(:disabled), [data-robot-focus]:not(:disabled), [data-calcul-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
+				)
+				?.focus();
 			return;
 		}
 		if ('operation' in slot) {
@@ -729,6 +802,39 @@
 	{/if}
 {/snippet}
 
+<!--
+	Cellule cachée d'un tableau de signes, case `first + index` de la question : valeur
+	de x = petite case MathLive (prompt N), signe / marque = case à menu
+-->
+{#snippet signTableCellContent(first: number, hidden: HiddenCell)}
+	{@const caseIndex = first + hidden.index}
+	{@const state = inputStates[caseIndex]}
+	{#if hidden.kind === 'valeur'}
+		<MathPrompt
+			expression={`\\placeholder[${caseIndex}]{}`}
+			syntax="latex"
+			inputs={inputStates.filter((s) => s.type === 'math')}
+			onPromptChange={handleInputChange}
+			disabled={effectiveDisabled}
+			prefilledValues={interactivePrefilledValues}
+			{mathModeSpace}
+			{capitalPairs}
+			{genericFunctions}
+		/>
+	{:else}
+		<span data-construire-case={caseIndex}>
+			<SignCellPicker
+				kind={hidden.kind}
+				value={state?.value ?? ''}
+				caseNumber={caseIndex + 1}
+				isCorrect={state?.isCorrect ?? null}
+				disabled={effectiveDisabled}
+				onChange={(value) => handleInputChange(caseIndex, value)}
+			/>
+		</span>
+	{/if}
+{/snippet}
+
 <div class="fill-blanks-container" bind:this={container}>
 	{#if augmentedAST}
 		{#each augmentedAST.children as node, i (i)}
@@ -846,6 +952,442 @@
 							: undefined}
 					/>
 				{/if}
+			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.placer !== undefined}
+				<!-- Droite à placer : l'élève pose ses points, une case par point (N, N + 1…),
+				     la graduation de chacun est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.placer.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite avec les points justes -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<NumberLine
+							{node}
+							answers={node.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.representer !== undefined}
+				<!-- Droite à représenter : l'élève dessine l'intervalle, une case (`[2 ; +∞[`) -->
+				{@const lineCase = node.caseIndex}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite avec l'intervalle juste -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={lineCase} data-construire-cases={1}>
+						<NumberLine
+							{node}
+							answers={[
+								{
+									value: inputStates[lineCase]?.value ?? '',
+									isCorrect: flashMode ? null : (inputStates[lineCase]?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value: string) => handleInputChange(lineCase, value)
+								}
+							]}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && (node.spec?.tracer !== undefined || node.spec?.vecteur !== undefined)}
+				<!-- Droite ou vecteur à tracer : l'élève pose deux points, une case (x1;y1/x2;y2) -->
+				{@const lineCase = node.caseIndex}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le repère avec la droite ou la flèche juste -->
+					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={lineCase} data-construire-cases={1}>
+						<Courbe
+							{node}
+							answers={[
+								{
+									value: inputStates[lineCase]?.value ?? '',
+									isCorrect: flashMode ? null : (inputStates[lineCase]?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value: string) => handleInputChange(lineCase, value)
+								}
+							]}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
+				<!-- Repère à points à placer : l'élève pose ses points, une case par point
+				     (N, N + 1…), les coordonnées de chacun sont sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.spec.placer.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le repère avec les points justes -->
+					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<Courbe
+							{node}
+							answers={node.spec.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'trig-circle' && node.caseIndex !== undefined && node.placer !== undefined}
+				<!-- Cercle trigonométrique à points à placer : l'élève pose ses points, une case
+				     par point (N, N + 1…), le cran de chacun est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.placer.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le cercle avec les points justes -->
+					<BuildAnswer kind="trig" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<TrigPlacer
+							{node}
+							answers={node.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'stat-chart' && node.caseIndex !== undefined && node.spec?.toPlace}
+				<!-- Diagramme en barres à construire : l'élève monte ses barres, une case par
+				     barre (N, N + 1…), la hauteur de chacune est sa réponse ; `axe: à choisir` :
+				     la case N est l'échelle, les barres suivent -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = barsCaseCount(node.spec)}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le diagramme juste -->
+					<BuildAnswer kind="barres" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<BarresPlacer
+							{node}
+							answers={Array.from({ length: caseCount }, (_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'stat-chart' && node.caseIndex !== undefined && node.spec?.boxPlot?.toPlace}
+				<!-- Boîte à moustaches à construire : cinq cases par boîte (minimum, Q1, médiane,
+				     Q3, maximum), la valeur posée de chaque trait est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = boxPlotCaseCount(node.spec)}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la boîte juste -->
+					<BuildAnswer
+						kind="boite-a-moustaches"
+						source={node.source}
+						answer={null}
+						status="solution"
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<BoxPlotPlacer
+							{node}
+							answers={Array.from({ length: caseCount }, (_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'ranger' && node.caseIndex !== undefined && node.errors.length === 0}
+				<!-- Étiquettes à ranger : l'élève pose une étiquette par place, une case par place
+				     (N, N + 1…), la position affichée de l'étiquette posée est la réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.labels.length}
+				{@const expected = node.labels.map((_, k) => blanks[firstCase + k]?.expectedAnswer ?? '')}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : les étiquettes rangées -->
+					<BuildAnswer
+						kind="ranger"
+						source={node.source}
+						answer={null}
+						status="solution"
+						{expected}
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<RangerPlacer
+							{node}
+							expected={flashMode ? undefined : expected}
+							answers={node.labels.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'associer' && node.caseIndex !== undefined && node.errors.length === 0}
+				<!-- Éléments à associer : l'élève relie (ou pose une étiquette sur) chaque élément, une case par
+				     élément (N, N + 1…), la position affichée de l'étiquette posée est la réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.items.length}
+				{@const expected = node.items.map((_, k) => blanks[firstCase + k]?.expectedAnswer ?? '')}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : chaque élément avec sa bonne étiquette -->
+					<BuildAnswer
+						kind="associer"
+						source={node.source}
+						answer={null}
+						status="solution"
+						{expected}
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<AssocierPlacer
+							{node}
+							expected={flashMode ? undefined : expected}
+							answers={node.items.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'trous' && node.caseIndex !== undefined && node.errors.length === 0}
+				<!-- Texte à trous : l'élève pose une étiquette dans chaque trou, une case par trou
+				     (N, N + 1…), la position affichée de l'étiquette posée est la réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.answers.length}
+				{@const expected = node.answers.map((_, k) => blanks[firstCase + k]?.expectedAnswer ?? '')}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : chaque trou avec sa bonne étiquette -->
+					<BuildAnswer
+						kind="trous"
+						source={node.source}
+						answer={null}
+						status="solution"
+						{expected}
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<TrousEtiquettes
+							{node}
+							expected={flashMode ? undefined : expected}
+							answers={node.answers.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'tortue' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Programme tortue : l'élève assemble des blocs, son programme écrit en texte est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le tracé juste et un programme juste -->
+					<BuildAnswer
+						kind="tortue"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<!-- Autre question, autre bloc : la carte est recréée (les blocs sont chargés au montage) -->
+						{#key node.source}
+							<TortueProgramme
+								{node}
+								expected={flashMode ? undefined : expected}
+								answer={{
+									value: state?.value ?? '',
+									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex, value)
+								}}
+							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'robot' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Robot à produire : l'élève compose un code avec des cartes, son code en texte est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le trajet d'un code juste et ce code -->
+					<BuildAnswer
+						kind="robot"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<!-- Autre question (même bloc compris), autre bloc : les cartes repartent de la case.
+						     `blanks` : un « avance de » sans chiffre donne '' — la case vide de la question
+						     suivante ne doit pas garder ses cartes -->
+						{#key node.source}
+							{#key blanks}
+								<RobotCode
+									{node}
+									expected={flashMode ? undefined : expected}
+									answer={{
+										value: state?.value ?? '',
+										isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+										disabled: flashMode || effectiveDisabled,
+										onChange: (value) => handleInputChange(caseIndex, value)
+									}}
+								/>
+							{/key}
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'calcul' && node.caseIndex !== undefined && node.spec !== null}
+				<!-- Programme de calcul : l'élève assemble des blocs, son programme écrit en texte est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{@const expected = blanks[caseIndex]?.expectedAnswer}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : un programme juste et ce qu'il affiche -->
+					<BuildAnswer
+						kind="calcul"
+						source={node.source}
+						answer={null}
+						status="solution"
+						expected={expected === undefined ? undefined : [expected]}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<!-- Autre question, autre bloc : la carte est recréée (les blocs sont chargés au montage) -->
+						{#key node.source}
+							<CalculProgramme
+								{node}
+								answer={{
+									value: state?.value ?? '',
+									isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex, value)
+								}}
+							/>
+						{/key}
+					</div>
+				{/if}
+			{:else if node.type === 'horloge' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
+				<!-- Horloge à placer : l'élève pose les deux aiguilles, leurs crans sont la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le cadran à l'heure juste -->
+					<BuildAnswer kind="horloge" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<HorlogePlacer
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'partage' && node.caseIndex !== undefined && node.spec?.colorier !== undefined}
+				<!-- Figure à colorier : l'élève colorie des parts, leurs rangs sont la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la figure juste, les premières parts coloriées -->
+					<BuildAnswer kind="partage" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<PartageColorier
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.genre === 'patron' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Patron à geste : l'élève touche des faces, ou pose les faces manquantes -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : les faces attendues, ou le patron du prof -->
+					<BuildAnswer kind="patron" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<PatronGeste
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.genre === 'solide' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Vecteur à tracer sur un solide : l'élève touche l'origine puis l'extrémité -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la flèche attendue -->
+					<BuildAnswer kind="solide" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<SolideGeste
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.genre === 'cubes' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Assemblage de cubes à geste : l'élève colorie une vue ou écrit les hauteurs -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la vue coloriée, ou les hauteurs du bloc -->
+					<BuildAnswer kind="cubes" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<CubesGeste
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
 			{:else if node.type === 'collection' && node.caseIndex !== undefined && node.spec?.build !== undefined}
 				<!-- Collection à construire : l'élève pose barres et cubes, la valeur posée est la réponse -->
 				{@const caseIndex = node.caseIndex}
@@ -929,6 +1471,28 @@
 						{genericFunctions}
 					/>
 				{/if}
+			{:else if node.type === 'variation-table' && isTableToFill(node)}
+				<!-- Tableau de signes à compléter : une case par cellule cachée (N, N + 1…, ordre
+				     de lecture). Flash : cellules vides ; bonne réponse : cellules remplies -->
+				{#if flashMode}
+					<VariationTable {node} />
+				{:else if showCorrectAnswers}
+					<!-- Réponses lues dans les cases : un énoncé masqué ne les porte pas -->
+					<VariationTable
+						{node}
+						hiddenCells="filled"
+						answers={(node.cases ?? []).map(
+							(_, k) => blanks[node.caseIndex + k]?.expectedAnswer ?? ''
+						)}
+					/>
+				{:else}
+					{@const first = node.caseIndex}
+					<VariationTable {node}>
+						{#snippet cell(hidden: HiddenCell)}
+							{@render signTableCellContent(first, hidden)}
+						{/snippet}
+					</VariationTable>
+				{/if}
 			{:else if node.type === 'image'}
 				<ImageDisplay
 					src={node.src}
@@ -977,7 +1541,7 @@
 	</div>
 
 	<!-- Helper text -->
-	{#if !flashMode && !effectiveDisabled && blanks.length > 0}
+	{#if !flashMode && !effectiveDisabled && hasWrittenBlank}
 		<div class="helper-text">
 			<span class="text-xs text-muted-foreground"> Remplissez les blancs avec vos réponses </span>
 		</div>

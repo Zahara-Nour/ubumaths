@@ -18,7 +18,7 @@ import {
 	BasePythonExecutor,
 	type ExerciseValidationConfig,
 	type ExerciseValidationResult
-} from '$lib/shared/python';
+} from '#lib/shared/python/index.ts';
 
 // =============================================================================
 // Mock Worker (mirrors the pattern in pythonPlayground.svelte.test.ts)

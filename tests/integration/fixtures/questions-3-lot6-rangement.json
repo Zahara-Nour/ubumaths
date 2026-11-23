@@ -1,0 +1,90 @@
+[
+	{
+		"id": "6bcb3535-6632-4659-9a83-23a740b8e685",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-018"]
+	},
+	{
+		"id": "787cc937-5bc7-435f-9a63-7d4d0f102ea1",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Vecteurs > somme et relation de Chasles",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-026"]
+	},
+	{
+		"id": "7bb95104-9256-4bdb-a481-bdd2aae66a67",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > sections planes",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-020"]
+	},
+	{
+		"id": "87f79961-03c8-44af-98b5-438165d2f689",
+		"noeudAvant": null,
+		"noeudApres": "Grandeurs et mesures > Volumes > boule",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-021"]
+	},
+	{
+		"id": "c8306505-e030-4d65-8a56-3271669f28b5",
+		"noeudAvant": "Géométrie > Translations",
+		"noeudApres": "Géométrie > Translations",
+		"gradesAvant": ["4"],
+		"gradesApres": ["4", "3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["4§4-031"],
+		"tagsApres": ["4§4-031", "3§3-024"]
+	},
+	{
+		"id": "cd756e21-af71-4922-8106-8387658a45e1",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Solides > propriétés",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-019"]
+	},
+	{
+		"id": "d157dfb2-3666-484d-93f9-9fe46a0e2fcf",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Vecteurs > somme et relation de Chasles",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-027"]
+	},
+	{
+		"id": "ff3bd841-6d22-40f6-a4e3-4ddc7e017905",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Vecteurs > égalité de vecteurs",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-025"]
+	}
+]

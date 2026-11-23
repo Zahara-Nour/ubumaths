@@ -8,17 +8,6 @@
  */
 
 // ============================================================================
-// LATEX GENERATOR
-// ============================================================================
-
-export {
-	generateLatex,
-	escapeLatex,
-	resolveImagePath as resolveLatexImagePath,
-	markdownToLatex
-} from './latex-generator';
-
-// ============================================================================
 // TYPST GENERATOR
 // ============================================================================
 
@@ -36,9 +25,7 @@ export {
 // PROBABILITY TREE GENERATORS
 // ============================================================================
 
-export { generateProbabilityTreeLatex } from './probability-tree-latex';
 export { generateProbabilityTreeTypst } from './probability-tree-typst';
-export type { ProbTreeLatexOptions } from './probability-tree-latex';
 export type { ProbTreeTypstOptions } from './probability-tree-typst';
 
 // ============================================================================

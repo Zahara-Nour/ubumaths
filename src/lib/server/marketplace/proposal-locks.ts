@@ -11,7 +11,7 @@
  * Client service : le vendeur qui refuse n'a aucun droit sur les verrous du
  * proposant, et une suppression refusée par la RLS ne rend pas d'erreur.
  */
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 
 export interface ProposalLockScope {
 	proposalId: string;

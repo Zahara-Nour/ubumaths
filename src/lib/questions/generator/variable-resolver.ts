@@ -22,8 +22,9 @@ import type { QuestionVariable, ResolvedVariable } from '../types';
 import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
-} from '$lib/ubumark';
-import type { RandomSource } from '$lib/utils/random';
+} from '#lib/ubumark/index.ts';
+import type { RandomSource } from '#lib/utils/random.ts';
+import type { DurationWriting } from '#lib/mathAST/tidy/index.ts';
 import { resolveVariableConditionals } from './variable-conditionals';
 
 /**
@@ -55,7 +56,7 @@ export function resolveVariableExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
 	random: RandomSource = Math.random,
-	options?: { useDisplayValue?: boolean; markdown?: boolean }
+	options?: { useDisplayValue?: boolean; markdown?: boolean; durations?: DurationWriting }
 ): string {
 	// Use shared library's resolveExpression for full 3-stage pipeline
 	// NOTE: expression should already be in Markdown syntax at this point

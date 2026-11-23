@@ -29,8 +29,8 @@ import {
 	setContentPublication,
 	listDistributedWorksheetIds,
 	type ChapterContentType
-} from '$lib/server/chapters-publication';
-import type { Database } from '$lib/types/database';
+} from '#lib/server/chapters-publication.ts';
+import type { Database } from '#lib/types/database.ts';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -213,14 +213,9 @@ describe('publier pose l’heure de la base, pas celle de Node', () => {
 		const serie = await insert('series', {
 			title: 'Série horloge HB',
 			grade: '1_SPE',
-			categories: [
+			items: [
 				{
-					category: {
-						theme: 'Fonctions',
-						domain: 'Étude de fonction',
-						subdomain: 'Méthode',
-						level: 1
-					},
+					templateId: crypto.randomUUID(),
 					quantity: 4,
 					delay: 20
 				}

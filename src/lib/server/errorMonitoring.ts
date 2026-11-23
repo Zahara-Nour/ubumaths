@@ -11,12 +11,13 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json } from '#lib/types/database.ts';
 import { createSystemNotification } from './notifications';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { createServiceRoleClient } from './serviceRoleClient';
-import { escapeHtml } from '$lib/utils/html-escape';
-import { createServerLogger } from '$lib/utils/logger';
+import { escapeHtml } from '#lib/utils/html-escape.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { redactSecretUrl } from '#lib/utils/analytics-redact.ts';
 
 const logger = createServerLogger('server/errorMonitoring');
 
@@ -268,12 +269,14 @@ export async function logError(
 		// Sanitize sensitive data
 		const sanitized = sanitizeErrorData(data);
 
-		// Truncate long fields
+		// Truncate long fields. Le jeton d'un lien personnel (carnet de liaison,
+		// ADR 0040) ne reste ni dans l'adresse ni dans le message : il est dans le
+		// CHEMIN, que le masquage des paramètres ne voit pas.
 		const truncated = {
 			...sanitized,
-			message: truncateString(sanitized.message, 1000),
+			message: truncateString(sanitized.message && redactSecretUrl(sanitized.message), 1000),
 			stack_trace: truncateString(sanitized.stack_trace, 5000),
-			url: truncateString(sanitized.url, 500)
+			url: truncateString(sanitized.url && redactSecretUrl(sanitized.url), 500)
 		};
 
 		// Use service role client to bypass RLS

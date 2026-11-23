@@ -16,6 +16,7 @@
  * jour, l'exemption, la couverture. Aucun test ne lit docs/ : tout est en chaînes.
  */
 
+import { matchesGlob } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import {
 	parseCouvre,
@@ -26,6 +27,8 @@ import {
 	holesTouched,
 	staleHoles,
 	uncoveredFiles,
+	literalPrefix,
+	matches,
 	type DocCoverage,
 	type CoverageConfig
 } from '../check-doc-a-jour';
@@ -325,7 +328,7 @@ describe('COVERAGE_CONFIG — les fichiers d’environnement sont gardés', () =
 			'.github/dependabot.yml',
 			'.husky/pre-push',
 			'vercel.json',
-			'svelte.config.js',
+			'src/env.ts',
 			'.claude/settings.json',
 			'.claude/hooks/garde-commandes.py',
 			'scripts/deploy-prod.sh',
@@ -338,5 +341,68 @@ describe('COVERAGE_CONFIG — les fichiers d’environnement sont gardés', () =
 		expect(
 			guarded(['package.json', 'pnpm-lock.yaml', '.husky/_/pre-push', 'scripts/create-teacher.ts'])
 		).toEqual([]);
+	});
+});
+
+describe('test rapide avant matchesGlob', () => {
+	it('prend le début du glob écrit sans caractère spécial, en minuscules', () => {
+		expect(literalPrefix('src/lib/Atelier/**')).toBe('src/lib/atelier/');
+		expect(literalPrefix('src/hooks*.ts')).toBe('src/hooks');
+		expect(literalPrefix('vercel.json')).toBe('vercel.json');
+		expect(literalPrefix('.husky/*')).toBe('.husky/');
+		expect(literalPrefix('src/routes/(protected)/calculatrice/**')).toBe('src/routes/');
+		expect(literalPrefix('src/lib/{a,b}/**')).toBe('src/lib/');
+	});
+
+	it('ne garde aucun début quand le glob commence par un caractère spécial ou un chemin à normaliser', () => {
+		for (const glob of ['**/*.md', '*.ts', './src/**', '/src/**', 'src//lib/**', 'src/./lib/**']) {
+			expect(literalPrefix(glob)).toBe('');
+		}
+		expect(literalPrefix('src/../lib/**')).toBe('');
+		// `..` après un joker : le glob désigne un fichier hors de son début (revue du 2026-11-23)
+		expect(literalPrefix('src/a*/../b')).toBe('');
+		expect(literalPrefix('src/*/..')).toBe('');
+	});
+
+	it('répond comme matchesGlob, fichier par fichier', () => {
+		const globs = [
+			'src/lib/atelier/**',
+			'src/hooks*.ts',
+			'src/routes/(protected)/calculatrice/**',
+			'src/lib/{a,b}/*.ts',
+			'**/*.test.*',
+			'.husky/*',
+			'vercel.json',
+			'src/lib/server/*.ts',
+			'./src/lib/**',
+			'src//lib/**',
+			'src/a*/../b',
+			'src/*/..'
+		];
+		const files = [
+			'src',
+			'src/b',
+			'src/lib/atelier/a.ts',
+			'src/lib/Atelier/a.ts',
+			'src/lib/atelier',
+			'src/lib/atelierbis/a.ts',
+			'src/hooks.server.ts',
+			'src/routes/(protected)/calculatrice/+page.svelte',
+			'src/routes/protected/calculatrice/+page.svelte',
+			'src/lib/a/x.ts',
+			'src/lib/c/x.ts',
+			'src/lib/a/x.test.ts',
+			'.husky/pre-push',
+			'.husky/_/pre-push',
+			'vercel.json',
+			'vercel.json.bak',
+			'src/lib/server/a.ts',
+			'src/lib/server/b/a.ts'
+		];
+		for (const glob of globs) {
+			for (const file of files) {
+				expect(matches(file, glob), `${file} ~ ${glob}`).toBe(matchesGlob(file, glob));
+			}
+		}
 	});
 });

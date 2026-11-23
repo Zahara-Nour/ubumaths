@@ -1,0 +1,300 @@
+{
+	"id": "452b9a91-4670-464e-b59e-f587f1150a15",
+	"title": "Construire le symétrique d'une figure",
+	"description": "Sur quadrillage, axe vertical ou horizontal qui ne touche pas la figure : symétrique d'un point, d'un segment, d'un triangle",
+	"grades": ["CM1"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le point $A'$, symétrique du point $A$ par rapport à la droite $d$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: point\nverifier: point A' = symetrie(A, axe=d)\n---\n{{if:k==1|m = point(7, 0, visible=faux)\nn = point(7, 10, visible=faux)\ntexte(7.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\nA = point(4, 6, etiquette=\"gauche\")|{{if:k==2|m = point(6, 0, visible=faux)\nn = point(6, 10, visible=faux)\ntexte(6.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\nA = point(9, 3, etiquette=\"droite\")|{{if:k==3|m = point(8, 0, visible=faux)\nn = point(8, 10, visible=faux)\ntexte(8.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\nA = point(6, 7, etiquette=\"gauche\")|{{if:k==4|m = point(0, 5, visible=faux)\nn = point(14, 5, visible=faux)\ntexte(13.5, 5.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\nA = point(5, 8, etiquette=\"haut\")|{{if:k==5|m = point(0, 6, visible=faux)\nn = point(14, 6, visible=faux)\ntexte(13.5, 6.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\nA = point(9, 3, etiquette=\"bas\")|m = point(0, 4, visible=faux)\nn = point(14, 4, visible=faux)\ntexte(13.5, 4.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\nA = point(3, 5, etiquette=\"haut\")}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les carreaux de $A$ jusqu'à l'axe $d$, en allant tout droit vers l'axe (perpendiculairement à $d$).",
+					"On en compte $\\textcolor{{{color:primary.0}}}{\\text{autant}}$ de l'autre côté de $d$, sur la même ligne : c'est le point $A'$."
+				]
+			}
+		},
+		{
+			"statement": "Construis le symétrique du segment par rapport à la droite $d$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\nverifier: symetrique par d\n---\n{{if:k==1|m = point(7, 0, visible=faux)\nn = point(7, 10, visible=faux)\ntexte(7.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(2, 2, visible=faux)\np1 = point(5, 7, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)|{{if:k==2|m = point(6, 0, visible=faux)\nn = point(6, 10, visible=faux)\ntexte(6.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(8, 8, visible=faux)\np1 = point(11, 3, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)|{{if:k==3|m = point(8, 0, visible=faux)\nn = point(8, 10, visible=faux)\ntexte(8.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(4, 1, visible=faux)\np1 = point(6, 5, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)|{{if:k==4|m = point(0, 5, visible=faux)\nn = point(14, 5, visible=faux)\ntexte(13.5, 5.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(3, 6, visible=faux)\np1 = point(10, 9, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)|{{if:k==5|m = point(0, 5, visible=faux)\nn = point(14, 5, visible=faux)\ntexte(13.5, 5.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(4, 3, visible=faux)\np1 = point(11, 1, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)|m = point(0, 6, visible=faux)\nn = point(14, 6, visible=faux)\ntexte(13.5, 6.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(2, 2, visible=faux)\np1 = point(7, 4, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque point et son symétrique sont $\\textcolor{{{color:primary.0}}}{\\text{à la même distance}}$ de l'axe $d$, de part et d'autre, sur une même ligne du quadrillage perpendiculaire à $d$ : on compte les carreaux jusqu'à l'axe, puis autant de l'autre côté.",
+					"On relie les symétriques des sommets dans le même ordre : la figure est retournée, pas glissée."
+				]
+			}
+		},
+		{
+			"statement": "Construis le symétrique du triangle par rapport à la droite $d$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\nverifier: symetrique par d\n---\n{{if:k==1|m = point(7, 0, visible=faux)\nn = point(7, 10, visible=faux)\ntexte(7.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(2, 2, visible=faux)\np1 = point(5, 4, visible=faux)\np2 = point(3, 8, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p0, epaisseur=3)|{{if:k==2|m = point(6, 0, visible=faux)\nn = point(6, 10, visible=faux)\ntexte(6.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(8, 2, visible=faux)\np1 = point(11, 5, visible=faux)\np2 = point(9, 8, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p0, epaisseur=3)|{{if:k==3|m = point(8, 0, visible=faux)\nn = point(8, 10, visible=faux)\ntexte(8.4, 9.6, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(3, 7, visible=faux)\np1 = point(6, 2, visible=faux)\np2 = point(6, 6, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p0, epaisseur=3)|{{if:k==4|m = point(0, 5, visible=faux)\nn = point(14, 5, visible=faux)\ntexte(13.5, 5.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(3, 6, visible=faux)\np1 = point(9, 7, visible=faux)\np2 = point(5, 9, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p0, epaisseur=3)|{{if:k==5|m = point(0, 5, visible=faux)\nn = point(14, 5, visible=faux)\ntexte(13.5, 5.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(4, 1, visible=faux)\np1 = point(11, 2, visible=faux)\np2 = point(8, 3, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p0, epaisseur=3)|m = point(0, 5, visible=faux)\nn = point(14, 5, visible=faux)\ntexte(13.5, 5.4, \"d\")\nd = droite(m, n, trait=\"tirets\", couleur=\"rouge\")\np0 = point(2, 7, visible=faux)\np1 = point(6, 9, visible=faux)\np2 = point(10, 6, visible=faux)\ns0 = segment(p0, p1, epaisseur=3)\ns1 = segment(p1, p2, epaisseur=3)\ns2 = segment(p2, p0, epaisseur=3)}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque point et son symétrique sont $\\textcolor{{{color:primary.0}}}{\\text{à la même distance}}$ de l'axe $d$, de part et d'autre, sur une même ligne du quadrillage perpendiculaire à $d$ : on compte les carreaux jusqu'à l'axe, puis autant de l'autre côté.",
+					"On relie les symétriques des sommets dans le même ordre : la figure est retournée, pas glissée."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "V1 point 1 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(10;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1 point 2 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["point(3;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1 point 3 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["point(10;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1 point 4 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["point(5;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1 point 5 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["point(9;9)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V1 point 6 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["point(3;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V1 : décalé le long de l'axe",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(10;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur V1 : un carreau trop près de l'axe",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["point(9;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V2 figure 1 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(12;2;9;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2 figure 2 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(4;8;1;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2 figure 3 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(12;1;10;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2 figure 4 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["segment(3;4;10;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2 figure 5 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["segment(4;7;11;9)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V2 figure 6 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["segment(2;10;7;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V2 : figure glissée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;2;12;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V3 figure 1 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(12;2;9;4)|segment(9;4;11;8)|segment(11;8;12;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3 figure 2 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(4;2;1;5)|segment(1;5;3;8)|segment(3;8;4;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3 figure 3 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(13;7;10;2)|segment(10;2;10;6)|segment(10;6;13;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3 figure 4 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["segment(3;4;9;3)|segment(9;3;5;1)|segment(5;1;3;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3 figure 5 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["segment(4;9;11;8)|segment(11;8;8;7)|segment(8;7;4;9)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V3 figure 6 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["segment(2;3;6;1)|segment(6;1;10;4)|segment(10;4;2;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur V3 : figure glissée",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(9;2;12;4)|segment(12;4;10;8)|segment(10;8;9;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

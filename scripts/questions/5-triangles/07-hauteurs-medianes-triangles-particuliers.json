@@ -1,0 +1,156 @@
+{
+	"id": "d8991c01-e90b-482e-8daf-3b19cd623248",
+	"title": "Hauteurs et médianes des triangles particuliers",
+	"description": "Triangle isocèle : la hauteur issue du sommet principal est aussi la médiane (son pied est le milieu de la base) ; triangle rectangle : les côtés de l'angle droit sont des hauteurs",
+	"grades": ["5"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle $ABC$ est isocèle en $A$, et $H$ est le pied de la hauteur issue de $A$.\n\n```figure\nfenetre: -3.6 ; 3.6 ; -2.2 ; 4.2\ndescription: Un triangle ABC isocèle en A et sa hauteur [AH], en bleu.\n---\nA = point(0, 3.2, etiquette=\"haut\")\nB = point(-2.2, -1.2, etiquette=\"bas-gauche\")\nC = point(2.2, -1.2, etiquette=\"bas-droite\")\ntriangle(A, B, C)\nmarque_segment(A, B)\nmarque_segment(A, C)\nH = point(0, -1.2, etiquette=\"bas\")\nsegment(A, H, couleur=\"bleu\")\nangle(A, H, C, marque=\"carre\")\n```\n\nOn sait que $BC = {{c}}~\\unit{cm}$. Combien mesure $BH$ ?\n\n$BH = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "3..8"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*h"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans un triangle isocèle, la hauteur issue du sommet principal est aussi la médiane** issue de ce sommet : son pied $H$ est le milieu de la base $[BC]$.",
+					"$BH = \\dfrac{BC}{2} = \\dfrac{{{c}}}{2} = \\textcolor{{{color:primary.0}}}{{{h}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}$ est isocèle en ${{if:k==1|A|{{if:k==2|B|C}}}}$.\n\nLa hauteur issue de ${{if:k==1|A|{{if:k==2|B|C}}}}$ est aussi :\n\n```choix\n- la médiane issue de ${{if:k==1|A|{{if:k==2|B|C}}}}$\n- la médiane issue de ${{if:k==1|B|{{if:k==2|C|A}}}}$\n- la hauteur issue de ${{if:k==1|B|{{if:k==2|C|A}}}}$\n- aucune médiane du triangle\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans un triangle isocèle, la hauteur issue du sommet principal est aussi la médiane issue de ce sommet** : son pied est le milieu de la base $[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]$.",
+					"La hauteur issue de ${{if:k==1|A|{{if:k==2|B|C}}}}$ est aussi $\\textcolor{{{color:primary.0}}}{\\text{la médiane issue de }{{if:k==1|A|{{if:k==2|B|C}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}$ est rectangle en ${{if:k==1|A|{{if:k==2|B|C}}}}$.\n\nLa hauteur issue de ${{if:k==1|B|{{if:k==2|C|A}}}}$ est :\n\n```choix\n- le côté $[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|A|{{if:k==2|B|C}}}}]$\n- le côté $[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]$\n- un segment à l'intérieur du triangle\n- un segment à l'extérieur du triangle\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La hauteur issue de ${{if:k==1|B|{{if:k==2|C|A}}}}$** part de ${{if:k==1|B|{{if:k==2|C|A}}}}$ et est perpendiculaire au côté opposé $[{{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|C|{{if:k==2|A|B}}}}]$.",
+					"Le triangle est rectangle en ${{if:k==1|A|{{if:k==2|B|C}}}}$ : $({{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|A|{{if:k==2|B|C}}}})$ est déjà perpendiculaire à $({{if:k==1|A|{{if:k==2|B|C}}}}{{if:k==1|C|{{if:k==2|A|B}}}})$. La hauteur issue de ${{if:k==1|B|{{if:k==2|C|A}}}}$ est le côté $\\textcolor{{{color:primary.0}}}{[{{if:k==1|B|{{if:k==2|C|A}}}}{{if:k==1|A|{{if:k==2|B|C}}}}]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BC = 12 : BH = 6",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"c": "12"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BH = BC",
+			"variationIndex": 0,
+			"variables": {
+				"h": "6",
+				"c": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Isocèle en A : médiane issue de A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aucune médiane",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle en A : le côté [BA]",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'hypoténuse",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un segment intérieur",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,300 @@
+{
+	"id": "9fa1b0e9-82b4-487d-a97b-cc7c16d29a76",
+	"title": "La loi binomiale B(n ; p) : ce que compte X",
+	"description": "Ce que compte X, valeurs prises de 0 à n, traduire « au moins un », « aucun » en évènement sur X",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une usine fabrique des pièces ; chacune est défectueuse avec la probabilité ${{p}}$, indépendamment des autres. On prélève au hasard ${{n}}$ pièces (le stock est assez grand pour assimiler ce prélèvement à des tirages avec remise). On appelle $X$ le nombre de pièces défectueuses parmi les ${{n}}$ : $X$ suit la loi binomiale $\\mathcal{B}({{n}}\\,;{{p}})$.\n\nQuelles valeurs la variable $X$ peut-elle prendre ?\n\n```choix\nmelanger: non\n- $1$, $2$, …, ${{n}}$\n- $0$, $1$, $2$, …, ${{n}}$\n- $0$, $1$, …, ${{eval:n-1}}$\n- $0$ et $1$ seulement\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				},
+				{
+					"name": "p",
+					"expression": "0.02|0.05|0.1|0.15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ compte les pièces défectueuses parmi les ${{n}}$ prélevées.",
+					"Il peut n'y en avoir aucune ($X=0$), et au plus toutes ($X={{n}}$) : $X$ prend les valeurs $\\textcolor{{{color:primary.0}}}{0,\\,1,\\,\\ldots,\\,{{n}}}$, soit ${{eval:n+1}}$ valeurs.",
+					"« $0$ et $1$ » sont les valeurs d'une loi de Bernoulli : celle d'une seule pièce."
+				]
+			}
+		},
+		{
+			"statement": "Une usine fabrique des pièces ; chacune est défectueuse avec la probabilité ${{p}}$, indépendamment des autres. On prélève au hasard ${{n}}$ pièces (le stock est assez grand pour assimiler ce prélèvement à des tirages avec remise). On appelle $X$ le nombre de pièces défectueuses parmi les ${{n}}$ : $X$ suit la loi binomiale $\\mathcal{B}({{n}}\\,;{{p}})$.\n\nQuel évènement s'écrit « au moins une pièce est défectueuse » ?\n\n```choix\nmelanger: non\n- $\\{X=1\\}$\n- $\\{X\\geqslant 1\\}$\n- $\\{X>1\\}$\n- $\\{X\\leqslant 1\\}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				},
+				{
+					"name": "p",
+					"expression": "0.02|0.05|0.1|0.15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Au moins une » : une, ou deux, …, ou ${{n}}$ pièces défectueuses.",
+					"C'est l'évènement $\\textcolor{{{color:primary.0}}}{\\{X\\geqslant 1\\}}$, contraire de $\\{X=0\\}$ (aucune pièce défectueuse).",
+					"$\\{X=1\\}$ veut dire « exactement une » ; $\\{X>1\\}$, « au moins deux »."
+				]
+			}
+		},
+		{
+			"statement": "Une usine fabrique des pièces ; chacune est défectueuse avec la probabilité ${{p}}$, indépendamment des autres. On prélève au hasard ${{n}}$ pièces (le stock est assez grand pour assimiler ce prélèvement à des tirages avec remise). On appelle $X$ le nombre de pièces défectueuses parmi les ${{n}}$ : $X$ suit la loi binomiale $\\mathcal{B}({{n}}\\,;{{p}})$.\n\nQuel évènement s'écrit « toutes les pièces prélevées sont en bon état » ?\n\n```choix\nmelanger: non\n- $\\{X=0\\}$\n- $\\{X={{n}}\\}$\n- $\\{X\\leqslant 1\\}$\n- $\\{X\\neq 0\\}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				},
+				{
+					"name": "p",
+					"expression": "0.02|0.05|0.1|0.15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ compte les pièces **défectueuses** (les succès).",
+					"Toutes en bon état : aucune pièce défectueuse, c'est $\\textcolor{{{color:primary.0}}}{\\{X=0\\}}$.",
+					"$\\{X={{n}}\\}$ voudrait dire que les ${{n}}$ pièces sont défectueuses."
+				]
+			}
+		},
+		{
+			"statement": "Une usine fabrique des pièces ; chacune est défectueuse avec la probabilité ${{p}}$, indépendamment des autres. On prélève au hasard ${{n}}$ pièces (le stock est assez grand pour assimiler ce prélèvement à des tirages avec remise). On appelle $X$ le nombre de pièces défectueuses parmi les ${{n}}$ : $X$ suit la loi binomiale $\\mathcal{B}({{n}}\\,;{{p}})$.\n\nQuelle est la plus grande valeur que $X$ peut prendre ? Combien de valeurs différentes $X$ peut-elle prendre ?\n\nPlus grande valeur : $?$\n\nNombre de valeurs : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				},
+				{
+					"name": "p",
+					"expression": "0.02|0.05|0.1|0.15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au plus, les ${{n}}$ pièces sont défectueuses : la plus grande valeur est $\\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"$X$ prend les valeurs $0,\\,1,\\,\\ldots,\\,{{n}}$ : on n'oublie pas $0$, cela fait $\\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$ valeurs."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"p": "0.05"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oubli de 0",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"p": "0.05"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : oubli de n",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"p": "0.05"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : loi de Bernoulli",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"p": "0.05"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"p": "0.1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exactement une",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"p": "0.1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au moins deux",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"p": "0.1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au plus une",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"p": "0.1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 0",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"p": "0.02"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : succès et échecs confondus",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"p": "0.02"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au plus une",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"p": "0.02"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : contraire",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"p": "0.02"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 8 : 8 et 9",
+			"variationIndex": 3,
+			"variables": {
+				"n": "8",
+				"p": "0.05"
+			},
+			"answers": ["8", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oubli de 0 (8 valeurs)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "8",
+				"p": "0.05"
+			},
+			"answers": ["8", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 20 : 20 et 21",
+			"variationIndex": 3,
+			"variables": {
+				"n": "20",
+				"p": "0.1"
+			},
+			"answers": ["20", "21"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

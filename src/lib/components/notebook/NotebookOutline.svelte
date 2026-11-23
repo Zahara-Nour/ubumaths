@@ -11,9 +11,9 @@
 	 * Renders nothing when no headings exist (no empty noisy sidebar).
 	 */
 
-	import type { NotebookCell } from '$lib/types/notebook';
-	import { extractOutline } from '$lib/utils/notebook-outline';
-	import { Button } from '$lib/components/ui/button';
+	import type { NotebookCell } from '#lib/types/notebook.ts';
+	import { extractOutline } from '#lib/utils/notebook-outline.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ListTree, X } from '@lucide/svelte';
 
 	let {

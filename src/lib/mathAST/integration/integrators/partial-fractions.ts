@@ -14,7 +14,17 @@ import type {
 	ResolvedIntegrateOptions
 } from '../types';
 import { isNumber, isVariable, isZero } from '../../guards';
-import { number, divide, add, subtract, power, implicitMultiply, func } from '../../factory';
+import {
+	number,
+	divide,
+	add,
+	subtract,
+	power,
+	implicitMultiply,
+	func,
+	opposite,
+	variable as variableNode
+} from '../../factory';
 import { numericNode, rationalToNode } from '../../common/numeric';
 import { divRational, negRational } from '../../normal/rational';
 import { integerLinearFactorNode, toPolynomial } from '../../factor';
@@ -368,7 +378,7 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 			return [
 				{
 					type: 'linear',
-					root: { type: 'opposite', operand: poly.right } as MathNode,
+					root: opposite(poly.right),
 					multiplicity: 1
 				}
 			];
@@ -394,7 +404,7 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 					return [
 						{
 							type: 'linear',
-							root: { type: 'opposite', operand: base.right } as MathNode,
+							root: opposite(base.right),
 							multiplicity: mult
 						}
 					];
@@ -439,7 +449,7 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 				const a = number(sqrtValue.toString());
 				return [
 					{ type: 'linear', root: a, multiplicity: 1 },
-					{ type: 'linear', root: { type: 'opposite', operand: a } as MathNode, multiplicity: 1 }
+					{ type: 'linear', root: opposite(a), multiplicity: 1 }
 				];
 			}
 		}
@@ -530,7 +540,7 @@ function factorDenominator(poly: MathNode, variable: string): PolynomialFactor[]
 					const b = isVariable(right.left) ? right.right : right.left;
 					return [
 						{ type: 'linear', root: number('0'), multiplicity: 1 },
-						{ type: 'linear', root: { type: 'opposite', operand: b } as MathNode, multiplicity: 1 }
+						{ type: 'linear', root: opposite(b), multiplicity: 1 }
 					];
 				}
 			}
@@ -698,7 +708,7 @@ function createCoeffNode(value: number): MathNode {
 		if (value >= 0) {
 			return number(value.toString());
 		} else {
-			return { type: 'opposite', operand: number((-value).toString()) };
+			return opposite(number((-value).toString()));
 		}
 	} else {
 		// Express as fraction
@@ -709,10 +719,7 @@ function createCoeffNode(value: number): MathNode {
 				if (numInt >= 0) {
 					return divide(number(numInt.toString()), number(d.toString()), 'fraction');
 				} else {
-					return {
-						type: 'opposite',
-						operand: divide(number((-numInt).toString()), number(d.toString()), 'fraction')
-					};
+					return opposite(divide(number((-numInt).toString()), number(d.toString()), 'fraction'));
 				}
 			}
 		}
@@ -1029,7 +1036,7 @@ function exactCoefficient(value: number): MathNode | null {
 				q === 1
 					? number(String(Math.abs(p)))
 					: divide(number(String(Math.abs(p))), number(String(q)), 'fraction');
-			return p < 0 ? { type: 'opposite', operand: magnitude } : magnitude;
+			return p < 0 ? opposite(magnitude) : magnitude;
 		}
 	}
 	return null;
@@ -1118,13 +1125,13 @@ function integratePartialFraction(
 		if (term.power === 1) {
 			// A/(x-a) → A * ln|x-a|
 			// Build: ln(abs(x-a))
-			const xMinusA = subtract({ type: 'variable', name: variable }, term.factor.root!);
+			const xMinusA = subtract(variableNode(variable), term.factor.root!);
 			const lnTerm = func('ln', [func('abs', [xMinusA])]);
 			return implicitMultiply(term.coefficient, lnTerm);
 		} else {
 			// A/(x-a)^n → A * (x-a)^(-n+1) / (-n+1) for n > 1
 			const n = term.power;
-			const xMinusA = subtract({ type: 'variable', name: variable }, term.factor.root!);
+			const xMinusA = subtract(variableNode(variable), term.factor.root!);
 			const newPower = power(xMinusA, numericNode(-n + 1));
 			const divisor = numericNode(-n + 1);
 			return implicitMultiply(term.coefficient, divide(newPower, divisor, 'fraction'));
@@ -1149,7 +1156,7 @@ function integratePartialFraction(
 			const sqrtCNode = Number.isInteger(sqrtC)
 				? number(sqrtC.toString())
 				: func('sqrt', [coeffs.c]);
-			const xVar: MathNode = { type: 'variable', name: variable };
+			const xVar = variableNode(variable);
 
 			// Check if we have extended coefficients (xCoeff, constCoeff) from solveMixedFactors
 			const extendedTerm = term as PartialFractionTerm & { xCoeff?: number; constCoeff?: number };
@@ -1448,7 +1455,7 @@ export const partialFractionsIntegrator: Integrator = {
 						);
 
 						// Build Ax/(x²+c)
-						const xVar: MathNode = { type: 'variable', name: variable };
+						const xVar = variableNode(variable);
 						const axTerm = implicitMultiply(xCoeff, xVar);
 						const part1 = divide(axTerm, denominator, 'fraction');
 

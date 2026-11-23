@@ -11,7 +11,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import {
 	createGeometryFigure,
 	deleteGeometryFigure,
@@ -19,8 +19,8 @@ import {
 	getPublicGeometryFigure,
 	listGeometryFigures,
 	updateGeometryFigure
-} from '$lib/server/geometry-figures';
-import type { FigureInput } from '$lib/server/validation/geometry-figures';
+} from '#lib/server/geometry-figures.ts';
+import type { FigureInput } from '#lib/server/validation/geometry-figures.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';

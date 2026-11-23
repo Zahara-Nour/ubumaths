@@ -4,13 +4,13 @@
  *
  * Ce que l'admin lit en tête de l'aperçu d'un modèle (et, en court, de l'éditeur) : statut,
  * classes, chemin dans l'arbre des notions, points du programme, réglages de validation.
- * Les lectures sont côté serveur (`$lib/server/template-fact-sheet`) ; ici, les types et la
+ * Les lectures sont côté serveur (`#lib/server/template-fact-sheet.ts`) ; ici, les types et la
  * mise en mots, partagés avec le composant.
  */
 
 import { CONSTRAINT_IDS, CONSTRAINT_LABELS } from './constraint-constants';
 import { DEFAULT_CONSTRAINT_MODE, DEFAULT_FORM_CONSTRAINT_MODE } from './types';
-import { GRADES, isGradeCode } from '$lib/types/grades';
+import { GRADES, isGradeCode } from '#lib/types/grades.ts';
 
 // Types
 
@@ -100,7 +100,6 @@ export function describeValidationSettings(options: unknown): string[] {
 		settings.push('Espaces dès 4 chiffres (7 900, numération)');
 	}
 	if (opts.orderIndependent === true) settings.push('Trous dans n’importe quel ordre');
-	if (opts.shuffleChoices === false) settings.push('Choix non mélangés');
 
 	return settings;
 }

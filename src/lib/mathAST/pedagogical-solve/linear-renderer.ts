@@ -506,15 +506,11 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		const variable = variableOf(step);
 		const leftSplit = splitSide(step.before.left, variable);
 		const rightSplit = splitSide(step.before.right, variable);
-		const leftRemainder = leftSplit.xPart !== null ? fmt(leftSplit.xPart) : '0';
-		const rightRemainder = rightSplit.constPart !== null ? fmt(rightSplit.constPart) : '0';
-		const leftAddend =
-			op.variableOperand !== null ? ' ' + formatColoredAddend(op.variableOperand) : '';
-		const rightAddend =
-			op.constantOperand !== null ? ' ' + formatColoredAddend(op.constantOperand) : '';
+		const leftMember = transposedMember(leftSplit.xPart, op.variableOperand, LATEX_MEMBER);
+		const rightMember = transposedMember(rightSplit.constPart, op.constantOperand, LATEX_MEMBER);
 		return [
 			'\\begin{aligned}',
-			`  ${leftRemainder}${leftAddend} &${relBefore} ${rightRemainder}${rightAddend} \\\\`,
+			`  ${leftMember} &${relBefore} ${rightMember} \\\\`,
 			`  ${aL} &${relAfter} ${aR}`,
 			'\\end{aligned}'
 		];
@@ -586,6 +582,43 @@ function factorLatex(latex: string, node: MathNode | undefined): string {
 	return bare ? latex : `\\left(${latex}\\right)`;
 }
 
+/** Les écritures d'un membre du transfert : LaTeX (`\\textcolor`) ou console (`@blue`). */
+interface MemberWriting {
+	readonly plain: (node: MathNode) => string;
+	readonly coloredAddend: (operand: MathNode) => string;
+	readonly color: (text: string) => string;
+}
+
+const LATEX_MEMBER: MemberWriting = {
+	plain: fmt,
+	coloredAddend: (operand) => formatColoredAddend(operand),
+	color: (text) => `\\textcolor{blue}{${text}}`
+};
+
+const CUSTOM_MEMBER: MemberWriting = {
+	plain: toCustom,
+	coloredAddend: (operand) => customColoredAddend(operand),
+	color: (text) => `@blue{${text}}`
+};
+
+/**
+ * Un membre du transfert (`transpose-terms`) : ce qui y reste, suivi du terme déplacé en
+ * couleur. Un membre qui ne garde rien s'écrit avec le seul terme coloré, signe compris
+ * (`\\textcolor{blue}{-2x}`), jamais `0 \\textcolor{blue}{- 2x}` (écart V51) ; sans reste ni
+ * terme déplacé, il vaut `0`.
+ */
+function transposedMember(
+	remainder: MathNode | null,
+	operand: MathNode | null,
+	writing: MemberWriting
+): string {
+	if (remainder === null) {
+		return operand === null ? '0' : writing.color(writing.plain(operand));
+	}
+	const kept = writing.plain(remainder);
+	return operand === null ? kept : `${kept} ${writing.coloredAddend(operand)}`;
+}
+
 /**
  * Format an operand for display in a colored `+` / `-` addition. Detects
  * negative operands (`negativeTermMagnitude` : `-5`, `-2x`, `-\dfrac{1}{2}x`…) and renders them
@@ -650,13 +683,9 @@ export function formatTransformationCustom(step: EquationStep): string | null {
 		const variable = variableOf(step);
 		const leftSplit = splitSide(step.before.left, variable);
 		const rightSplit = splitSide(step.before.right, variable);
-		const leftRemainder = leftSplit.xPart !== null ? toCustom(leftSplit.xPart) : '0';
-		const rightRemainder = rightSplit.constPart !== null ? toCustom(rightSplit.constPart) : '0';
-		const leftAddend =
-			op.variableOperand !== null ? ' ' + customColoredAddend(op.variableOperand) : '';
-		const rightAddend =
-			op.constantOperand !== null ? ' ' + customColoredAddend(op.constantOperand) : '';
-		return `${leftRemainder}${leftAddend} ${relBefore} ${rightRemainder}${rightAddend}\n${aL} ${relAfter} ${aR}`;
+		const leftMember = transposedMember(leftSplit.xPart, op.variableOperand, CUSTOM_MEMBER);
+		const rightMember = transposedMember(rightSplit.constPart, op.constantOperand, CUSTOM_MEMBER);
+		return `${leftMember} ${relBefore} ${rightMember}\n${aL} ${relAfter} ${aR}`;
 	}
 
 	if (op.kind === 'simplify-coefficient') {

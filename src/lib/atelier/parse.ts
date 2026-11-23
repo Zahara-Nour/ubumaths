@@ -8,18 +8,18 @@
  * @module atelier/parse
  */
 
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
-import { knownFrench } from '$lib/mathAST/cli/web/french-errors';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { hideIndexedNames, indexedNameOf } from '$lib/mathAST/common/indexed-names';
-import { format as formatUnit } from '$lib/mathAST/units';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
-import type { MathNode } from '$lib/mathAST/types';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { legacyDecimalCommas } from '#lib/mathAST/parser/custom/legacy-decimal-commas.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { detectInputFormat, hasBareFunctionCall } from '#lib/mathAST/cli/core/input-detector.ts';
+import { knownFrench } from '#lib/mathAST/cli/web/french-errors.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { bareFunctionRefusal } from '#lib/mathAST/cli/core/variable-argument.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { hideIndexedNames, indexedNameOf } from '#lib/mathAST/common/indexed-names.ts';
+import { format as formatUnit } from '#lib/mathAST/units/index.ts';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import {
 	MAX_CATEGORIES,
 	MAX_CATEGORY_LENGTH,
@@ -27,13 +27,14 @@ import {
 	MAX_LIST_VALUES
 } from './types';
 import type { MissingReference, ObjectKind } from './types';
-import { readListValue, readNumber } from '$lib/statistics/read-value';
+import { readListValue, readNumber } from '#lib/statistics/read-value.ts';
 import { hasObjectNameShape } from './names';
 import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
 import { objectKindOf, partsOf, specOf } from './construction-spec';
 import { hasMeasureCall, measureShapeRefusal, withoutMeasureCalls } from './measures-read';
 import { perfSwitches } from './perf-switches';
-import { strayDegreeRefusal, withDegreeUnits } from './degrees';
+import { strayDegreeRefusal, withDegreeUnits } from '#lib/mathAST/cli/core/degrees.ts';
+import { withPiCommand } from '#lib/mathAST/cli/core/typed-line.ts';
 import {
 	CURVE_NEEDS_XY,
 	CURVE_UNIT,
@@ -123,20 +124,6 @@ function genericFunctionsFor(extraNames: readonly string[] | undefined) {
 	const names = new Set<string>(DEFAULT_FUNCTION_NAMES);
 	for (const name of extraNames ?? []) names.add(name);
 	return { names: [...names], allowDerivatives: true, allowInverse: true };
-}
-
-/**
- * Le symbole `π` tapé tel quel, réécrit `\pi` — la constante, que les deux
- * parseurs connaissent. Sans quoi ils lisent une VARIABLE nommée « π » :
- * `f(x) = 2sin(π x)` ne s'évaluait pas, et sa dérivée l'affichait comme une
- * lettre. L'atelier conseille pourtant « \pi ou le symbole π » (#896).
- *
- * Le parseur maison lit lui aussi `π` comme la constante depuis le 2026-10-20
- * (lecture-grandeurs PR 4) ; la réécriture reste pour le parseur LaTeX. L'espace
- * qui suit évite de coller la commande à une lettre (`πx` → `\pi x`, pas `\pix`).
- */
-export function withPiCommand(text: string): string {
-	return text.replace(/π/g, '\\pi ');
 }
 
 /**

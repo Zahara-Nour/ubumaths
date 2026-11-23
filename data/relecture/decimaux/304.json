@@ -81,9 +81,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Décimaux",
-		"domain": "Diviser",
-		"subdomain": "Quotient",
 		"level": 6,
 		"status": "draft",
 		"delay": 20,

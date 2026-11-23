@@ -5,15 +5,15 @@
 	Chip de fraîcheur "dernière saisie il y a X jours".
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
+	import { lore } from '#lib/config/lore.ts';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,
 		type MathCompetenceLevel
-	} from '$lib/types/skills';
+	} from '#lib/types/skills.ts';
 
 	interface ClassStudent {
 		id: string;

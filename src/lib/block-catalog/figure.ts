@@ -58,11 +58,18 @@ export const figureEntry: BlockCatalogEntry = {
 					description: 'Graduations sur les axes. Il faut aussi axes: oui.'
 				},
 				{
-					key: 'deplacable, rendu',
-					values: 'oui | non ; normal | croquis | mixte',
-					defaultValue: 'réservés',
+					key: 'deplacable',
+					values: 'oui | non',
+					defaultValue: 'non',
 					description:
-						'Réglages des figures interactives enregistrées. Un bloc d’exercice les refuse.'
+						'oui : l’élève fait glisser points, textes et noms, et ce qui en dépend suit. Rien n’est noté ni gardé ; « Remettre la figure » la ramène au départ. Sur la fiche PDF, la figure reste fixe.'
+				},
+				{
+					key: 'rendu',
+					values: 'normal | croquis | mixte',
+					defaultValue: 'normal',
+					description:
+						'croquis : traits tremblés, comme à main levée ; mixte : objets à main levée, repère net. Sur la fiche PDF, rendu normal.'
 				}
 			]
 		}
@@ -110,6 +117,22 @@ export const figureEntry: BlockCatalogEntry = {
 			explanation: 'La description est lue à la place de la figure par un lecteur d’écran.'
 		},
 		{
+			title: 'Une figure à manipuler',
+			source: fence(
+				'figure',
+				'fenetre: -1 ; 7 ; -1 ; 5',
+				'deplacable: oui',
+				'---',
+				'A = point(0, 0)',
+				'B = point(5, 0)',
+				'C = point(2, 4)',
+				'p = polygone(A, B, C)',
+				'm = mediatrice(A, B)'
+			),
+			explanation:
+				'Fais glisser A, B ou C : la médiatrice de [AB] suit. La figure s’affiche dans une toile, à l’écran seulement.'
+		},
+		{
 			title: 'Deux pas différents',
 			source: fence(
 				'figure',
@@ -131,16 +154,16 @@ export const figureEntry: BlockCatalogEntry = {
 			explanation: 'Ajoute fenetre: xmin ; xmax ; ymin ; ymax dans l’en-tête.'
 		},
 		{
-			title: 'Réglage réservé aux figures interactives',
+			title: 'deplacable: sans oui ni non',
 			source: fence(
 				'figure',
 				'fenetre: -1 ; 5 ; -1 ; 5',
-				'deplacable: oui',
+				'deplacable: vrai',
 				'---',
 				'A = point(1, 1)'
 			),
-			message: 'réservé aux figures interactives',
-			explanation: 'deplacable: et rendu: ne servent que pour les figures enregistrées. Retire-les.'
+			message: 'écrire oui ou non',
+			explanation: 'deplacable: ne connaît que oui et non.'
 		}
 	],
 	tryIt: fence(

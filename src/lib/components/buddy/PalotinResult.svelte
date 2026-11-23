@@ -6,12 +6,12 @@
 -->
 
 <script lang="ts">
-	import type { PalotinType } from '$lib/config/buddy-messages';
-	import { buddyMessages } from '$lib/config/buddy-messages';
-	import { PALOTIN_INFO } from '$lib/config/buddy-quiz';
+	import type { PalotinType } from '#lib/config/buddy-messages.ts';
+	import { buddyMessages } from '#lib/config/buddy-messages.ts';
+	import { PALOTIN_INFO } from '#lib/config/buddy-quiz.ts';
 	import BuddyAvatar from './BuddyAvatar.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { fade } from 'svelte/transition';
 
 	interface Props {

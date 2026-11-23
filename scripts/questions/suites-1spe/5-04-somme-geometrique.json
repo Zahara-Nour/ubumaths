@@ -1,10 +1,8 @@
 {
+	"id": "b72fae4a-f8c1-4758-a4d7-9a7523cda877",
 	"title": "Somme de termes consécutifs d'une suite géométrique",
 	"description": "u₀ + u₁ + … + uₙ, premier terme et raison entiers",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Sommes",
-	"subdomain": "Suites géométriques",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,

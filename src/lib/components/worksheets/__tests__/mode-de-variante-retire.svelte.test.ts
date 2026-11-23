@@ -10,7 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ExerciseList from '../ExerciseList.svelte';
 import ExerciseConfigModal from '../ExerciseConfigModal.svelte';
-import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+import type { WorksheetExerciseWithExercise } from '#lib/types/worksheets.ts';
 
 const FICHE = '808e2eee-162a-4493-81f6-8a945c81db3c';
 const EXO = '02a099dd-ff75-4a75-835b-056cd3565f8f';

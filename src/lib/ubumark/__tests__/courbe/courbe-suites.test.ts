@@ -8,8 +8,13 @@ import { parseCourbeContent } from '../../parser/courbe-parser';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { generateTypst } from '../../generators/typst-generator';
-import { parseMarkdown, templateMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
-import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
+import {
+	parseMarkdown,
+	templateMarkdown,
+	type BlockNode,
+	type ListNode
+} from '#lib/ubumark/index.ts';
+import { resolveMarkdownContent } from '#lib/questions/generator/content-resolver.ts';
 import type { CourbeNode, CourbeSpec } from '../../types/courbe';
 import { COURBE_LIMITS } from '../../types/courbe';
 

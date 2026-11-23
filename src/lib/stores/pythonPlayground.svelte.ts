@@ -12,12 +12,12 @@
  * - Editor settings (theme, font size)
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import LZString from 'lz-string';
-import { PlaygroundExecutor } from '$lib/shared/python';
-import type { CompletionItem, WorkerBreakpoint } from '$lib/shared/python';
-import type { DebugStepAction } from '$lib/shared/python/debug/types';
-import type { Database } from '$lib/types/database';
+import { PlaygroundExecutor } from '#lib/shared/python/index.ts';
+import type { CompletionItem, WorkerBreakpoint } from '#lib/shared/python/index.ts';
+import type { DebugStepAction } from '#lib/shared/python/debug/types.ts';
+import type { Database } from '#lib/types/database.ts';
 
 // =============================================================================
 // Types from Database
@@ -61,7 +61,7 @@ print("Valeur de sin(π/2) :", np.sin(np.pi/2))
 // =============================================================================
 
 // Re-export ExecutorState as PlaygroundState for backwards compatibility
-export type { ExecutorState as PlaygroundState } from '$lib/shared/python';
+export type { ExecutorState as PlaygroundState } from '#lib/shared/python/index.ts';
 
 /**
  * Available editor themes.
@@ -130,7 +130,7 @@ const DEFAULT_FONT_SIZE = 14;
  * @example
  * ```svelte
  * <script>
- * import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+ * import { pythonStore } from '#lib/stores/pythonPlayground.svelte.ts';
  *
  * function handleExecute() {
  *   pythonStore.execute();

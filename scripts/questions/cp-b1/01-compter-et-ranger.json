@@ -1,10 +1,8 @@
 {
+	"id": "7752c23e-f2f9-4eb2-aa26-6866650cdbe4",
 	"title": "Compte et range dans un tableau",
 	"description": "Compter des formes mélangées (9 ou 12, 3 ou 4 formes) et écrire chaque nombre dans un tableau",
 	"grades": ["CP"],
-	"theme": "Statistiques",
-	"domain": "Représenter des données",
-	"subdomain": "Tableaux",
 	"level": 1,
 	"delay": 90,
 	"status": "draft",

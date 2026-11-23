@@ -5,23 +5,23 @@
  * DELETE - Delete exercise
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	getExercise,
 	updateExercise,
 	deleteExercise,
 	EXERCISE_NOT_DELETED
-} from '$lib/server/exercises';
-import type { Database } from '$lib/types/database';
-import { validateUpdateExercise } from '$lib/server/validation';
-import { requireRole } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
+} from '#lib/server/exercises.ts';
+import type { Database } from '#lib/types/database.ts';
+import { validateUpdateExercise } from '#lib/server/validation/index.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	isSearchIndexedViolation
-} from '$lib/server/exercise-search-indexed';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/exercise-search-indexed.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/+server');
 
@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Exercice introuvable');
 	}
 
-	return json({ exercise: result.data });
+	return Response.json({ exercise: result.data });
 };
 
 /**
@@ -93,7 +93,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier l’exercice');
 	}
 
-	return json({ exercise: result.data });
+	return Response.json({ exercise: result.data });
 };
 
 /**
@@ -123,5 +123,5 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de supprimer l’exercice');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

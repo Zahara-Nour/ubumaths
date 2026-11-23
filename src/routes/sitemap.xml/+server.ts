@@ -3,13 +3,18 @@
  *
  * Généré plutôt que statique : les URL restent synchronisées avec les routes
  * sans qu'on ait à penser à un fichier séparé. La liste des pages fixes vit dans
- * `$lib/seo/sitemap-pages` — SvelteKit n'autorise ici que les exports de
+ * `#lib/seo/sitemap-pages.ts` — SvelteKit n'autorise ici que les exports de
  * méthodes HTTP, et l'y déclarer casse le build.
  *
  * Les URL partent du domaine canonique (`SITE_URL`), même servies depuis une
  * préproduction. Seuls les articles du Shtam (date de parution) et les exercices
  * (date de dernière modification) portent un `lastmod` : dater les pages fixes
  * du jour de la requête apprend à Google à ignorer ce signal.
+ *
+ * Villes du Royaume : une page par ville (`/royaume/<ville>`), liste fixe du code, sans date.
+ *
+ * Glossaire : une page par terme visible (`/glossaire/<slug>`), datée de la dernière
+ * modification de l'entrée ; les renvois nus, qui redirigent, n'y sont pas.
  *
  * Exercices : seuls ceux que leur auteur a cochés « Afficher sur Google »
  * (`is_public AND search_indexed`), lus avec un client ANONYME. Une panne de la
@@ -20,12 +25,14 @@
  *
  * @module routes/sitemap.xml
  */
-import { SITEMAP_PAGES } from '$lib/seo/sitemap-pages';
-import { absoluteUrl } from '$lib/seo/site';
-import { allArticles, publishedArticles } from '$lib/server/shtam/articles';
-import { todayIsoInParis } from '$lib/server/shtam/present';
-import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
-import { fetchIndexedExercises } from '$lib/server/sitemap-exercises';
+import { SITEMAP_PAGES } from '#lib/seo/sitemap-pages.ts';
+import { CITIES, cityPath } from '#lib/kingdom-tour/cities.ts';
+import { absoluteUrl } from '#lib/seo/site.ts';
+import { allArticles, publishedArticles } from '#lib/server/shtam/articles.ts';
+import { todayIsoInParis } from '#lib/server/shtam/present.ts';
+import { createAnonymousSupabase } from '#lib/server/anonymous-supabase.ts';
+import { fetchIndexedExercises } from '#lib/server/sitemap-exercises.ts';
+import { fetchGlossaryPages } from '#lib/server/sitemap-glossary.ts';
 import type { RequestHandler } from './$types';
 
 interface Entry {
@@ -60,9 +67,24 @@ export const GET: RequestHandler = async () => {
 		lastmod: e.lastmod
 	}));
 
+	// Termes du glossaire ; liste vide en cas de panne
+	const glossary: Entry[] = (await fetchGlossaryPages(createAnonymousSupabase())).map((g) => ({
+		path: g.path,
+		priority: 0.5,
+		changefreq: 'monthly',
+		lastmod: g.lastmod
+	}));
+
+	// Villes du Royaume : liste fixe, dans le code
+	const cities: Entry[] = CITIES.map((c) => ({
+		path: cityPath(c.slug),
+		priority: 0.5,
+		changefreq: 'yearly'
+	}));
+
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...SITEMAP_PAGES, ...articles, ...exercises].map(toXml).join('\n')}
+${[...SITEMAP_PAGES, ...cities, ...articles, ...glossary, ...exercises].map(toXml).join('\n')}
 </urlset>
 `;
 

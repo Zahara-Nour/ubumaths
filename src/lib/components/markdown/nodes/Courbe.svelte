@@ -15,15 +15,46 @@
 
 	@module components/markdown/nodes/Courbe
 -->
+<script module lang="ts">
+	import type { CourbeColor } from '#lib/ubumark/types/courbe.ts';
+
+	/** Point posé par-dessus la figure (repère à points à placer) : disque coloré et nom */
+	export interface CourbeMark {
+		name: string;
+		x: number;
+		y: number;
+		color: CourbeColor;
+	}
+
+	/**
+	 * Trait par-dessus la figure : droite à tracer (d'un bord à l'autre de la
+	 * fenêtre) ou, avec `arrow`, flèche d'un vecteur à tracer (de `from` à `to`)
+	 */
+	export interface CourbeTrace {
+		from: { x: number; y: number };
+		to: { x: number; y: number };
+		color: CourbeColor;
+		arrow?: boolean;
+		/** Trait de construction de la correction (somme de vecteurs) */
+		dashed?: boolean;
+	}
+</script>
+
 <script lang="ts">
 	import {
 		COURBE_COLORS,
-		type CourbeColor,
+		COURBE_DATA_COLOR,
 		type CourbeLabel,
 		type CourbeNode
-	} from '$lib/ubumark/types/courbe';
-	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
-	import { buildCourbeScene, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
+	} from '#lib/ubumark/types/courbe.ts';
+	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
+	import {
+		buildCourbeScene,
+		COURBE_PAD,
+		type ScenePoint
+	} from '#lib/ubumark/utils/courbe-scene.ts';
+	import CourbePlacer from './CourbePlacer.svelte';
+	import type { BuildCase } from './CollectionConstruire.svelte';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
@@ -32,16 +63,38 @@
 		node: CourbeNode;
 		/** Forcer l'affichage des erreurs d'auteur ; sinon, contexte du renderer (élève par défaut) */
 		showErrors?: boolean;
+		/** Points posés par-dessus la figure (repère à points à placer) */
+		marks?: CourbeMark[];
+		/** Droites tracées par-dessus la figure (droite à tracer), sous les points posés */
+		traces?: CourbeTrace[];
+		/** Repère à points à placer, dans une question : une case par point (droite à tracer : une) */
+		answers?: BuildCase[];
+		/** false : repère seul, sans étiquettes de points (copie corrigée) */
+		showControls?: boolean;
 		class?: string;
 	}
 
-	let { node, showErrors, class: className = '' }: Props = $props();
+	let {
+		node,
+		showErrors,
+		marks = [],
+		traces = [],
+		answers,
+		showControls = true,
+		class: className = ''
+	}: Props = $props();
 
 	/** Marge autour du cadre, en px, pour les étiquettes */
-	const PAD = 26;
+	const PAD = COURBE_PAD;
 
 	/** Décalage des rangs u_k de l'escalier sous l'axe, en px (sous les graduations) */
 	const RANK_OFFSET = 26;
+
+	/** Pointe de la flèche d'un vecteur à tracer : longueur et demi-largeur, en px */
+	const ARROW_LENGTH = 11;
+	const ARROW_HALF_WIDTH = 5;
+	/** Écart du nom d'un vecteur donné à sa flèche, en px */
+	const VECTOR_LABEL_GAP = 10;
 
 	/** Couleurs : palette commune des figures (app.css), claire ou sombre */
 	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
@@ -64,10 +117,19 @@
 	let errorsVisible = $derived(showErrors ?? authoring());
 	/** Budget du document (nombre de blocs, temps cumulé) partagé avec ```figure */
 	const budget = readRenderBudget();
-	let admitted = $derived(budget()?.admits(node) ?? true);
+	/**
+	 * Repère à points à placer ou à droite à tracer : c'est la figure dérivée de
+	 * `CourbePlacer` qui compte au budget
+	 */
+	let toPlace = $derived(
+		node.spec?.placer !== undefined ||
+			node.spec?.tracer !== undefined ||
+			node.spec?.vecteur !== undefined
+	);
+	let admitted = $derived(toPlace || (budget()?.admits(node) ?? true));
 	let computed = $derived.by(() => {
 		const spec = node.spec;
-		if (!spec || !admitted) return null;
+		if (!spec || !admitted || toPlace) return null;
 		return withinBudget(budget(), () => buildCourbeScene(spec, { locale: locale() }));
 	});
 	let overBudget = $derived(node.spec !== null && computed === null);
@@ -75,6 +137,7 @@
 	let shownErrors = $derived(overBudget ? [{ message: OVER_BUDGET_MESSAGE }] : node.errors);
 	let warnings = $derived([...node.warnings, ...(scene?.warnings ?? [])]);
 
+	let axisTitles = $derived(node.spec?.axisTitles);
 	let width = $derived(scene?.pixelSize.width ?? 0);
 	let height = $derived(scene?.pixelSize.height ?? 0);
 	/** Place sous le cadre pour les rangs u_k quand l'axe des abscisses est en bas */
@@ -94,6 +157,53 @@
 		return PAD + ((w.yMax - y) / (w.yMax - w.yMin)) * height;
 	}
 
+	/**
+	 * Pointe d'une flèche (vecteur à tracer), en px : le triangle au bout de `to`
+	 * et le pied de la pointe, où s'arrête le trait (le bout arrondi du trait ne
+	 * dépasse pas la pointe)
+	 */
+	/**
+	 * Nom d'un vecteur donné : près du milieu de la flèche, à gauche du sens de
+	 * parcours (comme on l'écrit à la main)
+	 */
+	function vectorLabelAt(from: ScenePoint, to: ScenePoint): { x: number; y: number } {
+		const x1 = sx(from.x);
+		const y1 = sy(from.y);
+		const x2 = sx(to.x);
+		const y2 = sy(to.y);
+		const length = Math.hypot(x2 - x1, y2 - y1) || 1;
+		return {
+			x: (x1 + x2) / 2 + ((y2 - y1) / length) * VECTOR_LABEL_GAP,
+			y: (y1 + y2) / 2 - ((x2 - x1) / length) * VECTOR_LABEL_GAP
+		};
+	}
+
+	function arrowHead(t: Pick<CourbeTrace, 'from' | 'to'>): {
+		base: { x: number; y: number };
+		points: string;
+	} {
+		const x1 = sx(t.from.x);
+		const y1 = sy(t.from.y);
+		const x2 = sx(t.to.x);
+		const y2 = sy(t.to.y);
+		const length = Math.hypot(x2 - x1, y2 - y1);
+		if (length === 0) return { base: { x: x2, y: y2 }, points: '' };
+		const ux = (x2 - x1) / length;
+		const uy = (y2 - y1) / length;
+		const headLength = Math.min(ARROW_LENGTH, length / 2);
+		const bx = x2 - ux * headLength;
+		const by = y2 - uy * headLength;
+		const corners = [
+			[x2, y2],
+			[bx - uy * ARROW_HALF_WIDTH, by + ux * ARROW_HALF_WIDTH],
+			[bx + uy * ARROW_HALF_WIDTH, by - ux * ARROW_HALF_WIDTH]
+		];
+		return {
+			base: { x: bx, y: by },
+			points: corners.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ')
+		};
+	}
+
 	function pointsAttr(points: ScenePoint[]): string {
 		return points.map((p) => `${sx(p.x).toFixed(2)},${sy(p.y).toFixed(2)}`).join(' ');
 	}
@@ -109,7 +219,9 @@
 	}
 </script>
 
-{#if scene}
+{#if toPlace}
+	<CourbePlacer {node} {answers} {showErrors} {showControls} class={className} />
+{:else if scene}
 	<figure class="courbe-figure {className}">
 		<svg
 			role="img"
@@ -157,6 +269,26 @@
 					) + 3.5},{PAD - 5}"
 				/>
 			</g>
+
+			<!-- Titres des axes (`axes:`), au bout de chaque axe -->
+			{#if axisTitles?.x}
+				<text
+					class="courbe-titre-axe"
+					x={PAD + width}
+					y={sy(scene.axes.xAxisY) - 7}
+					text-anchor="end">{axisTitles.x}</text
+				>
+			{/if}
+			{#if axisTitles?.y}
+				<!-- Axe y dans la moitié droite (fenêtre toute négative) : titre à sa gauche, sinon il sort du cadre -->
+				{@const yAxisRight = sx(scene.axes.yAxisX) > PAD + width / 2}
+				<text
+					class="courbe-titre-axe"
+					x={sx(scene.axes.yAxisX) + (yAxisRight ? -8 : 8)}
+					y={PAD - 13}
+					text-anchor={yAxisRight ? 'end' : 'start'}>{axisTitles.y}</text
+				>
+			{/if}
 
 			<!-- Graduations -->
 			<g class="courbe-graduations" aria-hidden="true">
@@ -208,6 +340,24 @@
 						style:stroke={COLOR_VAR[curve.color]}
 					/>
 				{/each}
+			{/each}
+
+			<!-- Courbe de données (`données:`) : ligne brisée, un disque par point -->
+			{#each scene.data.polylines as poly, i (i)}
+				<polyline
+					class="courbe-donnees"
+					points={pointsAttr(poly)}
+					style:stroke={COLOR_VAR[COURBE_DATA_COLOR]}
+				/>
+			{/each}
+			{#each scene.data.marks as p, i (i)}
+				<circle
+					class="courbe-donnee"
+					cx={sx(p.x)}
+					cy={sy(p.y)}
+					r="3"
+					style:fill={COLOR_VAR[COURBE_DATA_COLOR]}
+				/>
 			{/each}
 
 			<!-- Escaliers : droite y = x, relation, rappels, escalier, rangs u_k -->
@@ -303,6 +453,82 @@
 				<text class="courbe-point-nom" x={sx(p.x) + 5} y={sy(p.y) - 5}>{p.name}</text>
 			{/each}
 
+			<!-- Vecteurs donnés (`vecteurs:`) : flèche, nom près du milieu -->
+			{#each scene.vectors as v, i (i)}
+				{@const head = arrowHead(v)}
+				{@const label = vectorLabelAt(v.from, v.to)}
+				<g class="courbe-fleche courbe-vecteur-donne">
+					<line
+						class="courbe-trace"
+						x1={sx(v.from.x)}
+						y1={sy(v.from.y)}
+						x2={head.base.x}
+						y2={head.base.y}
+					/>
+					<polygon points={head.points} stroke-linejoin="round" />
+				</g>
+				{#if v.name !== ''}
+					<text
+						class="courbe-point-nom courbe-vecteur-nom"
+						x={label.x}
+						y={label.y}
+						text-anchor="middle"
+						dominant-baseline="middle">{v.name}</text
+					>
+				{/if}
+			{/each}
+
+			<!-- Droites tracées (droite à tracer) et flèches (vecteur à tracer) -->
+			{#each traces as t, i (i)}
+				{#if t.arrow}
+					{@const head = arrowHead(t)}
+					<g
+						class="courbe-fleche"
+						style:stroke={COLOR_VAR[t.color]}
+						style:fill={COLOR_VAR[t.color]}
+					>
+						<line
+							class="courbe-trace"
+							class:pointille={t.dashed}
+							x1={sx(t.from.x)}
+							y1={sy(t.from.y)}
+							x2={head.base.x}
+							y2={head.base.y}
+						/>
+						<polygon points={head.points} stroke-linejoin="round" />
+					</g>
+				{:else}
+					<line
+						class="courbe-trace"
+						class:pointille={t.dashed}
+						x1={sx(t.from.x)}
+						y1={sy(t.from.y)}
+						x2={sx(t.to.x)}
+						y2={sy(t.to.y)}
+						style:stroke={COLOR_VAR[t.color]}
+					/>
+				{/if}
+			{/each}
+
+			<!-- Points posés (repère à points à placer) -->
+			{#each marks as m, i (i)}
+				<circle
+					class="courbe-pose"
+					cx={sx(m.x)}
+					cy={sy(m.y)}
+					r="4.5"
+					style:fill={COLOR_VAR[m.color]}
+				/>
+				{#if m.name !== ''}
+					<text
+						class="courbe-pose-nom"
+						x={sx(m.x) + 7}
+						y={sy(m.y) - 7}
+						style:fill={COLOR_VAR[m.color]}>{m.name}</text
+					>
+				{/if}
+			{/each}
+
 			<!-- Noms des courbes -->
 			{#each scene.curveLabels as l, i (i)}
 				<text class="courbe-nom" x={sx(l.x) + 6} y={sy(l.y) - 6} style:fill={COLOR_VAR[l.color]}
@@ -390,8 +616,20 @@
 		stroke-linecap: round;
 	}
 
+	.courbe-donnees {
+		fill: none;
+		stroke-width: 2;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+	}
+
 	.courbe-trace.pointille {
 		stroke-dasharray: 6 4;
+	}
+
+	.courbe-vecteur-donne {
+		stroke: var(--color-foreground);
+		fill: var(--color-foreground);
 	}
 
 	.courbe-diagonale {
@@ -442,6 +680,27 @@
 		fill: var(--color-foreground);
 		font-size: 12px;
 		font-style: italic;
+	}
+
+	.courbe-titre-axe {
+		fill: var(--color-foreground);
+		font-size: 11px;
+	}
+
+	.courbe-trace {
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+
+	.courbe-pose {
+		stroke: var(--color-background);
+		stroke-width: 1.25;
+	}
+
+	.courbe-pose-nom {
+		font-size: 13px;
+		font-style: italic;
+		font-weight: 600;
 	}
 
 	.courbe-nom {

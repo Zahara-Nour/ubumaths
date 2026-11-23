@@ -40,6 +40,7 @@ import { detectVariable, getPolynomialDegree, unwrapGroupingMembers } from '../s
 import { getVariables } from '../eval/substitute';
 import {
 	addToBothSides,
+	groupedCoefficient,
 	chooseAddOrSubtract,
 	movedTerm,
 	divideBothSidesWithFlip,
@@ -119,6 +120,10 @@ function splitSide(
 
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
+	// Coefficient somme regroupé (`groupVariableTerms`, V52) : gardé tel qu'écrit, `9 - \pi`
+	// (canonicalForm le rendrait `-\pi + 9` dans la division)
+	const grouped = groupedCoefficient(node, variable);
+	if (grouped !== null) return grouped;
 	return canonicalForm(divide(node, varNode(variable), 'fraction'));
 }
 
@@ -239,8 +244,8 @@ export function generateLinearInequalitySteps(
 	if (strategy.regroupementMode === 'combined') {
 		if (xMoveRaw !== null || constMoveRaw !== null) {
 			let after = current;
-			if (xMoveRaw !== null) after = addToBothSides(after, xMoveRaw);
-			if (constMoveRaw !== null) after = addToBothSides(after, constMoveRaw);
+			if (xMoveRaw !== null) after = addToBothSides(after, xMoveRaw, variable);
+			if (constMoveRaw !== null) after = addToBothSides(after, constMoveRaw, variable);
 			regroupementSteps.push(
 				makeStep({
 					id: id(),
@@ -260,7 +265,7 @@ export function generateLinearInequalitySteps(
 	} else {
 		if (xMoveRaw !== null) {
 			const choice = chooseAddOrSubtract(xMoveRaw);
-			const after = addToBothSides(current, xMoveRaw);
+			const after = addToBothSides(current, xMoveRaw, variable);
 			regroupementSteps.push(
 				makeStep({
 					id: id(),
@@ -278,7 +283,7 @@ export function generateLinearInequalitySteps(
 		}
 		if (constMoveRaw !== null) {
 			const choice = chooseAddOrSubtract(constMoveRaw);
-			const after = addToBothSides(current, constMoveRaw);
+			const after = addToBothSides(current, constMoveRaw, variable);
 			regroupementSteps.push(
 				makeStep({
 					id: id(),

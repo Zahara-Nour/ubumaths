@@ -14,8 +14,8 @@
  *
  * @example
  * ```typescript
- * import { generatePdfFromTypst } from '$lib/typst/pdf-generator';
- * import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+ * import { generatePdfFromTypst } from '#lib/typst/pdf-generator.ts';
+ * import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
  *
  * const result = await generatePdfFromTypst(() =>
  *   generateStudentWorksheetTypst(worksheet, includeSolution)
@@ -27,15 +27,16 @@
  * ```
  */
 
-import { getTypstService, PRIORITY } from '$lib/typst/service';
+import { getTypstService, PRIORITY } from '#lib/typst/service/index.ts';
 import {
 	clearTrackedExternalImages,
 	getTrackedExternalImages
-} from '$lib/ubumark/generators/typst-generator';
-import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
-import { createLogger } from '$lib/utils/logger';
-import { hasCorrectionFonts } from '$lib/typst/correction-fonts';
-import { compileTypstDocument } from '$lib/typst/compiler/correction-fonts-compiler';
+} from '#lib/ubumark/generators/typst-generator.ts';
+import { fetchExternalImages, urlToVirtualPath } from '#lib/typst/image-loader.ts';
+import { createLogger } from '#lib/utils/logger.ts';
+import { hasCorrectionFonts } from '#lib/typst/correction-fonts.ts';
+import { hasEasyReading } from '#lib/typst/easy-reading.ts';
+import { compileTypstDocument } from '#lib/typst/compiler/correction-fonts-compiler.ts';
 
 const logger = createLogger('pdf-generator');
 
@@ -133,8 +134,9 @@ export async function generatePdfFromTypst(
 				? await fetchExternalImages(externalImageUrls, { timeout: imageFetchTimeout })
 				: new Map<string, Uint8Array>();
 
-		// Corrigé : compilateur dédié (Shantell Sans, Chiphre Math), avec repli
-		if (hasCorrectionFonts(typstContent)) {
+		// Corrigé (Shantell Sans, Chiphre Math) ou lecture facilitée (Luciole) :
+		// compilateur dédié, avec repli
+		if (hasCorrectionFonts(typstContent) || hasEasyReading(typstContent)) {
 			// Repli dans la police standard : par la file du service, comme les autres PDF
 			const result = await compileTypstDocument(typstContent, {
 				images: imageData,

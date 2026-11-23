@@ -1,0 +1,282 @@
+{
+	"id": "3b5c6c13-d765-4aa6-9247-f2cdedb5b930",
+	"title": "Tracer avec l'équerre et le compas",
+	"description": "Papier uni : angle droit à l'équerre ; cercle de centre donné passant par un point ; cercle de rayon donné en cm",
+	"grades": ["CE1"],
+	"level": 7,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Avec l'$\\textcolor{{{color:primary.0}}}{\\text{équerre}}$, trace le triangle $ABC$ qui a un angle droit en $A$ : trace l'angle droit, puis les côtés $[AC]$ et $[BC]$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\nverifier: triangle ABC : CAB = 90\n---\n{{if:k==1|A = point(3, 2)\nB = point(9, 2)|{{if:k==2|A = point(2, 3)\nB = point(8, 3)|{{if:k==3|A = point(9, 2)\nB = point(9, 8)|A = point(10, 3)\nB = point(4, 3)}}}}}}\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose l'équerre le long de $[AB]$, son $\\textcolor{{{color:primary.0}}}{\\text{angle droit}}$ sur $A$, et on trace le long de l'autre côté de l'équerre.",
+					"On choisit le point $C$ sur ce tracé, puis on trace $[AC]$ et $[BC]$ : le triangle a un angle droit en $A$."
+				]
+			}
+		},
+		{
+			"statement": "Avec le $\\textcolor{{{color:primary.0}}}{\\text{compas}}$, trace le cercle de centre $O$ qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\nverifier: cercle c = cercle(O, passant=A)\n---\nO = point(6, 5)\n{{if:k==1|A = point(8.5, 6.5)|{{if:k==2|A = point(3, 7)|{{if:k==3|A = point(7, 1.5)|A = point(3.5, 3)}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pique la pointe du compas sur le $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$.",
+					"On ouvre le compas jusqu'au point $A$ et on trace le cercle : il passe par $A$."
+				]
+			}
+		},
+		{
+			"statement": "Avec la règle graduée et le compas, trace le cercle de $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$ et de $\\textcolor{{{color:primary.1}}}{\\text{rayon}}$ $\\textcolor{{{color:primary.1}}}{{{r}}\\text{ cm}}$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{r}} cm)\n---\nO = point(7, 7)\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose la règle graduée, son $0$ sur le $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$.",
+					"On pique le compas en $O$ et on l'ouvre jusqu'à la graduation $\\textcolor{{{color:primary.1}}}{{{r}}\\text{ cm}}$ : c'est le $\\textcolor{{{color:primary.1}}}{\\text{rayon}}$.",
+					"On trace le cercle sans changer l'écartement."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Angle droit 1 : équerre, côtés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;2;3;8)|segment(3;2;3;6)|segment(9;2;3;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angle droit 1 : autre point C sur la droite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;2;3;8)|segment(3;2;3;4)|segment(9;2;3;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans équerre, angle à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(3;2;3.5;6)|segment(9;2;3.5;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : angle droit en B",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(9;2;9;8)|segment(9;2;9;6)|segment(3;2;9;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [BC] manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["droite(3;2;3;8)|segment(3;2;3;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle droit 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["droite(2;3;2;9)|segment(2;3;2;7)|segment(8;3;2;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angle droit 3 (côté vertical)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["droite(9;2;3;2)|segment(9;2;4;2)|segment(9;8;4;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Angle droit 4 (vers la gauche)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["droite(10;3;10;-3)|segment(10;3;10;7)|segment(4;3;10;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 1 : centre O, ouvert jusqu'à A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;5;8.5;6.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compas piqué en A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(8.5;6.5;6;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : compas trop ouvert",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["cercle(6;5;9.5;6.5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Cercle 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["cercle(6;5;3;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["cercle(6;5;7;1.5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle 4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["cercle(6;5;3.5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rayon 3 cm",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;10;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rayon 3 cm, règle vers le haut",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["regle(7;7;7;8;1)|cercle(7;7;7;10)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compas ouvert à l'œil, sans la règle",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["cercle(7;7;10;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : diamètre pris pour le rayon (6 cm)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;13;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon 5 cm",
+			"variationIndex": 2,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["regle(7;7;8;7;1)|cercle(7;7;12;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

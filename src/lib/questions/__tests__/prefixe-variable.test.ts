@@ -8,8 +8,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { specVerdicts } from './spec-verdicts.helper';
-import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
-import type { QuestionTemplate } from '$lib/questions/types';
+import { runAllTestSpecs } from '#lib/questions/test-spec-runner.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 function statuses(statement: string, expected: string, answers: string[]) {
 	return Object.fromEntries(
@@ -66,8 +66,6 @@ describe('cases en ordre libre (deux solutions)', () => {
 			type: 'fill_in_blanks',
 			title: 't',
 			grades: ['1_SPE'],
-			theme: 'T',
-			domain: 'D',
 			level: 1,
 			delay: 20,
 			status: 'draft',

@@ -5,9 +5,9 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark';
-import type { DocumentNode, TextNode } from '$lib/ubumark';
-import type { GradeCode } from '$lib/types/grades';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { DocumentNode, TextNode } from '#lib/ubumark/index.ts';
+import type { GradeCode } from '#lib/types/grades.ts';
 import { lexiconGrade } from '../grade';
 import { REFERENCE_DICTIONARY } from '../../../../tests/fixtures/lexique/dictionnaire-reference';
 import { createLinker } from '../linker';

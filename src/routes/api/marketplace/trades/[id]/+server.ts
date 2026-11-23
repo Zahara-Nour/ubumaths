@@ -1,13 +1,14 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
 import {
 	unlockCardsForEntity,
 	createMarketplaceNotification,
 	enrichWithUsernames
-} from '$lib/server/marketplace/helpers';
+} from '#lib/server/marketplace/helpers.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/trades/[id]/+server');
 
@@ -20,11 +21,8 @@ const idSchema = z.string().uuid("ID d'échange invalide");
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate trade ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -99,7 +97,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		);
 	}
 
-	return json(enrichWithUsernames(trade));
+	return Response.json(enrichWithUsernames(trade));
 };
 
 /**
@@ -108,11 +106,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate trade ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -169,5 +164,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		cancelled_by: userId
 	});
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

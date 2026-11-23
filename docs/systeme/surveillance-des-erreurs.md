@@ -1,12 +1,13 @@
 ---
 couvre:
-  - 'src/routes/api/{errors,bug-reports,search,openapi.json}/**'
+  - 'src/routes/api/{errors,bug-reports,search,openapi.json,web-vitals}/**'
   - 'src/routes/(protected)/dashboard/admin/{errors,bug-reports,docs,debug,integrite-donnees}/**'
   - 'src/routes/(protected)/dev/{session,rls,avatar,roue,champ-math,apercu-question,correction-generee,pdf-typst,pdf-latex,latex-vers-ubumark}/**'
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
-  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version}.ts'
+  - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version,web-vitals-visibilite,web-vitals-mesures,inp-tracker,analytics-redact}.ts'
+  - 'src/lib/server/web-vitals/**'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
@@ -51,7 +52,9 @@ Trois boucles distinctes :
 - `src/hooks.client.ts` appelle `initErrorMonitoring()`, `initWebVitals()` et
   `initFreezeDetection()` au chargement. Son `handleError` envoie lui-même un `fetch`
   vers `/api/errors/log` pour les erreurs que SvelteKit intercepte (rendu, `$effect`,
-  `load`). Une 404 de navigation part en `warning`, le reste en `error`.
+  `load`). SvelteKit 3 lui passe toutes les erreurs avec un `kind` : une 404 de
+  navigation (`framework`) part en `warning`, une exception (`unknown`) en `error`, une
+  erreur voulue (`app`, levée par `error(...)`) n'est pas journalisée.
 - `src/lib/utils/errorMonitoring.ts` :
   - écoute `error` et `unhandledrejection` sur `window` ;
   - API manuelle : `captureError`, `captureValidationError`, `capturePerformance`,
@@ -59,7 +62,23 @@ Trois boucles distinctes :
   - `initWebVitals` : observe LCP, CLS, INP, etc. ; une valeur au-dessus du seuil part
     en `performance` (rien n'est envoyé si la sévérité vaut `info`) ; l'URL passe par
     `sanitizeUrl` (paramètres `token`, `key`, `secret`, `password`, `auth`, `session`,
-    `code` remplacés par `[REDACTED]`) ;
+    `code` remplacés par `[REDACTED]`) ; un FCP ou un LCP mesuré après le premier passage
+    de la page en arrière-plan est écarté (`web-vitals-visibilite.ts`, même règle que
+    `web-vitals` : un onglet ouvert en arrière-plan donnait des « LCP » de plusieurs heures) ;
+    INP et CLS partent au passage en arrière-plan, mais seulement s'ils ont grandi depuis
+    le dernier envoi (avant, un onglet ouvert des jours renvoyait le même INP dès la fin
+    de la fenêtre anti-doublon de 5 minutes : jusqu'à 28 fois la même valeur) ;
+  - **mesures gardées chez nous** (depuis novembre 2026, cf. ci-dessous) : `initWebVitals`
+    remet aussi **toutes** les mesures, bonnes comprises, à `createSampleCollector`
+    (`web-vitals-mesures.ts`), qui les envoie à `/api/web-vitals` au passage en arrière-plan ;
+  - INP (`inp-tracker.ts`) : seuls les événements d'une interaction comptent
+    (`interactionId` non nul ; survol, défilement exclus) ; une interaction vaut son
+    événement le plus lent ; la plus lente par tranche de 50 interactions est écartée
+    (`performance.interactionCount`, à défaut les interactions observées). L'URL envoyée est
+    celle de la page où l'interaction a commencé (relevée au `pointerdown` / `keydown`), pas
+    celle du passage en arrière-plan. `context` reçoit `event_name` (`pointerup`, `keydown`…)
+    et `target` : balise, `id`, `role` — **jamais d'`aria-label`** (certains portent le nom
+    d'un élève) ni de texte saisi ;
   - garde-fous (objet `CONFIG`) : 10 erreurs par minute au plus, file envoyée toutes
     les 10 s ou dès 5 erreurs. « Lot » ne veut dire que regroupement dans le temps :
     chaque erreur part dans son propre `POST` ;
@@ -68,15 +87,62 @@ Trois boucles distinctes :
 - Autres émetteurs directs de `/api/errors/log` : `src/lib/stores/minesweeper.svelte.ts`.
 - `src/lib/utils/errors.ts` sert à **afficher** une erreur, pas à la remonter :
   - `readApiErrorMessage(response)` lit le message d'une réponse d'API en échec :
-    `{ message }` (erreur SvelteKit) ou `{ error }` (`json({ error })`), sinon
-    « Erreur <statut> ». Jamais le corps brut. Appelée par
-    `src/lib/components/worksheets/VariantPreview.svelte` ;
+    `{ message }` (erreur SvelteKit) ou `{ error }` (`Response.json({ error })`), sinon
+    « Erreur <statut> ». Jamais le corps brut. Sans appelant depuis le
+    retrait de `VariantPreview.svelte` (testée seule) ;
   - `formatUserError(error)` : message lisible d'une exception (champ `details` de
     Supabase s'il existe) ;
   - `logNonCriticalError(contexte, error)` : un `console.warn`, rien d'envoyé.
 
 ### Erreurs côté serveur
 
+- **Mesures de performance gardées chez nous** (`web_vital_samples`, chantier `amelioration`,
+  novembre 2026 : Vercel a rendu payant le détail de Speed Insights). Le journal des erreurs ne
+  reçoit que les mauvaises mesures, donc pas de quoi calculer un p75 ; cette table reçoit tout.
+  - **Navigateur** (`web-vitals-mesures.ts`, branché dans `initWebVitals`) : TTFB, FCP et LCP
+    sont rattachés à la page d'arrivée (le dernier LCP observé), le CLS (pire rafale de
+    décalages, définition de Google) à la page courante, l'INP à la page où l'interaction a
+    commencé. **Tout part une seule fois, au premier passage de la page
+    en arrière-plan** : une ligne par visite et par indicateur (la table est anonyme, rien ne
+    relierait deux envois d'une même visite) ; ce qui se passe après le retour sur l'onglet
+    n'est pas mesuré ici. Le TTFB envoyé ici
+    est compté depuis le début de la navigation (définition de Google), pas depuis l'envoi de
+    la requête comme celui du journal des erreurs. Sans prise en charge de `layout-shift`
+    (Safari), aucun CLS ne part. Rien n'est envoyé en développement. Limites à connaître pour
+    lire le relevé : un FCP ou un LCP arrivé après l'envoi est perdu ; le CLS est celui
+    de toute la visite, rattaché à la page affichée au moment de l'envoi, pas à celle où le
+    décalage a eu lieu ; une arrivée sur une page sans route (404) n'envoie pas son chargement.
+  - **Page = identifiant de route SvelteKit** (`/(public)/cours/[token]`), noté par le layout
+    racine (`afterNavigate` → `noteWebVitalsRoute`). Jamais `url.pathname` : l'adresse réelle
+    peut porter un jeton.
+  - **Pages comptées** (`isMeasuredRoute`) : toutes, sauf l'admin et `/dev`.
+  - **Serveur** (`POST /api/web-vitals`, `src/lib/server/web-vitals/reception.ts`) : route
+    ouverte, sans compte, qui **ne se sert pas de la session** (les hooks la lisent comme pour
+    toute requête). Elle n'écrit qu'en prod (`VERCEL_ENV=production`), limite à 30 envois par
+    minute et par adresse (préfixe /64 en IPv6 ; la clé du compteur est une empreinte de
+    l'adresse, un pseudonyme gardé dans `rate_limits` jusqu'à la purge quotidienne) et à 2 000
+    envois par heure pour tout le site (clé `web-vitals:global`), valide l'enveloppe (400 sinon),
+    puis écarte une à une les mesures hors bornes (durée > 10 min, CLS > 100) ou dont la route
+    n'est pas une **page du site** (`KNOWN_ROUTES`, tirée des fichiers `+page.svelte`). C'est
+    cette liste, pas la contrainte de la table, qui garantit qu'aucun jeton n'est écrit. Le
+    serveur n'insère que `route`, `metric`, `value`, `device_type` : la base fixe la date
+    (arrondie à l'heure) et l'identifiant.
+  - **Risque résiduel** : l'heure est arrondie, mais qui lit la base (admin, serveur) peut
+    retrouver l'ordre d'écriture des lignes (ordre physique, numéro de transaction) et les
+    situer entre deux lignes horodatées d'une autre table. Les deux limites de débit échouent
+    ouvertes (panne du compteur = pas de limite).
+  - Lecture des lignes : admin seul ; purge à 90 jours.
+  - **Relevé** (`GET /api/web-vitals/releve?days=28`, `src/lib/server/web-vitals/releve.ts`) :
+    pour le relevé mensuel de GitHub. Jeton dédié `WEB_VITALS_RELEVE_TOKEN` en
+    `Authorization: Bearer` (comparé en temps constant ; variable absente ou de moins de 32 caractères = 503), 10 appels par
+    minute et par adresse comptés avant le jeton, `days` de 1 à 90 (400 sinon). La route ne se
+    sert pas de la session et ne rend que des résultats calculés : nombre de mesures par
+    indicateur, pour tout le site et par page, et p75 à partir de 5 mesures ; ni ligne, ni date,
+    ni type d'appareil. Période en jours entiers (UTC), journée en cours exclue : interroger la
+    route en boucle ne défait pas l'arrondi à l'heure de `created_at`. Elle lit la table avec le
+    client service, par pages de 1 000 dans l'ordre des identifiants (tirés au hasard, jamais
+    l'ordre d'arrivée), 100 000 lignes au plus (`truncated` au-delà). Usage :
+    [core-web-vitals.md](../pratiques/core-web-vitals.md).
 - `src/lib/server/errorMonitoring.ts` est le seul écrivain de `error_logs` :
   - `logError` nettoie (`sanitizeErrorData`), tronque (message 1 000, pile 5 000, URL
     500 caractères), puis insère avec le **client service** (la RLS n'autorise
@@ -102,8 +168,11 @@ Trois boucles distinctes :
 | Route                              | Qui                             | Rôle                                                                                                                          |
 | ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte approuvé, `critical` devient `error` ; `context` ≤ 10 000 caractères |
-| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
-| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                         |
+| `POST /api/errors/bulk-resolve`    | admin (ou prof élevé)           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
+| `POST /api/errors/delete-resolved` | admin (ou prof élevé)           | supprime toutes les erreurs résolues (client service)                                                                         |
+
+Les deux routes admin se gardent par `requireAdmin` (vrai compte admin, ou prof en mode
+administration : [auth.md](auth.md) § Élévation admin) ; `bulk-resolve` écrit avec le client rendu.
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
 `type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
@@ -180,7 +249,8 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
 
 Table singleton `bug_reports_config` (`singleton_key = 'global'`), quatre drapeaux :
 `fab_enabled`, `freeze_detection_enabled`, `freeze_prompt_enabled`, `auto_report_enabled`.
-`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin. Côté client,
+`/api/bug-reports/config` : `GET` pour tout compte connecté, `PATCH` admin (`requireAdmin` : le prof en
+mode administration passe aussi, [auth.md](auth.md)). Côté client,
 `bugReportsConfigStore` (`src/lib/stores/bugReportsConfig.svelte.ts`), valeurs par
 défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsConfigCard`, sur
 `/dashboard/admin/bug-reports` et `/dashboard/admin/settings`.
@@ -255,6 +325,11 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   adresses mail dans le message, la pile, l'URL **et toutes les valeurs texte** des en-têtes, du
   corps et du contexte, quel que soit le nom de la clé (depuis le 2026-10-13). Aucun appelant
   ne range plus `user_email` dans le contexte : `user_id` suffit.
+- Le jeton d'un lien du carnet de liaison (ADR 0040) est dans le CHEMIN (`/carnet/<jeton>`,
+  `/carnet/confirmer/<jeton>`), que `sanitizeUrl` ne voit pas : `logError` le remplace par
+  `[token]` dans l'URL et le message (`redactSecretUrl`, `src/lib/utils/analytics-redact.ts`,
+  depuis le 2026-11-16). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
+  lente et exception de `hooks.server.ts`.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les
   erreurs récentes de l'auteur n'y sont **pas** enregistrées : son auteur peut le relire, et
@@ -268,7 +343,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 
 ### Limites de débit
 
-En mémoire, par instance (voir [serveur.md](serveur.md) §1.5) : `error-log:<ip>` 20/min,
+En base, partagées par toutes les instances (`rateLimit()`, voir [serveur.md](serveur.md) §1.5) : `error-log:<ip>` 20/min,
 `bug-report:<userId>` 10/h (test : `src/routes/api/bug-reports/__tests__/rate-limit.test.ts`),
 `search:<userId>` 30/min. Côté navigateur, 10 erreurs par minute.
 
@@ -318,7 +393,8 @@ rapport en UUID. Exceptions : voir Écarts.
   `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
   du bucket.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
-  contexte et l'URL, message de l'alerte critique échappé.
+  contexte et l'URL, jeton du carnet masqué dans l'URL et le message, message de l'alerte
+  critique échappé.
 - `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte approuvé,
   taille du contexte bornée.
 - `tests/integration/database/error-monitoring-triggers.test.ts` : empreinte SHA-256 et

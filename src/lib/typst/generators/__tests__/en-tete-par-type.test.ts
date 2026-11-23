@@ -10,15 +10,15 @@
 import { describe, it, expect } from 'vitest';
 import { WorksheetGenerator } from '../worksheet-generator';
 import { DEFAULT_TEMPLATE_IDS } from '../../templates/default-templates';
-import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+import { generateStudentWorksheetTypst } from '#lib/worksheets/student-worksheet-typst.ts';
 import type {
 	InstanceData,
 	StudentWorksheetView,
 	WorksheetConfig,
 	WorksheetRow,
 	WorksheetType
-} from '$lib/types/worksheets';
-import type { ContentLocale } from '$lib/types/locale';
+} from '#lib/types/worksheets.ts';
+import type { ContentLocale } from '#lib/types/locale.ts';
 
 // =============================================================================
 // Décor

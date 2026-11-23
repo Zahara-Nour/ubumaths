@@ -1,11 +1,11 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import HillAttack from '$lib/components/ciphers/HillAttack.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { lettersOnly } from '$lib/ciphers/alphabet';
-	import { CipherInputError } from '$lib/ciphers/errors';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import HillAttack from '#lib/components/ciphers/HillAttack.svelte';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { lettersOnly } from '#lib/ciphers/alphabet.ts';
+	import { CipherInputError } from '#lib/ciphers/errors.ts';
 	import {
 		hillCollision,
 		hillDecrypt,
@@ -13,10 +13,10 @@
 		hillInverse,
 		hillKeyFromKeyword,
 		type HillKey
-	} from '$lib/ciphers/hill';
-	import { attempt, type CipherOutcome } from '$lib/ciphers/outcome';
-	import { REPORT_PREFIX } from '$lib/ciphers/dispatches';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	} from '#lib/ciphers/hill.ts';
+	import { attempt, type CipherOutcome } from '#lib/ciphers/outcome.ts';
+	import { REPORT_PREFIX } from '#lib/ciphers/dispatches.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Types
 	type KeyMode = 'numbers' | 'keyword';
@@ -75,7 +75,7 @@
 </script>
 
 <SeoHead
-	title="Chiffre de Hill : matrices et décryptage — Chiphre"
+	title="Chiffre de Hill : matrices et décryptage | Chiphre"
 	description="Le chiffre de Hill pas à pas : chiffrer par paires avec une matrice 2 × 2 modulo 26, calculer la matrice inverse pour déchiffrer, et décrypter par clair connu ou ligne par ligne."
 />
 

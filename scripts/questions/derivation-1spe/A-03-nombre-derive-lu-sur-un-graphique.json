@@ -1,11 +1,9 @@
 {
+	"id": "d58208eb-48f8-4a77-b5bb-55cddcd845ab",
 	"title": "Lire un nombre dérivé sur un graphique",
 	"description": "Lecture de f′(a), coefficient directeur de la tangente tracée au point d'abscisse a (entier ou demi-entier)",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Dérivation",
 	"status": "draft",
-	"subdomain": "Nombre dérivé",
 	"level": 3,
 	"delay": 45,
 	"options": {

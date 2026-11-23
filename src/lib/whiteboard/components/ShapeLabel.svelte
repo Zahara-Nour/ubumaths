@@ -18,7 +18,7 @@
 		getPolylineMidpoint
 	} from '../core/shapes';
 	import { parseLabelToInline } from '../utils/label-parser';
-	import InlineRenderer from '$lib/components/markdown/InlineRenderer.svelte';
+	import InlineRenderer from '#lib/components/markdown/InlineRenderer.svelte';
 
 	// ==========================================================================
 	// Constants for line/arrow label layout

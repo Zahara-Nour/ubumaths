@@ -13,12 +13,12 @@
 		Code,
 		type DeckConfig,
 		type SlideChangedEvent
-	} from '$lib/slides';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import type { Page } from '$lib/whiteboard/types/document';
-	import { resolvedMarkdown } from '$lib/ubumark';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	} from '#lib/slides/index.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import type { AnswerData } from '#lib/types/question-display.ts';
+	import type { Page } from '#lib/whiteboard/types/document.ts';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
 
 	let { config = {} }: { config?: Partial<DeckConfig> } = $props();
 
@@ -56,25 +56,19 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 	// Example QCM Question
 	const qcmQuestion: QuestionInstance = {
 		templateId: 'demo-qcm',
-		statement: resolvedMarkdown('Quel est le resultat de $2^3$ ?'),
+		statement: resolvedMarkdown(
+			'Quel est le resultat de $2^3$ ?\n\n```choix\ncase: 0\n- $6$\n- $8$\n- $9$\n- $16$\n```'
+		),
 		grades: ['6'],
-		theme: 'Calcul',
-		domain: 'Puissances',
 		level: 1,
 		generatedAt: new Date().toISOString(),
-		// Indice dans l'ordre d'origine des choix ($8$)
-		correctChoiceIndex: '1',
-		shuffledChoices: [
-			{ content: resolvedMarkdown('$6$'), originalIndex: 0 },
-			{ content: resolvedMarkdown('$8$'), originalIndex: 1 },
-			{ content: resolvedMarkdown('$9$'), originalIndex: 2 },
-			{ content: resolvedMarkdown('$16$'), originalIndex: 3 }
-		],
-		choices: [
-			{ content: resolvedMarkdown('$6$'), isCorrect: false },
-			{ content: resolvedMarkdown('$8$'), isCorrect: true },
-			{ content: resolvedMarkdown('$9$'), isCorrect: false },
-			{ content: resolvedMarkdown('$16$'), isCorrect: false }
+		// Case choix : bonne réponse en indice d'origine ($8$)
+		blanks: [
+			{
+				expectedAnswer: '1',
+				type: 'choice',
+				choice: { choices: ['$6$', '$8$', '$9$', '$16$'], order: [0, 1, 2, 3], multiple: false }
+			}
 		],
 		correction: {
 			steps: [resolvedMarkdown('$2^3 = 2 \\times 2 \\times 2 = 8$')]

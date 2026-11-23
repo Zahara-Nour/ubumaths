@@ -29,8 +29,8 @@ import {
 import { createAuthenticatedClient } from '../../helpers/database/supabase-client';
 import { TestData } from '../../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { VipCardRarity } from '$lib/types/vip-card';
+import type { Database } from '#lib/types/database.ts';
+import type { VipCardRarity } from '#lib/types/vip-card.ts';
 
 describe('VIP Card Draw Filters - RPC Function Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
@@ -883,33 +883,6 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 			// Assert
 			expect(error).toBeDefined();
 			expect(error?.message).toContain('Invalid count');
-			expect(data).toBeNull();
-		});
-
-		// Obsolete under the single-teacher model: no second teacher to test
-		// cross-teacher authorization against (enforce_single_teacher trigger).
-		it.skip('should reject unauthorized teacher (student not in their class)', async () => {
-			// Arrange
-			const student = await TestData.profile().withRole('student').create();
-			const teacher1 = await TestData.profile().withRole('teacher').create();
-			const teacher2 = await TestData.profile().withRole('teacher').create();
-			const classRoom = await TestData.class(teacher1.id).create();
-			await serviceClient.from('class_members').insert({
-				student_id: student.id,
-				class_id: classRoom.id
-			});
-
-			// Teacher2 is NOT the teacher of this student
-			const teacher2Client = await createAuthenticatedClient(teacher2.email);
-
-			// Act
-			const { data, error } = await callAwardVipCardsWithFilters(teacher2Client, student.id, 5, {
-				forceRarity: 'rare'
-			});
-
-			// Assert
-			expect(error).toBeDefined();
-			expect(error?.message).toContain('Student is not in your classes');
 			expect(data).toBeNull();
 		});
 

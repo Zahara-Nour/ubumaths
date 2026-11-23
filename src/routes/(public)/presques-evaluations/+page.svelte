@@ -1,13 +1,13 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '#lib/components/TagBadgeSelector.svelte';
 	import { FileText, Eye, Download, Calendar, X } from '@lucide/svelte';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
+	import { GRADE_CODES, type GradeCode } from '#lib/types/grades.ts';
 	import type { PageData } from './$types';
 
 	const { data }: { data: PageData } = $props();
@@ -75,7 +75,7 @@
 </script>
 
 <SeoHead
-	title="Les presques évaluations · Chiphre"
+	title="Les presques évaluations | Chiphre"
 	description="Collection de parodies d’évaluations de mathématiques, partagées par les professeurs de Chiphre."
 />
 

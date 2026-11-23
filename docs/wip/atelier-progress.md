@@ -8,7 +8,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
+_Mis à jour le 2026-10-26, après #1839 (limite de uⁿ)._
 
 - **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés et en prod (v0.47.0).
   Aucun worktree ni PR ouverts pour l'atelier.
@@ -21,7 +21,8 @@ _Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
 - **Ménage** : #1733 verse dans `docs/archive/wip/` les neuf journaux livrés (cas, copier, croiser,
   développer, intervalle, listes qualitatives, réciproque, réglages, remplacer) ; leurs restes ci-dessous.
 - **Fait (2026-10-26, #1827, pas en prod)** : bouton ⤢ « Agrandir le graphe » dans la barre du graphe (toute la fenêtre, Échap le réduit), icône maison pour « Réinitialiser la vue », graphe qui remplit la largeur de sa vue. Échap quitte aussi le plein écran du NAVIGATEUR (Chrome) : verrou d'Échap proposé, refusé par David. Worktree retiré.
-- **Ensuite** : rien de lancé après #1746 ; prochain sujet à choisir par David.
+- **Fait (2026-10-26, #1839, pas en prod)** : limite de uⁿ quand u → ±∞ (V66, ex-« V65 » en doublon) : `.variations (x-3)^2` a son tableau ; [journal](../archive/wip/limite-puissance-progress.md).
+- **Fait (2026-10-27, #1844, #1852, #1857, pas en prod)** : écarts voisins V67-V71 des limites ; [journal](../archive/wip/limites-ecarts-progress.md), restes dans les Points ouverts du README mathAST.
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
 - **Sens inverse Python → atelier LIVRÉ** (#1746, 2026-10-25, sur `main`, pas en prod) : chantier
@@ -31,7 +32,7 @@ _Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
   étaient tranchées depuis le 2026-10-02 (décisions 92 et 93 d'`outils-statistiques-v2-progress.md`) et
   confirmées par David le 2026-10-25 — 20 modalités par côté dans l'atelier, 8 dans un bloc imprimé ;
   `1e3` → 1000, `2x`/`π`/`3 m` = mots, cause nommée. Restent : `breadcrumb-ellipsis` dit encore
-  « More » (composant inutilisé) ; `f(2x)` sur un intervalle = futur chantier des composées.
+  « More » (composant inutilisé) ; `f(2x)` sur un intervalle : chantier [composees](../archive/wip/composees-progress.md) (2026-10-26).
 
 - **Ce qui est livré, et comment ça marche** : [docs/systeme/atelier.md](../systeme/atelier.md)
   (vérifié contre le code le 2026-10-10) ; syntaxe des commandes : [atelier-syntaxe.md](../systeme/atelier-syntaxe.md).
@@ -195,8 +196,8 @@ _Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
   les bornes d'un curseur depuis l'atelier : aucune action ne le permet encore.
 - **Composant de saisie des unités** (macro `\unit`, palette) — pas extrait ;
   aucune trace de `\unit` dans `components/atelier`.
-- **Renommer la liste partenaire choisie** fait revenir en silence au
-  partenaire par défaut (#615).
+- ~~**Renommer la liste partenaire choisie** fait revenir en silence au
+  partenaire par défaut (#615).~~ Corrigé (`2e7351c11`, 2026-10-02 ; test `list-limits.test.ts`).
 
 ### État mesuré le 2026-10-14 (moteur de `main`, `runInput` / `CalcDesk`)
 
@@ -221,7 +222,7 @@ Relevé des points « plus tard » de ce journal et des phases 0, à la demande 
   - `0,5*0,5` → 1/4 en mode exact (décision de David en attente) ;
   - saisie, lot 2 (tournures nominales, `2,5 h en min`) ;
   - tableur : option C choisie le 2026-10-15, lot 1 livré (#1410→#1413) ; phase 0 du lot 2 validée ([atelier-tableur-lot2-phase0.md](../archive/wip/atelier-tableur-lot2-phase0.md)) ; v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
-  - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c).
+  - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c) : chantier [composees](../archive/wip/composees-progress.md), u affine (2026-10-26).
 - **Corrigés par #1404 (2026-10-15)** : image depuis la carte f′, « (x ≈ 0) » pour t, « [-1 ; 1:/2] »
   (et `\pi`), les trois défauts nouveaux ci-dessous ; revue : `3 en m` refusé n'efface plus la
   grandeur d'avant, lettres grecques en symboles dans « dépend de ».

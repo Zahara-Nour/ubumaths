@@ -1,10 +1,8 @@
 {
+	"id": "1a57c0a4-8992-4c3f-8ca7-f1a7ce9320dc",
 	"title": "ln et exp, fonctions réciproques : calculer sans calculatrice",
 	"description": "ln(eᵏ) = k, e^{ln k} = k, e^{n ln b} = bⁿ, ln(1/eᵏ), e^{−ln k} (pièges : signe, e^{n ln b} = nb, ln recopié)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Fonctions",
-	"domain": "Fonction logarithme",
-	"subdomain": "Réciproque de l'exponentielle",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

@@ -27,7 +27,7 @@ import type {
 	WorksheetConfig,
 	WorksheetTemplateRow,
 	WorksheetType
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // FIXTURES

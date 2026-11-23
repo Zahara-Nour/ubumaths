@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Georgia, 'Times New Roman', serif">
+<style>text{fill:#1B2232;paint-order:stroke;stroke:#F1EDE4;stroke-linejoin:round}.lieu{font-weight:bold;font-style:italic;stroke-width:6px;stroke-opacity:.9}</style>
+<image href="carte-ville.png" width="1024" height="1024"/>
+<g id="lieux">
+<g id="lieu-grand-place"><title>La Grand-Place (Roulette Royale et estrade du Cheval à Phynances)</title><ellipse cx="590" cy="480" rx="110" ry="95" fill="#fff" fill-opacity="0"/><text x="610" y="590" font-size="24" text-anchor="middle" class="lieu">La Grand-Place</text></g>
+<g id="lieu-quai-des-tripots"><title>Le Quai des Tripots</title><ellipse cx="430" cy="420" rx="45" ry="70" fill="#fff" fill-opacity="0"/><ellipse cx="470" cy="590" rx="55" ry="90" fill="#fff" fill-opacity="0"/><text x="470" y="712" font-size="24" text-anchor="middle" class="lieu" transform="rotate(38 470 712)">Quai des Tripots</text></g>
+<g id="lieu-casino-flottant"><title>Le Casino flottant</title><ellipse cx="348" cy="520" rx="30" ry="85" fill="#fff" fill-opacity="0"/><text x="300" y="520" font-size="24" text-anchor="middle" class="lieu" transform="rotate(-90 300 520)">Casino flottant</text></g>
+<g id="lieu-champ-de-courses"><title>Le Champ de courses</title><ellipse cx="850" cy="690" rx="150" ry="100" fill="#fff" fill-opacity="0"/><text x="850" y="715" font-size="24" text-anchor="middle" class="lieu">Champ de courses</text></g>
+<g id="lieu-caisse-du-cheval"><title>La Caisse du Cheval</title><ellipse cx="765" cy="515" rx="32" ry="32" fill="#fff" fill-opacity="0"/><text x="880" y="545" font-size="24" text-anchor="middle" class="lieu">La Caisse du Cheval</text></g>
+</g>
+</svg>

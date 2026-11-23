@@ -12,8 +12,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 const logger = createServerLogger('server/bug-report-screenshots');
 
@@ -60,7 +61,7 @@ export async function signBugReportScreenshots<T extends SignableReport>(
 				return;
 			}
 
-			report.screenshot_url = data.signedUrl;
+			report.screenshot_url = toBrowserAddress(data.signedUrl);
 		})
 	);
 

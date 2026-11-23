@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Progress } from '$lib/components/ui/progress';
+	import { lore } from '#lib/config/lore.ts';
+	import { Card, CardContent, CardHeader, CardTitle } from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
 	import { TrendingUp, Package, Coins, CheckCircle, XCircle, Clock, Trophy } from '@lucide/svelte';
 
 	interface Stats {
-		period: string;
 		totalTrades: number;
 		completedTrades: number;
 		cancelledTrades: number;

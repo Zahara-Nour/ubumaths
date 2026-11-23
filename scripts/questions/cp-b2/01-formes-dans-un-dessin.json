@@ -1,10 +1,8 @@
 {
+	"id": "9d6bc8b3-ee8f-4f70-a735-61b1075a9746",
 	"title": "Combien de formes dans le dessin ?",
 	"description": "Compter les triangles, carrés, rectangles ou disques d'un dessin fait de formes (maison, bateau, robot)",
 	"grades": ["CP"],
-	"theme": "Géométrie",
-	"domain": "Figures planes",
-	"subdomain": "Propriétés",
 	"level": 1,
 	"delay": 60,
 	"status": "draft",

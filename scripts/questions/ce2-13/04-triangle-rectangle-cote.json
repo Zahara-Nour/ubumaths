@@ -1,0 +1,117 @@
+{
+	"id": "d29a1fac-8c6f-41b6-98a2-bda33b52a823",
+	"title": "Construire un triangle rectangle de dimensions données",
+	"description": "Papier uni, [AB] tracé : angle droit en A à l'équerre, AC de 3 à 6 cm à la règle graduée",
+	"grades": ["CE2"],
+	"level": 5,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le côté $[AB]$ est déjà tracé. Avec l'équerre et la règle graduée, construis le triangle $ABC$ qui a un $\\textcolor{{{color:primary.0}}}{\\text{angle droit}}$ en $A$ et dont le côté $[AC]$ mesure $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ cm}}$.\n\n```figure-a-completer\nfenetre: 0 ; 13 ; 0 ; 9\nverifier: triangle ABC : CAB = 90 ; AC = {{c}} cm\n---\nA = point(2, 2)\nB = point({{eval:2+d}}, 2)\nab = segment(A, B, epaisseur=3)\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "6..10"
+				},
+				{
+					"name": "c",
+					"expression": "3..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose l'équerre le long de $[AB]$, l'angle droit en $A$, et on trace la droite qui $\\textcolor{{{color:primary.0}}}{\\text{coupe}}$ $[AB]$ à angle droit.",
+					"On pose la règle graduée sur cette droite, son 0 en $A$, et on place $C$ à $\\textcolor{{{color:primary.0}}}{{{c}}\\text{ cm}}$ de $A$.",
+					"On trace $[AC]$ et $[BC]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle juste (10 cm, 4 cm)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"c": "4"
+			},
+			"answers": ["droite(2;2;2;12)|regle(2;2;2;3;1)|segment(2;2;2;6)|segment(12;2;2;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans équerre, [AC] tracé à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"c": "4"
+			},
+			"answers": ["regle(2;2;2;3;1)|segment(2;2;2;6)|segment(12;2;2;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans règle graduée, C placé à l'œil",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"c": "4"
+			},
+			"answers": ["droite(2;2;2;12)|segment(2;2;2;6)|segment(12;2;2;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [AC] trop long de 2 mm",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"c": "4"
+			},
+			"answers": ["droite(2;2;2;12)|regle(2;2;2;3;1)|segment(2;2;2;6.2)|segment(12;2;2;6.2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté [BC] manque",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"c": "4"
+			},
+			"answers": ["droite(2;2;2;12)|regle(2;2;2;3;1)|segment(2;2;2;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"c": "4"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Triangle juste (6 cm, 6 cm)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6",
+				"c": "6"
+			},
+			"answers": ["droite(2;2;2;8)|regle(2;2;2;3;1)|segment(2;2;2;8)|segment(8;2;2;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

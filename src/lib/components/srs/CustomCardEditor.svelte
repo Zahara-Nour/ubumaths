@@ -18,13 +18,13 @@
 -->
 
 <script lang="ts">
-	import { MarkdownEditor, MarkdownRenderer } from '$lib/components/markdown';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
+	import { MarkdownEditor, MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '#lib/components/ui/tabs/index.ts';
 	import { Eye, Save, X } from '@lucide/svelte';
-	import type { TemplateMarkdown } from '$lib/ubumark';
-	import { templateMarkdown } from '$lib/ubumark';
+	import type { TemplateMarkdown } from '#lib/ubumark/index.ts';
+	import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 	interface Props {
 		initialFrontContent?: TemplateMarkdown;

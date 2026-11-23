@@ -40,26 +40,28 @@
  *   (`copyExerciseOrder`) et `shuffled: true`.
  */
 
-import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
-import { error, json } from '@sveltejs/kit';
+import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { resolveAssignmentAccess } from '$lib/server/worksheets/assignment-access';
-import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { resolveAssignmentAccess } from '#lib/server/worksheets/assignment-access.ts';
+import { loadWorksheetClassifications } from '#lib/server/worksheets/worksheet-classification.ts';
+import { isWorksheetCategory } from '#lib/worksheets/worksheet-title.ts';
+import { loadAuthorStyleTemplate } from '#lib/server/worksheets/worksheet-styles.ts';
 import {
 	validateStudentWorksheetParam,
 	studentWorksheetDetailResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { fetchAssignmentClasses } from '$lib/server/worksheets/assignment-classes';
-import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
-import type { ExerciseResource } from '$lib/exercises/types';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
+import { fetchAssignmentClasses } from '#lib/server/worksheets/assignment-classes.ts';
+import { getCorrectionVisibilityMap } from '#lib/server/worksheets/correction-visibility.ts';
+import type { ExerciseResource } from '#lib/exercises/types.ts';
 import {
 	assignmentCopyScope,
 	copyExerciseOrder,
 	resolveWorksheetExerciseCopy,
 	type ExerciseContentRow
-} from '$lib/worksheets/worksheet-copy';
+} from '#lib/worksheets/worksheet-copy.ts';
 import {
 	localizedText,
 	asRowTranslations,
@@ -67,20 +69,20 @@ import {
 	asWorksheetConfig,
 	viewTypeOptions,
 	type RowTranslations
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 import type {
 	StudentExerciseView,
 	StudentWorksheetView,
 	StudentSectionView,
 	WorksheetType
-} from '$lib/types/worksheets';
-import { worksheetHeader } from '$lib/worksheets/worksheet-header';
-import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+} from '#lib/types/worksheets.ts';
+import { worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
+import { estimateAnswerFrames } from '#lib/worksheets/document/answer-frames.ts';
 import {
 	resolveAnswerFrames,
 	toAnswerFrameLines
-} from '$lib/worksheets/document/answer-frame-lines';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/worksheets/document/answer-frame-lines.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/worksheets/[assignmentId]/+server');
 
@@ -150,7 +152,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					style_id,
 					created_by,
 					total_points,
-					estimated_duration_minutes
+					estimated_duration_minutes,
+					grades,
+					category,
+					custom_title
 				)
 			`
 			)
@@ -177,6 +182,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				created_by: string;
 				total_points: number | null;
 				estimated_duration_minutes: number | null;
+				grades: string[] | null;
+				category: string | null;
+				custom_title: boolean;
 			}
 		);
 		// La classe rapportée à l'élève est la SIENNE : la RLS ne lui montre de la
@@ -397,7 +405,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			template: await loadAuthorStyleTemplate(worksheet),
 			// Cartouche du gabarit, comme le PDF du prof
 			total_points: worksheet.total_points,
-			estimated_duration_minutes: worksheet.estimated_duration_minutes
+			estimated_duration_minutes: worksheet.estimated_duration_minutes,
+			// Badge du niveau et titre composé du PDF (ADR 0041) : l'accès à la
+			// fiche est vérifié plus haut ; les notions se lisent sous sa RLS
+			grades: worksheet.grades ?? [],
+			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,
+			custom_title: worksheet.custom_title,
+			classifications: await loadWorksheetClassifications(locals.supabase, worksheet.id)
 		};
 
 		// Validate response
@@ -407,7 +421,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			'GET /api/student/worksheets/[assignmentId]'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

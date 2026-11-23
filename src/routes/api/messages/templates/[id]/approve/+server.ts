@@ -7,38 +7,19 @@
  * Body: { action: 'approve' | 'reject', notes?: string }
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { approveTemplateSchema } from '$lib/server/validation/message-templates';
-import { createServerLogger } from '$lib/utils/logger';
+import { approveTemplateSchema } from '#lib/server/validation/message-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/[id]/approve/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { supabase, user } = locals;
 	const { id } = params;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Only admins can approve/reject
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile || profile.role !== 'admin') {
-		return error(403, 'Seuls les admins peuvent approuver/rejeter des templates');
-	}
+	// Prof en mode administration, ou vrai compte admin
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	// ✅ SECURITY: Validate input with Zod
 	const body = await request.json();
@@ -65,7 +46,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.from('message_templates')
 		.update({
 			approval_status: action === 'approve' ? 'approved' : 'rejected',
-			reviewed_by: user.id,
+			reviewed_by: adminUserId,
 			reviewed_at: new Date().toISOString(),
 			review_notes: notes || null
 		})
@@ -82,11 +63,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	await supabase.rpc('log_template_action', {
 		p_template_id: id,
 		p_action: action === 'approve' ? 'approved' : 'rejected',
-		p_performed_by: user.id,
+		p_performed_by: adminUserId,
 		p_metadata: notes ? { notes: notes } : null
 	});
 
-	return json({
+	return Response.json({
 		template: updated,
 		message: `Template ${action === 'approve' ? 'approuvé' : 'rejeté'} avec succès`
 	});

@@ -1,8 +1,8 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/tutor/stats/+server');
 
@@ -168,7 +168,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			query = query.in('class_id', classIds);
 		} else {
 			// Teacher has no classes, return empty results
-			return json({
+			return Response.json({
 				overview: {
 					totalConversations: 0,
 					totalMessages: 0,
@@ -220,7 +220,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		helpLevelDistribution: calculateHelpLevelDistribution(conversations)
 	};
 
-	return json(stats);
+	return Response.json(stats);
 };
 
 // ============================================================================

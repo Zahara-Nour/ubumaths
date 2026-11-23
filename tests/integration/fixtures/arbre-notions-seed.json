@@ -511,7 +511,8 @@
 						"formes indéterminées",
 						"comparaison et encadrement",
 						"croissances comparées",
-						"asymptotes"
+						"asymptotes",
+						"limites usuelles"
 					],
 					"note": null
 				},
@@ -637,7 +638,8 @@
 					"sous_notions": [
 						"explicite ou par récurrence",
 						"représentation graphique",
-						"sens de variation"
+						"sens de variation",
+						"sommes de termes"
 					],
 					"note": null
 				},
@@ -656,7 +658,7 @@
 				{
 					"nom": "Modèles d'évolution",
 					"niveaux": "1re, Tle, Tle comp.",
-					"sous_notions": ["seuil"],
+					"sous_notions": ["seuil", "emprunt"],
 					"note": null
 				},
 				{
@@ -669,7 +671,9 @@
 						"comparaison et encadrement",
 						"suites géométriques",
 						"convergence monotone",
-						"suites majorées, minorées"
+						"suites majorées, minorées",
+						"limites usuelles",
+						"croissances comparées"
 					],
 					"note": null
 				},
@@ -682,7 +686,7 @@
 				{
 					"nom": "Suites récurrentes",
 					"niveaux": "Tle, Tle comp.",
-					"sous_notions": ["escalier", "point fixe"],
+					"sous_notions": ["escalier", "point fixe", "récurrence linéaire d'ordre 2"],
 					"note": null
 				},
 				{
@@ -885,7 +889,8 @@
 						"intersection de deux droites",
 						"vecteur normal et équation de droite",
 						"équation de cercle",
-						"projeté orthogonal"
+						"projeté orthogonal",
+						"parabole"
 					],
 					"note": null
 				},
@@ -977,7 +982,8 @@
 						"triangle quelconque",
 						"parallélogramme",
 						"disque",
-						"unités et conversions"
+						"unités et conversions",
+						"aires sur quadrillage"
 					],
 					"note": "au CM : comparer et mesurer, formules carré/rectangle au CM2"
 				},
@@ -1057,7 +1063,8 @@
 						"absence de mémoire",
 						"densité et aire",
 						"fonction de répartition",
-						"espérance et variance"
+						"espérance et variance",
+						"loi de Poisson"
 					],
 					"note": null
 				},
@@ -1122,7 +1129,8 @@
 						"diagrammes circulaires",
 						"courbes et repères",
 						"histogrammes",
-						"fréquences cumulées"
+						"fréquences cumulées",
+						"choisir une représentation"
 					],
 					"note": "aucun modèle aujourd'hui"
 				},
@@ -1250,7 +1258,12 @@
 				{
 					"nom": "Variables et instructions",
 					"niveaux": "5e à 2de",
-					"sous_notions": ["variables et affectation", "types", "instructions conditionnelles"],
+					"sous_notions": [
+						"variables et affectation",
+						"types",
+						"instructions conditionnelles",
+						"blocs personnalisés"
+					],
 					"note": null
 				},
 				{

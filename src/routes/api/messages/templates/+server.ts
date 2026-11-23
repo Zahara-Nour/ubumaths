@@ -7,13 +7,14 @@
  * POST - Create new template (admin/teacher only)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import { requireAuth, requireRoles } from '#lib/server/middleware/auth.ts';
 import type { RequestHandler } from './$types';
-import { validateTemplate } from '$lib/templates/templateEngine';
-import type { MessageTemplateInput } from '$lib/types/messageTemplates';
-import { createMessageTemplateSchema, validateRequest } from '$lib/server/validation';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { validateTemplate } from '#lib/templates/templateEngine.ts';
+import type { MessageTemplateInput } from '#lib/types/messageTemplates.ts';
+import { createMessageTemplateSchema, validateRequest } from '#lib/server/validation/index.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/messages/templates/+server');
 
@@ -21,32 +22,9 @@ const logger = createServerLogger('api/messages/templates/+server');
 // GET - List templates
 // =====================================================
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile) {
-		return error(404, 'Profil non trouvé');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// ====================================================================
 	// SECURITY: Input Validation (Query Parameters)
@@ -144,7 +122,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		class_name: (t.classes as { name?: string } | null)?.name || null
 	}));
 
-	return json({
+	return Response.json({
 		templates: formattedTemplates || [],
 		count: formattedTemplates?.length || 0
 	});
@@ -154,39 +132,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 // POST - Create template
 // =====================================================
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile) {
-		return error(404, 'Profil non trouvé');
-	}
-
-	// ====================================================================
-	// SECURITY: Authorization Check
-	// ====================================================================
-	if (profile.role !== 'admin' && profile.role !== 'teacher') {
-		return error(403, 'Permissions insuffisantes');
-	}
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// ====================================================================
 	// SECURITY: Input Validation
@@ -216,7 +164,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	});
 
 	if (!templateValidation.valid) {
-		return json(
+		return Response.json(
 			{
 				error: 'Validation échouée',
 				errors: templateValidation.errors
@@ -279,7 +227,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		return error(500, 'Erreur lors de la création du template');
 	}
 
-	return json(
+	return Response.json(
 		{
 			template: newTemplate,
 			message: 'Template créé avec succès',

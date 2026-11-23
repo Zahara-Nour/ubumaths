@@ -14,8 +14,8 @@
 	 */
 	import { onMount, tick, untrack } from 'svelte';
 	import { z } from 'zod';
-	import { useAtelier } from '$lib/atelier/context';
-	import { isList, type ListObject } from '$lib/atelier/types';
+	import { useAtelier } from '#lib/atelier/context.ts';
+	import { isList, type ListObject } from '#lib/atelier/types.ts';
 	import {
 		cellName,
 		columnLetter,
@@ -30,19 +30,19 @@
 		readCsvFile,
 		readTable,
 		tableText
-	} from '$lib/atelier/grid';
-	import { cascadeMessage } from '$lib/atelier/removal';
-	import { functionHint } from '$lib/atelier/grid-functions';
-	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
-	import type { CellValue } from '$lib/atelier/formula';
-	import { isSafeLatex } from '$lib/atelier/safe-latex';
+	} from '#lib/atelier/grid.ts';
+	import { cascadeMessage } from '#lib/atelier/removal.ts';
+	import { functionHint } from '#lib/atelier/grid-functions.ts';
+	import type { RemovedWithDependents } from '#lib/atelier/atelier.svelte.ts';
+	import type { CellValue } from '#lib/atelier/formula.ts';
+	import { isSafeLatex } from '#lib/atelier/safe-latex.ts';
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
-	import { summarizeList } from '$lib/statistics/describe';
-	import { listChart } from '$lib/atelier/chart';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import { summarizeList } from '#lib/statistics/describe.ts';
+	import { listChart } from '#lib/atelier/chart.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { ConfirmDialog } from '#lib/components/ui/confirm-dialog/index.ts';
+	import StatChart from '#lib/components/markdown/nodes/StatChart.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
 	import { AlignCenter, AlignLeft, AlignRight, Bold, Eraser, Italic } from '@lucide/svelte';
 	import type { Component } from 'svelte';
 	import {
@@ -57,8 +57,8 @@
 		type NumberFormat,
 		type StylePatch,
 		type ThemeColor
-	} from '$lib/atelier/cell-format';
-	import { COLOR_LABELS, fillColorCss, textColorCss } from '$lib/atelier/cell-colors';
+	} from '#lib/atelier/cell-format.ts';
+	import { COLOR_LABELS, fillColorCss, textColorCss } from '#lib/atelier/cell-colors.ts';
 
 	/** Où va la frappe en cours : dans la cellule, ou dans la barre au-dessus. */
 	type Editing = 'cell' | 'bar' | null;
@@ -134,6 +134,7 @@
 	}
 
 	let { initialZone = null }: Props = $props();
+	const uid = $props.id();
 
 	const atelier = useAtelier();
 
@@ -402,8 +403,15 @@
 		return skipped === '' ? main : `${main} · ${skipped}`;
 	}
 
-	const summaryId = (name: string) => `atelier-apercu-${name}`;
-	const chartMessageId = (name: string) => `atelier-diagramme-${name}`;
+	// Les id ne reprennent pas le nom de la liste (texte saisi) : un id peut partir
+	// dans `error_logs` (cible d'une interaction lente, `inp-tracker.ts`)
+	const listNumbers = new Map<string, number>();
+	function listNumber(name: string): number {
+		if (!listNumbers.has(name)) listNumbers.set(name, listNumbers.size);
+		return listNumbers.get(name) ?? 0;
+	}
+	const summaryId = (name: string) => `${uid}-apercu-${listNumber(name)}`;
+	const chartMessageId = (name: string) => `${uid}-diagramme-${listNumber(name)}`;
 
 	// -------------------------------------------------------------------------
 	// Sélection et frappe

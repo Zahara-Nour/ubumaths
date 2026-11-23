@@ -1,16 +1,14 @@
 {
+	"id": "6e712e78-2bef-4028-be37-745c47418797",
 	"title": "Le sens de « fois » : quel calcul ?",
 	"description": "3 boîtes de 4 œufs : 4 + 4 + 4 (sans le signe ×)",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Multiplier",
-	"subdomain": "Sens",
 	"level": 1,
 	"delay": 20,
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Il y a ${{g}}$ boîtes. Dans chaque boîte, il y a ${{n}}$ œufs.\n\nQuel calcul donne le nombre d'œufs ?",
+			"statement": "Il y a ${{g}}$ boîtes. Dans chaque boîte, il y a ${{n}}$ œufs.\n\nQuel calcul donne le nombre d'œufs ?\n\n```choix\n- ${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}$\n- ${{g}}+{{n}}$\n- ${{if:g==2|{{n}}+{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}$\n```",
 			"variables": [
 				{
 					"name": "g",
@@ -22,25 +20,18 @@
 				}
 			],
 			"conditions": ["g != n"],
-			"choices": [
-				{
-					"content": "${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}$"
-				},
-				{
-					"content": "${{g}}+{{n}}$"
-				},
-				{
-					"content": "${{if:g==2|{{n}}+{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Chaque boîte contient ${{n}}$ œufs, et il y a ${{g}}$ boîtes : on ajoute ${{n}}$ autant de fois qu'il y a de boîtes, ${{g}}$ fois.",
 					"$${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}={{eval:g*n}}$$",
 					"Il y a ${{eval:g*n}}$ œufs."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -54,7 +45,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : 3 + 4",
@@ -66,7 +57,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : 4 répété une fois de trop",
@@ -78,7 +69,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "bornes : 5 boîtes de 2",
@@ -90,7 +81,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

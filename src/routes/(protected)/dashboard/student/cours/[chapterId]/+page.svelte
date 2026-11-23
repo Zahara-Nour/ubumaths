@@ -15,20 +15,20 @@
 	 * publication. Ne pas la ré-implémenter ici, et surtout ne pas la déplacer.
 	 */
 
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		ChapterProgressIndicator,
 		ChapterRevisionButton,
 		ChapterSeriesCard,
 		DocumentCard,
 		ChecklistSection
-	} from '$lib/components/cours';
-	import { getChapterColorClasses } from '$lib/types/chapters';
+	} from '#lib/components/cours/index.ts';
+	import { getChapterColorClasses } from '#lib/types/chapters.ts';
 	import { BookMarked } from '@lucide/svelte';
-	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
+	import WorksheetCard from '#lib/components/student/worksheets/WorksheetCard.svelte';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {
@@ -45,7 +45,7 @@
 
 	$effect(() => {
 		if (form?.success) {
-			invalidateAll();
+			refreshAll();
 		}
 	});
 </script>

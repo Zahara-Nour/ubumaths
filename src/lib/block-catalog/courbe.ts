@@ -148,6 +148,61 @@ export const courbeEntry: BlockCatalogEntry = {
 					defaultValue: 'aucune',
 					description:
 						'Colore l’aire sous la courbe de f entre a et b. La ligne peut se répéter, 10 au plus.'
+				},
+				{
+					key: 'axes',
+					values: 'x = titre ; y = titre (un axe ou les deux)',
+					defaultValue: 'aucun titre',
+					description:
+						'Titre de chaque axe, pour représenter des données : axes: x = Durée (min) ; y = Température (°C). 60 caractères au plus par titre.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : placer des points',
+			settings: [
+				{
+					key: 'placer',
+					values: 'A=(2 ; 3) ; B=(-1 ; 2) (6 points au plus), ou un point seul sans nom : (2 ; 3)',
+					defaultValue: 'aucun',
+					description:
+						'L’élève touche le repère pour y poser chaque point (il se pose sur le nœud de grille le plus proche) : chaque point compte pour une case, juste s’il est sur ses coordonnées. Chaque point doit être sur un nœud de la grille (régler grille:) et dans la fenêtre. Jamais écrit à l’écran. Sur le PDF, le repère sans les points : l’enfant fait ses croix.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : tracer une droite',
+			settings: [
+				{
+					key: 'tracer',
+					values:
+						'y = 2x - 1, x = 3, ou 2x + 3y - 6 = 0 (fraction en ligne : y = 1/2x + 1 ; variables permises)',
+					defaultValue: 'aucune',
+					description:
+						'L’élève pose deux points sur les nœuds de la grille ; la droite qui passe par eux se dessine. Une case, juste si les deux points sont distincts et sur la droite, quels qu’ils soient. La droite doit passer par au moins deux nœuds de la grille dans la fenêtre. Jamais avec placer: dans le même repère. Jamais écrite à l’écran avant la correction.'
+				},
+				{
+					key: 'tracer: vecteur',
+					values:
+						'vecteur (3 ; -2), vecteur u = (3 ; -2), vecteur (3 ; -2) depuis A (A donné dans points:) ; des nombres seulement (variables permises)',
+					defaultValue: 'aucune',
+					description:
+						'L’élève pose l’origine puis l’extrémité sur les nœuds de la grille (étiquettes Origine / Extrémité) ; une flèche les relie. Une case, juste si l’extrémité moins l’origine donne le vecteur, où qu’il soit. Avec depuis A, l’origine est A, déjà dessiné : l’élève ne pose que l’extrémité. Coordonnées multiples du pas de la grille ; le vecteur doit tenir dans la fenêtre. Le nom (une minuscule) n’apparaît que dans la phrase de correction. Jamais avec placer: dans le même repère.'
+				},
+				{
+					key: 'tracer: vecteur (combinaison)',
+					values:
+						'vecteur u + v, vecteur 2u - AC depuis A : vecteurs de vecteurs: ou couples de points de points:, coefficients entiers de -3 à 3 (pas 0), au plus 4 termes',
+					defaultValue: 'aucune',
+					description:
+						'Le même geste ; le vecteur attendu est calculé à partir des vecteurs nommés. Phrases de correction nommées pour deux termes (u⃗ seul, u⃗ − v⃗, mauvais sens) ; la correction ajoute la construction en pointillés : parallélogramme si les deux vecteurs donnés partent de l’origine de la flèche juste, sinon le second mis au bout du premier. Rien à masquer dans une évaluation : la combinaison est la tâche.'
+				},
+				{
+					key: 'vecteurs',
+					values: 'u = AB, v = AC, ou AB sans nom (au plus 4 ; points pris dans points:)',
+					defaultValue: 'aucun',
+					description:
+						'Flèches données, dessinées dans l’énoncé (écran et PDF) ; le nom (une minuscule) est écrit près du milieu de la flèche. Sert aussi de vocabulaire à tracer: vecteur u + v.'
 				}
 			]
 		}
@@ -157,6 +212,69 @@ export const courbeEntry: BlockCatalogEntry = {
 			title: 'Une parabole',
 			source: fence('courbe', 'x: -4 ; 6', 'y: -8 ; 12', 'f(x) = -(x+2)*(x-4)'),
 			explanation: 'La fenêtre, puis une fonction : bleue, en trait plein par défaut.'
+		},
+		{
+			title: 'Placer des points (question)',
+			source: fence(
+				'courbe',
+				'x: -5 ; 5',
+				'y: -4 ; 4',
+				'grille: 1',
+				'placer: A=(2 ; 3) ; B=(-1 ; 2) ; C=(0 ; -3)'
+			),
+			explanation:
+				'Dans une question, l’élève choisit l’étiquette A, B ou C sous le repère, puis touche le repère ; chaque point compte pour une case. La consigne (« Place les points A(2 ; 3)… ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Tracer une droite (question)',
+			source: fence('courbe', 'x: -5 ; 5', 'y: -5 ; 5', 'grille: 1', 'tracer: y = 2x - 1'),
+			explanation:
+				'Dans une question, l’élève pose deux points de la droite (étiquettes 1 et 2 sous le repère) ; la droite se dessine. La consigne (« Trace la droite d’équation y = 2x − 1 ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Tracer un vecteur (question)',
+			source: fence('courbe', 'x: -5 ; 5', 'y: -5 ; 5', 'grille: 1', 'tracer: vecteur (3 ; -2)'),
+			explanation:
+				'Dans une question, l’élève pose l’origine où il veut, puis l’extrémité ; une flèche se dessine. La consigne (« Représente le vecteur de coordonnées (3 ; −2) ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Tracer un vecteur depuis un point (question)',
+			source: fence(
+				'courbe',
+				'x: -5 ; 5',
+				'y: -5 ; 5',
+				'grille: 1',
+				'points: A(-1 ; 2)',
+				'tracer: vecteur u = (3 ; -2) depuis A'
+			),
+			explanation:
+				'Origine imposée : A est dessiné, l’élève ne pose que l’extrémité. Le nom u sert à la phrase de correction.'
+		},
+		{
+			title: 'Tracer la somme de deux vecteurs (question)',
+			source: fence(
+				'courbe',
+				'x: -6 ; 6',
+				'y: -6 ; 6',
+				'grille: 1',
+				'points: A(-2 ; -1), B(1 ; 0), C(-1 ; 2)',
+				'vecteurs: u = AB, v = AC',
+				'tracer: vecteur u + v depuis A'
+			),
+			explanation:
+				'Les flèches u et v sont dessinées ; l’élève trace u + v depuis A. La correction nomme l’erreur (« u⃗ seul », « u⃗ − v⃗ ») et dessine le parallélogramme en pointillés.'
+		},
+		{
+			title: 'Des données dans un repère',
+			source: fence(
+				'courbe',
+				'x: 0 ; 10',
+				'y: 0 ; 30',
+				'grille: 1 ; 5',
+				'axes: x = Durée (min) ; y = Température (°C)',
+				'points: A(0 ; 5), B(2 ; 10), C(4 ; 15)'
+			),
+			explanation: 'axes: écrit le titre de chaque axe, utile pour un graphique de données.'
 		},
 		{
 			title: 'Deux fonctions et une grille',

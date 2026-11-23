@@ -33,7 +33,7 @@ import {
 	linkPath,
 	type MapPointRow
 } from '../programme-map';
-import type { ClassificationNode } from '$lib/types/database-helpers';
+import type { ClassificationNode } from '#lib/types/database-helpers.ts';
 
 const STAMP = '2026-10-23T00:00:00Z';
 

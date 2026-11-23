@@ -29,27 +29,28 @@ import type {
 	DisplayOptions,
 	TemplateMarkdown,
 	ResolvedMarkdown
-} from '$lib/ubumark';
-import type { AnswerAssumptions } from '$lib/math';
+} from '#lib/ubumark/index.ts';
+import type { AnswerAssumptions } from '#lib/math/index.ts';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
-export type { DisplayOptions } from '$lib/ubumark';
+export type { DisplayOptions } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // GRADE LEVELS (re-exported from unified system)
 // ============================================================================
 
 // Import from unified grade system - single source of truth
-import { type GradeCode } from '$lib/types/grades';
-export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+import { type GradeCode } from '#lib/types/grades.ts';
+export { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
 
 // Import from mathAST pedagogical layer (used by Mode B `generatedSteps`)
-import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { RenderedStep, SchoolLevel } from '#lib/mathAST/common/step-renderer-base.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import type { SuperfluRuleId } from '#lib/mathAST/superflu/rules.ts';
+import type { ConstructionCheck } from '#lib/ubumark/types/construction.ts';
+import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 
 /**
  * French educational grade levels
@@ -69,19 +70,18 @@ export type GradeLevel = GradeCode;
 /**
  * Question type.
  *
- * - `fill_in_blanks`: question has blanks[] (or is any non-choice question)
- * - `multiple_choice`: question has choices[]
+ * - `fill_in_blanks`: question à cases (un QCM est une question réduite à une
+ *   case choix, bloc ```choix — ADR 0033)
  * - `course_card`: carte de cours (recto = énoncé, verso = correction), sans
- *   case ni choix. Jamais inférée : marqueur explicite `options.courseCard`.
+ *   case. Jamais inférée : marqueur explicite `options.courseCard`.
  *
  * Use `getQuestionType()` to derive from a template or instance.
  */
-export type QuestionType = 'fill_in_blanks' | 'multiple_choice' | 'course_card';
+export type QuestionType = 'fill_in_blanks' | 'course_card';
 
 /** Libellés français des types (badges, filtres, sélecteurs). */
 export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
 	fill_in_blanks: 'À trous',
-	multiple_choice: 'QCM',
 	course_card: 'Carte de cours'
 };
 
@@ -121,27 +121,12 @@ export function isCourseQuestion(q: { options?: unknown }): boolean {
 }
 
 /**
- * Infer the question type: explicit course-card marker first, then the
- * presence of `choices`.
+ * Type d'une question : carte de cours (marqueur explicite), sinon à cases.
  *
- * Works on templates (via resolved variation or shared), instances,
- * or any object with optional `choices` / `options` fields.
+ * Works on templates, instances, or any object with optional `options`.
  */
-export function getQuestionType(q: {
-	choices?: unknown[] | undefined;
-	// `shared` vient d'une colonne jsonb, donc de forme libre : la fonction la
-	// sonde elle-même plutôt que d'obliger l'appelant à l'affirmer.
-	shared?: unknown;
-	// `options` aussi (colonne jsonb) : porte le marqueur `courseCard`.
-	options?: unknown;
-}): QuestionType {
-	if (isCourseCard(q)) return 'course_card';
-	const sharedChoices =
-		typeof q.shared === 'object' && q.shared !== null && 'choices' in q.shared
-			? (q.shared as { choices?: unknown }).choices
-			: undefined;
-	const choices = q.choices ?? sharedChoices;
-	return Array.isArray(choices) && choices.length > 0 ? 'multiple_choice' : 'fill_in_blanks';
+export function getQuestionType(q: { options?: unknown }): QuestionType {
+	return isCourseCard(q) ? 'course_card' : 'fill_in_blanks';
 }
 
 // ============================================================================
@@ -214,29 +199,6 @@ export type QuestionVariable = SharedVariable;
 // QUESTION VARIATIONS
 // ============================================================================
 
-/**
- * A single variation of a question template
- *
- * Templates can have multiple variations, and one is randomly selected
- * during instance generation. Each variation contains its own statement,
- * variables, correctChoiceIndex (for QCM), and correction.
- *
- * @example Multiple choice question with 2 variations
- * {
- *   variations: [
- *     {
- *       statement: [{ type: 'text', content: 'Is 4 even?' }],
- *       correctChoiceIndex: '0',
- *       choices: [{ content: 'Yes', isCorrect: true }, { content: 'No', isCorrect: false }]
- *     },
- *     {
- *       statement: [{ type: 'text', content: 'Is 7 odd?' }],
- *       correctChoiceIndex: '0',
- *       choices: [{ content: 'Yes', isCorrect: true }, { content: 'No', isCorrect: false }]
- *     }
- *   ]
- * }
- */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
 export type AnswerKind =
 	'intervalles' | 'equation' | 'vecteur' | 'matrice' | 'primitive' | 'solution-ed';
@@ -320,6 +282,32 @@ export interface BlankDefaults extends CalculusBlankFields {
 		/** Imposed unit (e.g., "m"). If absent → any compatible unit */
 		required?: string;
 	};
+}
+
+/**
+ * Erreur prévue d'une case, écrite par l'auteur (chantier `idees-format`, idée 3).
+ *
+ * L'élève dont la réponse a la MÊME VALEUR que `answer` (quelle que soit son
+ * écriture : `8/6` pour `4/3`) lit `message` à la correction, à la place du type
+ * d'erreur deviné. La note ne change pas : faux reste faux.
+ */
+export interface ExpectedError {
+	/** Réponse fausse, écrite comme une réponse attendue (variables permises : `{{eval:a-b}}`) */
+	answer: string;
+	/** Message à l'élève (variables et `$…$` permis) */
+	message: string;
+	/** Nom court pour le prof (panneaux d'erreurs) ; absent → le message */
+	label?: string;
+}
+
+/** Erreur prévue d'un tirage : réponse et message résolus */
+export interface InstanceExpectedError {
+	/** Réponse fausse résolue, même écriture que `InstanceBlank.expectedAnswer` */
+	answer: string;
+	/** Son LaTeX (affichage, rejeu de publication) */
+	answerLatex: string;
+	message: string;
+	label?: string;
 }
 
 /**
@@ -407,6 +395,17 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * simplifier perfectible, calcul non fait `\frac{\pi}{4}+2\pi` de mauvaise forme).
 	 */
 	angleModulo?: AngleModulo;
+	/**
+	 * Erreurs prévues (chantier `idees-format`, idée 3) : « si l'élève répond
+	 * `{{eval:a-b}}`, lui écrire : “Tu as soustrait au lieu d'additionner.” ».
+	 * Case à écriture mathématique ordinaire seulement. Voir `ExpectedError`.
+	 */
+	expectedErrors?: ExpectedError[];
+	/**
+	 * Veto de l'auteur (chantier `idees-format`, idée 4) : cette case ne se répond
+	 * jamais en QCM, même si le prof coche « en QCM » sur la ligne de série.
+	 */
+	neverChoice?: boolean;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -422,13 +421,6 @@ export interface QuestionVariation {
 
 	/** Variables in declaration order (resolved sequentially) */
 	variables?: QuestionVariable[];
-
-	/**
-	 * Index (or expression evaluating to index) of the correct choice for QCM.
-	 * Optional for fill_in_blanks (blanks[] is the source of truth).
-	 * Required for multiple_choice.
-	 */
-	correctChoiceIndex?: string | string[];
 
 	/** Detailed correction/explanation with full structure (optional) */
 	correction?: QuestionCorrection;
@@ -452,24 +444,6 @@ export interface QuestionVariation {
 	 * @example { "expression1": "10^?" }
 	 */
 	answerFormats?: Record<string, string>;
-
-	// ---- Multiple Choice Fields ----
-
-	/** Choices for multiple choice */
-	choices?: {
-		/** Choice content as markdown template */
-		content: TemplateMarkdown;
-
-		/**
-		 * Whether this choice is correct (optional in template).
-		 *
-		 * For dynamic QCM where the correct answer depends on generated variables,
-		 * isCorrect is NOT set in the template. Instead, the solution contains
-		 * the index (or expression evaluating to the index) of the correct choice,
-		 * and isCorrect is calculated at runtime.
-		 */
-		isCorrect?: boolean;
-	}[];
 
 	/**
 	 * Generation conditions (guards). After variable generation, all conditions
@@ -498,6 +472,15 @@ export interface QuestionVariation {
 	 * @example { requiredForm: 'fraction' } // Answer must be a/b
 	 */
 	requiredForm?: RequiredForm;
+
+	/**
+	 * Coup de pouce (idée 5) : indice que l'élève ouvre s'il est bloqué, jamais en
+	 * évaluation. Gabarit comme une étape de correction, sans `{{solution}}` (cf. `hint.ts`).
+	 */
+	hint?: TemplateMarkdown;
+
+	/** Coup de pouce = première étape de la correction (exclusif de `hint`) */
+	hintFromFirstStep?: boolean;
 }
 
 /**
@@ -511,23 +494,8 @@ export interface SharedVariationDefaults {
 	/** Shared variable definitions (resolved before per-variation variables) */
 	variables?: QuestionVariable[];
 
-	/** Shared correct choice index — optional for fill_in_blanks */
-	correctChoiceIndex?: string | string[];
-
 	/** Shared correction with full structure (feedback + steps) */
 	correction?: QuestionCorrection;
-
-	/** Shared choices for choice/qcm types */
-	choices?: {
-		/** Choice content as markdown template */
-		content: TemplateMarkdown;
-
-		/**
-		 * Whether this choice is correct (optional in template).
-		 * See QuestionVariation.choices for details on dynamic QCM.
-		 */
-		isCorrect?: boolean;
-	}[];
 
 	/**
 	 * Shared generation conditions (guards). After variable generation, all conditions
@@ -661,9 +629,6 @@ export interface QuestionTemplate {
 		/** Constraint validation options for form checking */
 		constraints?: ConstraintOptions;
 
-		/** Whether to shuffle choices for multiple_choice questions (default: true) */
-		shuffleChoices?: boolean;
-
 		/** When true, multi-answer blanks are matched order-independently:
 		 *  each student answer is matched against any unused blank
 		 *  (instead of positional matching). */
@@ -691,17 +656,15 @@ export interface QuestionTemplate {
 
 	// ---- Categorization ----
 
-	/** Question theme (e.g., Algèbre, Géométrie) - independent from grades */
-	theme: string;
-
-	/** Question domain within theme (e.g., Équations, Polynômes) */
-	domain: string;
-
-	/** Optional subdomain for finer categorization (e.g., Linéaires, Quadratiques) */
-	subdomain?: string;
-
 	/** Difficulty level as positive integer (no max) - independent from grades */
 	level: number;
+
+	/**
+	 * Nœud de l'arbre des notions (notion ou sous-notion, ADR 0019). Nom de
+	 * colonne brut : la liste publique (`/api/questions/templates/all`) ne passe
+	 * pas par `mapDbTemplateToForm`.
+	 */
+	classification_node_id?: string | null;
 
 	/** Template status: 'draft' (work-in-progress) or 'published' (active) */
 	status: 'draft' | 'published';
@@ -712,17 +675,27 @@ export interface QuestionTemplate {
 	/** Deterministic test specifications for regression testing */
 	testSpecs?: TestSpec[];
 
-	// ---- Type-specific Configuration (shared across all variations) ----
-
-	/** Whether multiple answers are allowed (for multiple_choice) */
-	multipleAnswers?: boolean;
-
 	// ---- Audit Fields ----
 
 	created_at?: string;
 	updated_at?: string;
 	created_by?: string; // UUID of creator
 }
+
+/**
+ * Modèle de la liste publique `/api/questions/templates/all`
+ * (`questionTemplatesCache` : catalogue Automaths, panier, test).
+ *
+ * La liste n'envoie pas les cas de test (colonnes listées dans son
+ * `+server.ts` : c'est là qu'est la vraie protection) ; seul l'éditeur les lit,
+ * et il charge le modèle complet par son id. Le type refuse de les lire sous
+ * leurs deux noms : `testSpecs` (retiré ici) et `test_specs` (jamais déclaré).
+ *
+ * Le cache passe chaque ligne par `mapDbTemplateToForm` : les noms de
+ * l'éditeur (`exerciseInstruction`, `defaultDisplayOptions`) s'ajoutent à
+ * ceux de la base, que le catalogue lit encore (`classification_node_id`).
+ */
+export type CatalogueTemplate = Omit<QuestionTemplate, 'testSpecs'>;
 
 /**
  * Map a raw Supabase question_templates row (snake_case) to QuestionTemplate (camelCase).
@@ -733,14 +706,12 @@ export interface QuestionTemplate {
  * Fields mapped:
  * - exercise_instruction → exerciseInstruction
  * - default_display_options → defaultDisplayOptions
- * - multiple_answers → multipleAnswers
  */
 export function mapDbTemplateToForm(dbTemplate: Record<string, unknown>): QuestionTemplate {
 	return {
 		...dbTemplate,
 		exerciseInstruction: dbTemplate.exercise_instruction as string | undefined,
 		defaultDisplayOptions: dbTemplate.default_display_options as DisplayOptions | undefined,
-		multipleAnswers: dbTemplate.multiple_answers as boolean | undefined,
 		testSpecs: (dbTemplate.test_specs as TestSpec[] | null) ?? undefined
 	} as QuestionTemplate;
 }
@@ -765,8 +736,63 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Instance-side blank (resolved, with inferred type and merged validation)
  */
-/** Genre d'un bloc à construire (case portée par le bloc) */
-export type BuildKind = 'collection' | 'monnaie';
+/**
+ * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
+ * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
+ * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), des
+ * éléments à associer (```associer), un texte à trous (```trous), ou une figure à colorier
+ * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
+ * ou un patron à geste (```patron, `designer:` / `completer:`), ou des points à placer
+ * dans un repère (```courbe, `placer:`) ou sur le cercle trigonométrique (```trig, `placer:`),
+ * ou un vecteur à tracer sur un solide (```solide, `tracer:`)
+ */
+export type BuildKind =
+	| 'collection'
+	| 'monnaie'
+	| 'line'
+	| 'horloge'
+	| 'barres'
+	| 'boite-a-moustaches'
+	| 'ranger'
+	| 'associer'
+	| 'trous'
+	| 'partage'
+	| 'cubes'
+	| 'patron'
+	| 'courbe'
+	| 'trig'
+	| 'solide'
+	| 'tortue'
+	| 'calcul'
+	| 'robot';
+
+/** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
+export function buildKindName(kind: BuildKind): string {
+	if (kind === 'line') return 'droite graduée';
+	if (kind === 'barres') return 'diagramme en barres';
+	if (kind === 'boite-a-moustaches') return 'boîte à moustaches';
+	if (kind === 'ranger') return 'étiquettes à ranger';
+	if (kind === 'associer') return 'éléments à associer';
+	if (kind === 'trous') return 'texte à trous';
+	if (kind === 'partage') return 'figure à colorier';
+	if (kind === 'cubes') return 'assemblage de cubes';
+	if (kind === 'patron') return 'patron à geste';
+	if (kind === 'solide') return 'solide à geste';
+	if (kind === 'courbe') return 'repère';
+	if (kind === 'trig') return 'cercle trigonométrique';
+	if (kind === 'tortue') return 'programme tortue';
+	if (kind === 'calcul') return 'programme de calcul';
+	if (kind === 'robot') return 'robot à produire';
+	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
+}
+
+/**
+ * Le bloc se joue en plaçant un objet (point, aiguilles) plutôt qu'en construisant ;
+ * un diagramme en barres (`placer:`) se construit
+ */
+export function isPlaceKind(kind: BuildKind): kind is 'line' | 'horloge' | 'courbe' | 'trig' {
+	return kind === 'line' || kind === 'horloge' || kind === 'courbe' || kind === 'trig';
+}
 
 export interface InstanceBlank extends CalculusBlankFields {
 	/** Resolved expected answer (math: "10^5", text: "entier") */
@@ -788,9 +814,43 @@ export interface InstanceBlank extends CalculusBlankFields {
 	/**
 	 * Case portée par un bloc ```collection ou ```monnaie à construire : réponse =
 	 * la valeur du bloc (`construire:`), juge ordinaire, l'élève pose barres et
-	 * cubes, ou pièces et billets.
+	 * cubes, ou pièces et billets. Droite à placer (```line, `placer:`) : réponse =
+	 * la graduation (`placerAnswer`), l'élève y pose son point. Horloge à placer
+	 * (```horloge, `placer:`) : réponse = l'heure sur le cadran de 12 (`9 h 25`),
+	 * l'élève pose les deux aiguilles, juge à part (`isPlacedTimeCorrect`). Diagramme
+	 * en barres à construire (```barres, `placer:`) : une case par barre, réponse =
+	 * son effectif, l'élève monte la barre. Étiquettes à ranger (```ranger) : une
+	 * case par place, réponse = la position AFFICHÉE de l'étiquette qui y va (`2`),
+	 * l'élève y pose une étiquette, juge à part (l'étiquette, jamais sa valeur). Figure
+	 * à colorier (```partage, `colorier: 3/8`) : réponse attendue = parts à colorier /
+	 * parts de la figure (`3/8`), l'élève colorie des parts (`1, 4, 6`, ses rangs),
+	 * juge à part (`isColoringCorrect`) : le nombre de parts, quelles qu'elles soient.
+	 * Assemblage de cubes à geste (```cubes, `dessiner: face`, `retrouver: face, droite`) :
+	 * réponse attendue = la vue (`100/111`) ou `face, droite : 2 1 / 1 2`, l'élève colorie
+	 * un quadrillage ou écrit des hauteurs, juge à part (`isCubesAnswerCorrect`) : la vue à
+	 * une translation près, ou les mêmes vues. Patron à geste (```patron, `designer: opposee`,
+	 * `completer: 4`) : réponse attendue = les faces à toucher (`2,4`) ou le quadrillage du
+	 * patron du prof (`0010/0112/0010`), juge à part (`isPatronAnswerCorrect`) : mêmes faces,
+	 * ou toute pose qui se plie en cube. Points à placer dans un repère (```courbe,
+	 * `placer: A=(2 ; 3) ; B=(-1 ; 2)`) : une case par point, réponse = ses coordonnées en
+	 * point décimal (`2;3`, `1.5;-0.5`, `pointAnswer`), l'élève pose le point sur un nœud de
+	 * la grille, juge à part (`isPlacedPointCorrect`) : les nombres exacts. Points à placer
+	 * sur le cercle trigonométrique (```trig, `placer: M = 2*pi/3`) : une case par point,
+	 * réponse = sa mesure principale en LaTeX (`\frac{2\pi}{3}`), l'élève pose le point
+	 * sur un cran de π/12 (sa case porte le cran, `8`), juge à part
+	 * (`isPlacedAngleCorrect`) : le même cran, modulo 2π. Vecteur à tracer sur un
+	 * solide (```solide, `tracer: vecteur AB + AD depuis A`) : réponse attendue = les
+	 * couples justes (`A/C`, ou `A/C|E/G` quand l'origine est libre), l'élève touche
+	 * deux points (`A/C`), juge à part (`isSolideAnswerCorrect`) : l'un des couples.
 	 */
 	construire?: BuildKind;
+	/**
+	 * Case d'un tableau de signes à compléter (```variation à `?`) : la nature de la
+	 * cellule cachée. Réponse attendue tirée du bloc : valeur de x (`valeur`, case
+	 * `math`, juge ordinaire), signe `+`/`-` (`signe`) ou marque `z`/`||`/`rien`
+	 * (`marque`), cases `text` jugées à l'égalité exacte (`isSignCellCorrect`).
+	 */
+	cellule?: HiddenCellKind;
 	/**
 	 * Case « figure » portée par un bloc ```figure-a-completer ou ```figure-de-travail (`type: 'graphical'`) :
 	 * texte du bloc (variables résolues, sans `case:`) et vérifications. Le juge
@@ -851,6 +911,18 @@ export interface InstanceBlank extends CalculusBlankFields {
 	openableBounds?: boolean;
 	/** Voir `TemplateBlank.angleModulo` (fusionné avec blankDefaults, case ordinaire seulement) */
 	angleModulo?: AngleModulo;
+	/**
+	 * Erreurs prévues résolues pour ce tirage (`TemplateBlank.expectedErrors`).
+	 * Retirées de l'énoncé envoyé à l'élève en évaluation notée, comme l'attendu.
+	 */
+	expectedErrors?: InstanceExpectedError[];
+	/** Voir `TemplateBlank.neverChoice` (posé seulement quand vrai) */
+	neverChoice?: true;
+	/**
+	 * Case choix venue des erreurs prévues (idée 4) : la question est répondue en
+	 * QCM (`isAnsweredAsChoice`). Posé seulement par `asChoiceInstance`.
+	 */
+	fromExpectedErrors?: true;
 
 	/** Unit config (merged) */
 	unit?: {
@@ -898,12 +970,6 @@ export interface QuestionInstance {
 	/** Resolved variables with final values */
 	resolvedVariables?: ResolvedVariable[];
 
-	/**
-	 * Resolved correct choice index — optional for fill_in_blanks (blanks[] is the source of truth).
-	 * Present for multiple_choice.
-	 */
-	correctChoiceIndex?: string | string[];
-
 	// ---- Metadata (copied from template) ----
 
 	/** Template title (copied from template) */
@@ -933,9 +999,6 @@ export interface QuestionInstance {
 	capitalPairs?: CapitalPairs;
 
 	grades: GradeLevel[];
-	theme: string;
-	domain: string;
-	subdomain?: string;
 	level: number;
 	delay?: number;
 
@@ -944,6 +1007,9 @@ export interface QuestionInstance {
 	 * All placeholders are resolved to final values.
 	 */
 	correction?: ResolvedCorrection;
+
+	/** Coup de pouce résolu (valeurs du tirage) ; absent si la variation n'en a pas */
+	hint?: ResolvedMarkdown;
 
 	// ---- Fill-in-blanks (resolved) ----
 
@@ -975,21 +1041,6 @@ export interface QuestionInstance {
 		 */
 		value?: string;
 	}[];
-
-	// ---- Multiple Choice (resolved) ----
-
-	choices?: {
-		content: ResolvedMarkdown; // Resolved markdown for each choice
-		isCorrect: boolean;
-	}[];
-
-	/** Shuffled choices (for display, preserves original index) */
-	shuffledChoices?: {
-		content: ResolvedMarkdown; // Resolved markdown for each choice
-		originalIndex: number; // Index before shuffle
-	}[];
-
-	multipleAnswers?: boolean;
 
 	/**
 	 * Custom validation rules (copied from variation)
@@ -1248,6 +1299,11 @@ export const COMPLEX_FORMS = [
 export interface TestSpecExpected {
 	status: ValidationStatus;
 	constraintViolations?: ConstraintId[];
+	/**
+	 * Message d'une erreur prévue que la réponse doit déclencher (tel que résolu
+	 * pour les variables de la spec) ; une case au moins doit le porter
+	 */
+	expectedErrorMessage?: string;
 }
 
 /**
@@ -1261,7 +1317,6 @@ export interface TestSpec {
 	variationIndex?: number;
 	variables: Record<string, string>;
 	answers?: string[];
-	selectedChoices?: number[];
 	expected: TestSpecExpected;
 }
 

@@ -9,8 +9,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import QuestionTemplateForm from '../QuestionTemplateForm.svelte';
-import { templateMarkdown } from '$lib/ubumark';
-import type { BlankDefaults, QuestionTemplate } from '$lib/questions/types';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { BlankDefaults, QuestionTemplate } from '#lib/questions/types.ts';
 
 type SavedTemplate = Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
 
@@ -18,8 +18,6 @@ function calculusTemplate(blankDefaults: BlankDefaults): QuestionTemplate {
 	return {
 		id: '44444444-4444-4444-8444-444444444444',
 		title: 'Primitive',
-		theme: 'Analyse',
-		domain: 'Primitives',
 		level: 1,
 		grades: ['T_SPE'],
 		status: 'draft',

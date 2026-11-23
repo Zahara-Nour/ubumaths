@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PostgrestError } from '@supabase/supabase-js';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/utils/error-handler');
 

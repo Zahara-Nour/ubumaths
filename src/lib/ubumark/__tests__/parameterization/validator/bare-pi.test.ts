@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { rewriteBarePi } from '$lib/ubumark/parameterization/validator/bare-pi';
+import { rewriteBarePi } from '#lib/ubumark/parameterization/validator/bare-pi.ts';
 
 describe('rewriteBarePi : calculs réécrits', () => {
 	it.each([
@@ -35,14 +35,6 @@ describe('rewriteBarePi : calculs réécrits', () => {
 			'variations[0].conditions[0]',
 			'variations[0].variables[0].expression'
 		]);
-	});
-
-	it('bon choix d’un QCM : la condition du {{if:…}} de correctChoiceIndex', () => {
-		const { value, occurrences } = rewriteBarePi({
-			correctChoiceIndex: ['{{if:cos(pi/6)>0.5|0|1}}', '2']
-		});
-		expect(value.correctChoiceIndex).toEqual(['{{if:cos(\\pi/6)>0.5|0|1}}', '2']);
-		expect(occurrences.map((o) => o.path)).toEqual(['correctChoiceIndex[0]']);
 	});
 
 	it('expression de variable sans eval: : seuls ses {{eval:…}}', () => {

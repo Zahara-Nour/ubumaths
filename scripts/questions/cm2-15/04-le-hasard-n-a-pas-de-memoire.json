@@ -1,0 +1,185 @@
+{
+	"id": "400f5c43-7880-4bbb-b98f-f5be4feb076d",
+	"title": "Le hasard n'a pas de mémoire",
+	"description": "Comprendre que la répétition d'une expérience ne change pas les chances : pièce tombée N fois sur pile, face d'un dé qui ne sort pas, tirage avec remise (« a chances sur b » inchangé)",
+	"grades": ["CM2"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Léo lance une pièce de monnaie bien équilibrée. Elle vient de tomber ${{N}}$ fois de suite sur {{if:k==0|pile|face}}.\n\nAu lancer suivant :\n\n```choix\nmelanger: non\n- pile a plus de chances que face\n- face a plus de chances que pile\n- pile et face ont autant de chances\n```",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "3..6"
+				},
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pièce ne se souvient pas des lancers d'avant : chaque lancer recommence la même expérience.",
+					"À chaque lancer, on a une chance sur deux d'obtenir pile, une chance sur deux d'obtenir face.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{pile et face ont autant de chances}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lina lance un dé à $6$ faces bien équilibré. Le ${{f}}$ n'est pas sorti depuis ${{N}}$ lancers.\n\nAu lancer suivant, le ${{f}}$ a :\n\n```choix\nmelanger: non\n- plus de chances de sortir que les autres faces\n- moins de chances de sortir que les autres faces\n- autant de chances de sortir que les autres faces\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..6"
+				},
+				{
+					"name": "N",
+					"expression": "8..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dé ne se souvient pas des lancers d'avant : le ${{f}}$ n'est pas « en retard ».",
+					"À chaque lancer, chaque face a $1$ chance sur $6$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{autant de chances que les autres faces}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{r}}$ boules rouges et ${{b}}$ boules bleues. On tire une boule, on note sa couleur et on la **remet** dans le sac. On vient de tirer $3$ boules rouges de suite.\n\nComplète : au tirage suivant, on a $?$ chances sur $?$ de tirer une boule rouge.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "T",
+					"expression": "eval:r+b"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{T}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque boule est remise : avant chaque tirage, le sac est le même, ${{r}}$ rouges et ${{b}}$ bleues.",
+					"Les tirages d'avant ne changent rien : on a $\\textcolor{{{color:primary.0}}}{{{r}}}$ chances sur $\\textcolor{{{color:primary.0}}}{{{T}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pièce : autant",
+			"variationIndex": 0,
+			"variables": {
+				"N": "5",
+				"k": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « face, c'est son tour »",
+			"variationIndex": 0,
+			"variables": {
+				"N": "5",
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pile est « en série »",
+			"variationIndex": 0,
+			"variables": {
+				"N": "5",
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé : autant",
+			"variationIndex": 1,
+			"variables": {
+				"f": "6",
+				"N": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le 6 est en retard",
+			"variationIndex": 1,
+			"variables": {
+				"f": "6",
+				"N": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 R, 4 B, remise : 5 sur 9",
+			"variationIndex": 2,
+			"variables": {
+				"r": "5",
+				"b": "4",
+				"T": "9"
+			},
+			"answers": ["5", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : comme sans remise (2 sur 6)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "5",
+				"b": "4",
+				"T": "9"
+			},
+			"answers": ["2", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

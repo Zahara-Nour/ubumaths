@@ -10,7 +10,7 @@ import {
 	readExpectedIntervals,
 	expectedIntervalsLatex,
 	INTERVAL_FEEDBACK
-} from '$lib/questions/intervals/interval-answer';
+} from '#lib/questions/intervals/interval-answer.ts';
 
 const SOLUTION = ']-\\infty;-2[\\cup]3;+\\infty[';
 
@@ -254,6 +254,10 @@ describe('expectedIntervalsLatex — réponse attendue affichée (corrigé, flas
 		['\\emptyset', '\\emptyset'],
 		['\\mathbb{R}', '\\mathbb{R}'],
 		['\\{3\\}', '\\{3\\}'],
+		// Ensemble fini : un seul ensemble, pas une réunion de singletons
+		['\\{ -3 ; 1 ; -1 \\}', '\\{-3;-1;1\\}'],
+		['[0;1]\\cup\\{3\\}\\cup\\{2\\}', '[0;1]\\cup\\{2;3\\}'],
+		['\\{-2\\}\\cup[0;1]\\cup\\{3\\}', '\\{-2\\}\\cup[0;1]\\cup\\{3\\}'],
 		['\\mathbb{R}\\setminus\\{2\\}', '\\mathbb{R}\\setminus\\{2\\}']
 	])('%s → %s', (expected, latex) => {
 		expect(expectedIntervalsLatex(expected)).toBe(latex);
@@ -261,6 +265,11 @@ describe('expectedIntervalsLatex — réponse attendue affichée (corrigé, flas
 
 	it('se relit comme la réponse attendue (aller-retour)', () => {
 		const expected = ']-\\infty;(1-sqrt(5))/2]\\cup[(1+sqrt(5))/2;+\\infty[';
+		expect(judgeIntervalAnswer(expectedIntervalsLatex(expected), expected).status).toBe('correct');
+	});
+
+	it('ensemble fini : se relit comme la réponse attendue (aller-retour)', () => {
+		const expected = '\\{ -4 ; -1 \\}';
 		expect(judgeIntervalAnswer(expectedIntervalsLatex(expected), expected).status).toBe('correct');
 	});
 
@@ -562,5 +571,121 @@ describe('constante e dans une borne (sonde du 2026-10-04)', () => {
 	it('corrigé affiché : e reste e', () => {
 		expect(expectedIntervalsLatex('[e^{-1};+\\infty[')).toBe('[e^{-1};+\\infty[');
 		expect(expectedIntervalsLatex(']0;\\frac{1}{e}[')).toMatch(/\\[d]?frac\{1\}\{e\}/);
+	});
+});
+
+// Décision de David, 2026-10-27 (lot 2 de la 2de, x² = 12) : une racine simplifiable
+// (√12 pour 2√3) est une écriture à reprendre, comme une fraction simplifiable.
+describe('racine simplifiable', () => {
+	const expected = '\\{-2\\sqrt{3};2\\sqrt{3}\\}';
+	const unreduced = '\\{-\\sqrt{12};\\sqrt{12}\\}';
+
+	it('{-√12 ; √12} vaut ½ (warn), avec le message', () => {
+		expect(judgeIntervalAnswer(unreduced, expected)).toEqual({
+			status: 'unoptimal_form',
+			feedback: INTERVAL_FEEDBACK.unsimplifiedRadicalSet
+		});
+		expect(INTERVAL_FEEDBACK.unsimplifiedRadicalSet).toBe('La racine peut être simplifiée.');
+	});
+
+	it('suit le réglage intervalForm : strict → mauvaise forme, off → juste', () => {
+		expect(judgeIntervalAnswer(unreduced, expected, 'strict').status).toBe('bad_form');
+		expect(judgeIntervalAnswer(unreduced, expected, 'off').status).toBe('correct');
+	});
+
+	it('coefficient devant la racine (3√12 pour 6√3) et √4 pour 2 : ½', () => {
+		expect(judgeIntervalAnswer('\\{3\\sqrt{12}\\}', '\\{6\\sqrt{3}\\}').status).toBe(
+			'unoptimal_form'
+		);
+		expect(judgeIntervalAnswer('\\{-\\sqrt{4};\\sqrt{4}\\}', '\\{-2;2\\}').status).toBe(
+			'unoptimal_form'
+		);
+	});
+
+	it('racines simplifiées ou sans facteur carré : justes', () => {
+		expect(judgeIntervalAnswer(expected, expected).status).toBe('correct');
+		expect(judgeIntervalAnswer('\\{-2\\sqrt3;2\\sqrt3\\}', expected).status).toBe('correct');
+		expect(
+			judgeIntervalAnswer('\\{-\\sqrt{11};\\sqrt{11}\\}', '\\{-\\sqrt{11};\\sqrt{11}\\}').status
+		).toBe('correct');
+	});
+
+	it('borne d’intervalle : ]-∞ ; √8] pour ]-∞ ; 2√2] vaut ½, avec le message', () => {
+		expect(judgeIntervalAnswer(']-\\infty;\\sqrt{8}]', ']-\\infty;2\\sqrt{2}]')).toEqual({
+			status: 'unoptimal_form',
+			feedback: INTERVAL_FEEDBACK.unsimplifiedRadical
+		});
+	});
+
+	it('ensemble de complexes : {1 + √12 i ; 1 − √12 i} vaut ½, avec le message', () => {
+		expect(
+			judgeIntervalAnswer('\\{1+\\sqrt{12}i;1-\\sqrt{12}i\\}', '\\{1+2\\sqrt{3}i;1-2\\sqrt{3}i\\}')
+		).toEqual({ status: 'unoptimal_form', feedback: INTERVAL_FEEDBACK.unsimplifiedRadicalSet });
+		expect(
+			judgeIntervalAnswer('\\{1+2\\sqrt{3}i;1-2\\sqrt{3}i\\}', '\\{1+2\\sqrt{3}i;1-2\\sqrt{3}i\\}')
+				.status
+		).toBe('correct');
+	});
+
+	it('une valeur fausse reste fausse (√12 pour 2√2)', () => {
+		expect(
+			judgeIntervalAnswer('\\{-\\sqrt{12};\\sqrt{12}\\}', '\\{-2\\sqrt2;2\\sqrt2\\}').status
+		).toBe('incorrect');
+	});
+});
+
+describe('ensemble fini écrit sans accolades (validé par David le 2026-10-29)', () => {
+	const HALF = '\\{0{,}5\\}';
+	const PAIR = '\\{-3;3\\}';
+
+	it.each([
+		['1', HALF, '1'],
+		['0{,}5', HALF, '0,5'],
+		['0,5', HALF, '0,5'],
+		['\\frac{1}{2}', HALF, '1/2'],
+		['\\sqrt{2}', PAIR, '√2'],
+		['-3;3', PAIR, '-3 ; 3'],
+		['2;5', PAIR, '2 ; 5'],
+		['x=2', HALF, '2'],
+		['x = -3 ; x = 3', PAIR, '-3 ; 3'],
+		['x=-3\\text{ ou }x=3', PAIR, '-3 ; 3'],
+		['x=-3 ou x=3', PAIR, '-3 ; 3'],
+		['S = 1', HALF, '1']
+	])(
+		'« %s » pour %s : faux, message des accolades avec ses valeurs',
+		(answer, expected, values) => {
+			expect(judgeIntervalAnswer(answer, expected)).toEqual({
+				status: 'incorrect',
+				feedback: INTERVAL_FEEDBACK.missingBraces(values)
+			});
+		}
+	);
+
+	it('même avec les bonnes valeurs, la réponse est fausse', () => {
+		expect(judgeIntervalAnswer('-3;3', PAIR).status).toBe('incorrect');
+	});
+
+	it.each([
+		['1', ']0;2]'],
+		['1', '\\varnothing'],
+		['1', '\\mathbb{R}'],
+		['x=2', ']-\\infty;2]'],
+		['-\\infty', '\\{0{,}5\\}'],
+		['+\\infty', '\\{-3;3\\}']
+	])(
+		'attendu intervalle, ∅ ou ℝ, ou réponse infinie : « %s » reste illisible',
+		(answer, expected) => {
+			expect(judgeIntervalAnswer(answer, expected).feedback).toBe(INTERVAL_FEEDBACK.unreadable);
+		}
+	);
+
+	it('un texte qui n’est pas fait de nombres reste illisible', () => {
+		expect(judgeIntervalAnswer('bonjour', HALF).feedback).toBe(INTERVAL_FEEDBACK.unreadable);
+	});
+
+	it('message', () => {
+		expect(INTERVAL_FEEDBACK.missingBraces('-3 ; 3')).toBe(
+			"Un ensemble de solutions s'écrit entre accolades : {-3 ; 3}."
+		);
 	});
 });

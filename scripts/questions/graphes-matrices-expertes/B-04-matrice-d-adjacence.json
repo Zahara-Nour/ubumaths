@@ -1,13 +1,14 @@
 {
+	"id": "234270ac-a763-4cb9-bf87-4d44f441cde5",
 	"title": "Matrice d'adjacence d'un graphe",
 	"description": "Écrire une ligne de la matrice d'adjacence d'un graphe donné par sa figure, lire degré et nombre d'arêtes sur la matrice, arcs sortants d'un graphe orienté (pièges : 1 sur la diagonale, ligne et colonne confondues pour un graphe orienté, somme des coefficients non divisée par 2)",
 	"grades": ["T_EXP"],
-	"theme": "Graphes et matrices",
-	"domain": "Graphes",
-	"subdomain": "Matrice d'adjacence",
 	"level": 2,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"capitalPairs": "product"
+	},
 	"variations": [
 		{
 			"statement": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$, $E$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nComplète la ligne de $B$ de sa matrice d'adjacence.\n\n|  | $A$ | $B$ | $C$ | $D$ | $E$ |\n| --- | --- | --- | --- | --- | --- |\n| ligne de $B$ | $?$ | $?$ | $?$ | $?$ | $?$ |",

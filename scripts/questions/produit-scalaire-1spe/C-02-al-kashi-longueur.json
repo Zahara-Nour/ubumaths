@@ -1,10 +1,8 @@
 {
+	"id": "721324f9-6ab3-4f62-b22e-103b9eb71fda",
 	"title": "Al-Kashi : calculer une longueur",
 	"description": "Calculer la longueur d'un côté d'un triangle connaissant deux côtés et l'angle compris, avec la formule d'Al-Kashi",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Angles et longueurs",
 	"level": 2,
 	"status": "draft",
 	"delay": 150,

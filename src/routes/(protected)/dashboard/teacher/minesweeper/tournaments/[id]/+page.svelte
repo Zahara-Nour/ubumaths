@@ -5,17 +5,17 @@
 -->
 
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import * as Alert from '$lib/components/ui/alert';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { refreshAll } from '$app/navigation';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Users, Trophy, RefreshCw, XCircle, AlertTriangle } from '@lucide/svelte';
-	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
+	import { DIFFICULTY_LABELS, type TournamentStatus } from '#lib/types/minesweeper.ts';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -40,7 +40,7 @@
 	async function handleRefresh() {
 		isRefreshing = true;
 		try {
-			await invalidateAll();
+			await refreshAll();
 			toaster.success('Classement actualise');
 		} catch (err) {
 			console.error('Failed to refresh:', err);
@@ -64,7 +64,7 @@
 
 			toaster.success('Tournoi annule');
 			showCancelDialog = false;
-			await invalidateAll();
+			await refreshAll();
 		} catch (err) {
 			console.error('Failed to cancel tournament:', err);
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'annulation");

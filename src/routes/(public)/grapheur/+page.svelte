@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	/**
 	 * `/grapheur` — l'atelier, ouvert sur le graphique.
 	 *
@@ -16,10 +16,10 @@
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
-	import { Atelier } from '$lib/atelier/atelier.svelte';
-	import { openLink } from '$lib/atelier/grapheur-link';
-	import type { AtelierState } from '$lib/atelier/persistence';
+	import AtelierContainer from '#lib/components/atelier/AtelierContainer.svelte';
+	import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+	import { openLink } from '#lib/atelier/grapheur-link.ts';
+	import type { AtelierState } from '#lib/atelier/persistence.ts';
 
 	interface Opened {
 		atelier: Atelier;
@@ -39,7 +39,7 @@
 	 * `?a=` / `?f=` retirés de l'adresse sans naviguer, comme sur `/atelier`.
 	 */
 	function leaveLink() {
-		replaceState(resolve('/grapheur'), {});
+		replaceState(resolve('grapheur'), {});
 	}
 
 	$effect(() => {
@@ -66,8 +66,8 @@
 </script>
 
 <SeoHead
-	title="Grapheur | Chiphre"
-	description="Tracer des fonctions et des suites, les dériver, étudier leurs variations : le grapheur de l’atelier."
+	title="Grapheur en ligne : tracer des fonctions et des suites | Chiphre"
+	description="Grapheur en ligne, gratuit et sans compte : tracer des fonctions et des suites, les dériver, étudier leurs variations."
 />
 
 <div class="page">

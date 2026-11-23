@@ -6,12 +6,12 @@
  * Fetches chapters with content counts for display in cards.
  */
 
-import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
+import { fetchStaffDirectory, soleTeacher } from '#lib/server/staff-directory.ts';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
-import type { ChapterSummary } from '$lib/types/chapters';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import type { ChapterSummary } from '#lib/types/chapters.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/cours/+page.server');
 

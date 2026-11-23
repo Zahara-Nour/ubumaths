@@ -34,7 +34,10 @@ const HOOKS_WITH_FALLBACK = [
 	// avec un repli `light-dark(…)` quand il s'affiche hors de lui
 	'--expected-correct',
 	'--expected-incorrect',
-	'--expected-unoptimal'
+	'--expected-unoptimal',
+	// Plafond de largeur d'un assemblage de cubes dans un choix, posé par `ChoiceList` et
+	// `MultipleChoiceInput` ; `Cubes.svelte` le lit avec un repli `100%`
+	'--espace-taille'
 ];
 
 const COMPONENTS = [
@@ -46,10 +49,7 @@ const COMPONENTS = [
 	'src/lib/extensions/NumberLineNodeView.svelte',
 	'src/lib/extensions/VariationTableNodeView.svelte',
 	'src/lib/extensions/ImageNodeView.svelte',
-	'src/lib/components/question-inputs/NumberLineInput.svelte',
 	'src/lib/components/question-inputs/FillBlanksInput.svelte',
-	'src/lib/components/question-inputs/MathInput.svelte',
-	'src/lib/components/question-inputs/OrderingInput.svelte',
 	'src/lib/components/markdown/MarkdownRaw.svelte',
 	'src/lib/components/markdown/nodes/ImageDisplay.svelte',
 	'src/lib/components/markdown/nodes/MathPrompt.svelte',

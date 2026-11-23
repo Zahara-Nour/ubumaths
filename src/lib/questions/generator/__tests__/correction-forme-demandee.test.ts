@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateCorrection } from '../correction-generator';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { GeneratedSteps, QuestionInstance } from '../../types';
 
 // =============================================================================
@@ -29,8 +29,6 @@ function makeInstance(generatedSteps: GeneratedSteps): QuestionInstance {
 		statement: resolvedMarkdown('Test statement'),
 		resolvedVariables: [],
 		grades: ['T_SPE'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: '2026-10-24T00:00:00Z',
 		correction: { generatedSteps }

@@ -8,9 +8,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 const B = String.fromCharCode(92);
 
@@ -20,8 +20,6 @@ function statementOf(statement: string): string {
 		title: 't',
 		status: 'draft',
 		grades: ['5'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{

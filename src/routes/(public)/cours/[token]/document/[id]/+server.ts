@@ -13,14 +13,15 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import {
 	courseShareTokenSchema,
 	INVALID_COURSE_LINK,
 	resolveCourseDocumentByShareToken,
 	safeExternalUrl
-} from '$lib/server/course-share-tokens';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/course-share-tokens.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 const logger = createServerLogger('(public)/cours/[token]/document/[id]/+server');
 
@@ -95,5 +96,5 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		throw error(500, 'Document indisponible pour le moment');
 	}
 
-	return redirectTo(data.signedUrl);
+	return redirectTo(toBrowserAddress(data.signedUrl));
 };

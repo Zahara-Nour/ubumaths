@@ -9,42 +9,70 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
-import { previewCartItem } from '$lib/questions/cart-preview';
-import type { QuestionTemplate } from '$lib/questions/types';
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 // Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
 import fixture from '../../../../data/relecture/entiers/139.json';
 
 const TEMPLATE = { ...(fixture.template as unknown as QuestionTemplate), id: 'modele-139' };
-const ITEM: CartItem = {
-	category: {
-		theme: TEMPLATE.theme,
-		domain: TEMPLATE.domain,
-		subdomain: TEMPLATE.subdomain ?? null,
-		level: TEMPLATE.level
-	},
+const ITEM: SeriesItem = {
+	templateId: '11111111-1111-4111-8111-111111111139',
 	quantity: 3,
 	delay: 25
 };
-const { instance } = previewCartItem([TEMPLATE], ITEM.category);
+const TEMPLATE_WITH_ID = { ...TEMPLATE, id: ITEM.templateId };
+const generated = generateInstance(TEMPLATE_WITH_ID, PREVIEW_SEED);
+const instance = generated.success ? generated.instance : undefined;
 
-async function renderCard(overrides: { onUpdateDelay?: () => void } = {}) {
+async function renderCard(
+	overrides: {
+		onUpdateDelay?: (templateId: string, delay: number) => void;
+		onRemove?: () => void;
+		template?: boolean;
+		tooShort?: QuestionTiming | null;
+		observedDelay?: number | null;
+		distinctMax?: number | null;
+		onUpdateQuantity?: (templateId: string, quantity: number) => void;
+		onUpdateVariations?: (templateId: string, variations: number[] | undefined) => void;
+	} = {}
+) {
 	return await render(CartQuestionCard, {
 		item: ITEM,
+		template: overrides.template === false ? undefined : TEMPLATE_WITH_ID,
 		instance,
 		onIncrementQuantity: vi.fn(),
 		onDecrementQuantity: vi.fn(),
-		onUpdateDelay: overrides.onUpdateDelay ?? vi.fn()
+		onUpdateQuantity: overrides.onUpdateQuantity ?? vi.fn(),
+		onUpdateDelay: overrides.onUpdateDelay ?? vi.fn(),
+		onRemove: overrides.onRemove ?? vi.fn(),
+		tooShort: overrides.tooShort,
+		observedDelay: overrides.observedDelay,
+		distinctMax: overrides.distinctMax,
+		onUpdateVariations: overrides.onUpdateVariations
 	});
 }
 
 describe('CartQuestionCard', () => {
-	it('affiche « Thème / Domaine » au-dessus de la flash-card', async () => {
+	it('affiche le titre du modèle au-dessus de la flash-card', async () => {
 		const screen = await renderCard();
 
 		await expect
-			.element(screen.getByText(`${TEMPLATE.theme}`, { exact: false }).first())
-			.toHaveTextContent(`${TEMPLATE.theme} / ${TEMPLATE.domain}`);
+			.element(screen.getByText(TEMPLATE.title, { exact: false }).first())
+			.toBeInTheDocument();
+	});
+
+	it('modèle retiré : « Modèle retiré » et un bouton pour le retirer du panier', async () => {
+		const onRemove = vi.fn();
+		const screen = await renderCard({ template: false, onRemove });
+
+		await expect.element(screen.getByText('Modèle retiré')).toBeInTheDocument();
+		expect(screen.container.querySelector('.flip-card-front')).toBeNull();
+		await screen.getByRole('button', { name: 'Retirer de ma série' }).click();
+
+		expect(onRemove).toHaveBeenCalledWith(ITEM.templateId);
 	});
 
 	it("affiche l'énoncé dans la flash-card, sans champ de saisie", async () => {
@@ -92,7 +120,7 @@ describe('CartQuestionCard', () => {
 		await screen.getByTitle('Durée par question').hover();
 		await screen.getByRole('button', { name: 'Augmenter la durée' }).click();
 
-		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.category, 30);
+		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.templateId, 30);
 	});
 
 	/**
@@ -147,5 +175,77 @@ describe('CartQuestionCard', () => {
 
 			await expect.element(button).toHaveStyle({ opacity: '1' });
 		});
+	});
+
+	it('durée signalée trop courte : la marque et la phrase sous les réglages', async () => {
+		const screen = await renderCard({
+			tooShort: { delaySeconds: 25, students: 6, unansweredInTime: 4, tooShort: true }
+		});
+		const mark = screen.container.querySelector('[data-duree-trop-courte]');
+		expect(mark?.textContent).toContain('Durée sans doute trop courte');
+		expect(mark?.textContent).toContain("4 élèves sur 6 n'ont rien répondu dans les 25\u00a0s");
+	});
+
+	it('sans signal : aucune marque', async () => {
+		const screen = await renderCard();
+		expect(screen.container.querySelector('[data-duree-trop-courte]')).toBeNull();
+	});
+
+	it('durée observée : la suggestion, et « Appliquer » règle la durée (A1)', async () => {
+		const onUpdateDelay = vi.fn();
+		const screen = await renderCard({ observedDelay: 40, onUpdateDelay });
+		const hint = screen.container.querySelector('[data-duree-observee]');
+		expect(hint?.textContent?.replace(/\s+/g, ' ')).toContain('Durée observée : 40 s');
+		await screen
+			.getByRole('button', { name: 'Appliquer la durée observée de 40 secondes' })
+			.click();
+		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.templateId, 40);
+	});
+
+	it('sans durée observée : aucune suggestion', async () => {
+		const screen = await renderCard();
+		expect(screen.container.querySelector('[data-duree-observee]')).toBeNull();
+	});
+
+	it('trop de répétitions : le dit et propose d’abaisser au nombre de questions différentes', async () => {
+		const onUpdateQuantity = vi.fn();
+		const screen = await renderCard({ distinctMax: 2, onUpdateQuantity });
+
+		await expect
+			.element(screen.getByText("Ce modèle n'a que 2 questions différentes."))
+			.toBeInTheDocument();
+		await screen.getByRole('button', { name: 'Passer à 2 répétitions' }).click();
+
+		expect(onUpdateQuantity).toHaveBeenCalledWith(ITEM.templateId, 2);
+	});
+
+	it('une seule question possible : le dit au singulier', async () => {
+		const screen = await renderCard({ distinctMax: 1 });
+
+		await expect.element(screen.getByText("Ce modèle n'a qu'une question.")).toBeInTheDocument();
+		await expect
+			.element(screen.getByRole('button', { name: 'Passer à 1 répétition' }))
+			.toBeInTheDocument();
+	});
+
+	it('assez de questions : aucun avertissement', async () => {
+		const screen = await renderCard();
+
+		expect(screen.container.querySelector('[data-trop-de-repetitions]')).toBeNull();
+	});
+});
+
+describe('CartQuestionCard — variations choisies (idée 2)', () => {
+	const count = TEMPLATE_WITH_ID.variations.length;
+
+	it('prof : le choix des variations est proposé (modèle à plusieurs variations)', async () => {
+		expect(count).toBeGreaterThan(1);
+		const screen = await renderCard({ onUpdateVariations: vi.fn() });
+		await expect.element(screen.getByText(`Toutes les variations (${count})`)).toBeInTheDocument();
+	});
+
+	it('sans gestionnaire (élève) : rien', async () => {
+		const screen = await renderCard();
+		expect(screen.container.querySelector('[data-choix-variations]')).toBeNull();
 	});
 });

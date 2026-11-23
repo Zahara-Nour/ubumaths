@@ -1,0 +1,191 @@
+{
+	"id": "e2419609-0d83-4531-a799-acf1659323a5",
+	"title": "Reconnaître un cube, un pavé",
+	"description": "Reconnaître un cube et un pavé droit représentés en perspective cavalière",
+	"grades": ["5"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Lequel de ces solides est {{if:k==1|un **cube**|un **pavé droit** qui n'est pas un cube}} ?\n\n````choix\n- ```solide\n  forme: cube 3\n  ```\n- ```solide\n  forme: pave 4.5 2 2.5\n  ```\n- ```solide\n  forme: prisme triangle 3 2.5 4\n  ```\n- ```solide\n  forme: pyramide carree 3 3.5\n  ```\n````",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **pavé droit** a $6$ faces rectangulaires. Un **cube** est un pavé droit dont les $6$ faces sont des carrés : toutes ses arêtes ont la même longueur.",
+					"En perspective cavalière, la face de devant est dessinée en vraie grandeur : {{if:k==1|un carré pour le cube.|un rectangle non carré pour ce pavé.}}",
+					"Les deux autres sont un prisme (faces de devant triangulaires) et une pyramide (un sommet en haut) : {{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{le cube}}$|$\\textcolor{{{color:primary.0}}}{\\text{le pavé}}$}} est le seul qui convient."
+				]
+			}
+		},
+		{
+			"statement": "Voici un solide en perspective cavalière.\n\n{{if:k==1|```solide\nforme: cube {{a}}\ncotes: cm\n```|```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```}}\n\nQuel est le nom le plus précis de ce solide ?\n\n```choix\n- un cube\n- un pavé droit (non cube)\n- un prisme droit à base triangulaire\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "l",
+					"expression": "3..7"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "h",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["l!=p", "p!=h", "l!=h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $6$ faces de ce solide sont des rectangles : c'est un pavé droit.",
+					"{{if:k==1|Ses trois dimensions sont égales ($ {{a}} $ cm) : toutes ses faces sont des carrés. C'est $\\textcolor{{{color:primary.0}}}{\\text{un cube}}$, un pavé droit particulier.|Ses dimensions ne sont pas toutes égales : ce n'est pas un cube, c'est $\\textcolor{{{color:primary.0}}}{\\text{un pavé droit}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le cube",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le pavé pour le cube",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le pavé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le prisme pour le pavé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cube coté : un cube",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0",
+				"a": "4",
+				"l": "5",
+				"p": "3",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cube appelé pavé (non cube)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"j": "0",
+				"a": "4",
+				"l": "5",
+				"p": "3",
+				"h": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé coté : un pavé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1",
+				"a": "4",
+				"l": "5",
+				"p": "3",
+				"h": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pavé appelé cube",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"j": "1",
+				"a": "4",
+				"l": "5",
+				"p": "3",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

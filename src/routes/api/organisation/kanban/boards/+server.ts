@@ -7,14 +7,14 @@
  *        class board (requires the caller to be the teacher of that class).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { createBoardSchema, listBoardsQuerySchema } from '$lib/server/validation/kanban';
-import { getAccessibleBoards, isClassTeacher, rateLimitResponse } from '$lib/server/kanban';
-import { checkKanbanBoardCreateRateLimit } from '$lib/server/rateLimiter';
-import type { KanbanBoard, KanbanBoardInsert } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { createBoardSchema, listBoardsQuerySchema } from '#lib/server/validation/kanban.ts';
+import { getAccessibleBoards, isClassTeacher, rateLimitResponse } from '#lib/server/kanban.ts';
+import { checkKanbanBoardCreateRateLimit } from '#lib/server/rateLimiter.ts';
+import type { KanbanBoard, KanbanBoardInsert } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/boards/+server');
 
@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		limit: queryParsed.data.limit,
 		cursor: queryParsed.data.cursor ?? null
 	});
-	return json({ boards: page.boards, nextCursor: page.nextCursor });
+	return Response.json({ boards: page.boards, nextCursor: page.nextCursor });
 };
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -86,5 +86,5 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, 'Erreur lors de la création du tableau');
 	}
 
-	return json({ board: data as KanbanBoard }, { status: 201 });
+	return Response.json({ board: data as KanbanBoard }, { status: 201 });
 };

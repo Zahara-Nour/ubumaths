@@ -1,0 +1,3466 @@
+[
+	{
+		"id": "08bbf1c6-d96c-4570-8662-4908dd5cb8ef",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme astucieuse",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:c;d}}+{{eval:d;d}}+{{eval:f;d}}+{{eval:g;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c;d}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:d;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:f;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:g;d}}}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c+d;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:f+g;d}}}} \\\\               &=  {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				],
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:c;d}}+{{eval:f;d}}+{{eval:d;d}}+{{eval:g;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:f;d}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:d;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:g;d}}}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c+d;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:f+g;d}}}} \\\\               &=  {{solution}}                \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}};d}}"
+					}
+				],
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:c;d}}+{{eval:f;d}}+{{eval:g;d}}+{{eval:d;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:f;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:g;d}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:d;d}}}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:c+d;d}}}} + \\bold{\\textcolor{{{color:primary.1}}}{{{eval:f+g;d}}}} \\\\               &=  {{solution}}                \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Additionner par regroupements",
+		"description": "Regrouper pour obtenir un nombre entier. $4$ nombres à une décimale.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a,{{eval:10-a}}"
+				},
+				{
+					"name": "c1",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:c1+a*0.1"
+				},
+				{
+					"name": "d1",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:d1+(10-a)*0.1"
+				},
+				{
+					"name": "f1",
+					"expression": "1..9"
+				},
+				{
+					"name": "f",
+					"expression": "eval:f1+b*0.1"
+				},
+				{
+					"name": "g1",
+					"expression": "1..9"
+				},
+				{
+					"name": "g",
+					"expression": "eval:g1+(10-b)*0.1"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c1": "9",
+					"d1": "3",
+					"f1": "4",
+					"g1": "2"
+				},
+				"description": "9,7 + 3,3 + 4,9 + 2,1 = 20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c1": "9",
+					"d1": "3",
+					"f1": "4",
+					"g1": "2"
+				},
+				"description": "9,7 + 4,9 + 3,3 + 2,1 = 20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c1": "9",
+					"d1": "3",
+					"f1": "4",
+					"g1": "2"
+				},
+				"description": "9,7 + 4,9 + 2,1 + 3,3 = 20",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["20{,}0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c1": "9",
+					"d1": "3",
+					"f1": "4",
+					"g1": "2"
+				},
+				"description": "20,0 zéro inutile",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c1": "9",
+					"d1": "3",
+					"f1": "4",
+					"g1": "2"
+				},
+				"description": "retenues oubliées : 18",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "2444927b-3202-4866-a5cf-25e852b1706a"
+	},
+	{
+		"id": "08fbcd26-6068-47cc-8384-8aeed96c6a78",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"subdomain": "Différence",
+		"level": 11,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:c-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + f*10 + g}}  - {{eval: d*100 + b*10 + c}} "
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Calculer un écart.** ${{eval: a*100 + f*10 + g}} - {{eval: d*100 + b*10 + c}}$, c'est l'écart entre ${{eval: d*100 + b*10 + c}}$ et ${{eval: a*100 + f*10 + g}}$ : on avance de ${{eval: d*100 + b*10 + c}}$ jusqu'à ${{eval: a*100 + f*10 + g}}$ par bonds, en passant par les nombres ronds : ${{eval: d*100 + b*10 + c}} \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((d*100 + b*10 + c))/10)*10}}}{{if:(ceil(((d*100 + b*10 + c))/100)*100-ceil(((d*100 + b*10 + c))/10)*10)*(((a*100 + f*10 + g))-ceil(((d*100 + b*10 + c))/100)*100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((d*100 + b*10 + c))/100)*100}}}|}}{{if:(floor(((a*100 + f*10 + g))/100)*100-ceil(((d*100 + b*10 + c))/100)*100)*(((a*100 + f*10 + g))-floor(((a*100 + f*10 + g))/100)*100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:floor(((a*100 + f*10 + g))/100)*100}}}|}} \\to {{eval: a*100 + f*10 + g}}$. L'écart est la somme des bonds.",
+						"$$\\begin{align} {{eval: a*100 + f*10 + g}} - {{eval: d*100 + b*10 + c}} &= \\textcolor{{{color:primary.0}}}{{{eval:ceil(((d*100 + b*10 + c))/10)*10-((d*100 + b*10 + c))}}}{{if:(ceil(((d*100 + b*10 + c))/100)*100-ceil(((d*100 + b*10 + c))/10)*10)>0| + \\textcolor{{{color:primary.0}}}{{{eval:ceil(((d*100 + b*10 + c))/100)*100-ceil(((d*100 + b*10 + c))/10)*10}}}|}}{{if:(floor(((a*100 + f*10 + g))/100)*100-ceil(((d*100 + b*10 + c))/100)*100)>0| + \\textcolor{{{color:primary.0}}}{{{eval:floor(((a*100 + f*10 + g))/100)*100-ceil(((d*100 + b*10 + c))/100)*100}}}|}} + \\textcolor{{{color:primary.0}}}{{{eval:((a*100 + f*10 + g))-floor(((a*100 + f*10 + g))/100)*100}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": "Calcule.",
+		"status": "published",
+		"title": "Calculer une différence (résultat positif)",
+		"description": "Nombres à $3$ chiffres (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["229"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["229,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "unomptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["456-227"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "0cad3e5b-da0a-4b01-8529-1a6d9ab12c2f"
+	},
+	{
+		"id": "09f22a2f-9a2d-404a-b0b4-be00046b3d49",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Quotient",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "3..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*10}}:{{b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Diviser des dizaines.** ${{eval:a*b*10}}$, c'est $\\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}}$ dizaines. Avec la table de ${{b}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}} : {{b}} = \\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}}$, donc ${{eval:a*b*10}} : {{b}}$ fait $\\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}}$ dizaines.",
+						"$$\\begin{align} {{eval:a*b*10}} : {{b}} &= \\left( \\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}} : {{b}} \\right) \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer un quotient entier",
+		"description": "Le dividende est un nombre de dizaines",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "630:9 = 70",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "Borne : 810:9 = 90",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : zéro oublié",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "1b5da00f-8824-424b-8c8a-c2a75635ead0"
+	},
+	{
+		"id": "0a93ac99-aa32-4471-9ce2-7180278d737b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme astucieuse",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "f+j+g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{eval:f;d}}}}+ {{eval:j;d}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:g;d}}}} &= {{eval:j;d}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:f+g;d}}}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				],
+				"statement": "Calcule de manière astucieuse.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "j+f+g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{eval:j;d}} +\\bold{\\textcolor{{{color:primary.0}}}{{{eval:f;d}}}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:g;d}}}} &= {{eval:j;d}} + \\bold{\\textcolor{{{color:primary.0}}}{{{eval:f+g;d}}}} \\\\ &=  {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Additionner par regroupements",
+		"description": "Regrouper pour obtenir un nombre entier. $3$ nombres à une décimale.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "digits:1"
+				},
+				{
+					"name": "b",
+					"expression": "10-a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..{{eval:9-c}}"
+				},
+				{
+					"name": "f",
+					"expression": "eval:c+a/10;d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:d+(b)/10;d"
+				},
+				{
+					"name": "h1",
+					"expression": "digits:1"
+				},
+				{
+					"name": "h2",
+					"expression": "1..9!a,{{eval:b}}"
+				},
+				{
+					"name": "h",
+					"expression": "eval:h1+(h2)/10"
+				},
+				{
+					"name": "j",
+					"expression": "eval:h;d"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["13{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"description": "9,5 + 3,2 + 0,5 = 13,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["13.2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"description": "13.2 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["13{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"description": "3,2 + 9,5 + 0,5 = 13,2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12{,}2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"c": "9",
+					"d": "0",
+					"h1": "3",
+					"h2": "2"
+				},
+				"description": "erreur 12,2",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "2444927b-3202-4866-a5cf-25e852b1706a"
+	},
+	{
+		"id": "17a3c039-744d-4108-9b47-49f0183990b7",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 10,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				],
+				"statement": "Combien faut-il ajouter à ${{eval:10000-(c)}}$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*1000+b*100"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Compléter.** On avance par bonds : jusqu’au millier suivant, puis jusqu’à $10\\,000$.",
+						"De $\\textcolor{{{color:primary.0}}}{{{eval:10000-(c)}}}$ à $\\textcolor{{{color:primary.1}}}{{{eval:10000-a*1000}}}$, il faut $\\textcolor{{{color:primary.1}}}{{{eval:b*100}}}$ ; de $\\textcolor{{{color:primary.1}}}{{{eval:10000-a*1000}}}$ à $10\\,000$, il faut $\\textcolor{{{color:primary.1}}}{{{eval:a*1000}}}$.",
+						"$$\\begin{align} 10\\,000 - \\textcolor{{{color:primary.0}}}{{{eval:10000-(c)}}} &= \\textcolor{{{color:primary.1}}}{{{eval:b*100}}} + \\textcolor{{{color:primary.1}}}{{{eval:a*1000}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver le complément",
+		"description": "Complément à 10 000 - description",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,900"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Bonne réponse 7\\,900",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7900"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Sans espace des milliers",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8\\,900"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "ee8abe8b-368f-4037-a4b2-9a3cab1d1afa"
+	},
+	{
+		"id": "19323604-1e27-4b0f-8a24-1eef76ab6e59",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*1000"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+						"{{if:a>=10000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.|{{if:a>=1000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|{{if:a>=100|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a>=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a>=1/10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}}}}}}}}}",
+						"$$\\begin{align} {{a}} \\times 1000 &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer un produit",
+		"description": "Multiplier par $1000$",
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["99\\,990"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "99.99",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "99,99 × 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.3",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "0,3 × 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.07",
+					"p": "0",
+					"q": "2"
+				},
+				"description": "0,07 × 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["99990"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "99.99",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0.3",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "× 100 seulement",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	},
+	{
+		"id": "322f3479-0120-4a6d-839a-4e8df194f99e",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Forme décimale",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1/2|1/4|1/10|2/10|3/2|5/2|1/100|2/1000|7/2|9/2"
+					},
+					{
+						"name": "expression1",
+						"expression": "a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$. Si le dénominateur n'est pas $10$, $100$ ou $1000$, on cherche d'abord une fraction égale qui a un de ces dénominateurs.",
+						"{{if:1000*a=500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{5}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=250|Le dénominateur $4$ n'est pas $10$, $100$ ou $1000$. Comme $4 \\times \\textcolor{{{color:primary.1}}}{25} = 100$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{25}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : le dernier chiffre de $25$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=100|Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{1}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=200|Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le chiffre $\\textcolor{{{color:primary.0}}}{2}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:1000*a=1500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $15$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}{{if:1000*a=2500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $25$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}{{if:1000*a=10|Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : le chiffre $\\textcolor{{{color:primary.0}}}{1}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule. Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:1000*a=2|Le dénominateur est $\\textcolor{{{color:primary.1}}}{1000}$ : le chiffre $\\textcolor{{{color:primary.0}}}{2}$ se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$. Il n'y a pas d'unités : on écrit $0$ avant la virgule. Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:1000*a=3500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $35$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}{{if:1000*a=4500|Le dénominateur $2$ n'est pas $10$, $100$ ou $1000$. Comme $2 \\times \\textcolor{{{color:primary.1}}}{5} = 10$, on multiplie le numérateur et le dénominateur par $\\textcolor{{{color:primary.1}}}{5}$. Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : le dernier chiffre de $45$, $\\textcolor{{{color:primary.0}}}{5}$, se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|}}",
+						"{{if:1000*a=500|$$\\begin{align} \\dfrac{1}{2} &= \\dfrac{1 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{5}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=250|$$\\begin{align} \\dfrac{1}{4} &= \\dfrac{1 \\times \\textcolor{{{color:primary.1}}}{25}}{4 \\times \\textcolor{{{color:primary.1}}}{25}} \\\\ &= \\dfrac{25}{100} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=100|$$\\begin{align} \\dfrac{1}{10} &= {{solution}} \\end{align}$$|}}{{if:1000*a=200|$$\\begin{align} \\dfrac{2}{10} &= {{solution}} \\end{align}$$|}}{{if:1000*a=1500|$$\\begin{align} \\dfrac{3}{2} &= \\dfrac{3 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{15}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=2500|$$\\begin{align} \\dfrac{5}{2} &= \\dfrac{5 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{25}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=10|$$\\begin{align} \\dfrac{1}{100} &= {{solution}} \\end{align}$$|}}{{if:1000*a=2|$$\\begin{align} \\dfrac{2}{1000} &= {{solution}} \\end{align}$$|}}{{if:1000*a=3500|$$\\begin{align} \\dfrac{7}{2} &= \\dfrac{7 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{35}{10} \\\\ &= {{solution}} \\end{align}$$|}}{{if:1000*a=4500|$$\\begin{align} \\dfrac{9}{2} &= \\dfrac{9 \\times \\textcolor{{{color:primary.1}}}{5}}{2 \\times \\textcolor{{{color:primary.1}}}{5}} \\\\ &= \\dfrac{45}{10} \\\\ &= {{solution}} \\end{align}$$|}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Déterminer la forme décimale d'une fraction",
+		"description": "Cas à connaître par cœur",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1/2"
+				},
+				"description": "un demi",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3{,}5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7/2"
+				},
+				"description": "sept demis, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9/2"
+				},
+				"description": "neuf demis",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "un quart",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1/2"
+				},
+				"description": "confusion 1/2 = 1,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "confusion 1/4 = 0,4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{4}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.002"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2/1000"
+				},
+				"description": "millièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.02"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2/1000"
+				},
+				"description": "millièmes mal placés",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "7f7ee0a5-60a6-4cf5-ba27-7d1937be225c"
+	},
+	{
+		"id": "32724446-558b-4eea-ad4a-13d7c6afe435",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Encadrer",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b*0.1;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+(b+1)*0.1;d}}"
+					}
+				],
+				"statement": "Encadre ce nombre décimal au dixième près.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a+b*0.1+c*0.01;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<d<?"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Encadrer.** On garde les chiffres jusqu’au rang demandé (on supprime les suivants) : c’est la borne inférieure ; on ajoute $1$ à ce rang : c’est la borne supérieure.",
+						"On garde les chiffres de $\\textcolor{{{color:primary.0}}}{{{d}}}$ jusqu’aux dixièmes, puis on ajoute $\\textcolor{{{color:primary.1}}}{0.1}$.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{d}}} - {{eval:c*0.01;d}} &= {{eval:a+b*0.1;d}} \\end{align}$$",
+						"$$\\begin{align} {{eval:a+b*0.1;d}} + \\textcolor{{{color:primary.1}}}{0.1} &= {{eval:a+(b+1)*0.1;d}} \\end{align}$$",
+						"Donc ${{eval:a+b*0.1;d}} < {{d}} < {{eval:a+(b+1)*0.1;d}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Encadrer un nombre décimal au dixième près",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7{,}9", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "7,9 < 7,99 < 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7.9", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "Tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}9", "8{,}0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "8,0 accepté (zéros libres, comme TinyMath)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0", "0{,}1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "0",
+					"c": "3"
+				},
+				"description": "0 < 0,03 < 0,1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}98", "8{,}01"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "Encadrement au centième au lieu du dixième : refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "da9d04e7-1292-40c6-baf5-c1c3ca81becc"
+	},
+	{
+		"id": "4643ed4a-4cb9-456f-bc7b-a36c99b8290a",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Produit",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*10"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b*10"
+					},
+					{
+						"name": "expression1",
+						"expression": "c*d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\bold{\\textcolor{{{color:primary.0}}}{{{c}}}} \\times \\bold{\\textcolor{{{color:primary.1}}}{{{d}}}} &= \\bold{\\textcolor{{{color:primary.0}}}{{{a}} \\times 10}} \\times \\bold{\\textcolor{{{color:primary.1}}}{{{b}} \\times 10}} \\\\ &= {{a}} \\times {{b}} \\times 10 \\times 10 \\\\ &= {{eval:a*b}} \\times 100 \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Multiplier deux multiples de $10$",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6\\,300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "70×90 = 6 300",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6300"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "6300 sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["630"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : un seul zéro",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["600"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "30×20 = 600",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "82ec743b-5746-4969-9ee8-85811830bde0"
+	},
+	{
+		"id": "4ee04b22-c7c3-42a7-8cbf-26022ffbbc28",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 14,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10}}"
+					}
+				],
+				"statement": "Dans ${{eval:a*10*b}}$, combien de fois ${{b}}$ ?\n\nOn peut mettre $?$ fois ${{b}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Diviser des dizaines.** On compte en dizaines, on divise avec la table, puis on revient aux unités.",
+						"$\\textcolor{{{color:primary.0}}}{{{eval:a*b*10}}}$, c’est $\\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$ dizaines ; $\\textcolor{{{color:primary.0}}}{{{eval:a*b}}} : {{b}} = \\textcolor{{{color:primary.1}}}{{{a}}}$.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{eval:a*b*10}}} : {{b}} &= \\left( \\textcolor{{{color:primary.0}}}{{{eval:a*b}}} : {{b}} \\right) \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{a}}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Combien de fois ... dans ....",
+		"description": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$. Nombre à 1 chiffre.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "630 = 70 × 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "Borne haute : 810 = 90 × 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 7 (oubli du zéro)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 63",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "1b5da00f-8824-424b-8c8a-c2a75635ead0"
+	},
+	{
+		"id": "5d4dfd32-bc56-49a5-827c-7233881a68ad",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 16,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:9-c}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10 + c}} + {{eval:d*100 + f*10 + g}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Calculer rang par rang.** On décompose ${{eval:d*100 + f*10 + g}}$ selon ses rangs : ${{eval:d*100 + f*10 + g}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((d*100 + f*10 + g))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100 + f*10 + g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100 + f*10 + g)),10)}}}$. On ajoute les morceaux un par un : centaines, puis dizaines, puis unités.",
+						"$$\\begin{align} {{eval:a*100 + b*10 + c}} + {{eval:d*100 + f*10 + g}} &= {{eval:a*100 + b*10 + c}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(((d*100 + f*10 + g))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100 + f*10 + g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100 + f*10 + g)),10)}}}{{if:(floor(((d*100 + f*10 + g))/100)*100)*((floor(mod(((d*100 + f*10 + g)),100)/10)*10)+(mod(((d*100 + f*10 + g)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)+((floor(((d*100 + f*10 + g))/100)*100))}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100 + f*10 + g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100 + f*10 + g)),10)}}}|}}{{if:(floor(mod(((d*100 + f*10 + g)),100)/10)*10)*((mod(((d*100 + f*10 + g)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)+((floor(((d*100 + f*10 + g))/100)*100)+(floor(mod(((d*100 + f*10 + g)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100 + f*10 + g)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 3 chiffres (sans retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["998"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"c": "2",
+					"d": "3",
+					"f": "1",
+					"g": "6"
+				},
+				"description": "682+316",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["988"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"c": "2",
+					"d": "3",
+					"f": "1",
+					"g": "6"
+				},
+				"description": "erreur",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "0cad3e5b-da0a-4b01-8529-1a6d9ab12c2f"
+	},
+	{
+		"id": "61baef92-f8ff-4641-91f3-74ce63f04232",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"subdomain": "Quotient",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "b",
+						"expression": "3..5"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*10}}:{{b}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Diviser des dizaines.** ${{eval:a*b*10}}$, c'est $\\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}}$ dizaines. Avec la table de ${{b}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}} : {{b}} = \\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}}$, donc ${{eval:a*b*10}} : {{b}}$ fait $\\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}}$ dizaines.",
+						"$$\\begin{align} {{eval:a*b*10}} : {{b}} &= \\left( \\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}} : {{b}} \\right) \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer un quotient entier",
+		"description": "Le dividende est un nombre de dizaines (simple)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"description": "250:5 = 50",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "Borne : 180:3 = 60",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"description": "Erreur : zéro oublié",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "1b5da00f-8824-424b-8c8a-c2a75635ead0"
+	},
+	{
+		"id": "6379fa20-672c-4771-9d48-6d167a7a922e",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"subdomain": "Encadrer",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b*0.1+c*0.01;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+b*0.1+(c+1)*0.01;d}}"
+					}
+				],
+				"statement": "Encadre ce nombre décimal au centième près.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a+b*0.1+c*0.01+d*0.001;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<f<?"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Encadrer.** On garde les chiffres jusqu’au rang demandé (on supprime les suivants) : c’est la borne inférieure ; on ajoute $1$ à ce rang : c’est la borne supérieure.",
+						"On garde les chiffres de $\\textcolor{{{color:primary.0}}}{{{f}}}$ jusqu’aux centièmes, puis on ajoute $\\textcolor{{{color:primary.1}}}{0.01}$.",
+						"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{f}}} - {{eval:d*0.001;d}} &= {{eval:a+b*0.1+c*0.01;d}} \\end{align}$$",
+						"$$\\begin{align} {{eval:a+b*0.1+c*0.01;d}} + \\textcolor{{{color:primary.1}}}{0.01} &= {{eval:a+b*0.1+(c+1)*0.01;d}} \\end{align}$$",
+						"Donc ${{eval:a+b*0.1+c*0.01;d}} < {{f}} < {{eval:a+b*0.1+(c+1)*0.01;d}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Encadrer un nombre décimal au centième près",
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7{,}99", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "7,99 < 7,996 < 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7.99", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "Tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}99", "8{,}00"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "8,00 accepté (zéros libres)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}995", "7{,}997"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "Encadrement au millième : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "7{,}99"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "Bornes inversées : refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "da9d04e7-1292-40c6-baf5-c1c3ca81becc"
+	},
+	{
+		"id": "6a16303a-acb1-46c4-aed2-ebae62cb5c32",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"subdomain": "Différence",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10+a+b/10;d}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-h"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Soustraire des décimaux.** On soustrait rang par rang : les unités des unités, les dixièmes des dixièmes. Quand on ne peut pas retirer les dixièmes, on échange $1$ unité contre $10$ dixièmes.",
+						"Parties entières : $\\textcolor{{{color:primary.0}}}{{{eval:10+a}}} - \\textcolor{{{color:primary.0}}}{{{d}}} = {{eval:10+a-d}}$. Dixièmes : $\\textcolor{{{color:primary.0}}}{{{b}}} - \\textcolor{{{color:primary.0}}}{{{f}}} = {{eval:b-f}}$.",
+						"$$\\begin{align} {{c}} - {{h}} &= \\left( \\textcolor{{{color:primary.0}}}{{{eval:10+a}}} - \\textcolor{{{color:primary.0}}}{{{d}}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}} - \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= {{eval:10+a-d}} + \\textcolor{{{color:primary.1}}}{{{eval:(b-f)/10;d}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer une différence",
+		"description": "Partie entière à $2$ chiffres et partie entière à $1$ (retenue sur la partie entière)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "16,9 − 8,2 = 8,7 (virgule)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8.7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "8.7 avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "oubli de la retenue : 18,7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{87}{10}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "fraction 87/10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}70"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "8,70",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "961e9594-bf2b-47fd-a89e-63ee66c93a23"
+	},
+	{
+		"id": "7d57fb3b-a050-4920-8231-e5ac609fa07d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"subdomain": "Différence",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Soustraire des décimaux.** On soustrait rang par rang : les unités des unités, les dixièmes des dixièmes. Quand on ne peut pas retirer les dixièmes, on échange $1$ unité contre $10$ dixièmes.",
+						"On ne peut pas retirer $\\textcolor{{{color:primary.0}}}{{{f}}}$ dixièmes de $\\textcolor{{{color:primary.0}}}{{{b}}}$ dixièmes : on échange $\\textcolor{{{color:primary.1}}}{1}$ unité de ${{c}}$ contre $\\textcolor{{{color:primary.1}}}{10}$ dixièmes. ${{c}}$, c'est ${{eval:a-1}}$ unité{{if:a-1>1|s|}} et $\\textcolor{{{color:primary.1}}}{{{eval:10+b}}}$ dixièmes. Unités : ${{eval:a-1}} - \\textcolor{{{color:primary.0}}}{{{d}}} = {{eval:a-1-d}}$. Dixièmes : $\\textcolor{{{color:primary.1}}}{{{eval:10+b}}} - \\textcolor{{{color:primary.0}}}{{{f}}} = {{eval:10+b-f}}$.",
+						"$$\\begin{align} {{c}} - {{g}} &= \\left( {{eval:a-1}} + \\textcolor{{{color:primary.1}}}{{{eval:(10+b)/10;d}}} \\right) - \\left( \\textcolor{{{color:primary.0}}}{{{d}}} + \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= \\left( {{eval:a-1}} - \\textcolor{{{color:primary.0}}}{{{d}}} \\right) + \\left( \\textcolor{{{color:primary.1}}}{{{eval:(10+b)/10;d}}} - \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= {{if:a-1-d>0|{{eval:a-1-d}} + |}}{{eval:(10+b-f)/10;d}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer une différence",
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2{,}9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"d": "4",
+					"f": "9"
+				},
+				"description": "7,8 − 4,9 = 2,9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"d": "4",
+					"f": "9"
+				},
+				"description": "2.9 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3{,}1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"d": "4",
+					"f": "9"
+				},
+				"description": "petit ôté du grand chiffre à chiffre : 3,1",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "961e9594-bf2b-47fd-a89e-63ee66c93a23"
+	},
+	{
+		"id": "8fa3108c-692b-45d1-ac2a-7d4cb8cbf798",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Multiplication",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*c}}}{{{b}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*{c/b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{a}} \\times \\dfrac{{{c}}}{{{b}}} &= \\dfrac{{{a}} \\times {{c}}}{{{b}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*c}}}{{{b}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{c/b}*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{{{c}}}{{{b}}} \\times {{a}} &= \\dfrac{{{c}} \\times {{a}}}{{{b}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer un produit",
+		"description": "un entier par un quotient",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..10!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!cd(b)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{32}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "4"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{32}{56}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "4"
+				},
+				"description": "v1 dénominateur multiplié aussi",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{64}{14}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "4"
+				},
+				"description": "v1 non simplifiée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{63}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "9"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "2"
+				},
+				"description": "v2 bornes basses",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "ba8077bb-4aa8-473e-ae4f-c4a38b2a32ca"
+	},
+	{
+		"id": "a0241952-7930-4e8a-aa6c-2a5b8bef664a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:10-b}}..9"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c+g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Additionner des décimaux.** On additionne rang par rang : les unités avec les unités, les dixièmes avec les dixièmes, les centièmes avec les centièmes. $10$ dixièmes font $1$ unité.",
+						"Unités : $\\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} = {{eval:a+d}}$. Dixièmes : $\\textcolor{{{color:primary.0}}}{{{b}}} + \\textcolor{{{color:primary.0}}}{{{f}}} = {{eval:b+f}}$ dixièmes{{if:b+f>=10|, soit $\\textcolor{{{color:primary.1}}}{1}$ unité et ${{eval:b+f-10}}$ dixième{{if:b+f-10>1|s|}}|}}.",
+						"$$\\begin{align} {{c}} + {{g}} &= \\left( \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}} + \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= {{eval:a+d}} + \\textcolor{{{color:primary.1}}}{{{eval:(b+f)/10;d}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer une somme",
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenue pour la partie décimale)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "5,9 + 2,3 = 8,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8.2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "8.2 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "retenue oubliée : 7,12",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "retenue oubliée : 7,2",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "2444927b-3202-4866-a5cf-25e852b1706a"
+	},
+	{
+		"id": "a5d5a7a0-2b7f-4174-a487-4c673fee5eeb",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 15,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10}}* ?= {{eval:a*10*b*10}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.0}}}{{{eval:a*10}}} \\times ? = {{eval:a*10*b*10}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$, donne ${{eval:a*10*b*10}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:a*10*b*10}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$.",
+						"$$\\begin{align} ? &= {{eval:a*10*b*10}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{{{eval:a*10}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*{{eval:a*10}}={{eval:b*10*a*10}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$? \\times \\textcolor{{{color:primary.0}}}{{{eval:a*10}}} = {{eval:b*10*a*10}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$, donne ${{eval:b*10*a*10}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:b*10*a*10}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$.",
+						"$$\\begin{align} ? &= {{eval:b*10*a*10}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{{{eval:a*10}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier deux multiples de $10$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "70 × 90 = 6 300",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 9 (oubli du zéro)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "? × 70 = 6 300",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["900"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 900",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "82ec743b-5746-4969-9ee8-85811830bde0"
+	},
+	{
+		"id": "aa788ca7-bb32-45a3-9566-cc2d70a11d29",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*100 = {{eval:a*100;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.2}}}{{{eval:a;d}}} \\times 100 = {{eval:a*100;d}}$ car  ${{eval:a*100;d}} \\div 100 = {{solution:0}}$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "100*? = {{eval:a*100;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$100 \\times \\textcolor{{{color:primary.2}}}{{{eval:a;d}}} = {{eval:a*100;d}}$ car  ${{eval:a*100;d}} \\div 100 = {{solution:0}}$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				}
+			],
+			"conditions": ["mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["18{,}38"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "18,38 × 100 (virgule)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18.38"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "18.38 (point)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1{,}838"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "mauvais décalage",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18{,}380"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "18,380 : zéro inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.4",
+					"m": "0",
+					"q": "1"
+				},
+				"description": "100 × 0,4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}04"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0.4",
+					"m": "0",
+					"q": "1"
+				},
+				"description": "0,04 : mauvais décalage",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	},
+	{
+		"id": "ac2dae38-425e-4f10-ba6a-045c285355d0",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "A trou",
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*1000 = {{eval:a*1000;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{solution:0}} \\times 1000 = {{eval:a*1000;d}}$ car  ${{eval:a*1000;d}} \\div 1000 = {{solution:0}}$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "1000*? = {{eval:a*1000;d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$1000 \\times {{solution:0}} = {{eval:a*1000;d}}$ car  ${{eval:a*1000;d}} \\div 1000 = {{solution:0}}$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Compléter une multiplication à trou",
+		"description": "Multiplier par $1000$",
+		"shared": {
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				}
+			],
+			"conditions": ["mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["18{,}38"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "18,38 × 1000 (virgule)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18.38"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "18.38 (point)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1{,}838"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "mauvais décalage",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18{,}380"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "18,380 : zéro inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.4",
+					"m": "0",
+					"q": "1"
+				},
+				"description": "1000 × 0,4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}04"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0.4",
+					"m": "0",
+					"q": "1"
+				},
+				"description": "0,04 : mauvais décalage",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	},
+	{
+		"id": "cda36cc2-7d9c-4340-99f0-143467c83786",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "strict",
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture",
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Zéros inutiles.** Dans un nombre entier, les zéros écrits **à gauche** du premier chiffre non nul ne servent à rien : on les enlève. Les autres zéros (au milieu ou à droite) donnent le rang des chiffres : on les garde.",
+						"Les deux zéros $\\textcolor{{{color:primary.1}}}{00}$ écrits devant $\\textcolor{{{color:primary.0}}}{{{a}}}$ sont inutiles : on les enlève.",
+						"$$\\begin{align} \\textcolor{{{color:primary.1}}}{00}\\textcolor{{{color:primary.0}}}{{{a}}}{{b}}{{c}}{{d}} &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Zéros inutiles.** Dans un nombre entier, les zéros écrits **à gauche** du premier chiffre non nul ne servent à rien : on les enlève. Les autres zéros (au milieu ou à droite) donnent le rang des chiffres : on les garde.",
+						"Les deux zéros $\\textcolor{{{color:primary.1}}}{00}$ écrits devant $\\textcolor{{{color:primary.0}}}{{{a}}}$ sont inutiles : on les enlève. Le zéro de droite reste : il donne le rang des autres chiffres.",
+						"$$\\begin{align} \\textcolor{{{color:primary.1}}}{00}\\textcolor{{{color:primary.0}}}{{{a}}}{{b}}{{c}}{{d}}0 &= {{solution}} \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}00"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Zéros inutiles.** Dans un nombre entier, les zéros écrits **à gauche** du premier chiffre non nul ne servent à rien : on les enlève. Les autres zéros (au milieu ou à droite) donnent le rang des chiffres : on les garde.",
+						"Les deux zéros $\\textcolor{{{color:primary.1}}}{00}$ écrits devant $\\textcolor{{{color:primary.0}}}{{{a}}}$ sont inutiles : on les enlève. Les zéros de droite restent : ils donnent le rang des autres chiffres.",
+						"$$\\begin{align} \\textcolor{{{color:primary.1}}}{00}\\textcolor{{{color:primary.0}}}{{{a}}}{{b}}{{c}}{{d}}00 &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Ecrire un grand nombre entier sans les zéros inutiles",
+		"description": null,
+		"shared": {
+			"statement": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0|1..9"
+				},
+				{
+					"name": "c",
+					"expression": "0|1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "003045 → 3 045",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["003\\,045"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros de tête conservés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["345"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéro intérieur supprimé à tort",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3045"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros enlevés mais sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30\\,450"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "0030450 → 30 450",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéro final supprimé à tort",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0030\\,450"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros de tête conservés",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["304\\,500"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "00304500 → 304 500",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros finaux supprimés à tort",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["00304\\,500"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros de tête conservés",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67"
+	},
+	{
+		"id": "e320755f-fa1d-4230-9997-c5917e1c56ef",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"subdomain": "Multiplication",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*{1/b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{a}} \\times \\dfrac{1}{{{b}}} &= \\dfrac{{{a}} \\times 1}{{{b}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{1/b}*a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\dfrac{1}{{{b}}} \\times {{a}} &= \\dfrac{1 \\times {{a}}}{{{b}}} \\\\ &= {{solution}}  \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer un produit",
+		"description": "un entier par un quotient de numérateur $1$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..10!cd(a)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{8}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{8}{56}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7"
+				},
+				"description": "v1 dénominateur multiplié aussi",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{9}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "10"
+				},
+				"description": "v1 bornes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3"
+				},
+				"description": "v2 bornes basses",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "ba8077bb-4aa8-473e-ae4f-c4a38b2a32ca"
+	},
+	{
+		"id": "e38d205a-5737-4a0a-a9cd-aab742107c2b",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*100"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+						"{{if:a>=10000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|{{if:a>=1000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1000+1/100000)}}}$, est au rang des milliers. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a>=100|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/100+1/100000)}}}$, est au rang des centaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a>=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a>=1/10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*100+1/100000)}}}$, est au rang des centièmes. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.}}}}}}}}}}}}",
+						"$$\\begin{align} {{a}} \\times 100 &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer un produit",
+		"description": "Multiplier par $100$",
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1\\,838"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "18,38 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.07",
+					"p": "0",
+					"q": "2"
+				},
+				"description": "0,07 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["640"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6.4",
+					"p": "1",
+					"q": "1"
+				},
+				"description": "6,4 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["350"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3.5",
+					"p": "2",
+					"q": "1"
+				},
+				"description": "3,5 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1838"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["183.8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "× 10 seulement",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "41b6bef6-7831-49e9-a44f-7700a39207e9"
+	},
+	{
+		"id": "edc5d7d4-98a2-4118-8c7f-35dd510dbcd5",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Moitié",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Quelle est la moitié du nombre ${{eval:a;d}}$ ?\n\nLa moitié de ${{eval:a;d}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "0..14"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*2+1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:(a)/2;d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La moitié de ${{eval:a;d}}$ est ${{solution}}$ car $2 \\times {{solution:0}} = {{eval:a}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver la moitié",
+		"description": "Nombres impairs de $1$ à $29$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["10{,}5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a1": "10"
+				},
+				"description": "moitié de 21 = 10,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a1": "10"
+				},
+				"description": "10.5 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{21}{2}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a1": "10"
+				},
+				"description": "21/2 en fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a1": "10"
+				},
+				"description": "erreur 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a1": "0"
+				},
+				"description": "moitié de 1 = 0,5",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "c1a01819-c975-42ac-b756-2d427c826be9"
+	},
+	{
+		"id": "fe9df9ba-2017-4027-b678-bae8196c3651",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 15,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 17,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..7"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:8-b}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:11-c}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10 + c}} +{{eval:d*100+f*10+g}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Calculer rang par rang.** On décompose ${{eval:d*100+f*10+g}}$ selon ses rangs : ${{eval:d*100+f*10+g}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((d*100+f*10+g))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100+f*10+g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}$. On ajoute les morceaux un par un : centaines, puis dizaines, puis unités.",
+						"$$\\begin{align} {{eval:a*100 + b*10 + c}} + {{eval:d*100+f*10+g}} &= {{eval:a*100 + b*10 + c}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(((d*100+f*10+g))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100+f*10+g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}{{if:(floor(((d*100+f*10+g))/100)*100)*((floor(mod(((d*100+f*10+g)),100)/10)*10)+(mod(((d*100+f*10+g)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)+((floor(((d*100+f*10+g))/100)*100))}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100+f*10+g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}|}}{{if:(floor(mod(((d*100+f*10+g)),100)/10)*10)*((mod(((d*100+f*10+g)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)+((floor(((d*100+f*10+g))/100)*100)+(floor(mod(((d*100+f*10+g)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer une somme",
+		"description": "Nombres entiers à 3 chiffres (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["892"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "3",
+					"d": "3",
+					"f": "1",
+					"g": "9"
+				},
+				"description": "573+319",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["882"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "3",
+					"d": "3",
+					"f": "1",
+					"g": "9"
+				},
+				"description": "retenue oubliée",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "0cad3e5b-da0a-4b01-8529-1a6d9ab12c2f"
+	},
+	{
+		"id": "ff3ee576-e032-4c82-a428-9f49f046c313",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"subdomain": "Somme",
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:10-a}}..9"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:10-b}}..9"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c+g"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Additionner des décimaux.** On additionne rang par rang : les unités avec les unités, les dixièmes avec les dixièmes, les centièmes avec les centièmes. $10$ dixièmes font $1$ unité.",
+						"Unités : $\\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} = {{eval:a+d}}$. Dixièmes : $\\textcolor{{{color:primary.0}}}{{{b}}} + \\textcolor{{{color:primary.0}}}{{{f}}} = {{eval:b+f}}$ dixièmes{{if:b+f>=10|, soit $\\textcolor{{{color:primary.1}}}{1}$ unité et ${{eval:b+f-10}}$ dixième{{if:b+f-10>1|s|}}|}}.",
+						"$$\\begin{align} {{c}} + {{g}} &= \\left( \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}} + \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= {{eval:a+d}} + \\textcolor{{{color:primary.1}}}{{{eval:(b+f)/10;d}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Calculer une somme",
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenues)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["15{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "7,9 + 7,3 = 15,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15.2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "15.2 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14{,}12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "retenues oubliées : 14,12",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "2444927b-3202-4866-a5cf-25e852b1706a"
+	}
+]

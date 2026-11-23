@@ -24,11 +24,11 @@ function conclusion(output: string): string {
 
 describe('.solve — membre entre parenthèses', () => {
 	it.each([
-		['(2x-3)=0', 'x = 3/2'],
-		['((x-5))=0', 'x = 5'],
-		['0=(x-4)', 'x = 4'],
-		['2(x-1)=4', 'x = 3'],
-		['(e^x-1)=0', 'x = 0']
+		['(2x-3)=0', 'S = {3/2}'],
+		['((x-5))=0', 'S = {5}'],
+		['0=(x-4)', 'S = {4}'],
+		['2(x-1)=4', 'S = {3}'],
+		['(e^x-1)=0', 'S = {0}']
 	])('%s conclut %s', (input, expected) => {
 		expect(conclusion(solveOutput(input))).toBe(expected);
 	});
@@ -58,6 +58,6 @@ describe('.solve — membre entre parenthèses', () => {
 	it('témoin sans parenthèses : x^2-3x=0 inchangé', () => {
 		const output = solveOutput('x^2-3x=0');
 		expect(output).toContain('a = 1, b = -3, c = 0');
-		expect(conclusion(output)).toBe('x = 3 ou x = 0');
+		expect(conclusion(output)).toBe('S = {0 ; 3}');
 	});
 });

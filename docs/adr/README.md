@@ -42,6 +42,15 @@ contourner en silence.
 | 0031 | [Le parseur maison est une langue interne, lue comme le BIPM](0031-parseur-maison-langue-interne-bipm.md)                                | 2026-10-20 |
 | 0032 | [La forme affichée se choisit par le but ; `tidy` enlève, ne transforme pas](0032-la-forme-affichee-se-choisit-par-le-but.md)            | 2026-10-22 |
 | 0033 | [Le QCM est une case : la case choix remplace `multiple_choice`](0033-le-qcm-est-une-case.md)                                            | 2026-10-26 |
+| 0034 | [Solides : trois blocs, un nœud, une scène cavalière](0034-solides-trois-blocs-un-noeud-une-scene-cavaliere.md)                          | 2026-10-30 |
+| 0035 | [Une série enregistre des modèles, plus des catégories](0035-une-serie-enregistre-des-modeles.md)                                        | 2026-11-04 |
+| 0036 | [Le centimètre d'une figure à compléter est celui de la figure](0036-le-cm-de-la-figure.md)                                              | 2026-11-08 |
+| 0037 | [Cinq formes de série, deux boutons d'auto-évaluation](0037-cinq-formes-de-serie-deux-boutons.md)                                        | 2026-11-11 |
+| 0038 | [Le contenu d'une trace : la graine, la réponse par case, les temps](0038-contenu-d-une-trace.md)                                        | 2026-11-11 |
+| 0039 | [Les blocs tortue et calcul sont interprétés par Chiphre, jamais évalués en JavaScript](0039-blocs-interpretes-par-chiphre.md)           | 2026-11-14 |
+| 0040 | [Le carnet de liaison : un lien par parent, des courriels sur exception](0040-carnet-de-liaison-lien-par-parent.md)                      | 2026-11-16 |
+| 0041 | [Catégorie et notions d'une fiche](0041-categorie-et-notions-d-une-fiche.md)                                                             | 2026-11-19 |
+| 0042 | [Texte coloré dans la prose : `[texte]{.nom}`, les 12 noms de la palette](0042-texte-colore-dans-la-prose.md)                            | 2026-11-20 |
 
 ## Écrire un ADR
 

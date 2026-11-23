@@ -20,9 +20,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { runInput } from '$lib/atelier/calcul';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { runInput } from '#lib/atelier/calcul.ts';
 import { DOMAIN_CORPUS, type DomainEntry } from './corpus';
 import { judgeEntry, numericMismatches, parseExpected, type DomainVerdict } from './harness';
 import { KNOWN_REFUSED, KNOWN_WRONG } from './known';

@@ -11,11 +11,11 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
 import ExpectedResultView from '../ExpectedResultView.svelte';
-import { buildExpectedResult } from '$lib/questions/expected-result';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { TestAnswerResult } from '$lib/types/test';
-import { templateMarkdown } from '$lib/ubumark';
+import { buildExpectedResult } from '#lib/questions/expected-result.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 const MONNAIE = ['Paie le ballon à 35 €.', '', '```monnaie', 'construire: 35', '```'].join('\n');
 const COLLECTION = ['Construis 34.', '', '```collection', 'construire: 34', '```'].join('\n');
@@ -29,8 +29,6 @@ function instance(statement: string): QuestionInstance {
 			type: 'fill_in_blanks',
 			variations: [{ statement: templateMarkdown(statement) }],
 			grades: ['CP'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		42

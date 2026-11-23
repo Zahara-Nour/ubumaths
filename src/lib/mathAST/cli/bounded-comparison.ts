@@ -29,7 +29,7 @@ import { boolean, logical, relation } from '../factory';
 import { rationalToNode } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { compareEnclosures, enclosure } from './interval';
-import { isTooLongToCompute, productValue } from './exact-size';
+import { isTooLongToCompute, productValue, shortFactorialValue } from './exact-size';
 
 // =============================================================================
 // Constantes
@@ -75,8 +75,20 @@ function computableSide(side: MathNode): MathNode | null {
 }
 
 /**
+ * Un membre fait de factorielles dont la valeur est courte, remplacé par elle (`1000!/999!` →
+ * 1000) : le moteur ne réduit aucune factorielle au-delà de 2⁵³, et tranchait
+ * `1000!/999! = 1000` FAUX (revue du lot 2, 2026-11-03). `null` sinon.
+ */
+function shortFactorialSide(side: MathNode): MathNode | null {
+	if (isTooLongToCompute(side)) return null;
+	const value = shortFactorialValue(side);
+	return value === null ? null : rationalToNode(value);
+}
+
+/**
  * La comparaison réécrite pour que rien n'y dépasse le plafond de calcul : membres remplacés
- * par leur valeur exacte, ou relation tranchée (`true`/`false`) ; `null` si rien n'y dépasse.
+ * par leur valeur exacte, ou relation tranchée (`true`/`false`) ; un membre de factorielles
+ * courtes, par sa valeur ; `null` si rien n'y change.
  *
  * @throws si un membre trop grand ne s'encadre pas, ou si les encadrements se recouvrent
  */
@@ -100,7 +112,12 @@ export function boundedComparison(node: MathNode): MathNode | null {
 		);
 	}
 	if (!ORDER_RELATIONS.has(node.relation)) return null;
-	if (!isTooLongToCompute(node.left) && !isTooLongToCompute(node.right)) return null;
+	if (!isTooLongToCompute(node.left) && !isTooLongToCompute(node.right)) {
+		const [left, right] = [shortFactorialSide(node.left), shortFactorialSide(node.right)];
+		return left === null && right === null
+			? null
+			: { ...node, left: left ?? node.left, right: right ?? node.right };
+	}
 
 	const left = computableSide(node.left);
 	const right = computableSide(node.right);

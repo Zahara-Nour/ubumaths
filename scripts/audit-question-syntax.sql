@@ -41,8 +41,7 @@ WITH syntax_analysis AS (
     id,
     title,
     status,
-    theme,
-    domain,
+    classification_node_id,
     -- Check for old syntax patterns
     (
       variations::text LIKE '%{@:%' OR  -- Old variable syntax
@@ -81,8 +80,7 @@ SELECT
 SELECT
   id,
   title,
-  theme,
-  domain,
+  classification_node_id,
   status,
   DATE(created_at) as created,
   DATE(updated_at) as updated
@@ -101,8 +99,7 @@ SELECT
 SELECT
   id,
   title,
-  theme,
-  domain,
+  classification_node_id,
   status,
   DATE(created_at) as created,
   DATE(updated_at) as updated
@@ -121,8 +118,7 @@ SELECT
 SELECT
   id,
   title,
-  theme,
-  domain,
+  classification_node_id,
   status,
   DATE(created_at) as created,
   DATE(updated_at) as updated

@@ -13,8 +13,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import {
+	isCourseCard,
+	type QuestionInstance,
+	type QuestionTemplate
+} from '#lib/questions/types.ts';
 import { validateSaveTest } from '../tests';
 import { REAL_TEMPLATES } from './fixtures/real-templates';
 
@@ -46,7 +50,7 @@ type WirePayload = {
 			timeSpent: unknown;
 		}[];
 	};
-	categories: { category: { level: unknown } }[];
+	items: { templateId: unknown; quantity: unknown }[];
 };
 
 // ============================================================================
@@ -104,19 +108,20 @@ function buildPayload(
 		answers: answerResults,
 		completedAt: new Date().toISOString()
 	};
-	const categories = levels.map((level) => ({
-		category: { theme: 'Entiers', domain: 'Additionner', subdomain: 'Tables', level },
+	// Une ligne par « niveau » demandé : un modèle distinct chacune (ADR 0035)
+	const items = levels.map((level) => ({
+		templateId: `0a11f0e0-0000-4000-8000-${String(level).padStart(12, '0')}`,
 		quantity: 5,
 		delay: 20
 	}));
 	// Aller-retour réseau : `undefined` disparaît, les marques de type aussi
-	return JSON.parse(JSON.stringify({ result, categories }));
+	return JSON.parse(JSON.stringify({ result, items }));
 }
 
 function realSessionPayload() {
 	const instances = [
 		realInstance(REAL_TEMPLATES.singleBlank),
-		realInstance(REAL_TEMPLATES.multipleChoice),
+		realInstance(REAL_TEMPLATES.choiceCase),
 		realInstance(REAL_TEMPLATES.multiBlank),
 		realInstance(REAL_TEMPLATES.unit)
 	];
@@ -150,7 +155,7 @@ describe('validateSaveTest — vraies instances du générateur', () => {
 		if (!v.success) return;
 		expect(v.data.result.answers.map((a) => a.instance.templateId)).toEqual([
 			REAL_TEMPLATES.singleBlank.id,
-			REAL_TEMPLATES.multipleChoice.id,
+			REAL_TEMPLATES.choiceCase.id,
 			REAL_TEMPLATES.multiBlank.id,
 			REAL_TEMPLATES.unit.id
 		]);
@@ -172,10 +177,7 @@ describe('validateSaveTest — vraies instances du générateur', () => {
 	});
 
 	it('accepte un QCM sans choix sélectionné (value absente)', () => {
-		const payload = buildPayload(
-			[realInstance(REAL_TEMPLATES.multipleChoice)],
-			[{ isCorrect: false }]
-		);
+		const payload = buildPayload([realInstance(REAL_TEMPLATES.choiceCase)], [{ isCorrect: false }]);
 		const v = validateSaveTest(payload);
 		expect(v.success ? 'ok' : v.error.issues).toBe('ok');
 	});
@@ -278,11 +280,9 @@ describe('validateSaveTest — payloads hostiles', () => {
 		).toBe(false);
 	});
 
-	it('refuse trop de catégories et un niveau hors bornes', () => {
-		expect(mutate((p) => (p.categories = Array.from({ length: 51 }, () => p.categories[0])))).toBe(
-			false
-		);
-		expect(mutate((p) => (p.categories[0].category.level = 1000))).toBe(false);
+	it('refuse trop de lignes et un identifiant de modèle qui n’est pas un uuid', () => {
+		expect(mutate((p) => (p.items = Array.from({ length: 51 }, () => p.items[0])))).toBe(false);
+		expect(mutate((p) => (p.items[0].templateId = 'pas-un-uuid'))).toBe(false);
 	});
 
 	it('refuse un compteur de bonnes réponses incohérent', () => {

@@ -1,7 +1,7 @@
 /**
  * Shared number line rendering utilities.
  *
- * Used by both the static NumberLine.svelte and interactive NumberLineInput.svelte
+ * Used by both the static NumberLine.svelte
  * to avoid duplicating layout constants, coordinate mapping, and graduation logic.
  *
  * @module ubumark/utils/number-line-render
@@ -10,12 +10,13 @@
 import type {
 	NumberLineValue,
 	NumberLineConfig,
-	NumberLineNode
-} from '$lib/ubumark/types/number-line';
-import { resolveAuthorColor, type AuthorColor } from '$lib/theme/author-color';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
+	NumberLineNode,
+	NumberLineSegment
+} from '#lib/ubumark/types/number-line.ts';
+import { resolveAuthorColor, type AuthorColor } from '#lib/theme/author-color.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { compareNumericNodes } from '#lib/mathAST/eval/compare-numeric.ts';
 
 // =========================================================================
 // LAYOUT CONSTANTS
@@ -32,10 +33,29 @@ export const NL_LAYOUT = {
 	POINT_RADIUS: 5,
 	POINT_Y_OFFSET: -18,
 	POINT_LABEL_Y_OFFSET: -30,
-	SEGMENT_Y_OFFSET: 12,
+	/** Écart (px) entre deux étages de segments qui se chevauchent, au-dessus de l'axe */
+	SEGMENT_LEVEL_GAP: 10,
 	ARROW_SIZE: 8,
 	LINE_WIDTH: 600 - 40 - 40 // SVG_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
 } as const;
+
+/*
+ * Largeur réelle (téléphone, `docs/wip/reponses-a-placer-progress.md` § 8) :
+ * l'écran dessine la droite à la largeur de son conteneur, en px, sans viewBox
+ * réduite. Marges, chiffres, points et traits gardent leur taille ; seul
+ * l'écart entre graduations se resserre. Sans largeur : `SVG_WIDTH` (PDF, tests).
+ */
+/** Largeur en dessous de laquelle on ne dessine plus (la ligne resterait sans place) */
+export const NL_MIN_WIDTH = 160;
+/** Conteneur de référence sur un écran de téléphone (360 px moins les marges de page) */
+export const NL_PHONE_WIDTH = 320;
+/** En dessous, une graduation est difficile à lire et à viser du doigt */
+export const NL_MIN_GRADUATION_GAP = 20;
+
+/** Longueur de la ligne graduée pour une droite dessinée sur `width` px */
+function lineWidthFor(width: number): number {
+	return width - NL_LAYOUT.MARGIN_LEFT - NL_LAYOUT.MARGIN_RIGHT;
+}
 
 // =========================================================================
 // VALUE HELPERS
@@ -81,19 +101,22 @@ export function valueToX(
 	val: number,
 	startNum: number,
 	endNum: number,
-	scale: 'linear' | 'log' = 'linear'
+	scale: 'linear' | 'log' = 'linear',
+	width: number = NL_LAYOUT.SVG_WIDTH
 ): number {
-	return (
-		NL_LAYOUT.MARGIN_LEFT + mapValueToRange(val, startNum, endNum, NL_LAYOUT.LINE_WIDTH, scale)
-	);
+	return NL_LAYOUT.MARGIN_LEFT + mapValueToRange(val, startNum, endNum, lineWidthFor(width), scale);
 }
 
 /**
  * Map an SVG x coordinate back to a numeric value (linear only).
  */
-export function xToValue(x: number, startNum: number, endNum: number): number {
-	const { MARGIN_LEFT, LINE_WIDTH } = NL_LAYOUT;
-	return startNum + ((x - MARGIN_LEFT) / LINE_WIDTH) * (endNum - startNum);
+export function xToValue(
+	x: number,
+	startNum: number,
+	endNum: number,
+	width: number = NL_LAYOUT.SVG_WIDTH
+): number {
+	return startNum + ((x - NL_LAYOUT.MARGIN_LEFT) / lineWidthFor(width)) * (endNum - startNum);
 }
 
 /**
@@ -142,7 +165,10 @@ export interface Graduation {
  * Compute all graduations for a number line configuration.
  * Pure function — no Svelte reactivity.
  */
-export function computeGraduations(config: NumberLineConfig): Graduation[] {
+export function computeGraduations(
+	config: NumberLineConfig,
+	width: number = NL_LAYOUT.SVG_WIDTH
+): Graduation[] {
 	const grads: Graduation[] = [];
 	const startNum = numVal(config.start);
 	const endNum = numVal(config.end);
@@ -155,7 +181,7 @@ export function computeGraduations(config: NumberLineConfig): Graduation[] {
 	let tickIndex = 0;
 	for (let val = startNum; val <= endNum + tolerance; val += stepNum) {
 		const isMajor = tickIndex % major === 0;
-		const x = valueToX(val, startNum, endNum, scale);
+		const x = valueToX(val, startNum, endNum, scale, width);
 
 		let lineValue: NumberLineValue | null = null;
 		let label: string | null = null;
@@ -191,13 +217,96 @@ export function computeGraduations(config: NumberLineConfig): Graduation[] {
 /**
  * Compute the start/end x positions of the main line, accounting for arrows.
  */
-export function computeLineExtents(arrows: boolean): { lineStartX: number; lineEndX: number } {
-	const { MARGIN_LEFT, LINE_WIDTH, ARROW_SIZE } = NL_LAYOUT;
+export function computeLineExtents(
+	arrows: boolean,
+	width: number = NL_LAYOUT.SVG_WIDTH
+): { lineStartX: number; lineEndX: number } {
+	const { MARGIN_LEFT, ARROW_SIZE } = NL_LAYOUT;
 	const offset = arrows ? ARROW_SIZE + 2 : 0;
 	return {
 		lineStartX: MARGIN_LEFT - offset,
-		lineEndX: MARGIN_LEFT + LINE_WIDTH + offset
+		lineEndX: MARGIN_LEFT + lineWidthFor(width) + offset
 	};
+}
+
+// =========================================================================
+// CROCHETS (extrémités des segments, chantier `docs/archive/wip/demi-droite-progress.md`)
+// =========================================================================
+
+/**
+ * Sens des becs d'un crochet : +1 vers la droite, −1 vers la gauche.
+ * Borne comprise : becs vers l'intérieur du segment ; exclue : vers l'extérieur.
+ * `[2, …` → +1, `]2, …` → −1, `…, 5]` → −1, `…, 5[` → +1.
+ */
+export function bracketDirection(side: 'start' | 'end', open: boolean): 1 | -1 {
+	const inward = side === 'start' ? 1 : -1;
+	return open ? (-inward as 1 | -1) : inward;
+}
+
+/**
+ * Étage de chaque segment : 0 = sur l'axe ; un segment qui chevauche un segment
+ * déjà posé monte d'un étage (au-dessus de l'axe). Deux intervalles d'une réunion,
+ * disjoints, restent tous deux sur l'axe. Bornes infinies = ±Infinity.
+ */
+export function segmentLevels(segments: NumberLineSegment[]): number[] {
+	const placed: { level: number; from: number; to: number }[] = [];
+	return segments.map((s) => {
+		const from = s.startInfinite ? -Infinity : numVal(s.start);
+		const to = s.endInfinite ? Infinity : numVal(s.end);
+		let level = 0;
+		// Un bout commun ([1, 2] et [2, 3]) compte comme un chevauchement : les crochets se gêneraient
+		while (placed.some((p) => p.level === level && from <= p.to && p.from <= to)) level++;
+		placed.push({ level, from, to });
+		return level;
+	});
+}
+
+/**
+ * Les quatre points d'un crochet en abscisse `x`, ordonnée `y` : bec du haut,
+ * coin du haut, coin du bas, bec du bas. `height` = demi-hauteur, `beak` = longueur
+ * des becs. Repère quelconque (px à l'écran, cm au PDF).
+ */
+export function bracketPoints(
+	x: number,
+	y: number,
+	direction: 1 | -1,
+	height: number,
+	beak: number
+): [number, number][] {
+	const tip = x + direction * beak;
+	return [
+		[tip, y - height],
+		[x, y - height],
+		[x, y + height],
+		[tip, y + height]
+	];
+}
+
+// =========================================================================
+// ÉCART ENTRE GRADUATIONS (téléphone)
+// =========================================================================
+
+/** Plus petit écart (px) entre deux graduations voisines, droite dessinée sur `width` px */
+export function minGraduationGap(config: NumberLineConfig, width: number): number {
+	const xs = computeGraduations(config, width).map((g) => g.x);
+	let gap = Infinity;
+	for (let i = 1; i < xs.length; i++) gap = Math.min(gap, xs[i] - xs[i - 1]);
+	return gap;
+}
+
+/**
+ * Avertissement pour le prof, droite à placer : sur un téléphone, les graduations
+ * seraient trop serrées pour être visées du doigt. `null` si elles tiennent.
+ * (Une droite d'affichage peut avoir des graduations fines : pas d'avertissement.)
+ */
+export function phoneGapWarning(config: NumberLineConfig): string | null {
+	const gap = minGraduationGap(config, NL_PHONE_WIDTH);
+	if (gap >= NL_MIN_GRADUATION_GAP) return null;
+	return (
+		`sur un téléphone, les graduations ne seraient écartées que de ${Math.floor(gap)} px ` +
+		`(moins de ${NL_MIN_GRADUATION_GAP} px) : difficiles à viser du doigt. ` +
+		`Moins de graduations, ou une droite plus courte.`
+	);
 }
 
 // =========================================================================

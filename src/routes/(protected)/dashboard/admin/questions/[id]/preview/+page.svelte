@@ -15,29 +15,24 @@
 -->
 
 <script lang="ts">
-	import {
-		choiceLetter,
-		correctOriginalChoiceIndexes,
-		toDisplayedChoicePosition
-	} from '$lib/questions/choices';
 	import { page } from '$app/state';
 	import type { PageData } from './$types';
-	import TemplateFactSheet from '$lib/components/questions/TemplateFactSheet.svelte';
+	import TemplateFactSheet from '#lib/components/questions/TemplateFactSheet.svelte';
 	import { untrack } from 'svelte';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType } from '#lib/questions/types.ts';
 	import QuestionPreviewTabs, {
 		type PreviewTab
-	} from '$lib/components/questions/QuestionPreviewTabs.svelte';
-	import { provideAuthoringErrors } from '$lib/components/markdown/authoring-errors';
-	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	} from '#lib/components/questions/QuestionPreviewTabs.svelte';
+	import { provideAuthoringErrors } from '#lib/components/markdown/authoring-errors.ts';
+	import AnswerAssumptionsNotice from '#lib/components/questions/AnswerAssumptionsNotice.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { RefreshCw, Loader2 } from '@lucide/svelte';
 
 	// ===========================
@@ -68,7 +63,7 @@
 	// Page de PROF : un bloc mal écrit affiche son message détaillé, pas « Figure indisponible »
 	provideAuthoringErrors(() => true);
 
-	// Réponses attendues, lisibles : une ligne par trou, ou le(s) choix correct(s) d'un QCM
+	// Réponses attendues, lisibles : une ligne par trou (case choix : indices d'origine)
 	let expectedAnswers = $derived.by(() => {
 		if (!instance) return [];
 		if (instance.blanks && instance.blanks.length > 0) {
@@ -76,14 +71,6 @@
 				label: `Trou ${index + 1}`,
 				value: blank.expectedAnswer
 			}));
-		}
-		if (instance.correctChoiceIndex !== undefined) {
-			// Lettres AFFICHÉES : les choix sont mélangés, l'indice d'origine ne désigne rien à l'écran
-			const current = instance;
-			const letters = correctOriginalChoiceIndexes(current)
-				.map((index) => choiceLetter(toDisplayedChoicePosition(current, index)))
-				.sort();
-			return [{ label: 'Choix correct', value: letters.join(', ') }];
 		}
 		return [];
 	});

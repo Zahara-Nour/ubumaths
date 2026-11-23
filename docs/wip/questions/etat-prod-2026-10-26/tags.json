@@ -1,0 +1,50 @@
+[
+	{
+		"template_id": "3eedd905-1526-4c90-9005-eb1df389a9f9",
+		"grade": "CE1",
+		"code": "CE1-006",
+		"point_id": "287344b9-ae56-47e0-9af1-64ae53b3e057"
+	},
+	{
+		"template_id": "47f97c9f-5117-4817-8d10-7c17777397d8",
+		"grade": "CE1",
+		"code": "CE1-028",
+		"point_id": "abbf49fa-e25f-45c3-81bc-57d3015ecaf5"
+	},
+	{
+		"template_id": "495a397f-23b6-4bc4-82c3-2974b234b275",
+		"grade": "CE1",
+		"code": "CE1-006",
+		"point_id": "287344b9-ae56-47e0-9af1-64ae53b3e057"
+	},
+	{
+		"template_id": "9827242b-fbcd-4b63-8003-2b898372be63",
+		"grade": "CE1",
+		"code": "CE1-006",
+		"point_id": "287344b9-ae56-47e0-9af1-64ae53b3e057"
+	},
+	{
+		"template_id": "9d709f5b-e079-4316-a4c7-fe51ae73544c",
+		"grade": "CE1",
+		"code": "CE1-035",
+		"point_id": "9d97d568-abf8-4e9c-9470-b2a3cb44ba93"
+	},
+	{
+		"template_id": "c73734a8-aac1-4ce7-9aae-d568ce8752c5",
+		"grade": "CE1",
+		"code": "CE1-025",
+		"point_id": "92bbbdbf-7240-4c3c-bd52-873ccfc84f34"
+	},
+	{
+		"template_id": "c96ecf4d-caa9-4e5a-946f-c7ee0ecc352e",
+		"grade": "CE1",
+		"code": "CE1-034",
+		"point_id": "4a323588-f65b-41ab-976b-bdb919da2ed8"
+	},
+	{
+		"template_id": "e94c03b6-604f-4074-8763-0744b97cb7dd",
+		"grade": "CE1",
+		"code": "CE1-024",
+		"point_id": "7bd9dbbf-a56a-4558-803c-f392a7429959"
+	}
+]

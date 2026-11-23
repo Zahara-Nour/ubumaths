@@ -1,0 +1,162 @@
+{
+	"id": "9f01ca57-6330-40b6-a423-997ff357a6f3",
+	"title": "Encadrer entre deux puissances de 10",
+	"description": "Trouver n et n + 1 tels que 10ⁿ ≤ x < 10ⁿ⁺¹ pour 0,003 2 ou 32 000 (pièges : compter les zéros ou les chiffres, bornes échangées)",
+	"grades": ["2"],
+	"level": 13,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec deux entiers.\n\n$$10^{?}\\leqslant{{eval:(10*u+v)/10^(n+1);d}}<10^{?}$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit le nombre en notation scientifique (un seul chiffre non nul avant la virgule) : ${{eval:(10*u+v)/10^(n+1);d}}={{u}}{,}{{v}}\\times10^{-{{n}}}$.",
+					"Comme $1\\leqslant{{u}}{,}{{v}}<10$, en multipliant par $10^{-{{n}}}$ : $10^{-{{n}}}\\leqslant{{eval:(10*u+v)/10^(n+1);d}}<10^{ {{eval:1-n}} }$.",
+					"Les deux entiers sont $\\textcolor{{{color:primary.0}}}{{{eval:-n}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:1-n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète avec deux entiers.\n\n$$10^{?}\\leqslant{{eval:(10*u+v)*10^(n-1)}}<10^{?}$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..7"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit le nombre en notation scientifique (un seul chiffre non nul avant la virgule) : ${{eval:(10*u+v)*10^(n-1)}}={{u}}{,}{{v}}\\times10^{ {{n}} }$.",
+					"Comme $1\\leqslant{{u}}{,}{{v}}<10$, en multipliant par $10^{ {{n}} }$ : $10^{ {{n}} }\\leqslant{{eval:(10*u+v)*10^(n-1)}}<10^{ {{eval:n+1}} }$.",
+					"Les deux entiers sont $\\textcolor{{{color:primary.0}}}{{{n}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:n+1}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,003 2 : entre 10⁻³ et 10⁻²",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3", "-2"]
+		},
+		{
+			"description": "Erreur : zéros après la virgule comptés (10⁻² et 10⁻¹)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "-1"]
+		},
+		{
+			"description": "Erreur : bornes échangées",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "-3"]
+		},
+		{
+			"description": "0,47 : entre 10⁻¹ et 10⁰",
+			"variationIndex": 0,
+			"variables": {
+				"u": "4",
+				"v": "7",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "0"]
+		},
+		{
+			"description": "32 000 : entre 10⁴ et 10⁵",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "5"]
+		},
+		{
+			"description": "Erreur : chiffres comptés (10⁵ et 10⁶)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "3",
+				"v": "2",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5", "6"]
+		}
+	]
+}

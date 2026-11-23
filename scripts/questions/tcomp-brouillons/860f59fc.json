@@ -1,0 +1,103 @@
+{
+	"id": "860f59fc-a82c-47d8-8639-6bdfdeadfa45",
+	"title": "Coefficient de corrélation : interpréter r",
+	"description": "Valeur de r affichée par la calculatrice : pertinence d'un ajustement affine",
+	"grades": ["T_COMP"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx {{eval:-R/1000;d}}$.\n\nQue peut-on en conclure ?\n\n```choix\n- Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente\n- Il n'y a aucune liaison entre $x$ et $y$ car $r<0$\n- Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente\n- $y$ est proportionnel à $x$\n```",
+			"variables": [
+				{
+					"name": "R",
+					"expression": "951..998"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$r$ est proche de $-1$ : les points sont presque alignés sur une droite décroissante.",
+					"Donc **un ajustement affine est pertinent, avec une liaison négative**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx {{eval:R/100;d}}$.\n\nQue peut-on en conclure ?\n\n```choix\n- Un ajustement affine n'est pas pertinent\n- Un ajustement affine est pertinent car $r>0$\n- $y$ diminue quand $x$ augmente\n- Les points sont parfaitement alignés\n```",
+			"variables": [
+				{
+					"name": "R",
+					"expression": "5..35"
+				}
+			],
+			"conditions": ["mod(R, 10) != 0"],
+			"correction": {
+				"steps": [
+					"$r$ est proche de $0$ : les points ne sont pas proches d'une droite.",
+					"Donc **un ajustement affine n'est pas pertinent**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"R": "970"
+			},
+			"description": "v0 : r ≈ −0,97",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"R": "970"
+			},
+			"description": "v0 : r < 0 lu comme absence de liaison",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"R": "12"
+			},
+			"description": "v1 : r ≈ 0,12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"R": "12"
+			},
+			"description": "v1 : r > 0 suffit",
+			"variationIndex": 1
+		}
+	]
+}

@@ -7,8 +7,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { Figure } from '../figure';
-import { parseCustom, compile } from '$lib/mathAST';
-import { differentiate } from '$lib/mathAST/differentiation';
+import { parseCustom, compile } from '#lib/mathAST/index.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
 import { numeric, type ScalarParam } from '../../types/geo-value';
 import type { GeoParametricCurve } from '../../types/elements';
 import { isParametricCurve } from '../../types/elements';

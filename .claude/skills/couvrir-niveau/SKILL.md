@@ -1,0 +1,98 @@
+---
+name: couvrir-niveau
+description: Couvrir les points du programme d'un niveau en modèles de questions (relevé, vérification de l'existant, classement des points sans modèle, création des outils qui manquent (nouveaux blocs, gestes de réponse), lots, brouillons en prod, nœud + tag par migration, relecture dans /dev/modeles, publication). Utiliser quand David dit « couvre le CE1 », « compléter les modèles de 6e », « quels points du niveau X n'ont pas de modèle », ou reprend un lot de modèles de questions. Exige le niveau avant tout travail.
+---
+
+# Couvrir un niveau en modèles de questions
+
+Démarche complète : [docs/pratiques/couvrir-un-niveau.md](../../../docs/pratiques/couvrir-un-niveau.md).
+Ce skill en est le déroulé ; le document fait foi pour chaque étape, les gabarits et les pièges.
+Chantier de référence : le CP ([journal](../../../docs/wip/questions-progress.md)).
+
+## 0. Avant tout
+
+- **Le niveau** (`CP`, `CE1`… `6`… `2de`) : sans lui, le demander et s'arrêter.
+- Un chantier par niveau : journal `docs/wip/questions-<niveau>-progress.md` (bloc « Reprendre
+  ici »), worktree `../ubumaths-wt-questions-<niveau>` le temps d'une PR.
+- Vocabulaire de [CONTEXT.md](../../../CONTEXT.md) : branche → notion → sous-notion, point,
+  modèle, variation. Jamais les noms de colonnes devant David.
+
+## 1. Relevé et état des lieux (une fois par niveau)
+
+1. Relevé MCP prod en lecture seule (requêtes du § 1 de la doc) : points du niveau avec leur
+   nombre de modèles ; modèles du niveau avec statut, nœud, tags.
+2. Bornes : `docs/systeme/programmes/bornes/` (le cycle du niveau).
+3. Vérifier chaque modèle existant contre les bornes (plages ET corrigé) ; modèles non tagués :
+   point du niveau, d'un niveau suivant, ou rien. Chercher aussi les modèles **de tous les niveaux**
+   (pas par mots-clés de titre) qu'on pourrait taguer au lieu d'en écrire : la 1re spé, la 2de, la Tle…
+   **Avant de proposer un tag**, vérifier en base les deux règles de l'ADR 0020 (doc, § 9) : **un seul
+   point par programme** sur un modèle, et le point **sur le nœud du modèle ou sur sa notion**
+   (`question_template_points_check_rules`). Un tag qui les viole est refusé à la migration.
+4. Classer chaque point sans modèle : **A** texte, **B** outil existant, **C** outil neuf,
+   **D** non évaluable.
+5. Écrire tout cela dans le journal, puis **questions à David** (ordre des outils, corrections,
+   points à trancher). **Attendre ses réponses** ; une question sans réponse n'est pas tranchée.
+
+## 1 bis. Créer les outils qui manquent (classe C)
+
+**D'abord le catalogue** des outils existants (doc, § 3 bis) : tableau de variations, cercle
+trigo, courbes et grapheur, droite graduée, arbres, statistiques, géométrie (**en refonte** :
+lire `figure-et-choix`), horloge, opérations posées, collection,
+monnaie ; réponses en case, QCM écrit en case « choix » (ADR 0033 ; l'ancien QCM est refusé), construire,
+figure à compléter, gestes `placer:` (droite, repère, cercle trigo, horloge). Un point classé C à
+tort coûte un chantier. **Puis la liste unique des outils manquants,
+`docs/wip/outils-manquants.md`** : le geste y est peut-être déjà prévu ; un point classé C s'y ajoute
+(jamais une liste à part dans le journal du niveau).
+
+Un point qui demande un outil absent n'est pas abandonné : je **propose l'outil** (bloc ubumark
+d'affichage, QCM de dessins, geste de réponse comme « construire » ou « placer »), ce qu'il
+couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David décide.
+
+- Chantier à part (worktree, journal, phase 0 avec la syntaxe du bloc en exemples), ADR si la
+  décision est durable.
+- Recette technique : `docs/systeme/ubumark.md` § « Comment étendre — nouveau bloc spécial » ;
+  patrons `monnaie`, `collection`, `MonnaieConstruire` (doc, § 3 ter).
+- Par paliers : affichage, puis geste ; une PR et une page de démo par palier.
+- Les modèles qui s'en servent restent en brouillon jusqu'au `deploy:prod` qui livre le bloc.
+
+## 2. Un lot (3 à 10 modèles, un thème) — une PR de fichiers, une PR de migration
+
+1. **Phase 0** en français : point (un seul) et sous-notion de chaque modèle, variations,
+   plages, niveaux numérotés, forme de réponse, **question d'accès** de la migration. Attendre
+   la validation ; consigner les décisions dans le journal.
+2. **Écrire** : script `docs/wip/questions/lot-<x>.py` (gabarit `lot-c.py`) → JSON de
+   `scripts/questions/<niveau>-<lot>/` ; `testSpecs` justes ET erreurs typiques ; **erreurs prévues** des cases (réponse +
+   message à l'élève, `couvrir-un-niveau.md` § 5), proposées par le script, que le prof complète,
+   trois par case visées (QCM possible) ; un **coup de pouce** par variation (`hint` ou
+   `hintFromFirstStep`, jamais la réponse) ; forme et réglages du modèle selon les faits vérifiés du même § ;
+   `create-questions` en simulation tout vert ; essai en base **locale** (`.env.local` chargé) et
+   modèles joués dans l'aperçu admin. PR des fichiers (revue : aucune, contenu), merge.
+3. **Prod** : `deploy:prod` si un bloc neuf l'exige (David seul) ; **David** lance
+   `create-questions --publier` (brouillons) ; l'`id` de chaque modèle est écrit en tête de son
+   fichier : commiter les fichiers. Un fichier ne porte ni `theme`, ni `domain`, ni `subdomain`
+   (refusés, ADR 0035).
+4. **Migration nœud + tag, générée** (doc, § 6) : champ `rangement` dans chaque fichier du lot
+   (`{ "noeud": "Branche > Notion > Sous-notion", "point": "6-115" }`), puis
+   `pnpm tsx scripts/questions/migration-rangement.ts --dir scripts/questions/<lot>` : la
+   migration et sa fixture sont écrites, **aucun test à écrire** (un refus refuse tout le lot).
+   PR de la migration, de sa fixture et des JSON seuls, `security-auditor`, CI verte,
+   `pnpm check:migrations --pr <n>`, merge, `db:migrate` depuis le dépôt principal, vérification en prod.
+5. **Relecture dans `/dev/modeles`** (demandé le 2026-11-20 ; doc, § 8) : la vraie appli, modèles
+   joués, blocs dessinés, réponses jugées. Donner à David l'adresse qui montre tout le lot :
+   brouillons → `/dev/modeles?noeud=…` ou `?point=…` ; modèles publiés → série de relecture
+   (`scripts/series/creer-serie.ts`, 50 modèles au plus, David l'enregistre). **Les verdicts se lisent
+   en base** (`question_template_reviews` : « À revoir » + commentaire, `reviewed_at` postérieur au
+   lot) et se **comptent** avant de dire « tout est relu ». La page à cocher (`page-a-cocher.ts`,
+   artefact `db`) ne sert plus qu'en **phase 0**, pour trancher les fiches avant d'écrire.
+6. **Publication** : `pnpm tsx scripts/questions/publier-lot.ts --dir …` en simulation (tous les
+   brouillons du lot, ou rien), puis **David** le lance avec `--publier` ; le script relit
+   `published` en base. Journal + « Reprendre ici » à jour, commit direct.
+
+## 3. Règles
+
+- Rien n'est écrit en prod par moi : `create-questions --publier`, `--mettre-a-jour` et la
+  publication sont lancés par David (`!`), je vérifie ensuite.
+- Corriger un modèle en prod : instantané d'abord (§ 7 de la doc).
+- Un outil neuf (classe C) = un chantier à part, avec sa propre phase 0 ; jamais caché dans un
+  lot de modèles.
+- Relire les pièges (§ 9 de la doc) avant d'écrire un lot.

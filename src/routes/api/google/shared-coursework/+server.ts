@@ -42,16 +42,16 @@
  * - Array size limits to prevent DoS
  */
 
-import { json, error } from '@sveltejs/kit';
-import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
+import { error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '#lib/server/google/feature-guard.ts';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import {
 	listSharedCourseworkEnhancedSchema,
 	shareSingleCourseworkSchema,
 	bulkUnshareCourseworkSchema
-} from '$lib/server/validation/google';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/google.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/google/shared-coursework/+server');
 
@@ -283,7 +283,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Calculate pagination metadata
 		const totalPages = Math.ceil((count || 0) / limit);
 
-		return json({
+		return Response.json({
 			sharedCoursework: enrichedData,
 			total: count || 0,
 			page,
@@ -455,7 +455,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Impossible de partager le devoir Classroom');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			shared: insertedRecords?.length || sharesToInsert.length
 		});
@@ -539,7 +539,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 			throw error(500, 'Impossible d’arrêter le partage du devoir Classroom');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			deleted: deletedRecords?.length || 0
 		});

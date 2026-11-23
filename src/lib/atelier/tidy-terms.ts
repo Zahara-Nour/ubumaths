@@ -9,4 +9,4 @@
  * @module atelier/tidy-terms
  */
 
-export { tidyTerms } from '$lib/mathAST/tidy/terms';
+export { tidyTerms } from '#lib/mathAST/tidy/terms.ts';

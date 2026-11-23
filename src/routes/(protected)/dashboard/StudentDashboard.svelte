@@ -36,12 +36,12 @@
 	// `lore` n'est plus utilisé que dans les blocs commentés plus bas (sections
 	// exercices et SRS). Son dernier usage vivant était le message « famille B »,
 	// retiré avec les deux anciennes tuiles.
-	// import { lore } from '$lib/config/lore';
+	// import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
-	import InboxWidget from '$lib/components/student-inbox/InboxWidget.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import RewardsBlock from '#lib/components/RewardsBlock.svelte';
+	import InboxWidget from '#lib/components/student-inbox/InboxWidget.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import {
 		TrendingUp,
 		Sparkles,
@@ -51,12 +51,11 @@
 		ChevronRight,
 		Puzzle
 	} from '@lucide/svelte';
-	// import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
-	// import { Button } from '$lib/components/ui/button';
-	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
+	// import { Button } from '#lib/components/ui/button/index.ts';
+	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '#lib/utils/dates.ts';
 	// import { BookOpen, FileText, Calendar, CheckCircle } from '@lucide/svelte';
-	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
-	import { findCurrentPeriod } from '$lib/utils/academic-period';
+	import { studentCache } from '#lib/stores/studentDashboardCache.svelte.ts';
+	import { findCurrentPeriod } from '#lib/utils/academic-period.ts';
 
 	// Receive data from parent (+page.svelte)
 	// Contains profile with student's information
@@ -348,9 +347,4 @@
 			{/if}
 		</div>
 	</div> -->
-	<!-- MINESWEEPER ACHIEVEMENTS SECTION -->
-	<!-- Display student's Minesweeper achievements progress -->
-	<!-- {#if data.minesweeperAchievements && data.achievementStats}
-		<AchievementsWidget achievements={data.minesweeperAchievements} stats={data.achievementStats} />
-	{/if} -->
 </div>

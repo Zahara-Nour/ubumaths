@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { CURVE_COLORS, CURVE_SLOTS, curveColorValue, getNextSlot, isCurveColor } from '../colors';
-import type { LineStyle } from '$lib/geometry-core/viewport/types';
+import type { LineStyle } from '#lib/geometry-core/viewport/types.ts';
 
 // =============================================================================
 // Outils

@@ -13,17 +13,19 @@ export const horlogeEntry: BlockCatalogEntry = {
 	title: 'Horloge à aiguilles',
 	fences: ['horloge'],
 	nodeType: 'horloge',
-	summary: 'Une à quatre horloges à lire ou à comparer, cadran 12 ou 24 heures.',
+	summary:
+		'Une à quatre horloges à lire ou à comparer, cadran 12 ou 24 heures ; dans une question, une horloge où l’élève place les aiguilles.',
 	intro:
-		'Le bloc dessine une horloge par heure donnée. La petite aiguille avance avec les minutes, comme sur une vraie horloge. L’heure n’est jamais écrite à côté : c’est la réponse.',
+		'Le bloc dessine une horloge par heure donnée. La petite aiguille avance avec les minutes, comme sur une vraie horloge. Des secondes écrites ajoutent la trotteuse (la grande aiguille reste alors pile sur sa minute). L’heure n’est jamais écrite à côté : c’est la réponse.',
 	settingGroups: [
 		{
 			settings: [
 				{
 					key: 'heure',
-					values: '1 à 4 heures séparées par ;, écrites 9 h, 9 h 30 ou 9h5',
+					values: '1 à 4 heures séparées par ;, écrites 9 h, 9 h 30, 9h5 ou 9 h 30 min 15 s',
 					defaultValue: null,
-					description: 'Une horloge par heure. Heures de 0 à 23, minutes de 0 à 59.'
+					description:
+						'Une horloge par heure. Heures de 0 à 23, minutes et secondes de 0 à 59. Avec des secondes, la trotteuse est dessinée.'
 				},
 				{
 					key: 'légendes',
@@ -58,8 +60,21 @@ export const horlogeEntry: BlockCatalogEntry = {
 				{
 					key: 'taille',
 					values: '2 à 8 cm',
-					defaultValue: '4 cm (3 cm dans un choix de QCM)',
+					defaultValue: '4 cm (3 cm dans un choix de QCM, 6 cm à placer)',
 					description: 'Diamètre du cadran, à l’écran comme sur la fiche PDF.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : placer les aiguilles',
+			settings: [
+				{
+					key: 'placer',
+					values:
+						'une heure, écrite 9 h, 9 h 25, 14 h 25 ou 9 h 25 min 40 s (à la place de heure:)',
+					defaultValue: 'aucune',
+					description:
+						'Un cadran sans aiguilles : l’élève pose la petite et la grande aiguille (étiquettes sous le cadran, toucher, boutons ◀ ▶). Juste si la grande aiguille est sur la bonne minute et la petite dans le bon secteur : pile sur l’heure à minutes = 0, entre l’heure et la suivante sinon, ou à sa vraie place (9 h 05 : sur le 9). 14 h 25 se place comme 2 h 25. Avec des secondes, l’élève pose aussi la trotteuse, juste sur la seconde exacte. Jamais écrite à l’écran. Une légende au plus ; minutes: cachées refusé. Sur le PDF, le cadran sans aiguilles : l’enfant les dessine.'
 				}
 			]
 		}
@@ -86,9 +101,21 @@ export const horlogeEntry: BlockCatalogEntry = {
 			explanation: 'Pour les premières lectures, au CP.'
 		},
 		{
+			title: 'Avec la trotteuse',
+			source: fence('horloge', 'heure: 9 h 25 min 40 s'),
+			explanation:
+				'Les secondes écrites ajoutent la trotteuse, fine, avec son contrepoids. La grande aiguille reste pile sur le 25.'
+		},
+		{
 			title: 'Cadran de 24 heures',
 			source: fence('horloge', 'heure: 15 h 45', 'cadran: 24', 'taille: 5cm'),
 			explanation: '15 h 45 se dessine comme 3 h 45 ; la couronne intérieure aide à lire 15.'
+		},
+		{
+			title: 'Placer les aiguilles (question)',
+			source: fence('horloge', 'placer: 9 h 25'),
+			explanation:
+				'Dans une question, l’élève pose les deux aiguilles ; la réponse est juste à 9 h 25. La consigne (« Place les aiguilles : il est 9 h 25. ») va dans l’énoncé, au-dessus.'
 		},
 		{
 			title: 'Sans aucun repère',
@@ -108,6 +135,12 @@ export const horlogeEntry: BlockCatalogEntry = {
 			source: fence('horloge', 'heure: 8 h', 'légendes: Matin ; Midi'),
 			message: '2 légende(s) pour 1 horloge(s)',
 			explanation: 'Autant de légendes que d’heures, ou aucune.'
+		},
+		{
+			title: 'placer: avec heure:',
+			source: fence('horloge', 'heure: 9 h', 'placer: 9 h'),
+			message: 'placer: et heure: ne vont pas ensemble',
+			explanation: 'Une horloge à placer n’a pas d’aiguilles dessinées : placer: remplace heure:.'
 		}
 	],
 	tryIt: fence('horloge', 'heure: 10 h 10 ; 2 h 50', 'légendes: Avant ; Après', 'chiffres: quarts')

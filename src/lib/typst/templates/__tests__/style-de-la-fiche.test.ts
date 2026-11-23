@@ -17,7 +17,7 @@ import {
 } from '../styles';
 import { DEFAULT_TEMPLATES, DEFAULT_TEMPLATE_IDS } from '../default-templates';
 import { generateWorksheetTypst } from '../../generators/worksheet-generator';
-import type { InstanceData, WorksheetRow, WorksheetTemplateRow } from '$lib/types/worksheets';
+import type { InstanceData, WorksheetRow, WorksheetTemplateRow } from '#lib/types/worksheets.ts';
 
 const STANDARD = DEFAULT_TEMPLATE_IDS.standard;
 const MODERN = DEFAULT_TEMPLATE_IDS.modern;

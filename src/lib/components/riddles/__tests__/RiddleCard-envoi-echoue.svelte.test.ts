@@ -9,7 +9,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import RiddleCard from '../RiddleCard.svelte';
-import type { StudentRiddle } from '$lib/types/riddle';
+import type { StudentRiddle } from '#lib/types/riddle.ts';
 
 // ============================================================================
 // CONSTANTES

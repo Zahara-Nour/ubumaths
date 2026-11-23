@@ -1,0 +1,222 @@
+{
+	"id": "e206964d-c612-43df-a086-33b6180bd14b",
+	"title": "Aire d'une figure composée : retrancher",
+	"description": "Calculer l'aire d'une figure obtenue en retirant un triangle, un disque ou un rectangle d'un rectangle ou d'un carré : on soustrait les aires",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On a coupé un coin triangulaire dans un rectangle. Voici ce qui reste (en couleur).\n\n```figure\nfenetre: -4 ; {{eval:2*L+4}} ; -2 ; {{eval:2*l+2}}\ndescription: Un rectangle de {{L}} cm sur {{l}} cm dont on a coupé le coin en haut à droite : un triangle rectangle de côtés {{u}} cm et {{v}} cm.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nc1 = point({{eval:2*L}}, {{eval:2*l-2*v}}, visible=faux)\nc2 = point({{eval:2*L-2*u}}, {{eval:2*l}}, visible=faux)\nc = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)\ng = point(0, {{eval:2*l}}, visible=faux)\npolygone(a, b, c1, c2, g, remplissage=\"bleu\", opacite_fond=0.3)\nsegment(c1, c, trait=\"tirets\")\nsegment(c, c2, trait=\"tirets\")\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte(-2, {{l}}, \"{{l}} cm\")\ntexte({{eval:2*L-u}}, {{eval:2*l+1}}, \"{{u}} cm\")\ntexte({{eval:2*L+1.6}}, {{eval:2*l-v}}, \"{{v}} cm\")\n```\n\nCalcule l'aire de la partie colorée.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "6..10"
+				},
+				{
+					"name": "l",
+					"expression": "4..6"
+				},
+				{
+					"name": "u",
+					"expression": "2..3"
+				},
+				{
+					"name": "v",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l-u*v/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\text{aire} = \\text{aire du rectangle} - \\text{aire du triangle retiré}$.",
+					"Rectangle : ${{L}} \\times {{l}} = {{eval:L*l}}~\\unit{cm^2}$. Triangle rectangle : $\\dfrac{ {{u}} \\times {{v}} }{2} = {{eval:u*v/2;d}}~\\unit{cm^2}$.",
+					"Aire de la partie colorée : ${{eval:L*l}} - {{eval:u*v/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l-u*v/2;d}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a retiré un disque d'un carré. Voici ce qui reste (en couleur). On prend $\\pi \\approx 3{,}14$.\n\n```figure\nfenetre: -4 ; {{eval:2*c+1}} ; -2 ; {{eval:2*c+1}}\ndescription: Un carré de côté {{c}} cm ; le disque qui touche ses quatre côtés est retiré.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*c}}, 0, visible=faux)\nf = point({{eval:2*c}}, {{eval:2*c}}, visible=faux)\ng = point(0, {{eval:2*c}}, visible=faux)\npolygone(a, b, f, g, remplissage=\"bleu\", opacite_fond=0.3)\nO = point({{c}}, {{c}}, visible=faux)\ncercle(O, rayon={{c}}, remplissage=\"blanc\", opacite_fond=1)\ntexte({{c}}, -1, \"{{c}} cm\")\ntexte(-2, {{c}}, \"{{c}} cm\")\n```\n\nCalcule l'aire de la partie colorée.\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c^2-314*r^2/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\text{aire} = \\text{aire du carré} - \\text{aire du disque}$.",
+					"Le disque a pour diamètre le côté du carré : son rayon est $\\dfrac{ {{c}} }{2} = {{r}}$ cm, son aire $3{,}14 \\times {{r}} \\times {{r}} = {{eval:314*r^2/100;d}}~\\unit{cm^2}$.",
+					"Carré : ${{c}} \\times {{c}} = {{eval:c^2}}~\\unit{cm^2}$. Partie colorée : ${{eval:c^2}} - {{eval:314*r^2/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:c^2-314*r^2/100;d}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce cadre est un rectangle dont on a retiré un rectangle intérieur ; la bordure a partout une largeur de $1$ cm.\n\n```figure\nfenetre: -4 ; {{eval:2*L+1}} ; -2 ; {{eval:2*l+1}}\ndescription: Un cadre : rectangle de {{L}} cm sur {{l}} cm, bordure de 1 cm.\n---\na = point(0, 0, visible=faux)\nb = point({{eval:2*L}}, 0, visible=faux)\nf = point({{eval:2*L}}, {{eval:2*l}}, visible=faux)\ng = point(0, {{eval:2*l}}, visible=faux)\npolygone(a, b, f, g, remplissage=\"bleu\", opacite_fond=0.3)\ni = point(2, 2, visible=faux)\nj = point({{eval:2*L-2}}, 2, visible=faux)\nm = point({{eval:2*L-2}}, {{eval:2*l-2}}, visible=faux)\nq = point(2, {{eval:2*l-2}}, visible=faux)\npolygone(i, j, m, q, remplissage=\"blanc\", opacite_fond=1)\ntexte({{L}}, -1, \"{{L}} cm\")\ntexte(-2, {{l}}, \"{{l}} cm\")\ntexte({{L}}, 1, \"1 cm\")\n```\n\nCalcule l'aire du cadre (en couleur).\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "6..11"
+				},
+				{
+					"name": "l",
+					"expression": "4..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l-(L-2)*(l-2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\text{aire} = \\text{aire du grand rectangle} - \\text{aire du rectangle intérieur}$.",
+					"Le rectangle intérieur perd $1$ cm de chaque côté : il mesure ${{eval:L-2}}$ cm sur ${{eval:l-2}}$ cm.",
+					"${{L}} \\times {{l}} - {{eval:L-2}} \\times {{eval:l-2}} = {{eval:L*l}} - {{eval:(L-2)*(l-2)}} = \\textcolor{{{color:primary.0}}}{{{eval:L*l-(L-2)*(l-2)}}~\\unit{cm^2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rectangle 8 × 5 − triangle 2 × 3 / 2 = 37",
+			"variationIndex": 0,
+			"variables": {
+				"L": "8",
+				"l": "5",
+				"u": "2",
+				"v": "3"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : triangle ajouté",
+			"variationIndex": 0,
+			"variables": {
+				"L": "8",
+				"l": "5",
+				"u": "2",
+				"v": "3"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : triangle non divisé par 2",
+			"variationIndex": 0,
+			"variables": {
+				"L": "8",
+				"l": "5",
+				"u": "2",
+				"v": "3"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré 6 − disque r = 3 : 7,74",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"c": "6"
+			},
+			"answers": ["7,74"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : disque de rayon 6",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"c": "6"
+			},
+			"answers": ["-77,04"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré 8 − disque r = 4 : 13,76",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"c": "8"
+			},
+			"answers": ["13,76"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : disque ajouté",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"c": "8"
+			},
+			"answers": ["114,24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cadre 8 × 5 : 40 − 18 = 22",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "5"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aire du grand rectangle",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "5"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rectangle intérieur seul",
+			"variationIndex": 2,
+			"variables": {
+				"L": "8",
+				"l": "5"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

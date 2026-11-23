@@ -5,6 +5,8 @@ author: cotice
 lede: Les autres jours, ~\pi~ se contenterait d'être irrationnel. La communauté scientifique de Patatovie est en émoi, les boulangers aussi.
 ---
 
+![Dans un bureau de savant, deux scènes côte à côte : sous un éphéméride « LUNDI », un π lit son journal, assis sur une chaise ; sous un éphéméride « MARDI », le même π lévite en tailleur, auréolé ; entre les deux, un savant en toge, juché sur une pile de feuillets, désigne les deux π d’un air triomphant.](/shtam/pi-transcendant-le-mardi.webp){size=large}
+
 C'est un coup de tonnerre dans le monde des Mathres. Un chercheur de l'Académie de Patatovie affirme avoir démontré que le nombre ~\pi~ n'est transcendant **que le mardi**. Le reste de la semaine, il serait « simplement irrationnel, avec une légère tendance algébrique le dimanche soir ».
 
 La démonstration, longue de quatre cents pages, a été rédigée intégralement un mercredi. « C'est précisément ce qui la rend valable », explique son auteur, qui refuse de la relire un mardi « par prudence ».

@@ -42,7 +42,7 @@ import {
 	add
 } from '../../factory';
 import { rationalToNode, extractExactRational } from '../../common/numeric';
-import { normalize, denormalize } from '../../normal';
+import { canonicalForm } from '../../normal';
 import { divRational, mulRational, ONE } from '../../normal/rational';
 import type { Rational } from '../../normal/types';
 import { toCustom } from '../../custom-generator';
@@ -145,7 +145,7 @@ function proportionalityRatio(
 	if (direct !== null) return direct;
 	// Sommes (x − 1 contre 2x − 2) : le quotient normalisé doit être rationnel
 	try {
-		const quotient = denormalize(normalize(divide(factor, target, 'fraction')));
+		const quotient = canonicalForm(divide(factor, target, 'fraction'));
 		return containsVariable(quotient, variable) ? null : extractExactRational(quotient);
 	} catch {
 		return null;
@@ -179,7 +179,7 @@ function foldConstantExponents(node: MathNode, variable: string): MathNode {
 		if (containsVariable(n.superscript, variable)) return n;
 		let exponent: Rational | null;
 		try {
-			exponent = extractExactRational(denormalize(normalize(n.superscript)));
+			exponent = extractExactRational(canonicalForm(n.superscript));
 		} catch {
 			return n;
 		}

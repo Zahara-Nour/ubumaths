@@ -8,11 +8,11 @@
  * copie (`copyDisplayNumbers`), pas l'ordre des positions.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { tableMock, type TableMock } from '$lib/server/worksheets/__tests__/table-mock';
-import { assignmentCopyScope, copyDisplayNumbers } from '$lib/worksheets/worksheet-copy';
+import { tableMock, type TableMock } from '#lib/server/worksheets/__tests__/table-mock.ts';
+import { assignmentCopyScope, copyDisplayNumbers } from '#lib/worksheets/worksheet-copy.ts';
 
 const notified = vi.hoisted(() => ({ calls: [] as Array<Record<string, unknown>> }));
-vi.mock('$lib/server/auto-notifications', () => ({
+vi.mock('#lib/server/auto-notifications.ts', () => ({
 	notifyErrorReportValidated: async (data: Record<string, unknown>) => {
 		notified.calls.push({ kind: 'validated', ...data });
 	},
@@ -22,7 +22,7 @@ vi.mock('$lib/server/auto-notifications', () => ({
 }));
 
 const TEACHER = '550e8400-e29b-41d4-a716-446655440001';
-vi.mock('$lib/server/middleware/auth', () => ({
+vi.mock('#lib/server/middleware/auth.ts', () => ({
 	requireRoles: async () => ({ user: { id: TEACHER }, profile: { role: 'teacher' } })
 }));
 

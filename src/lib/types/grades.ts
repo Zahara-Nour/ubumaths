@@ -258,7 +258,7 @@ export function hasHighSchoolTrack(
  *
  * La relation n'est pas symétrique : un programme d'année supérieure remobilise
  * couramment une notion vue plus tôt — la distance entre deux points est une
- * capacité de seconde que la 1ʳᵉ spé réutilise — alors qu'une question de 1ʳᵉ
+ * point du programme de seconde que la 1ʳᵉ spé réutilise — alors qu'une question de 1ʳᵉ
  * n'a rien à faire dans le programme de 6ᵉ.
  *
  * La comparaison porte sur l'année et non sur la voie, ce qui inclut d'office

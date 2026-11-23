@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { GameState, CellState } from '$lib/types/minesweeper';
+	import type { GameState, CellState } from '#lib/types/minesweeper.ts';
 	import MinesweeperCell from './MinesweeperCell.svelte';
-	import { mobileStore } from '$lib/stores/mobile.svelte';
+	import { mobileStore } from '#lib/stores/mobile.svelte.ts';
 
 	// Props
 	let {

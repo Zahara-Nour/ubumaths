@@ -8,10 +8,10 @@
 -->
 
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import ReviewSession from '$lib/components/srs/ReviewSession.svelte';
+	import ReviewSession from '#lib/components/srs/ReviewSession.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

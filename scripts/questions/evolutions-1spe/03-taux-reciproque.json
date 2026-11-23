@@ -1,10 +1,8 @@
 {
+	"id": "bbd511cb-73fe-4b91-9b50-06d001f5b666",
 	"title": "Trouver le taux d'évolution réciproque",
 	"description": "Évolution qui ramène à la valeur initiale",
 	"grades": ["2"],
-	"theme": "Proportionnalité",
-	"domain": "Pourcentages",
-	"subdomain": "Variations",
 	"level": 9,
 	"delay": 30,
 	"status": "draft",

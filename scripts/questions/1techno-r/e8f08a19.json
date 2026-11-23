@@ -1,0 +1,406 @@
+{
+	"id": "e8f08a19-b417-4183-9cd3-fab7f3810211",
+	"title": "Lire sur le nuage de points d'une suite géométrique",
+	"description": "Termes positifs : lire u₀ et la raison, un terme, le sens de variation, un premier rang",
+	"grades": ["1_GEN"],
+	"level": 2,
+	"delay": 45,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{u}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"statement": "La suite géométrique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{u}} ; {{eval:u*q^3+u}}\ngrille: 1 ; {{u}}\nu(n) = {{u}}*{{q}}^n pour n de 0 à 3   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de 4 points représentant les premiers termes d'une suite géométrique, un point par rang n ; ordonnée graduée de {{u}} en {{u}}.\n```\n\nLis son premier terme $u_0$ et sa raison $q$.\n\n$u_0=?$ et $q=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				}
+			],
+			"conditions": ["u*q^3 <= 27"],
+			"correction": {
+				"steps": [
+					"Le premier terme $u_0$ est l'ordonnée du point d'abscisse $0$ : $u_0=\\textcolor{{{color:primary.0}}}{{{u}}}$.",
+					"Pour une suite géométrique, on passe d'un terme au suivant en **multipliant** par la raison : $q=\\dfrac{u_1}{u_0}$.",
+					"On lit $u_1={{eval:u*q}}$, donc $q=\\dfrac{{{eval:u*q}}}{{{u}}}=\\textcolor{{{color:primary.0}}}{{{q}}}$. (La différence $u_1-u_0={{eval:u*q-u}}$ n'est pas la raison : c'est celle d'une suite arithmétique.)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u/d^k}}"
+				}
+			],
+			"statement": "La suite géométrique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{t}} ; {{eval:u+t}}\ngrille: 1 ; {{t}}\nu(n) = {{u}}/{{d}}^n pour n de 0 à 3   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de 4 points représentant les premiers termes d'une suite géométrique, un point par rang n ; ordonnée graduée de {{t}} en {{t}}.\n```\n\nLis le terme $u_{{k}}$.\n\n$u_{{k}}=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:2*m-(d-2)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:t*d^3"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Attention, le premier point est celui de rang $0$ : le point d'abscisse $n$ représente $u_n$.",
+					"Le point d'abscisse ${{k}}$ a pour ordonnée ${{eval:u/d^k}}$ : $u_{{k}}=\\textcolor{{{color:primary.0}}}{{{eval:u/d^k}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La suite géométrique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{u}} ; {{eval:u*q^3+u}}\ngrille: 1 ; {{u}}\nu(n) = {{u}}*{{q}}^n pour n de 0 à 3   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de 4 points représentant les premiers termes d'une suite géométrique, un point par rang n ; ordonnée graduée de {{u}} en {{u}}.\n```\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				}
+			],
+			"conditions": ["u*q^3 <= 27"],
+			"correction": {
+				"steps": [
+					"On lit les ordonnées des points : $u_0={{u}}$, $u_1={{eval:u*q}}$, $u_2={{eval:u*q^2}}$, $u_3={{eval:u*q^3}}$.",
+					"Les points montent d'un rang au suivant : chaque terme est plus grand que le précédent, la suite est **croissante** (sa raison ${{q}}$ est supérieure à $1$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "La suite géométrique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{t}} ; {{eval:u+t}}\ngrille: 1 ; {{t}}\nu(n) = {{u}}/{{d}}^n pour n de 0 à 3   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de 4 points représentant les premiers termes d'une suite géométrique, un point par rang n ; ordonnée graduée de {{t}} en {{t}}.\n```\n\nQuel est le sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:2*m-(d-2)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:t*d^3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On lit les ordonnées des points : $u_0={{u}}$, $u_1={{eval:u/d}}$, $u_2={{eval:u/d^2}}$, $u_3={{eval:u/d^3}}$.",
+					"Les points descendent d'un rang au suivant : chaque terme est plus petit que le précédent, la suite est **décroissante** (sa raison $\\dfrac{1}{{{d}}}$ est comprise entre $0$ et $1$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"statement": "La suite géométrique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{u}} ; {{eval:u*q^3+u}}\ngrille: 1 ; {{u}}\nu(n) = {{u}}*{{q}}^n pour n de 0 à 3   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de 4 points représentant les premiers termes d'une suite géométrique, un point par rang n ; ordonnée graduée de {{u}} en {{u}}.\n```\n\nÀ partir de quel rang $n$ a-t-on $u_n>{{s}}$ ?\n\n$n=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:u*q^(k-1)*(1+q)/2"
+				}
+			],
+			"conditions": ["u*q^3 <= 27"],
+			"correction": {
+				"steps": [
+					"On lit les ordonnées des points : $u_0={{u}}$, $u_1={{eval:u*q}}$, $u_2={{eval:u*q^2}}$, $u_3={{eval:u*q^3}}$.",
+					"On cherche le premier point au-dessus de la hauteur ${{s}}$ : $u_{{eval:k-1}}={{eval:u*q^(k-1)}}\\leqslant{{s}}$ et $u_{{k}}={{eval:u*q^k}}>{{s}}$.",
+					"La suite est croissante : à partir du rang $n=\\textcolor{{{color:primary.0}}}{{{k}}}$, tous les termes dépassent ${{s}}$. Attention, le premier point est celui de rang $0$ : le point d'abscisse $n$ représente $u_n$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"statement": "La suite géométrique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 4\ny: -{{t}} ; {{eval:u+t}}\ngrille: 1 ; {{t}}\nu(n) = {{u}}/{{d}}^n pour n de 0 à 3   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de 4 points représentant les premiers termes d'une suite géométrique, un point par rang n ; ordonnée graduée de {{t}} en {{t}}.\n```\n\nÀ partir de quel rang $n$ a-t-on $u_n<{{s}}$ ?\n\n$n=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "t",
+					"expression": "eval:2*m-(d-2)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:t*d^3"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:u/d^(k-1)*(1+1/d)/2"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On lit les ordonnées des points : $u_0={{u}}$, $u_1={{eval:u/d}}$, $u_2={{eval:u/d^2}}$, $u_3={{eval:u/d^3}}$.",
+					"On cherche le premier point au-dessous de la hauteur ${{s}}$ : $u_{{eval:k-1}}={{eval:u/d^(k-1)}}\\geqslant{{s}}$ et $u_{{k}}={{eval:u/d^k}}<{{s}}$.",
+					"La suite est décroissante : à partir du rang $n=\\textcolor{{{color:primary.0}}}{{{k}}}$, tous les termes sont inférieurs à ${{s}}$. Attention, le premier point est celui de rang $0$ : le point d'abscisse $n$ représente $u_n$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "2",
+				"u": "3"
+			},
+			"description": "u₀ = 3, q = 2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3", "3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "2",
+				"u": "3"
+			},
+			"description": "Erreur : q = u₁ − u₀ (3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6", "2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "2",
+				"u": "3"
+			},
+			"description": "Erreur : u₁ lu pour u₀",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "3",
+				"k": "2",
+				"m": "2",
+				"t": "3",
+				"u": "81"
+			},
+			"description": "81, 27, 9, 3 : u₂ = 9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "3",
+				"k": "2",
+				"m": "2",
+				"t": "3",
+				"u": "81"
+			},
+			"description": "Erreur : rang décalé (u₁ = 27)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"q": "3",
+				"u": "1"
+			},
+			"description": "Croissante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"q": "3",
+				"u": "1"
+			},
+			"description": "Erreur : décroissante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "2",
+				"m": "1",
+				"t": "2",
+				"u": "16"
+			},
+			"description": "Décroissante",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "2",
+				"m": "1",
+				"t": "2",
+				"u": "16"
+			},
+			"description": "Erreur : croissante",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"q": "2",
+				"s": "6",
+				"u": "2"
+			},
+			"description": "2, 4, 8, 16 : u_n > 6 dès n = 2",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"q": "2",
+				"s": "6",
+				"u": "2"
+			},
+			"description": "Erreur : rang décalé (1)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"q": "2",
+				"s": "6",
+				"u": "2"
+			},
+			"description": "Erreur : la valeur du terme (8)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "2",
+				"k": "3",
+				"m": "2",
+				"s": "6",
+				"t": "4",
+				"u": "32"
+			},
+			"description": "32, 16, 8, 4 : u_n < 6 dès n = 3",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "2",
+				"k": "3",
+				"m": "2",
+				"s": "6",
+				"t": "4",
+				"u": "32"
+			},
+			"description": "Erreur : rang décalé (4)",
+			"variationIndex": 5
+		}
+	]
+}

@@ -71,7 +71,7 @@ import {
 	referencesOf
 } from './parse';
 import { z } from 'zod';
-import { COORDINATE_LIMIT } from '$lib/grapheur/types';
+import { COORDINATE_LIMIT } from '#lib/grapheur/types.ts';
 import type { ListChartKind } from './chart';
 import {
 	ATELIER_STATE_VERSION,
@@ -80,8 +80,8 @@ import {
 	type StoredObject
 } from './persistence';
 import { expressionOf, graphLatexOf, substitutedAstOf, termsOf } from './engine';
-import { isUnit } from '$lib/mathAST/guards';
-import { findNodes } from '$lib/mathAST/transforms';
+import { isUnit } from '#lib/mathAST/guards.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -111,14 +111,14 @@ import {
 	readInterval,
 	type CheckedInterval
 } from './interval';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { getVariables } from '$lib/mathAST/eval/substitute';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
 import { listCitedMessage } from './list-cited';
 import { figureCitedMessage, figureFullMessage } from './geometry';
 import { partsOf, specOf, type ConstructionSpec } from './construction-spec';
 import { DEFAULT_ANGLE_UNIT, type AngleUnit } from './angle-unit';
-import type { MathNode } from '$lib/mathAST/types';
-import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { quantityProblem } from '#lib/mathAST/cli/quantities.ts';
 import {
 	citesMeasure,
 	hasBareAngle,
@@ -174,7 +174,7 @@ import {
 	storedCellText,
 	type CellEdit
 } from './grid';
-import { transformAST } from '$lib/mathAST/visitor';
+import { transformAST } from '#lib/mathAST/visitor.ts';
 import {
 	CLEAR_PATCH,
 	formatOf,
@@ -3587,7 +3587,7 @@ export class Atelier {
 			return next;
 		});
 
-		this.#inheritIntervals(intervals.inherited);
+		this.#inheritIntervals(intervals.inherited, intervals.conditions);
 		this.#constructions();
 		this.#measures();
 		this.#geometryWaits(deps);
@@ -4052,17 +4052,35 @@ export class Atelier {
 	 * suit f quand son ensemble change ou disparaît (I6). Jamais sauvegardé.
 	 *
 	 * Décision d : toute fonction porte aussi l'ensemble hérité des fonctions
-	 * qu'elle cite (`inheritedInterval`, calculé par `citedIntervals`).
+	 * qu'elle cite (`inheritedInterval`, calculé par `citedIntervals`), et les
+	 * conditions des composées qui l'ont donné (`inheritedConditions`, chantier
+	 * composees).
 	 */
-	#inheritIntervals(inheritedDomains: ReadonlyMap<string, Domain>): void {
+	#inheritIntervals(
+		inheritedDomains: ReadonlyMap<string, Domain>,
+		inheritedConditions: ReadonlyMap<string, readonly string[]>
+	): void {
 		this.items.forEach((o, i) => {
 			if (!isFunction(o)) return;
 			const domain = inheritedDomains.get(o.name);
+			const conditions = domain === undefined ? undefined : inheritedConditions.get(o.name);
 			// Comparé par contenu : un objet neuf à chaque passage relancerait le
 			// rendu de la carte et la synchronisation du tracé pour rien
-			if (JSON.stringify(o.inheritedInterval) === JSON.stringify(domain)) return;
-			const { inheritedInterval: _stale, ...rest } = o;
-			this.items[i] = domain === undefined ? rest : { ...rest, inheritedInterval: domain };
+			if (
+				JSON.stringify(o.inheritedInterval) === JSON.stringify(domain) &&
+				JSON.stringify(o.inheritedConditions) === JSON.stringify(conditions)
+			) {
+				return;
+			}
+			const { inheritedInterval: _stale, inheritedConditions: _staleConditions, ...rest } = o;
+			this.items[i] =
+				domain === undefined
+					? rest
+					: {
+							...rest,
+							inheritedInterval: domain,
+							...(conditions !== undefined && { inheritedConditions: conditions })
+						};
 		});
 		this.items.forEach((o, i) => {
 			const derivative = derivativeOf(o.name);

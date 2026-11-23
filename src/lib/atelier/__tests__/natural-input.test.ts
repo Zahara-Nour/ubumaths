@@ -5,10 +5,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { runInput, type CalcResult } from '$lib/atelier/calcul';
-import { commandCatalog } from '$lib/atelier/commands';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { runInput, type CalcResult } from '#lib/atelier/calcul.ts';
+import { commandCatalog } from '#lib/atelier/commands.ts';
 import {
 	calcTextOf,
 	cleanedShortcuts,
@@ -150,7 +150,7 @@ describe('le champ produit le texte que lit runInput, et la vraie chaîne répon
 		[
 			'\\text{résous}\\,x^2=4\\,\\text{dans}\\,\\lbrack0;+\\infty\\lbrack',
 			'.résoudre x^2=4 dans [0;+∞[',
-			'x = 2'
+			'S = \\left\\{ 2 \\right\\}'
 		],
 		['\\text{dériver}\\,x^3', '.dériver x^3', '3 x^2'],
 		[

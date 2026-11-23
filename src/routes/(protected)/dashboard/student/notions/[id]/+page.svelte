@@ -7,10 +7,10 @@
 	 * d'entraînement ici » (Q1 de la PR D).
 	 */
 
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import {
 		Check,
 		Circle,
@@ -19,12 +19,12 @@
 		BookOpen,
 		MessageCircleQuestion
 	} from '@lucide/svelte';
-	import { formatNotionLevel, getNotionLevelVisual, notionLevel } from '$lib/types/skills';
-	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
+	import { formatNotionLevel, getNotionLevelVisual, notionLevel } from '#lib/types/skills.ts';
+	import CurriculumPointFsrsBadge from '#lib/components/srs/CurriculumPointFsrsBadge.svelte';
 	import type { PageData } from './$types';
-	import type { NotionPointDetail } from '$lib/server/progression/student-progression';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { notionReturn } from '$lib/navigation/return-links';
+	import type { NotionPointDetail } from '#lib/server/progression/student-progression.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { notionReturn } from '#lib/navigation/return-links.ts';
 	import { page } from '$app/state';
 
 	interface Props {
@@ -45,7 +45,7 @@
 	};
 
 	// Helpers visuels — verdict BO formel uniquement (le badge FSRS dynamique
-	// est affiché séparément via <CapacityFsrsBadge>).
+	// est affiché séparément via <CurriculumPointFsrsBadge>).
 	function pointBadgeVariant(p: NotionPointDetail): 'default' | 'outline' | 'destructive' {
 		if (p.needs_remediation) return 'destructive';
 		if (p.is_acquired) return 'default';
@@ -125,7 +125,7 @@
 							</Badge>
 						{/if}
 						{#if point.trainable}
-							<CapacityFsrsBadge badge={point.badge} showLabel />
+							<CurriculumPointFsrsBadge badge={point.badge} showLabel />
 						{:else}
 							<Badge variant="outline" class="text-xs text-muted-foreground">
 								Pas encore d'entraînement ici

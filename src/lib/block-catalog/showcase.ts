@@ -1,7 +1,8 @@
 /**
  * Catalogue des blocs ubumark — sélection de la vitrine `/demo/blocs`
  *
- * Neuf exemples rangés par niveau (phase 0 du 2026-10-25). Le texte du bloc
+ * Neuf exemples rangés par niveau (phase 0 du 2026-10-25), puis le schéma en barres
+ * (chantier schema-barres, 2026-11-12). Le texte du bloc
  * n'est pas recopié : chaque exemple renvoie à un exemple d'une fiche, par le
  * `slug` de la fiche et le titre de l'exemple. Un renvoi cassé fait échouer
  * `__tests__/showcase.test.ts`.
@@ -80,6 +81,13 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
 		example: 'Nuage de points avec ajustement affine',
 		title: 'Un nuage de points',
 		text: 'Les ventes année après année, la droite d’ajustement, son équation et une prévision.'
+	},
+	{
+		level: 'college',
+		slug: 'schema-barres',
+		example: 'Les primes',
+		title: 'Un schéma en barres',
+		text: 'Trois barres à la même échelle, une partie manquante en pointillés et le total en accolade.'
 	},
 	{
 		level: 'lycee',

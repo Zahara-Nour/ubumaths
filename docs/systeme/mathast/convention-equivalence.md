@@ -483,6 +483,13 @@ contrôle passe avant le garde de complexité : quatre solutions séparées par 
 24 472 instances) : 202 verdicts changés, tous des réponses « virgule » déjà fausses dont seul le
 message change ; 0 changement sur les specs et les réponses attendues.
 
+Ensemble fini attendu, réponse faite de nombres **sans accolades** (`1`, `-3 ; 3`, `x = 2`,
+`x = -3 ou x = 3`) : toujours faux, même avec les bonnes valeurs, mais avec le message « Un ensemble
+de solutions s'écrit entre accolades : {-3 ; 3}. » (les valeurs de l'élève, écrites comme le message
+du singleton : `1/2`, `√2`) au lieu de « Réponse illisible : écris un intervalle… » (décision de
+David, 2026-10-29). Attendu intervalle, ∅ ou ℝ : message inchangé. Seul le message change : la
+réponse était déjà fausse.
+
 Une fraction simplifiable dans un ensemble fini se traite comme une borne non simplifiée :
 `\{-\frac{10\pi}{12};\frac{\pi}{3}\}` pour `\{-\frac{5\pi}{6};\frac{\pi}{3}\}` vaut ½ (`unoptimal_form`,
 contrainte `intervalForm` : `strict` → mauvaise forme, `off` → juste), message « La fraction peut
@@ -490,6 +497,16 @@ contrainte `intervalForm` : `strict` → mauvaise forme, `off` → juste), messa
 que 4/2). »). Elle était jugée juste sans réserve. Mesure (même corpus) : 154 verdicts changés,
 tous des réponses « fraction doublée » dans un ensemble fini, de juste à ½ (sentinelle, 3 cartes
 trigo du dépôt, 3 modèles de prod) ; 0 changement sur les specs et les réponses attendues.
+
+Une racine carrée simplifiable aussi (décision de David, 2026-10-27, lot 2 de la 2de, x² = 12) :
+`\{-\sqrt{12};\sqrt{12}\}` pour `\{-2\sqrt{3};2\sqrt{3}\}` vaut ½, message « La racine peut être
+simplifiée. » ; en borne d'intervalle (`]-\infty;\sqrt{8}]`), « Simplifie les racines des bornes (par
+exemple 2√3 plutôt que √12). ». Même règle que la contrainte `reducedRadicals` des cases ordinaires
+(`reduceRadicalsAST` : √12 → 2√3, √4 → 2, 3√12 → 6√3) ; même réglage `intervalForm`. Mesure : specs
+de toutes les cases intervalles du dépôt inchangées ; en prod, une seule attendue avec une racine
+(9e1d084e, `p ± √r`, r sans facteur carré). Aussi dans un ensemble fini de complexes (`\{1+\sqrt{12}i;…\}`).
+Limites connues : `\sqrt{1}` et `\sqrt{0}` restent justes (la règle part de √4) ; un point exclu
+`\mathbb{R}\setminus\{\sqrt{12}\}` n'est pas contrôlé, comme `\mathbb{R}\setminus\{\frac42\}`.
 
 ### Constante e dans une borne
 
@@ -567,7 +584,8 @@ désormais une sphère centre-rayon comme bien formée).
   et comparées EXACTEMENT, aucun flottant : `\frac{2}{\sqrt2}` = `\sqrt2`, `1,414` ≠ `\sqrt2` ;
 - la VALEUR décide du juste / faux ; un vecteur juste voit ensuite chaque coordonnée jugée comme
   une case ordinaire (2026-10-04) : `(\frac{2}{4};1)` pour `(\frac12;1)` est juste avec « La
-  fraction peut être simplifiée » (`unoptimal_form`), `(0.5;1)` est de mauvaise forme ; en
+  fraction peut être simplifiée » (`unoptimal_form`), `(0.5;1)` est de mauvaise forme, juste avec
+  l'option `acceptDecimal` de la case, qui vaut pour chaque coordonnée (2026-10-29) ; en
   `colineaire`, seule l'écriture compte (fraction simplifiable), la valeur étant libre.
 
 | `vectorMode`     | Attendue  | Réponse                                                  | Verdict                 |

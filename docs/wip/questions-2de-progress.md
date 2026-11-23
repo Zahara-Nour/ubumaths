@@ -1,0 +1,2356 @@
+# Chantier « questions-2de » — couvrir la seconde en modèles de questions
+
+> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Bornes : `docs/systeme/programmes/bornes/lycee/2de.json` → `["2"].points` (décisions l2-1 à l2-10
+> dans `2de.md`). En base, la seconde est le niveau `2`.
+
+## Reprendre ici
+
+_Mis à jour le 2026-11-06, ouverture de `questions-2de-demonstrations` (§ 94)._
+
+- **État** : lots 1 à 12 publiés ; **seconde couverte**. Les points P (Q2) sont repris par le chantier
+  `questions-2de-demonstrations` (D1 du 2026-11-06 : les 12 démonstrations d'abord, comme en 1re spé).
+- **Prochaine action** : aucune ici ; suivre `docs/wip/questions-2de-demonstrations-progress.md`. Versement de fin de
+  chantier une fois les P traités (Q6 de D1).
+- **En attente de David** : rien.
+- **Pièges en cours** : `--publier`, `publier-lot` → David avec `!`, puis MCP ; une autre session écrit
+  aussi dans ce journal : `git pull`.
+- **Worktree / branche** : aucun chantier ouvert ; `../ubumaths-wt-questions-2de` (HEAD détachée) garde un
+  id de 1re spé non commité (`calcul-1spe/01-tableau-signes-affine.json`), à sa session : ne pas le retirer.
+
+## 1. Relevé (prod, 2026-10-27)
+
+- **292 points** de seconde ; **36** ont au moins un modèle, **256** aucun.
+- **51 modèles** `'2' = any(grades)` : 31 publiés, 20 brouillons ; tous rangés sur un nœud, tous tagués.
+- **6 modèles de 1re spé** (brouillons sauf 8b59ca4b) tagués d'un point de seconde : 5b20321f (2-204),
+  db8b5dc8 (2-205), f98164b1 (2-212), 8c31675a (2-244), 8b59ca4b (2-378), 5062197a (2-403).
+- 5 modèles portent des points de **plusieurs programmes** — conforme à l'ADR 0020 (« un point par
+  programme ») : 1cfc575d (2-399 + TSPE-616 + TCOMP-302), 77d6fedc (2-390 + TCOMP-302), f3e68e4b et 4016b05c
+  (2-396 + TCOMP-302), 9d7c4d98 (2-398 + TCOMP-302). Leur niveau reste `['2']` seul (Q7).
+
+Points couverts (nombre de modèles) : 2-403, 404, 405, 406, 204, 205 (2), 207, 210 (2), 408 (2), 212, 410,
+214, 411, 491, 244, 245 (5), 420, 261 (2), 262 (7), 271 (2), 328 (2), 339, 458, 347, 474, 350, 366 (2),
+367 (2), 377 (2), 378 (2), 379, 390, 488, 396 (2), 398, 399.
+
+## 2. L'existant contre les bornes
+
+Vérifié le 2026-10-27 (lecture seule) : `question:specs` des 57 modèles, 30 tirages par variation, tout
+vert ; deux tirages lus par variation (énoncé, réponse, corrigé). Images des fonctions affines : une seule
+regardée sur 30. Aucune passe antérieure pour le lycée (celle de l'arbre des notions s'arrêtait au collège).
+
+### 2.1 OK
+
+Ensembles 0598a535, 9724dc3d, 5676627b, 0a1ff14f ; « et / ou » 219c9470, 6c3ee9e6, 1e9a534f, 55341e85 ;
+implication 5426cead, bed58c24, e05203b0 ; racines 0d2edda7, 498d6d3e, b1e27739, f57c0a5a ; valeur absolue
+d6a810f4, 62b99aa7 ; calcul littéral 33eb676e, 34e569e7, d1648508 ; affines 09f0c9ec, ae0ad163, 75fe996a ;
+évolutions c4372fd8, 1c443c35, 2562438e, e05bb79b (peut tirer une baisse de 100 %), 36abc642, bbd511cb ;
+probabilités 1cfc575d, 9d7c4d98, 4016b05c, f3e68e4b, 77d6fedc, cf548ea1.
+
+### 2.2 À reprendre
+
+- **Niveau 1_SPE → 2** : 8b59ca4b, f98164b1, 8c31675a, db8b5dc8, 5062197a, 5b20321f (tagués d'un point de 2de).
+- **8b59ca4b** : le corrigé cite « suite géométrique de raison … » (1re).
+- **8c31675a** variation 1 (intervalles accolés) : réponse attendue `[0;1[∪[1;5]`, le corrigé dit `[0;5]`.
+- **939153b6** (2-420, distance) : même titre que 62b99aa7, corrigé purement algébrique au lieu de la distance.
+- **68db64b0, f96d3e43** (lire une image, un extremum) : courbes de sinus / cosinus, abscisses π/2, π — le
+  sinus n'est en 2de que dans le triangle rectangle. Refaire avec des abscisses entières.
+- **4cc21ccd, c7cdca01** (« signe d'une expression » sachant x > 0 / x < 0) tagués 2-328 (signe d'une
+  fonction affine) : ce n'est pas ce point ; aucun point de 2de ne le décrit mieux (Q7).
+- **a26e6e50** (Card(A × B)), **db8b5dc8** (couple dans A × B) : borne 2-205 déduite, « notion rencontrée »,
+  sans notation A × B (Q7).
+
+### 2.3 Doublons
+
+- Développer (a+b)² : 85f6e96e et 288c2bf0 ((a+bx)², (a+x)²) ; (a−b)² : 1338da34 et 6909bfde → une fiche à
+  plusieurs variations chacun.
+- « Calculer la valeur d'une valeur absolue » ×4 : 226e5b3b = d540f96e à fusionner ; 6ece66a6 (expressions)
+  et d03e49c0 (√a − b) à retitrer.
+- « Trouver le coefficient multiplicateur » : d98aa53a (diminution) et e12e58cb (augmentation) → fusion
+  possible.
+
+Détail par modèle : `scratchpad/verif-2de.md` de la session (non versé ; ce paragraphe en est le résumé).
+
+## 3. Points sans modèle, classés
+
+Classes : **A** texte / formule seuls · **B** outil existant · **C** outil neuf · **D** non évaluable dans
+les questions · **P** point-compétence, -démonstration ou approfondissement « en aucun cas obligatoire »
+(BO p.4) : à trancher (Q2).
+
+### 3.1 Vocabulaire ensembliste et logique (13 sans modèle ; 407 rangé en 3.4)
+
+- **A** : 201 (appartenance), 202 (ensemble vide), 203 (symboles), 206 (notation du complémentaire), 208
+  (proposition ?), 209 (variables dans une proposition), 211 (négation), 213 (implication), 409
+  (équivalence), 215 et 412 (« pour tout », « il existe » en mots).
+- **P** : 216 (disjonction des cas), 217 (absurde) — points-compétences.
+
+### 3.2 Algorithmique et programmation (22 sans modèle)
+
+- **A** (programme Python montré en bloc de code, « que vaut `x` à la fin ? », « quel type ? ») : 218, 219,
+  220, 221, 222, 413, 223, 229, 416, 228, 232, 233, 417.
+- **D** dans les questions, couverts par les **exercices Python** (Pyodide) : 224, 414, 415, 225, 226, 227,
+  231, 234, 230 (écrire, programmer). Une case « compléter la ligne manquante » reste possible (Q3).
+
+### 3.3 Automatismes (5 sans modèle)
+
+- **A** : 489 (calcul littéral multiplicatif), 490 (le tout par une partie), 402 (interpréter un quartile).
+- **B** : 492 (antécédents sur une courbe, ` ```courbe `), 401 (périmètre d'un polygone, ` ```figure `).
+
+### 3.4 Nombres réels et arithmétique (27 + 407)
+
+- **A** : 235, 236, 418, 419, 237 (multiples, diviseurs, parité), 238 (fraction irréductible), 243, 407
+  (notation des intervalles), 246 (|x − a| ⩽ r → intervalle), 247, 421, 248, 422, 252 (appartient à un
+  intervalle ?), 253 (encadrement), 254 (arrondi, chiffres significatifs).
+- **B** : 249 (lire une abscisse, ` ```line `) ; 250 (placer un réel : `placer:` de `reponses-a-placer`,
+  **pas encore en prod**) ; 251 (représenter un intervalle : case choix de droites à `segments:`).
+- **P** : 239, 240, 255, 256 (démonstrations) ; 241, 242, 257, 258, 259 (approfondissements).
+
+### 3.5 Algèbre (34 sans modèle)
+
+- **A** : 260, 270 (puissances), 423 (√a² = |a|), 272 (écritures fractionnaires), 263, 424 (inégalités),
+  264, 425, 276, 427, 277, 428 (comparer par différence, par rapport), 265, 266, 279, 429, 430, 280, 431,
+  432 (premier degré), 267 (produit nul), 269 (quotient = k), 281 (x² = a), 273, 274 (exprimer une variable),
+  275 (choisir la forme), 278 (modéliser par une inéquation).
+- **B** : 268, 426 (signe d'un produit, d'un quotient : ` ```variation ` en tableau de signes ; forme de la
+  réponse en Q4).
+- **P** : 282 (démonstration) ; 283, 284, 285, 286 (approfondissements).
+
+### 3.6 Vecteurs et géométrie (32 sans modèle)
+
+- **A** : 433 (vecteur nul), 290 (colinéarité), 292 (base orthonormée), 434, 294 (coordonnées de AB), 293
+  (norme), 295, 435 (déterminant), 296 (milieu, vectoriel), 300, 436 (coordonnées d'une somme, de k·u),
+  301 (distance), 302 (milieu), 303, 437 (alignement, parallélisme).
+- **B** (` ```figure ` en repère, vecteurs dessinés ; réponse en case ou case choix) : 287 (égalité de
+  vecteurs), 288 (représentants), 289 (k·u), 291 (combinaison de deux vecteurs), 299 (lire les coordonnées).
+- **C** : 297 (représenter la somme), 298 (représenter un vecteur) — geste « tracer un vecteur » (Q5).
+- **P** : 493, 494 (compétences) ; 304, 438 (démonstrations) ; 305, 306, 307, 308, 309, 310
+  (approfondissements, dont démonstrations).
+
+### 3.7 Droites du plan (21 sans modèle)
+
+- **A** : 311, 312, 439, 313, 314, 440, 441 (équations, pente), 442, 443, 317, 318, 319.
+- **B** (` ```courbe ` avec une droite tracée) : 315 (pente lue), 444 (vecteur directeur lu).
+- **C** : 316, 445 (tracer une droite : placer deux points dans un repère — le `placer:` est en 1D seulement ;
+  Q5).
+- **P** : 320 (démonstration) ; 321, 322, 323, 324 (approfondissements).
+
+### 3.8 Fonctions : représentation et équations (44 sans modèle)
+
+- **A** : 325, 326 (ensemble de définition), 327, 331, 447 (point sur la courbe ?), 329 (signe des fonctions
+  de référence), 455, 457 (affine), 460 (|x| < k), 461, 463 (x² = k, x² < k), 464, 466 (1/x), 467, 469 (√x),
+  470, 472 (x³), 336, 448 (f(x) = k au choix de la méthode).
+- **B** (` ```courbe `) : 333, 334, 335 (courbes de référence, case choix de courbes), 338, 453 (f = g, f < g
+  graphiquement), 456, 340, 459, 341, 462, 342, 465, 343, 468, 344, 471 (résolutions graphiques).
+- **B** (` ```variation `) : 330, 446 (tableau de signes d'un produit, d'un quotient), 337, 449, 450, 451
+  (résoudre par un tableau de signes) — forme en Q4.
+- **D** : 452, 454 (« à l'aide d'un outil numérique ») — hors appli, ou case avec calculatrice permise (Q6).
+- **P** : 495 (compétence).
+
+### 3.9 Variations et extrémums (21 sans modèle)
+
+- **A** : 348, 357 (variations d'une affine selon m), 475, 476 (signe de |x|, x²), 355 (variations de x²),
+  356 (comparer f(a) et f(b) numériquement).
+- **B** : 345, 473, 346, 349, 352, 354, 477 (` ```courbe ` et ` ```variation `).
+- **D** : 351 (logiciel, calculatrice ou Python pour décrire les variations).
+- **P** : 353 (compétence) ; 358, 359, 360 (démonstrations) ; 361, 362, 363 (approfondissements).
+
+### 3.10 Information chiffrée, statistique descriptive (19 sans modèle)
+
+- **A** : 364, 376 (pourcentage de pourcentage), 365, 368, 478 (évolutions), 375 (effectifs, proportions),
+  369 (linéarité de la moyenne), 370 (écart type, petite série), 371, 479 (ajout ou retrait d'une valeur),
+  380, 481 (moyenne de séries en classes), 381, 382, 483.
+- **B** : 372 (` ```histogramme `), 480, 482 (` ```frequences-cumulees `), 484 (comparer deux représentations).
+
+### 3.11 Croisement de deux variables qualitatives (9 sans modèle)
+
+- **B** (` ```tableau-croise `, à trous pour compléter) : 383, 384, 485, 385, 486, 386, 487.
+- **P** : 387, 388 (approfondissements, fichiers d'individus).
+
+### 3.12 Probabilités (8 sans modèle)
+
+- **A** : 389 (loi des grands nombres, case choix), 395 (traduire en notations), 400 (P_A(B) ou P_B(A) ?).
+- **B** : 391, 397 (` ```probtree `), 393 (arbre à trous `?`), 394 (` ```tableau-croise ` à trous).
+- **B ou D** : 392 (simulation : ` ```simulation ` montre une série ; la programmer relève des exercices Python).
+
+### Bilan
+
+| Classe | Points | Suite                                                   |
+| ------ | -----: | ------------------------------------------------------- |
+| A      |    140 | lots de texte                                           |
+| B      |     59 | lots avec ` ```courbe `, `line`, `variation`, `figure`… |
+| C      |      4 | tracer un vecteur (297, 298), une droite (316, 445)     |
+| D      |     12 | exercices Python, outil numérique                       |
+| P      |     41 | à trancher (Q2)                                         |
+
+## 4. Lots proposés (ordre)
+
+1. **Corrections de l'existant** (§ 2).
+2. **Équations et inéquations du premier degré** (265, 266, 279, 429, 430, 280, 431, 432, 267, 281) — A.
+   2 bis. **Lecture graphique** (492, 338, 453, 456, 340, 459, 341, 462, 342, 465, 343, 468, 344, 471) — B `courbe`
+   (Q1, David 2026-10-27).
+3. **Puissances, racines, fractions** (260, 270, 423, 272, 238) — A.
+4. **Vecteurs en coordonnées** (434, 294, 293, 300, 436, 301, 302, 295, 435, 303, 437) — A.
+5. **Droites** (311 à 319 en A, 315, 444 en B).
+6. **Fonctions de référence, résolutions** (A puis B `courbe`).
+7. **Signes et variations** (B `variation`, `courbe`).
+8. **Statistiques, évolutions, tableaux croisés, probabilités** (A et B).
+9. **Nombres réels, arithmétique, intervalles** (A, B `line`).
+10. **Ensembles et logique** (A).
+11. **Algorithmique : lire un programme** (A).
+12. Outils C, s'ils sont décidés (Q5).
+
+## 5. Questions à David
+
+Posées le 2026-10-27. **Décisions de David (2026-10-27) : mes recommandations, toutes validées** — sauf
+Q8, corrigée après coup (voir sa ligne).
+
+- **Q1 — Ordre des lots** : celui du § 4 (corrections d'abord, puis équations, puissances, vecteurs…) ?
+  → **Ordre du § 4, la lecture graphique avancée juste après les équations (2 bis).** Les corrections d'abord : elles touchent des modèles publiés.
+- **Q2 — Points P** (41 : démonstrations, compétences, approfondissements) : sans modèle, ou modèles plus
+  tard (démonstration à reconstituer en case choix, approfondissement en niveau élevé) ?
+  → **Aucun modèle pour l'instant** ; ces 41 points sont « sans modèle, voulu ». On y reviendra une fois le reste couvert (case choix en prod).
+- **Q3 — Algorithmique** : « lire un programme » en questions (bloc de code Python + case) ; « écrire,
+  programmer » laissés aux exercices Python, ou aussi « compléter la ligne manquante » en case ?
+  → **Lire en questions ; écrire aux exercices Python** ; « compléter la ligne manquante » seulement pour l'affectation et la condition.
+- **Q4 — Tableaux de signes** (268, 426, 330, 446, 337, 449-451) : case choix entre tableaux, cases sous le
+  tableau, ou outil neuf « tableau de signes à compléter » (classe C) ?
+  → **Cases sous le tableau** (signe sur chaque intervalle, valeur qui annule). L'outil « tableau de signes à compléter » (2de → Tle) = futur chantier, sans bloquer la 2de.
+- **Q5 — Outils C** : tracer un vecteur (297, 298) et une droite dans un repère (316, 445), dans la suite de
+  `reponses-a-placer` (placer en 2D) — à lancer, ou ces 4 points en case choix de figures ?
+  → **Case choix entre figures pour l'instant** ; le geste « placer en 2D » plus tard, après `reponses-a-placer`.
+- **Q6 — « À l'aide d'un outil numérique »** (452, 454, 351) : hors appli, ou case avec calculatrice permise ?
+  → **Hors appli** : 452, 454, 351 restent sans modèle.
+- **Q7 — Existant** : (a) Card(A × B) et la notation A × B dans 2-205 ? (b) 4cc21ccd / c7cdca01 : garder
+  2-328 ou retirer le tag ? (c) niveau des modèles tagués 2de + terminale : `['2']` seul ou les deux ?
+  → (a) db8b5dc8 garde 2-205 ; **a26e6e50 quitte la 2de** (dénombrement, TSPE-306). (b) **Tag 2-328 retiré** de 4cc21ccd et c7cdca01. (c) **`['2']` seul** ; vérifier avant d'y toucher que rien ne filtre par niveau là où on attend le tag.
+- **Q8 — Doublons** : fusionner en variations (un modèle archivé) ou seulement retitrer ?
+  → Validée : fusionner les quasi-identiques, retitrer les autres. ⚠️ **Corrigé après coup** : aucune paire n'est un vrai doublon — chaque paire est une **marche de niveaux** ((a+x)² niv. 5 / (a+bx)² niv. 7 ; (a−x)² 6 / (a−bx)² 8 ; |entier| 4 / |fraction, √, décimal| 5 ; augmentation 3 / diminution 4). Fusionner effacerait la progression → je propose de **seulement retitrer** (question reposée, phase 0 du lot 1).
+
+## 6. Lot 1 « corrections » : phase 0 (proposée le 2026-10-27, à valider)
+
+Gabarit : lot 0 du CE1 (`couvrir-un-niveau.md` § 7) — une PR **contenu** (script de lot → migration générée,
+pour les modèles publiés ; `--mettre-a-jour` lancé par David pour les brouillons), une PR **rangement**
+(niveaux, tags, nœuds, à la main). Aucune donnée d'élève sur les modèles touchés (relevé MCP : 0 tentative,
+0 carte, 0 évaluation, 0 journal).
+
+**Contenu**
+
+| Modèle                                    | Statut    | Changement                                                                                                                            |
+| ----------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 8b59ca4b                                  | publié    | corrigé : retirer « terme d'une suite géométrique de raison … »                                                                       |
+| 8c31675a                                  | brouillon | variation 1 : intervalles accolés → réponse `[a ; d]`                                                                                 |
+| 939153b6                                  | publié    | titre « Résoudre \|x − a\| = b avec la distance » ; corrigé : « les nombres à distance b de a : a − b et a + b »                      |
+| 85f6e96e / 288c2bf0                       | publiés   | titres « Développer (a + x)² » / « Développer (a + bx)² » ; consigne « Développe et réduis : » unifiée                                |
+| 1338da34 / 6909bfde                       | publiés   | « Développer (a − x)² » / « Développer (a − bx)² » ; même consigne                                                                    |
+| 226e5b3b / 6ece66a6 / d03e49c0 / d540f96e | publiés   | « Valeur absolue d'un entier » / « … d'une somme, d'un produit » / « … de √a − b » / « … d'une fraction, d'une racine, d'un décimal » |
+| e12e58cb / d98aa53a                       | publiés   | « Coefficient multiplicateur d'une augmentation » / « … d'une diminution »                                                            |
+
+**Rangement**
+
+- Niveau 1_SPE → 2 : 8b59ca4b (publié), f98164b1, 8c31675a, db8b5dc8, 5062197a, 5b20321f (brouillons).
+- a26e6e50 (brouillon) : niveau T_SPE, tag 2-205 → TSPE-306, nœud de TSPE-306.
+- 4cc21ccd, c7cdca01 (publiés) : tag 2-328 retiré ; nœud et statut gardés.
+- 68db64b0, f96d3e43 (brouillons, courbes de sinus / cosinus) : **proposé** — niveau T_SPE, tag TSPE-599
+  (courbes de sinus et cosinus), au lieu de les réécrire ; deux modèles neufs de 2de (2-491, 2-350) au lot 2 bis.
+
+**Question d'accès** : qui pourra lire quoi qu'il ne pouvait pas lire avant ? **Personne** : aucune policy ne
+change, aucun brouillon n'est publié. En miroir, personne ne perd l'accès à un modèle publié (rien n'est
+archivé). Effets visibles : un prof qui filtre « seconde » voit 8b59ca4b (il ne le voyait qu'en 1re spé) ;
+2-328 n'a plus de modèle.
+
+**Décisions de David (2026-10-27)** : § 6 validé, avec mes deux corrections — **titres partagés gardés**
+(c'est la convention de la base : 124 titres partagés par 480 modèles, la marche se lit au sous-titre ;
+seuls les 4 « Développer » n'avaient pas de sous-titre) et **68db64b0 / f96d3e43 vers la terminale spé**
+(TSPE-599). Niveaux des 6 modèles de 1re spé : **[2, 1_SPE]**, convenu avec la session `questions-1spe`
+(leur D3) : le cahier de texte filtre les modèles au niveau exact de la classe
+(`.contains('grades', [classData.grade])`), avec [2] seul la 1re spé les perdrait. La session 1re spé ne
+touche pas ces 6 modèles, ni a26e6e50, 68db64b0, f96d3e43.
+
+## 7. Lot 1, PR « corrections » (contenu + rangement, 2026-10-27)
+
+Une seule PR, deux migrations (comme la 6e) ; branche `feat/questions-2de-corrections`.
+
+- Instantané `questions-2de/etat-prod-2026-10-27/` (`questions-2de/releve-prod.ts`, lecture seule, points
+  de 2 et T_SPE : la requête plafonne à 1 000 lignes) : md5 des 22 modèles = MCP ; 0 donnée d'élève.
+- **Contenu** : `questions-2de/lot-corrections-2de.py` → `20261027192000_questions_2de_contenu` + fixture ;
+  7 modèles (8b59ca4b, 8c31675a, 939153b6, 85f6e96e, 1338da34, 288c2bf0, 6909bfde). Vérifiés par
+  `questions-2de/verifier-contenu.ts` (`checkTemplate` sur les lignes générées) : specs toutes vertes,
+  1 500 tirages sans échec. 8c31675a : la réunion en deux morceaux de deux intervalles accolés est jugée
+  `unoptimal_form` (`intervalForm`), spec ajoutée. Test `questions-2de-contenu.test.ts` vert (12) ; rouge
+  sans la migration (garde du rollback : 0 modèle sur 7 au contenu posé).
+- **Rangement** : `questions-2de/lot-rangement-2de.py` (générateur de la 6e, plus les tags **gardés**) →
+  `20261027192100_questions_2de_rangement_tags` + fixture ; 11 modèles, 9 niveaux, 3 déplacements, 3 tags
+  posés, 5 retirés, 6 gardés. Test `questions-2de-rangement-tags.test.ts` vert (21) ; rouge sans la
+  migration (garde du rollback : 2 modèles sur 11).
+- Revues : `security-auditor` sans finding bloquant (gardes TOUT ou RIEN, rollback avec tags gardés, md5
+  prod = « avant » 7/7, 11 modèles conformes en prod ; mineurs : le rollback du contenu laisse avancer
+  `updated_at`, comme la 6e). `code-reviewer` (opus) sans finding bloquant ; mineur corrigé : « avec un
+  coefficient » faux une fois sur 7 (coefficient tiré = 1) → sous-titre « La lettre multipliée par un
+  entier ». DoD : `check:incremental` 0 erreur, cliquet tenu, lint rapide vert.
+- #1866 mergée le 2026-10-27 (Lint relancé une fois : ESLint annulé au délai de 20 min, pas une erreur) ;
+  `db:migrate` joué depuis le dépôt principal ; MCP : 7 md5 = « après », niveaux / nœuds / tags du lot, statuts
+  inchangés, 2-328 sans modèle.
+
+## 8. Lot 2 « équations et inéquations du premier degré » : décisions (David, 2026-10-27)
+
+Relevé MCP : aucun modèle sur les 10 points ; le collège (5e, 4e) répond « x = … », aucune inéquation ni
+produit nul en base. Phase 0 validée telle que proposée (mes 4 recommandations).
+
+- **Réponse** : une case `S = ?`, `answerKind: 'intervalles'` (comme 8c31675a, 9e1d084e) : `{3}`, `∅`, `ℝ`,
+  intervalles ; borne non simplifiée = ½ ; « 3 » sans accolades ou « x ⩾ 2 » = faux. Niveau `['2']`,
+  brouillons.
+- **Équations** — Calcul littéral › Equations › « Ensemble des solutions » : 1 · 2-430 a + x = b (entiers ;
+  décimaux) · 2 · 2-429 ax = b (solution entière ; fraction ; a fractionnaire) · 3 · 2-265 ax + b = 0
+  (entière ; fraction) · 4 · 2-279 ax + b = cx + d (entière ; fraction ; a = c → ∅ ou ℝ) · 5 · 2-267 produit
+  nul ((x − p)(x − q) ; (ax + b)(cx + d), fractions) · 6 · 2-281 x² = a (carré parfait ; sans facteur carré ;
+  a = 0 ou a < 0 ; a simplifiable, √12 = ½).
+- **Inéquations** — Calcul littéral › Inéquations › « Premier degré », les quatre sens tirés (l2-3) :
+  1 · 2-432 a + x ⩾ b (entiers ; décimaux) · 2 · 2-431 ax ⩾ b (a > 0 ; a < 0) · 3 · 2-266 ax + b > 0
+  (a > 0 ; a < 0) · 4 · 2-280 ax + b ⩾ cx + d (a − c > 0 ; a − c < 0 ; a = c → ∅ ou ℝ).
+- 2-269 (quotient) hors lot. **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+## 9. Lot 2, PR des fichiers (2026-10-27)
+
+- Script `questions-2de/lot-equations-2de.py` → `scripts/questions/2de-equations/` (10 modèles, 25 variations,
+  83 specs) ; `create-questions` en simulation : tout vert.
+- **Écart trouvé** : la case intervalles jugeait `{−√12 ; √12}` juste. David a choisi le correctif (option 1) :
+  **#1877** mergée (racine simplifiable = ½ en borne, en ensemble fini, en ensemble de complexes ;
+  `code-reviewer` opus : 0 faux positif sur 59 réponses justes sondées). Limites notées dans
+  `convention-equivalence.md` : `\sqrt1` juste, `\mathbb{R}\setminus\{\sqrt{12}\}` non contrôlé.
+- Relecture des tirages : corrigés retouchés (inverse de 1/q écrit q ; crochet expliqué selon le sens tiré).
+- Base locale : 10 brouillons créés ; aperçu admin joué (x² = 9 : `{-3;3}` juste ; −4x ⩽ 19 : faux, corrigé
+  « le sens change », S = [−19/4 ; +∞[).
+- #1881 mergée le 2026-10-27 (CI verte du premier coup), worktree retiré.
+
+## 10. Lot 2, migration nœud + tag (2026-10-27)
+
+- David a lancé `create-questions --publier` : 10 brouillons en prod, niveau `2`, sans nœud ni tag (MCP).
+- Nœud = celui du point : 2-430, 2-429 → Algèbre › Équations : premier degré ; 2-265 → … › ax + b = c ;
+  2-279 → … › ax + b = cx + d ; 2-267 → Algèbre › Équations : produit et quotient › produit nul ; 2-281 →
+  … › x² = a ; 2-432, 2-431, 2-280 → Algèbre › Inéquations : premier degré ; 2-266 → … › ax + b < c.
+- Migration `20261027213000_questions_2de_equations_rangement_tags` (gabarit CP-C) + test d'intégration :
+  9/9 vert, 5/9 rouge avec une migration vide ; `security-auditor` : aucun finding. PR #1882.
+- #1882 mergée le 2026-10-27 (CI : garde de doc → commit `Doc-inchangée:`, test « cas rare » lent) ;
+  `db:migrate` joué ; MCP : 10 modèles sur le nœud de leur point, 1 tag chacun, `updated_at` inchangé,
+  brouillons. Page à cocher (aucune alerte sur les 10 fiches) :
+  https://claude.ai/artifact/T8Emcjbfc7wPj4qnUd5ebk — rendu à 390 px non vérifié (fenêtre Chrome
+  non redimensionnable).
+- David : « tu n'as pas mis en forme le latex » → #1887 (gabarit de la page à cocher) : libellé du point,
+  bornes et réponses des specs en KaTeX ; blocs `$$…$$` en mode bloc (`align` refusé en ligne) ; ℝ en
+  Unicode (MathML de Chrome sans `double-struck`). Page republiée, verdicts gardés.
+- Relecture : 10 OK sur 10 (verdicts comptés le 2026-10-28) ; `publier-lot.ts` en simulation : 10 brouillons
+  passent ; #1877 vérifié sur `production` (v0.52.0).
+- **Publié** par David le 2026-10-28 (`publier-lot.ts --publier`, 10/10) ; MCP : 10 `published`, rangés, tagués.
+
+## 11. Lot 2 bis « lecture graphique » : relevé et phase 0 (proposée le 2026-10-28, à valider)
+
+**Relevé MCP (prod, 2026-10-28)** : aucun modèle sur les 14 points. Aucun modèle de lecture graphique au
+collège ni en 2de ; patron en 1re/Tle : 68db64b0 « Lire une image sur une courbe » (T_SPE, case + ` ```courbe `,
+corrigé avec `points:` sur la courbe). Catégories prises en Fonctions : « Fonctions affines » (Apprivoiser
+1-7, Equations 1-2, Variations-Signe 1-3), « Valeur absolue » (Apprivoiser 1-8, Equations 1-2) ; rien
+d'autre.
+
+Nœuds des points : 2-492 → Généralités › images et antécédents ; 2-338, 2-453 → Généralités › équations et
+inéquations f(x) = k ; 2-456 → Fonctions affines › équations ; 2-340, 2-459 → Fonction valeur absolue ›
+équations et inéquations ; 2-341/462 carré, 2-342/465 inverse, 2-343/468 racine carrée, 2-344/471 cube →
+nœud « x… = k, x… < k » de chaque fonction.
+
+Bornes : courbe fournie par l'énoncé (l2-2, vaut aussi pour √x et x³) ; |x| = k, |x| < k seulement (l2-1) ;
+les quatre sens (l2-3) ; 2-338/453 graphiquement seulement.
+
+**Phase 0 proposée** — un modèle par point (14), niveau `['2']`, brouillons :
+
+- **Réponse** : une case `S = ?`, `answerKind: 'intervalles'` (comme le lot 2), réunion `∪` comprise ;
+  2-492 : « les antécédents de k sont… » en ensemble `{−2 ; 1}`.
+- **Lisibilité** : solutions sur des nœuds de la grille (entiers ; demis pour 1/x avec grille 0,5).
+  x² = k : k ∈ {1, 4, 9} ; √x = k : k ∈ {1, 2, 3} ; x³ = k : k ∈ {−8, −1, 1, 8} ; 1/x = k : k ∈ {±½, ±1,
+  ±2} ; |x| = k : k ∈ {1…4}. Une variation « aucune solution » par équation (k < 0 pour x², |x|, √x ;
+  k = 0 pour 1/x) et k = 0 pour x², |x| ({0}).
+- **Généralités** (2-492, 2-338, 2-453) : courbes sur [a ; b] fermé, construites pour tomber sur la grille
+  (f = g + c(x − p)(x − q) avec g affine ; antécédents : f = k + c(x − p)(x − q)(x − r)) ; bornes du
+  domaine fermées.
+- **Corrigé** : même courbe + droite y = k (ou la seconde courbe) en pointillé, points d'intersection
+  nommés ; pour une inéquation, la partie de la courbe solution repassée en couleur (`sur [..]`).
+- **Erreurs typiques en specs** : crochet du mauvais côté, x lu sur l'axe des y, oubli de la solution
+  négative (x² = 4), √x < 2 → ]−∞ ; 4[ au lieu de [0 ; 4[, 0 inclus pour 1/x, « 3 » sans accolades.
+- **Catégories** (Fonctions › domaine › « Lecture graphique ») : Généralités 1 · 492, 2 · 338, 3 · 453 ;
+  Fonctions affines 1 · 456 ; Valeur absolue 1 · 340, 2 · 459 ; Fonction carré, Fonction inverse,
+  Fonction racine carrée, Fonction cube : 1 · équation, 2 · inéquation.
+- **Découpage** : deux PR de 8 et 6 modèles (A : généralités, affine, |x|, carré ; B : inverse, racine,
+  cube), chacune avec sa migration nœud + tag.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Décisions de David (2026-10-28)** : phase 0 validée avec mes trois recommandations — réponse en ensemble
+pour 2-492 ; deux PR (A : 8 modèles, B : 6) ; **pas** de variation « aucune solution » pour 1/x = 0
+(lecture d'asymptote, à la limite du programme) : le cas ∅ reste pour x², |x|, √x.
+
+## 12. Lot 2 bis A, PR des fichiers (2026-10-28)
+
+- Script `questions-2de/lot-lecture-a-2de.py` → `scripts/questions/2de-lecture-a/` (8 modèles, 14 variations,
+  57 specs) ; `create-questions` en simulation : tout vert.
+- Sonde des blocs ` ```courbe ` tirés (3 200 tirages, énoncé et corrigé) : deux défauts corrigés avant la
+  PR (nom `h` répété dans le corrigé « entre les points » ; fenêtre en fraction d²/4 → `floor` / `ceil`).
+- Base locale : 8 brouillons ; aperçu joué (f(x) < g(x) : `]−4 ; −1[` juste, corrigé avec la partie verte et
+  les disques vides en A et B ; affine décroissante dessinée).
+- #1906 mergée le 2026-10-28 (CI : test « cas rare » relancé, puis verte).
+
+## 13. Lot 2 bis A, migration nœud + tag (2026-10-28)
+
+- Brouillons créés en prod par David le 2026-10-28 : 08c059b8 (2-462), 17809937 (2-492), 406fd9a8 (2-338),
+  7efd2e76 (2-453), 9c4f6b4f (2-341), a55ad3b4 (2-456), b807cc6c (2-340), cbf00ce7 (2-459) ; relevé MCP :
+  brouillons, niveau 2de, sans nœud ni tag ; les 8 points sans aucun tag.
+- Migration `20261028183000_questions_2de_lecture_a_rangement_tags.sql` (gabarit du lot 2) et son test
+  d’intégration : rouge sans la migration, 9/9 vert avec ; `security-auditor` : aucun finding bloquant.
+- Horodatage `20261028170000` pris entre-temps par le CE1 → migration renommée `20261028183000`.
+- #1912 mergée le 2026-10-28. `db:migrate` refusé par la CLI (prod en avance : `20261028193700`, `200000`) ;
+  `--include-all` refusé par le classifieur du mode auto → lancé par David.
+- `db push --include-all` lancé par David ; MCP : migration inscrite, 8 modèles sur le nœud de leur point,
+  1 tag chacun (le bon), `updated_at` inchangé, brouillons. Page à cocher (aucune alerte sur les 8 fiches) :
+  https://claude.ai/artifact/XapqZRQbt9Zz1bqUuDf2Mn — rendu vu à ~600 px (largeur mini de la fenêtre
+  Chrome), courbes et KaTeX dessinés, pas de défilement horizontal.
+
+## 14. Lot 2 bis A, solutions sur l'axe des x (2026-10-28)
+
+- Relecture de la page (verdicts comptés) : 2 OK (01 antécédents, 02 f = g), 6 « À revoir », même remarque :
+  « faire apparaître les solutions / l'intervalle solution sur l'axe des x ? ».
+- Décision de David : **trait + points** (recommandation) pour **tout le lot** : inéquation → ensemble des
+  solutions repassé en vert sur l'axe (`t(x) = 0 sur [a ; b]   vert`, disques selon les crochets ; ℝ → axe
+  entier) ; équation → points `A'`, `B'`… sur l'axe (omis quand le point de la courbe y est déjà, via
+  `{{if:k==0| |…}}` ; `S'` pour le sommet, `O` pour x² = 0) ; pas de verticale (le bloc n'a pas de segment).
+- Variables `e`, `w` (ordonnées des intersections de f = g) ajoutées aux variations 02 et 03, et à leurs specs.
+- Sonde : 2 400 tirages, 4 800 blocs, 0 problème ; base locale mise à jour ; page à cocher régénérée et
+  republiée (version 2), rendu vu (f ⩽ g : [−4 ; 0] vert sur l'axe) ; simulation prod : 8 à mettre à jour.
+- Instantané d'avant : les fichiers de #1906 (les brouillons en sont issus, aucune donnée d'élève).
+- #1926 mergée le 2026-10-28 (CI verte du premier coup).
+
+## 15. Lot 2 bis A publié (2026-10-28)
+
+- David a lancé `create-questions --mettre-a-jour --publier` (8 mis à jour, 14 h 11) : en prod, les 8
+  corrigés contiennent « sur l'axe des abscisses », trait vert dans les 4 inéquations seulement.
+- Relecture : 8/8 OK sur la page à cocher. `publier-lot.ts` simulé vert, puis lancé par David :
+  8/8 `published`, revérifié par MCP.
+- Sonde : `tmp-sonde-courbes.ts` + `tmp-montre.ts` fusionnés en `scripts/questions/sonde-courbes.ts`
+  (`--dir … [--tirages N]`, `--montre <fichier> [graine]`) ; essayée sur le lot A : 0 problème.
+
+## 16. Lot 2 bis B, PR des fichiers (2026-10-28)
+
+- Script `questions-2de/lot-lecture-b-2de.py` → `scripts/questions/2de-lecture-b/` (6 modèles, 9 variations,
+  46 specs) ; `create-questions` en simulation : tout vert.
+- 1/x : grille 0,5, on tire la solution `r`, k = 1/r ; k sort en `\dfrac{1}{2}`, illisible pour le bloc
+  ` ```courbe ` → dans le bloc, `1/(r)` (droite et point A), description sans la valeur de k. 0 jamais
+  solution (crochet ouvert, rappel dans le corrigé) ; la courbe repassée en vert n'a pas de disque en 0,
+  l'axe en a un ouvert.
+- √x : k < 0 et sens > ou ⩾ → `[0 ; +∞[` (erreur typique ℝ en spec) ; borne hors fenêtre = 20 (fenêtre
+  jusqu'à 10).
+- Sonde : 2 400 tirages, 4 800 blocs, 0 problème. Base locale : 6 brouillons créés.
+- #1945 mergée le 2026-10-28 (CI verte du premier coup). Aperçu local : 1/x = 2, `{0,5}` juste (MathLive envoie
+  `\lbrace0,5\rbrace`), corrigé « 0,5 » ; 1/x > 2, `]0 ; 0,5[` juste, partie verte et axe vus.
+
+## 17. Message pour un ensemble écrit sans accolades (2026-10-28)
+
+- David a répondu « 1 » à 1/x = 2 : faux (voulu), mais message « Réponse illisible : écris un intervalle
+  comme ]2 ; 5] », qui égare. Accord de David pour un correctif à part, après le lot B (revue
+  `code-reviewer` Opus : correction des réponses).
+- Phase 0 proposée : attendu = ensemble fini de nombres, réponse = nombres sans accolades → faux, message
+  « Un ensemble de solutions s'écrit entre accolades : {1}. » (ses valeurs) ; attendu intervalle, ∅ ou ℝ →
+  message inchangé ; « x = 2 » hors champ sauf avis contraire. Validée par David le 2026-10-29, « x = 2 » compris ; réponse infinie exclue (revue Opus). Mergé dans #1951.
+
+## 18. Lot 2 bis B, migration nœud + tag (2026-10-29)
+
+- Brouillons créés en prod par David le 2026-10-29 : 60207cfd (2-342), 2d4c0b35 (2-465), 1ac09759 (2-343),
+  a371b402 (2-468), 98892db9 (2-344), 52e58bd6 (2-471) ; relevé MCP : brouillons, 2de, sans nœud ni tag.
+- Migration `20261029183000_questions_2de_lecture_b_rangement_tags.sql` (dérivée du lot A) et son test :
+  5/9 rouges sans la migration, 9/9 verts avec ; `security-auditor` : aucun finding bloquant. PR #1946.
+- #1946 mergée le 2026-10-29 (premier passage rouge : `Doc-inchangée:` mise dans la PR au lieu d'un commit).
+  `db:migrate` le 2026-10-29 ; MCP : 6 modèles sur le nœud de leur point, 1 tag chacun (le bon),
+  `updated_at` inchangé, brouillons. Page à cocher (aucune alerte) :
+  https://claude.ai/artifact/Pg2wcdRUGdQpjQs3FdjJsb
+
+## 19. Lot 3 « puissances, racines, fractions » : relevé et phase 0 (proposée le 2026-10-29)
+
+**Relevé MCP (prod, 2026-10-29)** : 2-270, 2-272, 2-423, 2-238 sans modèle. **2-260 n'est plus vide** :
+`questions-4` y a rattaché le 2026-10-28 a1ae1558, 2158a2fc, 17f3dfcd ((aᵐ)ⁿ et (10ᵐ)ⁿ, exposants 2 à 9,
+« puissance de puissance »). La 3e couvre déjà produit et quotient de puissances d'un même nombre, exposants
+relatifs, lettres comprises (bb9cff7b, 18761148), la définition de a⁻ⁿ (15368b02) et la simplification de
+fractions (acbd2280, 90dca27a, c9d6c5db). Manquent en 2de, d'après l2-6 : (ab)ⁿ, (a/b)ⁿ et l'enchaînement
+des règles.
+
+Nœuds des points : 2-260 et 2-270 → notion « Puissances : calculs » (sous-notions : produit, quotient,
+puissance de puissance) ; 2-423 → Racines carrées : calculs › propriétés ; 2-272 → Algèbre › Calcul
+littéral › expressions fractionnaires ; 2-238 → Fractions : sens et écritures › simplification.
+
+**Phase 0 proposée** : 8 modèles, niveau `['2']`, brouillons, une PR de fichiers puis une migration
+nœud + tag.
+
+1. **2-260 · Puissance d'un produit** : (2x)³ ; (−3x)² ; (2x²)³ = 8x⁶. Coefficient 2 à 5, exposants 2 à 4.
+2. **2-260 · Puissance d'un quotient** : (x/3)² ; (2/x)³ ; (2/3)⁻² = 9/4 (exposant négatif → inverse).
+3. **2-260 · Enchaîner les règles** (une seule puissance, réponse `x^?`) : (x²)³ × x⁻⁴ ; x⁵ × x³ / x⁻² ;
+   (a⁻²)³ / a⁻⁴. Exposants relatifs entre −5 et 5, résultat ≠ 0 et ≠ 1.
+4. **2-270 · Calcul numérique** : 2⁵ × 2⁻² / 2 (entier) ; (2³ × 3²)/(2⁵ × 3) → fraction irréductible ;
+   (3 × 10⁴ × 4 × 10⁻²)/(6 × 10⁵) → notation scientifique.
+5. **2-270 · Calcul littéral** : (2x³)² × 3x⁻¹ = 12x⁵ ; 6x⁴y / (2xy³) = 3x³/y² (x³y⁻² accepté).
+6. **2-423 · √a² = |a|** : √((−5)²) ; √((1 − √2)²) = √2 − 1 (aussi 3 − π, √3 − 2) ; √((x − 2)²) sachant
+   x < 2 → 2 − x, puis x > 2 → x − 2.
+7. **2-272 · Écritures fractionnaires** (réponse : une seule fraction réduite) : numérique (a/b + c/d) ÷ e/f ;
+   littéral à dénominateurs monômes : a/x + b/(2x), (2/x) ÷ (4/x²) = x/2, 1 + 1/x = (x + 1)/x.
+8. **2-238 · Forme irréductible** : numérateur et dénominateur jusqu'à ~ 500, produits de 2, 3, 5, 7
+   (84/126 = 2/3) ; corrigé par décomposition en facteurs premiers (lien multiples et diviseurs) ; une
+   variation où la fraction est donnée en produits de puissances (2³ × 3² / (2² × 3³)).
+
+- **Corrigé** : chaque règle nommée et colorée, comme bb9cff7b ; 2-423 dit le signe de a avant de conclure.
+- **Erreurs typiques en specs** : (2x)³ = 2x³ ; (x/3)² = x²/3 ; x⁻³ × x⁵ = x⁻¹⁵ ; √((1 − √2)²) = 1 − √2 ;
+  1/x + 2/x = 3/(2x) ; fraction non réduite.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L3-a — Nœud de (ab)ⁿ, (a/b)ⁿ et de l'enchaînement** : aucune sous-notion ne leur va. → Je recommande
+  la **notion « Puissances : calculs »** elle-même (le point y est rangé, aucun nœud neuf). Autre choix :
+  une sous-notion « puissance d'un produit, d'un quotient ».
+- **L3-b — 2-423 littéral** : √((x − 2)²) sachant x < 2 reste-t-il dans la borne « √a² = |a|, a réel » ?
+  → Je recommande **oui**, en variation la plus difficile.
+- **L3-c — 2-272 littéral** : dénominateurs monômes seulement (x, 2x, x²), ou aussi x + 1 (1/x − 1/(x + 1)) ?
+  → Je recommande **monômes seulement**. Les dénominateurs affines reviendront avec le quotient = k
+  (2-269, hors lot).
+
+**Décisions de David (2026-10-29)** : phase 0 validée avec mes trois recommandations — L3-a notion
+« Puissances : calculs » ; L3-b oui ; L3-c monômes seulement.
+
+## 20. Lot 3, PR des fichiers (2026-10-29)
+
+- Script `questions-2de/lot-puissances-2de.py` → `scripts/questions/2de-puissances/` (8 modèles, 23 variations,
+  68 specs) ; `create-questions` en simulation : tout vert.
+- Catégories (niveaux relevés en prod) : Puissances › Calculer › « Puissance d'un produit » 1, « Puissance
+  d'un quotient » 1, « Mixer tout ça » 2 et 3 ; Calcul littéral › Calculs › « Avec des puissances » 3 ;
+  Racines carrées › Manipuler › « Propriétés » 2 ; Calcul littéral › Transformation › « Écritures
+  fractionnaires » 1 ; Fractions › Apprivoiser › « Simplification » 7.
+- **Écart à la phase 0** (modèle 5) : 3x³y⁻² devait être accepté pour 6x⁴y/(2xy³). Le jugement exact le
+  refuse (forme), et un motif `requiredForm` refusait aussi 3x³/y². La consigne demande donc « un quotient,
+  sans exposant négatif » : 3x³y⁻² = forme refusée, 6x³/(2y²) = à améliorer.
+- Relecture des tirages : « 1z/2 » corrigé (numérateur réduit à 1, modèle 7).
+- Base locale : 8 brouillons créés ; aperçu admin joué ((2t³)² : 4t⁶ juste, correction lisible ;
+  8 × 10⁷ × 9 × 10⁻⁴ : réponse fausse refusée, attendu 7,2 × 10⁴ affiché avec la virgule).
+
+## 21. Lot 3, migration nœud + tag (2026-10-29)
+
+- 8 brouillons créés en prod par David (`create-questions --publier`) : 04b1cc7f, 73514cdb, 634b55b8,
+  fab2680b, 777c5d31, 37ef27bc, 33d8874a, b0c57a57 ; vérifiés : brouillons, sans nœud ni tag.
+- Migration + test d'intégration (rouge sans : 5 échecs ; vert avec : 10/10, trigger `updated_at` réactivé
+  vérifié sur l'idée du `security-auditor`, sans finding bloquant). #1982 mergée.
+- `db:migrate` refusé : `…002000` antérieure à `…003000` et `…004700` jouées entre-temps par d'autres
+  sessions. Renommée `20261030004900` (#1989 ; `…004800` pris par un worktree). Puis `migration list
+--linked` : `20261030002300` (questions-3) aussi non jouée → `--include-all` nécessaire ; session
+  questions-3 prévenue, rien poussé de mon côté.
+- Jouée le 2026-10-29 par l'`--include-all` de questions-3 (avec `20261030002300`). MCP : les 8 en brouillon,
+  2-260 et 2-270 sur la notion « Puissances : calculs », 2-423 sur « propriétés » (Racines carrées : calculs),
+  2-272 sur « expressions fractionnaires », 2-238 sur « simplification » ; un tag chacun, le bon.
+- Page à cocher (aucune alerte) : https://claude.ai/artifact/6CcVZNPqLQg1M8t3AjWZuk
+
+## 22. Lot 3 publié (2026-10-29)
+
+- Page à cocher : 8/8 OK, sans commentaire. Modèle 5 (consigne « quotient, sans exposant négatif ») marqué OK :
+  écart du § 20 tenu pour accepté.
+- `publier-lot.ts` en simulation puis lancé par David avec `--publier` : 8/8 publiés, relus au MCP.
+- Serveur 5177 arrêté, worktree `ubumaths-wt-questions-2de` et sa branche retirés.
+
+## 23. Lot 4 « vecteurs en coordonnées » : relevé et phase 0 (proposée le 2026-10-29)
+
+**Relevé MCP (prod, 2026-10-29)** : les 11 points (2-434, 294, 293, 300, 436, 301, 302, 295, 435, 303, 437) sont toujours sans modèle, et leurs nœuds sont vides, tous niveaux confondus. Nœuds : 2-434, 294,
+300, 436 → Géométrie › Vecteurs › coordonnées ; 2-293 → › norme ; 2-295, 435, 303, 437 → › colinéarité ;
+2-301, 302 → Géométrie › Géométrie repérée › milieu et distance. Aucun modèle du plan en coordonnées, à
+aucun niveau (seulement l'espace en Tle spé, en brouillon : `geometrie-espace-terminale/A-01`, `A-02`, qui
+servent de patron).
+
+**Outils (classe A, tous en prod)** : la case `answerKind: "vecteur"` (plan ou espace, en ligne `(3;-2)`
+ou en colonne, jugée sur les coordonnées ; mode `colineaire` possible) ; la case choix (` ```choix `,
+v0.56.0, déjà utilisée en 3e). Bornes : BO p. 9, base orthonormée pour la norme et le déterminant ;
+milieu calculé quelle que soit la méthode (l2-8).
+
+**Phase 0 proposée** : 11 modèles, un par point, niveau `['2']`, brouillons. Catégorie neuve :
+Géométrie › Vecteurs du plan › Coordonnées / Norme et distance / Milieu / Colinéarité. Coordonnées
+entières de −9 à 9 aux premières variations, puis fractions et décimaux (« produit par un nombre réel »).
+Vecteurs écrits en colonne dans l'énoncé et le corrigé, comme en Tle.
+
+1. **2-434 · Coordonnées d'un vecteur** : u⃗ = 3i⃗ − 2j⃗ → (3 ; −2) ; u⃗ = 4j⃗ → (0 ; 4) ; réciproque
+   u⃗(−1 ; 4) → u⃗ = ?i⃗ + ?j⃗ (deux cases) ; u⃗ = −½i⃗ + 3j⃗.
+2. **2-294 · Coordonnées de AB⃗** : A, B donnés → AB⃗ ; puis A et AB⃗ donnés → B ; puis coordonnées
+   fractionnaires.
+3. **2-300 · Coordonnées d'une somme** : u⃗ + v⃗ ; u⃗ − v⃗ ; AB⃗ + BC⃗ à partir de trois points (Chasles
+   ou calcul, les deux mènent au même) ; combinaison 2u⃗ − 3v⃗ en dernière variation (L4-c).
+4. **2-436 · Produit par un réel** : 3u⃗, −2u⃗ ; ½u⃗, −⅔u⃗ (réponse fractionnaire) ; trouver k tel que
+   v⃗ = k u⃗ (k entier ou fraction).
+5. **2-293 · Norme** : u⃗(3 ; 4) → 5 ; u⃗(2 ; −3) → √13 ; u⃗(2 ; 6) → 2√10 (L4-b) ; coordonnées
+   fractionnaires (u⃗(⅓ ; ¼) → 5/12).
+6. **2-301 · Distance AB** : points entiers → entier ou √n ; puis « AB = AC ? » en case choix (triangle
+   isocèle en A, oui/non), corrigé par les deux distances.
+7. **2-302 · Milieu** : I milieu de [AB] (coordonnées demi-entières) ; réciproque A et I → B ;
+   centre d'un parallélogramme ABCD donné par A et C.
+8. **2-295 · Déterminant** : det(u⃗, v⃗) entier ; puis avec une coordonnée fractionnaire ; puis
+   det(AB⃗, AC⃗) à partir de trois points.
+9. **2-435 · Critère de colinéarité** : « u⃗ et v⃗ colinéaires ? » en case choix (oui/non), corrigé par le
+   déterminant ; trouver m pour que u⃗(m ; 3) et v⃗(4 ; 6) soient colinéaires (case).
+10. **2-303 · Alignement** : « A, B, C alignés ? » en case choix ; C(x ; 5) aligné avec A et B → x.
+11. **2-437 · Parallélisme** : « (AB) et (CD) parallèles ? » en case choix ; D(m ; …) pour (AB) ∥ (CD) → m.
+
+- **Corrigé** : formule écrite puis appliquée, résultat coloré ; déterminant écrit xy′ − x′y avec les
+  parenthèses des négatifs ; oui/non toujours justifié par le calcul.
+- **Erreurs typiques en specs** : A − B au lieu de B − A ; norme sans racine (x² + y²) ; √(x + y)² ;
+  milieu = différence / 2 ; xy′ + x′y ; déterminant nul lu « non colinéaires » ; k inversé (1/k).
+- Les « oui/non » sont devinables à 50 % : chaque modèle à case choix a aussi une variation à calcul
+  (trouver m, x), pour que le point ne se réussisse pas au hasard.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L4-a — Deux lots** : 11 modèles dépassent la taille d'un lot (3 à 10). → Je recommande **4 A**
+  « coordonnées, norme, distance, milieu » (434, 294, 300, 436, 293, 301, 302 : 7 modèles) puis **4 B**
+  « colinéarité » (295, 435, 303, 437 : 4 modèles).
+- **L4-b — Norme non simplifiée** : u⃗(2 ; 6) → √40 ou 2√10 ? → Je recommande **2√10 attendu, √40 « à
+  améliorer »** (juste, mais à simplifier, l2-7) : motif `requiredForm` avec forme `acceptable`, comme
+  au lot 3 (§ 20) ; à vérifier sur les tirages, sinon √40 juste.
+- **L4-c — 2u⃗ − 3v⃗** : point 2-300 (somme) ou 2-436 (produit) ? Un modèle ne porte qu'un point. → Je
+  recommande **2-300**, en dernière variation (la somme est le geste final).
+- **L4-d — Case choix oui/non** pour colinéaires / alignés / parallèles / isocèle ? → Je recommande **oui**,
+  doublée d'une variation à calcul dans chaque modèle (ci-dessus).
+
+**Décisions de David (2026-10-29)** : phase 0 validée avec mes quatre recommandations — L4-a lots 4 A
+puis 4 B ; L4-b 2√10 attendu, √40 « à améliorer » ; L4-c 2u⃗ − 3v⃗ sur 2-300 ; L4-d case choix oui/non
+doublée d'une variation à calcul.
+
+## 24. Lot 4 A, PR des fichiers (2026-10-30)
+
+- Script `questions-2de/lot-vecteurs-a-2de.py` → `scripts/questions/2de-vecteurs-a/` (7 modèles, 24 variations,
+  61 specs). Catégorie neuve Géométrie › Vecteurs du plan › Coordonnées (niveaux 1 à 4), Norme et distance
+  (1, 2), Milieu (1).
+- L4-b tenu sans motif : √40 pour 2√10 tombe seul en « à améliorer » (contrainte `reducedRadicals`).
+- **Bug trouvé** : dans une case `vecteur`, chaque coordonnée était rejugée sans l'option `acceptDecimal`
+  du modèle : (−2 ; 0,5) pour (−2 ; ½) refusé pour sa forme. Correctif à part, #1997 (même transmission que
+  les matrices ; revue `code-reviewer` Opus sans finding bloquant). Le lot en dépend : **ses brouillons
+  attendent le `deploy:prod` qui livre #1997** avant la page à cocher.
+- Relecture des tirages : « −1 j⃗ » (coefficients ±1 retirés), k attendu « 3/1 » (entier si d = 1),
+  conclusions colorées hors formule (en gras), B jusqu'à 21 (borné à 12).
+- #1997 mergé. Base locale : 7 brouillons ; aperçu joué (A(3,5 ; −3), B(−3 ; 5,5) : virgules affichées,
+  (−6,5 ; 8,5) « Juste »).
+- **Lot 4 B** (§ 23, 4 modèles : 2-295, 435, 303, 437) : `questions-2de/lot-vecteurs-b-2de.py` →
+  `scripts/questions/2de-vecteurs-b/` (9 variations, 26 specs), aucune case vecteur donc indépendant de #1997 ;
+  base locale jouée (m faux refusé) ; PR à part #1999, mergée.
+
+- #2008 (fichiers du lot 4 A) mergé le 2026-10-30 ; worktree retiré.
+
+## 25. Lots 4 A et 4 B, brouillons en prod (2026-10-30)
+
+- 11 brouillons créés par David (`create-questions --publier`), relevés au MCP : `draft`, `['2']`, sans nœud
+  ni tag. Nœud = celui du point (§ 23) : Géométrie › Vecteurs › coordonnées / norme / colinéarité ;
+  Géométrie › Géométrie repérée › milieu et distance.
+
+| id                                   | modèle                                 | point |
+| ------------------------------------ | -------------------------------------- | ----- |
+| 583398f7-dc30-4f9d-bf81-7ae39e6a0d91 | Coordonnées d'un vecteur dans une base | 2-434 |
+| 5a97d95a-8d28-40d6-a64c-79dbad34bc63 | Coordonnées du vecteur AB              | 2-294 |
+| b9f06686-9c65-4fe6-bb38-aa787fea30a1 | Coordonnées d'une somme de vecteurs    | 2-300 |
+| f26e24b9-abe3-45ca-84ee-dfeea372a5ef | Produit d'un vecteur par un réel       | 2-436 |
+| cf08f061-198f-4432-a312-f903ca7cd5bf | Norme d'un vecteur                     | 2-293 |
+| 576e8aed-3ea2-4bdd-8584-89d247fd3f03 | Distance entre deux points             | 2-301 |
+| 59f818c4-e3e0-460c-8635-857236c61b13 | Coordonnées du milieu d'un segment     | 2-302 |
+| 930711ec-0bb7-4cf0-bd78-c06140bc41c3 | Déterminant de deux vecteurs           | 2-295 |
+| 84227334-c406-4d8f-a25a-ca0024599ae3 | Critère de colinéarité                 | 2-435 |
+| 6514d084-b34e-4277-9e13-c1e3e65e0b78 | Trois points alignés ?                 | 2-303 |
+| f53ad892-dba0-49b4-badb-0a3b6add8973 | Deux droites parallèles ?              | 2-437 |
+
+- Migration à écrire sur le gabarit `20261030004900_questions_2de_puissances_rangement_tags.sql` et son test
+  `tests/integration/questions-2de-puissances-rangement-tags.test.ts` (8 → 11 modèles, sous-notions
+  « coordonnées », « norme », « colinéarité » sous Vecteurs, « milieu et distance » sous Géométrie repérée).
+
+## 26. Lot 4, migration nœud + tag (2026-10-30)
+
+- Migration `20261030160100_questions_2de_vecteurs_rangement_tags` + test d'intégration (rouge sans : 5 échecs ;
+  vert avec : 10/10), `security-auditor` sans finding. #2014 mergée (rebase sur `origin/main` puis merge de la
+  branche distante : le commit du journal y était déjà poussé).
+- `db:migrate` : en file avec 150030 (1spe), 150100 (CM1), 160000 (questions-4) ; joué par David d'un seul
+  `db push`. MCP : les 11 en brouillon, chacun sur la sous-notion de son point, un tag chacun, le bon ;
+  `updated_at` préservé.
+- `deploy:prod` v0.58.0 (2026-10-30, demandé par David) : #1997 en prod ; build Vercel prêt.
+
+## 27. Lot 4, page à cocher (2026-10-30)
+
+- `page-a-cocher.ts` sur les 11 fichiers des deux dossiers réunis (copie dans le scratchpad : le script ne
+  prend qu'un `--dir`) : les 11 ids du § 25 retrouvés, `draft`, aucune alerte. Page (capacité `db`,
+  collection `verdicts` vide au départ) : https://claude.ai/artifact/6WwvVGdVFZG1RUj8iWFbwo
+- Publication : `publier-lot.ts` une fois par dossier (`2de-vecteurs-a`, puis `2de-vecteurs-b`).
+
+## 28. Lot 4 A, vecteurs en deux trous (2026-10-31)
+
+- Relecture de David (01 et 02, « À revoir ») : demander les coordonnées d'un vecteur avec deux trous,
+  comme pour un point. La case `answerKind: "vecteur"` (choix de la phase 0, pas une décision de David)
+  faisait écrire la colonne ou le couple. Passés en deux trous dans la colonne,
+  $\vec{u}\begin{pmatrix}?\\?\end{pmatrix}$ : modèles 01 à 04 (11 cases), consigne réduite à « Donne
+  ses coordonnées. », specs en deux réponses (spec « En colonne » retirée, sans objet).
+- `create-questions` en simulation : 4 modèles « contenu différent », specs vertes. Base locale mise à jour ;
+  aperçu joué (01, u⃗ = −7j⃗ : deux cases dans la colonne, (0 ; −7) « Juste »).
+- #2048 mergée (shard client 1/2 relancé : navigateur de test fermé, sans lien). David a lancé
+  `create-questions --publier --mettre-a-jour` : 4 mis à jour ; relecture : 7 « déjà en base » identiques,
+  MCP : brouillons, nœud « coordonnées » et tag gardés. Page à cocher régénérée (même lien, version 2),
+  verdicts de 01 et 02 supprimés.
+
+## 29. Lot 4 publié (2026-11-01)
+
+- Page à cocher : 11/11 OK, sans commentaire (01 à 04 relus dans leur version à deux trous).
+- `publier-lot.ts` simulé vert sur `2de-vecteurs-a` (7) et `2de-vecteurs-b` (4), puis lancé par David avec
+  `--publier` : MCP, les 11 `published`.
+- Worktree `ubumaths-wt-questions-2de` retiré.
+
+## 30. Lot 5 « Droites » : relevé et phase 0 (proposée le 2026-11-01, à valider)
+
+**Relevé MCP (prod, 2026-11-01)** : 16 points de « Droites du plan ». 15 sans modèle (311, 312, 439, 313, 314,
+440, 441, 315, 442, 443, 444, 316, 445, 317, 319) ; 2-318 a un modèle (336451af, f et g affines, « parallèles ? »
+en case choix, sans variation à calcul) ; 2-320 = P (démonstration, Q2). Nœuds : Géométrie › Géométrie repérée ›
+vecteur directeur (311, 315, 442, 443, 444) / équations de droites (312, 439, 314, 440, 441, 316, 445) /
+intersection de deux droites (318, 319) ; 2-313 → Fonctions › Fonctions affines › coefficient directeur et
+ordonnée à l'origine ; 2-317 → Géométrie › Vecteurs › colinéarité.
+
+**Voisins en prod** : 2-303 « Trois points alignés ? » et 2-437 « Deux droites parallèles ? » (lot 4 B, par le
+déterminant) ; 09f0c9ec « Déterminer le coefficient directeur » (2de, images PNG, tagué 2-347) ; 3e : lecture
+du coefficient directeur sur un ` ```courbe ` (0d0e88f5, b9771108 : patron de 2-315).
+
+**Outils (tous en prod)** : case `answerKind: "equation"` (droite jugée sur ses points : y = 2x + 1 et
+4x − 2y + 2 = 0 tous deux justes ; `requiredForm` `reduite` / `cartesienne` possible ; patron
+`geometrie-reperee-1spe/A-02`) ; ` ```courbe ` (droites, points, grille) ; case choix, dessins de ` ```courbe `
+dans les choix (patron `fonctions-terminale/C-06`) ; case `vecteur` en mode `colineaire` (une seule case :
+tout vecteur colinéaire juste). **Classe** : tout en A ou B ; 2-316 et 2-445 (tracer) en case choix entre
+courbes (Q5).
+
+**Phase 0 proposée** : 16 modèles neufs, un par point, niveau `['2']`, brouillons. Catégorie neuve
+Géométrie › Droites du plan › Pente et vecteur directeur / Équations de droites / Positions relatives.
+Coordonnées entières de −9 à 9 d'abord, puis pentes fractionnaires.
+
+Lot 5 A « pente et vecteur directeur » (6) :
+
+1. **2-313 · Pente par deux points** : A, B → m = (y_B − y_A)/(x_B − x_A) ; entière, puis fractionnaire ;
+   puis « la droite (AB) a-t-elle une pente ? » quand x_A = x_B (case choix, corrigé : parallèle à l'axe des
+   ordonnées).
+2. **2-315 · Pente lue sur un graphique** : ` ```courbe ` d'une droite, pente entière puis fractionnaire
+   (deux points à coordonnées entières marqués), négative ; corrigé : deux points, déplacements.
+3. **2-442 · Pente lue sur une équation** : y = mx + p (m ≠ coefficient de tête : y = 3 − 2x) ; puis
+   cartésienne ax + by + c = 0 → −a/b.
+4. **2-311 · Vecteur directeur (connaissance)** : A, B donnés, « lesquels sont des vecteurs directeurs de
+   (AB) ? » (case choix, `plusieurs: oui` : AB⃗, BA⃗, 2AB⃗, et des leurres (x_B + x_A ; …), (Δy ; Δx)).
+5. **2-443 · Vecteur directeur lu sur une équation** : cartésienne → (−b ; a) ; réduite → (1 ; m).
+6. **2-444 · Vecteur directeur lu sur un graphique** : ` ```courbe `, deux points de la droite.
+
+Lot 5 B « équations, tracés, positions relatives » (10) :
+
+7. **2-439 · Équation réduite** : « le point A est-il sur d : y = 2x − 1 ? » (case choix + calcul de
+   l'ordonnée du point d'abscisse donnée) ; réduite d'une cartésienne (2x + y − 3 = 0 → y = −2x + 3),
+   `requiredForm: reduite` ; droite verticale x = c.
+8. **2-312 · Équation cartésienne** : « M appartient-il à d : 2x − 3y + 6 = 0 ? » ; écrire une cartésienne
+   d'une réduite, `requiredForm: cartesienne`.
+9. **2-441 · Point et pente** → équation (case `equation`, forme libre).
+10. **2-314 · Deux points** → équation (forme libre) ; variation x_A = x_B → x = c.
+11. **2-440 · Point et vecteur directeur** → équation (forme libre), corrigé par det(AM⃗, u⃗) = 0.
+12. **2-316 · Tracer depuis l'équation réduite** : case choix entre 4 ` ```courbe ` (bonne, pente au signe
+    changé, p et m échangés, p au signe changé).
+13. **2-445 · Tracer depuis l'équation cartésienne** : même forme, b ≠ 0 (le bloc ne trace pas de verticale).
+14. **2-317 · Alignement par une équation** : équation de (AB) écrite, C dessus ou non (case choix) ; puis
+    ordonnée de C pour qu'il soit sur (AB). Le corrigé passe par l'équation, pour se distinguer de 2-303.
+15. **2-318 · Parallèles ou sécantes** (2e modèle) : droites par équations cartésiennes ou réduite + cartésienne
+    (case choix) ; puis m pour que d : mx + 2y − 1 = 0 soit parallèle à d′.
+16. **2-319 · Point d'intersection** : deux réduites → (x ; y) en deux trous ; entier puis fractionnaire ;
+    une droite verticale x = c.
+
+- **Corrigé** : formule écrite puis appliquée, résultat coloré ; oui/non justifié par le calcul ; chaque
+  modèle à case choix oui/non a une variation à calcul (L4-d).
+- **Erreurs typiques en specs** : Δx/Δy au lieu de Δy/Δx ; y_B − y_A sur x_A − x_B ; pente a/b au lieu de
+  −a/b ; vecteur (b ; a) ou (a ; −b) au lieu de (−b ; a) ; p de signe faux ; point d'intersection donné par
+  x seul ; équation passant par un seul des deux points.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L5-a — Un vecteur directeur n'est pas unique** (2-443, 2-444). Deux trous dans la colonne (§ 28) ne
+  savent juger qu'une réponse ; tout vecteur colinéaire est juste. → Je recommande la **case `vecteur` en mode
+  `colineaire`** (une case, (2 ; 6) et (1 ; 3) justes), le seul jugement qui accepte toutes les bonnes
+  réponses ; autre voie : deux trous avec l'abscisse imposée (u⃗(1 ; ?)), juste mais qui souffle la méthode.
+- **L5-b — Forme de l'équation** (2-314, 440, 441) : → Je recommande **forme libre** (réduite ou cartésienne,
+  le BO ne fixe pas la forme), la forme imposée seulement dans 2-439 et 2-312 où elle est l'objet du point.
+- **L5-c — Deux lots** : 5 A (6 modèles), puis 5 B (10) ? → Je recommande **oui**.
+- **L5-d — 09f0c9ec** (lecture de pente sur image, tagué 2-347 « m taux d'accroissement ») : le laisser tel
+  quel ? → Je recommande **oui** : il lit une fonction affine (branche Fonctions), le nouveau 2-315 lit une
+  droite.
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes quatre recommandations — L5-a case `vecteur`
+en mode `colineaire` (2-443, 2-444) ; L5-b forme libre (2-314, 440, 441), forme imposée en 2-439 et 2-312 ;
+L5-c lots 5 A (6) puis 5 B (10) ; L5-d 09f0c9ec laissé tel quel.
+
+## 31. Lot 5 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-droites-a-2de.py` → `scripts/questions/2de-droites-a/` (6 modèles, 14 variations,
+  43 specs). Catégorie neuve Géométrie › Droites du plan › Pente et vecteur directeur (niveaux 1 à 6, libres
+  en prod). `cleanCoefficients` pour les équations tirées.
+- `create-questions` en simulation : tout vert ; `sonde-courbes` : 0 problème (902 blocs sur 300 tirages).
+- Relecture des tirages : « m = 5/1 » (01) et « y = 3/−4 x » (03) corrigés en valeurs calculées.
+- Base locale : 6 brouillons ; aperçu joué : 02 (−1/2 lu sur la droite, « Juste »), 05 (y = 5x + 1, réponse
+  (−2 ; −10) colinéaire « Juste »), 04 (choix mélangés, les trois vecteurs directeurs « coché, juste »).
+
+## 32. Lot 5 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-droites-b-2de.py` → `scripts/questions/2de-droites-b/` (10 modèles, 27 variations,
+  77 specs). Catégories neuves Géométrie › Droites du plan › Équations de droites (01 à 07, niveaux 1 à 7 :
+  2-439, 312, 441, 314, 440, 316, 445) et › Positions relatives (08 à 10, niveaux 1 à 3 : 2-317, 318, 319).
+  Cases `equation` posées case par case (`answerKind` dans la case, pas en `blankDefaults` : les modèles
+  mêlent choix et calcul) ; `requiredForm` réduite (01) et cartésienne (02) seulement.
+- `question-specs` : 77/77, tirages tous réussis ; `sonde-courbes` : 0 problème ; `create-questions` en
+  simulation contre la prod : « 10 à créer ».
+- Relecture des tirages (`apercu-fichiers.ts`, nouveau : aperçu par variation des fichiers d'un lot) :
+  `y=1x-2` dans `\textcolor` (le nettoyage ne passe pas la couleur) → coefficients par `{{if:…}}` ;
+  `15--3` et `-4\times(-8)--4` → `{{k;()}}` ; `\iffx` → espace, étape `1x = …` sautée si m1 − m2 = 1 ;
+  `y+0` → coordonnées non nulles.
+- MCP (prod) : aucun modèle du lot 5 A en base, le `--publier` de David reste à faire.
+- Base locale : 10 brouillons ; aperçu joué : 06 (y = −2x + 4, quatre droites dessinées, A « coché, juste ») ;
+  01 v3 (12x − 3y − 18 = 0 : `y=6+4x` « Juste », `4x-y+6=0` « Faux » avec le message de forme réduite) ;
+  10 v3 (x = −4 et y = −4x − 2 : I(−4 ; 14) en deux cases « Juste »).
+
+## 33. Lot 5, brouillons en prod (2026-11-01)
+
+David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droites-b` : 16 créés. MCP : 16
+`draft`, niveau `['2']`, niveaux 1 à 6 / 1 à 7 / 1 à 3 dans leurs trois catégories.
+
+| Fichier                                 | Point | id                                   |
+| --------------------------------------- | ----- | ------------------------------------ |
+| A-01 pente par deux points              | 2-313 | 7d6cf480-b062-4e45-a593-2e85fbeb28b3 |
+| A-02 pente lue sur un graphique         | 2-315 | f381c646-80fa-4cd2-86c0-0c3d9ad934be |
+| A-03 pente lue sur une équation         | 2-442 | 49df6491-f424-4560-8fba-a9c302449e3d |
+| A-04 vecteurs directeurs                | 2-311 | 7d605742-cf00-4282-b56c-c99aee16ad14 |
+| A-05 vecteur directeur sur une équation | 2-443 | 36c21f21-fee5-4d2e-a191-364b42039cd1 |
+| A-06 vecteur directeur sur un graphique | 2-444 | 2540ca82-26ca-443e-a5f7-5f87a49629e3 |
+| B-01 équation réduite                   | 2-439 | 7f308eb4-40f9-408e-9c71-012464d0f79d |
+| B-02 équation cartésienne               | 2-312 | 7c0f1c1a-e415-499c-97ac-cb6060f99105 |
+| B-03 point et pente                     | 2-441 | e6552232-b549-4966-8863-1cba6f945fcc |
+| B-04 deux points                        | 2-314 | 6e074f0e-0c3a-41b8-b70a-82cb402494b3 |
+| B-05 point et vecteur directeur         | 2-440 | d8a958ba-c6f2-4e6b-b4c9-ee7b370cc03e |
+| B-06 tracer, équation réduite           | 2-316 | 8d4bd94d-73f7-4589-8b3f-67c84edcf778 |
+| B-07 tracer, équation cartésienne       | 2-445 | 2cfae58d-7fdb-45f7-8ea1-777a4a307b5a |
+| B-08 alignement par une équation        | 2-317 | 7a3b209d-05b1-400d-98ba-e57d85639d05 |
+| B-09 parallèles ou sécantes             | 2-318 | c23f5a94-269d-4f2d-915a-ca234cec67a6 |
+| B-10 point d'intersection               | 2-319 | 718b7183-415b-4a86-bbf1-70a3c1eb0c6c |
+
+## 34. Lot 5, migration nœud + tag (2026-11-01)
+
+- Relevé MCP avant le SQL : les 16 en `draft`, sans nœud, sans tag ; chaque point sur le nœud du § 30.
+  Question d'accès : tranchée en phase 0 (§ 30, personne).
+- Migration `20261101160100_questions_2de_droites_rangement_tags` et
+  `tests/integration/questions-2de-droites-rangement-tags.test.ts`, générés depuis ceux du lot 4 (seul le lot
+  change). Rouge sans la migration (fichier vidé : 3 échecs, 5 sautés) ; vert avec : 10/10.
+- `security-auditor` : aucun finding (même code exécutable que le lot 4, gardes et rollback vérifiés, état prod
+  relu par MCP). PR #2087.
+- #2087 mergée (CI : `Doc-inchangée:` à mettre dans un commit, pas dans le corps de PR ; `/demo/editeur`
+  instable, vert à la relance). `db:migrate` : bloqué d'abord par une collision 20261101141600 (CE1 / CM1, levée
+  par #2093), puis refusé par le classifieur ; joué par David avec 160400 (CM1). MCP : 16 `draft`, bon nœud, un
+  seul tag, le bon, `updated_at` préservé.
+
+## 35. Lot 5, page à cocher (2026-11-01)
+
+- `page-a-cocher.ts` sur les 16 fichiers des deux dossiers réunis (copie dans le scratchpad, préfixes `a-`/`b-`) :
+  les 16 ids du § 33 retrouvés, `draft`, aucune alerte. Page (capacité `db`, collection `verdicts` vide au
+  départ) : https://claude.ai/artifact/YYe7XgNAqZa9ZmStmPGcci
+- Publication : `publier-lot.ts` une fois par dossier (`2de-droites-a`, puis `2de-droites-b`).
+
+## 36. Lot 5 publié (2026-11-01)
+
+- David valide le lot en bloc (aucun verdict sur la page). `publier-lot.ts` en simulation : 6/6 et 10/10 passent ;
+  `--publier` lancé par David sur `2de-droites-a` puis `2de-droites-b` : 16/16 publiés. MCP : 16 `published`.
+
+## 37. Lot 6 « Fonctions de référence, résolutions » : relevé et phase 0 (validée le 2026-11-01)
+
+**Relevé MCP (prod, 2026-11-01)** : sur les points du § 3.8 hors lecture graphique, **21 sans modèle** :
+325, 326, 327, 331, 447, 329, 333, 334, 335, 336, 448, 455, 457, 460, 461, 463, 466, 467, 469, 470, 472. Déjà couverts : 2-328 (bba95c2d), 2-339 (75fe996a), 2-458 (62b99aa7), **2-464** (419887ff et
+b0ef6947, « Division (2) », b/x = k, publiés, rangés « 1/x = k, 1/x < k » : pas de modèle neuf). 2-452, 2-454
+hors appli (Q6) ; 2-495 = P (Q2).
+
+Nœuds des points : Généralités › (notion) 325 · ensemble de définition 326 · appartenance à une courbe 327,
+331, 447 · signe 329 · équations et inéquations f(x) = k 336, 448 ; Fonctions affines › équations 455, 457 ;
+Fonction valeur absolue (notion) 333 · › équations et inéquations 460 ; Fonction carré › définition et courbe
+334 · › x² = k, x² < k 461, 463 ; Fonction inverse › définition et courbe 335 · › 1/x = k, 1/x < k 466 ;
+racine carrée › √x = k, √x < k 467, 469 ; cube › x³ = k, x³ < k 470, 472.
+
+**Voisins** : 2-281 x² = a (lot 2, Calcul littéral) ; 2-265/266/431 premier degré (lot 2) ; lecture graphique
+des mêmes fonctions (lot 2 bis, catégories « Lecture graphique ») ; 3e : 7407f328 « La courbe de la fonction
+carré » (3-046, case choix de courbes, patron de 2-334).
+
+**Bornes** : l2-1 (|x| = k, |x| < k seulement, pas |2x − 1| < 3) ; l2-2 (√x et x³ seulement en résolution ;
+domaine de √(x − 2) hors 2de ; 2-326 = dénominateur non nul) ; l2-3 (quatre sens) ; 2-447 : une abscisse
+seulement si f(x) = b est d'un type du programme.
+
+**Outils** (tous en prod) : case `intervalles` (S = ?, `{…}`, ∅, ℝ, réunion, ℝ \ {a}) ; ` ```courbe ` ; case
+choix avec dessins de ` ```courbe ` dans les choix (lot 5, B-06).
+
+**Phase 0 proposée** : un modèle par point, niveau `['2']`, brouillons, réponse `S = ?` en case `intervalles`
+sauf mention.
+
+Lot 6 A « Généralités et courbes de référence » (8) — Fonctions › Généralités › « Définition et courbe »
+(1 à 5) ; « Courbe » de chaque fonction :
+
+1. **2-325 · Ensemble de définition lu** : ` ```courbe ` tracée sur [a ; b], puis sur une réunion de deux
+   intervalles (bornes ouvertes / fermées marquées) → « f est définie sur ? ».
+2. **2-327 · Traduire « A(a ; b) ∈ C_f »** : case choix `plusieurs: oui` (f(a) = b ✔, « b est l'image de
+   a » ✔, « a est un antécédent de b » ✔ ; f(b) = a, « a est l'image de b »… ✘).
+3. **2-331 · Appartenance par le calcul** : f polynôme (2x² − 3x + 1, affine, (x − 1)(x + 2)), A donné ;
+   deux cases : f(x_A) = ? puis « A ∈ C_f ? » (case choix) ; variation 1/x et quotient a/(x − c).
+4. **2-447 · Coordonnées d'un point de la courbe** : ordonnée du point d'abscisse a ; abscisse(s) des points
+   d'ordonnée b quand f(x) = b est du programme (affine → `{…}` à un élément ; f(x) = x² + c → deux points).
+5. **2-326 · Ensemble de définition d'un quotient** : (2x + 1)/(x − 3) → ℝ \ {3} ; dénominateur ax + b
+   (valeur fractionnaire) ; produit (x − p)(x − q) au dénominateur → ℝ \ {p ; q}.
+6. **2-333 · Fonction valeur absolue** : case choix entre 4 courbes (|x|, −|x|, x², y = x) ; puis « pour
+   x < 0, |x| = ? » (case choix : −x ✔, x, 1/x, 0).
+7. **2-334 · Fonction carré** : case choix entre 4 courbes (x², −x², |x|, 1/x) ; puis image d'un négatif
+   (−3)² et piège −3².
+8. **2-335 · Fonction inverse** : case choix entre 4 courbes (1/x, −1/x, x², |x|) ; puis ensemble de
+   définition ℝ \ {0} ; image d'une fraction (1/(2/3)).
+
+Lot 6 B « Résolutions : affine, |x|, carré, inverse » (6) — sous-catégorie « Résolution algébrique » de chaque
+fonction, niveaux 1 (équation) et 2 (inéquation) :
+
+9. **2-455 · f affine, f(x) = k** : f(x) = mx + p donnée, « résoudre f(x) = k » ; solution entière, puis
+   fractionnaire ; « antécédent de k par f ».
+10. **2-457 · f affine, f(x) < k** : quatre sens tirés, m < 0 (sens qui change).
+11. **2-460 · |x| < k** : k > 0, quatre sens (]−k ; k[, ]−∞ ; −k] ∪ [k ; +∞[…) ; k < 0 (∅ ou ℝ) ; k = 0
+    ({0}, ℝ \ {0}, ∅, ℝ). Corrigé : distance à 0 sur la droite graduée.
+12. **2-461 · x² = k (fonction carré)** : voir L6-a.
+13. **2-463 · x² < k** : k carré parfait, quatre sens ; k non carré (√5) ; k < 0, k = 0.
+14. **2-466 · 1/x < k** : k ∈ {±½, ±1, ±2, ±3, ±4}, quatre sens : 1/x < 2 → ]−∞ ; 0[ ∪ ]½ ; +∞[ ; 1/x > −2 →
+    ]−∞ ; −½[ ∪ ]0 ; +∞[… Corrigé : signe de x, puis décroissance sur chaque intervalle, courbe et droite y = k.
+
+Lot 6 C « Résolutions : racine, cube, méthode au choix » (6) :
+
+15. **2-467 · √x = k** : k entier, décimal (√x = 1,2 → {1,44}), fraction ; k < 0 → ∅.
+16. **2-469 · √x < k** : [0 ; k²[, [k² ; +∞[… ; k < 0 (∅, [0 ; +∞[). Piège : oublier x ⩾ 0.
+17. **2-470 · x³ = k** : voir L6-c.
+18. **2-472 · x³ < k** : par la croissance de x ↦ x³, quatre sens.
+19. **2-336 · f(x) = k, méthode adaptée** : voir L6-d.
+20. **2-448 · f(x) < k, méthode adaptée** : voir L6-d.
+
+- **Corrigé** : méthode écrite (propriété de la fonction : croissance, décroissance, signe), résultat coloré ;
+  pour les inéquations, courbe + droite y = k en pointillé, partie solution repassée (comme le lot 2 bis).
+- **Erreurs typiques en specs** : oubli de la solution négative (x² = 9 → {3}) ; x² < 9 → ]−∞ ; 3[ ; √x < 2 →
+  ]−∞ ; 4[ ; 1/x < 2 → ]½ ; +∞[ seul (oubli des négatifs) ; 0 inclus pour 1/x ; |x| > 3 → ]3 ; +∞[ ; crochet
+  du mauvais côté ; sens non changé pour m < 0 ; « 3 » sans accolades ; ℝ \ {3} écrit {3}.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L6-a — 2-461 x² = k contre 2-281 x² = a** (lot 2, déjà écrit : carré parfait, √a, a ⩽ 0). → Je recommande
+  un modèle **distinct, du côté fonction** : « antécédents de k par la fonction carré », k fraction (9/4) et
+  décimal (0,49), puis f(x) = x² + c = k ; corrigé par la symétrie de la parabole. (Réutiliser le modèle de 2-281 est exclu : un
+  modèle porte un seul point par programme, ADR 0020.)
+- **L6-b — 2-329 « signe des fonctions de référence »** : 2-475 (signe de |x|) et 2-476 (signe de x²) sont
+  au lot 7. → Je recommande de **déplacer 2-329 au lot 7** (tous les signes ensemble) ; le lot 6 passe à 20.
+- **L6-c — 2-470, 2-472 cube** : la racine cubique ∛ n'est pas au BO de 2de. → Je recommande **cubes
+  parfaits seulement** (entiers −125 à 125, fractions 8/27, décimaux 0,008), sans ∛.
+- **L6-d — 2-336, 2-448 « méthode adaptée »** : le graphique est déjà fait (2-338, 2-453, lot 2 bis). → Je
+  recommande des **f données par leur expression, qui se ramènent à un type du programme** : 2x² + 1 = 19,
+  3/x − 1 = 5, 2√x + 1 = 7 (et < k) ; pas de |x| décalé (l2-1). Le corrigé nomme le type.
+- **L6-e — Découpage** : 6 A (8), 6 B (6), 6 C (6) : trois PR de fichiers, puis une migration nœud + tag et une
+  page à cocher pour les 20 ? → Je recommande **oui** (comme le lot 5).
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes cinq recommandations — L6-a 2-461 modèle
+distinct côté fonction ; L6-b 2-329 déplacé au lot 7 (lot 6 = 20 modèles : 6 A = 8, 6 B = 6, 6 C = 6) ; L6-c cubes parfaits
+seulement ; L6-d expressions qui se ramènent à un type du programme ; L6-e trois PR de fichiers, une migration,
+une page à cocher.
+
+## 38. Lot 6 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-a-2de.py` → `scripts/questions/2de-fonctions-a/` (8 modèles, 23 variations,
+  64 specs). Catégories : Fonctions › Généralités › « Définition et courbe » (01 à 05, niveaux 1 à 5 : 2-325, 327,
+  331, 447, 326) ; « Courbe » de Valeur absolue (niv. 1, 2-333), Fonction carré (niv. 2, 2-334 ; le niv. 1 est le
+  modèle de 3e 7407f328), Fonction inverse (niv. 1, 2-335). Cases posées case par case (nombre, choix, ensemble).
+- `question:specs` : 64/64, tirages tous réussis ; `sonde-courbes` : 0 problème (300 tirages) ; `create-questions`
+  en simulation contre la prod : « 8 à créer ».
+- Relecture des tirages : centre de la parabole rendu en `\dfrac` dans le bloc (illisible) → milieu laissé dans
+  l'expression ; « −4×(−4) » → « (−4)×(−4) ».
+- Base locale : 8 brouillons ; aperçu joué : 01 (réunion, réponse fausse « Faux » avec « La valeur de la borne est
+  incorrecte », puis [−3 ; 2[ « Juste ») ; 05 (ℝ\{−5} tapé avec `\backslash`, « Juste ») ; 08 (quatre courbes
+  dessinées et mélangées, hyperbole cochée « Juste », corrigé avec la courbe). **Défaut vu à l'aperçu** :
+  l'étiquette 𝒞_f se pose près d'une extrémité et ressemble à un disque vide → retirée des courbes de 01.
+- #2106 mergée (CI : `/demo/lexique` en échec sur le runner, `wrapDynamicImport`, vert à la relance).
+
+## 39. Lot 6 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-b-2de.py` → `scripts/questions/2de-fonctions-b/` (6 modèles, 17 variations,
+  75 specs). Catégories (relevé prod : aucune n'existait) : « Résolution algébrique » de Fonctions affines (niv. 1
+  2-455, niv. 2 2-457), Valeur absolue (niv. 1 2-460), Fonction carré (niv. 1 2-461, niv. 2 2-463), Fonction
+  inverse (niv. 1 2-466). |x| et 1/x n'ont que l'inéquation, d'où le niveau 1 (|x| = k = 2-458 et 1/x = k = 2-464
+  sont déjà couverts ailleurs).
+- Relevé avant d'écrire : « Fonctions affines › Equations » niv. 2 (75fe996a) est 2-339 (graphique), « Valeur
+  absolue › Equations » 1 et 2 sont 2-458 et 2-420 : pas de doublon.
+- Écart au § 37 : le corrigé de |x| < k dit la distance à 0 mais dessine le V (` ```courbe `, ensemble repassé
+  sur l'axe des abscisses) : ` ```line ` ne trace pas d'intervalle.
+- `question:specs` 75/75, tirages tous réussis ; `sonde-courbes` 0 problème (1 800 tirages) ; `create-questions`
+  en simulation contre la prod : « 6 à créer ».
+- Relecture des tirages : « aucun les réels négatifs sont solutions » → phrases entières selon le sens.
+- Base locale : 6 brouillons ; aperçu joué : 06 (k = 0,5 rendu « 0,5 » ; [0 ; 2] « Faux » avec « Tu as inclus une
+  borne qui devrait être exclue », ]0 ; 2] « Juste » ; corrigé : hyperbole, disque vide en 0) ; corrigés de 02
+  (m < 0), 03 (|x| ⩽ 3), 04 (1,69), 05 (√14 dans le bloc) dessinés comme prévu.
+- #2113 : CI rouge sans lien avec le lot — `migration-versions` (collision `20261101190200` sur `main`, 5e lot 6 et
+  6e lot 7), `wrapDynamicImport` (client, connu, vert à la relance), « Garde SECURITY DEFINER » (à relire après la
+  réparation de `main`).
+
+## 40. Lot 6 C, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-c-2de.py` → `scripts/questions/2de-fonctions-c/` (6 modèles, 20 variations,
+  81 specs). Catégories (relevé prod : « Fonction racine carrée » et « Fonction cube » n'ont que « Lecture
+  graphique ») : « Résolution algébrique » de Fonction racine carrée (niv. 1 2-467, niv. 2 2-469), Fonction cube
+  (niv. 1 2-470, niv. 2 2-472), Généralités (niv. 1 2-336, niv. 2 2-448).
+- L6-c : cubes parfaits (entiers ±1 à ±5, fractions p/q avec q ⩽ 4, décimaux ±0,001 à ±0,125), sans ∛. L6-d :
+  a·x² + c, a/x + c, a·√x + c, a·x³ + c pour l'équation ; carré, racine, cube pour l'inéquation (a > 0 : le sens
+  ne change pas ; 1/x laissé de côté, son signe est déjà travaillé au 6 B).
+- Écarts au § 37 : √x < k et √x = k ont aussi k = 0 (√x ⩽ 0 → {0}, √x > 0 → ]0 ; +∞[) ; l'équation adaptée
+  n'a pas de courbe (méthode algébrique seule).
+- `question:specs` 81/81, tirages tous réussis ; `sonde-courbes` 0 problème (1 800 tirages) ; `create-questions`
+  en simulation contre la prod : « 6 à créer ».
+- Relecture des tirages : redite « on divise par un nombre positif » dans le corrigé de la méthode adaptée →
+  une phrase ; fenêtre des cubes en fraction (±1,5) trop petite pour 27/8 → [−2 ; 2] × [−4 ; 4].
+- Base locale : 6 brouillons ; aperçu joué : 04 (x³ ⩽ −8 : [−2 ; +∞[ « Faux », corrigé : courbe, y = −8,
+  partie verte) ; 02 (√x > 1,9 : ]3,61 ; +∞[ « Juste », borne en disque vide) ; 06 (3x² + 2 ⩽ 5 : [−1 ; 1]
+  « Juste », parabole de f, A et B, partie verte).
+
+## 41. Lot 6, brouillons en prod et migration nœud + tag (2026-11-01)
+
+- Brouillons créés par David (`create-questions --publier`, trois dossiers) ; relevé MCP : les 20 en `draft`,
+  sans nœud, sans tag, catégorie et niveau attendus.
+  - 6 A : 345beb60 (2-325), 42c19a19 (2-327), bcfbf5f8 (2-331), ddc60d24 (2-447), 9723b1e4 (2-326),
+    b44e582b (2-333), 602bd8d7 (2-334), 1048e462 (2-335) ;
+  - 6 B : d49de3f3 (2-455), aeaff491 (2-457), 80a87e34 (2-460), 37f39db3 (2-461), 8bc8159f (2-463),
+    214f91c0 (2-466) ;
+  - 6 C : 05e8453d (2-467), cd8f96ba (2-469), e7b37987 (2-470), 811f6004 (2-472), 2a249385 (2-336),
+    d86c9577 (2-448).
+- Nœuds relevés par MCP, conformes au § 37 ; 2-325 et 2-333 sont sur une notion (pas de sous-notion).
+- Migration `20261101213600_questions_2de_fonctions_rangement_tags` et
+  `tests/integration/questions-2de-fonctions-rangement-tags.test.ts`, générés depuis ceux du lot 5 (seul le lot
+  change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec : 10/10.
+- Horodatage : max relevé sur `origin/main`, les worktrees et les branches distantes = 20261101213500 → 213600.
+- #2139 : CI verte, `security-auditor` sans finding bloquant (code identique au lot 5, état prod relu), mergée.
+  `db:migrate` refusé : la prod a déjà 20261101215000 (1re spé, autre session) → `--include-all` ; à blanc :
+  seule 20261101213600 part ; le `db push` réel est refusé par le classifieur, à lancer par David.
+- `db push --include-all` lancé par David : 20261101213600 jouée (avec 20261101215100 du CE1, mergée entre-temps
+  sur `main` ; session CE1 prévenue). MCP : les 20 en `draft`, bon nœud, un seul tag, le bon, `updated_at` préservé.
+
+## 42. Lot 6, page à cocher et fenêtre du 6 C-06 (2026-11-01)
+
+- `page-a-cocher.ts` sur les 20 (copie, préfixes `a-`/`b-`/`c-`) : une alerte sur 6 C-06 (f(x) < k, méthode
+  adaptée) — l'axe des abscisses, où l'ensemble est repassé en vert, sort de la fenêtre quand k et c sont loin de
+  0 (`sonde-courbes` ne le voit pas). Fenêtre y élargie pour contenir 0 ; specs 11/11, sonde 0 problème, page
+  sans alerte. Fichier corrigé à remettre en prod : `create-questions --mettre-a-jour` (David).
+- Page à cocher (20 fiches, sans alerte après le correctif) : https://claude.ai/artifact/H73An65fF3K7fkeZRMpYU5
+- #2152 mergée (CI : `wrapDynamicImport`, vert à la relance) ; 06 remis en prod par David
+  (`create-questions --mettre-a-jour`) ; MCP : fenêtre corrigée en base, toujours rangé et tagué.
+
+## 43. Lot 6 publié (2026-11-01)
+
+- David valide le lot sur la page. Simulation `publier-lot` des trois dossiers : 8 + 6 + 6 passent le contrôle.
+- Publication par David (`publier-lot --publier`, trois dossiers) : 8/8, 6/6, 6/6 ; MCP : les 20 `published`.
+- Leçon : lancer `page-a-cocher.ts` en local AVANT la PR des fichiers (alerte de fenêtre vue trop tard ici,
+  d'où un correctif et un `--mettre-a-jour`).
+
+## 44. Lot 7 « Signes et variations » : relevé et phase 0 (proposée le 2026-11-01, à valider)
+
+**Relevé MCP (prod, 2026-11-01)** : **21 points sans modèle** — 329, 475, 476, 352, 268, 426 (signes) ; 330,
+446, 337, 449, 450, 451 (tableaux de signes) ; 345, 473, 346, 349, 350, 354, 355, 356, 477 (variations,
+extrémums). Déjà couverts : 2-347 (09f0c9ec), 2-474 (ae0ad163), **2-348** (7c0ee046, « sens de variation
+d'une fonction affine », publié : le § 3.9 le comptait à tort sans modèle). **2-350** n'a aucun modèle (le
+§ 6 le prévoyait au lot 2 bis, il n'y a pas été écrit). **2-357** est un point-démonstration (bornes) → P,
+sans modèle (Q2), et non A comme l'écrivait le § 3.9. 2-351 hors appli (Q6) ; 353, 358-363 = P.
+
+Nœuds des points : Algèbre › Inéquations : produit et quotient › tableau de signes (268, 426, 330, 446, 337,
+449, 450, 451) ; Fonctions › Généralités › signe (329, **476**) · › variations (345, 473, 349, 356, 477) ·
+› extremums (346, 350) ; Fonctions affines › variations et signe (352) ; Fonction valeur absolue (notion : 475) · › variations (354) ; Fonction carré › variations (355).
+
+**Bornes** : facteurs = expressions affines et fonctions de référence, pas de trinôme non factorisé (268, 426,
+330, 446, 337, 449-451) ; quotient : valeur interdite exclue ; quatre sens (l2-3) ; fonctions de référence =
+affines, carré, inverse, valeur absolue — ni √ ni cube (l2-2) ; 352 : affines seulement ; 345, 346 : sur un
+intervalle.
+
+**Outils** (en prod) : ` ```variation ` (signes et flèches, `{{…}}` accepté), ` ```courbe `, case choix (avec
+dessins de courbes dans les choix), case `intervalles`. Patrons : 1re spé b48d72dd (signe en case choix),
+T_SPE 21840f6c (tableau ↔ courbes en case choix). Q4 : **cases sous le tableau**.
+
+**Phase 0 proposée** : un modèle par point, niveau `['2']`, brouillons, 21 modèles en trois PR de fichiers.
+
+Lot 7 A « Signes » (6) :
+
+1. **2-329 · Signe des fonctions de référence** : « pour x < 0, 1/x est… », « x² est… sur ℝ », « |x| … »
+   (case choix : strictement positif / positif ou nul / négatif / change de signe) ; variation : signe d'une
+   image (1/(−3), (−2)², |−5|) sans calcul.
+2. **2-475 · Signe de |x|** : tableau de signes de |x| à choisir (case choix entre 4 tableaux) ; « |x| = 0
+   pour x = ? ».
+3. **2-476 · Signe de x²** : même forme ; piège −x² et (x − a)² en niveau 2.
+4. **2-352 · Affine : variations, signe, droite** : f(x) = mx + p ; trois cases : sens de variation (choix),
+   valeur qui annule (−p/m), signe de f sur ]−∞ ; −p/m[ (choix + / −) ; niveau 2 : la droite donnée en
+   ` ```courbe `, mêmes cases.
+5. **2-268 · Signe de A(x)B(x), sans tableau** : (ax + b)(cx + d) en un x donné, puis sur un intervalle où
+   les deux facteurs gardent leur signe (règle des signes) ; case choix + / − / 0.
+6. **2-426 · Signe de A(x)/B(x), sans tableau** : même forme, valeur interdite comprise (« n'existe pas »).
+
+Lot 7 B « Tableaux de signes, résolutions » (6) — le tableau des facteurs est donné en ` ```variation `,
+réponses en cases dessous :
+
+7. **2-330 · Tableau de signes d'un produit** : (ax + b)(cx + d), puis k(ax + b), puis x(ax + b) ; cases :
+   valeurs qui annulent (dans l'ordre), signe sur chacun des trois intervalles (case choix + / −).
+8. **2-446 · Tableau de signes d'un quotient** : (ax + b)/(cx + d) ; cases : valeur qui annule, valeur
+   interdite, signes ; erreur typique : 0 mis sous la valeur interdite.
+9. **2-337 · f(x) = 0, f produit** : tableau complet donné → S = ? (case `intervalles`, `{a ; b}`).
+10. **2-449 · f(x) = 0, f quotient** : tableau complet donné → S = {a} (piège : la valeur interdite n'est pas
+    solution).
+11. **2-450 · f(x) > 0, f produit** : quatre sens, tableau complet donné → S en réunion d'intervalles ;
+    niveau 2 : seulement les facteurs donnés, signe du produit à faire.
+12. **2-451 · f(x) > 0, f quotient** : quatre sens ; crochet toujours ouvert à la valeur interdite.
+
+Lot 7 C « Variations et extrémums » (9) :
+
+13. **2-345 · Croissante, décroissante, monotone sur un intervalle** : ` ```courbe ` ; « f est … sur
+    [a ; b] » (case choix : croissante / décroissante / ni l'une ni l'autre) ; variation : traduction
+    « a < b ⇒ f(a) ? f(b) ».
+14. **2-473 · Tableau de variations** : tableau donné → « sur quel intervalle f est-elle croissante ? »
+    (case `intervalles`), image d'une borne lue.
+15. **2-346 · Maximum, minimum sur un intervalle** : tableau donné → maximum de f sur [a ; b] (valeur),
+    atteint en x = ? ; sur un sous-intervalle (le max n'est plus le même).
+16. **2-349 · Courbe ↔ tableau** : courbe donnée → choisir le tableau (case choix entre 4 tableaux) ; et
+    l'inverse (tableau → choisir la courbe, comme 21840f6c).
+17. **2-350 · Extrémums lus sur la courbe** : ` ```courbe ` sur [a ; b] → max, min, et où.
+18. **2-354 · Variations de |x|** : tableau de variations à choisir ; « |x| est décroissante sur ? »
+    (case `intervalles`).
+19. **2-355 · Variations de x²** : même forme ; minimum 0 atteint en 0.
+20. **2-356 · Comparer f(a) et f(b) numériquement** : f carré, inverse, |x| ; a, b de même signe puis de
+    signes contraires (carré : comparer les distances à 0) ; case choix <, =, > ; corrigé par le sens de
+    variation sur l'intervalle qui contient a et b.
+21. **2-477 · Comparer f(a) et f(b) graphiquement** : ` ```courbe ` de la fonction, points d'abscisses a
+    et b marqués ; case choix <, =, >.
+
+- **Corrigé** : tableau complet dessiné ; règle des signes écrite ; pour les variations, la propriété citée.
+- **Erreurs typiques en specs** : ordre des valeurs qui annulent inversé ; 0 sous la valeur interdite ;
+  valeur interdite incluse dans S ; crochet fermé en ±∞ ; sens non changé pour m < 0 ; x² < 0 « pour
+  x < 0 » ; (−3)² < (−2)² « car −3 < −2 ».
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L7-a — 2-268 / 2-330 et 2-426 / 2-446** : deux points par forme (Algèbre et Fonctions, même nœud).
+  → Je recommande **268, 426 = signe sans tableau** (en un point, sur un intervalle) et **330, 446 = le
+  tableau**.
+- **L7-b — Signe dans une case** : case choix « + / − » par intervalle (une case par intervalle).
+  → Je recommande **oui** (Q4 : cases sous le tableau) ; le tableau à compléter reste le futur outil.
+- **L7-c — 2-357 et 2-348** : 2-357 passe en P (point-démonstration), 2-348 est déjà couvert (7c0ee046).
+  → Je recommande **aucun modèle neuf** pour l'un comme pour l'autre.
+- **L7-d — Découpage** : 7 A (6), 7 B (6), 7 C (9) : trois PR de fichiers, une migration, une page à cocher.
+  → Je recommande **oui** (comme le lot 6).
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes quatre recommandations — L7-a 268, 426 sans
+tableau / 330, 446 le tableau ; L7-b case choix « + / − » par intervalle ; L7-c aucun modèle neuf pour 2-357
+ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration, une page à cocher.
+
+## 45. Lot 7 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-signes-a-2de.py` → `scripts/questions/2de-signes-a/` (6 modèles, 23 variations,
+  61 specs). Catégories : Fonctions › Généralités › « Signe » (niv. 1, 2-329) ; Valeur absolue › « Signe »
+  (niv. 1, 2-475) ; Fonction carré › « Signe » (niv. 1, 2-476) ; Fonctions affines › « Variations-Signe »
+  (niv. 4, 2-352 ; 1 à 3 pris) ; Calcul littéral › Inéquations › « Produit et quotient » (niv. 1 2-268, niv. 2
+  2-426 ; le lot 7 B y prendra 3 et plus).
+- `question:specs` : 61/61, tirages tous réussis ; `sonde-courbes` : 0 problème ; `create-questions` en
+  simulation contre la prod : « 6 à créer ».
+- **Piège** : `cleanCoefficients` ne nettoie que la notation maison, pas un `\dfrac` écrit en LaTeX (« 1x »,
+  « 2x+0 » restaient) ; et la notation maison `(ax+b)/(cx+d)` garde ses parenthèses dans la fraction. Le
+  quotient est donc écrit à la main : coefficient par des `{{if:…}}` à la suite (1 → rien, −1 → −), terme
+  constant jamais nul (conditions). Corrigés : « le facteur $2x-6$ vaut … » (formule maison, nettoyée) au lieu
+  de « 1×(−1)+0 ».
+- Base locale : 6 brouillons ; aperçu joué : 03 (quatre tableaux de signes dessinés dans la case choix,
+  mélangés ; réponse fausse « Faux », bonne réponse marquée, corrigé avec le tableau) ; 04 droite (trois cases,
+  « Juste », corrigé avec le tableau). Étiquette 𝒞_f retirée de la droite (posée sur la graduation −4).
+- Hors lot : un tableau de signes est annoncé « Tableau de variations de la fonction x » aux lecteurs d'écran
+  (composant `VariationTable`).
+
+## 46. Lot 7 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-signes-b-2de.py` → `scripts/questions/2de-signes-b/` (6 modèles, 26 variations,
+  50 specs). Catégorie : Calcul littéral › Inéquations › « Produit et quotient », niveaux 3 à 8 (2-330, 446,
+  337, 449, 450, 451).
+- Formes : tableau à construire (valeurs qui annulent, puis signe pour $x<x_1$, $x_1<x<x_2$, $x>x_2$ :
+  les intervalles ne trahissent pas les valeurs demandées) ; tableau des facteurs donné, signe du produit à
+  lire ; k(ax + b), x(cx + d) ; quotient : zéro, valeur interdite, « sous la valeur interdite on écrit : 0 /
+  une double barre » ; résolutions sur le tableau complet, quatre sens, deux ordres zéro / valeur interdite.
+- L'ordre des deux valeurs est fixé par variation (`ra < rb` / `ra > rb`) : chaque ligne est découpée aux
+  deux valeurs (convention des tests du parseur) ; racines non nulles (pas de « +0 » dans une étiquette).
+- `question:specs` : tout vert, tirages réussis ; simulation contre la prod : « 6 à créer ». Base locale :
+  6 brouillons ; aperçu : tableau à trois lignes du quotient dessiné juste (0 sur la ligne du dénominateur,
+  double barre sur celle de B(x), cases vides là où un facteur ne s'annule pas).
+- Branche `feat/questions-2de-lot7b`, empilée sur 7 A (à rebaser après son merge).
+
+## 47. Lot 7 C, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-variations-c-2de.py` → `scripts/questions/2de-variations-c/` (9 modèles, 28
+  variations, 59 specs). Catégories : Fonctions › Généralités › « Variations » (2-345 niv. 1, 2-473 niv. 2,
+  2-349 niv. 3, 2-356 niv. 4, 2-477 niv. 5) ; Généralités › « Extremums » (2-346 niv. 1, 2-350 niv. 2) ;
+  Valeur absolue › « Variations » (2-354 niv. 1) ; Fonction carré › « Variations » (2-355 niv. 1).
+- Parabole tracée s·0,5(x − h)² + k (valeurs entières aux points lus) ; intervalle de monotonie demandé
+  « le plus grand, bornes comprises » ; tableau sur ℝ sans valeur en ±∞ ; comparaisons : égalité f(−u) = f(u)
+  dans sa propre variation.
+- Sonde : les points de l'hyperbole sortaient en `\dfrac{1}{4}` (illisible pour le bloc) → ordonnées en
+  `;d` et u, v ∈ {±1, ±2, ±4} ; 0 problème ensuite. `question:specs` tout vert ; simulation prod : « 9 à
+  créer ». Base locale : 9 brouillons ; aperçu : 04 (quatre tableaux de variations dans la case choix, courbe
+  au-dessus), 08 (décimaux rendus avec la virgule).
+- Branche `feat/questions-2de-lot7c`, empilée sur 7 B.
+
+## 48. Lot 7, brouillons en prod et migration nœud + tag (2026-11-01)
+
+- Brouillons créés par David (`create-questions --publier`, trois dossiers) ; relevé MCP : les 21 en `draft`,
+  `['2']`, sans nœud, sans tag ; chaque point sur le nœud prévu au § 44 (2-475 sur sa notion).
+  - 7 A : 0cecc7f2 (2-329), 23908ef7 (2-475), 71c7933f (2-476), 6670b161 (2-352), 6bb5ff09 (2-268),
+    80826238 (2-426) ;
+  - 7 B : f0163416 (2-330), 9c7ab1c7 (2-446), d80a7d42 (2-337), 284bc012 (2-449), 71174c9c (2-450),
+    118c4696 (2-451) ;
+  - 7 C : 93bc8b5e (2-345), 9e35f8ba (2-473), e372112e (2-346), 3810a06c (2-349), 39154ac5 (2-350),
+    752c6c5e (2-354), a1cd5403 (2-355), 4f887f53 (2-356), 275cb665 (2-477).
+- Migration `20261101224703_questions_2de_signes_variations_rangement_tags` (`pnpm migration:horodatage`) et
+  `tests/integration/questions-2de-signes-variations-rangement-tags.test.ts`, générés depuis ceux du lot 6
+  (seul le lot change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec :
+  10/10. Horodatage 20261101224702 pris par la T_SPE entre-temps → 224703.
+- #2175 mergée (CI verte ; `Doc-inchangée` doit être dans un COMMIT, pas dans le corps de la PR ; horodatage
+  224702 pris entre-temps par la T_SPE → 224703). `security-auditor` : aucun finding. Migration jouée en prod
+  par une autre session (avec 224741 du CM1) ; MCP : les 21 en `draft`, bon nœud, un seul tag, le bon,
+  `updated_at` préservé.
+
+## 49. Page à cocher : tableaux de signes et de variations dessinés (2026-11-01)
+
+- Décidé par David (2026-11-01) avant la relecture du lot 7. Branche `feat/page-a-cocher-variation`.
+- `scripts/lib/page-a-cocher.ts` : bloc `variation` lu par `parseVariationTableContent` (+
+  `withImplicitEndpoints`), dessiné comme `VariationTable.svelte` (tableau, zéros, double barre, hachures,
+  valeurs en haut / au milieu / en bas, flèches SVG avec pointe dessinée, sens par les limites comme l'écran) ;
+  formules en `data-tex`, rendues en KaTeX par le gabarit (`formules()`). Bloc en erreur → la page s'arrête.
+- Tests : 4 nouveaux (rouges avant, 40/40 verts après). Page du lot 7 générée : 21 fiches, **aucune alerte**,
+  67 tableaux ; vus dans Chrome (quotient : 0 et double barre justes ; flèches lisibles dans les choix).
+- Pause des merges (deploy:prod relancé par questions-cm2) : branche poussée, PR à ouvrir au « go ».
+- Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : case d'intervalle = signe ou hachure seulement
+  (comme l'écran), hachure pleine largeur, ligne et contenu fautifs dans le message d'erreur ; tests ajoutés
+  (asymptote à deux limites, bornes implicites, case d'intervalle) : 43/43. Une zone interdite SANS limite
+  n'est pas écrivable dans une ligne de variation (le parseur exige des limites).
+- #2182 mergée (CI verte). Page du lot 7 publiée (artefact, capacité `db`), `verdicts` vide au départ.
+
+## 50. Lot 7 publié (2026-11-02)
+
+- Relecture de David sur la page à cocher : `verdicts` lus et comptés, 21/21 « ok », aucun commentaire ; les
+  21 ids sont ceux du § 48.
+- `publier-lot` simulé par David (trois dossiers) : 6 + 6 + 9 passent le contrôle ; puis `--publier` : 6/6,
+  6/6, 9/9.
+- MCP (prod) : les 21 `published`, 21 rangés sur un nœud, un tag chacun.
+- Le mode auto refuse de copier le `.env` de prod dans le worktree, même pour une simulation : David lance la
+  commande avec `!` en chargeant `../ubumaths/.env`.
+
+## 51. Lot 8 « Information chiffrée, statistiques, tableaux croisés, probabilités » : relevé et phase 0 (validée le 2026-11-02)
+
+**Relevé MCP (prod, 2026-11-02)** : 154 points de seconde sans modèle. Dans le champ du lot (§ 3.10 à 3.12,
+plus les automatismes 2-490 et 2-402) : **36 sans modèle** — 364, 365, 368, 478, 375, 376, 490 (évolutions,
+proportions) ; 369, 370, 371, 479, 402, 382, 483 (indicateurs) ; 372, 480, 380, 481, 381, 482, 484 (séries en
+classes, graphiques) ; 383, 384, 485, 385, 486, 386, 487 (tableaux croisés) ; 389, 391, 393, 394, 395, 397,
+400 (probabilités) ; 392 (simulation). 387, 388 = P (Q2).
+
+- **Déjà couverts, publiés** : 2-366 (e12e58cb, d98aa53a), 2-367 (2562438e, e05bb79b), 2-377 (c4372fd8,
+  1c443c35), 2-378 (8b59ca4b, 36abc642), 2-379 (bbd511cb).
+- **Brouillons d'avant le chantier, jamais publiés** (vérifiés OK au § 2.1) : 77d6fedc (2-390), f3e68e4b et
+  4016b05c (2-396), 9d7c4d98 (2-398), 1cfc575d (2-399), cf548ea1 (2-488) — tous dans le champ du lot. Les 16
+  autres brouillons de 2de (ensembles, logique, intervalles) relèvent du lot 10.
+- **Oubli trouvé** : **2-491** (« déterminer graphiquement des images ») n'a aucun modèle. Le § 6 prévoyait un
+  modèle neuf au lot 2 bis (68db64b0 et f96d3e43 partis en T_SPE) ; il n'a pas été écrit — même cas que 2-350
+  au lot 7.
+
+**Bornes** : séries en classes **de même amplitude** (372, 480, 380, 481, 381, 482) ; écart type seul
+indicateur de dispersion, pas de variance (370) ; quartiles comme en 3e (402, c4-2) ; « données réelles »
+n'est pas une borne, effectifs tirés admis (l2-9) ; arbres : probabilité d'un chemin et lecture des
+conditionnelles, **pas de probabilités totales** (l2-4) ; P_B(A) par inversion **sur un tableau croisé
+seulement** (400, l2-4) ; 394 = tableau croisé d'effectifs seulement (l2-10).
+
+**Outils** (en prod) : ` ```histogramme `, ` ```frequences-cumulees ` (`lecture: médiane`),
+` ```boite-a-moustaches `, ` ```effectifs `, ` ```barres `, ` ```tableau-croise ` (totaux, `masquer:`, case
+`?`), ` ```probtree ` (poids `?`), ` ```simulation `, ` ```courbe `, case choix. Aucun modèle publié n'utilise
+encore `histogramme` ni `frequences-cumulees`. Patrons : 3e 96992ea8, acaa7317, c2497d96 (`barres`,
+`effectifs`) ; 4e bb4dc318, 17a469bb (`simulation`) ; 1re spé 2c116f4d (`probtree`).
+
+**Phase 0 proposée** : un modèle par point, niveau `['2']`, brouillons. 37 modèles neufs + 6 anciens
+brouillons à relire, en **deux vagues** (L8-e).
+
+Vague 8 « Information chiffrée et statistiques » (22) :
+
+8 A « Évolutions et proportions » (8) :
+
+1. **2-365 · Variation absolue** : V₁, V₂ → V₂ − V₁ (avec son signe et son unité) ; niveau 2 : deux
+   grandeurs, « la plus forte hausse en euros / en % » (case choix). Erreur typique : V₁ − V₂.
+2. **2-368 · CM successifs = produit** : « multiplié par 1,2 puis par 0,85 : multiplié en tout par ? » — des
+   coefficients en entrée et en sortie, sans taux (36abc642, 2-378, part des taux). Erreur : 1,2 + 0,85 − 1.
+3. **2-478 · CM réciproque = inverse** : « multiplié par 1,25 : par combien multiplier pour revenir ? » (0,8 ou
+   4/5) ; CM non décimal à l'inverse → fraction attendue. Distinct de bbd511cb (taux, 2-379).
+4. **2-364 · Pourcentage de pourcentage** (notion) : « 40 % des élèves sont des filles, 25 % d'entre elles…
+   quelle proportion de l'ensemble ? » → 10 % ; forme p × p′.
+5. **2-376 · Pourcentages de pourcentages en situation** : même calcul dans un contexte à trois ensembles
+   emboîtés, effectif total donné → effectif final.
+6. **2-375 · Effectifs, proportions, pourcentages** : deux des trois donnés, le troisième demandé (trois
+   variations).
+7. **2-490 · Le tout connaissant une partie** : « 18 élèves, soit 3/8 (0,375 ; 37,5 %) de la classe » → 48 ;
+   les trois formes de proportion (borne).
+8. **2-491 · Images lues sur une courbe** (l'oubli) : ` ```courbe `, f(a) entier lu ; niveau 2 : image d'un
+   point de la grille entre deux nœuds marqués.
+
+8 B « Indicateurs » (7) :
+
+9. **2-369 · Linéarité de la moyenne** : moyenne m des xᵢ → moyenne des a·xᵢ + b (« chaque note est
+   augmentée de 2 », « convertie sur 10 »).
+10. **2-370 · Écart type** : petite série (4 à 8 valeurs) construite pour un écart type entier ; niveau 2 :
+    deux séries de même moyenne en ` ```barres `, « laquelle a le plus grand écart type ? ».
+11. **2-371 · Moyenne après ajout ou retrait d'une valeur** : n, m, valeur ajoutée (retirée) → nouvelle
+    moyenne ; niveau 2 : « augmente / diminue / inchangée » sans calcul.
+12. **2-479 · Médiane après ajout ou retrait** : série triée → nouvelle médiane (effectif pair ↔ impair).
+13. **2-402 · Interpréter un quartile** : case choix de la phrase juste (« au moins 25 % des valeurs ⩽ Q₁ ») ;
+    niveau 2 : « Q₃ = 15, 40 valeurs : au moins combien sont ⩽ 15 ? » (30).
+14. **2-382 · Moyenne–écart type** : deux séries (m, σ) → « plus élevée en moyenne », « plus homogène »
+    (case choix).
+15. **2-483 · Médiane–écart interquartile** : Q₁, Me, Q₃ de deux séries → écarts interquartiles (cases) puis
+    choix.
+
+8 C « Séries en classes, graphiques » (7) :
+
+16. **2-372 · Histogramme** : ` ```histogramme ` (classes de même amplitude) → effectif d'une classe, effectif
+    total, classe modale.
+17. **2-480 · Polygone des fréquences cumulées** : ` ```frequences-cumulees ` → proportion ⩽ une borne de
+    classe ; médiane lue (`lecture: médiane`).
+18. **2-380 · Moyenne pondérée des moyennes de classes** : tableau (groupes, effectif, moyenne) → moyenne
+    générale. Erreur : moyenne des moyennes.
+19. **2-481 · Moyenne par les centres de classes** : tableau de classes → centres, puis moyenne.
+20. **2-381 · Classe médiane** : effectifs des classes → la classe qui contient la médiane (case choix).
+21. **2-482 · Médiane estimée** (répartition uniforme dans la classe médiane) : interpolation, valeur exacte
+    choisie par les tirages.
+22. **2-484 · Comparer deux représentations données** : deux histogrammes ou deux boîtes à moustaches → case
+    choix d'affirmations.
+
+Vague 8 bis « Tableaux croisés et probabilités » (15 + 6 anciens brouillons) :
+
+8 D « Tableaux croisés » (7) — ` ```tableau-croise ` à effectifs tirés :
+
+23. **2-383 · Lire un tableau croisé** : effectif d'une case, d'une marge, total.
+24. **2-485 · Fréquence marginale (notion)** : case choix entre quatre quotients (le bon dénominateur).
+25. **2-486 · Calculer une fréquence marginale** : fraction ou pourcentage.
+26. **2-384 · Fréquence conditionnelle (notion)** : case choix, « parmi les A, proportion de X » ↔ quotient.
+27. **2-385 · Calculer une fréquence conditionnelle** : erreur typique : diviser par le total.
+28. **2-386 · Compléter par les effectifs** : cases `?` dans le tableau (différences, totaux).
+29. **2-487 · Compléter avec une fréquence conditionnelle** : « 30 % des 120 filles… » → effectif de la case.
+
+8 E « Probabilités » (7) :
+
+30. **2-389 · Loi des grands nombres** : ` ```simulation ` à n = 20, 100, 10 000 → case choix (fréquence la
+    plus proche de p ; affirmation juste).
+31. **2-391 · Arbre de probabilités** : deux épreuves indépendantes (pièce, dé) en ` ```probtree ` →
+    probabilité d'une issue (produit). Distinct de 1cfc575d (2-399, chemin d'un arbre conditionnel).
+32. **2-393 · Construire un arbre pondéré** : énoncé → arbre à poids `?` (cases) ; complément à 1 compris.
+33. **2-394 · Construire un tableau croisé** : énoncé (« sur 200 élèves, 120 filles, 30 % des filles… ») →
+    tableau à cases `?`.
+34. **2-395 · Traduire en notations** : phrase → P(A ∩ B), P_A(B), P(Ā)… (case choix) et l'inverse.
+35. **2-397 · Probabilité conditionnelle lue sur un arbre** : P_A(B) sur une branche de 2e niveau ; jamais
+    P(B) (l2-4).
+36. **2-400 · P_A(B) ou P_B(A) : faux positifs** : test de dépistage sur un tableau croisé → les deux
+    probabilités, vocabulaire (sensibilité, spécificité, faux positif).
+
+- **Corrigé** : formule écrite, puis le calcul ; tableau ou arbre redessiné, case cherchée mise en avant.
+- **Erreurs typiques en specs** : V₁ − V₂ ; somme des coefficients ; moyenne des moyennes ; dénominateur =
+  effectif total au lieu de la marge ; P_B(A) pour P_A(B) ; médiane non triée.
+- **Question d'accès** : personne pour les modèles neufs (brouillons, aucune policy). Publier les 6 anciens
+  brouillons les ouvre aux profs et élèves de seconde **et de terminale** (ils portent aussi TCOMP-302) —
+  comme toute publication.
+
+**Questions à David** :
+
+- **L8-a — 2-368 / 2-478** (relations sur les coefficients) contre 36abc642 / bbd511cb (taux, 2-378 / 2-379) :
+  → je recommande **deux modèles neufs, coefficients en entrée et en sortie** (comme 268 / 330 au lot 7).
+- **L8-b — 2-392** (observer à l'aide d'une simulation sur Python ou tableur) : → je recommande **sans
+  modèle** (programmer = exercices Python, Q3) ; l'observation est déjà le 2-389 avec ` ```simulation `.
+- **L8-c — 2-491** (l'oubli du lot 2 bis) : → je recommande **dans le lot 8 A**.
+- **L8-d — 6 anciens brouillons de probabilités** : → je recommande de les **mettre sur la page à cocher de
+  8 bis et de les publier avec elle**.
+- **L8-e — Découpage** : vague 8 (A 8, B 7, C 7 = 22) puis vague 8 bis (D 7, E 7 + 6 relectures) ; chacune
+  ses PR de fichiers, une migration, une page à cocher. → je recommande **oui**.
+- **L8-f — Page à cocher** : elle ne dessine pas encore les blocs statistiques ni `probtree` (montrés en
+  source, alerte « non dessiné »). → je recommande une **PR « page à cocher : blocs statistiques et arbres »**
+  (scènes `stat-chart-scene.ts`, comme #2182 pour `variation`) avant la relecture de la vague 8 ; sinon,
+  relecture dans l'aperçu admin.
+
+**Décisions de David (2026-11-02)** : « je te suis », en réponse aux six questions → mes recommandations,
+toutes : L8-a deux modèles neufs (coefficients en entrée et en sortie) ; L8-b 2-392 sans modèle ; L8-c 2-491
+dans 8 A ; L8-d les 6 anciens brouillons relus et publiés avec 8 bis ; L8-e deux vagues (8 = A, B, C ; 8 bis =
+D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la relecture de la vague 8.
+
+## 52. Lot 8 A, B, C : PR des fichiers (2026-11-02)
+
+- **8 A** : `questions-2de/lot-evolutions-a-2de.py` → `scripts/questions/2de-evolutions-a/` (8 modèles). Catégories :
+  Pourcentages › Variations niv. 12 (2-365) ; › Coefficient niv. 4, 5 (2-368, 2-478) ; › Proportion niv. 4, 5, 6
+  (2-364, 2-375, 2-490) ; › Problèmes niv. 2 (2-376) ; Fonctions › Généralités › Lecture graphique niv. 4
+  (2-491). Specs vertes, simulation prod « 8 à créer », base locale, aperçu joué. **#2190 mergée.**
+- **8 B** : `questions-2de/lot-indicateurs-b-2de.py` → `scripts/questions/2de-indicateurs-b/` (7 modèles).
+  Statistiques › Indicateurs › Moyenne niv. 4, 5 (2-369, 2-371) ; › Écart type niv. 1 (2-370, séries à écart
+  type entier) ; › Médiane niv. 3 (2-479) ; › Quartiles niv. 2 (2-402) ; Problèmes › Comparer des séries niv. 2,
+  3 (2-382, 2-483). **#2196 mergée.**
+- **8 C** : `questions-2de/lot-classes-c-2de.py` → `scripts/questions/2de-classes-c/` (7 modèles). Représenter
+  des données › Histogramme niv. 1 (2-372) ; › Fréquences cumulées niv. 1 (2-480) ; Indicateurs › Moyenne
+  niv. 6, 7 (2-380, 2-481) ; › Médiane niv. 4, 5 (2-381, 2-482) ; Problèmes › Comparer des séries niv. 4
+  (2-484). **#2199 mergée.**
+- **Pièges** : un choix d'index par variable s'écrit avec l'indicatrice `(1-min(1,abs((p)-k)))` dans un `eval` ;
+  le générateur ne retente que 100 fois les conditions (tirages à faible taux d'acceptation → tirer la valeur
+  dérivée) ; « en écriture décimale » → une fraction est `bad_form` (`constraintViolations: ['form']`) ;
+  histogramme quadrillé de 2 en 2 → effectifs pairs ; polygone des fréquences cumulées quadrillé de 10 en
+  10 % → effectifs multiples de 10 (vu dans l'aperçu).
+- **L8-f** : PR #2198 « page à cocher : blocs statistiques et arbres » (agent) : histogramme, polygone
+  (lecture), barres, boîtes, tableau croisé (cases `?` vides), simulation (tirages), probtree (mise en page
+  portée de `ProbabilityTree.svelte`, pas de scène partagée). Revue `code-reviewer` : aucun bloquant ;
+  corrigés : `série: seule` (la page dessinait la figure à construire), légende du tableau croisé sans titre.
+
+## 53. Vague 8 : brouillons en prod et migration nœud + tag (2026-11-02)
+
+- David a créé les 22 brouillons (`create-questions --publier`, trois dossiers) ; MCP : 22 `draft`, `['2']`,
+  sans nœud, 0 tag.
+  - 8 A : de146ac1 (2-365), 2dec310f (2-368), 7a763528 (2-478), 11f91d46 (2-364), afbfa8c6 (2-376),
+    5b3bef9f (2-375), 39b4823d (2-490), cc88ebd3 (2-491) ;
+  - 8 B : ba0925ce (2-369), ef92701a (2-370), a4de4154 (2-371), 3c411c3b (2-479), 82ba1365 (2-402),
+    893eb3cd (2-382), 6b2b7055 (2-483) ;
+  - 8 C : 7ca1d2da (2-372), 7a56029d (2-480), 03d8f171 (2-380), 90e2e7d8 (2-481), b7c71958 (2-381),
+    8d94fd69 (2-482), b73677c8 (2-484).
+- Migration `20261102055259_questions_2de_statistiques_rangement_tags` + test, générés par
+  `questions-2de/lot-8-rangement-2de.py` depuis ceux du lot 7 ; rouge sans la migration (5 échecs), vert
+  avec (10/10) ; `security-auditor` : aucun finding ; **#2204 mergée** (CI verte, intégration comprise).
+- **#2198 mergée** (page à cocher : blocs statistiques et arbres) ; worktree de l'agent retiré.
+- **`db:migrate` PAS ENCORE JOUÉ** : le dépôt principal est bloqué par la session `questions-6` (commit
+  local non poussé `1cb3ca05b` + journal indexé, `origin/main` en avance de 10) ; `pull --rebase` refuse.
+  Recommandé à David : migrer depuis le worktree sur `origin/main` (liaison `supabase/.temp` copiée,
+  `migration list --linked` d'abord : s'arrêter si d'autres migrations attendent) — **réponse attendue**.
+
+## 54. Vague 8 : migration jouée, page à cocher (2026-11-02)
+
+- `db:migrate` lancé par David depuis le worktree : 20261102055259 (2de) jouée, avec 20261102062309 (CM1 lot
+  5 A, autre session, mergée entre-temps).
+- MCP (prod) : les 22 en `draft`, `['2']`, rangés sur le nœud de leur point, un tag chacun, le bon code.
+- `page-a-cocher.ts` sur les 22 (copie dans le scratchpad, préfixes `a-`/`b-`/`c-`, `.env` de prod chargé
+  dans la commande) : 22 fiches, **aucune alerte**. Page (capacité `db`, `verdicts` vide) :
+  https://claude.ai/artifact/JrSwxKsh2iemADRjp84YSR
+
+## 55. Vague 8 publiée (2026-11-02)
+
+- Relecture de David sur la page : `verdicts` lus et comptés, 22/22 « ok », aucun commentaire ; les 22 ids
+  sont ceux du § 53.
+- `publier-lot` simulé par David (trois dossiers) : 8 + 7 + 7 passent le contrôle ; puis `--publier` : 8/8,
+  7/7, 7/7.
+- MCP (prod) : les 22 `published`, rangés sur un nœud, un tag chacun.
+
+## 56. Vague 8 bis : PR des fichiers 8 D et 8 E (2026-11-02)
+
+- **8 D** : `questions-2de/lot-tableaux-d-2de.py` → `scripts/questions/2de-tableaux-d/` (7 modèles).
+  Statistiques › Tableaux croisés › Effectifs niv. 1, 2 (2-383, 2-386) ; › Fréquences marginales niv. 1, 2
+  (2-485, 2-486) ; › Fréquences conditionnelles niv. 1, 2, 3 (2-384, 2-385, 2-487). Décor unique sexe ×
+  régime ; cases à trouver écrites puis cachées par `masquer:`. **#2214 mergée.**
+- **8 E** : `questions-2de/lot-probabilites-e-2de.py` → `scripts/questions/2de-probabilites-e/` (7 modèles).
+  Probabilités › Simulation › Stabilisation niv. 1 (2-389) ; › Probabilités conditionnelles › Arbres pondérés
+  niv. 3, 4, 5 (2-391, 2-393, 2-397 ; les anciens brouillons 9d7c4d98, 1cfc575d y sont niv. 1, 2) ;
+  › Tableaux croisés niv. 4 (2-394 ; anciens niv. 1-3) ; › Notations niv. 1 (2-395) ; › Problèmes en contexte
+  niv. 4 (2-400 ; 77d6fedc niv. 3). **#2220 mergée.**
+- Vérifié : specs 14/14 importables ; brouillons en base locale ; page à cocher locale capturée (Playwright)
+  et relue : tableaux masqués vides, arbres à `?`, simulation dessinés.
+- **Pièges** : une fraction en spec s'écrit `\\frac{a}{b}` (`a/b` → `bad_form`) ; `P_G(C)` dans une case
+  s'affichait `P_{G(C)}` → `P_{G}(C)` ; le pas `a..b..k` n'existe pas → tirer `q` puis `eval:5*(q)`.
+- **Trouvé en passant — `\textcolor` hors `$…$`** : `col(x)` écrit hors du mode maths s'affiche en LaTeX
+  brut (page à cocher ET appli : aucun rendu de `\textcolor` dans le texte). Corrigé dans 8 D / 8 E avant
+  merge. Dans les modèles **déjà publiés** : 51 variations de 24 modèles, sur 7 lots (signes A 6 modèles,
+  indicateurs B 5, évolutions A 4, classes C 4, variations C 3, fonctions A 1, signes B 1) — relevé :
+  `python3 docs/wip/questions-2de/hors-maths.py scripts/questions/2de-*`. Correctif à décider avec David
+  (corriger les générateurs, régénérer les JSON, mettre à jour les modèles en prod).
+
+## 57. Vague 8 bis : brouillons en prod, rangement, page à cocher (2026-11-02)
+
+- David a créé les 14 brouillons (`create-questions --publier`, deux dossiers) ; MCP : 14 `draft`, `['2']`,
+  sans nœud, 0 tag.
+  - 8 D : eb0dcd85 (2-383), d64946e4 (2-485), 62105594 (2-486), ba16b4f4 (2-384), ed96107e (2-385),
+    89e928a4 (2-386), b6ab5599 (2-487) ;
+  - 8 E : 7953dcfc (2-389), 38fe4cd5 (2-391), b28f4a68 (2-393), 23ceafb0 (2-394), 31096bae (2-395),
+    d7507e78 (2-397), 94b22887 (2-400).
+- Les 6 anciens brouillons (77d6fedc, f3e68e4b, 4016b05c, 9d7c4d98, 1cfc575d, cf548ea1) sont déjà rangés et
+  tagués (2-390, 2-396 ×2, 2-398, 2-399, 2-488, plus TCOMP-302 / TSPE-616) : hors migration. Exportés
+  (`export-question-templates.ts`) : specs toutes vertes, aucun `\textcolor` hors `$`.
+- Migration `20261102090330_questions_2de_tableaux_probabilites_rangement_tags` + test, générés par
+  `questions-2de/lot-8bis-rangement-2de.py` depuis ceux de la vague 8 (apostrophe d'un chemin échappée dans
+  le TS) ; rouge sans (3 échecs), vert avec (10/10) ; `security-auditor` : aucun finding ; **#2227 mergée**
+  (merge retardé d'environ 10 min par un `deploy:prod` en cours).
+- Migration jouée en prod par le `db:migrate` d'une autre session (avec 6 lot 10, 1spe savoir A, CE1 lot 10) ;
+  MCP : les 14 sur le nœud de leur point, un tag chacun, le bon code.
+- `page-a-cocher.ts` sur les 20 (scratchpad, préfixes `d-`/`e-`/`f-ancien-`) : 20 fiches, aucune alerte.
+  Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY
+
+## 58. `\textcolor` hors `$` : mesure sur tous les niveaux, go de David (2026-11-02)
+
+David valide (« Je valide ») : corriger maintenant les 2de, garde dans `question:specs`, mesurer ailleurs.
+`hors-maths.py` (corrigé : variation sans `correction` ne plante plus) sur `scripts/questions/*/` :
+106 textes dans 53 fichiers. Textes par dossier :
+
+- 2de (18 fichiers, 51 textes) : signes-a 18, variations-c 11, classes-c 8, indicateurs-b 6, evolutions-a 5,
+  signes-b 2, fonctions-a 1.
+- Hors 2de (35 fichiers, 55 textes, à montrer à David) : ce1-9 14, 3-lot-6 9, 4-lot-6 8,
+  tspe-3-ln-continuite-convexite 4, fonctions-terminale 4, 4-lot-5 4, 4-lot-8 3, 1spe-probas 3,
+  trigo-terminale 2, cm1-2 2, 3-lot-4b 2.
+
+Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors maths n'est vraiment pas traité
+(l'ampleur hors 2de, sur des lots publiés depuis longtemps, rend la question légitime).
+
+## 59. `\textcolor` hors `$` : correctif des 24 modèles publiés de 2de (2026-11-02)
+
+- **Revérifié dans le code** : le parseur ubumark laisse `\textcolor{…}{…}` hors `$` dans un nœud texte
+  (`parseMarkdown`, essai direct) ; aucun nœud de rendu ni pré-traitement ne le reconnaît (seul le PDF
+  typst le convertit). L'élève voit bien le LaTeX brut. Ubumark n'a pas de syntaxe de texte coloré.
+- **Générateurs** (7 lots) : `colt(x, k)` = `'$' + col(x, k) + '$'`, à la place de `col()` sur les 52
+  appels écrits en texte. Repérés sans tri à l'œil : `col()` instrumenté (ligne:colonne de l'appel),
+  tirages, appels dont le marqueur tombe hors `$`. Cas à part (`fonctions-a` 02) : le contenu portait
+  lui-même des `$` → `colt('{{b}}\\text{ est l\'image de }{{a}}')`.
+- **JSON régénérés** : 24 fichiers, 23 ne diffèrent que par des `$` ; `hors-maths.py` → 0 ;
+  `question:specs` 24/24 importables. Sonde de rendu (tirages réels → `parseMarkdown`, 40 graines par
+  modèle) : `\textcolor` dans un nœud texte **648 avant → 0 après** ; formules colorées valides
+  (`validateLatex` de MathLive).
+- **Mise à jour des publiés** : `create-questions --mettre-a-jour` ne touche jamais un publié
+  (`.eq('status', 'draft')`) — pas de doublon (même titre au même endroit = « déjà en base »), mais rien
+  d'écrit. Outil existant : `update-published-questions.ts`, lot **`textcolor-2de`** (24 ids explicites).
+  Instantanés `scripts/questions/2de-textcolor-existants/<id8>.json` = export de la prod
+  (`export-question-templates.ts`), seules les `variations` remplacées. Prod comparée aux fichiers
+  d'avant correctif : identique champ par champ (hors `id`, `status`). Simulation : 24 cibles, `variations`
+  seules à modifier, specs vertes.
+- **Écrit en prod** par David (`--lot textcolor-2de --publier`, 2026-11-02). Revérifié par export de la
+  prod : 24/24 publiés, variations identiques aux instantanés, `hors-maths.py` → 0.
+
+## 60. Garde `\textcolor` hors `$` dans `question:specs` (2026-11-03)
+
+- **Place** : celle décidée au § 58 (« garde dans `question:specs` ») ; la reco (a) « bloquante dans
+  `checkTemplate` » du 2026-11-02 est restée sans réponse → pas retenue. `checkTemplate` et la
+  publication dans l'appli ne l'appliquent pas.
+- `src/lib/questions/review/textcolor-hors-maths.ts` : chaque tirage (50 par variation, `--instances`)
+  → énoncé (choix compris) et corrigé passés à `parseMarkdown` ; un nœud texte (hors code en ligne) qui
+  porte `\textcolor` = signalement. Le script sort en 1, avec « VERDICT FINAL : à corriger » sous le
+  verdict de `checkTemplate`.
+- Tests : 5 (nominal, énoncé, corrigé, code en ligne, couleur apportée par une variable) ; rouges sans la
+  détection (3/5, les attendus). Sur fichiers réels : `2de-signes-a/01` corrigé → 0/100, sa version
+  d'avant le correctif → 25/25 et sortie 1, `ce1-9/05` (hors 2de) → signalé.
+
+## 61. À faire : 2-316, 2-445 (droite) et 2-298 (vecteur) au geste « tracer » (ajouté le 2026-11-03)
+
+- Les deux modèles du lot 5 B (B-06 `8d4bd94d`, 2-316, équation réduite ; B-07 `2cfae58d`, 2-445, équation
+  cartésienne) sont en case choix entre 4 ` ```courbe ` (§ 30, § 36 publiés, faute de geste à l'époque).
+- Le geste existe : ` ```courbe tracer: ` (#2265, en prod depuis la 0.65.0). Les réécrire avec : l'élève trace
+  la droite, le juge `isTracedLineCorrect` la corrige. Exemple déjà en prod : 1SPE-433 (`dc5d7cb6`,
+  journal archivé `questions-1spe-tracer-droite`) ; pièges dans `couvrir-un-niveau.md` § 9.
+- Publiés → `update-published-questions.ts`, pas `create-questions --mettre-a-jour`. Retirer la ligne de
+  `docs/wip/outils-manquants.md` (« Contenu restant aux sessions questions ») une fois faits.
+- **2-298 · Représenter un vecteur dont on connaît les coordonnées** : ⚠️ **faux** (vérifié en prod le
+  2026-11-03, § 65) : aucun modèle n'existait, ni tagué ni non tagué ; créé au lot `vecteur-tracer`. Texte d'origine :
+  même cas, modèles en case choix à
+  réécrire au geste ` ```courbe tracer: vecteur ` (`depuis A` pour l'origine imposée, #2274). ⚠️ #2274 n'est
+  **pas en prod** au 2026-11-03 : rien à publier avant le `deploy:prod` qui la livre. Ids des modèles : à relever
+  en prod (tag 2-298) ; origine du besoin : `docs/archive/wip/points-repere-progress.md`, lot 3.
+
+## 62. Vague 8 bis : relue, 8 D + anciens publiés, niveaux de 8 E (2026-11-03)
+
+- **#2283 mergée** : garde `\textcolor` hors `$` dans `question:specs` ; la revue (`code-reviewer`) a trouvé
+  des faux négatifs (choix d'un ```choix, cellules de tableau, texte de lien, `correction.feedback`) →
+  lus aussi, 9 tests. Aucun faux positif trouvé.
+- **Relecture** : `verdicts` lus et comptés, 20/20 « ok », aucun commentaire ; les 20 ids sont ceux du § 57.
+- `publier-lot` (simulation) : 8 D 7/7, anciens 6/6 (instantanés exportés au scratchpad, l'id apparie) ;
+  **8 E refusé** : 4 catégories prises par des publiés d'autres classes — Stabilisation niv. 1 (3e,
+  302655b9), Arbres pondérés niv. 3, 4, 5 (1re, 5ba712bc, 69a05f98, 6dd2f133).
+- David a publié 8 D et les anciens : MCP 13/13 `published`.
+- **Décision de David** (reco suivie) : ne déplacer que les brouillons de 2de, vers des niveaux libres
+  (MCP : aucun modèle à Stabilisation 2 ni Arbres pondérés 6-8). 7953dcfc 1 → 2 ; 38fe4cd5 3 → 6 ;
+  b28f4a68 4 → 7 ; d7507e78 5 → 8. Rien de publié ne bouge.
+- `create-questions --mettre-a-jour` exclu : le niveau est dans sa clé d'appariement → 4 doublons. Lot
+  **`niveaux-2de-probabilites`** de `update-published-questions.ts` (écrit `level`, tout statut) ;
+  instantanés `scripts/questions/2de-niveaux-probabilites-existants/` = export de la prod, `level` seul
+  modifié. Générateur et fichiers de 8 E : seul `level` change. Simulation : 4 cibles, `level` seul, specs
+  vertes.
+- **#2290 mergée** ; David a lancé le lot `niveaux-2de-probabilites` (4 niveaux, relus conformes) puis
+  `publier-lot --dir scripts/questions/2de-probabilites-e` : 7/7. MCP : 7/7 `published`, niveaux 2, 6, 7,
+  8 et 1, 4, 4 (inchangés).
+
+## 63. `\textcolor` hors `$` hors de la seconde : correctif des 27 modèles publiés (2026-11-03)
+
+- **Mesure refaite** (`hors-maths.py` sur `scripts/questions/*/`) : 57 textes dans **30 fichiers** (le § 58
+  disait 35 fichiers, compte faux ; 55 textes dans 29 fichiers, plus `1spe-tracer-droite/01`, ajouté
+  aujourd'hui, 2 textes).
+- **10 générateurs** (`docs/wip/questions/lot-{ce1-9,3-6,4-6,4-5,4-8,3-4b,1spe-probas,cm1-2,
+tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidèles (régénérés à vide =
+  JSON suivis, à l'identique). `col()` instrumenté (position de chaque appel dans le source), 59 appels
+  hors `$`, aucun tantôt dedans tantôt dehors → `colt()` à ces positions exactes, assertion par position.
+  Piège : `positions.col_offset` de Python compte en **octets UTF-8** (lignes accentuées).
+- **3 fichiers sans générateur** (`fonctions-terminale/A-06`, `C-06`, `trigo-terminale/A-01`) : le
+  `\textcolor{…}{…}` hors `$` entouré de `$`, par script (groupes d'accolades équilibrés).
+- **Contrôles** : diff des 30 JSON = **uniquement des `$` insérés** (aucun `$$` créé) ;
+  `hors-maths.py` sur tout `scripts/questions/` → 0 ; `question:specs` (garde du § 60 comprise) 30/30.
+- **Prod** (export, lecture seule) : 30 publiés retrouvés. 26 identiques au fichier d'avant correctif ;
+  `c8306505` ne diffère que par `grades` (prod `4, 3`, fichier `4` ; on garde la prod). **Déjà corrigés
+  en prod** : `10393ff9` (A-06) et `4c4d43dc` (A-01), variations identiques à la correction → hors lot.
+  `9ad36217` (C-06) : la prod porte une autre version (« Courbes de ln et exp : symétrie par rapport à
+  y = x »), sans le défaut → hors lot ; **le fichier `C-06` du dépôt est périmé** par rapport à la prod
+  (titre, description, variations, specs) : ne pas le réimporter tel quel.
+- Lot **`textcolor-hors-2de`** de `update-published-questions.ts` : **27 cibles** (CE1 5, CM1 2, 4e 9,
+  3e 7, 1re 2, Tle spé 2), un seul lot avec les ids rangés par niveau. Instantanés
+  `scripts/questions/textcolor-hors-2de-existants/<id8>.json` = export de la prod, seules les
+  `variations` remplacées ; `hors-maths.py` sur les instantanés → 0. Simulation : 27 cibles, `variations`
+  seules, specs vertes.
+- **#2291 mergée** (CI verte). Écriture en prod : à lancer par David.
+
+## 64. 2-316 et 2-445 au geste « tracer » (2026-11-03)
+
+- **Phase 0 validée par David** (2026-11-03) : énoncé « Trace la droite $d$ : place deux de ses points. »
+  dans un repère −6..6 gradué de 1 ; titre, niveaux (6, 7), `grades`, `delay` (120 s), variations et bornes
+  de tirage gardés ; corrigés inchangés. 2-445 : la ligne `tracer:` porte l'**équation cartésienne de
+  l'énoncé** (option a : le message d'erreur reprend l'équation lue, sans souffler la forme réduite).
+- Prod exportée d'abord (`2de-tracer-droites-existants/`) : identique aux fichiers du dépôt hors `status`.
+  Réécriture par script (fichiers du dépôt et instantanés) : `statement` (choix → `tracer:`), `blanks`
+  retirés, `description`, `testSpecs` (pièges de l'ancien choix en specs `incorrect`, un point seul, deux
+  points confondus). `question:specs` : 12/12 et 11/11, 100/100 tirages.
+- Lot **`tracer-droites-2de`** de `update-published-questions.ts`. Simulation contre la prod refusée à
+  Claude par le mode auto : à lancer par David avant le `--publier`.
+- Ligne « droite à tracer : 2-316 et 2-445 » retirée de `docs/wip/outils-manquants.md`.
+- 2-298 (vecteur) : reste au § 61, après le `deploy:prod` de #2274.
+- **#2296 mergée** (CI verte). Lot `textcolor-hors-2de` (§ 63) publié par David le 2026-11-03, relu :
+  27 exportés, `variations` identiques aux instantanés, `hors-maths.py` → 0.
+- Lot `tracer-droites-2de` : simulation (preuve rouge : 8/12 et 7/11 sur le contenu d'avant) puis
+  `--publier` par David le 2026-11-03 ; relu : export identique aux instantanés (variations, specs,
+  description ; titre, niveau, `grades`, `delay`, `status` inchangés).
+
+## 65. Lot `vecteur-tracer` : 2-299 (lire) et 2-298 (tracer), modèles neufs (2026-11-03)
+
+- #2274 en prod (0.66.0). Relevé prod : **0 modèle** tagué 2-298 ni 2-299, aucun modèle non tagué
+  ne fait le geste → le § 61 se trompait : création, pas réécriture.
+- **Phase 0 validée par David** (« je valide », recos suivies) : Géométrie › Vecteurs du plan ›
+  Coordonnées (niveaux 1-4 publiés) ; **2-299 au niveau 5** (lire : flèche AB entre deux points, puis
+  u⃗ seul ; deux cases en colonne), **2-298 au niveau 6** (tracer : origine libre, puis `depuis A`) ;
+  coordonnées 1..4 signées, |a| ≠ |b|, aucune nulle ; repère −6..6 gradué de 1 ; nœud « coordonnées »
+  (`2ad3ea7d`), tags 2-299 / 2-298 par migration après le `--publier`.
+- Script `docs/wip/questions-2de/lot-vecteur-tracer-2de.py` → `scripts/questions/2de-vecteur-tracer/`.
+  Flèches dessinées en ` ```figure ` (`vecteur(A, B)`, `vecteur(a, b, ancre=…)` + `texte` « u⃗ ») :
+  ` ```courbe ` n'a pas de flèche d'affichage. Corrigé de 2-298 : flèche depuis O (origine libre) ou A.
+- `create-questions` (simulation) : 8/8 et 12/12 ; `question:specs` 200/200 tirages ; `sonde-courbes`
+  et `sonde-figures` : 0 problème.
+- **#2304 mergée** (CI verte), le 2026-11-03.
+- Brouillons créés en prod par David le 2026-11-03 : 2-299 `22e8272e`, 2-298 `dd286c93`. Question d'accès :
+  **personne** (confirmé par David). Migration `20261103121554_questions_2de_vecteur_tracer_rangement_tags`
+  (nœud « coordonnées » + tag), test d'intégration rouge sans elle (5/10), vert avec (10/10).
+- PR #2306 ouverte (migration), `security-auditor` : aucun finding.
+- **#2306 mergée** (CI verte après relance d'un job navigateur instable, `wrapDynamicImport`) ;
+  `check:migrations --pr 2306` OK ; `db:migrate` le 2026-11-03 ; vérifié en prod : nœud « coordonnées »,
+  tags 2-299 / 2-298, brouillons, `updated_at` inchangé. Garde des niveaux : aucun manquant.
+- Page à cocher : https://claude.ai/artifact/CdSd9fPLEoRQdPwq6KG3Nb (capacité `db`, collection `verdicts` vide
+  à la publication).
+- Page à cocher relue par David : 2/2 « OK ». `publier-lot` (simulation puis `--publier`) par David le
+  2026-11-03 : 2/2 publiés, relu en base (statut `published`, nœud, tags).
+
+## 66. Lot 9 « Nombres réels, arithmétique, intervalles » : relevé et phase 0 (validée le 2026-11-03)
+
+**Relevé MCP (prod, 2026-11-03)** : 18 points sans modèle, hors P (239-242, 255-259, Q2) : 235, 236, 418, 419,
+237 (arithmétique) ; 243, 247, 248, 422 (ensembles de nombres) ; 407, 252, 246, 251 (intervalles) ; 249, 250
+(droite graduée) ; 421, 253, 254 (encadrements, arrondis). 2-238 est couvert (b0c57a57, lot 3).
+
+- Déjà là, à ne pas refaire : 5b20321f (2-204, brouillon : à quels ensembles appartient ce nombre) ;
+  8c31675a (2-244, brouillon : réunion, intersection d'intervalles) ; collège : faf57d3b (5e, multiples et
+  diviseurs ≤ 100), 9a06de2e (4e, 2n et 2n + 1), 70c52ae9 (4e, nombre rationnel).
+- Outils : ` ```line ` + `placer:` (en prod) ; `segments: [2, +inf[` à crochets (#2294) et geste
+  `representer:` (#2309) **mergés, pas en prod** → les modèles qui s'en servent restent en brouillon jusqu'au
+  `deploy:prod` qui les livre. Case `answerKind: 'intervalles'` en prod. Aucun juge d'encadrement libre.
+
+**Phase 0 proposée** : 18 modèles en trois sous-lots, niveau `['2']`, brouillons ; une PR de fichiers par
+sous-lot, une migration nœud + tag pour les trois.
+
+_9 A — Arithmétique_
+
+1. **2-235 · ℕ et ℤ** : −18/6, 0, 2,5, √16, −√9 ∈ ℕ ? ∈ ℤ ? (case choix, plusieurs bonnes réponses).
+2. **2-236 · Multiple, a = kb** : 391 est-il multiple de 17 ? donner k ; 6n + 9 = 3 × (…) → 2n + 3 ;
+   10n + 15 multiple de 5. Entiers ≤ 1 000.
+3. **2-418 · Diviseurs** : liste des diviseurs de 36, 48, 60, 84 (réponse : ensemble fini) ; « 7 divise-t-il 91 ? ».
+4. **2-419 · Pair, impair** : écrire sous la forme 2k ou 2k + 1 : (2n + 1) + (2m + 1), 2n × (2m + 1),
+   4n + 3 → 2(2n + 1) + 1 ; case choix « pair / impair / ça dépend de n ».
+5. **2-237 · Problèmes** : courts énoncés à une seule notion (nombre de paquets égaux, rangées, deux entiers
+   consécutifs dont la somme est impaire…). Réponse numérique.
+
+_9 B — Ensembles de nombres, intervalles_
+
+6. **2-243 · ℝ et inclusions** : ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ, vrai / faux (« tout décimal est rationnel »…).
+7. **2-247 · 𝔻** : 7/8, 3/20, 1/3, 5/12 décimal ? (dénominateur irréductible en 2 et 5) ; écrire 7/8 en décimal.
+8. **2-248 · ℚ** : écrire 0,125, −2,35, 1,4 comme fraction irréductible.
+9. **2-422 · Irrationnels de la géométrie** : diagonale d'un carré de côté 1, périmètre d'un cercle de
+   diamètre 1 → √2, π ; « ce nombre est-il rationnel ? » (case choix).
+10. **2-407 · Notation** : −2 < x ⩽ 5 → ]−2 ; 5] ; x ⩾ 3 → [3 ; +∞[ ; et l'inverse (intervalle → inégalité).
+    Case `intervalles`.
+11. **2-252 · Appartenance** : 3,99 ∈ [−1 ; 4[ ? 4 ∈ [−1 ; 4[ ? √2 ∈ [1,4 ; 1,5] ? π ∈ ]3,14 ; 3,15[ ?
+12. **2-246 · |x − a| ⩽ r** : |x − 3| ⩽ 2 → [1 ; 5] ; |x + 1| < 3 → ]−4 ; 2[ ; l'inverse ([2 ; 8] → a = 5,
+    r = 3). Sens ⩽ et < seulement (l2-3). Corrigé : distance à a, intervalle dessiné (`segments:`).
+13. **2-251 · Représenter un intervalle** : geste `representer:` sur ` ```line ` — borné, demi-droite, borne
+    comprise ou exclue.
+
+_9 C — Droite graduée, encadrements, arrondis_
+
+14. **2-249 · Lire une abscisse** : ` ```line ` graduée en 0,1, 0,25, 1/3 ; abscisses négatives.
+15. **2-250 · Placer** : `placer:` sur une graduation (décimal, fraction de dénominateur 2, 3, 4, 5).
+16. **2-421 · Encadrement à 10⁻ⁿ près** : x donné par son développement (3,14159…, √2 = 1,41421…) →
+    deux cases, n = 1 à 3.
+17. **2-253 · Amplitude donnée** : encadrer par deux multiples consécutifs de l'amplitude (0,5, 0,2, 0,05),
+    pour que la réponse soit unique.
+18. **2-254 · Chiffres significatifs** : petit problème (aire d'un disque de rayon 3,2 cm, vitesse…) : données
+    à 2 ou 3 chiffres significatifs → résultat arrondi au même nombre.
+
+- **Erreurs typiques en specs** : 0 ∉ ℕ ; −18/6 ∉ ℤ ; 1/3 décimal ; crochet tourné à l'envers pour une borne
+  exclue ; [a − r ; a + r] pris pour [r − a ; r + a] ; encadrement à 10⁻ⁿ arrondi au lieu de tronqué ;
+  arrondi à n décimales au lieu de n chiffres significatifs.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L9-a — Ordre** : 9 A, puis 9 B, puis 9 C, une PR de fichiers chacun ? → Je recommande **oui** ; 9 B et
+  9 C se servent de `segments:` et de `representer:` : ils restent en brouillon jusqu'au `deploy:prod`.
+- **L9-b — 2-253, amplitude donnée** : plusieurs encadrements sont justes (0,6 < 2/3 < 0,7 comme
+  0,65 < 2/3 < 0,75). → Je recommande **des multiples consécutifs de l'amplitude** (réponse unique, aucun juge
+  neuf). L'autre choix demanderait un juge « encadrement » (outil neuf, liste `outils-manquants.md`).
+- **L9-c — 2-237, problèmes** : « modéliser et résoudre » est en partie une compétence (remarque des bornes).
+  → Je recommande **des problèmes courts à réponse numérique**, une seule notion chacun ; pas de
+  démonstration (2-239, 2-240 sont des P).
+- **L9-d — 2-422** : seulement √2 et π (exemples du BO), ou aussi √3, √5 (diagonales, hauteurs) ?
+  → Je recommande **√2, π et √3** (hauteur du triangle équilatéral) : la liste du BO n'est pas limitative.
+
+**Décisions de David (2026-11-03)** : phase 0 validée avec mes quatre recommandations — L9-a 9 A, 9 B, 9 C, une
+PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts à réponse numérique ; L9-d √2,
+π et √3.
+
+## 67. Lot 9 : PR des fichiers (2026-11-03)
+
+- **9 A** : `questions-2de/lot-arithmetique-a-2de.py` → `scripts/questions/2de-arithmetique-a/` (5 modèles,
+  44 specs). 2-235 Logique › Ensembles › Appartenance et inclusion niv. 3 ; 2-236, 2-418 Entiers › Diviser ›
+  Multiples et diviseurs niv. 9, 10 ; 2-419 Calcul littéral › Produire une formule › Pairs et impairs niv. 2 ;
+  2-237 Entiers › Diviser › Problèmes niv. 1. Aperçu local joué. **#2318 mergée.**
+- **9 B** : `questions-2de/lot-ensembles-intervalles-b-2de.py` → `scripts/questions/2de-intervalles-b/` (8 modèles,
+  63 specs). Logique › Ensembles › Ensembles de nombres niv. 1-4 (2-243, 2-247, 2-248, 2-422) ; › Intervalles
+  niv. 1, 3, 4 (2-407, 2-252, 2-251) ; Fonctions › Valeur absolue › Inéquations niv. 1 (2-246). Écart à la
+  phase 0 : 2-243 = « le plus petit ensemble » (5062197a fait déjà le vrai / faux des inclusions). Geste
+  `representer:` joué en local (juste). **#2320 mergée.**
+- **9 C** : `questions-2de/lot-droite-encadrements-c-2de.py` → `scripts/questions/2de-encadrements-c/` (5 modèles).
+  Décimaux › Apprivoiser › Repérage niv. 5, 6 (2-249, 2-250) ; › Encadrer niv. 8, 9 (2-421, 2-253) ; › Arrondir
+  niv. 8 (2-254). Correctif après CI rouge (liste blanche, ci-dessous). **#2321 mergée.**
+- Nœuds des points (prod) : 2-235, 243, 247, 248, 249, 250 → « ℕ, ℤ, 𝔻, ℚ, ℝ » ; 2-236, 418 → « multiples et
+  diviseurs » ; 2-419 → « pair ou impair » ; 2-237 → notion « Divisibilité » ; 2-422 → « nombres irrationnels » ;
+  2-407, 251, 252 → « intervalles » ; 2-246 → « équations et inéquations » (Fonction valeur absolue) ; 2-421,
+  253 → « encadrement » ; 2-254 → « arrondis et ordres de grandeur ».
+- **Pièges** : le geste `placer:` écrit une fraction négative `-5/3`, refusée par la contrainte de forme
+  (`bad_form`) → 2-250 en `constraints.form: off` (aucun modèle en prod concerné) ; la liste blanche des réponses
+  (`student-answer-safety.render.test.ts`) plafonne la profondeur des accolades : un `selon` à 21 cas dans une
+  réponse attendue fait échouer la CI → bornes calculées par `floor` dans `eval`.
+
+## 68. Lot 9 : brouillons en prod, migration nœud + tag (2026-11-03)
+
+- `create-questions --publier` lancé par David : 9 A be39c27d (2-235), fa65910d (2-236), 5e6ce5a3 (2-418),
+  d264f7aa (2-419), 53c55b4a (2-237) ; 9 B bfcbf381 (2-243), d7392618 (2-247), b6ece43a (2-248), 30585711
+  (2-422), b720edd7 (2-407), 98eee50d (2-252), 2069ac7e (2-251), f4a12cab (2-246) ; 9 C a692569a (2-249),
+  3b0a04c0 (2-250), c99ae1e8 (2-421), 7d411132 (2-253), 22b0a9d6 (2-254). Relus en base : brouillons, niveaux
+  prévus, sans nœud.
+- Migration `20261103135331_questions_2de_lot9_rangement_tags` (gabarit vecteur-tracer), test
+  `questions-2de-lot9-rangement-tags.test.ts` : 10 verts, 5 rouges sans la migration. `security-auditor` :
+  aucun finding bloquant (SQL identique au gabarit hors liste et compte). PR #2323.
+- CI de #2323 : « Integration tests » rouge hors du lot (marche-verrou, succes-gidouilles, aussi sur d'autres
+  branches) ; réparation par #2324 (autre session). Pas de merge en rouge.
+
+## 69. Lot 9 : migration jouée, page à cocher (2026-11-03)
+
+- #2323 mise à jour avec `origin/main` (#2322, `safeGetSession`, cause des 15 échecs d'intégration),
+  CI verte, `check:migrations --pr 2323` OK ; merge retardé par le `deploy:prod` 0.67.0 (verrou), puis
+  **#2323 mergée**.
+- `db:migrate` depuis le dépôt principal (à blanc d'abord : seule `20261103135331` à jouer). MCP (prod) :
+  les 18 en `draft`, un nœud, un point chacun.
+- `page-a-cocher.ts` sur les trois dossiers (copie dans le scratchpad, préfixes `a-`/`b-`/`c-`, `.env` de
+  prod) : 18 fiches ; 4 alertes « bloc line non dessiné » (2-246, 2-251, 2-249, 2-250 : à jouer dans
+  l'aperçu), aucune alerte de point, de nœud ou de niveau. Page (capacité `db`, `verdicts` vide) :
+  https://claude.ai/artifact/Rs77PKsCfgBSSYxV8grGxq ; rendu vérifié dans Chrome (pas à 390 px : la fenêtre
+  ne s'est pas redimensionnée).
+
+## 70. Lot 9 publié ; relevé de toute la seconde (2026-11-03)
+
+- Page à cocher relue par David : 18/18 « OK », sans commentaire (ids = ceux du § 68). `publier-lot`
+  (simulation puis `--publier`) lancé par David sur les trois dossiers. MCP (prod) : 18 `published`, un
+  nœud et un point chacun.
+- **Erreur de lecture corrigée** : les « 18 points sans modèle » du § 66 ne valaient que pour la partie 3.4
+  (nombres réels), pas pour la seconde entière.
+- **Relevé MCP (prod) : 115 points de 2de sans modèle publié.** Croisé avec le § 3 :
+  - P (Q2, voulus) : 216, 217, 239-242, 255-259, 282-286, 357 (L7-c), 493, 494, 304, 438, 305-310, 320-324,
+    495, 353, 358-363, 387, 388.
+  - D (Q3, Q6) : 224, 414, 415, 225-227, 231, 234, 230 (Python ; 224, 415 en « compléter la ligne »),
+    452, 454, 351 ; 392 (B ou D).
+  - Lot 10 (ensembles et logique) : sans rien 201, 202, 203, 206, 208, 209, 211, 213, 409, 215, 412 ;
+    brouillons d'avant le chantier seulement 403 (5062197a), 404 (9724dc3d), 405 (0598a535), 406
+    (5676627b), 204 (5b20321f), 205 (db8b5dc8), 207 (0a1ff14f), 210 (219c9470, 6c3ee9e6), 408 (1e9a534f,
+    55341e85), 212 (f98164b1), 410 (e05203b0), 214 (5426cead), 411 (bed58c24) ; et 244 (8c31675a, bug
+    des intervalles accolés, § 2).
+  - Lot 11 (lire un programme) : 218-223, 413, 229, 416, 228, 232, 233, 417.
+  - **Oubliés** (A ou B au § 3, dans aucun lot du § 4) : 263, 424, 264, 425, 276, 427, 277, 428
+    (inégalités, comparaisons) ; 269, 273, 274, 275, 278 (algèbre) ; 287, 433, 288, 289, 290, 291, 292,
+    296, 297 (vecteurs sans coordonnées ; 297 en case choix de figures, Q5) ; 489, 401 (automatismes).
+- Recommandation à David : oubliés d'abord (lot 12 : 12a, 12b), puis lots 10 et 11. En attente.
+
+## 71. Lot 12 a « Inégalités, comparaisons, algèbre » : relevé et phase 0 (proposée le 2026-11-03, à valider)
+
+Ordre tranché par David (2026-11-03) : lot 12 (12 a puis 12 b), puis lot 10, puis lot 11.
+
+**Relevé MCP (prod, 2026-11-03)** : aucun modèle, en aucun statut, sur les 14 points du lot (263, 424, 264, 425,
+276, 427, 277, 428, 269, 273, 274, 275, 278, 489). Voisins à ne pas refaire : 342cff76 (4e, 4-053, comparer avec
+un rapport) ; de146ac1 (2-365, variation absolue V2 − V1) ; 33d8874a (2-272, écritures fractionnaires, dont
+(a/x) ÷ (b/x²)) ; 9723b1e4 (2-326, ensemble de définition d'un quotient) ; 7c0ee046 (2-348, sens de variation
+d'une fonction affine). Sous-notions visées, toutes vides en seconde : Inégalités › règles de calcul,
+› comparaison et encadrement ; Équations : produit et quotient › équation quotient ; Calcul littéral › isoler une
+variable ; Inéquations : premier degré › mettre en inéquation.
+
+- Outils : tout en prod. Réponse « ensemble des solutions » = case `intervalles` (`S = \{…\}`, comme
+  `2de-equations/05`). **Aucun juge d'inéquation** (`answerKind` : intervalles, equation, vecteur, matrice,
+  primitive, solution-ed) → 2-278 en case choix.
+
+**Phase 0 proposée** : 14 modèles en deux sous-lots, niveau `['2']`, brouillons ; une PR de fichiers par
+sous-lot, une migration nœud + tag pour les deux.
+
+_12 a-1 — Inégalités et comparaisons (8 modèles)_
+
+1. **2-263 · Somme d'inégalités** (Inégalités › règles de calcul, niv. 1) : 2 ⩽ a ⩽ 5 et −1 ⩽ b ⩽ 3 → encadrer
+   a + b (deux cases) ; puis a − b = a + (−b) (niv. supérieur dans le modèle). Erreur typique : a − b encadré par
+   2 − (−1) et 5 − 3.
+2. **2-424 · Produit par un réel** (› règles de calcul, niv. 2) : x < 3 ⇒ −2x ? −6 (case choix <, >) ;
+   −1 ⩽ x ⩽ 4 → encadrer −3x + 1 ; corrigé relié à f(x) = −3x + 1 décroissante. Erreur : sens non changé.
+3. **2-264 · Comparer par différence, en calcul** (› comparaison et encadrement, niv. 1) : a = 3/7, b = 5/12 :
+   a − b = ? puis a ? b ; A = x² + 4, B = 4x : A − B = (x − 2)², donc A ⩾ B pour tout x.
+4. **2-425 · Comparer par rapport, en calcul** (› comparaison et encadrement, niv. 2) : nombres > 0 seulement ;
+   a/b = ? puis a ? b (a = 9/8, b = 4/3 ; a = 7 × 10⁵, b = 3,5 × 10⁵…). Erreur : rapport < 1 lu « a > b ».
+5. **2-276 · Comparer deux quantités par leur différence** (› comparaison et encadrement, niv. 3) : deux
+   forfaits (20 € + 0,10 €/min contre 0,25 €/min) pour t minutes donné, deux prix, deux distances.
+6. **2-427 · Comparer deux quantités par leur rapport** (› comparaison et encadrement, niv. 4) : hauteurs, aires,
+   populations > 0 ; « A est ? fois plus … que B ».
+7. **2-277 · Interpréter une différence** (› comparaison et encadrement, niv. 5) : x − y = −12 (salaires,
+   températures, scores) → phrase en case choix (« x est 12 de moins que y »…) + valeur.
+8. **2-428 · Interpréter un rapport** (› comparaison et encadrement, niv. 6) : rapport 1,25 → « 25 % de plus » ;
+   0,8 → « 20 % de moins » ; 2 → « deux fois plus ». Case choix + pourcentage. Erreur : 0,8 lu « 80 % de moins ».
+
+_12 a-2 — Algèbre (6 modèles)_
+
+9. **2-269 · Équation quotient** (Équations : produit et quotient › équation quotient, niv. 1) :
+   (ax + b)/(cx + d) = k, A et B du premier degré, valeur interdite d'abord ; a/x = b (automatisme) ; un cas où
+   la seule solution est la valeur interdite → S = ∅. Réponse `S = \{…\}`.
+10. **2-273 · Isoler une variable dans une formule** (Calcul littéral › isoler une variable, niv. 1) : U = RI,
+    d = vt, V = abc, V = πr²h, P = UI, ρ = m/V (liste du BO, non limitative) ; S = πr² → r = √(S/π) (r > 0).
+    Réponse : expression en case.
+11. **2-274 · ax + by = c** (› isoler une variable, niv. 2) : 2x + 3y = 6 → y = −(2/3)x + 2 ; x en fonction de y.
+12. **2-275 · Choisir la forme** (sous-notion à trancher, L12a-c) : f(x) donnée sous ses deux formes
+    ((x − 1)(x + 3) = x² + 2x − 3) ; f(0) ? f(x) = 0 ? f(x) = −3 ? → quelle forme (case choix), puis la réponse.
+13. **2-278 · Mettre en inéquation** (Inéquations : premier degré › mettre en inéquation, niv. 1) : « au plus »,
+    « au moins », « strictement » → l'inéquation en case choix (distracteurs : sens inversé, large / strict,
+    coefficient mal placé), puis la plus grande ou la plus petite valeur entière.
+14. **2-489 · Calcul littéral multiplicatif** (Calcul littéral › écriture simplifiée, niv. 8) : égalités de la
+    liste du BO : 1/(a/b) = b/a, (a/b)/(c/d) = ad/(bc), x/a = (1/a)x, ab/c = a × (b/c), (−1) × a = −a,
+    0/a = 0. Flash, une case. Pas de doublon avec 33d8874a (calculs enchaînés, 2-272).
+
+- **Erreurs typiques en specs** : sens non changé par un négatif ; a − b mal encadré ; rapport < 1 lu à
+  l'envers ; 0,8 lu « 80 % de moins » ; valeur interdite gardée dans S ; r = S/π sans racine ; « au plus » écrit
+  < ; y = (c − ax)/b laissé non simplifié (accepté : la case juge l'expression, pas la forme).
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L12a-a — Paires de points** : 264 / 276 et 425 / 427 disent presque la même chose. → Je recommande **un
+  modèle par point** : 264, 425 en calcul (nombres, expressions) ; 276, 427 sur des quantités en contexte.
+- **L12a-b — 2-278** : aucun juge d'inéquation. → Je recommande **la case choix** (quatre inéquations) **suivie
+  de la réponse entière**. L'autre choix (l'élève écrit l'inéquation) demande un juge neuf (liste
+  `outils-manquants.md`).
+- **L12a-c — 2-275, sous-notion** : aucune ne dit « choisir la forme ». → Je recommande **Calcul littéral ›
+  factorisation** (niv. 13 ; les niveaux 3 à 12 sont pris). Sinon : une sous-notion neuve « choisir la forme »
+  (migration de l'arbre, à part).
+- **L12a-d — Ordre** : 12 a-1, puis 12 a-2, une PR de fichiers chacun ? → Je recommande **oui**.
+
+**Décisions de David (2026-11-03)** : phase 0 validée avec mes quatre recommandations — L12a-a un modèle par
+point (264, 425 en calcul ; 276, 427 en contexte) ; L12a-b case choix de quatre inéquations puis la valeur
+entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 12 a-1 puis 12 a-2, une PR chacun.
+
+- **Correction des niveaux** : les « niv. » du § 71 sont ceux de la sous-notion ; le niveau d'un modèle est celui
+  de sa **catégorie** (thème, domaine, sous-domaine), relevée en prod le 2026-11-03 : Calcul littéral ›
+  Inégalités (neuf) › Règles de calcul 1, 2 (263, 424) ; › Comparer 1 à 6 (264, 425, 276, 427, 277, 428).
+
+## 72. Lot 12 a-1, PR des fichiers (2026-11-03)
+
+- `questions-2de/lot-inegalites-a1-2de.py` → `scripts/questions/2de-inegalites-a1/` (8 modèles, 49 specs).
+  Calcul littéral › Inégalités › Règles de calcul niv. 1, 2 (2-263, 2-424) ; › Comparer niv. 1 à 6 (2-264,
+  2-425, 2-276, 2-427, 2-277, 2-428). `question:specs` 49/49, 850 tirages ; `create-questions` (simulation,
+  prod) 8 « à créer ». Base locale : 8 brouillons ; aperçu joué (01 juste, 08 faux : « 200 % » pour × 2).
+- Nœuds prévus : 2-263, 424 → Algèbre › Inégalités › règles de calcul ; les six autres → › comparaison et
+  encadrement.
+- Écart à la phase 0 : 2-425, deuxième variation en `u × 10ⁿ` (u entier de 11 à 49), pas en écriture
+  scientifique stricte.
+- **#2352 mergée** (12 a-1).
+
+## 73. Lot 12 a-2, PR des fichiers (2026-11-03)
+
+- `questions-2de/lot-algebre-a2-2de.py` → `scripts/questions/2de-algebre-a2/` (6 modèles, 45 specs). Calcul
+  littéral › Equations › Quotient égal à k niv. 1 (2-269) ; › Transformation › Isoler une variable niv. 1, 2
+  (2-273, 2-274) ; › Transformation › Factorisation niv. 13 (2-275) ; › Inéquations › Mettre en inéquation
+  niv. 1 (2-278) ; › Transformation › Simplification d'écriture niv. 5 (2-489). `question:specs` 45/45, 1 900
+  tirages ; simulation (prod) 6 « à créer » ; base locale : 6 brouillons, aperçu joué (02 juste, 01 faux :
+  S = {−1} pour la valeur interdite, message « −1 ne fait pas partie de l'ensemble »).
+- Nœuds prévus : 2-269 → Équations : produit et quotient › équation quotient ; 2-273, 274 → Calcul littéral ›
+  isoler une variable ; 2-275 → › factorisation ; 2-278 → Inéquations : premier degré › mettre en inéquation ;
+  2-489 → Calcul littéral › écriture simplifiée.
+- **Écart à la phase 0** : 2-274, `(6 − 2x)/3` était refusé (`bad_form`) → `constraints.form: warn` : accepté en
+  `unoptimal_form`, l'élève est invité à écrire la forme réduite.
+- **#2354 mergée** (12 a-2).
+
+## 74. Lot 12 a : brouillons en prod, migration nœud + tag (2026-11-03)
+
+- `create-questions --publier` lancé par David sur les deux dossiers : 12 a-1 57585d68 (2-263), d15b096f (2-424),
+  9660771f (2-264), d8b9e814 (2-425), 5ffcde13 (2-276), 313ae1a2 (2-427), 52516a54 (2-277), 1d25a492 (2-428) ;
+  12 a-2 9ed8c72e (2-269), ec690625 (2-273), d7aa3f33 (2-274), 610a25fb (2-275), ab668c94 (2-278), 36a37542
+  (2-489). Relus en base : brouillons, niveaux prévus, sans nœud.
+- **2-278 : sous-notion « mettre en inéquation » archivée le 2026-10-10** (facette d'activité) ; décision de David
+  (2026-11-03) : modèle sur « Inéquations : premier degré › ax + b < c », point sur la notion.
+- Points sur leur notion (2-275, 2-278, 2-489) : la migration résout le point sur le nœud OU sur sa notion (règle
+  de `question_template_points_check_rules`).
+- Migration `20261103225125_questions_2de_lot12a_rangement_tags` (gabarit du lot 9), test
+  `questions-2de-lot12a-rangement-tags.test.ts` : 10 verts, 5 rouges sans la migration.
+- `security-auditor` : aucun finding bloquant (mesure en prod : 14 brouillons sans nœud ni tag, 14 points actifs).
+  **#2355 mergée** ; `check:migrations --pr 2355` OK ; `db:migrate` depuis le dépôt principal (à blanc : seule
+  `20261103225125`). MCP (prod) : les 14 en `draft`, sur leur nœud, un point chacun, `updated_at` préservé.
+
+## 75. Lot 12 a : page à cocher (2026-11-04)
+
+- `page-a-cocher.ts` sur les deux dossiers (copie dans le scratchpad, préfixes `a1-`/`a2-`, `.env` de prod) :
+  14 fiches, aucune alerte. Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/SWKNyEvkVTR8PF6E19cPKb
+
+## 76. Lot 12 a publié (2026-11-04)
+
+- Page à cocher relue par David : 14/14 « ok », sans commentaire. `publier-lot` (simulation puis
+  `--publier`) lancé par David sur `2de-inegalites-a1` et `2de-algebre-a2` ; un premier essai n'avait rien
+  écrit (MCP : 14 `draft`), le second oui. MCP (prod) : 14/14 `published`.
+
+## 77. Lot 12 b « Vecteurs sans coordonnées, périmètre » : relevé et phase 0 (proposée le 2026-11-04, à valider)
+
+2-489 a été fait au 12 a (modèle 14) : le 12 b couvre 287, 433, 288, 289, 290, 291, 292, 296, 297 et 401.
+
+**Relevé MCP (prod, 2026-11-04)** : aucun modèle, en aucun statut, sur les 10 points. Nœuds des points :
+Géométrie › Vecteurs › égalité de vecteurs (287, 433, 288), › produit par un réel (289), › colinéarité (290),
+› combinaison linéaire (291), › coordonnées (292), › somme et relation de Chasles (297) ; 296 sur la notion
+Vecteurs ; 401 sur la notion Grandeurs et mesures › Périmètres (sous-notions : carré, rectangle, disque).
+Voisins à ne pas refaire : ff3bd841 (3e, 3-025, égaux / opposés / nul, case choix entre 4 flèches) ;
+787cc937 (3e, 3-026, somme de deux vecteurs, case choix) ; 59f818c4 (2-302, coordonnées du milieu) ; 930711ec,
+84227334 (colinéarité par le déterminant) ; 060086c8, 66f9abbf (6e, périmètre du carré, du rectangle).
+Catégories de seconde : Géométrie › Vecteurs du plan › Colinéarité 1-4, Coordonnées 1-6, Milieu 1 prises.
+
+- Outils : tout en prod. Flèches en ` ```figure ` sur quadrillage (`vecteur(A, B)`, comme `2de-vecteur-tracer`) ;
+  geste ` ```courbe tracer: vecteur ` + `depuis A` en prod depuis la 0.66.0 (2-298, `dd286c93`) → **la
+  décision Q5 (case choix « pour l'instant ») est dépassée pour 2-297**.
+
+**Phase 0 proposée** : 10 modèles en deux sous-lots, niveau `['2']`, brouillons ; une PR de fichiers par
+sous-lot, une migration nœud + tag pour les deux.
+
+_12 b-1 — Égalité, représentants, milieu, somme (5 modèles)_
+
+1. **2-287 · Égalité de deux vecteurs** (Vecteurs › égalité de vecteurs ; Vecteurs du plan › Égalité, niv. 1) :
+   flèches u⃗, v⃗, w⃗, t⃗ sur quadrillage → « quel vecteur est égal à u⃗ ? » (case choix) ; parallélogramme
+   ABCD → AB⃗ = ? (DC⃗ ; distracteurs CD⃗, BC⃗, AD⃗). Erreurs : sens inversé, même longueur autre direction.
+2. **2-433 · Vecteur nul** (› égalité de vecteurs ; Égalité, niv. 2) : AA⃗ = ? ; AB⃗ + BA⃗ = ? ; « AB⃗ = 0⃗
+   signifie… » (A = B) ; case choix. Erreur : AB⃗ + BA⃗ = 2AB⃗.
+3. **2-288 · Représentants** (› égalité de vecteurs ; Égalité, niv. 3) : u⃗ dessiné, point C ; « le point D tel
+   que CD⃗ = u⃗ est… » (points E, F, G, H nommés sur le quadrillage, case choix) ; puis l'origine connaissant
+   l'extrémité. Erreur : DC⃗ = u⃗ (sens).
+4. **2-296 · Milieu, vectoriel** (sous-notion à trancher, L12b-b ; Vecteurs du plan › Milieu, niv. 2) :
+   « I milieu de [AB] ⇔ … » (AI⃗ = IB⃗ ; distracteurs AI⃗ = BI⃗, IA⃗ = IB⃗, AB⃗ = AI⃗) ; AB⃗ = k·AI⃗ → k = 2 ;
+   IA⃗ + IB⃗ = ? (0⃗). Pas de formule de coordonnées (approfondissement, décision l2-8).
+5. **2-297 · Représenter la somme** (› somme et relation de Chasles ; Vecteurs du plan › Somme, niv. 1) :
+   u⃗ et v⃗ dessinés depuis A ; l'élève **trace** u⃗ + v⃗ `depuis A` (geste, L12b-a) ; corrigé : le
+   parallélogramme. Coordonnées 1..3 signées, somme non nulle. Erreur : u⃗ − v⃗, u⃗ seul.
+
+_12 b-2 — Produit, colinéarité, combinaison, base ; périmètre (5 modèles)_
+
+6. **2-289 · Produit par un réel** (› produit par un réel ; Vecteurs du plan › Produit par un réel, niv. 1) :
+   u⃗ dessiné → « quelle flèche représente 2u⃗ ? −u⃗ ? ½u⃗ ? » (case choix) ; v⃗ = k·u⃗ dessinés → k = ?
+   (k ∈ {−3, −2, −½, ½, 2, 3}, une case). Erreur : signe de k oublié.
+7. **2-290 · Colinéarité, sur la figure** (› colinéarité ; Colinéarité, niv. 5) : « parmi ces flèches,
+   lesquelles sont colinéaires à u⃗ ? » ; « u⃗ = −3v⃗ : u⃗ et v⃗ sont… » (colinéaires de sens contraires).
+   Sans coordonnées : le critère par le déterminant est déjà 930711ec, 84227334.
+8. **2-291 · Combinaison de deux vecteurs** (› combinaison linéaire ; Vecteurs du plan › Combinaison, niv. 1) :
+   i⃗, j⃗ non colinéaires (pas forcément orthogonaux) et w⃗ sur quadrillage → w⃗ = x i⃗ + y j⃗, deux cases ;
+   x, y entiers de −3 à 3, non tous deux nuls. Erreur : x et y échangés.
+9. **2-292 · Base orthonormée** (› coordonnées ; Coordonnées, niv. 7) : couple (i⃗, j⃗) dessiné → orthonormée,
+   orthogonale non normée, ou ni l'une ni l'autre (case choix). Erreur : orthogonale lue orthonormée.
+10. **2-401 · Périmètre d'un polygone** (nœud à trancher, L12b-c ; Grandeurs › Périmètres › Polygone, niv. 1) :
+    polygone dessiné, longueurs écrites (triangle, quadrilatère, pentagone ; décimaux à un chiffre) ; polygone
+    régulier dont un côté est donné ; puis unités mêlées (cm et mm). Réponse en case, unité imposée.
+    Automatisme : calcul de tête ou posé court.
+
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L12b-a — 2-297** : le geste « tracer un vecteur » est en prod (2-298). → Je recommande **le geste**
+  (l'élève trace u⃗ + v⃗ depuis A) plutôt que la case choix entre figures de Q5.
+- **L12b-b — 2-296, sous-notion** : le point est sur la notion Vecteurs. → Je recommande **égalité de vecteurs**
+  (I milieu ⇔ AI⃗ = IB⃗). Sinon : coordonnées, où vit 59f818c4.
+- **L12b-c — 2-401, nœud** : aucune sous-notion « polygone » sous Périmètres. → Je recommande **la notion
+  Périmètres elle-même** (le point y est). Sinon : une sous-notion neuve « polygone » (migration de l'arbre).
+- **L12b-d — Ordre** : 12 b-1 puis 12 b-2, une PR de fichiers chacun ? → Je recommande **oui**.
+
+**Décisions de David (2026-11-04)** : phase 0 validée avec mes quatre recommandations (« je suis tes
+recos ») — L12b-a 2-297 au geste « tracer un vecteur » ; L12b-b 2-296 rangé sous Vecteurs › égalité de
+vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12 b-1 puis 12 b-2, une PR chacun.
+
+## 78. Lot 12 b-1, fichiers (2026-11-04)
+
+- `questions-2de/lot-vecteurs-c1-2de.py` → `scripts/questions/2de-vecteurs-c1/` (5 modèles, 43 specs).
+  Catégories : Géométrie › Vecteurs du plan › Égalité 1, 2, 3 (287, 433, 288), › Milieu 2 (296), › Somme 1
+  (297).
+- Flèches à reconnaître (287, 288) : la bonne change de case à chaque tirage (décalage `p`, rôles par
+  indicatrices, rang = (n − p)·min(p, 1)). Rôles de 287 : égal, opposé, coordonnées échangées, symétrique,
+  quart de tour ; |a| ≠ |b| les rend tous distincts.
+- 2-297 : ` ```courbe ` n'a pas de flèche d'affichage → u⃗ = AB⃗ et v⃗ = AC⃗ donnés par `points: A, B, C`,
+  geste `tracer: vecteur (…) depuis A` ; le corrigé dessine le parallélogramme ABDC (` ```figure `).
+- Joué en local (aperçu admin, Chrome) : deux corrections faites — étiquette de B hors cadre dans le
+  parallélogramme (fenêtre −1..11 × −1..10) ; points de 288 renommés K et P, Q, R, S (C et E-H se
+  mélangeaient aux lettres A-D des cases choix) ; « 3 + (2) » → `{{eval:c;+}}`. Fraction 1/2 acceptée.
+- `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ; `sonde-figures`
+  et `sonde-courbes` : 0 problème. Base locale : `-3..3` au lieu de `0..3;±` (refusé par le tirage).
+- **#2367 mergée** (CI verte) le 2026-11-04.
+- Brouillons créés en prod par David le 2026-11-04 : 2-287 `ac50c946`, 2-433 `2228d79e`, 2-288 `7d07b0c2`,
+  2-296 `37a1b7ab`, 2-297 `51192dc4` (MCP : 5 `draft`, sans nœud ni tag). Migration
+  `20261103235826_questions_2de_lot12b1_rangement_tags` (gabarit du 12 a), test d'intégration rouge sans
+  elle (3 échecs, 5 sautés sur 10), vert avec (10/10).
+
+- PR #2368 (migration), `security-auditor` : aucun finding bloquant. **#2368 mergée** (CI verte, intégration
+  comprise) ; `check:migrations --pr 2368` OK ; `db:migrate` le 2026-11-04 ; vérifié en prod : 5 brouillons
+  sur leur nœud, un point chacun, `updated_at` inchangé.
+- Page à cocher (5 fiches, aucune alerte ; capacité `db`, `verdicts` vide à la publication) :
+  https://claude.ai/artifact/5HjYJpnuyzEhYansfXYNBq
+- Page à cocher relue par David : 5/5 « ok », sans commentaire (ids du rangement). `publier-lot`
+  (simulation puis `--publier`) lancé par David ; MCP (prod) : 5/5 `published`, nœud et tag chacun.
+
+## 79. Lot 12 b-2, fichiers (2026-11-04)
+
+- `questions-2de/lot-vecteurs-c2-2de.py` → `scripts/questions/2de-vecteurs-c2/` (5 modèles, 45 specs).
+  Catégories (relevées en prod, libres) : Géométrie › Vecteurs du plan › Produit par un réel 1 (289),
+  › Colinéarité 5 (290), › Combinaison 1 (291), › Coordonnées 7 (292) ; Grandeurs › Périmètres ›
+  « Périmètre d'un polygone » 1 (401), nommée comme ses sœurs (« Périmètre d'un carré »…), au lieu de
+  « Polygone » écrit au § 77.
+- 289 et 290 : flèches à reconnaître, même mécanique que le 12 b-1 (décalage `p`). 289 : k ∈ {±2, ±3}
+  (k = −1 confondrait deux rôles) ; puis k lu sur la figure, k ∈ {−3, −2, −½, ½, 2, 3}. 290 : la
+  colinéaire est c·u⃗, c ∈ {−2, −1, 2} ; puis « u⃗ = kv⃗ : même sens / sens contraires ».
+- 291 : x, y de −3 à 3, **non nuls** (écart au § 77, « non tous deux nuls ») : le corrigé dessine le
+  chemin x·i⃗ puis y·j⃗, sans flèche nulle. Fenêtre du corrigé calculée sur le chemin.
+- 292 : sur quadrillage, une base orthonormée tirée est toujours sur les axes (seuls vecteurs entiers de
+  norme 1) ; une orthogonale peut l'être aussi ((1 ; 0), (0 ; 2)). Deuxième variation : normes et angle
+  donnés. Normes du corrigé simplifiées par `eval` (√2, 2√2).
+- 401 : triangle, quadrilatère, pentagone (figures irrégulières, « pas en vraie grandeur »), polygone
+  régulier (5, 6, 8 côtés), longueurs en cm et en mm. 13,30 noté « forme non optimale » (`zeros`).
+- Joué en local (aperçu admin, Chrome) : corrections faites — pentagone et quadrilatère d'allure
+  régulière redessinés ; fenêtres de 291 et 292 resserrées (flèches d'un carreau illisibles) ; « −1u⃗ »,
+  « 1i⃗ » → −u⃗, i⃗ ; « v⃗ plus courte » → « plus court » ; texte de 290 corrigé (« même longueur ou
+  presque » faux pour c = ±2).
+- `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ;
+  `sonde-figures` : 0 problème ; `validateLatex` + accolades sur 2 189 formules (40 aperçus par modèle) :
+  0 problème hors `\unit` (macro de l'appli, rendu vérifié à l'écran).
+- **#2375 mergée** (CI verte) le 2026-11-04.
+
+## 80. Lot 12 b-2, brouillons en prod et migration nœud + tag (2026-11-05)
+
+- `create-questions --publier` lancé par David. Ids en prod : 06 `8d099a87` (2-289), 07 `da5554a9` (2-290),
+  08 `1422eeb1` (2-291), 09 `09007e44` (2-292), 10 `11bce2bf` (2-401). Relevé MCP : 5 brouillons, sans
+  nœud ni tag ; chaque point est sur le nœud visé (401 sur la notion Grandeurs et mesures › Périmètres).
+- Migration `20261105055243_questions_2de_lot12b2_rangement_tags` (gabarit 12 b-1 ; 401 sur une notion,
+  `sous_notion` nulle). Test d'intégration rouge sans la migration, 10/10 avec. `security-auditor` : aucun
+  point bloquant ; deux remarques pour les prochains lots : pas de garde `count = 1` par chemin (hérité),
+  pas de test d'échec propre à la branche notion. `check:migrations --pr 2389` : exit 0.
+- ⚠️ **#2389 mergée avec la CI en rouge** : `gh pr merge` enchaîné par `;` derrière la lecture des checks.
+  Seul échec : la garde « doc à jour » (`Doc-inchangée:` mis dans le corps de la PR au lieu du commit).
+  Contenu mergé sans défaut ; la garde ne tourne que sur les PR, `main` n'en souffre pas.
+- `db:migrate` suspendu : `20261105055111_questions_cp060_rangement_tag` (#2388, autre session) attend
+  aussi en prod et partirait avec la nôtre.
+- `db:migrate` lancé par David depuis le dépôt principal (avec `055111` CP-060 et `060921` 1re spé).
+  MCP (prod) : migration enregistrée ; 5 brouillons sur leur nœud, un point chacun, `updated_at` inchangé
+  (heure de création).
+- Page à cocher (`page-a-cocher.ts`, `.env` de prod ; 5 fiches, aucune alerte ; capacité `db`, `verdicts`
+  vide à la publication) : https://claude.ai/artifact/EkrPRK4N89X3vXS8fmXu1V
+
+## 81. Lot 12 b-2 publié (2026-11-05)
+
+- Page à cocher relue par David : 5/5 « ok », sans commentaire (ids du § 80). `publier-lot`
+  (simulation puis `--publier`) lancé par David ; MCP (prod) : 5/5 `published` (niveaux 1, 5, 1, 7, 1).
+
+## 82. Lot 10 « Ensembles et logique » : relevé et phase 0 (2026-11-05, validée)
+
+**Relevé MCP (prod, 2026-11-05)** : 11 points sans aucun modèle (201, 202, 203, 206, 208, 209, 211, 213,
+409, 215, 412) ; 16 anciens brouillons, tous rangés et tagués (§ 70) : 5062197a (403), 9724dc3d (404),
+0598a535 (405), 5676627b (406), 5b20321f (204), db8b5dc8 (205), 0a1ff14f (207), 219c9470 et 6c3ee9e6
+(210), 1e9a534f et 55341e85 (408), f98164b1 (212), e05203b0 (410), 5426cead (214), bed58c24 (411),
+8c31675a (244, corrigé au lot 1). 5062197a et 5b20321f ont encore `grades = {2, 1_SPE}` (Q7 c : `['2']`
+seul). Voisins de 1re, publiés, à ne pas refaire : 0ab3faa5 (nier une proposition, 1SPE-204), dd9a33b7
+(quantification implicite, 1SPE-203), 93f9ecdf (type de raisonnement), e5205176 (CN / CS).
+Sous-notions vides en prod : Opérations › union et intersection ; Implication et équivalence ›
+implication, › équivalence, › réciproque, › contraposée.
+
+**Phase 0 proposée** : 11 modèles neufs, niveau `['2']`, brouillons, BO « en situation » : propositions
+tirées des chapitres de 2de (intervalles, équations, parité, géométrie), jamais de logique formelle.
+
+_10 A — Ensembles (4)_
+
+1. **2-201 · Appartenance** (Ensembles de nombres › appartenance et inclusion) : 3 … E (E en extension,
+   diviseurs de n, intervalle, ℕ) → case choix ∈ / ∉ ; puis écrire en extension {entiers de [−2 ; 3[}.
+   Erreurs : borne ouverte comptée ; ∈ confondu avec ⊂ ({3} ∈ E).
+2. **2-202 · Ensemble vide** : S de x² = −4, de 2x + 1 = 2x + 3, A ∩ B disjoints → `S = ∅` ; case choix
+   ∅ / {0} / {∅} / 0. Erreur : {0} pris pour ∅.
+3. **2-203 · Le bon symbole** : compléter « 3 … ℕ », « {3} … ℕ », « ℕ … ℤ », « [1 ; 4] … [2 ; 6] = [2 ; 4] »
+   par ∈, ⊂, ∩, ∪ (case choix par trou). Erreur : ∈ / ⊂ échangés.
+4. **2-206 · Notations Ā et E \ A** : dé, urne, E = {1 ; … ; 10} ; A en mots (« pair », « multiple de 3 ») →
+   Ā en extension ; E \ A lu comme Ā. Pas de doublon avec 5676627b (diviseurs, sans contexte de probas).
+
+_10 B — Logique (7)_
+
+5. **2-208 · Proposition ou non ?** : « 3 + 2 = 6 » (proposition, fausse), « x + 2 » (non), « Résoudre
+   2x = 4 » (non), « tout carré est un losange » (vraie) → case choix ; puis vrai / faux.
+6. **2-209 · Écrire avec une variable** : « le carré d'un réel est positif » → « pour tout réel x, x² ⩾ 0 » ;
+   « n est pair » → « il existe un entier k tel que n = 2k » (case choix, distracteurs : variable mal
+   quantifiée, k réel).
+7. **2-211 · Négation** : x > 3 → x ⩽ 3 (case ; erreur x < 3) ; « le triangle est rectangle », « n est
+   pair » → phrases en case choix. Sans « et / ou » (niveau de 1re, 0ab3faa5) : à trancher (L10-c).
+8. **2-213 · Formuler une implication** : propriété du cours (« un rectangle a des diagonales de même
+   longueur ») → « Si …, alors … » en case choix (distracteur : la réciproque) ; puis x = 2 ⇒ x² = 4 :
+   quel sens est vrai ?
+9. **2-409 · Équivalence** : relier deux propositions par ⇒, ⇐ ou ⇔ (x² = 9 et x = 3 ; 2x + 1 = 7 et
+   x = 3 ; ABCD carré et ABCD losange). Erreur : ⇔ mis partout.
+10. **2-215 · « Pour tout »** : proposition universelle en mots (« pour tout réel x, x² ⩾ x ») → vrai / faux,
+    puis reformuler une phrase du cours. Le contre-exemple reste à f98164b1 (2-212).
+11. **2-412 · « Il existe »** : « il existe un entier n tel que n² = 2n + 3 » → vrai / faux ; puis donner un
+    tel nombre (tout exemple valable accepté, comme f98164b1).
+
+**Questions** :
+
+- **L10-a — Anciens brouillons** : les 16 sur la page à cocher du lot et publiés avec lui (comme L8-d),
+  `grades` de 5062197a et 5b20321f ramenés à `['2']` dans la migration de rangement ? → je recommande oui.
+- **L10-b — Découpage** : 10 A (4) puis 10 B (7), une PR de fichiers chacun, une migration nœud + tag pour
+  les deux, une page à cocher (11 + 16) ? → je recommande oui.
+- **L10-c — Négation de « et », « ou »** (non A ou non B) : BO 2de « propositions simples » ; en 1re
+  (0ab3faa5). Une variation de niveau élevé dans 2-211, ou rien ? → je recommande **rien** en 2de.
+- **L10-d — Symboles ⇒, ⇔** : le BO 2de ne les liste pas (seuls ∀, ∃ sont dits hors programme). Dans
+  2-409 : symboles ⇒ / ⇔, ou mots (« implique », « équivaut à ») ? → je recommande **les mots dans
+  l'énoncé, les symboles dans le corrigé**.
+
+**Réponse de David (2026-11-05)** : « je te suis » → phase 0 validée, L10-a à L10-d selon mes
+recommandations (16 anciens sur la page et publiés avec le lot, `grades` ramenés à `['2']` ; 10 A puis
+10 B ; pas de négation de « et / ou » ; les mots dans l'énoncé, ⇒ / ⇔ dans le corrigé seulement).
+
+## 83. Lot 10 A, fichiers (2026-11-05)
+
+- `questions-2de/lot-ensembles-10a-2de.py` → `scripts/questions/2de-ensembles-10a/` (4 modèles, 42 specs) :
+  2-201 « Élément d'un ensemble, appartenance » (niv. 3), 2-202 « L'ensemble vide » (niv. 1), 2-203
+  « Le bon symbole : ∈, ⊂, ∩, ∪ » (niv. 4), 2-206 « Notations Ā et E \ A » (niv. 1).
+- Nœuds visés (relevés en prod) : 201 et 203 → Ensembles › Ensembles de nombres › appartenance et
+  inclusion ; 202 → Ensembles › Opérations sur les ensembles (notion, sous-notion nulle) ; 206 →
+  › Opérations sur les ensembles › complémentaire.
+- Pièges : un ensemble fini en réponse veut `answerKind: intervalles` (sans lui, `\{1;3;5\}` et
+  `\varnothing` partent en `bad_form`) ; `?` dans `$…$` = une case (« … » à la place) ;
+  `\leqslantn` sans espace ; lettre d'ensemble / d'événement = étiquette de choix (E, A) → F, M.
+- Les lettres capitales des formules sont rendues droites (E, F, A…) dans l'appli, comme dans les
+  anciens brouillons : rien changé.
+- `question:specs` 4/4 importables ; `create-questions` (simulation prod) 4 à créer ; `validateLatex` +
+  accolades : 3 058 formules, 0 problème. Joués en local (aperçu admin, Chrome) : `{4;5;6}` tapé au
+  clavier « juste » ; ∅ par le clavier « Intervalles » « juste » ; cases multiples « juste ».
+- PR #2399.
+
+## 84. Lot 10 A en brouillon en prod ; lot 10 B, fichiers (2026-11-05)
+
+- #2399 mergée. David a lancé `create-questions --publier` sur `2de-ensembles-10a` : 99af2696 (2-201),
+  e7db99fc (2-202), c22d387e (2-203), 994437aa (2-206), en brouillon, `grades = ['2']` (vérifié au MCP).
+  Ids commités sur la branche du 10 B.
+- `questions-2de/lot-logique-10b-2de.py` → `scripts/questions/2de-logique-10b/` (7 modèles, 67 specs) ;
+  nœuds visés (relevés en prod) et niveaux libres : 208 → Logique › Proposition mathématique (notion,
+  niv. 1) ; 209 → › statut des lettres et des égalités (niv. 2) ; 211 → Quantificateurs et négation ›
+  négation d'une proposition (niv. 1) ; 215 et 412 → › pour tout, il existe (niv. 1 et 2) ; 213 →
+  Implication et équivalence › implication (niv. 1) ; 409 → › équivalence (niv. 1).
+- Pièges : aucune réponse « inégalité » dans le moteur → négation de « x > a » en case choix ; cases
+  multiples incomplètes = `unoptimal_form` (pas `incorrect`) ; « donne un tel entier » = règle
+  `equation_root` (`variable: 'n'`) ; `(d')` signalé par `validateLatex` mais bien rendu par KaTeX.
+- Contrôles : 7/7 importables ; simulation prod 7 à créer ; LaTeX 150 tirages par modèle, 882 formules.
+  Joués en local : négation « juste » ; « il existe » avec −4 (réponse stockée 5) « juste ».
+- PR #2402.
+
+## 85. Lot 10 B en brouillon, rangement du lot 10, page à cocher (2026-11-05)
+
+- David a lancé `create-questions --publier` sur `2de-logique-10b` : fa39b703 (2-208), 9207c6e6 (2-209),
+  c4e19f99 (2-211), 214f7500 (2-213), 75d0fc89 (2-409), 61d0571e (2-215), 24fd6a10 (2-412) ; MCP : brouillons,
+  `grades = ['2']`, sans nœud ni tag.
+- Migration `20261105194635_questions_2de_lot10_rangement_tags` (gabarit 12 b-2) : 11 nœuds + tags, et
+  5062197a, 5b20321f de {2, 1_SPE} à {2} (L10-a, garde « niveaux encore ceux du relevé », rollback filtré
+  sur `{2}`). **Écart au § 83** : c22d387e (2-203) va sur la notion « Opérations sur les ensembles » (où est
+  posé 2-203) et non sur « appartenance et inclusion » : la base refuse un point hors du nœud ou de sa notion.
+- Garde « un chemin = un nœud » (remarque du 12 b-2) inutile : l'index `classification_nodes_sibling_name_key`
+  rend le nom unique parmi les frères ; test d'échec de la branche « notion » ajouté (notion renommée).
+- Test d'intégration 14/14, 8 rouges sans le corps de la migration ; `security-auditor` : aucun finding
+  bloquant (2 anciens = 0 tentative, 0 carte SRS en prod ; ils sortent seulement du filtre « 1re » de l'admin).
+  **#2403 mergée**, `db:migrate` lancé (seule migration en attente) ; MCP : 11 sur leur nœud, un point
+  chacun, 2 anciens en `{2}`, `updated_at` inchangés.
+- Page à cocher : 16 anciens exportés (`export-question-templates.ts`) dans le scratchpad, préfixes `a-` /
+  `b-` / `c-ancien-` ; 27 fiches, aucune alerte ; capacité `db`, `verdicts` vide à la publication.
+
+## 86. Lot 10 publié (2026-11-05)
+
+- Page à cocher relue par David : 27/27 « ok », sans commentaire ; ids = les 11 neufs (§ 84-85) et les 16
+  anciens exportés (§ 85). `publier-lot` (simulation puis `--publier`) lancé par David sur
+  `2de-ensembles-10a`, `2de-logique-10b` et le dossier des anciens ; MCP (prod) : 27/27 `published`.
+
+## 87. Lot 11 « Lire un programme » : relevé et phase 0 (2026-11-05, validée)
+
+**Relevé MCP (prod, 2026-11-05)** : aucun modèle, en aucun statut, sur les 13 points du lot (218-223, 413,
+229, 416, 228, 232, 233, 417) ni sur 224 et 415 (« compléter la ligne », Q3). Voisins à ne pas refaire :
+1re spé, publiés, tous en Python : 5192e88a (moyenne d'un échantillon, **avec liste**, Statistiques ›
+Échantillonnage › simulation), 19961e67 (seuil, `while`), 31a77ba9 (terme d'une suite) ; 4e / 3e en Scratch
+(20cb9b55, 962da675, 8b6f9e98, 6c9c9649, 9f9bddbd, 4ce8eb3c). Forme reprise de la 1re : code en
+` ```python `, question en case (`$?$`) ou en case choix (lignes de code entre accent graves).
+Nœuds (prod) : Algorithmique › Variables et instructions › types (be9a1d55, vide), › variables et affectation
+(151ff8c9), › instructions conditionnelles (195147df) ; › Boucles › boucle bornée (62ad4a4b, vide), › boucle
+non bornée (04da83a6) ; › Fonctions Python › définir une fonction (9b78f06c, vide), › appeler une fonction
+(49cf382a, vide) ; Statistiques › Indicateurs › moyenne (7855ef87), › écart-type (984cf553).
+
+**Phase 0 proposée** : 15 modèles neufs, niveau `['2']`, brouillons. Python seulement (le BO : « langage
+naturel ↔ Python » pour l'affectation), **aucune liste** (BO), entiers petits, programmes de 3 à 8 lignes.
+
+_11 A — Variables et instructions (8)_
+
+1. **2-218 · Type d'une variable** (types) : `x = 7`, `x = 7.0`, `x = 7 / 2`, `x = 6 / 2`, `x = "7"`,
+   `x = 3 < 5` → `int`, `float`, `str`, `bool` en case choix. Erreurs : `6 / 2` pris pour un entier ;
+   `"7"` pris pour un nombre.
+2. **2-223 · Choisir le type** (types) : situation (« nombre d'élèves », « prix en euros », « nom de la
+   ville », « moyenne d'une classe ») → entier, flottant, chaîne en case choix (pas de booléen, borne du BO).
+3. **2-219 · Affectation** (variables et affectation) : algorithme en langage naturel `a ← 3`, `b ← a + 2`,
+   `a ← 2 × b` → valeur finale de `a` (case) ; puis la traduction Python de `a ← a + 1` en case choix
+   (distracteurs `a + 1 = a`, `a == a + 1`).
+4. **2-220 · Séquence d'instructions** (variables et affectation) : 3 à 5 affectations en Python, valeur
+   d'une variable à la fin (case). Erreur typique : l'échange `a = b` puis `b = a` (les deux valent b).
+5. **2-224 · Compléter une affectation** (variables et affectation) : programme de calcul donné en mots,
+   une ligne `...` à compléter en case choix (`y = 3 * x + 2` contre `y = 3 * (x + 2)`, `3x + 2`).
+6. **2-221 · Instruction conditionnelle** (instructions conditionnelles) : `if … else` (puis `elif`, niv. 2)
+   → valeur affichée pour une entrée donnée (case). Erreur : les deux branches exécutées ; `<` lu `<=`
+   sur la valeur frontière.
+7. **2-415 · Compléter une condition** (instructions conditionnelles) : tarif / seuil en mots, condition
+   `if ... :` à compléter en case choix (`x >= 18`, `x > 18`, `x = 18`, `x <= 18`).
+8. **2-222 · Boucle bornée** (boucle bornée) : `for i in range(n)` puis `range(1, n)`, `range(a, b)` →
+   valeur finale (somme, produit, compteur, case). Erreur : `range(n)` compté de 1 à n.
+9. **2-413 · Boucle non bornée** (boucle non bornée) : `while` avec compteur (capital qui double, somme qui
+   dépasse un seuil) → valeur de `n` ou de la variable à la fin (case). Sans suite (c'est la 1re, 19961e67).
+10. **2-228 · Programme plus complexe** (notion Variables et instructions) : boucle + condition (compter
+    les multiples de 3 jusqu'à n, somme des pairs) → valeur (case) ; puis « que faut-il modifier pour
+    obtenir … ? » en case choix.
+
+_11 B — Fonctions (5)_
+
+11. **2-229 · Fonction à un ou plusieurs arguments** (définir une fonction) : `def aire(L, l):`,
+    `def f(x):` → nombre d'arguments, valeur de `aire(5, 3)` (case). Erreur : arguments inversés quand
+    l'ordre compte (`def d(a, b): return a - b`).
+12. **2-416 · Appeler une fonction** (appeler une fonction) : `y = f(2) + f(3)`, `f(f(1))` → valeur (case) ;
+    quelle instruction calcule l'image de 5 en case choix (`f(5)`, `f = 5`, `def f(5)`, `f[5]`).
+13. **2-232 · Fonction plus complexe** (définir une fonction) : fonction avec boucle et condition (nombre de
+    diviseurs, plus petit entier qui dépasse) → valeur renvoyée (case) ; compléter une ligne (case choix).
+14. **2-233 · Fonction moyenne** (Statistiques › Indicateurs › moyenne ou Algorithmique, L11-b) : sans liste,
+    `def moyenne(a, b, c, d)` ou boucle `for` sur des tirages → valeur renvoyée (case, décimal accepté) ;
+    « que renvoie cette fonction ? » (moyenne, somme, effectif) en case choix.
+15. **2-417 · Fonction écart type** (› écart-type ou Algorithmique, L11-b) : `from math import sqrt`, sommes
+    `s` et `s2` dans une boucle, `return sqrt(s2 / n - m ** 2)` → « que renvoie-t-elle ? » (écart type,
+    variance, moyenne) en case choix ; puis valeur pour quatre arguments choisis pour un écart type entier
+    (m − d, m − d, m + d, m + d → d).
+
+**Questions** :
+
+- **L11-a — 224 et 415** (« compléter une affectation / une condition », Q3) : dans ce lot, en case choix ?
+  → je recommande **oui** (15 modèles au lieu de 13).
+- **L11-b — Rangement de 233 et 417** : Algorithmique › Fonctions Python › définir une fonction, ou
+  Statistiques › Indicateurs › moyenne / écart-type ? → je recommande **Algorithmique** (le point est
+  « lire une fonction », sous la rubrique Algorithmique du BO ; la 1re a fait l'inverse, mais pour une
+  simulation).
+- **L11-c — Découpage** : 11 A (10) puis 11 B (5), une PR de fichiers chacun, une migration nœud + tag pour
+  les deux, une page à cocher (15) ? → je recommande oui.
+- **L11-d — Langage naturel (←)** : seulement dans 2-219, ou un algorithme en langage naturel dans quelques
+  variations des autres modèles ? → je recommande **2-219 seul** (le reste en Python, comme les sujets).
+
+**Réponse de David (2026-11-05)** : « je te suis » → phase 0 validée, L11-a à L11-d selon mes
+recommandations (224 et 415 dans le lot ; 233 et 417 sous Algorithmique › Fonctions Python ; 11 A puis 11 B,
+une migration, une page à cocher ; ← seulement dans 2-219).
+
+## 88. Lot 11 A, fichiers (2026-11-05)
+
+- `questions-2de/lot-programmes-11a-2de.py` → `scripts/questions/2de-programmes-11a/` (10 modèles, 73 specs) :
+  2-218 « Type d'une variable Python » (niv. 1), 2-223 « Choisir le type d'une variable » (2), 2-219
+  « Affectation en langage naturel et en Python » (2), 2-220 « Séquence d'instructions » (2), 2-224
+  « Compléter une affectation » (3), 2-221 « Instruction conditionnelle » (2), 2-415 « Compléter une
+  condition » (3), 2-222 « Boucle bornée (for) » (2), 2-413 « Boucle non bornée (while) » (2), 2-228
+  « Lire et modifier un programme (boucle et condition) » (3). Nœuds visés : ceux du § 87.
+- Pièges : une variable de modèle ne vaut pas une lettre (`x|n|s|c` : « Variable "x" not found ») → indice
+  - `selon` ; `{{if:a<b|…}}` évité (indicatrice `ab`) ; l'algorithme en ← est un bloc de code sans
+    langage (texte brut, flèches rendues).
+- Contrôles : simulation prod 10 à créer, specs toutes vertes ; 60 tirages par modèle : 298 réponses
+  numériques recalculées en **exécutant le code Python affiché** (0 écart), 58 cases choix (types, conditions)
+  recalculées de même (0 écart) ; LaTeX 3 599 formules, 0 problème. Joués en local (aperçu admin, Chrome) :
+  `while` (n = 3, c = 1600) « juste », corrigé lisible ; condition `n % 8 = 0` « faux », bonne réponse
+  montrée ; algorithme en ← bien rendu.
+
+## 89. Lot 11 A en brouillon en prod (2026-11-05)
+
+- #2411 mergée. David a lancé `create-questions --publier` sur `2de-programmes-11a` : b7785962 (2-218),
+  b3db9b3c (2-223), 1bb39e2d (2-219), bfdb42c0 (2-220), 3f4c0e5f (2-224), 5bd3323d (2-221), e2cc8a48 (2-415),
+  2ffa6d80 (2-222), 3cacefc5 (2-413), 8f0bbf63 (2-228) ; MCP : brouillons, `grades = ['2']`, niveaux du § 88,
+  sans nœud ni tag. Ids commités sur la branche du 11 B.
+
+## 90. Lot 11 B, fichiers (2026-11-06)
+
+- `questions-2de/lot-programmes-11b-2de.py` → `scripts/questions/2de-programmes-11b/` (5 modèles, 38 specs) :
+  2-229 « Fonction Python à un ou plusieurs arguments » (niv. 1), 2-416 « Appeler une fonction Python » (1),
+  2-232 « Lire une fonction Python plus complexe » (3 ; diviseurs, seuil n² > A, compléter max / min),
+  2-233 « Lire une fonction Python qui renvoie une moyenne » (2 ; quatre arguments, lancers de dé,
+  coefficients), 2-417 « Lire une fonction Python qui renvoie un écart type » (3). Nœuds du § 87 (L11-b :
+  233 et 417 sous Algorithmique › Fonctions Python › définir une fonction).
+- « Variance » absente du BO 2de : le distracteur dit « le carré de l'écart type ».
+- Piège : `{{eval:(s)/4}}` s'écrit `\dfrac{39}{4}` dans le corrigé alors que Python renvoie `9.75` →
+  `{{eval:…;d}}` (rendu `9{,}75`) ; `acceptDecimal` partagé sur 233 et 417.
+- Contrôles : simulation prod 5 à créer, specs vertes ; 60 tirages par modèle, 169 réponses recalculées en
+  exécutant le code affiché (0 écart) ; LaTeX 1 392 formules, 0 problème. Joué en local : moyenne(9, 12, 7, 17) → `11,25` tapé « juste », corrigé `45/4 = 11,25`.
+
+## 91. Lot 11 B en brouillon, migration de rangement du lot 11 (2026-11-06)
+
+- #2413 mergée. David a lancé `create-questions --publier` sur `2de-programmes-11b` : da04078f (2-229),
+  8d46dd50 (2-416), e4784c78 (2-232), 4ce02817 (2-233), f77e86cf (2-417) ; MCP : brouillons, `grades = ['2']`,
+  sans nœud ni tag. (Une commande du chantier CE2, `ce2-9 --publier`, a été lancée d'abord depuis le dépôt
+  principal par erreur : 8 brouillons CE2 créés, ids laissés non commités dans le dépôt principal, à la
+  session CE2.)
+- Relevé MCP : les 15 points sont sur le nœud visé ou sur sa notion (220, 228 sur la notion Variables et
+  instructions ; 232, 233, 416, 417 sur la notion Fonctions Python).
+- Migration `20261106050048_questions_2de_lot11_rangement_tags` (gabarit du lot 10, sans la partie
+  « anciens ») : 15 nœuds + tags. Test d'intégration 11/11, 6 rouges sans le corps de la migration ;
+  `types:cliquet` tenu.
+
+## 92. Lot 11 rangé en prod, page à cocher (2026-11-06)
+
+- Audit `security-auditor` : aucun finding bloquant ; 3 faibles, communs au gabarit du lot 10 (lock_timeout
+  `set local` sans effet hors transaction explicite ; pas de garde `status = 'draft'` ; le rollback remet le
+  nœud à null sans vérifier qu'il est encore celui posé). Laissés en l'état, comme au lot 10.
+- **#2417 mergée** (CI verte, `check:migrations --pr` propre), `db:migrate` (seule migration en attente) ;
+  MCP : 15 brouillons sur leur nœud, un point chacun, `updated_at` inchangés.
+- Page à cocher : 15 fiches, aucune alerte ; capacité `db`, `verdicts` vide ;
+  https://claude.ai/artifact/LvUUGf3FHn7RGroPjFtsPB . Rendu à 390 px non vérifié (fenêtre Chrome en plein
+  écran, redimensionnement sans effet).
+
+## 93. Lot 11 publié ; la seconde couverte (2026-11-06)
+
+- Page à cocher relue par David : 15/15 « ok », sans commentaire (ids des § 89 et 91). `publier-lot`
+  (simulation puis `--publier`) lancé par David sur `2de-programmes-11a` et `2de-programmes-11b` ; MCP : 15/15
+  `published`.
+- **Relevé MCP (prod) : 53 points de 2de sur 292 sans modèle publié**, exactement les « voulus » du § 70 :
+  - P (Q2) : 216, 217, 239-242, 255-259, 282-286, 357, 493, 494, 304, 438, 305-310, 320-324, 495, 353,
+    358-363, 387, 388 (42) ;
+  - D : 414, 225, 226, 227, 231, 234, 230 (Python à écrire, Q3), 452, 454, 351 (outil numérique, Q6), 392 (11).
+
+## 94. Points P : chantier `questions-2de-demonstrations` (2026-11-06)
+
+David : « comme pour les premières spécialités, en commençant par les démonstrations ». Phase 0 validée (D1 du journal
+`questions-2de-demonstrations-progress.md`) : les 12 démonstrations (239, 240, 255, 256, 282, 304, 438, 320, 357-360),
+puis les autres P ; ce journal sera versé une fois les P traités. Lot 1 mergé (#2434).

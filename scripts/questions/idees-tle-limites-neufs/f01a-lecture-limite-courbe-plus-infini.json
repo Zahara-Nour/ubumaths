@@ -1,0 +1,309 @@
+{
+	"id": "1b97da49-7eda-4b32-aa3b-21b0c07bfd90",
+	"title": "Conjecturer la limite en +∞ d'une fonction sur sa courbe",
+	"description": "Lecture graphique de la limite en +∞ : limite finie (palier, cloche), infinie, ou pas de limite (oscillation) (pièges : f(0), bord de la fenêtre, oscillation amortie)",
+	"grades": ["T_SPE"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe représentative d'une fonction $f$ définie sur $\\mathbb{R}$. On admet que, au-delà de la fenêtre, la courbe garde l'allure qu'elle a à droite.\n\n```courbe\nx: -2 ; 10\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{if:forme==0|{{L}}{{k;+}}*exp(-x/2)|{{L}}{{k;+}}/(1+(x/3)^2)}}   bleu\ntaille: moyenne\ndescription: Courbe d'une fonction qui se rapproche d'une droite horizontale vers la droite.\n```\n\nConjecture la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "forme",
+					"expression": "0|1"
+				},
+				{
+					"name": "L",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L+k}}",
+							"message": "Tu as lu $f\\left( 0 \\right)$, l'ordonnée du point de la courbe sur l'axe des ordonnées : la limite se lit tout à droite, là où la courbe s'aplatit.",
+							"label": "Ordonnée à l'origine"
+						},
+						{
+							"answer": "0",
+							"message": "La courbe se rapproche d'une droite horizontale, pas forcément de l'axe des abscisses : lis la hauteur de cette droite.",
+							"label": "Zéro par défaut"
+						},
+						{
+							"answer": "+\\infty",
+							"message": "Tu as donné la borne où va $x$ : la limite de $f$ est la valeur dont se rapproche $f(x)$, lue sur l'axe des ordonnées.",
+							"label": "Borne de x recopiée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x$ tend vers $+\\infty$ (vers la droite), la courbe se rapproche de la droite horizontale d'équation $y={{L}}$.",
+					"On conjecture que $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{L}} }$."
+				]
+			},
+			"hint": "Regarde la courbe tout à droite : de quelle droite horizontale se rapproche-t-elle ? Lis la hauteur de cette droite."
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe représentative d'une fonction $f$ définie sur $\\mathbb{R}$. On admet que, au-delà de la fenêtre, la courbe garde l'allure qu'elle a à droite.\n\n```courbe\nx: -2 ; 10\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{if:forme==0|{{s}}*0.4*(x-{{p}})^2{{q;+}}|{{if:forme==1|{{s}}*exp(x/2-2){{q;+}}|{{s}}*0.05*(x-{{p}})^3{{q;+}}}}}}   bleu\ntaille: moyenne\ndescription: Courbe d'une fonction qui sort de la fenêtre vers la droite.\n```\n\nConjecture la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "forme",
+					"expression": "0..2"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s>0|+\\infty|-\\infty}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s>0|-\\infty|+\\infty}}",
+							"message": "Tu as pris le mauvais sens : vers la droite, la courbe {{if:s>0|monte|descend}} sans fin.",
+							"label": "Signe de l'infini inversé"
+						},
+						{
+							"answer": "{{if:s>0|7|-7}}",
+							"message": "Tu as lu la valeur où la courbe sort de la fenêtre : au-delà, elle continue de {{if:s>0|monter|descendre}}.",
+							"label": "Bord de la fenêtre"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $x$ tend vers $+\\infty$ (vers la droite), la courbe {{if:s>0|monte|descend}} sans se rapprocher d'aucune droite horizontale : $f(x)$ devient {{if:s>0|aussi grand|aussi grand en valeur absolue, et négatif,}} que l'on veut.",
+					"On conjecture que $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:s>0|+\\infty|-\\infty}} }$."
+				]
+			},
+			"hint": "Regarde la courbe vers la droite : se rapproche-t-elle d'une droite horizontale, ou monte-t-elle (ou descend-elle) sans fin ?"
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe représentative d'une fonction $f$ définie sur $\\mathbb{R}$. On admet que, au-delà de la fenêtre, la courbe garde l'allure qu'elle a à droite.\n\n```courbe\nx: -2 ; 10\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{if:forme==0|{{c}}+2*sin(2*x)|{{c}}+4*exp(-x/3)*sin(2*x)}}   bleu\ntaille: moyenne\ndescription: Courbe d'une fonction qui oscille autour d'une droite horizontale.\n```\n\nQue peut-on conjecturer sur la limite de $f$ en $+\\infty$ ?\n\n```choix\n- $\\displaystyle\\lim_{x\\to+\\infty}f(x)={{c}}$\n- $\\displaystyle\\lim_{x\\to+\\infty}f(x)=+\\infty$\n- $\\displaystyle\\lim_{x\\to+\\infty}f(x)=-\\infty$\n- $\\displaystyle\\lim_{x\\to+\\infty}f(x)=0$\n- $f$ n'a pas de limite en $+\\infty$.\n```",
+			"variables": [
+				{
+					"name": "forme",
+					"expression": "0|1"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:forme==0|4|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:forme==0|Vers la droite, la courbe oscille entre les droites d'équations $y={{eval:c-2}}$ et $y={{eval:c+2}}$, sans que ses oscillations diminuent : $f(x)$ ne se rapproche d'aucun nombre.|Vers la droite, les oscillations de la courbe diminuent : la courbe se resserre autour de la droite d'équation $y={{c}}$.}}",
+					"{{if:forme==0|On conjecture que $\\textcolor{{{color:primary.0}}}{f\\text{ n'a pas de limite en }+\\infty}$.|On conjecture que $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{c}} }$.}}"
+				]
+			},
+			"hint": "Quand $x$ va vers la droite, les oscillations gardent-elles la même hauteur, ou se resserrent-elles autour d'une droite horizontale ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : palier, ℓ = 2",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "0",
+				"L": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "a : ordonnée à l'origine",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "0",
+				"L": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu $f\\left( 0 \\right)$, l'ordonnée du point de la courbe sur l'axe des ordonnées : la limite se lit tout à droite, là où la courbe s'aplatit."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "a : zéro par défaut",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "0",
+				"L": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La courbe se rapproche d'une droite horizontale, pas forcément de l'axe des abscisses : lis la hauteur de cette droite."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : borne de x recopiée",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "0",
+				"L": "2",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la borne où va $x$ : la limite de $f$ est la valeur dont se rapproche $f\\left( x \\right)$, lue sur l'axe des ordonnées."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "a : cloche, ℓ = −1",
+			"variationIndex": 0,
+			"variables": {
+				"forme": "1",
+				"L": "-1",
+				"k": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1"]
+		},
+		{
+			"description": "b : parabole montante",
+			"variationIndex": 1,
+			"variables": {
+				"forme": "0",
+				"s": "1",
+				"p": "2",
+				"q": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "b : signe inversé",
+			"variationIndex": 1,
+			"variables": {
+				"forme": "0",
+				"s": "1",
+				"p": "2",
+				"q": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le mauvais sens : vers la droite, la courbe monte sans fin."
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "b : bord de la fenêtre",
+			"variationIndex": 1,
+			"variables": {
+				"forme": "0",
+				"s": "1",
+				"p": "2",
+				"q": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu la valeur où la courbe sort de la fenêtre : au-delà, elle continue de monter."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "b : exponentielle descendante",
+			"variationIndex": 1,
+			"variables": {
+				"forme": "1",
+				"s": "-1",
+				"p": "2",
+				"q": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "c : oscillation, pas de limite",
+			"variationIndex": 2,
+			"variables": {
+				"forme": "0",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "c : oscillation, valeur moyenne",
+			"variationIndex": 2,
+			"variables": {
+				"forme": "0",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c : amortie, limite c",
+			"variationIndex": 2,
+			"variables": {
+				"forme": "1",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c : amortie, pas de limite à tort",
+			"variationIndex": 2,
+			"variables": {
+				"forme": "1",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		}
+	]
+}

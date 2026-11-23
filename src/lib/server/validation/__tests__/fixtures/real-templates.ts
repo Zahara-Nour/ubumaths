@@ -9,7 +9,7 @@
  * (`answer`, `type`), et restaient verts pendant que la route refusait tout.
  */
 
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 
 // Texte à trous, une case (table d'addition)
 const singleBlankRow = {
@@ -17,15 +17,12 @@ const singleBlankRow = {
 	type: 'fill_in_blanks',
 	delay: 15,
 	level: 1,
-	theme: 'Entiers',
 	title: "Table d'addition'",
-	domain: 'Additionner',
 	grades: ['CP'],
 	shared: null,
 	status: 'draft',
 	options: null,
 	precision: null,
-	subdomain: 'Tables',
 	variations: [
 		{
 			blanks: [{ expectedAnswer: 'eval:expression' }],
@@ -37,41 +34,37 @@ const singleBlankRow = {
 		}
 	],
 	description: 'de 1',
-	multiple_answers: null,
 	exercise_instruction: 'Calcule.',
 	default_display_options: null
 };
 
-// QCM (signe d'un quotient)
-const multipleChoiceRow = {
+// Case choix (signe d'un quotient) : l'ancien QCM, tel que migré en prod le 2026-10-28
+// (lot 4 du chantier figure-et-choix ; correction retirée, sans objet ici)
+const choiceCaseRow = {
 	id: '4d13f5d6-8350-4c34-96de-a5e31fb9759b',
-	type: 'multiple_choice',
+	type: 'fill_in_blanks',
 	delay: 20,
 	level: 1,
-	theme: 'Relatifs',
 	title: "Déterminer le signe d'un quotient",
-	domain: 'Multiplier et Diviser',
 	grades: ['4'],
 	shared: null,
 	status: 'draft',
-	options: { shuffleChoices: false },
+	options: null,
 	precision: null,
-	subdomain: 'Quotient',
 	variations: [
 		{
-			choices: [{ content: 'positif' }, { content: 'négatif' }],
-			statement: 'Quel est le signe de ce quotient ?\n\n$${{expression1}}$$',
+			blanks: [{ expectedAnswer: '{{eval:(1-a*b/abs(a*b))/2}}' }],
+			statement:
+				'Quel est le signe de ce quotient ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```',
 			variables: [
 				{ name: 'a', expression: '30..99;±' },
 				{ name: 'b', expression: '30..99;±' },
-				{ name: 'expression1', expression: 'a:(b)' }
+				{ name: 'expr1', expression: 'a:(b)' }
 			],
-			conditions: ['a<=0 || b<0'],
-			correctChoiceIndex: ['{{eval:(1-a*b/abs(a*b))/2}}']
+			conditions: ['a<=0 || b<0']
 		}
 	],
 	description: null,
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
@@ -82,15 +75,12 @@ const multiBlankRow = {
 	type: 'fill_in_blanks',
 	delay: 20,
 	level: 1,
-	theme: 'Décimaux',
 	title: 'Encadrer un nombre décimal par deux entiers consécutifs',
-	domain: 'Apprivoiser',
 	grades: ['CM1'],
 	shared: null,
 	status: 'draft',
 	options: null,
 	precision: null,
-	subdomain: 'Encadrer',
 	variations: [
 		{
 			blanks: [{ expectedAnswer: '{{a}}' }, { expectedAnswer: '{{eval:a+1}}' }],
@@ -104,7 +94,6 @@ const multiBlankRow = {
 		}
 	],
 	description: null,
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
@@ -115,15 +104,12 @@ const unitRow = {
 	type: 'fill_in_blanks',
 	delay: 20,
 	level: 1,
-	theme: 'Grandeurs',
 	title: 'Calculer une vitesse moyenne',
-	domain: 'Vitesses',
 	grades: ['4'],
 	shared: null,
 	status: 'draft',
 	options: null,
 	precision: null,
-	subdomain: 'Calculer',
 	variations: [
 		{
 			blanks: [{ unit: { expected: true }, expectedAnswer: '{{eval:b;[km.h^{-1}]}}' }],
@@ -144,7 +130,6 @@ const unitRow = {
 		}
 	],
 	description: null,
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
@@ -156,15 +141,12 @@ const courseCardRow = {
 	// Comme en production : les 4 cartes n'ont pas de délai (généré depuis #495)
 	delay: null,
 	level: 3,
-	theme: 'Fonctions',
 	title: 'Étude de fonction : ce que donne la dérivée',
-	domain: 'Etude de fonction',
 	grades: ['1_SPE'],
 	shared: null,
 	status: 'draft',
 	options: { courseCard: true },
 	precision: null,
-	subdomain: 'Flash',
 	variations: [
 		{
 			statement: "Que permet de trouver la dérivée d'une fonction ?",
@@ -172,7 +154,6 @@ const courseCardRow = {
 		}
 	],
 	description: 'Carte de cours',
-	multiple_answers: null,
 	exercise_instruction: null,
 	default_display_options: null
 };
@@ -180,7 +161,7 @@ const courseCardRow = {
 // La page automaths caste la ligne telle quelle : on fait pareil
 export const REAL_TEMPLATES = {
 	singleBlank: singleBlankRow as unknown as QuestionTemplate,
-	multipleChoice: multipleChoiceRow as unknown as QuestionTemplate,
+	choiceCase: choiceCaseRow as unknown as QuestionTemplate,
 	multiBlank: multiBlankRow as unknown as QuestionTemplate,
 	unit: unitRow as unknown as QuestionTemplate,
 	courseCard: courseCardRow as unknown as QuestionTemplate

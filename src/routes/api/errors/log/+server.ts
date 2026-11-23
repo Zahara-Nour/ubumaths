@@ -3,12 +3,12 @@
  * Log a new error (from client or server)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { logError, getUserContext, type LogErrorData } from '$lib/server/errorMonitoring';
-import { logErrorSchema } from '$lib/server/validation/errors';
-import { rateLimit } from '$lib/server/middleware/rateLimit';
-import { createServerLogger } from '$lib/utils/logger';
+import { logError, getUserContext, type LogErrorData } from '#lib/server/errorMonitoring.ts';
+import { logErrorSchema } from '#lib/server/validation/errors.ts';
+import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/errors/log/+server');
 
@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 	try {
 		// ✅ SECURITY: Rate limit by IP to prevent DoS
 		const clientIp = getClientAddress();
-		rateLimit(`error-log:${clientIp}`, 20, 60000); // 20 errors per minute per IP
+		await rateLimit(`error-log:${clientIp}`, 20, 60000); // 20 errors per minute per IP
 
 		// ✅ SECURITY: Validate input with Zod
 		const bodyRaw = await request.json();
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 			throw error(500, result.error || 'Failed to log error');
 		}
 
-		return json({ success: true, id: result.id });
+		return Response.json({ success: true, id: result.id });
 	} catch (err) {
 		// If this is already a SvelteKit error, rethrow it
 		if (err && typeof err === 'object' && 'status' in err) {

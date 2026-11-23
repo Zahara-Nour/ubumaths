@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { TriangleAlert } from '@lucide/svelte';
-	import type { MarketplaceListing } from '$lib/types/marketplace';
-	import type { VipCardRarity } from '$lib/types/vip-card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import VipCard from '$lib/components/VipCard.svelte';
+	import type { MarketplaceListing } from '#lib/types/marketplace.ts';
+	import type { VipCardRarity } from '#lib/types/vip-card.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
+	import VipCard from '#lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
 
 	// Props
 	let {
@@ -16,12 +16,12 @@
 		open = $bindable(false),
 		onclose = () => {},
 		isOwner = false
-	} = $props<{
+	}: {
 		listing: MarketplaceListing;
 		open?: boolean;
 		onclose?: () => void;
 		isOwner?: boolean;
-	}>();
+	} = $props();
 
 	// State for proposal modal
 	let showProposalModal = $state(false);

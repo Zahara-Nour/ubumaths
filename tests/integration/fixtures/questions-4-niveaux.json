@@ -1,0 +1,72 @@
+[
+	{
+		"id": "17f3dfcd-01e4-460f-9b94-40be348c2ed7",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"gradesAvant": ["3"],
+		"gradesApres": ["2"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-260"]
+	},
+	{
+		"id": "2158a2fc-df19-4455-a96a-765b22a797db",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"gradesAvant": ["4"],
+		"gradesApres": ["2"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-260"]
+	},
+	{
+		"id": "294c4316-d2c9-4894-9c3c-c2b24fdffc99",
+		"noeudAvant": "Algèbre > Calcul littéral > factorisation",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesAvant": ["4"],
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-008"]
+	},
+	{
+		"id": "2de1b93d-925e-40f7-a074-f8d7de584d04",
+		"noeudAvant": "Algèbre > Calcul littéral > factorisation",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesAvant": ["4"],
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-008"]
+	},
+	{
+		"id": "419887ff-ab39-43fb-8e5c-953822088459",
+		"noeudAvant": "Algèbre > Équations : premier degré > ax = b",
+		"noeudApres": "Fonctions > Fonction inverse > 1/x = k, 1/x < k",
+		"gradesAvant": ["4"],
+		"gradesApres": ["2"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-464"]
+	},
+	{
+		"id": "a1ae1558-89ca-4a60-8704-8e7e4ebc23ad",
+		"noeudAvant": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"noeudApres": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+		"gradesAvant": ["4"],
+		"gradesApres": ["2"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-260"]
+	},
+	{
+		"id": "b0ef6947-e4b9-478e-825b-bc7a2756e222",
+		"noeudAvant": "Algèbre > Équations : premier degré > ax = b",
+		"noeudApres": "Fonctions > Fonction inverse > 1/x = k, 1/x < k",
+		"gradesAvant": ["4"],
+		"gradesApres": ["2"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["2§2-464"]
+	}
+]

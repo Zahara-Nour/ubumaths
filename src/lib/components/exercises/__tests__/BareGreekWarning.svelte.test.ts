@@ -7,7 +7,7 @@ import { page } from 'vitest/browser';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import BareGreekWarning from '../BareGreekWarning.svelte';
-import type { ExerciseVariation } from '$lib/exercises/types';
+import type { ExerciseVariation } from '#lib/exercises/types.ts';
 
 function variation(statement: string, solution = ''): ExerciseVariation {
 	return {

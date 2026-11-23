@@ -1,62 +1,64 @@
 /**
- * Génération des questions d'une série : chaque question porte SA durée et SA
- * catégorie. Avant, les durées étaient reconstruites à part depuis le panier
- * et se décalaient dès qu'une catégorie était sautée ou qu'une génération
+ * Génération des questions d'une série : chaque question porte SA durée et SON
+ * modèle (ADR 0035). Avant, les durées étaient reconstruites à part depuis le
+ * panier et se décalaient dès qu'une ligne était sautée ou qu'une génération
  * échouait.
  */
 import { describe, it, expect, vi } from 'vitest';
 import {
 	buildSeriesItems,
-	categoryKeyOf,
 	drawSeriesQuestions,
-	DEFAULT_QUESTION_DELAY_SECONDS
-} from '$lib/questions/series-items';
-import type { GenerationResult, QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
+	seriesSeedSequence,
+	DEFAULT_QUESTION_DELAY_SECONDS,
+	MAX_QUESTION_SEED
+} from '#lib/questions/series-items.ts';
+import type { GenerationResult, QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { SeriesItem } from '#lib/validation/series.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 
 // Générateur réel remplacé : on vérifie seulement ce que `buildSeriesItems` lui passe
-vi.mock('$lib/questions/generator/instance-generator', () => ({
+vi.mock('#lib/questions/generator/instance-generator.ts', () => ({
 	generateInstance: vi.fn(
 		(t: QuestionTemplate, seed?: number): GenerationResult =>
 			({
 				success: true,
-				instance: { templateId: t.id, seed } as QuestionInstance
+				instance: { templateId: t.id, seed, statement: `${t.id}-${seed}` } as QuestionInstance
 			}) as GenerationResult
 	)
 }));
 
-function category(domain: string, level = 1): QuestionCategory {
-	return { theme: 'Entiers', domain, subdomain: 'Somme', level };
-}
-
 function template(domain: string, id: string, overrides: Partial<QuestionTemplate> = {}) {
 	return {
 		id,
-		theme: 'Entiers',
 		domain,
-		subdomain: 'Somme',
 		level: 1,
 		...overrides
 	} as unknown as QuestionTemplate;
 }
 
-function cart(domain: string, quantity: number, delay: number): CartItem {
-	return { category: category(domain), quantity, delay };
+/** Ligne de série : le modèle porte l'id fourni (`add`, `mul`…) */
+function line(templateId: string, quantity: number, delay: number): SeriesItem {
+	return { templateId, quantity, delay };
 }
 
-/** Générateur factice : l'instance porte l'id du modèle ; `failing` échoue */
+/**
+ * Générateur factice : l'instance porte l'id du modèle et un énoncé propre à sa
+ * graine (sinon toutes seraient des doublons) ; `failing` échoue
+ */
 function fakeGenerate(failing: Set<string> = new Set()) {
-	return (t: QuestionTemplate): GenerationResult =>
+	return (t: QuestionTemplate, seed: number): GenerationResult =>
 		failing.has(t.id)
 			? { success: false, errors: ['échec'] }
-			: ({ success: true, instance: { templateId: t.id } as QuestionInstance } as GenerationResult);
+			: ({
+					success: true,
+					instance: { templateId: t.id, statement: `${t.id}-${seed}` } as QuestionInstance
+				} as GenerationResult);
 }
 
 describe('buildSeriesItems', () => {
-	it('une question par répétition, chacune avec la durée et la clé de sa catégorie', () => {
+	it('une question par répétition, chacune avec la durée et le modèle de sa ligne', () => {
 		const items = buildSeriesItems(
-			[cart('Additionner', 2, 15), cart('Multiplier', 1, 30)],
+			[line('add', 2, 15), line('mul', 1, 30)],
 			[template('Additionner', 'add'), template('Multiplier', 'mul')],
 			{ generate: fakeGenerate() }
 		);
@@ -66,13 +68,12 @@ describe('buildSeriesItems', () => {
 			['add', 15],
 			['mul', 30]
 		]);
-		expect(items[0].categoryKey).toBe(categoryKeyOf(category('Additionner')));
-		expect(items[2].categoryKey).not.toBe(items[0].categoryKey);
+		expect(items.map((i) => i.templateId)).toEqual(['add', 'add', 'mul']);
 	});
 
-	it('une catégorie sans modèle est sautée, les suivantes gardent LEUR durée', () => {
+	it('une ligne dont le modèle manque est sautée, les suivantes gardent LEUR durée', () => {
 		const items = buildSeriesItems(
-			[cart('Diviser', 2, 10), cart('Multiplier', 1, 30)],
+			[line('div', 2, 10), line('mul', 1, 30)],
 			[template('Multiplier', 'mul')],
 			{ generate: fakeGenerate() }
 		);
@@ -82,7 +83,7 @@ describe('buildSeriesItems', () => {
 
 	it('une génération qui échoue est omise, sans décaler les durées suivantes', () => {
 		const items = buildSeriesItems(
-			[cart('Additionner', 1, 15), cart('Multiplier', 1, 30)],
+			[line('add', 1, 15), line('mul', 1, 30)],
 			[template('Additionner', 'add'), template('Multiplier', 'mul')],
 			{ generate: fakeGenerate(new Set(['add'])) }
 		);
@@ -91,7 +92,7 @@ describe('buildSeriesItems', () => {
 	});
 
 	it('durée absente ou nulle : 20 s par défaut', () => {
-		const items = buildSeriesItems([cart('Additionner', 1, 0)], [template('Additionner', 'add')], {
+		const items = buildSeriesItems([line('add', 1, 0)], [template('Additionner', 'add')], {
 			generate: fakeGenerate()
 		});
 
@@ -103,7 +104,12 @@ describe('buildSeriesItems', () => {
 		const card = template('Additionner', 'carte', {
 			options: { courseCard: true }
 		} as Partial<QuestionTemplate>);
-		const items = buildSeriesItems([cart('Additionner', 1, 15)], [card], {
+		const lines = [line('carte', 1, 15)];
+		// Sans l'exclusion, la carte est bien tirée : le test prouve l'exclusion
+		expect(
+			buildSeriesItems(lines, [card], { generate: fakeGenerate() }).map((i) => i.templateId)
+		).toEqual(['carte']);
+		const items = buildSeriesItems(lines, [card], {
 			generate: fakeGenerate(),
 			excludeCourseCards: true
 		});
@@ -111,49 +117,29 @@ describe('buildSeriesItems', () => {
 		expect(items).toEqual([]);
 	});
 
-	it('niveau en chaîne (ancien panier) et sous-domaine null ≡ absent', () => {
-		const legacy: CartItem = {
-			category: {
-				theme: 'Entiers',
-				domain: 'Vocabulaire',
-				subdomain: null,
-				level: '1' as unknown as number
-			},
-			quantity: 1,
-			delay: 12
-		};
-		const items = buildSeriesItems(
-			[legacy],
-			[template('Vocabulaire', 'voc', { subdomain: undefined })],
-			{ generate: fakeGenerate() }
-		);
-
-		expect(items.map((i) => i.instance.templateId)).toEqual(['voc']);
-	});
-
-	it('Q20 : une graine entière par question, passée à la génération', () => {
-		const seeds = [11, 22, 33];
+	it('Q20 : chaque question porte la graine avec laquelle elle a été générée', () => {
 		const generate = vi.fn(
 			(t: QuestionTemplate, seed?: number): GenerationResult =>
 				({
 					success: true,
-					instance: { templateId: t.id, seed } as QuestionInstance
+					instance: { templateId: t.id, seed, statement: `${t.id}-${seed}` } as QuestionInstance
 				}) as GenerationResult
 		);
+		const lineSeeds = [11, 22];
 		const items = buildSeriesItems(
-			[cart('Additionner', 2, 15), cart('Multiplier', 1, 30)],
+			[line('add', 2, 15), line('mul', 1, 30)],
 			[template('Additionner', 'add'), template('Multiplier', 'mul')],
-			{ generate, nextSeed: () => seeds.shift() ?? -1 }
+			{ generate, nextSeed: () => lineSeeds.shift() ?? -1 }
 		);
 
-		expect(generate.mock.calls.map((call) => call[1])).toEqual([11, 22, 33]);
-		expect(items.map((i) => i.instance.seed)).toEqual([11, 22, 33]);
+		expect(items).toHaveLength(3);
+		expect(items.map((i) => i.instance.seed)).toEqual(generate.mock.calls.map((call) => call[1]));
 	});
 
 	it('Q20 : par défaut, la graine est un entier positif tiré à chaque question', () => {
 		const mocked = vi.mocked(generateInstance);
 		mocked.mockClear();
-		const items = buildSeriesItems([cart('Additionner', 3, 15)], [template('Additionner', 'add')]);
+		const items = buildSeriesItems([line('add', 3, 15)], [template('Additionner', 'add')]);
 
 		const seeds = mocked.mock.calls.map((call) => call[1]);
 		expect(seeds).toHaveLength(3);
@@ -168,17 +154,15 @@ describe('buildSeriesItems', () => {
 });
 
 describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)', () => {
-	it('même règle que buildSeriesItems : un tirage par répétition, durée et clé de catégorie', () => {
-		const seeds = [5, 6, 7];
+	it('même règle que buildSeriesItems : un tirage par répétition, durée du modèle de la ligne', () => {
 		const draws = drawSeriesQuestions(
-			[cart('Additionner', 2, 15), cart('Absent', 1, 50), cart('Multiplier', 1, 0)],
-			[template('Additionner', 'add'), template('Multiplier', 'mul')],
-			{ nextSeed: () => seeds.shift() ?? -1, pickIndex: () => 0 }
+			[line('add', 2, 15), line('absent', 1, 50), line('mul', 1, 0)],
+			[template('Additionner', 'add'), template('Multiplier', 'mul')]
 		);
-		expect(draws.map((d) => [d.template.id, d.seed, d.delaySeconds, d.categoryKey])).toEqual([
-			['add', 5, 15, categoryKeyOf(category('Additionner'))],
-			['add', 6, 15, categoryKeyOf(category('Additionner'))],
-			['mul', 7, DEFAULT_QUESTION_DELAY_SECONDS, categoryKeyOf(category('Multiplier'))]
+		expect(draws.map((d) => [d.template.id, d.delaySeconds])).toEqual([
+			['add', 15],
+			['add', 15],
+			['mul', DEFAULT_QUESTION_DELAY_SECONDS]
 		]);
 	});
 
@@ -187,17 +171,70 @@ describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)',
 			options: { courseCard: true }
 		} as Partial<QuestionTemplate>);
 		const draws = drawSeriesQuestions(
-			[cart('Additionner', 2, 15)],
+			[line('carte', 1, 15), line('add', 2, 15)],
 			[card, template('Additionner', 'add')],
 			{ excludeCourseCards: true }
 		);
 		expect(draws.map((d) => d.template.id)).toEqual(['add', 'add']);
 	});
 
-	it('ne génère rien (tirage seul)', () => {
-		const mocked = vi.mocked(generateInstance);
-		mocked.mockClear();
-		drawSeriesQuestions([cart('Additionner', 2, 15)], [template('Additionner', 'add')]);
-		expect(mocked).not.toHaveBeenCalled();
+	it('rend l’instance générée avec la graine du tirage (le serveur ne régénère pas)', () => {
+		const draws = drawSeriesQuestions([line('add', 2, 15)], [template('Additionner', 'add')]);
+		for (const d of draws) expect(d.instance.seed).toBe(d.seed);
+	});
+});
+
+describe('seriesSeedSequence (mêmes nombres pour tous)', () => {
+	it('une même graine de série rend la même suite de graines de questions', () => {
+		const a = seriesSeedSequence(123456);
+		const b = seriesSeedSequence(123456);
+		const suiteA = Array.from({ length: 10 }, () => a());
+		const suiteB = Array.from({ length: 10 }, () => b());
+
+		expect(suiteA).toEqual(suiteB);
+		for (const seed of suiteA) {
+			expect(Number.isInteger(seed)).toBe(true);
+			expect(seed).toBeGreaterThanOrEqual(0);
+			expect(seed).toBeLessThanOrEqual(MAX_QUESTION_SEED);
+		}
+	});
+
+	it('deux graines de série différentes rendent des suites différentes', () => {
+		const a = seriesSeedSequence(1);
+		const b = seriesSeedSequence(2);
+		expect(Array.from({ length: 5 }, () => a())).not.toEqual(Array.from({ length: 5 }, () => b()));
+	});
+
+	it('ligne répétée : questions différentes entre elles, mais les mêmes pour tous', () => {
+		const series = [line('add', 3, 15), line('mul', 2, 30)];
+		const templates = [template('Additionner', 'add'), template('Multiplier', 'mul')];
+		const seedsOf = () =>
+			buildSeriesItems(series, templates, { nextSeed: seriesSeedSequence(42) }).map(
+				(item) => item.instance.seed
+			);
+
+		const eleve1 = seedsOf();
+		const eleve2 = seedsOf();
+		expect(eleve1).toEqual(eleve2);
+		expect(new Set(eleve1).size).toBe(5);
+	});
+});
+
+describe('mêmes nombres pour tous : un modèle absent ne décale pas les autres', () => {
+	it('une ligne au modèle absent laisse inchangées les graines des lignes suivantes', () => {
+		const templates = [template('Additionner', 'add'), template('Multiplier', 'mul')];
+		const complete = buildSeriesItems([line('add', 2, 15), line('mul', 2, 30)], templates, {
+			nextSeed: seriesSeedSequence(42)
+		});
+		// Chez un autre élève, le modèle « add » manque (retiré, cache d'onglet en retard)
+		const sansAdd = buildSeriesItems(
+			[line('add', 2, 15), line('mul', 2, 30)],
+			[template('Multiplier', 'mul')],
+			{ nextSeed: seriesSeedSequence(42) }
+		);
+
+		expect(sansAdd.map((item) => item.instance.seed)).toEqual(
+			complete.filter((item) => item.templateId === 'mul').map((item) => item.instance.seed)
+		);
 	});
 });

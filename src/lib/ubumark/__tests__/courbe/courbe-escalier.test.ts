@@ -1,7 +1,7 @@
 /**
  * Bloc ```courbe — escalier d'une suite récurrente (décision de David du 2026-10-01)
  *
- * Comportements E1 à E9 de docs/wip/suites-1spe-progress.md, lot 0.
+ * Comportements E1 à E9 de docs/archive/wip/suites-1spe-progress.md, lot 0.
  */
 import { describe, it, expect } from 'vitest';
 import { parseCourbeContent } from '../../parser/courbe-parser';

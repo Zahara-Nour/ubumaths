@@ -34,7 +34,7 @@ export class DslTokenizerError extends Error {
  * `alpha`, …). This makes `\phi = 1.618` and `phi = 1.618` interchangeable —
  * both assign to the same symbol-table key.
  */
-import { SUPPORTED_GREEK_LETTERS } from '$lib/mathAST/parser/constants';
+import { SUPPORTED_GREEK_LETTERS } from '#lib/mathAST/parser/constants.ts';
 const BACKSLASH_WHITELIST = SUPPORTED_GREEK_LETTERS;
 
 /**

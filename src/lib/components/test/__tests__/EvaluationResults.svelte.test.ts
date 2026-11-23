@@ -5,9 +5,9 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import EvaluationResults from '../EvaluationResults.svelte';
-import type { EvaluationSubmitResponse } from '$lib/types/evaluation-attempt';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { EvaluationSubmitResponse } from '#lib/types/evaluation-attempt.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 function instance(expected: string): QuestionInstance {
 	return {
@@ -15,8 +15,6 @@ function instance(expected: string): QuestionInstance {
 		statement: `Combien ? $\\placeholder[0]{}$` as ResolvedMarkdown,
 		blanks: [{ expectedAnswer: expected, type: 'math' }],
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		generatedAt: ''
 	};

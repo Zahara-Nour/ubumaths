@@ -1,0 +1,529 @@
+{
+	"id": "a1e540c9-041f-4c68-9c7b-75b8c11fa950",
+	"title": "Limite d'une fonction par composition",
+	"description": "Poser X = u(x), chercher la limite de X, puis celle de la fonction de référence : e^(kx), e^(axⁿ + k), √(axᵐ + k), (ax + k)ᵖ, √(e^(kx) + m²) (pièges : signe de xⁿ en −∞, exponentielle vers −∞ ou vers 1, racine oubliée)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{k}}x }$.\n\nDétermine la limite de $f$ en ${{if:sg>0|+|-}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k*sg>0|+\\infty|0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:k*sg>0|0|+\\infty}}",
+							"message": "Regarde d'abord la limite de ${{k}} x$ : elle tend vers ${{if:k*sg>0|+|-}}\\infty$, puis vois ce que fait l'exponentielle en ${{if:k*sg>0|+|-}}\\infty$.",
+							"label": "Limite de kx mal lue"
+						},
+						{
+							"answer": "-\\infty",
+							"message": "Une exponentielle est toujours strictement positive : elle ne tend jamais vers $-\\infty$.",
+							"label": "Exponentielle vers −∞"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $X={{k}}x$. Quand $x$ tend vers ${{if:sg>0|+|-}}\\infty$, $X$ tend vers ${{if:k*sg>0|+|-}}\\infty$ (le coefficient ${{k}}$ est {{if:k>0|positif|négatif}}).",
+					"Or $\\displaystyle\\lim_{X\\to{{if:k*sg>0|+|-}}\\infty}e^{X}={{if:k*sg>0|+\\infty|0}}$. Par composition, $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:k*sg>0|+\\infty|0}} }$."
+				]
+			},
+			"hint": "Pose $X={{k}}x$ : cherche vers quoi tend $X$, puis la limite de $e^{X}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{ {{n}} }{{k;+}}}$.\n\nDétermine la limite de $f$ en ${{if:sg>0|+|-}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "2|3"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a*sg^n>0|+\\infty|0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:a*sg^n>0|0|+\\infty}}",
+							"message": "Cherche d'abord la limite de l'exposant : en ${{if:sg>0|+|-}}\\infty$, $x^{{n}}$ tend vers ${{if:sg^n>0|+|-}}\\infty$, et l'exposant vers ${{if:a*sg^n>0|+|-}}\\infty$.",
+							"label": "Limite de l'exposant mal lue"
+						},
+						{
+							"answer": "-\\infty",
+							"message": "Une exponentielle est toujours strictement positive : elle ne tend jamais vers $-\\infty$.",
+							"label": "Exponentielle vers −∞"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $X={{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{ {{n}} }{{k;+}}$. En ${{if:sg>0|+|-}}\\infty$, $x^{ {{n}} }$ tend vers ${{if:sg^n>0|+|-}}\\infty$, donc $X$ tend vers ${{if:a*sg^n>0|+|-}}\\infty$.",
+					"Or $\\displaystyle\\lim_{X\\to{{if:a*sg^n>0|+|-}}\\infty}e^{X}={{if:a*sg^n>0|+\\infty|0}}$. Par composition, $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:a*sg^n>0|+\\infty|0}} }$."
+				]
+			},
+			"hint": "Pose $X$ égal à l'exposant : cherche sa limite (attention au signe de $x^{ {{n}} }$), puis celle de $e^{X}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{ {{m}} }+{{k}}}$.\n\nDétermine la limite de $f$ en ${{if:sg>0|+|-}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "2|4"
+				},
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "+\\infty",
+					"expectedErrors": [
+						{
+							"answer": "-\\infty",
+							"message": "En $-\\infty$, $x^{{m}}$ tend vers $+\\infty$ (puissance paire), et une racine carrée n'est jamais négative.",
+							"label": "Signe de la puissance paire"
+						},
+						{
+							"answer": "0",
+							"message": "Sous la racine, ${{if:a==1||{{if:a==-1|-|{{a}}}}}} x^{{m}} + {{k}}$ tend vers $+\\infty$ : sa racine carrée aussi.",
+							"label": "Zéro"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $X={{if:a==1||{{if:a==-1|-|{{a}}}}}}x^{ {{m}} }+{{k}}$. En ${{if:sg>0|+|-}}\\infty$, $x^{ {{m}} }$ tend vers $+\\infty$ (puissance paire), donc $X$ tend vers $+\\infty$.",
+					"Or $\\displaystyle\\lim_{X\\to+\\infty}\\sqrt{X}=+\\infty$. Par composition, $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$."
+				]
+			},
+			"hint": "Pose $X$ égal à l'expression sous la racine : cherche sa limite, puis celle de $\\sqrt{X}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{k;+}}\\right)^{ {{p}} }$.\n\nDétermine la limite de $f$ en ${{if:sg>0|+|-}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "3..5"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:(a*sg)^p>0|+\\infty|-\\infty}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:(a*sg)^p>0|-\\infty|+\\infty}}",
+							"message": "Cherche d'abord le signe de la limite de ${{if:a==1||{{if:a==-1|-|{{a}}}}}} x {{k;+}}$, puis celui de sa puissance ${{p}}$-ième : une puissance {{if:p==4|paire|impaire}} {{if:p==4|est positive|garde le signe}}.",
+							"label": "Signe de la puissance"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $X={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{k;+}}$. En ${{if:sg>0|+|-}}\\infty$, $X$ tend vers ${{if:a*sg>0|+|-}}\\infty$ (le coefficient de $x$ est {{if:a>0|positif|négatif}}).",
+					"Or $\\displaystyle\\lim_{X\\to{{if:a*sg>0|+|-}}\\infty}X^{ {{p}} }={{if:(a*sg)^p>0|+|-}}\\infty$ (puissance {{if:p==4|paire|impaire}}). Par composition, $\\displaystyle\\lim_{x\\to{{if:sg>0|+|-}}\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:(a*sg)^p>0|+|-}}\\infty }$."
+				]
+			},
+			"hint": "Pose $X$ égal à l'expression entre parenthèses : cherche sa limite, puis celle de $X^{ {{p}} }$ (sa parité compte)."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{e^{ {{k}}x }+{{eval:m*m}}}$.\n\nDétermine la limite de $f$ en ${{if:k>0|-|+}}\\infty$.\n\n$\\displaystyle\\lim_{x\\to{{if:k>0|-|+}}\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m*m}}",
+							"message": "Tu as oublié la racine carrée : $\\sqrt{ {{eval:m*m}} }={{m}}$.",
+							"label": "Racine oubliée"
+						},
+						{
+							"answer": "+\\infty",
+							"message": "En ${{if:k>0|-|+}}\\infty$, ${{k}}x$ tend vers $-\\infty$ : l'exponentielle tend vers $0$, pas vers $+\\infty$.",
+							"label": "Exponentielle vers +∞"
+						},
+						{
+							"answer": "\\sqrt{ {{eval:m*m+1}} }",
+							"message": "Tu as remplacé l'exponentielle par $1$ : elle tend vers $0$ quand son exposant tend vers $-\\infty$.",
+							"label": "Exponentielle vers 1"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"En ${{if:k>0|-|+}}\\infty$, ${{k}}x$ tend vers $-\\infty$, donc $e^{ {{k}}x }$ tend vers $0$ et $X=e^{ {{k}}x }+{{eval:m*m}}$ tend vers ${{eval:m*m}}$.",
+					"La fonction racine carrée est continue en ${{eval:m*m}}$ : par composition, $\\displaystyle\\lim_{x\\to{{if:k>0|-|+}}\\infty}f(x)=\\sqrt{ {{eval:m*m}} }=\\textcolor{{{color:primary.0}}}{ {{m}} }$."
+				]
+			},
+			"hint": "Pose $X=e^{ {{k}}x }+{{eval:m*m}}$ : cherche sa limite (que fait $e^{ {{k}}x }$ ?), puis prends la racine carrée."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : e^(3x) en +∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "a : e^(3x) en +∞, 0 à tort",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde d'abord la limite de $3 x$ : elle tend vers $+\\infty$, puis vois ce que fait l'exponentielle en $+\\infty$."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : e^(−2x) en +∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : e^(−2x) en +∞, +∞ à tort",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde d'abord la limite de $-2 x$ : elle tend vers $-\\infty$, puis vois ce que fait l'exponentielle en $-\\infty$."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "a : −∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une exponentielle est toujours strictement positive : elle ne tend jamais vers $-\\infty$."
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "a : e^(−2x) en −∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "b : e^(−2x² + 1) en −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"n": "2",
+				"k": "1",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : parité oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"n": "2",
+				"k": "1",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Cherche d'abord la limite de l'exposant : en $-\\infty$, $x^2$ tend vers $+\\infty$, et l'exposant vers $-\\infty$."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "b : e^(2x³ − 3) en −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "3",
+				"k": "-3",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : e^(x² + 4) en −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"n": "2",
+				"k": "4",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "b : −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "3",
+				"k": "-3",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une exponentielle est toujours strictement positive : elle ne tend jamais vers $-\\infty$."
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "c : √(2x² + 3) en −∞",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2",
+				"k": "3",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "c : −∞ à tort",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"m": "2",
+				"k": "3",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En $-\\infty$, $x^2$ tend vers $+\\infty$ (puissance paire), et une racine carrée n'est jamais négative."
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "c : zéro",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"m": "4",
+				"k": "5",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sous la racine, $x^4 + 5$ tend vers $+\\infty$ : sa racine carrée aussi."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "d : (2x + 1)³ en −∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"k": "1",
+				"p": "3",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "d : (2x + 1)⁴ en −∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"k": "1",
+				"p": "4",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "d : (−3x + 2)⁵ en +∞",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-3",
+				"k": "2",
+				"p": "5",
+				"sg": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "d : signe de la puissance",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"k": "1",
+				"p": "3",
+				"sg": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Cherche d'abord le signe de la limite de $2 x + 1$, puis celui de sa puissance $3$-ième : une puissance impaire garde le signe."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "e : √(e^(2x) + 9) en −∞",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "e : racine oubliée",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la racine carrée : $\\sqrt{9} = 3$."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "e : +∞ à tort",
+			"variationIndex": 4,
+			"variables": {
+				"k": "-1",
+				"m": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En $+\\infty$, $-x$ tend vers $-\\infty$ : l'exponentielle tend vers $0$, pas vers $+\\infty$."
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "e : exponentielle vers 1",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as remplacé l'exponentielle par $1$ : elle tend vers $0$ quand son exposant tend vers $-\\infty$."
+			},
+			"answers": ["\\sqrt{10}"]
+		}
+	]
+}

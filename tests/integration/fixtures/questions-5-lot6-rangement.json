@@ -1,0 +1,90 @@
+[
+	{
+		"id": "087c7c9c-e359-4f9a-8ef8-7cf7b29c1730",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Indicateurs > moyenne",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-080"]
+	},
+	{
+		"id": "0d7dca16-40f1-4718-8e94-af13433dcf4f",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > événements",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-082"]
+	},
+	{
+		"id": "21ebfb57-d44b-4be7-878e-d159fefda924",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > effectifs et fréquences",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-134"]
+	},
+	{
+		"id": "5d0dc0e5-2de4-4528-abd3-a6627f076af1",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > équiprobabilité",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-083"]
+	},
+	{
+		"id": "8190200a-4e24-41b2-b53d-e317a1fb1d7e",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Indicateurs > moyenne",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-139"]
+	},
+	{
+		"id": "c73289f0-0dbc-44d4-b66b-f88afb4960d4",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Indicateurs > moyenne",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-080"]
+	},
+	{
+		"id": "ccb8407b-ca23-4329-af89-513b613361ce",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > choisir une représentation",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-079"]
+	},
+	{
+		"id": "f4f0d076-e95e-4662-b0a4-d04b0b5416c9",
+		"noeudAvant": null,
+		"noeudApres": "Probabilités > Expériences aléatoires > équiprobabilité",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-083"]
+	}
+]

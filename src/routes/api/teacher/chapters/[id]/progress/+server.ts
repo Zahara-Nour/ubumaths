@@ -3,13 +3,13 @@
  * GET - Get student progress for a chapter (checklist)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { getStudentChecklistProgress } from '$lib/server/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { getStudentChecklistProgress } from '#lib/server/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapters/[id]/progress/+server');
 
@@ -147,7 +147,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Filter by studentId if provided
 	const filteredProgress = studentId ? progress.filter((p) => p.studentId === studentId) : progress;
 
-	return json({
+	return Response.json({
 		chapterId,
 		totalChecklistItems: totalChecklistItems ?? 0,
 		students: filteredProgress,

@@ -1,0 +1,201 @@
+{
+	"id": "64a067cf-beb1-4479-9b08-85645937b8e6",
+	"title": "Placer un point d'abscisse relative",
+	"description": "Placer un nombre relatif sur une droite graduée étiquetée en 0 et 1 : en unités, en demis, en quarts, puis deux points de signes contraires",
+	"grades": ["5"],
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le nombre ${{x}}$ sur la droite graduée.\n\n```line\nstart: -6\nend: 6\nstep: 1\nmajor: 1\nlabels: 0, 1\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "x",
+					"expression": "eval:k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque graduation vaut $1$ ; ${{x}}$ est à ${{eval:abs(k)}}$ graduations {{if:k<0|à gauche|à droite}} de $0$.",
+					"On place le point sur la graduation $\\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la droite graduée.\n\n```line\nstart: -3\nend: 2\nstep: 0.5\nmajor: 2\nlabels: 0, 1\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "x",
+					"expression": "eval:k/2;d"
+				}
+			],
+			"conditions": ["mod(k*k,2)!=0", "k<=3"],
+			"correction": {
+				"steps": [
+					"L'unité est partagée en $2$ : chaque graduation vaut $0.5$.",
+					"${{x}}$, c'est ${{eval:abs(k)}}$ graduations {{if:k<0|à gauche|à droite}} de $0$ : on place le point en $\\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la droite graduée.\n\n```line\nstart: -2\nend: 1\nstep: 0.25\nmajor: 4\nlabels: 0, 1\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "x",
+					"expression": "eval:k/4;d"
+				}
+			],
+			"conditions": ["mod(k*k,2)!=0", "k<=3"],
+			"correction": {
+				"steps": [
+					"L'unité est partagée en $4$ : chaque graduation vaut $0.25$.",
+					"${{x}}$, c'est ${{eval:abs(k)}}$ graduations {{if:k<0|à gauche|à droite}} de $0$ : on place le point en $\\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place les points $A({{xa}})$ et $B({{xb}})$ sur la droite graduée.\n\n```line\nstart: -3\nend: 2\nstep: 0.5\nmajor: 2\nlabels: 0, 1\nplacer: A={{xa}} ; B={{xb}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				},
+				{
+					"name": "xa",
+					"expression": "eval:-a/2;d"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:b/2;d"
+				}
+			],
+			"conditions": ["a!=b"],
+			"correction": {
+				"steps": [
+					"Chaque graduation vaut $0.5$.",
+					"$A$ est à ${{a}}$ graduations à gauche de $0$, en $\\textcolor{{{color:primary.0}}}{{{xa}}}$ ; $B$ est à ${{b}}$ graduations à droite de $0$, en $\\textcolor{{{color:primary.0}}}{{{xb}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−3 placé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2,5 placé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-5"
+			},
+			"answers": ["-2.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1,5 (compté depuis −1 vers la droite)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-5"
+			},
+			"answers": ["-1.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-5"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1,75 placé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-7"
+			},
+			"answers": ["-1.75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1,25",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-7"
+			},
+			"answers": ["-1.25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−1,5), B(1,5) placés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "3"
+			},
+			"answers": ["-1.5", "1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A en 1,5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1.5", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

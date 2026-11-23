@@ -18,9 +18,10 @@ import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionTemplate } from '$lib/questions/types';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { singleExpectedDuration } from '#lib/questions/units/composite-duration.ts';
 
 // ============================================================================
 // TYPES
@@ -194,9 +195,10 @@ function answersFor(value: number, unit: string): { famille: string; saisie: str
 	return answers;
 }
 
-/** `20[km.h^{-1}]` → { value, unit } */
+/** `20[km.h^{-1}]` → { value, unit } ; `{2[h]}{58[min]}` → 178 min */
 function readExpected(expected: string): { value: number; unit: string } | null {
-	const match = /^\(?\+?(-?\d+(?:\.\d+)?)\[([^[\]]+)\]\)?$/.exec(expected.trim());
+	const single = singleExpectedDuration(expected);
+	const match = /^\(?\+?(-?\d+(?:\.\d+)?)\[([^[\]]+)\]\)?$/.exec(single.trim());
 	return match ? { value: Number(match[1]), unit: match[2] } : null;
 }
 

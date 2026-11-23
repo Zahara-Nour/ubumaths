@@ -1,0 +1,329 @@
+{
+	"id": "bb7bcab6-0a5b-4af4-8ec4-2761300f1cf0",
+	"title": "Coût moyen, prix unitaire",
+	"description": "Coût moyen C(x)/x écrit x + p + q/x ; production qui rend le coût moyen minimal et ce coût ; prix unitaire c + F/n : valeur limite et seuil",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Une entreprise produit $x$ tonnes d'un produit, avec $1\\leqslant x\\leqslant 20$. Le coût de production, en milliers d'euros, est $C(x)=x^2+{{p}}x+{{q}}$. Le coût moyen d'une tonne est $C_M(x)=\\dfrac{C(x)}{x}$.\n\nÉcris $C_M(x)$ sans quotient de polynômes.\n\n$C_M(x)=x+?+\\dfrac{?}{x}$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "4..10"
+				},
+				{
+					"name": "q",
+					"expression": "eval:m^2"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise chaque terme de $C(x)$ par $x$ :",
+					"$C_M(x)=\\dfrac{x^2}{x}+\\dfrac{ {{p}}x}{x}+\\dfrac{ {{q}} }{x}=x+\\textcolor{{{color:primary.0}}}{{{p}}}+\\dfrac{\\textcolor{{{color:primary.0}}}{{{q}}}}{x}$."
+				]
+			}
+		},
+		{
+			"statement": "Une entreprise produit $x$ tonnes d'un produit, avec $1\\leqslant x\\leqslant 20$. Le coût de production, en milliers d'euros, est $C(x)=x^2+{{p}}x+{{q}}$. Le coût moyen d'une tonne est $C_M(x)=\\dfrac{C(x)}{x}$. On a $C_M(x)=x+{{p}}+\\dfrac{ {{q}} }{x}$.\n\nQuelle production rend le coût moyen minimal ?\n\n$x=?$ tonnes",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "4..10"
+				},
+				{
+					"name": "q",
+					"expression": "eval:m^2"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$C_M(x)=x+{{p}}+\\dfrac{ {{q}} }{x}$, donc $C_M'(x)=1-\\dfrac{ {{q}} }{x^2}=\\dfrac{x^2-{{q}} }{x^2}$, du signe de $x^2-{{q}}=(x-{{m}})(x+{{m}})$ : négatif sur $[1\\,;{{m}}[$, positif sur $]{{m}}\\,;20]$.",
+					"```variation\nvariable: x\ndomain: 1, {{m}}, 20\n\nsign: C_M'(x)\n  1,{{m}}: -\n  {{m}}: z\n  {{m}},20: +\n\nvariation: C_M(x)\n  1: {{eval:1+p+q}}, top\n  {{m}}: {{eval:2*m+p}}, bottom\n  20: {{eval:20+p+q/20;d}}, top\n```",
+					"Le coût moyen est minimal pour $\\textcolor{{{color:primary.0}}}{{{m}}}$ tonnes."
+				]
+			}
+		},
+		{
+			"statement": "Une entreprise produit $x$ tonnes d'un produit, avec $1\\leqslant x\\leqslant 20$. Le coût de production, en milliers d'euros, est $C(x)=x^2+{{p}}x+{{q}}$. Le coût moyen d'une tonne est $C_M(x)=\\dfrac{C(x)}{x}$. On a $C_M(x)=x+{{p}}+\\dfrac{ {{q}} }{x}$ ; il est minimal pour ${{m}}$ tonnes.\n\nQuel est ce coût moyen minimal ?\n\n$?$ milliers d'euros par tonne",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "4..10"
+				},
+				{
+					"name": "q",
+					"expression": "eval:m^2"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*m+p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$C_M({{m}})={{m}}+{{p}}+\\dfrac{ {{q}} }{ {{m}} }={{m}}+{{p}}+{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:2*m+p}}}$ milliers d'euros par tonne."
+				]
+			}
+		},
+		{
+			"statement": "Un imprimeur facture une commande de $n$ affiches : ${{F}}$ € de frais fixes, puis ${{c}}$ € par affiche. Le prix unitaire d'une affiche est $P(n)={{c}}+\\dfrac{ {{F}} }{n}$ (en euros).\n\nQuand le nombre d'affiches devient très grand, de quel prix le prix unitaire se rapproche-t-il ?\n\n$?$ €",
+			"variables": [
+				{
+					"name": "F",
+					"expression": "200|300|400|500|600"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $n$ devient très grand, $\\dfrac{ {{F}} }{n}$ se rapproche de $0$ : les frais fixes se partagent entre de plus en plus d'affiches.",
+					"$P(n)$ se rapproche de $\\textcolor{{{color:primary.0}}}{{{c}}}$ € (droite asymptote $y={{c}}$)."
+				]
+			}
+		},
+		{
+			"statement": "Un imprimeur facture une commande de $n$ affiches : ${{F}}$ € de frais fixes, puis ${{c}}$ € par affiche. Le prix unitaire d'une affiche est $P(n)={{c}}+\\dfrac{ {{F}} }{n}$ (en euros).\n\nÀ partir de combien d'affiches le prix unitaire est-il inférieur ou égal à ${{eval:c+d}}$ € ?\n\n$n\\geqslant ?$",
+			"variables": [
+				{
+					"name": "F",
+					"expression": "200|300|400|500|600"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "d",
+					"expression": "1|2|4|5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:F/d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(n)\\leqslant{{eval:c+d}}$ équivaut à $\\dfrac{ {{F}} }{n}\\leqslant{{d}}$, soit $n\\geqslant\\dfrac{ {{F}} }{ {{d}} }={{eval:F/d}}$ ($n>0$).",
+					"À partir de $\\textcolor{{{color:primary.0}}}{{{eval:F/d}}}$ affiches. $P$ est décroissante : plus la commande est grande, plus l'affiche est bon marché."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² + 3x + 49 : 3 et 49",
+			"variationIndex": 0,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["3", "49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3x et 49 (x oublié dans la division)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["3x", "49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "q = 49 : 7 tonnes",
+			"variationIndex": 1,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 49 (q au lieu de √q)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 (borne de l'intervalle)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "CM(7) = 17",
+			"variationIndex": 2,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 (q/m oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C(7) = 119",
+			"variationIndex": 2,
+			"variables": {
+				"m": "7",
+				"q": "49",
+				"p": "3"
+			},
+			"answers": ["119"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P(n) → 5",
+			"variationIndex": 3,
+			"variables": {
+				"F": "300",
+				"c": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 3,
+			"variables": {
+				"F": "300",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 305",
+			"variationIndex": 3,
+			"variables": {
+				"F": "300",
+				"c": "5"
+			},
+			"answers": ["305"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "400/n ⩽ 2 : n ⩾ 200",
+			"variationIndex": 4,
+			"variables": {
+				"F": "400",
+				"c": "3",
+				"d": "2"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 80 (F/(c + d))",
+			"variationIndex": 4,
+			"variables": {
+				"F": "400",
+				"c": "3",
+				"d": "2"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

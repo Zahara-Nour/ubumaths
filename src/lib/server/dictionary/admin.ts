@@ -16,17 +16,17 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { z } from 'zod';
-import type { Database, Json } from '$lib/types/database';
-import { newProblems, type CheckedEntry } from '$lib/dictionary/consistency';
-import type { AdminDictionaryRow, DictionaryVersion } from '$lib/dictionary/admin-draft';
+import type { Database, Json } from '#lib/types/database.ts';
+import { newProblems, type CheckedEntry } from '#lib/dictionary/consistency.ts';
+import type { AdminDictionaryRow, DictionaryVersion } from '#lib/dictionary/admin-draft.ts';
 import {
 	DICTIONARY_COLUMNS,
 	rowToTerm,
 	type DictionaryEntryInput,
 	type DictionaryRow
-} from '$lib/dictionary/entry-schema';
+} from '#lib/dictionary/entry-schema.ts';
 import { forgetDictionary } from './load';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/dictionary/admin');
 
@@ -115,7 +115,9 @@ export async function createEntry(
 	const position = rows.reduce((max, row) => Math.max(max, row.position), -1) + 1;
 	const { data, error } = await supabase
 		.from('dictionary_entries')
-		.insert({ ...toColumns(input), position })
+		// L'adresse est posée par le trigger `dictionary_entries_slug` (terme + sens), qui
+		// écrase toute valeur reçue : la colonne est obligatoire pour le type, pas pour nous.
+		.insert({ ...toColumns(input), position, slug: '' })
 		.select(ADMIN_DICTIONARY_COLUMNS)
 		.single();
 	if (error?.code === '23505')

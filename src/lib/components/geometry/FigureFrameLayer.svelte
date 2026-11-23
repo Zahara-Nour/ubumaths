@@ -13,16 +13,17 @@
 	grille (ou les graduations) disparaît plutôt que de figer l'onglet.
 -->
 <script lang="ts">
-	import type { Viewport } from '$lib/geometry-core/viewport/types';
-	import { buildFigureFrame } from '$lib/ubumark/utils/figure-scene';
-	import { frameToSvg } from '$lib/ubumark/utils/figure-svg';
+	import type { Viewport } from '#lib/geometry-core/viewport/types.ts';
+	import type { ContentLocale } from '#lib/types/locale.ts';
+	import { buildFigureFrame } from '#lib/ubumark/utils/figure-scene.ts';
+	import { frameToSvg } from '#lib/ubumark/utils/figure-svg.ts';
 	import {
 		FIGURE_LIMITS,
 		type FigureHeader,
 		type FigureSize,
 		type FigureStep,
 		type FigureWindow
-	} from '$lib/ubumark/types/figure';
+	} from '#lib/ubumark/types/figure.ts';
 
 	interface Props {
 		header: Pick<FigureHeader, 'axes' | 'grid' | 'ticks'>;
@@ -34,9 +35,11 @@
 		height: number;
 		/** Marge autour de la fenêtre, en px */
 		margin: number;
+		/** Séparateur décimal des graduations (langue du document) ; défaut français */
+		locale?: ContentLocale;
 	}
 
-	let { header, size, viewport, width, height, margin }: Props = $props();
+	let { header, size, viewport, width, height, margin, locale }: Props = $props();
 
 	function tooDense(step: FigureStep, w: FigureWindow): boolean {
 		return (
@@ -62,7 +65,7 @@
 			header.ticks === false ? null : (header.ticks ?? header.grid ?? { x: 1, y: 1 });
 		// Pas explicite : la grille peut avoir disparu, son pas reste celui des graduations
 		const ticks = tickStep === null || tooDense(tickStep, w) ? false : tickStep;
-		const frame = buildFigureFrame({ axes: header.axes, grid, ticks }, w, size);
+		const frame = buildFigureFrame({ axes: header.axes, grid, ticks }, w, size, locale);
 		if (frame === null) return null;
 		const toPx = (x: number, y: number) => ({ x: (x - w.xMin) * ppu, y: (w.yMax - y) * ppu });
 		return frameToSvg(frame, toPx, innerWidth, innerHeight);

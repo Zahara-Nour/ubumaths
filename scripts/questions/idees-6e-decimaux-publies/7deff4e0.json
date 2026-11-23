@@ -1,0 +1,391 @@
+{
+	"id": "7deff4e0-61c6-42bd-8cfb-ddcad1c94b35",
+	"title": "Contrôler par un ordre de grandeur",
+	"description": "Choisir le bon résultat d'un produit ou d'une somme de décimaux (mêmes chiffres, virgule déplacée) ; choisir un ordre de grandeur d'un produit",
+	"grades": ["6"],
+	"level": 3,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Sans poser le calcul, quel est le résultat de ${{a}} \\times {{b}}$ ?\n\n```choix\n- ${{eval:P/1000;d}}$\n- ${{eval:P/100;d}}$\n- ${{eval:P/10;d}}$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "101..999"
+				},
+				{
+					"name": "B",
+					"expression": "11..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:B/10;d"
+				},
+				{
+					"name": "P",
+					"expression": "eval:A*B"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(P,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+					"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/10)}}$, donc ${{a}} \\times {{b}} \\approx {{eval:round(A/10)*round(B/10)}}$.",
+					"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:P/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Sans poser le calcul, quel est le résultat de ${{a}} + {{b}}$ ?\n\n```choix\n- ${{eval:S/1000;d}}$\n- ${{eval:S/100;d}}$\n- ${{eval:S/10;d}}$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "B",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:B/100;d"
+				},
+				{
+					"name": "S",
+					"expression": "eval:10*A+B"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "mod(S,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+					"${{a}} \\approx {{eval:round(A/10)}}$ et ${{b}} \\approx {{eval:round(B/100)}}$, donc ${{a}} + {{b}} \\approx {{eval:round(A/10)+round(B/100)}}$.",
+					"Le seul résultat proche est $\\textcolor{{{color:primary.0}}}{{{eval:S/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Quel est un ordre de grandeur de ${{a}} \\times {{n}}$ ?\n\n```choix\n- ${{eval:10*p*q}}$\n- ${{eval:100*p*q}}$\n- ${{eval:1000*p*q}}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "dl",
+					"expression": "-9..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:100*p+dl"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "el",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*q+el"
+				}
+			],
+			"conditions": ["dl!=0", "el!=0"],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque nombre par un nombre proche, simple à calculer de tête : le résultat exact doit en être proche.",
+					"${{a}} \\approx {{eval:10*p}}$ et ${{n}} \\approx {{eval:10*q}}$, donc ${{a}} \\times {{n}} \\approx {{eval:10*p}} \\times {{eval:10*q}} = \\textcolor{{{color:primary.0}}}{{{eval:100*p*q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On cherche un ordre de grandeur de ${{x}} \\times {{y}}$.\n\nArrondi de ${{x}}$ à la dizaine : $?$\n\nArrondi de ${{y}}$ à l'unité : $?$\n\nOrdre de grandeur du produit : $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "dl",
+					"expression": "-29..29"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(100*p+dl)/10;d"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(10*q+t)/10;d"
+				}
+			],
+			"conditions": ["mod(dl,10)!=0", "t!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*floor((100*p+dl)/100)}}",
+							"message": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : ${{x}}$ est plus près de la dizaine supérieure.",
+							"label": "Troncature"
+						},
+						{
+							"answer": "{{eval:round((100*p+dl)/10)}}",
+							"message": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine.",
+							"label": "Arrondi à l'unité"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor((10*q+t)/10)}}",
+							"message": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : ${{y}}$ est plus près de l'unité supérieure.",
+							"label": "Troncature"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:10*p*q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round((100*p+dl)*(10*q+t)/100)}}",
+							"message": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs.",
+							"label": "Produit exact arrondi"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ordre de grandeur.** On remplace chaque facteur par un nombre proche, simple à calculer de tête.",
+					"${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:10*p}}}$ (à la dizaine) et ${{y}} \\approx \\textcolor{{{color:primary.0}}}{{{q}}}$ (à l'unité).",
+					"${{x}} \\times {{y}} \\approx {{eval:10*p}} \\times {{q}} = \\textcolor{{{color:primary.0}}}{{{eval:10*p*q}}}$."
+				]
+			},
+			"hint": "Pour arrondir à la dizaine, regarde le chiffre des unités ; à l'unité, le chiffre des dixièmes. Puis multiplie les deux arrondis."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "487",
+				"B": "31",
+				"P": "15097",
+				"a": "48.7",
+				"b": "3.1"
+			},
+			"description": "48,7 × 3,1 = 150,97",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "487",
+				"B": "31",
+				"P": "15097",
+				"a": "48.7",
+				"b": "3.1"
+			},
+			"description": "Erreur : 15,097",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "3986",
+				"B": "5125",
+				"S": "44985",
+				"a": "398.6",
+				"b": "51.25"
+			},
+			"description": "398,6 + 51,25 = 449,85",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "3986",
+				"B": "5125",
+				"S": "44985",
+				"a": "398.6",
+				"b": "51.25"
+			},
+			"description": "Erreur : 4 498,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"A": "498",
+				"a": "49.8",
+				"n": "21",
+				"p": "5",
+				"q": "2",
+				"dl": "-2",
+				"el": "1"
+			},
+			"description": "49,8 × 21 ≈ 1 000",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"A": "498",
+				"a": "49.8",
+				"n": "21",
+				"p": "5",
+				"q": "2",
+				"dl": "-2",
+				"el": "1"
+			},
+			"description": "Erreur : 10 000",
+			"variationIndex": 2
+		},
+		{
+			"description": "F10 : 19,8 × 5,1",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"dl": "-2",
+				"q": "5",
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["20", "5", "100"]
+		},
+		{
+			"description": "F10 : produit exact arrondi",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"dl": "-2",
+				"q": "5",
+				"t": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi le produit exact : l'ordre de grandeur se calcule avec les arrondis des deux facteurs."
+			},
+			"answers": ["20", "5", "101"]
+		},
+		{
+			"description": "F10 : troncature de 19,8",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"dl": "-2",
+				"q": "5",
+				"t": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé le chiffre des dizaines sans regarder le chiffre des unités : $19.8$ est plus près de la dizaine supérieure."
+			},
+			"answers": ["10", "5", "100"]
+		},
+		{
+			"description": "F10 : 31,7 × 4,8",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"dl": "17",
+				"q": "5",
+				"t": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30", "5", "150"]
+		},
+		{
+			"description": "F10 : arrondi à l'unité (32)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"dl": "17",
+				"q": "5",
+				"t": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'unité : on demande l'arrondi à la dizaine."
+			},
+			"answers": ["32", "5", "150"]
+		},
+		{
+			"description": "F10 : troncature de 4,8",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"dl": "17",
+				"q": "5",
+				"t": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as gardé la partie entière sans regarder le chiffre des dixièmes : $4.8$ est plus près de l'unité supérieure."
+			},
+			"answers": ["30", "4", "150"]
+		}
+	]
+}

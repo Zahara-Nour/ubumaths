@@ -35,8 +35,9 @@
  * @module ubumark/parser/stat-chart-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { bodyOpensParagraph } from './block-closure';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 import {
 	CLASS_CHART_KINDS,
 	CROSS_TABLE_DISPLAYS,
@@ -47,6 +48,8 @@ import {
 	type LawIndicator,
 	type LawThreshold,
 	SCATTER_INDICATORS,
+	type BoxPlotBox,
+	type BoxPlotData,
 	type ScatterData,
 	type ScatterIndicator,
 	SERIES_MODES,
@@ -67,6 +70,7 @@ import {
 	type StatChartDatum,
 	type StatChartDirection,
 	type StatChartIndicator,
+	type StatChartAxis,
 	type StatChartIssue,
 	type StatChartKind,
 	type StatChartLabels,
@@ -77,23 +81,27 @@ import {
 	type QueryInterval
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
-import { resolveNamedColor } from '$lib/theme/named-colors';
-import { summarizeClasses } from '$lib/statistics/classes';
-import { crossTable } from '$lib/statistics/cross-table';
-import { Fraction } from '$lib/statistics/fraction';
-import { randomVariable } from '$lib/statistics/random-variable';
-import { readListValue } from '$lib/statistics/read-value';
-import { invalidValueReason, readExactValue } from '$lib/statistics/bivariate';
+import { resolveNamedColor } from '#lib/theme/named-colors.ts';
+import { summarizeClasses } from '#lib/statistics/classes.ts';
+import { describeList } from '#lib/statistics/describe.ts';
+import { crossTable } from '#lib/statistics/cross-table.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
+import { randomVariable } from '#lib/statistics/random-variable.ts';
+import { readListValue } from '#lib/statistics/read-value.ts';
+import { invalidValueReason, readExactValue } from '#lib/statistics/bivariate.ts';
 import {
 	changeDomainProblem,
 	readVariableChange,
 	VARIABLE_CHANGE_LIST,
 	type VariableChange
-} from '$lib/statistics/variable-change';
-import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
-import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
-import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
+} from '#lib/statistics/variable-change.ts';
+import { BINOMIAL_MAX_N } from '#lib/statistics/binomial.ts';
+import { GEOMETRIC_MAX_K } from '#lib/statistics/geometric.ts';
+import { UNIFORM_MAX_VALUES } from '#lib/statistics/uniform.ts';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
+import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
+import { isMaskedValue } from '../utils/masked-value';
+import { isOnGraduation } from '../utils/boxplot-placer';
 
 // ============================================================================
 // TYPES
@@ -149,6 +157,14 @@ interface Options {
 	areaQuery: string | null;
 	/** `classes: N` d'une simulation de loi à densité (manche 14) */
 	simulationClasses: number | null;
+	/** Barres : `axe: 0 à 20, de 2 en 2` */
+	axis: StatChartAxis | null;
+	/** Barres : `axe: à choisir` (l'élève choisit l'échelle) */
+	chooseScale: boolean;
+	/** Barres à construire (`placer:`) : noms tels qu'écrits, ou `toutes` ; vérifiés une fois tout lu */
+	placer: string[] | 'toutes' | null;
+	/** Numéro de la première case (`case: N`, posé par le générateur) */
+	caseIndex: number | undefined;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -184,7 +200,7 @@ interface TableRow {
 // ============================================================================
 
 const BLOCK_START_REGEX =
-	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi|simulation|effectifs|nuage)\s*$/;
+	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi|simulation|effectifs|nuage|boite-a-moustaches)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `titre: …` — clé en lettres (accents compris), puis deux-points */
@@ -200,6 +216,12 @@ const PLAIN_NUMBER_REGEX = new RegExp(`^${PLAIN_NUMBER}$`);
 
 /** `[0 ; 10[`, `[0;10[`, `[-2,5 ; 0[` */
 const CLASS_REGEX = new RegExp(`^\\[\\s*(${PLAIN_NUMBER})\\s*;\\s*(${PLAIN_NUMBER})\\s*\\[$`);
+
+/** `0 à 20`, `0 à 20, de 2 en 2` (axe vertical d'un diagramme en barres) */
+const AXIS_REGEX = new RegExp(
+	`^(${PLAIN_NUMBER})\\s*à\\s*(${PLAIN_NUMBER})\\s*(?:,\\s*de\\s*(${PLAIN_NUMBER})\\s*en\\s*(${PLAIN_NUMBER}))?$`,
+	'i'
+);
 
 /** `1 carreau = 2 élèves`, `1 carreau = 2,5` */
 const AREA_LEGEND_REGEX = /^1\s*carreaux?\s*=\s*(\d+(?:[.,]\d+)?)\s*(.*)$/i;
@@ -237,7 +259,10 @@ const OPTION_KEYS = [
 	'seuil',
 	'jusqua',
 	'repartition',
-	'aire'
+	'aire',
+	'axe',
+	'placer',
+	'case'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -284,7 +309,11 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	jusqua: ['loi', 'simulation'],
 	repartition: ['loi'],
 	aire: ['loi'],
-	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
+	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees'],
+	// Diagramme en barres à construire (chantier « réponses à placer », § 17-18)
+	axe: ['barres'],
+	placer: ['barres'],
+	case: ['barres']
 };
 
 /** Options dont l'auteur écrit l'accent */
@@ -308,7 +337,8 @@ const KIND_NAME: Record<StatChartKind, string> = {
 	loi: 'lois de variables aléatoires',
 	simulation: 'simulations',
 	effectifs: 'tableaux d’effectifs',
-	nuage: 'nuages de points'
+	nuage: 'nuages de points',
+	'boite-a-moustaches': 'boîtes à moustaches'
 };
 
 /** Indicateurs d'une loi, tels que l'auteur les écrit */
@@ -410,6 +440,22 @@ const SCATTER_INDICATOR_NAME: Record<ScatterIndicator, string> = {
 	r: 'r'
 };
 
+/** Options d'une boîte à moustaches, sans accent ; `placer:` et `case:` : palier 2 */
+const BOX_PLOT_OPTIONS = [
+	'axe',
+	'titre',
+	'valeurs',
+	'donnees',
+	'description',
+	'taille',
+	'placer',
+	'case'
+] as const;
+type BoxPlotOptionKey = (typeof BOX_PLOT_OPTIONS)[number];
+
+/** Les cinq valeurs d'une boîte, dans l'ordre, telles que les messages les nomment */
+const BOX_PLOT_VALUE_NAMES = ['minimum', 'Q1', 'médiane', 'Q3', 'maximum'] as const;
+
 /** `x = 4,5` ou `y = 25` dans `prévoir:` */
 const PREDICTION_REGEX = /^([xy])\s*=\s*(.+)$/i;
 
@@ -437,6 +483,9 @@ function looksLikeStatChartLine(kind: StatChartKind, line: string): boolean {
 	const trimmed = line.trim();
 	if (trimmed.includes('=')) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
+	if (kind === 'boite-a-moustaches') {
+		return kv !== null && (BOX_PLOT_OPTIONS as readonly string[]).includes(optionKeyOf(kv[1]));
+	}
 	if (kind === 'nuage') {
 		if (SCATTER_DATA_REGEX.test(trimmed)) return true;
 		return kv !== null && (SCATTER_OPTIONS as readonly string[]).includes(optionKeyOf(kv[1]));
@@ -482,6 +531,57 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 		i = end + 1;
 	}
 	return blocks;
+}
+
+/** `axe: à choisir` : l'élève choisit l'échelle */
+const CHOOSE_SCALE = 'à choisir';
+
+/** Ligne `placer:` (ligne rognée) d'un diagramme à construire : barres, boîte à moustaches */
+export const PLACER_LINE_REGEX = /^placer\s*:/i;
+
+/**
+ * Les diagrammes en barres à construire (`placer:`) d'un énoncé, délimités comme
+ * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
+ * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées)
+ */
+export function findBarsToPlace(markdown: string): StatChartToPlace[] {
+	return findStatChartsToPlace(markdown, 'barres');
+}
+
+/** Les boîtes à moustaches à construire (`placer:`, palier 2) d'un énoncé, comme les barres */
+export function findBoxPlotsToPlace(markdown: string): StatChartToPlace[] {
+	return findStatChartsToPlace(markdown, 'boite-a-moustaches');
+}
+
+/** Bloc statistique à construire repéré dans un énoncé */
+interface StatChartToPlace {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}
+
+function findStatChartsToPlace(markdown: string, kind: StatChartKind): StatChartToPlace[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unnestedLine);
+	return findStatChartBlocks(plain)
+		.filter((block) => block.kind === kind)
+		.map((block) => {
+			const closed = block.closed !== false;
+			const body = plain.slice(block.startIndex + 1, closed ? block.endIndex : block.endIndex + 1);
+			return {
+				startIndex: block.startIndex,
+				body,
+				closed,
+				nested: lines[block.startIndex] !== plain[block.startIndex]
+			};
+		})
+		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())));
+}
+
+/** L'énoncé a-t-il un diagramme à construire (barres, boîte à moustaches) ? */
+export function hasStatChartToPlace(markdown: string): boolean {
+	return findBarsToPlace(markdown).length > 0 || findBoxPlotsToPlace(markdown).length > 0;
 }
 
 // ============================================================================
@@ -783,6 +883,23 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				'graine : un entier entre 0 et 999 999 999'
 			);
 			return;
+		case 'axe':
+			if (normalizeKey(value.trim()) === normalizeKey(CHOOSE_SCALE)) options.chooseScale = true;
+			else options.axis = parseAxis(value);
+			return;
+		case 'placer': {
+			const written = value.trim();
+			if (written === '') throw new LineError('placer : nommer les barres à construire, ou toutes');
+			options.placer =
+				normalizeKey(written) === 'toutes' ? 'toutes' : written.split(';').map((n) => n.trim());
+			return;
+		}
+		case 'case':
+			if (!/^\d+$/.test(value.trim())) {
+				throw new LineError(`case « ${value.trim()} » : numéro de case entier`);
+			}
+			options.caseIndex = Number(value.trim());
+			return;
 		case 'masquer':
 			// Tableau d'effectifs (Q130) : résolu une fois les valeurs connues
 			if (kind === 'effectifs') {
@@ -813,6 +930,133 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				});
 			return;
 	}
+}
+
+/** `axe: 0 à 20, de 2 en 2` : depuis 0, entiers, le haut multiple du pas */
+function parseAxis(raw: string): StatChartAxis {
+	const match = AXIS_REGEX.exec(raw.trim());
+	if (!match || (match[3] !== undefined && match[3] !== match[4])) {
+		throw new LineError('axe : écrire « axe: 0 à 20, de 2 en 2 »');
+	}
+	const [low, max] = [toNumber(match[1]), toNumber(match[2])];
+	const step = match[3] === undefined ? 1 : toNumber(match[3]);
+	if (low !== 0) {
+		throw new LineError(
+			`axe : un diagramme en barres part de 0 (écrire axe: 0 à ${formatForMessage(max)})`
+		);
+	}
+	if (max <= 0) throw new LineError('axe : le haut de l’axe doit dépasser 0');
+	if (!Number.isInteger(max) || !Number.isInteger(step) || step <= 0) {
+		throw new LineError('axe : des nombres entiers (des effectifs)');
+	}
+	if (max % step !== 0) {
+		throw new LineError(`axe : ${max} n’est pas un multiple du pas ${step}`);
+	}
+	if (max / step > STAT_CHART_LIMITS.axisTicks) {
+		throw new LineError(
+			`axe : au plus ${STAT_CHART_LIMITS.axisTicks} graduations (agrandir le pas)`
+		);
+	}
+	return { max, step };
+}
+
+/**
+ * Diagramme en barres à construire (`placer:`) et axe écrit (`axe:`), une fois
+ * les données connues : le premier problème, situé ; sinon les rangs des barres
+ * à construire (null sans `placer:`)
+ */
+function checkBarsToPlace(
+	data: readonly StatChartDatum[],
+	unit: StatChartUnit,
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>,
+	twoSeries: boolean
+): { toPlace: number[] | null } | { error: StatChartIssue } {
+	const fail = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	let toPlace: number[] | null = null;
+	if (options.placer !== null) {
+		const line = optionLines.placer ?? 0;
+		if (options.axis === null && !options.chooseScale) {
+			return fail(
+				line,
+				'placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2, ou axe: à choisir) : calculé, il trahirait la plus grande barre'
+			);
+		}
+		if (options.axis !== null && options.axis.max > STAT_CHART_LIMITS.placeAxisMax) {
+			return fail(
+				line,
+				`placer : axe jusqu’à ${STAT_CHART_LIMITS.placeAxisMax} au plus (au-delà, l’élève ne viserait plus l’unité)`
+			);
+		}
+		if (options.showValues) {
+			return fail(line, 'placer : impossible avec valeurs: oui (l’effectif attendu serait écrit)');
+		}
+		// Effectif total, moyenne… : la barre manquante se déduirait (revue de la PR barres)
+		if (options.indicators.length > 0) {
+			return fail(line, 'placer : impossible avec indicateurs: (l’effectif attendu se déduirait)');
+		}
+		if (twoSeries) return fail(line, 'placer : une seule série');
+		if (unit === 'pourcentages') return fail(line, 'placer : des effectifs, pas des pourcentages');
+		const lower = (text: string) => text.toLocaleLowerCase('fr');
+		if (options.placer === 'toutes') toPlace = data.map((_, i) => i);
+		else {
+			const ranks: number[] = [];
+			for (const name of options.placer) {
+				// Le nom exact d'abord : `Lundi` et `lundi` peuvent être deux catégories
+				const exact = data.findIndex((d) => d.label === name);
+				const loose = data.flatMap((d, i) => (lower(d.label) === lower(name) ? [i] : []));
+				if (exact === -1 && loose.length > 1) {
+					return fail(
+						line,
+						`placer : « ${name} » désigne plusieurs catégories (écrire le nom exact)`
+					);
+				}
+				const rank = exact !== -1 ? exact : (loose[0] ?? -1);
+				if (rank === -1) {
+					return fail(line, `placer : « ${name} » n’est pas une catégorie du diagramme`);
+				}
+				if (ranks.includes(rank)) return fail(line, `placer : « ${name} » nommée deux fois`);
+				ranks.push(rank);
+			}
+			toPlace = ranks.sort((a, b) => a - b);
+		}
+		// Effectif décimal : déjà refusé à sa ligne (un effectif est entier)
+	}
+	if (options.chooseScale) {
+		const axeLine = optionLines.axe ?? 0;
+		// Sans échelle, une barre dessinée n'aurait pas de hauteur (§ 24)
+		if (options.placer !== 'toutes') {
+			return fail(
+				axeLine,
+				'axe : à choisir seulement avec placer: toutes (l’élève construit tout le diagramme)'
+			);
+		}
+		const highest = scaleAxis(SCALE_STEPS[SCALE_STEPS.length - 1]).max;
+		const over = data.find((d) => d.value > highest);
+		if (over) {
+			return fail(
+				over.line,
+				`la barre ${over.label} (${formatForMessage(over.value)}) dépasse ${highest} : aucune échelle à choisir ne rentre`
+			);
+		}
+	}
+	if (options.caseIndex !== undefined && options.placer === null) {
+		return fail(optionLines.case ?? 0, 'case: sans objet sans placer:');
+	}
+	if (options.axis !== null) {
+		const axis = options.axis;
+		if (twoSeries) return fail(optionLines.axe ?? 0, 'axe : seulement avec une seule série');
+		const over = data.find((d) => d.value > axis.max);
+		if (over) {
+			return fail(
+				over.line,
+				`la barre ${over.label} (${formatForMessage(over.value)}) dépasse l’axe (0 à ${axis.max})`
+			);
+		}
+	}
+	return { toPlace };
 }
 
 /** Un entier de `min` à `max` ; `10 000` s'écrit avec ses espaces */
@@ -2764,6 +3008,377 @@ function parseScatterContent(source: string): StatChartNode {
 	return { type: 'stat-chart', kind: 'nuage', source, spec, errors, warnings: [] };
 }
 
+// ============================================================================
+// BOÎTE À MOUSTACHES (palier 1 : affichage ; palier 2 : construire)
+// ============================================================================
+
+/** Un nombre d'une boîte ou d'un axe : `28`, `12,5`, `-3`, `−3` */
+function boxNumber(raw: string): number {
+	const text = raw.trim().replaceAll('−', '-');
+	if (text === '') throw new LineError('valeur vide (un « ; » de trop ?)');
+	if (!PLAIN_NUMBER_REGEX.test(text)) {
+		throw new LineError(`« ${raw.trim()} » n’est pas un nombre (écrire par exemple 12 ou 12,5)`);
+	}
+	const value = toNumber(text);
+	if (Math.abs(value) > STAT_CHART_LIMITS.maxValue) {
+		throw new LineError('nombre trop grand (au plus 10^9 en valeur absolue)');
+	}
+	return value;
+}
+
+/** `axe: 25 à 60, de 5 en 5` : départ quelconque, décimaux permis, au plus 40 graduations */
+function parseBoxAxis(raw: string): NonNullable<BoxPlotData['axis']> {
+	const match = AXIS_REGEX.exec(raw.trim());
+	if (!match || (match[3] !== undefined && match[3] !== match[4])) {
+		throw new LineError('axe : écrire « axe: 25 à 60, de 5 en 5 »');
+	}
+	const [min, max] = [boxNumber(match[1]), boxNumber(match[2])];
+	const step = match[3] === undefined ? 1 : boxNumber(match[3]);
+	if (!(max > min)) throw new LineError('axe : le haut de l’axe doit dépasser le bas');
+	if (!(step > 0)) throw new LineError('axe : le pas doit être positif');
+	const ticks = (max - min) / step;
+	if (Math.abs(ticks - Math.round(ticks)) > 1e-9) {
+		throw new LineError(
+			`axe : de ${formatForMessage(min)} à ${formatForMessage(max)}, le pas ${formatForMessage(step)} ne tombe pas juste`
+		);
+	}
+	if (Math.round(ticks) > STAT_CHART_LIMITS.axisTicks) {
+		throw new LineError(
+			`axe : au plus ${STAT_CHART_LIMITS.axisTicks} graduations (agrandir le pas)`
+		);
+	}
+	return { min, max, step };
+}
+
+/**
+ * Les cinq valeurs d'une ligne de boîte, vérifiées une à une puis dans l'ordre ;
+ * null : cinq `?` (énoncé d'évaluation masqué, boîte à construire)
+ */
+function parseBoxValues(raw: string): BoxPlotBox['values'] | null {
+	const texts = raw.split(';');
+	// Un point-virgule final ne compte pas, comme dans `données:`
+	if (texts.length > 1 && texts.at(-1)!.trim() === '') texts.pop();
+	if (texts.length !== 5) {
+		throw new LineError(
+			`${texts.length} valeur${texts.length > 1 ? 's' : ''} : en écrire 5 (minimum ; Q1 ; médiane ; Q3 ; maximum)`
+		);
+	}
+	const masked = texts.filter(isMaskedValue).length;
+	if (masked === 5) return null;
+	if (masked > 0) throw new LineError('« ? » : les cinq valeurs, ou aucune');
+	const values = texts.map(boxNumber) as BoxPlotBox['values'];
+	for (let i = 0; i < 4; i++) {
+		if (values[i] > values[i + 1]) {
+			const [a, b] = [BOX_PLOT_VALUE_NAMES[i], BOX_PLOT_VALUE_NAMES[i + 1]];
+			throw new LineError(
+				`valeurs dans le désordre : ${a === 'médiane' ? 'la médiane' : a} (${formatForMessage(values[i])}) dépasse ${b === 'médiane' ? 'la médiane' : b} (${formatForMessage(values[i + 1])}) ; il faut minimum ⩽ Q1 ⩽ médiane ⩽ Q3 ⩽ maximum`
+			);
+		}
+	}
+	return values;
+}
+
+/**
+ * Bloc ```boite-a-moustaches : une ligne par boîte (`Nom = min ; Q1 ; médiane ;
+ * Q3 ; max`, nom facultatif), ou `données:` — une boîte calculée par
+ * `describe.ts`, jamais un second calcul de quartile.
+ */
+function parseBoxPlotContent(source: string): StatChartNode {
+	const errors: StatChartIssue[] = [];
+	const boxes: BoxPlotBox[] = [];
+	const optionLines: Partial<Record<BoxPlotOptionKey, number>> = {};
+	let axis = null as BoxPlotData['axis'];
+	let axisTitle: string | null = null;
+	let description: string | null = null;
+	let size: CourbeSize = 'moyenne';
+	let showValues = false;
+	let rawValues = null as number[] | null;
+	/** `placer:` : les noms écrits, ou toutes ; null : boîtes à lire */
+	let placer = null as string[] | 'toutes' | null;
+	let caseIndex: number | undefined;
+
+	source.split('\n').forEach((rawLine, index) => {
+		const line = index + 1;
+		const content = rawLine.trim();
+		if (content === '') return;
+		try {
+			const kv = KEY_LINE_REGEX.exec(content);
+			const key = kv === null ? null : optionKeyOf(kv[1]);
+			const isOption = kv !== null && (BOX_PLOT_OPTIONS as readonly string[]).includes(key ?? '');
+			// Une option CONNUE l'emporte ; sinon une ligne à « = » est une boîte (Q8)
+			if (!isOption && content.includes('=')) {
+				const separator = content.indexOf('=');
+				const name = content.slice(0, separator).trim();
+				if (name.length > STAT_CHART_LIMITS.labelLength) {
+					throw new LineError(
+						`nom trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`
+					);
+				}
+				const values = parseBoxValues(content.slice(separator + 1));
+				const wanted = name.toLowerCase();
+				if (boxes.some((box) => (box.name ?? '').toLowerCase() === wanted)) {
+					throw new LineError(
+						name === ''
+							? 'deux boîtes sans nom : donner un nom à chacune'
+							: `deux boîtes s’appellent « ${name} »`
+					);
+				}
+				boxes.push({
+					name: name === '' ? null : name,
+					// `?` : rien à dessiner, le bas de l'axe une fois l'axe lu
+					values: values ?? [0, 0, 0, 0, 0],
+					line,
+					...(values === null && { masked: true as const })
+				});
+				return;
+			}
+			if (kv === null) {
+				throw new LineError('écrire « Nom = min ; Q1 ; médiane ; Q3 ; max » ou « option: valeur »');
+			}
+			if (!isOption) {
+				const choices = BOX_PLOT_OPTIONS.filter((k) => k !== 'case')
+					.map((k) => (k === 'donnees' ? 'données' : k))
+					.join(', ');
+				throw new LineError(`option « ${kv[1]} » inconnue (options : ${choices})`);
+			}
+			const option = key as BoxPlotOptionKey;
+			if (optionLines[option] !== undefined) {
+				throw new LineError(`option « ${kv[1]} » déjà donnée`);
+			}
+			optionLines[option] = line;
+			const value = kv[2];
+			switch (option) {
+				case 'axe':
+					axis = parseBoxAxis(value);
+					return;
+				case 'titre':
+					axisTitle = parseText(value, 'titre');
+					return;
+				case 'description':
+					description = parseText(value, 'description');
+					return;
+				case 'taille':
+					size = oneOf(value, COURBE_SIZES, 'taille');
+					return;
+				case 'valeurs':
+					showValues = yesNo(value, 'valeurs');
+					return;
+				case 'placer': {
+					const written = value.trim();
+					if (written === '') {
+						throw new LineError('placer : nommer les boîtes à construire, ou toutes');
+					}
+					placer =
+						normalizeKey(written) === 'toutes' ? 'toutes' : written.split(';').map((n) => n.trim());
+					return;
+				}
+				case 'case':
+					if (!/^\d+$/.test(value.trim())) {
+						throw new LineError(`case « ${value.trim()} » : numéro de case entier`);
+					}
+					caseIndex = Number(value.trim());
+					return;
+				case 'donnees': {
+					const entries = parseRawEntries(value);
+					if (entries.length > STAT_CHART_LIMITS.rawValues) {
+						throw new LineError(`données : au plus ${STAT_CHART_LIMITS.rawValues} valeurs`);
+					}
+					rawValues = entries.map((entry) => {
+						const number = rawNumber(entry);
+						if (number === null || !Number.isFinite(number)) {
+							throw new LineError(`données : « ${entry} » n’est pas un nombre`);
+						}
+						return number;
+					});
+					return;
+				}
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			errors.push({ message: `Ligne ${line} : ${message}`, line, content });
+		}
+	});
+
+	const fail = (line: number, message: string) =>
+		errors.push({ message: `Ligne ${line} : ${message}`, line });
+	const dataLine = optionLines.donnees;
+	if (errors.length === 0) {
+		if (dataLine !== undefined && boxes.length > 0) {
+			fail(
+				boxes[0].line,
+				'soit « données: … », soit des lignes « Nom = min ; Q1 ; médiane ; Q3 ; max », pas les deux'
+			);
+		} else if (dataLine !== undefined && rawValues !== null) {
+			// La seule source des quartiles du programme (2de) : describe.ts
+			const summary = describeList(rawValues);
+			if (summary === null) fail(dataLine, 'données : aucune valeur');
+			else {
+				boxes.push({
+					name: null,
+					values: [summary.min, summary.q1, summary.median, summary.q3, summary.max],
+					line: dataLine
+				});
+			}
+		} else if (boxes.length === 0) {
+			fail(1, 'aucune boîte : écrire « Nom = min ; Q1 ; médiane ; Q3 ; max » ou « données: … »');
+		} else if (boxes.length > STAT_CHART_LIMITS.boxPlots) {
+			fail(boxes[STAT_CHART_LIMITS.boxPlots].line, `au plus ${STAT_CHART_LIMITS.boxPlots} boîtes`);
+		}
+	}
+	let toPlace: number[] | null = null;
+	if (errors.length === 0) {
+		const checked = checkBoxesToPlace(boxes, placer, axis, showValues, optionLines);
+		if ('error' in checked) errors.push(checked.error);
+		else toPlace = checked.toPlace;
+	}
+	if (errors.length === 0 && caseIndex !== undefined && toPlace === null) {
+		fail(optionLines.case ?? 1, 'case : seulement avec placer:');
+	}
+	if (errors.length === 0 && axis !== null) {
+		const { min, max } = axis;
+		for (const box of boxes) {
+			if (box.masked) {
+				box.values = [min, min, min, min, min];
+				continue;
+			}
+			const outside = box.values.find((value) => value < min || value > max);
+			if (outside !== undefined) {
+				fail(
+					box.line,
+					`${formatForMessage(outside)} est hors de l’axe (${formatForMessage(min)} à ${formatForMessage(max)})`
+				);
+				break;
+			}
+		}
+	}
+
+	const spec: StatChartSpec | null =
+		errors.length === 0
+			? {
+					kind: 'boite-a-moustaches',
+					data: [],
+					unit: 'effectifs',
+					title: null,
+					axes: { x: axisTitle, y: null },
+					description,
+					size,
+					showValues,
+					color: 'bleu',
+					labels: 'pourcentages',
+					areaLegend: null,
+					direction: 'croissantes',
+					reading: 'aucune',
+					indicators: [],
+					table: null,
+					law: null,
+					simulation: null,
+					rawValues: null,
+					frequencyTable: null,
+					series: null,
+					twoSeries: null,
+					scatter: null,
+					boxPlot: {
+						boxes,
+						axis,
+						axisTitle,
+						showValues,
+						fromData: dataLine !== undefined,
+						toPlace
+					}
+				}
+			: null;
+	const withCase = caseIndex === undefined ? {} : { caseIndex };
+	return {
+		type: 'stat-chart',
+		kind: 'boite-a-moustaches',
+		source,
+		spec,
+		errors,
+		warnings: [],
+		...withCase
+	};
+}
+
+/**
+ * `placer:` d'une boîte à moustaches (palier 2) : les rangs des boîtes nommées,
+ * ou de toutes ; les refus du journal § 5. Une boîte `?` (énoncé masqué) doit
+ * être à construire.
+ */
+function checkBoxesToPlace(
+	boxes: readonly BoxPlotBox[],
+	placer: string[] | 'toutes' | null,
+	axis: BoxPlotData['axis'],
+	showValues: boolean,
+	optionLines: Partial<Record<BoxPlotOptionKey, number>>
+): { toPlace: number[] | null } | { error: StatChartIssue } {
+	const fail = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	if (placer === null) {
+		const masked = boxes.find((box) => box.masked);
+		return masked
+			? fail(
+					masked.line,
+					'« ? » à la place des valeurs : seulement pour une boîte à construire (placer:)'
+				)
+			: { toPlace: null };
+	}
+	const line = optionLines.placer ?? 1;
+	if (axis === null) {
+		return fail(
+			line,
+			'placer : écrire aussi l’axe (axe: 0 à 20, de 1 en 1) : calculé, il trahirait le minimum et le maximum'
+		);
+	}
+	if (showValues) {
+		return fail(
+			line,
+			'placer : impossible avec valeurs: oui (les valeurs attendues seraient écrites)'
+		);
+	}
+	let toPlace: number[];
+	if (placer === 'toutes') toPlace = boxes.map((_, i) => i);
+	else {
+		const lower = (text: string) => text.toLocaleLowerCase('fr');
+		toPlace = [];
+		for (const name of placer) {
+			// Noms comparés sans la casse : deux boîtes ne diffèrent jamais que par elle
+			const rank = boxes.findIndex((box) => box.name !== null && lower(box.name) === lower(name));
+			if (rank === -1) {
+				return fail(
+					line,
+					name === ''
+						? 'placer : nom vide (un « ; » de trop ?)'
+						: `placer : « ${name} » n’est pas une boîte du bloc`
+				);
+			}
+			if (toPlace.includes(rank)) return fail(line, `placer : « ${name} » nommée deux fois`);
+			toPlace.push(rank);
+		}
+		toPlace.sort((a, b) => a - b);
+	}
+	const masked = boxes.findIndex((box, i) => box.masked && !toPlace.includes(i));
+	if (masked !== -1) {
+		return fail(
+			boxes[masked].line,
+			'« ? » à la place des valeurs : seulement pour une boîte à construire (placer:)'
+		);
+	}
+	for (const rank of toPlace) {
+		const box = boxes[rank];
+		if (box.masked) continue;
+		const off = box.values.find((value) => !isOnGraduation(axis, value));
+		// Hors de l'axe : dit ensuite, avec le message des boîtes à lire
+		if (off !== undefined && off >= axis.min && off <= axis.max) {
+			return fail(
+				box.line,
+				`${formatForMessage(off)} n’est pas sur une graduation de l’axe (de ${formatForMessage(axis.step)} en ${formatForMessage(axis.step)}) : l’élève ne pourrait pas le placer`
+			);
+		}
+	}
+	return { toPlace };
+}
+
 /** Valeurs écrites toutes égales (exactement : `2` et `2,0` aussi) */
 function allEqual(texts: readonly string[]): boolean {
 	const first = readExactValue(texts[0]);
@@ -2781,6 +3396,8 @@ function allEqual(texts: readonly string[]): boolean {
 export function parseStatChartContent(kind: StatChartKind, source: string): StatChartNode {
 	// Deux séries x / y, pas de catégories : une grammaire à part (manche 15)
 	if (kind === 'nuage') return parseScatterContent(source);
+	// Cinq valeurs par boîte, ou une série brute : une grammaire à part
+	if (kind === 'boite-a-moustaches') return parseBoxPlotContent(source);
 	const errors: StatChartIssue[] = [];
 	const data: StatChartDatum[] = [];
 	// `as` : affectée dans le rappel de `forEach`, que TypeScript ne suit pas
@@ -2828,7 +3445,11 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		upTo: null,
 		cdf: false,
 		areaQuery: null,
-		simulationClasses: null
+		simulationClasses: null,
+		axis: null,
+		chooseScale: false,
+		placer: null,
+		caseIndex: undefined
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
@@ -3101,6 +3722,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				throw new LineError(`au plus ${limit} ${what} dans les ${KIND_NAME[kind]}`);
 			}
 
+			// Barre à construire d'un énoncé d'évaluation notée : effectif de remplacement
+			// (`masked-value.ts`), la barre se dessine en pointillés comme avant
+			if (kind === 'barres' && isMaskedValue(content.slice(separator + 1))) {
+				data.push({ label, value: 0, interval, line });
+				return;
+			}
 			const parsed = parseValue(content.slice(separator + 1));
 			if (unit !== null && unit.value !== parsed.unit) {
 				throw new LineError(
@@ -3406,6 +4033,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		}
 	}
 
+	let toPlace: number[] | null = null;
+	if (errors.length === 0 && kind === 'barres') {
+		const checked = checkBarsToPlace(data, dataUnit, options, optionLines, twoSeries !== null);
+		if ('error' in checked) errors.push(checked.error);
+		else toPlace = checked.toPlace;
+	}
+
 	const spec: StatChartSpec | null =
 		errors.length === 0
 			? {
@@ -3430,11 +4064,15 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					frequencyTable,
 					series,
 					twoSeries,
-					scatter: null
+					scatter: null,
+					axis: options.axis,
+					toPlace,
+					chooseScale: options.chooseScale
 				}
 			: null;
 
-	return { type: 'stat-chart', kind, source, spec, errors, warnings };
+	const withCase = options.caseIndex === undefined ? {} : { caseIndex: options.caseIndex };
+	return { type: 'stat-chart', kind, source, spec, errors, warnings, ...withCase };
 }
 
 /**

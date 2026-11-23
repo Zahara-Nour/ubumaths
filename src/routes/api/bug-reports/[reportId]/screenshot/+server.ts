@@ -11,13 +11,17 @@
  * Allowed types: image/jpeg, image/png, image/gif, image/webp
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { MAX_IMAGE_SIZE_BYTES, validateFileSignature } from '$lib/server/validation/image-upload';
-import { DISPLAY_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import {
+	MAX_IMAGE_SIZE_BYTES,
+	validateFileSignature
+} from '#lib/server/validation/image-upload.ts';
+import { DISPLAY_SIGNED_URL_TTL } from '#lib/server/bug-report-screenshots.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { toBrowserAddress } from '#lib/utils/supabase-address.ts';
 
 const logger = createServerLogger('api/bug-reports/[reportId]/screenshot/+server');
 
@@ -154,10 +158,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Impossible de charger les données');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			data: {
-				url: signed?.signedUrl ?? null,
+				url: signed?.signedUrl ? toBrowserAddress(signed.signedUrl) : null,
 				path: storagePath,
 				size: file.size,
 				mimeType: file.type

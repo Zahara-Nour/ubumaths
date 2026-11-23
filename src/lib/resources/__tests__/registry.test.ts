@@ -15,7 +15,7 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
+import { parseMarkdown } from '#lib/ubumark/parser/markdown-parser.ts';
 import {
 	RESOURCE_KINDS,
 	RESOURCE_REGISTRY,
@@ -229,7 +229,7 @@ describe('isResourceKind', () => {
 
 describe('ubumark vocabulary stays in sync', () => {
 	// `src/lib/ubumark` is self-contained by design (it imports nothing from the
-	// rest of $lib), so its inline-link whitelist is a second list of the same
+	// rest of #lib), so its inline-link whitelist is a second list of the same
 	// vocabulary. This test is what keeps the two from drifting apart again.
 	it.each([...RESOURCE_KINDS])('parses [[%s:uuid|label]] as an internal link', (kind) => {
 		const ast = parseMarkdown(`[[${kind}:${SENTINEL.id}|Une ressource]]`);

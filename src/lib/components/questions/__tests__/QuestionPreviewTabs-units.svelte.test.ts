@@ -6,12 +6,13 @@
  */
 
 import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
+import { tick } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import QuestionPreviewTabs from '../QuestionPreviewTabs.svelte';
-import TestInteractive from '$lib/components/test/TestInteractive.svelte';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import { UNITS_LAYOUT_ID } from '$lib/questions/units/keyboard-units';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import TestInteractive from '#lib/components/test/TestInteractive.svelte';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import { UNITS_LAYOUT_ID } from '#lib/questions/units/keyboard-units.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { MathfieldElement, VirtualKeyboardKeycap, VirtualKeyboardLayout } from 'mathlive';
 
 const statement =
@@ -28,8 +29,6 @@ function unitInstance(): QuestionInstance {
 		statement,
 		blanks,
 		grades: ['6'],
-		theme: 'Grandeurs',
-		domain: 'Grandeurs et mesures',
 		level: 1,
 		generatedAt: new Date().toISOString()
 	} as QuestionInstance;
@@ -114,13 +113,18 @@ describe('QuestionPreviewTabs — touches d’unités (Entraînement)', () => {
 			target: mainElement(),
 			props: {
 				// Item tel que buildSeriesItems le construit : sans unitKeys
-				items: [{ instance: unitInstance(), delaySeconds: 600, categoryKey: 'x' }],
+				items: [{ instance: unitInstance(), delaySeconds: 600, templateId: 'x' }],
 				isLoggedIn: true,
 				onComplete: vi.fn(),
 				onRestart: vi.fn(),
 				onBack: vi.fn()
 			}
 		});
+		// Entraînement libre : passer la page d'attente
+		[...serie.container.querySelectorAll('button')]
+			.find((b) => b.textContent?.trim() === "C'est parti !")
+			?.click();
+		await tick();
 		const serieKeys = await unitKeysOffered(serie.container);
 		await serie.unmount();
 

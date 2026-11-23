@@ -13,7 +13,7 @@
  * @module ubumark/utils/stat-chart-text
  */
 
-import type { ContentLocale } from '$lib/types/locale';
+import type { ContentLocale } from '#lib/types/locale.ts';
 import type { FrequencyTableRow, StatChartDirection } from '../types/stat-chart';
 
 /** Lignes possibles d'un tableau d'indicateurs (`.comparer`, deux séries) */
@@ -40,6 +40,8 @@ interface StatText {
 	};
 	/** Titres d'axe par défaut */
 	axis: { count: string; relative: string; cumulative: string };
+	/** Barre à construire (`placer:`), dans la description accessible : son effectif est tu */
+	toBuild: string;
 	/** Noms des indicateurs (lignes « Moyenne = 12 », en-têtes des tableaux) */
 	rows: Record<IndicatorRowId, string>;
 	/** « Effectif total : 8 » */
@@ -119,6 +121,17 @@ interface StatText {
 		/** Loi normale : les deux classes du bord comptent ce qui dépasse μ ± 3σ */
 		overflowBoth: (low: string, below: string, high: string, beyond: string) => string;
 	};
+	/** Boîte à moustaches ; nombres déjà écrits selon la langue */
+	boxPlot: {
+		title: string;
+		/**
+		 * Phrase lue par le lecteur d'écran, une par boîte : « Boîte Nautic :
+		 * minimum 28, premier quartile 30, … » ; sans nom, « Boîte à moustaches : … »
+		 */
+		sentence: (name: string | null, values: readonly string[]) => string;
+		/** Boîte à construire (`placer:`) : « Boîte Notes : à construire. » */
+		toBuild: (name: string | null) => string;
+	};
 	/** Nuage de points (```nuage, manche 15) ; nombres déjà écrits selon la langue */
 	scatter: {
 		title: string;
@@ -168,6 +181,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			relative: 'Fréquence (%)',
 			cumulative: 'Fréquence cumulée (%)'
 		},
+		toBuild: 'à construire',
 		rows: {
 			count: 'Effectif',
 			mean: 'Moyenne',
@@ -247,6 +261,12 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			overflowBoth: (low, below, high, beyond) =>
 				`la première classe compte aussi les tirages en deçà de ${low} (ici ${below}), la dernière ceux au-delà de ${high} (ici ${beyond})`
 		},
+		boxPlot: {
+			title: 'Boîte à moustaches',
+			sentence: (name, [min, q1, median, q3, max]) =>
+				`${name === null ? 'Boîte à moustaches' : `Boîte ${name}`} : minimum ${min}, premier quartile ${q1}, médiane ${median}, troisième quartile ${q3}, maximum ${max}.`,
+			toBuild: (name) => `${name === null ? 'Boîte à moustaches' : `Boîte ${name}`} : à construire.`
+		},
 		scatter: {
 			title: 'Nuage de points',
 			points: (count) => `Nuage de ${count} points`,
@@ -283,6 +303,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			relative: 'Relative frequency (%)',
 			cumulative: 'Cumulative relative frequency (%)'
 		},
+		toBuild: 'to draw',
 		rows: {
 			count: 'Frequency',
 			mean: 'Mean',
@@ -361,6 +382,12 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 				`the last class also counts the draws beyond ${bound} (here ${count})`,
 			overflowBoth: (low, below, high, beyond) =>
 				`the first class also counts the draws below ${low} (here ${below}), the last those beyond ${high} (here ${beyond})`
+		},
+		boxPlot: {
+			title: 'Box plot',
+			sentence: (name, [min, q1, median, q3, max]) =>
+				`${name === null ? 'Box plot' : `Box ${name}`}: minimum ${min}, lower quartile ${q1}, median ${median}, upper quartile ${q3}, maximum ${max}.`,
+			toBuild: (name) => `${name === null ? 'Box plot' : `Box ${name}`}: to be drawn.`
 		},
 		scatter: {
 			title: 'Scatter plot',

@@ -9,11 +9,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { evaluate } from '$lib/mathAST/eval';
-import { substitute } from '$lib/mathAST/eval/substitute';
-import { number } from '$lib/mathAST/factory';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { substitute } from '#lib/mathAST/eval/substitute.ts';
+import { number } from '#lib/mathAST/factory.ts';
 import { Atelier } from '../atelier.svelte';
 import { runInput, type CalcResult, type CalcSession } from '../calcul';
 import { graphLatexOf } from '../engine';
@@ -186,7 +186,7 @@ describe('un angle en degrés pris par cos, sin, tan dans une fonction ou une su
 
 	it('.résoudre h(x)=1 avec h(x) = cos(60°)·x : x = 2, sans cosinus d’une grandeur', () => {
 		const { result } = typed('h(x) = cos(60°)*x', '.résoudre h(x)=1');
-		expect(result.kind === 'commande' && result.latex).toBe('x = 2');
+		expect(result.kind === 'commande' && result.latex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 
 	it('.évaluer cos(60°)*x en x=2 : 1', () => {

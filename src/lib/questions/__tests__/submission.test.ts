@@ -1,13 +1,13 @@
 /**
  * Copie d'une évaluation telle que la page l'envoie (chantier 5, relecture) :
- * une case trop longue, trop de cases ou un choix hors bornes ne doivent pas
+ * une case trop longue ou trop de cases ne doivent pas
  * faire refuser TOUTE la copie par Zod. La page tronque ou limite.
  */
 import { describe, it, expect } from 'vitest';
 import { toSubmission } from '../submission';
-import { submitAttemptSchema } from '$lib/server/validation/evaluations';
-import type { TestAnswerResult } from '$lib/types/test';
-import type { QuestionInstance } from '$lib/questions/types';
+import { submitAttemptSchema } from '#lib/server/validation/evaluations.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import type { QuestionInstance } from '#lib/questions/types.ts';
 
 function answer(
 	value: TestAnswerResult['userAnswer'] extends infer A ? A : never
@@ -20,7 +20,7 @@ function answer(
 	};
 }
 
-function data(value: string | string[] | number | number[]) {
+function data(value: string | string[]) {
 	return answer({ value, isCorrect: false, timeSpent: 12.6, attempts: 1, submittedAt: '' });
 }
 
@@ -37,18 +37,6 @@ describe('toSubmission', () => {
 		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
 	});
 
-	it('choix hors bornes ou non entiers : écartés', () => {
-		const submission = toSubmission([0], [data([0.5, 1, 99, -1])]);
-		expect(submission.answers[0].choices).toEqual([1]);
-		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
-	});
-
-	it('QCM à plusieurs réponses (V5) : tous les choix cochés, sans doublon', () => {
-		const submission = toSubmission([0], [data([2, 0, 2, 3])]);
-		expect(submission.answers[0].choices).toEqual([2, 0, 3]);
-		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
-	});
-
 	it('plus de 500 questions : les 500 premières (le reste compte vide côté serveur)', () => {
 		const positions = Array.from({ length: 520 }, (_, i) => i);
 		const submission = toSubmission(
@@ -59,15 +47,35 @@ describe('toSubmission', () => {
 		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
 	});
 
-	it('rien tapé (chrono écoulé) ou pas de réponse : question vide', () => {
+	it('rien tapé (chrono écoulé) ou pas de réponse : question vide, sa durée part quand même', () => {
 		const submission = toSubmission([0, 1], [data(''), answer(undefined)]);
-		expect(submission.answers).toEqual([{ position: 0 }, { position: 1 }]);
+		expect(submission.answers).toEqual([{ position: 0, timeSpent: 13 }, { position: 1 }]);
+		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
 	});
 
-	it('QCM à choix unique : un nombre → une liste ; temps arrondi', () => {
-		expect(toSubmission([3], [data(2)]).answers[0]).toEqual({
+	it('fin de la question (PR 4 bis) : envoyée avec la réponse, même vide', () => {
+		const typed = { ...data(['7']), endReason: 'validated' as const };
+		const empty = { ...data(''), endReason: 'timeout' as const };
+		const left = { ...answer(undefined), endReason: 'timeout' as const };
+		const submission = toSubmission([0, 1, 2], [typed, empty, left]);
+		expect(submission.answers).toEqual([
+			{ position: 0, values: ['7'], timeSpent: 13, endReason: 'validated' },
+			{ position: 1, timeSpent: 13, endReason: 'timeout' },
+			{ position: 2, endReason: 'timeout' }
+		]);
+		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
+	});
+
+	it('fin inconnue refusée par le schéma', () => {
+		expect(
+			submitAttemptSchema.safeParse({ answers: [{ position: 0, endReason: 'abandon' }] }).success
+		).toBe(false);
+	});
+
+	it('case choix : sa valeur (indices « 0;2 ») part telle quelle ; temps arrondi', () => {
+		expect(toSubmission([3], [data(['0;2'])]).answers[0]).toEqual({
 			position: 3,
-			choices: [2],
+			values: ['0;2'],
 			timeSpent: 13
 		});
 	});

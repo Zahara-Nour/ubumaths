@@ -5,10 +5,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput } from '../calcul';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { readableText } from '$lib/mathAST/variations/display';
+import { parseCustomSafe } from '#lib/mathAST/parser/custom/index.ts';
+import { readableText } from '#lib/mathAST/variations/display.ts';
 
 function output(input: string): string {
 	const result = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input);
@@ -117,11 +117,11 @@ describe('.variations : racine cubique écrite ∛, pas √ (seconde revue)', ()
 
 describe('.résoudre : x^{p/q} = c, q impair (troisième revue)', () => {
 	it.each([
-		['.résoudre x^(2/3)=4', 'x = -8 ou x = 8'],
-		['.résoudre x^(-2/3)=4', 'x = -1/8 ou x = 1/8'],
-		['.résoudre (x-1)^(2/3)=4', 'x = -7 ou x = 9'],
-		['.résoudre x^(2/3)=x', 'x = 0 ou x = 1'],
-		['.résoudre x^(1/3)=x^3', 'x = -1 ou x = 0 ou x = 1']
+		['.résoudre x^(2/3)=4', 'S = {-8 ; 8}'],
+		['.résoudre x^(-2/3)=4', 'S = {-1/8 ; 1/8}'],
+		['.résoudre (x-1)^(2/3)=4', 'S = {-7 ; 9}'],
+		['.résoudre x^(2/3)=x', 'S = {0 ; 1}'],
+		['.résoudre x^(1/3)=x^3', 'S = {-1 ; 0 ; 1}']
 	])('%s', (input, expected) => {
 		expect(output(input)).toContain(expected);
 	});

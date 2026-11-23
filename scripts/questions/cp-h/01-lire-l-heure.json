@@ -1,10 +1,8 @@
 {
+	"id": "9780d3c1-bb3b-4519-bd0f-032fa27e8e1f",
 	"title": "Quelle heure est-il ? (heures entières)",
 	"description": "Lire une heure entière sur une horloge à aiguilles (1 à 12 heures)",
 	"grades": ["CP"],
-	"theme": "Grandeurs",
-	"domain": "Durées",
-	"subdomain": "Lire l'heure",
 	"level": 1,
 	"delay": 30,
 	"status": "draft",

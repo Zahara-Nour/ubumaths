@@ -25,7 +25,7 @@
 	@see src/lib/shared/parameterization for variable system
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		Bold,
 		Italic,
@@ -46,8 +46,9 @@
 	} from '@lucide/svelte';
 	import MarkdownRenderer from './MarkdownRenderer.svelte';
 	import type { ImageUploadConfig } from './types';
-	import type { Variable } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { Variable } from '#lib/ubumark/index.ts';
+	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import { toStoredAddress } from '#lib/utils/supabase-address.ts';
 
 	// Props
 	interface Props {
@@ -291,7 +292,7 @@
 
 				const imageName = file.name.replace(/\.[^/.]+$/, '');
 				const altText = imageName.replace(/[-_]/g, ' ');
-				const markdown = `![${altText}](${publicUrl})`;
+				const markdown = `![${altText}](${toStoredAddress(publicUrl)})`;
 
 				if (onImageInsert) {
 					onImageInsert(markdown);

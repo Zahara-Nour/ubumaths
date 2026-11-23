@@ -18,8 +18,10 @@ import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { REFERENCE_DICTIONARY } from '../fixtures/lexique/dictionnaire-reference';
 import { READING_WORDS_2026_10_11 } from '../fixtures/lexique/mots-lecture-2026-10-11';
-import type { Database } from '$lib/types/database';
-import { forgetDictionary, loadDictionary } from '$lib/server/dictionary/load';
+import { withConsigneVerbs } from '../fixtures/lexique/verbes-consigne-2026-11-16';
+import { withSeoExamples } from '../fixtures/lexique/exemples-seo-2026-11-21';
+import type { Database } from '#lib/types/database.ts';
+import { forgetDictionary, loadDictionary } from '#lib/server/dictionary/load.ts';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
@@ -68,6 +70,8 @@ async function seedEntry(suffix: string, hidden: boolean): Promise<string> {
 	const { data, error } = await service
 		.from('dictionary_entries')
 		.insert({
+			// Adresse posée par le trigger `dictionary_entries_slug` : la valeur reçue est écrasée
+			slug: '',
 			position: 100000,
 			term: `${TAG} ${suffix}`,
 			grade: '6',
@@ -114,10 +118,9 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 
 	it('1. un visiteur lit exactement les entrées du fichier puis les ajouts, dans leur ordre', async () => {
 		const entries = await loadDictionary(anon);
-		expect(entries.filter((e) => !e.term.startsWith(TAG))).toEqual([
-			...REFERENCE_DICTIONARY,
-			...READING_WORDS_2026_10_11
-		]);
+		expect(entries.filter((e) => !e.term.startsWith(TAG))).toEqual(
+			withSeoExamples(withConsigneVerbs([...REFERENCE_DICTIONARY, ...READING_WORDS_2026_10_11]))
+		);
 	});
 
 	it('4. une entrée masquée n’est lue ni par un visiteur, ni par l’admin', async () => {
@@ -152,6 +155,7 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 
 	it('une image hébergée ailleurs (`//hôte/…`) est refusée par la base', async () => {
 		const { error } = await service.from('dictionary_entries').insert({
+			slug: '',
 			position: 100000,
 			term: `${TAG} image`,
 			grade: '6',
@@ -160,6 +164,7 @@ describe('Dictionnaire en base — lecture par le site (loadDictionary)', () => 
 		});
 		expect(error?.code).toBe('23514');
 		const { error: ok } = await service.from('dictionary_entries').insert({
+			slug: '',
 			position: 100000,
 			term: `${TAG} image du site`,
 			grade: '6',

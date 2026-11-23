@@ -14,6 +14,17 @@
 	avec la réponse de l'élève, statut global du barème de l'entraînement (Q105).
 	Carte de cours : verso inchangé (`CourseCardBack`).
 
+	Aucune trace envoyée d'ici : la forme de série qui l'affiche s'en charge
+	(`series-trace.ts`, ADR 0038). `flipOnSubmit` (forme Saisie) : la carte se
+	retourne d'elle-même après « Valider », juste ou faux.
+
+	Coup de pouce (idée 5 du chantier `idees-format`) : `showHint` (Saisie,
+	Flash-cards, révision ; jamais en évaluation, Contrôle blanc, Course aux
+	nombres ni combat) montre le bouton « Coup de pouce » sous l'énoncé quand la
+	variation a un indice (`instance.hint`, hors carte de cours). Un clic l'ouvre,
+	il reste ouvert ; `onHintOpen` prévient la forme (trace « avec indice »,
+	demi-réussite). Rendu comme une étape de correction, version détaillée.
+
 	Props:
 	- interactive: boolean (default: false) - Enable answer validation
 	- instance: QuestionInstance (pre-generated)
@@ -22,48 +33,46 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType, isCourseQuestion } from '#lib/questions/types.ts';
+	import type { AnswerData, QuestionStats } from '#lib/types/question-display.ts';
 	import {
 		validateAnswer,
 		validateAnswerDetailed,
 		type DetailedVerdict,
 		type StudentAnswer
-	} from '$lib/utils/answer-validator';
-	import { isDisplayedChoiceCorrect, toOriginalChoiceIndexes } from '$lib/questions/choices';
-	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
+	} from '#lib/utils/answer-validator.ts';
+	import { buildExpectedResult, showsInstructionOnly } from '#lib/questions/expected-result.ts';
 	import {
 		globalVerdictOf,
 		instructionOf,
 		trainingStatus
-	} from '$lib/questions/correction-card-verdict';
+	} from '#lib/questions/correction-card-verdict.ts';
 	import { computeBlankColors } from './blank-verdicts';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { templateGenericFunctions } from '$lib/questions/generic-functions';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import { templateGenericFunctions } from '#lib/questions/generic-functions.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 	import {
 		digitGroupingOf,
 		provideDigitGrouping
-	} from '$lib/components/markdown/content-digit-grouping';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
-	import { cn } from '$lib/utils';
-	import FlipCard from '$lib/components/FlipCard.svelte';
-	import { createLogger } from '$lib/utils/logger';
+	} from '#lib/components/markdown/content-digit-grouping.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { RotateCw, Check, X, AlertCircle, TriangleAlert, Lightbulb } from '@lucide/svelte';
+	import { splitCorrectionDetail } from '#lib/questions/correction-detail.ts';
+	import { cn } from '#lib/utils.ts';
+	import FlipCard from '#lib/components/FlipCard.svelte';
 
 	// Input components
-	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
-	import { toFrenchDecimal } from '$lib/utils/french-math';
-	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
+	import FillBlanksInput from '#lib/components/question-inputs/FillBlanksInput.svelte';
+	import { toFrenchDecimal } from '#lib/utils/french-math.ts';
 	import CourseCardBack from './CourseCardBack.svelte';
 	import CorrectionView from './CorrectionView.svelte';
 	import ExpectedResultView from './ExpectedResultView.svelte';
-	import { provideQuestionLexicon } from '$lib/components/markdown/lexicon-context';
-
-	const logger = createLogger('FlashCard');
+	import { provideQuestionLexicon } from '#lib/components/markdown/lexicon-context.ts';
+	import LexiconToggle from './LexiconToggle.svelte';
+	import LexiconOff from '#lib/components/markdown/LexiconOff.svelte';
 
 	// Props
 	interface Props {
@@ -89,6 +98,12 @@
 		flippable?: boolean;
 		/** Carte présentée côté verso dès l'affichage (grille des corrections) */
 		startFlipped?: boolean;
+		/** Forme Saisie : la carte se retourne après « Valider », juste ou faux (N2) */
+		flipOnSubmit?: boolean;
+		/** Bouton « Coup de pouce » permis par la forme (idée 5) ; défaut : non */
+		showHint?: boolean;
+		/** Coup de pouce ouvert (une fois par question) */
+		onHintOpen?: () => void;
 	}
 
 	let {
@@ -104,18 +119,26 @@
 		maxAttempts = 0,
 		height = undefined,
 		flippable = true,
-		startFlipped = false
+		startFlipped = false,
+		flipOnSubmit = false,
+		showHint = false,
+		onHintOpen
 	}: Props = $props();
 
-	// Mots cliquables dans l'énoncé et la correction
-	provideQuestionLexicon(() => instance.grades);
+	// Mots cliquables dans l'énoncé du recto ; le verso n'en a aucun (R2, `LexiconOff`)
+	// Question de cours : seuls les mots marqués `{.def}` (R4, chantier mots-cliquables)
+	provideQuestionLexicon(
+		() => instance.grades,
+		() => true,
+		() => isCourseQuestion(instance)
+	);
 
 	// ============================================================================
 	// STATE MANAGEMENT
 	// ============================================================================
 
 	// Answer state
-	let userAnswer = $state<string | string[] | number | number[]>('');
+	let userAnswer = $state<string | string[]>('');
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
 	let isCorrect = $state(false);
@@ -132,7 +155,6 @@
 	let isFlipped = $state(startFlipped);
 
 	// Type-specific state
-	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
 	let fillBlankValuesLatex = $state<string[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
@@ -142,6 +164,9 @@
 	// régénéré) retrouve un verso sans réponse (R9). `raw` : comparée par identité
 	// à l'instance reçue (un proxy profond ne lui serait jamais égal)
 	let submitted = $state.raw<{ instance: QuestionInstance; answer: StudentAnswer } | null>(null);
+	// Coup de pouce ouvert, rattaché à SON instance (comme `submitted`) : une autre
+	// question repart fermée
+	let hintOpenedFor = $state.raw<QuestionInstance | null>(null);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -166,17 +191,14 @@
 		return minDigits === undefined ? {} : { minDigits };
 	};
 
-	// Choix dans l'ordre affiché, chacun marqué juste ou faux À SA POSITION AFFICHÉE
-	// (sans `isCorrect`, le choix coché était toujours barré après validation)
-	const displayedChoices = $derived(
-		(instance.shuffledChoices ?? []).map((choice, position) => ({
-			...choice,
-			isCorrect: isDisplayedChoiceCorrect(instance, position)
-		}))
-	);
-
 	// Carte de cours (#617) : recto = énoncé, verso = correction, pas de réponse
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
+
+	// Coup de pouce (idée 5) : version détaillée, comme une étape de correction
+	const hintMarkdown = $derived(
+		showHint && !isCourseCard && instance.hint ? splitCorrectionDetail(instance.hint).detailed : ''
+	);
+	const hintOpen = $derived(hintOpenedFor !== null && hintOpenedFor === instance);
 
 	// Résultat attendu du verso (R14) : avec la réponse validée s'il y en a une
 	const studentAnswer = $derived(
@@ -243,10 +265,6 @@
 			blankUnoptimalResults = [];
 			blankFeedback = [];
 		}
-
-		if (getQuestionType(instance) === 'multiple_choice' && instance.shuffledChoices) {
-			selectedChoices = [];
-		}
 	});
 
 	// ============================================================================
@@ -265,8 +283,6 @@
 						blank.construction.work ||
 						(fillBlankValues[index] ?? '').trim() !== ''
 				);
-			case 'multiple_choice':
-				return selectedChoices.length > 0;
 			default:
 				return false;
 		}
@@ -277,44 +293,8 @@
 		return Math.round((Date.now() - startTime) / 1000);
 	}
 
-	function prepareAnswerValue(): string | string[] | number | number[] {
-		switch (getQuestionType(instance)) {
-			case 'fill_in_blanks':
-				return fillBlankValues;
-			case 'multiple_choice': {
-				// Positions cliquées (ordre affiché, mélangé) → indices d'origine : ceux que
-				// compare `validateAnswer` et ceux qui sont enregistrés.
-				const originalIndexes = toOriginalChoiceIndexes(instance, selectedChoices);
-				return instance.multipleAnswers ? originalIndexes : originalIndexes[0];
-			}
-			default:
-				return userAnswer;
-		}
-	}
-
-	// ============================================================================
-	// SKILL TRACKING
-	// ============================================================================
-
-	/**
-	 * Fire-and-forget POST to /api/skill-attempts.
-	 * Fail-silent: network errors are logged but never surfaced to the student.
-	 * The API inserts one skill_attempts row per family-knowledge skill tagged
-	 * on the template. If no skills are tagged yet, the API returns { inserted: 0 }
-	 * with no error — that is the expected state for most templates (decision phase 2).
-	 */
-	async function trackSkillAttempt(template_id: string, success: boolean): Promise<void> {
-		try {
-			await fetch('/api/skill-attempts', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ template_id, success, with_help: false })
-			});
-			// Response is intentionally ignored — fail-silent strategy
-		} catch (err) {
-			// Network-level error (fetch itself threw) — log but do not block UX
-			logger.warn('Failed to track skill attempt (network error)', err);
-		}
+	function prepareAnswerValue(): string | string[] {
+		return getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValues : userAnswer;
 	}
 
 	// ============================================================================
@@ -335,10 +315,7 @@
 		// Réponse telle que le validateur l'a lue, pour le résultat attendu du verso
 		submitted = {
 			instance,
-			answer:
-				getQuestionType(instance) === 'multiple_choice'
-					? { choiceIndexes: toOriginalChoiceIndexes(instance, selectedChoices) }
-					: { values: [...fillBlankValues], latex: [...fillBlankValuesLatex] }
+			answer: { values: [...fillBlankValues], latex: [...fillBlankValuesLatex] }
 		};
 		isCorrect = validationResult.isCorrect;
 		validationFeedback = validationResult.feedback || '';
@@ -357,13 +334,6 @@
 		isSubmitted = true;
 		isSubmitting = false;
 
-		// Track skill attempt (fire-and-forget, fail-silent).
-		// Only in interactive mode and when the template has a known ID.
-		// with_help is always false in V1 — FlashCard has no help mechanism (decision 58).
-		if (interactive && instance.templateId) {
-			void trackSkillAttempt(instance.templateId, isCorrect);
-		}
-
 		onAnswerSubmit?.(answerData);
 
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
@@ -372,7 +342,11 @@
 			blankUnoptimalResults = colors.unoptimal;
 		}
 
-		if (!isCorrect && showCorrectionOnWrong) {
+		if (flipOnSubmit) {
+			// Saisie : sa réponse face à la bonne, puis la correction (verso R1-R7)
+			isFlipped = true;
+			onFlip?.(true);
+		} else if (!isCorrect && showCorrectionOnWrong) {
 			setTimeout(() => {
 				isFlipped = true;
 				onFlip?.(true);
@@ -384,6 +358,12 @@
 				completeQuestion();
 			}, 1000);
 		}
+	}
+
+	function handleHintOpen() {
+		if (hintOpen) return;
+		hintOpenedFor = instance;
+		onHintOpen?.();
 	}
 
 	function handleFlip() {
@@ -424,10 +404,14 @@
 		{#snippet front()}
 			<div class="face relative h-full">
 				<!-- Recto allégé : ni titre, ni badge du type, ni sous-titre, ni encadré.
-				     Hauteur imposée : la carte défile, place réservée en bas au bouton de retournement
-				     (frère de la carte, il ne défile pas). -->
-				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
+				     Hauteur imposée : la carte défile. Carte retournable : place réservée en bas au
+				     bouton de retournement (frère de la carte, il ne défile pas). -->
+				<Card.Root
+					class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
+				>
 					<Card.Content class="space-y-6">
+						<!-- Bouton « Mots du dictionnaire » (R6), avant l'énoncé dans l'ordre de tabulation -->
+						<LexiconToggle class="float-right -mt-2 -mr-2 ml-2" />
 						{#if instance.exerciseInstruction}
 							<p class="text-base font-medium text-muted-foreground">
 								{instance.exerciseInstruction}
@@ -462,21 +446,29 @@
 							</div>
 						</div>
 
-						<!-- Multiple choice: always show choices (disabled when non-interactive) -->
-						{#if getQuestionType(instance) === 'multiple_choice'}
-							<div class="answer-section">
-								{#if interactive}
-									<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
-								{/if}
-								<MultipleChoiceInput
-									choices={displayedChoices}
-									bind:selectedIndexes={selectedChoices}
-									multipleAnswers={instance.multipleAnswers}
-									disabled={!interactive || isInputDisabled}
-									showValidation={isSubmitted}
-									{genericFunctions}
-								/>
-							</div>
+						<!-- Coup de pouce (idée 5) : fermé au départ, ouvert pour de bon -->
+						{#if hintMarkdown}
+							{#if hintOpen}
+								<div class="hint" data-testid="hint">
+									<p class="hint-heading">
+										<Lightbulb class="h-4 w-4" aria-hidden="true" />
+										Coup de pouce
+									</p>
+									<MarkdownRenderer content={hintMarkdown} {genericFunctions} />
+								</div>
+							{:else if !isSubmitted}
+								<div class="flex justify-center">
+									<Button
+										variant="outline"
+										size="sm"
+										onclick={handleHintOpen}
+										data-testid="hint-button"
+									>
+										<Lightbulb class="h-4 w-4" aria-hidden="true" />
+										Coup de pouce
+									</Button>
+								</div>
+							{/if}
 						{/if}
 
 						<!-- Interactive controls (une carte de cours n'a rien à valider) -->
@@ -551,92 +543,96 @@
 
 		{#snippet back()}
 			<div class="face relative h-full">
-				<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
-				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
-					<Card.Content class="space-y-6">
-						<p
-							class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
-							data-verso-title
-						>
-							<!-- En-tête du résultat attendu ; « Correction » intitule la correction plus bas -->
-							{isCourseCard ? 'Verso' : 'Réponse'}
-						</p>
+				<!-- Verso : aucun mot du dictionnaire (R2, chantier mots-cliquables) -->
+				<LexiconOff>
+					<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
+					<Card.Root
+						class={cn('face-card h-full', height && 'scrollable', flippable && 'reserve-bouton')}
+					>
+						<Card.Content class="space-y-6">
+							<p
+								class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
+								data-verso-title
+							>
+								<!-- En-tête du résultat attendu ; « Correction » intitule la correction plus bas -->
+								{isCourseCard ? 'Verso' : 'Réponse'}
+							</p>
 
-						{#if isCourseCard}
-							<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
-							<CourseCardBack correction={instance.correction} {genericFunctions} />
-						{:else}
-							<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
-							<div class="space-y-3">
-								{#if globalVerdict}
-									<p class="flex justify-center">
-										<span
-											class="verdict-badge verdict-{globalVerdict.kind}"
-											data-testid="global-verdict"
-											data-kind={globalVerdict.kind}
-										>
-											{#if globalVerdict.kind === 'correct'}
-												<Check class="h-3.5 w-3.5" aria-hidden="true" />
-											{:else if globalVerdict.kind === 'half'}
-												<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
-											{:else}
-												<X class="h-3.5 w-3.5" aria-hidden="true" />
-											{/if}
-											{globalVerdict.label}
-										</span>
-									</p>
-								{/if}
-								{#if instruction}
-									<!-- Consigne seule (Q104) : la formule à case est remplacée par la solution -->
-									<div class="text-muted-foreground" data-testid="instruction">
-										<MarkdownRenderer content={instruction} />
-									</div>
-								{/if}
-								<div class="correct-answer">
-									{#if expected && expected.lines.length > 0}
-										<!-- Résultat attendu (R9, ou R1-R7 après « Valider ») -->
-										<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
-									{:else}
-										<!--
-										getQuestionType() ne connaît que deux types : sans `choices`, une
-										question est classée `fill_in_blanks`. Si elle n'a pas non plus de
-										`blanks`, il n'y a aucune réponse structurée à afficher — sans ce
-										repli, la zone de réponse se rendait vide et muette.
-									-->
-										<p class="text-sm text-muted-foreground">
-											{correctionMarkdown
-												? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
-												: 'Aucune réponse enregistrée pour cette question.'}
+							{#if isCourseCard}
+								<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
+								<CourseCardBack correction={instance.correction} {genericFunctions} />
+							{:else}
+								<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
+								<div class="space-y-3">
+									{#if globalVerdict}
+										<p class="flex justify-center">
+											<span
+												class="verdict-badge verdict-{globalVerdict.kind}"
+												data-testid="global-verdict"
+												data-kind={globalVerdict.kind}
+											>
+												{#if globalVerdict.kind === 'correct'}
+													<Check class="h-3.5 w-3.5" aria-hidden="true" />
+												{:else if globalVerdict.kind === 'half'}
+													<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
+												{:else}
+													<X class="h-3.5 w-3.5" aria-hidden="true" />
+												{/if}
+												{globalVerdict.label}
+											</span>
 										</p>
 									{/if}
-								</div>
-							</div>
-
-							{#if correctionMarkdown}
-								<!-- Filet et intitulé : la correction ne s'enchaîne pas au résultat attendu -->
-								<div>
-									<hr class="correction-separator" data-testid="correction-separator" />
-									<p class="correction-heading" data-testid="correction-heading">Correction</p>
-									<div class="correction-steps">
-										<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
-										<CorrectionView markdown={correctionMarkdown} {genericFunctions} />
+									{#if instruction}
+										<!-- Consigne seule (Q104) : la formule à case est remplacée par la solution -->
+										<div class="text-muted-foreground" data-testid="instruction">
+											<MarkdownRenderer content={instruction} />
+										</div>
+									{/if}
+									<div class="correct-answer">
+										{#if expected && expected.lines.length > 0}
+											<!-- Résultat attendu (R9, ou R1-R7 après « Valider ») -->
+											<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
+										{:else}
+											<!--
+											Hors carte de cours, une question est classée `fill_in_blanks`.
+											Sans `blanks`, il n'y a aucune réponse structurée à afficher — sans ce
+											repli, la zone de réponse se rendait vide et muette.
+										-->
+											<p class="text-sm text-muted-foreground">
+												{correctionMarkdown
+													? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
+													: 'Aucune réponse enregistrée pour cette question.'}
+											</p>
+										{/if}
 									</div>
 								</div>
-							{/if}
-						{/if}
-					</Card.Content>
-				</Card.Root>
 
-				{#if flippable}
-					<button
-						class="flip-button"
-						onclick={handleFlip}
-						aria-label="Retour à la question"
-						title="Retour à la question"
-					>
-						<RotateCw class="h-5 w-5" />
-					</button>
-				{/if}
+								{#if correctionMarkdown}
+									<!-- Filet et intitulé : la correction ne s'enchaîne pas au résultat attendu -->
+									<div>
+										<hr class="correction-separator" data-testid="correction-separator" />
+										<p class="correction-heading" data-testid="correction-heading">Correction</p>
+										<div class="correction-steps">
+											<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
+											<CorrectionView markdown={correctionMarkdown} {genericFunctions} />
+										</div>
+									</div>
+								{/if}
+							{/if}
+						</Card.Content>
+					</Card.Root>
+
+					{#if flippable}
+						<button
+							class="flip-button"
+							onclick={handleFlip}
+							aria-label="Retour à la question"
+							title="Retour à la question"
+						>
+							<RotateCw class="h-5 w-5" />
+						</button>
+					{/if}
+				</LexiconOff>
 			</div>
 		{/snippet}
 	</FlipCard>
@@ -657,7 +653,10 @@
 	.face :global(.face-card.scrollable) {
 		height: 100%;
 		overflow-y: auto;
-		/* Place du bouton de retournement sous la dernière ligne */
+	}
+
+	/* Place du bouton de retournement sous la dernière ligne, hauteur imposée ou non */
+	.face :global(.face-card.reserve-bouton) {
 		padding-bottom: calc(4rem * var(--font-scale, 1));
 	}
 
@@ -708,6 +707,20 @@
 	 * CONTENT SECTIONS
 	 * ============================================================================ */
 
+	/* Coup de pouce : un filet d'accent à gauche, pas un encadré */
+	.hint {
+		border-left: 3px solid var(--color-primary);
+		padding-left: 0.75rem;
+	}
+	.hint-heading {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		margin-bottom: 0.25rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--color-muted-foreground);
+	}
 	/* Séparation résultat attendu / correction : un filet discret, pas un encadré */
 	.correction-separator {
 		border: none;

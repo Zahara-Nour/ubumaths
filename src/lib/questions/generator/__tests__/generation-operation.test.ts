@@ -9,8 +9,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {
@@ -19,8 +19,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CE1'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }
@@ -259,17 +257,6 @@ describe('bloc ```operation : validation du modèle', () => {
 });
 
 describe('bloc ```operation : revue #1726', () => {
-	it('QCM avec un bloc : aucune case créée, génération inchangée', () => {
-		const t = template({
-			statement: `$3 + ? = 5$\n\n${op('calcul: 45 + 37')}`,
-			choices: [{ content: templateMarkdown('2') }, { content: templateMarkdown('3') }],
-			correctChoiceIndex: ['0']
-		} as never);
-		const instance = generate(t);
-		expect(instance.blanks ?? []).toEqual([]);
-		expect(String(instance.statement)).not.toContain('case:');
-	});
-
 	it('carte de cours avec un bloc : aucune case', () => {
 		const t = {
 			...template({ statement: op('calcul: 45 + 37'), correction: { steps: ['82'] } } as never),

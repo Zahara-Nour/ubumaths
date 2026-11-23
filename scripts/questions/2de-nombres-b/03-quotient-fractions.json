@@ -1,0 +1,289 @@
+{
+	"id": "7b4a0268-8d79-455c-b8f4-0af1b84a96f3",
+	"title": "Quotient de fractions",
+	"description": "Diviser par une fraction en multipliant par son inverse : 3/4 ÷ 9/8 = 2/3, 5 ÷ 2/3 = 15/2, la moitié de 7/3 = 7/6 (pièges : inverser la mauvaise fraction, multiplier au lieu de diviser)",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n$\\dfrac{ {{a}} }{ {{b}} }\\div\\dfrac{ {{c}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "X",
+					"expression": "eval:a*d"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*c"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "c>1", "a*d!=b*c", "D!=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par une fraction, c'est multiplier par son **inverse**. L'inverse de $\\dfrac{ {{c}} }{ {{d}} }$ est $\\dfrac{ {{d}} }{ {{c}} }$.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\div\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{d}} }{ {{c}} }=\\dfrac{ {{a}}\\times{{d}} }{ {{b}}\\times{{c}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			}
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\n${{n}}\\div\\dfrac{ {{a}} }{ {{b}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "X",
+					"expression": "eval:n*b"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:a"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "b<a+4", "D!=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par une fraction, c'est multiplier par son **inverse**. L'inverse de $\\dfrac{ {{a}} }{ {{b}} }$ est $\\dfrac{ {{b}} }{ {{a}} }$.",
+					"$${{n}}\\div\\dfrac{ {{a}} }{ {{b}} }={{n}}\\times\\dfrac{ {{b}} }{ {{a}} }=\\dfrac{ {{n}}\\times{{b}} }{ {{a}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			}
+		},
+		{
+			"statement": "Donne le résultat sous la forme d'une fraction irréductible.\n\nCalcule {{if:k==2|la moitié|{{if:k==3|le tiers|le quart}}}} de $\\dfrac{ {{a}} }{ {{b}} }$.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3|4"
+				},
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "X",
+					"expression": "eval:a"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*k"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Prendre {{if:k==2|la moitié|{{if:k==3|le tiers|le quart}}}} d'un nombre, c'est le diviser par ${{k}}$, c'est-à-dire le multiplier par $\\dfrac{ 1 }{ {{k}} }$.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }\\div{{k}}=\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ 1 }{ {{k}} }=\\dfrac{ {{a}} }{ {{b}}\\times{{k}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/4 ÷ 9/8 = 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "9",
+				"d": "8"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la première fraction inversée (3/2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "9",
+				"d": "8"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : multiplication (27/32)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "9",
+				"d": "8"
+			},
+			"answers": ["\\frac{27}{32}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non simplifiée : 24/36",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "9",
+				"d": "8"
+			},
+			"answers": ["\\frac{24}{36}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "5 ÷ 2/3 = 15/2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["\\frac{15}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 × 2/3 = 10/3",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["\\frac{10}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La moitié de 7/3 = 7/6",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["\\frac{7}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le double (14/3)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["\\frac{14}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le quart de 10/3 = 5/6",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"a": "10",
+				"b": "3"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

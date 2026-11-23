@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 import {
 	additionGroupingDemo,
 	arithmeticFromBlankDemo,
@@ -168,7 +168,7 @@ describe('Mode B end-to-end demos', () => {
 		expect(gs?.kind).toBe('arithmetic');
 		if (gs?.kind === 'arithmetic') {
 			// Template variables intentionally NOT resolved on the declaration.
-			expect(gs.expression).toBe('{{a}}+{{b}}*{{c}}+{{d}}*{{e}}');
+			expect(gs.expression).toBe('{{a}}+{{b}}*{{c}}+{{d}}*{{g}}');
 		}
 	});
 

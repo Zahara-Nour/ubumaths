@@ -1,10 +1,8 @@
 {
+	"id": "3b396d9c-5e35-42dd-8c21-f63323418f37",
 	"title": "Relation de Chasles pour les intégrales",
 	"description": "Ajouter, retrancher ou inverser les bornes : ∫ₐᶜ = ∫ₐᵇ + ∫ᵇᶜ, ∫ᵇᵃ = −∫ₐᵇ (pièges : soustraire, oublier le signe)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Intégration",
-	"domain": "Propriétés de l'intégrale",
-	"subdomain": "Relation de Chasles",
 	"level": 1,
 	"status": "draft",
 	"delay": 45,

@@ -10,7 +10,7 @@
  * @example
  * ```svelte
  * <script>
- * import { debugStore } from '$lib/stores/pythonDebug.svelte';
+ * import { debugStore } from '#lib/stores/pythonDebug.svelte.ts';
  *
  * function handleToggleBreakpoint(line: number) {
  *   debugStore.toggleBreakpoint(line);
@@ -33,8 +33,8 @@ import type {
 	Breakpoint,
 	DebugPauseReason,
 	WorkerBreakpoint
-} from '$lib/shared/python/debug/types';
-import { DEBUG_CONFIG } from '$lib/shared/python/debug/types';
+} from '#lib/shared/python/debug/types.ts';
+import { DEBUG_CONFIG } from '#lib/shared/python/debug/types.ts';
 
 // =============================================================================
 // Python Debug Store Class

@@ -7,8 +7,8 @@
  * @module whiteboard/utils/label-parser
  */
 
-import { parseMarkdown } from '$lib/ubumark';
-import type { InlineNode, ParagraphNode } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
+import type { InlineNode, ParagraphNode } from '#lib/ubumark/index.ts';
 
 /**
  * Parse a label markdown string to inline nodes.

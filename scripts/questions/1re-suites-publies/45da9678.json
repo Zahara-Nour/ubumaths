@@ -1,0 +1,780 @@
+{
+	"id": "45da9678-f16d-4168-9e19-aefcd4197edb",
+	"title": "De l'énoncé à l'expression de la suite",
+	"description": "Traduire un énoncé en langage naturel : forme explicite (u₀ ou u₁ premier terme, prix affine à pente décimale), relation de récurrence uₙ₊₁ = a × uₙ + b (deux cases : poissons, inscrits, capital avec frais, abonnés)",
+	"grades": ["1_SPE", "1_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}+{{eval:r}}n"
+				}
+			],
+			"statement": "Léa a ${{eval:a}}~\\unit{€}$ sur son compte en janvier, et y verse ${{eval:r}}~\\unit{€}$ à la fin de chaque mois. On note $u_n$ la somme sur son compte $n$ mois après janvier, avec $u_0={{eval:a}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..150"
+				},
+				{
+					"name": "r",
+					"expression": "10..60"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque mois, la somme augmente de ${{eval:r}}$ : $(u_n)$ est arithmétique de raison ${{eval:r}}$ et de premier terme $u_0={{eval:a}}$.",
+					"$$u_n=u_0+nr=\\textcolor{{{color:primary.0}}}{{{eval:a}}+{{eval:r}}n}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-p/100;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:100*j}}"
+				}
+			],
+			"statement": "Un lac contient ${{eval:n0}}$ poissons. Chaque année, ${{eval:p}}\\,\\%$ des poissons meurent, puis on en introduit ${{eval:100*j}}$. On note $u_n$ le nombre de poissons au bout de $n$ années.\n\nComplète la relation de récurrence.\n\n$u_{n+1}=?\\times u_n+?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "2000..6000"
+				},
+				{
+					"name": "p",
+					"expression": "10|15|20|25|30"
+				},
+				{
+					"name": "j",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Perdre ${{eval:p}}\\,\\%$ des poissons, c'est multiplier leur nombre par $1-\\dfrac{{{eval:p}}}{100}={{eval:1-p/100;d}}$.",
+					"On ajoute ensuite les ${{eval:100*j}}$ poissons introduits : $u_{n+1}=\\textcolor{{{color:primary.0}}}{{{eval:1-p/100;d}}}\\times u_n+\\textcolor{{{color:primary.1}}}{{{eval:100*j}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-d}}"
+				}
+			],
+			"statement": "Un site compte ${{eval:a}}$ inscrits le premier jour. Chaque jour, le nombre d'inscrits {{if:k==2|double|triple}}, puis ${{eval:d}}$ personnes se désinscrivent. On note $u_n$ le nombre d'inscrits le $n$-ième jour.\n\nComplète la relation de récurrence.\n\n$u_{n+1}=?\\times u_n+?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..80"
+				},
+				{
+					"name": "k",
+					"expression": "2|3"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre d'inscrits {{if:k==2|double|triple}} : on multiplie $u_n$ par ${{eval:k}}$.",
+					"${{eval:d}}$ personnes partent : on retranche ${{eval:d}}$, c'est-à-dire qu'on ajoute ${{eval:-d}}$.",
+					"$$u_{n+1}=\\textcolor{{{color:primary.0}}}{{{eval:k}}}\\times u_n\\textcolor{{{color:primary.1}}}{-{{eval:d}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "u"
+					},
+					"expectedAnswer": "{{eval:a-r}}+{{eval:r}}n"
+				}
+			],
+			"statement": "Hugo prépare un semi-marathon. La première semaine, il court ${{eval:a}}~\\unit{km}$ ; chaque semaine, il court ${{eval:r}}~\\unit{km}$ de plus que la semaine précédente. On note $u_n$ la distance courue la $n$-ième semaine, avec $u_1={{eval:a}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..15"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["a > r"],
+			"correction": {
+				"steps": [
+					"$(u_n)$ est arithmétique de raison ${{eval:r}}$, mais son premier terme est $u_1={{eval:a}}$ : de $u_1$ à $u_n$, on ajoute $n-1$ fois la raison.",
+					"$u_n=u_1+(n-1)r={{eval:a}}+{{eval:r}}(n-1)$.",
+					"$$u_n=\\textcolor{{{color:primary.0}}}{{{eval:r}}n+{{eval:a-r}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+p/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p/100;d}}",
+							"message": "Tu as donné le taux : augmenter de ${{p}}\\,\\%$, c'est multiplier par $1+\\dfrac{ {{p}} }{100}$.",
+							"label": "Taux au lieu du coefficient"
+						},
+						{
+							"answer": "{{eval:1-p/100;d}}",
+							"message": "Le capital augmente : on multiplie par $1+\\dfrac{ {{p}} }{100}$, pas par $1-\\dfrac{ {{p}} }{100}$.",
+							"label": "Baisse au lieu de hausse"
+						},
+						{
+							"answer": "{{eval:1+p/10;d}}",
+							"message": "${{p}}\\,\\%$, c'est $\\dfrac{ {{p}} }{100}$ et non $\\dfrac{ {{p}} }{10}$.",
+							"label": "Pourcentage divisé par 10"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:-f}}",
+					"expectedErrors": [
+						{
+							"answer": "{{f}}",
+							"message": "Les frais sont retirés du capital : on ajoute $-{{f}}$.",
+							"label": "Frais ajoutés"
+						},
+						{
+							"answer": "{{eval:-f*(1+p/100);d}}",
+							"message": "Les frais sont prélevés après les intérêts : ils ne sont pas multipliés par le coefficient.",
+							"label": "Frais multipliés par le coefficient"
+						}
+					]
+				}
+			],
+			"statement": "Un capital de ${{c}}~\\unit{€}$ est placé à ${{p}}\\,\\%$ par an. À la fin de chaque année, après le versement des intérêts, la banque prélève ${{f}}~\\unit{€}$ de frais. On note $u_n$ le capital, en euros, au bout de $n$ années.\n\nComplète la relation de récurrence.\n\n$u_{n+1}=?\\times u_n+?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1000..5000"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "f",
+					"expression": "10..40"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Augmenter de ${{p}}\\,\\%$, c'est multiplier par $1+\\dfrac{ {{p}} }{100}={{eval:1+p/100;d}}$.",
+					"On retire ensuite les ${{f}}~\\unit{€}$ de frais : $u_{n+1}=\\textcolor{{{color:primary.0}}}{{{eval:1+p/100;d}}}\\times u_n\\textcolor{{{color:primary.1}}}{-{{f}}}$."
+				]
+			},
+			"hint": "Commence par traduire la hausse de ${{p}}\\,\\%$ par une multiplication, puis tiens compte des frais."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1-p/100;d}}",
+							"message": "Tu as pris la part des abonnés qui partent : on garde ${{p}}\\,\\%$ des abonnés.",
+							"label": "Part des départs"
+						},
+						{
+							"answer": "{{eval:1+p/100;d}}",
+							"message": "Garder ${{p}}\\,\\%$ des abonnés, c'est multiplier par $\\dfrac{ {{p}} }{100}$, pas par $1+\\dfrac{ {{p}} }{100}$.",
+							"label": "Hausse au lieu de proportion"
+						},
+						{
+							"answer": "{{p}}",
+							"message": "Un pourcentage s'écrit sous forme décimale : ${{p}}\\,\\%=\\dfrac{ {{p}} }{100}$.",
+							"label": "Pourcentage non converti"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a}}",
+							"message": "Les nouveaux abonnés s'ajoutent : le nombre à ajouter est positif.",
+							"label": "Signe des nouveaux abonnés"
+						},
+						{
+							"answer": "{{eval:a*p/100;d}}",
+							"message": "Les nouveaux abonnés s'ajoutent après les réabonnements : on ne leur applique pas le pourcentage.",
+							"label": "Pourcentage appliqué aux nouveaux"
+						}
+					]
+				}
+			],
+			"statement": "Un magazine compte ${{m}}$ abonnés. Chaque année, ${{p}}\\,\\%$ des abonnés se réabonnent et ${{a}}$ nouveaux lecteurs s'abonnent. On note $u_n$ le nombre d'abonnés au bout de $n$ années.\n\nComplète la relation de récurrence.\n\n$u_{n+1}=?\\times u_n+?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2000..8000"
+				},
+				{
+					"name": "p",
+					"expression": "70..80"
+				},
+				{
+					"name": "a",
+					"expression": "200..900"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Garder ${{p}}\\,\\%$ des abonnés, c'est multiplier leur nombre par $\\dfrac{ {{p}} }{100}={{eval:p/100;d}}$.",
+					"On ajoute ensuite les ${{a}}$ nouveaux abonnés : $u_{n+1}=\\textcolor{{{color:primary.0}}}{{{eval:p/100;d}}}\\times u_n+\\textcolor{{{color:primary.1}}}{{{a}}}$."
+				]
+			},
+			"hint": "Quelle part des abonnés de l'année reste abonnée ? Traduis-la par une multiplication, puis ajoute les nouveaux."
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{f}}+{{eval:k/100;d}}n",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k/100;d}}+{{f}}n",
+							"message": "Le forfait est payé une seule fois : c'est le prix au kilomètre qui est multiplié par $n$.",
+							"label": "Forfait et prix au km échangés"
+						},
+						{
+							"answer": "{{f}}+{{k}}n",
+							"message": "Le prix au kilomètre est donné en euros, pas en centimes.",
+							"label": "Centimes non convertis"
+						},
+						{
+							"answer": "{{eval:k/100;d}}n",
+							"message": "Tu as oublié le forfait de ${{f}}~\\unit{€}$.",
+							"label": "Forfait oublié"
+						}
+					]
+				}
+			],
+			"statement": "Une agence loue une voiture ${{f}}~\\unit{€}$ la journée, plus ${{eval:k/100;d}}~\\unit{€}$ par kilomètre parcouru. On note $u_n$ le prix, en euros, d'une journée de location avec $n$ kilomètres parcourus.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "30..80"
+				},
+				{
+					"name": "k",
+					"expression": "15|20|25|30|35|40"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $n$ kilomètres, on paie $n$ fois ${{eval:k/100;d}}~\\unit{€}$, plus le forfait de ${{f}}~\\unit{€}$.",
+					"$$u_n=\\textcolor{{{color:primary.0}}}{{{f}}+{{eval:k/100;d}}n}$$"
+				]
+			},
+			"hint": "Écris le prix pour $1$, puis $2$, puis $3$ kilomètres : qu'est-ce qui change à chaque kilomètre ?"
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}-{{eval:k/100;d}}n",
+					"expectedErrors": [
+						{
+							"answer": "{{t}}+{{eval:k/100;d}}n",
+							"message": "La température baisse : le coefficient de $n$ est négatif.",
+							"label": "Hausse au lieu de baisse"
+						},
+						{
+							"answer": "{{t}}-{{eval:k/10;d}}n",
+							"message": "Attention à la virgule : la baisse est de $0{,}0{{k}}~\\unit{°C}$ par mètre.",
+							"label": "Erreur de virgule"
+						},
+						{
+							"answer": "{{eval:-k/100;d}}+{{t}}n",
+							"message": "La température de surface ne se multiplie pas par $n$ : c'est la baisse par mètre qui est multipliée par $n$.",
+							"label": "Termes échangés"
+						}
+					]
+				}
+			],
+			"statement": "En mer, un jour d'été, l'eau est à ${{t}}~\\unit{°C}$ en surface. Entre la surface et $100~\\unit{m}$ de profondeur, on admet que sa température baisse de ${{eval:k/100;d}}~\\unit{°C}$ par mètre. On note $u_n$ la température, en degrés Celsius, à $n$ mètres de profondeur.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "18..26"
+				},
+				{
+					"name": "k",
+					"expression": "3..8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque mètre de plus, la température perd ${{eval:k/100;d}}~\\unit{°C}$ : à $n$ mètres, elle a perdu $n$ fois ${{eval:k/100;d}}~\\unit{°C}$.",
+					"$$u_n=\\textcolor{{{color:primary.0}}}{{{t}}-{{eval:k/100;d}}n}$$"
+				]
+			},
+			"hint": "Calcule la température à $1$, puis $2$ mètres de profondeur : que retranche-t-on à chaque mètre ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["120+25n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "120",
+				"r": "25"
+			},
+			"description": "120 + 25n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["25n+120"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "120",
+				"r": "25"
+			},
+			"description": "Écriture 25n + 120",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["25+120n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "120",
+				"r": "25"
+			},
+			"description": "Erreur : 25 + 120n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,8", "300"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"j": "3",
+				"p": "20",
+				"n0": "5000"
+			},
+			"description": "Lac 20 %, +300 : 0,8 et 300",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,2", "300"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "3",
+				"p": "20",
+				"n0": "5000"
+			},
+			"description": "Erreur : 0,2 (le taux)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-0,2", "300"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"j": "3",
+				"p": "20",
+				"n0": "5000"
+			},
+			"description": "Erreur : −0,2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2", "-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "40",
+				"d": "5",
+				"k": "2"
+			},
+			"description": "Double, −5 : 2 et −5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "40",
+				"d": "5",
+				"k": "2"
+			},
+			"description": "Erreur : +5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3n+7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"r": "3"
+			},
+			"description": "u₁ = 10, +3 : 3n + 7",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["10+3(n-1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"r": "3"
+			},
+			"description": "Écriture 10 + 3(n − 1)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["10+3n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "10",
+				"r": "3"
+			},
+			"description": "Erreur : 10 + 3n (u₀ supposé)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1{,}03", "-25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2000",
+				"p": "3",
+				"f": "25"
+			},
+			"description": "Capital 3 %, frais 25 : 1,03 et −25",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1.03", "-25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2000",
+				"p": "3",
+				"f": "25"
+			},
+			"description": "Écriture 1.03",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0{,}03", "-25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le taux : augmenter de $3\\,\\%$, c'est multiplier par $1 + \\dfrac{3}{100}$."
+			},
+			"variables": {
+				"c": "2000",
+				"p": "3",
+				"f": "25"
+			},
+			"description": "Erreur : 0,03 (le taux)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0{,}97", "-25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le capital augmente : on multiplie par $1 + \\dfrac{3}{100}$, pas par $1 - \\dfrac{3}{100}$."
+			},
+			"variables": {
+				"c": "2000",
+				"p": "3",
+				"f": "25"
+			},
+			"description": "Erreur : 0,97",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1{,}3", "-25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$3\\,\\%$, c'est $\\dfrac{3}{100}$ et non $\\dfrac{3}{10}$."
+			},
+			"variables": {
+				"c": "2000",
+				"p": "3",
+				"f": "25"
+			},
+			"description": "Erreur : 1,3",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1{,}03", "25"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les frais sont retirés du capital : on ajoute $-25$."
+			},
+			"variables": {
+				"c": "2000",
+				"p": "3",
+				"f": "25"
+			},
+			"description": "Erreur : +25",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1{,}03", "-25{,}75"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les frais sont prélevés après les intérêts : ils ne sont pas multipliés par le coefficient."
+			},
+			"variables": {
+				"c": "2000",
+				"p": "3",
+				"f": "25"
+			},
+			"description": "Erreur : frais multipliés",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0{,}75", "400"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "5000",
+				"p": "75",
+				"a": "400"
+			},
+			"description": "Abonnés 75 %, +400",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0{,}25", "400"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris la part des abonnés qui partent : on garde $75\\,\\%$ des abonnés."
+			},
+			"variables": {
+				"m": "5000",
+				"p": "75",
+				"a": "400"
+			},
+			"description": "Erreur : 0,25",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1{,}75", "400"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Garder $75\\,\\%$ des abonnés, c'est multiplier par $\\dfrac{75}{100}$, pas par $1 + \\dfrac{75}{100}$."
+			},
+			"variables": {
+				"m": "5000",
+				"p": "75",
+				"a": "400"
+			},
+			"description": "Erreur : 1,75",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["75", "400"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un pourcentage s'écrit sous forme décimale : $75\\,\\%=\\dfrac{ 75 }{100}$."
+			},
+			"variables": {
+				"m": "5000",
+				"p": "75",
+				"a": "400"
+			},
+			"description": "Erreur : 75",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0{,}75", "-400"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les nouveaux abonnés s'ajoutent : le nombre à ajouter est positif."
+			},
+			"variables": {
+				"m": "5000",
+				"p": "75",
+				"a": "400"
+			},
+			"description": "Erreur : −400",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0{,}75", "300"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les nouveaux abonnés s'ajoutent après les réabonnements : on ne leur applique pas le pourcentage."
+			},
+			"variables": {
+				"m": "5000",
+				"p": "75",
+				"a": "400"
+			},
+			"description": "Erreur : 0,75 × 400",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["45+0{,}25n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"f": "45",
+				"k": "25"
+			},
+			"description": "Location 45 € + 0,25 €/km",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0{,}25n+45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"f": "45",
+				"k": "25"
+			},
+			"description": "Écriture 0,25n + 45",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0{,}25+45n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le forfait est payé une seule fois : c'est le prix au kilomètre qui est multiplié par $n$."
+			},
+			"variables": {
+				"f": "45",
+				"k": "25"
+			},
+			"description": "Erreur : 0,25 + 45n",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["45+25n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le prix au kilomètre est donné en euros, pas en centimes."
+			},
+			"variables": {
+				"f": "45",
+				"k": "25"
+			},
+			"description": "Erreur : 45 + 25n",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0{,}25n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le forfait de $45~\\unit{€}$."
+			},
+			"variables": {
+				"f": "45",
+				"k": "25"
+			},
+			"description": "Erreur : forfait oublié",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["22-0{,}05n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "22",
+				"k": "5"
+			},
+			"description": "Plongée 22 °C, −0,05 °C/m",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["-0{,}05n+22"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "22",
+				"k": "5"
+			},
+			"description": "Écriture −0,05n + 22",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["22+0{,}05n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La température baisse : le coefficient de $n$ est négatif."
+			},
+			"variables": {
+				"t": "22",
+				"k": "5"
+			},
+			"description": "Erreur : hausse",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["22-0{,}5n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention à la virgule : la baisse est de $0{,}05~\\unit{°C}$ par mètre."
+			},
+			"variables": {
+				"t": "22",
+				"k": "5"
+			},
+			"description": "Erreur : virgule",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["-0{,}05+22n"],
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La température de surface ne se multiplie pas par $n$ : c'est la baisse par mètre qui est multipliée par $n$."
+			},
+			"variables": {
+				"t": "22",
+				"k": "5"
+			},
+			"description": "Erreur : termes échangés",
+			"variationIndex": 7
+		}
+	]
+}

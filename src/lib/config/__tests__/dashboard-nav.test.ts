@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getNavLinks, getZoneTitle, isNavLinkActive } from '../dashboard-nav';
-import { lore } from '$lib/config/lore';
+import { lore } from '#lib/config/lore.ts';
 
 describe('getZoneTitle', () => {
 	it('retourne "Mon cabinet" pour student', () => {

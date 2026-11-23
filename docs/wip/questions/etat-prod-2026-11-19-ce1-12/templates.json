@@ -1,0 +1,1525 @@
+[
+	{
+		"id": "37408a63-a0d4-4dae-8f28-80dbb2956286",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "$ABCD$ est un rectangle. Combien mesure le côté $[{{if:k==1|CD|DA}}]$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Le rectangle ABCD, AB et BC écrits, quatre angles droits codés.\n---\na = point(1.5, 1.5, visible=faux)\nb = point(8.5, 1.5, visible=faux)\nc = point(8.5, 4.5, visible=faux)\nd = point(1.5, 4.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")\ntexte(1.15, 1.15, \"A\")\ntexte(8.85, 1.15, \"B\")\ntexte(8.85, 4.85, \"C\")\ntexte(1.15, 4.85, \"D\")\ntexte(5, 1.05, \"{{u}} cm\")\ntexte(9.35, 3, \"{{w}} cm\")\n```\n\n$[{{if:k==1|CD|DA}}]$ mesure $?$ cm.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..4"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "u",
+						"expression": "5..9"
+					},
+					{
+						"name": "w",
+						"expression": "2..4"
+					},
+					{
+						"name": "a",
+						"expression": "eval:u*(2-k) + w*(k-1)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans un rectangle, les côtés qui se font face ont la $\\textcolor{{{color:primary.0}}}{\\text{même longueur}}$.",
+						"$[{{if:k==1|CD|DA}}]$ est en face de $[{{if:k==1|AB|BC}}]$ : il mesure $\\textcolor{{{color:primary.0}}}{{{a}}}$ cm."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "$ABCD$ est un carré. Combien mesure le côté $[{{if:k==1|BC|{{if:k==2|CD|DA}}}}]$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Le carré ABCD, AB écrit, quatre angles droits codés.\n---\na = point(3.25, 0.9, visible=faux)\nb = point(6.75, 0.9, visible=faux)\nc = point(6.75, 4.4, visible=faux)\nd = point(3.25, 4.4, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")\ntexte(2.9, 0.55, \"A\")\ntexte(7.1, 0.55, \"B\")\ntexte(7.1, 4.75, \"C\")\ntexte(2.9, 4.75, \"D\")\ntexte(5, 0.45, \"{{n}} cm\")\n```\n\n$[{{if:k==1|BC|{{if:k==2|CD|DA}}}}]$ mesure $?$ cm.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..4"
+					},
+					{
+						"name": "k",
+						"expression": "1..3"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un carré a ses $4$ côtés de la $\\textcolor{{{color:primary.0}}}{\\text{même longueur}}$.",
+						"Tous ses côtés mesurent, comme $[AB]$, $\\textcolor{{{color:primary.0}}}{{{n}}}$ cm."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle phrase est vraie pour tous les rectangles ?\n\n```choix\n- Ils ont $4$ angles droits.\n- Ils ont $4$ côtés de la même longueur.\n- Ils ont $2$ angles droits seulement.\n- Leurs côtés qui se font face n'ont pas la même longueur.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"Un rectangle a $\\textcolor{{{color:primary.0}}}{\\text{$4$ angles droits}}$, et ses côtés qui se font face ont la même longueur.",
+						"Ses $4$ côtés n'ont pas toujours la même longueur : un long, un court."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle phrase est vraie pour tous les carrés ?\n\n```choix\n- Ils ont $4$ côtés de la même longueur et $4$ angles droits.\n- Ils ont $4$ côtés de la même longueur, mais pas d'angle droit.\n- Ils ont $4$ angles droits, deux côtés longs et deux côtés courts.\n- Ils ont $3$ côtés de la même longueur.\n```",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"Un carré a $\\textcolor{{{color:primary.0}}}{\\text{$4$ côtés de la même longueur}}$ et $\\textcolor{{{color:primary.1}}}{\\text{$4$ angles droits}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Carré et rectangle : angles droits et côtés",
+		"description": "Longueur d'un côté d'après les propriétés ; phrases vraies pour tous les carrés, tous les rectangles",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"c": "1",
+					"k": "1",
+					"u": "7",
+					"w": "3"
+				},
+				"description": "CD = AB = 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"c": "2",
+					"k": "2",
+					"u": "7",
+					"w": "3"
+				},
+				"description": "DA = BC = 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"c": "1",
+					"k": "1",
+					"u": "7",
+					"w": "3"
+				},
+				"description": "Erreur : le côté voisin (CD pris pour BC)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"c": "2",
+					"k": "2",
+					"u": "7",
+					"w": "3"
+				},
+				"description": "Erreur : le côté voisin (DA pris pour AB)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"k": "1",
+					"n": "5"
+				},
+				"description": "Carré : BC = 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "4",
+					"k": "3",
+					"n": "8"
+				},
+				"description": "Carré : DA = 8",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"k": "1",
+					"n": "5"
+				},
+				"description": "Erreur : le tour (20)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Rectangle : 4 angles droits",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 4 côtés égaux (le carré)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Carré : côtés égaux et angles droits",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : sans angle droit",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "973bf62d-ee82-4f8e-830c-256aa3f281df",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 2,
+		"variations": [
+			{
+				"statement": "Termine le carré.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: segment\nverifier: carre A ; B\n---\nA = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|5|{{if:k==4|5|5}}}}}}}}, {{if:k==1|3|{{if:k==2|3|{{if:k==3|4|{{if:k==4|5|2}}}}}}}}, visible=faux)\nB = point({{if:k==1|7|{{if:k==2|6|{{if:k==3|7|{{if:k==4|6|6}}}}}}}}, {{if:k==1|4|{{if:k==2|5|{{if:k==3|3|{{if:k==4|3|5}}}}}}}}, visible=faux)\nab = segment(A, B)\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un carré a $4$ côtés de la même longueur et $4$ angles droits.",
+						"Le côté tracé avance de {{if:k==1|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==2|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==3|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==4|$1$ carreau en largeur et $2$ carreaux en hauteur|$1$ carreau en largeur et $3$ carreaux en hauteur}}}}}}}}.",
+						"Le côté suivant tourne d'un angle droit : il $\\textcolor{{{color:primary.0}}}{\\text{échange les deux nombres}}$, {{if:k==1|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==2|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==3|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==4|$2$ carreaux en largeur et $1$ carreau en hauteur|$3$ carreaux en largeur et $1$ carreau en hauteur}}}}}}}}.",
+						"On trace ainsi les trois côtés qui manquent, d'un côté ou de l'autre du côté tracé ; la figure se ferme."
+					]
+				}
+			},
+			{
+				"statement": "Termine le rectangle.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: segment\nverifier: rectangle A ; B ; C\n---\nA = point({{if:k==1|2|{{if:k==2|3|{{if:k==3|7|{{if:k==4|2|{{if:k==5|5|2}}}}}}}}}}, {{if:k==1|2|{{if:k==2|1|{{if:k==3|1|{{if:k==4|3|{{if:k==5|1|2}}}}}}}}}}, visible=faux)\nB = point({{if:k==1|6|{{if:k==2|7|{{if:k==3|9|{{if:k==4|6|{{if:k==5|7|8}}}}}}}}}}, {{if:k==1|4|{{if:k==2|5|{{if:k==3|5|{{if:k==4|1|{{if:k==5|3|4}}}}}}}}}}, visible=faux)\nC = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|7|{{if:k==4|7|{{if:k==5|4|7}}}}}}}}}}, {{if:k==1|6|{{if:k==2|7|{{if:k==3|6|{{if:k==4|3|{{if:k==5|6|7}}}}}}}}}}, visible=faux)\nab = segment(A, B)\nbc = segment(B, C)\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..6"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans un rectangle, les côtés qui se font face ont la même longueur, et les $4$ angles sont droits.",
+						"Les deux côtés tracés se touchent en un angle droit. En face de chacun, on trace un côté $\\textcolor{{{color:primary.0}}}{\\text{pareil}}$ : le même nombre de carreaux en largeur et en hauteur.",
+						"Ici : {{if:k==1|$4$ carreaux en largeur et $2$ carreaux en hauteur|{{if:k==2|$4$ carreaux en largeur et $4$ carreaux en hauteur|{{if:k==3|$2$ carreaux en largeur et $4$ carreaux en hauteur|{{if:k==4|$4$ carreaux en largeur et $2$ carreaux en hauteur|{{if:k==5|$2$ carreaux en largeur et $2$ carreaux en hauteur|$6$ carreaux en largeur et $2$ carreaux en hauteur}}}}}}}}}} pour l'un, {{if:k==1|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==2|$2$ carreaux en largeur et $2$ carreaux en hauteur|{{if:k==3|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==4|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==5|$3$ carreaux en largeur et $3$ carreaux en hauteur|$1$ carreau en largeur et $3$ carreaux en hauteur}}}}}}}}}} pour l'autre. La figure se ferme."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Termine le carré ou le rectangle aux côtés obliques",
+		"description": "Sur quadrillage, compléter un carré (un côté oblique tracé) ou un rectangle (deux côtés obliques tracés)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["segment(7;4;6;6)|segment(6;6;4;5)|segment(4;5;5;3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "carré 1, à gauche de AB",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(7;4;8;2)|segment(8;2;6;1)|segment(6;1;5;3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "carré 1, à droite de AB",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(7;4;6;6)|segment(6;6;4;5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : carré 1, un côté manque",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(7;4;7;6)|segment(7;6;5;5)|segment(5;5;5;3)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : carré 1, côtés suivants à la verticale",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(6;5;4;6)|segment(4;6;3;4)|segment(3;4;5;3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "carré 2, à gauche de AB",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(6;5;8;4)|segment(8;4;7;2)|segment(7;2;5;3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "carré 2, à droite de AB",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(6;5;4;6)|segment(4;6;3;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : carré 2, un côté manque",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(6;5;6;7)|segment(6;7;5;5)|segment(5;5;5;3)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : carré 2, côtés suivants à la verticale",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(7;3;8;5)|segment(8;5;6;6)|segment(6;6;5;4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "carré 3, à gauche de AB",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(7;3;6;1)|segment(6;1;4;2)|segment(4;2;5;4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "carré 3, à droite de AB",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(7;3;8;5)|segment(8;5;6;6)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : carré 3, un côté manque",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(7;3;7;5)|segment(7;5;5;6)|segment(5;6;5;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : carré 3, côtés suivants à la verticale",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(5;6;1;4)|segment(1;4;2;2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "rectangle 1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(2;2;1;4)|segment(1;4;5;6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "rectangle 1, dans l'autre sens",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(5;6;1;4)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : rectangle 1, un côté manque",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(5;6;2;4)|segment(2;4;2;2)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : rectangle 1, quatrième sommet décalé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(5;7;1;3)|segment(1;3;3;1)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "rectangle 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(3;1;1;3)|segment(1;3;5;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "rectangle 2, dans l'autre sens",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(5;7;1;3)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : rectangle 2, un côté manque",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(5;7;2;3)|segment(2;3;3;1)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : rectangle 2, quatrième sommet décalé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(7;6;5;2)|segment(5;2;7;1)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "rectangle 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(7;1;5;2)|segment(5;2;7;6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "rectangle 3, dans l'autre sens",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(7;6;5;2)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : rectangle 3, un côté manque",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["segment(7;6;6;2)|segment(6;2;7;1)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Erreur : rectangle 3, quatrième sommet décalé",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "a690369b-fb5d-4333-ae34-8deecfe46864",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 9,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "6"
+					}
+				],
+				"statement": "Combien ce cube a-t-il de faces ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: cube 3\n```\n\n$?$ faces",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On voit $3$ faces : devant, dessus, à droite. Il y en a $3$ cachées : derrière, dessous, à gauche.",
+						"$3 + 3 = 6$ faces."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "12"
+					}
+				],
+				"statement": "Combien ce cube a-t-il de arêtes ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: cube 3\n```\n\n$?$ arêtes",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une $\\textcolor{{{color:primary.0}}}{\\text{arête}}$ est un bord, là où deux faces se touchent.",
+						"$4$ arêtes en bas, $4$ en haut, $4$ debout : $4 + 4 + 4 = 12$ arêtes."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "8"
+					}
+				],
+				"statement": "Combien ce cube a-t-il de sommets ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: cube 3\n```\n\n$?$ sommets",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un $\\textcolor{{{color:primary.0}}}{\\text{sommet}}$ est un coin, là où les arêtes se rejoignent.",
+						"$4$ sommets en bas, $4$ en haut : $4 + 4 = 8$ sommets."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "6"
+					}
+				],
+				"statement": "Combien ce pavé a-t-il de faces ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n$?$ faces",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": ["Comme le cube, le pavé a $3$ faces vues et $3$ cachées : $3 + 3 = 6$ faces."]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "12"
+					}
+				],
+				"statement": "Combien ce pavé a-t-il de arêtes ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n$?$ arêtes",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une $\\textcolor{{{color:primary.0}}}{\\text{arête}}$ est un bord, là où deux faces se touchent.",
+						"$4$ arêtes en bas, $4$ en haut, $4$ qui les relient : $4 + 4 + 4 = 12$ arêtes."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "8"
+					}
+				],
+				"statement": "Combien ce pavé a-t-il de sommets ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n$?$ sommets",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un $\\textcolor{{{color:primary.0}}}{\\text{sommet}}$ est un coin, là où les arêtes se rejoignent.",
+						"$4$ sommets en bas, $4$ en haut : $4 + 4 = 8$ sommets."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "5"
+					}
+				],
+				"statement": "Combien cette pyramide a-t-elle de faces ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ faces",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La base est un carré : $1$ face.",
+						"Sur chaque côté du carré, une face en triangle monte jusqu'à la pointe : $4$ faces.",
+						"$1 + 4 = 5$ faces."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "8"
+					}
+				],
+				"statement": "Combien cette pyramide a-t-elle de arêtes ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ arêtes",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une $\\textcolor{{{color:primary.0}}}{\\text{arête}}$ est un bord, là où deux faces se touchent.",
+						"$4$ arêtes autour de la base carrée, $4$ qui montent vers la pointe : $4 + 4 = 8$ arêtes."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "5"
+					}
+				],
+				"statement": "Combien cette pyramide a-t-elle de sommets ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ sommets",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un $\\textcolor{{{color:primary.0}}}{\\text{sommet}}$ est un coin, là où les arêtes se rejoignent.",
+						"$4$ sommets au coin de la base, plus la pointe : $4 + 1 = 5$ sommets."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"statement": "Combien de faces de cette pyramide sont des triangles ?\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ faces en triangle",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"La base est un carré : ce n'est pas un triangle.",
+						"Sur chaque côté du carré, une face en triangle monte jusqu'à la pointe : $4$ triangles."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Faces, arêtes et sommets : cube, pavé, pyramide",
+		"description": "Compter les faces, les arêtes, les sommets d'un cube, d'un pavé, d'une pyramide à base carrée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "cube : 6 faces",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : cube, seulement les faces qu'on voit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "cube : 12 arêtes",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : cube, seulement les arêtes qu'on voit",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "cube : 8 sommets",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : cube, seulement les sommets qu'on voit",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "pavé : 6 faces",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : pavé, seulement les faces qu'on voit",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "pavé : 12 arêtes",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : pavé, seulement les arêtes qu'on voit",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "pavé : 8 sommets",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : pavé, seulement les sommets qu'on voit",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "pyramide : 5 faces",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : pyramide, seulement les faces qu'on voit",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "pyramide : 8 arêtes",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : pyramide, seulement les arêtes qu'on voit",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "pyramide : 5 sommets",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Pyramide : 4 triangles",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : la base comptée (5)",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : les triangles vus seuls (2)",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Erreur : les sommets du cube pour la pyramide",
+				"variationIndex": 8
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "adbc6259-0ba3-4c2e-ada9-f0d4b5136831",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle écriture veut dire la même chose que ${{if:g==3|{{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}$ ?\n\n```choix\n- ${{g}} \\times {{n}}$\n- ${{g}} + {{n}}$\n- ${{n}} \\times {{n}}$\n- ${{g}}{{n}}$\n```",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "3..5"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["g != n"],
+				"correction": {
+					"steps": [
+						"On ajoute ${{g}}$ fois le nombre ${{n}}$.",
+						"« ${{g}}$ fois ${{n}}$ » s'écrit $\\textcolor{{{color:primary.0}}}{{{g}} \\times {{n}}}$ : le signe $\\times$ se lit « fois »."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Comment se lit ${{a}} \\times {{b}}$ ?\n\n```choix\n- « {{a}} fois {{b}} »\n- « {{a}} plus {{b}} »\n- « {{a}} moins {{b}} »\n- « {{a}}{{b}} »\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le signe $\\times$ se lit $\\textcolor{{{color:primary.0}}}{\\text{« fois »}}$ : $\\times$ n'est pas $+$.",
+						"${{a}} \\times {{b}}$ se lit « {{a}} fois {{b}} »."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle addition est égale à ${{g}} \\times {{n}}$ ?\n\n```choix\n- ${{if:g==3|{{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}$\n- ${{g}} + {{n}}$\n- ${{n}} + {{n}}$\n- ${{if:g==3|{{n}} + {{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}$\n```",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "3..5"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["g != n"],
+				"correction": {
+					"steps": [
+						"${{g}} \\times {{n}}$, c'est « ${{g}}$ fois ${{n}}$ » : on ajoute ${{g}}$ fois le nombre ${{n}}$.",
+						"$\\textcolor{{{color:primary.0}}}{{{if:g==3|{{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:g*n}}"
+					}
+				],
+				"statement": "Il y a ${{g}}$ paquets de ${{n}}$ biscuits.\n\nNombre de biscuits : ${{g}} \\times {{n}} = ?$",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "2..9"
+					},
+					{
+						"name": "m",
+						"expression": "1..2"
+					},
+					{
+						"name": "n",
+						"expression": "eval:10*m"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{g}}$ paquets de ${{n}}$ biscuits, c'est ${{g}}$ fois ${{n}}$ biscuits : ${{g}} \\times {{n}}$.",
+						"${{g}} \\times {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n}}}$ : il y a ${{eval:g*n}}$ biscuits."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Le signe × : « fois »",
+		"description": "Écrire une addition répétée avec ×, lire ×, et le calcul d'une situation (paquets de 10 ou 20)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "3",
+					"n": "4"
+				},
+				"description": "4 + 4 + 4 = 3 × 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "3",
+					"n": "4"
+				},
+				"description": "Erreur : 3 + 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "3",
+					"n": "4"
+				},
+				"description": "Erreur : 4 × 4 (le nombre répété, deux fois)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "3",
+					"n": "4"
+				},
+				"description": "Erreur : 34 (les chiffres collés)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "7 × 3 se lit « 7 fois 3 »",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "Erreur : « 7 plus 3 »",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "5",
+					"n": "4"
+				},
+				"description": "5 × 4 = 4 + 4 + 4 + 4 + 4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "5",
+					"n": "4"
+				},
+				"description": "Erreur : 5 + 4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "5",
+					"n": "4"
+				},
+				"description": "Erreur : une fois de trop",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["140"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "7",
+					"m": "2",
+					"n": "20"
+				},
+				"description": "7 paquets de 20 : 140",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "5",
+					"m": "1",
+					"n": "10"
+				},
+				"description": "5 paquets de 10 : 50",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["27"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "2",
+					"n": "20"
+				},
+				"description": "Erreur : 7 + 20 = 27",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["720"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "2",
+					"n": "20"
+				},
+				"description": "Erreur : 720 (les nombres collés)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b4cc9045-0a4b-4557-a5de-c70c1e0d94ef",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 10,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "6"
+					}
+				],
+				"statement": "Combien de faces de ce cube sont des carrés ?\n\n```solide\nforme: cube 3\ncotes: cm\n```\n\n$?$ faces carrées",
+				"variables": [],
+				"correction": {
+					"steps": [
+						"Toutes les arêtes du cube ont la même longueur : chacune de ses faces a $4$ côtés égaux et $4$ angles droits.",
+						"Les $6$ faces du cube sont des $\\textcolor{{{color:primary.0}}}{\\text{carrés}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Les faces de ce pavé sont…\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n```choix\n- … des rectangles.\n- … des triangles.\n- … des disques.\n- … des cercles.\n```",
+				"variables": [
+					{
+						"name": "o",
+						"expression": "1..2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque face du pavé a $4$ côtés et $4$ angles droits.",
+						"Les faces du pavé sont des $\\textcolor{{{color:primary.0}}}{\\text{rectangles}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Combien de faces de ce pavé sont des carrés ?\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```\n\n$?$ faces carrées",
+				"variables": [
+					{
+						"name": "l",
+						"expression": "4..6"
+					},
+					{
+						"name": "p",
+						"expression": "2..3"
+					},
+					{
+						"name": "h",
+						"expression": "1..3"
+					}
+				],
+				"conditions": ["p != h", "l != p", "l != h"],
+				"correction": {
+					"steps": [
+						"Les faces ont pour côtés ${{l}}$ cm et ${{p}}$ cm, ${{l}}$ cm et ${{h}}$ cm, ${{p}}$ cm et ${{h}}$ cm.",
+						"Aucune n'a ses $4$ côtés de la même longueur : $\\textcolor{{{color:primary.0}}}{\\text{aucune}}$ n'est un carré. Ce sont des rectangles."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					},
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"statement": "Ce pavé a des faces carrées et des faces rectangulaires (qui ne sont pas des carrés).\n\n```solide\nforme: pave {{if:k==1|{{l}} 3 3|3 3 {{l}}}}\ncotes: cm\n```\n\nFaces carrées : $?$\n\nFaces rectangulaires : $?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "l",
+						"expression": "4..6"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les deux faces de $3$ cm sur $3$ cm sont des $\\textcolor{{{color:primary.0}}}{\\text{carrés}}$ : {{if:k==1|à gauche et à droite|en haut et en bas}}.",
+						"Les $4$ autres faces mesurent ${{l}}$ cm sur $3$ cm : ce sont des $\\textcolor{{{color:primary.1}}}{\\text{rectangles}}$.",
+						"$2 + 4 = 6$ faces."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Les faces du cube et du pavé : carrés ou rectangles",
+		"description": "Nombre et forme des faces ; pavé à deux faces carrées",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Cube : 6 carrés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : les carrés vus seuls (3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"o": "1"
+				},
+				"description": "Pavé : des rectangles",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"o": "2"
+				},
+				"description": "Erreur : triangles",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"h": "2",
+					"l": "5",
+					"p": "3"
+				},
+				"description": "Pavé 5 × 3 × 2 : aucun carré",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"h": "2",
+					"l": "5",
+					"p": "3"
+				},
+				"description": "Erreur : 6 (pavé pris pour un cube)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"l": "5"
+				},
+				"description": "Pavé couché : 2 carrés, 4 rectangles",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"l": "4"
+				},
+				"description": "Pavé debout : 2 carrés, 4 rectangles",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0", "6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"l": "5"
+				},
+				"description": "Erreur : 0 et 6 (« un pavé n'a que des rectangles »)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1", "5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"l": "5"
+				},
+				"description": "Erreur : le carré vu seul, 1 et 5",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["4", "2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"l": "6"
+				},
+				"description": "Erreur : 4 et 2 (inversés)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]

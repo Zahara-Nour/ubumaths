@@ -8,10 +8,9 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
 const goto = vi.hoisted(() => vi.fn(async () => {}));
-vi.mock('$app/navigation', async (importOriginal) => ({
-	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto
-}));
+vi.mock('$app/navigation', async () =>
+	(await import('#tests/helpers/app-navigation-mock.ts')).appNavigationMock({ goto })
+);
 
 const toaster = vi.hoisted(() => ({
 	success: vi.fn(),
@@ -19,14 +18,14 @@ const toaster = vi.hoisted(() => ({
 	warning: vi.fn(),
 	info: vi.fn()
 }));
-vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+vi.mock('#lib/stores/toaster.svelte.ts', () => ({ toaster }));
 
 import Page from '../+page.svelte';
-import type { SeriesWithUsage } from '$lib/types/evaluation';
-import { parseCategoriesParam } from '$lib/validation/series';
+import type { SeriesWithUsage } from '#lib/types/evaluation.ts';
+import { parseSeriesLink } from '#lib/validation/series.ts';
 
 const ITEM = {
-	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	templateId: '11111111-1111-4111-8111-111111111111',
 	quantity: 4,
 	delay: 20
 };
@@ -37,7 +36,7 @@ function series(overrides: Partial<SeriesWithUsage>): SeriesWithUsage {
 		title: 'Tables de 7',
 		description: null,
 		grade: '6',
-		categories: [ITEM],
+		items: [ITEM],
 		created_by: 'prof',
 		created_at: '2026-09-30T10:00:00Z',
 		updated_at: '2026-09-30T10:00:00Z',
@@ -107,16 +106,14 @@ describe('Page Séries — lien de série (Q44, Q46)', () => {
 		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
 		const link = new URL(writeText.mock.calls[0][0] as string);
 		expect(link.pathname).toBe('/automaths/panier');
-		expect(parseCategoriesParam(link.searchParams.get('categories'))).toEqual({
-			success: true,
-			data: [ITEM]
-		});
+		expect(link.searchParams.has('categories')).toBe(false);
+		expect(parseSeriesLink(link.searchParams)).toEqual({ success: true, lines: [ITEM] });
 		expect(toaster.success).toHaveBeenCalledWith('Lien copié');
 	});
 
 	it('« En classe » : lien qui lance la série sous cette forme', async () => {
 		await renderPage([series({})]);
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'En classe' }).click();
 		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
@@ -128,7 +125,7 @@ describe('Page Séries — lien de série (Q44, Q46)', () => {
 
 	it('« Course aux nombres » : une durée est proposée et portée par le lien', async () => {
 		await renderPage([series({})]);
-		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('combobox', { name: 'Forme du lien' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 		await page.getByLabelText('Temps limite (minutes)').fill('12');
 		await page.getByRole('button', { name: 'Copier le lien' }).click();

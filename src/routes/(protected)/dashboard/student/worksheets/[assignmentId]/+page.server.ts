@@ -6,11 +6,11 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import { redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
-import { loadTextSize } from '$lib/server/worksheets/print-settings';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { loadPrintSettings } from '#lib/server/worksheets/print-settings.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/student/worksheets/[assignmentId]/+page.server'
@@ -43,10 +43,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	}
 
 	const worksheet = await response.json();
+	// Réglages de ses PDF (accessibilité) : taille normale, lecture facilitée éteinte par défaut
+	const { textSize, easyReading } = await loadPrintSettings(locals.supabase, user.id);
 
-	return {
-		worksheet,
-		// Taille du texte de ses PDF (accessibilité) ; normale par défaut
-		textSize: await loadTextSize(locals.supabase, user.id)
-	};
+	return { worksheet, textSize, easyReading };
 };

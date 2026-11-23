@@ -1,0 +1,254 @@
+{
+	"id": "ba899229-5d76-48dc-a3b1-6d3b5cee38e0",
+	"title": "Yohaku : compléter une grille de sommes",
+	"description": "Grille 2 × 2 de nombres de 1 à 10 dont on connaît les sommes des lignes et des colonnes : un coin donné (trois cases à trouver) ou une diagonale donnée (deux cases)",
+	"grades": ["CM2", "6"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La somme de chaque ligne et de chaque colonne est écrite au bout. Complète la grille.\n\n$\\begin{array}{|c|c||c|} \\hline {{a}} & ? & {{s1}} \\\\ \\hline ? & ? & {{s2}} \\\\ \\hline \\hline {{t1}} & {{t2}} & \\\\ \\hline \\end{array}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "1..10"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:a+b"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:c+d"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a+c"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:b+d"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}",
+							"message": "Tu as utilisé la somme de la première colonne : cette case est dans la première ligne, elle vaut ${{s1}} - {{a}}$.",
+							"label": "Ligne et colonne confondues"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{b}}",
+							"message": "Tu as utilisé la somme de la première ligne : cette case est dans la première colonne, elle vaut ${{t1}} - {{a}}$.",
+							"label": "Ligne et colonne confondues"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Première ligne.** ${{a}} + \\square = {{s1}}$, donc la case vaut ${{s1}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"**Première colonne.** ${{a}} + \\square = {{t1}}$, donc la case vaut ${{t1}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{c}}}$.",
+					"**Deuxième ligne.** ${{c}} + \\square = {{s2}}$, donc la case vaut ${{s2}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{d}}}$.",
+					"**Vérification.** Deuxième colonne : ${{b}} + {{d}} = {{t2}}$."
+				]
+			},
+			"hint": "Commence par une ligne ou une colonne où il ne manque qu'un nombre : la somme moins le nombre connu donne le nombre manquant."
+		},
+		{
+			"statement": "La somme de chaque ligne et de chaque colonne est écrite au bout. Complète la grille.\n\n$\\begin{array}{|c|c||c|} \\hline {{a}} & ? & {{s1}} \\\\ \\hline ? & {{d}} & {{s2}} \\\\ \\hline \\hline {{t1}} & {{t2}} & \\\\ \\hline \\end{array}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "1..10"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:a+b"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:c+d"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a+c"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:b+d"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}",
+							"message": "Cette case est dans la première ligne, avec ${{a}}$ : elle vaut ${{s1}} - {{a}}$.",
+							"label": "Cases échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{c}}",
+					"expectedErrors": [
+						{
+							"answer": "{{b}}",
+							"message": "Cette case est dans la deuxième ligne, avec ${{d}}$ : elle vaut ${{s2}} - {{d}}$.",
+							"label": "Cases échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Première ligne.** ${{a}} + \\square = {{s1}}$, donc la case vaut ${{s1}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{b}}}$.",
+					"**Deuxième ligne.** $\\square + {{d}} = {{s2}}$, donc la case vaut ${{s2}} - {{d}} = \\textcolor{{{color:primary.0}}}{{{c}}}$.",
+					"**Vérification.** Première colonne : ${{a}} + {{c}} = {{t1}}$ ; deuxième colonne : ${{b}} + {{d}} = {{t2}}$."
+				]
+			},
+			"hint": "Commence par une ligne ou une colonne où il ne manque qu'un nombre : la somme moins le nombre connu donne le nombre manquant."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Coin 3, sommes 10, 9, 8, 11 : 7, 5, 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"c": "5",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7", "5", "4"]
+		},
+		{
+			"description": "Erreur prévue : cases 7 et 5 échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"c": "5",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé la somme de la première colonne : cette case est dans la première ligne, elle vaut $10 - 3$."
+			},
+			"answers": ["5", "7", "4"]
+		},
+		{
+			"description": "Erreur : dernière case fausse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"c": "5",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7", "5", "6"]
+		},
+		{
+			"description": "Cases égales : 2, 2, 9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"c": "2",
+				"d": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "2", "9"]
+		},
+		{
+			"description": "Diagonale 8 et 10 : 1 et 6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "1",
+				"c": "6",
+				"d": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "6"]
+		},
+		{
+			"description": "Erreur prévue : 6 et 1 échangés (case 1)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "1",
+				"c": "6",
+				"d": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Cette case est dans la première ligne, avec $8$ : elle vaut $9 - 8$."
+			},
+			"answers": ["6", "6"]
+		},
+		{
+			"description": "Erreur prévue : 6 et 1 échangés (case 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "1",
+				"c": "6",
+				"d": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Cette case est dans la deuxième ligne, avec $10$ : elle vaut $16 - 10$."
+			},
+			"answers": ["1", "1"]
+		}
+	]
+}

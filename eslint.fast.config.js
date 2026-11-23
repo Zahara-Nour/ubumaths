@@ -17,6 +17,8 @@
  *   `no-unused-svelte-ignore`, `no-useless-mustaches`… ;
  * - les deux règles maison : `custom/require-zod-validation`,
  *   `supabase/require-error-check`.
+ * - `no-restricted-syntax` : `canonicalForm` au lieu de
+ *   `denormalize(normalize(…))` écrit en ligne.
  *
  * Seule exception : `svelte/no-unused-props` exige les types et se tait sans
  * eux (`getTypeScriptTools` rend null) — elle reste vue par la CI seule.

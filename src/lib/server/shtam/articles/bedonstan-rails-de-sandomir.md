@@ -5,6 +5,8 @@ author: cotice
 lede: Vus du quai, ils se touchent. Vus de près, jamais. Le chef de gare est parti vérifier à pied. Il n'est toujours pas revenu.
 ---
 
+![Dans la steppe, le chef de gare, lanterne à la main, s’éloigne le long de la voie en déroulant un mètre ruban ; les deux rails et les poteaux télégraphiques filent jusqu’à l’horizon, où les rails semblent se rejoindre.](/shtam/bedonstan-rails-de-sandomir.webp){size=large}
+
 Depuis l'inauguration de la ligne Lobatchevsk–Sandomir, les deux rails filent côte à côte à travers les steppes du Bedonstan. Toujours le même écartement, jamais un centimètre de plus ou de moins : ils sont parallèles. C'est du moins ce qu'affirmait la Compagnie des chemins de fer royaux.
 
 Mais depuis le quai de la gare de Lobatchevsk, n'importe quel voyageur peut le constater : là-bas, au loin, les deux rails se rejoignent. Interrogés, les intéressés ne démentent pas. « Ici, on est séparés », reconnaît l'un d'eux. « Mais à l'horizon, on se touche. »

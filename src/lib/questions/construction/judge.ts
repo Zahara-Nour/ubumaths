@@ -5,7 +5,7 @@
  * On juge le RÉSULTAT par des positions, jamais par des identifiants : une
  * droite tracée depuis deux points quelconques qui passe par A et B est la
  * droite (AB). Tout-ou-rien ; le message est celui de la première vérification
- * ratée (verdict du conseil, `docs/wip/geometrie-validation-progress.md` § 2).
+ * ratée (verdict du conseil, `docs/archive/wip/geometrie-validation-progress.md` § 2).
  *
  * Pur : les positions des points de la figure sont données par l'appelant
  * (registre `positions.ts`).
@@ -13,13 +13,51 @@
  * @module questions/construction/judge
  */
 
-import type {
-	ConstructionCheck,
-	DroiteParCheck,
-	PolygonCheck
-} from '$lib/ubumark/types/construction';
-import { parseConstructionAnswer, type DrawnLine } from './answer';
+import {
+	centeredCircleOf,
+	isRuledLength,
+	isDiagonalRectangleCheck,
+	isRuledPolygonCheck,
+	type ConstructionCheck,
+	type DroiteParCheck,
+	type PolygonCheck
+} from '#lib/ubumark/types/construction.ts';
+import {
+	isDrawnLine,
+	parseConstructionAnswer,
+	splitMeasuredAnswer,
+	type DrawnLine
+} from './answer';
+import {
+	PointAuthorError,
+	assertPoints,
+	isPointCheck,
+	judgePoints,
+	type ExpectedPoints
+} from './point';
+import { LineAuthorError, assertLines, bissectriceOf, isLineCheck, judgeLines } from './line';
+import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
+import { RuledPolygonAuthorError, assertRuledPolygon, judgeRuledPolygon } from './ruled-polygon';
+import {
+	DiagonalRectangleAuthorError,
+	assertDiagonalRectangle,
+	judgeDiagonalRectangle
+} from './diagonal-rectangle';
+import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
+import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
+import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
+import { MeasureAuthorError, assertMeasure, judgeMeasure } from './measure';
+import {
+	SegmentMeasureAuthorError,
+	assertSegmentMeasure,
+	judgeSegmentMeasure
+} from './segment-measure';
+import {
+	SegmentLengthAuthorError,
+	assertSegmentLength,
+	judgeSegmentLength
+} from './segment-length';
 
 export {
 	EXTRA_SEGMENT_FEEDBACK,
@@ -27,8 +65,10 @@ export {
 	NOT_CLOSED_FEEDBACK,
 	NOT_ON_GRID_LINES_FEEDBACK,
 	OVERSHOOT_FEEDBACK,
+	PART_OF_SIDE_FEEDBACK,
 	PROLONGED_RECTANGLE_SIDES_FEEDBACK,
-	PROLONGED_SIDE_FEEDBACK
+	PROLONGED_SIDE_FEEDBACK,
+	SHIFTED_SIDE_FEEDBACK
 } from './polygon';
 
 export interface Position {
@@ -111,19 +151,140 @@ function droiteParFeedback(
 }
 
 function isPolygonCheck(check: ConstructionCheck): check is PolygonCheck {
-	return check.kind !== 'droite_par';
+	// Carré / rectangle cotés sur papier uni (PR 6 de `regle-graduee`) : `ruled-polygon.ts`
+	// … et le rectangle sans équerre (chantier `rectangle-sans-equerre`) : `diagonal-rectangle.ts`
+	return (
+		(check.kind === 'carre' || check.kind === 'rectangle') &&
+		!isRuledPolygonCheck(check) &&
+		!isDiagonalRectangleCheck(check)
+	);
+}
+
+/** Erreur d'auteur d'un module de vérification → celle du juge ; le reste passe */
+function asAuthorError(error: unknown): unknown {
+	if (
+		error instanceof PolygonAuthorError ||
+		error instanceof RuledPolygonAuthorError ||
+		error instanceof DiagonalRectangleAuthorError ||
+		error instanceof SymmetryAuthorError ||
+		error instanceof PointAuthorError ||
+		error instanceof LineAuthorError ||
+		error instanceof CircleAuthorError ||
+		error instanceof TriangleAuthorError ||
+		error instanceof AngleAuthorError ||
+		error instanceof MeasureAuthorError ||
+		error instanceof SegmentLengthAuthorError ||
+		error instanceof SegmentMeasureAuthorError
+	) {
+		return new ConstructionAuthorError(error.message);
+	}
+	return error;
 }
 
 /**
  * Les vérifications sont-elles faisables sur cette figure ? Erreur d'AUTEUR
  * sinon (point inconnu, sommets confondus…) : `check-template` l'appelle à
- * chaque tirage, pour ne pas l'apprendre au premier élève.
+ * chaque tirage, pour ne pas l'apprendre au premier élève. `shapes` : les
+ * traits de la figure (vérification `symetrique`) ; `expected` : les points
+ * attendus (vérification `point`), les droites (`droite`) et les cercles
+ * attendus (`cercle`).
  */
 export function assertConstructionChecks(
 	checks: readonly ConstructionCheck[],
-	points: ReadonlyMap<string, Position>
+	points: ReadonlyMap<string, Position>,
+	shapes?: FigureShapes,
+	expected?: ExpectedPoints
 ): void {
+	const pointChecks = checks.filter(isPointCheck);
+	if (pointChecks.length > 0) {
+		try {
+			assertPoints(pointChecks, expected, points, shapes);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	const lineChecks = checks.filter(isLineCheck);
+	if (lineChecks.length > 0) {
+		try {
+			assertLines(lineChecks, expected, points, shapes);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	const circleChecks = checks.filter(isCircleCheck);
+	if (circleChecks.length > 0) {
+		try {
+			assertCircles(circleChecks, expected, points, shapes);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
 	for (const check of checks) {
+		if (check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle') continue;
+		if (check.kind === 'mesure') {
+			try {
+				assertMeasure(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (check.kind === 'mesure_segment') {
+			try {
+				assertSegmentMeasure(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (check.kind === 'segment') {
+			try {
+				assertSegmentLength(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (check.kind === 'angle') {
+			try {
+				assertAngle(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (isDiagonalRectangleCheck(check)) {
+			try {
+				assertDiagonalRectangle(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (isRuledPolygonCheck(check)) {
+			try {
+				assertRuledPolygon(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (check.kind === 'triangle') {
+			try {
+				assertTriangle(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
+		if (check.kind === 'symetrique') {
+			try {
+				assertSymmetry(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
 		if (!isPolygonCheck(check)) {
 			// Deux points confondus : toute droite par l'un passerait pour juste
 			const [a, b] = check.points.map((name) => positionOf(points, name));
@@ -138,8 +299,7 @@ export function assertConstructionChecks(
 		try {
 			givenVertices(check, points);
 		} catch (error) {
-			if (error instanceof PolygonAuthorError) throw new ConstructionAuthorError(error.message);
-			throw error;
+			throw asAuthorError(error);
 		}
 	}
 }
@@ -148,24 +308,177 @@ export function assertConstructionChecks(
  * Verdict d'une réponse. Droites : chaque vérification prend SA droite parmi
  * celles tracées ; une droite qu'aucune vérification ne prend est de trop.
  * Carré / rectangle (une seule vérification, garantie par le parseur) :
- * `polygon.ts`.
+ * `polygon.ts` ; symétrique (seul aussi) : `symmetry.ts`, avec les traits de
+ * la figure (`shapes`) ; points à placer : `point.ts`, avec les points
+ * attendus (`expected`).
  */
 export function judgeConstruction(
 	allChecks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
-	answer: string
+	answer: string,
+	shapes?: FigureShapes,
+	expected?: ExpectedPoints
 ): ConstructionVerdict {
-	const lines = parseConstructionAnswer(answer);
-	if (lines === null) return { status: 'incorrect' };
-	if (lines.length === 0) return { status: 'empty' };
+	// Angle à mesurer (lot 6) : seul dans la figure (garanti par le parseur) ; les repères ne
+	// sont pas notés, la mesure tapée l'est
+	const measure = allChecks.find((c) => c.kind === 'mesure');
+	if (measure) {
+		if (answer.trim() === '') return { status: 'empty' };
+		const split = splitMeasuredAnswer(answer);
+		const drawn = split ? parseConstructionAnswer(split.drawn) : null;
+		// Le rapporteur seul dans la palette : autre chose qu'un repère est une réponse forgée
+		if (!split || !drawn || drawn.some((o) => o.kind !== 'repere')) return { status: 'incorrect' };
+		try {
+			return judgeMeasure(measure, points, shapes, split.measure);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Segment à mesurer (n° 26) : seul dans la figure (garanti par le parseur) ; les règles
+	// posées ne sont pas notées, la longueur tapée l'est
+	const segmentMeasure = allChecks.find((c) => c.kind === 'mesure_segment');
+	if (segmentMeasure) {
+		if (answer.trim() === '') return { status: 'empty' };
+		const split = splitMeasuredAnswer(answer);
+		const drawn = split ? parseConstructionAnswer(split.drawn) : null;
+		// La règle graduée seule dans la palette : autre chose qu'une règle est une réponse forgée
+		if (!split || !drawn || drawn.some((o) => o.kind !== 'regle')) return { status: 'incorrect' };
+		try {
+			return judgeSegmentMeasure(segmentMeasure, points, shapes, drawn, split.measure);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	const objects = parseConstructionAnswer(answer);
+	if (objects === null) return { status: 'incorrect' };
+	if (objects.length === 0) return { status: 'empty' };
+	// Repère du rapporteur (lot 5) hors d'un angle à construire (ou d'un triangle à angle
+	// donné, lot 7, ou d'une bissectrice, lot 9) : sans son outil, réponse forgée
+	const angle = allChecks.find((c) => c.kind === 'angle');
+	const protractor =
+		angle !== undefined ||
+		allChecks.some(
+			(c) =>
+				(c.kind === 'triangle' && c.angles.length > 0) ||
+				(c.kind === 'droite' && bissectriceOf(c.expression) !== null)
+		);
+	if (!protractor && objects.some((o) => o.kind === 'repere')) return { status: 'incorrect' };
+	// Règle graduée posée (chantier `regle-graduee`) hors d'un segment de longueur donnée :
+	// sans son outil, réponse forgée ; le segment est seul dans la figure (garanti par le parseur)
+	const segmentLength = allChecks.find((c) => c.kind === 'segment');
+	// … ou d'un cercle de rayon donné en cm (PR 3), seul avec d'autres cercles (garanti par le parseur)
+	const rulerCircle = allChecks.some(
+		(c) => c.kind === 'cercle' && centeredCircleOf(c.expression)?.kind === 'longueur'
+	);
+	// … ou d'un triangle rectangle coté en cm (PR 4), seul dans la figure (garanti par le parseur)
+	const rulerTriangle = allChecks.some(
+		(c) => c.kind === 'triangle' && c.lengths.some(isRuledLength)
+	);
+	// … ou d'un carré / rectangle coté (PR 6), seul dans la figure (garanti par le parseur)
+	const rulerPolygon = allChecks.find(isRuledPolygonCheck);
+	// … ou d'un rectangle sans équerre, seul dans la figure (garanti par le parseur)
+	const diagonalRectangle = allChecks.find(isDiagonalRectangleCheck);
+	if (
+		!segmentLength &&
+		!rulerCircle &&
+		!rulerTriangle &&
+		!rulerPolygon &&
+		!diagonalRectangle &&
+		objects.some((o) => o.kind === 'regle')
+	) {
+		return { status: 'incorrect' };
+	}
+	if (diagonalRectangle) {
+		try {
+			return judgeDiagonalRectangle(diagonalRectangle, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	if (rulerPolygon) {
+		try {
+			return judgeRuledPolygon(rulerPolygon, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	if (segmentLength) {
+		try {
+			return judgeSegmentLength(segmentLength, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Angle à construire (lot 5) : seul dans la figure (garanti par le parseur)
+	if (angle) {
+		try {
+			return judgeAngle(angle, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+
+	const pointChecks = allChecks.filter(isPointCheck);
+	if (pointChecks.length > 0) {
+		try {
+			return judgePoints(pointChecks, expected, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Droites à construire (lot 3) : seules dans la figure (garanti par le parseur)
+	const lineChecks = allChecks.filter(isLineCheck);
+	if (lineChecks.length > 0) {
+		try {
+			return judgeLines(lineChecks, expected, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Cercles à construire (lot 3b) : seuls dans la figure (garanti par le parseur)
+	const circleChecks = allChecks.filter(isCircleCheck);
+	if (circleChecks.length > 0) {
+		try {
+			return judgeCircles(circleChecks, expected, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Triangle à construire (lot 4) : seul dans la figure (garanti par le parseur)
+	const triangle = allChecks.find((c) => c.kind === 'triangle');
+	if (triangle) {
+		try {
+			return judgeTriangle(triangle, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	const symmetry = allChecks.find((c) => c.kind === 'symetrique');
+	if (symmetry) {
+		// Papier uni (lot 2b) : droites de la règle et de l'équerre, cercles du compas = construction
+		const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
+		// Report (revue du lot 4) : construction aussi, si l'auteur l'a mis dans la palette
+		const constructions = objects.filter(
+			(o) => o.kind === 'droite' || o.kind === 'cercle' || o.kind === 'report'
+		);
+		// Un point placé sans outil point : réponse forgée
+		if (segments.length + constructions.length !== objects.length) return { status: 'incorrect' };
+		try {
+			return judgeSymmetry(symmetry, points, shapes, segments);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Un point ou un cercle sans leur outil : réponse forgée
+	const lines = objects.filter(isDrawnLine);
+	if (lines.length !== objects.length) return { status: 'incorrect' };
 
 	const polygon = allChecks.find(isPolygonCheck);
 	if (polygon) {
 		try {
 			return judgePolygon(polygon, points, lines);
 		} catch (error) {
-			if (error instanceof PolygonAuthorError) throw new ConstructionAuthorError(error.message);
-			throw error;
+			throw asAuthorError(error);
 		}
 	}
 	const checks = allChecks.filter((c): c is DroiteParCheck => c.kind === 'droite_par');

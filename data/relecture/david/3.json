@@ -6,9 +6,7 @@
 	"template": {
 		"delay": 10,
 		"level": 4,
-		"theme": "Entiers",
 		"title": "Connaître la position décimale",
-		"domain": "Apprivoiser",
 		"grades": ["CE2"],
 		"shared": {
 			"variables": [
@@ -29,13 +27,12 @@
 					"expression": "0..9!a,b,c"
 				},
 				{
-					"name": "e",
+					"name": "h",
 					"expression": "eval:a*1000+b*100+c*10+d"
 				}
 			]
 		},
 		"status": "draft",
-		"subdomain": "Ecriture",
 		"variations": [
 			{
 				"blanks": [
@@ -43,7 +40,7 @@
 						"expectedAnswer": "{{a}}"
 					}
 				],
-				"statement": "Dans le nombre ${{e}}$, le chiffre des milliers est $?$."
+				"statement": "Dans le nombre ${{h}}$, le chiffre des milliers est $?$."
 			},
 			{
 				"blanks": [
@@ -51,7 +48,7 @@
 						"expectedAnswer": "{{b}}"
 					}
 				],
-				"statement": "Dans le nombre ${{e}}$, le chiffre des centaines est $?$."
+				"statement": "Dans le nombre ${{h}}$, le chiffre des centaines est $?$."
 			},
 			{
 				"blanks": [
@@ -59,7 +56,7 @@
 						"expectedAnswer": "{{c}}"
 					}
 				],
-				"statement": "Dans le nombre ${{e}}$, le chiffre des dizaines est $?$."
+				"statement": "Dans le nombre ${{h}}$, le chiffre des dizaines est $?$."
 			},
 			{
 				"blanks": [
@@ -67,7 +64,7 @@
 						"expectedAnswer": "{{d}}"
 					}
 				],
-				"statement": "Dans le nombre ${{e}}$, le chiffre des unités est $?$."
+				"statement": "Dans le nombre ${{h}}$, le chiffre des unités est $?$."
 			}
 		],
 		"description": "Jusqu'aux milliers",

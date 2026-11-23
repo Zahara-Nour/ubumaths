@@ -5,8 +5,8 @@
  */
 
 import { z } from 'zod';
-import { RESOURCE_KINDS } from '$lib/resources/kinds';
-import { GRADE_CODES } from '$lib/types/grades';
+import { RESOURCE_KINDS } from '#lib/resources/kinds.ts';
+import { GRADE_CODES } from '#lib/types/grades.ts';
 
 /**
  * Query parameters for `GET /api/search`.

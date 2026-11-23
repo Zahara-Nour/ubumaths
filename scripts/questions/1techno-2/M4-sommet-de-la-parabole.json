@@ -1,0 +1,160 @@
+{
+	"id": "493adeb4-7eb9-4156-bd1b-79996f54c5e4",
+	"title": "Coordonnées du sommet d'une parabole, par la symétrie",
+	"description": "Abscisse par l'axe de symétrie (milieu des racines), ordonnée par le calcul de son image",
+	"grades": ["1_GEN", "1_TECHNO"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}(x{{eval:-(r);+}})(x{{eval:-(s);+}})$.\n\nLe sommet de la parabole qui représente $f$ est $S\\left(\\,?\\,;\\,?\\,\\right)$.",
+			"blanks": [
+				{
+					"expectedAnswer": "{{al}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-a*h^2}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+2*h"
+				},
+				{
+					"name": "al",
+					"expression": "eval:r+h"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)=0$ pour $x={{r}}$ ou $x={{s}}$. La parabole est symétrique par rapport à la droite verticale qui passe par le milieu de ses deux points d'intersection avec l'axe des abscisses : $x=\\dfrac{{{r}}+{{if:s<0|({{s}})|{{s}}}}}{2}={{al}}$. Le sommet est sur cet axe : son abscisse est ${{al}}$.",
+					"Son ordonnée est l'image de ${{al}}$ : $f({{al}})={{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}({{al}}{{eval:-(r);+}})({{al}}{{eval:-(s);+}})={{eval:-a*h^2}}$.",
+					"Donc $S\\left({{al}}\\,;{{eval:-a*h^2}}\\right)$."
+				]
+			},
+			"conditions": ["s <= 6"]
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+c}}$.\n\nLe sommet de la parabole qui représente $f$ est $S\\left(\\,?\\,;\\,?\\,\\right)$.",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(-x)=f(x)$ : la parabole est symétrique par rapport à l'axe des ordonnées ; le sommet a pour abscisse $0$.",
+					"$f(0)={{c}}$, donc $S\\left(0\\,;{{c}}\\right)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2(x-1)(x-5) : S(3 ; -8)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"h": "2",
+				"s": "5",
+				"al": "3"
+			},
+			"answers": ["3", "-8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée de signe contraire",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"h": "2",
+				"s": "5",
+				"al": "3"
+			},
+			"answers": ["3", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : abscisse -3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"h": "2",
+				"s": "5",
+				"al": "3"
+			},
+			"answers": ["-3", "-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-x²+4 : S(0 ; 4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"c": "4"
+			},
+			"answers": ["0", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : S(4 ; 0)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"c": "4"
+			},
+			"answers": ["4", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

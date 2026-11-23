@@ -1,0 +1,246 @@
+{
+	"id": "6140dae0-a92e-4f30-bae4-5f2c8559b32b",
+	"title": "Dénombrer quand il y a plus de dix objets d'un rang",
+	"description": "Plaques, barres, cubes jusqu'à 999 ; plus de dix cubes, plus de dix barres, ou les deux",
+	"grades": ["CE1"],
+	"level": 12,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "1..8"
+				},
+				{
+					"name": "u",
+					"expression": "11..19"
+				}
+			],
+			"conditions": ["100*c+10*d+u <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ petits cubes seuls.",
+					"Avec $\\textcolor{{{color:primary.0}}}{\\text{10 petits cubes seuls}}$, on fait une barre de plus : ${{u}}$ cubes, c'est $1$ dizaine et ${{eval:u-10}}$ {{if:u-10<=1|unité|unités}}.",
+					"${{c}}$ {{if:c<=1|centaine|centaines}}, ${{eval:d+1}}$ dizaines et ${{eval:u-10}}$ {{if:u-10<=1|unité|unités}} : il y a $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ cubes."
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..7"
+				},
+				{
+					"name": "d",
+					"expression": "11..29"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["100*c+10*d+u <= 999", "d != 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ barres et ${{u}}$ {{if:u<=1|petit cube|petits cubes}} seuls.",
+					"Avec $\\textcolor{{{color:primary.0}}}{\\text{10 barres}}$, on fait une plaque : ${{d}}$ dizaines, c'est ${{eval:floor(d/10)}}$ {{if:floor(d/10)<=1|centaine|centaines}} et ${{eval:d-10*floor(d/10)}}$ {{if:d-10*floor(d/10)<=1|dizaine|dizaines}}.",
+					"${{eval:c+floor(d/10)}}$ centaines, ${{eval:d-10*floor(d/10)}}$ {{if:d-10*floor(d/10)<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}} : il y a $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ cubes."
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6"
+				},
+				{
+					"name": "d",
+					"expression": "11..29"
+				},
+				{
+					"name": "u",
+					"expression": "11..19"
+				}
+			],
+			"conditions": ["100*c+10*d+u <= 999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*c+10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ barres et ${{u}}$ petits cubes seuls.",
+					"On compte par rang : ${{c}}$ {{if:c<=1|centaine fait|centaines font}} ${{eval:100*c}}$, ${{d}}$ dizaines font ${{eval:10*d}}$ et il reste ${{u}}$ unités.",
+					"${{eval:100*c}} + {{eval:10*d}} + {{u}} = \\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ : il y a $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ cubes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 c, 3 d, 17 u = 247",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "17"
+			},
+			"answers": ["247"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres mis bout à bout (2317)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "17"
+			},
+			"answers": ["2317"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la dizaine des 17 oubliée (237)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "17"
+			},
+			"answers": ["237"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 c, 8 d, 19 u = 899",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"d": "8",
+				"u": "19"
+			},
+			"answers": ["899"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 c, 27 d, 4 u = 474",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "4"
+			},
+			"answers": ["474"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2274 (bout à bout)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "4"
+			},
+			"answers": ["2274"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 274 (les 20 dizaines oubliées)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "4"
+			},
+			"answers": ["274"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 c, 27 d, 14 u = 484 (exemple du BO)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "14"
+			},
+			"answers": ["484"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 274 (plus de dix ignorés)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "14"
+			},
+			"answers": ["274"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 22714 (bout à bout)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "14"
+			},
+			"answers": ["22714"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien d'écrit",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "27",
+				"u": "14"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

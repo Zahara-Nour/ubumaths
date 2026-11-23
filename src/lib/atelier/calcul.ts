@@ -13,13 +13,13 @@
 import type { Atelier, Created, Refused } from './atelier.svelte';
 import type { AtelierObject, ObjectKind } from './types';
 import { dependsOnMessage, isList, isQualitative, parametersOf } from './types';
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { Provenance } from './parse';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
-import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { RELATION_UNDECIDABLE, WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import type { ReplExecutionResult } from '#lib/mathAST/cli/web/types.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { getVariables, substitute } from '#lib/mathAST/eval/substitute.ts';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import {
 	citedReciprocalInterval,
 	citesReciprocal,
@@ -47,7 +47,6 @@ import {
 	referencesOf,
 	variablesOf,
 	individualEntries,
-	withPiCommand,
 	latexUnitsWithPi,
 	mixedNotationMessage,
 	withLatexFunctionNames
@@ -86,29 +85,27 @@ import {
 	intersect,
 	isEmpty,
 	isUniversal
-} from '$lib/mathAST/domain/algebra';
-import { closedInterval, intervalSet } from '$lib/mathAST/domain/factory';
-import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
-import { add, divide, number, opposite } from '$lib/mathAST/factory';
-import { compile } from '$lib/mathAST/eval/compile';
-import { computeDomain } from '$lib/mathAST/domain/compute';
-import { solve as solveRelation } from '$lib/mathAST/solve';
-import { formatInterval } from '$lib/mathAST/domain/format';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
-import { UNREADABLE_STUDY_DOMAIN } from '$lib/mathAST/domain/study';
-import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { simplify } from '$lib/mathAST/simplify/simplify';
-import { tidy } from '$lib/mathAST/tidy';
+} from '#lib/mathAST/domain/algebra.ts';
+import { closedInterval, intervalSet } from '#lib/mathAST/domain/factory.ts';
+import { expandExcludedPoints } from '#lib/mathAST/domain/validation/compare-domains.ts';
+import { add, divide, number, opposite } from '#lib/mathAST/factory.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
+import { computeDomain } from '#lib/mathAST/domain/compute.ts';
+import { formatInterval } from '#lib/mathAST/domain/format.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { parseStudentDomain } from '#lib/mathAST/domain/validation/parse-student-domain.ts';
+import { UNREADABLE_STUDY_DOMAIN } from '#lib/mathAST/domain/study.ts';
+import { MAX_SEQUENCE_TERMS } from '#lib/grapheur/sequence.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { simplify } from '#lib/mathAST/simplify/simplify.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
 import {
 	withUniformCoefficients,
 	withValueInRegister
-} from '$lib/mathAST/integration/coefficient-register';
-import { getPolynomialDegree } from '$lib/mathAST/analysis/expression-classify';
-import { differentiateN } from '$lib/mathAST/differentiation/differentiate';
-import { findNodes, mapNode } from '$lib/mathAST/transforms';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
+} from '#lib/mathAST/integration/coefficient-register.ts';
+import { getPolynomialDegree } from '#lib/mathAST/analysis/expression-classify.ts';
+import { findNodes, mapNode } from '#lib/mathAST/transforms.ts';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
 import {
 	resolveCommand,
 	suggestFor,
@@ -138,8 +135,8 @@ import {
 	pairNames,
 	withoutMeasureCalls
 } from './measures';
-import { evaluate } from '$lib/mathAST/eval';
-import { format as formatUnit } from '$lib/mathAST/units';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { format as formatUnit } from '#lib/mathAST/units/index.ts';
 import {
 	bareLineShortcut,
 	constructionWordIn,
@@ -163,7 +160,13 @@ import {
 	segmentLength,
 	type BuiltOutcome
 } from './construction';
-import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from './names';
+import {
+	ANGLE_POWER_MESSAGE,
+	DEGREE_POWER,
+	PI_IN_LETTERS,
+	PI_IN_LETTERS_MESSAGE,
+	withPiCommand
+} from '#lib/mathAST/cli/core/typed-line.ts';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
@@ -176,20 +179,29 @@ import {
 	uniformCommand
 } from './law-commands';
 import { filterCommand } from './filter';
-import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import type { StatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
-import { degreeSignWritten, strayDegreeRefusal, withDegreeUnits } from './degrees';
+import {
+	degreeSignWritten,
+	strayDegreeRefusal,
+	withDegreeUnits
+} from '#lib/mathAST/cli/core/degrees.ts';
 import { radiansInLatex, radiansInText } from './angle-radians';
-import { quantityProblem } from '$lib/mathAST/cli/quantities';
-import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
-import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
-import { isBoolean, isNumber, isOpposite, isRelation, isUnit } from '$lib/mathAST/guards';
+import { quantityProblem } from '#lib/mathAST/cli/quantities.ts';
+import {
+	EQUATION_UNSOLVED,
+	INEQUALITY_UNSOLVED,
+	PARAMETER_DEPENDS
+} from '#lib/mathAST/cli/commands/solve.command.ts';
+import { VALUE_FORBIDDEN, typedValueLatex } from '#lib/mathAST/cli/commands/eval.command.ts';
+import { isBoolean, isNumber, isOpposite, isRelation, isUnit } from '#lib/mathAST/guards.ts';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
-import { guardedAnswer, tidyFurther, writtenKeepingDomain, type DomainFacts } from './domain-guard';
+import { writtenKeepingDomain } from '#lib/mathAST/pedagogical-simplify/keep-domain.ts';
+import { guardedAnswer, tidyFurther, type DomainFacts } from './domain-guard';
 import {
 	conditionsText,
 	guarantees,
@@ -207,9 +219,9 @@ import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import { calculationSteps, evaluateSteps } from './evaluate-steps';
 import { domainLine } from './domain-steps';
 import { limitCommand } from './limit';
-import { collapseLnAbs } from '$lib/mathAST/pedagogical-integration/latex';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import { collapseLnAbs } from '#lib/mathAST/pedagogical-integration/latex.ts';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import {
 	DEFAULT_VARIABLE,
 	bareFunctionRefusal,
@@ -218,13 +230,13 @@ import {
 	readCommandArguments,
 	writeCommandArguments,
 	type CommandArguments
-} from '$lib/mathAST/cli/core/variable-argument';
-import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
+} from '#lib/mathAST/cli/core/variable-argument.ts';
+import { parse as parseCommandExpression } from '#lib/mathAST/cli/core/pipeline.ts';
 import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
-} from '$lib/mathAST/parser/custom/tokenizer';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+} from '#lib/mathAST/parser/custom/tokenizer.ts';
+import type { VariationTableNode } from '#lib/ubumark/types/variation-table.ts';
 import {
 	decimalCommaDeep,
 	decimalCommaInput,
@@ -239,7 +251,7 @@ import { listCitedMessage } from './list-cited';
 import { cellCitedIn, cellInCalculMessage } from './grid';
 import { functionsListing, valuesListing } from './listing';
 import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
 
 // =============================================================================
 // Types
@@ -426,10 +438,13 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	// `5[m]+3[s]`, `.convertir kg` après une longueur (phase 0 grandeurs, lot A)
 	'QUANTITY_ERROR',
 	// `.évaluer \frac{x+1}{x-1} en x=1` : « $x = 1$ est une valeur interdite… »
-	VALUE_FORBIDDEN
+	VALUE_FORBIDDEN,
+	// `2 \approx 2` : « Relation « ≈ » non évaluable… » (décision C du lot 2)
+	RELATION_UNDECIDABLE
 ]);
 
-// `PI_IN_LETTERS` : la règle, partagée avec la grille, vit dans `names.ts`
+// `PI_IN_LETTERS` : la règle, partagée avec la grille et le registre, vit dans
+// `mathAST/cli/core/typed-line.ts`
 
 /** Un comparateur d'événement : `⩽ ⩾ ≤ ≥ < > =`, `<=`, `>=`, `\leqslant`, `\leq`… */
 const EVENT_COMPARATOR = String.raw`(?:<=|>=|[⩽⩾≤≥<>=]|\\(?:leqslant|geqslant|leq|geq|le|ge|lt|gt))`;
@@ -2002,6 +2017,13 @@ const WRITING_COMMANDS: ReadonlySet<string> = new Set([
 	'normal'
 ]);
 
+/**
+ * Les commandes dont les étapes lisent un angle en degrés et disent sa valeur
+ * remarquable (`cos(60°) = 1/2`, chantier valeurs-remarquables) : l'argument
+ * leur arrive en degrés, pas converti en radians.
+ */
+const DEGREES_READ: ReadonlySet<string> = new Set(['simplify', 'expand', 'solve']);
+
 /** Le résultat de `.évaluer`, un angle pris par un sin, cos, tan calculé en radians. */
 function evaluatedInRadians(result: ReplExecutionResult): ReplExecutionResult {
 	if (!result.success || result.latex === undefined) return result;
@@ -2244,8 +2266,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// moteur ne calcule pas `cos((π/3)[rad])` (`.résoudre h(x)=1`, h(x) = cos(60°)·x)
 	// Pas pour une commande d'ÉCRITURE (`.latex`, `.texte`…) : elle montre
 	// l'expression telle quelle, pas sa valeur (revue : `.latex cos(60[°])` → `1 / 2`)
+	// Pas pour `.simplifier`, `.développer`, `.résoudre` non plus : leurs étapes
+	// lisent les degrés et disent la valeur remarquable (`cos(60°) = 1/2`, chantier
+	// valeurs-remarquables) ; convertir ici la calculait en silence. Le moteur de
+	// `.résoudre` reçoit, lui, l'argument converti (plus bas, `engineArgument`)
 	const inRadians = (text: string | null): string | null =>
-		text === null || WRITING_COMMANDS.has(name)
+		text === null || WRITING_COMMANDS.has(name) || DEGREES_READ.has(name)
 			? text
 			: radiansInText(text, session.atelier.functionNames);
 	const substitute = (text: string): string | null =>
@@ -2450,28 +2476,21 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		finalArgs = { ...finalArgs, interval: formatInterval(studied) };
 	}
 	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
-	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
+	// `.résoudre` reçoit les degrés tels quels : le registre les lit (valeur
+	// remarquable calculée, angle quelconque gardé — registre-reference, PR 2c)
+	const engineArgument = commandArgument;
+	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${engineArgument}`;
 
 	// `.évaluer sin(x) en x=30°` : le moteur remplace x et rend `sin((π/6)[rad])`,
 	// non calculé ; l'angle y devient un nombre de radians (revue de la PR « 60° »)
 	const executedResult = engine.execute(executed);
 	const result = name === 'eval' ? evaluatedInRadians(executedResult) : executedResult;
 	// V57 : une résolution qui DIVISE par un paramètre (`a x = 0` → x = 0, faux
-	// pour a = 0) refuse plutôt que de répondre (Q5, David, 2026-10-14). Les
-	// refus du moteur passent avant : il dit déjà ce qu'il ne sait pas faire
-	const parameterRefusal =
-		name === 'solve' &&
-		finalArgs !== null &&
-		(result.success || result.error?.code === INEQUALITY_UNSOLVED)
-			? parameterSolveRefusal(
-					session,
-					finalArgs.expression,
-					finalArgs.variable ?? DEFAULT_VARIABLE,
-					result.success ? result.latex : undefined
-				)
-			: null;
-	if (parameterRefusal !== null) {
-		return { kind: 'refus', message: parameterRefusal, ...notesOf(letterNote) };
+	// pour a = 0) refuse plutôt que de répondre (Q5, David, 2026-10-14). Le refus
+	// vit dans le registre depuis la PR 2c (registre-reference) : l'Atelier dit le
+	// sien, avant les étapes — les valeurs posées sont celles du même moteur
+	if (name === 'solve' && !result.success && result.error?.code === PARAMETER_DEPENDS) {
+		return { kind: 'refus', message: result.error.message, ...notesOf(letterNote) };
 	}
 	// Une borne à paramètre sur un pôle (`1/x de 1 à a` → ln|a|, faux si
 	// a ⩽ 0), un pôle qui dépend du paramètre (`1/(x-a) de 0 à 1`), ou `x^a`
@@ -2568,7 +2587,9 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				kind: 'commande',
 				input,
 				output: rendered.text,
-				latex: derived.answer,
+				// La réponse du registre, qui fait foi (registre-reference, D1) ; les
+				// étapes y aboutissent (R5, `deriver-registre.test.ts`)
+				latex: result.success && result.answer !== undefined ? result.answer : derived.answer,
 				steps: derived.steps,
 				...summaryField(derived),
 				...notes
@@ -2588,11 +2609,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		if (note !== null) return { kind: 'commande', input, output: rendered.text, ...notes };
 	}
 
-	// ⚠️ Même forme que `.dériver`, pour la même raison : le moteur ne SAIT pas
-	// faire une partie de ce qu'on lui demande. Mesuré — `.simplifier x+x` et
-	// `.simplifier sqrt(8)` rendaient l'entrée inchangée. L'étape n'est donc pas
-	// qu'une explication ici : c'est aussi la bonne réponse.
+	// La réponse est celle du registre (`.simplify`, keep-domain.ts : le domaine
+	// gardé, ADR 0032 S3) ; les étapes et le bouton « Simplifier pour x ≠ 0 »
+	// sont de l'Atelier, et sortent du même calcul (garde : simplifier-registre).
+	// Avec des étapes, la ligne affichée est leur fin : le même calcul, sur la
+	// ligne lue par l'Atelier — le registre lit en LaTeX ce que la détection ne
+	// tranche pas (`x*0/x` : `(x·0)/x`), et la dernière étape le contredirait.
 	if (name === 'simplify') {
+		const answer =
+			result.success && result.answer !== undefined
+				? degreeSignWritten(displayUnitsInLatex(result.answer))
+				: undefined;
 		const simplified = simplifySteps(argument);
 		if (simplified !== null) {
 			return {
@@ -2605,21 +2632,21 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				...(simplified.alternative !== undefined && { alternative: simplified.alternative })
 			};
 		}
-		// Rien à simplifier (`2(x+3)`, `x²+2x+1`) : l'expression du moteur en
-		// LaTeX, jamais le bloc du terminal (« Custom: … Hash: 2*V(x)+6 »). Le
-		// moteur, lui, ne garde pas le domaine (`ln(x) − ln(x)` → 0) : gardé ici
-		if (result.success && result.ast !== undefined) {
+		// Rien à simplifier pour le moteur pédagogique (`2(x+3)`, `ln(x) − ln(x)`) :
+		// le registre a gardé le domaine ; le bouton montre le calcul du moteur
+		if (answer !== undefined) {
 			const typed = astOf(argument, 'text');
 			const guarded =
 				typed === null
-					? { shown: result.ast }
-					: guardedAnswer(writtenKeepingDomain(typed), result.ast);
+					? undefined
+					: guardedAnswer(writtenKeepingDomain(typed), simplify(typed).result);
 			return {
 				kind: 'commande',
 				input,
 				output: rendered.text,
-				latex: toLatex(guarded.shown),
-				...(guarded.alternative !== undefined && { alternative: guarded.alternative })
+				// `cos(20°)`, gardé en degrés depuis que `.simplifier` les lit lui-même
+				latex: answer,
+				...(guarded?.alternative !== undefined && { alternative: guarded.alternative })
 			};
 		}
 	}
@@ -2655,7 +2682,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 					finalArgs.variable === null
 						? finalArgs.expression
 						: `${finalArgs.expression} ; ${finalArgs.variable}`,
-					studied ?? undefined
+					studied ?? undefined,
+					cited?.kind === 'restricted' ? cited.conditions : []
 				)
 			: null;
 	if (solved !== null) {
@@ -2700,7 +2728,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			kind: 'commande',
 			input,
 			output: rendered.text,
-			latex: result.latex,
+			// `cos(20°)`, gardé en degrés depuis que `.résoudre` les lit lui-même (PR 2c)
+			latex: degreeSignWritten(displayUnitsInLatex(result.latex)),
 			...solutionsAlternative(result),
 			...noted
 		};
@@ -3004,10 +3033,54 @@ function citedParameters(ast: MathNode, parameters: readonly string[]): string[]
 	return parameters.filter((p) => letters.has(p));
 }
 
-/** Une condition « a ≠ 0 », écrite pour la ligne (LaTeX) et pour le texte. */
+/** Une relation d'une condition sur une lettre : `a ≠ 1`, `a ⩾ 0`, `a > -2`. */
+type ConditionRelation = '≠' | '⩾' | '>' | '⩽' | '<';
+
+/**
+ * Une condition « a ≠ 0 », écrite pour la ligne (LaTeX) et pour le texte.
+ * `bound` : la lettre, la relation et la valeur quand la condition porte sur
+ * une lettre seule — ce qui permet de fusionner « a ⩾ 0 » et « a ≠ 0 ».
+ */
 interface Condition {
 	readonly latex: string;
 	readonly text: string;
+	readonly bound?: {
+		readonly letter: string;
+		readonly relation: ConditionRelation;
+		readonly value: string;
+	};
+}
+
+const RELATION_LATEX: Record<ConditionRelation, string> = {
+	'≠': '\\neq',
+	'⩾': '\\geqslant',
+	'>': '>',
+	'⩽': '\\leqslant',
+	'<': '<'
+};
+
+/** La condition « lettre relation valeur », écrite pour la ligne et le texte. */
+function boundCondition(letter: string, relation: ConditionRelation, value: string): Condition {
+	return {
+		latex: `${letter} ${RELATION_LATEX[relation]} ${value}`,
+		text: `${letter} ${relation} ${value}`,
+		bound: { letter, relation, value }
+	};
+}
+
+/** `a ± n` ou `n ± a` : la lettre et le nombre, et le côté de la lettre. */
+function letterAndNumber(
+	node: MathNode
+): { letter: string; number: string; letterFirst: boolean } | null {
+	if (node.type !== 'addition' && node.type !== 'subtraction') return null;
+	const { left, right } = node;
+	if (left.type === 'variable' && isNumber(right)) {
+		return { letter: left.name, number: right.value, letterFirst: true };
+	}
+	if (right.type === 'variable' && isNumber(left)) {
+		return { letter: right.name, number: left.value, letterFirst: false };
+	}
+	return null;
 }
 
 /**
@@ -3042,22 +3115,19 @@ function conditionOf(factor: MathNode): Condition | null {
 	const node = factor.type === 'delimiter' ? factor.content : factor;
 	// Toujours vraie (`a^2 + 1 ≠ 0`) : rien à dire
 	if (isPositive(node)) return null;
-	const excluded = (letter: string, value: string): Condition => ({
-		latex: `${letter} \\neq ${value}`,
-		text: `${letter} ≠ ${value}`
-	});
-	if (node.type === 'variable') return excluded(node.name, '0');
-	if (node.type === 'addition' || node.type === 'subtraction') {
-		const { left, right } = node;
-		const pair =
-			left.type === 'variable' && isNumber(right)
-				? { letter: left.name, number: right.value }
-				: right.type === 'variable' && isNumber(left)
-					? { letter: right.name, number: left.value }
-					: null;
-		if (pair !== null) {
-			return excluded(pair.letter, node.type === 'addition' ? `-${pair.number}` : pair.number);
-		}
+	// √u ≠ 0, |u| ≠ 0 : u ≠ 0 (lot 3 : √a au dénominateur, fusionné avec a ⩾ 0)
+	if (isEvenRoot(node) || (node.type === 'function' && node.name === 'abs')) {
+		return node.args.length === 1 ? conditionOf(node.args[0]) : null;
+	}
+	if (node.type === 'variable') return boundCondition(node.name, '≠', '0');
+	const pair = letterAndNumber(node);
+	if (pair !== null) {
+		// a − n, n − a → a ≠ n ; a + n, n + a → a ≠ −n
+		return boundCondition(
+			pair.letter,
+			'≠',
+			node.type === 'addition' ? `-${pair.number}` : pair.number
+		);
 	}
 	return { latex: `${toLatex(node)} \\neq 0`, text: `${toCustom(node)} ≠ 0` };
 }
@@ -3102,89 +3172,134 @@ function introducedConditions(
 ): Condition[] {
 	if (parameters.length === 0) return [];
 	const input = parseCommandExpression(typed).ast;
-	const already = input === undefined ? [] : denominatorConditions(input, variable, parameters);
-	const answered = denominatorConditions(answer, variable, parameters);
-	if (!bounded) return answered.filter((c) => !already.some((a) => a.latex === c.latex));
-	return [...answered, ...already.filter((a) => !answered.some((c) => c.latex === a.latex))];
-}
-
-/**
- * Q5 (V57) : `.résoudre` refuse quand la résolution DIVISE par une expression
- * d'un paramètre — `a x = 0` répondait x = 0, faux pour a = 0.
- * - polynôme en l'inconnue : son coefficient dominant contient un paramètre
- *   (`a x + b = 0`, `x/a = 1`, `a x^2 = 1`, et `a x > 1`, dont le sens dépend
- *   du signe de a) ; `(x-a)(x-1) = 0`, `x + a = 0` restent résolus ;
- * - sinon, l'inconnue multipliée par un paramètre (`e^{a x} = 1`), ou un
- *   paramètre au dénominateur de la réponse (`1/x = a` → 1/a) — sauf si le
- *   moteur a écrit la condition (`u_0 \cdot 0{,}5^n = 1` : « si u₀ > 0 »).
- * ⚠️ `x^2 = a` reste : pas de division, et la réponse dit « si a ⩾ 0 ».
- *
- * @param latex - La réponse du moteur, `undefined` s'il n'a pas conclu
- */
-function parameterSolveRefusal(
-	session: CalcSession,
-	typed: string,
-	unknown: string,
-	latex: string | undefined
-): string | null {
-	const ast = parseCommandExpression(typed).ast;
-	if (ast === undefined || !isRelation(ast) || isRelation(ast.left)) return null;
-	const parameters = freeParameters(session, ast, unknown);
-	if (parameters.length === 0) return null;
-	const rational = ast.relation === '=' ? forbiddenSolutions(ast, unknown, parameters) : [];
-	if (rational.length > 0) return dependsOnMessage(rational);
-	const difference: MathNode = { type: 'subtraction', left: ast.left, right: ast.right };
-	const degree = getPolynomialDegree(difference, unknown);
-	if (degree === 0) return null;
-	if (degree !== null) {
-		const leading = leadingParameters(difference, degree, unknown, parameters);
-		if (leading.length > 0) return dependsOnMessage(leading);
+	const conditionsIn = (ast: MathNode): Condition[] =>
+		unique([
+			...argumentConditions(ast, variable, parameters),
+			...denominatorConditions(ast, variable, parameters)
+		]);
+	const already = input === undefined ? [] : conditionsIn(input);
+	const answered = conditionsIn(answer);
+	if (!bounded) {
+		return mergedConditions(answered.filter((c) => !already.some((a) => a.latex === c.latex)));
 	}
-	const conditioned = latex?.includes('\\text{si') ?? false;
-	if (conditioned) return null;
-	const multiplied = degree === null ? multipliedParameters(difference, unknown, parameters) : [];
-	if (multiplied.length > 0) return dependsOnMessage(multiplied);
-	if (latex === undefined) return null;
-	const cites = (chunk: string, p: string) =>
-		new RegExp(`(?<![A-Za-z\\\\])${p}(?![A-Za-z])`).test(chunk);
-	const denominators = latexDenominators(latex);
-	const divisors = parameters.filter((p) => denominators.some((d) => cites(d, p)));
-	return divisors.length === 0 ? null : dependsOnMessage(divisors);
+	return mergedConditions(unique([...answered, ...already]));
+}
+
+/** Une condition par écriture, dans l'ordre de la première rencontre. */
+function unique(conditions: readonly Condition[]): Condition[] {
+	return conditions.filter((c, i) => conditions.findIndex((d) => d.latex === c.latex) === i);
+}
+
+/** `\sqrt{u}`, `\sqrt[4]{u}` : une racine d'indice pair (u ⩾ 0) ; `\sqrt[3]{u}` non. */
+function isEvenRoot(node: MathNode): node is MathNode & { type: 'function' } {
+	if (node.type !== 'function' || node.name !== 'sqrt') return false;
+	if (node.base === undefined) return true;
+	if (!isNumber(node.base)) return false;
+	const index = Number(node.base.value);
+	return Number.isInteger(index) && index % 2 === 0;
 }
 
 /**
- * Équation rationnelle (revue de 0d3d9beea) : les paramètres pour lesquels une
- * solution tombe sur une valeur interdite. `x/(x-a) = 0` → x = 0, interdite si
- * a = 0 ; `(x-a)/(x-1) = 0` → x = a, interdite si a = 1 ; `a/x = 1` → x = a.
- * `1/(x-a) = 1` → x = a + 1 n'annule jamais x − a : gardée.
+ * Lot 3 (`ecarts-conditions`, 2026-11-01) : les conditions « u ⩾ 0 » des
+ * racines d'indice pair et « u > 0 » des `\ln` / `\log` dont l'argument u
+ * est fait de paramètres seulement — `\sqrt{a}` → a ⩾ 0, `\ln(a+2)` → a > −2.
+ * Un argument qui contient la variable porte une condition sur x : pas ici.
  */
-function forbiddenSolutions(
-	relation: RelationNode,
-	unknown: string,
+function argumentConditions(
+	ast: MathNode,
+	variable: string,
 	parameters: readonly string[]
-): string[] {
-	const denominators: MathNode[] = [];
-	mapNode(relation, (node) => {
-		if (node.type === 'division' && getVariables(node.denominator).has(unknown)) {
-			denominators.push(node.denominator);
+): Condition[] {
+	const found: Condition[] = [];
+	mapNode(ast, (node) => {
+		if (node.type !== 'function' || node.args.length !== 1) return node;
+		const strict = node.name === 'ln' || node.name === 'log';
+		if (!strict && !isEvenRoot(node)) return node;
+		const argument = node.args[0];
+		if (
+			getVariables(argument).has(variable) ||
+			citedParameters(argument, parameters).length === 0
+		) {
+			return node;
 		}
+		const condition = signConditionOf(argument, strict);
+		if (condition !== null) found.push(condition);
 		return node;
 	});
-	if (denominators.length === 0) return [];
-	let solutions: readonly { readonly value: MathNode }[];
-	try {
-		solutions = solveRelation(relation, { variable: unknown }).solutions;
-	} catch {
-		return [];
+	return found;
+}
+
+/**
+ * La forme la plus lisible de « u ⩾ 0 » (`strict` : « u > 0 ») : `a` → a ⩾ 0,
+ * `a − 1` → a ⩾ 1, `3 − a` → a ⩽ 3, `a²` → a ≠ 0 (strict) ; toujours vraie
+ * (`a² + 1`) → rien ; sinon l'argument entier, `a³ − a ⩾ 0`.
+ */
+function signConditionOf(argument: MathNode, strict: boolean): Condition | null {
+	const node = argument.type === 'delimiter' ? argument.content : argument;
+	if (isPositive(node)) return null;
+	if (!strict && isNonNegative(node)) return null;
+	const isAbs = node.type === 'function' && node.name === 'abs';
+	if (!strict && isAbs) return null;
+	// u² > 0, |u| > 0 : u ≠ 0
+	if (strict && isNonNegative(node) && node.type === 'superscript') return conditionOf(node.base);
+	if (strict && isAbs) return node.args.length === 1 ? conditionOf(node.args[0]) : null;
+	if (node.type === 'variable') return boundCondition(node.name, strict ? '>' : '⩾', '0');
+	const pair = letterAndNumber(node);
+	if (pair !== null) {
+		// n − a ⩾ 0 : a ⩽ n ; a − n : a ⩾ n ; a + n, n + a : a ⩾ −n
+		const below = !pair.letterFirst && node.type === 'subtraction';
+		const relation: ConditionRelation = below ? (strict ? '<' : '⩽') : strict ? '>' : '⩾';
+		const value = node.type === 'subtraction' ? pair.number : `-${pair.number}`;
+		return boundCondition(pair.letter, relation, value);
 	}
-	const found = new Set<string>();
-	for (const solution of solutions) {
-		for (const denominator of denominators) {
-			const at = simplify(substitute(denominator, { [unknown]: solution.value })).result;
-			for (const p of citedParameters(at, parameters)) found.add(p);
+	return {
+		latex: `${toLatex(node)} ${strict ? '>' : '\\geqslant'} 0`,
+		text: `${toCustom(node)} ${strict ? '>' : '⩾'} 0`
+	};
+}
+
+/**
+ * Q2 (David, 2026-11-01) : « a ⩾ v » et « a ≠ v » ensemble → « a > v » ; une
+ * condition « a > v » rend « a ⩾ v » et « a ≠ v » inutiles. De même de l'autre
+ * côté (revue de #2118) : « a ⩽ v » et « a ≠ v » → « a < v ». Les deux côtés
+ * ensemble (`a ⩾ 1`, `a ⩽ 1`) restent écrits tels quels.
+ */
+function mergedConditions(conditions: readonly Condition[]): Condition[] {
+	const merged: Condition[] = [];
+	for (const condition of conditions) {
+		const { bound } = condition;
+		const index =
+			bound === undefined
+				? -1
+				: merged.findIndex(
+						(c) => c.bound?.letter === bound.letter && c.bound.value === bound.value
+					);
+		const previous = index === -1 ? undefined : merged[index].bound;
+		const relation =
+			bound === undefined || previous === undefined
+				? null
+				: combinedRelation(previous.relation, bound.relation);
+		if (bound === undefined || relation === null) {
+			merged.push(condition);
+			continue;
 		}
+		merged[index] = boundCondition(bound.letter, relation, bound.value);
 	}
-	return parameters.filter((p) => found.has(p));
+	return merged;
+}
+
+/** La relation qui dit les deux à la fois, `null` si on garde les deux écrites. */
+function combinedRelation(
+	first: ConditionRelation,
+	second: ConditionRelation
+): ConditionRelation | null {
+	const both = new Set([first, second]);
+	if (both.size === 1) return first;
+	const above = [...both].every((r) => r === '≠' || r === '⩾' || r === '>');
+	if (above) return '>';
+	const below = [...both].every((r) => r === '≠' || r === '⩽' || r === '<');
+	if (below) return '<';
+	return null;
 }
 
 /** Positif ou nul quelle que soit la valeur des lettres : `a^2`, `a^2 + b^2`, 3. */
@@ -3481,70 +3596,6 @@ function positiveOn(node: MathNode, variable: string, segment: Segment): boolean
 	}
 }
 
-/** Les paramètres du coefficient dominant d'un polynôme en `unknown`. */
-function leadingParameters(
-	polynomial: MathNode,
-	degree: number,
-	unknown: string,
-	parameters: readonly string[]
-): string[] {
-	try {
-		const leading = simplify(differentiateN(polynomial, degree, { variable: unknown })).result;
-		return citedParameters(leading, parameters);
-	} catch {
-		return [];
-	}
-}
-
-/** Les paramètres qui multiplient (ou divisent) l'inconnue : `a x`, `x/a`. */
-function multipliedParameters(
-	ast: MathNode,
-	unknown: string,
-	parameters: readonly string[]
-): string[] {
-	const found = new Set<string>();
-	const withUnknown = (n: MathNode) => getVariables(n).has(unknown);
-	mapNode(ast, (node) => {
-		const pairs: (readonly [MathNode, MathNode])[] =
-			node.type === 'multiplication'
-				? [
-						[node.left, node.right],
-						[node.right, node.left]
-					]
-				: node.type === 'division'
-					? [[node.numerator, node.denominator]]
-					: [];
-		for (const [carrier, factor] of pairs) {
-			if (withUnknown(carrier) && !withUnknown(factor)) {
-				for (const p of citedParameters(factor, parameters)) found.add(p);
-			}
-		}
-		return node;
-	});
-	return parameters.filter((p) => found.has(p));
-}
-
-/** Les dénominateurs `\dfrac{…}{…}` d'une réponse en LaTeX. */
-function latexDenominators(latex: string): string[] {
-	const denominators: string[] = [];
-	// La fin du groupe `{…}` ouvert en `from`, -1 s'il ne se ferme pas
-	const groupEnd = (from: number): number => {
-		let depth = 0;
-		for (let i = from; i < latex.length; i++) {
-			if (latex[i] === '{') depth++;
-			else if (latex[i] === '}' && --depth === 0) return i;
-		}
-		return -1;
-	};
-	for (const match of latex.matchAll(/\\d?frac\{/g)) {
-		const numeratorEnd = groupEnd(match.index + match[0].length - 1);
-		if (numeratorEnd === -1 || latex[numeratorEnd + 1] !== '{') continue;
-		const denominatorEnd = groupEnd(numeratorEnd + 1);
-		if (denominatorEnd !== -1) denominators.push(latex.slice(numeratorEnd + 2, denominatorEnd));
-	}
-	return denominators;
-}
-
 /**
  * Le LaTeX du résultat de `.intégrer`, lu sur la première ligne du moteur :
  * `∫[a→b] … = v` (valeur exacte), `∫[a→b] … ≈ v` (approchée), sinon une
@@ -3813,12 +3864,6 @@ function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcRe
 	}
 	return { ...result, output: result.output.replace(/\\pi(?![A-Za-z])/g, 'π') };
 }
-
-/** Un exposant collé à l'unité degré : `60[°]^2`, `60\unit{°}^{2}`. */
-const DEGREE_POWER = /(?:\[°\]|\\unit\{°\})\s*\^/;
-
-const ANGLE_POWER_MESSAGE =
-	'Une puissance d’un angle n’est pas une mesure : élève plutôt son cosinus, son sinus, ou une valeur sans unité.';
 
 /** Une puissance d'un angle dans l'arbre d'un résultat (`°^2`, `rad^2`) : décidé sur l'ARBRE. */
 function hasAnglePower(ast: MathNode): boolean {
@@ -4530,7 +4575,8 @@ export function promote(
 	//
 	// Une commande ne porte pas l'arbre de son résultat — celui qu'elle rend est
 	// l'arbre de l'ENTRÉE. On refuse donc, plutôt que de deviner.
-	if (result.kind !== 'calcul' || result.ast === undefined) {
+	// … et une comparaison tranchée (`2=2` → vrai) n'est pas une valeur : `a = true` (revue de #2303)
+	if (result.kind !== 'calcul' || result.ast === undefined || isBoolean(result.ast)) {
 		return {
 			ok: false,
 			message:
@@ -4726,7 +4772,11 @@ function computeAction(
 			return {
 				ok: true,
 				output: rendered.text,
-				latex: derived.answer,
+				// La réponse du registre, comme `.dériver` tapé (registre-reference, D1)
+				latex:
+					result.success && result.answer !== undefined
+						? `${latexName(name)}'(x) = ${result.answer}`
+						: derived.answer,
 				steps: derived.steps,
 				...summaryField(derived)
 			};

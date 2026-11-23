@@ -7,9 +7,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateQuantityAnswer } from '../validator';
-import { blankStatuses, validateAnswer } from '$lib/utils/answer-validator';
-import type { PrecisionType, QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { blankStatuses, validateAnswer } from '#lib/utils/answer-validator.ts';
+import type { PrecisionType, QuestionInstance } from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 const HUNDREDTH: PrecisionType = { type: 'decimal', digits: 2 };
 
@@ -76,8 +76,6 @@ describe('Case à unité + arrondi : le message arrive à l’élève', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString()
 		};
@@ -224,8 +222,6 @@ describe('Case à unité, trop de chiffres : mauvaise forme si l’arrondi redon
 			statement: 'Test' as ResolvedMarkdown,
 			blanks: [{ expectedAnswer, type: 'math', unit: { expected: true }, precision: HUNDREDTH }],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			generatedAt: new Date().toISOString()
 		};

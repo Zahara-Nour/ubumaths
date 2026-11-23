@@ -1,0 +1,1625 @@
+[
+	{
+		"id": "14400c15-ba1c-4a00-861a-2b9b7f50a6ba",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 180,
+		"level": 6,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Avec la règle graduée, trace un segment $[AB]$ de $\\textcolor{{{color:primary.0}}}{{{l}}\\text{ cm}}$ qui part du point $A$. Pose le $0$ de la règle sur $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\nverifier: segment AB = {{l}} cm\n---\n{{if:k==1|A = point(1, 5)|{{if:k==2|A = point(1, 2)|A = point(1, 8)}}}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					},
+					{
+						"name": "l",
+						"expression": "3..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On pose la règle graduée, son $\\textcolor{{{color:primary.0}}}{\\text{0}}$ sur le point $A$.",
+						"On trace depuis $A$ jusqu'à la graduation $\\textcolor{{{color:primary.0}}}{{{l}}\\text{ cm}}$ : le segment $[AB]$ mesure ${{l}}$ cm."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Sur la demi-droite $[Ax)$, trace un segment $[AB]$ de $\\textcolor{{{color:primary.0}}}{{{l}}\\text{ cm}}$. Pose le $0$ de la règle graduée sur $A$, le long de la demi-droite.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 8\nverifier: segment AB = {{l}} cm sur [Ax)\n---\nA = point(1, 2, etiquette=\"bas\")\nX = point(13, {{y}}, visible=faux)\nx = demidroite(A, X)\ntexte(13, {{eval:y+0.45;d}}, \"x\")\n```",
+				"variables": [
+					{
+						"name": "y",
+						"expression": "2..7"
+					},
+					{
+						"name": "l",
+						"expression": "3..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On pose la règle graduée le long de la demi-droite, son $\\textcolor{{{color:primary.0}}}{\\text{0}}$ sur $A$.",
+						"On marque le point $B$ à la graduation $\\textcolor{{{color:primary.0}}}{{{l}}\\text{ cm}}$, sur la demi-droite, et on trace $[AB]$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Tracer un segment à la règle graduée",
+		"description": "Papier uni : segment de 3 à 10 cm depuis A, puis sur une demi-droite donnée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["regle(1;5;2;5;1)|segment(1;5;7;5)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"l": "6"
+				},
+				"description": "6 cm vers la droite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;5;1.6;5.8;1)|segment(1;5;4.6;9.8)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1",
+					"l": "6"
+				},
+				"description": "6 cm en oblique",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;5;2;5;1)|segment(1;5;8;5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"l": "6"
+				},
+				"description": "Erreur : 7 cm pour 6 (une graduation de trop)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;5;2;5;1)|segment(1;5;6;5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"l": "6"
+				},
+				"description": "Erreur : 5 cm (règle partie de 1)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(1;5;7;5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1",
+					"l": "6"
+				},
+				"description": "Erreur : tracé à l'œil, sans la règle",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"k": "1",
+					"l": "6"
+				},
+				"description": "Rien de tracé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;2;2;2;1)|segment(1;2;11;2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"l": "10"
+				},
+				"description": "10 cm depuis A en bas",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;8;2;8;1)|segment(1;8;4;8)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3",
+					"l": "3"
+				},
+				"description": "3 cm depuis A en haut",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["regle(1;2;13;2;1)|segment(1;2;7;2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "6",
+					"y": "2"
+				},
+				"description": "Demi-droite horizontale, 6 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;2;13;6;1)|segment(1;2;5.743416490253;3.581138830084)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "5",
+					"y": "6"
+				},
+				"description": "Demi-droite oblique, 5 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;2;13;7;1)|segment(1;2;10.230769230769;5.846153846154)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"l": "10",
+					"y": "7"
+				},
+				"description": "Demi-droite oblique, 10 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;2;13;2;1)|segment(1;2;6;2)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"l": "5",
+					"y": "6"
+				},
+				"description": "Erreur : 5 cm, mais pas sur la demi-droite",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(1;2;13;6;1)|segment(1;2;4.794733192202;3.264911064067)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"l": "5",
+					"y": "6"
+				},
+				"description": "Erreur : 4 cm au lieu de 5 sur la demi-droite",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "2647fb0f-99da-4d72-af30-24a1807774c4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 13,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Construis la collection de $\\textcolor{{{color:primary.0}}}{{{c}}}$ {{if:c<=1|centaine|centaines}}, $\\textcolor{{{color:primary.1}}}{{{d}}}$ dizaines et ${{u}}$ {{if:u<=1|unité|unités}}.\n\n```collection\nconstruire: {{eval:100*c+10*d+u}}\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "11..19"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["100*c+10*d+u <= 999"],
+				"correction": {
+					"steps": [
+						"${{d}}$ dizaines, c'est $1$ centaine et ${{eval:d-10}}$ {{if:d-10<=1|dizaine|dizaines}}.",
+						"La collection vaut $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ : on pose ${{eval:c+1}}$ plaques, ${{eval:d-10}}$ {{if:d-10<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}} (ou ${{c}}$ {{if:c<=1|plaque|plaques}} et ${{d}}$ barres)."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Construis la collection de $\\textcolor{{{color:primary.1}}}{{{d}}}$ dizaines et ${{u}}$ {{if:u<=1|unité|unités}}.\n\n```collection\nconstruire: {{eval:10*d+u}}\n```",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "11..39"
+					},
+					{
+						"name": "u",
+						"expression": "1..19"
+					}
+				],
+				"conditions": ["d != 20", "d != 30", "u != 10"],
+				"correction": {
+					"steps": [
+						"${{d}}$ dizaines font ${{eval:10*d}}$ ; avec ${{u}}$ {{if:u<=1|unité|unités}}, la collection vaut $\\textcolor{{{color:primary.0}}}{{{eval:10*d+u}}}$.",
+						"On peut poser ${{d}}$ barres et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}, ou remplacer chaque fois $10$ barres par une plaque et $10$ petits cubes par une barre."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Construis la collection de $\\textcolor{{{color:primary.0}}}{{{c}}}$ centaines et $\\textcolor{{{color:primary.1}}}{{{d}}}$ dizaines.\n\n```collection\nconstruire: {{eval:100*c+10*d}}\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "8..9"
+					},
+					{
+						"name": "d",
+						"expression": "10..20"
+					}
+				],
+				"conditions": ["100*c+10*d <= 1000"],
+				"correction": {
+					"steps": [
+						"${{d}}$ dizaines, c'est ${{eval:floor(d/10)}}$ {{if:floor(d/10)<=1|centaine|centaines}}{{if:mod(d,10)!=0| et ${{eval:d-10*floor(d/10)}}$ {{if:d-10*floor(d/10)<=1|dizaine|dizaines}}|}}.",
+						"La collection vaut $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Construire une collection donnée en centaines, dizaines et unités",
+		"description": "Construire avec le matériel : plus de dix dizaines, plus de dix unités, jusqu'à 1 000",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["353"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"d": "15",
+					"u": "3"
+				},
+				"description": "2 c, 15 d, 3 u : 353 posé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2153"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "15",
+					"u": "3"
+				},
+				"description": "Erreur : 2153 (bout à bout)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["253"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "15",
+					"u": "3"
+				},
+				"description": "Erreur : 253 (la centaine des 15 dizaines oubliée)",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"c": "2",
+					"d": "15",
+					"u": "3"
+				},
+				"description": "Collection vide",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "8",
+					"d": "19",
+					"u": "9"
+				},
+				"description": "8 c, 19 d, 9 u : 999",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["178"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "17",
+					"u": "8"
+				},
+				"description": "17 d, 8 u : 178",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "17",
+					"u": "8"
+				},
+				"description": "Erreur : 25 (17 + 8)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["244"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "23",
+					"u": "14"
+				},
+				"description": "23 d, 14 u : 244",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["234"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "23",
+					"u": "14"
+				},
+				"description": "Erreur : 234 (la dizaine des 14 unités oubliée)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"d": "10"
+				},
+				"description": "9 c, 10 d : 1 000",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["910"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "9",
+					"d": "10"
+				},
+				"description": "Erreur : 910",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["940"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "8",
+					"d": "14"
+				},
+				"description": "8 c, 14 d : 940",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "2fafe84d-219d-4298-a212-9f393339f43e",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE2"],
+		"delay": 90,
+		"level": 10,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Construis ${{n}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*c+10*d+1*u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{n}}$, c'est ${{c}}$ {{if:c<=1|centaine|centaines}}, ${{d}}$ {{if:d<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"On pose ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Construis ${{n}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*c+1*u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{n}}$, c'est ${{c}}$ {{if:c<=1|centaine|centaines}} et ${{u}}$ {{if:u<=1|unité|unités}}, aucune dizaine.",
+						"On pose ${{c}}$ {{if:c<=1|plaque|plaques}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Construis ${{n}}$ avec le matériel.\n\n```collection\nconstruire: {{n}}\n```",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*c+10*d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{n}}$, c'est ${{c}}$ {{if:c<=1|centaine|centaines}} et ${{d}}$ {{if:d<=1|dizaine|dizaines}}, aucune unité.",
+						"On pose ${{c}}$ {{if:c<=1|plaque|plaques}} et ${{d}}$ {{if:d<=1|barre|barres}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Construire un nombre de 100 à 999 avec le matériel",
+		"description": "Construire avec plaques, barres et cubes ; avec un zéro (305, 470)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["347"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"n": "347",
+					"u": "7"
+				},
+				"description": "347 construit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["374"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"n": "347",
+					"u": "7"
+				},
+				"description": "Erreur : 374 construit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["77"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"n": "347",
+					"u": "7"
+				},
+				"description": "Erreur : 3 barres au lieu de 3 plaques (77)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"d": "9",
+					"n": "999",
+					"u": "9"
+				},
+				"description": "borne : 999 construit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["305"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"n": "305",
+					"u": "5"
+				},
+				"description": "305 construit",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["35"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"n": "305",
+					"u": "5"
+				},
+				"description": "Erreur : 35 construit (zéro oublié)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["470"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "4",
+					"d": "7",
+					"n": "470"
+				},
+				"description": "470 construit",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["47"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "4",
+					"d": "7",
+					"n": "470"
+				},
+				"description": "Erreur : 47 construit",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "04f3bf0d-71d1-4c76-b01d-174867712ff5"
+	},
+	{
+		"id": "3b5c6c13-d765-4aa6-9247-f2cdedb5b930",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 180,
+		"level": 7,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Le côté $[AB]$ est déjà tracé. Avec l'$\\textcolor{{{color:primary.0}}}{\\text{équerre}}$, trace le triangle $ABC$ qui a un angle droit en $A$ : trace l'angle droit, puis les côtés $[AC]$ et $[BC]$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\nverifier: triangle ABC : CAB = 90\n---\n{{if:k==1|A = point(3, 2)\nB = point(9, 2)|{{if:k==2|A = point(2, 3)\nB = point(8, 3)|{{if:k==3|A = point(9, 2)\nB = point(9, 8)|A = point(10, 3)\nB = point(4, 3)}}}}}}\nab = segment(A, B, epaisseur=3)\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On pose l'équerre le long de $[AB]$, son $\\textcolor{{{color:primary.0}}}{\\text{angle droit}}$ sur $A$, et on trace le long de l'autre côté de l'équerre.",
+						"On choisit le point $C$ sur ce tracé, puis on trace $[AC]$ et $[BC]$ : le triangle a un angle droit en $A$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Avec le $\\textcolor{{{color:primary.0}}}{\\text{compas}}$, trace le cercle de centre $O$ qui passe par le point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 10\nverifier: cercle c = cercle(O, passant=A)\n---\nO = point(6, 5)\n{{if:k==1|A = point(8.5, 6.5)|{{if:k==2|A = point(3, 7)|{{if:k==3|A = point(7, 1.5)|A = point(3.5, 3)}}}}}}\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On pique la pointe du compas sur le $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$.",
+						"On ouvre le compas jusqu'au point $A$ et on trace le cercle : il passe par $A$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Avec la règle graduée et le compas, trace le cercle de $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$ et de $\\textcolor{{{color:primary.1}}}{\\text{rayon}}$ $\\textcolor{{{color:primary.1}}}{{{r}}\\text{ cm}}$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 14\nverifier: cercle c = cercle(O, rayon={{r}} cm)\n---\nO = point(7, 7)\n```",
+				"variables": [
+					{
+						"name": "r",
+						"expression": "2..5"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On pose la règle graduée, son $0$ sur le $\\textcolor{{{color:primary.0}}}{\\text{centre}}$ $O$.",
+						"On pique le compas en $O$ et on l'ouvre jusqu'à la graduation $\\textcolor{{{color:primary.1}}}{{{r}}\\text{ cm}}$ : c'est le $\\textcolor{{{color:primary.1}}}{\\text{rayon}}$.",
+						"On trace le cercle sans changer l'écartement."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Tracer avec l'équerre et le compas",
+		"description": "Papier uni : angle droit à l'équerre ; cercle de centre donné passant par un point ; cercle de rayon donné en cm",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["droite(3;2;3;8)|segment(3;2;3;6)|segment(9;2;3;6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Angle droit 1 : équerre, côtés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["droite(3;2;3;8)|segment(3;2;3;4)|segment(9;2;3;4)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Angle droit 1 : autre point C sur la droite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["segment(3;2;3.5;6)|segment(9;2;3.5;6)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : sans équerre, angle à l'œil",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["droite(9;2;9;8)|segment(9;2;9;6)|segment(3;2;9;6)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : angle droit en B",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["droite(3;2;3;8)|segment(3;2;3;6)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : le côté [BC] manque",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["droite(2;3;2;9)|segment(2;3;2;7)|segment(8;3;2;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Angle droit 2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["droite(9;2;3;2)|segment(9;2;4;2)|segment(9;8;4;2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Angle droit 3 (côté vertical)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["droite(10;3;10;-3)|segment(10;3;10;7)|segment(4;3;10;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4"
+				},
+				"description": "Angle droit 4 (vers la gauche)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["cercle(6;5;8.5;6.5)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Cercle 1 : centre O, ouvert jusqu'à A",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["cercle(8.5;6.5;6;5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : compas piqué en A",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["cercle(6;5;9.5;6.5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Erreur : compas trop ouvert",
+				"variationIndex": 1
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"k": "1"
+				},
+				"description": "Rien de tracé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["cercle(6;5;3;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Cercle 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["cercle(6;5;7;1.5)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "3"
+				},
+				"description": "Cercle 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["cercle(6;5;3.5;3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4"
+				},
+				"description": "Cercle 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;10;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Rayon 3 cm",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["regle(7;7;7;8;1)|cercle(7;7;7;10)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Rayon 3 cm, règle vers le haut",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["cercle(7;7;10;7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Erreur : compas ouvert à l'œil, sans la règle",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;13;7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"r": "3"
+				},
+				"description": "Erreur : diamètre pris pour le rayon (6 cm)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["regle(7;7;8;7;1)|cercle(7;7;12;7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"r": "5"
+				},
+				"description": "Rayon 5 cm",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "6140dae0-a92e-4f30-bae4-5f2c8559b32b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 12,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+10*d+u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..8"
+					},
+					{
+						"name": "u",
+						"expression": "11..19"
+					}
+				],
+				"conditions": ["100*c+10*d+u <= 999"],
+				"correction": {
+					"steps": [
+						"Il y a ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|barre|barres}} et ${{u}}$ petits cubes seuls.",
+						"Avec $\\textcolor{{{color:primary.0}}}{\\text{10 petits cubes seuls}}$, on fait une barre de plus : ${{u}}$ cubes, c'est $1$ dizaine et ${{eval:u-10}}$ {{if:u-10<=1|unité|unités}}.",
+						"${{c}}$ {{if:c<=1|centaine|centaines}}, ${{eval:d+1}}$ dizaines et ${{eval:u-10}}$ {{if:u-10<=1|unité|unités}} : il y a $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ cubes."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+10*d+u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..7"
+					},
+					{
+						"name": "d",
+						"expression": "11..29"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["100*c+10*d+u <= 999", "d != 20"],
+				"correction": {
+					"steps": [
+						"Il y a ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ barres et ${{u}}$ {{if:u<=1|petit cube|petits cubes}} seuls.",
+						"Avec $\\textcolor{{{color:primary.0}}}{\\text{10 barres}}$, on fait une plaque : ${{d}}$ dizaines, c'est ${{eval:floor(d/10)}}$ {{if:floor(d/10)<=1|centaine|centaines}} et ${{eval:d-10*floor(d/10)}}$ {{if:d-10*floor(d/10)<=1|dizaine|dizaines}}.",
+						"${{eval:c+floor(d/10)}}$ centaines, ${{eval:d-10*floor(d/10)}}$ {{if:d-10*floor(d/10)<=1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}} : il y a $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ cubes."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+10*d+u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..6"
+					},
+					{
+						"name": "d",
+						"expression": "11..29"
+					},
+					{
+						"name": "u",
+						"expression": "11..19"
+					}
+				],
+				"conditions": ["100*c+10*d+u <= 999"],
+				"correction": {
+					"steps": [
+						"Il y a ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ barres et ${{u}}$ petits cubes seuls.",
+						"On compte par rang : ${{c}}$ {{if:c<=1|centaine fait|centaines font}} ${{eval:100*c}}$, ${{d}}$ dizaines font ${{eval:10*d}}$ et il reste ${{u}}$ unités.",
+						"${{eval:100*c}} + {{eval:10*d}} + {{u}} = \\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ : il y a $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ cubes."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Dénombrer quand il y a plus de dix objets d'un rang",
+		"description": "Plaques, barres, cubes jusqu'à 999 ; plus de dix cubes, plus de dix barres, ou les deux",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["247"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"u": "17"
+				},
+				"description": "2 c, 3 d, 17 u = 247",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2317"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"u": "17"
+				},
+				"description": "Erreur : chiffres mis bout à bout (2317)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["237"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"u": "17"
+				},
+				"description": "Erreur : la dizaine des 17 oubliée (237)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["899"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "8",
+					"d": "8",
+					"u": "19"
+				},
+				"description": "8 c, 8 d, 19 u = 899",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["474"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"d": "27",
+					"u": "4"
+				},
+				"description": "2 c, 27 d, 4 u = 474",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2274"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "27",
+					"u": "4"
+				},
+				"description": "Erreur : 2274 (bout à bout)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["274"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "27",
+					"u": "4"
+				},
+				"description": "Erreur : 274 (les 20 dizaines oubliées)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["484"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"d": "27",
+					"u": "14"
+				},
+				"description": "2 c, 27 d, 14 u = 484 (exemple du BO)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["274"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "27",
+					"u": "14"
+				},
+				"description": "Erreur : 274 (plus de dix ignorés)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["22714"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "27",
+					"u": "14"
+				},
+				"description": "Erreur : 22714 (bout à bout)",
+				"variationIndex": 2
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"c": "2",
+					"d": "27",
+					"u": "14"
+				},
+				"description": "Rien d'écrit",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "7e23cca8-42ba-420c-8cd2-b5c4609a5579",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CE1"],
+		"delay": 90,
+		"level": 14,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d+10}}"
+					}
+				],
+				"statement": "Au bureau de poste, les timbres se vendent par $\\textcolor{{{color:primary.0}}}{\\text{plaques de 100}}$, par $\\textcolor{{{color:primary.1}}}{\\text{carnets de 10}}$ ou $\\textcolor{{{color:primary.2}}}{\\text{à l'unité}}$.\n\nPour ${{n}}$ timbres, une commande est : ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|carnet|carnets}} et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.\n\nUne autre commande de ${{n}}$ timbres : ${{eval:c-1}}$ {{if:c-1<=1|plaque|plaques}}, $?$ carnets et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*c+10*d+u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une plaque de $100$ timbres, c'est $\\textcolor{{{color:primary.1}}}{\\text{10 carnets}}$ de $10$.",
+						"Une plaque de moins, donc $10$ carnets de plus : ${{d}} + 10 = \\textcolor{{{color:primary.0}}}{{{eval:d+10}}}$ carnets."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10*c+d}}"
+					}
+				],
+				"statement": "Au bureau de poste, les timbres se vendent par $\\textcolor{{{color:primary.0}}}{\\text{plaques de 100}}$, par $\\textcolor{{{color:primary.1}}}{\\text{carnets de 10}}$ ou $\\textcolor{{{color:primary.2}}}{\\text{à l'unité}}$.\n\nPour ${{n}}$ timbres, une commande est : ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|carnet|carnets}} et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.\n\nIl n'y a plus de plaques. Une autre commande de ${{n}}$ timbres : $?$ carnets et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*c+10*d+u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{c}}$ plaques, c'est ${{eval:10*c}}$ carnets ; avec les ${{d}}$ {{if:d<=1|carnet|carnets}}, cela fait ${{eval:10*c}} + {{d}}$.",
+						"Il faut $\\textcolor{{{color:primary.0}}}{{{eval:10*c+d}}}$ carnets : dans ${{n}}$, il y a ${{eval:10*c+d}}$ dizaines."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10*d+u}}"
+					}
+				],
+				"statement": "Au bureau de poste, les timbres se vendent par $\\textcolor{{{color:primary.0}}}{\\text{plaques de 100}}$, par $\\textcolor{{{color:primary.1}}}{\\text{carnets de 10}}$ ou $\\textcolor{{{color:primary.2}}}{\\text{à l'unité}}$.\n\nPour ${{n}}$ timbres, une commande est : ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|carnet|carnets}} et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.\n\nIl n'y a plus de carnets. Une autre commande de ${{n}}$ timbres : ${{c}}$ {{if:c<=1|plaque|plaques}} et $?$ timbres à l'unité.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "eval:100*c+10*d+u"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{d}}$ {{if:d<=1|carnet|carnets}} de $10$, c'est ${{eval:10*d}}$ timbres.",
+						"Il faut ${{eval:10*d}} + {{u}} = \\textcolor{{{color:primary.0}}}{{{eval:10*d+u}}}$ timbres à l'unité."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Plaques, carnets et timbres",
+		"description": "Une même quantité commandée autrement : 1 plaque = 10 carnets = 100 timbres",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "235 : 1 plaque, 13 carnets (exemple du BO)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "Erreur : 3 carnets (rien changé)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "Erreur : 4 carnets (une plaque = un carnet)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["23"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "235 : 23 carnets",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "Erreur : 5 carnets (2 + 3)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "Erreur : 3 carnets (les plaques oubliées)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["35"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "235 : 35 timbres à l'unité",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "Erreur : 8 (3 + 5)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"d": "0",
+					"n": "908",
+					"u": "8"
+				},
+				"description": "908 : 90 carnets",
+				"variationIndex": 1
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"c": "2",
+					"d": "3",
+					"n": "235",
+					"u": "5"
+				},
+				"description": "Rien d'écrit",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "aaebfe52-5740-47ab-8c5c-799023a6d906",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CE2"],
+		"delay": 60,
+		"level": 11,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+10*d+1*u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\ndizaines: {{d}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"${{d}}$ {{if:d<=1|barre|barres}} : ${{d}}$ {{if:d<=1|dizaine|dizaines}}, c'est ${{eval:10*d}}$ cubes.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:100*c}}+{{eval:10*d}}+{{u}}={{solution}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100*c+u}}"
+					}
+				],
+				"statement": "Combien de petits cubes y a-t-il en tout ?\n\n```collection\ncentaines: {{c}}\nunités: {{u}}\n```\n\nIl y a $?$ cubes en tout.",
+				"variables": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{c}}$ {{if:c<=1|plaque|plaques}} : ${{c}}$ {{if:c<=1|centaine|centaines}}, c'est ${{eval:100*c}}$ cubes.",
+						"Aucune barre : $0$ dizaine.",
+						"${{u}}$ {{if:u<=1|petit cube|petits cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}.",
+						"$${{eval:100*c}}+0+{{u}}={{solution}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Dénombrer des plaques, des barres et des cubes",
+		"description": "Matériel multibase jusqu'à 999 → nombre de cubes ; avec une dizaine vide (304)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["347"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "3 plaques, 4 barres, 7 cubes : 347",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["77"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "Erreur : plaques comptées comme barres (3 + 4 = 7 dizaines, 77)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["374"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "Erreur : rangs inversés (374)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"d": "4",
+					"u": "7"
+				},
+				"description": "Erreur : objets comptés un à un (14)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "9",
+					"d": "9",
+					"u": "9"
+				},
+				"description": "borne : 9 plaques, 9 barres, 9 cubes : 999",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["304"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "3",
+					"u": "4"
+				},
+				"description": "3 plaques, 4 cubes : 304",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["34"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "3",
+					"u": "4"
+				},
+				"description": "Erreur : zéro oublié (34)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "04f3bf0d-71d1-4c76-b01d-174867712ff5"
+	}
+]

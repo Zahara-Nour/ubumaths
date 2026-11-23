@@ -52,9 +52,6 @@
 			}
 		],
 		"grades": ["CP"],
-		"theme": "Entiers",
-		"domain": "Soustraire",
-		"subdomain": "A trou",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

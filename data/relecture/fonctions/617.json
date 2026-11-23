@@ -19,9 +19,6 @@
 			"courseCard": true
 		},
 		"grades": ["1_SPE"],
-		"theme": "Fonctions",
-		"domain": "Etude de fonction",
-		"subdomain": "Flash",
 		"level": 1,
 		"status": "draft"
 	},

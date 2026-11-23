@@ -1,0 +1,157 @@
+{
+	"id": "9d6896cc-16d9-4ffb-9bd3-ba3b4fdcf7f0",
+	"title": "Représenter une fonction P(x) + k/x",
+	"description": "Points de la courbe de x + 12/x + b à placer ; courbe de x ± k/x reconnue d'après l'expression ; allure tirée d'un tableau de variations",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x+\\dfrac{12}{x}{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}$.\n\nPlace les points $A$, $B$, $C$, $D$ et $E$ de la courbe de $f$ d'abscisses $1$, $2$, $3$, $4$ et $6$.\n\n```courbe\nx: -1 ; 7\ny: {{eval:b-1}} ; {{eval:b+14}}\ngrille: 1 ; 1\nplacer: A=(1 ; {{eval:13+b}}) ; B=(2 ; {{eval:8+b}}) ; C=(3 ; {{eval:7+b}}) ; D=(4 ; {{eval:7+b}}) ; E=(6 ; {{eval:8+b}})\ntaille: moyenne\ndescription: Repère : x de −1 à 7, y de {{eval:b-1}} à {{eval:b+14}}, de 1 en 1.\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "-5|-4|-3|-2|0"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On calcule les images : $f(1)=1+12{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}={{eval:13+b}}$, $f(2)=2+6{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}={{eval:8+b}}$, $f(3)=3+4{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}={{eval:7+b}}$, $f(4)=4+3{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}={{eval:7+b}}$, $f(6)=6+2{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}={{eval:8+b}}$.",
+					"```courbe\nx: -1 ; 7\ny: {{eval:b-1}} ; {{eval:b+14}}\ngrille: 1 ; 1\nf(x) = x + 12/x + ({{b}})   bleu\npoints: A(1 ; {{eval:13+b}}), B(2 ; {{eval:8+b}}), C(3 ; {{eval:7+b}}), D(4 ; {{eval:7+b}}), E(6 ; {{eval:8+b}})\ntaille: moyenne\ndescription: Courbe de f sur ]0 ; 7] : elle descend jusqu'au voisinage de x ≈ 3,5 puis remonte, et passe par les cinq points placés.\n```",
+					"La courbe descend puis remonte : elle longe l'axe des ordonnées près de $0$ et se rapproche de la droite $y=x{{if:b>0|+{{b}}}}{{if:b<0|{{b}}}}$ quand $x$ devient grand."
+				]
+			}
+		},
+		{
+			"statement": "Quelle courbe représente la fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x+\\dfrac{4}{x}$ ?\n\n````choix\nmelanger: non\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = 4/x   bleu\n  taille: petite\n  description: Courbe qui descend sur tout l'intervalle et se rapproche de l'axe des abscisses.\n  ```\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = x + 4/x   bleu\n  taille: petite\n  description: Courbe qui descend jusqu'au point (2 ; 4) puis remonte.\n  ```\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = x - 4/x   bleu\n  taille: petite\n  description: Courbe qui monte sur tout l'intervalle et coupe l'axe des abscisses en x = 2.\n  ```\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = -x + 4/x   bleu\n  taille: petite\n  description: Courbe qui descend sur tout l'intervalle et passe sous l'axe des abscisses après x = 2.\n  ```\n````",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule quelques images : $f(1)=5$, $f(2)=4$, $f(4)=5$. La seule courbe qui passe par ces points est la $\\textcolor{{{color:primary.0}}}{\\text{deuxième}}$.",
+					"Sa dérivée $f'(x)=1-\\dfrac{4}{x^2}=\\dfrac{x^2-4}{x^2}$ est négative avant $2$, positive après : la courbe descend jusqu'à $(2\\,;4)$ puis remonte."
+				]
+			}
+		},
+		{
+			"statement": "Une fonction $f$ définie sur $\\left]0\\,;+\\infty\\right[$ a ce tableau de variations :\n\n```variation\nvariable: x\ndomain: ]0, [2, [+inf[\n\nsign: f'(x)\n  0: ||\n  0,2: +\n  2: z\n  2,+inf: -\n\nvariation: f(x)\n  2: 6, top\n```\n\nQuelle courbe peut la représenter ?\n\n````choix\nmelanger: non\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = x + 4/x   bleu\n  taille: petite\n  description: Courbe qui descend jusqu'au point (2 ; 4) puis remonte.\n  ```\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = 8/x   bleu\n  taille: petite\n  description: Courbe qui descend sur tout l'intervalle.\n  ```\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = 10 - x - 4/x   bleu\n  taille: petite\n  description: Courbe qui monte jusqu'au point (2 ; 6) puis redescend.\n  ```\n- ```courbe\n  x: 0 ; 6.5\n  y: -6 ; 10\n  grille: 1 ; 1\n  f(x) = x - 4/x   bleu\n  taille: petite\n  description: Courbe qui monte sur tout l'intervalle.\n  ```\n````",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tableau dit : $f$ croissante sur $\\left]0\\,;2\\right]$, décroissante sur $\\left[2\\,;+\\infty\\right[$, maximum $6$ en $2$.",
+					"La seule courbe qui monte jusqu'à $(2\\,;6)$ puis redescend est la $\\textcolor{{{color:primary.0}}}{\\text{troisième}}$ (celle de $x\\mapsto 10-x-\\dfrac{4}{x}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "b = 0 : 13, 8, 7, 7, 8",
+			"variationIndex": 0,
+			"variables": {
+				"b": "0"
+			},
+			"answers": ["1;13", "2;8", "3;7", "4;7", "6;8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x + 12x (12/x lu 12x) : 13, 26…",
+			"variationIndex": 0,
+			"variables": {
+				"b": "0"
+			},
+			"answers": ["1;13", "2;26", "3;39", "4;52", "6;78"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "b = −3 : 10, 5, 4, 4, 5",
+			"variationIndex": 0,
+			"variables": {
+				"b": "-3"
+			},
+			"answers": ["1;10", "2;5", "3;4", "4;4", "6;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur b = −3 : b oublié",
+			"variationIndex": 0,
+			"variables": {
+				"b": "-3"
+			},
+			"answers": ["1;13", "2;8", "3;7", "4;7", "6;8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x + 4/x : deuxième courbe",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4/x seul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x − 4/x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Maximum 6 en 2 : troisième courbe",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : minimum au lieu de maximum",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

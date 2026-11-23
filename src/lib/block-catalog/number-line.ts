@@ -13,7 +13,8 @@ export const numberLineEntry: BlockCatalogEntry = {
 	title: 'Droite graduée',
 	fences: ['line'],
 	nodeType: 'number-line',
-	summary: 'Une droite graduée avec des points nommés, des intervalles et des repères cachés.',
+	summary:
+		'Une droite graduée avec des points nommés, des intervalles et des repères cachés ; dans une question, l’élève y place un point.',
 	intro:
 		'Le bloc dessine une droite entre deux bornes, avec une graduation régulière. On y place des points nommés, des intervalles colorés et des repères à retrouver. Les nombres s’écrivent comme dans les autres blocs : 1/3, sqrt(2), \\pi, 2.5. Le séparateur décimal est le point, et la virgule sépare les éléments d’une liste.',
 	settingGroups: [
@@ -94,6 +95,30 @@ export const numberLineEntry: BlockCatalogEntry = {
 						'Un intervalle, couleur facultative en dernier comme pour un point. Crochet tourné vers l’intervalle : fermé ; vers l’extérieur : ouvert, comme en cours. a doit être plus petit que b.'
 				}
 			]
+		},
+		{
+			title: 'Dans une question : placer un point',
+			settings: [
+				{
+					key: 'placer',
+					values: 'un nombre de la droite, sur une graduation (7, 3/4, 0.3)',
+					defaultValue: 'aucun',
+					description:
+						'L’élève touche la droite pour y poser son point (ou les boutons ◀ ▶) : la droite compte pour une case, juste si le point est sur ce nombre. Jamais écrit à l’écran. Sans points: (un seul point, celui de l’élève). Sur le PDF, la droite sans point : l’enfant fait sa croix.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : représenter un intervalle',
+			settings: [
+				{
+					key: 'representer',
+					values: 'un intervalle, bornes sur des graduations ([2, +inf[, ]-inf, 3], [-1, 3[)',
+					defaultValue: 'aucun',
+					description:
+						'L’élève touche la droite pour poser la borne, choisit le côté des solutions (← vers la gauche, vers la droite →) et bascule la borne comprise / exclue ; intervalle borné : il pose les deux bornes. La droite compte pour une case, juste si bornes, côté et crochets le sont. Jamais écrit à l’écran. Ni placer: ni segments: avec.'
+				}
+			]
 		}
 	],
 	examples: [
@@ -150,7 +175,53 @@ export const numberLineEntry: BlockCatalogEntry = {
 				'step: 1',
 				'segments: [-2, 1] vert, ]2, 4[ orange'
 			),
-			explanation: '[-2, 1] est fermé aux deux bouts ; ]2, 4[ est ouvert aux deux bouts.'
+			explanation:
+				'[-2, 1] est fermé aux deux bouts (crochets tournés vers l’intervalle) ; ]2, 4[ est ouvert aux deux bouts (crochets tournés vers l’extérieur).'
+		},
+		{
+			title: 'Demi-droite (solutions d’une inéquation)',
+			source: fence(
+				'line',
+				'start: -3',
+				'end: 5',
+				'step: 1',
+				'arrows: true',
+				'segments: [2, +inf[ vert'
+			),
+			explanation:
+				'x ⩾ 2 : crochet tourné vers les solutions en 2, trait jusqu’au bout de la flèche. -inf s’écrit à gauche (]-inf, 3]) ; l’infini est toujours exclu.'
+		},
+		{
+			title: 'Placer un nombre (question)',
+			source: fence('line', 'start: 0', 'end: 20', 'step: 1', 'labels: 0, 10, 20', 'placer: 7'),
+			explanation:
+				'Dans une question, l’élève pose son point ; la réponse est juste s’il est sur 7. La consigne (« Place le nombre 7. ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Représenter les solutions d’une inéquation (question)',
+			source: fence(
+				'line',
+				'start: -3',
+				'end: 5',
+				'step: 1',
+				'arrows: true',
+				'representer: [2, +inf['
+			),
+			explanation:
+				'x ⩾ 2 : l’élève pose la borne en 2, choisit « vers la droite → » et garde la borne comprise. Un intervalle borné ([-1, 3[) se représente en posant deux bornes. La consigne va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Placer plusieurs nombres (question)',
+			source: fence(
+				'line',
+				'start: 0',
+				'end: 20',
+				'step: 1',
+				'labels: 0, 10, 20',
+				'placer: A=3 ; B=7 ; C=12'
+			),
+			explanation:
+				'Un point par lettre majuscule, séparés par « ; » (6 au plus) ; chaque point compte pour une case. L’élève choisit l’étiquette A, B ou C sous la droite, puis touche la droite.'
 		},
 		{
 			title: 'Un nombre irrationnel',

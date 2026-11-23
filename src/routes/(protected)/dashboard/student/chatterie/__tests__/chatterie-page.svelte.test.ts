@@ -8,33 +8,33 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
-import { buildSeriesLink, type SeriesCategories } from '$lib/validation/series';
-import { consent } from '$lib/stores/consent.svelte';
-import type { MathouCatalogId } from '$lib/mathoux/decorations';
+import type { Mathou, MathouCollection } from '#lib/mathoux/collection-logic.ts';
+import { buildSeriesLink, type SeriesItem } from '#lib/validation/series.ts';
+import { consent } from '#lib/stores/consent.svelte.ts';
+import type { MathouCatalogId } from '#lib/mathoux/decorations.ts';
 import ChatteriePage from '../+page.svelte';
 
-vi.mock('$app/navigation', () => ({ invalidateAll: vi.fn(async () => {}) }));
+vi.mock('$app/navigation', () => ({ refreshAll: vi.fn(async () => {}) }));
 
 const REVISION_HREF = '/dashboard/revisions/decks/programme';
 
-/** Catégories d'Entraînement d'une notion : une par domaine fictif. */
-function categoriesFor(...domains: string[]): SeriesCategories {
-	return domains.map((domain, i) => ({
-		category: { theme: 'Nombres', domain, subdomain: null, level: i + 1 },
+/** Lignes d'Entraînement d'une notion : un modèle fictif (uuid) par nom. */
+function itemsFor(...ids: string[]): SeriesItem[] {
+	return ids.map((id) => ({
+		templateId: `00000000-0000-4000-8000-${id.padStart(12, '0')}`,
 		quantity: 1,
 		delay: 20
 	}));
 }
 
 /** Le lien attendu, par l'encodeur des liens de série. */
-function linkOf(categories: SeriesCategories): string {
-	return buildSeriesLink('', categories, { mode: 'interactive' });
+function linkOf(items: SeriesItem[]): string {
+	return buildSeriesLink('', items, { mode: 'interactive' });
 }
 
-const CAT_FRAC = categoriesFor('Fractions', 'Somme');
-const CAT_ENT = categoriesFor('Entiers');
-const CAT_VEC = categoriesFor('Vecteurs');
+const CAT_FRAC = itemsFor('1', '2');
+const CAT_ENT = itemsFor('3');
+const CAT_VEC = itemsFor('4');
 const TRAIN_FRAC = linkOf(CAT_FRAC);
 const TRAIN_VEC = linkOf(CAT_VEC);
 
@@ -57,7 +57,7 @@ const COLLECTION: MathouCollection = {
 					collar: null,
 					glasses: null,
 					hat: null,
-					trainingCategories: CAT_FRAC,
+					trainingItems: CAT_FRAC,
 					stars: [],
 					workablePoints: 4,
 					acquiredPoints: 2,
@@ -76,7 +76,7 @@ const COLLECTION: MathouCollection = {
 					glasses: null,
 					hat: null,
 					// La logique n'en donne pas à une silhouette : la page ne doit pas le montrer non plus
-					trainingCategories: CAT_ENT,
+					trainingItems: CAT_ENT,
 					stars: [],
 					workablePoints: 2,
 					acquiredPoints: 0,
@@ -101,7 +101,7 @@ const COLLECTION: MathouCollection = {
 					collar: null,
 					glasses: null,
 					hat: null,
-					trainingCategories: CAT_VEC,
+					trainingItems: CAT_VEC,
 					stars: ['2', '1_SPE'],
 					workablePoints: 3,
 					acquiredPoints: 3,
@@ -190,7 +190,7 @@ describe('La Chatterie de Faustroll', () => {
 	});
 
 	it('une notion sans modèle publié : pas de « Faire grandir »', async () => {
-		await renderPage(single({ asleep: false, dueForRevision: false, trainingCategories: null }));
+		await renderPage(single({ asleep: false, dueForRevision: false, trainingItems: null }));
 		expect(page.getByRole('link', { name: /Faire grandir/ }).elements()).toHaveLength(0);
 	});
 
@@ -204,7 +204,7 @@ describe('La Chatterie de Faustroll', () => {
 	});
 
 	it('endormi sans carte due ni Entraînement possible : il dort, aucun bouton', async () => {
-		await renderPage(single({ asleep: true, dueForRevision: false, trainingCategories: null }));
+		await renderPage(single({ asleep: true, dueForRevision: false, trainingItems: null }));
 		await expect.element(page.getByText('Fait la sieste', { exact: true })).toBeVisible();
 		expect(page.getByRole('link', { name: /Réveiller|Faire grandir/ }).elements()).toHaveLength(0);
 	});
@@ -374,13 +374,13 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 	});
 
 	it('acheter : une requête pour CE Mathou, la page se recharge', async () => {
-		const { invalidateAll } = await import('$app/navigation');
+		const { refreshAll } = await import('$app/navigation');
 		await renderDecor(single({}), [], 30);
 		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
 		await page
 			.getByRole('button', { name: 'Acheter Cocarde pour le Mathou des Fractions' })
 			.click();
-		await vi.waitFor(() => expect(invalidateAll).toHaveBeenCalled());
+		await vi.waitFor(() => expect(refreshAll).toHaveBeenCalled());
 		expect(fetchMock).toHaveBeenCalledWith(
 			'/api/student/mathoux/decorations/buy',
 			expect.objectContaining({ method: 'POST' })
@@ -392,8 +392,8 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 	});
 
 	it('refus (page périmée : déjà achetée dans un autre onglet) : le message, puis la page se recharge', async () => {
-		const { invalidateAll } = await import('$app/navigation');
-		vi.mocked(invalidateAll).mockClear();
+		const { refreshAll } = await import('$app/navigation');
+		vi.mocked(refreshAll).mockClear();
 		fetchMock.mockResolvedValue(
 			new Response(JSON.stringify({ message: 'Tu as déjà cette décoration.' }), { status: 409 })
 		);
@@ -401,14 +401,14 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
 		const buy = page.getByRole('button', { name: 'Acheter Cœur pour le Mathou des Fractions' });
 		await buy.click();
-		await vi.waitFor(() => expect(invalidateAll).toHaveBeenCalledTimes(1));
+		await vi.waitFor(() => expect(refreshAll).toHaveBeenCalledTimes(1));
 		// Les boutons se libèrent
 		await expect.element(buy).toBeEnabled();
 	});
 
 	it('panne : pas de rechargement, les boutons se libèrent', async () => {
-		const { invalidateAll } = await import('$app/navigation');
-		vi.mocked(invalidateAll).mockClear();
+		const { refreshAll } = await import('$app/navigation');
+		vi.mocked(refreshAll).mockClear();
 		fetchMock.mockRejectedValue(new Error('réseau'));
 		await renderDecor(single({}), [], 30);
 		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
@@ -416,7 +416,7 @@ describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 		await buy.click();
 		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 		await expect.element(buy).toBeEnabled();
-		expect(invalidateAll).not.toHaveBeenCalled();
+		expect(refreshAll).not.toHaveBeenCalled();
 	});
 
 	it('poser une décoration portée ailleurs, ou retirer celle de ce Mathou : gratuit', async () => {

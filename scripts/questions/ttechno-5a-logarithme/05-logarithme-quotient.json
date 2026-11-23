@@ -1,0 +1,261 @@
+{
+	"id": "ceeba3f8-f169-4736-83bf-21b7d49f6303",
+	"title": "Logarithme d'un quotient",
+	"description": "log(a/b) = log a − log b : formule ; log(1/a) = −log a ; regrouper en log(n) ; valeurs approchées de log(1/a) et log(10ᵏ/a)",
+	"grades": ["T_TECHNO"],
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour tous réels $a>0$ et $b>0$, $\\log\\left(\\dfrac{a}{b}\\right)$ est égal à :\n\n```choix\n- $\\log(a)-\\log(b)$\n- $\\dfrac{\\log(a)}{\\log(b)}$\n- $\\log(a-b)$\n- $\\log(b)-\\log(a)$\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : le logarithme transforme un quotient en différence.",
+					"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$\\log\\left(\\dfrac{1}{ {{a}} }\\right)=?\\log({{a}})$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7|11|13"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$.",
+					"$\\log\\left(\\dfrac{1}{ {{a}} }\\right)=\\log(1)-\\log({{a}})=0-\\log({{a}})=\\textcolor{{{color:primary.0}}}{-}\\log({{a}})$ : le coefficient est $\\textcolor{{{color:primary.0}}}{-1}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme $\\log(n)$, avec $n$ entier : $\\log({{eval:b*m}})-\\log({{b}})$.\n\n$\\log({{eval:b*m}})-\\log({{b}})=\\log(?)$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["b*m-b != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$.",
+					"$\\log({{eval:b*m}})-\\log({{b}})=\\log\\left(\\dfrac{ {{eval:b*m}} }{ {{b}} }\\right)=\\log(\\textcolor{{{color:primary.0}}}{{{m}}})$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\log({{a}})\\approx{{eval:la;d}}$. Déduis-en une valeur approchée de $\\log\\left(\\dfrac{1}{ {{a}} }\\right)$.\n\n$\\log\\left(\\dfrac{1}{ {{a}} }\\right)\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "la",
+					"expression": "eval:round(1000*log(a))/1000"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-la;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$.",
+					"$\\log\\left(\\dfrac{1}{ {{a}} }\\right)=-\\log({{a}})\\approx\\textcolor{{{color:primary.0}}}{{{eval:-la;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\log({{a}})\\approx{{eval:la;d}}$. Déduis-en une valeur approchée de $\\log({{eval:10^k/a;d}})$.\n\n$\\log({{eval:10^k/a;d}})\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|5|8"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "la",
+					"expression": "eval:round(1000*log(a))/1000"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k-la;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $a>0$ et $b>0$ : $\\log\\left(\\dfrac{a}{b}\\right)=\\log(a)-\\log(b)$ ; en particulier $\\log\\left(\\dfrac{1}{b}\\right)=-\\log(b)$.",
+					"${{eval:10^k/a;d}}=\\dfrac{ {{eval:10^k}} }{ {{a}} }$, donc $\\log({{eval:10^k/a;d}})=\\log({{eval:10^k}})-\\log({{a}})\\approx{{k}}-{{eval:la;d}}\\approx\\textcolor{{{color:primary.0}}}{{{eval:k-la;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "log(a/b) = log a − log b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : log a / log b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log(1/3) = −1 × log 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 24 − log 4 = log 6",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"m": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : log 20 (différence)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"m": "6"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log(1/2) ≈ −0,301",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"la": "0.301"
+			},
+			"answers": ["-0,301"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/0,301 ≈ 3,322",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"la": "0.301"
+			},
+			"answers": ["3,322"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 5 = log(10/2) ≈ 0,699",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"k": "1",
+				"la": "0.301"
+			},
+			"answers": ["0,699"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,301 − 1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"k": "1",
+				"la": "0.301"
+			},
+			"answers": ["-0,699"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "log 12,5 = log(100/8) ≈ 1,097",
+			"variationIndex": 4,
+			"variables": {
+				"a": "8",
+				"k": "2",
+				"la": "0.903"
+			},
+			"answers": ["1,097"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

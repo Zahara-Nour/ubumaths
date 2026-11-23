@@ -22,7 +22,7 @@ import type { SolveOptions, SolveResult } from './types';
 import { isDelimiter, isDivision, isEulerConstant, isNumber, isOpposite } from '../guards';
 import { divide, equals, func, number, opposite, subtract } from '../factory';
 import { extractLinearForm } from '../analysis/coefficient-utils';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { getVariables } from '../eval/substitute';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import { P } from '../pattern/builder';
@@ -100,9 +100,7 @@ function logarithmInBase(base: MathNode, target: MathNode, value: number): MathN
 		const rounded = Math.round(scaled);
 		if (Math.abs(scaled - rounded) < EXACT_TOLERANCE * Math.max(1, Math.abs(scaled))) {
 			if (denominator === 1) return integerNode(rounded);
-			return denormalize(
-				normalize(divide(integerNode(rounded), number(String(denominator)), 'fraction'))
-			);
+			return canonicalForm(divide(integerNode(rounded), number(String(denominator)), 'fraction'));
 		}
 	}
 	if (isEulerConstant(base)) return func('ln', [target]);
@@ -152,7 +150,7 @@ function linearValue(
 		return { node: divide(shifted, form.coefficient, 'fraction'), approximate };
 	}
 	return {
-		node: denormalize(normalize(divide(shifted, form.coefficient, 'fraction'))),
+		node: canonicalForm(divide(shifted, form.coefficient, 'fraction')),
 		approximate
 	};
 }
@@ -210,10 +208,7 @@ export function solveConstantBaseExponential(
 		const target =
 			rest === null || others.length === 0
 				? number('0')
-				: writtenTarget(
-						expr,
-						denormalize(normalize(divide(opposite(rest), signedCoefficient, 'fraction')))
-					);
+				: writtenTarget(expr, canonicalForm(divide(opposite(rest), signedCoefficient, 'fraction')));
 		const targetValue = computeNumericValue(target);
 		const baseValue = computeNumericValue(base);
 		if (targetValue === null || baseValue === null) return null;

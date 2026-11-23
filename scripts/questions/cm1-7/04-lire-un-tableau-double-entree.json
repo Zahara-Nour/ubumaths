@@ -1,0 +1,400 @@
+{
+	"id": "62389b29-78e4-4730-8434-ef6e36960083",
+	"title": "Lis le tableau à double entrée (cinq lignes)",
+	"description": "Clubs de sport, filles et garçons : une case (« combien de garçons pratiquent la natation ? »), la case d'un total, le sport qui a un nombre de garçons donné (case choix) ; nombres ≤ 240",
+	"grades": ["CM1"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nCombien de {{if:q==0|filles|garçons}} pratiquent {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}} ?\n\n$?$ {{if:q==0|filles|garçons}}",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "15..240"
+				},
+				{
+					"name": "f2",
+					"expression": "15..240"
+				},
+				{
+					"name": "f3",
+					"expression": "15..240"
+				},
+				{
+					"name": "f4",
+					"expression": "15..240"
+				},
+				{
+					"name": "f5",
+					"expression": "15..240"
+				},
+				{
+					"name": "g1",
+					"expression": "15..240"
+				},
+				{
+					"name": "g2",
+					"expression": "15..240"
+				},
+				{
+					"name": "g3",
+					"expression": "15..240"
+				},
+				{
+					"name": "g4",
+					"expression": "15..240"
+				},
+				{
+					"name": "g5",
+					"expression": "15..240"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "q",
+					"expression": "0..1"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(f1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "y",
+					"expression": "eval:(g1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(g2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(g3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(g4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(g5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				},
+				{
+					"name": "n",
+					"expression": "eval:x+(y-x)*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La ligne « {{if:k==0|Natation|{{if:k==1|Football|{{if:k==2|Danse|{{if:k==3|Judo|Tennis}}}}}}}} » et la colonne « {{if:q==0|Filles|Garçons}} » : la réponse est dans la case où elles se croisent.",
+					"Cette case : $\\textcolor{{{color:primary.0}}}{{{n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville, avec les totaux.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: oui\n```\n\nCombien d'enfants, filles et garçons, pratiquent {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}} ?\n\n$?$ enfants",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "15..240"
+				},
+				{
+					"name": "f2",
+					"expression": "15..240"
+				},
+				{
+					"name": "f3",
+					"expression": "15..240"
+				},
+				{
+					"name": "f4",
+					"expression": "15..240"
+				},
+				{
+					"name": "f5",
+					"expression": "15..240"
+				},
+				{
+					"name": "g1",
+					"expression": "15..240"
+				},
+				{
+					"name": "g2",
+					"expression": "15..240"
+				},
+				{
+					"name": "g3",
+					"expression": "15..240"
+				},
+				{
+					"name": "g4",
+					"expression": "15..240"
+				},
+				{
+					"name": "g5",
+					"expression": "15..240"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(f1+g1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(f2+g2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(f3+g3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(f4+g4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(f5+g5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Filles et garçons ensemble : c'est la colonne « Total », sur la ligne « {{if:k==0|Natation|{{if:k==1|Football|{{if:k==2|Danse|{{if:k==3|Judo|Tennis}}}}}}}} ».",
+					"On lit $\\textcolor{{{color:primary.0}}}{{{n}}}$ enfants (c'est bien la somme des deux cases de la ligne)."
+				]
+			}
+		},
+		{
+			"statement": "Ce tableau donne le nombre d'enfants inscrits dans les clubs de sport de la ville.\n\n```tableau-croise\nlignes: Natation ; Football ; Danse ; Judo ; Tennis\ncolonnes: Filles ; Garçons\nNatation = {{f1}} ; {{g1}}\nFootball = {{f2}} ; {{g2}}\nDanse = {{f3}} ; {{g3}}\nJudo = {{f4}} ; {{g4}}\nTennis = {{f5}} ; {{g5}}\ncoin: Sport \\ Élèves\ntotaux: non\n```\n\nDans quel sport y a-t-il ${{n}}$ garçons ?\n\n```choix\nmelanger: non\n- Natation\n- Football\n- Danse\n- Judo\n- Tennis\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "15..240"
+				},
+				{
+					"name": "f2",
+					"expression": "15..240"
+				},
+				{
+					"name": "f3",
+					"expression": "15..240"
+				},
+				{
+					"name": "f4",
+					"expression": "15..240"
+				},
+				{
+					"name": "f5",
+					"expression": "15..240"
+				},
+				{
+					"name": "h1",
+					"expression": "15..240"
+				},
+				{
+					"name": "h2",
+					"expression": "15..240"
+				},
+				{
+					"name": "h3",
+					"expression": "15..240"
+				},
+				{
+					"name": "h4",
+					"expression": "15..240"
+				},
+				{
+					"name": "h5",
+					"expression": "15..240"
+				},
+				{
+					"name": "n",
+					"expression": "15..240"
+				},
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "g1",
+					"expression": "eval:h1+(n-h1)*((k-1)*(k-2)*(k-3)*(k-4))/(24)"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:h2+(n-h2)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)"
+				},
+				{
+					"name": "g3",
+					"expression": "eval:h3+(n-h3)*((k-0)*(k-1)*(k-3)*(k-4))/(4)"
+				},
+				{
+					"name": "g4",
+					"expression": "eval:h4+(n-h4)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)"
+				},
+				{
+					"name": "g5",
+					"expression": "eval:h5+(n-h5)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"conditions": [
+				"(h1-n)*(h1-n) > 0",
+				"(h2-n)*(h2-n) > 0",
+				"(h3-n)*(h3-n) > 0",
+				"(h4-n)*(h4-n) > 0",
+				"(h5-n)*(h5-n) > 0",
+				"(f1-n)*(f1-n) > 0",
+				"(f2-n)*(f2-n) > 0",
+				"(f3-n)*(f3-n) > 0",
+				"(f4-n)*(f4-n) > 0",
+				"(f5-n)*(f5-n) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche ${{n}}$ dans la colonne « Garçons » seulement, puis on lit le sport sur sa ligne.",
+					"C'est {{if:k==0|la natation|{{if:k==1|le football|{{if:k==2|la danse|{{if:k==3|le judo|le tennis}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Garçons en natation : 112",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77",
+				"k": "0",
+				"q": "1",
+				"x": "128",
+				"y": "112",
+				"n": "112"
+			},
+			"answers": ["112"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la case des filles (128)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77",
+				"k": "0",
+				"q": "1",
+				"x": "128",
+				"y": "112",
+				"n": "112"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Filles en judo : 45",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77",
+				"k": "3",
+				"q": "0",
+				"x": "45",
+				"y": "96",
+				"n": "45"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Total de la danse : 220",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77",
+				"k": "2",
+				"n": "220"
+			},
+			"answers": ["220"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la case des filles seule",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77",
+				"k": "2",
+				"n": "220"
+			},
+			"answers": ["197"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "96 garçons : le judo",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "128",
+				"f2": "64",
+				"f3": "197",
+				"f4": "45",
+				"f5": "82",
+				"h1": "112",
+				"h2": "215",
+				"h3": "23",
+				"h4": "150",
+				"h5": "77",
+				"n": "96",
+				"k": "3",
+				"g1": "112",
+				"g2": "215",
+				"g3": "23",
+				"g4": "96",
+				"g5": "77"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

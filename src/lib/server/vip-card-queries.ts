@@ -7,10 +7,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-import { asVipCardAction, type VipCardCategory, type VipCardRarity } from '$lib/types/vip-card';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
+import { asVipCardAction, type VipCardCategory, type VipCardRarity } from '#lib/types/vip-card.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/vip-card-queries');
 

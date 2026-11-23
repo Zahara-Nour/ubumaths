@@ -1,0 +1,279 @@
+{
+	"id": "68425f1e-0734-476a-995d-627998229963",
+	"title": "Tracer un segment de longueur donnée en cm et mm",
+	"description": "Papier uni : tracer à la règle graduée un segment donné en cm et mm (5 cm et 3 mm) ou en mm (72 mm)",
+	"grades": ["CE2"],
+	"level": 9,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Avec la règle graduée, trace le segment $[AB]$ de $\\textcolor{{{color:primary.0}}}{{{a}}\\text{ cm et }{{b}}\\text{ mm}}$ en partant du point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\nverifier: segment AB = {{a}} cm {{b}} mm\n---\n{{if:k==1|A = point(1, 5)|{{if:k==2|A = point(1, 2)|A = point(1, 8)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "2..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose la règle graduée : son $\\textcolor{{{color:primary.0}}}{\\text{0}}$ sur le point $A$.",
+					"On compte $\\textcolor{{{color:primary.0}}}{{{a}}\\text{ cm}}$, puis encore $\\textcolor{{{color:primary.0}}}{{{b}}\\text{ petits traits}}$ (les millimètres), et on trace le segment depuis $A$ jusque-là."
+				]
+			}
+		},
+		{
+			"statement": "Avec la règle graduée, trace le segment $[AB]$ de $\\textcolor{{{color:primary.0}}}{{{m}}\\text{ mm}}$ en partant du point $A$.\n\n```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\nverifier: segment AB = {{m}} mm\n---\n{{if:k==1|A = point(1, 5)|{{if:k==2|A = point(1, 2)|A = point(1, 8)}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "2..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "{{eval:10*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10\\text{ mm} = 1\\text{ cm}$ : $\\textcolor{{{color:primary.0}}}{{{m}}\\text{ mm}}$, c'est {{a}} cm et {{b}} mm.",
+					"On pose la règle graduée, son $\\textcolor{{{color:primary.0}}}{\\text{0}}$ sur le point $A$, on compte {{a}} cm puis {{b}} petits traits, et on trace le segment depuis $A$ jusque-là."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "53 mm vers la droite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["regle(1;5;2;5;1)|segment(1;5;6.3;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "53 mm en oblique",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["regle(1;5;1.6;5.8;1)|segment(1;5;4.18;9.24)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 mm de trop",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["regle(1;5;2;5;1)|segment(1;5;6.4;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 cm de moins",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["regle(1;5;2;5;1)|segment(1;5;5.3;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tracé à l'œil, sans la règle graduée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["segment(1;5;6.3;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux segments depuis A",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["regle(1;5;2;5;1)|segment(1;5;6.3;5)|segment(1;5;1;7)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "119 mm vers la droite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "11",
+				"b": "9"
+			},
+			"answers": ["regle(1;8;2;8;1)|segment(1;8;12.9;8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "72 mm vers la droite",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "2",
+				"m": "72"
+			},
+			"answers": ["regle(1;2;2;2;1)|segment(1;2;8.2;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "72 mm en oblique",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "2",
+				"m": "72"
+			},
+			"answers": ["regle(1;2;1.6;2.8;1)|segment(1;2;5.32;7.76)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 mm de trop",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "2",
+				"m": "72"
+			},
+			"answers": ["regle(1;2;2;2;1)|segment(1;2;8.3;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 cm de moins",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "2",
+				"m": "72"
+			},
+			"answers": ["regle(1;2;2;2;1)|segment(1;2;7.2;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tracé à l'œil, sans la règle graduée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "2",
+				"m": "72"
+			},
+			"answers": ["segment(1;2;8.2;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux segments depuis A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "2",
+				"m": "72"
+			},
+			"answers": ["regle(1;2;2;2;1)|segment(1;2;8.2;2)|segment(1;2;1;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien de tracé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "7",
+				"b": "2",
+				"m": "72"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "21 mm vers la droite",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"b": "1",
+				"m": "21"
+			},
+			"answers": ["regle(1;5;2;5;1)|segment(1;5;3.1;5)"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

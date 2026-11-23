@@ -46,9 +46,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Grandeurs",
-		"domain": "Vitesses",
-		"subdomain": "Calculer",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

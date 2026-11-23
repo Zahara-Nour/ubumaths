@@ -1,9 +1,9 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
-	import CipherWorkbench from '$lib/components/ciphers/CipherWorkbench.svelte';
-	import { attempt } from '$lib/ciphers/outcome';
-	import { scytaleCandidates, scytaleDecrypt, scytaleEncrypt } from '$lib/ciphers/scytale';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import CipherWorkbench from '#lib/components/ciphers/CipherWorkbench.svelte';
+	import { attempt } from '#lib/ciphers/outcome.ts';
+	import { scytaleCandidates, scytaleDecrypt, scytaleEncrypt } from '#lib/ciphers/scytale.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 
 	// Constantes
 	const PLAIN = 'Attaque à l’aube par le flanc gauche';
@@ -18,7 +18,7 @@
 </script>
 
 <SeoHead
-	title="La scytale spartiate : chiffre par transposition — Chiphre"
+	title="La scytale spartiate : chiffre par transposition | Chiphre"
 	description="La scytale pas à pas : enrouler une bande sur un bâton, écrire le message, dérouler. Un chiffre par transposition, et comment le décrypter en essayant tous les bâtons."
 />
 

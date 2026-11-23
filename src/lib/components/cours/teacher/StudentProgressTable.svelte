@@ -9,11 +9,11 @@
 	@module components/cours/teacher/StudentProgressTable
 -->
 <script lang="ts">
-	import type { ChapterChecklistItem } from '$lib/types/chapters';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import { Progress } from '$lib/components/ui/progress';
-	import { cn } from '$lib/utils';
+	import type { ChapterChecklistItem } from '#lib/types/chapters.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { cn } from '#lib/utils.ts';
 	import { Check, X, Users } from '@lucide/svelte';
 
 	// Props

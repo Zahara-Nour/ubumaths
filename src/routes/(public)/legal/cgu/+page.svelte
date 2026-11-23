@@ -1,10 +1,10 @@
 <script lang="ts">
-	import SeoHead from '$lib/seo/SeoHead.svelte';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 </script>
 
 <SeoHead
-	title="Conditions générales d’utilisation - Chiphre"
+	title="Conditions générales d’utilisation | Chiphre"
 	description="Conditions générales d’utilisation de Chiphre : règles d’utilisation de la plateforme éducative de mathématiques."
 />
 
@@ -21,7 +21,7 @@
 			<p>
 				Les présentes Conditions générales d'utilisation (ci-après "CGU") ont pour objet de définir
 				les modalités et conditions d'utilisation de la plateforme <strong>Chiphre</strong>,
-				accessible à l'adresse <a href={resolve('/')}>chiph.re</a>.
+				accessible à l'adresse <a href={resolve('')}>chiph.re</a>.
 			</p>
 			<p class="rounded-lg bg-muted p-4">
 				<strong
@@ -126,7 +126,7 @@
 			<h2>6. Protection des données personnelles</h2>
 			<p>
 				Le traitement des données personnelles est décrit dans notre
-				<a href={resolve('/legal/confidentialite')}>Politique de confidentialité</a>.
+				<a href={resolve('legal/confidentialite')}>Politique de confidentialité</a>.
 			</p>
 			<p>En résumé :</p>
 			<ul>

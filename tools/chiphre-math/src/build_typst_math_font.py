@@ -10,6 +10,8 @@ KaTeX fonts already hold all of it, so this script only gathers their glyphs
 and writes that table:
 
 - letters: Math-Italic → math italic code points (U+1D434…, ℎ, Greek, π),
+  Main-Bold → math bold digits and letters (U+1D7CE…, U+1D400…) and math bold
+  italic letters (U+1D468…: Typst's bold() keeps letters italic),
   Main-Regular → upright letters, digits, operators, punctuation, Greek capitals;
   AMS → ℕ ℤ ℚ ℝ ℂ (the \\mathbb letters), ⩽ ⩾ and every other AMS symbol missing
   from Main; ≠ = « = » and the slash of \\not; · (Typst's dot.c) = ⋅; ″ ‴ = the
@@ -60,6 +62,7 @@ FAMILY = "Chiphre Math"
 SOURCES = {
     "Main": "KaTeX_Main-Regular",
     "MathIt": "KaTeX_Math-Italic",
+    "Bold": "KaTeX_Main-Bold",
     "AMS": "KaTeX_AMS-Regular",
     "Cal": "KaTeX_Caligraphic-Regular",
     "S1": "KaTeX_Size1-Regular",
@@ -184,6 +187,20 @@ def math_italic_codepoint(char: str) -> Optional[int]:
     return None
 
 
+def math_bold_codepoints(char: str) -> List[int]:
+    """Points de code « gras mathématique » d'un chiffre ou d'une lettre latine : gras
+    droit (U+1D400…, chiffres U+1D7CE…) et, pour une lettre, gras italique (U+1D468…).
+    Typst les écrit pour bold() (le gras des réponses d'un corrigé) : les lettres y
+    restent italiques, d'où le second bloc."""
+    if "0" <= char <= "9":
+        return [0x1D7CE + ord(char) - ord("0")]
+    if "a" <= char <= "z":
+        return [0x1D41A + ord(char) - ord("a"), 0x1D482 + ord(char) - ord("a")]
+    if "A" <= char <= "Z":
+        return [0x1D400 + ord(char) - ord("A"), 0x1D468 + ord(char) - ord("A")]
+    return []
+
+
 # Capitales « script » rangées hors du bloc U+1D49C (bloc des symboles de type lettre)
 SCRIPT_EXCEPTIONS = {"B": 0x212C, "E": 0x2130, "F": 0x2131, "H": 0x210B, "I": 0x2110, "L": 0x2112, "M": 0x2133, "R": 0x211B}
 
@@ -293,6 +310,12 @@ class FontBuilder:
             target = math_italic_codepoint(chr(codepoint))
             if target is not None:
                 self.map(target, "MathIt", codepoint)
+        # Gras (bold() de Typst) : le gras de Main, manuscrit, pour le droit comme pour
+        # l'italique — comme \\mathbf à l'écran (KaTeX, Main-Bold, lettres droites) ;
+        # sans eux, les chiffres gras d'un corrigé sortaient en carrés vides
+        for codepoint in self.sources["Bold"].getBestCmap():
+            for target in math_bold_codepoints(chr(codepoint)):
+                self.map(target, "Bold", codepoint)
         for char, codepoint in (("N", 0x2115), ("Z", 0x2124), ("Q", 0x211A), ("R", 0x211D), ("C", 0x2102)):
             self.map(codepoint, "AMS", ord(char))
         for codepoint in (0x2A7D, 0x2A7E):

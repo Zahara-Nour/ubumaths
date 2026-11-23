@@ -383,3 +383,22 @@ describe('quartique écrite sans être développée : aucun coefficient ne garde
 		}
 	});
 });
+
+/**
+ * Frère de L27 (revue #2064) : une racine de quartique trouvée en flottant et
+ * arrondie à 10 décimales n'est pas exacte (`exact: false`) ; une racine
+ * entière ou rationnelle le reste.
+ */
+describe('Quartique : racine arrondie non exacte (frère de L27)', () => {
+	it('x^4 - x - 3 = 0 : racines arrondies, aucune exacte', () => {
+		const result = solve(parseEquation('x^4-x-3=0'), { variable: 'x' });
+		expect(result.solutions.length).toBeGreaterThan(0);
+		for (const s of result.solutions) expect(s.exact).toBe(false);
+	});
+
+	it('x^4 - 5x^2 + 4 = 0 : racines entières, exactes', () => {
+		const result = solve(parseEquation('x^4-5x^2+4=0'), { variable: 'x' });
+		expect(result.solutions).toHaveLength(4);
+		for (const s of result.solutions) expect(s.exact).toBe(true);
+	});
+});

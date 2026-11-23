@@ -4,8 +4,8 @@
  */
 
 import { z } from 'zod';
-import { ALL_TIMEZONES } from '$lib/utils/timezones';
-import { isValidWeekConfig } from '$lib/utils/week-config';
+import { ALL_TIMEZONES } from '#lib/utils/timezones.ts';
+import { isValidWeekConfig } from '#lib/utils/week-config.ts';
 
 /**
  * Week configuration schema

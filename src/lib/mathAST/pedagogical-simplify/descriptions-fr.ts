@@ -27,6 +27,8 @@ import type { SchoolLevel } from '../common/step-renderer-base';
 import { getRuleDescription as getNormalizeRuleDescription } from '../normal/step-recorder';
 import { TIDY_RULE_DESCRIPTIONS, type TidyRule } from '../tidy';
 import type { MathNode } from '../types';
+import { toLatex } from '../latex-generator';
+import { displayUnitsInLatex } from '../units/display';
 import type { Rational } from '../normal/types';
 import { isNegative, isZero } from '../normal/rational';
 import type { PedagogicalSimplifyStep } from './types';
@@ -95,6 +97,12 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'tan-negative': 'Parité : tan(-x) = -tan(x)',
 	'sin-period-2pi': 'Périodicité : sin(x + 2π) = sin(x)',
 	'cos-period-2pi': 'Périodicité : cos(x + 2π) = cos(x)',
+	'sin-remarkable-period': 'Périodicité : sin(x + 2π) = sin(x)',
+	'cos-remarkable-period': 'Périodicité : cos(x + 2π) = cos(x)',
+	'tan-remarkable-period': 'Périodicité : tan(x + π) = tan(x)',
+	'sin-remarkable-value': 'Valeur remarquable du sinus',
+	'cos-remarkable-value': 'Valeur remarquable du cosinus',
+	'tan-remarkable-value': 'Valeur remarquable de la tangente',
 	'sin-over-cos': 'Définition : sin(x)/cos(x) = tan(x)',
 	'cos-over-sin': 'Définition : cos(x)/sin(x) = 1/tan(x)',
 	'double-angle-sin': "Formule de l'angle double : sin(2x) = 2 sin(x) cos(x)",
@@ -223,6 +231,42 @@ function identityTitle(before: MathNode): string | null {
 	return `On reconnaît ${shapes[identity.kind]} avec a = ${a} et b = ${b}`;
 }
 
+/** Un tour de plus ou de moins ne change ni le sinus ni le cosinus. */
+const PERIOD_EXPLANATION =
+	'Ajouter ou retirer un tour (2π) à l’angle ne change pas sa valeur : on ramène l’angle entre 0 et 2π.';
+
+/** Les valeurs aux angles du cercle trigonométrique que l'on connaît. */
+const VALUE_EXPLANATION =
+	'Aux angles remarquables (0, π/6, π/4, π/3, π/2 et leurs symétriques), sinus, cosinus et tangente ont une valeur exacte connue.';
+
+/**
+ * Les paires (angle, valeur) d'une étape de valeur remarquable : celles que le
+ * pipeline a réunies dans `bindings` (`before0`, `after0`…), sinon l'étape seule.
+ */
+function remarkablePairs(step: PedagogicalSimplifyStep): [MathNode, MathNode][] {
+	const pairs: [MathNode, MathNode][] = [];
+	const bindings = step.bindings ?? {};
+	for (let index = 0; bindings[`before${index}`] !== undefined; index++) {
+		pairs.push([bindings[`before${index}`], bindings[`after${index}`]]);
+	}
+	return pairs.length > 0 ? pairs : [[step.before, step.after]];
+}
+
+/** `\cos\left( 60{}^{\circ} \right)` : le degré collé au nombre, comme sur la copie. */
+function angleLatex(node: MathNode): string {
+	return displayUnitsInLatex(toLatex(node)).replace(/~(\{\}\^\{\\circ\})/g, '$1');
+}
+
+/** « On utilise une valeur remarquable : $cos(π/3) = 1/2$ », plusieurs reliées par « et ». */
+function remarkableValuesTitle(step: PedagogicalSimplifyStep): string {
+	const written = [
+		...new Set(remarkablePairs(step).map(([b, a]) => `$${angleLatex(b)} = ${toLatex(a)}$`))
+	];
+	if (written.length === 1) return `On utilise une valeur remarquable : ${written[0]}`;
+	const last = written[written.length - 1];
+	return `On utilise des valeurs remarquables : ${written.slice(0, -1).join(', ')} et ${last}`;
+}
+
 /** Le titre d'identité avec a et b, sinon le titre d'origine (motif symbolique, plusieurs lettres). */
 function withIdentityTitle(fallback: string): TitleFn {
 	return (step) => identityTitle(step.before) ?? fallback;
@@ -311,6 +355,12 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'cos-negative': () => 'cos est paire : cos(-x) = cos(x)',
 	'sin-period-2pi': () => 'sin est 2π-périodique',
 	'cos-period-2pi': () => 'cos est 2π-périodique',
+	'sin-remarkable-period': () => 'sin est 2π-périodique',
+	'cos-remarkable-period': () => 'cos est 2π-périodique',
+	'tan-remarkable-period': () => 'tan est π-périodique',
+	'sin-remarkable-value': remarkableValuesTitle,
+	'cos-remarkable-value': remarkableValuesTitle,
+	'tan-remarkable-value': remarkableValuesTitle,
 	'sin-over-cos': () => 'sin(x)/cos(x) = tan(x)',
 	// log/exp
 	'ln-exp': () => 'ln et exp sont réciproques : ln(eˣ) = x',
@@ -387,6 +437,9 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	pythagorean: () => 'Pythagore',
 	'sin-negative': () => 'Imparité de sin',
 	'cos-negative': () => 'Parité de cos',
+	'sin-remarkable-value': () => 'Valeur remarquable',
+	'cos-remarkable-value': () => 'Valeur remarquable',
+	'tan-remarkable-value': () => 'Valeur remarquable',
 	'ln-product': () => 'ln additif',
 	'ln-quotient': () => 'ln soustractif',
 	'ln-pow': () => 'ln·n',
@@ -438,6 +491,13 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	pythagorean: () => 'L’identité fondamentale : pour tout x réel, sin²(x) + cos²(x) = 1.',
 	'sin-negative': () => 'La fonction sinus est impaire : sin(-x) = -sin(x).',
 	'cos-negative': () => 'La fonction cosinus est paire : cos(-x) = cos(x).',
+	'sin-remarkable-period': () => PERIOD_EXPLANATION,
+	'cos-remarkable-period': () => PERIOD_EXPLANATION,
+	'tan-remarkable-period': () =>
+		'Ajouter ou retirer π à l’angle ne change pas sa tangente : on ramène l’angle entre 0 et 2π.',
+	'sin-remarkable-value': () => VALUE_EXPLANATION,
+	'cos-remarkable-value': () => VALUE_EXPLANATION,
+	'tan-remarkable-value': () => VALUE_EXPLANATION,
 	'ln-product': () => 'Le logarithme transforme un produit en somme : ln(a·b) = ln(a) + ln(b).',
 	'ln-pow': () => 'Le logarithme d’une puissance : ln(aⁿ) = n·ln(a).',
 	'abs-negation': () => 'La valeur absolue d’un nombre et de son opposé sont égales.',

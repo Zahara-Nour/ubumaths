@@ -1,19 +1,19 @@
 /**
  * Question à bloc ```figure-a-completer (case « figure ») : génération et jugement
- * de bout en bout (`docs/wip/geometrie-validation-progress.md` § 3 et § 4).
+ * de bout en bout (`docs/archive/wip/geometrie-validation-progress.md` § 3 et § 4).
  *
  * Le bloc porte sa case, comme ```operation : `blanks[]` peut l'omettre. La
  * réponse attendue est symbolique (`droite(A;B)`) ; le juge lit les positions
  * dans le registre (inscrit ici comme à l'écran de l'élève).
  */
 import { describe, it, expect } from 'vitest';
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { toPublicQuestion } from '$lib/questions/public-question';
-import { validateTemplate } from '$lib/questions/validators/template-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { toPublicQuestion } from '#lib/questions/public-question.ts';
+import { validateTemplate } from '#lib/questions/validators/template-validator.ts';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {
@@ -23,8 +23,6 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		type: 'fill_in_blanks',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
 		grades: ['CP'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1
 	} as QuestionTemplate;
 }
@@ -121,7 +119,10 @@ describe('bloc ```figure-a-completer : la case', () => {
 	it('évaluation notée : la case publique ne porte que sa nature (jugée au serveur)', () => {
 		const instance = generate(CP059);
 		const publicQuestion = toPublicQuestion(instance, { position: 0, delaySeconds: 60 });
-		expect(publicQuestion.blanks).toEqual([{ type: 'graphical' }]);
+		// `figure` : le fait seul (l'énoncé montre le bloc), pour que l'écran ne la compte pas
+		// comme une case écrite ; jamais `construction` (texte et vérifications) — fuite-enonce
+		expect(publicQuestion.blanks).toEqual([{ type: 'graphical', figure: true }]);
+		expect(JSON.stringify(publicQuestion.blanks)).not.toContain('construction');
 	});
 });
 

@@ -13,13 +13,15 @@
 	@see types.ts BlockquoteNode for the AST node type
 -->
 <script lang="ts">
-	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '$lib/ubumark';
-	import { DETAIL_KIND_LABELS } from '$lib/ubumark';
+	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '#lib/ubumark/index.ts';
+	import { detailKindLabel } from '#lib/ubumark/index.ts';
+	import { readContentLocale } from '../content-locale';
 	import { CALLOUT_CLASSES, CALLOUT_LABEL_CLASSES } from '../detail-styles';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
+	import VideoDisplay from './VideoDisplay.svelte';
 	import ListNode from './ListNode.svelte';
 	import TableNode from './TableNode.svelte';
 	import HorizontalRule from './HorizontalRule.svelte';
@@ -35,6 +37,9 @@
 	}
 
 	let { children, callout, class: className = '' }: Props = $props();
+
+	// Langue du contenu : même source que le PDF (`detailKindLabel`)
+	const locale = readContentLocale();
 
 	/**
 	 * Type guards for different block node types
@@ -135,6 +140,20 @@
 				originalWidth={child.originalWidth}
 				originalHeight={child.originalHeight}
 			/>
+		{:else if child.type === 'video'}
+			<VideoDisplay
+				src={child.src}
+				alt={child.alt}
+				provider={child.provider}
+				videoId={child.videoId}
+				sizeClass={child.sizeClass}
+				widthPercent={child.widthPercent}
+				alignment={child.alignment}
+				controls={child.controls}
+				autoplay={child.autoplay}
+				loop={child.loop}
+				muted={child.muted}
+			/>
 		{:else if isBlockquoteNode(child)}
 			<!-- Recursive blockquote rendering -->
 			<Blockquote children={child.children} callout={child.callout} />
@@ -149,14 +168,14 @@
 {#if callout}
 	<div
 		role="note"
-		aria-label={DETAIL_KIND_LABELS[callout]}
+		aria-label={detailKindLabel(callout, locale())}
 		data-callout={callout}
 		class="callout callout-{callout} my-4 rounded-md border-l-4 px-4 py-2 text-foreground {CALLOUT_CLASSES[
 			callout
 		]} {className}"
 	>
 		<p class="mb-1 text-sm font-semibold {CALLOUT_LABEL_CLASSES[callout]}">
-			{DETAIL_KIND_LABELS[callout]}
+			{detailKindLabel(callout, locale())}
 		</p>
 		{@render content()}
 	</div>

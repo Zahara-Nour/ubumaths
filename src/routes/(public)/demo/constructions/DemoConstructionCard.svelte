@@ -7,9 +7,9 @@
 	leur taille.
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import ConstructionPlayer from '$lib/constructions-v2/components/ConstructionPlayer.svelte';
-	import * as Card from '$lib/components/ui/card';
+	import { browser } from '$app/env';
+	import ConstructionPlayer from '#lib/constructions-v2/components/ConstructionPlayer.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
 	import { PLAYER_HEIGHT, PLAYER_WIDTH, type DemoConstruction } from './constructions';
 
 	// Types

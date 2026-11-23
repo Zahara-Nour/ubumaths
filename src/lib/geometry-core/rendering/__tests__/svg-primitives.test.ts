@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numericNode } from '#lib/mathAST/common/numeric.ts';
 import { pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG } from '../svg-primitives';
 import { Figure } from '../../graph/figure';
 import { createTransformer } from '../../viewport/viewport';

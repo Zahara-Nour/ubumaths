@@ -64,8 +64,7 @@
  */
 
 import type { Database, Json, Tables, TablesUpdate } from './database';
-import type { QuestionTemplate } from '$lib/questions/types';
-import type { GradeCode } from '$lib/types/grades';
+import type { GradeCode } from '#lib/types/grades.ts';
 
 // ============================================================================
 // Table Row Type Aliases
@@ -73,9 +72,6 @@ import type { GradeCode } from '$lib/types/grades';
 
 /** Class table row type alias */
 export type Class = Tables<'classes'>;
-
-/** Migration edit row type alias */
-export type MigrationEdit = Tables<'migration_edits'>;
 
 /** Class schedule table row type alias */
 export type ClassSchedule = Tables<'class_schedules'>;
@@ -183,34 +179,6 @@ export interface FriendshipWithProfile {
 	requester_id: string;
 	addressee_id: string;
 	friend_profile: FriendProfile;
-}
-
-// ============================================================================
-// Migration Edit Types
-// ============================================================================
-
-/**
- * Migration edit with properly typed edited_json field.
- *
- * The database stores edited_json as JSONB, but we know it's a QuestionTemplate.
- */
-export interface MigrationEditWithTemplate {
-	id: string;
-	migration_tracking_id: string;
-	old_question_hash: string;
-	edited_json: Partial<QuestionTemplate>;
-	editor_id: string;
-	edit_notes: string | null;
-	created_at: string;
-	updated_at: string;
-}
-
-/**
- * Input type for creating/updating a migration edit
- */
-export interface MigrationEditInput {
-	editedTransformed: Partial<QuestionTemplate>;
-	notes?: string;
 }
 
 // ============================================================================
@@ -475,14 +443,14 @@ export type AntiFraudFlagType =
 /** Severity 1..5 (1=info ; 5=critical). */
 export type AntiFraudSeverity = 1 | 2 | 3 | 4 | 5;
 
-/** Flag enrichi avec données élève + capacité (endpoint GET prof). */
+/** Flag enrichi avec données élève + point du programme (endpoint GET prof). */
 export interface AntiFraudFlagWithStudent extends AntiFraudFlag {
 	student: {
 		id: string;
 		first_name: string | null;
 		last_name: string | null;
 	};
-	capacity: {
+	point: {
 		id: string;
 		name: string;
 	} | null;
@@ -651,9 +619,21 @@ export type JournalEntryPoint = Omit<Tables<'journal_entry_points'>, 'source'> &
  * would perform anyway: `undefined` fields disappear, `Date` becomes a string,
  * and a cyclic structure throws here rather than at the network boundary.
  */
-export function toJson<T>(value: T): Json {
-	return JSON.parse(JSON.stringify(value ?? null)) as Json;
+export function toJson<T>(value: T): JsonDe<T> {
+	return JSON.parse(JSON.stringify(value ?? null)) as JsonDe<T>;
 }
+
+/**
+ * Valeur d'une colonne jsonb obligatoire (`NOT NULL`) : tout JSON sauf `null`. C'est le type que
+ * `pnpm db:types` donne à ces colonnes.
+ */
+export type JsonRequis = NonNullable<Json>;
+
+/**
+ * Ce que `toJson` rend pour une valeur de type `T` : `JsonRequis` quand `T` ne peut être ni `null`
+ * ni `undefined` (la conversion ne fabrique pas de `null`), `Json` sinon, et pour `unknown`.
+ */
+export type JsonDe<T> = unknown extends T ? Json : T extends null | undefined ? Json : JsonRequis;
 
 // =============================================================================
 // RPC PARAMETERS

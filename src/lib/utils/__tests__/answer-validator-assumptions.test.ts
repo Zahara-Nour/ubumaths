@@ -10,10 +10,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { isBlankValueCorrect, validateAlgebraic, validateAnswer } from '../answer-validator';
-import { evaluateRule } from '$lib/questions/validation-rule-evaluator';
-import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
-import type { AnswerAssumptions } from '$lib/math';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import { evaluateRule } from '#lib/questions/validation-rule-evaluator.ts';
+import type { InstanceBlank, QuestionInstance } from '#lib/questions/types.ts';
+import type { AnswerAssumptions } from '#lib/math/index.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -30,8 +30,6 @@ function createInstance(
 		statement: 'Soit x > 0' as ResolvedMarkdown,
 		blanks,
 		grades: ['2'],
-		theme: 'Algèbre',
-		domain: 'Puissances',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		options

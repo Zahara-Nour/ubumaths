@@ -7,6 +7,7 @@
  * @module questions/validators/template-validator
  */
 
+import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } from '../types';
 import { getQuestionType } from '../types';
 import { hasCourseCardBackSource } from '../course-card';
@@ -14,9 +15,26 @@ import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-assumptions';
 import { choiceAnswerCountErrors } from './choice-answer-count';
 import { assignBlankIndices } from '../generator/assign-blank-indices';
-import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
-import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
-import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
+import { hasCollectionToBuild } from '#lib/ubumark/parser/collection-parser.ts';
+import { hasMonnaieToBuild } from '#lib/ubumark/parser/monnaie-parser.ts';
+import { hasLineToPlace } from '#lib/ubumark/parser/number-line-parser.ts';
+import { hasHorlogeToPlace } from '#lib/ubumark/parser/horloge-parser.ts';
+import { hasStatChartToPlace } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { hasCourbeToPlace } from '#lib/ubumark/parser/courbe-parser.ts';
+import { hasTrigCircleToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { hasTortueToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
+import { hasCalculToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
+import { hasRobotToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { hasRangerToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
+import { hasAssocierToPlace } from '#lib/ubumark/parser/associer-parser.ts';
+import { hasTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
+import { hasPartageToColorier } from '#lib/ubumark/parser/partage-parser.ts';
+import {
+	hasCubesToBuild,
+	hasPatronsToBuild,
+	hasSolidesToBuild
+} from '#lib/ubumark/parser/espace-parser.ts';
+import { WORK_FIGURE_ALONE_MESSAGE } from '#lib/ubumark/parser/construction-parser.ts';
 
 /**
  * Validate a question template
@@ -47,12 +65,8 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		return errors;
 	}
 
-	// Infer question type from first variation (or shared) for type-specific checks
-	const firstVariation = template.variations[0];
-	const inferredType = getQuestionType({
-		choices: firstVariation.choices ?? template.shared?.choices,
-		options: template.options
-	});
+	// Type for type-specific checks (carte de cours : marqueur explicite)
+	const inferredType = getQuestionType({ options: template.options });
 
 	// Validate each variation (pass shared defaults for merged field checks)
 	template.variations.forEach((variation, index) => {
@@ -60,7 +74,7 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		errors.push(...variationErrors);
 	});
 
-	// QCM : exactement une bonne réponse, au moins une avec « plusieurs réponses » (V1)
+	// Case choix : exactement une bonne réponse, au moins une avec `plusieurs: oui` (V1)
 	errors.push(...choiceAnswerCountErrors(template));
 
 	// Hypothèses de l'énoncé : jamais sur une variable tirée (ADR 0012)
@@ -68,15 +82,8 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		errors.push(assumptionCollisionMessage(name));
 	}
 
-	// Categorization fields
-	if (!template.theme || template.theme.trim() === '') {
-		errors.push('Missing required field: theme');
-	}
-
-	if (!template.domain || template.domain.trim() === '') {
-		errors.push('Missing required field: domain');
-	}
-
+	// Rangement : `theme` et `domain` ne sont plus exigés (le modèle se range dans l'arbre
+	// des notions par `classification_node_id`, facultatif — ADR 0035). Seul le niveau reste.
 	if (template.level == null || template.level < 0) {
 		errors.push('level must be a non-negative integer');
 	}
@@ -96,7 +103,7 @@ export function validateTemplate(template: QuestionTemplate): string[] {
  * @param variation - Variation to validate
  * @param questionType - Question type from template
  * @param index - Variation index (for error messages)
- * @param shared - Shared defaults (for merged field checks like choices)
+ * @param shared - Shared defaults (for merged field checks like statement)
  * @returns Array of error messages
  */
 function validateVariation(
@@ -125,18 +132,6 @@ function validateVariation(
 	for (const blankIndex of findRulesSufficeBlanksWithoutRules(variation, shared)) {
 		errors.push(
 			`${prefix} blank ${blankIndex + 1} has rulesSuffice but no validationRules (every answer would be accepted)`
-		);
-	}
-
-	// Validate correctChoiceIndex (required for multiple_choice, optional for fill_in_blanks)
-	// Can come from shared defaults
-	if (
-		questionType === 'multiple_choice' &&
-		!variation.correctChoiceIndex &&
-		!shared?.correctChoiceIndex
-	) {
-		errors.push(
-			`${prefix} Missing required field: correctChoiceIndex (required for multiple_choice)`
 		);
 	}
 
@@ -189,12 +184,33 @@ function validateVariation(
 		case 'fill_in_blanks':
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
 			// un bloc ```figure-a-completer aussi (la figure de l'élève), un bloc ```collection
-			// ou ```monnaie à construire aussi (sa réponse est sa valeur)
+			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite ou une horloge
+			// à placer aussi, un diagramme en barres à construire aussi, des étiquettes à ranger aussi, des éléments à associer aussi, un texte à trous aussi,
+			// une figure à colorier aussi,
+			// un assemblage de cubes à geste aussi, un patron à geste aussi, un repère à points
+			// à placer aussi, un cercle trigonométrique à points à placer aussi, un tableau de
+			// signes à compléter aussi (ses cellules cachées), un programme tortue ou de calcul aussi
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCollectionToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasMonnaieToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasLineToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasHorlogeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasStatChartToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasCourbeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasTrigCircleToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasTortueToProgram(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasCalculToProgram(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasRobotToProduce(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasAssocierToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasTrousToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasPartageToColorier(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasCubesToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasPatronsToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasSolidesToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasVariationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
 				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
 				)
@@ -211,12 +227,9 @@ function validateVariation(
 			break;
 
 		case 'course_card': {
-			// Carte de cours : ni case ni choix ; le verso (correction) est obligatoire
+			// Carte de cours : aucune case ; le verso (correction) est obligatoire
 			if ((variation.blanks?.length ?? 0) > 0) {
 				errors.push(`${prefix} course_card cannot have blanks[]`);
-			}
-			if ((variation.choices ?? shared?.choices ?? []).length > 0) {
-				errors.push(`${prefix} course_card cannot have choices[]`);
 			}
 			const correction = variation.correction ?? shared?.correction;
 			if (!hasCourseCardBackSource(correction)) {
@@ -224,17 +237,6 @@ function validateVariation(
 					`${prefix} course_card requires a correction (verso): non-empty steps or generatedSteps`
 				);
 			}
-			break;
-		}
-
-		case 'multiple_choice': {
-			// Use merged choices (variation overrides shared)
-			const effectiveChoices = variation.choices ?? shared?.choices;
-			if (!effectiveChoices || effectiveChoices.length < 2) {
-				errors.push(`${prefix} multiple_choice requires at least 2 choices`);
-			}
-
-			// Nombre de bonnes réponses : `choiceAnswerCountErrors` (V1), sur tout le modèle
 			break;
 		}
 	}

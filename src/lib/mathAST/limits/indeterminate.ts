@@ -19,6 +19,7 @@ import {
 } from './exact-evaluation';
 import { evaluateNumeric, literalNumberValue, ZERO_TOLERANCE, NUMERIC_DELTA } from '../common';
 import { showsNoLimitAtInfinity } from './sign-tracking';
+import { limitByGeneralizedDegree } from './generalized-degree';
 
 // =============================================================================
 // Limit Value Types
@@ -237,7 +238,13 @@ function determinateExactLimit(
 	direction: LimitDirection
 ): ReturnType<typeof tryEvaluateLimitExact> {
 	const result = tryEvaluateLimitExact(expr, varName, approach, direction);
-	return result && !isIndeterminateResult(result) ? result : null;
+	if (result && !isIndeterminateResult(result)) return result;
+	// Somme ∞ − ∞ en ±∞ (x² − 6x + 9) : le terme dominant la tranche
+	// exactement. Sans lui, le repli numérique classait x² − 6x + 9 « fini »
+	// (10²⁰) et (x² − 6x + 9)/eˣ n'était pas vu ∞/∞ (V68).
+	if (!isInfinity(approach)) return null;
+	const leading = limitByGeneralizedDegree(expr, varName, approach);
+	return leading !== null && isInfinity(leading) ? { type: 'infinity', sign: leading.sign } : null;
 }
 
 /**

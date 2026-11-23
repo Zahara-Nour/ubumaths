@@ -27,9 +27,16 @@ export interface ProdCopies {
 // ============================================================================
 
 export async function insertProdCopies(pg: Client, copies: ProdCopies): Promise<void> {
+	// Base locale remplie par `pnpm db:seed-riche` : elle porte déjà le contenu de la prod, avec ses
+	// vrais identifiants. On retire ces lignes dans la transaction ouverte (annulée en fin de test),
+	// sinon l'insertion bute sur la clé primaire. Base vide (CI) : ne fait rien.
+	await pg.query('delete from public.exercises where id = any($1::uuid[])', [copies.exerciseIds]);
+	await pg.query('delete from public.question_templates where id = any($1::uuid[])', [
+		copies.templateIds
+	]);
 	await pg.query(
-		`insert into public.question_templates (id, type, grades, theme, domain, level, variations, status, title, created_at, updated_at)
-		 select unnest($1::uuid[]), 'numerical_exact', array['2'], 'copie', 'copie', 1, '[{}]'::jsonb, 'draft', 'copie de la prod', $2::timestamptz, $2::timestamptz`,
+		`insert into public.question_templates (id, type, grades, level, variations, status, title, created_at, updated_at)
+		 select unnest($1::uuid[]), 'numerical_exact', array['2'], 1, '[{}]'::jsonb, 'draft', 'copie de la prod', $2::timestamptz, $2::timestamptz`,
 		[copies.templateIds, copies.timestamp]
 	);
 	await pg.query(

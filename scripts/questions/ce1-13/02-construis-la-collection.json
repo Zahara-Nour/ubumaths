@@ -1,0 +1,229 @@
+{
+	"id": "2647fb0f-99da-4d72-af30-24a1807774c4",
+	"title": "Construire une collection donnée en centaines, dizaines et unités",
+	"description": "Construire avec le matériel : plus de dix dizaines, plus de dix unités, jusqu'à 1 000",
+	"grades": ["CE1"],
+	"level": 13,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Construis la collection de $\\textcolor{{{color:primary.0}}}{{{c}}}$ {{if:c<=1|centaine|centaines}}, $\\textcolor{{{color:primary.1}}}{{{d}}}$ dizaines et ${{u}}$ {{if:u<=1|unité|unités}}.\n\n```collection\nconstruire: {{eval:100*c+10*d+u}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "11..19"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["100*c+10*d+u <= 999"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{d}}$ dizaines, c'est $1$ centaine et ${{eval:d-10}}$ {{if:d-10<=1|dizaine|dizaines}}.",
+					"La collection vaut $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d+u}}}$ : on pose ${{eval:c+1}}$ plaques, ${{eval:d-10}}$ {{if:d-10<=1|barre|barres}} et ${{u}}$ {{if:u<=1|petit cube|petits cubes}} (ou ${{c}}$ {{if:c<=1|plaque|plaques}} et ${{d}}$ barres)."
+				]
+			}
+		},
+		{
+			"statement": "Construis la collection de $\\textcolor{{{color:primary.1}}}{{{d}}}$ dizaines et ${{u}}$ {{if:u<=1|unité|unités}}.\n\n```collection\nconstruire: {{eval:10*d+u}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "11..39"
+				},
+				{
+					"name": "u",
+					"expression": "1..19"
+				}
+			],
+			"conditions": ["d != 20", "d != 30", "u != 10"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{d}}$ dizaines font ${{eval:10*d}}$ ; avec ${{u}}$ {{if:u<=1|unité|unités}}, la collection vaut $\\textcolor{{{color:primary.0}}}{{{eval:10*d+u}}}$.",
+					"On peut poser ${{d}}$ barres et ${{u}}$ {{if:u<=1|petit cube|petits cubes}}, ou remplacer chaque fois $10$ barres par une plaque et $10$ petits cubes par une barre."
+				]
+			}
+		},
+		{
+			"statement": "Construis la collection de $\\textcolor{{{color:primary.0}}}{{{c}}}$ centaines et $\\textcolor{{{color:primary.1}}}{{{d}}}$ dizaines.\n\n```collection\nconstruire: {{eval:100*c+10*d}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "8..9"
+				},
+				{
+					"name": "d",
+					"expression": "10..20"
+				}
+			],
+			"conditions": ["100*c+10*d <= 1000"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{d}}$ dizaines, c'est ${{eval:floor(d/10)}}$ {{if:floor(d/10)<=1|centaine|centaines}}{{if:mod(d,10)!=0| et ${{eval:d-10*floor(d/10)}}$ {{if:d-10*floor(d/10)<=1|dizaine|dizaines}}|}}.",
+					"La collection vaut $\\textcolor{{{color:primary.0}}}{{{eval:100*c+10*d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 c, 15 d, 3 u : 353 posé",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "15",
+				"u": "3"
+			},
+			"answers": ["353"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2153 (bout à bout)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "15",
+				"u": "3"
+			},
+			"answers": ["2153"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 253 (la centaine des 15 dizaines oubliée)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "15",
+				"u": "3"
+			},
+			"answers": ["253"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Collection vide",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "15",
+				"u": "3"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "8 c, 19 d, 9 u : 999",
+			"variationIndex": 0,
+			"variables": {
+				"c": "8",
+				"d": "19",
+				"u": "9"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "17 d, 8 u : 178",
+			"variationIndex": 1,
+			"variables": {
+				"d": "17",
+				"u": "8"
+			},
+			"answers": ["178"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 (17 + 8)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "17",
+				"u": "8"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "23 d, 14 u : 244",
+			"variationIndex": 1,
+			"variables": {
+				"d": "23",
+				"u": "14"
+			},
+			"answers": ["244"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 234 (la dizaine des 14 unités oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "23",
+				"u": "14"
+			},
+			"answers": ["234"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 c, 10 d : 1 000",
+			"variationIndex": 2,
+			"variables": {
+				"c": "9",
+				"d": "10"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 910",
+			"variationIndex": 2,
+			"variables": {
+				"c": "9",
+				"d": "10"
+			},
+			"answers": ["910"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 c, 14 d : 940",
+			"variationIndex": 2,
+			"variables": {
+				"c": "8",
+				"d": "14"
+			},
+			"answers": ["940"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

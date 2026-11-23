@@ -20,12 +20,12 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { Button } from '$lib/components/ui/button';
-	import PiSpiral from '$lib/components/error-page/PiSpiral.svelte';
-	import avatarPereUbu from '$lib/assets/images/avatar-pereubu.png';
-	import { describeError } from '$lib/error-page/error-copy';
-	import { frenchOrdinal, piOccurrence } from '$lib/error-page/pi-status';
-	import { suggestPages } from '$lib/error-page/suggestions';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import PiSpiral from '#lib/components/error-page/PiSpiral.svelte';
+	import avatarPereUbu from '#lib/assets/images/avatar-pereubu.png';
+	import { describeError } from '#lib/error-page/error-copy.ts';
+	import { frenchOrdinal, piOccurrence } from '#lib/error-page/pi-status.ts';
+	import { suggestPages } from '#lib/error-page/suggestions.ts';
 
 	const status = $derived(page.status);
 	const copy = $derived(describeError(status, page.error?.message));
@@ -106,14 +106,14 @@
 
 		<div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start">
 			{#if copy.offerLogin}
-				<Button href={resolve('/auth/login')}>Se connecter</Button>
+				<Button href={resolve('auth/login')}>Se connecter</Button>
 			{:else if copy.offerRetry}
 				<Button onclick={() => location.reload()}>Réessayer</Button>
 			{/if}
 			{#if copy.offerLogin || copy.offerRetry}
-				<a href={resolve('/')} class={secondaryLinkClass}>Retour à l’accueil</a>
+				<a href={resolve('')} class={secondaryLinkClass}>Retour à l’accueil</a>
 			{:else}
-				<Button href={resolve('/')}>Retour à l’accueil</Button>
+				<Button href={resolve('')}>Retour à l’accueil</Button>
 			{/if}
 			{#if canGoBack}
 				<button type="button" class={secondaryLinkClass} onclick={() => history.back()}>

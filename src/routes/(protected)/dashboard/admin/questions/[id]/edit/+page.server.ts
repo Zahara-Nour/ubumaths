@@ -10,17 +10,25 @@
  *
  * RETURNS:
  * - template: QuestionTemplate
+ * - nodes: arbre des notions (nœuds non archivés), pour le champ « Rangé dans »
  */
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { mapDbTemplateToForm } from '$lib/questions/types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { loadTemplateProgrammeTags, type TemplateProgrammeTags } from '$lib/server/programme-tags';
-import { loadNodesWithAncestors } from '$lib/server/programme-tree';
-import { buildTemplateFactSheet, type FactSheetTemplateRow } from '$lib/server/template-fact-sheet';
-import type { TemplateFactSheet } from '$lib/questions/template-fact-sheet';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { mapDbTemplateToForm } from '#lib/questions/types.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import {
+	loadTemplateProgrammeTags,
+	type TemplateProgrammeTags
+} from '#lib/server/programme-tags.ts';
+import { loadActiveNodes } from '#lib/server/classification-nodes.ts';
+import { loadNodesWithAncestors } from '#lib/server/programme-tree.ts';
+import {
+	buildTemplateFactSheet,
+	type FactSheetTemplateRow
+} from '#lib/server/template-fact-sheet.ts';
+import type { TemplateFactSheet } from '#lib/questions/template-fact-sheet.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	// Check admin (real admin login OR step-up elevation)
@@ -47,16 +55,19 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const row = template as unknown as FactSheetTemplateRow;
 	let programmeTags: TemplateProgrammeTags;
 	let factSheet: TemplateFactSheet;
+	let treeNodes: Awaited<ReturnType<typeof loadActiveNodes>>;
 	try {
 		const nodeId = row.classification_node_id ?? null;
-		const [tags, nodes] = await Promise.all([
+		const [tags, nodes, activeNodes] = await Promise.all([
 			loadTemplateProgrammeTags(supabase, {
 				id,
 				grades: row.grades ?? [],
 				classification_node_id: nodeId
 			}),
-			nodeId === null ? Promise.resolve([]) : loadNodesWithAncestors(supabase, [nodeId])
+			nodeId === null ? Promise.resolve([]) : loadNodesWithAncestors(supabase, [nodeId]),
+			loadActiveNodes(supabase)
 		]);
+		treeNodes = activeNodes;
 		programmeTags = tags;
 		factSheet = buildTemplateFactSheet(row, nodes, tags);
 	} catch (err) {
@@ -67,6 +78,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>),
 		templateId: id,
 		programmeTags,
-		factSheet
+		factSheet,
+		nodes: treeNodes
 	};
 };

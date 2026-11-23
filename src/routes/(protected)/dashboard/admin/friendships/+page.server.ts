@@ -1,7 +1,7 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { requireRole } from '$lib/server/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/admin/friendships/+page.server');
 

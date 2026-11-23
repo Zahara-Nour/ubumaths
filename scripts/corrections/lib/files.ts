@@ -32,8 +32,6 @@ const rowSchema = z
 	.object({
 		id: z.string().uuid(),
 		title: z.string(),
-		theme: z.string(),
-		domain: z.string(),
 		level: z.number(),
 		status: z.string(),
 		grades: z.array(z.string()),

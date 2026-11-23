@@ -46,9 +46,6 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Calcul littéral",
-		"domain": "Equations",
-		"subdomain": "Dans $$\\N$$",
 		"level": 4,
 		"status": "draft",
 		"delay": 30,

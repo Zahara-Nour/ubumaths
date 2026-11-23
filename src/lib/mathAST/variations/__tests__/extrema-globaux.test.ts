@@ -45,13 +45,14 @@ describe('extremum global : pas si une limite le dépasse', () => {
 		]);
 	});
 
-	// x² e^{−x} servait d'exemple tant que ses limites en e^… sortaient
-	// « indéterminées » ; le moteur les calcule désormais (0 en +∞). x⁴ e^{−x}
-	// garde une limite inconnue en +∞ (croissance comparée en u⁴ absente).
+	// x² e^{−x}, puis x⁴ e^{−x} (V68), ont servi d'exemple tant que leur
+	// limite en +∞ restait inconnue ; x² e^{−√x} la garde (0 en vrai). Si le
+	// moteur l'apprend, choisir un autre exemple : le test le dit.
 	it('une limite indéterminée interdit de conclure « global »', () => {
-		const result = study('x^4*e^(-x)');
+		const result = study('x^2*e^(-sqrt(x))');
 		const unknown = (result.boundaryLimits ?? []).some((l) => l.limit === 'indeterminate');
-		if (unknown) expect(result.extrema.every((e) => e.type.startsWith('local_'))).toBe(true);
+		expect(unknown).toBe(true);
+		expect(result.extrema.every((e) => e.type.startsWith('local_'))).toBe(true);
 	});
 });
 
@@ -69,5 +70,9 @@ describe('extremum global atteint : conservé', () => {
 
 	it('x² e^{−x} : minimum global 0, maximum LOCAL en 2 (f → +∞ en −∞)', () => {
 		expect(extrema('x^2*e^(-x)')).toEqual(['global_minimum@0', 'local_maximum@2']);
+	});
+
+	it('x⁴ e^{−x} : minimum global 0, maximum LOCAL en 4 (limite 0 en +∞, V68)', () => {
+		expect(extrema('x^4*e^(-x)')).toEqual(['global_minimum@0', 'local_maximum@4']);
 	});
 });

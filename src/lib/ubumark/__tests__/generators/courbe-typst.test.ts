@@ -6,7 +6,7 @@ import { parseCourbeContent } from '../../parser/courbe-parser';
 import { buildCourbeScene } from '../../utils/courbe-scene';
 import { generateCourbeTypst } from '../../generators/courbe-typst';
 import { generateTypst } from '../../generators/typst-generator';
-import { parseMarkdown } from '$lib/ubumark';
+import { parseMarkdown } from '#lib/ubumark/index.ts';
 
 const SOURCE = `x: -4 ; 6
 y: -8 ; 12
@@ -85,5 +85,65 @@ describe('courbe → Typst', () => {
 		expect(count(out, /^\s*\/\/ trace /gm)).toBe(
 			scene.curves.reduce((n, c) => n + c.polylines.length, 0)
 		);
+	});
+});
+
+describe('courbe → Typst : titres d’axes et points à placer', () => {
+	const BASE = 'x: -5 ; 5\ny: -4 ; 4\nplacer: A=(2 ; 3) ; B=(-1 ; 2)';
+
+	it('titres d’axes : un texte par axe, jamais interprété comme du balisage', () => {
+		const node = parseCourbeContent(
+			'x: 0 ; 10\ny: 0 ; 40\naxes: x = Durée (min) ; y = Temp. #1 [°C]'
+		);
+		const out = generateCourbeTypst(node);
+		expect(out).toContain('// titre axe x');
+		expect(out).toContain('text(size: 7.5pt, "Durée (min)")');
+		expect(out).toContain('"Temp. #1 [°C]"');
+	});
+
+	it('titre de l’axe y : à gauche de l’axe quand il est au bord droit (fenêtre toute négative)', () => {
+		const out = generateCourbeTypst(
+			parseCourbeContent('x: -10 ; -2\ny: 0 ; 4\naxes: y = Température (°C)')
+		);
+		expect(out).toMatch(/anchor: "south-east", text\(size: 7\.5pt, "Température \(°C\)"\)/);
+	});
+
+	it('sans axes: aucun titre', () => {
+		const out = generateCourbeTypst(parseCourbeContent('x: 0 ; 10\ny: 0 ; 40'));
+		expect(out).not.toContain('titre axe');
+	});
+
+	it('énoncé : le repère sans les points à placer', () => {
+		const out = generateCourbeTypst(parseCourbeContent(BASE));
+		expect(out).not.toContain('// solution');
+		expect(count(out, /^\s*\/\/ point /gm)).toBe(0);
+	});
+
+	it('corrigé : un point par cible, nommé', () => {
+		const out = generateCourbeTypst(parseCourbeContent(BASE), { solved: true });
+		expect(count(out, /^\s*\/\/ solution /gm)).toBe(2);
+		expect(out).toContain('[A]');
+		expect(out).toContain('[B]');
+	});
+
+	it('droite à tracer : énoncé vide, corrigé = la droite et deux de ses nœuds', () => {
+		const source = 'x: -5 ; 5\ny: -5 ; 5\ngrille: 1\ntracer: y = 2x - 1';
+		expect(generateCourbeTypst(parseCourbeContent(source))).not.toContain('// solution');
+		const out = generateCourbeTypst(parseCourbeContent(source), { solved: true });
+		expect(count(out, /^\s*\/\/ solution droite/gm)).toBe(1);
+		// Segment de (-2 ; -5) à (3 ; 5) dans un cadre de la fenêtre [-5 ; 5]²
+		expect(out).toMatch(/line\(\([\d.]+, 0\), \([\d.]+, [\d.]+\), stroke: 1pt/);
+		expect(count(out, /circle\([^)]*\), radius: 0\.06/g)).toBe(2);
+	});
+
+	it('vecteur à tracer : énoncé avec A seul, corrigé = la flèche depuis A', () => {
+		const source =
+			'x: -5 ; 5\ny: -5 ; 5\ngrille: 1\npoints: A(-1;2)\ntracer: vecteur (3 ; -2) depuis A';
+		const statement = generateCourbeTypst(parseCourbeContent(source));
+		expect(statement).not.toContain('// solution');
+		expect(statement).toContain('[A]');
+		const out = generateCourbeTypst(parseCourbeContent(source), { solved: true });
+		expect(count(out, /^\s*\/\/ solution vecteur/gm)).toBe(1);
+		expect(out).toMatch(/line\([^\n]*mark: \(end: ">"/);
 	});
 });

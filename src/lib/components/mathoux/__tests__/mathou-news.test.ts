@@ -5,7 +5,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fetchMathouNews } from '../mathou-news';
-import { NO_NEWS, type MathouNews } from '$lib/mathoux/news';
+import { NO_NEWS, type MathouNews } from '#lib/mathoux/news.ts';
 
 const NEWS: MathouNews = {
 	firstVisit: false,

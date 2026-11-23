@@ -27,11 +27,11 @@ import type {
 	CourbeWindow
 } from '../types/courbe';
 import { COURBE_LIMITS, courbeRangeProblem } from '../types/courbe';
-import type { ContentLocale } from '$lib/types/locale';
-import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
-import { sampleFunction } from '$lib/geometry-core/viewport/sampler';
-import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { computeCobwebPath, createRecurrenceFunctionEvaluator } from '$lib/grapheur/sequence';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { createSafeEvaluator } from '#lib/mathAST/eval/compile.ts';
+import { sampleFunction } from '#lib/geometry-core/viewport/sampler.ts';
+import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
+import { computeCobwebPath, createRecurrenceFunctionEvaluator } from '#lib/grapheur/sequence.ts';
 
 // ============================================================================
 // TYPES
@@ -109,9 +109,13 @@ export interface CourbeScene {
 	endpoints: SceneEndpoint[];
 	sequences: SceneSequence[];
 	points: { name: string; x: number; y: number }[];
+	/** Vecteurs donnés (`vecteurs:`) : flèches entre points de la fenêtre, nom '' sans nom */
+	vectors: { name: string; from: ScenePoint; to: ScenePoint }[];
 	asymptotes: { from: ScenePoint; to: ScenePoint }[];
 	areas: { color: CourbeColor; polygon: ScenePoint[] }[];
 	tangents: SceneTangent[];
+	/** Courbe de données (`données:`) : ligne brisée découpée à la fenêtre, repères des points visibles */
+	data: { polylines: ScenePoint[][]; marks: ScenePoint[] };
 	curveLabels: { label: CourbeLabel; x: number; y: number; color: CourbeColor }[];
 	ariaLabel: string;
 	warnings: CourbeIssue[];
@@ -134,6 +138,15 @@ export const COURBE_PIXEL_WIDTH: Record<CourbeSize, number> = {
 };
 
 const ASPECT_RATIO = 3 / 4;
+
+/** Marge autour du cadre à l'écran, en px, pour les graduations et les titres d'axes */
+export const COURBE_PAD = 26;
+
+/** Cadre de la figure à l'écran, en px (la fenêtre de l'auteur le remplit) */
+export function courbeFrame(size: CourbeSize): { width: number; height: number } {
+	const width = COURBE_PIXEL_WIDTH[size] ?? COURBE_PIXEL_WIDTH.moyenne;
+	return { width, height: width * ASPECT_RATIO };
+}
 
 /** Écart visé entre deux lignes de grille automatiques, en px */
 const AUTO_GRID_TARGET_PX = 40;
@@ -210,6 +223,28 @@ function piTickLabel(k: number, ratio: { p: number; q: number }): string {
 	const n = Math.abs(num);
 	const head = n === 1 ? 'π' : `${n}π`;
 	return den === 1 ? `${sign}${head}` : `${sign}${head}/${den}`;
+}
+
+/**
+ * Pas de la grille, par axe : `grille:` de l'auteur, sinon le pas automatique,
+ * calculé sur la taille FIXE de la figure (jamais sur sa largeur à l'écran) :
+ * les nœuds où l'élève pose ses points (`placer:`) sont les mêmes partout.
+ */
+export function courbeGridSteps(spec: Pick<CourbeSpec, 'window' | 'grid' | 'size'>): {
+	x: number;
+	y: number;
+} {
+	const width = COURBE_PIXEL_WIDTH[spec.size] ?? COURBE_PIXEL_WIDTH.moyenne;
+	const height = width * ASPECT_RATIO;
+	const w = spec.window;
+	return {
+		x:
+			spec.grid?.x ??
+			computeGridStep(width / (w.xMax - w.xMin), { targetPx: AUTO_GRID_TARGET_PX }).major,
+		y:
+			spec.grid?.y ??
+			computeGridStep(height / (w.yMax - w.yMin), { targetPx: AUTO_GRID_TARGET_PX }).major
+	};
 }
 
 /** Multiples entiers du pas compris dans [min ; max] (aussi la grille du bloc ```figure) */
@@ -502,6 +537,12 @@ function defaultAriaLabel(spec: CourbeSpec): string {
 	const cloudNames = sequences.filter((s) => !s.staircase).map((s) => s.name);
 	const staircaseNames = sequences.filter((s) => s.staircase).map((s) => s.name);
 	const parts: string[] = [];
+	// Courbe de données : les valeurs elles-mêmes (sans elles, la question ne se lit pas)
+	if (spec.donnees) {
+		const given = spec.donnees.points.slice(0, COURBE_LIMITS.dataPoints);
+		const values = given.map((p) => `(${formatTick(p.x)} ; ${formatTick(p.y)})`).join(', ');
+		parts.push(`courbe de données de ${given.length} points : ${values}`);
+	}
 	if (names.length > 0) {
 		parts.push(`${names.length === 1 ? 'courbe de' : 'courbes de'} ${joinNames(names)}`);
 	}
@@ -541,9 +582,11 @@ function emptyScene(spec: CourbeSpec, width: number, height: number, message: st
 		endpoints: [],
 		sequences: [],
 		points: [],
+		vectors: [],
 		asymptotes: [],
 		areas: [],
 		tangents: [],
+		data: { polylines: [], marks: [] },
 		curveLabels: [],
 		ariaLabel: spec.description ?? 'Figure indisponible',
 		warnings: [{ message }]
@@ -573,12 +616,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 	const warnings: CourbeIssue[] = [];
 
 	// Grille : donnée par l'auteur, sinon calculée par axe (repère anisotrope).
-	const xStep =
-		spec.grid?.x ??
-		computeGridStep(width / (w.xMax - w.xMin), { targetPx: AUTO_GRID_TARGET_PX }).major;
-	const yStep =
-		spec.grid?.y ??
-		computeGridStep(height / (w.yMax - w.yMin), { targetPx: AUTO_GRID_TARGET_PX }).major;
+	const { x: xStep, y: yStep } = courbeGridSteps(spec);
 	const xs = multiples(xStep, w.xMin, w.xMax);
 	const ys = multiples(yStep, w.yMin, w.yMax);
 
@@ -630,6 +668,15 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 				line: p.line
 			});
 		}
+	}
+
+	// Vecteurs donnés : entre deux points dessinés (un bout hors fenêtre : pas de flèche)
+	const vectors: CourbeScene['vectors'] = [];
+	for (const v of (spec.vecteurs ?? []).slice(0, COURBE_LIMITS.vectors)) {
+		const from = points.find((p) => p.name === v.from);
+		const to = points.find((p) => p.name === v.to);
+		if (from === undefined || to === undefined) continue;
+		vectors.push({ name: v.name, from: { x: from.x, y: from.y }, to: { x: to.x, y: to.y } });
 	}
 
 	// Positions à éviter : points nommés ET noms déjà placés (sinon deux courbes proches
@@ -782,6 +829,26 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		});
 	}
 
+	// Courbe de données : segments coupés au bord, repère seulement pour un point de la fenêtre
+	const data: CourbeScene['data'] = { polylines: [], marks: [] };
+	if (input.donnees) {
+		const given = input.donnees.points.slice(0, COURBE_LIMITS.dataPoints);
+		data.polylines = clipPolyline(given, w);
+		data.marks = given
+			.filter((p) => inside(p.x, p.y))
+			.map((p) => ({ x: clean(p.x), y: clean(p.y) }));
+		if (data.marks.length < given.length) {
+			const hidden = given.length - data.marks.length;
+			warnings.push({
+				message:
+					hidden === 1
+						? `Ligne ${input.donnees.line} : 1 point de données est hors de la fenêtre, la courbe est coupée au bord`
+						: `Ligne ${input.donnees.line} : ${hidden} points de données sont hors de la fenêtre, la courbe est coupée au bord`,
+				line: input.donnees.line
+			});
+		}
+	}
+
 	return {
 		window: { ...w },
 		pixelSize: { width, height },
@@ -793,9 +860,11 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		endpoints,
 		sequences,
 		points,
+		vectors,
 		asymptotes,
 		areas,
 		tangents,
+		data,
 		curveLabels,
 		ariaLabel: spec.description ?? defaultAriaLabel(spec),
 		warnings

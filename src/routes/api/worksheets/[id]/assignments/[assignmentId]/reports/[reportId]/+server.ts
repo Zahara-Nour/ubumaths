@@ -7,25 +7,25 @@
  * PUT - Review an error report (mark as fixed/rejected with optional response)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
-import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
+import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
+import { isStudentOfAssignment } from '#lib/server/worksheets/assignment-recipients.ts';
 import {
 	validateErrorReportParams,
 	validateReviewErrorReport,
 	reviewErrorReportResponseSchema,
 	getErrorReportDetailResponseSchema
-} from '$lib/server/validation/worksheets';
-import { validateJsonResponse } from '$lib/server/validation/response-utils';
+} from '#lib/server/validation/worksheets.ts';
+import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
 import {
 	notifyErrorReportValidated,
 	notifyErrorReportRejected
-} from '$lib/server/auto-notifications';
-import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
-import { toJson } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/auto-notifications.ts';
+import type { TeacherErrorReportView, ErrorReportStatus } from '#lib/types/worksheets.ts';
+import { toJson } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+server'
@@ -258,7 +258,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			'GET /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -614,7 +614,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			'PUT /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]'
 		);
 
-		return json(validated);
+		return Response.json(validated);
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

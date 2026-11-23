@@ -1,11 +1,12 @@
 <script lang="ts">
+	import SeoHead from '#lib/seo/SeoHead.svelte';
 	/**
 	 * 2048 Game Page
 	 * Educational math game where players combine powers of 2
 	 */
 	import Game2048 from './Game2048.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Trophy } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
@@ -15,13 +16,10 @@
 	let showRules = $state(false);
 </script>
 
-<svelte:head>
-	<title>2048 - Chiphre</title>
-	<meta
-		name="description"
-		content="Jeu 2048 éducatif - Apprenez les puissances de 2 en vous amusant !"
-	/>
-</svelte:head>
+<SeoHead
+	title="2048 : le jeu des puissances de 2 | Chiphre"
+	description="Fusionne les tuiles pour atteindre 2048 : un jeu pour apprivoiser les puissances de 2."
+/>
 
 <div class="container mx-auto max-w-3xl px-4 py-8">
 	<!-- Titre de la page pour les lecteurs d'écran (la bannière en tient lieu à l'écran) -->

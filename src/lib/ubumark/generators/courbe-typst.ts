@@ -16,9 +16,18 @@
  * @module ubumark/generators/courbe-typst
  */
 
-import { COURBE_COLORS, type CourbeLabel, type CourbeNode, type CourbeSize } from '../types/courbe';
-import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
+import {
+	COURBE_COLORS,
+	COURBE_DATA_COLOR,
+	type CourbeLabel,
+	type CourbeNode,
+	type CourbeSize
+} from '../types/courbe';
+import { namedColorTable, namedColorTypst } from '#lib/theme/named-colors.ts';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
+import { solutionLine } from '../utils/courbe-tracer';
+import { solutionVector } from '../utils/courbe-vecteur';
+import { constructionTraces } from '../utils/courbe-combinaison';
 
 // ============================================================================
 // CONFIGURATION
@@ -27,6 +36,12 @@ import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
 export interface CourbeTypstOptions {
 	/** Langue du document : séparateur décimal des graduations */
 	language?: string;
+	/**
+	 * Corrigé : les points à placer (`placer:`), la droite à tracer (`tracer:`)
+	 * et deux de ses nœuds, ou la flèche du vecteur à tracer, sont dessinés. Sans cette option (énoncé), le repère
+	 * reste vide : l'élève fait ses croix.
+	 */
+	solved?: boolean;
 }
 
 /** Largeur du cadre en cm ; une colonne de fiche fait ~8,7 cm. Partagée avec les diagrammes statistiques. */
@@ -48,6 +63,11 @@ const UNAVAILABLE =
 // AIDE
 // ============================================================================
 
+/** Texte libre (titre d'axe) en chaîne Typst : jamais interprété comme du balisage */
+function typstString(text: string): string {
+	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
 function fmt(n: number): string {
 	const s = n.toFixed(3).replace(/\.?0+$/, '');
 	return s === '-0' || s === '' ? '0' : s;
@@ -64,6 +84,9 @@ function labelToTypst(label: CourbeLabel): string {
 // ============================================================================
 // GÉNÉRATEUR
 // ============================================================================
+
+/** Écart du nom d'un vecteur donné à sa flèche, en cm */
+const VECTOR_LABEL_GAP = 0.22;
 
 export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOptions = {}): string {
 	if (!node.spec) return UNAVAILABLE;
@@ -120,6 +143,23 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		`  line((${ay}, 0), (${ay}, ${fmt(H + 0.35)}), stroke: 0.6pt, mark: (end: ">", fill: black))`
 	);
 
+	// Titres des axes (`axes:`) : au bout de chaque axe, du côté des flèches
+	const titles = node.spec.axisTitles;
+	if (titles?.x) {
+		lines.push('  // titre axe x');
+		lines.push(
+			`  content((${fmt(W)}, ${fmt(Number(ax) + 0.08)}), anchor: "south-east", text(size: 7.5pt, ${typstString(titles.x)}))`
+		);
+	}
+	if (titles?.y) {
+		lines.push('  // titre axe y');
+		// Axe y dans la moitié droite (fenêtre toute négative) : titre à sa gauche, sinon il sort du cadre
+		const right = Number(ay) > W / 2;
+		lines.push(
+			`  content((${fmt(Number(ay) + (right ? -0.1 : 0.1))}, ${fmt(H + 0.3)}), anchor: "${right ? 'south-east' : 'south-west'}", text(size: 7.5pt, ${typstString(titles.y)}))`
+		);
+	}
+
 	// Graduations
 	lines.push('  // graduations');
 	for (const t of scene.ticks.x) {
@@ -163,6 +203,20 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 				`  line(${path(poly)}, stroke: (paint: ${TYPST_COLORS[curve.color]}, thickness: 1.1pt, join: "round"${dash}))`
 			);
 		}
+	}
+
+	// Courbe de données : ligne brisée, un disque par point visible
+	for (const poly of scene.data.polylines) {
+		lines.push('  // données');
+		lines.push(
+			`  line(${path(poly)}, stroke: (paint: ${TYPST_COLORS[COURBE_DATA_COLOR]}, thickness: 1.1pt, join: "round"))`
+		);
+	}
+	for (const p of scene.data.marks) {
+		lines.push('  // point de données');
+		lines.push(
+			`  circle(${P(p)}, radius: 0.06, fill: ${TYPST_COLORS[COURBE_DATA_COLOR]}, stroke: none)`
+		);
 	}
 
 	// Tangentes : droite en pointillés (couleur de la courbe) et point de contact
@@ -241,6 +295,67 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		lines.push(
 			`  content((${fmt(Number(X(p.x)) + 0.08)}, ${fmt(Number(Y(p.y)) + 0.08)}), anchor: "south-west", text(size: 8pt, style: "italic")[${p.name}])`
 		);
+	}
+
+	// Vecteurs donnés : flèche noire, nom en italique près du milieu, à gauche du sens
+	for (const v of scene.vectors) {
+		lines.push(`  // vecteur ${v.name}`);
+		lines.push(
+			`  line(${P(v.from)}, ${P(v.to)}, stroke: 0.8pt + black, mark: (end: ">", fill: black))`
+		);
+		if (v.name === '') continue;
+		const dx = Number(X(v.to.x)) - Number(X(v.from.x));
+		const dy = Number(Y(v.to.y)) - Number(Y(v.from.y));
+		const length = Math.hypot(dx, dy);
+		const mx = (Number(X(v.from.x)) + Number(X(v.to.x))) / 2 - (dy / length) * VECTOR_LABEL_GAP;
+		const my = (Number(Y(v.from.y)) + Number(Y(v.to.y))) / 2 + (dx / length) * VECTOR_LABEL_GAP;
+		lines.push(`  content((${fmt(mx)}, ${fmt(my)}), text(size: 8pt, style: "italic")[${v.name}])`);
+	}
+
+	// Corrigé : les points attendus (jamais dans l'énoncé)
+	if (options.solved) {
+		for (const t of node.spec.placer ?? []) {
+			const color = TYPST_COLORS.vert;
+			lines.push(`  // solution ${t.name}`);
+			lines.push(`  circle(${P(t)}, radius: 0.06, fill: ${color}, stroke: none)`);
+			if (t.name !== '') {
+				lines.push(
+					`  content((${fmt(Number(X(t.x)) + 0.08)}, ${fmt(Number(Y(t.y)) + 0.08)}), anchor: "south-west", text(size: 8pt, style: "italic", fill: ${color})[${t.name}])`
+				);
+			}
+		}
+		const vecteur = node.spec.vecteur;
+		const arrow = vecteur?.coords
+			? solutionVector(node.spec, vecteur.coords, null, vecteur.origin)
+			: null;
+		if (arrow) {
+			const color = TYPST_COLORS.vert;
+			for (const t of vecteur?.terms
+				? constructionTraces(node.spec, vecteur.terms, arrow.from)
+				: []) {
+				lines.push('  // construction');
+				const mark = t.arrow ? `, mark: (end: ">", fill: ${color})` : '';
+				lines.push(
+					`  line(${P(t.from)}, ${P(t.to)}, stroke: (paint: ${color}, thickness: 0.6pt, dash: "dashed")${mark})`
+				);
+			}
+			lines.push('  // solution vecteur');
+			lines.push(
+				`  line(${P(arrow.from)}, ${P(arrow.to)}, stroke: 1pt + ${color}, mark: (end: ">", fill: ${color}))`
+			);
+		}
+		const tracer = node.spec.tracer;
+		const solution = tracer ? solutionLine(node.spec, tracer.equation) : null;
+		if (solution) {
+			const color = TYPST_COLORS.vert;
+			lines.push('  // solution droite');
+			lines.push(
+				`  line(${P(solution.segment[0])}, ${P(solution.segment[1])}, stroke: 1pt + ${color})`
+			);
+			for (const p of solution.points) {
+				lines.push(`  circle(${P(p)}, radius: 0.06, fill: ${color}, stroke: none)`);
+			}
+		}
 	}
 
 	// Noms des courbes

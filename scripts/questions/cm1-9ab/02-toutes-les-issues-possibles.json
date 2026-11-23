@@ -1,0 +1,225 @@
+{
+	"id": "5081e180-a313-4003-b57a-3f51316b93d5",
+	"title": "Toutes les issues possibles",
+	"description": "Compter ou cocher les issues d'un dé, d'une pièce, d'un sac de boules de trois couleurs (le nombre de boules n'est pas le nombre d'issues)",
+	"grades": ["CM1", "CM2"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==0|On lance un dé à $6$ faces numérotées de $1$ à $6$ et on note le nombre obtenu.|{{if:k==1|On lance une pièce de monnaie et on note la face du dessus.|Un sac contient ${{a}}$ boules rouges, ${{b}}$ boules bleues et ${{c}}$ boules vertes. On tire une boule sans regarder et on note sa couleur.}}}}\n\nCombien y a-t-il d'issues possibles ?\n\nIl y en a $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(1-min(abs(k-0),1))*6+(1-min(abs(k-1),1))*2+(1-min(abs(k-2),1))*3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **issue**, c'est un résultat possible de l'expérience.",
+					"{{if:k==0|Le dé peut montrer $1$, $2$, $3$, $4$, $5$ ou $6$.|{{if:k==1|La pièce peut tomber sur pile ou sur face.|On note la couleur : la boule tirée peut être rouge, bleue ou verte. Le nombre de boules ne change pas les couleurs possibles.}}}}",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{n}}}$ issues possibles."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{a}}$ boules rouges, ${{b}}$ boules bleues et ${{c}}$ boules vertes. On tire une boule sans regarder et on note sa couleur.\n\nCoche toutes les issues possibles.\n\n```choix\nplusieurs: oui\n- une boule rouge\n- une boule bleue\n- une boule verte\n- une boule jaune\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le sac, il n'y a que des boules rouges, bleues et vertes.",
+					"Issues possibles : $\\textcolor{{{color:primary.0}}}{\\text{rouge, bleue, verte}}$. Il n'y a pas de boule jaune : tirer une boule jaune est impossible."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé à $6$ faces numérotées de $1$ à $6$.\n\nCoche les nombres qu'on peut obtenir.\n\n```choix\nplusieurs: oui\n- ${{x}}$\n- ${{y}}$\n- $0$\n- $7$\n- $10$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..3"
+				},
+				{
+					"name": "y",
+					"expression": "4..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les faces du dé portent les nombres de $1$ à $6$ : ce sont les seules issues.",
+					"On peut obtenir $\\textcolor{{{color:primary.0}}}{{{x}}}$ et $\\textcolor{{{color:primary.0}}}{{{y}}}$. On ne peut obtenir ni $0$, ni $7$, ni $10$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé : 6 issues",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"b": "2",
+				"c": "4",
+				"n": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pièce : 2 issues",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "2",
+				"c": "4",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sac : 3 couleurs",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "2",
+				"c": "4",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sac, 9 (les boules comptées)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "2",
+				"c": "4",
+				"n": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rouge, bleue, verte",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : jaune cochée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Verte oubliée : partiel",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Dé : 2 et 5",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 coché",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"y": "5"
+			},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

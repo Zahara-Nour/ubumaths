@@ -1,6 +1,6 @@
 /**
  * Bloc ```figure-a-completer — lecture (phase 0 de CP-059 validée le 2026-10-25,
- * `docs/wip/geometrie-validation-progress.md` § 3 et § 4)
+ * `docs/archive/wip/geometrie-validation-progress.md` § 3 et § 4)
  *
  * Le bloc est une figure de départ (même en-tête, même langage que ```figure)
  * plus ses lignes à lui : `outils:`, `verifier:` et `case:` (posée par le
@@ -71,7 +71,13 @@ describe('construction — lecture du bloc', () => {
 				'A = point(1, 2)'
 			)
 		);
-		expect(node.construction?.checks.map((c) => c.points)).toEqual([
+		expect(
+			node.construction?.checks.map((c) =>
+				c.kind === 'point' || c.kind === 'droite' || c.kind === 'cercle' || c.kind === 'segment'
+					? null
+					: c.points
+			)
+		).toEqual([
 			['A', 'B'],
 			['C', 'D']
 		]);
@@ -104,15 +110,19 @@ describe('construction — erreurs situées', () => {
 	it('outil inconnu', () => {
 		expect(
 			messages(
-				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: compas', 'verifier: droite_par A ; B', '---')
+				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: crayon', 'verifier: droite_par A ; B', '---')
 			)
-		).toContain('Ligne 2 : outil « compas » inconnu (droite, segment)');
+		).toContain(
+			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur, regle)'
+		);
 	});
 
 	it('vérification inconnue', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
-		).toContain('Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle)');
+		).toContain(
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle, angle, mesure, segment)'
+		);
 	});
 
 	it('droite_par attend deux points', () => {
@@ -181,22 +191,24 @@ describe('carré et rectangle sur quadrillage (CP-060, § 7 et § 9)', () => {
 
 	it('carre attend deux points, rectangle trois, tous différents', () => {
 		expect(messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A', '---'))).toContain(
-			'Ligne 2 : carre attend deux points : « carre A ; B »'
+			'Ligne 2 : carre attend deux points : « carre A ; B » (sur papier uni : « carre A ; B ; C ; D »)'
 		);
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B', '---'))
-		).toContain('Ligne 2 : rectangle attend trois points : « rectangle A ; B ; C »');
+		).toContain(
+			'Ligne 2 : rectangle attend trois points : « rectangle A ; B ; C » (sur papier uni : « rectangle A ; B ; C ; D : BC = 3 cm »)'
+		);
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B ; A', '---'))
 		).toContain('Ligne 2 : rectangle attend trois points différents');
 	});
 
-	it('un seul outil par bloc', () => {
+	it('un seul outil par bloc (plusieurs : seulement les instruments du point ou du symétrique)', () => {
 		expect(
 			messages(
 				block('fenetre: 0 ; 10 ; 0 ; 7', 'outils: droite, segment', 'verifier: carre A ; B', '---')
 			)
-		).toContain('Ligne 2 : un seul outil par figure');
+		).toContain('Ligne 3 : carre : un seul outil par figure (outils: segment)');
 	});
 
 	it('l’outil va avec la vérification', () => {
@@ -229,6 +241,63 @@ describe('carré et rectangle sur quadrillage (CP-060, § 7 et § 9)', () => {
 				block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A ; B', 'verifier: carre C ; D', '---')
 			)
 		).toContain('Ligne 3 : un seul carré ou rectangle par figure');
+	});
+});
+
+describe('symétrique (chantier `controles-figure`, lot 1, 2026-11-02)', () => {
+	const messages = (markdown: string) => firstNode(markdown).errors.map((e) => e.message);
+
+	it('`symetrique par d` : tout le tracé sauf l’axe, outil segment', () => {
+		const node = firstNode(
+			block('fenetre: 0 ; 12 ; 0 ; 8', 'grille: 1', 'verifier: symetrique par d', '---')
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.construction).toEqual({
+			tools: ['segment'],
+			checks: [{ kind: 'symetrique', by: 'd', line: 3 }]
+		});
+	});
+
+	it('`symétrique A ; B ; C par O` : accent admis, points listés', () => {
+		const node = firstNode(
+			block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symétrique A ; B ; C par O', '---')
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.construction?.checks).toEqual([
+			{ kind: 'symetrique', by: 'O', points: ['A', 'B', 'C'], line: 2 }
+		]);
+	});
+
+	it('`par` manquant, ou sans nom', () => {
+		const expected = 'Ligne 2 : symetrique attend un axe ou un centre : « symetrique par d »';
+		expect(messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique d', '---'))).toContain(
+			expected
+		);
+		expect(messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique par', '---'))).toContain(
+			expected
+		);
+	});
+
+	it('points listés : deux au moins, tous différents', () => {
+		expect(
+			messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique A par d', '---'))
+		).toContain('Ligne 2 : symetrique attend deux points au moins : « symetrique A ; B par d »');
+		expect(
+			messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique A ; A par d', '---'))
+		).toContain('Ligne 2 : symetrique attend des points différents');
+	});
+
+	it('un seul symétrique par figure, jamais mêlé à un carré', () => {
+		expect(
+			messages(
+				block(
+					'fenetre: 0 ; 12 ; 0 ; 8',
+					'verifier: symetrique par d',
+					'verifier: carre A ; B',
+					'---'
+				)
+			)
+		).toContain('Ligne 3 : un seul carré, rectangle ou symétrique par figure');
 	});
 });
 

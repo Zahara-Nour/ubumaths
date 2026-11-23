@@ -8,7 +8,7 @@
  * serveur (`grading.ts`) et celle de l'élève (`answer-validator.ts`) l'appellent
  * EN PREMIER, et aucune autre règle (cases vides, appariement libre, « figure
  * vide → 0 », « Tu n'as pas tout complété ») ne voit la figure de travail
- * (décision de David, 2026-10-26, `docs/wip/figure-et-choix-progress.md` § 2.9).
+ * (décision de David, 2026-10-26, `docs/archive/wip/figure-et-choix-progress.md` § 2.9).
  *
  * @module questions/graded-part
  */

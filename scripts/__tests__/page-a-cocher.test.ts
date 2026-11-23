@@ -1,0 +1,943 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { lireLot } from '../lib/lot-questions';
+import {
+	assemblerPage,
+	cheminDuNoeud,
+	dessinerBlocs,
+	exemplesDuModele,
+	ficheDuModele,
+	HTML,
+	type Fiche,
+	type InfosEnBase
+} from '../lib/page-a-cocher';
+
+const LOT = lireLot('tests/fixtures/lot-questions');
+const modele = (fichier: string) => {
+	const m = LOT.find((x) => x.fichier === fichier);
+	if (!m) throw new Error(fichier);
+	return m.modele;
+};
+const BASE: InfosEnBase = {
+	id: 'ded05f7c-555c-4eec-aeeb-5cf04dbfab44',
+	statut: 'draft',
+	niveau: 1,
+	rangement: 'Nombres et calculs > Entiers : numération > dénombrement',
+	codes: ['CP-002']
+};
+const BORNES = {
+	'CP-002': {
+		libelle: 'Lire et écrire les nombres.',
+		bornes: [{ borne: 'Nombres jusqu’à 100.' }],
+		remarque: 'Cardinal ≤ 100.'
+	}
+};
+/** Le gabarit découpe l'énoncé aux lignes vides : un dessin n'en contient jamais */
+const surUneLigne = (md: string) =>
+	md
+		.split('\n')
+		.filter((l) => l.startsWith(HTML))
+		.every((l) => !l.slice(HTML.length).includes('\n'));
+
+describe('dessinerBlocs', () => {
+	it('monnaie à plusieurs ensembles : une figure légendée par ensemble', () => {
+		const r = dessinerBlocs(
+			'Qui ?\n\n```monnaie\npièces: 2×2 2×1 ; 1×2 2×1\nlégendes: Léa ; Tom\n```'
+		);
+		expect(r.markdown.startsWith(`Qui ?\n\n${HTML}<div class="m-bloc">`)).toBe(true);
+		expect(r.markdown.match(/<figure class="m-fig">/g)).toHaveLength(2);
+		expect(r.markdown).toContain('<figcaption>Léa</figcaption>');
+		expect(r.markdown).toContain('<figcaption>Tom</figcaption>');
+		// 2 + 1 pièces de 2 € (anneau), 2 + 2 pièces de 1 €
+		expect(r.markdown.match(/class="m-anneau"/g)).toHaveLength(3);
+		expect(r.solutions).toEqual([]);
+		expect(r.nonDessines).toEqual([]);
+	});
+
+	it('taille: du bloc : la largeur suit, comme --monnaie-taille dans l’appli', () => {
+		const defaut = dessinerBlocs('```monnaie\nbillets: 1×10\n```').markdown;
+		const quatre = dessinerBlocs('```monnaie\nbillets: 1×10\ntaille: 4cm\n```').markdown;
+		expect(defaut).toMatch(/width:calc\(8cm \* /);
+		expect(quatre).toMatch(/width:calc\(4cm \* /);
+	});
+
+	it('monnaie sans légende et à un seul ensemble : pas de légende A', () => {
+		const r = dessinerBlocs('```monnaie\nbillets: 1×10\n```');
+		expect(r.markdown).not.toContain('figcaption');
+		expect(r.markdown).toContain('class="m-billet"');
+	});
+
+	it('partage : une part par polygone, « gris: 2 » = deux parts coloriées', () => {
+		const r = dessinerBlocs('```partage\nforme: bande 4\ngris: 2\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown.match(/class="p-part/g)).toHaveLength(4);
+		expect(r.markdown.match(/p-coloriee/g)).toHaveLength(2);
+	});
+
+	it('partage à colorier : la figure vide, puis un coloriage juste', () => {
+		const r = dessinerBlocs('```partage\nforme: disque 8\ncolorier: 3/8\ncase: 0\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('À colorier : 3/8');
+		expect(r.markdown).toContain('Un coloriage juste : 3 parts sur 8');
+		// 8 parts vides, puis 8 parts dont 3 coloriées
+		expect(r.markdown.match(/class="p-part/g)).toHaveLength(16);
+		expect(r.markdown.match(/p-coloriee/g)).toHaveLength(3);
+	});
+
+	it('solide : arêtes en traits, cachées en tirets, nom accessible sans le nom du solide', () => {
+		const r = dessinerBlocs('```solide\nforme: cube 3\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('class="s-dessin"');
+		// 12 arêtes d'un cube, dont 3 cachées
+		expect(r.markdown.match(/<polyline class="s-trait/g)).toHaveLength(12);
+		expect(r.markdown.match(/s-cache/g)).toHaveLength(3);
+		expect(r.markdown).not.toMatch(/aria-label="[^"]*cube/i);
+	});
+
+	it('cubes : un cube seul = trois faces (dessus, devant, côté)', () => {
+		const r = dessinerBlocs('```cubes\nhauteurs: 1\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('class="c-dessin"');
+		expect(r.markdown.match(/class="c-face c-dessus"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="c-face c-devant"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="c-face c-cote"/g)).toHaveLength(1);
+		expect(r.avertissements).toEqual([]);
+	});
+
+	it('cubes à énoncé masqué : les vues données sont signalées', () => {
+		const r = dessinerBlocs('```cubes\nhauteurs: ? 1\nvues: face 1 1\nretrouver: face\n```');
+		expect(r.markdown).toContain('class="c-dessin"');
+		expect(r.avertissements).toHaveLength(1);
+	});
+
+	it('cubes avec un geste : la perspective dessinée, le geste signalé', () => {
+		const r = dessinerBlocs('```cubes\nhauteurs: 1 2\ndessiner: dessus\ncase: 0\n```');
+		expect(r.markdown).toContain('class="c-dessin"');
+		expect(r.markdown).toContain('le jouer dans l');
+		expect(r.avertissements).toHaveLength(1);
+	});
+
+	it('monnaie à construire : réserve, plan vide, et la construction juste à part', () => {
+		const r = dessinerBlocs('```monnaie\ncase: 0\nconstruire: 8\n```');
+		expect(r.markdown).toContain('<span class="r-tag">Réserve</span>');
+		expect(r.markdown).toContain('plan de travail (vide au départ)');
+		expect(r.solutions).toHaveLength(1);
+		// 8 € = 5 + 2 + 1 : un billet, deux pièces
+		expect(r.solutions[0].match(/class="m-billet"/g)).toHaveLength(1);
+		expect(r.solutions[0].match(/<circle class="m-(anneau|piece)[" ]/g)).toHaveLength(3);
+	});
+
+	it('pièces de centimes : « 50 c » écrit sur la pièce, teinte cuivre ou dorée', () => {
+		const md = dessinerBlocs('```monnaie\npièces: 1×50c 1×5c 1×2\n```').markdown;
+		expect(md).toContain('>50 c</text>');
+		expect(md).toContain('>5 c</text>');
+		expect(md).toContain('>2 €</text>');
+		expect(md).not.toContain('0.5 €');
+		expect(md).toContain('m-piece-dore');
+		expect(md).toContain('m-piece-cuivre');
+	});
+
+	it('collection à construire : la construction juste pose les barres et les cubes', () => {
+		const r = dessinerBlocs('```collection\ncase: 0\nconstruire: 23\n```');
+		expect(r.solutions).toHaveLength(1);
+		// 2 barres (9 séparations chacune) et 3 cubes
+		expect(r.solutions[0].match(/class="c-sep"/g)).toHaveLength(18);
+		expect(r.solutions[0].match(/<rect class="c-forme"/g)).toHaveLength(5);
+	});
+
+	it('collection à centaines : plaques quadrillées et gros cubes à trois faces, jamais un cadre vide', () => {
+		const md = dessinerBlocs('```collection\nmilliers: 2\ncentaines: 3\n```').markdown;
+		// 3 plaques (un rectangle chacune) ; 2 gros cubes (devant, dessus, côté)
+		expect(md.match(/<rect class="c-forme"/g)).toHaveLength(3);
+		expect(md.match(/<polygon class="c-forme c-face-\d"/g)).toHaveLength(6);
+		expect(md).toContain('class="c-quad"');
+		expect(md).not.toContain('c-contour');
+		// La construction juste de 1 234 pose aussi le gros cube et les plaques
+		const r = dessinerBlocs('```collection\ncase: 0\nconstruire: 1234\n```');
+		expect(r.solutions[0].match(/<polygon class="c-forme c-face-\d"/g)).toHaveLength(3);
+		expect(r.solutions[0]).not.toContain('c-contour');
+	});
+
+	it('horloge : un cadran par heure, la grande aiguille seulement si elle est montrée', () => {
+		const deux = dessinerBlocs('```horloge\nheure: 3 h ; 9 h 30\n```');
+		expect(deux.markdown.match(/class="h-cadran"/g)).toHaveLength(2);
+		expect(deux.markdown.match(/h-minutes/g)).toHaveLength(2);
+		expect(deux.markdown).toContain('<figcaption>A</figcaption>');
+		const cachees = dessinerBlocs('```horloge\nheure: 3 h\nminutes: cachées\n```');
+		expect(cachees.markdown).not.toContain('h-minutes');
+		expect(cachees.markdown).toContain('h-heures');
+	});
+
+	it('schema-barres : le SVG de la scène de l’appli, manquants en pointillés, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```schema-barres\nTom : ? (2)\nLéa : ? (2) ; 12 (1)\nBen : ? (2) ; -5 (1)\ntotal : 84\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="sb-schema"`));
+		expect(r.markdown.match(/<rect class="sb-segment/g)).toHaveLength(5);
+		expect(r.markdown.match(/sb-manquant/g)).toHaveLength(1);
+		expect(r.markdown).toContain('>84</text>');
+		expect(r.markdown).toContain('aria-label="Schéma en barres');
+		expect(r.markdown).toContain('stroke-dasharray="5 4"');
+		const echappe = dessinerBlocs('```schema-barres\nR&D : <b> (2)\n```');
+		expect(echappe.markdown).toContain('R&amp;D');
+		expect(echappe.markdown).toContain('&lt;b>');
+		expect(echappe.markdown).not.toContain('<b>');
+	});
+
+	it('figure : le SVG de figureToSvg', () => {
+		const r = dessinerBlocs(
+			'```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un segment.\n---\nA = point(1, 1)\nB = point(8, 1)\ns = segment(A, B)\n```'
+		);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.markdown).toContain('<line ');
+	});
+
+	/** Les traits verts d'une solution, en coordonnées d'écran */
+	const traitsVerts = (svg: string) =>
+		[
+			...svg.matchAll(
+				/<line class="fig-solution" x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)"/g
+			)
+		].map((m) => m.slice(1).map(Number));
+	/** Les traits de la figure (sans classe : ni quadrillage, ni solution), en coordonnées d'écran */
+	const traitsDeLaFigure = (svg: string) =>
+		[
+			...svg.matchAll(
+				/<line x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)" style="stroke:/g
+			)
+		].map((m) => m.slice(1).map(Number));
+	/** Le premier point visible de la figure (A), en coordonnées d'écran */
+	const pointDeLaFigure = (svg: string) => {
+		const m = svg.match(/<circle cx="([\d.-]+)" cy="([\d.-]+)" r="[\d.]+" style="fill:/);
+		if (!m) throw new Error('aucun point dans la figure');
+		return [Number(m[1]), Number(m[2])];
+	};
+	/** L'axe vertical d (x constant) parmi les traits de la figure */
+	const axeVertical = (svg: string) => {
+		const axe = traitsDeLaFigure(svg).find(([x1, , x2]) => Math.abs(x1 - x2) < 0.01);
+		if (!axe) throw new Error('aucun axe vertical');
+		return axe[0];
+	};
+
+	it('figure-a-completer, perpendiculaire : la figure de départ, et la bonne droite en vert à part', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite p = perpendiculaire(A, d)\n---\nm = point(0, 3, visible=faux)\nn = point(14, 3, visible=faux)\nd = droite(m, n)\nA = point(6, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.markdown).not.toContain('fig-solution');
+		expect(r.solutions).toHaveLength(1);
+		// d horizontale : la perpendiculaire est verticale, et passe par A (même repère d'écran)
+		const [ax] = pointDeLaFigure(r.solutions[0]);
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		expect(x1).toBeCloseTo(ax, 1);
+		expect(x2).toBeCloseTo(ax, 1);
+		expect(Math.abs(y2 - y1)).toBeGreaterThan(0);
+	});
+
+	it('figure-a-completer, parallèle : la bonne droite a la direction de d et passe par A', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 14 ; 0 ; 10\ngrille: 1\noutils: droite, equerre\nverifier: droite q = parallele(A, d)\n---\nm = point(0, 0, visible=faux)\nn = point(10, 10, visible=faux)\nd = droite(m, n)\nA = point(4, 7)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const traits = traitsVerts(r.solutions[0]);
+		expect(traits).toHaveLength(1);
+		const [x1, y1, x2, y2] = traits[0];
+		// d en diagonale montante : à l'écran (y vers le bas), la pente vaut -1
+		expect((y2 - y1) / (x2 - x1)).toBeCloseTo(-1);
+		// A est sur la droite verte (produit vectoriel nul, à l'arrondi du centième près)
+		const [ax, ay] = pointDeLaFigure(r.solutions[0]);
+		const croix = (x2 - x1) * (ay - y1) - (y2 - y1) * (ax - x1);
+		expect(Math.abs(croix) / Math.hypot(x2 - x1, y2 - y1)).toBeLessThan(0.1);
+	});
+
+	it('figure-a-completer, symétrique par d : chaque trait vert est l’image d’un côté par d', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\nverifier: symetrique par d\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(6, 1, visible=faux)\nB = point(3, 2, visible=faux)\nC = point(6, 6, visible=faux)\ns1 = segment(A, B)\ns2 = segment(B, C)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const axe = axeVertical(r.solutions[0]);
+		const cotes = traitsDeLaFigure(r.solutions[0]).filter(([x1, , x2]) => Math.abs(x1 - x2) > 0.01);
+		expect(cotes).toHaveLength(2);
+		const verts = traitsVerts(r.solutions[0]);
+		expect(verts).toHaveLength(2);
+		// Image d'un trait par l'axe vertical : x → 2·axe − x, y inchangé (bouts dans un ordre ou l'autre)
+		const memeTrait = (a: number[], b: number[]) =>
+			[
+				[0, 1, 2, 3],
+				[2, 3, 0, 1]
+			].some((o) => o.every((k, i) => Math.abs(a[i] - b[k]) < 0.1));
+		for (const v of verts) {
+			const image = [2 * axe - v[0], v[1], 2 * axe - v[2], v[3]];
+			expect(cotes.some((c) => memeTrait(image, c))).toBe(true);
+		}
+	});
+
+	it('figure-a-completer, point symétrique : le point attendu en vert, à sa place, avec son nom', () => {
+		const r = dessinerBlocs(
+			"```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: point\nverifier: point A' = symetrie(A, axe=d)\n---\nm = point(6, 0, visible=faux)\nn = point(6, 8, visible=faux)\nd = droite(m, n)\nA = point(2, 3)\n```"
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.solutions).toHaveLength(1);
+		const vert = r.solutions[0].match(
+			/<circle class="fig-solution-point" cx="([\d.-]+)" cy="([\d.-]+)"/
+		);
+		expect(vert).not.toBeNull();
+		const [ax, ay] = pointDeLaFigure(r.solutions[0]);
+		const axe = axeVertical(r.solutions[0]);
+		expect(Number(vert?.[1])).toBeCloseTo(2 * axe - ax, 1);
+		expect(Number(vert?.[2])).toBeCloseTo(ay, 1);
+		expect(r.solutions[0]).toMatch(/>A(?:'|&#39;|’)</);
+	});
+
+	it('figure-a-completer, autre vérification : la figure de départ, la solution signalée', () => {
+		const r = dessinerBlocs(
+			'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\ngrille: 1\nverifier: droite_par A ; B\n---\nA = point(1, 1)\nB = point(8, 6)\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="fig"`));
+		expect(r.solutions).toEqual([]);
+		expect(r.avertissements).toEqual([
+			'bloc figure-a-completer : solution de « droite_par » non dessinée, la voir dans l’aperçu'
+		]);
+	});
+
+	it('figure-a-completer en erreur : la page s’arrête', () => {
+		expect(() =>
+			dessinerBlocs(
+				'```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 8\nverifier: rien du tout\n---\nA = point(1, 1)\n```'
+			)
+		).toThrow(/bloc figure-a-completer en erreur/);
+	});
+
+	it('courbe : le SVG de la scène de Courbe.svelte (termes d’une suite, escalier)', () => {
+		const r = dessinerBlocs(
+			'```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = 3+n/2 pour n de 0 à 8   bleu   nom=u_n\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(new RegExp(`^${HTML}<svg class="courbe"`));
+		// Neuf termes, un disque chacun, à la couleur du thème
+		expect(r.markdown.match(/<circle [^>]*fill:var\(--color-fig-bleu\)/g)).toHaveLength(9);
+		const escalier = dessinerBlocs(
+			'```courbe\nx: -1 ; 11\ny: -1 ; 11\nu(0) = 2 ; u(n+1) = 0.5*u(n)+3 pour n de 0 à 2   rouge   escalier termes   nom=C_f\n```'
+		);
+		expect(escalier.markdown).toContain('class="ce"');
+		expect(escalier.markdown).toContain('class="cr"');
+		expect(surUneLigne(escalier.markdown)).toBe(true);
+	});
+
+	it('variation, tableau de signes : valeurs en formules, signes, zéro et double barre, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, -2, 3, +inf\n\nsign: B(x)\n  -inf,-2: +\n  -2: z\n  -2,3: -\n  3: ||\n  3,+inf: +\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		const t = r.markdown.slice(HTML.length);
+		expect(t).toMatch(/^<table class="vt"/);
+		// En-tête : la variable puis les valeurs, en formules que le gabarit rend
+		for (const tex of ['x', '-\\infty', '-2', '3', '+\\infty', 'B(x)'])
+			expect(t).toContain(`data-tex="${tex}"`);
+		// Une case par valeur et une par intervalle : 4 + 3, après l'étiquette
+		expect(t.match(/<td class="vt-[a-z-]+"/g)).toHaveLength(7);
+		expect(t.match(/class="vt-signe">[+−]</g)?.map((s) => s.slice(-2, -1))).toEqual([
+			'+',
+			'−',
+			'+'
+		]);
+		expect(t).toContain('<span class="vt-zero">0</span>');
+		expect(t).toContain('<span class="vt-barre"></span>');
+	});
+
+	it('variation, tableau de variations : valeurs en haut ou en bas, flèches qui montent ou descendent', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -4, 1, 5\n\nvariation: f(x)\n  -4: 2, bottom\n  1: 7, top\n  5: -3, bottom\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		expect(t).toContain('<div class="vt-val vt-bas"><span class="tex" data-tex="2"></span></div>');
+		expect(t).toContain('<div class="vt-val vt-haut"><span class="tex" data-tex="7"></span></div>');
+		expect(t.match(/aria-label="(croissante|décroissante)"/g)).toEqual([
+			'aria-label="croissante"',
+			'aria-label="décroissante"'
+		]);
+	});
+
+	it('variation à compléter : cellules cachées encadrées, remplies de la réponse ; « rien » écrit', () => {
+		const r = dessinerBlocs(
+			'```variation\ncase: 0\nvariable: x\ndomain: -inf, ?-3, 0, +inf\n\nsign: B(x)\n  -inf,-3: ?+\n  -3: ?z\n  -3,0: -\n  0: ?rien\n  0,+inf: -\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		// Quatre cellules cachées : valeur, signe, marque, « rien »
+		expect(t.match(/class="vt-cache"/g)).toHaveLength(4);
+		expect(t).toContain('<span class="vt-cache"><span class="tex" data-tex="-3"></span></span>');
+		expect(t).toContain('<span class="vt-cache"><span class="vt-signe">+</span></span>');
+		expect(t).toContain('<span class="vt-cache"><span class="vt-zero">0</span></span>');
+		expect(t).toContain('<span class="vt-cache">rien</span>');
+		// Le signe visible ne l'est pas
+		expect(t).toContain('<td class="vt-intervalle"><span class="vt-signe">−</span></td>');
+	});
+
+	it('variation à compléter, ligne variation: : valeur et flèche cachées encadrées, remplies', () => {
+		const r = dessinerBlocs(
+			'```variation\ncase: 0\nvariable: x\ndomain: -4, 1, 5\n\nvariation: f(x)\n  -4: 2, bottom\n  1: ?7, top\n  5: -3, bottom\n  1,5: ?flèche\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		expect(t.match(/class="vt-cache"/g)).toHaveLength(2);
+		// La valeur garde sa hauteur : encadrée dans son bloc « en haut »
+		expect(t).toContain(
+			'<div class="vt-val vt-haut"><span class="vt-cache"><span class="tex" data-tex="7"></span></span></div>'
+		);
+		expect(t).toMatch(/<span class="vt-cache">[^]*?aria-label="décroissante"/);
+	});
+
+	it('variation : une formule échappée pour l’attribut (\\dfrac)', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, \\dfrac{1}{2}, +inf\n\nsign: f(x)\n  -inf,\\dfrac{1}{2}: -\n  \\dfrac{1}{2}: z\n  \\dfrac{1}{2},+inf: +\n```'
+		);
+		expect(r.markdown).toContain('data-tex="\\dfrac{1}{2}"');
+	});
+
+	it('variation : asymptote à deux limites, on arrive à la GAUCHE et on repart de la DROITE', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, 2, +inf\n\nvariation: f(x)\n  -inf: 0, bottom\n  2: ||, +inf, top, -inf, bottom\n  +inf: 0, top\n```'
+		);
+		const t = r.markdown.slice(HTML.length);
+		expect(t).toContain('<div class="vt-asy">');
+		expect(t.match(/aria-label="(croissante|décroissante)"/g)).toEqual([
+			'aria-label="croissante"',
+			'aria-label="croissante"'
+		]);
+	});
+
+	it('variation sans valeur aux bornes (tableau de 1re) : bornes déduites, deux flèches', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  0: 3, top\n```'
+		);
+		expect(r.markdown.match(/aria-label="(croissante|décroissante)"/g)).toEqual([
+			'aria-label="croissante"',
+			'aria-label="décroissante"'
+		]);
+	});
+
+	it('variation : une case d’intervalle ne montre que le signe ou la hachure, comme l’écran', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, 2, +inf\n\nsign: f(x)\n  -inf,2: z\n  2: z\n  2,+inf: |h|\n```'
+		);
+		const t = r.markdown.slice(HTML.length);
+		// Le seul 0 est celui de la valeur 2
+		expect(t.match(/vt-zero/g)).toHaveLength(1);
+		expect(t).toContain('<td class="vt-intervalle"><span class="vt-hachure vt-large"></span></td>');
+	});
+
+	it('variation en erreur : la page s’arrête', () => {
+		expect(() => dessinerBlocs('```variation\ndomain: -inf, +inf\n```')).toThrow(
+			/bloc variation en erreur/
+		);
+	});
+
+	it('« série: seule » : la série seule, sans figure ni indicateurs (comme l’écran)', () => {
+		const r = dessinerBlocs(
+			'```frequences-cumulees\nclasses: 0 ; 10 ; 20\ndonnées: 3 ; 12 ; 15\nsérie: seule\n```'
+		);
+		expect(r.markdown).toContain('class="stat-serie"');
+		expect(r.markdown).not.toContain('<svg');
+		expect(r.markdown).not.toContain('stat-indicateurs');
+	});
+
+	it('tableau croisé sans titre : pas de légende visible (sr-only à l’écran)', () => {
+		const r = dessinerBlocs(
+			'```tableau-croise\nlignes: A ; B\ncolonnes: X ; Y\nA = 1 ; 2\nB = 3 ; 4\n```'
+		);
+		expect(r.markdown).not.toContain('<caption>');
+	});
+
+	it('histogramme : un rectangle par classe, graduations, titres d’axes, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```histogramme\naxes: Taille (cm) ; Effectif\n[0 ; 10[ = 3\n[10 ; 20[ = 8\n[20 ; 30[ = 5\nvaleurs: oui\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown.match(/class="stat-rectangle"/g)).toHaveLength(3);
+		// Effectifs au-dessus des rectangles, bornes des classes sous l'axe
+		for (const v of ['3', '8', '5'])
+			expect(r.markdown).toContain(`text-anchor="middle">${v}</text>`);
+		for (const b of ['0', '10', '20', '30']) expect(r.markdown).toContain(`>${b}</text>`);
+		expect(r.markdown).toContain('>Taille (cm)</text>');
+		expect(r.markdown).toContain('>Effectif</text>');
+	});
+
+	it('frequences-cumulees avec lecture: médiane : polygone, sommets et lignes de lecture', () => {
+		const r = dessinerBlocs(
+			'```frequences-cumulees\nlecture: médiane\n[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 30[ = 10\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('<polyline class="stat-polygone"');
+		// Origine du polygone + une borne par classe
+		expect(r.markdown.match(/class="stat-sommet"/g)).toHaveLength(4);
+		expect(r.markdown.match(/class="stat-lecture"/g)).toHaveLength(1);
+		expect(r.markdown).toMatch(/Me ≈ [\d,]+/);
+	});
+
+	it('frequences-cumulees sans lecture : aucune ligne de lecture', () => {
+		const r = dessinerBlocs('```frequences-cumulees\n[0 ; 10[ = 12\n[10 ; 20[ = 18\n```');
+		expect(r.markdown).not.toContain('stat-lecture');
+	});
+
+	it('barres : une barre par catégorie, noms et valeurs', () => {
+		const r = dessinerBlocs(
+			'```barres\ntitre: Sports\nFootball = 12\nDanse = 7\nJudo = 4\nvaleurs: oui\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown.match(/class="stat-barre"/g)).toHaveLength(3);
+		for (const n of ['Football', 'Danse', 'Judo', 'Sports']) expect(r.markdown).toContain(n);
+		expect(surUneLigne(r.markdown)).toBe(true);
+	});
+
+	it('boite-a-moustaches : les cinq valeurs de la boîte, médiane épaisse', () => {
+		const r = dessinerBlocs(
+			'```boite-a-moustaches\nNautic = 28 ; 30 ; 37 ; 45 ; 58\nvaleurs: oui\naxe: 25 à 60, de 5 en 5\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		for (const v of ['28', '30', '37', '45', '58'])
+			expect(r.markdown).toContain(`text-anchor="middle">${v}</text>`);
+		expect(r.markdown).toContain('>Nautic</text>');
+		expect(r.markdown.match(/class="stat-mediane"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="stat-moustache-bout"/g)).toHaveLength(2);
+		expect(r.markdown.match(/class="stat-boite"/g)).toHaveLength(1);
+	});
+
+	it('tableau-croise : cases ? vides à remplir, totaux calculés', () => {
+		const r = dessinerBlocs(
+			'```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Demi-pension ; Externe\nFilles = 12 ; ?\nGarçons = 8 ; 10\ntotaux: oui\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(/^@@HTML@@.*<table class="stat-tableau"/);
+		// La case `?` et les totaux qui en dépendent sont vides
+		expect(r.markdown.match(/<td class="stat-case-vide"><\/td>/g)?.length).toBeGreaterThanOrEqual(
+			1
+		);
+		for (const t of ['Filles', 'Garçons', 'Demi-pension', 'Externe', 'Total'])
+			expect(r.markdown).toContain(`>${t}</th>`);
+		expect(r.markdown).toContain('<td>12</td>');
+	});
+
+	it('tableau-croise avec masquer : la case masquée est vide, sans sa valeur', () => {
+		const r = dessinerBlocs(
+			'```tableau-croise\nlignes: A ; B\ncolonnes: X ; Y\nA = 11 ; 22\nB = 33 ; 44\nmasquer: A/X\n```'
+		);
+		expect(r.markdown).toContain('stat-case-vide');
+		expect(r.markdown).not.toContain('<td>11</td>');
+		expect(r.markdown).toContain('<td>22</td>');
+	});
+
+	it('probtree : une branche par arc, probabilités et événements en formules', () => {
+		const r = dessinerBlocs(
+			'```probtree\nroot: Urne\nRouge:3/5\n  Gagné:1/2\n  Perdu:1/2\nBleue:2/5\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown.match(/class="pt-branche"/g)).toHaveLength(4);
+		for (const tex of [
+			'\\text{Rouge}',
+			'\\text{Bleue}',
+			'\\text{Urne}',
+			'\\text{Gagné}',
+			'3/5',
+			'2/5'
+		])
+			expect(r.markdown).toContain(`data-tex="${tex}"`);
+	});
+
+	it('simulation en tirages : tableau des effectifs observés', () => {
+		const r = dessinerBlocs('```simulation\nX = 1 ; 2\nP = 1/2 ; 1/2\ntirages: 50\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('<table class="stat-tableau">');
+		expect(r.markdown).toContain('>Simulation de 50 tirages');
+	});
+
+	it('blocs statistiques et arbre en erreur : la page s’arrête, ligne fautive nommée', () => {
+		expect(() => dessinerBlocs('```histogramme\ntitre: vide\n```')).toThrow(
+			/bloc histogramme en erreur/
+		);
+		expect(() => dessinerBlocs('```boite-a-moustaches\nA = 3 ; 1 ; 2\n```')).toThrow(
+			/bloc boite-a-moustaches en erreur/
+		);
+		expect(() => dessinerBlocs('```tableau-croise\nlignes: A\n```')).toThrow(
+			/bloc tableau-croise en erreur/
+		);
+		expect(() => dessinerBlocs('```probtree\nRouge 1/2\n```')).toThrow(/bloc probtree en erreur/);
+	});
+
+	it('python : le programme tel quel, échappé, sans alerte', () => {
+		const r = dessinerBlocs('```python\ndef f(n):\n    return n < 3\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toBe(
+			`${HTML}<pre class="code"><code>def f(n):<br>    return n &lt; 3</code></pre>`
+		);
+	});
+
+	it('courbe : coordonnées de Courbe.svelte (cadre 400 × 300, marge 26), nom calligraphique', () => {
+		// x et y de 0 à 10 : le terme (2 ; 8) tombe à 26 + 2/10 × 400 = 106, 26 + 2/10 × 300 = 86
+		const r = dessinerBlocs(
+			'```courbe\nx: 0 ; 10\ny: 0 ; 10\nu(n) = 4*n pour n de 2 à 2   bleu\nf(x) = x   rouge   nom=\\mathcal{C}_f\n```'
+		);
+		expect(r.markdown).toContain(
+			'<circle cx="106" cy="86" r="3" style="fill:var(--color-fig-bleu)"/>'
+		);
+		expect(r.markdown).toContain('viewBox="0 0 452 352"');
+		expect(r.markdown).toContain('𝒞<tspan class="ci" dy="4">f</tspan>');
+	});
+
+	it('courbe : un avertissement du bloc remonte en alerte de fiche', () => {
+		const r = dessinerBlocs(
+			'```courbe\nx: -4 ; 6\ny: -8 ; 12\nf(x) = x\npoints: A(1 ; 2), B(10 ; 0)\n```'
+		);
+		expect(r.avertissements.length).toBeGreaterThan(0);
+		expect(r.avertissements[0]).toMatch(/^bloc courbe : /);
+	});
+
+	it('courbe en erreur : la page s’arrête', () => {
+		expect(() => dessinerBlocs('```courbe\nx: 5 ; 1\n```')).toThrow(/bloc courbe en erreur/);
+	});
+
+	it('line : axe, une graduation par pas, nombres en formules à la française, point et segment', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 2\nstep: 0.5\nmajor: 2\npoints: A=1/2\nsegments: [1, 2[\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown.match(/class="nl-tick"/g)).toHaveLength(5);
+		// Nombres sous les grandes graduations seulement : 0, 1, 2
+		expect(r.markdown.match(/data-tex=/g)).toHaveLength(3);
+		expect(r.markdown).toContain('class="nl-point"');
+		expect(r.markdown).toContain('var(--color-fig-rouge)');
+		expect(r.markdown).toContain('>A<');
+		expect(r.markdown.match(/class="nl-segment"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="nl-bracket"/g)).toHaveLength(2);
+		expect(r.markdown).toContain('var(--color-fig-bleu)');
+		expect(r.solutions).toEqual([]);
+	});
+
+	it('line : étiquettes de l’auteur, décimaux à la française ; automatiques comme l’appli', () => {
+		const r = dessinerBlocs('```line\nstart: 2\nend: 3\nstep: 0.1\nlabels: 2, 2.5, 3\n```');
+		expect(r.markdown).toContain('data-tex="2{,}5"');
+		// formatAutoLabel de l'appli : 0,5 s'écrit en fraction
+		expect(dessinerBlocs('```line\nstart: 0\nend: 1\nstep: 0.5\n```').markdown).toContain(
+			'data-tex="\\frac{1}{2}"'
+		);
+	});
+
+	it('line : une étiquette cachée est un « ? », sans son nombre', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 4\nstep: 1\nhidden: 3\n```');
+		expect(r.markdown).toContain('class="nl-cache"');
+		expect(r.markdown).not.toContain('data-tex="3"');
+		expect(r.markdown).toContain('data-tex="2"');
+	});
+
+	it('line avec flèches : deux pointes ; demi-droite jusqu’à la pointe, un seul crochet', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 5\nstep: 1\narrows: true\nsegments: [2, +inf[\n```'
+		);
+		expect(r.markdown.match(/class="nl-arrow"/g)).toHaveLength(2);
+		expect(r.markdown.match(/class="nl-bracket"/g)).toHaveLength(1);
+	});
+
+	it('line à placer : énoncé sans aucun point, la correction pose les points attendus en vert', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 10\nstep: 1\nplacer: A=3 ; B=7\n```');
+		// `points:` est refusé avec `placer:` par le parseur : l'énoncé n'a aucun point
+		expect(r.markdown).not.toContain('class="nl-point"');
+		expect(r.solutions).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-point"/g)).toHaveLength(2);
+		expect(r.solutions[0]).toContain('>A<');
+		expect(r.solutions[0]).toContain('>B<');
+		expect(r.solutions[0]).toContain('var(--color-fig-vert)');
+		// Posés SUR la droite (y = 50), plus gros ; x(3) = 40 + 3/10 × 520
+		expect(r.solutions[0]).toContain('cx="196" cy="50" r="7"');
+	});
+
+	it('line à représenter : énoncé sans segment, la correction trace l’intervalle en vert', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: -5\nend: 5\nstep: 1\narrows: true\nrepresenter: ]-inf, 2]\n```'
+		);
+		// `segments:` est refusé avec `representer:` par le parseur : l'énoncé n'en a aucun
+		expect(r.markdown).not.toContain('class="nl-segment"');
+		expect(r.solutions).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-segment"/g)).toHaveLength(1);
+		expect(r.solutions[0].match(/class="nl-bracket"/g)).toHaveLength(1);
+		expect(r.solutions[0]).toContain('var(--color-fig-vert)');
+		// Demi-droite jusqu'à la pointe gauche (40 - 10), jusqu'à x(2) = 40 + 7/10 × 520
+		expect(r.solutions[0]).toContain('x1="30" y1="50" x2="404" y2="50"');
+	});
+
+	it('line : becs des crochets vers l’intérieur (compris) ou l’extérieur (exclu)', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 2\nstep: 1\nsegments: [1, 2[\n```');
+		expect(r.markdown).toContain('d="M 305 41 L 300 41 L 300 59 L 305 59"');
+		expect(r.markdown).toContain('d="M 565 41 L 560 41 L 560 59 L 565 59"');
+	});
+
+	it('line : deux points au même endroit, noms côte à côte ; segments qui se touchent, un étage', () => {
+		const r = dessinerBlocs(
+			'```line\nstart: 0\nend: 2\nstep: 1\npoints: A=1, B=1\nsegments: [0, 1], [1, 2]\n```'
+		);
+		expect(r.markdown).toContain('<foreignObject x="268" y="7"');
+		expect(r.markdown).toContain('<foreignObject x="282" y="7"');
+		expect(r.markdown).toContain('x1="40" y1="50" x2="300" y2="50"');
+		expect(r.markdown).toContain('x1="300" y1="40" x2="560" y2="40"');
+	});
+
+	it('line à représenter sans intervalle lisible : signalé en alerte, pas de solution vide', () => {
+		const r = dessinerBlocs('```line\nstart: -5\nend: 5\nstep: 1\nrepresenter: ?\n```');
+		expect(r.solutions).toEqual([]);
+		expect(r.avertissements.join(' ')).toMatch(/bloc line : .*intervalle/);
+	});
+
+	it('line : une couleur inconnue remonte en alerte de fiche', () => {
+		const r = dessinerBlocs('```line\nstart: 0\nend: 4\nstep: 1\npoints: A=2 fuchsia\n```');
+		expect(r.avertissements.join(' ')).toMatch(/bloc line : Point A/);
+	});
+
+	it('line en erreur : la page s’arrête', () => {
+		expect(() => dessinerBlocs('```line\nstep: 1\n```')).toThrow(/bloc line en erreur/);
+	});
+
+	it('bloc inconnu de la page : sa source, échappée, et signalé', () => {
+		const r = dessinerBlocs('```operation\ncalcul: 44 + 25 <b>\n```');
+		expect(r.nonDessines).toEqual(['operation']);
+		expect(r.markdown).toContain('bloc operation, non dessiné ici');
+		expect(r.markdown).toContain('calcul: 44 + 25 &lt;b>');
+	});
+
+	it('un bloc en erreur arrête la page (jamais une fiche fausse en silence)', () => {
+		expect(() => dessinerBlocs('```monnaie\nn’importe quoi\n```')).toThrow(
+			/bloc monnaie en erreur/
+		);
+	});
+});
+
+describe('exemplesDuModele', () => {
+	it('un exemple par variation, chaque bloc dessiné sur une seule ligne', () => {
+		for (const { fichier, modele: m } of LOT) {
+			const { exemples } = exemplesDuModele(m);
+			expect(
+				exemples.map((e) => e.variation),
+				fichier
+			).toEqual(m.variations.map((_, i) => i + 1));
+			for (const e of exemples) {
+				expect(surUneLigne(e.statement), fichier).toBe(true);
+				expect(e.statement, fichier).not.toContain('```');
+			}
+		}
+	});
+
+	it('décimaux à la française, comme à l’écran : virgule dans les formules et les réponses', () => {
+		for (const { fichier, modele: m } of lireLot('tests/fixtures/lot-questions-decimaux')) {
+			for (const e of exemplesDuModele(m).exemples) {
+				const textes = [
+					e.statement,
+					e.answer,
+					...e.steps,
+					...(e.choices ?? []).map((c) => c.content)
+				];
+				const formules = textes.flatMap((t) => t.match(/\$\$[\s\S]*?\$\$|\$[^$]*\$/g) ?? []);
+				expect(formules.length, fichier).toBeGreaterThan(0);
+				for (const f of [...formules, e.answer])
+					expect(f, `${fichier} v${e.variation}`).not.toMatch(/\d\.\d/);
+				expect(textes.join(' '), fichier).toMatch(/\d\{,\}\d/);
+			}
+		}
+	});
+
+	it('reproductible : deux appels donnent les mêmes exemples', () => {
+		const m = modele('02-rends-la-monnaie.json');
+		expect(exemplesDuModele(m)).toEqual(exemplesDuModele(m));
+	});
+
+	it('convention « expression » : la formule reçoit sa case, comme à l’écran', () => {
+		const [e] = exemplesDuModele(modele('05-ajouter-1-ou-2.json')).exemples;
+		expect(e.statement).toMatch(/^Calcule\.\n\n\$\$\d+ \+ [12] = \\placeholder\[0\]\{\}\$\$$/);
+		expect(e.statement).not.toContain('<<expr:');
+		expect(e.answer).toMatch(/^\d+$/);
+	});
+
+	it('case de texte {{blank:N}} : la même case que dans une formule', () => {
+		const [e] = exemplesDuModele(modele('04-lire-l-heure.json')).exemples;
+		expect(e.statement).toContain('Il est $\\placeholder[0]{}$ h.');
+		expect(e.statement).not.toContain('{{blank');
+	});
+
+	it('case choix : les choix et le bon, aucune réponse de case', () => {
+		const { exemples } = exemplesDuModele(modele('03-qui-a-le-plus.json'));
+		for (const e of exemples) {
+			expect(e.choices?.filter((c) => c.bon)).toHaveLength(1);
+			expect(e.answer).toBe('');
+		}
+	});
+
+	it('à construire : la construction juste accompagne l’exemple', () => {
+		const { exemples } = exemplesDuModele(modele('01-construis-le-nombre.json'));
+		for (const e of exemples) expect(e.solution).toContain('Une construction juste');
+	});
+
+	it('bloc non dessiné : signalé une fois pour le modèle', () => {
+		const r = exemplesDuModele(modele('07-addition-posee.json'));
+		expect(r.nonDessines).toEqual(['operation']);
+	});
+});
+
+describe('ficheDuModele', () => {
+	const m = modele('01-construis-le-nombre.json');
+
+	it('réunit le fichier, la base et les bornes du point', () => {
+		const f = ficheDuModele(m, BASE, BORNES);
+		expect(f).toMatchObject({
+			id: BASE.id,
+			code: 'CP-002',
+			titre: 'Construis le nombre',
+			rangement: BASE.rangement,
+			niveau: 1,
+			statut: 'draft',
+			libelle: 'Lire et écrire les nombres.',
+			bornes: ['Nombres jusqu’à 100.', 'Cardinal ≤ 100.'],
+			alertes: []
+		});
+		expect(f.exemples).toHaveLength(m.variations.length);
+		expect(f.specs).toHaveLength(m.testSpecs?.length ?? 0);
+		expect(f.variables[0]).toMatch(/^v1 : /);
+	});
+
+	it('écrit les réponses des specs en formules ($…$), que la page rend en KaTeX', () => {
+		const f = ficheDuModele(m, BASE, BORNES);
+		const spec = m.testSpecs?.[0];
+		expect(spec?.answers?.length).toBeGreaterThan(0);
+		expect(f.specs[0]).toBe(
+			`${spec?.description} : ${spec?.answers?.map((a) => `$${a}$`).join(', ')} → ${spec?.expected.status}`
+		);
+	});
+
+	it('signale un modèle sans point et sans nœud', () => {
+		const f = ficheDuModele(m, { ...BASE, codes: [], rangement: null }, BORNES);
+		expect(f.alertes).toEqual(['sans point', 'sans nœud']);
+		expect(f.code).toBe('—');
+		expect(f.bornes).toEqual([]);
+	});
+
+	it('signale deux points d’un même programme (ADR 0020) et un point absent des bornes', () => {
+		expect(ficheDuModele(m, { ...BASE, codes: ['CP-002', 'CP-005'] }, BORNES).alertes).toEqual([
+			'2 points de CP (ADR 0020 : un par programme)',
+			'point CP-005 absent des bornes'
+		]);
+		expect(ficheDuModele(m, { ...BASE, codes: ['CP-999'] }, BORNES).alertes).toEqual([
+			'point CP-999 absent des bornes'
+		]);
+	});
+
+	it('un point par programme est permis : chaque borne dit son point', () => {
+		const bornes = {
+			...BORNES,
+			'CE1-004': { libelle: 'Comparer des nombres.', bornes: [{ borne: 'Jusqu’à 1000.' }] }
+		};
+		const f = ficheDuModele(m, { ...BASE, codes: ['CE1-004', 'CP-002'] }, bornes);
+		expect(f.alertes).toEqual([]);
+		expect(f.libelle).toBe(
+			'CE1-004 : Comparer des nombres. · CP-002 : Lire et écrire les nombres.'
+		);
+		expect(f.bornes).toContain('CP-002 : Nombres jusqu’à 100.');
+		expect(f.bornes).toContain('CE1-004 : Jusqu’à 1000.');
+	});
+
+	it('signale un niveau en base différent du fichier, et montre celui de la base', () => {
+		const f = ficheDuModele(m, { ...BASE, niveau: 3 }, BORNES);
+		expect(f.alertes).toEqual(['niveau 3 en base, 1 dans le fichier']);
+		expect(f.niveau).toBe(3);
+	});
+
+	it('signale un bloc non dessiné', () => {
+		const f = ficheDuModele(modele('07-addition-posee.json'), BASE, BORNES);
+		expect(f.alertes).toContain("bloc operation non dessiné : le jouer dans l'aperçu");
+	});
+});
+
+describe('cheminDuNoeud', () => {
+	const arbre = new Map([
+		['b', { name: 'Nombres et calculs', parent_id: null }],
+		['n', { name: 'Entiers : numération', parent_id: 'b' }],
+		['s', { name: 'dénombrement', parent_id: 'n' }]
+	]);
+
+	it('remonte de la sous-notion à la branche', () => {
+		expect(cheminDuNoeud('s', arbre)).toBe(
+			'Nombres et calculs > Entiers : numération > dénombrement'
+		);
+		expect(cheminDuNoeud('n', arbre)).toBe('Nombres et calculs > Entiers : numération');
+	});
+
+	it('nœud inconnu : null', () => {
+		expect(cheminDuNoeud('x', arbre)).toBeNull();
+	});
+});
+
+describe('assemblerPage', () => {
+	const gabarit = readFileSync('scripts/questions/page-a-cocher.html', 'utf8');
+	const fiche: Fiche = ficheDuModele(modele('05-ajouter-1-ou-2.json'), BASE, BORNES);
+
+	it('remplit le titre (échappé), l’introduction (HTML) et les fiches', () => {
+		const page = assemblerPage(gabarit, {
+			titre: 'Relecture CP — lot <A>',
+			intro: 'Deux modèles <strong>neufs</strong>.',
+			fiches: [fiche]
+		});
+		expect(page).toContain('<title>Relecture CP — lot &lt;A&gt;</title>');
+		expect(page).toContain('<h1>Relecture CP — lot &lt;A&gt;</h1>');
+		expect(page).toContain('<p class="intro">Deux modèles <strong>neufs</strong>.</p>');
+		expect(page).not.toContain('@@TITRE@@');
+		expect(page).not.toContain('@@MODELES@@');
+		const donnees = /const MODELES = (\[.*\]);/.exec(page)?.[1];
+		expect(JSON.parse(donnees ?? 'null')).toEqual([fiche]);
+	});
+
+	it('une donnée qui contient </script> ne ferme pas le script du gabarit', () => {
+		const page = assemblerPage(gabarit, {
+			titre: 't',
+			intro: '',
+			fiches: [{ ...fiche, titre: '</script><b>' }]
+		});
+		// autant de fermetures que dans le gabarit (KaTeX + script de la page) : aucune venue des données
+		expect(page.match(/<\/script>/g)).toHaveLength(gabarit.match(/<\/script>/g)?.length ?? 0);
+		expect(page).not.toContain('</script><b>');
+	});
+
+	it('une donnée qui contient <!-- reste une donnée', () => {
+		const page = assemblerPage(gabarit, {
+			titre: 't',
+			intro: '',
+			fiches: [{ ...fiche, titre: '<!--<script>' }]
+		});
+		const donnees = /const MODELES = (\[.*\]);/.exec(page)?.[1] ?? '';
+		expect(donnees).not.toContain('<!--');
+		expect(JSON.parse(donnees)[0].titre).toBe('<!--<script>');
+	});
+
+	it('une introduction avec « $ » reste telle quelle (pas de motif de remplacement)', () => {
+		const page = assemblerPage(gabarit, { titre: 't', intro: 'Prix : 5 $& $1', fiches: [] });
+		expect(page).toContain('<p class="intro">Prix : 5 $& $1</p>');
+	});
+
+	it('refuse un gabarit sans ses marques', () => {
+		expect(() =>
+			assemblerPage('<p>@@TITRE@@ @@INTRO@@</p>', { titre: 't', intro: '', fiches: [] })
+		).toThrow(/marque \/\*@@MODELES@@\*\//);
+	});
+});

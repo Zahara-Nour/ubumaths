@@ -1,10 +1,8 @@
 {
+	"id": "e6b429b4-e6b4-41a1-b25b-57b66c989ce4",
 	"title": "Produit d'exponentielles",
 	"description": "eᵃ × eᵇ = eᵃ⁺ᵇ, exposants entiers puis affines en x",
 	"grades": ["1_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonction exponentielle",
-	"subdomain": "Propriétés algébriques",
 	"level": 2,
 	"status": "draft",
 	"delay": 40,

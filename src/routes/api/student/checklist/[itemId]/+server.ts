@@ -30,13 +30,13 @@
  * - Students can only modify their own progress
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { toggleChecklistItem } from '$lib/server/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { toggleChecklistItem } from '#lib/server/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/checklist/[itemId]/+server');
 
@@ -102,7 +102,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			throw error(500, 'Failed to update checklist progress');
 		}
 
-		return json({
+		return Response.json({
 			progress: result.data
 		});
 	} catch (err) {

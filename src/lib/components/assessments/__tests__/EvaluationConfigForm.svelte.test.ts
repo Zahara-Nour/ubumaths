@@ -1,9 +1,9 @@
 /**
  * Formulaire d'évaluation (C20, chantier 4, Q30).
  *
- * - Choix de la forme : Entraînement ou Course aux nombres.
+ * - Choix de la forme : Contrôle blanc ou Course aux nombres.
  * - Temps limite affiché SEULEMENT pour une Course aux nombres : 1 à 60 min,
- *   7 min par défaut ; un Entraînement n'en envoie aucun.
+ *   7 min par défaut ; un Contrôle blanc n'en envoie aucun.
  * - Plus de champ catégories (ni titre, ni niveau) : tout vient de la série.
  * - Ordre aléatoire par MyCheckbox.
  */
@@ -12,7 +12,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import EvaluationConfigForm from '../EvaluationConfigForm.svelte';
-import type { EvaluationSettingsInput } from '$lib/types/evaluation';
+import type { EvaluationSettingsInput } from '#lib/types/evaluation.ts';
 
 type OnSubmit = (settings: EvaluationSettingsInput) => void;
 
@@ -30,7 +30,7 @@ async function submit() {
 }
 
 describe('EvaluationConfigForm — forme et temps limite', () => {
-	it('Entraînement par défaut : aucun champ de temps, rien de tel envoyé', async () => {
+	it('Contrôle blanc par défaut : aucun champ de temps, rien de tel envoyé', async () => {
 		const onSubmit = vi.fn<OnSubmit>();
 		const { container } = await renderForm({ onSubmit });
 
@@ -48,7 +48,7 @@ describe('EvaluationConfigForm — forme et temps limite', () => {
 		const onSubmit = vi.fn<OnSubmit>();
 		const { container } = await renderForm({ onSubmit });
 
-		await page.getByRole('button', { name: 'Choisir une forme' }).click();
+		await page.getByRole('combobox', { name: 'Choisir une forme' }).click();
 		await page.getByRole('option', { name: 'Course aux nombres' }).click();
 
 		await expect.element(page.getByLabelText('Temps limite (minutes)')).toHaveValue(7);
@@ -76,15 +76,15 @@ describe('EvaluationConfigForm — forme et temps limite', () => {
 		expect(onSubmit).not.toHaveBeenCalled();
 	});
 
-	it('repasser en Entraînement retire le temps limite de ce qui est envoyé', async () => {
+	it('repasser en Contrôle blanc retire le temps limite de ce qui est envoyé', async () => {
 		const onSubmit = vi.fn<OnSubmit>();
 		const { container } = await renderForm({
 			onSubmit,
 			initialData: { form: 'course', time_limit_minutes: 12 }
 		});
 
-		await page.getByRole('button', { name: 'Choisir une forme' }).click();
-		await page.getByRole('option', { name: 'Entraînement' }).click();
+		await page.getByRole('combobox', { name: 'Choisir une forme' }).click();
+		await page.getByRole('option', { name: 'Contrôle blanc' }).click();
 
 		expect(container.querySelector('#timeLimit')).toBeNull();
 		await submit();

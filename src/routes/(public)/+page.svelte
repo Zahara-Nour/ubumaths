@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { MONTH_PALETTES } from '$lib/almanach/palettes';
-	import SeoHead from '$lib/seo/SeoHead.svelte';
-	import JsonLd from '$lib/seo/JsonLd.svelte';
-	import PereUbuFigure from '$lib/components/kingdom-tour/PereUbuFigure.svelte';
-	import AudienceWheel from '$lib/components/kingdom-tour/AudienceWheel.svelte';
-	import { SITE_LOGO, SITE_NAME, SITE_URL, absoluteUrl } from '$lib/seo/site';
+	import { MONTH_PALETTES } from '#lib/almanach/palettes.ts';
+	import SeoHead from '#lib/seo/SeoHead.svelte';
+	import JsonLd from '#lib/seo/JsonLd.svelte';
+	import PereUbuFigure from '#lib/components/kingdom-tour/PereUbuFigure.svelte';
+	import AudienceWheel from '#lib/components/kingdom-tour/AudienceWheel.svelte';
+	import { SITE_LOGO, SITE_NAME, SITE_URL, absoluteUrl } from '#lib/seo/site.ts';
 	import type { PageProps } from './$types';
 
 	// Constantes
@@ -47,7 +47,7 @@
 >
 	<div class="flex flex-col items-center gap-1 self-start">
 		<h1 class="titre text-3xl font-bold sm:text-4xl">
-			Les maths de la chandelle <span class="text-primary">verte</span>
+			Chiphre, les maths de la chandelle <span class="text-primary">verte</span>
 		</h1>
 	</div>
 

@@ -1,0 +1,264 @@
+{
+	"id": "acaeb02a-e934-43b6-99bc-46bb1ffb4f0f",
+	"title": "Démontrer le terme général d'une suite géométrique",
+	"description": "Démonstration à trous de uₙ = u₀qⁿ : produit télescopique des n quotients uₖ₊₁/uₖ = q, calcul de proche en proche jusqu'à u₃, justification de l'existence des quotients",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $(u_n)$ la suite géométrique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:q}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}={{eval:q}}\\times u_k$. Comme $u_0\\neq 0$ et ${{eval:q}}\\neq 0$, aucun terme de la suite n'est nul, et pour tout $k$, $\\dfrac{u_{k+1}}{u_k}={{eval:q}}$. On écrit cette égalité pour $k=0$, …, $k=n-1$, puis on multiplie membre à membre :\n\n$$\\dfrac{u_1}{u_0}\\times\\dfrac{u_2}{u_1}\\times\\cdots\\times\\dfrac{u_n}{u_{n-1}}={{eval:q}}\\times{{eval:q}}\\times\\cdots\\times{{eval:q}}$$\n\nLes termes $u_1$, …, $u_{n-1}$ se simplifient. Complète.\n\n$\\dfrac{u_n}{u_0}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q}}^n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le membre de gauche, chaque terme $u_1$, …, $u_{n-1}$ est une fois au numérateur et une fois au dénominateur : il reste $\\dfrac{u_n}{u_0}$.",
+					"Le membre de droite est le produit de $n$ facteurs égaux à ${{eval:q}}$.",
+					"Donc $\\dfrac{u_n}{u_0}=\\textcolor{{{color:primary.0}}}{{{eval:q}}^n}$, soit $u_n={{eval:a}}\\times{{eval:q}}^n$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite géométrique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:q}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}={{eval:q}}\\times u_k$. On calcule les premiers termes de proche en proche :\n\n$$u_1={{eval:q}}\\times u_0,\\qquad u_2={{eval:q}}\\times u_1={{eval:q}}^2\\times u_0$$\n\nComplète.\n\n$u_3={{eval:q}}\\times u_2=?\\times u_0$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q^3}}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_3={{eval:q}}\\times u_2={{eval:q}}\\times{{eval:q}}^2\\times u_0={{eval:q}}^3\\times u_0$.",
+					"Donc $u_3=\\textcolor{{{color:primary.0}}}{{{eval:q^3}}}\\times u_0$ : à chaque rang, on multiplie une fois de plus par la raison.",
+					"De même, $u_n={{eval:q}}^n\\times u_0$ : il y a $n$ multiplications par ${{eval:q}}$ de $u_0$ à $u_n$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ la suite géométrique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:q}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}={{eval:q}}\\times u_k$. Pour démontrer l'expression de $u_n$, on veut écrire les quotients $\\dfrac{u_{k+1}}{u_k}$. Pourquoi ces quotients existent-ils ?\n\n```choix\n- Car $u_0\\neq 0$ et la raison est non nulle : aucun terme de la suite n'est nul.\n- Car la suite $(u_n)$ est arithmétique.\n- Car on peut toujours diviser par un terme d'une suite.\n- Car $u_{k+1}-u_k$ est constant.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un quotient $\\dfrac{u_{k+1}}{u_k}$ n'existe que si $u_k\\neq 0$.",
+					"Ici $u_0={{eval:a}}\\neq 0$ et $u_{k+1}={{eval:q}}\\times u_k$ avec ${{eval:q}}\\neq 0$ : de proche en proche, **aucun terme n'est nul**.",
+					"La suite est géométrique, pas arithmétique : c'est le quotient de deux termes consécutifs qui est constant, pas leur différence."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ une suite géométrique de premier terme $u_0\\neq 0$ et de raison $q\\neq 0$, et $n$ un entier naturel non nul. On démontre que $u_n=u_0q^n$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout entier naturel $k$, $u_{k+1}=q\\times u_k$ : de proche en proche, aucun terme n'est nul.\n- Donc pour tout entier naturel $k$, $\\dfrac{u_{k+1}}{u_k}=q$.\n- On écrit cette égalité pour $k=0$, …, $k=n-1$ et on multiplie : $\\dfrac{u_1}{u_0}\\times\\cdots\\times\\dfrac{u_n}{u_{n-1}}=q\\times\\cdots\\times q$.\n- Les termes $u_1$, …, $u_{n-1}$ se simplifient : $\\dfrac{u_n}{u_0}=q^n$.\n- Donc $u_n=u_0q^n$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Avant d'écrire un quotient $\\dfrac{u_{k+1}}{u_k}$, il faut savoir que $u_k\\neq 0$ : c'est la première étape.",
+					"Le produit des $n$ quotients se télescope : $\\dfrac{u_n}{u_0}=q^n$, d'où $\\textcolor{{{color:primary.0}}}{u_n=u_0q^n}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2ⁿ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["2^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n (raisonnement arithmétique)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["2n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2ⁿ⁺¹",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["2^{n+1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 × 2ⁿ (uₙ au lieu du quotient)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["5\\times2^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture 2³",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["2^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (3 × 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 (2²)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "aucun terme nul",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arithmétique",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : toujours possible",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : différence",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"q": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

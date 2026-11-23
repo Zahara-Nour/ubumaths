@@ -19,13 +19,13 @@
 -->
 
 <script lang="ts">
-	import { referencesToLabels } from '$lib/resources/references';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
+	import { journalContentPreview } from '#lib/journal/content.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { FileText, BookCheck, Globe, Calendar } from '@lucide/svelte';
-	import type { ClassJournalEntry, JournalEntryWithClass } from '$lib/types/journal';
-	import { GRADES, type GradeCode } from '$lib/types/grades';
-	import { cn } from '$lib/utils';
+	import type { ClassJournalEntry, JournalEntryWithClass } from '#lib/types/journal.ts';
+	import { GRADES, type GradeCode } from '#lib/types/grades.ts';
+	import { cn } from '#lib/utils.ts';
 
 	interface Props {
 		/** The journal entry */
@@ -64,17 +64,6 @@
 		}
 		return { variant: 'secondary' as const, label: 'Prévu', color: 'text-orange-500' };
 	});
-
-	/**
-	 * Strip HTML and truncate content
-	 */
-	function truncateContent(html: string | null, maxLength: number): string {
-		if (!html) return '';
-		// Les références citées sont réduites à leur libellé : un uuid mangerait
-		// l'aperçu sans rien apprendre au lecteur.
-		const text = referencesToLabels(html).replace(/<[^>]*>/g, '');
-		return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
-	}
 
 	/**
 	 * Check if entry has class info
@@ -134,7 +123,7 @@
 		{#if entry.lessonContent}
 			<div>
 				<p class="text-sm text-muted-foreground">
-					{truncateContent(entry.lessonContent, 100)}
+					{journalContentPreview(entry.lessonContent, 100)}
 				</p>
 			</div>
 		{:else}

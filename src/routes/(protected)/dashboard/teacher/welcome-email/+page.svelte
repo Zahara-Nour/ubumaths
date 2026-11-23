@@ -11,15 +11,15 @@
 	- Shows previous email status if already sent
 -->
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Alert from '$lib/components/ui/alert';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { Mail, AlertTriangle, CheckCircle2, Send } from '@lucide/svelte';
-	import { WELCOME_EMAIL_SUBJECT, getWelcomeEmailText } from '$lib/email-templates/welcome';
+	import { WELCOME_EMAIL_SUBJECT, getWelcomeEmailText } from '#lib/email-templates/welcome.ts';
 
 	let { data }: { data: PageData } = $props();
 	// svelte-ignore state_referenced_locally

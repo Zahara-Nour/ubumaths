@@ -18,14 +18,14 @@
  * @module questions/units/student-calculation
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { tidy } from '$lib/mathAST/tidy';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { rationalOf } from '$lib/mathAST/eval/evaluate-with-modifiers';
-import { isOpposite, isUnit, isVariable } from '$lib/mathAST/guards';
-import { findNodes } from '$lib/mathAST/transforms';
-import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { tidy } from '#lib/mathAST/tidy/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { rationalOf } from '#lib/mathAST/eval/evaluate-with-modifiers.ts';
+import { isOpposite, isUnit, isVariable } from '#lib/mathAST/guards.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { quantityProblem } from '#lib/mathAST/cli/quantities.ts';
 import { parseLatexQuantity, parseUnitExpression } from './parser';
 import { degreeSymbolLatex, normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readCompositeDuration } from './composite-duration';
@@ -134,7 +134,8 @@ export function readStudentCalculation(latex: string): StudentCalculation | null
 	const problem = quantityProblem(parsed.ast);
 	if (problem !== null) return { kind: 'refused', reason: 'dimensions', feedback: problem };
 
-	const reduced = tidy(parsed.ast, { unitChoice: 'written' });
+	// UNE grandeur, même pour une durée tapée en h et min (`durations: 'single'`)
+	const reduced = tidy(parsed.ast, { unitChoice: 'written', durations: 'single' });
 	const quantity = unsignedQuantity(reduced);
 	if (!isUnit(quantity)) return { kind: 'refused', reason: 'unreadable' };
 	// `2\sqrt{2}\,m` : une valeur qui n'est pas un nombre décimal ou rationnel

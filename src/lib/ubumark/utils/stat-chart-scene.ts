@@ -27,33 +27,35 @@ import type {
 	SimulationData,
 	SimulatedNamedLaw,
 	StatChartIndicator,
+	StatChartAxis,
 	StatChartSpec,
 	StatChartUnit,
 	QueryInterval
 } from '../types/stat-chart';
 import { STAT_CHART_LIMITS } from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
-import type { ContentLocale } from '$lib/types/locale';
-import { groupNumberText } from '$lib/mathAST/digit-grouping';
-import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { categoryFrequencies, describeList, summarizeTable } from '$lib/statistics/describe';
+import type { ContentLocale } from '#lib/types/locale.ts';
+import { groupNumberText } from '#lib/mathAST/digit-grouping.ts';
+import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
+import { categoryFrequencies, describeList, summarizeTable } from '#lib/statistics/describe.ts';
 import {
 	estimateClassQuantile,
 	summarizeClasses,
 	type ClassSummary,
 	type StatClass
-} from '$lib/statistics/classes';
+} from '#lib/statistics/classes.ts';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
-import { crossTable } from '$lib/statistics/cross-table';
+import { SCALE_TICKS } from './barres-placer';
+import { crossTable } from '#lib/statistics/cross-table.ts';
 import {
 	formatApproxValue,
 	formatFraction,
 	formatLawApproxValue,
 	formatLawIndicators,
 	formatStatNumber
-} from '$lib/statistics/format';
-import { Fraction } from '$lib/statistics/fraction';
+} from '#lib/statistics/format.ts';
+import { Fraction } from '#lib/statistics/fraction.ts';
 import {
 	decimalFit,
 	relationPole,
@@ -61,9 +63,9 @@ import {
 	squaredSign,
 	transformValue,
 	type VariableChange
-} from '$lib/statistics/variable-change';
-import { bivariateFit, readExactValue, toSafeNumber } from '$lib/statistics/bivariate';
-import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
+} from '#lib/statistics/variable-change.ts';
+import { bivariateFit, readExactValue, toSafeNumber } from '#lib/statistics/bivariate.ts';
+import { randomVariable, type RandomVariableLaw } from '#lib/statistics/random-variable.ts';
 import {
 	discreteSampler,
 	exponentialSampler,
@@ -76,11 +78,14 @@ import {
 	uniformDensitySampler,
 	uniformSampler,
 	type LawSampler
-} from '$lib/statistics/simulation';
+} from '#lib/statistics/simulation.ts';
 // ⚠️ Import circulaire (simulation-scene construit ses histogrammes par
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
 import { buildComparisonScene } from './comparison-scene';
+// ⚠️ Import circulaire (boxplot-scene reprend `scatterAxis`) : sans risque, rien
+// n'y est appelé au chargement
+import { buildBoxPlotScene } from './boxplot-scene';
 import { STAT_TEXT, type IndicatorRowId } from './stat-chart-text';
 import {
 	asWritten,
@@ -95,7 +100,7 @@ import {
 	scatterEquation,
 	scatterNumber
 } from './scatter-lines';
-import { createRandomSource } from '$lib/utils/random';
+import { createRandomSource } from '#lib/utils/random.ts';
 import {
 	binomialDistribution,
 	binomialInterval,
@@ -103,17 +108,17 @@ import {
 	binomialProbability,
 	binomialThreshold,
 	type BinomialDistribution
-} from '$lib/statistics/binomial';
-import { roundExact, roundNumber } from '$lib/statistics/rounding';
+} from '#lib/statistics/binomial.ts';
+import { roundExact, roundNumber } from '#lib/statistics/rounding.ts';
 import {
 	geometricConditional,
 	geometricMoments,
 	GEOMETRIC_MAX_K,
 	geometricProbability,
 	geometricThreshold
-} from '$lib/statistics/geometric';
-import type { ThresholdResult } from '$lib/statistics/threshold';
-import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
+} from '#lib/statistics/geometric.ts';
+import type { ThresholdResult } from '#lib/statistics/threshold.ts';
+import { uniformMoments, uniformProbability } from '#lib/statistics/uniform.ts';
 import {
 	exponentialDensity,
 	exponentialMoments,
@@ -123,7 +128,7 @@ import {
 	normalProbability,
 	uniformDensityMoments,
 	uniformDensityProbability
-} from '$lib/statistics/density';
+} from '#lib/statistics/density.ts';
 
 // ============================================================================
 // TYPES
@@ -185,6 +190,11 @@ export interface SceneBar {
 	series?: 0 | 1;
 	/** Loi binomiale avec `intervalle:` : false hors de I (gris) ; absente sinon */
 	highlighted?: boolean;
+	/**
+	 * Barre à construire par l'élève (`placer:`) : `value` est l'effectif attendu,
+	 * que seule la correction dessine ; absente sinon
+	 */
+	toPlace?: true;
 	value: number;
 	/** Valeur écrite au-dessus de la barre (`valeurs: oui`) */
 	valueLabel: string;
@@ -199,6 +209,8 @@ export interface BarScene extends SceneCommon {
 	/** Haut de l'axe vertical, multiple du pas */
 	yMax: number;
 	ticks: SceneTick[];
+	/** `axe: à choisir` sans échelle choisie : graduations sans nombres */
+	scaleToChoose?: true;
 	axisTitles: { x: string | null; y: string };
 	color: CourbeColor;
 	showValues: boolean;
@@ -514,7 +526,57 @@ export interface ScatterScene extends SceneCommon {
 	curve: ScenePoint[][] | null;
 }
 
+/** Une boîte d'une boîte à moustaches, prête à dessiner */
+export interface BoxPlotSceneBox {
+	/** null : boîte sans nom (pas d'étiquette) */
+	name: string | null;
+	/** Minimum, Q1, médiane, Q3, maximum */
+	values: [number, number, number, number, number];
+	/** Les mêmes, écrits selon la langue (`valeurs: oui`) */
+	labels: string[];
+	/**
+	 * Rangée de chaque étiquette sous la boîte (0 = la plus proche) : deux valeurs
+	 * proches ne s'écrivent pas l'une sur l'autre
+	 */
+	valueRows: number[];
+	/** Boîte à construire par l'élève (`placer:`) : jamais dessinée, son nom seul */
+	toPlace?: true;
+}
+
+/**
+ * Boîtes à moustaches (```boite-a-moustaches) : horizontales, empilées dans
+ * l'ordre de l'auteur ; un seul axe en bas, de `xMin` à `xMax`.
+ */
+export interface BoxPlotScene extends SceneCommon {
+	kind: 'boite-a-moustaches';
+	xMin: number;
+	xMax: number;
+	xTicks: SceneTick[];
+	/** `titre:` du bloc, sous l'axe ; null sans titre */
+	axisTitle: string | null;
+	boxes: BoxPlotSceneBox[];
+	showValues: boolean;
+	/** Place de chaque boîte en hauteur, dans l'ordre de `boxes` */
+	bands: BoxPlotBand[];
+	color: CourbeColor;
+}
+
+/**
+ * Place d'une boîte en hauteur, en px depuis le haut du cadre (`pixelSize`) ; le
+ * PDF la met à l'échelle de sa largeur
+ */
+export interface BoxPlotBand {
+	/** Ligne de base du nom ; null quand aucune boîte n'a de nom */
+	nameY: number | null;
+	/** Haut et bas de la boîte */
+	top: number;
+	bottom: number;
+	/** Ligne de base de chaque rangée d'étiquettes de valeurs (`valueRows`) */
+	valueY: number[];
+}
+
 export type StatChartScene =
+	| BoxPlotScene
 	| ScatterScene
 	| DensityScene
 	| FrequencyTableScene
@@ -663,7 +725,12 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const values = seriesList.flatMap((s) => spec.data.map((_, i) => shown(s, i)));
 	const maxValue = Math.max(...values) || 1;
 
-	const { yMax, ticks } = valueAxis(maxValue, height, unit, locale);
+	const { yMax, ticks } = spec.axis
+		? writtenAxis(spec.axis, locale)
+		: spec.chooseScale
+			? mutedAxis(locale)
+			: valueAxis(maxValue, height, unit, locale);
+	const toPlace = new Set(spec.toPlace ?? []);
 
 	const margin = (1 - BAR_WIDTH) / 2;
 	const barWidth = BAR_WIDTH / seriesList.length;
@@ -674,6 +741,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 			return {
 				label: shownLabel(d.label, locale),
 				...(two !== null && { series: s }),
+				...(toPlace.has(i) && { toPlace: true as const }),
 				value,
 				valueLabel: formatValue(value, unit, locale),
 				left,
@@ -687,9 +755,10 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const longest = Math.max(...spec.data.map((d) => d.label.length));
 	const rotateLabels = count > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
 
+	// Barre à construire : son effectif n'est jamais dit avant la correction
 	const listed = spec.data.map((d, i) =>
 		two === null
-			? `${shownLabel(d.label, locale)} ${formatValue(d.value, spec.unit, locale)}`
+			? `${shownLabel(d.label, locale)} ${toPlace.has(i) ? STAT_TEXT[locale].toBuild : formatValue(d.value, spec.unit, locale)}`
 			: `${shownLabel(d.label, locale)} — ${two.names[0]} ${formatValue(shown(0, i), unit, locale)}, ${two.names[1]} ${formatValue(shown(1, i), unit, locale)}`
 	);
 
@@ -719,6 +788,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 		bars,
 		yMax,
 		ticks,
+		...(spec.chooseScale && !spec.axis && { scaleToChoose: true as const }),
 		axisTitles: {
 			x: spec.axes.x,
 			y:
@@ -755,6 +825,27 @@ function valueAxis(
 		label: formatTick(i * step, locale)
 	}));
 	return { yMax: tickCount * step, ticks };
+}
+
+/** Axe vertical écrit par le prof (`axe: 0 à 20, de 2 en 2`) */
+function writtenAxis(
+	axis: StatChartAxis,
+	locale: ContentLocale
+): { yMax: number; ticks: SceneTick[] } {
+	const ticks = Array.from({ length: axis.max / axis.step + 1 }, (_, i) => ({
+		value: i * axis.step,
+		label: formatTick(i * axis.step, locale)
+	}));
+	return { yMax: axis.max, ticks };
+}
+
+/**
+ * Échelle à choisir (`axe: à choisir`) : `SCALE_TICKS` graduations sans nombres,
+ * tant que l'élève n'a pas choisi ce que vaut une graduation
+ */
+function mutedAxis(locale: ContentLocale): { yMax: number; ticks: SceneTick[] } {
+	const { yMax, ticks } = writtenAxis({ max: SCALE_TICKS, step: 1 }, locale);
+	return { yMax, ticks: ticks.map((t) => ({ ...t, label: '' })) };
 }
 
 /** Indicateurs d'une série à effectifs dont les catégories sont des nombres (Q28). */
@@ -3017,7 +3108,7 @@ const SCATTER_MIN_SPACING = { x: TICK_TARGET_PX, y: 30 };
  * Largeur d'un caractère d'étiquette, en px : le plus large des deux rendus
  * (écran 11 px ; PDF 6,5 pt sur 6,5 cm pour 400 px ≈ 7 px)
  */
-const SCATTER_LABEL_CHAR_PX = 7;
+export const SCATTER_LABEL_CHAR_PX = 7;
 
 /** Air entre deux étiquettes voisines, en px */
 const SCATTER_LABEL_GAP_PX = 8;
@@ -3029,7 +3120,7 @@ const SCATTER_MAX_TICKS = 200;
 const SCATTER_LABEL_HEIGHT_PX = 14;
 
 /** Une graduation d'un nuage : arrondie au pas, milliers groupés à partir de 10 000 */
-function scatterTick(value: number, locale: ContentLocale): SceneTick {
+export function scatterTick(value: number, locale: ContentLocale): SceneTick {
 	return { value, label: groupThousands(formatTick(value, locale), locale) };
 }
 
@@ -3042,7 +3133,7 @@ function scatterTick(value: number, locale: ContentLocale): SceneTick {
  * étiquettes : leur largeur sur l'axe des x (« 2014,5 » ne tenait pas tous
  * les 0,5 sur 400 px), leur hauteur sur l'axe des y.
  */
-function scatterAxis(
+export function scatterAxis(
 	values: readonly number[],
 	pixels: number,
 	withZero: boolean,
@@ -3445,5 +3536,7 @@ function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartSc
 			return buildFrequencyTableScene(spec, locale);
 		case 'nuage':
 			return buildScatterScene(spec, locale);
+		case 'boite-a-moustaches':
+			return buildBoxPlotScene(spec, locale);
 	}
 }

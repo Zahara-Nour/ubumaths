@@ -9,14 +9,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const logErrorMock = vi.fn();
 
-vi.mock('$lib/server/errorMonitoring', () => ({
+vi.mock('#lib/server/errorMonitoring.ts', () => ({
 	logError: (...args: unknown[]) => logErrorMock(...args),
 	getUserContext: async () => ({ user_id: 'u1', user_role: 'student' })
 }));
-vi.mock('$lib/server/middleware/rateLimit', () => ({ rateLimit: () => undefined }));
+vi.mock('#lib/server/middleware/rateLimit.ts', () => ({ rateLimit: () => undefined }));
 
 import { POST } from '../+server';
-import { logErrorSchema } from '$lib/server/validation/errors';
+import { logErrorSchema } from '#lib/server/validation/errors.ts';
 
 type PostEvent = Parameters<typeof POST>[0];
 

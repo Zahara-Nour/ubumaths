@@ -6,15 +6,15 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
-	import { calculateBadges, getTierColorClass } from '$lib/utils/riddle-badges';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import * as Progress from '$lib/components/ui/progress';
+	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '#lib/types/riddle.ts';
+	import { calculateBadges, getTierColorClass } from '#lib/utils/riddle-badges.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import * as Progress from '#lib/components/ui/progress/index.ts';
 	import { BookOpen, Trophy, Target, Award } from '@lucide/svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';

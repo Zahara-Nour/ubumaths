@@ -27,7 +27,7 @@ describe('une définition en erreur', () => {
 	it.each([
 		[['h(x) = x^^2'], 'h'],
 		[['k(x) = (x+1'], 'k'],
-		[['f(x) = x^2 sur [0;+∞[', 'g(x) = f(2x)'], 'g']
+		[['f(x) = x^2 sur [0;+∞[', 'g(x) = f(x^2)'], 'g']
 	])('%j : la ligne reprend le message de la carte, en échec', (lines, name) => {
 		const desk = deskWith(...lines);
 		const card = desk.atelier.get(name)!;

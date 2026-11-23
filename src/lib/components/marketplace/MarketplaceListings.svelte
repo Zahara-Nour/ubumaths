@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import SkeletonList from '#lib/components/skeleton/SkeletonList.svelte';
 	import { RefreshCw, ShoppingBag } from '@lucide/svelte';
 	import MarketplaceListingCard from './MarketplaceListingCard.svelte';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
-	import type { MarketplaceListing } from '$lib/types/marketplace';
+	import type { MarketplaceListing } from '#lib/types/marketplace.ts';
 
 	// State
 	let selectedListing = $state<MarketplaceListing | null>(null);

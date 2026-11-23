@@ -26,12 +26,12 @@ import {
 	createMockLocals,
 	createMockRequest,
 	createMockURL
-} from '$tests/helpers';
+} from '#tests/helpers/index.ts';
 
 // ============================================================================
 // MOCK SETUP
 // ============================================================================
-// Using shared helpers from $tests/helpers barrel export
+// Using shared helpers from #tests/helpers barrel export
 
 /**
  * Mock request event for SvelteKit API route handlers

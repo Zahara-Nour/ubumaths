@@ -5,10 +5,10 @@
 	 * Shown when a freeze > 15s is detected.
 	 * Offers to send an automatic bug report.
 	 */
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getFreezeDetectionContext } from '$lib/utils/freezeDetection';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { getFreezeDetectionContext } from '#lib/utils/freezeDetection.ts';
 	import { Loader2, AlertTriangle } from '@lucide/svelte';
 
 	interface Props {

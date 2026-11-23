@@ -1,9 +1,9 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { validateTimetable, type SchoolTimetable } from '$lib/utils/timetable';
-import { validateUuidParam } from '$lib/server/validation/params';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
+import { validateTimetable, type SchoolTimetable } from '#lib/utils/timetable.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
 import {
 	createSchoolYearSchema,
 	updateSchoolYearSchema,
@@ -16,8 +16,9 @@ import {
 	updateSchoolHolidaySchema,
 	deleteSchoolHolidaySchema,
 	duplicateSchoolYearSchema
-} from '$lib/server/validation/academic';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/academic.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { schoolYearConflictMessage } from '#lib/server/school-year-errors.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server'
@@ -129,6 +130,8 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('school_years').insert(validation.data);
 
 		if (dbError) {
+			const conflict = schoolYearConflictMessage(dbError, validation.data.name);
+			if (conflict) return fail(409, { error: conflict });
 			logger.error('Error creating school year:', dbError);
 			return fail(500, { error: "Erreur lors de la création de l'année scolaire" });
 		}
@@ -169,6 +172,8 @@ export const actions: Actions = {
 		const { error: dbError } = await supabase.from('school_years').update(updateData).eq('id', id);
 
 		if (dbError) {
+			const conflict = schoolYearConflictMessage(dbError, validation.data.name ?? '');
+			if (conflict) return fail(409, { error: conflict });
 			logger.error('Error updating school year:', dbError);
 			return fail(500, { error: "Erreur lors de la mise à jour de l'année scolaire" });
 		}
@@ -560,6 +565,8 @@ export const actions: Actions = {
 			.single();
 
 		if (yearError || !newYear) {
+			const conflict = schoolYearConflictMessage(yearError, validation.data.target_year_name);
+			if (conflict) return fail(409, { error: conflict });
 			logger.error('Error creating duplicate year:', yearError);
 			return fail(500, { error: "Erreur lors de la création de l'année dupliquée" });
 		}

@@ -10,7 +10,7 @@
  * - Sync state management
  */
 
-import { toaster } from '$lib/stores/toaster.svelte';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
 import { AUTO_SYNC_DELAY } from '../utils/sync-state';
 import type { WhiteboardDocument } from '../types/document';
 import type { DriveFolder, ListFilesResponse } from '../types/drive';

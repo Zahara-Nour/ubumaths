@@ -18,7 +18,7 @@
  * @module atelier/steps-summary
  */
 
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 
 // =============================================================================
 // Types

@@ -1,0 +1,222 @@
+{
+	"id": "fc84a1c8-f0fd-45c5-bf58-40009ac00efa",
+	"title": "Représenter une liste de termes d'une suite en Python",
+	"description": "Programme Python qui place les points (n ; u(n)) : nuage obtenu (arithmétique, géométrique), nombre de points, instruction de tracé",
+	"grades": ["1_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nimport matplotlib.pyplot as plt\n\nrangs = []\ntermes = []\nu = {{a}}\nfor n in range(5):\n    rangs.append(n)\n    termes.append(u)\n    u = u + {{r}}\nplt.plot(rangs, termes, 'o')\nplt.show()\n```\n\nQuel nuage de points obtient-on ?\n\n````choix\n- ```nuage\n  x: 0 ; 1 ; 2 ; 3 ; 4\n  y: {{eval:a+0*r}} ; {{eval:a+1*r}} ; {{eval:a+2*r}} ; {{eval:a+3*r}} ; {{eval:a+4*r}}\n  nom x: n\n  nom y: u(n)\n  description: Cinq points alignés, de (0 ; u(0)) à (4 ; u(4)).\n  ```\n- ```nuage\n  x: 0 ; 1 ; 2 ; 3 ; 4\n  y: {{eval:a+1*r}} ; {{eval:a+2*r}} ; {{eval:a+3*r}} ; {{eval:a+4*r}} ; {{eval:a+5*r}}\n  nom x: n\n  nom y: u(n)\n  description: Cinq points alignés, le premier plus haut.\n  ```\n- ```nuage\n  x: 0 ; 1 ; 2 ; 3 ; 4\n  y: {{eval:a+0*r}} ; {{eval:a+2*r}} ; {{eval:a+4*r}} ; {{eval:a+6*r}} ; {{eval:a+8*r}}\n  nom x: n\n  nom y: u(n)\n  description: Cinq points alignés, plus pentus.\n  ```\n- ```nuage\n  x: {{eval:a+0*r}} ; {{eval:a+1*r}} ; {{eval:a+2*r}} ; {{eval:a+3*r}} ; {{eval:a+4*r}}\n  y: 0 ; 1 ; 2 ; 3 ; 4\n  nom x: n\n  nom y: u(n)\n  description: Cinq points alignés, peu pentus.\n  ```\n````",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "2..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le programme place les points $(n\\,;u(n))$ pour $n$ de $0$ à $4$ : `u` vaut d'abord $u(0)={{a}}$ et augmente de ${{r}}$ à chaque tour.",
+					"Les points sont $(0\\,;{{a}})$, $(1\\,;{{eval:a+1*r}})$, … , $(4\\,;{{eval:a+4*r}})$ : cinq points alignés, puisque la suite est arithmétique."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nimport matplotlib.pyplot as plt\n\nrangs = []\ntermes = []\nu = {{a}}\nfor n in range(5):\n    rangs.append(n)\n    termes.append(u)\n    u = {{q}} * u\nplt.plot(rangs, termes, 'o')\nplt.show()\n```\n\nQuel nuage de points obtient-on ?\n\n````choix\n- ```nuage\n  x: 0 ; 1 ; 2 ; 3 ; 4\n  y: {{eval:a*q^0}} ; {{eval:a*q^1}} ; {{eval:a*q^2}} ; {{eval:a*q^3}} ; {{eval:a*q^4}}\n  nom x: n\n  nom y: u(n)\n  description: Cinq points sur une courbe qui monte de plus en plus vite.\n  ```\n- ```nuage\n  x: 0 ; 1 ; 2 ; 3 ; 4\n  y: {{eval:a*q^1}} ; {{eval:a*q^2}} ; {{eval:a*q^3}} ; {{eval:a*q^4}} ; {{eval:a*q^5}}\n  nom x: n\n  nom y: u(n)\n  description: Cinq points, le premier déjà multiplié.\n  ```\n- ```nuage\n  x: 0 ; 1 ; 2 ; 3 ; 4\n  y: {{eval:a+0*q}} ; {{eval:a+1*q}} ; {{eval:a+2*q}} ; {{eval:a+3*q}} ; {{eval:a+4*q}}\n  nom x: n\n  nom y: u(n)\n  description: Cinq points alignés.\n  ```\n````",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le programme place les points $(n\\,;u(n))$ pour $n$ de $0$ à $4$ : `u` vaut d'abord $u(0)={{a}}$ et il est multiplié par ${{q}}$ à chaque tour.",
+					"Les points sont $(0\\,;{{a}})$, $(1\\,;{{eval:a*q^1}})$, $(2\\,;{{eval:a*q^2}})$, … : ils ne sont pas alignés, ils montent de plus en plus vite."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nimport matplotlib.pyplot as plt\n\nrangs = []\ntermes = []\nu = {{a}}\nfor n in range({{N}}):\n    rangs.append(n)\n    termes.append(u)\n    u = u + {{r}}\nplt.plot(rangs, termes, 'o')\nplt.show()\n```\n\nCombien de points sont placés sur le graphique ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..7"
+				},
+				{
+					"name": "N",
+					"expression": "6..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range({{N}})` donne à `n` les valeurs $0$, $1$, … , ${{eval:N-1}}$ : la boucle tourne ${{N}}$ fois.",
+					"Chaque tour ajoute un rang et un terme : $\\textcolor{{{color:primary.0}}}{{{N}}}$ points sont placés, de $(0\\,;u(0))$ à $({{eval:N-1}}\\,;u({{eval:N-1}}))$."
+				]
+			}
+		},
+		{
+			"statement": "On veut placer les points de coordonnées $(n\\,;u(n))$. On complète la dernière ligne utile du programme suivant.\n\n```python\nimport matplotlib.pyplot as plt\n\nrangs = []\ntermes = []\nu = {{a}}\nfor n in range({{N}}):\n    rangs.append(n)\n    termes.append(u)\n    u = u + {{r}}\n# ligne à compléter\nplt.show()\n```\n\nQuelle instruction faut-il écrire ?\n\n```choix\n- `plt.plot(rangs, termes, 'o')`\n- `plt.plot(termes, rangs, 'o')`\n- `plt.plot(rangs, u, 'o')`\n- `plt.plot(n, termes, 'o')`\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..7"
+				},
+				{
+					"name": "N",
+					"expression": "6..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`plt.plot(X, Y, 'o')` place les points dont les abscisses sont dans la liste `X` et les ordonnées dans la liste `Y`.",
+					"Les abscisses sont les rangs $n$ (liste `rangs`), les ordonnées les termes $u(n)$ (liste `termes`) : `plt.plot(rangs, termes, 'o')`."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bon nuage (arithmétique)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : commence à u(1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bon nuage (géométrique)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arithmétique",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"q": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "range(8) : 8 points",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"N": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 points",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"N": "8"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "plot(rangs, termes)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"N": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : axes inversés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"N": "8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

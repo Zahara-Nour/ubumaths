@@ -14,16 +14,18 @@
 	- Budget du DOCUMENT épuisé (`render-budget.ts`) : cadre neutre.
 	- Case « figure » (```figure-a-completer, `answer` ou `showSolution`) : la
 	  vue de saisie (`FigureACompleterView`), chargée à la demande elle aussi.
+	- `deplacable: oui` ou `rendu: croquis|mixte` : la toile (`FigureCanvasView`),
+	  chargée à la demande ; au PDF, la figure reste statique.
 
 	@module components/markdown/nodes/FigureBlock
 -->
 <script lang="ts">
-	import type { FigureNode } from '$lib/ubumark/types/figure';
-	import { FIGURE_AXES_MARGIN_PX, FIGURE_PIXEL_WIDTH } from '$lib/ubumark/types/figure';
+	import type { FigureNode } from '#lib/ubumark/types/figure.ts';
+	import { FIGURE_AXES_MARGIN_PX, FIGURE_PIXEL_WIDTH } from '#lib/ubumark/types/figure.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget } from '../render-budget';
 	import FigureErrors from './FigureErrors.svelte';
-	import type { ConstructionAnswerInput } from '$lib/questions/construction/drawing';
+	import type { ConstructionAnswerInput } from '#lib/questions/construction/drawing.ts';
 
 	interface Props {
 		node: FigureNode;
@@ -62,11 +64,18 @@
 	let completing = $derived(
 		node.construction !== undefined && (answer !== undefined || showSolution)
 	);
+	/** Figure à manipuler ou dessinée à main levée : la toile */
+	let onCanvas = $derived(
+		node.interactive !== undefined &&
+			(node.interactive.draggable || node.interactive.renderMode !== 'normal')
+	);
 	// Promesses créées au premier besoin seulement : rien n'est chargé pour l'autre vue
 	let staticView: Promise<typeof import('./FigureBlockView.svelte')> | undefined;
 	let completerView: Promise<typeof import('./FigureACompleterView.svelte')> | undefined;
+	let canvasView: Promise<typeof import('./FigureCanvasView.svelte')> | undefined;
 	const loadStaticView = () => (staticView ??= import('./FigureBlockView.svelte'));
 	const loadCompleterView = () => (completerView ??= import('./FigureACompleterView.svelte'));
+	const loadCanvasView = () => (canvasView ??= import('./FigureCanvasView.svelte'));
 </script>
 
 {#snippet loading()}
@@ -89,6 +98,14 @@
 			{@render loading()}
 		{:then module}
 			<module.default {node} {errorsVisible} {answer} {showSolution} class={className} />
+		{:catch}
+			<FigureErrors errors={[]} errorsVisible={false} class={className} />
+		{/await}
+	{:else if onCanvas}
+		{#await loadCanvasView()}
+			{@render loading()}
+		{:then module}
+			<module.default {node} {errorsVisible} class={className} />
 		{:catch}
 			<FigureErrors errors={[]} errorsVisible={false} class={className} />
 		{/await}

@@ -5,11 +5,11 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
-vi.mock('$lib/server/mathoux/teacher', () => ({ loadMathouxCountsByStudent: vi.fn() }));
+vi.mock('#lib/server/middleware/auth.ts', () => ({ requireRole: vi.fn() }));
+vi.mock('#lib/server/mathoux/teacher.ts', () => ({ loadMathouxCountsByStudent: vi.fn() }));
 
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadMathouxCountsByStudent } from '$lib/server/mathoux/teacher';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadMathouxCountsByStudent } from '#lib/server/mathoux/teacher.ts';
 import { load } from '../+page.server';
 
 type Result = { data: unknown; error: unknown };

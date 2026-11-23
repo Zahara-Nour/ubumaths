@@ -1,0 +1,419 @@
+{
+	"id": "ca1a1201-e819-4ad2-8237-dd61c3d1dbc2",
+	"title": "Ordre de grandeur : est-ce vraisemblable ?",
+	"description": "Juger si une valeur annoncée (aire, masse, taille, durée, volume, distance) est vraisemblable (piège : valeur à un facteur 10 de l'ordre de grandeur réaliste)",
+	"grades": ["2"],
+	"level": 12,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une salle de classe a une aire de ${{if:k==0|{{v}}|{{w}}}}~\\unit{m^2}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "50|60|70"
+				},
+				{
+					"name": "w",
+					"expression": "5|6|500|600|800"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une salle de classe mesure environ $8~\\unit{m}$ sur $8~\\unit{m}$ : son aire est de l'ordre de $50$ à $70~\\unit{m^2}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un élève de Seconde pèse ${{if:k==0|{{v}}|{{w}}}}~\\unit{kg}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "50|55|60|65"
+				},
+				{
+					"name": "w",
+					"expression": "5|6|500|600"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La masse d'un adolescent est de l'ordre de $50$ à $70~\\unit{kg}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un élève de Seconde mesure ${{if:k==0|{{v}}|{{w}}}}~\\unit{cm}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "160|165|170|175|180"
+				},
+				{
+					"name": "w",
+					"expression": "12|15|16"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un adolescent mesure de l'ordre de $1{,}60~\\unit{m}$ à $1{,}80~\\unit{m}$, soit $160$ à $180~\\unit{cm}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un film au cinéma dure ${{if:k==0|{{v}}|{{w}}}}~\\unit{min}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "100|110|120"
+				},
+				{
+					"name": "w",
+					"expression": "8|9|10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un film dure de l'ordre d'une heure et demie à deux heures, soit $90$ à $120~\\unit{min}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Une baignoire remplie contient ${{if:k==0|{{v}}|{{w}}}}~\\unit{L}$ d'eau. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "150|200|250"
+				},
+				{
+					"name": "w",
+					"expression": "10|15|20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une baignoire remplie contient de l'ordre de $150$ à $250~\\unit{L}$ d'eau.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un téléphone portable a une masse de ${{if:k==0|{{v}}|{{w}}}}~\\unit{g}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "180|200|220"
+				},
+				{
+					"name": "w",
+					"expression": "10|15|18"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un téléphone portable a une masse de l'ordre de $150$ à $250~\\unit{g}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un immeuble de cinq étages a une hauteur de ${{if:k==0|{{v}}|{{w}}}}~\\unit{m}$. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "15|18|20"
+				},
+				{
+					"name": "w",
+					"expression": "2|150|200"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un étage mesure environ $3~\\unit{m}$ : cinq étages font de l'ordre de $15$ à $20~\\unit{m}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un trajet à pied de ${{if:k==0|{{v}}|{{w}}}}~\\unit{km}$ dure une demi-heure. Est-ce vraisemblable ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "2|3"
+				},
+				{
+					"name": "w",
+					"expression": "20|30|40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On marche à environ $5~\\unit{km}$ par heure : en une demi-heure, on parcourt de l'ordre de $2$ à $3~\\unit{km}$.",
+					"{{if:k==0|La valeur annoncée, ${{v}}$, est de cet ordre de grandeur : c'est vraisemblable. Réponse : **Oui**.|La valeur annoncée, ${{w}}$, est environ **dix fois** trop {{if:w<v|petite|grande}} (ou plus) : ce n'est pas vraisemblable. Réponse : **Non**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Salle de 60 m² : Oui",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"v": "60",
+				"w": "600"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Salle de 600 m² : Non",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "600"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : salle de 600 m² jugée vraisemblable",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "600"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Élève de 60 kg : Oui",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"v": "60",
+				"w": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Élève de 6 kg : Non",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"v": "60",
+				"w": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Élève de 170 cm : Oui",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"v": "170",
+				"w": "16"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 170 cm jugés invraisemblables",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"v": "170",
+				"w": "16"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Film de 9 min : Non",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"v": "110",
+				"w": "9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Baignoire de 200 L : Oui",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : baignoire de 15 L jugée vraisemblable",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Téléphone de 15 g : Non",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"v": "200",
+				"w": "15"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Immeuble de 18 m : Oui",
+			"variationIndex": 6,
+			"variables": {
+				"k": "0",
+				"v": "18",
+				"w": "150"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : immeuble de 150 m jugé vraisemblable",
+			"variationIndex": 6,
+			"variables": {
+				"k": "1",
+				"v": "18",
+				"w": "150"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30 km en une demi-heure à pied : Non",
+			"variationIndex": 7,
+			"variables": {
+				"k": "1",
+				"v": "3",
+				"w": "30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import TypedConfirmDialog from '$lib/components/admin/TypedConfirmDialog.svelte';
-	import type { Database } from '$lib/types/database';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import TypedConfirmDialog from '#lib/components/admin/TypedConfirmDialog.svelte';
+	import type { Database } from '#lib/types/database.ts';
 
 	type VipCardConfig = Database['public']['Tables']['vip_card_config']['Row'];
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TestResults from '../TestResults.svelte';
-import type { TestResult } from '$lib/types/test';
-import type { MathouNews } from '$lib/mathoux/news';
+import type { TestResult } from '#lib/types/test.ts';
+import type { MathouNews } from '#lib/mathoux/news.ts';
 
 /**
  * Cartes de cours (#617) : hors score, comptées à part (décision 2026-09-28).
@@ -44,13 +44,13 @@ describe('TestResults — cartes de cours', () => {
 /**
  * Évaluation (chantier 4) : ni « Recommencer » (une nouvelle tentative ne se
  * lance que depuis « Mes évaluations », où les tentatives sont vérifiées), ni
- * « Retour au panier ».
+ * « Retour à ma série ».
  */
 describe('TestResults — évaluation', () => {
-	it('hors évaluation : « Recommencer » et « Retour au panier »', async () => {
+	it('hors évaluation : « Recommencer » et « Retour à ma série »', async () => {
 		const { container } = await render(TestResults, { result: result(), ...noop });
 		expect(container.textContent).toContain('Recommencer avec de nouvelles questions');
-		expect(container.textContent).toContain('Retour au panier');
+		expect(container.textContent).toContain('Retour à ma série');
 		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).toBeNull();
 	});
 
@@ -61,7 +61,7 @@ describe('TestResults — évaluation', () => {
 			inEvaluation: true
 		});
 		expect(container.textContent).not.toContain('Recommencer');
-		expect(container.textContent).not.toContain('Retour au panier');
+		expect(container.textContent).not.toContain('Retour à ma série');
 		const link = container.querySelector('a[href="/dashboard/student/assessments"]');
 		expect(link?.textContent).toContain('Mes contrôles');
 	});

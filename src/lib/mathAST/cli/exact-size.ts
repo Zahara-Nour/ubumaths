@@ -365,3 +365,20 @@ export function exactCharacters(node: MathNode, written: string): number {
 	const value = isRationalValued(node) ? smallRational(node) : null;
 	return value === null ? written.length : Math.max(written.length, rationalCharacters(value));
 }
+
+/** Une factorielle ou un coefficient binomial, que le moteur garde au-delà de 2⁵³. */
+function isFactorialLike(node: MathNode): boolean {
+	return isFunction(node) && (node.name === 'factorial' || node.name === 'binom');
+}
+
+/**
+ * La valeur courte d'un résultat que le moteur laisse avec ses factorielles : `1000!/999!`
+ * vaut 1000 (règle « calcul puis mesure », David, 2026-11-01 — avant : `\dfrac{1000!}{999!}`).
+ * `null` sans factorielle, avec un symbole ou une variable, ou si la valeur dépasse elle-même
+ * 1 000 caractères (`1000!` garde son écriture).
+ */
+export function shortFactorialValue(node: MathNode): Rational | null {
+	if (findNodes(node, isFactorialLike).length === 0 || !isRationalValued(node)) return null;
+	const value = smallRational(node);
+	return value === null || rationalCharacters(value) > MAX_EXACT_CHARACTERS ? null : value;
+}

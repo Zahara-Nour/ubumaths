@@ -22,21 +22,23 @@
  * @module atelier/expand
  */
 
-import type { MathNode, RelationNode } from '$lib/mathAST/types';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { MathNode, RelationNode } from '#lib/mathAST/types.ts';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
 // `unwrapGrouping` : sans ce retrait, une équation ou une liste entre parenthèses
 // (`f` substitué en `((x+1)^2)`) ne serait pas reconnue
 import {
 	explainExpansion,
 	unwrapGrouping
-} from '$lib/mathAST/pedagogical-simplify/expand-explained';
-import { isMonomial } from '$lib/mathAST/pedagogical-simplify/expand-order';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { flattenSumShallow } from '$lib/mathAST/flatten';
-import { findNodes } from '$lib/mathAST/transforms';
-import { getVariables } from '$lib/mathAST/eval/substitute';
+} from '#lib/mathAST/pedagogical-simplify/expand-explained.ts';
+import { isMonomial } from '#lib/mathAST/pedagogical-simplify/expand-order.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { displayUnitsInLatex } from '#lib/mathAST/units/display.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { flattenSumShallow } from '#lib/mathAST/flatten.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
 import { astOf } from './parse';
+import { degreeSignWritten } from '#lib/mathAST/cli/core/degrees.ts';
 import { summaryOf } from './steps-summary';
 import { tidyAlternative, type DomainAlternative } from './domain-guard';
 
@@ -240,7 +242,8 @@ export function expandExpression(
 		if (explained.kind === 'unfinished') {
 			return { kind: 'inchangee', message: `Je ne sais pas développer « ${typed} ».` };
 		}
-		const answer = toLatex(explained.answer);
+		// Un angle en degrés sans valeur remarquable reste écrit, signe collé (`cos(20°)`)
+		const answer = degreeSignWritten(displayUnitsInLatex(toLatex(explained.answer)));
 		if (answer.trim() === '') {
 			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
 		}

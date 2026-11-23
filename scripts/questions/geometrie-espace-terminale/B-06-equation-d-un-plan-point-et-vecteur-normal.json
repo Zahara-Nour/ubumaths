@@ -1,10 +1,8 @@
 {
+	"id": "d192da3e-534d-4c3e-b30e-68c9f166b8a9",
 	"title": "Espace : équation cartésienne d'un plan (calculer d)",
 	"description": "Plan passant par un point, de vecteur normal donné (aussi plan médiateur, plan parallèle, plan contenant une droite) : calculer d, ou donner une équation cartésienne (tout multiple juste) — pièges : signe de d, z oublié, A au lieu du milieu, vecteur directeur pris pour normal",
 	"grades": ["T_SPE"],
-	"theme": "Géométrie",
-	"domain": "Représentations paramétriques et équations cartésiennes",
-	"subdomain": "Équation cartésienne d'un plan",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

@@ -9,9 +9,10 @@
  */
 
 import type { QuestionTemplate, TestSpec, ValidationStatus, ConstraintId } from './types';
-import type { ValidationResult } from '$lib/types/question-display';
+import type { ValidationResult } from '#lib/types/question-display.ts';
 import { generateInstanceWithFixedVariables } from './generator/test-instance-builder';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { validateAnswer, validateAnswerDetailed } from '#lib/utils/answer-validator.ts';
+import { expectedErrorOf } from './expected-errors';
 // Case « figure » : positions des points (registre, cf. construction/positions) — éditeur,
 // relecture de migration et publication côté serveur
 import './construction/positions-setup';
@@ -29,6 +30,8 @@ export interface TestSpecResult {
 	actual: {
 		status: ValidationStatus;
 		constraintViolations: ConstraintId[];
+		/** Messages des erreurs prévues que la réponse déclenche (idée 3), case par case */
+		expectedErrorMessages: string[];
 	};
 	error?: string;
 }
@@ -40,7 +43,7 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 	const makeError = (msg: string): TestSpecResult => ({
 		spec,
 		passed: false,
-		actual: { status: 'incorrect', constraintViolations: [] },
+		actual: { status: 'incorrect', constraintViolations: [], expectedErrorMessages: [] },
 		error: msg
 	});
 
@@ -104,17 +107,6 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 			}
 			// answers are LaTeX (same value for text and LaTeX, like the real MathField flow)
 			validationResult = validateAnswer(spec.answers, instance, spec.answers);
-		} else if (questionType === 'multiple_choice') {
-			if (!spec.selectedChoices || spec.selectedChoices.length === 0) {
-				return makeError('Test spec for multiple choice must provide selectedChoices[]');
-			}
-
-			// selectedChoices are original indices (not shuffled display indices)
-			// validateAnswer expects original indices directly
-			validationResult = validateAnswer(
-				spec.selectedChoices.length === 1 ? spec.selectedChoices[0] : spec.selectedChoices,
-				instance
-			);
 		} else {
 			return makeError(`Type de question sans réponse à tester : ${questionType}`);
 		}
@@ -129,6 +121,12 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 		(v) => v.constraint
 	);
 
+	// Erreurs prévues déclenchées : même chemin que le résultat attendu de l'élève
+	const expectedErrorMessages = validateAnswerDetailed(instance, {
+		values: spec.answers,
+		latex: spec.answers
+	}).blanks.flatMap((verdict) => expectedErrorOf(instance, verdict)?.message ?? []);
+
 	// 4. Compare with expected
 	const statusMatch = actualStatus === spec.expected.status;
 	const expectedViolations = spec.expected.constraintViolations ?? [];
@@ -137,12 +135,17 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 		expectedViolations.every((v) => actualViolations.includes(v)) &&
 		actualViolations.every((v) => expectedViolations.includes(v));
 
+	const wantedMessage = spec.expected.expectedErrorMessage;
+	const messageMatch =
+		wantedMessage === undefined || expectedErrorMessages.includes(wantedMessage.trim());
+
 	return {
 		spec,
-		passed: statusMatch && violationsMatch,
+		passed: statusMatch && violationsMatch && messageMatch,
 		actual: {
 			status: actualStatus,
-			constraintViolations: actualViolations
+			constraintViolations: actualViolations,
+			expectedErrorMessages
 		}
 	};
 }

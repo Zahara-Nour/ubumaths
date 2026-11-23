@@ -1,0 +1,46 @@
+[
+	{
+		"id": "18e2afca-3e36-4dfc-b92b-38c9a6f4bb1a",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral > identités remarquables",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-016"]
+	},
+	{
+		"id": "24aff7b0-dded-4530-b743-1072643bd7be",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Inéquations : premier degré > ax + b < c",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-014"]
+	},
+	{
+		"id": "2ab49a6f-2fc4-4583-9cbb-46ace580c019",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Équations : produit et quotient > produit nul",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-015"]
+	},
+	{
+		"id": "dcaabf69-d84c-4498-a0d3-4584d5972cd4",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Calcul littéral > factorisation",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-054"]
+	}
+]

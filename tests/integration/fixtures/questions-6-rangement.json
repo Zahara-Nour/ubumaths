@@ -1,0 +1,344 @@
+[
+	{
+		"id": "053391dc-f050-4e0a-afe0-9e5f8071035e",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-008"]
+	},
+	{
+		"id": "108b97fa-438e-47c4-8020-7e3877fc28c3",
+		"noeudAvant": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesApres": ["CM2", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM2§CM2-047"]
+	},
+	{
+		"id": "1de71a20-4bd4-4cb2-a0d3-369bef2e2afd",
+		"noeudAvant": "Grandeurs et mesures > Aires > parallélogramme",
+		"noeudApres": "Grandeurs et mesures > Aires > parallélogramme",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-073"]
+	},
+	{
+		"id": "24a8e2b1-446f-4df9-84f6-eba54599c035",
+		"noeudAvant": "Proportionnalité > Échelle d'une carte",
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > coefficient de proportionnalité",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-088"]
+	},
+	{
+		"id": "24f7a007-bb6a-42a4-b1b0-de257308b375",
+		"noeudAvant": "Proportionnalité > Pourcentages > calculs de pourcentages",
+		"noeudApres": "Proportionnalité > Évolutions > variations en pourcentage",
+		"gradesApres": ["3"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-069"]
+	},
+	{
+		"id": "26d4c7c5-2025-417a-9cbb-c98b7217158a",
+		"noeudAvant": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesApres": ["CM2", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM2§CM2-047"]
+	},
+	{
+		"id": "290dcf6f-02ee-4c2b-a38f-fa4e860e601c",
+		"noeudAvant": "Proportionnalité > Pourcentages > calculs de pourcentages",
+		"noeudApres": "Proportionnalité > Évolutions > variations en pourcentage",
+		"gradesApres": ["3"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-068"]
+	},
+	{
+		"id": "355bd41a-1589-4c25-be09-5f062bada81a",
+		"noeudAvant": "Grandeurs et mesures > Volumes > conversions",
+		"noeudApres": "Grandeurs et mesures > Volumes > conversions",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-129"]
+	},
+	{
+		"id": "3a7a5711-941c-466f-95c6-51a4691c767b",
+		"noeudAvant": "Grandeurs et mesures > Aires > rectangle",
+		"noeudApres": "Grandeurs et mesures > Aires > rectangle",
+		"gradesApres": ["6"],
+		"statutApres": "draft",
+		"tagsAvant": ["6§6-200"],
+		"tagsApres": []
+	},
+	{
+		"id": "44a3062b-4e55-44e8-b40d-ac7218b58cb7",
+		"noeudAvant": "Proportionnalité > Situations de proportionnalité > quatrième proportionnelle",
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > quatrième proportionnelle",
+		"gradesApres": ["4"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-055"]
+	},
+	{
+		"id": "49e31496-47be-4f0c-b462-3b65a8f26f42",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > division",
+		"noeudApres": "Nombres et calculs > Décimaux : calculs > division",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-003"]
+	},
+	{
+		"id": "4a1e0767-7d1a-416c-aff4-9818165924e3",
+		"noeudAvant": "Grandeurs et mesures > Aires > triangle quelconque",
+		"noeudApres": "Grandeurs et mesures > Aires > triangle quelconque",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-061"]
+	},
+	{
+		"id": "59ac62a2-3539-44f4-af7f-7c03cb4617f0",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Algèbre > Équations : premier degré > ax = b",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-126"]
+	},
+	{
+		"id": "5d515eb1-c8f8-4678-b4bd-f9ab3f34713f",
+		"noeudAvant": "Nombres et calculs > Entiers : priorités opératoires > écriture d'une expression",
+		"noeudApres": "Nombres et calculs > Entiers : priorités opératoires > écriture d'une expression",
+		"gradesApres": ["4"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": []
+	},
+	{
+		"id": "5fb2d24b-a4d7-4513-a706-1077ace12e48",
+		"noeudAvant": "Grandeurs et mesures > Aires > parallélogramme",
+		"noeudApres": "Grandeurs et mesures > Aires > parallélogramme",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-073"]
+	},
+	{
+		"id": "6632e5c2-45eb-4b6f-afff-c162bcb382e8",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > division",
+		"noeudApres": "Algèbre > Équations : premier degré > ax = b",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-126"]
+	},
+	{
+		"id": "6ca011c9-7384-4561-9aa1-d991575c569c",
+		"noeudAvant": "Nombres et calculs > Entiers : priorités opératoires > avec parenthèses",
+		"noeudApres": "Nombres et calculs > Entiers : priorités opératoires > avec parenthèses",
+		"gradesApres": ["CM2", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM2§CM2-054"]
+	},
+	{
+		"id": "72ac333e-4d40-44d3-bd27-25e8fd775729",
+		"noeudAvant": "Grandeurs et mesures > Aires > triangle quelconque",
+		"noeudApres": "Grandeurs et mesures > Aires > triangle quelconque",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-061"]
+	},
+	{
+		"id": "819df2a9-5dd9-40c5-9525-c68e626c04b6",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"gradesApres": ["CM2", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM2§CM2-042"]
+	},
+	{
+		"id": "8a3191ce-0c5a-488e-ad3f-d59d97cd6245",
+		"noeudAvant": "Proportionnalité > Situations de proportionnalité > coefficient de proportionnalité",
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > coefficient de proportionnalité",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": []
+	},
+	{
+		"id": "91c0f9a0-3c4d-4ee1-86be-aed4b02b38fa",
+		"noeudAvant": "Grandeurs et mesures > Aires > triangle quelconque",
+		"noeudApres": "Grandeurs et mesures > Aires > triangle quelconque",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-061"]
+	},
+	{
+		"id": "98c41bde-bb56-4569-88ec-76f09f21e783",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-008"]
+	},
+	{
+		"id": "99c4ab73-9824-46e6-9c55-98cf8250fca3",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Algèbre > Équations : premier degré > ax = b",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-126"]
+	},
+	{
+		"id": "9c7978da-6bf9-4ff6-b117-f26733bda9f0",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > division",
+		"noeudApres": "Nombres et calculs > Décimaux : calculs > division",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-003"]
+	},
+	{
+		"id": "9cc8cd82-371c-4d7d-ab1f-40f45766ae5a",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Algèbre > Équations : premier degré > ax = b",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-126"]
+	},
+	{
+		"id": "a869c2c1-cd5a-432a-927c-565495c3c872",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-008"]
+	},
+	{
+		"id": "ae7a332e-c69a-4f4a-aa32-cb38c6b1ef42",
+		"noeudAvant": "Proportionnalité > Situations de proportionnalité > coefficient de proportionnalité",
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > coefficient de proportionnalité",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": []
+	},
+	{
+		"id": "b79d4cb7-d138-4be0-86e5-57131c8e265d",
+		"noeudAvant": "Grandeurs et mesures > Unités et conversions > unités composées",
+		"noeudApres": "Grandeurs et mesures > Volumes > conversions",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-051"]
+	},
+	{
+		"id": "bf774c82-c2cb-496f-9305-d5da7b3ffe10",
+		"noeudAvant": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesApres": ["CM2", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM2§CM2-047"]
+	},
+	{
+		"id": "c1a54695-3914-4990-85cd-fc6ede9c6a35",
+		"noeudAvant": "Proportionnalité > Échelle d'une carte",
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > coefficient de proportionnalité",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-088"]
+	},
+	{
+		"id": "c5607804-f31f-49ab-b71a-fa1379ec794a",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Algèbre > Équations : premier degré > ax = b",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-126"]
+	},
+	{
+		"id": "d006d936-c7a9-431f-819e-2f06da722c0e",
+		"noeudAvant": "Grandeurs et mesures > Aires > triangle rectangle",
+		"noeudApres": "Grandeurs et mesures > Aires > triangle quelconque",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-061"]
+	},
+	{
+		"id": "d793de49-b065-46ea-aa8b-d09adcbb7617",
+		"noeudAvant": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"noeudApres": "Nombres et calculs > Entiers : multiplication > distributivité",
+		"gradesApres": ["CM2", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM2§CM2-047"]
+	},
+	{
+		"id": "def797c6-4841-43ca-977f-020deb4c36d7",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Algèbre > Équations : premier degré > ax = b",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-126"]
+	},
+	{
+		"id": "e0f6b04e-2969-4aaa-aa5c-8f8d2b2b637f",
+		"noeudAvant": "Nombres et calculs > Entiers : priorités opératoires > avec parenthèses",
+		"noeudApres": "Nombres et calculs > Entiers : priorités opératoires > avec parenthèses",
+		"gradesApres": ["CM1", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM1§CM1-049"]
+	},
+	{
+		"id": "f3ae46e9-f305-429e-b9e9-f33d0062b7f0",
+		"noeudAvant": "Grandeurs et mesures > Aires > triangle rectangle",
+		"noeudApres": "Grandeurs et mesures > Aires > triangle quelconque",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-061"]
+	},
+	{
+		"id": "f3bf4c64-5de9-4728-adb7-c86ab79e94e5",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Algèbre > Premiers pas algébriques > égalités à trous",
+		"gradesApres": ["CM2", "6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["CM2§CM2-065"]
+	},
+	{
+		"id": "f9a3333d-94ad-4a9b-b5d4-22325d67f6d9",
+		"noeudAvant": "Nombres et calculs > Décimaux : calculs > multiplication",
+		"noeudApres": "Algèbre > Équations : premier degré > ax = b",
+		"gradesApres": ["5"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-126"]
+	}
+]

@@ -1,12 +1,12 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { error } from '@sveltejs/kit';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 import {
 	getTournamentSchema,
 	getTournamentStandingsSchema
-} from '$lib/server/validation/minesweeper-tournament';
-import { sanitizePostgresError } from '$lib/server/utils/error-handler';
-import type { TournamentStanding } from '$lib/types/minesweeper';
+} from '#lib/server/validation/minesweeper-tournament.ts';
+import { sanitizePostgresError } from '#lib/server/utils/error-handler.ts';
+import type { TournamentStanding } from '#lib/types/minesweeper.ts';
 
 /**
  * Get tournament leaderboard
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			.select('*', { count: 'exact', head: true })
 			.eq('tournament_id', tournamentId);
 
-		return json({
+		return Response.json({
 			tournament: {
 				id: tournament.id,
 				name: tournament.name,

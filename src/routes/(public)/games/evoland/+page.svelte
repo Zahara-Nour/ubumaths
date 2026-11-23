@@ -4,7 +4,7 @@
 	 * Port du jeu Haxe original vers TypeScript/Svelte 5
 	 */
 
-	import EvolandGame from '$lib/games/evoland/components/EvolandGame.svelte';
+	import EvolandGame from '#lib/games/evoland/components/EvolandGame.svelte';
 </script>
 
 <svelte:head>

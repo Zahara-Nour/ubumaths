@@ -1,0 +1,495 @@
+{
+	"id": "98f558e4-3361-42df-9bee-5e5837100e74",
+	"title": "Trouver le nombre choisi",
+	"description": "Un nombre inconnu noté par une lettre ou un symbole : k × (a + N) = r, N × k + a = r, deux égalités à symboles enchaînées ; programmes en phrases à défaire : N ÷ k + a = r, (N + a) ÷ k = r, N × k − a = r",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"statement": "Rose a choisi un nombre, noté $N$. Elle a calculé $${{k}} \\times ({{a}} + N)$$ et elle a trouvé ${{r}}$.\n\nQuel nombre Rose a-t-elle choisi ?\n\n$N = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k*(a+n)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le nombre entre parenthèses.** ${{k}} \\times ({{a}} + N) = {{r}}$, donc $({{a}} + N) = {{r}} \\div {{k}} = {{eval:a+n}}$.",
+					"**Le nombre choisi.** ${{a}} + N = {{eval:a+n}}$, donc $N = {{eval:a+n}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"**Vérification.** ${{k}} \\times ({{a}} + {{n}}) = {{k}} \\times {{eval:a+n}} = {{r}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"statement": "Léo a choisi un nombre, noté $N$. Il a calculé $$N \\times {{k}} + {{a}}$$ et il a trouvé ${{r}}$.\n\nQuel nombre Léo a-t-il choisi ?\n\n$N = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "n",
+					"expression": "2..30"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n*k+a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On défait la dernière étape.** $N \\times {{k}} + {{a}} = {{r}}$, donc $N \\times {{k}} = {{r}} - {{a}} = {{eval:n*k}}$.",
+					"**Puis la première.** $N = {{eval:n*k}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"**Vérification.** ${{n}} \\times {{k}} + {{a}} = {{eval:n*k}} + {{a}} = {{r}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Chaque symbole cache un nombre ; un même symbole cache toujours le même nombre.\n\n$${\\square} + {\\square}{{if:k>2| + {\\square}|}}{{if:k>3| + {\\square}|}} = {{s}}$$\n\n$${\\square} + {\\triangle} = {{t}}$$\n\nQuel nombre cache $\\triangle$ ?\n\n$\\triangle = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..30"
+				},
+				{
+					"name": "d",
+					"expression": "1..40"
+				},
+				{
+					"name": "s",
+					"expression": "eval:k*c"
+				},
+				{
+					"name": "t",
+					"expression": "eval:c+d"
+				}
+			],
+			"conditions": ["c!=d"],
+			"correction": {
+				"steps": [
+					"**D'abord $\\square$.** ${{k}}$ fois le même nombre font ${{s}}$ : $\\square = {{s}} \\div {{k}} = {{c}}$.",
+					"**Puis $\\triangle$.** ${{c}} + \\triangle = {{t}}$, donc $\\triangle = {{t}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{d}}}$.",
+					"**Vérification.** ${{c}} + {{d}} = {{t}}$."
+				]
+			}
+		},
+		{
+			"statement": "Inès a choisi un nombre, noté $N$. Elle l'a divisé par ${{k}}$, puis elle a ajouté ${{a}}$ au résultat. Elle a trouvé ${{r}}$.\n\nQuel nombre Inès a-t-elle choisi ?\n\n$N = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				},
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "n",
+					"expression": "eval:k*q"
+				},
+				{
+					"name": "r",
+					"expression": "eval:q+a"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r*k-a}}",
+							"message": "Tu as défait les étapes dans le mauvais ordre : on retire d'abord ${{a}}$, puis on multiplie par ${{k}}$.",
+							"label": "Étapes défaites dans le mauvais ordre"
+						},
+						{
+							"answer": "{{q}}",
+							"message": "Tu as oublié de défaire la division par ${{k}}$ : multiplie par ${{k}}$.",
+							"label": "Division oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On défait la dernière étape.** $N \\div {{k}} + {{a}} = {{r}}$, donc $N \\div {{k}} = {{r}} - {{a}} = {{q}}$.",
+					"**Puis la première.** $N = {{q}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"**Vérification.** ${{n}} \\div {{k}} + {{a}} = {{q}} + {{a}} = {{r}}$."
+				]
+			},
+			"hint": "Fais les calculs à l'envers en partant de la fin : défais d'abord la dernière étape avec l'opération inverse, puis la première."
+		},
+		{
+			"statement": "Malo a choisi un nombre, noté $N$. Il lui a ajouté ${{a}}$, puis il a divisé le résultat par ${{k}}$. Il a trouvé ${{r}}$.\n\nQuel nombre Malo a-t-il choisi ?\n\n$N = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "r",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:r*k-a"
+				}
+			],
+			"conditions": ["r*k - a >= 2", "r > a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(r-a)*k}}",
+							"message": "Tu as défait les étapes dans le mauvais ordre : on multiplie d'abord par ${{k}}$, puis on retire ${{a}}$.",
+							"label": "Étapes défaites dans le mauvais ordre"
+						},
+						{
+							"answer": "{{eval:r*k}}",
+							"message": "Tu as oublié de défaire l'ajout de ${{a}}$ : retire-le.",
+							"label": "Ajout non défait"
+						},
+						{
+							"answer": "{{eval:r*k+a}}",
+							"message": "Pour défaire « ajouter ${{a}}$ », on retire ${{a}}$ : tu l'as ajouté une deuxième fois.",
+							"label": "Ajouté au lieu de retirer"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On défait la dernière étape.** $(N + {{a}}) \\div {{k}} = {{r}}$, donc $N + {{a}} = {{r}} \\times {{k}} = {{eval:r*k}}$.",
+					"**Puis la première.** $N = {{eval:r*k}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"**Vérification.** $({{n}} + {{a}}) \\div {{k}} = {{eval:r*k}} \\div {{k}} = {{r}}$."
+				]
+			},
+			"hint": "Fais les calculs à l'envers en partant de la fin : défais d'abord la dernière étape avec l'opération inverse, puis la première."
+		},
+		{
+			"statement": "Chloé a choisi un nombre, noté $N$. Elle l'a multiplié par ${{k}}$, puis elle a retiré ${{a}}$ du résultat. Elle a trouvé ${{r}}$.\n\nQuel nombre Chloé a-t-elle choisi ?\n\n$N = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n*k-a"
+				}
+			],
+			"conditions": ["r >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r*k-a}}",
+							"message": "Tu as refait le programme sur ${{r}}$ au lieu de le défaire : on ajoute ${{a}}$, puis on divise par ${{k}}$.",
+							"label": "Programme refait au lieu d'être défait"
+						},
+						{
+							"answer": "{{eval:r+a}}",
+							"message": "Tu as oublié de défaire la multiplication par ${{k}}$ : divise par ${{k}}$.",
+							"label": "Multiplication non défaite"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On défait la dernière étape.** $N \\times {{k}} - {{a}} = {{r}}$, donc $N \\times {{k}} = {{r}} + {{a}} = {{eval:r+a}}$.",
+					"**Puis la première.** $N = {{eval:r+a}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"**Vérification.** ${{n}} \\times {{k}} - {{a}} = {{eval:r+a}} - {{a}} = {{r}}$."
+				]
+			},
+			"hint": "Fais les calculs à l'envers en partant de la fin : défais d'abord la dernière étape avec l'opération inverse, puis la première."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"n": "7",
+				"r": "27"
+			},
+			"description": "3 × (2 + N) = 27 : N = 7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"n": "7",
+				"r": "27"
+			},
+			"description": "Erreur : 9 (le 2 oublié)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"k": "4",
+				"n": "12",
+				"r": "53"
+			},
+			"description": "N × 4 + 5 = 53 : N = 12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"k": "4",
+				"n": "12",
+				"r": "53"
+			},
+			"description": "Erreur : 48 (pas divisé)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "12",
+				"d": "8",
+				"k": "3",
+				"s": "36",
+				"t": "20"
+			},
+			"description": "□ + □ + □ = 36, □ + △ = 20 : △ = 8",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "12",
+				"d": "8",
+				"k": "3",
+				"s": "36",
+				"t": "20"
+			},
+			"description": "Erreur : 12 (le carré rendu)",
+			"variationIndex": 2
+		},
+		{
+			"description": "N ÷ 3 + 5 = 11 : N = 18",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"q": "6",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["18"]
+		},
+		{
+			"description": "Erreur prévue : 11 × 3 − 5 = 28",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"q": "6",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as défait les étapes dans le mauvais ordre : on retire d'abord $5$, puis on multiplie par $3$."
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "Erreur prévue : 6 (division oubliée)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"q": "6",
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de défaire la division par $3$ : multiplie par $3$."
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "(N + 3) ÷ 4 = 7 : N = 25",
+			"variationIndex": 4,
+			"variables": {
+				"k": "4",
+				"r": "7",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "Erreur prévue : (7 − 3) × 4 = 16",
+			"variationIndex": 4,
+			"variables": {
+				"k": "4",
+				"r": "7",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as défait les étapes dans le mauvais ordre : on multiplie d'abord par $4$, puis on retire $3$."
+			},
+			"answers": ["16"]
+		},
+		{
+			"description": "Erreur prévue : 28 (ajout non défait)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "4",
+				"r": "7",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de défaire l'ajout de $3$ : retire-le."
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "Erreur prévue : 31 (ajouté)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "4",
+				"r": "7",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour défaire « ajouter $3$ », on retire $3$ : tu l'as ajouté une deuxième fois."
+			},
+			"answers": ["31"]
+		},
+		{
+			"description": "N × 5 − 7 = 38 : N = 9",
+			"variationIndex": 5,
+			"variables": {
+				"k": "5",
+				"n": "9",
+				"a": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "Erreur prévue : 38 × 5 − 7 = 183",
+			"variationIndex": 5,
+			"variables": {
+				"k": "5",
+				"n": "9",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as refait le programme sur $38$ au lieu de le défaire : on ajoute $7$, puis on divise par $5$."
+			},
+			"answers": ["183"]
+		},
+		{
+			"description": "Erreur prévue : 45 (multiplication non défaite)",
+			"variationIndex": 5,
+			"variables": {
+				"k": "5",
+				"n": "9",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de défaire la multiplication par $5$ : divise par $5$."
+			},
+			"answers": ["45"]
+		}
+	]
+}

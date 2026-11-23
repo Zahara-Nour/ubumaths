@@ -1,10 +1,8 @@
 {
+	"id": "6ed907d7-03b3-43b2-b737-37bf7c633f16",
 	"title": "Intégrale d'une fonction positive : aire d'une figure simple",
 	"description": "∫ₐᵇ f(x) dx = aire sous la courbe, en unités d'aire : rectangle, triangle, trapèze, figure composée (pièges : oubli du ½, produit des bases)",
 	"grades": ["T_SPE", "T_COMP"],
-	"theme": "Intégration",
-	"domain": "Intégrale et aire",
-	"subdomain": "Lecture graphique",
 	"level": 1,
 	"status": "draft",
 	"delay": 60,

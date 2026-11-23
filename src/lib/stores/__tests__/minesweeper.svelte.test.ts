@@ -22,15 +22,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { minesweeperStore } from '../minesweeper.svelte';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import type { CellState } from '$lib/types/minesweeper';
+import type { Database } from '#lib/types/database.ts';
+import type { CellState } from '#lib/types/minesweeper.ts';
 
 // ============================================================================
 // TEST SETUP
 // ============================================================================
 
 // Mock browser environment (required for store)
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	building: false,
 	dev: true,

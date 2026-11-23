@@ -1,0 +1,300 @@
+{
+	"id": "ae90499d-8da4-43e3-9d5b-bd387fd03e3a",
+	"title": "Impossible, possible ou certain ?",
+	"description": "Le vocabulaire du hasard sur un dé et un sac de boules : impossible, possible, certain ; probable, peu probable, une chance sur deux (sans calcul)",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On lance un dé à $6$ faces numérotées de $1$ à $6$.\n\n« {{if:k==1|obtenir $7$|{{if:k==2|obtenir un nombre plus petit que $7$|{{if:k==3|obtenir ${{n}}$|{{if:k==4|obtenir $0$|{{if:k==5|obtenir un nombre entre $1$ et $6$|obtenir un nombre pair}}}}}}}}}} » : est-ce impossible, possible ou certain ?\n\n```choix\nmelanger: non\n- impossible\n- possible\n- certain\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-min(abs(k-1),1))*0+(1-min(abs(k-2),1))*2+(1-min(abs(k-3),1))*1+(1-min(abs(k-4),1))*0+(1-min(abs(k-5),1))*2+(1-min(abs(k-6),1))*1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Impossible** : cela n'arrive jamais. **Certain** : cela arrive à chaque fois. **Possible** : cela peut arriver, ou pas.",
+					"{{if:k==1|Aucune face ne porte $7$ : c'est impossible.|{{if:k==2|Toutes les faces portent un nombre plus petit que $7$ : c'est certain.|{{if:k==3|Une face porte ${{n}}$, mais le dé peut aussi tomber sur une autre : c'est possible, pas certain.|{{if:k==4|Aucune face ne porte $0$ : c'est impossible.|{{if:k==5|Toutes les faces portent un nombre entre $1$ et $6$ : c'est certain.|Trois faces portent un nombre pair ($2$, $4$, $6$), les autres non : c'est possible, pas certain.}}}}}}}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|impossible|{{if:r==1|possible|certain}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{R}}$ boules rouges et ${{B}}$ boules bleues. On tire une boule sans regarder.\n\nTirer une boule rouge, c'est :\n\n```choix\nmelanger: non\n- probable\n- peu probable\n- une chance sur deux\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "9..12"
+				},
+				{
+					"name": "y",
+					"expression": "1..2"
+				},
+				{
+					"name": "z",
+					"expression": "3..8"
+				},
+				{
+					"name": "R",
+					"expression": "eval:(1-min(abs(k-0),1))*x+(1-min(abs(k-1),1))*y+(1-min(abs(k-2),1))*z"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(1-min(abs(k-0),1))*y+(1-min(abs(k-1),1))*x+(1-min(abs(k-2),1))*z"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare le nombre de boules rouges au nombre de boules bleues.",
+					"{{if:k==0|Il y a beaucoup plus de rouges (${{R}}$) que de bleues (${{B}}$) : on a de grandes chances de tirer une rouge.|{{if:k==1|Il y a beaucoup moins de rouges (${{R}}$) que de bleues (${{B}}$) : on a peu de chances de tirer une rouge.|Il y a autant de rouges que de bleues (${{R}}$ chacune) : rouge ou bleue, la même chance.}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:k==0|probable|{{if:k==1|peu probable|une chance sur deux}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{a}}$ boules rouges et ${{b}}$ boules bleues, et rien d'autre. On tire une boule sans regarder.\n\n« {{if:k==1|tirer une boule verte|{{if:k==2|tirer une boule rouge ou une boule bleue|tirer une boule rouge}}}} » : est-ce impossible, possible ou certain ?\n\n```choix\nmelanger: non\n- impossible\n- possible\n- certain\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-min(abs(k-1),1))*0+(1-min(abs(k-2),1))*2+(1-min(abs(k-3),1))*1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Il n'y a aucune boule verte dans le sac : c'est impossible.|{{if:k==2|Toutes les boules sont rouges ou bleues : c'est certain.|On peut tirer une rouge, mais aussi une bleue : c'est possible, pas certain.}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|impossible|{{if:r==1|possible|certain}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Obtenir 7 : impossible",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"n": "4",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : obtenir 7, possible",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"n": "4",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus petit que 7 : certain",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"n": "4",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Obtenir 4 : possible",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : obtenir 4, certain",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"n": "4",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 rouges, 2 bleues : probable",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"x": "10",
+				"y": "2",
+				"z": "5",
+				"R": "10",
+				"B": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 rouges, peu probable",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"x": "10",
+				"y": "2",
+				"z": "5",
+				"R": "10",
+				"B": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 rouge, 11 bleues : peu probable",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"x": "11",
+				"y": "1",
+				"z": "5",
+				"R": "1",
+				"B": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 et 5 : une chance sur deux",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x": "10",
+				"y": "2",
+				"z": "5",
+				"R": "5",
+				"B": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Verte : impossible",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "5",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rouge ou bleue : certain",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "5",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rouge ou bleue, possible",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "5",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rouge : possible",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"b": "5",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

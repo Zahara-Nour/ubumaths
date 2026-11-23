@@ -4,10 +4,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { load } from '../+page.server';
-import { createFakeSupabase } from '$lib/server/__tests__/helpers/fake-supabase';
-import { FIGURE_NOT_FOUND_MESSAGE } from '$lib/server/geometry-figures';
+import { createFakeSupabase } from '#lib/server/__tests__/helpers/fake-supabase.ts';
+import { FIGURE_NOT_FOUND_MESSAGE } from '#lib/server/geometry-figures.ts';
 
 const FIGURE_ID = '2b3c4d5e-2222-4222-8222-222222222222';
 

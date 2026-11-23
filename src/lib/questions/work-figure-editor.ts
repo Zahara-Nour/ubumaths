@@ -5,20 +5,21 @@
  * Le bloc ```figure-de-travail porte une case, jamais notée. L'éditeur la montre
  * en carte de lecture seule (son outil, ses erreurs), sans champ de réponse :
  * elle se modifie dans l'énoncé (décision de David, 2026-10-26,
- * `docs/wip/figure-et-choix-progress.md` § 2.9, Q3).
+ * `docs/archive/wip/figure-et-choix-progress.md` § 2.9, Q3).
  *
  * @module questions/work-figure-editor
  */
 
 import { assignBlankIndices } from './generator/assign-blank-indices';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
-import type { ConstructionTool } from '$lib/ubumark/types/construction';
+import { readConstructionHeader } from '#lib/ubumark/parser/construction-parser.ts';
+import { parseFigureContent } from '#lib/ubumark/parser/figure-parser.ts';
+import type { ConstructionTool } from '#lib/ubumark/types/construction.ts';
 
 // Types
 /** Ce que dit la carte d'une figure de travail */
 export interface WorkFigureCase {
-	tool: ConstructionTool;
+	/** Outils proposés à l'élève (plusieurs : une palette) */
+	tools: ConstructionTool[];
 	/** Messages pour l'auteur (bloc mal écrit) */
 	errors: string[];
 }
@@ -40,7 +41,7 @@ export function readWorkFigureCases(statement: string): Map<number, WorkFigureCa
 			? []
 			: parseFigureContent(header.figureSource).errors;
 		cases.set(Number(key), {
-			tool: header.spec.tools[0] ?? 'droite',
+			tools: header.spec.tools,
 			errors: [...header.errors, ...figureErrors].map((e) => e.message)
 		});
 	}

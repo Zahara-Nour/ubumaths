@@ -45,6 +45,12 @@ export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const TRUTH_HEADING = /^## Le vrai du faux[ \t]*$/m;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
 
+/** Bloc de code, code en ligne, formule `~…~` : laissés tels quels par `frenchSpacing` */
+const VERBATIM = /^```[\s\S]*?^```[ \t]*$|`[^`\n]*`|~[^~\n]*~/gm;
+
+const NARROW_NBSP = '\u202f';
+const NBSP = '\u00a0';
+
 const frontMatterSchema = z.object({
 	// Texte brut : le titre sert aussi au <title> de la page, sans rendu ubumark
 	title: z
@@ -75,6 +81,33 @@ function isRealDate(iso: string): boolean {
 	const [y, m, d] = iso.split('-').map(Number);
 	const date = new Date(Date.UTC(y, m - 1, d));
 	return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+}
+
+/**
+ * Espaces insécables de la typographie française : ; ! ? restent collés au mot voisin
+ * (espace fine), « : » et les guillemets aussi (espace mot). Sans elles, un guillemet ou un point
+ * d'interrogation tombe seul en début ou en fin de ligne. Le code et les formules ne
+ * sont pas touchés.
+ */
+export function frenchSpacing(text: string): string {
+	let result = '';
+	let last = 0;
+	for (const match of text.matchAll(VERBATIM)) {
+		result += spaceProse(text.slice(last, match.index)) + match[0];
+		last = match.index + match[0].length;
+	}
+	return result + spaceProse(text.slice(last));
+}
+
+function spaceProse(text: string): string {
+	return (
+		text
+			.replace(/« /g, `«${NBSP}`)
+			.replace(/ »/g, `${NBSP}»`)
+			// `![` ouvre une image ubumark : l'espace qui la précède reste sécable
+			.replace(/ ([;!?])(?!\[)/g, `${NARROW_NBSP}$1`)
+			.replace(/ :/g, `${NBSP}:`)
+	);
 }
 
 export function parseArticle(slug: string, raw: string): ShtamArticle {
@@ -116,7 +149,14 @@ export function parseArticle(slug: string, raw: string): ShtamArticle {
 	if (!body) throw new Error('corps de l’article vide');
 	if (!truth) throw new Error('section « Le vrai du faux » vide');
 
-	return { slug, ...front.data, body, truth };
+	return {
+		slug,
+		...front.data,
+		title: frenchSpacing(front.data.title),
+		lede: frenchSpacing(front.data.lede),
+		body: frenchSpacing(body),
+		truth: frenchSpacing(truth)
+	};
 }
 
 /** Lit un lot de sources `{ chemin: contenu }` ; le slug est le nom du fichier */

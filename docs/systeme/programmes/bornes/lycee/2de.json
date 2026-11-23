@@ -1266,13 +1266,13 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-362": {
 				"libelle": "Algorithme de calcul approché de longueur d'une portion de courbe représentative de fonction",
 				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
 				"bornes": [],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-363": {
 				"libelle": "Relier les courbes représentatives de la fonction racine carrée et de la fonction carré sur $\\mathbb{R}^+$",
@@ -1490,13 +1490,13 @@
 				"libelle": "Étudier l'alignement de trois points dans le plan",
 				"rubrique": "Géométrie > Droites du plan",
 				"bornes": [],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-322": {
 				"libelle": "Déterminer une équation de droite passant par deux points donnés",
 				"rubrique": "Géométrie > Droites du plan",
 				"bornes": [],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-323": {
 				"libelle": "Ensemble des points équidistants d'un point et de l'axe des abscisses",
@@ -2240,7 +2240,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-284": {
 				"libelle": "Développement de $(a + b + c)^2$",
@@ -2352,7 +2352,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-242": {
 				"libelle": "Pour des entiers $a$ et $b$ donnés, déterminer le plus grand multiple de $a$ inférieur ou égal à $b$",
@@ -2365,7 +2365,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-243": {
 				"libelle": "Ensemble $\\mathbb{R}$ des nombres réels, droite numérique",
@@ -2551,7 +2551,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-258": {
 				"libelle": "Développement décimal illimité d'un nombre réel",
@@ -2646,13 +2646,13 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-388": {
 				"libelle": "Dresser le tableau croisé de deux variables qualitatives à partir du fichier des individus et calculer des fréquences conditionnelles ou marginales",
 				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
 				"bornes": [],
-				"remarque": "« Données réelles » : décision l2-9. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+				"remarque": "« Données réelles » : décision l2-9. Exemple d'algorithme, comme les approfondissements « en aucun cas obligatoire » (BO 2de p.4)."
 			},
 			"2-364": {
 				"libelle": "Ensembles de référence inclus les uns dans les autres : pourcentage de pourcentage",

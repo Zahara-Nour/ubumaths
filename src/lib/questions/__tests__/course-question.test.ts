@@ -14,7 +14,7 @@ import { isCourseQuestion, type QuestionTemplate } from '../types';
 import { applyCourseQuestionOption, readCourseQuestionOption } from '../course-question';
 import { optionsSchema, questionTemplateSchema } from '../template-schema';
 import { generateInstance } from '../generator/instance-generator';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -27,17 +27,13 @@ function question(overrides: Partial<QuestionTemplate> = {}): QuestionTemplate {
 		status: 'draft',
 		variations: [
 			{
-				statement: templateMarkdown('Le discriminant de $$ax^2+bx+c$$ vaut :'),
-				choices: [
-					{ content: templateMarkdown('$$b^2-4ac$$') },
-					{ content: templateMarkdown('$$b^2+4ac$$') }
-				],
-				correctChoiceIndex: '0'
+				statement: templateMarkdown(
+					'Le discriminant de $$ax^2+bx+c$$ vaut :\n\n```choix\n- $$b^2-4ac$$\n- $$b^2+4ac$$\n```'
+				),
+				blanks: [{ expectedAnswer: '0' }]
 			}
 		],
 		grades: ['1_SPE'],
-		theme: 'Algèbre',
-		domain: 'Polynômes',
 		level: 1,
 		...overrides
 	};
@@ -128,7 +124,7 @@ describe("éditeur : lecture et écriture d'options.courseQuestion", () => {
 
 	it('écriture : case cochée → options.courseQuestion = true', () => {
 		const options: NonNullable<QuestionTemplate['options']> = {};
-		applyCourseQuestionOption(options, { checked: true, questionType: 'multiple_choice' });
+		applyCourseQuestionOption(options, { checked: true, questionType: 'fill_in_blanks' });
 		expect(options).toEqual({ courseQuestion: true });
 	});
 

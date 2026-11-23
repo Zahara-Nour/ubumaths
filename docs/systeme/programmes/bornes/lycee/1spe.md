@@ -42,6 +42,58 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **l1s-6** — Linéarité de l'espérance : E(aX + b) seulement, ou aussi E(X + Y) ? → **affine** (2026-10-23)
 - **l1s-7** — Automatismes « privilégiant l'activité mentale » : bornent-ils les valeurs numériques ? → **mental** (2026-10-23)
 
+## Couverture en modèles de questions (prod, 2026-11-09)
+
+Chantier `questions-1spe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
+2026-11-02, complété le 2026-11-03 par `questions-1spe-tracer-droite` et `questions-1spe-tangente`, puis du
+2026-11-03 au 2026-11-08 par `questions-1spe-demonstrations` (démonstrations, approfondissements, exemples
+d'algorithmes) et le 2026-11-09 par `questions-1spe-raisonnements` (points-compétences, logique) ; journaux dans
+`docs/archive/wip/` (`questions-1spe*-progress.md` : index + sous-chantiers `geometrie`, `analyse`, `logique`,
+`tracer-droite`, `tangente`, `demonstrations`, `raisonnements` ; journaux par thème
+`*-1spe-progress.md` de septembre-octobre 2026).
+
+- **349 modèles publiés** de niveau `1_SPE` ; **224 points sur 237** ont au moins un modèle publié, aucun n'a que
+  des brouillons (relevé MCP du 2026-11-09). 5 brouillons `1_SPE` restent hors de ces chantiers (c90fa022,
+  dc4b8d08, 174e202b, 0495289a, d2067413 : suites et angles associés, dont 3 partagés avec `1_TECHNO`).
+- **Points P couverts par `questions-1spe-demonstrations`** (47, un modèle par point, tagué sur son point,
+  ADR 0020) :
+  - **14 démonstrations** (232-235, 255, 275-278, 398, 308, 411, 322, 323) : démonstration à trous (étape clé en
+    case, ou justification en case choix à 4 propositions), plus une variation « étapes à ranger » (bloc
+    ` ```ranger ` avec `signe: aucun`, #2341). Catégorie « Démonstrations » dans chaque domaine.
+  - **20 approfondissements** (240-242, 381, 256-258, 387, 300-302, 324-326, 334, 335, 420, 345, 346, 361) :
+    preuves (300-302, 325, 326, en partie 257 et 361) traitées comme les démonstrations, les autres en exercices
+    d'application à valeurs tirées ; formule donnée dans l'énoncé pour 241 et 381 (le BO ne demande pas de la
+    connaître). Catégorie « Approfondissements » dans chaque domaine (facultatifs au BO, p.3).
+  - **13 exemples d'algorithmes** (238, 239, 380, 279, 288, 298, 299, 309, 344, 427, 359, 431, 360) : Python
+    seulement ; faire tourner un programme (jamais un programme aléatoire), compléter une ligne (case choix),
+    interpréter la valeur renvoyée. 239 et 380 dans « Seuil et algorithmes › Algorithmes » (après 378 et 369), les
+    autres dans une catégorie « Algorithmes » par domaine.
+  - Au BO, 300-302 sont des approfondissements (rubrique Fonction exponentielle sans « Démonstrations ») et
+    240-242, 381 aussi (rubrique Suites), pas des démonstrations ni des algorithmes.
+- **Points-compétences relus par `questions-1spe-raisonnements`** (2026-11-09) : 205, 284, 436, 437 sont
+  questionnables, un modèle chacun (contraposée, optimisation, produit scalaire, repère), publiés le
+  2026-11-09 ; 435 est couvert par ses voisins. Le même lot ajoute la disjonction des cas et l'absurde
+  (points de seconde 2-216, 2-217, `grades = ['2', '1_SPE']`) et `1_SPE` à 11 modèles de logique de seconde
+  (« et », « ou », implication, équivalence, réciproque, contraposée, quantificateurs), que le BO de 1re reprend
+  sans point propre.
+- **13 points sans modèle, tous voulus** :
+  - **Couverts par leur voisin** (11) — même savoir-faire sur deux lignes du BO : 435 → 370, 222, 376, 230, 379,
+    297 ; 211 → 223, 220 → 231,
+    328 → 331, 368 → 377, 371 → 224, 373 → 225, 382 → 251, 389 → 272, 417 → 327, 421 → 340. Les faits « à
+    connaître » de ces doublons ont, eux, leur modèle « à savoir ».
+  - **D** (2) — 362, 365 (simuler avec Python ou un tableur) : exercices Python, pas des questions.
+- **Geste `tracer:`** (#2265, en prod depuis la 0.65.0) : **433** couvert par `dc5d7cb6` « Tracer une droite par un
+  point et sa pente » (tagué aussi 1GEN-063, 1TECHNO-140, #2272, #2279) ; **271** par `edb094bd` « Tracer une
+  tangente connaissant le nombre dérivé » (niveau 4 de « Fonctions > Dérivation > tangente », tagué aussi
+  1TECHNO-078, `grades = ['1_SPE', '1_TECHNO']`, #2275, #2277). Les trois voisins tagués 1TECHNO-079 (05387201,
+  ed8444bb, f52395d1) ont reçu `1_TECHNO` par #2280 (migration `20261103082130`, appliquée).
+- **5 brouillons `1_SPE` laissés tels quels** : 174e202b, dc4b8d08 (angles associés : hors l1s-3) ; 0495289a (hors
+  borne 377, pour la terminale) ; c90fa022, d2067413 (tagués de 1TECHNO). Les 5 brouillons `grades = ['2', '1_SPE']`
+  du relevé du 2026-11-03 sont publiés depuis (chantiers de seconde) : 8c31675a, db8b5dc8, f98164b1 gardent `1_SPE`,
+  5b20321f et 5062197a ne l'ont plus.
+- Hors 1re spé (voulu) : 8b599a53 (`g(ax + b)`, TSPE-408) et fece187e, afd9b3ff (cos x = a, TSPE-457) n'ont plus
+  `1_SPE` dans leurs niveaux (l1s-1, pas d'équation trigonométrique en 1re).
+
 ## Première spécialité (237 points, 232 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
@@ -193,7 +245,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - Somme des n premiers cubes. — _BO 1re spé p.6_ (BO)
   - ⚠ Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3).
 - **1SPE-435** — Proposer, modéliser une situation permettant de générer une suite de nombres — _hérite des bornes générales_
-  - ⚠ Point-compétence (modéliser) : « Proposer, modéliser une situation permettant de générer une suite de nombres » (BO p.6) ; aucun grain questionnable propre.
+  - ⚠ Point-compétence (modéliser) : « Proposer, modéliser une situation permettant de générer une suite de nombres » (BO p.6) ; couvert par ses voisins (370, 222, 376 : motifs ; 230, 379, 297 : modéliser une évolution), pas de modèle propre.
 
 ### Algèbre > Équations, fonctions polynômes du second degré
 
@@ -416,7 +468,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - Fonctions dérivables à l'aide des dérivées et opérations du programme ; variations par le signe de la dérivée. — _BO 1re spé p.8_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : la capacité « étudier les variations d'une fonction » (p.8) ne liste pas les fonctions ; elles sont bornées par ce que l'élève sait dériver (bornes générales).
 - **1SPE-284** — Résoudre un problème d'optimisation — _hérite des bornes générales_
-  - ⚠ Point-compétence (modéliser, résoudre un problème) : « Résoudre un problème d'optimisation » (BO p.8) ; les fonctions en jeu restent bornées par les bornes générales.
+  - ⚠ Point-compétence (modéliser, résoudre un problème), questionnable : problème guidé (aire, volume), fonction à exprimer ou dérivée donnée, valeur optimale et optimum en cases ; les fonctions en jeu restent bornées par les bornes générales.
 - **1SPE-285** — Exploiter les variations d'une fonction pour établir une inégalité
   - Inégalité établie par l'étude des variations d'une fonction (signe d'une différence). — _BO 1re spé p.8_ (BO)
 - **1SPE-286** — Étudier la position relative de deux courbes représentatives
@@ -501,7 +553,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-416** — Développement de $\lVert\vec{u} - \vec{v}\rVert^2$
   - ‖u − v‖² = ‖u‖² − 2u·v + ‖v‖². — _BO 1re spé p.9_ (BO)
 - **1SPE-436** — Utiliser le produit scalaire pour résoudre un problème géométrique — _hérite des bornes générales_
-  - ⚠ Point-compétence (résoudre un problème géométrique) : « Utiliser le produit scalaire pour résoudre un problème géométrique » (BO p.9) ; aucun grain questionnable propre, plan seulement.
+  - ⚠ Point-compétence (résoudre un problème géométrique), questionnable : problème guidé à trous (carré, rectangle ; relation de Chasles, produits scalaires en cases, justification en case choix), plan seulement.
 
 ### Géométrie > Géométrie repérée
 
@@ -537,7 +589,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - Parabole y = ax² + bx + c et droite parallèle à un axe seulement. — _BO 1re spé p.9_ (BO)
   - ⚠ Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3).
 - **1SPE-437** — Utiliser un repère pour étudier une configuration — _hérite des bornes générales_
-  - ⚠ Point-compétence (choisir un cadre) : « Utiliser un repère pour étudier une configuration » (BO p.9) ; aucun grain questionnable propre, plan en repère orthonormé.
+  - ⚠ Point-compétence (choisir un cadre), questionnable : problème guidé dans un repère orthonormé choisi sur la figure (carré, coordonnées et distances en cases, conclusion en case choix), plan seulement.
 
 ### Probabilités et statistiques > Expérimentations
 
@@ -658,6 +710,6 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - Négation de propositions quantifiées, formulée en langage naturel (∀ et ∃ non exigibles). — _BO 1re spé p.4_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : les symboles ∀ et ∃ n'étant « pas exigibles » (BO p.4), la négation attendue est formulée en mots ; un modèle peut afficher les symboles dans l'énoncé sans les exiger dans la réponse.
 - **1SPE-205** — Produire un raisonnement par contraposée — _hérite des bornes générales_
-  - ⚠ Point-compétence (raisonner) : « les élèves produisent des raisonnements … par contraposée » (BO p.4) ; aucun grain questionnable propre, au mieux une question sur la contraposée d'une implication donnée (voir aussi la puce « formuler la réciproque d'une implication, la contraposée »).
+  - ⚠ Point-compétence (raisonner), questionnable : raisonnement par contraposée écrit à trous (contraposée à choisir, étape clé en case, étapes à ranger), sur la parité des entiers ; sous les bornes générales.
 - **1SPE-366** — Identifier le statut des lettres utilisées (variable, inconnue, paramètre)
   - Statut d'une lettre : variable, inconnue ou paramètre. — _BO 1re spé p.4_ (BO)

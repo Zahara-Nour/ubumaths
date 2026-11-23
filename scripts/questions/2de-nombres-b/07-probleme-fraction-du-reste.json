@@ -1,0 +1,354 @@
+{
+	"id": "46b95c39-fc13-4e8d-a013-50799dbfd666",
+	"title": "Problème : une fraction du reste",
+	"description": "Léa dépense 1/3 de son argent, puis 1/4 de ce qui reste : quelle fraction lui reste-t-il ? (1/2) ; deux étapes puis trois, contextes variés (piège : prendre 1/4 du total, 1 − 1/3 − 1/4)",
+	"grades": ["2"],
+	"level": 8,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:w==0|Léa|{{if:w==1|Nathan|Jade}}}} dépense {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{b}} }$ de son argent de poche pour un livre, puis {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui lui reste pour une place de cinéma.\n\nQuelle fraction de son argent de poche de départ lui reste-t-il ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:b-a"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:d-c"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(b-a)*(d-c)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après la première étape, il reste $1-\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{R1}} }{ {{b}} }$ du total.",
+					"Ensuite, on prend $\\dfrac{ {{c}} }{ {{d}} }$ **de ce reste**, pas du total : il reste les $1-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{R2}} }{ {{d}} }$ de $\\dfrac{ {{R1}} }{ {{b}} }$.",
+					"Prendre une fraction d'une quantité, c'est multiplier :",
+					"$$\\dfrac{ {{R2}} }{ {{d}} }\\times\\dfrac{ {{R1}} }{ {{b}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			}
+		},
+		{
+			"statement": "Une bouteille de jus de fruits est pleine. {{if:w==0|Noé|{{if:w==1|Lina|Adam}}}} en boit les $\\dfrac{ {{a}} }{ {{b}} }$, puis on verse {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui reste dans une carafe.\n\nQuelle fraction de la bouteille pleine reste-t-il dans la bouteille ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:b-a"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:d-c"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(b-a)*(d-c)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["a<b", "c<d", "gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après la première étape, il reste $1-\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{R1}} }{ {{b}} }$ du total.",
+					"Ensuite, on prend $\\dfrac{ {{c}} }{ {{d}} }$ **de ce reste**, pas du total : il reste les $1-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{R2}} }{ {{d}} }$ de $\\dfrac{ {{R1}} }{ {{b}} }$.",
+					"Prendre une fraction d'une quantité, c'est multiplier :",
+					"$$\\dfrac{ {{R2}} }{ {{d}} }\\times\\dfrac{ {{R1}} }{ {{b}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			}
+		},
+		{
+			"statement": "{{if:w==0|Maya|{{if:w==1|Nolan|Zoé}}}} a cueilli un bouquet de fleurs. {{if:w==1|Il|Elle}} en donne {{if:a==1|le|les}} $\\dfrac{ {{a}} }{ {{b}} }$ à sa mère, puis {{if:c==1|le|les}} $\\dfrac{ {{c}} }{ {{d}} }$ de ce qui reste à sa sœur, puis {{if:f==1|le|les}} $\\dfrac{ {{f}} }{ {{h}} }$ de ce qui reste encore à son amie.\n\nQuelle fraction du bouquet lui reste-t-il ? Donne le résultat sous la forme d'une fraction irréductible.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "2..5"
+				},
+				{
+					"name": "f",
+					"expression": "1..3"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:b-a"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:d-c"
+				},
+				{
+					"name": "R3",
+					"expression": "eval:h-f"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(b-a)*(d-c)*(h-f)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:b*d*h"
+				},
+				{
+					"name": "g",
+					"expression": "eval:gcd(abs(X),Y)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:(X)/(g)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(Y)/(g)"
+				}
+			],
+			"conditions": ["a<b", "c<d", "f<h", "gcd(a,b)==1", "gcd(c,d)==1", "gcd(f,h)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{ {{D}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque étape, on prend une fraction **de ce qui reste**, pas du bouquet entier.",
+					"Il reste successivement $1-\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{R1}} }{ {{b}} }$, puis $1-\\dfrac{ {{c}} }{ {{d}} }=\\dfrac{ {{R2}} }{ {{d}} }$ de ce reste, puis $1-\\dfrac{ {{f}} }{ {{h}} }=\\dfrac{ {{R3}} }{ {{h}} }$ du nouveau reste.",
+					"Prendre une fraction d'une quantité, c'est multiplier :",
+					"$$\\dfrac{ {{R3}} }{ {{h}} }\\times\\dfrac{ {{R2}} }{ {{d}} }\\times\\dfrac{ {{R1}} }{ {{b}} }=\\dfrac{ {{X}} }{ {{Y}} }$$",
+					"{{if:g>1|On simplifie par ${{g}}$ : ${{if:X<0|-}}\\dfrac{ {{eval:abs(X)}} }{ {{Y}} }=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$.|Le résultat $\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{ {{D}} }}$ ne se simplifie pas.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/3 puis 1/4 du reste : il reste 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 du total (1 − 1/3 − 1/4 = 5/12)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2/5 puis 1/2 du reste, la fraction dépensée 7/10 au lieu de 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "2",
+				"b": "5",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non simplifiée : 6/12",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "4"
+			},
+			"answers": ["\\frac{6}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Bouteille : 1/4 puis 2/3 du reste, il reste 1/4",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "4",
+				"c": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 1/4 − 2/3 = 1/12",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"a": "1",
+				"b": "4",
+				"c": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bouquet : 1/2, 1/3, 1/4 : il reste 1/4",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "3",
+				"f": "1",
+				"h": "4"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 1/2 − 1/3 − 1/4 = −1/12",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"a": "1",
+				"b": "2",
+				"c": "1",
+				"d": "3",
+				"f": "1",
+				"h": "4"
+			},
+			"answers": ["-\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

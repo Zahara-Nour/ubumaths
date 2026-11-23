@@ -1,0 +1,284 @@
+{
+	"id": "f6d63dfa-94a6-4be7-b19e-367405c574b6",
+	"title": "Signe d'une puissance",
+	"description": "Dire sans calculer si (−a)ⁿ, −aⁿ, −(−a)ⁿ ou (−a)⁻ⁿ est positif ou négatif (pièges : −3⁴ positif, exposant négatif rend négatif)",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Sans calculer, dis si ce nombre est positif ou négatif.\n\n$$(-{{a}})^{ {{n}} }$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "4..11"
+				},
+				{
+					"name": "o",
+					"expression": "eval:(n)-2*floor((n)/2)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:o"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Signe d'une puissance d'un nombre négatif** : avec un exposant **pair**, le résultat est positif ; avec un exposant **impair**, il est négatif.",
+					"Les parenthèses contiennent le signe : on multiplie ${{n}}$ fois le nombre négatif $-{{a}}$.",
+					"L'exposant ${{n}}$ est {{if:o==1|impair|pair}} : $(-{{a}})^{ {{n}} }$ est **{{if:o==1|négatif|positif}}**."
+				]
+			}
+		},
+		{
+			"statement": "Sans calculer, dis si ce nombre est positif ou négatif.\n\n$$-{{a}}^{ {{n}} }$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Attention aux parenthèses** : dans $-{{a}}^{ {{n}} }$, l'exposant ne porte que sur ${{a}}$ ; le signe « $-$ » est devant le résultat : $-{{a}}^{ {{n}} }=-\\left({{a}}^{ {{n}} }\\right)$.",
+					"${{a}}^{ {{n}} }$ est positif (produit de nombres positifs), donc $-{{a}}^{ {{n}} }$ est **négatif**, que l'exposant soit pair ou impair."
+				]
+			}
+		},
+		{
+			"statement": "Sans calculer, dis si ce nombre est positif ou négatif.\n\n$$-(-{{a}})^{ {{n}} }$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "o",
+					"expression": "eval:(n)-2*floor((n)/2)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:1-(o)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Signe d'une puissance d'un nombre négatif** : avec un exposant **pair**, le résultat est positif ; avec un exposant **impair**, il est négatif.",
+					"L'exposant ${{n}}$ est {{if:o==1|impair|pair}} : $(-{{a}})^{ {{n}} }$ est {{if:o==1|négatif|positif}}.",
+					"Le signe « $-$ » devant change le signe : $-(-{{a}})^{ {{n}} }$ est **{{if:o==1|positif|négatif}}**."
+				]
+			}
+		},
+		{
+			"statement": "Sans calculer, dis si ce nombre est positif ou négatif.\n\n$$(-{{a}})^{-{{n}} }$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..7"
+				},
+				{
+					"name": "o",
+					"expression": "eval:(n)-2*floor((n)/2)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:o"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Signe d'une puissance d'un nombre négatif** : avec un exposant **pair**, le résultat est positif ; avec un exposant **impair**, il est négatif.",
+					"$(-{{a}})^{-{{n}} }=\\dfrac{1}{(-{{a}})^{ {{n}} } }$ : l'exposant négatif donne un inverse, qui a le même signe que $(-{{a}})^{ {{n}} }$.",
+					"L'exposant ${{n}}$ est {{if:o==1|impair|pair}} : $(-{{a}})^{-{{n}} }$ est **{{if:o==1|négatif|positif}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(−3)⁵ : négatif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−3)⁵ positif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−3)⁴ : positif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−3)⁴ négatif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3⁴ : négatif",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3⁴ positif (exposant pair)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−(−2)⁴ : négatif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−(−2)³ : positif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −(−2)³ négatif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−5)⁻² : positif",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−5)⁻² négatif (exposant négatif)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−5)⁻³ : négatif",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

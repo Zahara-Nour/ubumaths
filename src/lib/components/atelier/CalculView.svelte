@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
+	import '#lib/utils/mathlive-styles.ts';
 	/**
 	 * La console de l'atelier (l'ancienne vue Calcul).
 	 *
@@ -16,39 +16,40 @@
 	 * réglages (`docs/archive/wip/atelier-reglages-phase0.md`).
 	 */
 	import { convertLatexToMarkup, type MathfieldElement } from 'mathlive';
-	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
+	import type { CalcDesk, Entry } from '#lib/atelier/desk.svelte.ts';
 	import {
 		commandBeingWritten,
 		commandCatalog,
 		plain,
 		type AtelierCommand
-	} from '$lib/atelier/commands';
+	} from '#lib/atelier/commands.ts';
 	import { tick } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import { answerToCopy } from '$lib/atelier/copy-text';
-	import { insertProposal, proposalsFor, type Proposal } from '$lib/atelier/completion';
-	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
-	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
-	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import { answerToCopy } from '#lib/atelier/copy-text.ts';
+	import { insertProposal, proposalsFor, type Proposal } from '#lib/atelier/completion.ts';
+	import VariationTable from '#lib/components/markdown/nodes/VariationTable.svelte';
+	import StatChart from '#lib/components/markdown/nodes/StatChart.svelte';
 	import FormulaText from './FormulaText.svelte';
-	import { definedName } from '$lib/atelier/desk.svelte';
+	import StepsOnDemand from './StepsOnDemand.svelte';
+	import { definedName } from '#lib/atelier/desk.svelte.ts';
 	import {
 		readStepsVerbosity,
 		writeStepsVerbosity,
 		type StepsVerbosity
-	} from '$lib/atelier/steps-summary';
-	import type { InputMode } from '$lib/atelier/input-mode';
+	} from '#lib/atelier/steps-summary.ts';
+	import type { InputMode } from '#lib/atelier/input-mode.ts';
 	import {
 		calcTextOf,
 		commandWords,
 		draftTextOf,
 		fieldLatexFromText
-	} from '$lib/atelier/natural-input';
+	} from '#lib/atelier/natural-input.ts';
 	import NaturalField from './NaturalField.svelte';
-	import { isSafeLatex } from '$lib/atelier/safe-latex';
+	import { isSafeLatex } from '#lib/atelier/safe-latex.ts';
+	import { definitionHint, type DraftHint } from '#lib/atelier/draft-hint.ts';
 
 	/** Les étapes d'une ligne et leur résumé, celles de la ligne ou de son bouton. */
 	type LineSteps = { readonly steps?: Entry['steps']; readonly summary?: Entry['summary'] };
@@ -200,7 +201,7 @@
 	 * Le champ « Écriture mathématique » (phase 0 `atelier-reglages-phase0.md`).
 	 *
 	 * `desk.draft` reste la ligne en cours, en TEXTE, quel que soit le champ :
-	 * le bouton « Calculer », les commandes préparées par une carte et le retour
+	 * l'envoi du formulaire, les commandes préparées par une carte et le retour
 	 * au mode texte la lisent. Le champ mathématique l'écrit à chaque frappe
 	 * (`draftTextOf`) ; la reprend quand elle change du dehors
 	 * (`fieldLatexFromText`).
@@ -392,9 +393,17 @@
 		highlightedProposal = proposals[next].insert;
 	}
 
-	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
+	/**
+	 * Le modèle sous le champ : celui de la commande dont l'élève tape la suite,
+	 * sinon, pour une définition de fonction, l'écriture « sur [a;b] » (phase 0
+	 * `docs/wip/modele-definition-progress.md`, dans les deux champs).
+	 */
 	const writing = $derived(inputMode === 'math' ? null : commandBeingWritten(catalog, desk.draft));
-	const model = $derived(writing === null ? null : (writing.example ?? writing.description));
+	const hint = $derived<DraftHint | null>(
+		writing !== null
+			? { model: writing.example ?? writing.description }
+			: definitionHint(desk.draft, inputMode)
+	);
 
 	/**
 	 * Une frappe rouvre la liste et remet le surlignage sur la première
@@ -558,9 +567,13 @@
 
 	function submit(event: SubmitEvent) {
 		event.preventDefault();
-		// Le bouton « Calculer » sous le champ mathématique : le même chemin qu'Entrée
+		// Pas de bouton « Calculer » (David, 2026-11-14) : Entrée, ou la touche ↵
+		// d'un clavier virtuel, valide. Le champ texte envoie le formulaire (seul
+		// champ : envoi implicite) ; le champ mathématique valide lui-même, et un
+		// envoi du formulaire en mode mathématique prend le même chemin
 		if (inputMode === 'math') naturalField?.submit();
-		else desk.submit(desk.draft);
+		// Ligne vide : rien (le bouton grisé bloquait aussi l'envoi par Entrée)
+		else if (desk.draft.trim() !== '') desk.submit(desk.draft);
 	}
 
 	/** Remplacer la commande en cours par celle que l'élève vient de choisir. */
@@ -741,7 +754,7 @@
 								>
 							</div>
 						{/if}
-						<GeneratedStepsCorrection
+						<StepsOnDemand
 							steps={shownSteps(entry, { steps: lineSteps.steps, summary: lineSteps.summary })}
 						/>
 					</div>
@@ -828,8 +841,10 @@
 		</ul>
 	{/if}
 
-	{#if model !== null}
-		<p class="modele" id="{uid}-modele">Modèle : <code>{model}</code></p>
+	{#if hint !== null}
+		<p class="modele" id="{uid}-modele">
+			Modèle : <code>{hint.model}</code>{#if hint.note !== undefined}&nbsp;— {hint.note}{/if}
+		</p>
 	{/if}
 
 	<form onsubmit={submit}>
@@ -861,7 +876,7 @@
 						? `${uid}-propositions`
 						: undefined}
 				aria-activedescendant={activeDescendant}
-				aria-describedby={model !== null ? `${uid}-modele` : undefined}
+				aria-describedby={hint !== null ? `${uid}-modele` : undefined}
 				onkeydown={handleKeydown}
 				onkeyup={handleKeyup}
 				onclick={syncCaret}
@@ -870,7 +885,6 @@
 				placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
 			/>
 		{/if}
-		<Button type="submit" disabled={desk.draft.trim() === ''}>Calculer</Button>
 	</form>
 </div>
 

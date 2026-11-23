@@ -5,7 +5,7 @@
  * normalizes to that form, like `1/x − 1` → `(−x + 1)/x`).
  *
  * Strategy :
- * 1. Apply `denormalize(normalize(expr))` to canonicalize. If the result
+ * 1. Apply `canonicalForm(expr)` to canonicalize. If the result
  *    is not a `division` node, this isn't a rational equation — return
  *    `null` (let the polynomial / transcendental paths take over).
  * 2. Solve `numerator = 0` recursively (this re-enters `solve`).
@@ -23,7 +23,7 @@ import type { MathNode, RelationNode } from '../types';
 import type { PeriodicSolutionFamily, Solution, SolveResult, SolveOptions } from './types';
 import { isSolverFailure } from './types';
 import type { SolveStepRecorder } from './types';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { equals, number } from '../factory';
 import { hasVariable } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -90,7 +90,7 @@ export function tryRationalDecomposition(
 	if (originalDenominators.length === 0) return null;
 
 	// Step 1 : canonicalize. May or may not produce a single fraction.
-	const canonical = denormalize(normalize(expr));
+	const canonical = canonicalForm(expr);
 
 	// Decide what the "numerator equation" is :
 	// - if canonical is a division, use its numerator ;

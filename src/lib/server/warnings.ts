@@ -12,7 +12,7 @@
  *
  * USAGE:
  * ```typescript
- * import { getCurrentAcademicPeriod, getClassWarnings } from '$lib/server/warnings';
+ * import { getCurrentAcademicPeriod, getClassWarnings } from '#lib/server/warnings.ts';
  *
  * const period = await getCurrentAcademicPeriod({ schoolId, supabase });
  * const warnings = await getClassWarnings({ classId, periodId: period.id, teacherId, supabase });
@@ -25,7 +25,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { error } from '@sveltejs/kit';
 
 // ============================================================================
@@ -33,8 +33,8 @@ import { error } from '@sveltejs/kit';
 // ============================================================================
 
 // Import and re-export shared types and constants
-import { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '$lib/types/warnings';
-import { createServerLogger } from '$lib/utils/logger';
+import { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel } from '#lib/types/warnings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/warnings');
 export { type WarningType, WARNING_TYPE_LABELS, getWarningTypeLabel };

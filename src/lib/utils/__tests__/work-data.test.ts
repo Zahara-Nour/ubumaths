@@ -37,6 +37,7 @@ const OWNER = 'chiphre:work-data-owner';
 const WORK = {
 	'chiphre-python-playground': 'print("A")',
 	'chiphre-calc-history': '[1]',
+	'chiphre:palotin:dernier-passage': '1700000000000',
 	minesweeper_game: '{}',
 	game_player: '{"xp":3}',
 	'chiphre-exercise-123': 'code',

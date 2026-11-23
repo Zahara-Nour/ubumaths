@@ -14,9 +14,9 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { loadMathouxCountsByStudent } from '$lib/server/mathoux/teacher';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { loadMathouxCountsByStudent } from '#lib/server/mathoux/teacher.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/gamification/mathoux/+page.server'

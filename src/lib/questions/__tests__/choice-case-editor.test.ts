@@ -13,7 +13,8 @@ import {
 	readCheckedChoices,
 	readChoiceCase,
 	statementCaseKinds,
-	writeChoiceCase
+	writeChoiceCase,
+	withBlockCases
 } from '../choice-case-editor';
 import { assignBlankIndices } from '../generator/assign-blank-indices';
 
@@ -195,5 +196,65 @@ describe('choiceIndexesAfterRemoval — un choix supprimé décale les suivants'
 describe('readChoiceCase — `case:` écrit à la main', () => {
 	it('pas réécrivable : la réécriture perdrait le réglage', () => {
 		expect(readChoiceCase('```choix\ncase: 2\n- a\n- b\n```', 0)?.rewritable).toBe(false);
+	});
+});
+
+describe('withBlockCases : cases des blocs omises de blanks[], remises à leur rang', () => {
+	const FIGURE = '```figure-de-travail\nfenetre: 0 ; 10 ; 0 ; 6\n---\nA = point(1, 1)\n```';
+	const OPERATION = '```operation\n12 + 7\ncases: résultat\n```';
+
+	it('figure de travail puis choix, une entrée : elle revient au choix', () => {
+		const statement = `${FIGURE}\n\n\`\`\`choix\n- Oui\n- Non\n\`\`\``;
+		expect(withBlockCases(['1'], statement, () => '')).toEqual(['', '1']);
+	});
+
+	it('opération puis [_], une entrée : elle revient au trou', () => {
+		expect(withBlockCases(['5'], `${OPERATION}\n\nEt [_]`, () => '')).toEqual(['', '5']);
+	});
+
+	it('variable dans une opération : rien (`{{a}} ÷ 7` porte deux cases une fois résolu)', () => {
+		const division = '```operation\ncalcul: {{a}} ÷ 7\n```\n\nEt [_]';
+		expect(withBlockCases(['x'], division, () => '')).toBeNull();
+		const operator = '```operation\n12 {{op}} 7\n```\n\nEt [_]';
+		expect(withBlockCases(['x'], operator, () => '')).toBeNull();
+	});
+
+	it('variables qui ne portent aucune case (texte, figure, choix, {{if:}}) : remises à leur rang', () => {
+		// Forme de CP-058 : {{if:}} dans le texte, variables dans la figure
+		const statement = [
+			'Les points sont-ils alignés ? Trace $({{if:k==3|B|A}}{{if:k==1|B|C}})$.',
+			'',
+			'```figure-de-travail',
+			'fenetre: 0 ; 10 ; 0 ; 6',
+			'outils: droite',
+			'---',
+			'A = point({{xa}}, {{ya}})',
+			'```',
+			'',
+			'```choix',
+			'melanger: non',
+			'- Oui {{u}}',
+			'- Non',
+			'```'
+		].join('\n');
+		expect(withBlockCases(['0'], statement, () => '')).toEqual(['', '0']);
+	});
+
+	it('expression : rien (son format de réponse peut porter des cases, `?/?`)', () => {
+		expect(withBlockCases(['x'], `${FIGURE}\n\n$<<expr:expressionF>>{{f}}$`, () => '')).toBeNull();
+	});
+
+	it('{{if:}} qui porte une case : rien (le compte dépend du tirage)', () => {
+		expect(withBlockCases(['x'], `${FIGURE}\n\n{{if:k==1|Et [_]|Rien}}`, () => '')).toBeNull();
+		expect(
+			withBlockCases(['x', 'y'], `${FIGURE}\n\nEt [_] {{if:k==1|$? + 1$|}}`, () => '')
+		).toBeNull();
+	});
+
+	it('liste déjà complète, ou sans bloc, ou d’une autre longueur : rien', () => {
+		const statement = `${FIGURE}\n\nEt [_]`;
+		expect(withBlockCases(['', 'x'], statement, () => '')).toBeNull();
+		expect(withBlockCases(['x'], 'Et [_]', () => '')).toBeNull();
+		expect(withBlockCases([], `${statement} et [_]`, () => '')).toBeNull();
 	});
 });

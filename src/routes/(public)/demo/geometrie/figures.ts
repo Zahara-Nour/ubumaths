@@ -5,7 +5,7 @@
  * David le 2026-10-24, chantier demo-debug, PR 6f), sauf l'épicycloïde : celle de
  * `sliders/epicycloide` trace un cercle, la vitrine fait rouler un vrai petit cercle.
  */
-import { buildKochDsl } from '$lib/components/geometry/koch-dsl';
+import { buildKochDsl } from '#lib/components/geometry/koch-dsl.ts';
 
 // Types
 export type DemoSectionId = 'college' | 'lycee' | 'plaisir';

@@ -16,13 +16,13 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
-import { requireOwnedTemplate } from '$lib/server/template-guard';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { requireOwnedTemplate } from '#lib/server/template-guard.ts';
 import {
 	listTemplateContent,
 	retireTemplateElement,
 	templateHasContent
-} from '$lib/server/template-content';
+} from '#lib/server/template-content.ts';
 import {
 	insertChecklistItem,
 	insertDocument,
@@ -30,24 +30,24 @@ import {
 	insertWorksheet,
 	updateChecklistItem,
 	type SectionPlacement
-} from '$lib/server/chapters';
-import { nextSectionOrder } from '$lib/server/chapter-sections';
+} from '#lib/server/chapters.ts';
+import { nextSectionOrder } from '#lib/server/chapter-sections.ts';
 import {
 	linkSeries,
 	listAvailableSeries,
 	setSeriesForm,
 	type AvailableSeries
-} from '$lib/server/chapter-series';
+} from '#lib/server/chapter-series.ts';
 import {
 	createChecklistItemSchema,
 	updateChecklistItemSchema
-} from '$lib/server/validation/chapters';
-import { linkSeriesSchema, setSeriesFormSchema } from '$lib/server/validation/chapter-series';
+} from '#lib/server/validation/chapters.ts';
+import { linkSeriesSchema, setSeriesFormSchema } from '#lib/server/validation/chapter-series.ts';
 import {
 	targetSectionFieldSchema,
 	type SectionContentKind
-} from '$lib/server/validation/chapter-sections';
-import { uuidSchema } from '$lib/server/validation/common';
+} from '#lib/server/validation/chapter-sections.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
 import {
 	getChapterTemplate,
 	updateChapterTemplate,
@@ -57,19 +57,19 @@ import {
 	instantiateTemplate,
 	TemplateInUseError,
 	TemplateUnusableError
-} from '$lib/server/chapter-templates';
+} from '#lib/server/chapter-templates.ts';
 import {
 	updateChapterTemplateSchema,
 	instantiateTemplateSchema
-} from '$lib/server/validation/chapter-templates';
+} from '#lib/server/validation/chapter-templates.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import type {
 	TemplateContent,
 	TemplateSeries,
 	TemplateWorksheet
-} from '$lib/types/chapter-templates';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/types/chapter-templates.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Types
 /** Ce que l'éditeur partagé lit en plus du contenu brut du modèle. */

@@ -2,7 +2,7 @@
  * POST /api/admin/cron/trigger
  *
  * Manually triggers a CRON job execution.
- * Admin-only endpoint with rate limiting (1 req/min per job).
+ * Admin-only endpoint with rate limiting (1 req/min per job, compté en base).
  *
  * Body:
  * - job_path: The API path of the job to trigger
@@ -10,28 +10,25 @@
  *   - RPC jobs: "rpc:cleanup_stale_trades" (pg_cron functions)
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { assertTypedConfirmation } from '$lib/server/confirmAction';
-import { getEnv } from '$lib/server/env';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { assertTypedConfirmation } from '#lib/server/confirmAction.ts';
+import { getEnv } from '#lib/server/env.ts';
 import {
 	cronTriggerBodySchema,
 	CRON_TRIGGER_CONFIRM_KEYWORD,
 	type CronTriggerResponse
-} from '$lib/server/validation/cron';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/cron.ts';
+import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
+import { checkEndpointRateLimit } from '#lib/server/rateLimiter.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/cron/trigger/+server');
 
-// Simple in-memory rate limit store
-// WARNING: Resets on server restart. In Vercel serverless, each cold start
-// gets a fresh store. Acceptable for admin-only feature with low usage.
-// For high-volume production use, consider Redis-backed rate limiting.
-const rateLimitStore = new Map<string, number>();
-const RATE_LIMIT_MINUTES = 1;
-const RATE_LIMIT_MS = RATE_LIMIT_MINUTES * 60 * 1000;
+// Un lancement par minute et par tâche, compté en base (tient entre instances Vercel).
+// Le lancement est compté dès la demande, qu'il réussisse ou non.
+const RATE_LIMIT_SECONDS = 60;
 
 export const POST: RequestHandler = async ({ request, locals, url }) => {
 	// ✅ SECURITY: admin elevation OR real admin login. This handler triggers jobs
@@ -56,13 +53,12 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 	// ✅ SECURITY: global destructive op → require the fixed keyword.
 	assertTypedConfirmation(validation.data.confirm, CRON_TRIGGER_CONFIRM_KEYWORD);
 
-	// Check rate limit
-	const lastTrigger = rateLimitStore.get(job_path);
-	const now = Date.now();
-
-	if (lastTrigger && now - lastTrigger < RATE_LIMIT_MS) {
-		const waitSeconds = Math.ceil((RATE_LIMIT_MS - (now - lastTrigger)) / 1000);
-		throw error(429, `Tâche lancée il y a peu : attendre ${waitSeconds} s avant de la relancer`);
+	const limit = await checkEndpointRateLimit(`cron_trigger:${job_path}`, 1, RATE_LIMIT_SECONDS);
+	if (!limit.allowed) {
+		throw error(
+			429,
+			`Tâche lancée il y a peu : attendre ${limit.retryAfter ?? RATE_LIMIT_SECONDS} s avant de la relancer`
+		);
 	}
 
 	try {
@@ -71,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		// Check if this is an RPC job (pg_cron function)
 		if (job_path.startsWith('rpc:')) {
 			const functionName = job_path.replace('rpc:', '');
-			return await triggerRpcJob(functionName, job_path, now);
+			return await triggerRpcJob(functionName, job_path);
 		}
 
 		// HTTP job - requires CRON_SECRET
@@ -96,9 +92,6 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			}
 		});
 
-		// Update rate limit
-		rateLimitStore.set(job_path, now);
-
 		// Handle response
 		if (!response.ok) {
 			const errorText = await response.text().catch(() => 'Unknown error');
@@ -111,7 +104,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 				triggered_at: new Date().toISOString()
 			};
 
-			return json(triggerResponse, { status: response.status });
+			return Response.json(triggerResponse, { status: response.status });
 		}
 
 		// Parse job response for details
@@ -132,7 +125,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		};
 
 		// Include job result if available
-		return json({
+		return Response.json({
 			...triggerResponse,
 			result: jobResult
 		});
@@ -149,26 +142,19 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			triggered_at: new Date().toISOString()
 		};
 
-		return json(triggerResponse, { status: 500 });
+		return Response.json(triggerResponse, { status: 500 });
 	}
 };
 
 /**
  * Trigger a pg_cron RPC function
  */
-async function triggerRpcJob(
-	functionName: string,
-	job_path: string,
-	now: number
-): Promise<Response> {
+async function triggerRpcJob(functionName: string, job_path: string): Promise<Response> {
 	const serviceClient = createServiceRoleClient();
 
 	// Call the RPC function
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const { error: rpcError } = await serviceClient.rpc(functionName as any);
-
-	// Update rate limit
-	rateLimitStore.set(job_path, now);
 
 	if (rpcError) {
 		logger.error(`[CRON Trigger] RPC job failed:`, rpcError);
@@ -180,7 +166,7 @@ async function triggerRpcJob(
 			triggered_at: new Date().toISOString()
 		};
 
-		return json(triggerResponse, { status: 500 });
+		return Response.json(triggerResponse, { status: 500 });
 	}
 
 	logger.info(`[CRON Trigger] RPC job completed successfully:`, functionName);
@@ -192,5 +178,5 @@ async function triggerRpcJob(
 		triggered_at: new Date().toISOString()
 	};
 
-	return json(triggerResponse);
+	return Response.json(triggerResponse);
 }

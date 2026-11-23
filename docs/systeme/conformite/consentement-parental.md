@@ -19,8 +19,8 @@ couvre:
 > ⚠️ **Règle actuelle des niveaux** : tout niveau sauf 1re/Tle (base, 2026-10-01 ; code aligné le
 > 2026-10-10) — voir [`README.md`](README.md) §4. Ce document cite encore « grades 6-2 ».
 
-> ⚠️ **DOCUMENT DATÉ (2026-01-16).** Drifts actuels : période de grâce **= date fixe 2026-06-30** (et
-> non 30 jours) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
+> ⚠️ **DOCUMENT DATÉ (2026-01-16).** Drifts actuels : période de grâce **= 30 jours glissants** (la date
+> fixe 2026-06-30 a disparu) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
 > [`README.md`](README.md) §4.
 
 > **Adresse du parent et lien (2026-10-21, PR 3 de l'inscription par le parent)** : l'adresse
@@ -38,6 +38,16 @@ couvre:
 > adresse `@eleves.chiph.re` (compte d'un enfant inscrit par son parent, voir
 > [auth.md](../auth.md#le-domaine-fictif-eleveschiphre)) : le courriel de consentement part
 > toujours à l'adresse du parent.
+>
+> **Base locale (2026-11-17)** : sur la base Supabase locale, `sendEmail` n'envoie rien ; le
+> courriel est écrit dans `.captures/courriels/` (`src/lib/server/email/capture.ts`, détail dans
+> [environnement-de-dev.md](../../pratiques/environnement-de-dev.md#courriels-en-local--capturés-jamais-envoyés)).
+
+> **Carnet de liaison (2026-11-16, ADR 0040)** : quand le professeur active le carnet d'une
+> classe, l'adresse d'un consentement **accordé** (`granted`) devient une adresse confirmée du
+> carnet (`parent_contacts`, source `consent`) et reçoit le lien du carnet par Brevo
+> (`sendCarnetLinkEmail`). Une autre adresse ne reçoit d'abord qu'une confirmation. Détail :
+> [carnet-de-liaison.md](../carnet-de-liaison.md#les-envois).
 
 > Migrations citées : antérieures au baseline, archivées sous `supabase/migrations_archive/` ; le
 > schéma courant est dans `supabase/migrations/20260616220000_baseline_schema.sql`.
@@ -108,7 +118,7 @@ parental_consents (new)
 ├── consent_given_at: TIMESTAMPTZ
 ├── consent_ip: INET
 ├── consent_user_agent: TEXT
-├── email_count: INTEGER (max 5)
+├── email_count: INTEGER (max 5) — envoi réservé avant Brevo (mise à jour conditionnelle : un double clic → 409), rendu si Brevo refuse
 └── last_email_sent_at: TIMESTAMPTZ
 
 pending_students (modified)

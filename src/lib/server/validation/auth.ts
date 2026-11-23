@@ -4,12 +4,12 @@
 
 import { z } from 'zod';
 import { formDataTransforms } from './common';
-import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
+import { validatePasswordPolicy } from '#lib/server/passwordPolicy.ts';
 import {
 	childLoginBase,
 	isChildAccountEmail,
 	normalizeLoginIdentifier
-} from '$lib/utils/child-account';
+} from '#lib/utils/child-account.ts';
 
 /**
  * SECURITY (finding H6): the server-side password policy was dead code — real
@@ -32,7 +32,7 @@ function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
 
 /**
  * Login form schema. Le champ `email` reçoit une adresse OU l'identifiant d'un enfant
- * (`noelie42`), changé en adresse du domaine fictif (`$lib/utils/child-account`).
+ * (`noelie42`), changé en adresse du domaine fictif (`#lib/utils/child-account.ts`).
  */
 export const loginFormSchema = z.object({
 	email: z

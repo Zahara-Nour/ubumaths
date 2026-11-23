@@ -10,7 +10,7 @@
  * @module lexicon/runtime-store
  */
 
-import { fetchDictionary } from '$lib/dictionary/fetch-dictionary';
+import { fetchDictionary } from '#lib/dictionary/fetch-dictionary.ts';
 import type { Lexicon } from './runtime';
 
 export type LexiconRuntime = Lexicon;

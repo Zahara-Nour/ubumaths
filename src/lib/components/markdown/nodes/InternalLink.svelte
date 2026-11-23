@@ -4,7 +4,7 @@
 
 	Renders internal links ([[type:uuid|label]]) as navigation links.
 
-	Addressing is delegated to `$lib/resources` — this component holds no route
+	Addressing is delegated to `#lib/resources/index.ts` — this component holds no route
 	knowledge of its own. It used to build URLs with its own `switch`, which is
 	how it ended up pointing at four routes that did not exist: nothing tied its
 	copy of the paths to the real ones.
@@ -13,14 +13,15 @@
 	detail page; a chapter referenced outside its class) renders as inert text
 	rather than a link to a 404.
 
-	@see $lib/resources/registry for the route table
+	@see #lib/resources/registry for the route table
 	@see InternalLinkNode in ast.ts for node structure
 	@module components/markdown/nodes/InternalLink
 -->
 <script lang="ts">
-	import { resolveResource, type ResourceKind, type ViewerRole } from '$lib/resources';
-	import type { InternalLinkReferenceType } from '$lib/ubumark';
-	import { cn } from '$lib/utils';
+	import { resolveResource, type ResourceKind, type ViewerRole } from '#lib/resources/index.ts';
+	import type { InternalLinkReferenceType } from '#lib/ubumark/index.ts';
+	import { cn } from '#lib/utils.ts';
+	import { readInternalLinks } from '../internal-link-context';
 
 	interface Props {
 		/** Type of the internal resource */
@@ -29,10 +30,12 @@
 		uuid: string;
 		/** Display label for the link */
 		label: string;
-		/** Viewer role, used to pick the right route (default: student) */
+		/** Viewer role, used to pick the right route (default: the reader context, else student) */
 		role?: ViewerRole;
 		/** Class the reference is read from — required to link a chapter as a teacher */
 		classId?: string;
+		/** Share token of the public journal link — opens a cited worksheet without an account */
+		shareToken?: string;
 		/** Callback when the link is clicked (for SPA navigation) */
 		onClick?: (referenceType: InternalLinkReferenceType, uuid: string) => void;
 		/** Additional CSS classes */
@@ -43,19 +46,33 @@
 		referenceType,
 		uuid,
 		label,
-		role = 'student',
+		role,
 		classId,
+		shareToken,
 		onClick,
 		class: className = ''
 	}: Props = $props();
 
-	const resolved = $derived(
-		resolveResource(referenceType as ResourceKind, uuid, {
-			role,
+	// Lecteur posé par le `MarkdownRenderer` englobant (prop `internalLinks`) ;
+	// une prop explicite l'emporte.
+	const reader = readInternalLinks();
+
+	// `resolve()` de SvelteKit substitue les paramètres sans les encoder : un
+	// `classId` mal formé finirait tel quel dans le `href`.
+	const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+
+	const resolved = $derived.by(() => {
+		const fromContext = reader();
+		const rawClassId = classId ?? fromContext.classId;
+		return resolveResource(referenceType as ResourceKind, uuid, {
+			role: role ?? fromContext.role,
 			label,
-			context: { classId }
-		})
-	);
+			context: {
+				classId: rawClassId && UUID.test(rawClassId) ? rawClassId : undefined,
+				shareToken: shareToken ?? fromContext.shareToken
+			}
+		});
+	});
 	const Icon = $derived(resolved.icon);
 
 	/**

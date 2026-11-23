@@ -4,11 +4,10 @@
  * GET - Check if a student has access to a specific exercise
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { studentHasAccess } from '$lib/server/exercise-assignments';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { validateUuidParam } from '$lib/server/validation/params';
+import { studentHasAccess } from '#lib/server/exercise-assignments.ts';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 /**
  * GET /api/exercises/[id]/access
@@ -29,5 +28,5 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Check access
 	const hasAccess = await studentHasAccess(locals.supabase, exerciseId, user.id);
 
-	return json({ has_access: hasAccess });
+	return Response.json({ has_access: hasAccess });
 };

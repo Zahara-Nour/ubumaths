@@ -1,0 +1,353 @@
+{
+	"id": "8fb1a23a-6e98-4b58-8745-caf5fec3dc88",
+	"title": "Valeur d'une puissance",
+	"description": "Calculer (−a)ⁿ, a⁻ⁿ, 0,dⁿ et a⁰ (pièges : (−2)³ = 8, 5⁻² = −25, 0,3² = 0,6, 7⁰ = 0)",
+	"grades": ["2"],
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$(-{{a}})^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:(-(a))^(n)"
+				}
+			],
+			"conditions": ["(a)^(n) <= 700"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$).",
+					"$$(-{{a}})^{ {{n}} }={{if:n==2|(-{{a}})\\times (-{{a}})|{{if:n==3|(-{{a}})\\times (-{{a}})\\times (-{{a}})|{{if:n==4|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})|(-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})\\times (-{{a}})}}}}}}$$",
+					"Il y a ${{n}}$ facteurs négatifs, un nombre {{if:n==3|impair|{{if:n==5|impair|pair}}}} : le résultat est {{if:p<0|négatif|positif}}.",
+					"$$(-{{a}})^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{p}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule. Donne le résultat sous la forme d'une fraction.\n\n$${{a}}^{-{{n}} }=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|4|5|10"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(a)^(n)"
+				}
+			],
+			"conditions": ["(a)^(n) <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{ {{q}} }",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$). Un exposant négatif ne rend pas le nombre négatif.",
+					"$${{a}}^{-{{n}} }=\\dfrac{1}{ {{a}}^{ {{n}} } }=\\dfrac{1}{{{if:n==2|{{a}}\\times {{a}}|{{a}}\\times {{a}}\\times {{a}}}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{q}} }}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$0{,}{{d}}^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d)^(n)/10^(n);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$).",
+					"$$0{,}{{d}}^{ {{n}} }={{if:n==2|0{,}{{d}}\\times 0{,}{{d}}|0{,}{{d}}\\times 0{,}{{d}}\\times 0{,}{{d}}}}=\\textcolor{{{color:primary.0}}}{{{eval:(d)^(n)/10^(n);d}}}$$",
+					"${{d}}^{ {{n}} }={{eval:(d)^(n)}}$, puis on place la virgule : il y a ${{eval:(n)}}$ chiffres après la virgule dans les facteurs, donc ${{eval:(n)}}$ dans le résultat.",
+					"Attention : $0{,}{{d}}^{ {{n}} }$ n'est pas $0{,}{{d}}\\times{{n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{if:t==0|{{a}}|(-{{a}})}}^{0}=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : pour $n\\geqslant 1$, $a^n=a\\times a\\times\\cdots\\times a$ ($n$ facteurs) ; $a^0=1$ et $a^{-n}=\\dfrac{1}{a^n}$ (pour $a\\neq0$).",
+					"Tout nombre non nul élevé à la puissance $0$ vaut $1$ : ${{if:t==0|{{a}}|(-{{a}})}}^{0}=\\textcolor{{{color:primary.0}}}{1}$.",
+					"Pourquoi ? ${{a}}^{1}\\div {{a}}^{1}={{a}}^{1-1}={{a}}^{0}$, et un nombre divisé par lui-même vaut $1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(−2)³ = −8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié, (−2)³ = 8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (−2) × 3 = −6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−3)⁴ = 81",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["81"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−3)⁴ = −81",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["-81"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5⁻² = 1/25",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5⁻² = 0,04 (décimal exact)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["0,04"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5⁻² = −25",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["-25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5⁻² = −10",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5⁻² = 1/10",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,3² = 0,09",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["0,09"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,3² = 0,9",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["0,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,3² = 0,6",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["0,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,2³ = 0,008",
+			"variationIndex": 2,
+			"variables": {
+				"d": "2",
+				"n": "3"
+			},
+			"answers": ["0,008"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7⁰ = 1",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"a": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7⁰ = 0",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"a": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7⁰ = 7",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−4)⁰ = 1",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−4)⁰ = −1",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"a": "4"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

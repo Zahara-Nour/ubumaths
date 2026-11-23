@@ -9,11 +9,11 @@
  * @module grapheur/evaluator
  */
 
-import type { MathNode } from '$lib/mathAST/types';
-import { parseLatexSafe } from '$lib/mathAST/parser';
-import { substitute, getVariables } from '$lib/mathAST/eval/substitute';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { compile } from '$lib/mathAST/eval/compile';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { substitute, getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { evaluate } from '#lib/mathAST/eval/evaluate.ts';
+import { compile } from '#lib/mathAST/eval/compile.ts';
 
 // =============================================================================
 // Types

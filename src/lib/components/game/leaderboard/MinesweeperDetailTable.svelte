@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Card } from '$lib/components/ui/card';
-	import type { MinesweeperLeaderboardRow } from '$lib/types/database-helpers';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Avatar from '#lib/components/ui/avatar/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Card } from '#lib/components/ui/card/index.ts';
+	import type { MinesweeperLeaderboardRow } from '#lib/types/database-helpers.ts';
 
 	let { rows }: { rows: MinesweeperLeaderboardRow[] } = $props();
 

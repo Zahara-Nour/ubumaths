@@ -5,7 +5,7 @@
  * object level to reject unknown/misspelled keys.
  *
  * Building blocks are exported WITHOUT .strict() for reuse by server-side
- * validation schemas (questions.ts, migration-review.ts). The strict versions
+ * validation schemas (questions.ts). The strict versions
  * are used only locally for the questionTemplateSchema (JsonEditor validation).
  *
  * Used by:
@@ -14,7 +14,7 @@
  */
 
 import { z } from 'zod';
-import { SUPERFLU_RULE_IDS, bySuperfluRule } from '$lib/mathAST/superflu/rules';
+import { SUPERFLU_RULE_IDS, bySuperfluRule } from '#lib/mathAST/superflu/rules.ts';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
 import {
@@ -28,6 +28,7 @@ import {
 } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 import { capitalPairsSchema } from './capital-pairs';
+import { hintSchema, refineHints } from './hint';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -117,7 +118,20 @@ export const validationRuleSchema = z.discriminatedUnion('type', [
 	validationRuleCustom
 ]);
 
-export const correctChoiceIndexSchema = z.union([z.string(), z.array(z.string())]);
+/**
+ * Champ du QCM de modèle retiré (ADR 0033, lot 5) : le QCM est une case.
+ * Reçu, il est refusé avec ce message — jamais retiré en silence (un schéma
+ * non strict retirerait la clé sans rien dire). `null` (champ vidé, que
+ * renvoie un éditeur ouvert avant le retrait) est admis : il ne dit rien, et
+ * devient `undefined` pour que la clé ne soit jamais écrite en base.
+ */
+export const QCM_RETIRED_MESSAGE =
+	'le QCM est une case : écrire une case choix (bloc ```choix dans l’énoncé)';
+
+export const retiredQcmFieldSchema = z
+	.null({ error: QCM_RETIRED_MESSAGE })
+	.transform(() => undefined)
+	.optional();
 
 // === Test Specs ===
 
@@ -131,9 +145,36 @@ export const constraintIdSchema = z.enum([
 	'rounding'
 ]);
 
+/** Longueur maximale d'une réponse ou d'un message d'erreur prévue */
+const EXPECTED_ERROR_TEXT_MAX = 500;
+/** Longueur maximale du nom court d'une erreur prévue */
+const EXPECTED_ERROR_LABEL_MAX = 80;
+/** Nombre maximal d'erreurs prévues d'une case */
+const EXPECTED_ERRORS_MAX = 10;
+
+/** Erreur prévue d'une case (cf. `ExpectedError`) ; message et réponse non vides */
+const expectedErrorSchema = z
+	.object({
+		answer: z
+			.string()
+			.trim()
+			.min(1, 'Réponse de l’erreur prévue vide')
+			.max(EXPECTED_ERROR_TEXT_MAX),
+		message: z
+			.string()
+			.trim()
+			.min(1, 'Message de l’erreur prévue vide')
+			.max(EXPECTED_ERROR_TEXT_MAX),
+		label: z.string().trim().min(1).max(EXPECTED_ERROR_LABEL_MAX).optional()
+	})
+	.strict();
+
+const expectedErrorsSchema = z.array(expectedErrorSchema).max(EXPECTED_ERRORS_MAX);
+
 export const testSpecExpectedSchema = z.object({
 	status: z.enum(['correct', 'unoptimal_form', 'bad_form', 'incorrect', 'empty']),
-	constraintViolations: z.array(constraintIdSchema).optional()
+	constraintViolations: z.array(constraintIdSchema).optional(),
+	expectedErrorMessage: z.string().min(1).max(EXPECTED_ERROR_TEXT_MAX).optional()
 });
 
 export const testSpecSchema = z.object({
@@ -141,7 +182,7 @@ export const testSpecSchema = z.object({
 	variationIndex: z.number().int().nonnegative().optional(),
 	variables: z.record(z.string(), z.string()),
 	answers: z.array(z.string()).optional(),
-	selectedChoices: z.array(z.number().int().nonnegative()).optional(),
+	selectedChoices: retiredQcmFieldSchema,
 	expected: testSpecExpectedSchema
 });
 
@@ -298,11 +339,6 @@ export const variableSchema = z.object({
 	displayOptions: displayOptionsSchema.optional()
 });
 
-export const choiceSchema = z.object({
-	content: z.string(),
-	isCorrect: z.boolean().optional()
-});
-
 /** Longueur maximale d'un champ de case « primitive » / « solution-ed » */
 const CALCULUS_TEXT_MAX = 500;
 
@@ -350,6 +386,8 @@ export const blankSchema = z.object({
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
 	angleModulo: z.enum(ANGLE_MODULOS).optional(),
+	expectedErrors: expectedErrorsSchema.optional(),
+	neverChoice: z.boolean().optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -368,7 +406,7 @@ export const constraintsSchema = z.object({
 export const optionsSchema = z.object({
 	orderIndependent: z.boolean().optional(),
 	constraints: constraintsSchema.optional(),
-	shuffleChoices: z.boolean().optional(),
+	shuffleChoices: retiredQcmFieldSchema,
 	// Carte de cours (#617) : recto = énoncé, verso = correction
 	courseCard: z.boolean().optional(),
 	// Question de cours (Q110 b) : marqueur d'intention, cf. `isCourseQuestion`
@@ -572,8 +610,6 @@ const variableStrictZ = z
 	})
 	.strict();
 
-const choiceStrictZ = choiceSchema.strict();
-
 const blankDefaultsStrictZ = z
 	.object({
 		precision: precisionStrictZ.optional(),
@@ -607,6 +643,8 @@ const blankStrictZ = z
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
 		angleModulo: z.enum(ANGLE_MODULOS).optional(),
+		expectedErrors: expectedErrorsSchema.optional(),
+		neverChoice: z.boolean().optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
@@ -618,7 +656,6 @@ const optionsStrictZ = z
 	.object({
 		orderIndependent: z.boolean().optional(),
 		constraints: constraintsStrictZ.optional(),
-		shuffleChoices: z.boolean().optional(),
 		courseCard: z.boolean().optional(),
 		courseQuestion: z.boolean().optional(),
 		answerAssumptions: answerAssumptionsSchema.optional()
@@ -629,9 +666,7 @@ const sharedStrictZ = z
 	.object({
 		statement: z.string().optional(),
 		variables: z.array(variableStrictZ).optional(),
-		correctChoiceIndex: correctChoiceIndexSchema.optional(),
 		correction: correctionStrictZ.optional().nullable(),
-		choices: z.array(choiceStrictZ).optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		requiredForm: requiredFormStrictZ.optional(),
 		blankDefaults: blankDefaultsStrictZ.optional(),
@@ -650,15 +685,16 @@ const variationStrictZ = z
 	.object({
 		statement: z.string().optional(),
 		variables: z.array(variableStrictZ).optional(),
-		correctChoiceIndex: correctChoiceIndexSchema.optional(),
 		correction: correctionStrictZ.optional().nullable(),
 		blanks: z.array(blankStrictZ).optional(),
 		blankDefaults: blankDefaultsStrictZ.optional(),
 		answerFormats: z.record(z.string(), z.string()).optional(),
-		choices: z.array(choiceStrictZ).optional(),
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		requiredForm: requiredFormStrictZ.optional(),
-		conditions: z.array(z.string()).optional()
+		conditions: z.array(z.string()).optional(),
+		// Coup de pouce (idée 5) : indice écrit, ou première étape de la correction
+		hint: hintSchema.optional(),
+		hintFromFirstStep: z.boolean().optional()
 	})
 	.strict();
 
@@ -681,13 +717,10 @@ export const questionTemplateSchema = z
 		exerciseInstruction: z.string().optional().nullable(),
 		options: optionsStrictZ.optional().nullable(),
 		grades: z.array(z.string()),
-		theme: z.string(),
-		domain: z.string(),
-		subdomain: z.string().optional().nullable(),
+		classification_node_id: z.string().optional().nullable(),
 		level: z.number(),
 		status: z.enum(['draft', 'published']),
 		delay: z.number().optional().nullable(),
-		multipleAnswers: z.boolean().optional().nullable(),
 		testSpecs: z.array(testSpecSchema).optional().nullable()
 	})
 	.strict()
@@ -706,6 +739,8 @@ export const questionTemplateSchema = z
 	)
 	// Hypothèse de l'énoncé posée sur une variable tirée : refusée
 	.superRefine(refineAssumptionCollisions)
+	// Coup de pouce qui donnerait la réponse : refusé (cf. hint.ts)
+	.superRefine(refineHints)
 	.superRefine((data, ctx) => {
 		// rulesSuffice sans aucune règle : toute réponse serait juste
 		data.variations.forEach((variation, variationIndex) => {

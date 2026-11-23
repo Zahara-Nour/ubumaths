@@ -14,13 +14,14 @@
  * only enforces "must be authenticated".
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { upsertCheckpointRunSchema } from '$lib/server/validation/notebook-checkpoints';
-import { validateUuidParam } from '$lib/server/validation/params';
-import type { CheckpointRun, CheckpointRunStatus } from '$lib/types/database-helpers';
-import { rpcNullable } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { upsertCheckpointRunSchema } from '#lib/server/validation/notebook-checkpoints.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
+import type { CheckpointRun, CheckpointRunStatus } from '#lib/types/database-helpers.ts';
+import { rpcNullable } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/python-notebooks/[id]/checkpoint-runs/+server');
 
@@ -43,11 +44,8 @@ type CheckpointRunResponse = Omit<CheckpointRun, 'status'> & { status: Checkpoin
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const notebookId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	await requireAuth(locals);
+	const { supabase } = locals;
 
 	let body: unknown;
 	try {
@@ -97,7 +95,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 
-	return json({ run: run as CheckpointRunResponse });
+	return Response.json({ run: run as CheckpointRunResponse });
 };
 
 /**
@@ -112,11 +110,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const notebookId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	await requireAuth(locals);
+	const { supabase } = locals;
 
 	const { data: runs, error: dbError } = await supabase
 		.from('python_notebook_checkpoint_runs')
@@ -129,5 +124,5 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger les résultats des checkpoints');
 	}
 
-	return json({ runs: (runs ?? []) as CheckpointRunResponse[] });
+	return Response.json({ runs: (runs ?? []) as CheckpointRunResponse[] });
 };

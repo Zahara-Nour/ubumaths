@@ -101,6 +101,31 @@ niveau) ; il refuse de travailler sans **grade** et **thème** précisés.
 - Il suit la démarche de [fiches-exercices.md](fiches-exercices.md), modèle par tâche compris.
 - Rien n'est écrit en production sans ton accord (`--publier`).
 
+## `couvrir-niveau` — couvrir un niveau en modèles de questions
+
+Se déclenche sur « couvre le CE1 », « complète les modèles de 6e », « quels points du niveau X
+n'ont pas de modèle » ; il refuse de travailler sans **niveau**.
+
+- Il suit la démarche de [couvrir-un-niveau.md](couvrir-un-niveau.md), tirée du chantier du CP :
+  relevé en lecture seule, vérification de l'existant contre les bornes, classement des points
+  sans modèle, **proposition des outils qui manquent** (nouveaux blocs, gestes de réponse, en
+  chantiers à part), lots avec phase 0 (page à cocher), migration nœud + tag, relecture dans
+  `/dev/modeles`, publication.
+- Rien n'est écrit en production par lui : `create-questions --publier` et la publication, c'est
+  toi qui les lances.
+
+## `idees-rubrique` — une rubrique d'ailleurs par session
+
+`/idees-rubrique <niveau> <rubrique>` (ou « prends la rubrique fonctions de Seconde ») : la session
+réserve la rubrique dans [idees-ailleurs-repartition.md](../wip/idees-ailleurs-repartition.md), puis
+reprend les idées d'exercices d'une autre plateforme pour compléter nos modèles. Elle fait le relevé
+dans le code source, la phase 0 avec toi, le gros lot (modèles neufs et variations de modèles publiés,
+réservés eux aussi), la relecture dans `/dev/modeles` et la publication.
+
+- Plusieurs sessions tournent en même temps, une par rubrique. C'est la démarche du chantier
+  `ensembles-2de`, appliquée à n'importe quel niveau.
+- Jamais le nom de la plateforme dans un commit (le hook le refuse), une branche ou une PR.
+
 ## `reprendre` — repartir d'un chantier après un `/clear`
 
 `/reprendre <sujet>` (ou « reprends », « on en était où ? ») : la session retrouve le journal
@@ -114,6 +139,16 @@ toujours ton go au lieu d'enchaîner sur la prochaine action.
 Le but est d'économiser des tokens : une session qui s'étire sur plusieurs PR relit tout son
 historique à chaque message. Après chaque merge, la session met le bloc à jour et te propose
 `/clear` + `/reprendre <sujet>` (règle de `CLAUDE.md` § Worktrees, 2026-10-19).
+
+## `relancer` — préparer le `/clear`
+
+`/relancer` (ou « prépare le /clear ») : avant de vider la session, elle vérifie que tout ce qui
+compte survit au `/clear` : travail du chantier commité et poussé (worktree et dépôt principal,
+sans pousser les commits d'une autre session), PR et CI notées, serveurs de la session arrêtés,
+bloc « Reprendre ici » relu et réécrit s'il ment (un seul titre, numéros de PR vérifiés), journal
+commité. Puis elle te donne les deux lignes à taper, `/clear` et `/reprendre <sujet>` : Claude ne
+peut pas lancer lui-même ces commandes de l'interface. En **Sonnet**, comme `reprendre`.
+Créée le 2026-10-29.
 
 ---
 

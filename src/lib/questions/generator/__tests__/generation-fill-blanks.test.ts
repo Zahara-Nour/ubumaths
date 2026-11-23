@@ -16,8 +16,8 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
 import { getQuestionType } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
 
 /**
  * Helper to create a minimal fill-in-blanks template
@@ -32,8 +32,6 @@ function makeFillInTemplate(
 		status: 'draft',
 		variations: [variation],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};
@@ -54,8 +52,6 @@ function makeFillInTemplateWithShared(
 		shared,
 		variations: [variation],
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		...overrides
 	};
@@ -145,7 +141,6 @@ describe('Fill-in-blanks: simple math blanks', () => {
 		if (!result.success) return;
 
 		expect(getQuestionType(result.instance)).toBe('fill_in_blanks');
-		expect(result.instance.correctChoiceIndex).toBeUndefined();
 	});
 });
 
@@ -696,7 +691,6 @@ describe('Fill-in-blanks: real-world examples', () => {
 		expect(result.instance.blanks![0].expectedAnswer).toBe('357');
 		expect(result.instance.blanks![0].type).toBe('math');
 		expect(result.instance.blanks![0].expectedAnswerLatex).toBeDefined();
-		expect(result.instance.correctChoiceIndex).toBeUndefined();
 	});
 
 	// Pattern from globalIndex 51: fill-in with ? in statement (not expression convention)

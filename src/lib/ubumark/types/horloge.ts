@@ -24,8 +24,11 @@ import type { BaseNode } from './ast';
 // VALEURS
 // ============================================================================
 
-/** Taille d'un cadran, en cm : 4 cm par défaut, 3 cm dans un choix de QCM */
-export const HORLOGE_SIZE_CM = { min: 2, max: 8, default: 4, choice: 3 } as const;
+/**
+ * Taille d'un cadran, en cm : 4 cm par défaut, 3 cm dans un choix de QCM, 6 cm à
+ * placer (une minute assez large pour le doigt)
+ */
+export const HORLOGE_SIZE_CM = { min: 2, max: 8, default: 4, choice: 3, placer: 6 } as const;
 
 /** Nombre de cadrans d'un bloc (durées : départ, arrivée…) */
 export const HORLOGE_MAX_CLOCKS = 4;
@@ -52,15 +55,32 @@ export type HorlogeTicks = (typeof HORLOGE_TICKS)[number];
 // NŒUD
 // ============================================================================
 
-/** Une heure affichée : heures de 0 à 23, minutes de 0 à 59 */
+/**
+ * Une heure affichée : heures de 0 à 23, minutes de 0 à 59 ; secondes de 0 à 59
+ * quand elles sont écrites (`9 h 25 min 40 s`) — elles seules font dessiner la
+ * trotteuse (chantier `docs/wip/cercle-trotteuse-progress.md` § 3, 6)
+ */
 export interface HorlogeTime {
 	hours: number;
 	minutes: number;
+	seconds?: number;
 }
 
+/**
+ * `placer:` masqué d'une heure à secondes (énoncé d'une évaluation notée,
+ * `masked-statement.ts`) : `?` cacherait aussi qu'il y a une trotteuse à poser
+ */
+export const HORLOGE_MASKED_WITH_SECONDS = '? s';
+
 export interface HorlogeSpec {
-	/** 1 à 4 cadrans, dans l'ordre de la ligne `heure:` */
+	/** 1 à 4 cadrans, dans l'ordre de la ligne `heure:` ; vide pour une horloge à placer */
 	times: HorlogeTime[];
+	/**
+	 * Horloge à placer (`placer:`, une question) : l'heure où l'élève met les
+	 * aiguilles ; le cadran est dessiné SANS aiguilles (chantier
+	 * `docs/wip/reponses-a-placer-progress.md` § 13, 14)
+	 */
+	placer?: HorlogeTime;
 	/** Une légende par cadran, ou null */
 	captions: string[] | null;
 	numbers: HorlogeNumbers;
@@ -87,6 +107,8 @@ export interface HorlogeNode extends BaseNode {
 	/** null si le bloc est en erreur */
 	spec: HorlogeSpec | null;
 	errors: HorlogeIssue[];
+	/** Horloge à placer : sa case, posée par le générateur (`case: N`) */
+	caseIndex?: number;
 }
 
 export interface HorlogeBlockRange {

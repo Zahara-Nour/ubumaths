@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, runAction, type CalcSession } from '../calcul';
 
 function session(): CalcSession {
@@ -53,6 +53,31 @@ describe('le bouton « Dériver »', () => {
 		expect(outcome.latex).not.toContain('d/dx');
 		expect(outcome.latex).not.toContain(':/');
 		expect(outcome.steps?.[0].title).toBe('Règle du quotient');
+	});
+});
+
+describe('la réponse du registre (registre-reference, D1)', () => {
+	// La forme finale de f′ que rend le registre, là où l'ancienne écriture
+	// (`eˣ + xeˣ`) différait : le branchement de `calcul.ts` est vu ici
+	const REDUITE = '\\left( x + 1 \\right) \\exponentialE^x';
+
+	it('le bouton affiche la réponse du registre', () => {
+		const s = session();
+		runInput(s, 'f(x) = x e^x');
+
+		const outcome = runAction(s, 'derive', 'f');
+
+		expect(outcome.ok).toBe(true);
+		if (!outcome.ok) return;
+		expect(outcome.latex).toBe(`f'(x) = ${REDUITE}`);
+	});
+
+	it('la commande tapée aussi', () => {
+		const line = runInput(session(), '.dériver x e^x');
+
+		expect(line.kind).toBe('commande');
+		if (line.kind !== 'commande') return;
+		expect(line.latex).toBe(REDUITE);
 	});
 });
 

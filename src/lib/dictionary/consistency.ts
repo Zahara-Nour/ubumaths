@@ -13,8 +13,8 @@
  * @module dictionary/consistency
  */
 
-import { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
-import { hasAccessToGrade } from '$lib/utils/grades';
+import { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
+import { hasAccessToGrade } from '#lib/utils/grades.ts';
 import { isTermVisibleTo, resolveGradedField, type MathTerm } from './model';
 
 // ---------------------------------------------------------------------------

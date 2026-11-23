@@ -395,7 +395,7 @@ def alignement(pts, juste, leurres, explication):
         lignes += [f'{n} = point({nombre(x)}, {nombre(y)}, couleur="noir", etiquette="aucune")',
                    f'texte({nombre(x)}, {nombre(y + 0.45)}, "{numeros(n)}")']
     return {
-        'statement': 'Quels points sont alignés ?\n\n'
+        'statement': 'Quels points semblent être alignés ?\n\n'
         + figure('0 ; 10 ; 0 ; 7', 'Cinq points numérotés de 1 à 5.', lignes),
         'variables': [],
         'conditions': [],

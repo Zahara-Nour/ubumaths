@@ -1,0 +1,59 @@
+/**
+ * Ce que chaque outil rend pour une ligne du corpus du registre : la réponse
+ * brute, un refus, ou rien de lisible (`compare.ts` juge ensuite).
+ *
+ * - **Registre** : le champ `answer` de `WebReplEngine`, sur la ligne aux
+ *   noms traduits (`.dériver` → `.diff`) et RIEN d'autre de réécrit : ce qui
+ *   ne se lit qu'à travers l'Atelier (virgule décimale…) se voit. Écriture
+ *   décimale : les champs `decimal` et `decimalExact` (décision A du lot 2).
+ * - **Atelier** : le `latex` de la ligne affichée par `runInput` ; écriture
+ *   décimale : l'autre écriture du bouton (`= 0{,}25`, `\approx 0{,}7071`).
+ */
+
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { runInput, type Alternative } from '#lib/atelier/calcul.ts';
+import { resolveCommand } from '#lib/atelier/commands.ts';
+import type { Produced } from './compare';
+
+// =============================================================================
+// Fonctions
+// =============================================================================
+
+/** La réponse du registre, dans une session neuve. */
+export function produceRegistre(ligne: string): Produced {
+	const result = new WebReplEngine().execute(resolveCommand(ligne));
+	if (!result.success) {
+		return { kind: 'refus', message: result.error?.message ?? result.output };
+	}
+	return result.answer === undefined
+		? { kind: 'sans-reponse', detail: firstLine(result.output) }
+		: {
+				kind: 'reponse',
+				latex: result.answer,
+				...(result.decimal !== undefined && { decimal: result.decimal }),
+				...(result.decimalExact !== undefined && { decimalExact: result.decimalExact })
+			};
+}
+
+/** La réponse affichée par l'Atelier, dans un atelier neuf. */
+export function produceAtelier(ligne: string): Produced {
+	const result = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, ligne);
+	if (result.kind === 'refus') return { kind: 'refus', message: result.message };
+	if (result.kind !== 'commande' && result.kind !== 'calcul') {
+		return { kind: 'sans-reponse', detail: `ligne ${result.kind}` };
+	}
+	return result.latex === undefined
+		? { kind: 'sans-reponse', detail: firstLine(result.output) }
+		: { kind: 'reponse', latex: result.latex, decimal: decimalOf(result.alternative) };
+}
+
+/** L'autre écriture, quand c'est une écriture décimale (pas « pour x ≠ 0 ») */
+function decimalOf(alternative: Alternative | undefined): string | undefined {
+	if (alternative === undefined || alternative.domain !== undefined) return undefined;
+	return /^\s*(=|\\approx)/.test(alternative.latex) ? alternative.latex : undefined;
+}
+
+function firstLine(text: string): string {
+	return text.split('\n')[0].trim();
+}

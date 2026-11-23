@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import {
 		Home,
 		Gamepad2,
 		PenTool,
 		Terminal,
+		Turtle,
+		Blocks,
 		Calculator,
 		Laugh,
 		FlaskConical,
@@ -14,7 +16,7 @@
 		KeyRound
 	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
-	import type { Tables } from '$lib/types/database';
+	import type { Tables } from '#lib/types/database.ts';
 
 	type NavSection = 'serious' | 'fun';
 	type NavItem = {
@@ -39,6 +41,10 @@
 				icon: Terminal,
 				roles: ['student', 'teacher']
 			},
+			// La Tortue (chantier blockly, PR 3) : publique, aucune donnée serveur
+			{ label: 'La Tortue', href: '/tortue', icon: Turtle },
+			// Programmes de calcul (chantier blockly) : publique, aucune donnée serveur
+			{ label: 'Programmes de calcul', href: '/programmes-de-calcul', icon: Blocks },
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
 			// Sans `roles` : l'atelier, Automaths et le Shtam ne lisent aucune donnée serveur
 			// réservée, ils sont donc ouverts, y compris hors connexion.
@@ -90,7 +96,7 @@
 
 {#snippet itemLink(item: NavItem)}
 	<a
-		href={resolve(item.href as '/')}
+		href={resolvePath(item.href)}
 		data-sveltekit-preload-data="tap"
 		class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 			item.href

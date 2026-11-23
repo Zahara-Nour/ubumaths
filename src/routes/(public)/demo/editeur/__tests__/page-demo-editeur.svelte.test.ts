@@ -13,7 +13,7 @@ import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 
-vi.mock('$lib/dictionary/fetch-dictionary', () => ({ fetchDictionary: async () => [] }));
+vi.mock('#lib/dictionary/fetch-dictionary.ts', () => ({ fetchDictionary: async () => [] }));
 
 const USAGES = ['usage-message', 'usage-cahier', 'usage-enonce'];
 
@@ -59,8 +59,14 @@ describe('/demo/editeur', () => {
 		for (const testId of USAGES) {
 			await expect.poll(() => usageText(container, testId)).toContain('La solution de');
 		}
-		// Formules du cahier de texte : vides tant que le cahier garde du HTML (`transformMathHtml`
-		// ne lit `latex` qu'en première place). Test à ajouter avec le chantier « cahier en ubumark ».
+		// Carte du cahier : son vrai moteur, `JournalContent` (ubumark), comme la page élève
+		// depuis le chantier cahier-ubumark — plus le HTML de `transformMathHtml`, dont
+		// l'assainisseur tronquait toute formule contenant `}}` (2026-11-08)
+		const formulesDuCahier = () =>
+			[...container.querySelectorAll('[data-testid="usage-cahier"] math-span')].map((f) =>
+				f.textContent?.trim()
+			);
+		await expect.poll(formulesDuCahier).toEqual(['2x+3=11', 'x=4']);
 	});
 
 	it('une phrase changée dans l’éditeur change les trois usages', async () => {

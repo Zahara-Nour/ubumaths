@@ -13,8 +13,8 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import { curveNatureOf as natureOfEquation } from '$lib/geometry-core/geometry/curve-nature';
-import type { CurveNature } from '$lib/geometry-core/geometry/curve-nature';
+import { curveNatureOf as natureOfEquation } from '#lib/geometry-core/geometry/curve-nature.ts';
+import type { CurveNature } from '#lib/geometry-core/geometry/curve-nature.ts';
 import { substitutedAstOf } from './engine';
 import { constructionNatureOf } from './construction';
 

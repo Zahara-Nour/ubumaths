@@ -13,20 +13,20 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { MathNode } from '$lib/mathAST/types';
-import { parseLatex } from '$lib/mathAST/parser';
-import { differentiate } from '$lib/mathAST/differentiation';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { differentiate } from '#lib/mathAST/differentiation/index.ts';
 import {
 	generatePedagogicalDifferentiationSteps,
 	withTidyStep,
 	type PedagogicalDifferentiationStep
-} from '$lib/mathAST/pedagogical-differentiation';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { compile } from '$lib/mathAST/eval';
-import { checkForm } from '$lib/mathAST/cosmetic-transforms';
-import { Atelier } from '$lib/atelier/atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { runInput } from '$lib/atelier/calcul';
+} from '#lib/mathAST/pedagogical-differentiation/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { compile } from '#lib/mathAST/eval/index.ts';
+import { checkForm } from '#lib/mathAST/cosmetic-transforms.ts';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
+import { runInput } from '#lib/atelier/calcul.ts';
 
 // =============================================================================
 // Types

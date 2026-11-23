@@ -12,6 +12,9 @@
  *
  * La petite aiguille avance avec les minutes (9 h 30 : à mi-chemin entre le 9
  * et le 10), comme une vraie horloge — c'est ce que l'élève apprend à lire.
+ * La grande aiguille, elle, reste pile sur sa minute même avec des secondes
+ * (lecture nette ; chantier `docs/wip/cercle-trotteuse-progress.md`, décision 2) ;
+ * la trotteuse n'est dessinée que si des secondes sont écrites.
  *
  * @module ubumark/utils/horloge-scene
  */
@@ -40,7 +43,10 @@ const RATIO = {
 	/** Couronne 13-24 */
 	innerNumbers: 0.56,
 	hourHand: 0.5,
-	minuteHand: 0.82
+	minuteHand: 0.82,
+	secondHand: 0.88,
+	/** Contrepoids de la trotteuse, de l'autre côté du centre */
+	secondTail: 0.2
 } as const;
 
 /** Taille des chiffres, en unités de la scène */
@@ -52,6 +58,7 @@ export const HORLOGE_STROKE = {
 	minorTick: 1.2,
 	hourHand: 7,
 	minuteHand: 3.5,
+	secondHand: 1.5,
 	center: 5
 } as const;
 
@@ -80,12 +87,18 @@ export interface HorlogeNumber extends HorlogePoint {
 }
 
 export interface HorlogeScene {
-	hourAngle: number;
-	/** null : grande aiguille cachée */
+	/** null : cadran sans aiguilles (horloge à placer) */
+	hourAngle: number | null;
+	/** null : grande aiguille cachée, ou cadran sans aiguilles */
 	minuteAngle: number | null;
-	/** Extrémité de la petite aiguille (elle part du centre) */
-	hourHand: HorlogePoint;
+	/** Extrémité de la petite aiguille (elle part du centre) ; null : cadran sans aiguilles */
+	hourHand: HorlogePoint | null;
 	minuteHand: HorlogePoint | null;
+	/** null : pas de secondes écrites (pas de trotteuse), ou cadran sans aiguilles */
+	secondAngle: number | null;
+	secondHand: HorlogePoint | null;
+	/** Bout du contrepoids de la trotteuse (la trotteuse va de là à `secondHand`) */
+	secondTail: HorlogePoint | null;
 	ticks: HorlogeTick[];
 	numbers: HorlogeNumber[];
 }
@@ -135,16 +148,35 @@ function buildNumbers(spec: HorlogeSpec): HorlogeNumber[] {
 	return numbers;
 }
 
-/** La scène d'UN cadran du bloc */
-export function buildHorlogeScene(spec: HorlogeSpec, time: HorlogeTime): HorlogeScene {
-	const r = HORLOGE_VIEW.radius;
-	const hourAngle = ((time.hours % 12) + time.minutes / 60) * 30;
-	const minuteAngle = spec.minuteHand ? time.minutes * 6 : null;
+const HAND_RATIO = {
+	hour: RATIO.hourHand,
+	minute: RATIO.minuteHand,
+	second: RATIO.secondHand
+} as const;
+
+/** Extrémité d'une aiguille dirigée vers `angle` (degrés depuis le 12) */
+export function handTip(hand: 'hour' | 'minute' | 'second', angle: number): HorlogePoint {
+	return polar(angle, HAND_RATIO[hand] * HORLOGE_VIEW.radius);
+}
+
+/** Bout du contrepoids de la trotteuse dirigée vers `angle` */
+export function secondTailOf(angle: number): HorlogePoint {
+	return polar(angle + 180, RATIO.secondTail * HORLOGE_VIEW.radius);
+}
+
+/** La scène d'UN cadran du bloc ; `time` null : le cadran sans aiguilles (horloge à placer) */
+export function buildHorlogeScene(spec: HorlogeSpec, time: HorlogeTime | null): HorlogeScene {
+	const hourAngle = time === null ? null : ((time.hours % 12) + time.minutes / 60) * 30;
+	const minuteAngle = time !== null && spec.minuteHand ? time.minutes * 6 : null;
+	const secondAngle = time?.seconds === undefined ? null : time.seconds * 6;
 	return {
 		hourAngle,
 		minuteAngle,
-		hourHand: polar(hourAngle, RATIO.hourHand * r),
-		minuteHand: minuteAngle === null ? null : polar(minuteAngle, RATIO.minuteHand * r),
+		hourHand: hourAngle === null ? null : handTip('hour', hourAngle),
+		minuteHand: minuteAngle === null ? null : handTip('minute', minuteAngle),
+		secondAngle,
+		secondHand: secondAngle === null ? null : handTip('second', secondAngle),
+		secondTail: secondAngle === null ? null : secondTailOf(secondAngle),
 		ticks: buildTicks(spec),
 		numbers: buildNumbers(spec)
 	};

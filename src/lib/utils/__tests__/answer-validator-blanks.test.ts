@@ -14,14 +14,14 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
-import { validateQuantityAnswer } from '$lib/questions/units/validator';
+import { validateQuantityAnswer } from '#lib/questions/units/validator.ts';
 import type {
 	QuestionInstance,
 	InstanceBlank,
 	PrecisionType,
 	RequiredForm
-} from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+} from '#lib/questions/types.ts';
+import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // HELPERS
@@ -37,8 +37,6 @@ function createInstance(
 		statement: 'Test statement' as ResolvedMarkdown,
 		blanks,
 		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
 		level: 1,
 		generatedAt: new Date().toISOString(),
 		options
@@ -431,35 +429,6 @@ describe('Per-blank validation — validateAnswer signature', () => {
 	it('E18. polymorphic signature still works with single string', () => {
 		const instance = createInstance([mathBlank('5')]);
 		const result = validateAnswer('5', instance);
-		expect(result.isCorrect).toBe(true);
-	});
-
-	it('E18b. polymorphic signature still works with number', () => {
-		const instance = createInstance([mathBlank('5')]);
-		const result = validateAnswer(5, instance);
-		expect(result.isCorrect).toBe(true);
-	});
-
-	it('E19. branches via choices (multiple_choice still works)', () => {
-		const instance: QuestionInstance = {
-			templateId: 'test-mc',
-			statement: 'Choose' as ResolvedMarkdown,
-			choices: [
-				{ content: 'A' as ResolvedMarkdown, isCorrect: true },
-				{ content: 'B' as ResolvedMarkdown, isCorrect: false }
-			],
-			// NOTE (tests stale 2026-06-12): `solution` was renamed to
-			// `correctChoiceIndex` (commits 89726bf2e / 6114e256e removed the legacy
-			// `solution` fallback). Updated field name only — behaviour unchanged.
-			correctChoiceIndex: '0',
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			generatedAt: new Date().toISOString()
-		};
-
-		const result = validateAnswer(0, instance);
 		expect(result.isCorrect).toBe(true);
 	});
 

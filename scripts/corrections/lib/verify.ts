@@ -21,8 +21,8 @@
  *    réponse attendue (équivalente, si elle est littérale). Plusieurs cases :
  *    chacune finit un calcul, OU est donnée dans la prose par une égalité
  *    `n = valeur` (une lettre, la valeur exacte de la case) ; pour un trou, `? = calcul =
- *    réponse` et la valeur trouvée VÉRIFIE l'égalité posée ; pour un QCM, la
- *    dernière étape nomme le bon choix et aucun autre (comme un mot ou un nombre
+ *    réponse` et la valeur trouvée VÉRIFIE l'égalité posée ; pour une question
+ *    réduite à une case choix (l'ancien QCM), la dernière étape nomme le bon choix et aucun autre (comme un mot ou un nombre
  *    entier : « 3 » n'est pas nommé dans « 13 » ni dans « 3,5 ») ;
  * 6. hors des calculs : aucun reste de résolution (`NaN`, `undefined`…), et une
  *    égalité numérique écrite dans la prose (`$3 + 4 = 7$`) est juste.
@@ -44,6 +44,7 @@ import {
 	resolveExpression
 } from '../../../src/lib/questions/generator/content-resolver';
 import { injectCorrection, type Proposal } from './proposal';
+import { parseChoiceAnswer } from '../../../src/lib/questions/choice-case';
 import { planDraws, type Sampling } from './sampling';
 
 // ============================================================================
@@ -903,7 +904,19 @@ export function checkInstance(
 
 	// Fin du calcul : la réponse attendue (chaque case, quand il y en a plusieurs)
 	const blanks = instance.blanks ?? [];
-	if (blanks.length === 1 && checks.digit) {
+	const choice = blanks.length === 1 ? blanks[0].choice : undefined;
+	if (choice) {
+		// Case choix seule : la conclusion nomme le(s) bon(s) choix et aucun autre
+		const correct = new Set(parseChoiceAnswer(blanks[0].expectedAnswer, choice.choices.length));
+		const lastStep = steps.at(-1) ?? '';
+		choice.choices.forEach((text, index) => {
+			const named = namesChoice(lastStep, text);
+			if (correct.has(index) && !named)
+				reasons.push(`la conclusion ne nomme pas le bon choix « ${text} »`);
+			if (!correct.has(index) && named)
+				reasons.push(`la conclusion nomme un mauvais choix « ${text} »`);
+		});
+	} else if (blanks.length === 1 && checks.digit) {
 		reasons.push(...digitTableReasons(steps, instance, checks.digit));
 	} else if (blanks.length === 1 && checks.end === 'factor') {
 		reasons.push(...factorEndReasons(chains, instance));
@@ -961,16 +974,6 @@ export function checkInstance(
 				);
 			}
 		});
-	} else if (instance.choices && instance.choices.length > 0) {
-		const lastStep = steps.at(-1) ?? '';
-		for (const choice of instance.choices) {
-			const text = String(choice.content);
-			const named = namesChoice(lastStep, text);
-			if (choice.isCorrect && !named)
-				reasons.push(`la conclusion ne nomme pas le bon choix « ${text} »`);
-			if (!choice.isCorrect && named)
-				reasons.push(`la conclusion nomme un mauvais choix « ${text} »`);
-		}
 	}
 	return { reasons };
 }

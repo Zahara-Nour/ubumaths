@@ -14,12 +14,12 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import {
 		COURSE_TIME_LIMIT_DEFAULT_MINUTES,
 		COURSE_TIME_LIMIT_MAX_MINUTES,
@@ -27,8 +27,8 @@
 		DEFAULT_EVALUATION_SETTINGS,
 		EVALUATION_FORM_LABELS,
 		isEvaluationForm
-	} from '$lib/types/evaluation';
-	import type { EvaluationForm, EvaluationSettingsInput } from '$lib/types/evaluation';
+	} from '#lib/types/evaluation.ts';
+	import type { EvaluationForm, EvaluationSettingsInput } from '#lib/types/evaluation.ts';
 
 	interface Props {
 		initialData?: Partial<EvaluationSettingsInput>;

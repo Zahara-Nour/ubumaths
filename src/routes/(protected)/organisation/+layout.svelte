@@ -11,7 +11,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
+	import { resolvePath } from '#lib/navigation/resolve-path.ts';
 	import { LayoutDashboard } from '@lucide/svelte';
 
 	let { children }: { children: Snippet } = $props();
@@ -45,7 +45,7 @@
 	// future tool like /organisation/kanbanboard.
 	let activeTool = $derived(
 		tools.find((t) => {
-			const href = resolve(t.path);
+			const href = resolvePath(t.path);
 			return page.url.pathname === href || page.url.pathname.startsWith(`${href}/`);
 		}) ?? null
 	);
@@ -74,7 +74,7 @@
 			{#each tools as tool (tool.path)}
 				{@const isActive = activeTool?.path === tool.path}
 				<a
-					href={resolve(tool.path)}
+					href={resolvePath(tool.path)}
 					aria-current={isActive ? 'page' : undefined}
 					class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors
 						{isActive

@@ -16,9 +16,20 @@
  */
 
 import type { Position } from './judge';
+import type { ExpectedPoints } from './point';
+import type { FigureShapes } from './symmetry';
 
-/** Positions des points nommés d'un bloc (texte entre les clôtures) */
-export type ConstructionPositionsResolver = (source: string) => Map<string, Position>;
+/** Ce que le juge lit d'une figure : points nommés, traits (symétrique), points attendus */
+export interface ConstructionGeometry {
+	/** Partagé (cache du registre) : lecture seule */
+	readonly points: ReadonlyMap<string, Position>;
+	readonly shapes: FigureShapes;
+	/** Points des vérifications `point …`, calculés par le langage des figures */
+	readonly expected: ExpectedPoints;
+}
+
+/** Points nommés et traits d'un bloc (texte entre les clôtures) */
+export type ConstructionPositionsResolver = (source: string) => ConstructionGeometry;
 
 let resolver: ConstructionPositionsResolver | null = null;
 
@@ -41,11 +52,25 @@ export function loadConstructionPositions(): Promise<unknown> {
 	return import('./positions-setup');
 }
 
-export function constructionPositions(source: string): Map<string, Position> {
+function geometry(source: string): ConstructionGeometry {
 	if (!resolver) {
 		throw new Error(
 			'Case « figure » : positions des figures non inscrites (importer questions/construction/positions-setup)'
 		);
 	}
 	return resolver(source);
+}
+
+export function constructionPositions(source: string): ReadonlyMap<string, Position> {
+	return geometry(source).points;
+}
+
+/** Traits de la figure de départ (vérification `symetrique`) */
+export function constructionShapes(source: string): FigureShapes {
+	return geometry(source).shapes;
+}
+
+/** Points attendus des vérifications `point A' = …` (jamais affichés à l'élève) */
+export function constructionExpected(source: string): ExpectedPoints {
+	return geometry(source).expected;
 }

@@ -13,8 +13,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import QuestionTemplateForm from '../QuestionTemplateForm.svelte';
-import { templateMarkdown } from '$lib/ubumark';
-import type { QuestionCorrection, QuestionTemplate } from '$lib/questions/types';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
+import type { QuestionCorrection, QuestionTemplate } from '#lib/questions/types.ts';
 
 type SavedTemplate = Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
 
@@ -28,8 +28,6 @@ function baseTemplate(overrides: Partial<QuestionTemplate>): QuestionTemplate {
 	return {
 		id: '55555555-5555-4555-8555-555555555555',
 		title: 'Correction gardée',
-		theme: 'Fonctions',
-		domain: 'Dérivation',
 		level: 1,
 		grades: ['1re'],
 		status: 'draft',

@@ -1,9 +1,9 @@
-import { toaster } from '$lib/stores/toaster.svelte';
-import { browser } from '$app/environment';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database } from '#lib/types/database.ts';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
-import { createLogger } from '$lib/utils/logger';
+import { createLogger } from '#lib/utils/logger.ts';
 import { z } from 'zod';
 import { SvelteMap } from 'svelte/reactivity';
 
@@ -82,7 +82,7 @@ export interface MessageAttachment {
 }
 
 /**
- * Message type with client-side flags for optimistic updates and broadcast tracking
+ * Message type with client-side flags for optimistic updates
  */
 export interface Message {
 	id: string;
@@ -96,7 +96,6 @@ export interface Message {
 	is_flagged: boolean | null;
 	flag_reason: string | null;
 	is_optimistic?: boolean; // Temporary message, not yet saved to DB
-	is_broadcast?: boolean; // From broadcast channel, awaiting DB confirmation
 	sender?: {
 		id: string;
 		full_name: string | null;
@@ -161,22 +160,20 @@ type BroadcastPayload =
  * Hybrid Chat Store - Uses DUAL subscription strategy for optimal UX and quota management
  *
  * Strategy:
- * 1. Broadcast Channel (FREE, ephemeral, 50ms latency) - Ultra-fast UX
- * 2. postgres_changes (COUNTS toward quota, 300ms latency) - Source of truth with JOINs
+ * 1. Broadcast Channel privé (signal seul : l'identifiant du message)
+ * 2. Lecture en base, sous RLS - source de vérité (le broadcast n'affiche jamais rien)
  *
  * Flow:
- * - Send: Optimistic UI → Broadcast (50ms) → DB insert (200ms) → postgres_changes (300ms)
- * - Receive: Broadcast (50ms, show immediately) → postgres_changes (300ms, replace with DB version)
+ * - Send: Optimistic UI → DB insert (+ pièces jointes) → signal Broadcast (identifiant)
+ * - Receive: signal Broadcast → relecture du message en base → affichage
  *
  * Benefits:
- * - Instant UX (50ms via Broadcast)
- * - Reliable persistence (DB source of truth)
- * - Quota optimization (Broadcast is FREE)
- * - Full message data (postgres_changes includes JOINs)
+ * - Un payload forgé ne peut rien afficher (le message est relu sous RLS)
+ * - Persistance fiable (la base fait foi)
  *
  * @example
  * ```ts
- * import { chatStore } from '$lib/stores/chat.svelte';
+ * import { chatStore } from '#lib/stores/chat.svelte.ts';
  *
  * // Initialize with Supabase client and user info
  * chatStore.init(supabase, userId, { full_name: 'John Doe', avatar_url: 'https://...' });
@@ -545,7 +542,8 @@ class ChatStore {
 					id: msg.id,
 					conversation_id: msg.conversation_id,
 					sender_id: msg.sender_id,
-					content: msg.content,
+					// Colonne obligatoire : la fonction la rend telle quelle, son type de retour ne le dit pas.
+					content: msg.content as Message['content'],
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,
@@ -712,7 +710,8 @@ class ChatStore {
 					id: msg.id,
 					conversation_id: msg.conversation_id,
 					sender_id: msg.sender_id,
-					content: msg.content,
+					// Colonne obligatoire : la fonction la rend telle quelle, son type de retour ne le dit pas.
+					content: msg.content as Message['content'],
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,
@@ -755,7 +754,7 @@ class ChatStore {
 	}
 
 	/**
-	 * Send a message (Optimistic UI → Broadcast → DB → postgres_changes)
+	 * Send a message (Optimistic UI → DB → signal Broadcast)
 	 *
 	 * @param conversationId - The conversation ID
 	 * @param content - The message content (plain text or rich JSON)

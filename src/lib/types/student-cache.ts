@@ -35,7 +35,7 @@
  */
 
 import type { StudentVipCards } from './vip-card';
-import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
+import type { Warning, StudentWarningCounts } from '#lib/server/warnings.ts';
 
 // ============================================================================
 // BASIC TYPES (API Response Shapes)
@@ -296,7 +296,7 @@ export interface CacheStats {
  */
 export interface CachedBuddy {
 	/** The student buddy state */
-	buddy: import('$lib/types/buddy').BuddyState;
+	buddy: import('#lib/types/buddy.ts').BuddyState;
 	/** Unix timestamp (milliseconds) when this data was fetched */
 	fetchedAt: number;
 }

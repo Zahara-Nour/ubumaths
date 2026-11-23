@@ -1,0 +1,68 @@
+[
+	{
+		"id": "19889310-745e-4dba-b236-38b3f813e71d",
+		"noeudAvant": null,
+		"noeudApres": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-037"]
+	},
+	{
+		"id": "320f5ac7-b16a-48a7-b136-704d62854138",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Inéquations : premier degré > ax + b < c",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-057"]
+	},
+	{
+		"id": "7407f328-e770-49da-8bc8-38cdf6081b6d",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonction carré > définition et courbe",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-046"]
+	},
+	{
+		"id": "77500c81-ffb6-4404-a096-89476d219565",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > fonction linéaire",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-065"]
+	},
+	{
+		"id": "8cb2cdfd-d905-4e37-bff4-cceeb774fdc9",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonction carré > x² = k, x² < k",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-053"]
+	},
+	{
+		"id": "eb04ebf7-8476-4c01-8e6b-25fc488a1acb",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > fonction linéaire",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-042"]
+	}
+]

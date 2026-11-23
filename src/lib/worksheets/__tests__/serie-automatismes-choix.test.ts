@@ -6,14 +6,12 @@
  * AFFICHÉ), `Réponse : **b)** …` au corrigé ; le bloc compte pour une case.
  */
 import { describe, it, expect } from 'vitest';
-import type { QuestionTemplate } from '$lib/questions/types';
+import type { QuestionTemplate } from '#lib/questions/types.ts';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
 
 const base = {
 	title: 't',
 	grades: ['6'],
-	theme: 'T',
-	domain: 'D',
 	level: 1,
 	status: 'draft'
 } as const;

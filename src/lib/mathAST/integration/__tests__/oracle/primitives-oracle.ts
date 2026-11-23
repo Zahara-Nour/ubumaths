@@ -26,17 +26,17 @@
  *     Ce n'est PAS l'équivalence mathématique, déjà vérifiée par (a).
  */
 
-import { parseLatex } from '$lib/mathAST/parser';
-import { integrate, integrateDefinite } from '$lib/mathAST/integration';
-import type { IntegrateStep } from '$lib/mathAST/integration';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { compile, type CompiledFn } from '$lib/mathAST/eval/compile';
-import { findNodes, mapNode } from '$lib/mathAST/transforms';
-import { isDivision, isVariable } from '$lib/mathAST/guards';
-import { checkForm } from '$lib/mathAST/cosmetic-transforms';
-import { parse as parseAtelierNotation } from '$lib/mathAST/cli/core/pipeline';
-import { runInput, type CalcSession } from '$lib/atelier/calcul';
-import type { MathNode } from '$lib/mathAST/types';
+import { parseLatex } from '#lib/mathAST/parser/index.ts';
+import { integrate, integrateDefinite } from '#lib/mathAST/integration/index.ts';
+import type { IntegrateStep } from '#lib/mathAST/integration/index.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { compile, type CompiledFn } from '#lib/mathAST/eval/compile.ts';
+import { findNodes, mapNode } from '#lib/mathAST/transforms.ts';
+import { isDivision, isVariable } from '#lib/mathAST/guards.ts';
+import { checkForm } from '#lib/mathAST/cosmetic-transforms.ts';
+import { parse as parseAtelierNotation } from '#lib/mathAST/cli/core/pipeline.ts';
+import { runInput, type CalcSession } from '#lib/atelier/calcul.ts';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import {
 	PARAMETER_SETS,
 	DEFAULT_POINTS,

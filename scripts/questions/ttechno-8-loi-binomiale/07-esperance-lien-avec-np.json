@@ -1,0 +1,237 @@
+{
+	"id": "8ad50484-b694-4109-8e4b-183bb7dbdf91",
+	"title": "Espérance de la loi binomiale : le lien avec np",
+	"description": "Calculer Σ k·P(X = k) sur la loi de B(3 ou 4 ; p) et comparer à np ; moyenne d'une simulation ; boucle Python de l'espérance",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}({{n}}\\,;{{p}})$. Voici sa loi de probabilité.\n\n```loi\nX ~ B({{n}} ; {{eval:p;d}})\narrondi: 4\n```\n\nCalcule l'espérance $\\displaystyle E(X)=\\sum_k k\\,P(X=k)$, puis le produit ${{n}}\\times{{p}}$.\n\n$E(X)=?$\n\n${{n}}\\times{{p}}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..4"
+				},
+				{
+					"name": "p",
+					"expression": "0.1|0.2|0.5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*p;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n*p;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$E(X)=0\\times P(X=0)+1\\times P(X=1)+\\cdots+{{n}}\\times P(X={{n}})$.",
+					"Avec les valeurs du tableau, la somme vaut $E(X)=\\textcolor{{{color:primary.0}}}{{{eval:n*p;d}}}$.",
+					"Et ${{n}}\\times{{p}}=\\textcolor{{{color:primary.0}}}{{{eval:n*p;d}}}$ : on retrouve l'expression admise $E(X)=np$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}({{n}}\\,;{{p}})$. On simule ${{nb}}$ valeurs de $X$ et on trace la moyenne des valeurs obtenues en fonction du nombre de tirages.\n\n```simulation\nX ~ B({{n}} ; {{eval:p;d}})\nmode: moyenne\ntirages: {{nb}}\ngraine: {{g}}\n```\n\nDe quel nombre la moyenne se rapproche-t-elle quand le nombre de tirages augmente ?\n\n```choix\nmelanger: non\n- ${{n}}$\n- ${{p}}$\n- ${{n}}\\times{{p}}$\n- ${{n}}+{{p}}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|25"
+				},
+				{
+					"name": "p",
+					"expression": "0.2|0.3|0.5"
+				},
+				{
+					"name": "nb",
+					"expression": "500|1000"
+				},
+				{
+					"name": "g",
+					"expression": "1..30"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand le nombre de tirages augmente, la moyenne des valeurs simulées se rapproche de l'espérance de $X$.",
+					"Pour la loi $\\mathcal{B}({{n}}\\,;{{p}})$, l'espérance est $\\textcolor{{{color:primary.0}}}{{{n}}\\times{{p}}}$$={{eval:n*p;d}}$ : c'est la droite horizontale du graphique."
+				]
+			}
+		},
+		{
+			"statement": "La liste Python `L` contient les probabilités $P(X=0)$, $P(X=1)$, …, $P(X=n)$ d'une variable aléatoire $X$ de loi $\\mathcal{B}(n\\,;p)$. La fonction `esperance` doit renvoyer $\\displaystyle\\sum_k k\\,P(X=k)$.\n\n```python\ndef esperance(L):\n    s = 0\n    for k in range(len(L)):\n        s = ...\n    return s\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\nmelanger: non\n- `s + L[k]`\n- `s + k*L[k]`\n- `k*L[k]`\n- `s + k + L[k]`\n```",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque tour, on ajoute à `s` le terme $k\\,P(X=k)$, c'est-à-dire `k*L[k]`.",
+					"La ligne est `s = s + k*L[k]`, la $\\textcolor{{{color:primary.0}}}{\\text{deuxième}}$ proposition. Pour toute loi binomiale, la fonction renvoie $np$ (aux arrondis près).",
+					"`s + L[k]` additionne les probabilités (on obtient $1$) ; `k*L[k]` seul oublie les termes précédents."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 3, p = 0,5 : 1,5 et 1,5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"p": "0.5"
+			},
+			"answers": ["1,5", "1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des probabilités (1)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"p": "0.5"
+			},
+			"answers": ["1", "1,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 4, p = 0,2 : 0,8 et 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "0.2"
+			},
+			"answers": ["0,8", "0,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 4, p = 0,1 : 0,4 et 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "0.1"
+			},
+			"answers": ["0,4", "0,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20",
+				"p": "0.3",
+				"nb": "500",
+				"g": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20",
+				"p": "0.3",
+				"nb": "500",
+				"g": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20",
+				"p": "0.3",
+				"nb": "500",
+				"g": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20",
+				"p": "0.3",
+				"nb": "500",
+				"g": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "choix : bonne réponse 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des probabilités",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : oubli de s",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

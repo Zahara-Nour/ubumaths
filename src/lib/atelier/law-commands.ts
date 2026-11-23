@@ -14,9 +14,9 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import { Fraction } from '$lib/statistics/fraction';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { buildStatChartScene, type StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { Fraction } from '#lib/statistics/fraction.ts';
+import { parseStatChartContent } from '#lib/ubumark/parser/stat-chart-parser.ts';
+import { buildStatChartScene, type StatChartScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
 
 // =============================================================================
 // Types

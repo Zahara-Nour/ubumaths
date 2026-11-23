@@ -15,18 +15,18 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import { MAX_LISTS, MAX_LIST_VALUES, isList, isValue } from './types';
 import { MAX_TITLE_LENGTH } from './grid';
 import { constantOf } from './constant';
 import { nameRejectionMessage, nextName, validateName } from './names';
 import { substitutedTextOf } from './engine';
 import { positionTextOf, positionSliderFor, withPosition } from './construction';
-import { evaluate } from '$lib/mathAST/eval';
-import { transformAST } from '$lib/mathAST/visitor';
-import { format as formatUnit } from '$lib/mathAST/units';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
+import { evaluate } from '#lib/mathAST/eval/index.ts';
+import { transformAST } from '#lib/mathAST/visitor.ts';
+import { format as formatUnit } from '#lib/mathAST/units/index.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { bareFunctionRefusal } from '#lib/mathAST/cli/core/variable-argument.ts';
 
 // =============================================================================
 // Types

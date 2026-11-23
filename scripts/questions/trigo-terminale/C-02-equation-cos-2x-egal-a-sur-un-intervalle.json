@@ -1,10 +1,8 @@
 {
+	"id": "42f091c1-35f2-47e4-8fb3-e38c1bbf0dfd",
 	"title": "Résoudre cos(2x) = a ou sin(2x) = a sur un intervalle",
 	"description": "Changement X = 2x, solutions ±h + kπ (ou h + kπ et π/2 − h + kπ) puis sélection dans ]−π ; π] ou [0 ; 2π[ ; réponse : ensemble fini (pièges : deux solutions au lieu de quatre, 2x oublié, solution hors intervalle)",
 	"grades": ["T_SPE"],
-	"theme": "Fonctions",
-	"domain": "Fonctions trigonométriques",
-	"subdomain": "Équations et inéquations",
 	"level": 3,
 	"status": "draft",
 	"delay": 120,

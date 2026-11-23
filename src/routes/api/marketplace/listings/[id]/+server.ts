@@ -1,16 +1,17 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
 // Supabase client is now accessed via locals.supabase
-import { updateListingSchema } from '$lib/server/marketplace/validation';
+import { updateListingSchema } from '#lib/server/marketplace/validation.ts';
 import {
 	unlockCardsForEntity,
 	isMarketplaceEnabled,
 	enrichWithParticipants
-} from '$lib/server/marketplace/helpers';
+} from '#lib/server/marketplace/helpers.ts';
 // TODO: Implement cache invalidation
-// import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
+// import { invalidateListingCaches } from '#lib/server/marketplace/cache-manager';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/marketplace/listings/[id]/+server');
 
@@ -23,11 +24,8 @@ const idSchema = z.string().uuid("ID d'annonce invalide");
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate listing ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -115,7 +113,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	const [avecCreateur] = await enrichWithParticipants(supabase, [listing]);
 	const propositions = proposals ? await enrichWithParticipants(supabase, proposals) : undefined;
 
-	return json({ ...avecCreateur, proposals: propositions });
+	return Response.json({ ...avecCreateur, proposals: propositions });
 };
 
 /**
@@ -124,11 +122,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  */
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate listing ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -194,7 +189,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// TODO: await invalidateListingCaches(supabase, userId);
 
 	const [avecParticipant] = await enrichWithParticipants(supabase, [updatedListing]);
-	return json(avecParticipant);
+	return Response.json(avecParticipant);
 };
 
 /**
@@ -203,11 +198,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate listing ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -274,5 +266,5 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// Invalidate caches
 	// TODO: await invalidateListingCaches(supabase, userId);
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

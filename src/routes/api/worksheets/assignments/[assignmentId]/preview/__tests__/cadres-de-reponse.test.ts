@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { tableMock, twoLevelExercise } from '$lib/server/worksheets/__tests__/table-mock';
+import { tableMock, twoLevelExercise } from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 // ============================================================================
 // MOCKS
@@ -16,18 +16,18 @@ import { tableMock, twoLevelExercise } from '$lib/server/worksheets/__tests__/ta
 
 const visibility = vi.hoisted(() => ({ visible: false }));
 
-vi.mock('$lib/server/worksheets/correction-visibility', () => ({
+vi.mock('#lib/server/worksheets/correction-visibility.ts', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
 		new Map(ids.map((id) => [id, visibility.visible]))
 }));
-vi.mock('$lib/server/worksheets/assignment-classes', () => ({
+vi.mock('#lib/server/worksheets/assignment-classes.ts', () => ({
 	fetchAssignmentClasses: async () => [],
 	formatClassNames: () => null
 }));
-vi.mock('$lib/server/worksheets/assignment-recipients', () => ({
+vi.mock('#lib/server/worksheets/assignment-recipients.ts', () => ({
 	isStudentOfAssignment: async () => true
 }));
-vi.mock('$lib/server/worksheets/worksheet-styles', () => ({
+vi.mock('#lib/server/worksheets/worksheet-styles.ts', () => ({
 	loadAuthorStyleTemplate: async () => null
 }));
 

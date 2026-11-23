@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseCourbeContent } from '../../parser/courbe-parser';
 import { buildCourbeScene } from '../../utils/courbe-scene';
-import { parseMarkdown, type BlockNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode } from '#lib/ubumark/index.ts';
 import type { CourbeNode, CourbeSpec } from '../../types/courbe';
 
 // Seuil de détection d'un blocage, pas une mesure de performance : sans les

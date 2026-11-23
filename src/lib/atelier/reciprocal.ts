@@ -18,21 +18,21 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { CalcResult } from './calcul';
-import type { MathNode, SubscriptNode } from '$lib/mathAST/types';
-import type { Domain } from '$lib/mathAST/domain/types';
-import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { computeReciprocal, type ReciprocalResult } from '$lib/mathAST/reciprocal';
-import { computeNumericValueOrInfinity } from '$lib/mathAST/eval/numeric-value';
-import { textbookWriting } from '$lib/mathAST/reciprocal/writing';
-import { solve } from '$lib/mathAST/solve/solve';
-import { isSolverFailure } from '$lib/mathAST/solve/types';
-import { equals, variable as variableNode } from '$lib/mathAST/factory';
-import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
-import { hideIndexedNames } from '$lib/mathAST/common/indexed-names';
-import { containsValue, intersect, isEmpty } from '$lib/mathAST/domain/algebra';
-import { formatInterval } from '$lib/mathAST/domain/format';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { toLatex } from '$lib/mathAST/latex-generator';
+import type { MathNode, SubscriptNode } from '#lib/mathAST/types.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import type { RenderedStep } from '#lib/mathAST/common/step-renderer-base.ts';
+import { computeReciprocal, type ReciprocalResult } from '#lib/mathAST/reciprocal/index.ts';
+import { computeNumericValueOrInfinity } from '#lib/mathAST/eval/numeric-value.ts';
+import { textbookWriting } from '#lib/mathAST/reciprocal/writing.ts';
+import { solve } from '#lib/mathAST/solve/solve.ts';
+import { isSolverFailure } from '#lib/mathAST/solve/types.ts';
+import { equals, variable as variableNode } from '#lib/mathAST/factory.ts';
+import { getVariables, substitute } from '#lib/mathAST/eval/substitute.ts';
+import { hideIndexedNames } from '#lib/mathAST/common/indexed-names.ts';
+import { containsValue, intersect, isEmpty } from '#lib/mathAST/domain/algebra.ts';
+import { formatInterval } from '#lib/mathAST/domain/format.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
 import { expandCommandArgument, substitutedAstOf } from './engine';
 import {
 	derivativeOf,
@@ -42,17 +42,19 @@ import {
 	reciprocalOf
 } from './names';
 import {
+	affinePreimage,
 	intervalDomainOf,
 	intervalText,
 	outsideIntervalMessage,
 	readInterval,
 	splitInterval,
-	type CitedInterval
+	type CitedInterval,
+	type ComposedCondition
 } from './interval';
 import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from './letter';
 import { astOf, type Provenance } from './parse';
 import { dependsOnMessage, lettersText } from './types';
-import { visitAST } from '$lib/mathAST/visitor';
+import { visitAST } from '#lib/mathAST/visitor.ts';
 
 // =============================================================================
 // Types
@@ -647,16 +649,31 @@ export function citedReciprocalInterval(
 	const unknown = new RegExp(`(?<![A-Za-z_\\\\])${variable}(?![A-Za-z_0-9])`);
 	for (const { base, argument, written } of calls) {
 		const name = displayName(reciprocalName(base));
-		if (argument !== null && argument.trim() !== variable && unknown.test(argument)) {
-			return { kind: 'composed', call: written.replace(`${base}^{-1}`, name), name };
-		}
-		if (argument !== null && argument.trim() !== variable) continue;
+		const composed = argument !== null && argument.trim() !== variable;
+		if (composed && !unknown.test(argument)) continue;
 		const departure = departureOf(atelier.reciprocalOutcome(base));
 		if (departure === null) continue;
+		// `f⁻¹(2x)` : comme `f(2x)` (chantier composees), x tel que 2x soit au départ
+		let within = departure;
+		const conditions: ComposedCondition[] = [];
+		if (composed) {
+			const node = astOf(argument, 'text');
+			const preimage = node === null ? null : affinePreimage(node, variable, departure);
+			const call = written.replace(`${base}^{-1}`, name);
+			if (preimage === null) {
+				return { kind: 'composed', call, name, argument: argument.trim(), set: departure };
+			}
+			within = preimage;
+			conditions.push({ argument: argument.trim(), set: departure, within });
+		}
 		cited =
 			cited === null
-				? { kind: 'restricted', domain: departure, name }
-				: { ...cited, domain: intersect(cited.domain, departure) };
+				? { kind: 'restricted', domain: within, name, conditions }
+				: {
+						...cited,
+						domain: intersect(cited.domain, within),
+						conditions: [...cited.conditions, ...conditions]
+					};
 	}
 	return cited;
 }

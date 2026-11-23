@@ -1,0 +1,74 @@
+[
+	{
+		"id": "4f4a5c94-b162-4250-bc7c-255f9951c365",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"gradesApres": ["4"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-005"]
+	},
+	{
+		"id": "554496dd-506a-4110-8132-81fb9c494378",
+		"noeudAvant": "Algèbre > Calcul littéral > substitution",
+		"noeudApres": "Algèbre > Calcul littéral > substitution",
+		"gradesApres": ["4"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": []
+	},
+	{
+		"id": "635bbc32-6263-45c3-8c5e-4412afb69250",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > égalité de fractions",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > égalité de fractions",
+		"gradesApres": ["6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["6§6-132"]
+	},
+	{
+		"id": "90dca27a-fc58-4821-9648-9cdc406b263f",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"gradesApres": ["4"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-005"]
+	},
+	{
+		"id": "acbd2280-4fc8-4842-8474-8693975e6019",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"gradesApres": ["4"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-005"]
+	},
+	{
+		"id": "c6fe3cbf-5591-4080-ab9d-63ce00b5cdfa",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > égalité de fractions",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > égalité de fractions",
+		"gradesApres": ["6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["6§6-132"]
+	},
+	{
+		"id": "d14fe0cf-cbbf-4349-a32d-4fd30de05c7f",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"gradesApres": ["4"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["4§4-005"]
+	},
+	{
+		"id": "d568cedb-6368-40f7-a149-6b7fbebd850d",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > égalité de fractions",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > égalité de fractions",
+		"gradesApres": ["6"],
+		"statutApres": "published",
+		"tagsAvant": [],
+		"tagsApres": ["6§6-132"]
+	}
+]

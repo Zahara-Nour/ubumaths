@@ -3,28 +3,46 @@
  *
  * - `assignment=<id>` : une évaluation assignée ; sa forme et son temps viennent
  *   du serveur, le `mode` de l'URL est ignoré (B15).
- * - `categories=<…>` sans `mode` : ancien lien de série partagé → le PANIER,
- *   paramètre intact (Q46) ; le panier le relit et dit s'il est abîmé.
- * - `categories=<…>&mode=<…>` : démarrage direct sous cette forme.
+ * - `modeles=<…>` (ou un ancien `categories=<…>`) sans `mode` : lien de série
+ *   partagé → le PANIER, paramètre intact (Q46) ; le panier le relit et dit
+ *   s'il est abîmé ou d'une ancienne version.
+ * - `modeles=<…>&mode=<…>` : démarrage direct sous cette forme ; `graine=<n>`
+ *   (« Mêmes nombres pour tous ») : les mêmes questions pour tous. Une graine
+ *   abîmée est ignorée : nombres au hasard, sans message.
  *
- * Les catégories sont validées (mêmes bornes que l'enregistrement d'une série) :
- * un lien abîmé donne un message, jamais un plantage.
+ * La composition est validée (mêmes bornes que l'enregistrement d'une série) :
+ * un lien abîmé, ou un ancien lien `categories=` (plus relu), donne un message,
+ * jamais un plantage.
  */
 
-import type { CartItem } from '$lib/stores/questionCart.svelte';
-import type { TestMode } from '$lib/types/test';
-import { parseCategoriesParam } from '$lib/validation/series';
+import { MAX_QUESTION_SEED } from '#lib/questions/series-items.ts';
+import type { TestMode } from '#lib/types/test.ts';
+import {
+	ANCIEN_LIEN_PARAM,
+	SERIES_LINK_PARAM,
+	SERIES_SEED_PARAM,
+	hasSeriesLink,
+	parseSeriesLink,
+	type SeriesItem
+} from '#lib/validation/series.ts';
 
 export type TestLaunch =
 	| { kind: 'assignment'; assignmentId: string }
 	| { kind: 'cart'; href: string }
-	| { kind: 'start'; mode: TestMode; categories: CartItem[]; timeLimit?: number }
+	| { kind: 'start'; mode: TestMode; lines: SeriesItem[]; timeLimit?: number; seed?: number }
 	| { kind: 'error'; message: string };
 
-const TEST_MODES: readonly TestMode[] = ['display', 'interactive', 'course', 'flash'];
+const TEST_MODES: readonly TestMode[] = ['display', 'interactive', 'course', 'flash', 'typing'];
 
 /** Temps limite d'une Course aux nombres lu dans l'URL (secondes, 1 s à 1 h) */
 const MAX_TIME_LIMIT_SECONDS = 3600;
+
+/** Graine de série lue dans l'URL : entier écrit en chiffres seuls, dans [0, MAX_QUESTION_SEED] */
+function parseSeriesSeed(raw: string | null): number | undefined {
+	if (raw === null || !/^\d{1,10}$/.test(raw)) return undefined;
+	const seed = Number(raw);
+	return seed <= MAX_QUESTION_SEED ? seed : undefined;
+}
 
 function isTestMode(value: string): value is TestMode {
 	return (TEST_MODES as readonly string[]).includes(value);
@@ -36,16 +54,19 @@ export function resolveTestLaunch(searchParams: URLSearchParams): TestLaunch {
 		return { kind: 'assignment', assignmentId };
 	}
 
-	const categoriesParam = searchParams.get('categories');
 	const modeParam = searchParams.get('mode');
-	if ((modeParam === null || modeParam === '') && categoriesParam) {
-		const cart = new URLSearchParams({ categories: categoriesParam });
+	if ((modeParam === null || modeParam === '') && hasSeriesLink(searchParams)) {
+		const cart = new URLSearchParams();
+		for (const name of [SERIES_LINK_PARAM, ANCIEN_LIEN_PARAM]) {
+			const value = searchParams.get(name);
+			if (value !== null) cart.set(name, value);
+		}
 		return { kind: 'cart', href: `/automaths/panier?${cart.toString()}` };
 	}
 
-	const categories = parseCategoriesParam(categoriesParam);
-	if (!categories.success) {
-		return { kind: 'error', message: categories.error };
+	const series = parseSeriesLink(searchParams);
+	if (!series.success) {
+		return { kind: 'error', message: series.error };
 	}
 	if (modeParam === null || modeParam === '') {
 		return { kind: 'error', message: 'Forme de série inconnue' };
@@ -59,5 +80,11 @@ export function resolveTestLaunch(searchParams: URLSearchParams): TestLaunch {
 	const timeLimit =
 		Number.isInteger(time) && time > 0 && time <= MAX_TIME_LIMIT_SECONDS ? time : undefined;
 
-	return { kind: 'start', mode: modeParam, categories: categories.data, timeLimit };
+	return {
+		kind: 'start',
+		mode: modeParam,
+		lines: series.lines,
+		timeLimit,
+		seed: parseSeriesSeed(searchParams.get(SERIES_SEED_PARAM))
+	};
 }

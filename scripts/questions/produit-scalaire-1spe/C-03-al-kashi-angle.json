@@ -1,10 +1,8 @@
 {
+	"id": "f7c15433-a944-4440-bb42-4a2f899e5f06",
 	"title": "Al-Kashi : calculer un angle",
 	"description": "Calculer le cosinus puis la mesure d'un angle d'un triangle dont on connaît les trois côtés, avec la formule d'Al-Kashi",
 	"grades": ["1_SPE"],
-	"theme": "Géométrie",
-	"domain": "Produit scalaire",
-	"subdomain": "Angles et longueurs",
 	"level": 3,
 	"status": "draft",
 	"delay": 180,

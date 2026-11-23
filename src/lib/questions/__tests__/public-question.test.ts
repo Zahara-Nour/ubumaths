@@ -4,7 +4,7 @@
  *
  * Pendant une évaluation, le navigateur ne reçoit que ce qu'il faut pour
  * AFFICHER et SAISIR : jamais la réponse attendue, la correction, la bonne
- * réponse d'un QCM, la graine ni le modèle. Construite en LISTE BLANCHE : un
+ * réponse ni l'ordre d'origine d'une case choix, la graine ni le modèle. Construite en LISTE BLANCHE : un
  * champ ajouté demain à `QuestionInstance` n'y passe pas sans qu'on l'y mette.
  */
 
@@ -69,7 +69,7 @@ function allStrings(value: unknown, strings: string[] = []): string[] {
 }
 
 const TEMPLATES = [
-	template('relatifs/314', '00000000-0000-4000-8000-000000000314'), // QCM
+	template('relatifs/314', '00000000-0000-4000-8000-000000000314'), // case choix (ancien QCM)
 	template('grandeurs/437', '00000000-0000-4000-8000-000000000437'), // unités
 	template('entiers/142', '00000000-0000-4000-8000-000000000142') // correction
 ];
@@ -102,14 +102,15 @@ describe('toPublicQuestion : liste blanche', () => {
 		}
 	});
 
-	it('QCM : les choix dans l’ordre affiché, sans indication de bonne réponse', () => {
+	it('case choix : les choix dans l’ordre affiché, sans bonne réponse ni ordre d’origine', () => {
 		const instance = generate(TEMPLATES[0], 5);
+		const choice = instance.blanks?.[0].choice;
 		const pub = toPublicQuestion(instance, { position: 0, delaySeconds: 20 });
-		expect(pub.type).toBe('multiple_choice');
-		expect(pub.choices?.map((c) => c.content)).toEqual(
-			instance.shuffledChoices?.map((c) => c.content)
+		expect(pub.type).toBe('fill_in_blanks');
+		expect(pub.blanks?.[0].choice?.choices).toEqual(
+			choice?.order.map((index) => choice.choices[index])
 		);
-		expect(Object.keys(pub.choices?.[0] ?? {})).toEqual(['content']);
+		expect(Object.keys(pub.blanks?.[0].choice ?? {}).sort()).toEqual(['choices', 'multiple']);
 	});
 
 	it('garde ce qu’il faut pour saisir : énoncé, type des cases, unité, position, durée', () => {
@@ -134,16 +135,14 @@ describe('toDisplayInstance : ce que le composant de saisie reçoit', () => {
 		}
 	});
 
-	it('QCM : aucun choix marqué juste ; positions affichées = indices', () => {
+	it('case choix : aucune bonne réponse ; ordre affiché = ordre d’origine du navigateur', () => {
 		const instance = generate(TEMPLATES[0], 5);
 		const display = toDisplayInstance(
 			toPublicQuestion(instance, { position: 0, delaySeconds: 20 })
 		);
-		expect(display.choices?.every((c) => c.isCorrect === false)).toBe(true);
-		expect(display.shuffledChoices?.map((c) => c.originalIndex)).toEqual(
-			display.shuffledChoices?.map((_, i) => i)
-		);
-		expect(display.correctChoiceIndex).toBeUndefined();
+		const blank = display.blanks?.[0];
+		expect(blank?.expectedAnswer).toBe('');
+		expect(blank?.choice?.order).toEqual(blank?.choice?.choices.map((_, i) => i));
 	});
 
 	it('question à cases : réponses attendues vides', () => {

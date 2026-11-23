@@ -22,10 +22,11 @@
  * - created_by_name: string | null - name of teacher who made the change
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '#lib/server/middleware/auth.ts';
 import { z } from 'zod';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/student/gidouilles-activity/+server');
 
@@ -43,17 +44,8 @@ export interface GidouilleActivityEntry {
 }
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user, profile, supabase } = locals;
-
-	// Auth check: Must be logged in
-	if (!user || !profile) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Auth check: Must be a student
-	if (profile.role !== 'student') {
-		throw error(403, 'Réservé aux élèves');
-	}
+	const { user } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	// Validate query parameters
 	const validation = getGidouillesActivitySchema.safeParse({
@@ -104,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			};
 		});
 
-		return json({ activity });
+		return Response.json({ activity });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

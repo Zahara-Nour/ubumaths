@@ -120,6 +120,23 @@ python src/convert_woff2.py convert "$OUTPUT/ShantellMath-Regular-final.ttf" -o 
 echo "Done! Police générée: $KATEX_FONTS/ShantellMath-Regular.woff2"
 ```
 
+## Jeu écran Luciole Math (chantier `lecture-facilitee`)
+
+`src/build_luciole_katex.py` construit, d'un seul appel, les 20 `KaTeX_*.woff2` du jeu `luciole`
+de MathLive (`static/fonts/luciole-math/`) : glyphes de Luciole (texte) et Luciole-Math (maths),
+pris dans `static/fonts/luciole/`, sans effet manuscrit, sur la base de
+`static/fonts/katex-original/`.
+
+```bash
+python src/build_luciole_katex.py            # écrit static/fonts/luciole-math/
+python src/build_luciole_katex.py --report   # liste aussi les caractères gardés de KaTeX
+```
+
+Choix (détaillés en tête du script) : glyphes ordinaires réduits à 0,9 (les formules sont
+grossies d'autant par `src/lib/utils/mathlive-fonts.ts`) ; grands symboles, délimiteurs
+agrandis, morceaux empilés, radical et primes : variante Luciole de hauteur la plus proche,
+calée dans la boîte du glyphe KaTeX ; codes privés de KaTeX désignés par nom de glyphe.
+
 ## Structure
 
 ```

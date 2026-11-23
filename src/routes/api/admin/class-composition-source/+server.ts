@@ -19,11 +19,11 @@
  * AUTH : admin (connexion admin ou élévation).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { classCompositionSourceSchema } from '$lib/server/validation/admin';
-import { requireAdmin } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
+import { classCompositionSourceSchema } from '#lib/server/validation/admin.ts';
+import { requireAdmin } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/admin/class-composition-source/+server');
 
@@ -102,7 +102,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	if (!sources || sources.length === 0) {
-		return json({ classes: [] satisfies SourceClass[] });
+		return Response.json({ classes: [] satisfies SourceClass[] });
 	}
 
 	const sourceIds = sources.map((c) => c.id);
@@ -178,5 +178,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				a.class_name.localeCompare(b.class_name, 'fr')
 		);
 
-	return json({ classes });
+	return Response.json({ classes });
 };

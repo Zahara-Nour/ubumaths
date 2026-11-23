@@ -51,18 +51,22 @@ parfois `autonomous`). Depuis le 2026-10-12, David veut des **sections dans les 
 **illustrations** dans la fiche d'applications : le thème « Variables aléatoires » a été refait
 ainsi (voir la ligne du tableau) et sert de modèle.
 
-| Thème (topic en base)      | Entraînement technique                                      | Applications                     | Script                                                                            |
-| -------------------------- | ----------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
-| Second degré               | `b5ca9ed3`                                                  | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`                                          |
-| Suites                     | `f09992e6`                                                  | `2d043bf5`                       | `create-suites-1spe.ts`                                                           |
-| Fonction exponentielle     | `ad1083a2`                                                  | `18f2252a`                       | `create-exponentielle-1spe.ts`                                                    |
-| Dérivation                 | `139ec069` (12 neufs + 17 existants)                        | `4fea9f37`                       | `create-derivation-1spe.ts`                                                       |
-| Fonctions trigonométriques | `808e2eee`                                                  | `dde45b26`                       | `create-trigonometrie-1spe.ts`                                                    |
-| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)                         | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`                                                 |
-| Probabilités               | `570376ab`                                                  | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts`                                     |
-| Variables aléatoires       | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)            | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
-| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
-| Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
+| Thème (topic en base)              | Entraînement technique                                                | Applications                     | Script                                                                            |
+| ---------------------------------- | --------------------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| Second degré                       | `b5ca9ed3`                                                            | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`                                          |
+| Suites                             | `f09992e6`                                                            | `2d043bf5`                       | `create-suites-1spe.ts`                                                           |
+| Fonction exponentielle             | `ad1083a2`                                                            | `18f2252a`                       | `create-exponentielle-1spe.ts`                                                    |
+| Dérivation                         | `139ec069` (12 neufs + 17 existants)                                  | `4fea9f37`                       | `create-derivation-1spe.ts`                                                       |
+| Fonctions trigonométriques         | `808e2eee`                                                            | `dde45b26`                       | `create-trigonometrie-1spe.ts`                                                    |
+| Géométrie (produit scal.)          | `c20d4094` (10 neufs + 6 existants)                                   | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`                                                 |
+| Probabilités                       | `570376ab`                                                            | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts`                                     |
+| Variables aléatoires               | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)                      | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
+| Géométrie repérée                  | `6ee9c178` (10 neufs + 2 existants)                                   | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
+| Automatismes (évolutions)          | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8           | —                                | _(script retiré, fiche en base)_                                                  |
+| Automatismes (droites)             | `0f98be04` « Automatismes : droites (1) », 2 séries de 8              | —                                | `create-automatismes-droites-1spe.ts`                                             |
+| Automatismes (lectures graphiques) | `7ff081db` « Automatismes : lectures graphiques (1) », 2 séries de 8  | —                                | `create-automatismes-lectures-graphiques-1spe.ts`                                 |
+| Automatismes (statistiques)        | `d37413a3` « Automatismes : statistiques (1) », 2 séries de 8         | —                                | `create-automatismes-statistiques-1spe.ts`                                        |
+| Automatismes (probabilités)        | « Automatismes : probabilités (1) », 2 séries de 8 (à écrire en prod) | —                                | `create-automatismes-probabilites-1spe.ts`                                        |
 
 Terminale maths complémentaires : **« Loi binomiale »** (thème `Loi binomiale`, 2026-10-16) — technique
 `f054c015` (7 sections, 14 ex.), applications `19848611` (4 sections, 8 ex., 3 illustrations) —
@@ -76,8 +80,20 @@ Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —
 `create-fonctions-generalites-2nde.ts`. Courbes de lecture graphique : tout ce qu'on fait LIRE est
 sur un nœud de la grille (vérifié par sympy) ; une cubique ne le permet qu'avec une racine double.
+**« Fonctions affines »** (thème `Fonctions affines`, 2026-11-12) — technique `18a394e6` (7 sections,
+15 neufs + « Antécédents par une fonction affine » `b5390946`), applications `e9bfec01` (4 sections,
+9 ex. dont 3 `autonomous`, 3 illustrations) — `create-fonctions-affines-2nde.ts`, sources versionnées
+dans `data/fiches/fonctions-affines-2nde/`. Côté fonctions seulement (équations de droite, parallélisme
+→ future fiche « Droites du plan ») ; tableaux de signes de mx + p seulement.
 
-Restent (priorité) : automatismes transverses (évolutions, droites, lectures graphiques,
+**Sources d'une fiche : sous `data/fiches/<sujet>/`, jamais dans le scratchpad ni sous `docs/`.** Le
+scratchpad disparaît avec la session (les dossiers des fiches de 1re spé et de Seconde sont perdus) ;
+sous `docs/`, le prettier du pre-commit réécrit les listes ubumark (« 1. a. … » sur une ligne).
+`data/fiches/` est dans `.prettierignore`, et `data/` dans `.gitignore` : ajouter les sources avec
+`git add -f data/fiches/<sujet>/…` (sorties de `fiche:verifier` exclues par un `.gitignore` dans le
+dossier : `*.typ`, `*.pdf`, `fiche-*.png`, `corrige-*.png`, `virtual/`, cf. `data/fiches/fonctions-affines-2nde/`).
+
+Restent (priorité) : automatismes transverses (lectures graphiques,
 statistiques), listes Python injectées dans les thèmes, logique et ensembles, démonstrations
 manquantes.
 
@@ -135,6 +151,9 @@ pnpm fiche:verifier <dossier> "Titre de la fiche"
 
 Enchaîne : Typst par le vrai générateur (FR/EN, énoncé/corrigé) → compilation par le compilateur
 **exact** de la production → débords de colonne (texte et tracés) → pages en PNG.
+Les illustrations citées par leur URL du bucket (pas encore envoyées) sont prises dans
+`<dossier>/images/` par leur nom de fichier et copiées sous `<dossier>/virtual/images/`
+(`scripts/fiches/images-locales.ts`) ; une image citée absente du dossier est signalée (⛔).
 
 Puis **relire les pages**. Les détecteurs ne voient pas : une chaîne d'égalités fausse, un vecteur
 minuscule, une ligne justifiée étirée par du code, un renvoi « question 3.a » alors que l'affichage
@@ -196,7 +215,7 @@ toute la classe.
    créé en brouillon par `pnpm tsx scripts/create-questions.ts --dir <dossier> [--publier]`
    (`--mettre-a-jour` pour corriger un modèle encore en brouillon). Les modèles d'autres niveaux
    se réutilisent tels quels (pas de niveau ajouté).
-2. Fiche : script sur le modèle de `scripts/create-automatismes-evolutions-1spe.ts` — chaque
+2. Fiche : script sur le modèle de `scripts/create-automatismes-droites-1spe.ts` — chaque
    **série** est un exercice listant des (modèle, graine) ; `buildSerie`
    (`src/lib/worksheets/serie-automatismes.ts`) met les cases en pointillés et les réponses en gras
    au corrigé, et convertit chaque formule maison `~…~` / `~~…~~` en LaTeX `$…$` / `$$…$$` avec
@@ -204,8 +223,12 @@ toute la classe.
    L'exercice figé n'a donc pas de `generic_functions` : l'écran et le PDF ne relisent jamais une
    formule LaTeX avec la liste d'un exercice. **Relire les séries en simulation** et changer une
    graine qui tombe sur un cas limite (coefficient 0) ou sur une question déjà posée (refusé
-   automatiquement).
-3. Vérifier comme au § 2.6 (`regen-depuis-base.ts`, compilation, débords, pages).
+   automatiquement). ⚠️ Deux modèles **différents** d'une même famille (lire / compléter un tableau
+   croisé ; chemin / probabilités totales sur un arbre) tirent les **mêmes données** à graine égale,
+   ce que le refus automatique ne voit pas : la graine 1 partout faisait livrer à une question les
+   réponses d'une autre (lot « Probabilités »). Varier les graines dans une famille.
+3. Vérifier comme au § 2.6 (`regen-depuis-base.ts`, compilation, débords, pages). Le corrigé se
+   compile avec `compile-prod.mjs --polices-corrige`, sinon « current font does not support math ».
 
 Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
 
@@ -218,7 +241,7 @@ d'un modèle publié se changent aussi là.
 Le champ `"points"` des JSON (codes des anciens points du référentiel) est **abandonné** (arbre des
 notions, étape 3) : `create-questions.ts` et `question:specs` refusent un fichier qui le porte, et
 `link-template-points.ts` a été retiré. `create-questions.ts --mettre-a-jour` réécrit toujours le
-contenu, la description et les `grades` d'un **brouillon** (comparés comme un ensemble) ; un modèle publié n'est
+contenu, la description, le délai et les `grades` d'un **brouillon** (comparés comme un ensemble) ; un modèle publié n'est
 jamais touché.
 
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)
@@ -676,7 +699,7 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   ~35 caractères ou de 2 « = » ; jamais de `\quad`.
 - Tableaux markdown : formules des cellules en `$…$` uniquement ; au plus 6 colonnes de valeurs.
 - Arbre pondéré : bloc ` ```probtree ` (une branche par ligne, `étiquette:probabilité`, enfants
-  indentés de 2 espaces) ; 3 épreuves au plus en arbre complet ; sous une sous-question, indenter
+  indentés de 2 espaces ; étiquette indicée `G_1`, mot en texte droit) ; 3 épreuves au plus en arbre complet ; sous une sous-question, indenter
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
 - **Illustrations** (2026-10-12) : schémas SVG dessinés à la main, convertis en PNG de 1 200 px

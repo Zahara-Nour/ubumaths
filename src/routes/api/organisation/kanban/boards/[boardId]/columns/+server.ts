@@ -6,14 +6,14 @@
  *        403 responses).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/server/middleware/auth';
-import { parseKanbanId, createColumnSchema } from '$lib/server/validation/kanban';
-import { assertBoardOwner, rateLimitResponse } from '$lib/server/kanban';
-import { checkKanbanColumnMutationRateLimit } from '$lib/server/rateLimiter';
-import type { KanbanColumn, KanbanColumnInsert } from '$lib/types/database-helpers';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireAuth } from '#lib/server/middleware/auth.ts';
+import { parseKanbanId, createColumnSchema } from '#lib/server/validation/kanban.ts';
+import { assertBoardOwner, rateLimitResponse } from '#lib/server/kanban.ts';
+import { checkKanbanColumnMutationRateLimit } from '#lib/server/rateLimiter.ts';
+import type { KanbanColumn, KanbanColumnInsert } from '#lib/types/database-helpers.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/organisation/kanban/boards/[boardId]/columns/+server');
 
@@ -58,5 +58,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur lors de la création de la colonne');
 	}
 
-	return json({ column: data as KanbanColumn }, { status: 201 });
+	return Response.json({ column: data as KanbanColumn }, { status: 201 });
 };

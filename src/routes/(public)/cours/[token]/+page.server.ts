@@ -15,7 +15,7 @@ import {
 	courseShareTokenSchema,
 	INVALID_COURSE_LINK,
 	resolveCourseShareToken
-} from '$lib/server/course-share-tokens';
+} from '#lib/server/course-share-tokens.ts';
 
 export const load: PageServerLoad = async ({ params, locals, setHeaders }) => {
 	// Le contenu d'une classe circule entre familles ; il n'a pas à être trouvé.

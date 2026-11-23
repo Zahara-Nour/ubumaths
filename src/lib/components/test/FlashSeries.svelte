@@ -3,8 +3,8 @@
 	=====================
 	Forme « Flash-cards » d'une série (spécification de David, 2026-09-30).
 
-	Une carte à la fois, sans chrono : l'élève la retourne, puis dit s'il avait
-	trouvé. Ce clic enregistre sa réponse (auto-évaluation) et passe à la carte
+	Une carte à la fois, sans chrono : l'élève la retourne, puis dit s'il a
+	réussi (« Pas réussi / Réussi », comme en révision). Ce clic enregistre sa réponse (auto-évaluation) et passe à la carte
 	suivante. Les cartes de cours suivent la même mécanique.
 
 	Fin : bilan « k cartes trouvées sur n » (cartes de cours à part, comme
@@ -17,20 +17,27 @@
 	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé une seule fois, à la fin du premier tour
 	- onRestart: () => void - Nouvelles questions (la page régénère)
-	- onBack: () => void - Retour au panier
+	- onBack: () => void - Retour à ma série
+	- traceRecorder: élève connecté → une trace par carte du premier tour, envoyée
+	  au clic « Réussi / Pas réussi » (lieu `flash_cards`, trace « déclarée »,
+	  ADR 0038) ; `null` → rien (visiteur, vitrine). « Revoir » n'en laisse pas.
+	  Coup de pouce ouvert (idée 5 du chantier `idees-format`) : la trace dit
+	  « avec indice » ; « Réussi » devient alors « Difficile » pour la révision.
 -->
 
 <script lang="ts">
 	import { tick } from 'svelte';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Progress } from '$lib/components/ui/progress';
-	import { computeTestScore } from '$lib/utils/test-score';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import type { TestAnswerResult, TestResult } from '$lib/types/test';
-	import { ArrowLeft, Check, LogIn, RefreshCw, RotateCcw, X } from '@lucide/svelte';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import SelfAssessButtons from '#lib/components/questions/SelfAssessButtons.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Progress } from '#lib/components/ui/progress/index.ts';
+	import { computeTestScore } from '#lib/utils/test-score.ts';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import type { TestAnswerResult, TestResult } from '#lib/types/test.ts';
+	import { ArrowLeft, LogIn, RefreshCw, RotateCcw } from '@lucide/svelte';
+	import { buildSeriesTrace, type TraceRecorder } from '#lib/questions/series-trace.ts';
 
 	// Types
 	interface Props {
@@ -39,10 +46,22 @@
 		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
+		/** « Mêmes nombres pour tous » : Recommencer redonne les mêmes questions */
+		sameQuestions?: boolean;
 		onBack: () => void;
+		traceRecorder?: TraceRecorder | null;
 	}
 
-	let { instances, isLoggedIn, loginNote = true, onComplete, onRestart, onBack }: Props = $props();
+	let {
+		instances,
+		isLoggedIn,
+		loginNote = true,
+		onComplete,
+		onRestart,
+		sameQuestions = false,
+		onBack,
+		traceRecorder = null
+	}: Props = $props();
 
 	// Variables
 	// Indices (dans `instances`) des cartes du tour en cours : toutes, puis les ratées
@@ -58,6 +77,8 @@
 	let isFirstRound = $state(true);
 	// Force un nouveau FlashCard (au recto) à chaque carte, même si une carte revient
 	let cardKey = $state(0);
+	// Coup de pouce ouvert sur la carte affichée (idée 5)
+	let helped = $state(false);
 
 	let seriesStart = Date.now();
 	let cardStart = Date.now();
@@ -104,6 +125,22 @@
 			timeSpent: Math.round((Date.now() - cardStart) / 1000),
 			attempts: 1
 		});
+		// Trace « déclarée » de la carte, tout de suite (premier tour seulement)
+		if (isFirstRound && traceRecorder) {
+			const trace = buildSeriesTrace({
+				place: 'flash_cards',
+				instance: currentInstance,
+				withHelp: helped,
+				answer: {
+					value: isCorrect ? 'knew' : 'did_not_know',
+					isCorrect,
+					timeSpent: 0,
+					attempts: 1,
+					submittedAt: new Date().toISOString()
+				}
+			});
+			if (trace) traceRecorder.record(trace);
+		}
 
 		if (position + 1 < round.length) {
 			position += 1;
@@ -121,6 +158,7 @@
 
 	function showNextCard() {
 		revealed = false;
+		helped = false;
 		cardKey += 1;
 		cardStart = Date.now();
 		void focusIn('.flip-card-front [aria-label="Voir la correction"]');
@@ -189,11 +227,13 @@
 					{/if}
 					<Button variant="outline" onclick={onRestart}>
 						<RefreshCw class="mr-2 h-4 w-4" aria-hidden="true" />
-						Recommencer avec de nouvelles questions
+						{sameQuestions
+							? 'Recommencer les mêmes questions'
+							: 'Recommencer avec de nouvelles questions'}
 					</Button>
 					<Button variant="ghost" onclick={onBack}>
 						<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />
-						Retour au panier
+						Retour à ma série
 					</Button>
 				</div>
 			</Card.Content>
@@ -210,25 +250,19 @@
 
 		<div data-testid="flash-card">
 			{#key cardKey}
-				<FlashCard instance={currentInstance} interactive={false} size="lg" onFlip={handleFlip} />
+				<FlashCard
+					instance={currentInstance}
+					interactive={false}
+					size="lg"
+					showHint
+					onHintOpen={() => (helped = true)}
+					onFlip={handleFlip}
+				/>
 			{/key}
 		</div>
 
 		{#if revealed}
-			<div class="flex flex-col justify-center gap-3 sm:flex-row">
-				<Button
-					class="bg-green-600 text-white hover:bg-green-700"
-					data-self-assess="found"
-					onclick={() => handleSelfAssessment(true)}
-				>
-					<Check class="mr-2 h-4 w-4" aria-hidden="true" />
-					J'avais trouvé
-				</Button>
-				<Button variant="destructive" onclick={() => handleSelfAssessment(false)}>
-					<X class="mr-2 h-4 w-4" aria-hidden="true" />
-					Je n'avais pas trouvé
-				</Button>
-			</div>
+			<SelfAssessButtons onAssess={handleSelfAssessment} keyboard />
 		{:else}
 			<p class="text-center text-sm text-muted-foreground">
 				Retourne la carte pour voir la réponse.
@@ -241,7 +275,7 @@
 				<p class="text-muted-foreground">Aucune carte à afficher pour cette série.</p>
 				<Button variant="ghost" onclick={onBack}>
 					<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />
-					Retour au panier
+					Retour à ma série
 				</Button>
 			</Card.Content>
 		</Card.Root>

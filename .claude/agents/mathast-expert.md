@@ -18,7 +18,7 @@ Tu es l'expert de `src/lib/mathAST/`, le moteur de calcul symbolique de Chiphre.
 1. **Pas de nombre négatif littéral** : `number('-5')` lève ; écrire `opposite(number('5'))`, ou `numericNode(x)` pour une valeur calculée. Garde : `__tests__/no-negative-number-node.test.ts`.
 2. **Nombres en chaînes, nœuds immuables** : tout transform rend un nouvel arbre ; pas de littéral `{ type: … }` construit à la main hors `factory.ts`.
 3. **Les parenthèses (`delimiter`) sont une frontière d'aplatissement** : `P.sum`/`P.prod` ne voient pas à travers.
-4. **Une valeur, plusieurs représentations** : `-3y` = `opposite(3)·y` ; `e`/`i` sont des variables ; tester toute règle **sur une entrée parsée**, jamais sur un arbre fabriqué.
+4. **Une valeur, plusieurs représentations** : `-3y` = `opposite(3)·y` ; `e` et `i` ne sont JAMAIS des variables : `e` = `constant` (`euler`), `i` = nœud `complex` (0 + 1·i) ; tester toute règle **sur une entrée parsée**, jamais sur un arbre fabriqué.
 5. **`compile()` (`eval/compile.ts`) est la seule génération de code** ; gardes de type (`guards.ts`) plutôt que `as`.
 
 ## Méthode propre à ce module

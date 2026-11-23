@@ -5,7 +5,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { load } from '../+page.server';
 
-const TARGET = '/automaths/test?categories=%255B%255D&mode=course&time=300';
+const TARGET = '/automaths/test?modeles=%255B%255D&mode=course&time=300';
 
 function call(code: string, resolved: unknown) {
 	const rpc = vi.fn(async () => ({ data: resolved, error: null }));

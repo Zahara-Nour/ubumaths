@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ScatterPlot from '../ScatterPlot.svelte';
-import { createTransformer } from '$lib/grapheur/viewport';
-import type { ScatterPlottable, Viewport } from '$lib/grapheur/types';
+import { createTransformer } from '#lib/grapheur/viewport.ts';
+import type { ScatterPlottable, Viewport } from '#lib/grapheur/types.ts';
 
 /**
  * Le nuage de deux séries saisies par l'élève — décision Q3.

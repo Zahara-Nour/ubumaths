@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
+	import { Checkbox } from '#lib/components/ui/checkbox/index.ts';
+	import type { VipCardTemplate } from '#lib/stores/vipCardTemplates.svelte.ts';
 	import { categoryIcon } from './utils';
 
 	interface Props {

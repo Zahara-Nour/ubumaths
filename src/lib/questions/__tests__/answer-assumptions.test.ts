@@ -30,9 +30,8 @@ import { mapDbTemplateToForm, type GradeLevel, type QuestionTemplate } from '../
 import {
 	createQuestionTemplateSchema,
 	updateQuestionTemplateSchema
-} from '$lib/server/validation/questions';
-import { editedQuestionTemplateSchema } from '$lib/server/validation/migration-review';
-import { templateMarkdown } from '$lib/ubumark';
+} from '#lib/server/validation/questions.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // FIXTURES
@@ -43,8 +42,6 @@ const GRADES: GradeLevel[] = ['2'];
 const baseTemplate = {
 	title: 'Puissances',
 	grades: GRADES,
-	theme: 'Algèbre',
-	domain: 'Puissances',
 	level: 1,
 	status: 'published' as const,
 	variations: [
@@ -246,23 +243,6 @@ describe('API : createQuestionTemplateSchema / updateQuestionTemplateSchema', ()
 	});
 });
 
-describe('Relecture de migration : editedQuestionTemplateSchema', () => {
-	const edited = (answerAssumptions: unknown) => ({
-		variations: baseTemplate.variations,
-		options: { answerAssumptions }
-	});
-
-	it('garde des hypothèses valides', () => {
-		const parsed = editedQuestionTemplateSchema.parse(edited({ x: 'positive' }));
-		expect(parsed.options?.answerAssumptions).toEqual({ x: 'positive' });
-	});
-
-	it('refuse des hypothèses invalides au lieu de les laisser passer (passthrough)', () => {
-		expect(editedQuestionTemplateSchema.safeParse(edited({ e: 'positive' })).success).toBe(false);
-		expect(editedQuestionTemplateSchema.safeParse(edited({ a: 'positive' })).success).toBe(false);
-	});
-});
-
 // ============================================================================
 // Affichage et lignes de l'éditeur
 // ============================================================================
@@ -338,7 +318,7 @@ describe('validateAssumptionRows (éditeur)', () => {
 });
 
 describe('isSequenceCategory (proposition « n ∈ ℕ »)', () => {
-	it('reconnaît le thème ou le domaine Suites', () => {
+	it('reconnaît la branche ou la notion Suites', () => {
 		expect(isSequenceCategory('Suites', 'Généralités')).toBe(true);
 		expect(isSequenceCategory('Analyse', 'Suites arithmétiques')).toBe(true);
 		expect(isSequenceCategory(' suites ', '')).toBe(true);
@@ -375,7 +355,6 @@ describe('aller-retour éditeur ↔ base', () => {
 			...baseTemplate,
 			exercise_instruction: null,
 			default_display_options: null,
-			multiple_answers: null,
 			test_specs: null,
 			options: { answerAssumptions: { x: 'positive', n: 'natural' } }
 		};

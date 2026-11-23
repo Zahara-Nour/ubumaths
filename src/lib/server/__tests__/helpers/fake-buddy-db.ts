@@ -10,7 +10,7 @@
  */
 
 import { createFakeSupabase, type Call, type Result } from './fake-supabase';
-import type { StudentBuddy } from '$lib/types/database-helpers';
+import type { StudentBuddy } from '#lib/types/database-helpers.ts';
 
 // Types
 type Row = Record<string, unknown>;

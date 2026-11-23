@@ -11,11 +11,11 @@
  * - Only \infty for symbols
  */
 
-import { parseLatexSafe, DEFAULT_GENERIC_FUNCTION_NAMES } from '$lib/mathAST/parser';
-import { groupDecimalDigits, groupIntegerDigits } from '$lib/mathAST/digit-grouping';
-import { toCustom, SUPPORTED_GREEK, SUPPORTED_SYMBOLS } from '$lib/mathAST/custom-generator';
-import { findNodes } from '$lib/mathAST/transforms';
-import type { MathNode, GreekLetterNode, SymbolNode } from '$lib/mathAST/types';
+import { parseLatexSafe, DEFAULT_GENERIC_FUNCTION_NAMES } from '#lib/mathAST/parser/index.ts';
+import { groupDecimalDigits, groupIntegerDigits } from '#lib/mathAST/digit-grouping.ts';
+import { toCustom, SUPPORTED_GREEK, SUPPORTED_SYMBOLS } from '#lib/mathAST/custom-generator.ts';
+import { findNodes } from '#lib/mathAST/transforms.ts';
+import type { MathNode, GreekLetterNode, SymbolNode } from '#lib/mathAST/types.ts';
 import type { ConversionContext } from '../types';
 
 /**

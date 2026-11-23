@@ -1,0 +1,68 @@
+[
+	{
+		"id": "034e6b74-8881-488b-b621-af56414378cb",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Théorème de Thalès > calcul de longueurs",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-059"]
+	},
+	{
+		"id": "16478dab-5fbe-4300-a8ad-f1895cc81102",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Théorème de Thalès > calcul de longueurs",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-022"]
+	},
+	{
+		"id": "37c13d51-d85c-4315-846a-ae51562220e0",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Théorème de Thalès > réciproque",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-055"]
+	},
+	{
+		"id": "57c73be1-c98c-45a0-8828-94987041ab60",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Trigonométrie du triangle rectangle",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-061"]
+	},
+	{
+		"id": "dbd5debf-38d2-48f3-ae13-05701f5b09fc",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Trigonométrie du triangle rectangle",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-023"]
+	},
+	{
+		"id": "f55d07b0-9256-4cfd-817a-28b7be6bb8ea",
+		"noeudAvant": null,
+		"noeudApres": "Géométrie > Théorème de Thalès > calcul de longueurs",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-060"]
+	}
+]

@@ -1,0 +1,191 @@
+{
+	"id": "41e84aa6-9a14-4108-9dbe-b8d061cfc1e0",
+	"title": "Deux issues, pas forcément une chance sur deux",
+	"description": "Une roue à parts coloriées ou un sac de deux couleurs : deux issues, mais une chance sur deux seulement si les deux couleurs sont aussi nombreuses",
+	"grades": ["CM1"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une roue est partagée en ${{N}}$ parts égales. On la fait tourner : la flèche montre une part coloriée ou une part blanche. Il y a donc deux issues.\n\n```partage\nforme: disque {{N}}\ngris: {{g}}\n```\n\nA-t-on une chance sur deux que la flèche montre une part coloriée ?\n\n```choix\nmelanger: non\n- Oui, une chance sur deux\n- Non, moins d'une chance sur deux\n- Non, plus d'une chance sur deux\n```",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "4|6|8"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:N-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "eval:max(min(2*g-N,1),-1)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(3*s*s+s)/2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux issues, ce n'est pas forcément une chance sur deux : il faut regarder combien de parts a chaque couleur.",
+					"${{g}}$ part{{if:g>1|s}} coloriée{{if:g>1|s}}, ${{eval:N-g}}$ blanche{{if:N-g>1|s}}.{{if:s==-1| Moins de parts coloriées que de blanches.|{{if:s==0| Autant de chaque couleur.| Plus de parts coloriées que de blanches.}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui, une chance sur deux|{{if:r==1|non, moins d'une chance sur deux|non, plus d'une chance sur deux}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{R}}$ boule{{if:R>1|s}} rouge{{if:R>1|s}} et ${{B}}$ boule{{if:B>1|s}} bleue{{if:B>1|s}}. On tire une boule sans regarder : elle est rouge ou bleue, il y a deux issues.\n\nA-t-on une chance sur deux de tirer une boule rouge ?\n\n```choix\nmelanger: non\n- Oui, une chance sur deux\n- Non, moins d'une chance sur deux\n- Non, plus d'une chance sur deux\n```",
+			"variables": [
+				{
+					"name": "R",
+					"expression": "1..6"
+				},
+				{
+					"name": "B",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "eval:max(min(R-B,1),-1)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(3*s*s+s)/2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux issues, ce n'est pas forcément une chance sur deux : il faut comparer le nombre de boules de chaque couleur.",
+					"{{if:s==-1|Il y a moins de rouges (${{R}}$) que de bleues (${{B}}$).|{{if:s==0|Il y a autant de rouges que de bleues.|Il y a plus de rouges (${{R}}$) que de bleues (${{B}}$).}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui, une chance sur deux|{{if:r==1|non, moins d'une chance sur deux|non, plus d'une chance sur deux}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 part sur 4 : moins",
+			"variationIndex": 0,
+			"variables": {
+				"N": "4",
+				"g": "1",
+				"s": "-1",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 part sur 4, une chance sur deux",
+			"variationIndex": 0,
+			"variables": {
+				"N": "4",
+				"g": "1",
+				"s": "-1",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 parts sur 6 : une chance sur deux",
+			"variationIndex": 0,
+			"variables": {
+				"N": "6",
+				"g": "3",
+				"s": "0",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6 parts sur 8 : plus",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"g": "6",
+				"s": "1",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 rouge, 3 bleues : moins",
+			"variationIndex": 1,
+			"variables": {
+				"R": "1",
+				"B": "3",
+				"s": "-1",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 rouge, 3 bleues, une chance sur deux",
+			"variationIndex": 1,
+			"variables": {
+				"R": "1",
+				"B": "3",
+				"s": "-1",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 et 4 : une chance sur deux",
+			"variationIndex": 1,
+			"variables": {
+				"R": "4",
+				"B": "4",
+				"s": "0",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 rouges, 2 bleues : plus",
+			"variationIndex": 1,
+			"variables": {
+				"R": "5",
+				"B": "2",
+				"s": "1",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

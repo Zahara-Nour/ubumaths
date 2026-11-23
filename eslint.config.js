@@ -6,9 +6,17 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import { loadConfig } from '@sveltejs/load-config';
 import requireZodValidation from './eslint-rules/require-zod-validation.js';
 import requireSupabaseErrorCheck from './eslint-rules/require-supabase-error-check.js';
+
+// SvelteKit 3 : la config Svelte vit dans les options du plugin `sveltekit()` de vite.config.ts
+const loadedSvelteConfig = (await loadConfig('./', { traverse: false }))?.config;
+// `version.name` vaut `Date.now()` à chaque chargement : ESLint met la config dans
+// l'empreinte de son cache, qui changeait donc à chaque lancement, et les ~1 300
+// fichiers Svelte étaient tous relus (Lint de la CI de version : 25 min, cache restauré).
+// Ni eslint-plugin-svelte ni svelte-eslint-parser ne lisent `version` : on le retire.
+const svelteConfig = loadedSvelteConfig && { ...loadedSvelteConfig, version: undefined };
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
@@ -88,6 +96,26 @@ export default defineConfig(
 		},
 		rules: {
 			'supabase/require-error-check': 'error'
+		}
+	},
+	// La forme canonique d'une expression a un nom : `canonicalForm`
+	// (`#lib/mathAST/normal/canonical-form.ts`). Écrit en ligne, l'appel se
+	// recopie sans qu'on sache qu'il sert à comparer ou à calculer, pas à
+	// montrer (ADR 0032). Règle AST : les appels écrits sur plusieurs lignes
+	// sont vus aussi.
+	{
+		files: ['src/**/*.ts', 'src/**/*.svelte'],
+		ignores: ['src/**/__tests__/**', 'src/**/*.test.ts', 'src/**/*.spec.ts'],
+		rules: {
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector:
+						"CallExpression[callee.name='denormalize'] > CallExpression.arguments[callee.name='normalize']",
+					message:
+						'Écrire `canonicalForm(…)` (`#lib/mathAST/normal/canonical-form.ts`) au lieu de `denormalize(normalize(…))`.'
+				}
+			]
 		}
 	}
 );

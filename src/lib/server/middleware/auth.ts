@@ -29,8 +29,8 @@
 
 import { error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
+import type { Database } from '#lib/types/database.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/middleware/auth');
 
@@ -82,11 +82,13 @@ export interface AuthResult {
  * **Error Responses**:
  * - `401 Unauthorized` - No valid session
  * - `403 Forbidden` - Session exists but profile not found (orphaned auth user)
+ * - `500` - Profile read failed for another reason than "no row" (timeout, 5xx)
  *
  * @param locals - SvelteKit request locals containing supabase client and session
  * @returns Promise resolving to `{ user, profile }` on success
  * @throws `401` if user is not authenticated
  * @throws `403` if user profile doesn't exist in database
+ * @throws `500` if the profile read fails (other than PGRST116)
  *
  * @example Basic authentication check
  * ```typescript
@@ -144,8 +146,15 @@ export async function requireAuth(locals: App.Locals): Promise<AuthResult> {
 		.eq('id', user.id)
 		.single();
 
-	if (profileError || !profile) {
+	// Panne de lecture (délai, 5xx…) ≠ profil absent : 500, pour qu'un compte légitime
+	// ne se voie pas refuser l'accès en silence. PGRST116 = `.single()` sans ligne.
+	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Profile fetch error:', profileError);
+		throw error(500, 'Impossible de vérifier les droits');
+	}
+
+	if (!profile) {
+		logger.error('Profile not found:', { userId: user.id });
 		throw error(403, 'Profil utilisateur introuvable');
 	}
 

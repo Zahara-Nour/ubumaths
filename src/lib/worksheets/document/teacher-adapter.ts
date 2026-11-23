@@ -13,7 +13,7 @@ import {
 	type InstanceData,
 	type WorksheetConfig,
 	type WorksheetRow
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 import { worksheetHeader } from '../worksheet-header';
 import type { WorksheetDocument } from './types';
 import { placeExercises, writtenOrNull } from './numbering';

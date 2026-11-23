@@ -22,13 +22,13 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { CalcResult } from './calcul';
-import type { MathNode } from '$lib/mathAST/types';
-import type { LimitDirection, LimitResult } from '$lib/mathAST/limits/types';
-import { evaluateLimit } from '$lib/mathAST/limits';
-import { LimitError } from '$lib/mathAST/limits/types';
-import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { infinity, mathConstant, number, opposite, power } from '$lib/mathAST/factory';
+import type { MathNode } from '#lib/mathAST/types.ts';
+import type { LimitDirection, LimitResult } from '#lib/mathAST/limits/types.ts';
+import { evaluateLimit } from '#lib/mathAST/limits/index.ts';
+import { LimitError } from '#lib/mathAST/limits/types.ts';
+import { parse as parseCommandExpression } from '#lib/mathAST/cli/core/pipeline.ts';
+import { getVariables } from '#lib/mathAST/eval/substitute.ts';
+import { infinity, mathConstant, number, opposite, power } from '#lib/mathAST/factory.ts';
 import {
 	isAddition,
 	isInfinity,
@@ -36,18 +36,18 @@ import {
 	isNumber,
 	isOpposite,
 	isSubtraction
-} from '$lib/mathAST/guards';
-import type { Domain } from '$lib/mathAST/domain/types';
-import { containsValue } from '$lib/mathAST/domain/algebra';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { toCustom } from '$lib/mathAST/custom-generator';
-import { transformAST, visitAST } from '$lib/mathAST/visitor';
+} from '#lib/mathAST/guards.ts';
+import type { Domain } from '#lib/mathAST/domain/types.ts';
+import { containsValue } from '#lib/mathAST/domain/algebra.ts';
+import { evaluateNodeToApproximatedNumber } from '#lib/mathAST/eval/evaluate.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
+import { transformAST, visitAST } from '#lib/mathAST/visitor.ts';
 import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
-} from '$lib/mathAST/parser/custom/tokenizer';
-import { bareFunctionMessage, bareFunctionName } from '$lib/mathAST/cli/core/variable-argument';
+} from '#lib/mathAST/parser/custom/tokenizer.ts';
+import { bareFunctionMessage, bareFunctionName } from '#lib/mathAST/cli/core/variable-argument.ts';
 import { astOf } from './parse';
 import { listCitedMessage } from './list-cited';
 import {
@@ -59,6 +59,7 @@ import {
 	type CitedInterval
 } from './interval';
 import { INTERNAL_LETTER, typedLetterOf } from './letter';
+import { lettersText } from './types';
 import { limitSteps, type LimitQuestion as StepsQuestion, type LimitSteps } from './limit-steps';
 import type { LimitAnswer } from './limit-steps-check';
 
@@ -215,7 +216,7 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	const direction: LimitDirection = side ?? 'both';
 	const approach = point.kind === 'infinite' ? infinity(point.sign) : point.node;
 	const result = safeLimit(ast, variable, approach, direction);
-	if (result === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
+	if (result === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
 
 	// « Comment ? » : les étapes portent sur l'expression, dans la lettre de
 	// l'élève ; une fonction ou une suite citée seule garde son nom
@@ -237,7 +238,7 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 		return noLimit(input, result, subject, limitQuestion, point, side, typedSide, explain);
 	}
 	const value = knownValue(result);
-	if (value === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
+	if (value === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
 	// R1 : sans côté tapé, une fonction définie d'un seul côté (ln x en 0) l'écrit : x → 0⁺
 	const impliedSide = side === null ? (result.definedSide ?? null) : null;
 	if (impliedSide !== null) side = impliedSide;
@@ -412,7 +413,9 @@ function restrictedDomain(
 	const get = (name: string) => atelier.get(name);
 	if (cited?.kind === 'function') {
 		const domain = intervalDomainOf(get(cited.base));
-		return domain === null ? null : { kind: 'restricted', domain, name: cited.name };
+		return domain === null
+			? null
+			: { kind: 'restricted', domain, name: cited.name, conditions: [] };
 	}
 	if (cited !== null) return null;
 	return citedIntervalDomain(get, typed, letter);
@@ -541,6 +544,17 @@ function guessedLetter(
 		ok: false,
 		message: `Plusieurs lettres (${listed}) : écris la variable après « en », par exemple « .limite … en ${last}=${pointText} ».`
 	};
+}
+
+/**
+ * « Je ne sais pas » : une lettre autre que la variable (k, λ) peut en être
+ * la cause — le moteur ne devine plus son signe (e^{−kx} en +∞ rendait +∞,
+ * chantier limites-parametres) ; on la nomme.
+ */
+function unknownLimit(ast: MathNode, variable: string): string {
+	const parameters = [...getVariables(ast)].filter((name) => name !== variable).sort();
+	if (parameters.length === 0) return UNKNOWN_LIMIT;
+	return `Je ne sais pas calculer cette limite : elle peut dépendre du signe de ${lettersText(parameters)}.`;
 }
 
 /** `evaluateLimit` sans exception : `null` quand le moteur renonce. */

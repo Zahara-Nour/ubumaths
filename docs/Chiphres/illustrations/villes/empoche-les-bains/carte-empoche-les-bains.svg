@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Georgia, 'Times New Roman', serif">
+<style>text{fill:#1B2232;paint-order:stroke;stroke:#F1EDE4;stroke-linejoin:round}.lieu{font-weight:bold;font-style:italic;stroke-width:6px;stroke-opacity:.9}</style>
+<image href="carte-ville.png" width="1024" height="1024"/>
+<g id="lieux">
+<g id="lieu-place-de-la-gidouille"><title>La Place de la Gidouille et le Grand Hôtel thermal</title><ellipse cx="555" cy="240" rx="150" ry="80" fill="#fff" fill-opacity="0"/><text x="555" y="336" font-size="24" text-anchor="middle" class="lieu">Place de la Gidouille</text></g>
+<g id="lieu-parc-thermal"><title>Le Parc thermal</title><ellipse cx="548" cy="485" rx="172" ry="150" fill="#fff" fill-opacity="0"/><text x="548" y="650" font-size="24" text-anchor="middle" class="lieu">Le Parc thermal</text></g>
+<g id="lieu-buvette"><title>La Buvette à colonnade</title><ellipse cx="440" cy="470" rx="44" ry="52" fill="#fff" fill-opacity="0"/><text x="440" y="545" font-size="24" text-anchor="middle" class="lieu">La Buvette</text></g>
+<g id="lieu-bains"><title>Les Bains</title><ellipse cx="555" cy="780" rx="150" ry="112" fill="#fff" fill-opacity="0"/><text x="555" y="940" font-size="24" text-anchor="middle" class="lieu">Les Bains</text></g>
+<g id="lieu-villa-des-phynances"><title>La Villa des Phynances</title><ellipse cx="210" cy="615" rx="76" ry="60" fill="#fff" fill-opacity="0"/><text x="210" y="700" font-size="24" text-anchor="middle" class="lieu">Villa des Phynances</text></g>
+<g id="lieu-promenade-de-la-vistule"><title>La Promenade de la Vistule</title><ellipse cx="765" cy="510" rx="22" ry="180" fill="#fff" fill-opacity="0"/><text x="748" y="510" font-size="24" text-anchor="middle" class="lieu" transform="rotate(-90 748 510)">La Promenade</text></g>
+</g>
+</svg>

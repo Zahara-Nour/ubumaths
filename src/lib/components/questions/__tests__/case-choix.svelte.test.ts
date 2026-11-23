@@ -16,12 +16,12 @@ import type { MathfieldElement } from 'mathlive';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
 import CorrectionCard from '../CorrectionCard.svelte';
-import { MarkdownRenderer } from '$lib/components/markdown';
-import { generateInstance } from '$lib/questions/generator/instance-generator';
-import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
-import type { AnswerData } from '$lib/types/question-display';
-import type { TestAnswerResult } from '$lib/types/test';
-import { templateMarkdown } from '$lib/ubumark';
+import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
+import type { AnswerData } from '#lib/types/question-display.ts';
+import type { TestAnswerResult } from '#lib/types/test.ts';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 // Fixtures
 function generate(statement: string, expected: string[], seed = 42): QuestionInstance {
@@ -38,8 +38,6 @@ function generate(statement: string, expected: string[], seed = 42): QuestionIns
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		} as unknown as QuestionTemplate,
 		seed
@@ -264,5 +262,30 @@ describe('hors question : liste A, B, C non cliquable', () => {
 		expect(list.querySelector('math-span, .katex, math')).not.toBeNull();
 		expect(container.querySelector('button')).toBeNull();
 		expect(container.querySelector('pre')).toBeNull();
+	});
+});
+
+describe('case choix : texte d’aide sous la question', () => {
+	const HELPER = 'Remplissez les blancs avec vos réponses';
+
+	it('choix seul : pas de « Remplissez les blancs » (aucun blanc à remplir)', async () => {
+		const { container } = await render(QuestionCard, {
+			target: mainElement(),
+			props: {
+				instance: generate('Est-ce pair ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```', ['1']),
+				interactive: true
+			}
+		});
+		await expect.poll(() => container.querySelector('[role="radiogroup"]')).toBeTruthy();
+		expect(container.textContent).not.toContain(HELPER);
+	});
+
+	it('une case à écrire à côté du choix : le texte d’aide reste', async () => {
+		const { container } = await render(QuestionCard, {
+			target: mainElement(),
+			props: { instance: MIXED(), interactive: true }
+		});
+		await expect.poll(() => container.querySelector('[role="radiogroup"]')).toBeTruthy();
+		expect(container.textContent).toContain(HELPER);
 	});
 });

@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateTemplate } from '../template-validator';
 import type { QuestionTemplate } from '../../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '#lib/ubumark/index.ts';
 
 describe('validateTemplate - Valid Templates', () => {
 	it('should validate simple fill_in_blanks template', () => {
@@ -25,8 +25,6 @@ describe('validateTemplate - Valid Templates', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -54,8 +52,6 @@ describe('validateTemplate - Valid Templates', () => {
 				}
 			],
 			grades: ['6', '5'],
-			theme: 'Arithmétique',
-			domain: 'Addition',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -67,7 +63,7 @@ describe('validateTemplate - Valid Templates', () => {
 		expect(errors).toEqual([]);
 	});
 
-	it('should validate fill_in_blanks template (inferred from no choices)', () => {
+	it('should validate fill_in_blanks template', () => {
 		const template: QuestionTemplate = {
 			id: 'test-fill',
 			title: 'Test fill_in_blanks',
@@ -80,41 +76,7 @@ describe('validateTemplate - Valid Templates', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const errors = validateTemplate(template);
-		expect(errors).toEqual([]);
-	});
-
-	it('should validate multiple_choice template (inferred from choices)', () => {
-		const template: QuestionTemplate = {
-			id: 'test-mc',
-			title: 'Test multiple_choice',
-			status: 'published',
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					correctChoiceIndex: '0',
-					choices: [
-						{ content: templateMarkdown('A'), isCorrect: true },
-						{ content: templateMarkdown('B'), isCorrect: false },
-						{ content: templateMarkdown('C'), isCorrect: false },
-						{ content: templateMarkdown('D'), isCorrect: false }
-					]
-				}
-			],
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			multipleAnswers: false,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
@@ -148,8 +110,6 @@ describe('validateTemplate - Valid Templates', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Opérations',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -163,8 +123,8 @@ describe('validateTemplate - Valid Templates', () => {
 });
 
 describe('validateTemplate - Required Fields', () => {
-	it('should infer type from choices (type no longer a field)', () => {
-		// Template without choices → fill_in_blanks (valid)
+	it('should infer type from structure (type no longer a field)', () => {
+		// Template sans marqueur de carte de cours → fill_in_blanks (valid)
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -177,8 +137,6 @@ describe('validateTemplate - Required Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -197,8 +155,6 @@ describe('validateTemplate - Required Fields', () => {
 			title: 'Test Template',
 			status: 'published' as const,
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -217,8 +173,6 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published' as const,
 			variations: [],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -242,8 +196,6 @@ describe('validateTemplate - Required Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -255,37 +207,7 @@ describe('validateTemplate - Required Fields', () => {
 		expect(errors.some((e) => e.includes('statement'))).toBe(true);
 	});
 
-	it('should fail on missing solution for multiple_choice variation', () => {
-		const template = {
-			id: 'test',
-			title: 'Test Template',
-			status: 'published' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					choices: [
-						{ text: 'A', isCorrect: true },
-						{ text: 'B', isCorrect: false }
-					]
-					// solution missing — required for multiple_choice
-				}
-			],
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		} as unknown as QuestionTemplate;
-
-		const errors = validateTemplate(template);
-
-		expect(errors.some((e) => e.includes('correctChoiceIndex'))).toBe(true);
-	});
-
-	it('should accept fill_in_blanks with blanks (no correctChoiceIndex needed)', () => {
+	it('should accept fill_in_blanks with blanks', () => {
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -298,8 +220,6 @@ describe('validateTemplate - Required Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -323,8 +243,6 @@ describe('validateTemplate - Required Fields', () => {
 					blanks: [{ expectedAnswer: '5' }]
 				}
 			],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -349,8 +267,6 @@ describe('validateTemplate - Required Fields', () => {
 				}
 			],
 			grades: [],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -362,7 +278,7 @@ describe('validateTemplate - Required Fields', () => {
 		expect(errors.some((e) => e.includes('grades'))).toBe(true);
 	});
 
-	it('should fail on missing theme', () => {
+	it('does not require a theme any more (rangement par l’arbre)', () => {
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -375,7 +291,6 @@ describe('validateTemplate - Required Fields', () => {
 				}
 			],
 			grades: ['6'],
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -384,10 +299,10 @@ describe('validateTemplate - Required Fields', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('theme'))).toBe(true);
+		expect(errors.some((e) => e.includes('theme'))).toBe(false);
 	});
 
-	it('should fail on missing domain', () => {
+	it('does not require a domain any more (rangement par l’arbre)', () => {
 		const template = {
 			id: 'test',
 			title: 'Test Template',
@@ -400,7 +315,6 @@ describe('validateTemplate - Required Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -409,7 +323,7 @@ describe('validateTemplate - Required Fields', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('domain'))).toBe(true);
+		expect(errors.some((e) => e.includes('domain'))).toBe(false);
 	});
 
 	it('should fail on missing level', () => {
@@ -425,8 +339,6 @@ describe('validateTemplate - Required Fields', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
@@ -452,8 +364,6 @@ describe('validateTemplate - Statement Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -478,8 +388,6 @@ describe('validateTemplate - Statement Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -504,8 +412,6 @@ describe('validateTemplate - Statement Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -535,8 +441,6 @@ describe('validateTemplate - Variable Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -561,8 +465,6 @@ describe('validateTemplate - Variable Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -592,8 +494,6 @@ describe('validateTemplate - Variable Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -623,8 +523,6 @@ describe('validateTemplate - Variable Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -651,8 +549,6 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -662,63 +558,6 @@ describe('validateTemplate - Type-Specific Validation', () => {
 		const errors = validateTemplate(template);
 
 		expect(errors.some((e) => e.includes('blanks'))).toBe(true);
-	});
-
-	it('should fail multiple_choice with less than 2 choices in variation', () => {
-		const template = {
-			id: 'test',
-			title: 'Test Template',
-			status: 'published' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					correctChoiceIndex: '0',
-					// Only 1 choice — multiple_choice requires at least 2
-					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
-				}
-			],
-			multipleAnswers: false,
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		} as unknown as QuestionTemplate;
-
-		const errors = validateTemplate(template);
-
-		expect(errors.some((e) => e.includes('choices') || e.includes('2'))).toBe(true);
-	});
-
-	it('should fail multiple_choice with less than 2 choices', () => {
-		const template: QuestionTemplate = {
-			id: 'test',
-			title: 'Test Template',
-			status: 'published',
-			variations: [
-				{
-					statement: templateMarkdown('Question'),
-					variables: [],
-					correctChoiceIndex: '0',
-					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
-				}
-			],
-			multipleAnswers: false,
-			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const errors = validateTemplate(template);
-
-		expect(errors.some((e) => e.includes('at least 2') || e.includes('2 choices'))).toBe(true);
 	});
 });
 
@@ -741,8 +580,6 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -772,8 +609,6 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -803,8 +638,6 @@ describe('validateTemplate - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			delay: 120,
 			created_at: new Date().toISOString(),
@@ -829,8 +662,6 @@ describe('validateTemplate - Edge Cases', () => {
 			variations: [{ statement: templateMarkdown('Question'), correction: { steps: ['Réponse'] } }],
 			options: { courseCard: true },
 			grades: ['1_SPE'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			delay: null,
 			created_at: new Date().toISOString(),
@@ -856,8 +687,6 @@ describe('validateTemplate - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			delay: 0,
 			created_at: new Date().toISOString(),
@@ -887,8 +716,6 @@ describe('validateTemplate - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -927,8 +754,6 @@ describe('validateTemplate - Edge Cases', () => {
 				'T_SPE',
 				'T_TECHNO'
 			],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -953,8 +778,6 @@ describe('validateTemplate - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -984,8 +807,6 @@ describe('validateTemplate - Edge Cases', () => {
 				}
 			],
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
@@ -1015,7 +836,7 @@ describe('validateTemplate - Multiple Errors', () => {
 				}
 			],
 			grades: [],
-			// missing theme, domain, level
+			// missing level
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
@@ -1029,8 +850,6 @@ describe('validateTemplate - Multiple Errors', () => {
 		expect(errors.some((e) => e.includes('Statement cannot be empty'))).toBe(true);
 		expect(errors.some((e) => e.includes('Duplicate') || e.includes('duplicate'))).toBe(true);
 		expect(errors.some((e) => e.includes('grade'))).toBe(true);
-		expect(errors.some((e) => e.includes('theme'))).toBe(true);
-		expect(errors.some((e) => e.includes('domain'))).toBe(true);
 		expect(errors.some((e) => e.includes('level'))).toBe(true);
 		expect(errors.some((e) => e.includes('blanks'))).toBe(true);
 	});

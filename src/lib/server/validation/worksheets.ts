@@ -2,16 +2,17 @@
  * Worksheet API validation schemas
  *
  * Comprehensive Zod validation for all worksheet-related API endpoints.
- * Based on types from $lib/types/worksheets.ts
+ * Based on types from #lib/types/worksheets.ts
  */
 
+import { WORKSHEET_CATEGORIES } from '#lib/worksheets/worksheet-title.ts';
 import { z } from 'zod';
 import { uuidSchema } from './common';
 import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
-import { CONTENT_LOCALES } from '$lib/types/locale';
-import { capitalPairsSchema } from '$lib/questions/capital-pairs';
-import { TEXT_SIZES } from '$lib/typst/text-size';
+import { CONTENT_LOCALES } from '#lib/types/locale.ts';
+import { capitalPairsSchema } from '#lib/questions/capital-pairs.ts';
+import { TEXT_SIZES } from '#lib/typst/text-size.ts';
 import {
 	ANSWER_FRAME_MAX_LINES,
 	ANSWER_FRAME_MAX_QUESTIONS,
@@ -19,7 +20,7 @@ import {
 	CALCULATOR_RULES,
 	WORKSHEET_TYPES,
 	isIsoDate
-} from '$lib/types/worksheets';
+} from '#lib/types/worksheets.ts';
 
 // ============================================================================
 // ENUM SCHEMAS
@@ -305,7 +306,12 @@ export const updateWorksheetSchema = z.object({
 	grades: z.array(gradeCodeSchema).max(20, '20 niveaux au maximum').optional(), // No default - won't be set if not in request
 	tags: z.array(z.string().trim().min(1).max(50)).max(30, '30 mots-clés au maximum').optional(), // No default - won't be set if not in request
 	status: worksheetStatusSchema.optional(),
-	translations: rowTranslationsSchema.optional().nullable()
+	translations: rowTranslationsSchema.optional().nullable(),
+	// Catégorie, titre libre et notions (ADR 0041) : le titre composé est
+	// décidé par la route (`worksheet-classification.ts`)
+	category: z.enum(WORKSHEET_CATEGORIES).nullable().optional(),
+	custom_title: z.boolean().optional(),
+	notions: z.array(uuidSchema).max(20, '20 notions au maximum').optional()
 });
 
 /**
@@ -732,6 +738,10 @@ export const worksheetResponseSchema = z.object({
 	total_points: z.number().nullable(),
 	grades: z.array(gradeCodeSchema),
 	tags: z.array(z.string()),
+	// Catégorie et titre libre (ADR 0041). Optionnels : une route qui choisit
+	// ses colonnes peut ne pas les lire ; sans ces clés, le schéma les retire
+	category: z.enum(WORKSHEET_CATEGORIES).nullable().optional(),
+	custom_title: z.boolean().optional(),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),
 	created_at: timestampSchema,
@@ -817,6 +827,15 @@ export const worksheetListResponseSchema = z.object({
 	})
 });
 
+/** Une notion de la fiche, avec son nom (ADR 0041) */
+export const worksheetClassificationViewSchema = z.object({
+	node_id: z.string().uuid(),
+	name: z.string(),
+	kind: z.string().optional(),
+	branch: z.string().nullable().optional(),
+	position: z.number().int()
+});
+
 /**
  * Worksheet with sections, exercises and template response schema (GET /api/worksheets/[id])
  */
@@ -824,6 +843,8 @@ export const worksheetDetailResponseSchema = z.object({
 	worksheet: worksheetResponseSchema.extend({
 		sections: z.array(worksheetSectionResponseSchema).optional(),
 		exercises: z.array(worksheetExerciseWithDataResponseSchema).optional(),
+		// Notions de la fiche avec leur nom, dans l'ordre d'impression (ADR 0041)
+		classifications: z.array(worksheetClassificationViewSchema).optional(),
 		// La fiche d'un style du prof (`loadStyleTemplate`) : son Typst sert au PDF
 		template: z
 			.object({
@@ -1032,7 +1053,7 @@ export const studentWorksheetListItemSchema = z.object({
 	type: worksheetTypeSchema,
 	class_id: z.string().uuid().nullable(),
 	class_name: z.string().nullable(),
-	available_from: timestampSchema,
+	available_from: timestampSchema.nullable(),
 	closes_at: timestampSchema.nullable(),
 	show_corrections: z.boolean(),
 	exercise_count: z.number().int().nonnegative()
@@ -1133,7 +1154,7 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	description: z.string().nullable(),
 	type: worksheetTypeSchema,
 	instructions: z.string().nullable(),
-	available_from: timestampSchema,
+	available_from: timestampSchema.nullable(),
 	closes_at: timestampSchema.nullable(),
 	show_corrections: z.boolean(),
 	class_name: z.string().nullable(),
@@ -1155,7 +1176,12 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	template: z.object({ template_content: z.string() }).nullable().optional(),
 	/** Cartouche du gabarit (lot 4b) : sans ces clés, le schéma les retire */
 	total_points: z.number().nullable().optional(),
-	estimated_duration_minutes: z.number().int().nullable().optional()
+	estimated_duration_minutes: z.number().int().nullable().optional(),
+	/** Niveau, catégorie, titre libre, notions (ADR 0041) : badge et titre du PDF */
+	grades: z.array(z.string()).optional(),
+	category: z.enum(WORKSHEET_CATEGORIES).nullable().optional(),
+	custom_title: z.boolean().optional(),
+	classifications: z.array(worksheetClassificationViewSchema).optional()
 });
 
 // ============================================================================
@@ -1672,10 +1698,15 @@ export function validateStudentReportIdParam(params: Record<string, string>) {
  * PUT /api/worksheets/print-settings : la taille du texte d'un élève. L'élève
  * omet `studentId` (c'est le sien) ; le prof et l'admin le donnent.
  */
-export const printSettingsUpdateSchema = z.object({
-	studentId: uuidSchema.optional(),
-	textSize: z.enum(TEXT_SIZES)
-});
+export const printSettingsUpdateSchema = z
+	.object({
+		studentId: uuidSchema.optional(),
+		textSize: z.enum(TEXT_SIZES).optional(),
+		easyReading: z.boolean().optional()
+	})
+	.refine((body) => body.textSize !== undefined || body.easyReading !== undefined, {
+		message: 'Aucun réglage à enregistrer'
+	});
 
 /** GET /api/worksheets/print-settings?studentId= */
 export const printSettingsQuerySchema = z.object({

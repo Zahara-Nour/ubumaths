@@ -10,9 +10,9 @@
  * - Condition notation: x > 0
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { IntervalDomain, Interval, IntervalSet } from './types';
-import { toCustom } from '$lib/mathAST/custom-generator';
+import { toCustom } from '#lib/mathAST/custom-generator.ts';
 import {
 	isInfinity,
 	isPositiveInfinity,
@@ -23,7 +23,7 @@ import {
 	isFunction,
 	isDivision,
 	isMultiplication
-} from '$lib/mathAST/guards';
+} from '#lib/mathAST/guards.ts';
 import { isUniversalInterval } from './algebra';
 
 // =============================================================================

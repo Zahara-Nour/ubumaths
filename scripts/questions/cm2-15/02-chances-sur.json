@@ -1,0 +1,313 @@
+{
+	"id": "07fdaf1b-0faf-47ba-90a9-89fece48b2ac",
+	"title": "… chances sur …",
+	"description": "Écrire la probabilité d'un évènement sous la forme « a chances sur b » (a issues qui le réalisent, b issues en tout, sans simplifier) : dé, sac de boules, roue, jeu de 52 cartes",
+	"grades": ["CM2"],
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance un dé à $6$ faces numérotées de $1$ à $6$.\n\nComplète : on a $?$ chances sur $?$ d'obtenir {{if:k==0|un nombre pair|{{if:k==1|un multiple de $3$|un nombre plus grand que ${{N}}$}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "N",
+					"expression": "2..4"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(3)*((k-1)*(k-2))/(2)+(2)*((k-0)*(k-2))/(-1)+(6-N)*((k-0)*(k-1))/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dé a $6$ faces, qui ont autant de chances de sortir : $6$ issues.",
+					"Celles qui réalisent l'évènement : {{if:k==0|$2$, $4$, $6$|{{if:k==1|$3$, $6$|les nombres de ${{eval:N+1}}$ à $6$}}}}.",
+					"On a $\\textcolor{{{color:primary.0}}}{{{a}}}$ chances sur $\\textcolor{{{color:primary.0}}}{6}$.",
+					"Le premier nombre compte les issues qui réalisent l'évènement, le second **toutes** les issues (on ne simplifie pas : « $1$ chance sur $3$ » ne dit pas combien il y a d'issues)."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{r}}$ boules rouges, ${{b}}$ boules bleues et ${{g}}$ boules vertes, toutes pareilles au toucher. On tire une boule sans regarder.\n\nComplète : on a $?$ chances sur $?$ de tirer une boule {{if:k==0|rouge|{{if:k==1|bleue|verte}}}}.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "g",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(r)*((k-1)*(k-2))/(2)+(b)*((k-0)*(k-2))/(-1)+(g)*((k-0)*(k-1))/(2)"
+				},
+				{
+					"name": "T",
+					"expression": "eval:r+b+g"
+				}
+			],
+			"conditions": ["T <= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{T}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque boule a autant de chances d'être tirée : il y a ${{r}} + {{b}} + {{g}} = {{T}}$ issues.",
+					"Les boules {{if:k==0|rouges|{{if:k==1|bleues|vertes}}}} : ${{a}}$.",
+					"On a $\\textcolor{{{color:primary.0}}}{{{a}}}$ chances sur $\\textcolor{{{color:primary.0}}}{{{T}}}$.",
+					"Le premier nombre compte les issues qui réalisent l'évènement, le second **toutes** les issues (on ne simplifie pas : « $1$ chance sur $3$ » ne dit pas combien il y a d'issues)."
+				]
+			}
+		},
+		{
+			"statement": "Une roue est partagée en ${{N}}$ parts égales. On la fait tourner : quand elle s'arrête, la flèche montre une part au hasard.\n\n```partage\nforme: disque {{N}}\ngris: {{g}}\n```\n\nComplète : on a $?$ chances sur $?$ que la flèche montre une part coloriée.",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "6|8|10|12"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:N-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				},
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{N}}$ parts sont égales : elles ont autant de chances d'être montrées, il y a ${{N}}$ issues.",
+					"Les parts coloriées : ${{g}}$.",
+					"On a $\\textcolor{{{color:primary.0}}}{{{g}}}$ chances sur $\\textcolor{{{color:primary.0}}}{{{N}}}$.",
+					"Le premier nombre compte les issues qui réalisent l'évènement, le second **toutes** les issues (on ne simplifie pas : « $1$ chance sur $3$ » ne dit pas combien il y a d'issues)."
+				]
+			}
+		},
+		{
+			"statement": "Un jeu de $52$ cartes a quatre familles : cœur et carreau (rouges), trèfle et pique (noirs). Chaque famille a $13$ cartes : l'as, les cartes de $2$ à $10$, le valet, la dame et le roi (le valet, la dame et le roi sont les **figures**).\n\nOn tire une carte au hasard. Complète : on a $?$ chances sur $?$ de {{if:k==0|tirer un roi|{{if:k==1|tirer un cœur|{{if:k==2|tirer une figure|{{if:k==3|tirer un as rouge|tirer une carte rouge}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(4)*((k-1)*(k-2)*(k-3)*(k-4))/(24)+(13)*((k-0)*(k-2)*(k-3)*(k-4))/(-6)+(12)*((k-0)*(k-1)*(k-3)*(k-4))/(4)+(2)*((k-0)*(k-1)*(k-2)*(k-4))/(-6)+(26)*((k-0)*(k-1)*(k-2)*(k-3))/(24)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "52"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque carte a autant de chances d'être tirée : $52$ issues.",
+					"Celles qui réalisent l'évènement : {{if:k==0|un roi par famille : $4$ rois|{{if:k==1|$13$ cartes de cœur|{{if:k==2|trois figures par famille : $4 \\times 3 = 12$ figures|{{if:k==3|l'as de cœur et l'as de carreau : $2$ as rouges|deux familles rouges de $13$ cartes : $2 \\times 13 = 26$ cartes rouges}}}}}}}}.",
+					"On a $\\textcolor{{{color:primary.0}}}{{{a}}}$ chances sur $\\textcolor{{{color:primary.0}}}{52}$.",
+					"Le premier nombre compte les issues qui réalisent l'évènement, le second **toutes** les issues (on ne simplifie pas : « $1$ chance sur $3$ » ne dit pas combien il y a d'issues)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé, pair : 3 sur 6",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"N": "2",
+				"a": "3"
+			},
+			"answers": ["3", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : simplifié en 1 sur 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"N": "2",
+				"a": "3"
+			},
+			"answers": ["1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé, multiple de 3 : 2 sur 6",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"N": "2",
+				"a": "2"
+			},
+			"answers": ["2", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : simplifié en 1 sur 3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"N": "2",
+				"a": "2"
+			},
+			"answers": ["1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé, plus grand que 2 : 4 sur 6",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"N": "2",
+				"a": "4"
+			},
+			"answers": ["4", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les issues qui ne le réalisent pas (2 sur 6)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"N": "2",
+				"a": "4"
+			},
+			"answers": ["2", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sac 5 R, 3 B, 2 V, rouge : 5 sur 10",
+			"variationIndex": 1,
+			"variables": {
+				"r": "5",
+				"b": "3",
+				"g": "2",
+				"k": "0",
+				"a": "5",
+				"T": "10"
+			},
+			"answers": ["5", "10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre de couleurs pour le total (5 sur 3)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "5",
+				"b": "3",
+				"g": "2",
+				"k": "0",
+				"a": "5",
+				"T": "10"
+			},
+			"answers": ["5", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Roue de 8, 3 coloriées : 3 sur 8",
+			"variationIndex": 2,
+			"variables": {
+				"N": "8",
+				"g": "3"
+			},
+			"answers": ["3", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les parts blanches (5 sur 8)",
+			"variationIndex": 2,
+			"variables": {
+				"N": "8",
+				"g": "3"
+			},
+			"answers": ["5", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Un roi : 4 sur 52",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"a": "4"
+			},
+			"answers": ["4", "52"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 sur 13 (une famille)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"a": "4"
+			},
+			"answers": ["4", "13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

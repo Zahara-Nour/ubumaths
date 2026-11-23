@@ -1,0 +1,269 @@
+{
+	"id": "08337d34-d1fe-4c28-984e-ff71d9833b9e",
+	"title": "Combien de petits cubes ?",
+	"description": "Une rangée de piles, deux rangées avec des cubes cachés, escaliers (20 cubes au plus)",
+	"grades": ["CM1", "CM2"],
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de petits cubes y a-t-il dans cet assemblage ?\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} {{d}} {{f}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "f",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c+d+f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les cubes de chaque pile, de gauche à droite.",
+					"${{a}} + {{b}} + {{c}} + {{d}} + {{f}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c+d+f}}}$ cubes."
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il dans cet assemblage ?\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} / {{d}} {{f}} {{g}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				},
+				{
+					"name": "f",
+					"expression": "1..2"
+				},
+				{
+					"name": "g",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c+d+f+g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte pile par pile.** Un cube est toujours posé sur le sol ou sur un autre cube : sous le dessus d'une pile, il y a tous les cubes de la pile, même ceux qu'on ne voit pas.",
+					"Rangée du fond : ${{a}} + {{b}} + {{c}} = {{eval:a+b+c}}$. Rangée de devant : ${{d}} + {{f}} + {{g}} = {{eval:d+f+g}}$.",
+					"En tout : ${{eval:a+b+c}} + {{eval:d+f+g}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c+d+f+g}}}$ cubes."
+				]
+			}
+		},
+		{
+			"statement": "Combien de petits cubes y a-t-il dans cet assemblage ?\n\n```cubes\nhauteurs: {{H}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "H",
+					"expression": "{{if:k==1|3 2 1 / 3 2 1|{{if:k==2|4 3 2 1 / 4 3 2 1|{{if:k==3|3 2 1 / 2 1 0 / 1 0 0|{{if:k==4|1 2 3 / 1 2 3|{{if:k==5|4 3 2 1 / 3 2 1 0|{{if:k==6|3 3 2 / 2 2 1 / 1 1 0|2 2 2 / 2 2 1 / 2 1 1}}}}}}}}}}}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{if:k==1|12|{{if:k==2|20|{{if:k==3|10|{{if:k==4|12|{{if:k==5|16|{{if:k==6|15|15}}}}}}}}}}}}"
+				},
+				{
+					"name": "T",
+					"expression": "{{if:k==1|Rangée du fond : $3 + 2 + 1 = 6$ ; rangée de devant : $3 + 2 + 1 = 6$|{{if:k==2|Rangée du fond : $4 + 3 + 2 + 1 = 10$ ; rangée de devant : $4 + 3 + 2 + 1 = 10$|{{if:k==3|Rangée du fond : $3 + 2 + 1 = 6$ ; rangée du milieu : $2 + 1 + 0 = 3$ ; rangée de devant : $1 + 0 + 0 = 1$|{{if:k==4|Rangée du fond : $1 + 2 + 3 = 6$ ; rangée de devant : $1 + 2 + 3 = 6$|{{if:k==5|Rangée du fond : $4 + 3 + 2 + 1 = 10$ ; rangée de devant : $3 + 2 + 1 + 0 = 6$|{{if:k==6|Rangée du fond : $3 + 3 + 2 = 8$ ; rangée du milieu : $2 + 2 + 1 = 5$ ; rangée de devant : $1 + 1 + 0 = 2$|Rangée du fond : $2 + 2 + 2 = 6$ ; rangée du milieu : $2 + 2 + 1 = 5$ ; rangée de devant : $2 + 1 + 1 = 4$}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte pile par pile.** Un cube est toujours posé sur le sol ou sur un autre cube : sous le dessus d'une pile, il y a tous les cubes de la pile, même ceux qu'on ne voit pas.",
+					"{{T}}.",
+					"En tout : $\\textcolor{{{color:primary.0}}}{{{N}}}$ cubes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Une rangée : 2 + 3 + 1 + 4 + 2 = 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "4",
+				"f": "2"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une pile = un cube",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "4",
+				"f": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux rangées : 9 + 4 = 13",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2",
+				"d": "1",
+				"f": "2",
+				"g": "1"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seulement les cubes de devant",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2",
+				"d": "1",
+				"f": "2",
+				"g": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Escalier 3 2 1 / 3 2 1 : 12",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"H": "3 2 1 / 3 2 1",
+				"N": "12",
+				"T": "Rangée du fond : $3 + 2 + 1 = 6$ ; rangée de devant : $3 + 2 + 1 = 6$"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un cube de moins (un caché oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"H": "3 2 1 / 3 2 1",
+				"N": "12",
+				"T": "Rangée du fond : $3 + 2 + 1 = 6$ ; rangée de devant : $3 + 2 + 1 = 6$"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Escalier 3 2 1 / 2 1 0 / 1 0 0 : 10",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"H": "3 2 1 / 2 1 0 / 1 0 0",
+				"N": "10",
+				"T": "Rangée du fond : $3 + 2 + 1 = 6$ ; rangée du milieu : $2 + 1 + 0 = 3$ ; rangée de devant : $1 + 0 + 0 = 1$"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un cube de moins (un caché oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"H": "3 2 1 / 2 1 0 / 1 0 0",
+				"N": "10",
+				"T": "Rangée du fond : $3 + 2 + 1 = 6$ ; rangée du milieu : $2 + 1 + 0 = 3$ ; rangée de devant : $1 + 0 + 0 = 1$"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Escalier 2 2 2 / 2 2 1 / 2 1 1 : 15",
+			"variationIndex": 2,
+			"variables": {
+				"k": "7",
+				"H": "2 2 2 / 2 2 1 / 2 1 1",
+				"N": "15",
+				"T": "Rangée du fond : $2 + 2 + 2 = 6$ ; rangée du milieu : $2 + 2 + 1 = 5$ ; rangée de devant : $2 + 1 + 1 = 4$"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un cube de moins (un caché oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "7",
+				"H": "2 2 2 / 2 2 1 / 2 1 1",
+				"N": "15",
+				"T": "Rangée du fond : $2 + 2 + 2 = 6$ ; rangée du milieu : $2 + 2 + 1 = 5$ ; rangée de devant : $2 + 1 + 1 = 4$"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

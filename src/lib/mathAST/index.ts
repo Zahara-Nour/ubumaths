@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { MathAST, isVariable, mapNode, withMetadata } from '$lib/mathAST';
+ * import { MathAST, isVariable, mapNode, withMetadata } from '#lib/mathAST/index.ts';
  *
  * // Create expression: x^2 + 3x - 5 = 0
  * const ast = MathAST.equals(
@@ -777,13 +777,6 @@ export type {
 	ComputeDomainOptions,
 	Bindings as DomainBindings
 } from './domain';
-
-// =============================================================================
-// Parse Cache
-// =============================================================================
-
-export { ParseCache } from './cache';
-export type { CacheStats } from './cache';
 
 // =============================================================================
 // Security

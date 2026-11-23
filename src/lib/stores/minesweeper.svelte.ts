@@ -1,13 +1,13 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import { createLogger } from '$lib/utils/logger';
-import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
-import { toaster } from '$lib/stores/toaster.svelte';
-import { modalStack } from '$lib/stores/modalStack.svelte';
-import VictoryModal from '$lib/components/game/minesweeper/VictoryModal.svelte';
-import DefeatModal from '$lib/components/game/minesweeper/DefeatModal.svelte';
+import type { Database, Json } from '#lib/types/database.ts';
+import type { StudentVipCards } from '#lib/types/vip-card.ts';
+import { createLogger } from '#lib/utils/logger.ts';
+import { countAvailableConsumableUses } from '#lib/utils/vip-cards.ts';
+import { toaster } from '#lib/stores/toaster.svelte.ts';
+import { modalStack } from '#lib/stores/modalStack.svelte.ts';
+import VictoryModal from '#lib/components/game/minesweeper/VictoryModal.svelte';
+import DefeatModal from '#lib/components/game/minesweeper/DefeatModal.svelte';
 import type {
 	GameState,
 	CellState,
@@ -17,10 +17,10 @@ import type {
 	DatabaseGameStatus,
 	RewardBreakdown,
 	TournamentGameStartResponse
-} from '$lib/types/minesweeper';
-import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
-import TournamentVictoryModal from '$lib/components/game/minesweeper/TournamentVictoryModal.svelte';
-import TournamentDefeatModal from '$lib/components/game/minesweeper/TournamentDefeatModal.svelte';
+} from '#lib/types/minesweeper.ts';
+import { DIFFICULTY_CONFIGS } from '#lib/types/minesweeper.ts';
+import TournamentVictoryModal from '#lib/components/game/minesweeper/TournamentVictoryModal.svelte';
+import TournamentDefeatModal from '#lib/components/game/minesweeper/TournamentDefeatModal.svelte';
 
 const logger = createLogger('minesweeper.svelte.ts');
 
@@ -104,7 +104,7 @@ export interface UnlockedAchievement {
  * @example
  * ```ts
  * import { onDestroy } from 'svelte';
- * import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
+ * import { minesweeperStore } from '#lib/stores/minesweeper.svelte.ts';
  *
  * // Initialize with user (null for public)
  * minesweeperStore.init(supabase, user);
@@ -539,7 +539,7 @@ class MinesweeperStore {
 	 * @returns GridStateDTO format for API/database
 	 * @throws Error if DTO is invalid (defense in depth)
 	 */
-	private gridToDTO(grid: CellState[][]): import('$lib/types/minesweeper').GridStateDTO {
+	private gridToDTO(grid: CellState[][]): import('#lib/types/minesweeper.ts').GridStateDTO {
 		// Build arrays from grid (source of truth)
 		const mines: [number, number][] = [];
 		const revealed: [number, number][] = [];
@@ -639,7 +639,9 @@ class MinesweeperStore {
 	 * GridStateDTO.adjacentCounts (Record<string, number>) is not directly
 	 * assignable to Json, so we spread through a Json-typed structure.
 	 */
-	private gridStateToJson(dto: import('$lib/types/minesweeper').GridStateDTO): Json {
+	private gridStateToJson(
+		dto: import('#lib/types/minesweeper.ts').GridStateDTO
+	): NonNullable<Json> {
 		const { adjacentCounts, ...rest } = dto;
 		const jsonCounts: { [key: string]: Json } = {};
 		for (const [k, v] of Object.entries(adjacentCounts)) {
@@ -651,7 +653,7 @@ class MinesweeperStore {
 	/**
 	 * Convert a Json value from the database back to GridStateDTO.
 	 */
-	private jsonToGridStateDTO(json: Json): import('$lib/types/minesweeper').GridStateDTO {
+	private jsonToGridStateDTO(json: Json): import('#lib/types/minesweeper.ts').GridStateDTO {
 		const obj = json as {
 			rows: number;
 			cols: number;
@@ -669,7 +671,7 @@ class MinesweeperStore {
 	 * @param dto - GridStateDTO from API/database
 	 * @returns Internal grid representation
 	 */
-	private dtoToGrid(dto: import('$lib/types/minesweeper').GridStateDTO): CellState[][] {
+	private dtoToGrid(dto: import('#lib/types/minesweeper.ts').GridStateDTO): CellState[][] {
 		const grid: CellState[][] = [];
 		const mineSet = new Set(dto.mines.map(([r, c]) => `${r},${c}`));
 		const revealedSet = new Set(dto.revealed.map(([r, c]) => `${r},${c}`));
@@ -1887,7 +1889,7 @@ class MinesweeperStore {
 					// Build update payload (exclude time_seconds - it's server-controlled)
 					// The complete_minesweeper_game() function sets time_seconds when game ends
 					const updatePayload: {
-						grid_state: Json;
+						grid_state: NonNullable<Json>;
 						status: DatabaseGameStatus;
 						flags_used: number;
 						cells_revealed: number;
@@ -2798,7 +2800,7 @@ class MinesweeperStore {
 			seed: string;
 			game_number: number;
 			started_at: string;
-			grid_state: import('$lib/types/minesweeper').GridStateDTO;
+			grid_state: import('#lib/types/minesweeper.ts').GridStateDTO;
 			time_seconds: number | null;
 		}
 	): void {

@@ -30,9 +30,6 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Puissances",
-		"domain": "Apprivoiser",
-		"subdomain": "Puissances de 10",
 		"level": 3,
 		"status": "draft",
 		"delay": 20,

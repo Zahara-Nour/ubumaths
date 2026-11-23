@@ -1,10 +1,8 @@
 {
+	"id": "c3b236fc-8000-4111-950c-c98f6d788abd",
 	"title": "Le rang en chiffres (jusqu'à vingtième)",
 	"description": "Lire un rang écrit en lettres : quatorzième → place numéro 14",
 	"grades": ["CP"],
-	"theme": "Entiers",
-	"domain": "Apprivoiser",
-	"subdomain": "Ordinaux",
 	"level": 2,
 	"delay": 30,
 	"status": "draft",

@@ -13,7 +13,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcResult, type CalcSession } from '../calcul';
 
 function line(input: string): Extract<CalcResult, { kind: 'calcul' | 'commande' }> {
@@ -157,21 +157,68 @@ describe('revue du 2026-10-26 : une réécriture qui rétrécit le domaine passe
 	});
 });
 
-// Plusieurs lettres : on ne voit pas si le domaine rétréci garde un point
-// (revue Opus du § 4.2) — ni simplification, ni bouton, comme avant
+// Plusieurs lettres (§ 5, L5) : la ligne garde l'écriture ; le bouton vient
+// quand chaque condition d'après porte sur une lettre (`x > 0 et y > 0`) et
+// dit celles d'avant ; sinon (revue Opus du § 4.2) ni simplification ni bouton
 describe('plusieurs lettres : une réécriture qui rétrécit le domaine n’a pas lieu', () => {
-	it.each(['.simplifier ln(x*y)', '.simplifier ln(x/y)'])('%s', (input) => {
-		const result = line(input);
+	it.each(['.simplifier ln(x*y)', '.simplifier ln(x/y)'])(
+		'%s : « pour x > 0 et y > 0 »',
+		(input) => {
+			const result = line(input);
+			expect(result.alternative?.label).toBe('Simplifier pour x > 0 et y > 0');
+			expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)+');
+			expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)-');
+		}
+	);
+
+	it('.simplifier ln((x+y)z) : x + y > 0 porte sur deux lettres, ni bouton ni simplification', () => {
+		const result = line('.simplifier ln((x+y)z)');
 		expect(result.alternative).toBeUndefined();
-		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)+');
-		expect(flat(result.latex)).not.toContain('\\ln\\left(x\\right)-');
+		expect(flat(result.latex)).not.toContain('+\\ln\\left(z\\right)');
 	});
 });
 
-describe('revue du 2026-10-26 : un décimal tapé reste décimal', () => {
-	it('0,5x/x → « 0,5, pour x ≠ 0 »', () => {
+// Revue du 2026-10-26 (« un décimal tapé reste décimal ») revue par Q9, rouverte
+// en entier le 2026-11-02 : une barre est une fraction, même sur une lettre
+describe('un décimal sous une barre à lettre se chasse (Q9)', () => {
+	it('0,5x/x → « 1/2, pour x ≠ 0 »', () => {
 		expect(flat(line('0,5x/x').alternative?.latex)).toBe(
-			flat('0{,}5\\text{,}\\quad\\text{pour }x\\neq0')
+			flat('\\dfrac{1}{2}\\text{,}\\quad\\text{pour }x\\neq0')
 		);
+	});
+});
+
+// tidy-conditions, PR D : le moteur pédagogique développait `ln(xy)` et
+// s'arrêtait sur `ln x + ln y − (ln x + ln y)` (bouton) ; `ln(2x) − ln(2x)`
+// laissait cette écriture sur la ligne, sans bouton
+describe('une différence de deux logarithmes égaux : le bouton rend 0', () => {
+	it.each([
+		['.simplifier ln(xy)-ln(xy)', 'Simplifier pour xy > 0', '0\\text{,}\\quad\\text{pour }xy>0'],
+		['.simplifier ln(2x)-ln(2x)', 'Simplifier pour x > 0', '0\\text{,}\\quad\\text{pour }x>0'],
+		['.simplifier ln(2x)-ln(2x)+1', 'Simplifier pour x > 0', '1\\text{,}\\quad\\text{pour }x>0'],
+		[
+			'.simplifier ln(x(x+1))-ln(x(x+1))',
+			'Simplifier pour x < −1 ou x > 0',
+			'0\\text{,}\\quad\\text{pour }x<-1\\text{ ou }x>0'
+		],
+		['ln(xy)-ln(xy)', 'Simplifier pour xy > 0', '0\\text{,}\\quad\\text{pour }xy>0']
+	])('%s : « %s » → %s', (input, label, latex) => {
+		const result = line(input);
+		expect(result.latex).not.toContain('\\left( \\ln');
+		expect(result.alternative?.label).toBe(label);
+		expect(flat(result.alternative?.latex)).toBe(flat(latex));
+	});
+
+	it('.simplifier ln(x/y)-ln(x/y) : 0', () => {
+		expect(flat(line('.simplifier ln(x/y)-ln(x/y)').alternative?.domain?.answer)).toBe('0');
+	});
+
+	it('témoin : .simplifier 2ln(xy)-ln(xy) garde ses étapes', () => {
+		const { alternative } = line('.simplifier 2ln(xy)-ln(xy)');
+		expect(alternative?.label).toBe('Simplifier pour x > 0 et y > 0');
+		expect(alternative?.steps?.map((s) => s.rule)).toEqual([
+			'ln-product',
+			'tidy-collect-like-terms'
+		]);
 	});
 });

@@ -15,7 +15,7 @@
  * AUTHENTICATION:
  * --------------
  * This layout runs BEFORE any child route loads, ensuring:
- * 1. User is authenticated (redirects to /login if not)
+ * 1. User is authenticated (redirects to /auth/login if not)
  * 2. User has a valid profile in the database
  * 3. Profile data (including role) is available to all child routes
  *
@@ -28,13 +28,13 @@
  *
  * USAGE IN CHILD ROUTES:
  * ---------------------
- * Child routes can access authenticated user and profile via parent():
+ * Server-side child loads read the authenticated user and profile from locals
+ * (set by userProfileHandle in hooks.server.ts); parent() also returns them:
  *
  * ```typescript
- * export const load: PageServerLoad = async ({ parent }) => {
- *   const { user, profile } = await parent();
+ * export const load: PageServerLoad = async ({ locals }) => {
+ *   const { user, profile } = locals;
  *   // user and profile are guaranteed to exist here
- *   // No need to call requireAuth() again!
  * };
  * ```
  *
@@ -48,10 +48,10 @@
 
 import type { LayoutServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/auth';
-import { createServerLogger } from '$lib/utils/logger';
-import { logError } from '$lib/server/errorMonitoring';
-import { getConsentStatus, type ConsentProfile } from '$lib/utils/consent';
+import { requireUserOrRedirect } from '#lib/server/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { logError } from '#lib/server/errorMonitoring.ts';
+import { getConsentStatus, type ConsentProfile } from '#lib/utils/consent.ts';
 
 const logger = createServerLogger('(protected)/+layout.server.ts');
 
@@ -62,8 +62,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	logger.info('🎨 [PROTECTED LAYOUT SERVER] Exécution');
 
 	// Require authentication for ALL routes in (protected) group
-	// If user is null, requireAuth() throws a redirect to /login
-	requireAuth(user);
+	// If user is null, requireUserOrRedirect() throws a redirect to /auth/login
+	requireUserOrRedirect(user);
 
 	// Verify profile exists
 	// Every authenticated user should have a profile

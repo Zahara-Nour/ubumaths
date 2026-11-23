@@ -1,10 +1,8 @@
 {
+	"id": "349e1be5-65c5-49ce-b8e5-627a0c4a0bf5",
 	"title": "Déterminer la raison d'une suite géométrique",
 	"description": "À partir de deux termes consécutifs, raison fractionnaire",
 	"grades": ["1_SPE"],
-	"theme": "Suites",
-	"domain": "Suites géométriques",
-	"subdomain": "Déterminer la raison",
 	"level": 2,
 	"status": "draft",
 	"delay": 30,

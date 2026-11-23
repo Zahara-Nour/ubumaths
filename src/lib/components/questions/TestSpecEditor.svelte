@@ -20,21 +20,23 @@
 		ConstraintId,
 		SharedVariationDefaults,
 		QuestionVariable
-	} from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { TestSpecResult } from '$lib/questions/test-spec-runner';
-	import { getRootVariableNames } from '$lib/questions/generator/test-instance-builder';
-	import { readChoiceCase, statementCaseKinds } from '$lib/questions/choice-case-editor';
-	import { readWorkFigureCases } from '$lib/questions/work-figure-editor';
-	import { formatChoiceAnswer, parseChoiceAnswer } from '$lib/questions/choice-case';
+	} from '#lib/questions/types.ts';
+	import type { TestSpecResult } from '#lib/questions/test-spec-runner.ts';
+	import { getRootVariableNames } from '#lib/questions/generator/test-instance-builder.ts';
+	import { readChoiceCase, statementCaseKinds } from '#lib/questions/choice-case-editor.ts';
+	import { readWorkFigureCases } from '#lib/questions/work-figure-editor.ts';
+	import { formatChoiceAnswer, parseChoiceAnswer } from '#lib/questions/choice-case.ts';
+	import { choiceLetter } from '#lib/questions/choices.ts';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import MathField from '$lib/components/MathField.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import MathField from '#lib/components/MathField.svelte';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
 	import { Plus, Trash2, Play, Check, X, Copy, Loader2 } from '@lucide/svelte';
 
 	interface Props {
@@ -106,14 +108,6 @@
 		return allVars.filter((v) => rootNames.has(v.name));
 	});
 
-	// Determine question type from variation
-	let questionType = $derived(
-		getQuestionType({
-			choices: variations[editSpec.variationIndex ?? 0]?.choices,
-			shared
-		})
-	);
-
 	// Count blanks from variation
 	let blankCount = $derived.by(() => {
 		const variation = variations[editSpec.variationIndex ?? 0];
@@ -170,12 +164,6 @@
 	function saveSpec() {
 		if (!editSpec.description.trim()) return;
 		const spec: TestSpec = JSON.parse(JSON.stringify(editSpec));
-		// Clean up: remove empty answers/selectedChoices
-		if (questionType === 'fill_in_blanks') {
-			delete spec.selectedChoices;
-		} else {
-			delete spec.answers;
-		}
 		if (editingIndex !== null) {
 			testSpecs[editingIndex] = spec;
 		} else {
@@ -220,8 +208,6 @@
 			variations,
 			options,
 			grades: ['6'],
-			theme: 'Test',
-			domain: 'Test',
 			level: 1
 		};
 	}
@@ -229,7 +215,7 @@
 	async function runSpec(index: number) {
 		isRunning = true;
 		try {
-			const { runTestSpec } = await import('$lib/questions/test-spec-runner');
+			const { runTestSpec } = await import('#lib/questions/test-spec-runner.ts');
 			const result = runTestSpec(buildTemplateForTest(), testSpecs[index]);
 			results.set(index, result);
 		} finally {
@@ -240,7 +226,7 @@
 	async function runAll() {
 		isRunning = true;
 		try {
-			const { runTestSpec } = await import('$lib/questions/test-spec-runner');
+			const { runTestSpec } = await import('#lib/questions/test-spec-runner.ts');
 			const templateForTest = buildTemplateForTest();
 			results.clear();
 			for (let i = 0; i < testSpecs.length; i++) {
@@ -399,7 +385,7 @@
 				{/if}
 
 				<!-- Answers (fill-in-blanks) -->
-				{#if questionType === 'fill_in_blanks' && blankCount > 0}
+				{#if blankCount > 0}
 					<div>
 						<Label>Reponses (LaTeX)</Label>
 						<div class="space-y-1">
@@ -416,12 +402,20 @@
 									<div class="flex flex-wrap gap-3 rounded-md border p-2">
 										<span class="text-sm text-muted-foreground">Case {i + 1} : choix</span>
 										{#each choices as choice, c (c)}
+											<!-- Choix rendu comme dans l'aperçu ; un bloc garde son rendu de bloc -->
 											<MyCheckbox
 												checked={picked.includes(c)}
 												onCheckedChange={() => toggleSpecChoice(i, choices.length, c)}
-												label="{String.fromCharCode(65 + c)}. {choice}"
-												labelClass="font-mono"
-											/>
+											>
+												<span class="flex items-start gap-1">
+													<span>{choiceLetter(c)}.</span>
+													{#if choice.trimStart().startsWith('```')}
+														<MarkdownRenderer content={choice} />
+													{:else}
+														<InlineMarkdown content={choice} />
+													{/if}
+												</span>
+											</MyCheckbox>
 										{/each}
 									</div>
 								{:else}
@@ -438,25 +432,6 @@
 								{/if}
 							{/each}
 						</div>
-					</div>
-				{/if}
-
-				<!-- Selected choices (QCM) -->
-				{#if questionType === 'multiple_choice'}
-					<div>
-						<Label>Choix selectionnes (indices, ex: 0, 1)</Label>
-						<Input
-							value={editSpec.selectedChoices?.join(', ') ?? ''}
-							oninput={(e: Event) => {
-								const val = (e.target as HTMLInputElement).value;
-								editSpec.selectedChoices = val
-									.split(',')
-									.map((s) => parseInt(s.trim(), 10))
-									.filter((n) => !isNaN(n));
-							}}
-							placeholder="0"
-							class="h-8 font-mono"
-						/>
 					</div>
 				{/if}
 

@@ -8,11 +8,11 @@
 	 * Cf. docs/systeme/srs.md §5.2
 	 */
 
-	import { notionHref, studySessionHref } from '$lib/navigation/return-links';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { notionHref, studySessionHref } from '#lib/navigation/return-links.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { AlertCircle, RefreshCw, Clock, CheckCircle, PlayCircle, Target } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { ProgrammeBadge } from './+page.server';
@@ -38,8 +38,8 @@
 	};
 
 	const sectionStateFilter: Record<ProgrammeBadge, string> = {
-		a_remedier: 'learning,relearning',
-		a_renforcer: 'review',
+		a_remedier: 'relearning',
+		a_renforcer: 'learning,review',
 		en_apprentissage: '',
 		acquise_en_memoire: ''
 	};
@@ -75,7 +75,8 @@
 		<div class="flex-1">
 			<h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Programme</h1>
 			<p class="text-muted-foreground">
-				Tes capacités à retravailler — mises à jour automatiquement après chaque entraînement.
+				Tes points du programme à retravailler — mises à jour automatiquement après chaque
+				entraînement.
 			</p>
 			<div class="mt-2 text-sm text-muted-foreground">
 				{data.totalCards} carte{data.totalCards > 1 ? 's' : ''} au total
@@ -87,7 +88,7 @@
 		<Card.Root>
 			<Card.Content class="py-12 text-center">
 				<p class="mb-4 text-muted-foreground">
-					Tu n'as pas encore travaillé de capacité tagué dans le référentiel.<br />
+					Tu n'as pas encore travaillé de point du programme.<br />
 					Va t'entraîner pour faire apparaître tes premières cartes ici.
 				</p>
 				<Button href="/dashboard/student/progression?onglet=objectifs">Voir ma progression</Button>

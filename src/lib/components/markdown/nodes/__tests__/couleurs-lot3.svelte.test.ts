@@ -11,12 +11,12 @@ import NumberLine from '../NumberLine.svelte';
 import TrigCircle from '../TrigCircle.svelte';
 import VariationTable from '../VariationTable.svelte';
 import ProbabilityTree from '../ProbabilityTree.svelte';
-import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
-import { parseProbTreeContent } from '$lib/ubumark/parser/probability-tree-parser';
-import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
-import type { NumberLineNode } from '$lib/ubumark/types/number-line';
-import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
+import { parseNumberLineContent } from '#lib/ubumark/parser/number-line-parser.ts';
+import { parseTrigCircleContent } from '#lib/ubumark/parser/trig-circle-parser.ts';
+import { parseProbTreeContent } from '#lib/ubumark/parser/probability-tree-parser.ts';
+import { parseVariationTableContent } from '#lib/ubumark/parser/variation-table-parser.ts';
+import type { NumberLineNode } from '#lib/ubumark/types/number-line.ts';
+import type { TrigCircleNode } from '#lib/ubumark/types/trig-circle.ts';
 
 // Valeurs attendues (app.css)
 const BACKGROUND = { light: 'rgb(250, 250, 250)', dark: 'rgb(38, 38, 36)' };
@@ -84,14 +84,14 @@ async function renderTrig(block: string, showErrors = false) {
 }
 
 describe('Droite graduée', () => {
-	it('points ouverts : remplis de la couleur du fond, dans les deux modes', async () => {
+	it('bornes exclues : crochets de la couleur du segment, dans les deux modes', async () => {
 		const c = await renderNumberLine(
 			numberLine(['start: 0', 'end: 10', 'step: 1', 'segments: ]1, 3[ bleu'])
 		);
-		const open = c.querySelectorAll('circle.nl-endpoint-open');
-		expect(open).toHaveLength(2);
-		expect(inBothModes(() => getComputedStyle(open[0]).fill)).toEqual(BACKGROUND);
-		expect(inBothModes(() => getComputedStyle(open[0]).stroke)).toEqual(BLUE);
+		const brackets = c.querySelectorAll('path.nl-bracket');
+		expect(brackets).toHaveLength(2);
+		expect(inBothModes(() => getComputedStyle(brackets[0]).stroke)).toEqual(BLUE);
+		expect(getComputedStyle(brackets[0]).fill).toBe('none');
 	});
 
 	it('`bleu` et `blue` : le bleu de la palette, qui suit le thème', async () => {

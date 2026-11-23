@@ -9,13 +9,13 @@
 -->
 
 <script lang="ts">
-	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
-	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import { worksheetPdfFileName } from '#lib/worksheets/pdf-file-name.ts';
+	import { WORKSHEET_TYPE_LABELS } from '#lib/utils/worksheet-type-labels.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import BackLink from '#lib/components/navigation/BackLink.svelte';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
 	import {
 		Calendar,
 		CheckCircle,
@@ -28,29 +28,39 @@
 		Download,
 		Loader2
 	} from '@lucide/svelte';
-	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
+	import { generateAndDownloadPdf } from '#lib/typst/pdf-generator.ts';
 	import {
 		generateStudentWorksheetTypst,
 		type StudentPdfEnding
-	} from '$lib/worksheets/student-worksheet-typst';
-	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
-	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
-	import type { TextSize } from '$lib/typst/text-size';
+	} from '#lib/worksheets/student-worksheet-typst.ts';
+	import { fallbackWarning } from '#lib/typst/compiler/correction-fonts-compiler.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { StudentWorksheetView, WorksheetType } from '#lib/types/worksheets.ts';
+	import TextSizeSelect from '#lib/components/worksheets/TextSizeSelect.svelte';
+	import EasyReadingPdfCheckbox from '#lib/components/worksheets/EasyReadingPdfCheckbox.svelte';
+	import type { TextSize } from '#lib/typst/text-size.ts';
 
 	interface Props {
 		worksheet: StudentWorksheetView;
 		/** Taille du texte enregistrée pour l'élève (accessibilité) */
 		textSize?: TextSize;
+		/** Lecture facilitée enregistrée pour l'élève (PDF en Luciole) */
+		easyReading?: boolean;
 	}
 
-	let { worksheet, textSize: savedTextSize = 'normal' }: Props = $props();
+	let {
+		worksheet,
+		textSize: savedTextSize = 'normal',
+		easyReading: savedEasyReading = false
+	}: Props = $props();
 
 	// L'élève peut la changer (dérivé réassignable : le choix l'emporte jusqu'au
 	// prochain chargement) ; enregistrée pour toutes ses fiches
 	let textSize = $derived<TextSize>(savedTextSize);
 	let isSavingTextSize = $state(false);
+	// Même principe pour la lecture facilitée
+	let easyReading = $derived(savedEasyReading);
+	let isSavingEasyReading = $state(false);
 
 	let readOnly = $derived(worksheet.read_only === true);
 
@@ -85,7 +95,7 @@
 
 		const kind = ending === 'none' ? 'worksheet' : ending;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(worksheet, ending, { textSize }),
+			() => generateStudentWorksheetTypst(worksheet, ending, { textSize, easyReading }),
 			worksheetPdfFileName(worksheet.title, kind)
 		);
 
@@ -117,6 +127,31 @@
 			toaster.error("La taille du texte n'a pas pu être enregistrée");
 		} finally {
 			isSavingTextSize = false;
+		}
+	}
+
+	/** Allume ou éteint la lecture facilitée de toutes les fiches de l'élève */
+	async function handleEasyReadingChange(checked: boolean) {
+		const previous = easyReading;
+		easyReading = checked;
+		isSavingEasyReading = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ easyReading: checked })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success(
+				checked
+					? 'Lecture facilitée enregistrée pour toutes tes fiches'
+					: 'Lecture facilitée retirée de toutes tes fiches'
+			);
+		} catch {
+			easyReading = previous;
+			toaster.error("La lecture facilitée n'a pas pu être enregistrée");
+		} finally {
+			isSavingEasyReading = false;
 		}
 	}
 
@@ -237,6 +272,12 @@
 					value={textSize}
 					onchange={handleTextSizeChange}
 					disabled={isSavingTextSize}
+				/>
+
+				<EasyReadingPdfCheckbox
+					checked={easyReading}
+					onchange={handleEasyReadingChange}
+					disabled={isSavingEasyReading}
 				/>
 
 				<!-- PDF Download Button -->

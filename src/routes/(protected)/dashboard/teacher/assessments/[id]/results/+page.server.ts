@@ -1,19 +1,21 @@
 /**
  * Résultats d'une évaluation (professeur) : les séances sont lues par
- * `test_sessions.evaluation_id`.
+ * `test_sessions.evaluation_id`. Le bilan par question et par notion porte sur
+ * les élèves du tableau (mode test compris) et ne fait jamais échouer la page.
  */
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	computeEvaluationStatistics,
 	EvaluationError,
 	getEvaluation,
 	getEvaluationResults
-} from '$lib/server/evaluations';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import { validateUuidParam } from '$lib/server/validation/params';
+} from '#lib/server/evaluations.ts';
+import { getEvaluationBreakdown } from '#lib/server/evaluation-breakdown.ts';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
@@ -30,10 +32,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 		const results = await getEvaluationResults(locals.supabase, evaluation, isTestMode);
 
+		const breakdown = await getEvaluationBreakdown(
+			locals.supabase,
+			evaluation,
+			results.map((r) => r.student_id)
+		);
+
 		return {
 			evaluation,
 			results,
-			statistics: computeEvaluationStatistics(evaluation.id, results)
+			statistics: computeEvaluationStatistics(evaluation.id, results),
+			breakdown
 		};
 	} catch (e) {
 		if (e instanceof EvaluationError) throw error(e.status, e.message);

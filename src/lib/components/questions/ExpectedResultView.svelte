@@ -9,7 +9,8 @@
 	- solution `= 8` encadrée, énoncé rempli (solutions en vert), « Ta réponse : »
 	  (chaque case colorée selon son statut), QCM, remarques, attendu seul,
 	  « Tu n'as rien répondu. » ; case « figure » : la figure (`FigureAnswer`) ;
-	  case à construire : le plan verrouillé (`BuildAnswer`) ;
+	  case à construire : le plan verrouillé (`BuildAnswer`) ; tableau de signes à
+	  compléter : le tableau, chaque cellule cachée corrigée (`SignTableAnswer`) ;
 	  figure de travail : en dernier, traits gris, sans verdict.
 
 	Le statut n'est jamais porté par la couleur seule : chaque ligne colorée a son
@@ -23,17 +24,17 @@
 -->
 <script lang="ts">
 	import { Check, X, TriangleAlert, Info } from '@lucide/svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import { MarkdownRenderer } from '#lib/components/markdown/index.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import FigureAnswer from './FigureAnswer.svelte';
 	import BuildAnswer from './BuildAnswer.svelte';
+	import SignTableAnswer from './SignTableAnswer.svelte';
 	import ChoiceCasesScope from './ChoiceCasesScope.svelte';
-	import ChoiceList from '$lib/components/markdown/nodes/ChoiceList.svelte';
 	import type {
 		ExpectedFill,
 		ExpectedResult,
 		ExpectedStatus
-	} from '$lib/questions/expected-result';
+	} from '#lib/questions/expected-result.ts';
 	import {
 		EXPECTED_STATUS_LABEL,
 		alignedComparisonMarkdown,
@@ -42,7 +43,7 @@
 		filledMarkdown,
 		remarkSegments,
 		solutionMarkdown
-	} from '$lib/questions/expected-result-markdown';
+	} from '#lib/questions/expected-result-markdown.ts';
 
 	interface Props {
 		result: ExpectedResult;
@@ -137,8 +138,6 @@
 				<MarkdownRenderer content={filledMarkdown(line.markdown, line.fills)} />
 				<p class="text-xs text-muted-foreground" data-fill-statuses>{fillStatuses(line.fills)}</p>
 			</div>
-		{:else if line.kind === 'choices'}
-			<ChoiceList corrected multiple={line.multiple} items={line.choices} />
 		{:else if line.kind === 'remark'}
 			<p class="remark" data-kind="remark">
 				<Info class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -183,8 +182,18 @@
 					source={line.source}
 					answer={line.answer}
 					status={line.status}
+					answers={line.answers}
+					expected={line.expected}
 				/>
 				{#if line.answer !== null}
+					<p class="flex justify-center">{@render statusTag(line.status)}</p>
+				{/if}
+			</div>
+		{:else if line.kind === 'sign-table'}
+			<!-- Tableau de signes à compléter : chaque cellule cachée dit sa réponse et son statut -->
+			<div class="space-y-1" data-kind="sign-table" data-status={line.status}>
+				<SignTableAnswer source={line.source} first={line.index} cells={line.cells} />
+				{#if line.status !== 'solution'}
 					<p class="flex justify-center">{@render statusTag(line.status)}</p>
 				{/if}
 			</div>

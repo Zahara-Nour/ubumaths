@@ -1,0 +1,382 @@
+{
+	"id": "c04b78f8-04ab-46e9-b8c9-cc330fb84b19",
+	"title": "L'égalité de la division euclidienne",
+	"description": "Compléter l'égalité N = (d × q) + r, corriger une égalité juste dont le reste dépasse le diviseur (247 = 9 × 26 + 13), nommer dividende, diviseur, quotient et reste (pièges : reste plus grand que le diviseur, quotient ou reste recopiés)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète l'égalité de la division euclidienne de ${{N}}$ par ${{d}}$.\n\n$${{N}}=({{d}}\\times ?)+?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..99"
+				},
+				{
+					"name": "q",
+					"expression": "2..999"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N >= 100", "N <= 9999", "mod(d,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-1}}",
+							"message": "Avec ${{eval:q-1}}$, le reste serait ${{eval:r+d}}$, plus grand que ${{d}}$ : on peut encore mettre ${{d}}$ une fois de plus.",
+							"label": "Quotient trop petit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+d}}",
+							"message": "Le reste ${{eval:r+d}}$ est plus grand que le diviseur ${{d}}$ : on peut encore enlever ${{d}}$.",
+							"label": "Reste plus grand que le diviseur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"On cherche le plus grand multiple de ${{d}}$ qui ne dépasse pas ${{N}}$ : ${{d}}\\times {{q}}={{eval:d*q}}$, et ${{N}}-{{eval:d*q}}={{r}}$, plus petit que ${{d}}$.",
+					"$${{N}}=({{d}}\\times \\textcolor{{{color:primary.0}}}{ {{q}} })+\\textcolor{{{color:primary.1}}}{ {{r}} }$$"
+				]
+			},
+			"hint": "Cherche combien de fois ${{d}}$ tient dans ${{N}}$ ; ce qui reste doit être plus petit que ${{d}}$."
+		},
+		{
+			"statement": "L'égalité $${{N}}=({{d}}\\times {{eval:q-m}})+{{eval:r+m*d}}$$ est juste, mais ce n'est pas celle de la division euclidienne de ${{N}}$ par ${{d}}$. Écris la bonne.\n\n$${{N}}=({{d}}\\times ?)+?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..99"
+				},
+				{
+					"name": "q",
+					"expression": "3..999"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "m",
+					"expression": "1|2"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N >= 100", "N <= 9999", "mod(d,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:q-m}}",
+							"message": "Le reste ${{eval:r+m*d}}$ est plus grand que ${{d}}$ : le quotient doit être plus grand.",
+							"label": "Quotient recopié"
+						},
+						{
+							"answer": "{{eval:q-m+1}}",
+							"message": "Avec ce quotient, le reste serait encore ${{eval:r+d}}$, plus grand que ${{d}}$ : on peut encore mettre ${{d}}$ une fois de plus.",
+							"label": "Diviseur enlevé une seule fois"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:r+m*d}}",
+							"message": "Le reste ${{eval:r+m*d}}$ est plus grand que le diviseur ${{d}}$ : ce n'est pas celui de la division euclidienne.",
+							"label": "Reste recopié"
+						},
+						{
+							"answer": "{{eval:r+(m-1)*d}}",
+							"message": "Le reste ${{eval:r+d}}$ est encore plus grand que ${{d}}$ : enlève encore ${{d}}$.",
+							"label": "Diviseur enlevé une seule fois"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le reste ${{eval:r+m*d}}$ est plus grand que le diviseur ${{d}}$ : on peut encore enlever ${{d}}$ {{if:m==1|une fois|deux fois}}, et le quotient augmente d'autant.",
+					"${{eval:r+m*d}}{{if:m==1|-{{d}}|-2\\times {{d}}}}={{r}}$ et ${{eval:q-m}}+{{m}}={{q}}$.",
+					"$${{N}}=({{d}}\\times \\textcolor{{{color:primary.0}}}{ {{q}} })+\\textcolor{{{color:primary.1}}}{ {{r}} }$$"
+				]
+			},
+			"hint": "Dans une division euclidienne, le reste est plus petit que le diviseur : compare ${{eval:r+m*d}}$ à ${{d}}$."
+		},
+		{
+			"statement": "L'égalité ci-dessous est celle d'une division euclidienne.\n\n$${{N}}=({{if:ordre==0|{{d}}\\times {{q}}|{{q}}\\times {{d}}}})+{{r}}$$\n\nQue représente le nombre ${{if:k==0|{{N}}|{{if:k==1|{{d}}|{{if:k==2|{{q}}|{{r}}}}}}}}$ ?\n\n```choix\n- le dividende\n- le diviseur\n- le quotient\n- le reste\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "12..99"
+				},
+				{
+					"name": "q",
+					"expression": "2..{{eval:d-2}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:q+1}}..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				},
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "ordre",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["N <= 9999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le reste est toujours plus petit que le diviseur. Ici, ${{r}}$ est plus petit que ${{d}}$ mais pas que ${{q}}$ : le diviseur est ${{d}}$, le quotient ${{q}}$.",
+					"${{N}}$ est le dividende, ${{d}}$ le diviseur, ${{q}}$ le quotient et ${{r}}$ le reste : le nombre ${{if:k==0|{{N}}|{{if:k==1|{{d}}|{{if:k==2|{{q}}|{{r}}}}}}}}$ est **{{if:k==0|le dividende|{{if:k==1|le diviseur|{{if:k==2|le quotient|le reste}}}}}}**."
+				]
+			},
+			"hint": "Le nombre seul à gauche du signe $=$ est celui qu'on divise ; le reste est toujours plus petit que le diviseur."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 1 247 = (23 × 54) + 5",
+			"variationIndex": 0,
+			"variables": {
+				"d": "23",
+				"q": "54",
+				"r": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["54", "5"]
+		},
+		{
+			"description": "a : quotient trop petit",
+			"variationIndex": 0,
+			"variables": {
+				"d": "23",
+				"q": "54",
+				"r": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec $53$, le reste serait $28$, plus grand que $23$ : on peut encore mettre $23$ une fois de plus."
+			},
+			"answers": ["53", "28"]
+		},
+		{
+			"description": "a : reste trop grand",
+			"variationIndex": 0,
+			"variables": {
+				"d": "23",
+				"q": "54",
+				"r": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le reste $28$ est plus grand que le diviseur $23$ : on peut encore enlever $23$."
+			},
+			"answers": ["54", "28"]
+		},
+		{
+			"description": "b : 247 = 9 × 26 + 13 → 27 et 4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"q": "27",
+				"r": "4",
+				"m": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["27", "4"]
+		},
+		{
+			"description": "b : quotient recopié",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"q": "27",
+				"r": "4",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le reste $13$ est plus grand que $9$ : le quotient doit être plus grand."
+			},
+			"answers": ["26", "4"]
+		},
+		{
+			"description": "b : reste recopié",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"q": "27",
+				"r": "4",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le reste $13$ est plus grand que le diviseur $9$ : ce n'est pas celui de la division euclidienne."
+			},
+			"answers": ["27", "13"]
+		},
+		{
+			"description": "b : m = 2, 247 = 9 × 25 + 22 → 27 et 4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"q": "27",
+				"r": "4",
+				"m": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["27", "4"]
+		},
+		{
+			"description": "b : m = 2, diviseur enlevé une fois (quotient)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"q": "27",
+				"r": "4",
+				"m": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec ce quotient, le reste serait encore $13$, plus grand que $9$ : on peut encore mettre $9$ une fois de plus."
+			},
+			"answers": ["26", "4"]
+		},
+		{
+			"description": "b : m = 2, diviseur enlevé une fois (reste)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"q": "27",
+				"r": "4",
+				"m": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le reste $13$ est encore plus grand que $9$ : enlève encore $9$."
+			},
+			"answers": ["27", "13"]
+		},
+		{
+			"description": "c : 176 = (23 × 7) + 15, 23 est le diviseur",
+			"variationIndex": 2,
+			"variables": {
+				"d": "23",
+				"q": "7",
+				"r": "15",
+				"ordre": "0",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "c : 23 pris pour le quotient",
+			"variationIndex": 2,
+			"variables": {
+				"d": "23",
+				"q": "7",
+				"r": "15",
+				"ordre": "0",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "c : 7 est le quotient (ordre inversé)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "23",
+				"q": "7",
+				"r": "15",
+				"ordre": "1",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "c : 15 est le reste",
+			"variationIndex": 2,
+			"variables": {
+				"d": "23",
+				"q": "7",
+				"r": "15",
+				"ordre": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "c : 176 est le dividende",
+			"variationIndex": 2,
+			"variables": {
+				"d": "23",
+				"q": "7",
+				"r": "15",
+				"ordre": "0",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		}
+	]
+}

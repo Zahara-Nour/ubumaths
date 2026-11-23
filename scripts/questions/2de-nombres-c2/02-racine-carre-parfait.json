@@ -1,0 +1,206 @@
+{
+	"id": "5ddd58db-f08b-44d4-bc9c-67ee47250ace",
+	"title": "Racine d'un carré parfait",
+	"description": "Calculer √144, √0,09, √0,0049 ou le nombre positif de carré 144 (pièges : √0,09 = 0,03, la réponse négative)",
+	"grades": ["2"],
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\sqrt{ {{eval:k^2}} }=?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{ {{eval:k^2}} }$ est le nombre **positif** dont le carré vaut ${{eval:k^2}}$.",
+					"${{k}}^2={{eval:k^2}}$, donc $\\sqrt{ {{eval:k^2}} }=\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$\\sqrt{ {{eval:k^2/10^(2*p);d}} }=?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3|4|5|6|7|8|9|11|12"
+				},
+				{
+					"name": "p",
+					"expression": "1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/10^p;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le nombre positif dont le carré vaut ${{eval:k^2/10^(2*p);d}}$.",
+					"${{eval:k/10^p;d}}^2={{eval:k/10^p;d}}\\times{{eval:k/10^p;d}}={{eval:k^2/10^(2*p);d}}$ : en élevant au carré, le nombre de chiffres après la virgule **double**.",
+					"Donc $\\sqrt{ {{eval:k^2/10^(2*p);d}} }=\\textcolor{{{color:primary.0}}}{{{eval:k/10^p;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre **positif** a pour carré ${{eval:k^2}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{k}}^2={{eval:k^2}}$ et ${{k}}$ est positif.",
+					"Le nombre cherché est $\\sqrt{ {{eval:k^2}} }=\\textcolor{{{color:primary.0}}}{{{k}}}$. ($-{{k}}$ a aussi pour carré ${{eval:k^2}}$, mais il est négatif.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√144 = 12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur : √144 = 72 (moitié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["72"]
+		},
+		{
+			"description": "Erreur : √144 = −12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-12"]
+		},
+		{
+			"description": "√0,09 = 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,3"]
+		},
+		{
+			"description": "Erreur : √0,09 = 0,03",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"p": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,03"]
+		},
+		{
+			"description": "√1,44 = 1,2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "12",
+				"p": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,2"]
+		},
+		{
+			"description": "√0,0049 = 0,07",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"p": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,07"]
+		},
+		{
+			"description": "Erreur : √0,0049 = 0,007",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,007"]
+		},
+		{
+			"description": "Carré 144 → 12",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Erreur : −12 (négatif)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-12"]
+		}
+	]
+}

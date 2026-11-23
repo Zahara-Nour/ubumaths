@@ -7,7 +7,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
 	import FloatingToolbar from './FloatingToolbar.svelte';
@@ -17,7 +17,7 @@
 	import FileDrawer from './FileDrawer.svelte';
 	import ContextMenu from './ContextMenu.svelte';
 	import TemplatePickerModal from './TemplatePickerModal.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '#lib/components/ui/button/index.ts';
 	import {
 		Plus,
 		ZoomIn,
@@ -33,7 +33,7 @@
 	import type { PageFormatKey } from '../types/document';
 	import type { TemplatePageData } from '../types/templates';
 	import { driveSyncService } from '../services/drive-sync';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { importImageFromClipboard } from '../utils/image-loader';
 
 	// ==========================================================================

@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { expressionToLatex } from '../math-utils';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 
 describe('expressionToLatex with genericFunctions', () => {
 	describe('custom syntax with default generic functions', () => {

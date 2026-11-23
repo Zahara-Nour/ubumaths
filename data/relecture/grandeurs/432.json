@@ -164,9 +164,6 @@
 			}
 		],
 		"grades": ["6"],
-		"theme": "Grandeurs",
-		"domain": "Périmètres",
-		"subdomain": "Périmètre d'un carré",
 		"level": 1,
 		"status": "draft",
 		"delay": 15,

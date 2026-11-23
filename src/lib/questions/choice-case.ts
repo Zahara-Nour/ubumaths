@@ -34,12 +34,17 @@ export function isChoiceBlank(blank: InstanceBlank | undefined): blank is Choice
 	return blank?.choice !== undefined;
 }
 
-/** Indices lus (format seul, sans bornes) ; `null` si illisible ou répété */
-function readIndexes(value: string): number[] | null {
+/**
+ * Indices lus (format seul, sans bornes) ; `null` si illisible, ou répété sauf
+ * `repeats: true` (bonne réponse calculée de l'auteur : un indice répété compte une fois)
+ */
+function readIndexes(value: string, settings: { repeats?: boolean } = {}): number[] | null {
 	if (value === '') return [];
 	if (!ANSWER_REGEX.test(value)) return null;
 	const indexes = value.split(';').map(Number);
-	return new Set(indexes).size === indexes.length ? indexes : null;
+	const distinct = [...new Set(indexes)];
+	if (distinct.length === indexes.length || settings.repeats) return distinct;
+	return null;
 }
 
 /**
@@ -74,10 +79,12 @@ export function readExpectedChoices(
 	raw: string,
 	count: number,
 	multiple: boolean,
-	settings: { draft?: boolean } = {}
+	settings: { draft?: boolean; computed?: boolean } = {}
 ): { indexes: number[]; errors: string[] } {
 	const value = raw.trim();
-	const indexes = readIndexes(value);
+	// Calculée (`0;{{f1}};{{eval:2*f2}}`, `computed`), elle peut répéter un indice : il
+	// compte une fois. Écrite en dur, un indice répété reste une faute de frappe.
+	const indexes = readIndexes(value, { repeats: settings.computed === true });
 	if (indexes === null) {
 		return {
 			indexes: [],

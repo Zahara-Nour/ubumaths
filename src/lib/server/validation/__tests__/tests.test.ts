@@ -20,14 +20,13 @@ describe('test system validation schemas', () => {
 		// et `type`, que le générateur ne produit plus : il restait vert pendant
 		// que la route refusait toute session réelle. Voir aussi
 		// `tests-real-instances.test.ts` (instances générées).
-		type FixtureInstance = { templateId?: string; statement: string; theme?: string };
+		type FixtureInstance = { templateId?: string; statement: string };
 		const TEMPLATE_ID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 		const makeAnswer = (index: number, isCorrect: boolean) => ({
 			index,
 			instance: {
 				templateId: TEMPLATE_ID,
-				statement: `$$${index}+1$$`,
-				theme: 'Entiers'
+				statement: `$$${index}+1$$`
 			} as FixtureInstance,
 			userAnswer: {
 				value: [String(index + 1)] as string | string[] | number | number[],
@@ -55,27 +54,9 @@ describe('test system validation schemas', () => {
 				answers: Array.from({ length: 10 }, (_, i) => makeAnswer(i, i < 7)),
 				completedAt: '2025-01-01T12:00:00.000Z'
 			},
-			categories: [
-				{
-					category: {
-						theme: 'Algebra',
-						domain: 'Equations',
-						subdomain: 'Linear',
-						level: 1
-					},
-					quantity: 5,
-					delay: 60
-				},
-				{
-					category: {
-						theme: 'Arithmétique',
-						domain: 'Opérations',
-						subdomain: null,
-						level: 2
-					},
-					quantity: 5,
-					delay: 90
-				}
+			items: [
+				{ templateId: TEMPLATE_ID, quantity: 5, delay: 60 },
+				{ templateId: '0a11f0e0-0000-4000-8000-000000000002', quantity: 5, delay: 90 }
 			],
 			assignmentId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
 		});
@@ -116,14 +97,19 @@ describe('test system validation schemas', () => {
 
 		it('should strip unknown instance fields (never stored in test_answers)', () => {
 			const data = createValidTestData();
-			Object.assign(data.result.answers[0].instance, { answer: 4, type: 'qcm', blanks: [] });
+			// `theme` : ancien champ d'instance (avant l'ADR 0035), retiré comme les autres
+			Object.assign(data.result.answers[0].instance, {
+				answer: 4,
+				type: 'qcm',
+				blanks: [],
+				theme: 'Calcul'
+			});
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 			if (result.success) {
 				expect(Object.keys(result.data.result.answers[0].instance).sort()).toEqual([
 					'statement',
-					'templateId',
-					'theme'
+					'templateId'
 				]);
 			}
 		});
@@ -199,16 +185,24 @@ describe('test system validation schemas', () => {
 
 		it('should accept instance with only templateId and statement', () => {
 			const data = createValidTestData();
-			delete data.result.answers[0].instance.theme;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept category with null subdomain', () => {
-			const data = createValidTestData();
-			data.categories[0].category.subdomain = null;
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(true);
+		// Un onglet ouvert avant la mise en prod de l'ADR 0035 envoie l'ancienne forme : refusée
+		it('should reject the old `categories` shape (no repli, `items` required)', () => {
+			const { items: _items, ...data } = createValidTestData();
+			const result = saveTestSchema.safeParse({
+				...data,
+				categories: [
+					{
+						category: { level: 2 },
+						quantity: 5,
+						delay: 90
+					}
+				]
+			});
+			expect(result.success).toBe(false);
 		});
 
 		it('should reject score below 0', () => {
@@ -311,15 +305,10 @@ describe('test system validation schemas', () => {
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject too many categories', () => {
+		it('should reject too many items', () => {
 			const data = createValidTestData();
-			data.categories = Array.from({ length: 51 }, (_, i) => ({
-				category: {
-					theme: `Theme ${i}`,
-					domain: `Domain ${i}`,
-					subdomain: null,
-					level: 1
-				},
+			data.items = Array.from({ length: 51 }, (_, i) => ({
+				templateId: `0a11f0e0-0000-4000-8000-${String(i).padStart(12, '0')}`,
 				quantity: 1,
 				delay: 60
 			}));
@@ -327,79 +316,50 @@ describe('test system validation schemas', () => {
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject empty categories array', () => {
+		it('should reject empty items array', () => {
 			const data = createValidTestData();
-			data.categories = [];
+			data.items = [];
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject invalid category level', () => {
-			const data = createValidTestData();
-			data.categories[0].category.level = 0;
+		it('should reject a body without items', () => {
+			const { items: _items, ...data } = createValidTestData();
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should accept category level 20 (highest level in production)', () => {
+		it('should reject a templateId that is not a uuid', () => {
 			const data = createValidTestData();
-			data.categories[0].category.level = 20;
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should reject category level above 100', () => {
-			const data = createValidTestData();
-			data.categories[0].category.level = 101;
+			data.items[0].templateId = 'pas-un-uuid';
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
 		it('should reject zero quantity', () => {
 			const data = createValidTestData();
-			data.categories[0].quantity = 0;
+			data.items[0].quantity = 0;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject quantity exceeding max', () => {
+		it('should reject quantity exceeding max (99)', () => {
 			const data = createValidTestData();
-			data.categories[0].quantity = 101;
+			data.items[0].quantity = 100;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject zero delay', () => {
+		it('should accept zero delay (0 = default duration)', () => {
 			const data = createValidTestData();
-			data.categories[0].delay = 0;
+			data.items[0].delay = 0;
 			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(false);
+			expect(result.success).toBe(true);
 		});
 
-		it('should reject delay exceeding max', () => {
+		it('should reject delay exceeding max (600 s)', () => {
 			const data = createValidTestData();
-			data.categories[0].delay = 301;
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject empty theme', () => {
-			const data = createValidTestData();
-			data.categories[0].category.theme = '';
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject theme exceeding max length', () => {
-			const data = createValidTestData();
-			data.categories[0].category.theme = 'a'.repeat(101);
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject empty domain', () => {
-			const data = createValidTestData();
-			data.categories[0].category.domain = '';
+			data.items[0].delay = 601;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
@@ -486,18 +446,7 @@ describe('test system validation schemas', () => {
 					],
 					completedAt: '2025-01-01T00:00:00.000Z'
 				},
-				categories: [
-					{
-						category: {
-							theme: 'T',
-							domain: 'D',
-							subdomain: null,
-							level: 1
-						},
-						quantity: 1,
-						delay: 1
-					}
-				]
+				items: [{ templateId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8', quantity: 1, delay: 1 }]
 			};
 
 			const result = saveTestSchema.safeParse(data);
@@ -508,9 +457,8 @@ describe('test system validation schemas', () => {
 			const data = createValidTestData();
 			data.result.score = 10;
 			data.result.scorePercentage = 100;
-			data.categories[0].category.level = 5;
-			data.categories[0].quantity = 100;
-			data.categories[0].delay = 300;
+			data.items[0].quantity = 99;
+			data.items[0].delay = 600;
 
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
@@ -551,18 +499,7 @@ describe('test system validation schemas', () => {
 					],
 					completedAt: '2025-01-01T12:00:00Z'
 				},
-				categories: [
-					{
-						category: {
-							theme: 'Math',
-							domain: 'Arithmetic',
-							subdomain: null,
-							level: 1
-						},
-						quantity: 1,
-						delay: 60
-					}
-				]
+				items: [{ templateId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8', quantity: 1, delay: 60 }]
 			};
 
 			const result = validateSaveTest(data);

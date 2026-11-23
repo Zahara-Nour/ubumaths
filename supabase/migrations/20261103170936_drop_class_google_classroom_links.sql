@@ -1,0 +1,25 @@
+-- M11 (chantier ecarts-a-trier, décision de David du 2026-11-03) :
+-- suppression de `class_google_classroom_links`.
+--
+-- Mesuré en prod le 2026-11-03 : 0 ligne, aucune clé étrangère entrante,
+-- aucune fonction ni vue qui la cite ; aucune référence dans `src/`
+-- (grep : seuls `tests/integration/anon-option-b.test.ts` et
+-- `scripts/generate-db-doc.ts`, retirés dans la même PR).
+-- Perte : la table vide et ses 3 policies (lecture admin, lecture élève de la
+-- classe, gestion prof). Aucune donnée.
+--
+-- Rollback (recrée la table vide, telle qu'en prod avant ce DROP) :
+--   create table public.class_google_classroom_links (
+--     id uuid primary key default gen_random_uuid(),
+--     class_id uuid not null references public.classes(id) on delete cascade,
+--     google_course_id uuid not null references public.google_classroom_courses(id) on delete cascade,
+--     created_by uuid not null references public.profiles(id) on delete cascade,
+--     created_at timestamptz not null default now(),
+--     constraint unique_class_google_course unique (class_id, google_course_id)
+--   );
+--   create index idx_class_google_links_class on public.class_google_classroom_links (class_id);
+--   create index idx_class_google_links_google_course on public.class_google_classroom_links (google_course_id);
+--   alter table public.class_google_classroom_links enable row level security;
+--   -- puis les 3 policies (voir 20260620090000 et 20260915700000).
+
+drop table if exists public.class_google_classroom_links;

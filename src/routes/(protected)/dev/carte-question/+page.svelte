@@ -9,22 +9,22 @@
 -->
 
 <script lang="ts">
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import { Separator } from '$lib/components/ui/separator';
-	import { Input } from '$lib/components/ui/input';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { resolvedMarkdown } from '$lib/ubumark';
+	import FlashCard from '#lib/components/questions/FlashCard.svelte';
+	import type { QuestionInstance } from '#lib/questions/types.ts';
+	import { getQuestionType } from '#lib/questions/types.ts';
+	import type { AnswerData, QuestionStats } from '#lib/types/question-display.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Tabs from '#lib/components/ui/tabs/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Separator } from '#lib/components/ui/separator/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
+	import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 	import { RefreshCw, Copy, Check } from '@lucide/svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// ============================================================================
 	// STATE MANAGEMENT
@@ -86,11 +86,11 @@
 		'ab = segment(A, B)'
 	].join('\n');
 
-	// CP-058 : point C presque sur la droite (AB), 0,25 carreau au-dessus ; figure + case oui / non
+	// CP-058 : point C presque sur la droite (AB), 0,25 carreau au-dessus ; figure de travail
+	// (non notée) + case choix Oui / Non
 	const ALIGNES_BODY = [
 		'fenetre: 0 ; 10 ; 0 ; 6',
 		'outils: droite',
-		'verifier: droite_par A ; B',
 		'---',
 		'A = point(2, 3)',
 		'B = point(8, 5)',
@@ -101,22 +101,21 @@
 		figure_alignes: {
 			templateId: 'demo-figure-alignes',
 			statement: resolvedMarkdown(
-				`Les points A, B et C sont-ils alignés ? Trace la droite (AB) pour vérifier.\n\n\`\`\`figure-a-completer\ncase: 0\n${ALIGNES_BODY}\n\`\`\`\n\nRéponds par oui ou par non : {{blank:1}}`
+				`Les points $A$, $B$ et $C$ sont-ils alignés ? Tu peux tracer la droite $(AB)$ pour vérifier.\n\n\`\`\`figure-de-travail\ncase: 0\n${ALIGNES_BODY}\n\`\`\`\n\n\`\`\`choix\ncase: 1\n- Oui\n- Non\n\`\`\``
 			),
 			blanks: [
 				{
-					expectedAnswer: 'droite(A;B)',
+					expectedAnswer: '',
 					type: 'graphical',
-					construction: {
-						source: ALIGNES_BODY,
-						checks: [{ kind: 'droite_par', points: ['A', 'B'], line: 3 }]
-					}
+					construction: { source: ALIGNES_BODY, checks: [], work: true }
 				},
-				{ expectedAnswer: 'non', type: 'text' }
+				{
+					expectedAnswer: '1',
+					type: 'choice',
+					choice: { choices: ['Oui', 'Non'], order: [0, 1], multiple: false }
+				}
 			],
 			grades: ['CP'],
-			theme: 'Géométrie',
-			domain: 'Points alignés',
 			level: 1
 		},
 		figure_carre: {
@@ -135,8 +134,6 @@
 				}
 			],
 			grades: ['CP'],
-			theme: 'Géométrie',
-			domain: 'Terminer un carré',
 			level: 1
 		},
 		figure_a_completer: {
@@ -155,8 +152,6 @@
 				}
 			],
 			grades: ['CP'],
-			theme: 'Géométrie',
-			domain: 'Tracer une droite',
 			level: 1
 		},
 		numerical_exact: {
@@ -210,23 +205,6 @@
 			},
 			grades: ['4', '3']
 		},
-		multiple_choice: {
-			templateId: 'debug-qcm-1',
-			statement: 'Résolvez: $$2x + 5 = 13$$' as QuestionInstance['statement'],
-			solution: '0',
-			shuffledChoices: [
-				{ content: '$$x = 4$$' as QuestionInstance['statement'], originalIndex: 0 },
-				{ content: '$$x = 9$$' as QuestionInstance['statement'], originalIndex: 1 },
-				{ content: '$$x = 6.5$$' as QuestionInstance['statement'], originalIndex: 2 }
-			],
-			multipleAnswers: false,
-			correction: {
-				steps: [
-					'On résout: $$2x + 5 = 13 \\Rightarrow 2x = 13 - 5 \\Rightarrow 2x = 8 \\Rightarrow x = 4$$.' as QuestionInstance['statement']
-				]
-			},
-			grades: ['3', '2']
-		},
 		// Reprises de la démo `/demo/question-display-demo`
 		fraction_sum: {
 			templateId: 'demo-numerical',
@@ -236,8 +214,6 @@
 			// réponse n'a alors rien à afficher.
 			blanks: [{ expectedAnswer: '5/4', expectedAnswerLatex: '\\frac{5}{4}', type: 'math' }],
 			grades: ['6', '5'],
-			theme: 'Algèbre',
-			domain: 'Fractions',
 			level: 1,
 			correction: {
 				steps: [
@@ -249,24 +225,21 @@
 		},
 		qcm_pi: {
 			templateId: 'demo-qcm',
-			statement: resolvedMarkdown('Quelle est la valeur de $\\pi$ arrondie au centième ?'),
-			correctChoiceIndex: '1',
-			choices: [
-				{ content: resolvedMarkdown('$$3{,}00$$'), isCorrect: false },
-				{ content: resolvedMarkdown('$$3{,}14$$'), isCorrect: true },
-				{ content: resolvedMarkdown('$$3{,}41$$'), isCorrect: false },
-				{ content: resolvedMarkdown('$$2{,}71$$'), isCorrect: false }
+			statement: resolvedMarkdown(
+				'Quelle est la valeur de $\\pi$ arrondie au centième ?\n\n```choix\ncase: 0\n- $$3{,}00$$\n- $$3{,}14$$\n- $$3{,}41$$\n- $$2{,}71$$\n```'
+			),
+			blanks: [
+				{
+					expectedAnswer: '1',
+					type: 'choice',
+					choice: {
+						choices: ['$$3{,}00$$', '$$3{,}14$$', '$$3{,}41$$', '$$2{,}71$$'],
+						order: [0, 1, 2, 3],
+						multiple: false
+					}
+				}
 			],
-			shuffledChoices: [
-				{ content: resolvedMarkdown('$$3{,}00$$'), originalIndex: 0 },
-				{ content: resolvedMarkdown('$$3{,}14$$'), originalIndex: 1 },
-				{ content: resolvedMarkdown('$$3{,}41$$'), originalIndex: 2 },
-				{ content: resolvedMarkdown('$$2{,}71$$'), originalIndex: 3 }
-			],
-			multipleAnswers: false,
 			grades: ['6'],
-			theme: 'Géométrie',
-			domain: 'Constantes',
 			level: 1,
 			correction: {
 				steps: [
@@ -284,8 +257,6 @@
 				{ expectedAnswer: 'c', type: 'text' }
 			],
 			grades: ['4', '3'],
-			theme: 'Géométrie',
-			domain: 'Théorème de Pythagore',
 			level: 2,
 			correction: {
 				steps: [
@@ -302,9 +273,8 @@
 		{ value: 'numerical_decimal', label: 'Numérique (décimale)' },
 		{ value: 'algebraic_transform', label: 'Transformation algébrique' },
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
-		{ value: 'multiple_choice', label: 'QCM' },
 		{ value: 'fraction_sum', label: 'Somme de fractions, à trou' },
-		{ value: 'qcm_pi', label: 'QCM : valeur de π' },
+		{ value: 'qcm_pi', label: 'Case choix : valeur de π' },
 		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' },
 		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' },
 		{ value: 'figure_carre', label: 'Terminer un carré (CP-060)' },

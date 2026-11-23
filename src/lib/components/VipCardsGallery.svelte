@@ -1,12 +1,12 @@
 <script lang="ts">
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-	import type { VipCard, StudentVipCards } from '$lib/types/vip-card';
-	import { getStudentCardCounts } from '$lib/utils/vip-cards';
+	import VipCardHolo from '#lib/components/VipCardHolo.svelte';
+	import type { VipCard, StudentVipCards } from '#lib/types/vip-card.ts';
+	import { getStudentCardCounts } from '#lib/utils/vip-cards.ts';
 	import {
 		vipCardTemplates,
 		getEnabledTemplates,
 		templateToVipCard
-	} from '$lib/stores/vipCardTemplates.svelte';
+	} from '#lib/stores/vipCardTemplates.svelte.ts';
 
 	interface Props {
 		vipCards: StudentVipCards;

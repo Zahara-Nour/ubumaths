@@ -1,0 +1,238 @@
+[
+	{
+		"id": "e3d87166-f0cb-4a9a-ab24-6377e612cfeb",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["6"],
+		"delay": 30,
+		"multiple_answers": null,
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"subdomain": "Puissances de 10",
+		"level": 10,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k-1}}"
+					}
+				],
+				"statement": "Multiplier un nombre par ${{if:k==1|0.1|{{if:k==2|0.01|0.001}}}}$, c'est :\n\n```choix\n- le diviser par $10$\n- le diviser par $100$\n- le diviser par $1~000$\n- le multiplier par $10$\n- le multiplier par $100$\n```",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Le lien.** $0.1$, c'est un dixième : multiplier par $0.1$, c'est prendre le dixième, donc diviser par $10$. De même, $\\times 0.01$ revient à $\\div 100$, et $\\times 0.001$ à $\\div 1~000$.",
+						"Multiplier par ${{if:k==1|0.1|{{if:k==2|0.01|0.001}}}}$, c'est \\textcolor{{{color:primary.0}}}{diviser par ${{if:k==1|10|{{if:k==2|100|1~000}}}}$} : chaque chiffre recule de ${{k}}$ rang{{if:k>1|s|}} vers la droite."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10^k}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{n}} \\times {{if:k==1|0.1|{{if:k==2|0.01|0.001}}}} = {{n}} \\div ?$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					},
+					{
+						"name": "N",
+						"expression": "11..999"
+					},
+					{
+						"name": "n",
+						"expression": "eval:N/10;d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Le lien.** $0.1$, c'est un dixième : multiplier par $0.1$, c'est prendre le dixième, donc diviser par $10$. De même, $\\times 0.01$ revient à $\\div 100$, et $\\times 0.001$ à $\\div 1~000$.",
+						"$$\\times {{if:k==1|0.1|{{if:k==2|0.01|0.001}}}} \\quad \\text{revient à} \\quad \\div \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10^(-k);d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{n}} \\div {{if:k==1|10|{{if:k==2|100|1~000}}}} = {{n}} \\times ?$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					},
+					{
+						"name": "N",
+						"expression": "11..999"
+					},
+					{
+						"name": "n",
+						"expression": "eval:N/10;d"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Le lien.** $0.1$, c'est un dixième : multiplier par $0.1$, c'est prendre le dixième, donc diviser par $10$. De même, $\\times 0.01$ revient à $\\div 100$, et $\\times 0.001$ à $\\div 1~000$.",
+						"$$\\div {{if:k==1|10|{{if:k==2|100|1~000}}}} \\quad \\text{revient à} \\quad \\times \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n/10^k;d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{n}} \\times {{if:k==1|0.1|{{if:k==2|0.01|0.001}}}} = ?$$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					},
+					{
+						"name": "n",
+						"expression": "2..999"
+					}
+				],
+				"conditions": ["mod(n,10)!=0"],
+				"correction": {
+					"steps": [
+						"**Le lien.** $0.1$, c'est un dixième : multiplier par $0.1$, c'est prendre le dixième, donc diviser par $10$. De même, $\\times 0.01$ revient à $\\div 100$, et $\\times 0.001$ à $\\div 1~000$.",
+						"$${{n}} \\times {{if:k==1|0.1|{{if:k==2|0.01|0.001}}}} = {{n}} \\div {{if:k==1|10|{{if:k==2|100|1~000}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Multiplier par 0,1, c'est diviser par 10",
+		"description": "Lien entre × 0,1 / × 0,01 / × 0,001 et ÷ 10 / ÷ 100 / ÷ 1 000 : case choix, égalités à compléter, calcul par la division",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "× 0,01 : diviser par 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2"
+				},
+				"description": "Erreur : multiplier par 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "375",
+					"k": "1",
+					"n": "37.5"
+				},
+				"description": "37,5 × 0,1 = 37,5 ÷ 10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0,1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "375",
+					"k": "1",
+					"n": "37.5"
+				},
+				"description": "Erreur : 0,1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "375",
+					"k": "1",
+					"n": "37.5"
+				},
+				"description": "Erreur : un zéro de trop (100)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0,01"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"N": "45",
+					"k": "2",
+					"n": "4.5"
+				},
+				"description": "4,5 ÷ 100 = 4,5 × 0,01",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"N": "45",
+					"k": "2",
+					"n": "4.5"
+				},
+				"description": "Erreur : 100",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0,52"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"n": "52"
+				},
+				"description": "52 × 0,01 = 0,52",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5\\,200"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"n": "52"
+				},
+				"description": "Erreur : multiplié par 100 (5 200)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "83a0aeef-1abe-444e-b386-846a49017d1e"
+	}
+]

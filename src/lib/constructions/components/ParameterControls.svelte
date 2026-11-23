@@ -7,10 +7,10 @@
 	 */
 
 	import type { ConstructionEngine } from '../core/engine.svelte';
-	import Slider from '$lib/components/ui/slider/slider.svelte';
-	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import Slider from '#lib/components/ui/slider/slider.svelte';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 
 	// Types
 	interface Props {

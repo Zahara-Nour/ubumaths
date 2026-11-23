@@ -7,18 +7,18 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import {
 		Card,
 		CardContent,
 		CardDescription,
 		CardHeader,
 		CardTitle
-	} from '$lib/components/ui/card';
+	} from '#lib/components/ui/card/index.ts';
 	import {
 		Plus,
 		Search,
@@ -28,10 +28,10 @@
 		ClipboardList,
 		Layers
 	} from '@lucide/svelte';
-	import { formatGradeShort } from '$lib/utils/grades';
+	import { formatGradeShort } from '#lib/utils/grades.ts';
 	import { goto } from '$app/navigation';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import type { GradeCode } from '$lib/types/grades';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
+	import type { GradeCode } from '#lib/types/grades.ts';
 
 	let { data }: { data: PageData } = $props();
 

@@ -28,7 +28,7 @@ import { join } from 'node:path';
 import type { QuestionTemplate } from '../../src/lib/questions/types';
 import type { Database, Json } from '../../src/lib/types/database';
 import { toQuestionTemplate } from '../../src/lib/types/question-template';
-import { checkTemplate } from '../../src/lib/migration/review/check-template';
+import { checkTemplate } from '../../src/lib/questions/review/check-template';
 import { createScriptClient, hasFlag } from '../relecture/common';
 import { parseRows } from './lib/files';
 import {

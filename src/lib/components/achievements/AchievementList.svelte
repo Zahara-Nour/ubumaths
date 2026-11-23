@@ -11,11 +11,11 @@
 
 <script lang="ts">
 	import AchievementCard from './AchievementCard.svelte';
-	import MySelect from '$lib/components/MySelect.svelte';
-	import { Skeleton } from '$lib/components/ui/skeleton';
+	import MySelect from '#lib/components/MySelect.svelte';
+	import { Skeleton } from '#lib/components/ui/skeleton/index.ts';
 	import { Trophy, Target, Percent, Star } from '@lucide/svelte';
-	import type { Achievement, AchievementRarity } from '$lib/types/achievements';
-	import { cn } from '$lib/utils';
+	import type { Achievement, AchievementRarity } from '#lib/types/achievements.ts';
+	import { cn } from '#lib/utils.ts';
 
 	// Type for achievement with status (from props)
 	type AchievementWithStatus = {

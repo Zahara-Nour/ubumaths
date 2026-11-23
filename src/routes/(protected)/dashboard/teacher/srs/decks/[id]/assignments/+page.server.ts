@@ -7,9 +7,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import { findAssignedDeckCopy } from '$lib/server/srs/deck-copy';
-import { createServerLogger } from '$lib/utils/logger';
+import { getTeacherTestMode } from '#lib/server/test-mode.ts';
+import { findAssignedDeckCopy } from '#lib/server/srs/deck-copy.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/srs/decks/[id]/assignments/+page.server'

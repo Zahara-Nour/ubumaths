@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
+	import { lore } from '#lib/config/lore.ts';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import * as Tooltip from '$lib/components/ui/tooltip';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Badge } from '$lib/components/ui/badge';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import { submitAction } from '$lib/utils/form-action';
-	import ExportDialog from '$lib/components/exercises/ExportDialog.svelte';
-	import ImportDialog from '$lib/components/exercises/ImportDialog.svelte';
-	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import * as Table from '#lib/components/ui/table/index.ts';
+	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import { submitAction } from '#lib/utils/form-action.ts';
+	import ExportDialog from '#lib/components/exercises/ExportDialog.svelte';
+	import ImportDialog from '#lib/components/exercises/ImportDialog.svelte';
+	import ExerciseDisplay from '#lib/components/exercises/ExerciseDisplay.svelte';
+	import ConfirmDialog from '#lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import GradeBadgeSelector from '#lib/components/GradeBadgeSelector.svelte';
 	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown, Eye, Globe } from '@lucide/svelte';
-	import type { Exercise, ExerciseCategory } from '$lib/exercises/types';
-	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
+	import type { Exercise, ExerciseCategory } from '#lib/exercises/types.ts';
+	import { EXERCISE_CATEGORIES } from '#lib/exercises/types.ts';
 	import type { PageData } from './$types';
-	import type { GradeCode } from '$lib/types/grades';
-	import { formatGradeShort, getMinGradeOrder } from '$lib/utils/grades';
+	import type { GradeCode } from '#lib/types/grades.ts';
+	import { formatGradeShort, getMinGradeOrder } from '#lib/utils/grades.ts';
 
 	let { data }: { data: PageData } = $props();
 

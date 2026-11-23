@@ -2,26 +2,28 @@
  * /api/worksheets/print-settings
  * ==============================
  *
- * Taille du texte des PDF de fiche d'un élève (accessibilité, élèves
- * malvoyants) : `normal` (10 pt), `large` (14 pt), `x_large` (18 pt).
+ * Réglages d'impression des PDF de fiche d'un élève (accessibilité) : taille
+ * du texte (élèves malvoyants : `normal` 10 pt, `large` 14 pt, `x_large`
+ * 18 pt) et lecture facilitée (élèves dys : Luciole et Luciole Math).
  *
- * GET  ?studentId=  → { textSize }  (sans studentId : l'appelant)
- * PUT  { studentId?, textSize } → { textSize }
+ * GET  ?studentId=  → { textSize, easyReading }  (sans studentId : l'appelant)
+ * PUT  { studentId?, textSize?, easyReading? } → les réglages enregistrés
+ *      (au moins un ; un réglage absent n'est pas réécrit)
  *
  * AUTH : l'élève, pour lui-même seulement ; le prof et l'admin, pour un élève
  * (studentId obligatoire). La RLS de `student_print_settings` tranche en
  * dernier ressort ; un refus (zéro ligne écrite) → 403.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRoles } from '#lib/server/middleware/auth.ts';
 import {
 	printSettingsQuerySchema,
 	printSettingsUpdateSchema
-} from '$lib/server/validation/worksheets';
-import { loadTextSize, saveTextSize } from '$lib/server/worksheets/print-settings';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/validation/worksheets.ts';
+import { loadPrintSettings, savePrintSettings } from '#lib/server/worksheets/print-settings.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/worksheets/print-settings/+server');
 
@@ -44,7 +46,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	if (!query.success) throw error(400, query.error.issues[0].message);
 
 	const studentId = targetStudent(profile.role, user.id, query.data.studentId);
-	return json({ textSize: await loadTextSize(locals.supabase, studentId) });
+	return Response.json(await loadPrintSettings(locals.supabase, studentId));
 };
 
 export const PUT: RequestHandler = async ({ locals, request }) => {
@@ -59,18 +61,18 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 	const validation = printSettingsUpdateSchema.safeParse(body);
 	if (!validation.success) throw error(400, validation.error.issues[0].message);
 
-	const { textSize } = validation.data;
-	const studentId = targetStudent(profile.role, user.id, validation.data.studentId);
+	const { studentId: requested, ...changes } = validation.data;
+	const studentId = targetStudent(profile.role, user.id, requested);
 
 	let saved: boolean;
 	try {
-		saved = await saveTextSize(locals.supabase, studentId, textSize);
+		saved = await savePrintSettings(locals.supabase, studentId, changes);
 	} catch (err) {
-		logger.error('[API] Taille du texte non enregistrée :', err);
-		throw error(500, 'Taille du texte non enregistrée');
+		logger.error("[API] Réglages d'impression non enregistrés :", err);
+		throw error(500, "Réglages d'impression non enregistrés");
 	}
 	// Zéro ligne : la RLS a refusé (pas un élève, ou pas le droit)
 	if (!saved) throw error(403, 'Réglage impossible pour ce compte');
 
-	return json({ textSize });
+	return Response.json(changes);
 };

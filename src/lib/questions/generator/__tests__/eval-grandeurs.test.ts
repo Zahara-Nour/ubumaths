@@ -12,11 +12,11 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
 import type { QuestionTemplate } from '../../types';
-import type { Variable } from '$lib/ubumark';
-import { templateMarkdown, resolveVariables } from '$lib/ubumark';
-import { validateAnswer } from '$lib/utils/answer-validator';
-import { createRandomSource } from '$lib/utils/random';
-import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import type { Variable } from '#lib/ubumark/index.ts';
+import { templateMarkdown, resolveVariables } from '#lib/ubumark/index.ts';
+import { validateAnswer } from '#lib/utils/answer-validator.ts';
+import { createRandomSource } from '#lib/utils/random.ts';
+import { expressionToLatex } from '#lib/components/markdown/utils/math-utils.ts';
 
 const A_B: Variable[] = [
 	{ name: 'a', expression: '7[mm]' },
@@ -38,8 +38,6 @@ function templateOf(statement: string, expectedAnswer: string): QuestionTemplate
 		title: 't',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{
@@ -61,8 +59,9 @@ describe('un calcul avec une grandeur garde son unité', () => {
 	it.each([
 		['4*a', '28[mm]'],
 		['a*b', '35[mm^2]'],
+		// La valeur d'une variable : UNE grandeur (David, 2026-11-03)
 		['3[h]+20[min]', '200[min]'],
-		['5[km]+3[m]', '5.003[km]'],
+		['5[km]+3[m]', '5003[m]'],
 		['120[km]/2[h]', '60[km/h]'],
 		['(1[h]+30[min])*60[km/h]', '90[km]'],
 		['90[min]*60[km/h]', '90[km]']
@@ -254,8 +253,6 @@ describe('relecture #467 : durées ;hms dans l’énoncé et la correction', () 
 		title: 't',
 		status: 'draft',
 		grades: ['6'],
-		theme: 'T',
-		domain: 'D',
 		level: 1,
 		variations: [
 			{

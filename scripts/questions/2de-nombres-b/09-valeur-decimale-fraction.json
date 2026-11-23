@@ -1,0 +1,213 @@
+{
+	"id": "a1a20304-015a-4c63-807e-aa69a58cbb7d",
+	"title": "Valeur décimale d'une fraction simple",
+	"description": "Écrire en décimal une fraction de dénominateur 2, 4, 5, 8, 10, 20, 25 ou 50 : 7/4 = 1,75 ; 13/5 = 2,6 (pièges : 7/4 lu 7,4, décimales oubliées)",
+	"grades": ["2"],
+	"level": 9,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Donne l'écriture décimale de $\\dfrac{ {{a}} }{ {{d}} }$.\n\n$\\dfrac{ {{a}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|5|10"
+				},
+				{
+					"name": "a",
+					"expression": "1..29"
+				},
+				{
+					"name": "T",
+					"expression": "eval:10+90*min(mod(10,d),1)+900*min(mod(100,d),1)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:T/d"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*T/d"
+				}
+			],
+			"conditions": ["gcd(a,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/d;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit une fraction égale dont le dénominateur est $10$, $100$ ou $1\\,000${{if:k==1|, ici elle l'est déjà.| : ici ${{d}}\\times{{k}}={{T}}$.}}",
+					"$$\\dfrac{ {{a}} }{ {{d}} }{{if:k>1|=\\dfrac{ {{a}}\\times{{k}} }{ {{d}}\\times{{k}} }=\\dfrac{ {{A}} }{ {{T}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:a/d;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne l'écriture décimale de $\\dfrac{ {{a}} }{ {{d}} }$.\n\n$\\dfrac{ {{a}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "4|20|25|50"
+				},
+				{
+					"name": "a",
+					"expression": "1..99"
+				},
+				{
+					"name": "T",
+					"expression": "eval:10+90*min(mod(10,d),1)+900*min(mod(100,d),1)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:T/d"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*T/d"
+				}
+			],
+			"conditions": ["gcd(a,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/d;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit une fraction égale dont le dénominateur est $10$, $100$ ou $1\\,000${{if:k==1|, ici elle l'est déjà.| : ici ${{d}}\\times{{k}}={{T}}$.}}",
+					"$$\\dfrac{ {{a}} }{ {{d}} }{{if:k>1|=\\dfrac{ {{a}}\\times{{k}} }{ {{d}}\\times{{k}} }=\\dfrac{ {{A}} }{ {{T}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:a/d;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne l'écriture décimale de $\\dfrac{ {{a}} }{ {{d}} }$.\n\n$\\dfrac{ {{a}} }{ {{d}} }=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "8"
+				},
+				{
+					"name": "a",
+					"expression": "1..39"
+				},
+				{
+					"name": "T",
+					"expression": "eval:10+90*min(mod(10,d),1)+900*min(mod(100,d),1)"
+				},
+				{
+					"name": "k",
+					"expression": "eval:T/d"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*T/d"
+				}
+			],
+			"conditions": ["gcd(a,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/d;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit une fraction égale dont le dénominateur est $10$, $100$ ou $1\\,000${{if:k==1|, ici elle l'est déjà.| : ici ${{d}}\\times{{k}}={{T}}$.}}",
+					"$$\\dfrac{ {{a}} }{ {{d}} }{{if:k>1|=\\dfrac{ {{a}}\\times{{k}} }{ {{d}}\\times{{k}} }=\\dfrac{ {{A}} }{ {{T}} }}}=\\textcolor{{{color:primary.0}}}{{{eval:a/d;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "13/5 = 2,6",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"a": "13"
+			},
+			"answers": ["2{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 13/5 lu 13,5",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"a": "13"
+			},
+			"answers": ["13{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/4 = 1,75",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "7"
+			},
+			"answers": ["1{,}75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/4 lu 7,4",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "7"
+			},
+			"answers": ["7{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7/4 ≈ 1,7",
+			"variationIndex": 1,
+			"variables": {
+				"d": "4",
+				"a": "7"
+			},
+			"answers": ["1{,}7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "11/8 = 1,375",
+			"variationIndex": 2,
+			"variables": {
+				"d": "8",
+				"a": "11"
+			},
+			"answers": ["1{,}375"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11/8 = 1,38",
+			"variationIndex": 2,
+			"variables": {
+				"d": "8",
+				"a": "11"
+			},
+			"answers": ["1{,}38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

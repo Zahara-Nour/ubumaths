@@ -1,10 +1,8 @@
 {
+	"id": "d9937325-b96e-462e-8e99-bb74f0c92a63",
 	"title": "Infinité des nombres premiers : calculs autour de p₁ × … × pₖ + 1",
 	"description": "Reste de la division de 2 × 3 × 5 × 7 × 11 + r par un petit premier, diviseur premier de 2 × 3 × … × 17 + 1 (hors de la liste), plus petit diviseur premier de 2 × 3 × … × pₖ + 1, premier ou non (pièges : reste confondu avec r, N supposé toujours premier, 1 donné comme diviseur premier)",
 	"grades": ["T_EXP"],
-	"theme": "Arithmétique",
-	"domain": "Nombres premiers",
-	"subdomain": "Nombres premiers",
 	"level": 2,
 	"status": "draft",
 	"delay": 90,

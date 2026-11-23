@@ -14,17 +14,22 @@
  * @module questions/generator/content-resolver
  */
 
-import { evaluateConditionStrict } from './condition-evaluator';
 import { resolveVariableConditionals } from './variable-conditionals';
 import type { ResolvedVariable } from '../types';
-import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
-import { resolvedMarkdown } from '$lib/ubumark';
+import type { TemplateMarkdown, ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { resolvedMarkdown } from '#lib/ubumark/index.ts';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
-import type { RandomSource } from '$lib/utils/random';
-import { parseCustomSafe, toLatex, type GenericFunctionConfig, type MathNode } from '$lib/mathAST';
-import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
+import type { RandomSource } from '#lib/utils/random.ts';
+import type { DurationWriting } from '#lib/mathAST/tidy/index.ts';
+import {
+	parseCustomSafe,
+	toLatex,
+	type GenericFunctionConfig,
+	type MathNode
+} from '#lib/mathAST/index.ts';
+import type { CapitalPairs } from '#lib/mathAST/parser/types.ts';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
 import { cleanCoefficientsAst, latexRelationsToCustom } from '../clean-coefficients';
 
 export { resolveVariableConditionals };
@@ -147,6 +152,40 @@ function customToLatex(
 	return rewritten.ast ? render(rewritten.ast) : null;
 }
 
+/** Liens logiques entre deux formules (`a=0\\iff x=-3`), gardés au découpage */
+const LOGICAL_LINK_REGEX =
+	/(\\(?:iff|Leftrightarrow|Longleftrightarrow|implies|Rightarrow|Longrightarrow)(?![A-Za-z]))/;
+
+/**
+ * `cleanCoefficients` sur une formule qui ne se lit pas en entier à cause d'un lien
+ * logique (`-1x-3=0\\iff x=-3`) : chaque morceau est nettoyé pour lui-même
+ * (`-x - 3 = 0\\iff x=-3`). Un morceau illisible, ou sans rien à nettoyer, reste à
+ * l'octet près ; sans lien logique, la formule d'origine.
+ */
+function cleanLogicalPieces(
+	content: string,
+	genericFunctions?: GenericFunctionConfig,
+	capitalPairs?: CapitalPairs
+): string {
+	const pieces = content.split(LOGICAL_LINK_REGEX);
+	if (pieces.length === 1) return content;
+	return pieces
+		.map((piece, index) => {
+			// Indices impairs : les liens eux-mêmes
+			if (index % 2 === 1) return piece;
+			const core = piece.trim();
+			// Sans chiffre, aucun coefficient à nettoyer : `(E)\\iff …` garde le nom de
+			// l'équation (la règle des parenthèses en ferait `E`)
+			if (!/\d/.test(core)) return piece;
+			const cleaned = customToLatex(core, genericFunctions, true, capitalPairs);
+			const plain = customToLatex(core, genericFunctions, false, capitalPairs);
+			if (cleaned === null || cleaned === plain) return piece;
+			const start = piece.indexOf(core);
+			return piece.slice(0, start) + cleaned + piece.slice(start + core.length);
+		})
+		.join('');
+}
+
 /**
  * Convert content inside $...$ and $$...$$ from custom syntax to LaTeX
  *
@@ -195,6 +234,9 @@ function convertMathZonesToLatex(
 			cleanCoefficients,
 			capitalPairs
 		);
+		if (latex === null && cleanCoefficients) {
+			return prefix + cleanLogicalPieces(mathContent, genericFunctions, capitalPairs);
+		}
 		// On parse error, return original (will show error at render time)
 		return prefix + (latex ?? mathContent);
 	};
@@ -354,11 +396,17 @@ export function resolveMarkdownContent(
 export function resolveExpression(
 	expression: string,
 	resolvedVariables: ResolvedVariable[],
-	random: RandomSource = Math.random
+	random: RandomSource = Math.random,
+	options?: {
+		/** `'single'` : une valeur (motif, borne, formule à lire), une durée reste UNE grandeur */
+		durations?: DurationWriting;
+	}
 ): string {
 	// Database now stores pure markdown syntax ({{...}}) directly
 	// No conversion needed anymore
-	let resolved = resolveVariableExpression(expression, resolvedVariables, random);
+	let resolved = resolveVariableExpression(expression, resolvedVariables, random, {
+		durations: options?.durations
+	});
 	// Also resolve color references
 	resolved = resolveColorReferences(resolved, random);
 	return resolved;
@@ -443,55 +491,4 @@ export function convertToLatex(
 		customToLatex(expression.trim(), genericFunctions, cleanCoefficients, capitalPairs) ??
 		expression
 	);
-}
-
-/**
- * Bon choix d'un QCM donné par une condition : `{{if:condition|A|B}}` → A si la
- * condition est vraie pour les variables tirées, B sinon (forme produite depuis
- * le ternaire TinyMath `condition ?? A :: B`). Toute autre valeur est rendue
- * telle quelle.
- */
-export function resolveConditionalChoice(
-	value: string,
-	resolvedVariables: ResolvedVariable[]
-): string {
-	const match = value.trim().match(/^\{\{if:(.+)\|([^|{}]*)\|([^|{}]*)\}\}$/);
-	if (!match) return value;
-	const [, condition, whenTrue, whenFalse] = match;
-	// L'évaluateur de conditions note l'égalité « = » (comme TinyMath).
-	// Condition illisible → erreur (la génération échoue) plutôt qu'un choix B
-	// désigné en silence comme bon.
-	return evaluateConditionStrict(condition, resolvedVariables) ? whenTrue.trim() : whenFalse.trim();
-}
-
-/**
- * Resolve correctChoiceIndex (can be string, array of strings, or undefined for fill_in_blanks)
- *
- * @param solution - correctChoiceIndex from template (expected answer index)
- * @param resolvedVariables - Already resolved variables
- * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
- * @returns Resolved correctChoiceIndex, or undefined if input is undefined
- */
-export function resolveSolution(
-	solution: string | string[],
-	resolvedVariables: ResolvedVariable[],
-	random?: RandomSource
-): string | string[];
-export function resolveSolution(
-	solution: string | string[] | undefined,
-	resolvedVariables: ResolvedVariable[],
-	random?: RandomSource
-): string | string[] | undefined;
-export function resolveSolution(
-	solution: string | string[] | undefined,
-	resolvedVariables: ResolvedVariable[],
-	random: RandomSource = Math.random
-): string | string[] | undefined {
-	if (solution === undefined) return undefined;
-
-	if (Array.isArray(solution)) {
-		return solution.map((sol) => resolveExpression(sol, resolvedVariables, random));
-	}
-
-	return resolveExpression(solution, resolvedVariables, random);
 }

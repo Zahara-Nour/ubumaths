@@ -7,9 +7,13 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { createServerLogger } from '$lib/utils/logger';
-import { displayedConstance, utcDay } from '$lib/utils/buddy-constance';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
+import { displayedConstance, utcDay } from '#lib/utils/buddy-constance.ts';
+import {
+	fetchClassMembersWithBuddies,
+	type ClassMemberWithBuddy
+} from '#lib/server/buddy-class.ts';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/gamification/buddies/+page.server'
@@ -60,40 +64,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const today = utcDay();
 
 	for (const cls of classes) {
-		// Get students with their buddy data
-		const { data: members, error: membersError } = await supabase
-			.from('class_members')
-			.select(
-				`
-				student_id,
-				profiles:student_id (
-					full_name,
-					firstname,
-					lastname
-				),
-				student_buddies:student_id (
-					palotin_type,
-					xp,
-					level,
-					current_streak,
-					longest_streak,
-					last_activity_date,
-					constance_week_start,
-					constance_days_this_week
-				)
-			`
-			)
-			.eq('class_id', cls.id)
-			.eq('status', 'active');
-
-		if (membersError) {
+		// Élèves et Palotins de la classe : une panne saute la classe, comme avant
+		let members: ClassMemberWithBuddy[];
+		try {
+			members = await fetchClassMembersWithBuddies(supabase, cls.id);
+		} catch (membersError) {
 			logger.error(`[buddies] Error fetching members for class ${cls.id}:`, membersError);
 			continue;
 		}
 
-		const students: StudentBuddyInfo[] = (members || []).map((m) => {
-			const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
-			const buddy = Array.isArray(m.student_buddies) ? m.student_buddies[0] : m.student_buddies;
+		const students: StudentBuddyInfo[] = members.map((m) => {
+			const profile = m.profiles;
+			const buddy = m.student_buddies;
 			return {
 				studentId: m.student_id,
 				fullName:

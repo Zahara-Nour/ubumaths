@@ -12,21 +12,21 @@
  * autre classe ou inexistant → 404, sans rien révéler.
  */
 
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { ChapterDueCard, ChapterDueResponse } from '$lib/srs/types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { chapterDeckParamsSchema } from '$lib/server/validation/srs';
+import type { ChapterDueCard, ChapterDueResponse } from '#lib/srs/types.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { chapterDeckParamsSchema } from '#lib/server/validation/srs.ts';
 import {
 	loadChapterDeck,
 	loadDeckStats,
 	selectChapterSession,
 	type ChapterDeck,
 	type DeckCardStatsRow
-} from '$lib/server/srs/chapter-deck';
-import { generateSRSInstance } from '$lib/srs/generator';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/srs/chapter-deck.ts';
+import { generateSRSInstance } from '#lib/srs/generator.ts';
+import { toQuestionTemplate } from '#lib/types/question-template.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/srs/chapters/[chapterId]/due/+server');
 
@@ -35,7 +35,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	const validation = chapterDeckParamsSchema.safeParse(params);
 	if (!validation.success) {
-		return json({ error: validation.error.issues[0].message }, { status: 400 });
+		return Response.json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 	const { chapterId } = validation.data;
 	const supabase = locals.supabase;
@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const fresh = new Set(session.fresh);
 
 	if (ids.length === 0) {
-		return json({
+		return Response.json({
 			chapter: { id: deck.chapterId, title: deck.title },
 			cards: [],
 			skipped: 0
@@ -88,7 +88,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Nouvelle graine à chaque séance (`generateSRSInstance`)
 			const result = generateSRSInstance(toQuestionTemplate(row));
 			if (result.success) {
-				cards.push({ templateId, instance: result.instance, isNew: fresh.has(templateId) });
+				cards.push({
+					templateId,
+					instance: result.instance,
+					notionId: row.classification_node_id,
+					isNew: fresh.has(templateId)
+				});
 			} else {
 				skipped.push({ templateId, reason: result.errors.join('; ') });
 			}
@@ -105,7 +110,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		logger.error(`[srs/chapters/due] ${skipped.length} question(s) écartée(s) :`, skipped);
 	}
 
-	return json({
+	return Response.json({
 		chapter: { id: deck.chapterId, title: deck.title },
 		cards,
 		skipped: skipped.length

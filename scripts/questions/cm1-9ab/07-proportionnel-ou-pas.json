@@ -1,0 +1,189 @@
+{
+	"id": "833b120a-b1a7-456f-b8cd-c194865deed3",
+	"title": "Proportionnel ou pas ?",
+	"description": "Deux grandeurs en contexte : prix d'objets identiques, pile de manuels, recette, prix au kilo (oui) ; taille et âge, taxi, lot, forfait (non) ; deux achats chiffrés à comparer",
+	"grades": ["CM1"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:s==1|Des cahiers identiques sont vendus au même prix chacun. Le prix à payer est-il proportionnel au nombre de cahiers achetés ?|{{if:s==2|Des manuels sont tous identiques. La masse d'une pile de ces manuels est-elle proportionnelle au nombre de manuels ?|{{if:s==3|Pour une pâte à crêpes, on met toujours $250~\\unit{g}$ de farine pour $2$ œufs. La masse de farine est-elle proportionnelle au nombre d'œufs ?|{{if:s==4|Au marché, les pommes coûtent $3~\\unit{€}$ le kilogramme. Le prix payé est-il proportionnel à la masse de pommes ?|{{if:s==5|La taille d'un enfant est-elle proportionnelle à son âge ?|{{if:s==6|Un taxi fait payer $4~\\unit{€}$ dès qu'on monte, puis $2~\\unit{€}$ par kilomètre. Le prix de la course est-il proportionnel au nombre de kilomètres ?|{{if:s==7|Un magasin vend un stylo $1~\\unit{€}$, et le lot de $10$ stylos $7~\\unit{€}$. Le prix payé est-il proportionnel au nombre de stylos ?|Un forfait de téléphone coûte $15~\\unit{€}$ par mois, quel que soit le nombre d'appels. Le prix payé est-il proportionnel au nombre d'appels ?}}}}}}}}}}}}}}\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:min(floor(s/5),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux grandeurs sont **proportionnelles** quand, si l'une devient deux fois, trois fois… plus grande, l'autre aussi.",
+					"{{if:s==1|Deux fois plus de cahiers coûtent deux fois plus cher, trois fois plus, trois fois plus cher : oui.|{{if:s==2|Chaque manuel ajoute la même masse : deux fois plus de manuels pèsent deux fois plus.|{{if:s==3|Avec deux fois plus d'œufs, on met deux fois plus de farine : oui.|{{if:s==4|Chaque kilogramme coûte le même prix : deux fois plus de pommes coûtent deux fois plus.|{{if:s==5|Un enfant de $10$ ans n'est pas deux fois plus grand qu'un enfant de $5$ ans : non.|{{if:s==6|$1~\\unit{km}$ coûte $6~\\unit{€}$, $2~\\unit{km}$ coûtent $8~\\unit{€}$ et pas $12~\\unit{€}$ : les $4~\\unit{€}$ du départ ne doublent pas. Non.|{{if:s==7|$10$ stylos devraient coûter $10~\\unit{€}$ ; le lot coûte moins : non.|On paie toujours $15~\\unit{€}$, même en appelant deux fois plus : non.}}}}}}}}}}}}}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|oui|non}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "À la papeterie, ${{n}}$ cahiers identiques coûtent ${{A}}~\\unit{€}$ et ${{M}}$ cahiers coûtent ${{P}}~\\unit{€}$.\n\nLe prix est-il proportionnel au nombre de cahiers ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "u",
+					"expression": "2..4"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				},
+				{
+					"name": "A",
+					"expression": "eval:n*u"
+				},
+				{
+					"name": "M",
+					"expression": "eval:m*n"
+				},
+				{
+					"name": "P",
+					"expression": "eval:m*n*u-o*d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{M}}$ cahiers, c'est ${{m}}$ fois ${{n}}$ cahiers. Si le prix était proportionnel, on paierait ${{m}}$ fois plus : ${{m}} \\times {{A}} = {{eval:m*A}}$.",
+					"On paie ${{P}}~\\unit{€}${{if:o==0| : c'est bien ${{m}}$ fois plus.| et non ${{eval:m*A}}~\\unit{€}$.}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{{{if:o==0|oui|non}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cahiers : oui",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cahiers, non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Taxi : non",
+			"variationIndex": 0,
+			"variables": {
+				"s": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : taxi, oui (le prix augmente)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "6",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 cahiers 6 €, 6 cahiers 12 € : oui",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"u": "2",
+				"o": "0",
+				"d": "1",
+				"A": "6",
+				"M": "6",
+				"P": "12"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 cahiers 6 €, 6 cahiers 11 € : non",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"u": "2",
+				"o": "1",
+				"d": "1",
+				"A": "6",
+				"M": "6",
+				"P": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11 €, oui (le prix augmente)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"m": "2",
+				"u": "2",
+				"o": "1",
+				"d": "1",
+				"A": "6",
+				"M": "6",
+				"P": "11"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

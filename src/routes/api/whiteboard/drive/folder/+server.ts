@@ -14,18 +14,18 @@
  * - Requires Google integration with drive.file scope
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	GoogleNotConnectedError,
 	GoogleTokenExpiredError,
 	GoogleInsufficientPermissionsError
-} from '$lib/server/google/errors';
-import { requireRole } from '$lib/server/middleware/auth';
-import { GoogleDriveClient } from '$lib/server/google/drive-api';
-import { getTeacherAccessToken } from '$lib/server/google/sync';
-import { createFolderRequestSchema } from '$lib/server/validation/whiteboard-drive';
-import { createServerLogger } from '$lib/utils/logger';
+} from '#lib/server/google/errors.ts';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { GoogleDriveClient } from '#lib/server/google/drive-api.ts';
+import { getTeacherAccessToken } from '#lib/server/google/sync.ts';
+import { createFolderRequestSchema } from '#lib/server/validation/whiteboard-drive.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/whiteboard/drive/folder/+server');
 
@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		logger.info(`[Whiteboard Drive] Created folder "${name}" (${folderId}) for teacher ${user.id}`);
 
-		return json({
+		return Response.json({
 			success: true,
 			folderId,
 			name

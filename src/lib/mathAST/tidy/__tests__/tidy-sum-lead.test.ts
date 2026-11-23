@@ -202,7 +202,7 @@ describe('somme sans variable : le rationnel en tête', () => {
 		['2\\sin(1)+1', '1 + 2 \\sin\\left( 1 \\right)'],
 		['\\arctan(2)+1', '1 + \\arctan\\left( 2 \\right)'],
 		['\\sqrt[3]{2}+1', '1 + \\sqrt[3]{2}'],
-		// degré 1 : les négatifs restent derrière, le rationnel passe devant
+		// sans lettre : les négatifs restent derrière, le rationnel passe devant
 		['\\ln(3)-\\ln(2)+1', '1 + \\ln\\left( 3 \\right) - \\ln\\left( 2 \\right)'],
 		// une somme imbriquée sans variable, dans une expression qui en a une
 		['x\\ln(\\sqrt2+1)', '\\ln\\left( 1 + \\sqrt{2} \\right) x'],
@@ -231,7 +231,6 @@ describe('somme sans variable : le rationnel en tête', () => {
 		['x^2+1', 'x^2 + 1'],
 		['1+x', 'x + 1'],
 		['\\sqrt2 x+1', '\\sqrt{2} x + 1'],
-		['x+\\sqrt2+1', '\\sqrt{2} + x + 1'],
 		['u_0+1', 'u_0 + 1'],
 		['\\alpha+1', '\\alpha + 1'],
 		['3^x+1', '3^x + 1'],
@@ -253,8 +252,8 @@ describe('somme sans variable : le rationnel en tête', () => {
 		expect(l(input)).toBe(expected);
 	});
 
-	it('une grandeur garde son ordre : tidy(1[m]+sqrt(2)[m]) = sqrt(2)[m]+1[m]', () => {
-		expect(t('1[m]+sqrt(2)[m]')).toBe('sqrt(2)[m]+1[m]');
+	it('une grandeur : tidy(1[m]+sqrt(2)[m]) = 1[m]+sqrt(2)[m]', () => {
+		expect(t('1[m]+sqrt(2)[m]')).toBe('1[m]+sqrt(2)[m]');
 	});
 
 	it.each([
@@ -268,6 +267,49 @@ describe('somme sans variable : le rationnel en tête', () => {
 		const once = tidy(parseLatex(s) as MathNode);
 		expect(toLatex(tidy(once))).toBe(toLatex(once));
 	});
+});
+
+/**
+ * Le degré d'un terme ne compte que ses inconnues (Q14, David, 2026-10-26) :
+ * `√2`, `π`, `e`, `ln 2`, `cos 1` sont de degré 0, comme un nombre, et passent
+ * derrière les lettres — `x + √2`, `x² + 2x + √5`. Entre constantes, le
+ * rationnel d'abord (`x + 1 + √2`), comme dans une somme sans lettre. `i` garde
+ * son degré : l'écriture des complexes ne change pas.
+ */
+describe('une constante est de degré 0', () => {
+	const l = (s: string) => toLatex(tidy(parseLatex(s) as MathNode));
+
+	it.each([
+		['x+\\sqrt2', 'x + \\sqrt{2}'],
+		['\\sqrt2+x', 'x + \\sqrt{2}'],
+		['x+\\sqrt2+1', 'x + 1 + \\sqrt{2}'],
+		['2x+\\ln2', '2 x + \\ln\\left( 2 \\right)'],
+		['\\pi+x', 'x + \\pi'],
+		['e+x', 'x + \\exponentialE'],
+		['\\cos(1)+x', 'x + \\cos\\left( 1 \\right)'],
+		['\\frac{\\sqrt2}{2}+x', 'x + \\dfrac{\\sqrt{2}}{2}'],
+		['x^2+\\sqrt3 x+1', 'x^2 + \\sqrt{3} x + 1'],
+		['\\pi x+x^2', 'x^2 + \\pi x'],
+		['x^2+2x+\\sqrt5', 'x^2 + 2 x + \\sqrt{5}'],
+		['\\sqrt{2}x+\\sqrt{3}+x^2', 'x^2 + \\sqrt{2} x + \\sqrt{3}'],
+		['x^2+e x+e^2', 'x^2 + \\exponentialE x + \\exponentialE^2'],
+		['x+\\ln3-\\ln2', 'x + \\ln\\left( 3 \\right) - \\ln\\left( 2 \\right)'],
+		// témoins : déjà dans l'ordre
+		['x-\\sqrt2', 'x - \\sqrt{2}'],
+		['\\sqrt2-x', '\\sqrt{2} - x'],
+		['\\sqrt2 x^2+x+1', '\\sqrt{2} x^2 + x + 1'],
+		['\\exponentialE^x+\\sqrt2', '\\exponentialE^x + \\sqrt{2}']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it.each(['x+\\sqrt2+1', 'x^2+e x+e^2', '\\sqrt{2}x+\\sqrt{3}+x^2'])(
+		'tidy(tidy(%s)) stable',
+		(s) => {
+			const once = tidy(parseLatex(s) as MathNode);
+			expect(toLatex(tidy(once))).toBe(toLatex(once));
+		}
+	);
 });
 
 /**

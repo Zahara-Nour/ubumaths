@@ -14,7 +14,7 @@
  */
 
 import type { QuestionTemplate, ResolvedVariable } from '../types';
-import { tokenize } from '$lib/ubumark';
+import { tokenize } from '#lib/ubumark/index.ts';
 
 // ============================================================================
 // TYPES
@@ -98,7 +98,6 @@ function sourcesOf(template: QuestionTemplate, index: number): Source[] {
 	const correction = variation.correction ?? shared.correction;
 	for (const step of correction?.steps ?? []) markdown('correction', step);
 	for (const feedback of Object.values(correction?.feedback ?? {})) markdown('retour', feedback);
-	for (const choice of variation.choices ?? shared.choices ?? []) markdown('choix', choice.content);
 	for (const blank of variation.blanks ?? []) {
 		math('réponse attendue', blank.expectedAnswer);
 		math('case pré-remplie', blank.prefilled);

@@ -104,9 +104,6 @@
 			}
 		},
 		"grades": ["4"],
-		"theme": "Puissances",
-		"domain": "Apprivoiser",
-		"subdomain": "Définition",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,

@@ -5,13 +5,13 @@
  * Note: The [id] here refers to the class ID, not a chapter ID
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
-import { reorderChapters } from '$lib/server/chapters';
-import { reorderChaptersSchema } from '$lib/server/validation/chapters';
-import { uuidSchema } from '$lib/server/validation/common';
-import { createServerLogger } from '$lib/utils/logger';
+import { requireRole } from '#lib/server/middleware/auth.ts';
+import { reorderChapters } from '#lib/server/chapters.ts';
+import { reorderChaptersSchema } from '#lib/server/validation/chapters.ts';
+import { uuidSchema } from '#lib/server/validation/common.ts';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/teacher/chapters/[id]/reorder/+server');
 
@@ -75,5 +75,5 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to reorder chapters');
 	}
 
-	return json({ success: true });
+	return Response.json({ success: true });
 };

@@ -1,0 +1,3074 @@
+[
+	{
+		"id": "03bd034d-5c4e-49d4-8da4-5e621089c12b",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "Pour fabriquer un bracelet, Inès enfile ${{a}}$ perles rouges et ${{b}}$ perles bleues. Elle a ${{R}}$ perles rouges et ${{B}}$ perles bleues.\n\nCombien de bracelets peut-elle fabriquer, au maximum ?\n\nElle peut fabriquer $?$ bracelets.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "R",
+						"expression": "12..80"
+					},
+					{
+						"name": "B",
+						"expression": "12..80"
+					},
+					{
+						"name": "qr",
+						"expression": "eval:floor(R/a)"
+					},
+					{
+						"name": "qb",
+						"expression": "eval:floor(B/b)"
+					},
+					{
+						"name": "w",
+						"expression": "eval:min(qr,qb)"
+					}
+				],
+				"conditions": ["qr != qb"],
+				"correction": {
+					"steps": [
+						"Chaque bracelet demande ${{a}}$ perles rouges **et** ${{b}}$ perles bleues : il faut que les deux couleurs suffisent.",
+						"Les rouges : ${{R}} = {{a}} \\times {{qr}} + {{eval:R-a*qr}}$, assez pour ${{qr}}$ bracelets. Les bleues : ${{B}} = {{b}} \\times {{qb}} + {{eval:B-b*qb}}$, assez pour ${{qb}}$ bracelets.",
+						"La couleur qui manque la première décide : le plus petit des deux nombres, $\\textcolor{{{color:primary.0}}}{{{w}}}$.",
+						"Inès peut fabriquer ${{w}}$ bracelets.",
+						"On vérifie : un bracelet de plus demanderait {{if:qr<qb|${{eval:a*(w+1)}}$ perles rouges, plus que les ${{R}}$|${{eval:b*(w+1)}}$ perles bleues, plus que les ${{B}}$}} qu'elle a."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "Kenzo doit payer exactement ${{S}}~\\unit{€}$. Il n'a que des pièces de $2~\\unit{€}$ et de $5~\\unit{€}$ (autant qu'il en veut), et on ne lui rend pas la monnaie.\n\nCombien de pièces doit-il donner, au minimum ?\n\nIl doit donner $?$ pièces.",
+				"variables": [
+					{
+						"name": "S",
+						"expression": "11..49"
+					},
+					{
+						"name": "q",
+						"expression": "eval:floor(S/5)"
+					},
+					{
+						"name": "k",
+						"expression": "eval:q-mod(S-5*q,2)"
+					},
+					{
+						"name": "t",
+						"expression": "eval:(S-5*k)/2"
+					},
+					{
+						"name": "w",
+						"expression": "eval:k+t"
+					}
+				],
+				"conditions": ["mod(S,5) != 0"],
+				"correction": {
+					"steps": [
+						"Pour donner le moins de pièces possible, on prend le plus de pièces de $5~\\unit{€}$ possible ; mais le reste doit se payer en pièces de $2~\\unit{€}$ : il doit être **pair**.",
+						"${{q}}$ pièces de $5~\\unit{€}$ font ${{eval:5*q}}~\\unit{€}$ ; il reste ${{eval:S-5*q}}~\\unit{€}${{if:k<q|, un nombre impair : impossible en pièces de $2~\\unit{€}$. Avec une pièce de $5~\\unit{€}$ de moins, il reste ${{eval:S-5*k}}~\\unit{€}$|}}, soit ${{t}}$ {{if:t==1|pièce|pièces}} de $2~\\unit{€}$.",
+						"$${{k}} + {{t}} = \\textcolor{{{color:primary.0}}}{{{w}}}$$",
+						"Kenzo doit donner ${{w}}$ pièces : ${{k}}$ {{if:k==1|pièce|pièces}} de $5~\\unit{€}$ et ${{t}}$ {{if:t==1|pièce|pièces}} de $2~\\unit{€}$.",
+						"On vérifie : $5 \\times {{k}} + 2 \\times {{t}} = {{S}}$ ; avec plus de pièces de $5~\\unit{€}$, le reste ne se paierait plus en pièces de $2~\\unit{€}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes d'optimisation",
+		"description": "Le plus de bracelets possible avec des perles de deux couleurs (le plus petit des deux quotients) ; payer une somme exacte avec le moins de pièces de 2 € et de 5 €",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "18",
+					"R": "20",
+					"a": "3",
+					"b": "2",
+					"w": "6",
+					"qb": "9",
+					"qr": "6"
+				},
+				"description": "bracelets : 3 rouges et 2 bleues, 20 et 18 → 6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "18",
+					"R": "20",
+					"a": "3",
+					"b": "2",
+					"w": "6",
+					"qb": "9",
+					"qr": "6"
+				},
+				"description": "Erreur : bracelets, le plus grand quotient (9)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "18",
+					"R": "20",
+					"a": "3",
+					"b": "2",
+					"w": "6",
+					"qb": "9",
+					"qr": "6"
+				},
+				"description": "Erreur : bracelets, toutes les perles ensemble (38 ÷ 5 → 7)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "22",
+					"R": "40",
+					"a": "2",
+					"b": "5",
+					"w": "4",
+					"qb": "4",
+					"qr": "20"
+				},
+				"description": "bracelets : les bleues manquent d'abord (2, 5, 40, 22 → 4)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "22",
+					"R": "40",
+					"a": "2",
+					"b": "5",
+					"w": "4",
+					"qb": "4",
+					"qr": "20"
+				},
+				"description": "Erreur : bracelets, les rouges seules (20)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"S": "16",
+					"k": "2",
+					"q": "3",
+					"t": "3",
+					"w": "5"
+				},
+				"description": "pièces : 16 € = 2 × 5 + 3 × 2 → 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"S": "16",
+					"k": "2",
+					"q": "3",
+					"t": "3",
+					"w": "5"
+				},
+				"description": "Erreur : pièces, que des pièces de 2 € (8)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"S": "16",
+					"k": "2",
+					"q": "3",
+					"t": "3",
+					"w": "5"
+				},
+				"description": "Erreur : pièces, 3 pièces de 5 € et un reste de 1 € (4)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"S": "13",
+					"k": "1",
+					"q": "2",
+					"t": "4",
+					"w": "5"
+				},
+				"description": "pièces : 13 € = 5 + 4 × 2 → 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"S": "22",
+					"k": "4",
+					"q": "4",
+					"t": "1",
+					"w": "5"
+				},
+				"description": "pièces : 22 € = 4 × 5 + 2 → 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"S": "22",
+					"k": "4",
+					"q": "4",
+					"t": "1",
+					"w": "5"
+				},
+				"description": "Erreur : pièces, 22 € en pièces de 2 € (11)",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "24db415b-40ab-47d4-86c7-98bf42a9bab3",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 4,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+d}}"
+					}
+				],
+				"statement": "En 2025, la ville de Brévin comptait ${{a}}$ habitants. La ville de Corlay en comptait ${{d}}$ de plus que Brévin.\n\nCombien d'habitants la ville de Corlay comptait-elle ?\n\nCorlay comptait $?$ habitants.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "15000..700000"
+					},
+					{
+						"name": "d",
+						"expression": "1500..150000"
+					}
+				],
+				"conditions": ["a + d <= 999999"],
+				"correction": {
+					"steps": [
+						"Corlay a autant d'habitants que Brévin, et encore ${{d}}$ de plus : on ajoute l'écart.\n\n```schema-barres\nBrévin : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (5)\nCorlay : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (5) ; {{eval:floor((d)/1000)}} {{eval:floor(mod((d),1000)/100)}}{{eval:floor(mod((d),100)/10)}}{{eval:mod((d),10)}} (2) = ?\n```",
+						"$${{a}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+d}}}$$",
+						"Corlay comptait ${{eval:a+d}}$ habitants.",
+						"Corlay a plus d'habitants que Brévin : ${{eval:a+d}}$ est bien plus grand que ${{a}}$, et ${{eval:a+d}} - {{a}} = {{d}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f-g}}"
+					}
+				],
+				"statement": "Cette année, le festival de Lirac a accueilli ${{f}}$ spectateurs. L'an dernier, il en avait accueilli ${{g}}$.\n\nCombien de spectateurs de plus le festival a-t-il accueillis cette année ?\n\nIl en a accueilli $?$ de plus.",
+				"variables": [
+					{
+						"name": "f",
+						"expression": "12000..999999"
+					},
+					{
+						"name": "g",
+						"expression": "10000..990000"
+					}
+				],
+				"conditions": ["f - g >= 1000", "f - g <= 200000"],
+				"correction": {
+					"steps": [
+						"On cherche **l'écart** : ce qu'il faut ajouter à ${{g}}$ pour arriver à ${{f}}$. C'est une soustraction, même si la question dit « de plus ».\n\n```schema-barres\nL'an dernier : {{eval:floor((g)/1000)}} {{eval:floor(mod((g),1000)/100)}}{{eval:floor(mod((g),100)/10)}}{{eval:mod((g),10)}} (5)\nCette année : {{eval:floor((g)/1000)}} {{eval:floor(mod((g),1000)/100)}}{{eval:floor(mod((g),100)/10)}}{{eval:mod((g),10)}} (5) ; ? (2) = {{eval:floor((f)/1000)}} {{eval:floor(mod((f),1000)/100)}}{{eval:floor(mod((f),100)/10)}}{{eval:mod((f),10)}}\n```",
+						"$${{f}} - {{g}} = \\textcolor{{{color:primary.0}}}{{{eval:f-g}}}$$",
+						"Le festival a accueilli ${{eval:f-g}}$ spectateurs de plus cette année.",
+						"On vérifie : ${{g}} + {{eval:f-g}} = {{f}}$ ; l'écart est plus petit que chacun des deux nombres, c'est vraisemblable."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a-d}}"
+					}
+				],
+				"statement": "Le stade de Marvel peut accueillir ${{a}}$ spectateurs. Il a ${{d}}$ places de plus que le stade de Cimbres.\n\nCombien de places le stade de Cimbres a-t-il ?\n\nLe stade de Cimbres a $?$ places.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "25000..99000"
+					},
+					{
+						"name": "d",
+						"expression": "1200..20000"
+					}
+				],
+				"conditions": ["a - d >= 5000"],
+				"correction": {
+					"steps": [
+						"Marvel a plus de places : c'est Cimbres qui en a ${{d}}$ de **moins**. On enlève l'écart, même si l'énoncé dit « de plus ».\n\n```schema-barres\nMarvel : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (7)\nCimbres : ? (5) ; -{{eval:floor((d)/1000)}} {{eval:floor(mod((d),1000)/100)}}{{eval:floor(mod((d),100)/10)}}{{eval:mod((d),10)}} (2)\n```",
+						"$${{a}} - {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a-d}}}$$",
+						"Le stade de Cimbres a ${{eval:a-d}}$ places.",
+						"On vérifie : ${{eval:a-d}} + {{d}} = {{a}}$ ; Marvel a bien ${{d}}$ places de plus que Cimbres."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:number"
+						},
+						"expectedAnswer": "{{eval:(A-d)/100;d}}"
+					}
+				],
+				"statement": "Alix mesure ${{eval:A/100;d}}~\\unit{m}$. Elle mesure ${{d}}~\\unit{cm}$ de plus que Bruno.\n\nCombien mesure Bruno ?\n\nBruno mesure $?~\\text{m}$.",
+				"variables": [
+					{
+						"name": "A",
+						"expression": "132..175"
+					},
+					{
+						"name": "d",
+						"expression": "5..25"
+					}
+				],
+				"conditions": ["mod(A,10) != 0", "mod(A-d,10) != 0"],
+				"correction": {
+					"steps": [
+						"Alix est plus grande : Bruno mesure ${{d}}~\\unit{cm}$ de **moins** qu'Alix. On enlève l'écart, après avoir tout écrit dans la **même unité** : ${{d}}~\\unit{cm} = {{eval:d/100;d}}~\\unit{m}$.\n\n```schema-barres\nAlix : {{eval:floor((A)/100)}},{{eval:floor(mod((A),100)/10)}}{{eval:mod((A),10)}} m (6)\nBruno : ? (5) ; -{{d}} cm (1)\n```",
+						"$${{eval:A/100;d}} - {{eval:d/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(A-d)/100;d}}}$$",
+						"Bruno mesure ${{eval:(A-d)/100;d}}~\\unit{m}$.",
+						"Bruno est un peu plus petit qu'Alix, de quelques centimètres seulement : ${{eval:(A-d)/100;d}}~\\unit{m}$ est vraisemblable."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de comparaison",
+		"description": "Le plus grand, l'écart (« combien de plus ? »), le plus petit quand l'énoncé dit « de plus » ; décimaux et deux unités (Alix 1,61 m, 13 cm de plus que Bruno) ; schéma en barres dans le corrigé",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["343\\,050"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "318450",
+					"d": "24600"
+				},
+				"description": "plus grand : 318 450 + 24 600 = 343 050",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["293\\,850"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "318450",
+					"d": "24600"
+				},
+				"description": "Erreur : plus grand, l'écart enlevé (293 850)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["23\\,550"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "152300",
+					"g": "128750"
+				},
+				"description": "écart : 152 300 − 128 750 = 23 550",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["281\\,050"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "152300",
+					"g": "128750"
+				},
+				"description": "Erreur : écart, « de plus » lu addition (281 050)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["152\\,300"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "152300",
+					"g": "128750"
+				},
+				"description": "Erreur : écart, une valeur donnée pour l'écart (152 300)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["42\\,250"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "48500",
+					"d": "6250"
+				},
+				"description": "plus petit : 48 500 − 6 250 = 42 250",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["54\\,750"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "48500",
+					"d": "6250"
+				},
+				"description": "Erreur : plus petit, « de plus » lu addition (54 750)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1,48"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "161",
+					"d": "13"
+				},
+				"description": "BO : 1,61 m − 13 cm = 1,48 m",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1,74"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "161",
+					"d": "13"
+				},
+				"description": "Erreur : « de plus » lu addition (1,74 m)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["148"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "161",
+					"d": "13"
+				},
+				"description": "Erreur : la réponse en centimètres (148)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0,31"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "161",
+					"d": "13"
+				},
+				"description": "Erreur : 13 cm lus 1,3 m (0,31)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "30c6f9d4-1485-437d-ba3e-ae400a7d7156",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 11,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:g*n+h*m}}"
+					}
+				],
+				"statement": "Pour la fête de l'école, on installe ${{g}}$ tables de ${{n}}$ places et ${{h}}$ tables de ${{m}}$ places.\n\nCombien de personnes peuvent s'asseoir ?\n\n$?$ personnes peuvent s'asseoir.",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "3..25"
+					},
+					{
+						"name": "n",
+						"expression": "4..12"
+					},
+					{
+						"name": "h",
+						"expression": "3..25"
+					},
+					{
+						"name": "m",
+						"expression": "4..12"
+					}
+				],
+				"conditions": ["g * n + h * m <= 999", "n != m", "g != h"],
+				"correction": {
+					"steps": [
+						"On calcule en trois étapes : les places des tables de ${{n}}$, celles des tables de ${{m}}$, puis on ajoute.",
+						"$${{g}} \\times {{n}} = {{eval:g*n}}$$",
+						"$${{h}} \\times {{m}} = {{eval:h*m}}$$",
+						"$${{eval:g*n}} + {{eval:h*m}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n+h*m}}}$$",
+						"${{eval:g*n+h*m}}$ personnes peuvent s'asseoir.",
+						"Ordre de grandeur : il y a ${{eval:g+h}}$ tables de ${{n}}$ ou ${{m}}$ places, donc entre ${{eval:(g+h)*min(n,m)}}$ et ${{eval:(g+h)*max(n,m)}}$ places : c'est vraisemblable."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:number"
+						},
+						"expectedAnswer": "{{eval:(100*B-g*p)/100;d}}"
+					}
+				],
+				"statement": "Zoé achète ${{g}}$ cahiers à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ l'un. Elle paie avec un billet de ${{B}}~\\unit{€}$.\n\nCombien le vendeur doit-il lui rendre ?\n\nIl rend $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "2..9"
+					},
+					{
+						"name": "B",
+						"expression": "20|50"
+					},
+					{
+						"name": "pE",
+						"expression": "1..9"
+					},
+					{
+						"name": "pC",
+						"expression": "1..99"
+					},
+					{
+						"name": "p",
+						"expression": "eval:100*pE+pC"
+					}
+				],
+				"conditions": ["g * p <= 100 * B - 100", "mod(pC,10) != 0"],
+				"correction": {
+					"steps": [
+						"On calcule en deux étapes : d'abord le prix des ${{g}}$ cahiers (${{g}}$ fois le même prix : on multiplie), puis la monnaie (on enlève).",
+						"$${{g}} \\times {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} = {{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}}$$",
+						"$${{B}} - {{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*B-g*p)/100)}}.{{eval:floor(mod(100*B-g*p,100)/10)}}{{eval:mod(100*B-g*p,10)}}}$$",
+						"Le vendeur rend ${{eval:floor((100*B-g*p)/100)}}.{{eval:floor(mod(100*B-g*p,100)/10)}}{{eval:mod(100*B-g*p,10)}}~\\unit{€}$ à Zoé.",
+						"On vérifie : ${{eval:floor((g*p)/100)}}.{{eval:floor(mod(g*p,100)/10)}}{{eval:mod(g*p,10)}} + {{eval:floor((100*B-g*p)/100)}}.{{eval:floor(mod(100*B-g*p,100)/10)}}{{eval:mod(100*B-g*p,10)}} = {{B}}$, on retrouve le billet."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:g*n-r-s}}"
+					}
+				],
+				"statement": "Un cinéma a ${{g}}$ rangées de ${{n}}$ places. Pour la séance du soir, ${{r}}$ places sont réservées sur Internet et ${{s}}$ places sont vendues au guichet.\n\nCombien de places restent libres ?\n\nIl reste $?$ places libres.",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "8..25"
+					},
+					{
+						"name": "n",
+						"expression": "10..30"
+					},
+					{
+						"name": "r",
+						"expression": "20..200"
+					},
+					{
+						"name": "s",
+						"expression": "20..200"
+					}
+				],
+				"conditions": ["g * n <= 750", "g * n - r - s >= 10"],
+				"correction": {
+					"steps": [
+						"On calcule en trois étapes : toutes les places (on multiplie), les places prises (on ajoute), puis les places libres (on enlève).",
+						"$${{g}} \\times {{n}} = {{eval:g*n}}$$",
+						"$${{r}} + {{s}} = {{eval:r+s}}$$",
+						"$${{eval:g*n}} - {{eval:r+s}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n-r-s}}}$$",
+						"Il reste ${{eval:g*n-r-s}}$ places libres.",
+						"On vérifie : ${{eval:g*n-r-s}} + {{eval:r+s}} = {{eval:g*n}}$, toutes les places du cinéma."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:p+a}}"
+					}
+				],
+				"statement": "Madame Roux partage ${{eval:g*p}}~\\unit{€}$ en parts égales entre ses ${{g}}$ petits-enfants. Lila, l'une d'eux, avait déjà ${{a}}~\\unit{€}$ dans sa tirelire.\n\nCombien Lila a-t-elle maintenant ?\n\nLila a $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "2..9"
+					},
+					{
+						"name": "p",
+						"expression": "10..90"
+					},
+					{
+						"name": "a",
+						"expression": "5..60"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On calcule en deux étapes : d'abord la part de Lila (on partage, on divise), puis ce qu'elle a en tout (on ajoute).",
+						"$${{eval:g*p}} \\div {{g}} = {{p}}$$",
+						"$${{p}} + {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:p+a}}}$$",
+						"Lila a maintenant ${{eval:p+a}}~\\unit{€}$.",
+						"On vérifie : ${{g}} \\times {{p}} = {{eval:g*p}}$ ; Lila a plus qu'avant, mais moins que toute la somme partagée."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes mixtes : les quatre opérations",
+		"description": "Les quatre opérations enchaînées : 12 tables de 8 et 9 tables de 6 ; 4 cahiers à 2,35 € sur un billet de 20 € ; un cinéma, ses places réservées et vendues ; un partage puis une addition",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["150"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "12",
+					"h": "9",
+					"m": "6",
+					"n": "8"
+				},
+				"description": "tables : 12 × 8 + 9 × 6 = 150",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "12",
+					"h": "9",
+					"m": "6",
+					"n": "8"
+				},
+				"description": "Erreur : tables comptées (21)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["96"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "12",
+					"h": "9",
+					"m": "6",
+					"n": "8"
+				},
+				"description": "Erreur : une seule sorte de tables (96)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10,6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "20",
+					"g": "4",
+					"p": "235",
+					"pC": "35",
+					"pE": "2"
+				},
+				"description": "cahiers : 20 − 4 × 2,35 = 10,60 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["17,65"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "20",
+					"g": "4",
+					"p": "235",
+					"pC": "35",
+					"pE": "2"
+				},
+				"description": "Erreur : cahiers, un seul retiré (17,65 €)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9,4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "20",
+					"g": "4",
+					"p": "235",
+					"pC": "35",
+					"pE": "2"
+				},
+				"description": "Erreur : cahiers, le prix payé (9,40 €)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["155"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "15",
+					"n": "24",
+					"r": "85",
+					"s": "120"
+				},
+				"description": "cinéma : 15 × 24 − 85 − 120 = 155",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["275"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "15",
+					"n": "24",
+					"r": "85",
+					"s": "120"
+				},
+				"description": "Erreur : cinéma, le guichet oublié (275)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["360"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "15",
+					"n": "24",
+					"r": "85",
+					"s": "120"
+				},
+				"description": "Erreur : cinéma, rien retiré (360)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["55"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "25",
+					"g": "6",
+					"p": "30"
+				},
+				"description": "partage : 180 € entre 6, plus 25 € = 55 €",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "25",
+					"g": "6",
+					"p": "30"
+				},
+				"description": "Erreur : partage, la part seule (30)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["205"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "25",
+					"g": "6",
+					"p": "30"
+				},
+				"description": "Erreur : partage oublié (205)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "559aa5fc-10ec-4b7e-bd49-c054bb242b34",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"reducedFractions": "off",
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 24,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:number"
+						},
+						"expectedAnswer": "{{eval:(a+b+c)/100;d}}"
+					}
+				],
+				"statement": "Trois amis courent un relais. Lina parcourt ${{eval:a/100;d}}~\\unit{km}$, Tom ${{eval:b/100;d}}~\\unit{km}$ et Sami ${{eval:c/100;d}}~\\unit{km}$.\n\nQuelle distance les trois amis ont-ils parcourue en tout ?\n\nIls ont parcouru $?~\\text{km}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "105..395"
+					},
+					{
+						"name": "b",
+						"expression": "105..395"
+					},
+					{
+						"name": "c",
+						"expression": "105..395"
+					}
+				],
+				"conditions": ["mod(a,10) != 0", "mod(b,10) != 0", "mod(c,10) != 0"],
+				"correction": {
+					"steps": [
+						"Les trois distances sont les **parties** ; on cherche **le tout** : on ajoute, en alignant les virgules (unités sous unités, dixièmes sous dixièmes, centièmes sous centièmes).",
+						"$${{eval:a/100;d}} + {{eval:b/100;d}} + {{eval:c/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(a+b+c)/100;d}}}$$",
+						"Les trois amis ont parcouru ${{eval:(a+b+c)/100;d}}~\\unit{km}$ en tout.",
+						"Ordre de grandeur, en arrondissant chaque distance à l'unité : ${{eval:floor(a/100+0.5)}} + {{eval:floor(b/100+0.5)}} + {{eval:floor(c/100+0.5)}} = {{eval:floor(a/100+0.5)+floor(b/100+0.5)+floor(c/100+0.5)}}$ ; le résultat en est proche, il est vraisemblable."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:number"
+						},
+						"expectedAnswer": "{{eval:(b)/100;d}}"
+					}
+				],
+				"statement": "Lucas a payé ${{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}~\\unit{€}$ pour un sac et une casquette. Le sac coûte ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$.\n\nCombien coûte la casquette ?\n\nLa casquette coûte $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "aE",
+						"expression": "15..60"
+					},
+					{
+						"name": "aC",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:100*aE+aC"
+					},
+					{
+						"name": "bE",
+						"expression": "6..19"
+					},
+					{
+						"name": "bC",
+						"expression": "1..99"
+					},
+					{
+						"name": "b",
+						"expression": "eval:100*bE+bC"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le sac et la casquette, c'est **le tout** : ${{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}~\\unit{€}$. On cherche une partie, le prix de la casquette : on enlève le prix du sac.",
+						"$${{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}} - {{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}}$$",
+						"La casquette coûte ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$.",
+						"On vérifie : ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}} = {{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}$, on retrouve bien ce que Lucas a payé."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:b+(1-t)*a}}}{{{d}}}"
+					}
+				],
+				"statement": "Lou peint une fresque. {{if:t==0|Le matin, elle en peint|Dans la journée, elle en peint en tout}} $\\frac{{{eval:a+t*b}}}{{{d}}}$ ; {{if:t==0|l'après-midi, elle en peint|le matin, elle en avait peint}} $\\frac{{{eval:b+t*(a-b)}}}{{{d}}}$.\n\nQuelle fraction de la fresque Lou a-t-elle peinte {{if:t==0|dans toute la journée|l'après-midi}} ?\n\nElle a peint $?$ de la fresque {{if:t==0|dans la journée|l'après-midi}}.",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "5..20"
+					},
+					{
+						"name": "a",
+						"expression": "1..{{eval:d-2}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:d-a-1}}"
+					},
+					{
+						"name": "t",
+						"expression": "0..1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:t==0|Le matin et l'après-midi sont les deux **parties** ; on cherche **le tout** : on ajoute.|La journée, c'est **le tout** ; le matin est une partie, on cherche l'autre : on enlève.}} Les parts sont de même taille : on calcule sur les numérateurs, le dénominateur ${{d}}$ ne change pas.",
+						"$$\\frac{{{eval:a+t*b}}}{{{d}}} {{if:t==0|+|-}} \\frac{{{eval:b+t*(a-b)}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:b+(1-t)*a}}}{{{d}}}}$$",
+						"Lou a peint $\\frac{{{eval:b+(1-t)*a}}}{{{d}}}$ de la fresque {{if:t==0|dans la journée|l'après-midi}}.",
+						"On vérifie : le matin $\\frac{{{a}}}{{{d}}}$ et l'après-midi $\\frac{{{b}}}{{{d}}}$ font bien $\\frac{{{eval:a+b}}}{{{d}}}$ ; c'est moins que la fresque entière, $\\frac{{{d}}}{{{d}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes parties-tout : décimaux, fractions",
+		"description": "Le tout ou une partie avec des décimaux (1,25 km + 2,48 km + 1,36 km ; un prix à virgule manquant) ou des fractions de même dénominateur (5/12 le matin, 4/12 l'après-midi)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5,09"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "125",
+					"b": "248",
+					"c": "136"
+				},
+				"description": "relais : 1,25 + 2,48 + 1,36 = 5,09",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4,09"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "125",
+					"b": "248",
+					"c": "136"
+				},
+				"description": "Erreur : relais, retenue des centièmes oubliée (4,09)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3,73"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "125",
+					"b": "248",
+					"c": "136"
+				},
+				"description": "Erreur : relais, un coureur oublié (3,73)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3,75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "125",
+					"b": "135",
+					"c": "115"
+				},
+				"description": "relais : 1,25 + 1,35 + 1,15 = 3,75",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{509}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "125",
+					"b": "248",
+					"c": "136"
+				},
+				"description": "Forme : 509/100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12,6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3475",
+					"b": "1260",
+					"aC": "75",
+					"aE": "34",
+					"bC": "60",
+					"bE": "12"
+				},
+				"description": "prix : 47,35 − 34,75 = 12,60 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12,60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3475",
+					"b": "1260",
+					"aC": "75",
+					"aE": "34",
+					"bC": "60",
+					"bE": "12"
+				},
+				"description": "Zéro final accepté : 12,60 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["82,1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3475",
+					"b": "1260",
+					"aC": "75",
+					"aE": "34",
+					"bC": "60",
+					"bE": "12"
+				},
+				"description": "Erreur : prix, les deux ajoutés (82,10 €)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["13,4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3475",
+					"b": "1260",
+					"aC": "75",
+					"aE": "34",
+					"bC": "60",
+					"bE": "12"
+				},
+				"description": "Erreur : prix, centimes soustraits à l'envers (13,40 €)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{9}{12}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "4",
+					"d": "12",
+					"t": "0"
+				},
+				"description": "fractions, le tout : 5/12 + 4/12 = 9/12",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "4",
+					"d": "12",
+					"t": "0"
+				},
+				"description": "fractions, le tout : 3/4, fraction égale",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{9}{24}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "4",
+					"d": "12",
+					"t": "0"
+				},
+				"description": "Erreur : dénominateurs ajoutés (9/24)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "4",
+					"d": "12",
+					"t": "0"
+				},
+				"description": "Erreur : dénominateur oublié (9)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{4}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"d": "10",
+					"t": "1"
+				},
+				"description": "fractions, une partie : 7/10 − 3/10 = 4/10",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{2}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"d": "10",
+					"t": "1"
+				},
+				"description": "fractions, une partie : 2/5, fraction égale",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{10}{10}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"d": "10",
+					"t": "1"
+				},
+				"description": "Erreur : une partie, les deux ajoutés (10/10)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "67cb8e74-fa1a-4171-8ae2-ab1e62ded92c",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:h*b}}"
+					}
+				],
+				"statement": "Pour la photo de classe, Maëlle hésite entre ${{h}}$ hauts et ${{b}}$ bas (jupes et pantalons).\n\nCombien de tenues différentes (un haut et un bas) peut-elle composer ?\n\nElle peut composer $?$ tenues.",
+				"variables": [
+					{
+						"name": "h",
+						"expression": "3..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					}
+				],
+				"conditions": ["h != b"],
+				"correction": {
+					"steps": [
+						"Avec **un** haut, Maëlle peut mettre chacun des ${{b}}$ bas : ${{b}}$ tenues. Dans un tableau, il y aurait ${{h}}$ lignes (les hauts) et ${{b}}$ colonnes (les bas) : chaque case est une tenue.",
+						"On compte les cases : $${{h}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:h*b}}}$$",
+						"Maëlle peut composer ${{eval:h*b}}$ tenues.",
+						"On vérifie : ${{b}}$ tenues pour chacun des ${{h}}$ hauts, c'est bien plus que les ${{eval:h+b}}$ vêtements."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b*c}}"
+					}
+				],
+				"statement": "À la cantine, le menu propose ${{a}}$ entrées, ${{b}}$ plats et ${{c}}$ desserts. On choisit une entrée, un plat et un dessert.\n\nCombien de repas différents peut-on composer ?\n\nOn peut composer $?$ repas.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					},
+					{
+						"name": "c",
+						"expression": "2..4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On construit un arbre : ${{a}}$ branches pour les entrées ; au bout de chacune, ${{b}}$ branches pour les plats ; au bout de chacune, ${{c}}$ branches pour les desserts.",
+						"Chaque chemin de l'arbre est un repas : $${{a}} \\times {{b}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b*c}}}$$",
+						"On peut composer ${{eval:a*b*c}}$ repas différents.",
+						"On vérifie : avec une seule entrée, il y a déjà ${{b}} \\times {{c}} = {{eval:b*c}}$ repas ; ${{a}}$ entrées en donnent ${{a}}$ fois plus."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "On lance deux dés à six faces, un rouge et un bleu, et on ajoute les deux nombres obtenus. Un $1$ sur le dé rouge et un $2$ sur le dé bleu, ce n'est pas la même façon qu'un $2$ sur le dé rouge et un $1$ sur le dé bleu.\n\nDe combien de façons différentes peut-on obtenir une somme de ${{s}}$ ?\n\nOn peut l'obtenir de $?$ façons.",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "3..11"
+					},
+					{
+						"name": "w",
+						"expression": "eval:6-abs(s-7)"
+					},
+					{
+						"name": "v1",
+						"expression": "eval:min(max(s-1,0),1)*min(max(8-s,0),1)"
+					},
+					{
+						"name": "v2",
+						"expression": "eval:min(max(s-2,0),1)*min(max(9-s,0),1)"
+					},
+					{
+						"name": "v3",
+						"expression": "eval:min(max(s-3,0),1)*min(max(10-s,0),1)"
+					},
+					{
+						"name": "v4",
+						"expression": "eval:min(max(s-4,0),1)*min(max(11-s,0),1)"
+					},
+					{
+						"name": "v5",
+						"expression": "eval:min(max(s-5,0),1)*min(max(12-s,0),1)"
+					},
+					{
+						"name": "v6",
+						"expression": "eval:min(max(s-6,0),1)*min(max(13-s,0),1)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On note chaque façon (dé rouge ; dé bleu) et on liste les valeurs du dé rouge de $1$ à $6$ : le dé bleu doit compléter jusqu'à ${{s}}$, avec un nombre de $1$ à $6$.",
+						"Les façons : {{if:v1==1|$(1\\,;\\,{{eval:s-1}})$ |}}{{if:v2==1|$(2\\,;\\,{{eval:s-2}})$ |}}{{if:v3==1|$(3\\,;\\,{{eval:s-3}})$ |}}{{if:v4==1|$(4\\,;\\,{{eval:s-4}})$ |}}{{if:v5==1|$(5\\,;\\,{{eval:s-5}})$ |}}{{if:v6==1|$(6\\,;\\,{{eval:s-6}})$ |}}",
+						"On peut obtenir ${{s}}$ de $\\textcolor{{{color:primary.0}}}{{{w}}}$ façons.",
+						"On vérifie : $(a\\,;\\,b)$ et $(b\\,;\\,a)$ comptent pour deux façons quand les deux nombres sont différents ; la somme $7$ est celle qui a le plus de façons ($6$)."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{w}}"
+					}
+				],
+				"statement": "Un jeu contient tous les dominos différents que l'on peut faire avec les nombres de $0$ à ${{n}}$. Un domino porte deux nombres ; un double (comme $2$-$2$) compte. Les dominos $1$-$3$ et $3$-$1$ sont le même domino.\n\nCombien de dominos ce jeu contient-il ?\n\nIl contient $?$ dominos.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "3..6"
+					},
+					{
+						"name": "w",
+						"expression": "eval:(n+1)*(n+2)/2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On range les dominos par leur plus petit nombre, pour compter chaque domino une seule fois.",
+						"Avec $0$ : $0$-$0$, $0$-$1$, …, $0$-${{n}}$, soit ${{eval:n+1}}$ dominos ; avec $1$ comme plus petit nombre : $1$-$1$ à $1$-${{n}}$, soit ${{n}}$ dominos ; et ainsi de suite jusqu'à ${{n}}$-${{n}}$, un seul domino.",
+						"$${{if:n>5|7 + |}}{{if:n>4|6 + |}}{{if:n>3|5 + |}}4 + 3 + 2 + 1 = \\textcolor{{{color:primary.0}}}{{{w}}}$$",
+						"Le jeu contient ${{w}}$ dominos.",
+						"On vérifie : chaque double n'est compté qu'une fois, et $1$-$3$ n'est pas recompté en $3$-$1$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de dénombrement",
+		"description": "Compter par un tableau, un arbre ou une liste : 6 hauts × 3 bas ; entrée, plat, dessert ; les façons d'obtenir une somme avec deux dés ; les dominos de 0 à 4",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "3",
+					"h": "6"
+				},
+				"description": "BO : 6 hauts × 3 bas = 18",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "3",
+					"h": "6"
+				},
+				"description": "Erreur : tenues, 6 + 3 (9)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "repas : 3 × 4 × 2 = 24",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "Erreur : repas, 3 + 4 + 2 (9)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "Erreur : repas, les desserts oubliés (12)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"s": "7",
+					"w": "6",
+					"v1": "1",
+					"v2": "1",
+					"v3": "1",
+					"v4": "1",
+					"v5": "1",
+					"v6": "1"
+				},
+				"description": "dés : la somme 7, 6 façons",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"s": "7",
+					"w": "6",
+					"v1": "1",
+					"v2": "1",
+					"v3": "1",
+					"v4": "1",
+					"v5": "1",
+					"v6": "1"
+				},
+				"description": "Erreur : la somme 7, (3 ; 4) et (4 ; 3) comptés une fois (3)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"s": "4",
+					"w": "3",
+					"v1": "1",
+					"v2": "1",
+					"v3": "1",
+					"v4": "0",
+					"v5": "0",
+					"v6": "0"
+				},
+				"description": "dés : la somme 4, 3 façons",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"s": "4",
+					"w": "3",
+					"v1": "1",
+					"v2": "1",
+					"v3": "1",
+					"v4": "0",
+					"v5": "0",
+					"v6": "0"
+				},
+				"description": "Erreur : la somme 4, (1 ; 3) et (3 ; 1) comptés une fois (2)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"s": "10",
+					"w": "3",
+					"v1": "0",
+					"v2": "0",
+					"v3": "0",
+					"v4": "1",
+					"v5": "1",
+					"v6": "1"
+				},
+				"description": "dés : la somme 10, 3 façons",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "4",
+					"w": "15"
+				},
+				"description": "BO : dominos de 0 à 4 = 15",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "4",
+					"w": "15"
+				},
+				"description": "Erreur : dominos, les doubles oubliés (10)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "4",
+					"w": "15"
+				},
+				"description": "Erreur : dominos, 1-3 et 3-1 comptés deux fois (25)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "4",
+					"w": "15"
+				},
+				"description": "Erreur : dominos, les doubles comptés deux fois (20)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "6",
+					"w": "28"
+				},
+				"description": "dominos de 0 à 6 = 28",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "8a1d9a4a-cc92-4559-9a57-d1a746b5382d",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 23,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b+t*c}}"
+					}
+				],
+				"statement": "Un parc d'attractions a reçu ${{a}}$ visiteurs en juillet et ${{b}}$ visiteurs en août{{if:t==1| ; en septembre, il en a reçu ${{c}}$|}}.\n\nCombien de visiteurs le parc a-t-il reçus en {{if:t==1|trois|deux}} mois ?\n\nLe parc a reçu $?$ visiteurs.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "15000..400000"
+					},
+					{
+						"name": "b",
+						"expression": "15000..400000"
+					},
+					{
+						"name": "c",
+						"expression": "15000..190000"
+					},
+					{
+						"name": "t",
+						"expression": "0..1"
+					}
+				],
+				"conditions": ["a + b + c <= 999999"],
+				"correction": {
+					"steps": [
+						"Chaque mois est une **partie** ; on cherche **le tout** : on ajoute les parties.\n\n```schema-barres\nVisiteurs : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (3) ; {{eval:floor((b)/1000)}} {{eval:floor(mod((b),1000)/100)}}{{eval:floor(mod((b),100)/10)}}{{eval:mod((b),10)}} (3){{if:t==1| ; {{eval:floor((c)/1000)}} {{eval:floor(mod((c),1000)/100)}}{{eval:floor(mod((c),100)/10)}}{{eval:mod((c),10)}} (2)|}} = ?\n```",
+						"$${{a}} + {{b}}{{if:t==1| + {{c}}|}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+t*c}}}$$",
+						"Le parc a reçu ${{eval:a+b+t*c}}$ visiteurs en {{if:t==1|trois|deux}} mois.",
+						"Le tout est plus grand que chaque partie : ${{eval:a+b+t*c}}$ est plus grand que ${{a}}$ et que ${{b}}$. C'est vraisemblable."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:T-a}}"
+					}
+				],
+				"statement": "La médiathèque de la ville possède ${{T}}$ livres. Parmi eux, ${{a}}$ sont des romans ; les autres sont des documentaires.\n\nCombien la médiathèque possède-t-elle de documentaires ?\n\nElle possède $?$ documentaires.",
+				"variables": [
+					{
+						"name": "T",
+						"expression": "20000..600000"
+					},
+					{
+						"name": "a",
+						"expression": "8000..500000"
+					}
+				],
+				"conditions": ["T - a >= 5000"],
+				"correction": {
+					"steps": [
+						"Tous les livres, c'est **le tout** ; les romans sont une partie, on cherche l'autre partie : on enlève.\n\n```schema-barres\nTous les livres : {{eval:floor((T)/1000)}} {{eval:floor(mod((T),1000)/100)}}{{eval:floor(mod((T),100)/10)}}{{eval:mod((T),10)}} (8)\nRomans, documentaires : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (5) ; ? (3)\n```",
+						"$${{T}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:T-a}}}$$",
+						"La médiathèque possède ${{eval:T-a}}$ documentaires.",
+						"On vérifie en remettant les deux parties ensemble : ${{a}} + {{eval:T-a}} = {{T}}$, on retrouve bien le tout."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b}}"
+					}
+				],
+				"statement": "Un grossiste avait des bouteilles d'eau dans son entrepôt. Il en a vendu ${{a}}$ et il lui en reste ${{b}}$.\n\nCombien y avait-il de bouteilles dans l'entrepôt avant la vente ?\n\nIl y avait $?$ bouteilles.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "12000..500000"
+					},
+					{
+						"name": "b",
+						"expression": "3000..400000"
+					}
+				],
+				"conditions": ["a + b <= 999999", "a != b"],
+				"correction": {
+					"steps": [
+						"Les bouteilles du début, c'est **le tout** : celles qui sont vendues et celles qui restent. « Il en reste » ne veut pas dire qu'on enlève : on cherche le tout, on ajoute.\n\n```schema-barres\nAu début : ? (8)\nVendues, restantes : {{eval:floor((a)/1000)}} {{eval:floor(mod((a),1000)/100)}}{{eval:floor(mod((a),100)/10)}}{{eval:mod((a),10)}} (5) ; {{eval:floor((b)/1000)}} {{eval:floor(mod((b),1000)/100)}}{{eval:floor(mod((b),100)/10)}}{{eval:mod((b),10)}} (3)\n```",
+						"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$",
+						"Il y avait ${{eval:a+b}}$ bouteilles dans l'entrepôt.",
+						"On vérifie : ${{eval:a+b}} - {{a}} = {{b}}$ ; après la vente, il en reste bien ${{b}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes parties-tout (jusqu'à 999 999)",
+		"description": "Chercher le tout (deux ou trois parties), une partie, ou l'état de départ (« il en a vendu 125 400, il lui en reste 86 350 ») avec des nombres jusqu'à 999 999 ; schéma en barres dans le corrigé",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["432\\,950"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "245300",
+					"b": "187650",
+					"c": "50000",
+					"t": "0"
+				},
+				"description": "deux mois : 245 300 + 187 650 = 432 950",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["57\\,650"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "245300",
+					"b": "187650",
+					"c": "50000",
+					"t": "0"
+				},
+				"description": "Erreur : deux mois, soustraction (57 650)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["454\\,150"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "125000",
+					"b": "230400",
+					"c": "98750",
+					"t": "1"
+				},
+				"description": "trois mois : 125 000 + 230 400 + 98 750 = 454 150",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["355\\,400"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "125000",
+					"b": "230400",
+					"c": "98750",
+					"t": "1"
+				},
+				"description": "Erreur : trois mois, le troisième oublié (355 400)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["432950"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "245300",
+					"b": "187650",
+					"c": "50000",
+					"t": "0"
+				},
+				"description": "Forme : sans les espaces (432950)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["207\\,450"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"T": "356200",
+					"a": "148750"
+				},
+				"description": "partie : 356 200 − 148 750 = 207 450",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["504\\,950"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"T": "356200",
+					"a": "148750"
+				},
+				"description": "Erreur : partie, les deux ajoutés (504 950)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["217\\,450"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"T": "356200",
+					"a": "148750"
+				},
+				"description": "Erreur : partie, retenue oubliée (217 450)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["211\\,750"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "125400",
+					"b": "86350"
+				},
+				"description": "départ : 125 400 vendues, 86 350 restent → 211 750",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["39\\,050"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "125400",
+					"b": "86350"
+				},
+				"description": "Erreur : départ, « il reste » lu soustraction (39 050)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "9666ca34-ce4b-4a16-b87b-693a2bcb3827",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 120,
+		"level": 10,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b-c}}"
+					}
+				],
+				"statement": "Le matin, un entrepôt contient ${{a}}$ colis. Dans la journée, des camions en apportent ${{b}}$, puis d'autres en emportent ${{c}}$.\n\nCombien de colis l'entrepôt contient-il le soir ?\n\nIl contient $?$ colis.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "20000..600000"
+					},
+					{
+						"name": "b",
+						"expression": "5000..300000"
+					},
+					{
+						"name": "c",
+						"expression": "5000..400000"
+					}
+				],
+				"conditions": ["a + b <= 999999", "a + b - c >= 5000", "b != c"],
+				"correction": {
+					"steps": [
+						"On calcule en deux étapes, dans l'ordre de la journée : d'abord l'arrivée (on ajoute), puis le départ (on enlève).",
+						"$${{a}} + {{b}} = {{eval:a+b}}$$",
+						"$${{eval:a+b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b-c}}}$$",
+						"Le soir, l'entrepôt contient ${{eval:a+b-c}}$ colis.",
+						"Il est arrivé {{if:b>c|plus|moins}} de colis qu'il n'en est parti : le soir, il y en a {{if:b>c|plus|moins}} que le matin. C'est cohérent."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a-d}}"
+					}
+				],
+				"statement": "En janvier, le musée de Vaulx a reçu ${{a}}$ visiteurs. En février, il en a reçu ${{d}}$ de moins qu'en janvier.\n\nCombien de visiteurs le musée a-t-il reçus en janvier et en février ensemble ?\n\nIl a reçu $?$ visiteurs.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10000..450000"
+					},
+					{
+						"name": "d",
+						"expression": "1000..90000"
+					}
+				],
+				"conditions": ["a - d >= 5000", "2 * a - d <= 999999"],
+				"correction": {
+					"steps": [
+						"On calcule en deux étapes : d'abord les visiteurs de février (il y en a moins : on enlève l'écart), puis les deux mois ensemble (on ajoute).",
+						"$${{a}} - {{d}} = {{eval:a-d}}$$",
+						"$${{a}} + {{eval:a-d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*a-d}}}$$",
+						"Le musée a reçu ${{eval:2*a-d}}$ visiteurs en janvier et en février.",
+						"Février a moins de visiteurs que janvier : le total est un peu plus petit que deux fois janvier ($2 \\times {{a}} = {{eval:2*a}}$). C'est vraisemblable."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:number"
+						},
+						"expectedAnswer": "{{eval:(100*B-a-b)/100;d}}"
+					}
+				],
+				"statement": "Au marché, Clara achète un panier de fruits à ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$ et un fromage à ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$. Elle paie avec un billet de ${{B}}~\\unit{€}$.\n\nCombien la marchande doit-elle lui rendre ?\n\nElle rend $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "B",
+						"expression": "20|50"
+					},
+					{
+						"name": "aE",
+						"expression": "5..14"
+					},
+					{
+						"name": "aC",
+						"expression": "1..99"
+					},
+					{
+						"name": "a",
+						"expression": "eval:100*aE+aC"
+					},
+					{
+						"name": "bE",
+						"expression": "2..9"
+					},
+					{
+						"name": "bC",
+						"expression": "1..99"
+					},
+					{
+						"name": "b",
+						"expression": "eval:100*bE+bC"
+					}
+				],
+				"conditions": ["a + b <= 100 * B - 100"],
+				"correction": {
+					"steps": [
+						"On calcule en deux étapes : d'abord le prix des deux achats (on ajoute), puis ce qui manque pour aller jusqu'à ${{B}}~\\unit{€}$ (on enlève).",
+						"$${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}} = {{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}}$$",
+						"$${{B}} - {{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*B-a-b)/100)}}.{{eval:floor(mod(100*B-a-b,100)/10)}}{{eval:mod(100*B-a-b,10)}}}$$",
+						"La marchande rend ${{eval:floor((100*B-a-b)/100)}}.{{eval:floor(mod(100*B-a-b,100)/10)}}{{eval:mod(100*B-a-b,10)}}~\\unit{€}$ à Clara.",
+						"On vérifie : ${{eval:floor((a+b)/100)}}.{{eval:floor(mod(a+b,100)/10)}}{{eval:mod(a+b,10)}} + {{eval:floor((100*B-a-b)/100)}}.{{eval:floor(mod(100*B-a-b,100)/10)}}{{eval:mod(100*B-a-b,10)}} = {{B}}$, on retrouve le billet."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a-b+c-f}}"
+					}
+				],
+				"statement": "Un bus part du dépôt avec ${{a}}$ passagers. Au premier arrêt, ${{b}}$ passagers descendent et ${{c}}$ montent. Au deuxième arrêt, ${{f}}$ passagers descendent.\n\nCombien de passagers y a-t-il dans le bus après le deuxième arrêt ?\n\nIl y a $?$ passagers.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "20..60"
+					},
+					{
+						"name": "b",
+						"expression": "3..15"
+					},
+					{
+						"name": "c",
+						"expression": "3..20"
+					},
+					{
+						"name": "f",
+						"expression": "3..20"
+					}
+				],
+				"conditions": ["a - b + c <= 90", "a - b + c - f >= 5", "b != c", "c != b + f"],
+				"correction": {
+					"steps": [
+						"On calcule en trois étapes, dans l'ordre du trajet : on enlève ceux qui descendent, on ajoute ceux qui montent.",
+						"$${{a}} - {{b}} = {{eval:a-b}}$$",
+						"$${{eval:a-b}} + {{c}} = {{eval:a-b+c}}$$",
+						"$${{eval:a-b+c}} - {{f}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b+c-f}}}$$",
+						"Après le deuxième arrêt, il y a ${{eval:a-b+c-f}}$ passagers dans le bus.",
+						"En tout, ${{c}}$ passagers sont montés et ${{eval:b+f}}$ sont descendus : il y en a {{if:c>b+f|plus|moins}} qu'au départ. C'est cohérent."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes additifs en deux ou trois étapes",
+		"description": "Un stock, une arrivée, un départ ; « de moins » puis le total ; deux achats à virgule et la monnaie sur un billet ; un bus et ses deux arrêts (trois étapes)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["205\\,200"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "240000",
+					"b": "85500",
+					"c": "120300"
+				},
+				"description": "stock : 240 000 + 85 500 − 120 300 = 205 200",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["325\\,500"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "240000",
+					"b": "85500",
+					"c": "120300"
+				},
+				"description": "Erreur : stock, le départ oublié (325 500)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["445\\,800"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "240000",
+					"b": "85500",
+					"c": "120300"
+				},
+				"description": "Erreur : stock, tout ajouté (445 800)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["232\\,200"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "125400",
+					"d": "18600"
+				},
+				"description": "musée : 125 400 + (125 400 − 18 600) = 232 200",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["106\\,800"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "125400",
+					"d": "18600"
+				},
+				"description": "Erreur : musée, février seul (106 800)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["144\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "125400",
+					"d": "18600"
+				},
+				"description": "Erreur : musée, janvier + l'écart (144 000)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["269\\,400"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "125400",
+					"d": "18600"
+				},
+				"description": "Erreur : musée, « de moins » lu « de plus » (269 400)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7,85"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"B": "20",
+					"a": "845",
+					"b": "370",
+					"aC": "45",
+					"aE": "8",
+					"bC": "70",
+					"bE": "3"
+				},
+				"description": "monnaie : 20 − (8,45 + 3,70) = 7,85 €",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["11,55"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "20",
+					"a": "845",
+					"b": "370",
+					"aC": "45",
+					"aE": "8",
+					"bC": "70",
+					"bE": "3"
+				},
+				"description": "Erreur : monnaie, un seul achat retiré (11,55 €)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12,15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"B": "20",
+					"a": "845",
+					"b": "370",
+					"aC": "45",
+					"aE": "8",
+					"bC": "70",
+					"bE": "3"
+				},
+				"description": "Erreur : monnaie, le prix des achats (12,15 €)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["37"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "42",
+					"b": "8",
+					"c": "12",
+					"f": "9"
+				},
+				"description": "bus : 42 − 8 + 12 − 9 = 37",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["71"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "42",
+					"b": "8",
+					"c": "12",
+					"f": "9"
+				},
+				"description": "Erreur : bus, tout ajouté (71)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["46"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "42",
+					"b": "8",
+					"c": "12",
+					"f": "9"
+				},
+				"description": "Erreur : bus, le deuxième arrêt oublié (46)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "42",
+					"b": "8",
+					"c": "12",
+					"f": "9"
+				},
+				"description": "Erreur : bus, tout enlevé (13)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "b3771f79-7df9-4a4a-b03b-5d8ae11ba6d1",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 13,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q}}"
+					}
+				],
+				"statement": "Un apiculteur a ${{eval:n*q+r}}$ pots de miel. Il les range dans des cartons de ${{n}}$ pots.\n\nCombien de cartons pleins peut-il remplir ?\n\nIl peut remplir $?$ cartons pleins.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..9"
+					},
+					{
+						"name": "q",
+						"expression": "2..{{eval:floor(98/n)}}"
+					},
+					{
+						"name": "r",
+						"expression": "1..{{eval:n-1}}"
+					}
+				],
+				"conditions": ["n * q + r <= 99"],
+				"correction": {
+					"steps": [
+						"On fait des paquets de ${{n}}$ pots : combien de fois ${{n}}$ dans ${{eval:n*q+r}}$ ?",
+						"$${{eval:n*q+r}} = {{n}} \\times {{q}} + {{r}}, \\quad {{r}} < {{n}}$$",
+						"Il peut remplir $\\textcolor{{{color:primary.0}}}{{{q}}}$ cartons pleins ; il reste ${{r}}$ {{if:r==1|pot|pots}}, pas assez pour un carton de plus.",
+						"On vérifie : ${{q}}$ cartons demandent ${{eval:n*q}}$ pots, et un carton de plus en demanderait ${{eval:n*q+n}}$, plus que les ${{eval:n*q+r}}$ pots."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q+1}}"
+					}
+				],
+				"statement": "${{eval:n*q+r}}$ enfants doivent traverser le lac en barque. Chaque barque peut porter ${{n}}$ enfants.\n\nCombien faut-il de barques, au minimum, pour que **tous** les enfants traversent en même temps ?\n\nIl faut $?$ barques.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..9"
+					},
+					{
+						"name": "q",
+						"expression": "2..{{eval:floor(98/n)}}"
+					},
+					{
+						"name": "r",
+						"expression": "1..{{eval:n-1}}"
+					}
+				],
+				"conditions": ["n * q + r <= 99"],
+				"correction": {
+					"steps": [
+						"On fait des groupes de ${{n}}$ enfants : combien de fois ${{n}}$ dans ${{eval:n*q+r}}$ ?",
+						"$${{eval:n*q+r}} = {{n}} \\times {{q}} + {{r}}, \\quad {{r}} < {{n}}$$",
+						"${{q}}$ barques sont pleines, et il reste ${{r}}$ {{if:r==1|enfant|enfants}} : il faut **une barque de plus** pour {{if:r==1|lui|eux}}. $${{q}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$$",
+						"Il faut ${{eval:q+1}}$ barques.",
+						"On vérifie : ${{q}}$ barques ne portent que ${{eval:n*q}}$ enfants, moins que ${{eval:n*q+r}}$ ; ${{eval:q+1}}$ barques peuvent en porter ${{eval:n*q+n}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r}}"
+					}
+				],
+				"statement": "Hugo a ${{eval:n*q+r}}$ billes. Il les partage entre ses ${{n}}$ amis : chacun reçoit le même nombre de billes, le plus possible.\n\nCombien de billes reste-t-il à Hugo ?\n\nIl lui reste $?$ billes.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..9"
+					},
+					{
+						"name": "q",
+						"expression": "2..{{eval:floor(98/n)}}"
+					},
+					{
+						"name": "r",
+						"expression": "1..{{eval:n-1}}"
+					}
+				],
+				"conditions": ["n * q + r <= 99"],
+				"correction": {
+					"steps": [
+						"On partage ${{eval:n*q+r}}$ en ${{n}}$ parts égales, les plus grandes possible : on cherche ce qui reste.",
+						"$${{eval:n*q+r}} = {{n}} \\times {{q}} + {{r}}, \\quad {{r}} < {{n}}$$",
+						"Chaque ami reçoit ${{q}}$ billes, et il reste $\\textcolor{{{color:primary.0}}}{{{r}}}$ {{if:r==1|bille|billes}}.",
+						"Il reste ${{r}}$ {{if:r==1|bille|billes}} à Hugo.",
+						"On vérifie : le reste est plus petit que ${{n}}$ (sinon, on pourrait donner une bille de plus à chacun) et ${{n}} \\times {{q}} + {{r}} = {{eval:n*q+r}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes de partage avec un reste",
+		"description": "Combien de boîtes pleines (le quotient), combien de boîtes pour tout ranger (le quotient + 1), combien en reste-t-il (le reste) : 59 pots par cartons de 8, 45 enfants en barques de 6",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "8",
+					"q": "7",
+					"r": "3"
+				},
+				"description": "pleines : 59 pots par 8 → 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "8",
+					"q": "7",
+					"r": "3"
+				},
+				"description": "Erreur : pleines, une de trop (8)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "8",
+					"q": "7",
+					"r": "3"
+				},
+				"description": "Erreur : pleines, le reste (3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "6",
+					"q": "7",
+					"r": "3"
+				},
+				"description": "tout ranger : 45 enfants par 6 → 8",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "6",
+					"q": "7",
+					"r": "3"
+				},
+				"description": "Erreur : tout ranger, le + 1 oublié (7)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "5",
+					"q": "7",
+					"r": "3"
+				},
+				"description": "reste : 38 billes entre 5 → 3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "5",
+					"q": "7",
+					"r": "3"
+				},
+				"description": "Erreur : reste, le quotient (7)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "2",
+					"q": "49",
+					"r": "1"
+				},
+				"description": "borne : 99 = 2 × 49 + 1, le reste 1",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "e55366fc-b2f5-4b37-9938-6a8a01938829",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 12,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:g*p}}"
+					}
+				],
+				"statement": "Une papeterie reçoit ${{g}}$ boîtes de ${{p}}$ trombones.\n\nCombien de trombones la papeterie reçoit-elle en tout ?\n\nElle reçoit $?$ trombones.",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "2..10"
+					},
+					{
+						"name": "q",
+						"expression": "2..10"
+					},
+					{
+						"name": "z",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "eval:1+9*min(max(z-1,0),1)+90*min(max(z-2,0),1)"
+					},
+					{
+						"name": "p",
+						"expression": "eval:q*m"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{g}}$ boîtes de ${{p}}$ trombones, c'est ${{g}}$ fois ${{p}}$ : on multiplie.",
+						"{{if:z==1|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$.|{{if:z==2|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des dizaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} dizaines).|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des centaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} centaines).}}}}",
+						"$${{g}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{eval:g*p}}}$$",
+						"La papeterie reçoit ${{eval:g*p}}$ trombones.",
+						"On vérifie en partageant : ${{eval:g*p}} \\div {{g}} = {{p}}$ trombones par boîte."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:p}}"
+					}
+				],
+				"statement": "Madame Lemoine partage ${{eval:g*p}}~\\unit{€}$ en parts égales entre ses ${{g}}$ petits-enfants.\n\nCombien chacun reçoit-il ?\n\nChacun reçoit $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "2..10"
+					},
+					{
+						"name": "q",
+						"expression": "2..10"
+					},
+					{
+						"name": "z",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "eval:1+9*min(max(z-1,0),1)+90*min(max(z-2,0),1)"
+					},
+					{
+						"name": "p",
+						"expression": "eval:q*m"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On partage ${{eval:g*p}}$ en ${{g}}$ parts égales : on cherche le nombre qui, ${{g}}$ fois, fait ${{eval:g*p}}$. On divise.",
+						"{{if:z==1|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$.|{{if:z==2|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des dizaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} dizaines).|Dans la table de ${{g}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des centaines : ${{g}} \\times {{p}} = {{eval:g*p}}$ ({{eval:g*q}} centaines).}}}}",
+						"$${{eval:g*p}} \\div {{g}} = \\textcolor{{{color:primary.0}}}{{{p}}}$$",
+						"Chacun reçoit ${{p}}~\\unit{€}$.",
+						"On vérifie : ${{g}} \\times {{p}} = {{eval:g*p}}$, on retrouve la somme partagée."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:g}}"
+					}
+				],
+				"statement": "On découpe un ruban de ${{eval:g*p}}~\\unit{cm}$ en morceaux de ${{p}}~\\unit{cm}$.\n\nCombien de morceaux obtient-on ?\n\nOn obtient $?$ morceaux.",
+				"variables": [
+					{
+						"name": "g",
+						"expression": "2..10"
+					},
+					{
+						"name": "q",
+						"expression": "2..10"
+					},
+					{
+						"name": "z",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "eval:1+9*min(max(z-1,0),1)+90*min(max(z-2,0),1)"
+					},
+					{
+						"name": "p",
+						"expression": "eval:q*m"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On cherche combien de fois il y a ${{p}}~\\unit{cm}$ dans ${{eval:g*p}}~\\unit{cm}$ : on divise.",
+						"{{if:z==1|Dans la table de ${{q}}$ : ${{eval:g}} \\times {{q}} = {{eval:g*q}}$.|{{if:z==2|Dans la table de ${{q}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des dizaines : ${{g}} \\times {{p}} = {{eval:g*p}}$.|Dans la table de ${{q}}$ : ${{g}} \\times {{q}} = {{eval:g*q}}$ ; avec des centaines : ${{g}} \\times {{p}} = {{eval:g*p}}$.}}}}",
+						"$${{eval:g*p}} \\div {{p}} = \\textcolor{{{color:primary.0}}}{{{g}}}$$",
+						"On obtient ${{g}}$ morceaux.",
+						"On vérifie : ${{g}}$ morceaux de ${{p}}~\\unit{cm}$ font ${{g}} \\times {{p}} = {{eval:g*p}}~\\unit{cm}$, tout le ruban."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Problèmes multiplicatifs : partage exact",
+		"description": "Le tout (7 boîtes de 80 trombones), la valeur d'une part (560 € entre 7), le nombre de parts (un ruban de 560 cm en morceaux de 80 cm), appuyés sur les tables",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["560"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "tout : 7 boîtes de 80 = 560",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["87"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "Erreur : tout, 7 + 80 (87)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["56"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "Erreur : tout, le zéro oublié (56)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2\\,400"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "6",
+					"m": "100",
+					"p": "400",
+					"q": "4",
+					"z": "3"
+				},
+				"description": "tout : 6 boîtes de 400 = 2 400",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "part : 560 € entre 7 = 80 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["553"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "Erreur : part, 560 − 7 (553)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "Erreur : part, le zéro oublié (8)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "9",
+					"m": "1",
+					"p": "6",
+					"q": "6",
+					"z": "1"
+				},
+				"description": "part : 54 € entre 9 = 6 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "parts : 560 cm en morceaux de 80 = 7",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "Erreur : parts, la longueur d'un morceau (80)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["480"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"g": "7",
+					"m": "10",
+					"p": "80",
+					"q": "8",
+					"z": "2"
+				},
+				"description": "Erreur : parts, 560 − 80 (480)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "edb36f84-112f-4586-b2b7-b436ccdc2029",
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
+		"precision": null,
+		"grades": ["CM1"],
+		"delay": 90,
+		"level": 5,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*c}}"
+					}
+				],
+				"statement": "Le chien de Malo pèse ${{c}}~\\unit{kg}$. Son poney est ${{k}}$ fois plus lourd que le chien.\n\nCombien pèse le poney ?\n\nLe poney pèse $?~\\text{kg}$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..10"
+					},
+					{
+						"name": "c",
+						"expression": "6..40"
+					}
+				],
+				"conditions": ["k * c <= 400"],
+				"correction": {
+					"steps": [
+						"« ${{k}}$ fois plus lourd » : le poney pèse ${{k}}$ fois le poids du chien. On multiplie (ce n'est pas « de plus », qui ajouterait un écart).\n\n```schema-barres\nChien : {{c}}\nPoney : {{c}} ; {{c}}{{if:k>2| ; {{c}}|}}{{if:k>3| ; {{c}}|}}{{if:k>4| ; {{c}}|}}{{if:k>5| ; {{c}}|}}{{if:k>6| ; {{c}}|}}{{if:k>7| ; {{c}}|}}{{if:k>8| ; {{c}}|}}{{if:k>9| ; {{c}}|}} = ?\n```",
+						"$${{k}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:k*c}}}$$",
+						"Le poney pèse ${{eval:k*c}}~\\unit{kg}$.",
+						"Le poney est bien plus lourd que le chien, et ${{eval:k*c}} \\div {{k}} = {{c}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				],
+				"statement": "Une console coûte ${{eval:k*c}}~\\unit{€}$. Un jeu coûte ${{k}}$ fois moins cher que la console.\n\nCombien coûte le jeu ?\n\nLe jeu coûte $?~\\text{€}$.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..10"
+					},
+					{
+						"name": "c",
+						"expression": "8..90"
+					}
+				],
+				"conditions": ["k * c <= 900"],
+				"correction": {
+					"steps": [
+						"« ${{k}}$ fois moins cher » : la console coûte ${{k}}$ fois le prix du jeu. On partage le prix de la console en ${{k}}$ parts égales : on divise.\n\n```schema-barres\nConsole : ? ; ?{{if:k>2| ; ?|}}{{if:k>3| ; ?|}}{{if:k>4| ; ?|}}{{if:k>5| ; ?|}}{{if:k>6| ; ?|}}{{if:k>7| ; ?|}}{{if:k>8| ; ?|}}{{if:k>9| ; ?|}} = {{eval:k*c}} €\nJeu : ?\n```",
+						"$${{eval:k*c}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{c}}}$$",
+						"Le jeu coûte ${{c}}~\\unit{€}$.",
+						"On vérifie : ${{k}} \\times {{c}} = {{eval:k*c}}$ ; le jeu coûte bien moins cher que la console."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				],
+				"statement": "Le livre de Zoé a ${{eval:k*c}}$ pages. Il a ${{k}}$ fois plus de pages que le livre de Hugo.\n\nCombien de pages le livre de Hugo a-t-il ?\n\nLe livre de Hugo a $?$ pages.",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..10"
+					},
+					{
+						"name": "c",
+						"expression": "20..99"
+					}
+				],
+				"conditions": ["k * c <= 999"],
+				"correction": {
+					"steps": [
+						"Le livre de Zoé a ${{k}}$ fois plus de pages : c'est celui de **Hugo** qui en a ${{k}}$ fois moins. On divise, même si l'énoncé dit « fois plus ».\n\n```schema-barres\nZoé : ? ; ?{{if:k>2| ; ?|}}{{if:k>3| ; ?|}}{{if:k>4| ; ?|}}{{if:k>5| ; ?|}}{{if:k>6| ; ?|}}{{if:k>7| ; ?|}}{{if:k>8| ; ?|}}{{if:k>9| ; ?|}} = {{eval:k*c}}\nHugo : ?\n```",
+						"$${{eval:k*c}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{c}}}$$",
+						"Le livre de Hugo a ${{c}}$ pages.",
+						"On vérifie : ${{k}} \\times {{c}} = {{eval:k*c}}$ ; le livre de Hugo est le plus court, c'est cohérent."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(k+1-2*t)*c}}"
+					}
+				],
+				"statement": "Nour a ${{c}}$ images. Sacha en a ${{k}}$ fois plus que Nour.\n\n{{if:t==0|Combien d'images ont-ils à eux deux ?|Combien d'images Sacha a-t-il de plus que Nour ?}}\n\n{{if:t==0|À eux deux, ils ont|Sacha a}} $?$ images{{if:t==0|.| de plus que Nour.}}",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..10"
+					},
+					{
+						"name": "c",
+						"expression": "3..90"
+					},
+					{
+						"name": "t",
+						"expression": "0..1"
+					}
+				],
+				"conditions": ["(k + 1) * c <= 999"],
+				"correction": {
+					"steps": [
+						"On calcule en deux étapes : d'abord les images de Sacha (${{k}}$ fois celles de Nour), puis {{if:t==0|le total|l'écart}}.\n\n```schema-barres\nNour : {{c}}\nSacha : {{c}} ; {{c}}{{if:k>2| ; {{c}}|}}{{if:k>3| ; {{c}}|}}{{if:k>4| ; {{c}}|}}{{if:k>5| ; {{c}}|}}{{if:k>6| ; {{c}}|}}{{if:k>7| ; {{c}}|}}{{if:k>8| ; {{c}}|}}{{if:k>9| ; {{c}}|}}\n```",
+						"$${{k}} \\times {{c}} = {{eval:k*c}}$$",
+						"$${{if:t==0|{{c}} + {{eval:k*c}}|{{eval:k*c}} - {{c}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(k+1-2*t)*c}}}$$",
+						"{{if:t==0|Nour et Sacha ont|Sacha a}} ${{eval:(k+1-2*t)*c}}$ images{{if:t==0| à eux deux.| de plus que Nour.}}",
+						"On vérifie avec les parts : Nour a $1$ part, Sacha en a ${{k}}$ ; {{if:t==0|en tout, cela fait|l'écart est de}} ${{eval:k+1-2*t}}$ parts, et ${{eval:k+1-2*t}} \\times {{c}} = {{eval:(k+1-2*t)*c}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Comparaison multiplicative",
+		"description": "« k fois plus » et « k fois moins » : un poney 8 fois plus lourd qu'un chien de 25 kg ; une console 6 fois plus chère ; le plus petit quand l'énoncé dit « fois plus » ; en deux étapes, combien en tout, combien de plus ; schéma en barres dans le corrigé",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "25",
+					"k": "8"
+				},
+				"description": "fois plus : 8 × 25 = 200 kg",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["33"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "25",
+					"k": "8"
+				},
+				"description": "Erreur : « fois plus » lu addition (33)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "60",
+					"k": "6"
+				},
+				"description": "fois moins : 360 € ÷ 6 = 60 €",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2\\,160"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "60",
+					"k": "6"
+				},
+				"description": "Erreur : « fois moins » lu multiplication (2 160)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["354"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "60",
+					"k": "6"
+				},
+				"description": "Erreur : « fois moins » lu soustraction (354)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "63",
+					"k": "4"
+				},
+				"description": "piège : 252 pages, 4 fois plus → 63",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1\\,008"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "63",
+					"k": "4"
+				},
+				"description": "Erreur : piège, « fois plus » lu multiplication (1 008)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "12",
+					"k": "4",
+					"t": "0"
+				},
+				"description": "deux étapes, en tout : 12 + 4 × 12 = 60",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["48"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "12",
+					"k": "4",
+					"t": "0"
+				},
+				"description": "Erreur : en tout, une seule étape (48)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "12",
+					"k": "4",
+					"t": "0"
+				},
+				"description": "Erreur : en tout, 12 + 4 (16)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["36"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "12",
+					"k": "4",
+					"t": "1"
+				},
+				"description": "deux étapes, de plus : 4 × 12 − 12 = 36",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["48"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "12",
+					"k": "4",
+					"t": "1"
+				},
+				"description": "Erreur : de plus, les images de Sacha (48)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "12",
+					"k": "4",
+					"t": "1"
+				},
+				"description": "Erreur : de plus, le total (60)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]

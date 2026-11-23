@@ -17,13 +17,13 @@ couvre:
 
 ## Ce que chaque colonne veut dire
 
-| colonne      | ce qui est appelé                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `simplify`   | `simplify(node)` — `tidy` → règles (sans identité remarquable : ne factorise jamais) → « développer seulement si moins cher » → `tidy`                                                                                                                                                                                                                                                                                                                  |
-| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : les règles de `reduire`, puis les fractions de polynômes simplifiées en montrant la factorisation (`x ≠ −1`), puis « développer seulement si plus court », rédigé comme `.développer`. Ne factorise jamais le résultat (ADR 0007, simplify-carte § 33)                                                                                                                                           |
-| `reduire`    | identités, puissances, racines, parité et période, puis `tidy` qui raconte ses gestes (`tidy-*`). Ni factorisation ni développement. **Pas** de `normalize`                                                                                                                                                                                                                                                                                             |
-| `developper` | `expand` (`expand.ts`, chantier normalize-usages) : distribuer, multiplier les parenthèses, puissances entières de sommes, division par un nombre distribuée ; chaque terme calculé et la somme réduite par `tidy`. Développe et ne fait rien d'autre : ni identité (`ln(e^x)`, `sin² + cos²`), ni dénominateur commun, ni simplification de fraction. **Pas** de `normalize`                                                                           |
-| `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis les stratégies de l'ADR 0024 (facteurs réduits, racines du trinôme, racine évidente — lycée —, développer en dernier recours ; facteurs dans l'ordre du noyau), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
+| colonne      | ce qui est appelé                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `simplify`   | `simplify(node)` — `tidy` → règles (sans identité remarquable : ne factorise jamais) → « développer seulement si moins cher » → `tidy`                                                                                                                                                                                                                                                                                                                                     |
+| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : les règles de `reduire`, puis les fractions de polynômes simplifiées en montrant la factorisation (`x ≠ −1`), puis « développer seulement si plus court », rédigé comme `.développer`. Ne factorise jamais le résultat (ADR 0007, simplify-carte § 33)                                                                                                                                                              |
+| `reduire`    | identités, puissances, racines, parité et période, puis `tidy` qui raconte ses gestes (`tidy-*`). Ni factorisation ni développement. **Pas** de `normalize`                                                                                                                                                                                                                                                                                                                |
+| `developper` | `expand` (`expand.ts`, chantier normalize-usages) : distribuer, multiplier les parenthèses, puissances entières de sommes, division par un nombre distribuée ; chaque terme calculé et la somme réduite par `tidy`. Développe et ne fait rien d'autre : ni identité (`ln(e^x)`, `sin² + cos²`), ni dénominateur commun, ni simplification de fraction (les valeurs remarquables sont calculées avant, par `explainExpansion`, pas par le pipeline). **Pas** de `normalize` |
+| `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis les stratégies de l'ADR 0024 (facteurs réduits, racines du trinôme, racine évidente — lycée —, développer en dernier recours ; facteurs dans l'ordre du noyau), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize`                    |
 
 La colonne `developper` est le **résultat** de l'intention. Les étapes que voit l'élève — le
 « Comment ? » de `.développer` (atelier) comme une correction d'exercice générée
@@ -37,6 +37,10 @@ Ce panel n'en change pas.
 identités trigonométriques et exponentielles sont coupées en dessous — c'est un
 garde-fou pédagogique délibéré, pas un défaut. Sans niveau, `sin²x + cos²x`
 reste tel quel.
+
+`reduire` et `auto` écrivent les parenthèses implicites du résultat de la phase A
+(`withImpliedParentheses`) avant `tidy` : `ln(2x) − ln(2x)` passait par `ln 2 + ln x − (ln 2 + ln x)`
+sans nœud de parenthèse, que rien ne développait (tidy-conditions, PR D).
 
 ## Ce que ce panel sert à voir
 
@@ -129,7 +133,9 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 Le moteur pédagogique a aussi `exp-n-ln` : `e^{n \ln x} = xⁿ`, n entier (tidy-conditions § 4.2 :
 `e^{\ln(x^2)}` passait par `e^{2\ln x}` et s'arrêtait là). Dans l'atelier, ces réécritures qui
-changent le domaine passent au bouton « Simplifier pour … ». Hors panel : aucune ligne ci-dessus ne
+changent le domaine passent au bouton « Simplifier pour … ». La réponse de `.simplifier`, dans l'Atelier comme au registre, est
+`simplifyKeepingDomain` (`pedagogical-simplify/keep-domain.ts`, 2026-11-03) : le domaine gardé, pas
+la colonne `simplify` ni `auto` telles quelles. Hors panel : aucune ligne ci-dessus ne
 change.
 
 ## Trigonométrie

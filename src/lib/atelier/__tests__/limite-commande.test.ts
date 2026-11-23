@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
 import { runInput, type CalcResult, type CalcSession } from '../calcul';
 import { studentHelpText } from '../help';
 
@@ -226,8 +226,8 @@ describe('revue : une fonction citée seule, dans SA lettre', () => {
 		expect(latex('.limite f(2x)+1 en 1', ['f(x) = x^2+1']).endsWith('=6')).toBe(true);
 	});
 
-	it('f(2x) avec un ensemble choisi : refus de la composée', () => {
-		expect(refusal('.limite f(2x) en 1', ['f(x) = x^2 sur [0;+∞['])).toMatch(/2x/);
+	it('f(x²) avec un ensemble choisi : refus de la composée non affine (chantier composees)', () => {
+		expect(refusal('.limite f(x^2) en 1', ['f(x) = x^2 sur [0;+∞['])).toMatch(/x\^2/);
 	});
 
 	it("f' : f'(x)", () => {
@@ -597,5 +597,29 @@ describe('V60, revue : π et u − L nul d’un côté', () => {
 		expect(line('.limite sign(x+abs(x)) en 0').output).toBe(
 			'Je ne sais pas calculer cette limite.'
 		);
+	});
+});
+
+describe('paramètre de signe inconnu (chantier limites-parametres)', () => {
+	it('e^(-kx) en +∞ : je ne sais pas, et le paramètre est nommé (rendait +∞)', () => {
+		expect(line('.limite e^(-kx) en x=+∞').output).toBe(
+			'Je ne sais pas calculer cette limite : elle peut dépendre du signe de k.'
+		);
+	});
+
+	it('une lettre grecque est écrite en symbole', () => {
+		expect(line('.limite e^(-λt) en t=+∞').output).toBe(
+			'Je ne sais pas calculer cette limite : elle peut dépendre du signe de λ.'
+		);
+	});
+
+	it('le signe ne décide pas : la limite est calculée', () => {
+		expect(latex('.limite (kx+1)/(x+2) en x=+∞')).toBe(
+			'\\lim\\limits_{x\\to+\\infty}\\dfrac{kx+1}{x+2}=k'
+		);
+	});
+
+	it('sans paramètre, le refus reste le même', () => {
+		expect(line('.limite floor(x)/x en +∞').output).toBe('Je ne sais pas calculer cette limite.');
 	});
 });

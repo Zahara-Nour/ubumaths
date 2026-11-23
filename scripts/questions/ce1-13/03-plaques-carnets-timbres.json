@@ -1,0 +1,249 @@
+{
+	"id": "7e23cca8-42ba-420c-8cd2-b5c4609a5579",
+	"title": "Plaques, carnets et timbres",
+	"description": "Une même quantité commandée autrement : 1 plaque = 10 carnets = 100 timbres",
+	"grades": ["CE1"],
+	"level": 14,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Au bureau de poste, les timbres se vendent par $\\textcolor{{{color:primary.0}}}{\\text{plaques de 100}}$, par $\\textcolor{{{color:primary.1}}}{\\text{carnets de 10}}$ ou $\\textcolor{{{color:primary.2}}}{\\text{à l'unité}}$.\n\nPour ${{n}}$ timbres, une commande est : ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|carnet|carnets}} et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.\n\nUne autre commande de ${{n}}$ timbres : ${{eval:c-1}}$ {{if:c-1<=1|plaque|plaques}}, $?$ carnets et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+10*d+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d+10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une plaque de $100$ timbres, c'est $\\textcolor{{{color:primary.1}}}{\\text{10 carnets}}$ de $10$.",
+					"Une plaque de moins, donc $10$ carnets de plus : ${{d}} + 10 = \\textcolor{{{color:primary.0}}}{{{eval:d+10}}}$ carnets."
+				]
+			}
+		},
+		{
+			"statement": "Au bureau de poste, les timbres se vendent par $\\textcolor{{{color:primary.0}}}{\\text{plaques de 100}}$, par $\\textcolor{{{color:primary.1}}}{\\text{carnets de 10}}$ ou $\\textcolor{{{color:primary.2}}}{\\text{à l'unité}}$.\n\nPour ${{n}}$ timbres, une commande est : ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|carnet|carnets}} et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.\n\nIl n'y a plus de plaques. Une autre commande de ${{n}}$ timbres : $?$ carnets et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+10*d+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{c}}$ plaques, c'est ${{eval:10*c}}$ carnets ; avec les ${{d}}$ {{if:d<=1|carnet|carnets}}, cela fait ${{eval:10*c}} + {{d}}$.",
+					"Il faut $\\textcolor{{{color:primary.0}}}{{{eval:10*c+d}}}$ carnets : dans ${{n}}$, il y a ${{eval:10*c+d}}$ dizaines."
+				]
+			}
+		},
+		{
+			"statement": "Au bureau de poste, les timbres se vendent par $\\textcolor{{{color:primary.0}}}{\\text{plaques de 100}}$, par $\\textcolor{{{color:primary.1}}}{\\text{carnets de 10}}$ ou $\\textcolor{{{color:primary.2}}}{\\text{à l'unité}}$.\n\nPour ${{n}}$ timbres, une commande est : ${{c}}$ {{if:c<=1|plaque|plaques}}, ${{d}}$ {{if:d<=1|carnet|carnets}} et ${{u}}$ {{if:u<=1|timbre|timbres}} à l'unité.\n\nIl n'y a plus de carnets. Une autre commande de ${{n}}$ timbres : ${{c}}$ {{if:c<=1|plaque|plaques}} et $?$ timbres à l'unité.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+10*d+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{d}}$ {{if:d<=1|carnet|carnets}} de $10$, c'est ${{eval:10*d}}$ timbres.",
+					"Il faut ${{eval:10*d}} + {{u}} = \\textcolor{{{color:primary.0}}}{{{eval:10*d+u}}}$ timbres à l'unité."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "235 : 1 plaque, 13 carnets (exemple du BO)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 carnets (rien changé)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 carnets (une plaque = un carnet)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "235 : 23 carnets",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 carnets (2 + 3)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 carnets (les plaques oubliées)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "235 : 35 timbres à l'unité",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 (3 + 5)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "908 : 90 carnets",
+			"variationIndex": 1,
+			"variables": {
+				"c": "9",
+				"d": "0",
+				"u": "8",
+				"n": "908"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rien d'écrit",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "3",
+				"u": "5",
+				"n": "235"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

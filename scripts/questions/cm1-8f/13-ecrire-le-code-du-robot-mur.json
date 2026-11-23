@@ -1,0 +1,224 @@
+{
+	"id": "7714c08c-832c-48d0-a937-e953a9133222",
+	"title": "Écrire le code du robot : passer par l'ouverture",
+	"description": "Quadrillage 10 × 7, un mur gris à une seule ouverture : code en flèches, puis avance et pivote avec un sens de départ tiré",
+	"grades": ["CM1", "CM2"],
+	"level": 8,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le code qui mène le robot à la case verte. Chaque flèche le fait avancer d'une case dans son sens. Il ne peut pas entrer dans une case grise.\n\n```robot\nquadrillage: 10 x 7\ndépart: {{xd}}, {{yd}}\narrivée: {{xa}}, {{ya}}\ninterdites: {{if:g==1|{{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==2|{{c}}, 1 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==3|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==4|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==5|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 6 ; {{c}}, 7|{{if:g==6|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 7|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6}}}}}}}}}}}}\nproduire: oui\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..7"
+				},
+				{
+					"name": "g",
+					"expression": "1..7"
+				},
+				{
+					"name": "xd",
+					"expression": "1..{{eval:c-1}}"
+				},
+				{
+					"name": "yd",
+					"expression": "1..7"
+				},
+				{
+					"name": "xa",
+					"expression": "{{eval:c+1}}..10"
+				},
+				{
+					"name": "ya",
+					"expression": "1..7"
+				}
+			],
+			"conditions": ["abs(xa-xd)+abs(yd-g)+abs(ya-g) <= 15", "abs(yd-g)+abs(ya-g) >= 1"],
+			"correction": {
+				"steps": [
+					"Le mur gris n'a qu'une ouverture : le robot doit passer par elle.",
+					"On suit le code case par case depuis le robot : il est juste s'il finit sur la case verte, sans sortir du quadrillage ni entrer dans une case grise. Un autre chemin que celui du corrigé est juste aussi."
+				]
+			}
+		},
+		{
+			"statement": "Écris le code qui mène le robot à la case verte. Son nez montre où il regarde. **Avance de 3** : il avance de $3$ cases tout droit. **Pivote à droite** (ou **à gauche**) : il tourne d'un quart de tour sur place, vers sa droite (ou sa gauche). Il ne peut pas entrer dans une case grise.\n\n```robot\nquadrillage: 10 x 7\ncodage: avance-pivote\ndépart: {{xd}}, {{yd}}, {{if:s==1|haut|{{if:s==2|droite|{{if:s==3|bas|gauche}}}}}}\narrivée: {{xa}}, {{ya}}\ninterdites: {{if:g==1|{{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==2|{{c}}, 1 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==3|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==4|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 5 ; {{c}}, 6 ; {{c}}, 7|{{if:g==5|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 6 ; {{c}}, 7|{{if:g==6|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 7|{{c}}, 1 ; {{c}}, 2 ; {{c}}, 3 ; {{c}}, 4 ; {{c}}, 5 ; {{c}}, 6}}}}}}}}}}}}\nproduire: oui\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..7"
+				},
+				{
+					"name": "g",
+					"expression": "1..7"
+				},
+				{
+					"name": "xd",
+					"expression": "1..{{eval:c-1}}"
+				},
+				{
+					"name": "yd",
+					"expression": "1..7"
+				},
+				{
+					"name": "xa",
+					"expression": "{{eval:c+1}}..10"
+				},
+				{
+					"name": "ya",
+					"expression": "1..7"
+				},
+				{
+					"name": "s",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["abs(xa-xd)+abs(yd-g)+abs(ya-g) <= 15", "abs(yd-g)+abs(ya-g) >= 1"],
+			"correction": {
+				"steps": [
+					"Avant d'avancer, on fait pivoter le robot pour que son nez regarde là où il doit aller. Sa droite et sa gauche sont celles du robot, pas les tiennes.",
+					"Le mur gris n'a qu'une ouverture : le robot doit passer par elle.",
+					"On suit le code case par case depuis le robot : il est juste s'il finit sur la case verte, sans sortir du quadrillage ni entrer dans une case grise. Un autre chemin que celui du corrigé est juste aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Juste : monter, passer l'ouverture, monter",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6"
+			},
+			"answers": ["↑ ↑ → → → → → → ↑ ↑"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Juste : un autre chemin par l'ouverture",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6"
+			},
+			"answers": ["→ → ↑ ↑ → → → → ↑ ↑"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout droit dans le mur",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6"
+			},
+			"answers": ["→ → → → → → ↑ ↑ ↑ ↑"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une case de trop",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6"
+			},
+			"answers": ["↑ ↑ → → → → → → ↑ ↑ ↑"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Juste : regarde en haut, avance, pivote",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6",
+				"s": "1"
+			},
+			"answers": ["avance de 2, pivote à droite, avance de 6, pivote à gauche, avance de 2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : droite et gauche échangées",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6",
+				"s": "1"
+			},
+			"answers": ["avance de 2, pivote à gauche, avance de 6, pivote à droite, avance de 2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Juste : regarde à gauche, demi-tour en deux pivots",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6",
+				"s": "4"
+			},
+			"answers": [
+				"pivote à droite, avance de 2, pivote à droite, avance de 6, pivote à gauche, avance de 2"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avance sans pivoter d'abord",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"g": "4",
+				"xd": "2",
+				"yd": "2",
+				"xa": "8",
+				"ya": "6",
+				"s": "4"
+			},
+			"answers": ["avance de 2, pivote à droite, avance de 6, pivote à gauche, avance de 2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

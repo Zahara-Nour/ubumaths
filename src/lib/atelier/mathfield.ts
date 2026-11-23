@@ -16,7 +16,7 @@
  * @module atelier/mathfield
  */
 
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode } from '#lib/mathAST/types.ts';
 import type { AtelierObject, ObjectKind } from './types';
 import {
 	astOf,
@@ -33,10 +33,10 @@ import { argumentSeparatorsShown } from './decimal-comma';
 import { readArguments, readConstruction } from './construction-read';
 import { argumentLatex, constructionLatex } from './construction';
 import { hasMeasureCall, measureCalls } from './measures-read';
-import { parse as parseUnit } from '$lib/mathAST/units/parser';
-import { toLatex } from '$lib/mathAST/latex-generator';
-import { isAddition, isDelimiter, isJuxtaposedSum, isNumber, isUnit } from '$lib/mathAST/guards';
-import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
+import { parse as parseUnit } from '#lib/mathAST/units/parser.ts';
+import { toLatex } from '#lib/mathAST/latex-generator.ts';
+import { isAddition, isDelimiter, isJuxtaposedSum, isNumber, isUnit } from '#lib/mathAST/guards.ts';
+import { normalizeStudentQuantity } from '#lib/questions/units/student-input.ts';
 
 // =============================================================================
 // Constantes

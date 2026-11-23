@@ -10,16 +10,16 @@
 -->
 
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import * as Card from '$lib/components/ui/card';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import { lore } from '#lib/config/lore.ts';
+	import * as Card from '#lib/components/ui/card/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { CheckCircle, ChevronDown, ChevronUp, Info } from '@lucide/svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-	import type { StudentExerciseView } from '$lib/types/worksheets';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import MarkdownRenderer from '#lib/components/markdown/MarkdownRenderer.svelte';
+	import { genericFunctionsConfig } from '#lib/components/markdown/utils/math-utils.ts';
+	import type { StudentExerciseView } from '#lib/types/worksheets.ts';
+	import { detailedCorrection } from '#lib/questions/correction-detail.ts';
+	import { provideCapitalPairs } from '#lib/components/markdown/content-capital-pairs.ts';
 
 	interface Props {
 		exercise: StudentExerciseView;

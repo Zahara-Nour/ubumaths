@@ -20,26 +20,22 @@ import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
 	type StudentAnswer
-} from '$lib/utils/answer-validator';
-import {
-	getQuestionType,
-	type QuestionInstance,
-	type ValidationStatus
-} from '$lib/questions/types';
-import { statusFromBlankStatuses } from '$lib/questions/grading';
+} from '#lib/utils/answer-validator.ts';
+import type { QuestionInstance, ValidationStatus } from '#lib/questions/types.ts';
+import { statusFromBlankStatuses } from '#lib/questions/grading.ts';
 // Case « figure » : le juge lit les positions des points dans ce registre (cf. questions/construction/positions)
-import '$lib/questions/construction/positions-setup';
+import '#lib/questions/construction/positions-setup.ts';
 import type {
 	CorrectedAnswer,
 	CorrectedDetail,
 	UnavailableDetail
-} from '$lib/types/evaluation-attempt';
+} from '#lib/types/evaluation-attempt.ts';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
 	SUBMISSION_GRADING_BUDGET_MS,
 	SUBMITTED_COPY_DETAIL_BUDGET_MS
 } from './grading-budget';
-import { createServerLogger } from '$lib/utils/logger';
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/corrected-detail');
 
@@ -66,9 +62,6 @@ function studentAnswerOf(
 	instance: QuestionInstance,
 	answer: CorrectedAnswer | null
 ): StudentAnswer {
-	if (getQuestionType(instance) === 'multiple_choice') {
-		return { choiceIndexes: answer?.choiceIndexes ?? [] };
-	}
 	const values = answer?.values ?? (instance.blanks ?? []).map(() => '');
 	return { values, latex: values };
 }
@@ -89,13 +82,11 @@ export function detailOfCorrected(
 ): CorrectedDetail {
 	try {
 		const detail = validate(item.instance, studentAnswerOf(item.instance, item.answer));
-		const isChoice = getQuestionType(item.instance) === 'multiple_choice';
-		const recomputed = isChoice
-			? detail.status
-			: // Figures de travail : jamais notées, hors du statut
-				statusFromBlankStatuses(detail.blanks.filter((b) => !b.ungraded).map((b) => b.status));
-		// QCM : `validateAnswerDetailed` ne connaît pas le ½ du barème, seuls les cases comptent
-		if (!isChoice && recomputed !== item.status) {
+		// Figures de travail : jamais notées, hors du statut
+		const recomputed = statusFromBlankStatuses(
+			detail.blanks.filter((b) => !b.ungraded).map((b) => b.status)
+		);
+		if (recomputed !== item.status) {
 			logger.warn('[corrected-detail] Statut recalculé différent du statut enregistré', {
 				recomputed,
 				stored: item.status

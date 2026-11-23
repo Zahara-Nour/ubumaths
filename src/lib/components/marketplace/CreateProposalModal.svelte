@@ -1,31 +1,31 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
-	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import type { MarketplaceListing, CreateProposalData } from '$lib/types/marketplace';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import { lore } from '#lib/config/lore.ts';
+	import { marketplaceStore } from '#lib/stores/marketplace.svelte.ts';
+	import type { MarketplaceListing, CreateProposalData } from '#lib/types/marketplace.ts';
+	import * as Dialog from '#lib/components/ui/dialog/index.ts';
+	import { Button } from '#lib/components/ui/button/index.ts';
+	import { Input } from '#lib/components/ui/input/index.ts';
+	import { Textarea } from '#lib/components/ui/textarea/index.ts';
+	import { Label } from '#lib/components/ui/label/index.ts';
+	import { Badge } from '#lib/components/ui/badge/index.ts';
+	import UserAvatar from '#lib/components/UserAvatar.svelte';
 	import TradeCardSelector from './trade/TradeCardSelector.svelte';
-	import VipCard from '$lib/components/VipCard.svelte';
+	import VipCard from '#lib/components/VipCard.svelte';
 	import { Info, ArrowRight } from '@lucide/svelte';
-	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { VipCard as VipCardType } from '$lib/types/vip-card';
+	import gidouilleImage from '#lib/assets/images/gidouille.png';
+	import { toaster } from '#lib/stores/toaster.svelte.ts';
+	import type { VipCard as VipCardType } from '#lib/types/vip-card.ts';
 
 	// Props
 	let {
 		listing,
 		open = $bindable(false),
 		onSuccess = () => {}
-	} = $props<{
+	}: {
 		listing: MarketplaceListing;
 		open?: boolean;
 		onSuccess?: () => void;
-	}>();
+	} = $props();
 
 	// Form state
 	let offeredCardIds = $state<string[]>([]);
