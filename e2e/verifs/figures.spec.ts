@@ -32,6 +32,9 @@ async function setScript(page: Page, text: string): Promise<void> {
 
 test.describe.configure({ mode: 'serial' });
 
+// Base locale seulement : contre la prod (`VERIFS_URL`), les comptes `local-*` n'existent pas
+test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
+
 test.beforeAll(async () => {
 	assertLocalServerEnv();
 	await cleanup();

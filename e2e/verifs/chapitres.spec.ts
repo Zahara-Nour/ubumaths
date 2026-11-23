@@ -74,6 +74,9 @@ async function addPdf(page: Page, title: string): Promise<void> {
 
 test.describe.configure({ mode: 'serial' });
 
+// Base locale seulement : contre la prod (`VERIFS_URL`), les comptes `local-*` n'existent pas
+test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
+
 test.beforeAll(async () => {
 	assertLocalServerEnv();
 	await cleanup();
@@ -275,6 +278,6 @@ test('#1390 #1392 élève : ouvre le PDF d’un document publié du chapitre', a
 	expect(ok.headers()['content-type']).toContain('application/pdf');
 	// Le document non publié reste fermé à l'élève
 	const closed = await student.request.get(`/api/documents/${docB.id}`);
-	expect(closed.status()).toBeGreaterThanOrEqual(400);
+	expect([403, 404]).toContain(closed.status());
 	await context.close();
 });

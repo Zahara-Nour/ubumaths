@@ -36,6 +36,9 @@ const OTHER_WORK = {
 
 test.describe.configure({ mode: 'serial' });
 
+// Base locale seulement : contre la prod (`VERIFS_URL`), les comptes `local-*` n'existent pas
+test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
+
 test.beforeAll(() => {
 	assertLocalServerEnv();
 });
@@ -104,7 +107,11 @@ test('#1303, #1295 — compte A puis compte B : rien de A', async ({ page }) => 
 	await login(page, STUDENT_A, PASSWORD);
 	// #1295 : le chat du Père Ubu s'ouvre (il plantait au montage)
 	const errors: string[] = [];
-	page.on('pageerror', (error) => errors.push(error.message));
+	page.on('pageerror', (error) => {
+		// WebKit signale ainsi les requêtes de la page précédente coupées par la
+		// navigation (« … due to access control checks ») : pas une erreur du chat
+		if (!error.message.includes('due to access control checks')) errors.push(error.message);
+	});
 	await open(page, '/pere-ubu');
 	await expect(page.getByRole('textbox').first()).toBeVisible();
 	expect(errors).toEqual([]);
@@ -129,12 +136,14 @@ test('#1303, #1295 — compte A puis compte B : rien de A', async ({ page }) => 
 
 test('#1303 — deux onglets : un autre compte dans l’un recharge l’autre', async ({ page }) => {
 	await login(page, STUDENT_B, PASSWORD);
-	await open(page, '/python');
+	await writePython(page, 'print("code de B")');
 	const other = await page.context().newPage();
 	await logout(other);
 	const reloaded = page.waitForEvent('load', { timeout: 30_000 });
 	await login(other, STUDENT_C, PASSWORD);
 	await reloaded;
+	// Rechargé : le code de B n'est plus affiché dans le premier onglet
+	await expect(editor(page)).not.toContainText('code de B');
 	await other.close();
 	await logout(page);
 });
@@ -151,6 +160,10 @@ test('#1308 — rapport de bug : aucune page de A, aucune adresse avec ? ou #', 
 	await open(page, '/grapheur?verifs=b#fragment');
 	await page.locator('body').click({ position: { x: 5, y: 5 } });
 
+	// Les adresses retenues existent (sinon les « not » ci-dessous passeraient à vide)
+	await expect
+		.poll(() => page.evaluate(() => sessionStorage.getItem('chiphre_freeze_data') ?? ''))
+		.toContain('/grapheur');
 	const stored = await page.evaluate(() => sessionStorage.getItem('chiphre_freeze_data') ?? '');
 	expect(stored).not.toContain('verifs=a');
 	expect(stored).not.toContain('verifs-a');

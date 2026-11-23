@@ -75,6 +75,17 @@ async function studentPage(
 	return page;
 }
 
+// Base locale seulement : contre la prod (`VERIFS_URL`), les comptes `local-*` n'existent pas
+test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
+
+// Décor retiré même après un échec : fiches « Verifs … » et tailles de texte des élèves
+test.afterAll(async () => {
+	await wipeFiches();
+	await sql(`delete from student_print_settings where student_id = any($1)`, [
+		Object.values(STUDENT_IDS)
+	]);
+});
+
 test.beforeAll(async () => {
 	assertLocalServerEnv();
 	await wipeFiches();

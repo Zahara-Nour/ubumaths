@@ -964,7 +964,7 @@ test(
 			);
 		});
 		await expect.poll(() => shownIn(page, 'B2')).toBe('160');
-		expect(await shownIn(page, 'C1')).toBe('41,5');
+		await expect.poll(() => shownIn(page, 'C1')).toBe('41,5');
 		await expect(page.locator('input.titre').nth(1)).toHaveValue('Taille');
 
 		// Vers un tableur : décimaux à virgule
@@ -972,7 +972,7 @@ test(
 		await typeCell(page, 'E2', '=1/3');
 		await selectZone(page, 'C1', 'C2');
 		await page.keyboard.press('ControlOrMeta+C');
-		expect(await readClipboard(page)).toBe('41,5\n48');
+		await expect.poll(() => readClipboard(page)).toBe('41,5\n48');
 		// Après ⌘C, les flèches marchent encore
 		await selectCell(page, 'C1');
 		await page.keyboard.press('ControlOrMeta+C');

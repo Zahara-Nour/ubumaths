@@ -66,6 +66,8 @@ test('#1292 — « Résumé / Détaillé » se touche du doigt', async ({ page }
 	for (const choice of ['Résumé', 'Détaillé'] as const) {
 		const button = inequation.line.getByRole('button', { name: choice });
 		await expectTouchTarget(button, choice);
+		// Pas encore choisi : le geste fait le changement
+		await expect(button).toHaveAttribute('aria-pressed', 'false');
 		await button.tap();
 		await expect(button).toHaveAttribute('aria-pressed', 'true');
 	}
