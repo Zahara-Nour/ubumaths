@@ -63,3 +63,7 @@ Questions (recommandation entre parenthèses) :
   texte du bouton, « pas factorisable ». (oui)
 - Q6 Les variations Δ < 0 de « Factoriser un trinôme à l'aide de ses racines » (604f83b7) : dans
   ce chantier, en seconde PR, une fois l'outil en prod ? (oui)
+
+### 2026-11-23 — phase 0 tranchée
+
+- David : « je valide » (après la reformulation en français) : Q1 à Q6 oui, comme recommandé.
