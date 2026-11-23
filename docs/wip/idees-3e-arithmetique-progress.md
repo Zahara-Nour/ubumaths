@@ -5,15 +5,20 @@ skill `idees-rubrique`. Relevé : [idees-3e-arithmetique-releve.md](idees-3e-ari
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, phase 0 publiée, aucune PR._
+_Mis à jour le 2026-11-23, phase 0 validée, aucune PR._
 
-- **État** : relevé écrit, phase 0 publiée en page à cocher · **Prochaine action** : lire les verdicts
-  (`ArtifactData list verdicts` sur la page), puis écrire le lot · **En attente de David** : F1 à F8,
-  Q1 (hors programme de 3e rangé sans point ?), Q2 (point des critères de divisibilité) ·
-  **Pièges en cours** : en 3e, deux points seulement (3-010, 3-001) ; vérifier à l'écriture que la
-  case de F1 sait exiger « produit de nombres premiers » (brouillon 629c231b à lire) ·
-  **Worktree / branche** : `../ubumaths-wt-idees-3e-arithmetique`, `docs/idees-3e-arithmetique`
-  (vide, à renommer ou recréer en `feat/` pour le lot).
+- **État** : phase 0 validée par David (« je valide tout ») : F1 à F8 oui, Q1 oui (F4 à F7 sans
+  point), Q2 oui (F3 sans point, point de 3e des critères à noter pour le référentiel) ; rien
+  d'écrit encore · **Prochaine action** : écrire le lot dans le worktree, sur le gabarit de
+  `docs/wip/questions/idees-6e-decimaux-neufs.py` et `-publies.py` : scripts
+  `idees-3e-arithmetique-neufs.py` (F3 à F7) et `-publies.py` (F1 sur 77ab770d, F2 sur 90dca27a) ·
+  **En attente de David** : rien · **Pièges en cours** : F1 = case libre jugée comme le brouillon
+  629c231b (options `constraints: {spaces: off, products: off}` ; `8 × 45`, `2³ × 9 × 5` et `360`
+  → `bad_form` contrainte `form` ; vérifier d'où vient ce jugement avant d'écrire) ; F4 « donner un
+  diviseur » = règle `divisor` + `range`, `rulesSuffice` (comme b7304fcb) ; F3 « cocher » = choix
+  `plusieurs: oui` ; nombres ⩾ 1 000 : espaces · **Worktree / branche** :
+  `../ubumaths-wt-idees-3e-arithmetique`, branche `docs/idees-3e-arithmetique` vide, à recréer en
+  `feat/idees-3e-arithmetique` sur `origin/main`.
 
 ## Historique
 
@@ -37,3 +42,12 @@ _Mis à jour le 2026-11-23, phase 0 publiée, aucune PR._
 - Idée en attente notée au tableau : « plus grand reste possible » (niveau 6e).
 - Modèles publiés à réserver quand David aura dit oui : 77ab770d, 90dca27a (libres le 2026-11-23).
 - Questions ouvertes, sans réponse = non tranchées : F1 à F8, Q1, Q2.
+
+### 2026-11-23 — phase 0 validée
+
+- David : « je valide tout ». F1 à F8 oui ; Q1 oui : F4 (nombre premier), F5 (partage en lots),
+  F6 (engrenages et évènements), F7 (atteindre un multiple) rangés **sans point** ; Q2 oui : F3
+  (chiffre manquant) **sans point**, et le point manquant « critères de divisibilité par 2, 3, 5, 9 »
+  en 3e est à signaler au chantier du référentiel.
+- Modèles publiés réservés au tableau : 77ab770d (F1), 90dca27a (F2).
+- Lot attendu : 5 modèles neufs (15 variations), 5 variations de 2 modèles publiés.
