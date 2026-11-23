@@ -192,6 +192,13 @@ de contenu appliquée en prod.
 | 36991abb Arrondir un quotient, arrondir π                    | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 2e982062 Intercaler un nombre décimal                        | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 8fd459da Définition d'un pourcentage                         | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
+| 46913a48 Taux de variation et nombre dérivé                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| d58208eb Lire un nombre dérivé sur un graphique              | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 74d77343 Calculer une dérivée                                | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 1666b8e9 Dériver un polynôme                                 | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 0140fdfa Dériver l'inverse d'une fonction                    | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 8997f7c6 Dériver un produit                                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| f1440b52 Dériver un quotient                                 | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
 
 ## Idées en attente
 

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après la phase 0 (aucune PR encore)._
+_Mis à jour le 2026-11-23, phase 0 validée (aucune PR encore)._
 
 - **État** : relevé fait ([idees-1re-derivation-releve.md](idees-1re-derivation-releve.md)), phase 0 publiée en page à cocher : https://claude.ai/artifact/EU7fV67f4F39ze4yHnySLC (10 fiches, verdicts dans la collection `verdicts`).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), puis réserver dans le tableau de répartition les modèles publiés retenus (46913a48, d58208eb, 74d77343, 1666b8e9, 0140fdfa, 8997f7c6, f1440b52), puis worktree `../ubumaths-wt-idees-1re-derivation` sur `origin/main` et gros lot.
-- **En attente de David** : les verdicts des fiches F1 à F10.
+- **Prochaine action** : gros lot dans le worktree : 2 modèles neufs (F1, F2) et 13 variations (F3 à F9), avec tests, erreurs prévues et coups de pouce.
+- **En attente de David** : rien (phase 0 validée en entier le 2026-11-23).
 - **Pièges en cours** : 46913a48, d58208eb, 1666b8e9 portent aussi la 1re techno → rien au-delà des polynômes simples dans leurs variations de calcul (l1t-7) ; u(ax + b) hors liste du BO de 1re (l1s-1).
-- **Worktree / branche** : aucun pour l'instant.
+- **Worktree / branche** : `../ubumaths-wt-idees-1re-derivation`, `feat/idees-1re-derivation`.
 
 ## Journal
 
@@ -25,3 +25,8 @@ _Mis à jour le 2026-11-23, après la phase 0 (aucune PR encore)._
 - Message reçu de la session `idees-6e-entiers-decimaux` : `migration-contenu.ts` saura bientôt
   écrire les `options` d'un modèle publié (branche `feat/migration-contenu-options`). Rien à faire ici
   tant qu'aucune variation ne demande de changer les options.
+
+### 2026-11-23 — phase 0 validée
+
+- David : « je valide tout » (F1 à F10, comme proposé). Les 7 modèles publiés sont réservés dans le
+  tableau de répartition.
