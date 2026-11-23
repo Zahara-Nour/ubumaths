@@ -8,12 +8,19 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, chantier ouvert._
+_Mis à jour le 2026-11-23, code écrit, corrections de la revue en cours (PR pas encore ouverte)._
 
-- **État** : relevé du code fait, phase 0 écrite (ci-dessous) · **Prochaine action** : coder
-  après les réponses · **En attente de David** : réponses aux questions Q1 à Q6 de la phase 0 ·
-  **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-reponse-impossible`,
-  `feat/reponse-impossible`.
+- **État** : moteur + interface + doc commités sur la branche (33 tests, 0 erreur de typecheck) ;
+  revue `code-reviewer` (Opus) : 2 importants, 3 mineurs, en correction · **Prochaine action** :
+  corrections NON COMMITÉES dans le worktree (interface faite : aller-retour MathLive ’ → ',
+  bouton réservé aux vraies cases ; moteur en cours au moment du /clear : erreur prévue
+  `impossible`, boutons parasites, message) → `git diff`, relancer les tests `impossible-answer*`,
+  finir ce qui manque, commiter ; `security-auditor` non requis (ni RLS ni API), ouvrir la PR ; puis
+  seconde PR : variations Δ < 0 de 604f83b7 (Q6) · **En attente de David** : essai du bouton par
+  `pnpm lien` (modèle d'essai local `632e3012-…`, fichier dans le dossier tmp du job) ·
+  **Pièges en cours** : la base locale a été recopiée de la prod par une autre session vers 06:12
+  (modèle d'essai perdu, recréé) ; MathLive change ’ en ' dans `\text{}` · **Worktree / branche** :
+  `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`, serveur 5176.
 
 ## Historique
 
@@ -67,3 +74,11 @@ Questions (recommandation entre parenthèses) :
 ### 2026-11-23 — phase 0 tranchée
 
 - David : « je valide » (après la reformulation en français) : Q1 à Q6 oui, comme recommandé.
+
+### 2026-11-23 — code, revue
+
+- Contrat (`impossible-answer.ts`, champ `impossibleLabel`) posé, puis moteur (`pedagogy-expert`) et
+  interface (`frontend-developer`) en parallèle. Prod vérifiée : aucun modèle n'attend
+  `impossible` (témoin `frac` : 164).
+- Revue Opus : erreur prévue `impossible` lue en lettres ; aller-retour MathLive non testé (’ → ')
+  ; boutons parasites par `blankDefaults` ; casse ; message trompeur. Tout corrigé avant la PR.
