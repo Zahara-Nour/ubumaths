@@ -5,14 +5,14 @@ clos le 2026-11-23. Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, modèle écrit (pas encore en prod)._
+_Mis à jour le 2026-11-23, PR à ouvrir._
 
-- **État** : modèle neuf « Lire un nombre décimal sur le matériel » écrit (2 variations, 13 specs
-  vertes, essayé en base locale et dans l'aperçu de l'admin) ; rangement prévu : nœud
-  « Nombres et calculs > Décimaux : numération > décomposition », point 6-102, niveau 10 ·
-  **Prochaine action** : David lance `create-questions --publier` en prod, je commite l'id, puis
-  `migration-rangement.ts`, test d'intégration, `security-auditor`, PR, `db:migrate` · **En attente
-  de David** : la création en prod.
+- **État** : brouillon 111ba9c5 créé en prod par David ; migration de rangement générée
+  (6-102, « Décimaux : numération > décomposition », niveau 10), test vert, rouge sans elle ;
+  test générique corrigé (cas sans objet pour un lot d'un modèle : sautés au lieu de vides) ·
+  **Prochaine action** : revue (`security-auditor` + `code-reviewer`), PR, CI, merge, `db:migrate`,
+  puis relecture par David dans `/dev/modeles?point=6-102` et `publier-lot.ts` · **En attente de
+  David** : rien avant la relecture.
 - **Pièges en cours** : lettre `e` réservée (Euler) ; le dessin ne porte aucune valeur, l'énoncé fixe
   gros cube = 1 unité.
 - **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux-materiel` / `feat/idees-6e-decimaux-materiel`.
@@ -24,3 +24,6 @@ _Mis à jour le 2026-11-23, modèle écrit (pas encore en prod)._
   tout de suite. Script `docs/wip/questions/idees-6e-decimaux-materiel.py`. Variation a : lecture
   (pièges : lu comme un entier, plaques et barres échangées, lu à l'envers) ; b : un rang vide
   (dixièmes ou centièmes ; piège : rang sauté). Ligne 6N2 du tableau repassée à « prise ».
+- 2026-11-23 : brouillon 111ba9c5 créé en prod (David). Migration de rangement générée ; le test
+  générique échouait sur un lot d'un seul modèle sans niveau ajouté (4 cas sans assertion) : cas
+  sautés par `it.skipIf`. Vert avec la migration, 3 rouges sans.

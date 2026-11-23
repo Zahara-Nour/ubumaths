@@ -1,4 +1,5 @@
 {
+	"id": "111ba9c5-8069-4416-8699-7de77939ae77",
 	"title": "Lire un nombre décimal sur le matériel",
 	"description": "Écrire le nombre décimal représenté par des gros cubes (unités), plaques (dixièmes), barres (centièmes) et petits cubes (millièmes) du bloc collection ; avec ou sans rang vide (pièges : lu comme un entier, plaques et barres échangées, lu à l'envers, rang vide sauté)",
 	"grades": ["6"],
