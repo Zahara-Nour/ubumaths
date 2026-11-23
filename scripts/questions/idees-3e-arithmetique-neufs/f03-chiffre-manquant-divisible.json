@@ -1,5 +1,9 @@
 {
 	"id": "f7d51551-3e17-4930-87aa-61835ed9692e",
+	"rangement": {
+		"noeud": "Arithmétique > Divisibilité > critères de divisibilité",
+		"point": null
+	},
 	"title": "Trouver un chiffre pour que le nombre soit divisible",
 	"description": "Chiffre manquant d'un nombre de 4 chiffres pour qu'il soit divisible par 9 (une case), par 3, par 2 ou 5, par 2 et 3 à la fois (cocher tous les chiffres qui conviennent) (pièges : reste au lieu du complément, critère de 3 au lieu de 9, un critère sur deux)",
 	"grades": ["3"],

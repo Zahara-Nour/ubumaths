@@ -1,5 +1,9 @@
 {
 	"id": "1550954d-ed8b-4ffd-b4b7-83ced8ec7dbd",
+	"rangement": {
+		"noeud": "Arithmétique > Nombres premiers > décomposition en facteurs premiers",
+		"point": "3-010"
+	},
 	"title": "Décomposer un entier en facteurs premiers, sans aide",
 	"description": "Écrire la décomposition en facteurs premiers dans une seule case, avec des puissances : 360 = 2³ × 3² × 5 ; 306 = 2 × 3² × 17 (pièges : facteur non premier, facteur compté une fois de trop ou oublié)",
 	"grades": ["3"],

@@ -1,5 +1,9 @@
 {
 	"id": "1c7a2f93-b51f-4d0c-9945-f145292597ae",
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : division > division euclidienne",
+		"point": null
+	},
 	"title": "Atteindre un multiple",
 	"description": "Depuis l'égalité de la division euclidienne (1 000 = 23 × 43 + 11) : le plus petit entier à ajouter ou à soustraire pour obtenir un multiple du diviseur (pièges : reste et complément confondus, le diviseur, le multiple au lieu de l'écart)",
 	"grades": ["3"],
