@@ -7,25 +7,21 @@ homographique : −∞, à gauche et à droite de la valeur interdite, +∞).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, code en cours (pas de PR)._
+_Mis à jour le 2026-11-23, code complet (pas de PR)._
 
-- **État** : phase 0 validée (Q1 case de calcul + erreurs prévues, Q2 (a), Q3 (a), périmètre
-  « 1 et 2 » : erreurs prévues + QCM sur les cases valeur d'un tableau, tests des erreurs
-  prévues sur intervalle/équation/vecteur/matrice). Fait et vert : parseur (`side` sur
-  `HiddenCell`, `readHiddenLimits`), juge des infinis (`infinityToken`, `infiniteCellVerdict`),
-  masquage d'évaluation, erreurs prévues de tableau, QCM (`withSingleCellShown`), affichage
-  écran (`VariationTable.svelte`). Tests : `tableau-limite-infinie.test.ts` (19),
-  `VariationTable-limite-cachee.svelte.test.ts` (5), `expected-errors-answer-kinds.test.ts` (22)
-  · **Prochaine action** : impression PDF (`variation-table-typst.ts` : la limite cachée y
-  sort EN CLAIR, `generateHiddenVariationRow` ignore les marques) — modif écrite non
-  appliquée (David à distance n'a pas vu la demande d'autorisation), puis suite complète des
-  tests du tableau, `check:incremental`, doc système (`docs/systeme/questions.md`, syntaxe),
-  revue `code-reviewer` (opus : correction des réponses), PR · **En attente de David** :
-  rien · **Pièges en cours** : demande d'autorisation à distance : notification ntfy
-  (nom de session) en place depuis le 2026-11-23, reçue par David ; branche commitée mais
-  NON poussée (le pre-push exige la doc `docs/systeme/questions.md`) ; un message d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à
-  signaler à David) · **Worktree / branche** : `../ubumaths-wt-variation-limite-infinie`,
-  `feat/variation-limite-infinie`.
+- **État** : phase 0 validée ; tout le code fait et vert, impression PDF comprise (case vide
+  à la place d'une limite cachée autour de `||`, compilé par `scripts/fiches/compile-prod.mjs`
+  et vu à l'œil) ; suites `ubumark` + `questions` + `utils` + composants vertes,
+  `check:incremental` 0, `types:cliquet` tenu ; doc `docs/systeme/ubumark.md` et
+  `questions.md` à jour (garde `docs:check-a-jour` verte). 5 anciens tests de refus (limite
+  cachée) devenus tests d'acceptation · **Prochaine action** : revue `code-reviewer` (opus)
+  lancée le 2026-11-23 — si ses findings ne sont pas dans l'historique, la RELANCER sur
+  `git diff origin/main...HEAD -- src` ; corriger, puis push + PR + `pnpm pr:merger`
+  · **En attente de David** : rien · **Pièges en cours** : branche NON poussée ; un message
+  d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à signaler à David) ;
+  défaut ancien de vartable : `(pos, "||", v)` dessine `v` des deux côtés de la barre si le
+  domaine continue après (hors périmètre) · **Worktree / branche** :
+  `../ubumaths-wt-variation-limite-infinie`, `feat/variation-limite-infinie`.
 
 ## Historique
 
