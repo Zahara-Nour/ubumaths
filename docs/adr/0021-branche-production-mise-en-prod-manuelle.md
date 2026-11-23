@@ -38,7 +38,10 @@ l'inverse.
      sur la PR) ;
   4. il avance `production` jusqu'à lui, en avance rapide seulement.
 
-  Il refuse : main local pas à jour, CI en cours ou rouge, code sans CI, production divergente.
+  Il refuse : main local pas à jour, CI rouge, code sans CI, production divergente. **Amendement du
+  2026-11-23 (David)** : une CI allégée de `main` encore en cours n'est plus attendue ni refusée ;
+  la version est créée dessus, et sa CI complète (étape 3), qui tourne à côté (groupe de
+  concurrence propre aux commits de version), reste la garde de la prod.
   Rien de nouveau : ni version, ni prod. CI de la version rouge : la version reste, la prod ne bouge
   pas, et une relance réutilise ce commit déjà tagué. `--essai` montre sans rien créer.
 

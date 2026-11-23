@@ -407,8 +407,8 @@ describe('deploy-prod.sh — attendre la CI', () => {
 		pousser('success', 'src/a.ts');
 		pousser('running', 'src/b.ts');
 		const r = deployer();
-		expect(r.status, r.sortie).toBe(1);
-		expect(r.sortie).toContain('CI en cours');
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('CI allégée en cours');
 		expect(r.sortie).not.toContain('sans « CI Summary »');
 	});
 
@@ -427,43 +427,51 @@ describe('deploy-prod.sh — attendre la CI', () => {
 	});
 });
 
-describe('deploy-prod.sh — attendre la CI de main sous le verrou', () => {
-	function deployerAvecAttente(...args: string[]) {
+// La CI allégée de main (typecheck et build) n'est plus attendue (2026-11-23) : la
+// CI COMPLÈTE de la version, seule garde de la prod, la couvre ; et quality.yml la
+// fait tourner à côté de celle du merge (groupe de concurrence propre aux versions).
+describe('deploy-prod.sh — la CI allégée de main n’est pas attendue', () => {
+	// Pas de PAUSE ni d'ATTENTE_MAX : une attente de la CI de main ne rendrait jamais la main.
+	function deployerSansAttente(...args: string[]) {
 		const r = spawnSync('bash', [SCRIPT, ...args], {
 			cwd: dansLeBac(local),
-			env: { ...env(), DEPLOY_PROD_ATTENTE_MAX: '60', DEPLOY_PROD_PAUSE: '0' },
+			env: env(),
 			encoding: 'utf8'
 		});
 		return { status: r.status, sortie: `${r.stdout}${r.stderr}` };
 	}
 
-	it('CI en cours sur la pointe : attend sous le verrou, puis livre', () => {
+	it('CI en cours sur la pointe : version créée dessus sans l’attendre, puis livrée', () => {
 		pousser('success', 'src/a.ts');
-		const pointe = pousser('running-then-success', 'src/b.ts');
-		const r = deployerAvecAttente();
+		// « running » ne finit jamais : une attente ne rendrait pas la main.
+		const pointe = pousser('running', 'src/b.ts');
+		const r = deployerSansAttente();
 		expect(r.status, r.sortie).toBe(0);
-		expect(r.sortie).toContain('sous le verrou');
+		expect(r.sortie).toContain('CI allégée en cours');
+		expect(r.sortie).not.toContain('attente sous le verrou');
 		expect(version().parent).toBe(pointe);
 		expect(production()).toBe(version().sha);
 	});
 
-	it('CI toujours en cours au bout de l’attente : ni version, ni prod', () => {
+	it('CI en cours sur la pointe, suivie de doc : la version part de la pointe', () => {
 		pousser('success', 'src/a.ts');
-		pousser('running', 'src/b.ts');
-		const r = deployerAvecAttente();
-		expect(r.status, r.sortie).toBe(1);
-		expect(r.sortie).toContain('CI en cours');
-		expect(git(local, 'tag')).toBe('');
-		expect(production()).toBeNull();
+		const code = pousser('running', 'src/b.ts');
+		const doc = pousser(null, 'docs/journal.md');
+		const r = deployerSansAttente();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('CI allégée en cours');
+		expect(git(local, 'merge-base', '--is-ancestor', code, version().sha)).toBe('');
+		expect(version().parent).toBe(doc);
 	});
 
-	it('--essai n’attend pas la CI en cours', () => {
+	it('--essai montre la livraison, sans rien créer', () => {
 		pousser('success', 'src/a.ts');
-		pousser('running-then-success', 'src/b.ts');
-		const r = deployerAvecAttente('--essai');
-		expect(r.status, r.sortie).toBe(1);
-		expect(r.sortie).toContain('CI en cours');
-		expect(r.sortie).not.toContain('sous le verrou');
+		pousser('running', 'src/b.ts');
+		const r = deployerSansAttente('--essai');
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('CI allégée en cours');
+		expect(git(local, 'tag')).toBe('');
+		expect(production()).toBeNull();
 	});
 });
 
@@ -496,15 +504,6 @@ describe('deploy-prod.sh — ce qui arrête tout', () => {
 		expect(r.status, r.sortie).toBe(1);
 		expect(r.sortie).toContain('diffère de origin/main');
 		expect(r.sortie).toContain('journal d’une autre session');
-		expect(production()).toBeNull();
-	});
-
-	it('CI en cours sur la pointe', () => {
-		pousser('success', 'src/a.ts');
-		pousser('pending', 'src/b.ts');
-		const r = deployer();
-		expect(r.status, r.sortie).toBe(1);
-		expect(r.sortie).toContain('CI en cours');
 		expect(production()).toBeNull();
 	});
 

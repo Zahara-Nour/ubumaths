@@ -4,8 +4,8 @@
 # Vercel ne déploie que la branche `production`. Ce script :
 #   1. choisit le dernier commit de main à « CI Summary » vert (CI allégée de
 #      main : typecheck et build ; le reste a tourné sur la PR),
-#      en enjambant les commits de doc qui le suivent ; CI en cours → l'attend,
-#      sous le verrou « deploy » (au plus DEPLOY_PROD_ATTENTE_MAX s) ;
+#      en enjambant les commits de doc qui le suivent ; CI allégée encore en
+#      cours → ne l'attend pas (la CI complète de la version la couvre) ;
 #   2. crée la version (`pnpm release` : numéro, CHANGELOG, tag) et la pousse
 #      sur main, sauf si ce commit est déjà une version ;
 #   3. attend que la CI de ce commit de version soit verte : c'est la seule CI
@@ -424,53 +424,38 @@ if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
 fi
 
 # --- 1. le dernier commit vérifié -------------------------------------------
-# CI en cours : sous le verrou, personne ne merge, la CI ne repart donc pas de
-# zéro ; on l'attend (au plus ATTENTE_MAX s) au lieu de rendre le verrou
-# (2026-11-01 : une heure de relances, chaque merge relançait la CI). `--essai`
-# ne tient pas le verrou : il n'attend pas.
-pointe="$(git rev-parse origin/main)"
-attendu_main=0
-premier_tour=1
-while :; do
-	cible=""
-	en_cours=""
-	for c in $(git rev-list --first-parent -n "$PROFONDEUR" origin/main); do
-		etat="$(etat_ci "$c")"
-		case "$etat" in
-		success)
+# La CI ALLÉGÉE de main (typecheck et build) encore en cours n'est pas attendue
+# (2026-11-23) : la CI COMPLÈTE de la version (étape 3) la couvre et reste la
+# seule garde de la prod, et quality.yml la fait tourner À CÔTÉ de celle du
+# merge (groupe de concurrence propre aux commits de version). L'attendre
+# coûtait ~6 min à une mise en prod lancée juste après un merge (6 sur 18 du
+# 14 au 23/11). Une CI de main ROUGE arrête toujours tout.
+cible=""
+for c in $(git rev-list --first-parent -n "$PROFONDEUR" origin/main); do
+	etat="$(etat_ci "$c")"
+	case "$etat" in
+	success)
+		cible="$c"
+		break
+		;;
+	absent)
+		sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "Sa CI n'a pas tourné. Rien n'est créé."
+		echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
+		;;
+	pending)
+		echo "⏩ CI allégée en cours sur $(decrire "$c") : non attendue, la CI complète de la version fait foi."
+		cible="$c"
+		break
+		;;
+	*)
+		if relancer "$c" "$etat"; then
+			echo "⏩ CI de $(decrire "$c") relancée : non attendue, la CI complète de la version fait foi."
 			cible="$c"
 			break
-			;;
-		absent)
-			sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "Sa CI n'a pas tourné. Rien n'est créé."
-			[ "$premier_tour" = 0 ] || echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
-			;;
-		pending)
-			en_cours="$c"
-			break
-			;;
-		*)
-			if relancer "$c" "$etat"; then
-				en_cours="$c"
-				attendu_main=0
-				break
-			fi
-			arreter "⛔ « $CHECK » = $etat sur $(decrire "$c")" "Rien n'est créé. $CONSEIL"
-			;;
-		esac
-	done
-	premier_tour=0
-	[ -z "$en_cours" ] && break
-	[ "$essai" = 0 ] && [ "$attendu_main" -lt "$ATTENTE_MAX" ] ||
-		arreter "⏳ CI en cours sur $(decrire "$en_cours")" "Relancer quand « $CHECK » sera vert. Rien n'est créé."
-	echo "⏳ CI en cours sur $(decrire "$en_cours") : attente sous le verrou… (${attendu_main} s)"
-	sleep "$PAUSE"
-	# Au moins 1 par tour : avec DEPLOY_PROD_PAUSE=0 (tests), l'attente reste bornée
-	attendu_main=$((attendu_main + (PAUSE > 0 ? PAUSE : 1)))
-	# Un humain peut encore pousser (le verrou ne retient que les sessions Claude)
-	git fetch -q origin main
-	[ "$(git rev-parse origin/main)" = "$pointe" ] ||
-		arreter "⛔ origin/main a bougé pendant l'attente." "git pull --ff-only, puis relancer. Rien n'est créé."
+		fi
+		arreter "⛔ « $CHECK » = $etat sur $(decrire "$c")" "Rien n'est créé. $CONSEIL"
+		;;
+	esac
 done
 [ -n "$cible" ] || arreter "⛔ Aucun commit vérifié par la CI dans les $PROFONDEUR derniers de main."
 
