@@ -1,4 +1,8 @@
 {
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > tangente",
+		"point": "1SPE-272"
+	},
 	"title": "Équation de la tangente à une fonction rationnelle",
 	"description": "Équation réduite de la tangente à la courbe de k/x, k/(x − c) ou (ax + b)/(x + d) en un point.",
 	"grades": ["1_SPE"],

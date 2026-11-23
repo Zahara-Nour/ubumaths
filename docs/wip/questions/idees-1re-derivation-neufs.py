@@ -38,8 +38,8 @@ def spec(desc, vi, variables_, status, answers, message=None):
             'expected': expected, 'answers': answers}
 
 
-def modele(title, description, level, variations, specs):
-    return {'title': title, 'description': description, 'grades': ['1_SPE'], 'level': level,
+def modele(title, description, level, variations, specs, rangement):
+    return {'rangement': rangement, 'title': title, 'description': description, 'grades': ['1_SPE'], 'level': level,
             'delay': 180, 'status': 'draft', 'shared': {'cleanCoefficients': True},
             'options': {'constraints': {'form': 'warn'}},
             'variations': variations, 'testSpecs': specs}
@@ -278,7 +278,7 @@ ecrire('f1-nombre-derive-inverse-par-le-taux', modele(
     'Nombre dérivé de la fonction inverse par le taux de variation',
     'Taux de variation entre a et a + h, simplifié, puis nombre dérivé, pour 1/x, k/x et '
     'k/(x + b).',
-    2, f1, f1s))
+    2, f1, f1s, {'noeud': 'Fonctions > Dérivation > nombre dérivé', 'point': '1SPE-260'}))
 
 # =============================================================================================
 # F2 — Équation de la tangente à une fonction rationnelle (1AN10-4, cas 4). Point 1SPE-272.
@@ -388,7 +388,7 @@ ecrire('f2-tangente-fonction-rationnelle', modele(
     'Équation de la tangente à une fonction rationnelle',
     'Équation réduite de la tangente à la courbe de k/x, k/(x − c) ou (ax + b)/(x + d) en un '
     'point.',
-    3, f2, f2s))
+    3, f2, f2s, {'noeud': 'Fonctions > Dérivation > tangente', 'point': '1SPE-272'}))
 
 print('F1 :', len(f1), 'variations,', len(f1s), 'specs')
 print('F2 :', len(f2), 'variations,', len(f2s), 'specs')

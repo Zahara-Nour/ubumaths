@@ -1,4 +1,8 @@
 {
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > nombre dérivé",
+		"point": "1SPE-260"
+	},
 	"title": "Nombre dérivé de la fonction inverse par le taux de variation",
 	"description": "Taux de variation entre a et a + h, simplifié, puis nombre dérivé, pour 1/x, k/x et k/(x + b).",
 	"grades": ["1_SPE"],
