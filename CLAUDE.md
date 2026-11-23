@@ -142,7 +142,7 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 1. **Phase 0** : comportements en français (nominal / limite / erreur), **attendre la validation** avant de coder. Une tâche planifiée ne peut pas attendre : si le travail demande une validation qui n'est pas déjà écrite (journal, ADR, consigne de la tâche), elle écrit la question dans le journal du chantier, ne code rien et s'arrête.
 2. Agents et modèles spécifiés par tâche.
 3. **Tests d'abord** (rouges) → implémentation → verts.
-4. **Revue proportionnée au risque**, une fois **sur la PR** (pas à chaque phase) :
+4. **Revue proportionnée au risque**, une fois **par PR** (pas à chaque phase), **sur la branche avant d'ouvrir la PR** : chaque push sur une PR ouverte relance la CI de zéro, viser un seul push (journal compris) :
    - doc, article du Shtam, contenu, correctif d'UI < ~30 lignes sans logique → **aucune** ;
    - code courant → `code-reviewer` (Sonnet) ;
    - mathAST, géométrie, correction des réponses, gros diff → `code-reviewer` en `model: opus` ;
