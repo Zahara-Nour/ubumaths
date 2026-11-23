@@ -67,18 +67,18 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 
 ### Spécialité
 
-| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session     |
-| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ------------------- |
-| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`  |
-| Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites` |
-| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | libre                |                     |
-| Continuité des fonctions                                                       | TSA4        | 6         | libre                |                     |
-| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                     |
-| Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                     |
-| Intégration                                                                    | TSA8        | 5         | libre                |                     |
-| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                     |
-| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                     |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                |                     |
+| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session        |
+| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ---------------------- |
+| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`     |
+| Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`    |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | prise (2026-11-23)   | `idees-tle-derivation` |
+| Continuité des fonctions                                                       | TSA4        | 6         | libre                |                        |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                        |
+| Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                        |
+| Intégration                                                                    | TSA8        | 5         | libre                |                        |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                        |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                |                        |
 
 ### Maths expertes
 
@@ -103,7 +103,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Rubrique                           | Codes | Exercices | État                 | Sujet / session             |
 | ---------------------------------- | ----- | --------- | -------------------- | --------------------------- |
 | Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`          |
-| Nombres entiers et décimaux        | 6N1   | 38        | prise (2026-11-23)   | `idees-6e-entiers-decimaux` |
+| Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | libre                |                             |
 | Algèbre                            | 6N4   | 9         | libre                |                             |
@@ -132,23 +132,23 @@ Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-2
 anciennes versions. Leur rubrique « nombres et calcul » (`3N1`) n'a aucun exercice : elle ne figure
 pas. Le fichier `beta3I12` n'est pas repris.
 
-| Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session         |
-| ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ----------------------- |
-| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique` |
-| Puissances                               | 3C1       | 5         | libre                                                      |                         |
-| Calcul littéral, équations               | 3L1       | 55        | libre                                                      |                         |
-| Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                         |
-| Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                         |
-| Proportionnalité                         | 3P1       | 3         | libre                                                      |                         |
-| Statistiques                             | 3S1       | 3         | libre                                                      |                         |
-| Probabilités                             | 3S2       | 5         | libre                                                      |                         |
-| Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                         |
-| Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                         |
-| Trigonométrie                            | 3G3       | 13        | libre                                                      |                         |
-| Espace                                   | 3G4       | 6         | libre                                                      |                         |
-| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                         |
-| Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                         |
-| Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                         |
+| Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session            |
+| ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | -------------------------- |
+| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`    |
+| Puissances                               | 3C1       | 5         | libre                                                      |                            |
+| Calcul littéral, équations               | 3L1       | 55        | prise (2026-11-23)                                         | `idees-3e-calcul-litteral` |
+| Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                            |
+| Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                            |
+| Proportionnalité                         | 3P1       | 3         | libre                                                      |                            |
+| Statistiques                             | 3S1       | 3         | libre                                                      |                            |
+| Probabilités                             | 3S2       | 5         | libre                                                      |                            |
+| Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                            |
+| Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                            |
+| Trigonométrie                            | 3G3       | 13        | libre                                                      |                            |
+| Espace                                   | 3G4       | 6         | libre                                                      |                            |
+| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                            |
+| Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                            |
+| Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                            |
 
 ## Autres niveaux
 
@@ -178,19 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 4bcbbaae Le nombre de dizaines, de centièmes…                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 4d825d44 Le chiffre d'un rang                                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| a2ae7206 Fraction décimale et écriture décimale              | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 2c5bae8f Liens entre les unités de numération                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 8d7edbde Grands nombres jusqu'aux milliards                  | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| d7781eed Reconnaître un nombre décimal                       | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 8adac6d1 Repérer un nombre décimal                           | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 0ce253ea Placer un nombre décimal                            | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| a1b46489 Comparer deux nombres décimaux                      | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| e75cb1a3 Arrondir un nombre décimal                          | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 36991abb Arrondir un quotient, arrondir π                    | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 2e982062 Intercaler un nombre décimal                        | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 8fd459da Définition d'un pourcentage                         | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 46913a48 Taux de variation et nombre dérivé                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
 | d58208eb Lire un nombre dérivé sur un graphique              | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
 | 74d77343 Calculer une dérivée                                | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
@@ -217,8 +204,5 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
 - `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le
   plus grand reste possible dans une division euclidienne par d ? » (3A10), niveau 6e, aucun modèle.
-- `idees-3e-arithmetique` (2026-11-23, question à David) : refuser une fraction non simplifiée dans
-  90dca27a (aujourd'hui ½ point), par une migration de ses options quand `migration-contenu.ts` saura
-  les écrire (branche `feat/migration-contenu-options`).
 - `idees-6e-entiers-decimaux` (2026-11-23, David) : pourcentage approché d'une fraction (37/213 ≈ 17 %,
   6N1F-4), hors bornes de 6e, pour la session de la 5e ou de la 4e (ade95ae4 n'a que des cas exacts).

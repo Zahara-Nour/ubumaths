@@ -1,0 +1,1564 @@
+{
+	"id": "c178356b-4366-4d0e-ad9b-c286269f1ab4",
+	"title": "Compléter un tableau d'écritures : décimal, fraction, pourcentage",
+	"description": "Égalités à compléter, une écriture donnée par ligne : écriture décimale, fraction, pourcentage (0,25 = 1/4 = 25 %) ; fractions usuelles (toute fraction égale acceptée) ou centièmes (fraction sur 100 exigée) (pièges : pourcentage recopié, un rang de trop ou de moins, trait de fraction lu comme une virgule, 0,5 = 1/5)",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"reducedFractions": "off",
+			"percent": "strict"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète les égalités : sur chaque ligne, l'écriture décimale, la fraction et le pourcentage désignent le même nombre. Au milieu, écris une fraction (toute fraction égale convient) ; à droite, écris le pourcentage avec le signe $\\%$.\n\n$${{eval:n1/d1;d}}=?=?$$\n\n$$?=\\dfrac{ {{n2}} }{ {{d2}} }=?$$\n\n$$?=?={{eval:(100*n3/d3)}}~\\%$$\n\n$$?=\\dfrac{ {{n4}} }{ {{d4}} }=?$$",
+			"variables": [
+				{
+					"name": "c1",
+					"expression": "104|102|304|105|110|310|710|910"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:floor(c1/100)"
+				},
+				{
+					"name": "d1",
+					"expression": "eval:mod(c1,100)"
+				},
+				{
+					"name": "c2",
+					"expression": "104|102|304|105|110|310|710|910"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:floor(c2/100)"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:mod(c2,100)"
+				},
+				{
+					"name": "c3",
+					"expression": "104|102|304|105|110|310|710|910"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:floor(c3/100)"
+				},
+				{
+					"name": "d3",
+					"expression": "eval:mod(c3,100)"
+				},
+				{
+					"name": "c4",
+					"expression": "104|102|304|105|110|310|710|910"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:floor(c4/100)"
+				},
+				{
+					"name": "d4",
+					"expression": "eval:mod(c4,100)"
+				}
+			],
+			"conditions": ["c1 != c2", "c1 != c3", "c1 != c4", "c2 != c3", "c2 != c4", "c3 != c4"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{n1}} }{ {{d1}} }",
+					"requiredForm": {
+						"pattern": "n:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*n1/d1;d}}",
+							"message": "Ta fraction est $10$ fois trop grande : il manque un zéro au dénominateur.",
+							"label": "Un zéro de moins au dénominateur"
+						},
+						{
+							"answer": "{{eval:n1/(10*d1);d}}",
+							"message": "Ta fraction est $10$ fois trop petite : il y a un zéro de trop au dénominateur.",
+							"label": "Un zéro de trop au dénominateur"
+						},
+						{
+							"answer": "{{eval:1/((100*n1/d1)/10^(1-min(mod((100*n1/d1),10),1)))}}",
+							"message": "Les chiffres après la virgule vont au numérateur, et le dénominateur dit leur rang ($10$ pour des dixièmes, $100$ pour des centièmes).",
+							"label": "Chiffres après la virgule au dénominateur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*n1/d1)}}\\%",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n1/d1)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n1/d1)}}$ tout seul, ce n'est pas ${{eval:(100*n1/d1)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
+							"answer": "{{eval:(100*n1/d1)/10;d}}\\%",
+							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:n1/d1;d}}\\%",
+							"message": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes.",
+							"label": "Multiplication par 100 oubliée"
+						},
+						{
+							"answer": "{{eval:10*(100*n1/d1);d}}\\%",
+							"message": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois.",
+							"label": "Un rang de trop"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n2/d2;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n2+d2/10^(1+min(floor(d2/10),1)+min(floor(d2/100),1));d}}",
+							"message": "Le trait de fraction n'est pas une virgule : une fraction, c'est le numérateur divisé par le dénominateur.",
+							"label": "Numérateur virgule dénominateur"
+						},
+						{
+							"answer": "{{eval:(100*n2/d2);d}}",
+							"message": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$.",
+							"label": "Pourcentage recopié"
+						},
+						{
+							"answer": "{{eval:(100*n2/d2)/1000;d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de trop"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*n2/d2)}}\\%",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n2/d2)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n2/d2)}}$ tout seul, ce n'est pas ${{eval:(100*n2/d2)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
+							"answer": "{{eval:d2;d}}\\%",
+							"message": "Le pourcentage n'est pas le dénominateur : écris d'abord la fraction avec le dénominateur $100$.",
+							"label": "Dénominateur pris pour le pourcentage"
+						},
+						{
+							"answer": "{{eval:n2*10^(1+min(floor(d2/10),1)+min(floor(d2/100),1))+d2;d}}\\%",
+							"message": "On ne colle pas le numérateur et le dénominateur : écris d'abord la fraction avec le dénominateur $100$.",
+							"label": "Numérateur et dénominateur collés"
+						},
+						{
+							"answer": "{{eval:(100*n2/d2)/10;d}}\\%",
+							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
+							"label": "Un rang de moins"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n3/d3;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n3/d3);d}}",
+							"message": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$.",
+							"label": "Pourcentage recopié"
+						},
+						{
+							"answer": "{{eval:(100*n3/d3)/1000;d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:(100*n3/d3)/10;d}}",
+							"message": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de moins"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\frac{ {{n3}} }{ {{d3}} }",
+					"requiredForm": {
+						"pattern": "n:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*n3/d3;d}}",
+							"message": "Ta fraction est $10$ fois trop grande : il manque un zéro au dénominateur.",
+							"label": "Un zéro de moins au dénominateur"
+						},
+						{
+							"answer": "{{eval:n3/(10*d3);d}}",
+							"message": "Ta fraction est $10$ fois trop petite : il y a un zéro de trop au dénominateur.",
+							"label": "Un zéro de trop au dénominateur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n4/d4;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n4+d4/10^(1+min(floor(d4/10),1)+min(floor(d4/100),1));d}}",
+							"message": "Le trait de fraction n'est pas une virgule : une fraction, c'est le numérateur divisé par le dénominateur.",
+							"label": "Numérateur virgule dénominateur"
+						},
+						{
+							"answer": "{{eval:(100*n4/d4);d}}",
+							"message": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$.",
+							"label": "Pourcentage recopié"
+						},
+						{
+							"answer": "{{eval:(100*n4/d4)/1000;d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de trop"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*n4/d4)}}\\%",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n4/d4)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n4/d4)}}$ tout seul, ce n'est pas ${{eval:(100*n4/d4)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
+							"answer": "{{eval:d4;d}}\\%",
+							"message": "Le pourcentage n'est pas le dénominateur : écris d'abord la fraction avec le dénominateur $100$.",
+							"label": "Dénominateur pris pour le pourcentage"
+						},
+						{
+							"answer": "{{eval:n4*10^(1+min(floor(d4/10),1)+min(floor(d4/100),1))+d4;d}}\\%",
+							"message": "On ne colle pas le numérateur et le dénominateur : écris d'abord la fraction avec le dénominateur $100$.",
+							"label": "Numérateur et dénominateur collés"
+						},
+						{
+							"answer": "{{eval:(100*n4/d4)/10;d}}\\%",
+							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un pourcentage est une fraction de dénominateur $100$ : on passe d'une écriture à l'autre par la fraction de dénominateur $100$.",
+					"$${{eval:n1/d1;d}}=\\dfrac{ {{n1}} }{ {{d1}} }=\\dfrac{ {{eval:(100*n1/d1)}} }{100}={{eval:(100*n1/d1)}}\\,\\%$$\n\n$${{eval:n2/d2;d}}=\\dfrac{ {{n2}} }{ {{d2}} }=\\dfrac{ {{eval:(100*n2/d2)}} }{100}={{eval:(100*n2/d2)}}\\,\\%$$",
+					"$${{eval:n3/d3;d}}=\\dfrac{ {{n3}} }{ {{d3}} }=\\dfrac{ {{eval:(100*n3/d3)}} }{100}={{eval:(100*n3/d3)}}\\,\\%$$\n\n$${{eval:n4/d4;d}}=\\dfrac{ {{n4}} }{ {{d4}} }=\\dfrac{ {{eval:(100*n4/d4)}} }{100}={{eval:(100*n4/d4)}}\\,\\%$$"
+				]
+			},
+			"hint": "Pour chaque ligne, cherche d'abord la fraction de dénominateur $100$ : le pourcentage est son numérateur, et diviser par $100$ donne l'écriture décimale."
+		},
+		{
+			"statement": "Complète les égalités : sur chaque ligne, l'écriture décimale, la fraction et le pourcentage désignent le même nombre. Au milieu, écris une fraction de dénominateur $100$ ; à droite, écris le pourcentage avec le signe $\\%$.\n\n$${{eval:n1/d1;d}}=?=?$$\n\n$$?=\\dfrac{ {{n2}} }{ {{d2}} }=?$$\n\n$$?=?={{eval:(100*n3/d3)}}~\\%$$\n\n$$?=\\dfrac{ {{n4}} }{ {{d4}} }=?$$",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "1..99"
+				},
+				{
+					"name": "d1",
+					"expression": "100"
+				},
+				{
+					"name": "n2",
+					"expression": "1..99"
+				},
+				{
+					"name": "d2",
+					"expression": "100"
+				},
+				{
+					"name": "n3",
+					"expression": "1..99"
+				},
+				{
+					"name": "d3",
+					"expression": "100"
+				},
+				{
+					"name": "n4",
+					"expression": "1..99"
+				},
+				{
+					"name": "d4",
+					"expression": "100"
+				}
+			],
+			"conditions": [
+				"n1 != n2",
+				"n1 != n3",
+				"n1 != n4",
+				"n2 != n3",
+				"n2 != n4",
+				"n3 != n4",
+				"mod(n1,10) != 0",
+				"mod(n2,10) != 0",
+				"mod(n3,10) != 0",
+				"mod(n4,10) != 0",
+				"min(n1,n2,n3,n4) < 10"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{n1}} }{ {{d1}} }",
+					"requiredForm": {
+						"pattern": "n:integer / 100"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*n1/d1;d}}",
+							"message": "Ta fraction est $10$ fois trop grande : il manque un zéro au dénominateur.",
+							"label": "Un zéro de moins au dénominateur"
+						},
+						{
+							"answer": "{{eval:n1/(10*d1);d}}",
+							"message": "Ta fraction est $10$ fois trop petite : il y a un zéro de trop au dénominateur.",
+							"label": "Un zéro de trop au dénominateur"
+						},
+						{
+							"answer": "{{eval:1/((100*n1/d1)/10^(1-min(mod((100*n1/d1),10),1)))}}",
+							"message": "Les chiffres après la virgule vont au numérateur, et le dénominateur dit leur rang ($10$ pour des dixièmes, $100$ pour des centièmes).",
+							"label": "Chiffres après la virgule au dénominateur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*n1/d1)}}\\%",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n1/d1)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n1/d1)}}$ tout seul, ce n'est pas ${{eval:(100*n1/d1)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
+							"answer": "{{eval:(100*n1/d1)/10;d}}\\%",
+							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:n1/d1;d}}\\%",
+							"message": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes.",
+							"label": "Multiplication par 100 oubliée"
+						},
+						{
+							"answer": "{{eval:10*(100*n1/d1);d}}\\%",
+							"message": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois.",
+							"label": "Un rang de trop"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n2/d2;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n2/d2);d}}",
+							"message": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$.",
+							"label": "Pourcentage recopié"
+						},
+						{
+							"answer": "{{eval:(100*n2/d2)/1000;d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:(100*n2/d2)/10;d}}",
+							"message": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de moins"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*n2/d2)}}\\%",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n2/d2)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n2/d2)}}$ tout seul, ce n'est pas ${{eval:(100*n2/d2)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
+							"answer": "{{eval:(100*n2/d2)/10;d}}\\%",
+							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:n2/d2;d}}\\%",
+							"message": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes.",
+							"label": "Multiplication par 100 oubliée"
+						},
+						{
+							"answer": "{{eval:10*(100*n2/d2);d}}\\%",
+							"message": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois.",
+							"label": "Un rang de trop"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n3/d3;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n3/d3);d}}",
+							"message": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$.",
+							"label": "Pourcentage recopié"
+						},
+						{
+							"answer": "{{eval:(100*n3/d3)/1000;d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:(100*n3/d3)/10;d}}",
+							"message": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de moins"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\frac{ {{n3}} }{ {{d3}} }",
+					"requiredForm": {
+						"pattern": "n:integer / 100"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*n3/d3;d}}",
+							"message": "Ta fraction est $10$ fois trop grande : il manque un zéro au dénominateur.",
+							"label": "Un zéro de moins au dénominateur"
+						},
+						{
+							"answer": "{{eval:n3/(10*d3);d}}",
+							"message": "Ta fraction est $10$ fois trop petite : il y a un zéro de trop au dénominateur.",
+							"label": "Un zéro de trop au dénominateur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n4/d4;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n4/d4);d}}",
+							"message": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$.",
+							"label": "Pourcentage recopié"
+						},
+						{
+							"answer": "{{eval:(100*n4/d4)/1000;d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:(100*n4/d4)/10;d}}",
+							"message": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+							"label": "Un rang de moins"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*n4/d4)}}\\%",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n4/d4)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n4/d4)}}$ tout seul, ce n'est pas ${{eval:(100*n4/d4)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
+							"answer": "{{eval:(100*n4/d4)/10;d}}\\%",
+							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
+							"label": "Un rang de moins"
+						},
+						{
+							"answer": "{{eval:n4/d4;d}}\\%",
+							"message": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes.",
+							"label": "Multiplication par 100 oubliée"
+						},
+						{
+							"answer": "{{eval:10*(100*n4/d4);d}}\\%",
+							"message": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois.",
+							"label": "Un rang de trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Des centièmes : $a\\,\\%=\\dfrac{a}{100}$, et diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche.",
+					"$${{eval:n1/d1;d}}=\\dfrac{ {{n1}} }{ {{d1}} }={{eval:(100*n1/d1)}}\\,\\%$$\n\n$${{eval:n2/d2;d}}=\\dfrac{ {{n2}} }{ {{d2}} }={{eval:(100*n2/d2)}}\\,\\%$$",
+					"$${{eval:n3/d3;d}}=\\dfrac{ {{n3}} }{ {{d3}} }={{eval:(100*n3/d3)}}\\,\\%$$\n\n$${{eval:n4/d4;d}}=\\dfrac{ {{n4}} }{ {{d4}} }={{eval:(100*n4/d4)}}\\,\\%$$"
+				]
+			},
+			"hint": "Le deuxième chiffre après la virgule est celui des centièmes : le nombre de centièmes est le numérateur de la fraction sur $100$, et aussi le pourcentage."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : tout juste",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : fraction égale non simplifiée acceptée (25/100)",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"\\frac{25}{100}",
+				"25\\%",
+				"0,5",
+				"50\\%",
+				"0,75",
+				"\\frac{3}{4}",
+				"0,3",
+				"30\\%"
+			]
+		},
+		{
+			"description": "v0 : décimal dans la case fraction refusé",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["0,25", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : F1 = 25/10",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est $10$ fois trop grande : il manque un zéro au dénominateur."
+			},
+			"answers": ["\\frac{25}{10}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : F1 = 25/1 000",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est $10$ fois trop petite : il y a un zéro de trop au dénominateur."
+			},
+			"answers": [
+				"\\frac{25}{1\\,000}",
+				"25\\%",
+				"0,5",
+				"50\\%",
+				"0,75",
+				"\\frac{3}{4}",
+				"0,3",
+				"30\\%"
+			]
+		},
+		{
+			"description": "v0 : F1 = 1/25",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les chiffres après la virgule vont au numérateur, et le dénominateur dit leur rang ($10$ pour des dixièmes, $100$ pour des centièmes)."
+			},
+			"answers": ["\\frac{1}{25}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P1 = 25 sans le signe",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe $\\%$ : $25$ tout seul, ce n'est pas $25~\\%$."
+			},
+			"answers": ["\\frac{1}{4}", "25", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P1 = 0,25 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["percent", "form"]
+			},
+			"answers": ["\\frac{1}{4}", "0{,}25", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P2 = 50 sans le signe",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe $\\%$ : $50$ tout seul, ce n'est pas $50~\\%$."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P1 = 2,5 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite."
+			},
+			"answers": ["\\frac{1}{4}", "2,5\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P1 = 0,25 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes."
+			},
+			"answers": ["\\frac{1}{4}", "0,25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P1 = 250 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois."
+			},
+			"answers": ["\\frac{1}{4}", "250\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : D2 = 1,2",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le trait de fraction n'est pas une virgule : une fraction, c'est le numérateur divisé par le dénominateur."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "1,2", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : D2 = 50",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "50", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : D2 = 0,05",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,05", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : D2 en fraction refusé",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": [
+				"\\frac{1}{4}",
+				"25\\%",
+				"\\frac{1}{2}",
+				"50\\%",
+				"0,75",
+				"\\frac{3}{4}",
+				"0,3",
+				"30\\%"
+			]
+		},
+		{
+			"description": "v0 : P2 = 2 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le pourcentage n'est pas le dénominateur : écris d'abord la fraction avec le dénominateur $100$."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "2\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P2 = 12 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne colle pas le numérateur et le dénominateur : écris d'abord la fraction avec le dénominateur $100$."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "12\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P2 = 5 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "5\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : D3 = 75",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : D3 = 0,075",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "0,075", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : D3 = 7,5",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "7,5", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : F3 = 75/10",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est $10$ fois trop grande : il manque un zéro au dénominateur."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{75}{10}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : F3 = 75/1 000",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est $10$ fois trop petite : il y a un zéro de trop au dénominateur."
+			},
+			"answers": [
+				"\\frac{1}{4}",
+				"25\\%",
+				"0,5",
+				"50\\%",
+				"0,75",
+				"\\frac{75}{1\\,000}",
+				"0,3",
+				"30\\%"
+			]
+		},
+		{
+			"description": "v0 : D4 = 3,1",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le trait de fraction n'est pas une virgule : une fraction, c'est le numérateur divisé par le dénominateur."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "3,1", "30\\%"]
+		},
+		{
+			"description": "v0 : P4 = 3 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "3\\%"]
+		},
+		{
+			"description": "v0 : P4 = 10 %",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le pourcentage n'est pas le dénominateur : écris d'abord la fraction avec le dénominateur $100$."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "10\\%"]
+		},
+		{
+			"description": "v1 : tout juste",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : fraction sur 1 000 refusée",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": [
+				"\\frac{370}{1\\,000}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : F1 = 37/10",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est $10$ fois trop grande : il manque un zéro au dénominateur."
+			},
+			"answers": [
+				"\\frac{37}{10}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : F1 = 1/37",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les chiffres après la virgule vont au numérateur, et le dénominateur dit leur rang ($10$ pour des dixièmes, $100$ pour des centièmes)."
+			},
+			"answers": [
+				"\\frac{1}{37}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : P1 = 37 sans le signe",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe $\\%$ : $37$ tout seul, ce n'est pas $37~\\%$."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : P4 = 0,41 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["percent", "form"]
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"0{,}41"
+			]
+		},
+		{
+			"description": "v1 : P1 = 0,37 %",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de multiplier par $100$ : un pourcentage compte des centièmes."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"0,37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : D2 = 0,5 (zéro oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,5",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : D2 = 5",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le nombre du pourcentage : un pourcentage compte des centièmes, divise-le par $100$."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"5",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : D2 = 0,005",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,005",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : P2 = 50 % (zéro oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite, pas trois."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,05",
+				"50\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : P2 = 0,5 %",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,05",
+				"0,5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : D3 = 8,2",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : diviser par $100$, c'est décaler la virgule de deux rangs vers la gauche."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"8,2",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : F3 = 82/1 000",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta fraction est $10$ fois trop petite : il y a un zéro de trop au dénominateur."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{1\\,000}",
+				"0,41",
+				"41\\%"
+			]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : numération > forme fractionnaire",
+		"point": "6-106"
+	}
+}

@@ -2,7 +2,7 @@
 
 Outil n° 50 de [outils-manquants.md](../../wip/outils-manquants.md) : cacher une limite infinie dans un
 tableau de variations (` ```variation `), pour que l'élève la complète. Né du chantier
-[`idees-tle-limites`](../../wip/idees-tle-limites-progress.md), fiche F3 (point TSPE-415, fonction
+[`idees-tle-limites`](idees-tle-limites/idees-tle-limites-progress.md), fiche F3 (point TSPE-415, fonction
 homographique : −∞, à gauche et à droite de la valeur interdite, +∞).
 
 ## Reprendre ici

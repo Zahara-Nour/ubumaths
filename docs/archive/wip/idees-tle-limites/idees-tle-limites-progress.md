@@ -5,16 +5,13 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3029 (F3 écrit, fichiers sur `main`)._
+_Mis à jour le 2026-11-23, chantier clos._
 
-- **État** : rubrique publiée sauf F3 ; F3 (`f03-limites-tableau-homographique`, 2 variations,
-  13 specs) mergé en fichiers, pas encore en prod · **Prochaine action** : après le `deploy:prod`
-  qui livre #3027 (absent de la 0.102.0), David lance `create-questions --dir
-scripts/questions/idees-tle-limites-neufs --publier` ; je commite l'id, rangement TSPE-415 par
-  migration, relecture dans `/dev/modeles`, publication · **En attente de David** : `deploy:prod`
-  puis `create-questions --publier` · **Pièges en cours** : `{{e}}` interdit (Euler) ; le script
-  `idees-tle-limites-neufs.py` n'écrit que les noms passés en argument · **Worktree / branche** :
-  aucun (nouveau worktree sur `origin/main` pour la suite).
+- **État** : rubrique **publiée**, F3 compris : 5 modèles neufs (F1 +∞, F1 −∞, F2, Q2, F3
+  `d6eaa761`) et les variations des 7 publiés, validés par David ; journal archivé ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Pièges retenus** : `{{e}}`
+  interdit (Euler) ; `create-questions` se lance par `pnpm tsx scripts/create-questions.ts` ·
+  **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -125,3 +122,23 @@ scripts/questions/idees-tle-limites-neufs --publier` ; je commite l'id, rangemen
   (`pnpm voir`, tableau et cases en place, 0 erreur de console). Pas de saisie au navigateur :
   Chrome n'ouvre pas `[::1]` et `localhost` partagerait les cookies du port 5173.
 - #3027 n'est pas dans `production` (0.102.0) : le brouillon en prod attend le `deploy:prod`.
+
+### 2026-11-23 — F3 en prod (brouillon), rangement
+
+- `deploy:prod` fait par une autre session : 0.104.0 contient #3027 et #3029. David a lancé
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-limites-neufs --publier` :
+  F3 créé en brouillon, `d6eaa761-e8ff-4c08-a8c8-c3de1c4bbd83` (les 4 autres « déjà en base »).
+- Rangement : « Fonctions > Limites de fonctions > limite en un point », TSPE-415, voisin de
+  04ec9518 (homographique (x + b)/(x − a), même point). Migration générée par
+  `migration-rangement.ts` (F3 rangé, 4 ignorés) ; `migrations-rangement-tags.test.ts` vert.
+
+### 2026-11-23 — #3043 mergée, rangement en prod
+
+- `migration list --linked` : seule la migration du lot en attente ; `db:migrate` ; en prod,
+  d6eaa761 est sur « limite en un point » avec TSPE-415, toujours `draft`.
+
+### 2026-11-23 — F3 publié, chantier clos
+
+- David : « je valide F3 ». `garde-niveaux-tags.ts` : aucun niveau manquant ; `publier-lot.ts` en
+  simulation vert (F3 seul à publier), publication lancée par David ; d6eaa761 `published` en
+  prod (MCP lecture seule). Journal et relevé archivés.
