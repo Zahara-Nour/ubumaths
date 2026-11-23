@@ -487,9 +487,11 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
   dépassée ou page qui ne répond pas 200 : sortie en erreur, **sans retour arrière** (`production`
   reste avancée, David décide). Mode maintenance actif (accueil en 503 avec la page de maintenance ; un 503 sans elle est une panne) : dit, pages non vérifiées,
   pas une erreur. `pnpm deploy:prod --verifier` rejoue ce contrôle seul, sans rien livrer.
-- CI en cours sur main : `deploy:prod` l'attend sous le verrou « deploy » (au plus 45 min), au lieu
-  de s'arrêter ; les sessions Claude ne mergent plus, la CI ne repart donc pas de zéro. `--essai`
-  n'attend pas. `main` local qui diffère d'`origin/main` : arrêt, en nommant les commits en cause
+- CI allégée encore en cours sur main (typecheck et build, juste après un merge) : `deploy:prod`
+  **ne l'attend pas** (décision de David du 2026-11-23) ; il crée la version tout de suite, et la
+  CI complète de la version la couvre. `quality.yml` donne au commit de version son propre groupe de
+  concurrence : sa CI tourne à côté de celle du merge au lieu d'attendre derrière elle (~6 min
+  gagnées). Une CI de main rouge arrête toujours tout. `main` local qui diffère d'`origin/main` : arrêt, en nommant les commits en cause
   (le commit local d'une autre session ne peut plus être poussé sous le verrou).
 - CI rouge (version, ou dernier commit de code de main) : si **tous** les jobs rouges, hors
   « CI Summary », sont tombés sur le plantage connu des tests navigateur (« Browser connection was
