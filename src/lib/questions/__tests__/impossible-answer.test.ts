@@ -16,7 +16,7 @@ describe('isImpossibleAnswer', () => {
 		expect(isImpossibleAnswer(undefined)).toBe(false);
 	});
 	it('marque impossible à taper : un caractère de contrôle, jamais du LaTeX', () => {
-		expect(IMPOSSIBLE_ANSWER).toMatch(/[\u0001-\u001f]/);
+		expect(IMPOSSIBLE_ANSWER.codePointAt(0)).toBeLessThan(0x20);
 		expect(IMPOSSIBLE_ANSWER.trim()).toBe(IMPOSSIBLE_ANSWER);
 	});
 });

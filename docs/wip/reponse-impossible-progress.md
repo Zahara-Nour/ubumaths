@@ -8,16 +8,16 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, refonte du bouton commitée (377cf83ac), revue Opus lancée._
+_Mis à jour le 2026-11-23, revue de la refonte traitée, PR ouverte._
 
-- **État** : bouton à état propre codé (marque `IMPOSSIBLE_ANSWER`, case vidée et verrouillée,
-  juge sur la marque, affichage en texte du bouton), tests verts, doc à jour ; PR PAS ouverte ·
-  **Prochaine action** : lire/traiter la revue `code-reviewer` (Opus) du commit 377cf83ac (la
-  relancer si son rapport est perdu), puis push + PR · **En attente de David** : son essai sur
-  `/dev/modeles?titre=Essai` (serveur 5176 du worktree, lien du tailnet) · **Pièges en cours** :
-  `create-questions.ts` vise la PROD par défaut (lit `.env`) → `set -a; source ./.env.local; set +a`
-  avant ; modèle d'essai local `632e3012` (fichier : tmp du job, `factoriser-ou-pas.json`) ·
-  **Worktree / branche** : `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`.
+- **État** : outil complet (bouton à état propre), revu deux fois (Opus), PR ouverte (cf.
+  `gh pr list --search head:feat/reponse-impossible`) · **Prochaine action** : PR mergée → seconde
+  PR du chantier (Q6 : variations Δ < 0 de « Factoriser un trinôme à l'aide de ses racines »,
+  604f83b7), une fois l'outil en prod · **En attente de David** : son essai sur
+  `/dev/modeles?titre=Essai` (base locale) ; le `deploy:prod` qui livrera l'outil · **Pièges en
+  cours** : `create-questions.ts` vise la PROD par défaut (lit `.env`) → `set -a; source
+./.env.local; set +a` avant ; modèle d'essai local `632e3012` · **Worktree / branche** :
+  `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`.
 
 ## Historique
 
@@ -104,3 +104,10 @@ Questions (recommandation entre parenthèses) :
   état retrouvé au réaffichage ; `handleInputChange` ignore la case verrouillée relue vide.
 - `blankViews` (`expected-result.ts`) montre la marque en texte du bouton. Tests rouges puis verts
   (44 serveur, 6 composant) ; suites voisines vertes ; specs du modèle d'essai local mises à jour.
+
+### 2026-11-23 — revue de la refonte (Opus)
+
+- Lint (`no-control-regex` dans un test) ; test « case vidée » qui ne remplissait pas la case
+  (vérifié rouge sans le vidage, vert avec) ; frappe après un clic qui laisse le curseur dans la
+  case (Safari) : mesuré, MathLive refuse l'insertion dans une case verrouillée, test ajouté ;
+  aller-retour en vraie frappe ; doc : le verrouillage au réaffichage est une garde défensive.

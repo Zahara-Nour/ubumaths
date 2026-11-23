@@ -37,7 +37,8 @@ describe('FillBlanksInput — bouton « impossible » et relecture MathLive', ()
 			const field = document.querySelector('math-field') as MathfieldElement;
 			// Frappe dans l'autre case : MathPrompt relit toutes les cases
 			field.focus();
-			field.setPromptValue(String(otherIndex), '2', { silenceNotifications: true });
+			field.selection = field.getPromptRange(String(otherIndex));
+			field.executeCommand(['insert', '2']);
 			field.dispatchEvent(new Event('input', { bubbles: true }));
 			await expect.poll(() => values[otherIndex]).toBe('2');
 

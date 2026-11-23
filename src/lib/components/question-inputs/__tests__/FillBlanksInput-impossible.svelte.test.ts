@@ -27,15 +27,28 @@ async function mathField(): Promise<MathfieldElement> {
 	return document.querySelector('math-field') as MathfieldElement;
 }
 
+/** Vraie frappe MathLive dans la case `id` : curseur dans la case, insertion, événement `input` */
+async function typeInPrompt(field: MathfieldElement, id: string, latex: string) {
+	field.focus();
+	field.selection = field.getPromptRange(id);
+	field.executeCommand(['insert', latex]);
+	field.dispatchEvent(new Event('input', { bubbles: true }));
+	await new Promise((resolve) => setTimeout(resolve, 50));
+}
+
 describe('FillBlanksInput — bouton « impossible »', () => {
 	it('clic : case vidée et verrouillée, marque enregistrée ; second clic : case libre et vide', async () => {
-		const values = $state<string[]>(['x+1']);
+		const values = $state<string[]>([]);
 		const screen = await render(FillBlanksInput, {
 			props: { statement, blanks: [blank], values }
 		});
 		const button = screen.getByRole('button', { name: 'pas factorisable' });
 		await expect.element(button).toHaveAttribute('aria-pressed', 'false');
 		const field = await mathField();
+		// L'élève a d'abord tapé une expression : le clic doit la retirer de la case
+		await typeInPrompt(field, '0', 'x+1');
+		await expect.poll(() => values[0]).toBe('x+1');
+		expect(field.getPromptValue('0')).toBe('x+1');
 
 		await userEvent.click(button);
 		await expect.element(button).toHaveAttribute('aria-pressed', 'true');
@@ -47,6 +60,24 @@ describe('FillBlanksInput — bouton « impossible »', () => {
 		await expect.element(button).toHaveAttribute('aria-pressed', 'false');
 		await expect.poll(() => values[0]).toBe('');
 		await expect.poll(() => field.getPromptState('0')[1]).toBe(false);
+	});
+
+	it('curseur resté dans la case au clic (Safari) : la frappe suivante n’y entre pas', async () => {
+		const values = $state<string[]>([]);
+		const screen = await render(FillBlanksInput, {
+			props: { statement, blanks: [blank], values }
+		});
+		const button = screen.getByRole('button', { name: 'pas factorisable' });
+		const field = await mathField();
+		await typeInPrompt(field, '0', 'x');
+		// Clic sans déplacer le focus (un <button> ne prend pas toujours le focus sous Safari)
+		(button.element() as HTMLButtonElement).click();
+		await expect.element(button).toHaveAttribute('aria-pressed', 'true');
+		field.executeCommand(['insert', '2']);
+		field.dispatchEvent(new Event('input', { bubbles: true }));
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(field.getPromptValue('0')).toBe('');
+		expect(values[0]).toBe(IMPOSSIBLE_ANSWER);
 	});
 
 	it('réponse déjà enregistrée (marque) : bouton enfoncé et case verrouillée dès l’affichage', async () => {

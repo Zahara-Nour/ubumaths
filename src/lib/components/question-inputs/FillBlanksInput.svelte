@@ -425,8 +425,7 @@
 
 	/**
 	 * Bouton enfoncé = valeur de la case égale à la marque réservée `IMPOSSIBLE_ANSWER`, que rien
-	 * de tapé ne produit : l'état du bouton est à part (décision de David, 2026-11-23) et se
-	 * retrouve quand la question est réaffichée avec sa réponse.
+	 * de tapé ne produit : l'état du bouton est à part (décision de David, 2026-11-23).
 	 */
 	function isImpossiblePressed(index: number): boolean {
 		return isImpossibleAnswer(values[index]);
@@ -461,7 +460,8 @@
 		syncImpossiblePrompt(index, pressed);
 	}
 
-	// Case d'un bouton déjà enfoncé (réponse réaffichée) : verrouillée dès que MathLive est là
+	// Garde défensive : valeur qui porte déjà la marque (aucun parent ne la remonte aujourd'hui ;
+	// clic avant le chargement de MathLive) → case verrouillée dès que MathLive est là
 	$effect(() => {
 		const states = impossibleBlanks.map(({ index }) => ({
 			index,
