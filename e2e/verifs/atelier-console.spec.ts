@@ -296,70 +296,72 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	await expect(page.locator('article.objet')).toHaveCount(0);
 });
 
-test('#1385, #1388, #1423 — « Écriture mathématique » : choix retenu, saisies au clavier', async ({
-	page
-}) => {
-	const dialog = await openSettings(page);
-	await expect(dialog.getByRole('radio', { name: 'Texte' })).toBeChecked();
-	await page.keyboard.press('Escape');
-	await chooseSetting(page, 'Écriture mathématique');
-	const field = mathConsole(page);
-	await expect(field).toBeVisible();
-	await expect(page.locator('input[aria-label="Calcul, définition ou commande"]')).toHaveCount(0);
-	// #1388 : la consigne du champ vide
-	expect(await field.getAttribute('placeholder')).toMatch(/f\(x\)/);
+test(
+	'#1385, #1388, #1423 — « Écriture mathématique » : choix retenu, saisies au clavier',
+	{ tag: '@clavier-mathlive' },
+	async ({ page }) => {
+		const dialog = await openSettings(page);
+		await expect(dialog.getByRole('radio', { name: 'Texte' })).toBeChecked();
+		await page.keyboard.press('Escape');
+		await chooseSetting(page, 'Écriture mathématique');
+		const field = mathConsole(page);
+		await expect(field).toBeVisible();
+		await expect(page.locator('input[aria-label="Calcul, définition ou commande"]')).toHaveCount(0);
+		// #1388 : la consigne du champ vide
+		expect(await field.getAttribute('placeholder')).toMatch(/f\(x\)/);
 
-	await page.reload();
-	await expect(mathConsole(page)).toBeVisible();
+		await page.reload();
+		await expect(mathConsole(page)).toBeVisible();
 
-	// #1388 : la ligne de l'historique écrite en maths, sans point
-	const solve = await calcMath(page, 'résoudre x^2=4');
-	const written = solve.locator('.saisie');
-	await expect(written).toContainText('résoudre');
-	await expect(written).not.toContainText('.résoudre');
-	await expect(solve.locator('.reponse')).toContainText('2');
+		// #1388 : la ligne de l'historique écrite en maths, sans point
+		const solve = await calcMath(page, 'résoudre x^2=4');
+		const written = solve.locator('.saisie');
+		await expect(written).toContainText('résoudre');
+		await expect(written).not.toContainText('.résoudre');
+		await expect(solve.locator('.reponse')).toContainText('2');
 
-	for (const [keys, expected] of [
-		['dériver x^3', '3 x^2'],
-		['1/4+1/3', '\\frac{7}{12}'],
-		['5 km + 300 m', '5{,}3']
-	] as const) {
-		const line = await calcMath(page, keys);
-		await expect(line, keys).not.toHaveClass(/refus/);
-		const shown = (await line.locator('.reponse .math').getAttribute('data-latex')) ?? '';
-		expect(normalizeLatex(shown), keys).toContain(normalizeLatex(expected));
+		for (const [keys, expected] of [
+			['dériver x^3', '3 x^2'],
+			['1/4+1/3', '\\frac{7}{12}'],
+			['5 km + 300 m', '5{,}3']
+		] as const) {
+			const line = await calcMath(page, keys);
+			await expect(line, keys).not.toHaveClass(/refus/);
+			const shown = (await line.locator('.reponse .math').getAttribute('data-latex')) ?? '';
+			expect(normalizeLatex(shown), keys).toContain(normalizeLatex(expected));
+		}
+		// 5 km + 300 m : la grandeur dite en texte
+		await expect(historyLines(page).last().locator('.reponse')).toContainText('5,3 km');
+
+		// #1423 : `3*4` → la croix ×, puis 12
+		await field.click();
+		await page.keyboard.type('3*4');
+		expect(await mathValue(field)).toContain('\\times');
+		expect(await mathValue(field)).not.toContain('\\cdot');
+		await page.keyboard.press('Enter');
+		await expect(historyLines(page).last().locator('.reponse')).toContainText('12');
+
+		// ↑ rappelle la saisie précédente
+		await field.click();
+		await page.keyboard.press('ArrowUp');
+		expect(await mathValue(field)).toContain('\\times');
+
+		// Rechargée, la ligne revient écrite de même
+		await page.reload();
+		await expect(historyLines(page).first().locator('.saisie')).toContainText('résoudre');
+		await expect(historyLines(page).first().locator('.saisie')).not.toContainText('.résoudre');
+
+		// #1385 : passer au Graphe et revenir, la ligne commencée reste
+		await typeMath(page, '2+');
+		await openView(page, 'Graphe');
+		await openView(page, 'Données');
+		await openView(page, 'Graphe');
+		if ((await consoleButton(page).getAttribute('aria-expanded')) === 'false') {
+			await consoleButton(page).click();
+		}
+		expect(await mathValue(mathConsole(page))).toContain('2+');
 	}
-	// 5 km + 300 m : la grandeur dite en texte
-	await expect(historyLines(page).last().locator('.reponse')).toContainText('5,3 km');
-
-	// #1423 : `3*4` → la croix ×, puis 12
-	await field.click();
-	await page.keyboard.type('3*4');
-	expect(await mathValue(field)).toContain('\\times');
-	expect(await mathValue(field)).not.toContain('\\cdot');
-	await page.keyboard.press('Enter');
-	await expect(historyLines(page).last().locator('.reponse')).toContainText('12');
-
-	// ↑ rappelle la saisie précédente
-	await field.click();
-	await page.keyboard.press('ArrowUp');
-	expect(await mathValue(field)).toContain('\\times');
-
-	// Rechargée, la ligne revient écrite de même
-	await page.reload();
-	await expect(historyLines(page).first().locator('.saisie')).toContainText('résoudre');
-	await expect(historyLines(page).first().locator('.saisie')).not.toContainText('.résoudre');
-
-	// #1385 : passer au Graphe et revenir, la ligne commencée reste
-	await typeMath(page, '2+');
-	await openView(page, 'Graphe');
-	await openView(page, 'Données');
-	await openView(page, 'Graphe');
-	if ((await consoleButton(page).getAttribute('aria-expanded')) === 'false') {
-		await consoleButton(page).click();
-	}
-	expect(await mathValue(mathConsole(page))).toContain('2+');
-});
+);
 
 test('#1385 — « Simuler avec probabilités M » : simuler L M 100, lettres séparées', async ({
 	page
@@ -384,33 +386,35 @@ async function mathFieldButtons(field: Locator): Promise<{ menu: boolean; keyboa
 	});
 }
 
-test('#1425 — pas de menu ☰ ni de menu au clic droit dans les champs mathématiques', async ({
-	page
-}) => {
-	const menu = page.locator('.ui-menu-container');
-	await chooseSetting(page, 'Écriture mathématique');
-	await calcMath(page, 'f(x)=x^2');
-	for (const field of [mathConsole(page), cardLocator(page, 'f').locator('math-field')]) {
-		expect(await mathFieldButtons(field)).toEqual({ menu: false, keyboard: true });
-		await field.click({ button: 'right' });
-		// Une absence ne s'attend pas : un court délai, le témoin ci-dessous s'ouvre en moins
-		await page.waitForTimeout(500);
-		await expect(menu).toHaveCount(0);
-		await page.keyboard.press('Escape');
+test(
+	'#1425 — pas de menu ☰ ni de menu au clic droit dans les champs mathématiques',
+	{ tag: '@clavier-mathlive' },
+	async ({ page }) => {
+		const menu = page.locator('.ui-menu-container');
+		await chooseSetting(page, 'Écriture mathématique');
+		await calcMath(page, 'f(x)=x^2');
+		for (const field of [mathConsole(page), cardLocator(page, 'f').locator('math-field')]) {
+			expect(await mathFieldButtons(field)).toEqual({ menu: false, keyboard: true });
+			await field.click({ button: 'right' });
+			// Une absence ne s'attend pas : un court délai, le témoin ci-dessous s'ouvre en moins
+			await page.waitForTimeout(500);
+			await expect(menu).toHaveCount(0);
+			await page.keyboard.press('Escape');
+		}
+		// Témoin, en dernier (son menu ne se referme pas à Échap ici) : un champ
+		// MathLive ordinaire a son ☰ et son menu au clic droit
+		await page.evaluate(() => {
+			const plain = document.createElement('math-field');
+			plain.id = 'temoin';
+			plain.style.cssText = 'position:fixed;top:300px;left:600px;width:200px;z-index:9999';
+			document.body.append(plain);
+		});
+		const plain = page.locator('#temoin');
+		await expect.poll(async () => (await mathFieldButtons(plain)).menu).toBe(true);
+		await plain.click({ button: 'right' });
+		await expect(menu.first()).toBeVisible();
 	}
-	// Témoin, en dernier (son menu ne se referme pas à Échap ici) : un champ
-	// MathLive ordinaire a son ☰ et son menu au clic droit
-	await page.evaluate(() => {
-		const plain = document.createElement('math-field');
-		plain.id = 'temoin';
-		plain.style.cssText = 'position:fixed;top:300px;left:600px;width:200px;z-index:9999';
-		document.body.append(plain);
-	});
-	const plain = page.locator('#temoin');
-	await expect.poll(async () => (await mathFieldButtons(plain)).menu).toBe(true);
-	await plain.click({ button: 'right' });
-	await expect(menu.first()).toBeVisible();
-});
+);
 
 test('#1442 — fonctions de la grille tapées dans Calcul ; π dans la grille', async ({ page }) => {
 	await calc(page, 'L = 12 ; 15 ; 9');

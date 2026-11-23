@@ -26,7 +26,7 @@ interface Sheet {
 	pr: string;
 	title: string;
 	look: string;
-	shots: { caption: string; theme: string; width: number; image: string }[];
+	shots: { caption: string; theme: string; width: number; browser: string; image: string }[];
 }
 
 // ============================================================================
@@ -56,15 +56,17 @@ function readSheets(): Sheet[] {
 	const byLine = new Map<string, Shot[]>();
 	for (const shot of shots) byLine.set(shot.pr, [...(byLine.get(shot.pr) ?? []), shot]);
 	// `.captures/` garde les fiches des lancements passés (captures retirées ou
-	// renommées depuis) : de chaque ligne, seul son dernier lancement
+	// renommées depuis) : de chaque ligne, seul son dernier lancement — par
+	// navigateur, l'iPhone se lançant à part (`--project iphone`)
 	for (const [pr, lineShots] of byLine) {
-		const latest = lineShots.reduce(
-			(max, shot) => ((shot.run ?? '') > max ? (shot.run ?? '') : max),
-			''
-		);
+		const latest = new Map<string, string>();
+		for (const shot of lineShots) {
+			const browser = shot.browser ?? '';
+			if ((shot.run ?? '') >= (latest.get(browser) ?? '')) latest.set(browser, shot.run ?? '');
+		}
 		byLine.set(
 			pr,
-			lineShots.filter((shot) => (shot.run ?? '') === latest)
+			lineShots.filter((shot) => (shot.run ?? '') === latest.get(shot.browser ?? ''))
 		);
 	}
 	return [...byLine.entries()]
@@ -72,7 +74,11 @@ function readSheets(): Sheet[] {
 		.map(([pr, lineShots]) => {
 			const first = lineShots[0];
 			const ordered = lineShots.toSorted(
-				(a, b) => a.order - b.order || a.width - b.width || a.theme.localeCompare(b.theme)
+				(a, b) =>
+					a.order - b.order ||
+					(a.browser ?? '').localeCompare(b.browser ?? '') ||
+					a.width - b.width ||
+					a.theme.localeCompare(b.theme)
 			);
 			return {
 				id: sheetId(pr),
@@ -83,6 +89,7 @@ function readSheets(): Sheet[] {
 					caption: shot.caption,
 					theme: shot.theme,
 					width: shot.width,
+					browser: shot.browser ?? '',
 					image: `data:image/jpeg;base64,${readFileSync(`${CAPTURES_DIR}/${shot.file}`).toString('base64')}`
 				}))
 			};
@@ -302,7 +309,7 @@ dialog img { max-width: 96vw; max-height: 92vh; display: block; cursor: zoom-out
 				el('figure', { class: shot.width < 600 ? 'tel' : '' }, [
 					el('img', { src: shot.image, alt: shot.caption + ' (' + shot.theme + ')', tabindex: '0', loading: 'lazy',
 						onclick: () => zoom(shot), onkeydown: (event) => { if (event.key === 'Enter') zoom(shot); } }),
-					el('figcaption', { text: shot.caption + ' · ' + shot.theme + (shot.width < 600 ? ' · téléphone' : '') })
+					el('figcaption', { text: shot.caption + ' · ' + shot.theme + (shot.browser === 'iphone' ? ' · iPhone (Safari)' : shot.width < 600 ? ' · téléphone' : '') })
 				])
 			)),
 			el('div', { class: 'actions' }, [
