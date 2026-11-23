@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261123173030_questions_idees_1re_derivation_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "904fb546-fa1d-4fb3-b5a5-3a6681d16a2d",
+			"title": "Nombre dérivé de la fonction inverse par le taux de variation",
+			"fichier": "f1-nombre-derive-inverse-par-le-taux.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "nombre dérivé",
+			"point": "1SPE-260"
+		},
+		{
+			"id": "d1cf9d7c-3851-4389-ba99-abf9f479e68e",
+			"title": "Équation de la tangente à une fonction rationnelle",
+			"fichier": "f2-tangente-fonction-rationnelle.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "tangente",
+			"point": "1SPE-272"
+		}
+	],
+	"niveaux": []
+}

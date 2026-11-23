@@ -1,0 +1,485 @@
+{
+	"id": "d1cf9d7c-3851-4389-ba99-abf9f479e68e",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > tangente",
+		"point": "1SPE-272"
+	},
+	"title": "Équation de la tangente à une fonction rationnelle",
+	"description": "Équation réduite de la tangente à la courbe de k/x, k/(x − c) ou (ax + b)/(x + d) en un point.",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $]-\\infty\\,;0[\\cup]0\\,;+\\infty[$ par $f(x)=\\dfrac{ {{k}} }{x}$, de courbe $\\mathcal{C}_f$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{x0}}$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "x0",
+					"expression": "1|2|3|-1|-2|-3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-k/x0^2)*x-(-k/x0^2)*(x0)+(k/x0)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(k/x0^2)*x-(k/x0^2)*(x0)+(k/x0)}}",
+							"message": "Attention au signe de $f'$ : vérifie ta dérivée.",
+							"label": "Signe de la dérivée"
+						},
+						{
+							"answer": "{{eval:(-k/x0^2)*x+(k/x0)}}",
+							"message": "Tu as oublié de développer le produit par $x - a$ : le terme en $-a$ compte aussi.",
+							"label": "−a oublié dans (x − a)"
+						},
+						{
+							"answer": "{{eval:(-k/x0)*x-(-k/x0)*(x0)+(k/x0)}}",
+							"message": "Le dénominateur de la dérivée est un carré : vérifie ta dérivée.",
+							"label": "Dénominateur pas au carré"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)={{k}}\\times\\dfrac{1}{x}$, donc $f'(x)=-\\dfrac{ {{k}} }{x^2}$.",
+					"$f({{x0}})={{eval:k/x0}}$ et $f'({{x0}})={{eval:-k/x0^2}}$.",
+					"$T$ : $y=f'({{x0}})(x{{eval:-x0;+}})+f({{x0}})$, soit $y={{eval:-k/x0^2}}(x{{eval:-x0;+}}){{eval:k/x0;+}}$.",
+					"Donc $T$ : $y=\\textcolor{{{color:primary.0}}}{{{eval:(-k/x0^2)*x-(-k/x0^2)*(x0)+(k/x0)}}}$."
+				]
+			},
+			"hint": "Calcule $f({{x0}})$ et $f'({{x0}})$, puis utilise $y=f'(a)(x-a)+f(a)$ avec $a={{x0}}$, et réduis."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{c}}$ par $f(x)=\\dfrac{ {{k}} }{x{{eval:-c;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{x0}}$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1|2|-1|-2"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:c+q"
+				}
+			],
+			"conditions": ["c+q != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-k/q^2)*x-(-k/q^2)*(x0)+(k/q)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(k/q^2)*x-(k/q^2)*(x0)+(k/q)}}",
+							"message": "Attention au signe de $f'$ : vérifie ta dérivée.",
+							"label": "Signe de la dérivée"
+						},
+						{
+							"answer": "{{eval:(-k/q^2)*x+(k/q)}}",
+							"message": "Tu as oublié de développer le produit par $x - a$ : le terme en $-a$ compte aussi.",
+							"label": "−a oublié dans (x − a)"
+						},
+						{
+							"answer": "{{eval:(-k/q)*x-(-k/q)*(x0)+(k/q)}}",
+							"message": "Le dénominateur de la dérivée est un carré : vérifie ta dérivée.",
+							"label": "Dénominateur pas au carré"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)={{k}}\\times\\dfrac{1}{v(x)}$ avec $v(x)=x{{eval:-c;+}}$ et $v'(x)=1$, donc $f'(x)=-\\dfrac{ {{k}} }{(x{{eval:-c;+}})^2}$.",
+					"$f({{x0}})=\\dfrac{ {{k}} }{ {{x0}}{{eval:-c;+}} }={{eval:k/q}}$ et $f'({{x0}})=-\\dfrac{ {{k}} }{ {{q;()}}^2}={{eval:-k/q^2}}$.",
+					"$T$ : $y={{eval:-k/q^2}}(x{{eval:-x0;+}}){{eval:k/q;+}}$.",
+					"Donc $T$ : $y=\\textcolor{{{color:primary.0}}}{{{eval:(-k/q^2)*x-(-k/q^2)*(x0)+(k/q)}}}$."
+				]
+			},
+			"hint": "Calcule $f({{x0}})$ et $f'({{x0}})$, puis utilise $y=f'(a)(x-a)+f(a)$ avec $a={{x0}}$, et réduis."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-d}}$ par $f(x)=\\dfrac{ {{eval:a*x+b}} }{x{{d;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{x0}}$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1|2|-1|-2"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:q-d"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:(a*x0+b)/q"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a*d-b"
+				}
+			],
+			"conditions": ["a*d-b != 0", "q-d != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n/q^2)*x-(n/q^2)*(x0)+(fa)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(-n/q^2)*x-(-n/q^2)*(x0)+(fa)}}",
+							"message": "Attention au signe de $f'$ : vérifie ta dérivée.",
+							"label": "Signe de la dérivée"
+						},
+						{
+							"answer": "{{eval:(n/q^2)*x+(fa)}}",
+							"message": "Tu as oublié de développer le produit par $x - a$ : le terme en $-a$ compte aussi.",
+							"label": "−a oublié dans (x − a)"
+						},
+						{
+							"answer": "{{eval:(n/q)*x-(n/q)*(x0)+(fa)}}",
+							"message": "Le dénominateur de la dérivée est un carré : vérifie ta dérivée.",
+							"label": "Dénominateur pas au carré"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\dfrac{u}{v}$ avec $u(x)={{eval:a*x+b}}$, $v(x)=x{{d;+}}$, $u'(x)={{a}}$ et $v'(x)=1$ : $$f'(x)=\\dfrac{ {{if:a==-1|-|{{if:a==1||{{a}}}}}}(x{{d;+}})-({{eval:a*x+b}})}{(x{{d;+}})^2}=\\dfrac{ {{n}} }{(x{{d;+}})^2}$$",
+					"$f({{x0}})={{fa}}$ et $f'({{x0}})=\\dfrac{ {{n}} }{ {{q;()}}^2}={{eval:n/q^2}}$.",
+					"$T$ : $y={{eval:n/q^2}}(x{{eval:-x0;+}}){{eval:fa;+}}$.",
+					"Donc $T$ : $y=\\textcolor{{{color:primary.0}}}{{{eval:(n/q^2)*x-(n/q^2)*(x0)+(fa)}}}$."
+				]
+			},
+			"hint": "Calcule $f({{x0}})$ et $f'({{x0}})$, puis utilise $y=f'(a)(x-a)+f(a)$ avec $a={{x0}}$, et réduis."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4/x en 2 (y = −x + 4) : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-x+4"]
+		},
+		{
+			"description": "4/x en 2 (y = −x + 4) : signe de la dérivée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de $f'$ : vérifie ta dérivée."
+			},
+			"answers": ["x"]
+		},
+		{
+			"description": "4/x en 2 (y = −x + 4) : −a oublié",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de développer le produit par $x - a$ : le terme en $-a$ compte aussi."
+			},
+			"answers": ["-x+2"]
+		},
+		{
+			"description": "4/x en 2 (y = −x + 4) : dénominateur pas au carré",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur de la dérivée est un carré : vérifie ta dérivée."
+			},
+			"answers": ["-2x+6"]
+		},
+		{
+			"description": "3/x en −3 : y = −x/3 − 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"x0": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{1}{3}x-2"]
+		},
+		{
+			"description": "3/x en −3 : écriture (−x − 6)/3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"x0": "-3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{-x-6}{3}"]
+		},
+		{
+			"description": "2/(x − 1) en 2 (y = −2x + 6) : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "1",
+				"q": "1",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x+6"]
+		},
+		{
+			"description": "2/(x − 1) en 2 (y = −2x + 6) : signe de la dérivée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "1",
+				"q": "1",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de $f'$ : vérifie ta dérivée."
+			},
+			"answers": ["2x-2"]
+		},
+		{
+			"description": "2/(x − 1) en 2 (y = −2x + 6) : −a oublié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "1",
+				"q": "1",
+				"x0": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de développer le produit par $x - a$ : le terme en $-a$ compte aussi."
+			},
+			"answers": ["-2x+2"]
+		},
+		{
+			"description": "2/(x − 3) en 5 (y = −x/2 + 7/2) : juste",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "3",
+				"q": "2",
+				"x0": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{1}{2}x+\\frac{7}{2}"]
+		},
+		{
+			"description": "2/(x − 3) en 5 (y = −x/2 + 7/2) : signe de la dérivée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "3",
+				"q": "2",
+				"x0": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de $f'$ : vérifie ta dérivée."
+			},
+			"answers": ["\\frac{1}{2}x-\\frac{3}{2}"]
+		},
+		{
+			"description": "2/(x − 3) en 5 (y = −x/2 + 7/2) : −a oublié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "3",
+				"q": "2",
+				"x0": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de développer le produit par $x - a$ : le terme en $-a$ compte aussi."
+			},
+			"answers": ["-\\frac{1}{2}x+1"]
+		},
+		{
+			"description": "2/(x − 3) en 5 (y = −x/2 + 7/2) : dénominateur pas au carré",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "3",
+				"q": "2",
+				"x0": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur de la dérivée est un carré : vérifie ta dérivée."
+			},
+			"answers": ["-x+6"]
+		},
+		{
+			"description": "(2x + 1)/(x + 1) en 0 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"d": "1",
+				"q": "1",
+				"x0": "0",
+				"fa": "1",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x+1"]
+		},
+		{
+			"description": "(2x + 1)/(x + 1) en 0 : signe de la dérivée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"d": "1",
+				"q": "1",
+				"x0": "0",
+				"fa": "1",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de $f'$ : vérifie ta dérivée."
+			},
+			"answers": ["-x+1"]
+		},
+		{
+			"description": "(x + 3)/(x − 1) en 3 (y = −x + 6) : juste",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"d": "-1",
+				"q": "2",
+				"x0": "3",
+				"fa": "3",
+				"n": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-x+6"]
+		},
+		{
+			"description": "(x + 3)/(x − 1) en 3 (y = −x + 6) : signe de la dérivée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"d": "-1",
+				"q": "2",
+				"x0": "3",
+				"fa": "3",
+				"n": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe de $f'$ : vérifie ta dérivée."
+			},
+			"answers": ["x"]
+		},
+		{
+			"description": "(x + 3)/(x − 1) en 3 (y = −x + 6) : −a oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"d": "-1",
+				"q": "2",
+				"x0": "3",
+				"fa": "3",
+				"n": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de développer le produit par $x - a$ : le terme en $-a$ compte aussi."
+			},
+			"answers": ["-x+3"]
+		},
+		{
+			"description": "(x + 3)/(x − 1) en 3 (y = −x + 6) : dénominateur pas au carré",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"d": "-1",
+				"q": "2",
+				"x0": "3",
+				"fa": "3",
+				"n": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur de la dérivée est un carré : vérifie ta dérivée."
+			},
+			"answers": ["-2x+9"]
+		}
+	]
+}

@@ -1,0 +1,522 @@
+{
+	"id": "904fb546-fa1d-4fb3-b5a5-3a6681d16a2d",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > nombre dérivé",
+		"point": "1SPE-260"
+	},
+	"title": "Nombre dérivé de la fonction inverse par le taux de variation",
+	"description": "Taux de variation entre a et a + h, simplifié, puis nombre dérivé, pour 1/x, k/x et k/(x + b).",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\cup]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$.\n\nPour $h\\neq0$ assez petit, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["a != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{ {{a}}({{a}}+h)}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{1}{ {{a}}({{a}}+h)}",
+							"message": "Réduis au même dénominateur : le numérateur vaut $-h$, donc le taux est négatif.",
+							"label": "Signe du taux"
+						},
+						{
+							"answer": "{{eval:-1/a^2}}",
+							"message": "Le taux dépend encore de $h$ : écris-le en fonction de $h$, la limite vient ensuite.",
+							"label": "Limite donnée à la place du taux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:-1/a^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1/a^2}}",
+							"message": "Le nombre dérivé est la limite du taux, qui est négatif : garde le signe −.",
+							"label": "Signe du nombre dérivé"
+						},
+						{
+							"answer": "{{eval:1/a}}",
+							"message": "Tu as donné l'image de ${{a}}$ : le nombre dérivé est la limite du taux quand $h$ tend vers $0$.",
+							"label": "Image au lieu du nombre dérivé"
+						},
+						{
+							"answer": "{{eval:-1/a}}",
+							"message": "Quand $h$ tend vers $0$, le dénominateur tend vers ${{a;()}}^2$, pas vers ${{a}}$.",
+							"label": "Dénominateur a au lieu de a²"
+						}
+					],
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}}+h)-f({{a}})=\\dfrac{1}{ {{a}}+h}-\\dfrac{1}{ {{a}} }=\\dfrac{ {{a}}-({{a}}+h)}{ {{a}}({{a}}+h)}=\\dfrac{-h}{ {{a}}({{a}}+h)}$.",
+					"Pour $h\\neq0$, on divise par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{ {{a}}({{a}}+h)} }$$",
+					"Quand $h$ tend vers $0$, ${{a}}({{a}}+h)$ tend vers ${{a}}^2={{eval:a^2}}$.",
+					"Donc $f'({{a}})=\\textcolor{{{color:primary.0}}}{ {{eval:-1/a^2}} }$."
+				]
+			},
+			"hint": "Écris $f({{a}}+h)-f({{a}})$ comme une seule fraction (même dénominateur), puis divise par $h$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $]-\\infty\\,;0[\\cup]0\\,;+\\infty[$ par $f(x)=\\dfrac{ {{k}} }{x}$.\n\nPour $h\\neq0$ assez petit, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..7"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["gcd(k,a) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{k}} }{ {{a}}({{a}}+h)}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{k}} }{ {{a}}({{a}}+h)}",
+							"message": "Réduis au même dénominateur : le numérateur vaut $-{{k}}h$, donc le taux est négatif.",
+							"label": "Signe du taux"
+						},
+						{
+							"answer": "-\\frac{1}{ {{a}}({{a}}+h)}",
+							"message": "N'oublie pas le facteur ${{k}}$ devant $\\dfrac{1}{x}$.",
+							"label": "Facteur k oublié"
+						},
+						{
+							"answer": "{{eval:-k/a^2}}",
+							"message": "Le taux dépend encore de $h$ : écris-le en fonction de $h$, la limite vient ensuite.",
+							"label": "Limite donnée à la place du taux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:-k/a^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k/a^2}}",
+							"message": "Le nombre dérivé est la limite du taux, qui est négatif : garde le signe −.",
+							"label": "Signe du nombre dérivé"
+						},
+						{
+							"answer": "{{eval:-1/a^2}}",
+							"message": "N'oublie pas le facteur ${{k}}$ devant $\\dfrac{1}{x}$.",
+							"label": "Facteur k oublié"
+						},
+						{
+							"answer": "{{eval:-k/a}}",
+							"message": "Quand $h$ tend vers $0$, le dénominateur tend vers ${{a;()}}^2$, pas vers ${{a}}$.",
+							"label": "Dénominateur a au lieu de a²"
+						}
+					],
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}}+h)-f({{a}})=\\dfrac{ {{k}} }{ {{a}}+h}-\\dfrac{ {{k}} }{ {{a}} }=\\dfrac{ {{k}}\\left({{a}}-({{a}}+h)\\right)}{ {{a}}({{a}}+h)}=\\dfrac{-{{k}}h}{ {{a}}({{a}}+h)}$.",
+					"Pour $h\\neq0$, on divise par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\textcolor{{{color:primary.0}}}{-\\dfrac{ {{k}} }{ {{a}}({{a}}+h)} }$$",
+					"Quand $h$ tend vers $0$, ${{a}}({{a}}+h)$ tend vers ${{a}}^2={{eval:a^2}}$.",
+					"Donc $f'({{a}})=\\textcolor{{{color:primary.0}}}{ {{eval:-k/a^2}} }$."
+				]
+			},
+			"hint": "Écris $f({{a}}+h)-f({{a}})$ comme une seule fraction (même dénominateur), puis divise par $h$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b}}$ par $f(x)=\\dfrac{ {{k}} }{x{{b;+}}}$.\n\nPour $h\\neq0$ assez petit, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a+b"
+				}
+			],
+			"conditions": ["a+b > 1", "gcd(k,a+b) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{k}} }{ {{s}}({{s}}+h)}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{k}} }{ {{s}}({{s}}+h)}",
+							"message": "Réduis au même dénominateur : le numérateur vaut $-{{k}}h$, donc le taux est négatif.",
+							"label": "Signe du taux"
+						},
+						{
+							"answer": "-\\frac{ {{k}} }{ {{a}}({{a}}+h)}",
+							"message": "Le dénominateur de $f$ en ${{a}}$ vaut ${{s}}$, pas ${{a}}$.",
+							"label": "b oublié"
+						},
+						{
+							"answer": "{{eval:-k/s^2}}",
+							"message": "Le taux dépend encore de $h$ : écris-le en fonction de $h$, la limite vient ensuite.",
+							"label": "Limite donnée à la place du taux"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:-k/s^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k/s^2}}",
+							"message": "Le nombre dérivé est la limite du taux, qui est négatif : garde le signe −.",
+							"label": "Signe du nombre dérivé"
+						},
+						{
+							"answer": "{{eval:-k/a^2}}",
+							"message": "Le dénominateur de $f$ en ${{a}}$ vaut ${{s}}$, pas ${{a}}$.",
+							"label": "b oublié"
+						},
+						{
+							"answer": "{{eval:-k/s}}",
+							"message": "Quand $h$ tend vers $0$, le dénominateur tend vers ${{s;()}}^2$, pas vers ${{s}}$.",
+							"label": "Dénominateur au lieu de son carré"
+						}
+					],
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}})=\\dfrac{ {{k}} }{ {{s}} }$ et $f({{a}}+h)=\\dfrac{ {{k}} }{ {{s}}+h}$, donc $f({{a}}+h)-f({{a}})=\\dfrac{ {{k}}\\left({{s}}-({{s}}+h)\\right)}{ {{s}}({{s}}+h)}=\\dfrac{-{{k}}h}{ {{s}}({{s}}+h)}$.",
+					"Pour $h\\neq0$, on divise par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\textcolor{{{color:primary.0}}}{-\\dfrac{ {{k}} }{ {{s}}({{s}}+h)} }$$",
+					"Quand $h$ tend vers $0$, ${{s}}({{s}}+h)$ tend vers ${{s}}^2={{eval:s^2}}$.",
+					"Donc $f'({{a}})=\\textcolor{{{color:primary.0}}}{ {{eval:-k/s^2}} }$."
+				]
+			},
+			"hint": "Calcule d'abord $f({{a}})$ et $f({{a}}+h)$, écris leur différence comme une seule fraction, puis divise par $h$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/x, a = 3 : −1/(3(3 + h)) et −1/9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{1}{3(3+h)}", "-\\frac{1}{9}"]
+		},
+		{
+			"description": "1/x, a = 3 : −1/(9 + 3h), dénominateur développé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["-\\frac{1}{9+3h}", "-\\frac{1}{9}"]
+		},
+		{
+			"description": "Signe du taux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Réduis au même dénominateur : le numérateur vaut $-h$, donc le taux est négatif."
+			},
+			"answers": ["\\frac{1}{3(3+h)}", "-\\frac{1}{9}"]
+		},
+		{
+			"description": "Limite à la place du taux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le taux dépend encore de $h$ : écris-le en fonction de $h$, la limite vient ensuite."
+			},
+			"answers": ["-\\frac{1}{9}", "-\\frac{1}{9}"]
+		},
+		{
+			"description": "Signe du nombre dérivé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le nombre dérivé est la limite du taux, qui est négatif : garde le signe −."
+			},
+			"answers": ["-\\frac{1}{3(3+h)}", "\\frac{1}{9}"]
+		},
+		{
+			"description": "f(3) au lieu de f′(3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'image de $3$ : le nombre dérivé est la limite du taux quand $h$ tend vers $0$."
+			},
+			"answers": ["-\\frac{1}{3(3+h)}", "\\frac{1}{3}"]
+		},
+		{
+			"description": "−1/a au lieu de −1/a²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand $h$ tend vers $0$, le dénominateur tend vers $3^2$, pas vers $3$."
+			},
+			"answers": ["-\\frac{1}{3(3+h)}", "-\\frac{1}{3}"]
+		},
+		{
+			"description": "Décimal −0,25 en a = 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{1}{2(2+h)}", "-0{,}25"]
+		},
+		{
+			"description": "3/x, a = 2 : −3/(2(2 + h)) et −3/4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "3/x, a = 2 : −0,75",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "-0{,}75"]
+		},
+		{
+			"description": "Signe du taux",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Réduis au même dénominateur : le numérateur vaut $-3 h$, donc le taux est négatif."
+			},
+			"answers": ["\\frac{3}{2(2+h)}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "Facteur k oublié (taux)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le facteur $3$ devant $\\dfrac{1}{x}$."
+			},
+			"answers": ["-\\frac{1}{2(2+h)}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "Limite à la place du taux",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le taux dépend encore de $h$ : écris-le en fonction de $h$, la limite vient ensuite."
+			},
+			"answers": ["-\\frac{3}{4}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "Signe du nombre dérivé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le nombre dérivé est la limite du taux, qui est négatif : garde le signe −."
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "\\frac{3}{4}"]
+		},
+		{
+			"description": "Facteur k oublié (nombre dérivé)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le facteur $3$ devant $\\dfrac{1}{x}$."
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "-\\frac{1}{4}"]
+		},
+		{
+			"description": "−k/a au lieu de −k/a²",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand $h$ tend vers $0$, le dénominateur tend vers $2^2$, pas vers $2$."
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "-\\frac{3}{2}"]
+		},
+		{
+			"description": "3/(x + 1), a = 1 : −3/(2(2 + h)) et −3/4",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"b": "1",
+				"a": "1",
+				"s": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "Signe du taux",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"b": "1",
+				"a": "1",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Réduis au même dénominateur : le numérateur vaut $-3 h$, donc le taux est négatif."
+			},
+			"answers": ["\\frac{3}{2(2+h)}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "b oublié (taux)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"b": "1",
+				"a": "1",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur de $f$ en $1$ vaut $2$, pas $1$."
+			},
+			"answers": ["-\\frac{3}{1+h}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "Limite à la place du taux",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"b": "1",
+				"a": "1",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le taux dépend encore de $h$ : écris-le en fonction de $h$, la limite vient ensuite."
+			},
+			"answers": ["-\\frac{3}{4}", "-\\frac{3}{4}"]
+		},
+		{
+			"description": "Signe du nombre dérivé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"b": "1",
+				"a": "1",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le nombre dérivé est la limite du taux, qui est négatif : garde le signe −."
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "\\frac{3}{4}"]
+		},
+		{
+			"description": "b oublié (nombre dérivé)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"b": "1",
+				"a": "1",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le dénominateur de $f$ en $1$ vaut $2$, pas $1$."
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "-3"]
+		},
+		{
+			"description": "Dénominateur au lieu de son carré",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"b": "1",
+				"a": "1",
+				"s": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand $h$ tend vers $0$, le dénominateur tend vers $2^2$, pas vers $2$."
+			},
+			"answers": ["-\\frac{3}{2(2+h)}", "-\\frac{3}{2}"]
+		}
+	]
+}
