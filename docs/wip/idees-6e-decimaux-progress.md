@@ -6,7 +6,7 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, série de relecture publiée (PR à merger)._
+_Mis à jour le 2026-11-23, après #3020._
 
 - **État** : #3018 jouée en prod ; série de relecture des 10 publiés enregistrée par David
   (f5275c46, `scripts/series/6-relecture-decimaux-publies.json`) · **Prochaine action** : relecture
@@ -14,7 +14,7 @@ _Mis à jour le 2026-11-23, série de relecture publiée (PR à merger)._
   série f5275c46 ; puis verdicts lus en base, corrections, `publier-lot.ts` · **En attente de David** :
   la relecture.
 - **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu.
-- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux-serie` / `chore/idees-6e-decimaux-serie` (fichier de la série).
+- **Worktree / branche** : aucun (#3020 mergée, worktree supprimé).
 
 ## Décisions de David (2026-11-22)
 
