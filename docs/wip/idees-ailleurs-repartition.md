@@ -104,7 +104,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | ---------------------------------- | ----- | --------- | -------------------- | ------------------- |
 | Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`  |
 | Nombres entiers et décimaux        | 6N1   | 38        | libre                |                     |
-| Nombres décimaux                   | 6N2   | 55        | prise (2026-11-22)   | `idees-6e-decimaux` |
+| Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux` |
 | Fractions                          | 6N3   | 53        | libre                |                     |
 | Algèbre                            | 6N4   | 9         | libre                |                     |
 | Résolution de problèmes            | 6N5   | 24        | libre                |                     |
@@ -154,16 +154,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2c5bae8f Liens entre les unités de numération                | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| 819df2a9 Calculer un produit (CM2-042)                       | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| 590169c4 Calculer un quotient (CM2-043)                      | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| 571ca739 Calculer un produit (6-118)                         | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| ddbce820 Calculer un produit (6-118)                         | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| 7deff4e0 Contrôler par un ordre de grandeur                  | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| 32b7a9bc Problèmes de produits décimaux                      | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| 87cfa41b Problèmes de partage décimal                        | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| 3f4bacc6 Problèmes de division euclidienne                   | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
-| b586bdf8 Additionner des nombres décimaux                    | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
 
 ## Idées en attente
 
