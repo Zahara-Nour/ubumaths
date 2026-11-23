@@ -1,4 +1,5 @@
 {
+	"id": "415db113-8612-4bef-87b7-9006a863e057",
 	"title": "Reconnaître un nombre premier",
 	"description": "Cocher les nombres premiers d'une liste (pièges : 1, 51, 57, 87, 91), donner un diviseur qui prouve qu'un nombre de 100 à 400 n'est pas premier, dire si un nombre de 101 à 199 est premier ou divisible par 7, 11 ou 13",
 	"grades": ["3"],

@@ -1,4 +1,5 @@
 {
+	"id": "49a3d8ad-6467-45d1-8ee6-729241538c05",
 	"title": "Problème de partage en lots identiques",
 	"description": "Comme au brevet : le plus grand nombre de lots identiques et leur composition, à partir des décompositions ou des nombres seuls (252 roses et 180 tulipes → 36 bouquets de 7 roses et 5 tulipes), et « peut-on faire N lots ? » (pièges : un diviseur commun qui n'est pas le plus grand, composition échangée)",
 	"grades": ["3"],
