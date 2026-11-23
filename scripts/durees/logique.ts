@@ -14,6 +14,8 @@
  *   - `prod:<étape>`            une étape de `pnpm deploy:prod`.
  */
 
+import { z } from 'zod';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -68,6 +70,13 @@ export type Reference = {
 	phases: Record<string, number>;
 };
 
+/** Ce que demandent les options de `pnpm durees`. */
+export type Demande =
+	| { mode: 'tableau' }
+	| { mode: 'releve'; essai: boolean }
+	/** `depuis` (ISO 8601) seulement s'il est donné par `--depuis`. */
+	| { mode: 'reference'; depuis?: string };
+
 export type Verdict = 'lent' | 'normal' | 'trop-peu' | 'sans-reference';
 
 export type Ligne = {
@@ -101,6 +110,12 @@ export const ETAPES_SUIVIES = new Set([
 
 const JOUR_MS = 24 * 3600 * 1000;
 
+/** La forme de reference.json : le fichier peut avoir été édité à la main. */
+const SCHEMA_REFERENCE = z.object({
+	depuis: z.iso.datetime(),
+	phases: z.record(z.string().min(1).max(200), z.number().int().min(1).max(86_400))
+});
+
 const LIBELLES: Record<string, string> = {
 	ci: 'CI entière (PR de code)',
 	pr: 'Ouverture → merge (un push)',
@@ -117,6 +132,33 @@ function secondesEntre(debut?: string | null, fin?: string | null): number | nul
 	if (!debut || !fin) return null;
 	const duree = Math.round((Date.parse(fin) - Date.parse(debut)) / 1000);
 	return Number.isFinite(duree) && duree >= 0 ? duree : null;
+}
+
+/** La référence lue dans le texte de reference.json, ou `null` s'il est mal formé. */
+export function lireReference(texte: string): Reference | null {
+	let lu: unknown;
+	try {
+		lu = JSON.parse(texte);
+	} catch {
+		return null;
+	}
+	const controle = SCHEMA_REFERENCE.safeParse(lu);
+	return controle.success ? controle.data : null;
+}
+
+/** Les options de la ligne de commande, ou `null` si elles ne sont pas une forme prévue. */
+export function lireArguments(args: string[]): Demande | null {
+	if (args.length === 0) return { mode: 'tableau' };
+	if (args[0] === '--releve') {
+		if (args.length === 1) return { mode: 'releve', essai: false };
+		return args.length === 2 && args[1] === '--essai' ? { mode: 'releve', essai: true } : null;
+	}
+	if (args[0] !== '--reference') return null;
+	if (args.length === 1) return { mode: 'reference' };
+	if (args.length !== 3 || args[1] !== '--depuis' || !/^\d{4}-\d{2}-\d{2}$/.test(args[2]))
+		return null;
+	const date = Date.parse(args[2]);
+	return Number.isNaN(date) ? null : { mode: 'reference', depuis: new Date(date).toISOString() };
 }
 
 export function mediane(valeurs: number[]): number | null {
@@ -191,7 +233,9 @@ export function mesuresDeLaPr(pr: PrMergee, runs: Run[], completes: Set<number>)
 	);
 	if (siennes.length !== 1 || !completes.has(siennes[0].databaseId)) return [];
 	const duree = secondesEntre(pr.createdAt, pr.mergedAt);
-	return duree === null ? [] : [{ phase: 'pr', secondes: duree, date: pr.createdAt }];
+	// Datée du merge : datée de l'ouverture, une PR ouverte la veille et mergée
+	// lentement sortirait des dernières 24 heures, alors que c'est elle qu'on cherche.
+	return duree === null ? [] : [{ phase: 'pr', secondes: duree, date: pr.mergedAt }];
 }
 
 /** Le journal de `pnpm deploy:prod` : `date;version;étape;secondes`, une ligne par étape. */
@@ -301,14 +345,18 @@ export function tableau(lignes: Ligne[]): string {
 /**
  * La référence refaite sur les mesures prises depuis `depuis` : médiane de chaque
  * phase qui a au moins 5 mesures (et dure au moins 20 s). Les autres gardent
- * leur valeur ; `gardees` les nomme.
+ * leur valeur ; `gardees` les nomme. `depuisProd` : la même date pour la mise en
+ * prod, trop rare pour tenir dans la fenêtre de la CI.
  */
 export function nouvelleReference(
 	ancienne: Reference,
 	mesures: Mesure[],
-	depuis: string
+	depuis: string,
+	depuisProd: string = depuis
 ): { reference: Reference; gardees: string[] } {
-	const lisibles = mesures.filter((m) => m.date >= depuis);
+	const lisibles = mesures.filter(
+		(m) => m.date >= (m.phase.startsWith('prod:') ? depuisProd : depuis)
+	);
 	const phases: Record<string, number> = { ...ancienne.phases };
 	const gardees: string[] = [];
 	for (const phase of new Set([...Object.keys(ancienne.phases), ...lisibles.map((m) => m.phase)])) {

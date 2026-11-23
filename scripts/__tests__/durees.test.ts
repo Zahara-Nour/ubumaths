@@ -7,10 +7,13 @@
  *   job sauté (PR de contenu) et rien n'est compté, sinon la médiane baisserait ;
  * - un job rouge ou annulé n'est pas une mesure ; la durée de la CI entière ne
  *   vaut que pour une première tentative verte ;
- * - « ouverture → merge » ne compte que les PR mergées sur un seul push ;
+ * - « ouverture → merge » ne compte que les PR mergées sur un seul push, datées
+ *   du merge (une PR ouverte la veille et mergée lentement reste dans la journée) ;
  * - alerte : médiane d'au moins 1,5 fois la référence ET au moins 5 mesures ;
  *   une seule PR lente ne déclenche rien ;
  * - mise en prod : les 5 dernières, et seulement s'il y en a eu une dans la journée ;
+ * - une faute de frappe dans les options affiche l'usage, jamais le tableau ;
+ * - un fichier de référence mal formé est refusé à la lecture ;
  * - la référence ne bouge que par `nouvelleReference` : au moins 5 mesures par
  *   phase, sinon l'ancienne valeur reste.
  */
@@ -19,7 +22,9 @@ import { describe, it, expect } from 'vitest';
 import {
 	comparer,
 	formaterDuree,
+	lireArguments,
 	lireJournalProd,
+	lireReference,
 	mediane,
 	mesuresDeLaPr,
 	mesuresDuRun,
@@ -153,7 +158,7 @@ describe('mesuresDeLaPr', () => {
 
 	it('mesure ouverture → merge quand la PR n’a eu qu’un push, sur une CI complète', () => {
 		expect(mesuresDeLaPr(pr, [run()], new Set([1]))).toEqual([
-			{ phase: 'pr', secondes: 470, date: '2026-11-23T09:59:50Z' }
+			{ phase: 'pr', secondes: 470, date: '2026-11-23T10:07:40Z' }
 		]);
 	});
 
@@ -298,6 +303,51 @@ describe('messageAlerte', () => {
 	});
 });
 
+describe('lireArguments', () => {
+	it('accepte les formes prévues', () => {
+		expect(lireArguments([])).toEqual({ mode: 'tableau' });
+		expect(lireArguments(['--releve'])).toEqual({ mode: 'releve', essai: false });
+		expect(lireArguments(['--releve', '--essai'])).toEqual({ mode: 'releve', essai: true });
+		expect(lireArguments(['--reference'])).toEqual({ mode: 'reference' });
+		expect(lireArguments(['--reference', '--depuis', '2026-11-25'])).toEqual({
+			mode: 'reference',
+			depuis: '2026-11-25T00:00:00.000Z'
+		});
+	});
+
+	it.each([
+		[['--releves']],
+		[['foo']],
+		[['--essai']],
+		[['--depuis', '2026-11-25']],
+		[['--reference', '--depuis']],
+		[['--reference', '--depuis', 'hier']],
+		[['--reference', '--depuis', '2026-13-45']],
+		[['--reference', '--releve']],
+		[['--reference', '--essai']],
+		[['--reference', '--depuis', '2026-11-25', 'foo']]
+	])('refuse %j', (args) => {
+		expect(lireArguments(args)).toBeNull();
+	});
+});
+
+describe('lireReference', () => {
+	it('rend la référence bien formée', () => {
+		expect(lireReference(JSON.stringify(REFERENCE))).toEqual(REFERENCE);
+	});
+
+	it.each([
+		['pas du JSON'],
+		['{}'],
+		[JSON.stringify({ depuis: 'hier', phases: {} })],
+		[JSON.stringify({ depuis: REFERENCE.depuis })],
+		[JSON.stringify({ depuis: REFERENCE.depuis, phases: { ci: '430' } })],
+		[JSON.stringify({ depuis: REFERENCE.depuis, phases: { ci: -1 } })]
+	])('refuse %s', (texte) => {
+		expect(lireReference(texte)).toBeNull();
+	});
+});
+
 describe('tableau', () => {
 	it('écrit une ligne par phase, avec la référence, la journée et les 7 jours', () => {
 		const texte = tableau(
@@ -335,6 +385,15 @@ describe('nouvelleReference', () => {
 		);
 		expect(reference.phases['job:Nouveau']).toBe(50);
 		expect(reference.phases['job:CI Summary']).toBeUndefined();
+	});
+
+	it('mise en prod : lit depuis sa propre date, plus ancienne que la fenêtre de la CI', () => {
+		const prod = mesures('prod:vercel', [240, 240, 240, 240, 240], '2026-11-24T10:00:00Z');
+		const sans = nouvelleReference(REFERENCE, prod, '2026-12-01T00:00:00Z');
+		expect(sans.reference.phases['prod:vercel']).toBe(180);
+		const avec = nouvelleReference(REFERENCE, prod, '2026-12-01T00:00:00Z', REFERENCE.depuis);
+		expect(avec.reference.phases['prod:vercel']).toBe(240);
+		expect(avec.reference.depuis).toBe('2026-12-01T00:00:00Z');
 	});
 
 	it('ne lit que les mesures faites depuis la date donnée, et la retient', () => {

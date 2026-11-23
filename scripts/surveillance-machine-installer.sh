@@ -77,11 +77,12 @@ launchctl bootstrap "$DOMAINE" "$PLIST"
 
 # ── Relevé des durées, chaque matin ───────────────────────────────────────────
 # launchd ne lit pas le profil du shell : le dossier de node et de pnpm (mise,
-# nvm…) est relevé ici, une fois. Sans pnpm ni gh, le relevé n'est pas installé.
+# nvm…) est relevé ici, une fois. Sans pnpm, node ou gh, le relevé n'est pas installé.
 dossier_pnpm="$(dirname "$(command -v pnpm || true)")"
+dossier_node="$(dirname "$(command -v node || true)")"
 dossier_gh="$(dirname "$(command -v gh || true)")"
-if [ "$dossier_pnpm" = "." ] || [ "$dossier_gh" = "." ]; then
-	echo "⚠️  pnpm ou gh introuvable : relevé des durées non installé."
+if [ "$dossier_pnpm" = "." ] || [ "$dossier_node" = "." ] || [ "$dossier_gh" = "." ]; then
+	echo "⚠️  pnpm, node ou gh introuvable : relevé des durées non installé."
 else
 	mkdir -p "$ETAT_DUREES"
 	cat >"$PLIST_DUREES" <<EOF
@@ -100,7 +101,7 @@ else
 	<key>EnvironmentVariables</key>
 	<dict>
 		<key>PATH</key>
-		<string>$dossier_pnpm:$dossier_gh:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+		<string>$dossier_pnpm:$dossier_node:$dossier_gh:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
 	</dict>
 	<key>StartCalendarInterval</key>
 	<dict>

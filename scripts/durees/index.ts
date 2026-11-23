@@ -36,14 +36,16 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
 	comparer,
 	estComplete,
+	lireArguments,
 	lireJournalProd,
+	lireReference,
 	mesuresDeLaPr,
 	mesuresDuRun,
 	messageAlerte,
@@ -94,9 +96,30 @@ function gh(...args: string[]): string {
 	return r.stdout;
 }
 
-function lireReference(): Reference {
+function chargerReference(): Reference {
 	if (!existsSync(FICHIER_REFERENCE)) arreter(`⛔ Référence absente : ${FICHIER_REFERENCE}`);
-	return JSON.parse(readFileSync(FICHIER_REFERENCE, 'utf8')) as Reference;
+	const reference = lireReference(readFileSync(FICHIER_REFERENCE, 'utf8'));
+	if (reference === null) {
+		arreter(
+			`⛔ Référence mal formée : ${FICHIER_REFERENCE}`,
+			'   Attendu : { "depuis": date ISO, "phases": { "<phase>": secondes entières } }'
+		);
+	}
+	return reference;
+}
+
+/** Ce qui est gardé d'une exécution, ou `null` : absent, ou illisible (écriture interrompue). */
+function lireCache(fichier: string): RunLu | null {
+	if (!existsSync(fichier)) return null;
+	try {
+		const lu: unknown = JSON.parse(readFileSync(fichier, 'utf8'));
+		if (typeof lu === 'object' && lu !== null && 'complete' in lu && 'mesures' in lu) {
+			return lu as RunLu;
+		}
+	} catch {
+		// relu chez GitHub
+	}
+	return null;
 }
 
 /** Les exécutions de quality.yml sur les PR, créées depuis `depuis` (AAAA-MM-JJ). */
@@ -121,7 +144,8 @@ function lireRuns(depuis: string): Run[] {
 /** Les mesures d'une exécution finie, lues chez GitHub la première fois seulement. */
 function lireRun(run: Run): RunLu {
 	const fichier = join(CACHE, `${run.databaseId}-${run.attempt}.json`);
-	if (existsSync(fichier)) return JSON.parse(readFileSync(fichier, 'utf8')) as RunLu;
+	const garde = lireCache(fichier);
+	if (garde !== null) return garde;
 	const sortie = gh(
 		'api',
 		'--paginate',
@@ -134,7 +158,9 @@ function lireRun(run: Run): RunLu {
 		.filter(Boolean)
 		.map((ligne) => JSON.parse(ligne) as Job);
 	const lu: RunLu = { complete: estComplete(run, jobs), mesures: mesuresDuRun(run, jobs) };
-	writeFileSync(fichier, JSON.stringify(lu));
+	// Écrit à côté puis renommé : une écriture interrompue ne laisse pas un fichier tronqué.
+	writeFileSync(`${fichier}.tmp`, JSON.stringify(lu));
+	renameSync(`${fichier}.tmp`, fichier);
 	return lu;
 }
 
@@ -154,7 +180,11 @@ function lirePrMergees(depuis: string): PrMergee[] {
 	return JSON.parse(sortie) as PrMergee[];
 }
 
-/** Toutes les mesures prises depuis `depuis` (ISO 8601). */
+/**
+ * Les mesures de la CI et des PR prises depuis `depuis` (ISO 8601), et TOUTES
+ * celles de la mise en prod : elle est trop rare pour une fenêtre de 7 jours, la
+ * règle lit ses 5 dernières (`comparer` écarte ce qui précède la référence).
+ */
 function lireMesures(depuis: string): Mesure[] {
 	mkdirSync(CACHE, { recursive: true });
 	const jour = depuis.slice(0, 10);
@@ -170,7 +200,7 @@ function lireMesures(depuis: string): Mesure[] {
 	for (const pr of lirePrMergees(jour)) mesures.push(...mesuresDeLaPr(pr, runs, completes));
 	if (existsSync(JOURNAL_PROD))
 		mesures.push(...lireJournalProd(readFileSync(JOURNAL_PROD, 'utf8')));
-	return mesures.filter((m) => m.date >= depuis);
+	return mesures.filter((m) => m.phase.startsWith('prod:') || m.date >= depuis);
 }
 
 /** Le plus récent de : la date de la référence, il y a `jours` jours. */
@@ -192,15 +222,16 @@ async function envoyer(message: string): Promise<void> {
 }
 
 function refaireLaReference(depuisDemande: string | undefined): void {
-	const ancienne = lireReference();
-	let depuis = fenetre(ancienne, 7);
-	if (depuisDemande !== undefined) {
-		if (!/^\d{4}-\d{2}-\d{2}$/.test(depuisDemande) || Number.isNaN(Date.parse(depuisDemande))) {
-			arreter('⛔ --depuis attend une date AAAA-MM-JJ.');
-		}
-		depuis = new Date(depuisDemande).toISOString();
-	}
-	const { reference, gardees } = nouvelleReference(ancienne, lireMesures(depuis), depuis);
+	const ancienne = chargerReference();
+	const depuis = depuisDemande ?? fenetre(ancienne, 7);
+	// Mise en prod : depuis la date demandée, sinon depuis celle de la référence (pas 7 jours).
+	const depuisProd = depuisDemande ?? ancienne.depuis;
+	const { reference, gardees } = nouvelleReference(
+		ancienne,
+		lireMesures(depuis),
+		depuis,
+		depuisProd
+	);
 	writeFileSync(FICHIER_REFERENCE, `${JSON.stringify(reference, null, '\t')}\n`);
 	console.log(`✅ Référence refaite sur les mesures prises depuis le ${depuis.slice(0, 10)}.`);
 	if (gardees.length > 0) {
@@ -210,20 +241,17 @@ function refaireLaReference(depuisDemande: string | undefined): void {
 }
 
 async function main(): Promise<void> {
-	const args = process.argv.slice(2);
-	const connues = new Set(['--releve', '--essai', '--reference', '--depuis']);
-	const iDepuis = args.indexOf('--depuis');
-	const inconnue = args.find((a, i) => !connues.has(a) && i !== iDepuis + 1);
-	if (inconnue !== undefined || (iDepuis >= 0 && !args.includes('--reference'))) {
+	const demande = lireArguments(process.argv.slice(2));
+	if (demande === null) {
 		arreter('Usage : pnpm durees [--releve [--essai]] | --reference [--depuis AAAA-MM-JJ]');
 	}
-	if (args.includes('--reference')) {
-		refaireLaReference(iDepuis >= 0 ? args[iDepuis + 1] : undefined);
+	if (demande.mode === 'reference') {
+		refaireLaReference(demande.depuis);
 		return;
 	}
-	const reference = lireReference();
+	const reference = chargerReference();
 	const lignes = comparer(lireMesures(fenetre(reference, 7)), reference, new Date());
-	if (!args.includes('--releve')) {
+	if (demande.mode === 'tableau') {
 		console.log(tableau(lignes));
 		console.log(
 			`\nRéférence : scripts/durees/reference.json, mesures depuis le ${reference.depuis.slice(0, 10)}.`
@@ -232,7 +260,7 @@ async function main(): Promise<void> {
 	}
 	const message = messageAlerte(lignes);
 	if (message === null) console.log('RAS');
-	else if (args.includes('--essai')) console.log(`ENVOI : ${message}`);
+	else if (demande.essai) console.log(`ENVOI : ${message}`);
 	else await envoyer(message);
 }
 

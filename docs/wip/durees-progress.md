@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, avant un `/clear` (PR 1 codée, pas encore ouverte)._
+_Mis à jour le 2026-11-23, à l'ouverture de la PR 1._
 
-- **État** : PR 1 (CI, PR, mise en prod) **codée et poussée sur `feat/durees`, PR pas encore ouverte**. Référence validée par David (`scripts/durees/reference.json`), `pnpm durees` (tableau, `--releve`, `--reference`), `pnpm deploy:prod` note ses étapes, relevé de 6 h 40 ajouté à l'installeur launchd, doc et `CLAUDE.md` à jour. Verts : 27 tests `durees`, 63 tests `deploy-prod`, `check:incremental`, `types:cliquet`, `lint:fast`, `docs:check-a-jour`. Revue `code-reviewer` faite : **6 corrections à faire avant la PR** (section « Revue de la PR 1 » en bas).
-- **Prochaine action** : corriger les 6 points de la revue (tests d'abord), relancer les tests et les gardes, ouvrir la PR en un seul push, `pnpm pr:merger <n>`. Puis demander à David de lancer `pnpm surveillance:installer` dans le dépôt principal. Ensuite PR 2 = le local.
-- **En attente de David** : rien avant le merge ; après, lancer l'installeur (c'est lui qui installe le relevé du matin dans launchd).
+- **État** : PR 1 (CI, PR, mise en prod) ouverte depuis `feat/durees`, revue `code-reviewer` faite et ses 6 corrections appliquées. Contenu : référence validée par David (`scripts/durees/reference.json`), `pnpm durees` (tableau, `--releve`, `--reference`), `pnpm deploy:prod` note ses étapes, relevé de 6 h 40 ajouté à l'installeur launchd.
+- **Prochaine action** : PR 1 mergée (`pnpm pr:merger`) → **David lance `pnpm surveillance:installer` dans le dépôt principal** (c'est lui qui installe le relevé du matin dans launchd), puis `pnpm durees --releve --essai` pour voir. Ensuite PR 2 = le local (`check:incremental`, tests, pre-push, `pnpm pr:merger` notent leur durée dans un journal du Mac mini).
+- **En attente de David** : lancer l'installeur après le merge.
 - **Pièges en cours** : `/data` est ignoré par git, d'où la référence sous `scripts/durees/` ; un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; aucune mesure d'avant #3025 (`depuis` de la référence) ; une exécution avec un job sauté (PR de contenu) ne compte pas ; les tests d'intégration ne tournent pas dans `quality.yml` (`nightly-integration.yml`, pas encore mesuré : à décider avec David) ; « bascule du site » n'a pas de référence tant qu'il n'y a pas 5 mises en prod notées.
 - **Worktree / branche** : `ubumaths-wt-durees` / `feat/durees`.
 
@@ -53,7 +53,7 @@ Référence validée par David (« oui ») sur les 6 exécutions complètes des 
 - **Phases de moins de 20 s** (« CI Summary », « Porte de la CI ») : jamais dans la référence, pas montrées.
 - **Relevé du matin** : launchd sur le Mac mini (6 h 40), pas un workflow GitHub : le canal ntfy n'existe que sur la machine.
 
-## Revue de la PR 1 (`code-reviewer`, 2026-11-23) : à corriger avant d'ouvrir la PR
+## Revue de la PR 1 (`code-reviewer`, 2026-11-23) : les 6 points corrigés avant l'ouverture
 
 `deploy-prod.sh` : aucun risque trouvé (les notes de durée ne peuvent pas le faire échouer).
 
