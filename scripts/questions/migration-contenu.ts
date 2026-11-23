@@ -8,8 +8,9 @@
  *    (titre et niveau doivent concorder) ;
  *  - brouillon → ignoré ; publié identique au fichier → rien ; publié qui diffère → migré ;
  *  - refus de tout le lot (rien n'est écrit) : fichier sans id, id absent, titre ou niveau
- *    différents, variation retirée ou déplacée, autre champ que variations / specs / description
- *    différent de la prod, `checkTemplate` en échec ;
+ *    différents, variation retirée ou déplacée, autre champ que variations / specs / description /
+ *    options différent de la prod, `checkTemplate` en échec (il rejoue toutes les specs, anciennes
+ *    comprises : des options changées jugent aussi les variations déjà en prod) ;
  *  - écrit `supabase/migrations/<horodatage>_questions_<lot>_contenu.sql` et sa fixture
  *    `tests/integration/fixtures/contenu-publie/<même nom>.json`, rejouée par
  *    `tests/integration/migrations-contenu-publie.test.ts`.
@@ -86,7 +87,7 @@ async function main(): Promise<number> {
 			}
 			const c = examen.modele.changements;
 			console.log(
-				`  ${id8} migré     ${fichier} — +${c.ajoutees.length} variation(s), ${c.corrigees.length} corrigée(s)${c.corrigees.length > 0 ? ` (⚠️ n° ${c.corrigees.join(', ')} : relire leur diff, \`git diff\` du fichier)` : ''}${c.specs ? ', specs' : ''}${c.description ? ', description' : ''}`
+				`  ${id8} migré     ${fichier} — +${c.ajoutees.length} variation(s), ${c.corrigees.length} corrigée(s)${c.corrigees.length > 0 ? ` (⚠️ n° ${c.corrigees.join(', ')} : relire leur diff, \`git diff\` du fichier)` : ''}${c.specs ? ', specs' : ''}${c.description ? ', description' : ''}${c.options ? ', ⚠️ options (jugent toutes les variations)' : ''}`
 			);
 			migres.push(examen.modele);
 		}
