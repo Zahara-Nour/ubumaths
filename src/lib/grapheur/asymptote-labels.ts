@@ -12,6 +12,7 @@
 
 import type { CoordinateTransformer } from '#lib/geometry-core/viewport/index.ts';
 import type { FunctionAnalysis } from './types';
+import { labelBoxCenterY, labelBoxHeight, labelBoxSpan } from './label-box';
 
 // =============================================================================
 // Constants
@@ -23,8 +24,8 @@ const LABEL_MARGIN = 8;
 /** Hauteur d'une bande d'empilement, en pixels. */
 const LABEL_STACK = 22;
 
-/** Largeur en deçà de laquelle deux étiquettes d'une même bande se gênent. */
-const LABEL_WIDTH = 120;
+/** Écart minimal entre deux boîtes voisines, en pixels. */
+const LABEL_GAP = 4;
 
 /** Nombre de positions testées le long d'une branche pour y poser l'étiquette. */
 const ANCHOR_PROBES = 24;
@@ -220,6 +221,8 @@ export function placeAsymptoteLabels(
 ): AsymptoteLabel[] {
 	const list = Array.isArray(analyses) ? analyses : [analyses as FunctionAnalysis];
 	const placed: AsymptoteLabel[] = [];
+	/** Les boîtes AFFICHÉES des étiquettes posées (`GraphLabel`, bascule comprise) */
+	const boxes: { left: number; right: number; top: number; bottom: number }[] = [];
 
 	/**
 	 * Pose une étiquette en évitant celles déjà posées.
@@ -227,7 +230,9 @@ export function placeAsymptoteLabels(
 	 * Deux boîtes ne se gênent que si elles partagent une bande horizontale ET
 	 * se recouvrent en abscisse : une ordonnée d'ancrage constante faisait
 	 * descendre en escalier les six pôles de tan(x), pourtant répartis sur
-	 * toute la largeur.
+	 * toute la largeur. L'abscisse est celle de la boîte affichée, retournée à
+	 * gauche près du bord droit (E6) ; la hauteur, celle d'une fraction s'il y
+	 * en a une.
 	 */
 	const place = (
 		anchorX: number,
@@ -236,11 +241,24 @@ export function placeAsymptoteLabels(
 		latex: string,
 		functionId: string
 	): void => {
+		const { left, right } = labelBoxSpan(anchorX, text, size.width);
+		const height = labelBoxHeight(latex);
+		// Le rectangle affiché pour une ordonnée d'ancrage : `GraphLabel` pose la
+		// boîte au-dessus du point, ou dessous près du bord haut
+		const verticalSpan = (anchor: number) => {
+			const center = labelBoxCenterY(anchor, height, size.height);
+			return { top: center - height / 2, bottom: center + height / 2 };
+		};
 		let y = anchorY;
 
-		for (let attempt = 0; attempt < 8; attempt++) {
-			const collides = placed.some(
-				(other) => Math.abs(other.y - y) < LABEL_STACK && Math.abs(other.x - anchorX) < LABEL_WIDTH
+		for (let attempt = 0; attempt < 12; attempt++) {
+			const { top, bottom } = verticalSpan(y);
+			const collides = boxes.some(
+				(other) =>
+					top < other.bottom + LABEL_GAP &&
+					other.top < bottom + LABEL_GAP &&
+					left < other.right + LABEL_GAP &&
+					other.left < right + LABEL_GAP
 			);
 			if (!collides) break;
 			y += LABEL_STACK;
@@ -250,6 +268,7 @@ export function placeAsymptoteLabels(
 		// ce qui défait l'empilement calculé ici.
 		const bounded = Math.min(Math.max(y, LABEL_STACK), size.height - LABEL_MARGIN);
 		placed.push({ x: anchorX, y: bounded, text, latex, functionId });
+		boxes.push({ left, right, ...verticalSpan(bounded) });
 	};
 
 	for (const analysis of list) {

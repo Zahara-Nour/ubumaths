@@ -15,6 +15,13 @@
 
 	import { convertLatexToMarkup } from 'mathlive';
 	import { curveColorValue } from '#lib/grapheur/colors.ts';
+	import {
+		LABEL_BOX_MARGIN,
+		labelBoxCenterY,
+		labelBoxHeight,
+		labelBoxSpan,
+		labelBoxWidth
+	} from '#lib/grapheur/label-box.ts';
 
 	/** A label: plain text always, plus LaTeX when the value is worth rendering. */
 	export interface GraphLabelContent {
@@ -63,19 +70,12 @@
 	// Constants
 	// ==========================================================================
 
-	/** Height of a single-line label, in pixels. */
-	const LINE_HEIGHT = 20;
-
 	/**
-	 * Height of a label holding a two-storey formula.
-	 *
-	 * A fraction is two storeys tall: rendered inside a 20 pixel box with
-	 * hidden overflow, `-3/8` loses its denominator.
+	 * Distance kept between the point and its label. Box sizes (a fraction is
+	 * two storeys tall) and the flip near the right edge live in `label-box.ts`,
+	 * shared with the asymptote label placement (E6).
 	 */
-	const STACKED_HEIGHT = 36;
-
-	/** Distance kept between the point and its label. */
-	const MARGIN = 12;
+	const MARGIN = LABEL_BOX_MARGIN;
 
 	// ==========================================================================
 	// Derived State
@@ -87,31 +87,19 @@
 	 * Estimated from the LaTeX rather than measured, which would mean a second
 	 * render pass for a label that lives as long as a mouse move.
 	 */
-	const height = $derived(
-		content.latex && /\\[dt]?frac/.test(content.latex) ? STACKED_HEIGHT : LINE_HEIGHT
-	);
+	const height = $derived(labelBoxHeight(content.latex));
 
-	const width = $derived(Math.max(105, content.text.length * 7));
+	const width = $derived(labelBoxWidth(content.text));
 
 	/** Position of the box, kept inside the canvas. */
 	const position = $derived.by(() => {
-		let boxX = x + MARGIN;
-		let anchor: 'start' | 'end' = 'start';
-
 		// Too close to the right edge: flip to the left of the point.
-		if (x + width + MARGIN > canvasWidth) {
-			boxX = x - MARGIN;
-			anchor = 'end';
-		}
+		const span = labelBoxSpan(x, content.text, canvasWidth);
+		const anchor = span.anchor;
+		const boxX = anchor === 'start' ? span.left : span.right;
 
 		// Above the point, unless that would leave the canvas.
-		let boxY = y - MARGIN - 8;
-		if (boxY < MARGIN + height) {
-			boxY = y + MARGIN + height;
-			if (boxY + height > canvasHeight - MARGIN) {
-				boxY = canvasHeight - height - MARGIN;
-			}
-		}
+		const boxY = labelBoxCenterY(y, height, canvasHeight);
 
 		return { x: boxX, y: boxY, anchor };
 	});
