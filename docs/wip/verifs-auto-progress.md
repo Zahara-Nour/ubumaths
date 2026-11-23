@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-23, après #3031._
 
 - **État** : lot 10 mergé (#3031) ; liste à 391 lignes non cochées (418 le matin). Rouges connus de `test:verifs` : `each_key_duplicate` (#1674, #1703, #1620), #1369 ; #2731 (carnet) instable.
 - **Prochaine action** : présenter à David les 10 écarts du § « Lot 10 rejoué », un par un ; puis le découpage de la suite (R6, R13, R12, tri des 391 lignes) — ne rien coder avant sa validation de l'ordre.
-- **En attente de David** : les écarts ; l'ordre du découpage.
+- **En attente de David** : les écarts (écart 1/10, #1369, posé) ; phase 0 de R6 et ordre du découpage (§ « R6 »).
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; étapes de « Comment ? » chargées à la demande ; ligne de console longue → `shootLine` ; une ligne de la liste peut être périmée par une décision postérieure : chercher la décision avant de crier à l'écart ; ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : aucun (retiré après #3031).
 
@@ -159,6 +159,13 @@ David : « les captures et résultats du 26 octobre sont périmés », « juge l
   9. Étapes : parenthèses en trop dans les fractions (`(x²−1)/(x+1)` de #1617, `(3×x²−x)/(x²+1)` d'une limite) ; la note « On peut simplifier davantage pour x ≠ −1 » reste après « Simplifier pour x ≠ −1 ».
   10. Rappel : `each_key_duplicate` (mis de côté par David) fait aussi tomber `/dev/correction-generee` en erreur 500 en dev.
 - **Restent dans la liste, faisables par la session plus tard** : #1421 (« sans saccade »), #1649 (lecture continue, construction publique sur chiph.re), reste de #1621/#1626/#1629.
+
+## R6 — navigateurs du téléphone (David, 2026-11-23)
+
+David : « tu parles de Safari mais pas des autres navigateurs », puis « pars sur les trois projets ». Sur iPhone, tous les navigateurs utilisent WebKit ; sur Android, Chrome / Samsung / Edge utilisent Chromium, Firefox utilise Gecko (Playwright ne simule pas le toucher de Firefox Android).
+
+- **Décision** : `pnpm test:verifs` en trois projets de plus que le bureau : **iPhone + WebKit** (toute la suite), **Android + Chromium** (toute la suite), **Firefox à 390 px** (sous-ensemble : clavier MathLive, graphiques, constructions).
+- **Phase 0 de R6 et ordre du découpage (R6 → tri des lignes → R12 → R13)** : soumis à David le 2026-11-23, en attente.
 
 ## Plan d'ensemble
 
