@@ -1,4 +1,5 @@
 {
+	"id": "d9c8ff67-3f11-4a45-94c4-1068627c700e",
 	"title": "Écrire un nombre sans zéros inutiles",
 	"description": "Réécrire un nombre décimal (004 012,500) ou un grand entier (000 012 004 300) sans ses zéros inutiles, classes séparées (pièges : zéro utile retiré au milieu, après la virgule ou à la fin d'un entier)",
 	"grades": ["6"],
@@ -629,5 +630,9 @@
 			},
 			"answers": ["1\\,243"]
 		}
-	]
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
 }

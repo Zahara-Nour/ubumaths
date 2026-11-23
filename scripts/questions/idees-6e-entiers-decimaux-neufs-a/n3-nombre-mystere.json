@@ -1,4 +1,5 @@
 {
+	"id": "b7d28fdd-58ad-4b27-acc1-891820883536",
 	"title": "Le nombre mystère",
 	"description": "Trouver un nombre entier (4 ou 5 chiffres) ou décimal (deux chiffres après la virgule) à partir d'indices sur ses chiffres : un chiffre donné, double, moitié, plus grand ou plus petit de k, somme (pièges : chiffres écrits dans l'ordre inverse, indices pris à l'envers)",
 	"grades": ["6"],
@@ -773,5 +774,9 @@
 			},
 			"answers": ["57,36"]
 		}
-	]
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
 }

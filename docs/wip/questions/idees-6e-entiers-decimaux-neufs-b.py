@@ -10,12 +10,12 @@ idées reprises d'ailleurs, forme de chez nous.
   mots à glisser (bloc ```trous, comme e76ab26f) : une saisie libre en lettres a trop
   d'écritures justes. Orthographe de 1990 : traits d'union partout ; « mille » invariable ;
   « vingt » et « cent » au pluriel seulement multipliés et en fin de nombre.
-- N5 (6-106) « Compléter un tableau d'écritures » : écriture décimale, fraction, pourcentage.
-  Écart à la fiche (orientation seulement) : le tableau est posé avec les trois écritures en
-  COLONNES et les quatre nombres en LIGNES (la fiche dit trois lignes, quatre colonnes) : un
-  tableau markdown a besoin d'une ligne d'en-tête, et trois colonnes tiennent sur un téléphone,
-  cinq non. Une case donnée par ligne, à une place fixe (décimal, fraction, pourcentage,
-  fraction) : le nombre de cases et leur ordre doivent être les mêmes à chaque tirage.
+- N5 (6-106) « Compléter un tableau d'écritures » (titre gardé, en base). Quatre nombres, une
+  égalité par nombre (décimal = fraction = pourcentage), une écriture donnée par ligne à une
+  place fixe (décimal, fraction, pourcentage, fraction) : le nombre de cases et leur ordre
+  doivent être les mêmes à chaque tirage. D'abord écrit en tableau ; décision de David du
+  2026-11-23 : une égalité par ligne, le tableau débordant sur un téléphone (390 px). Le signe
+  % est écrit après la case : la réponse est le nombre seul.
 - N6 (6-106) « Nombre mixte et écriture décimale » : (v0) décimal → entier + fraction décimale
   < 1 ; (v1) nombre mixte → une seule fraction décimale ; (v2) fraction décimale > 1 → nombre
   mixte ; (v3) exemple du BO 6/5 = 1 + 1/5 = 1,2 (dénominateurs 2, 4, 5) ; (v4) décimal < 1 →
@@ -46,6 +46,9 @@ PRIMAIRE = '\\textcolor{{{color:primary.0}}}'
 OPTIONS = {'constraints': {'spacesFromFourDigits': True}}
 # N5 et N6 : une fraction décimale non simplifiée (5/10, 82/100) est la forme demandée
 OPTIONS_FRACTIONS = {'constraints': {'spacesFromFourDigits': True, 'reducedFractions': 'off'}}
+# N5 : de plus, un décimal (0,25) dans une case de pourcentage est refusé, pas seulement remarqué
+OPTIONS_N5 = {'constraints': {'spacesFromFourDigits': True, 'reducedFractions': 'off',
+                              'percent': 'strict'}}
 
 # Formes exigées
 DECIMALE = {'pattern': 'a:number'}
@@ -425,7 +428,7 @@ N4 = modele(
 
 
 # =============================================================================================
-# N5 — 6-106 : compléter un tableau d'écritures (décimal, fraction, pourcentage)
+# N5 — 6-106 : compléter des écritures (décimal, fraction, pourcentage), une égalité par ligne
 # =============================================================================================
 # Quatre lignes j = 1..4, chacune un nombre n_j / d_j. Case donnée : ligne 1 le décimal,
 # ligne 2 la fraction, ligne 3 le pourcentage, ligne 4 la fraction. Ordre des cases (ligne par
@@ -520,26 +523,37 @@ def err_f(j, depuis_decimal):
 
 
 def err_p(j, depuis_fraction, usuelles):
+    # L'élève écrit le signe % lui-même : chaque erreur prévue porte le signe, sauf la première
     if depuis_fraction and usuelles:
-        return [
+        erreurs = [
             erreur(ev('d' + j) + '\\%', M_P_DEN, 'Dénominateur pris pour le pourcentage'),
             erreur(ev('n' + j + '*10^' + chiffres_d(j) + '+d' + j) + '\\%', M_P_JUXT,
                    'Numérateur et dénominateur collés'),
             erreur(ev(m_(j) + '/10') + '\\%', M_P_MOINS, 'Un rang de moins'),
         ]
-    return [
-        erreur(ev(m_(j) + '/10') + '\\%', M_P_MOINS, 'Un rang de moins'),
-        erreur(ev('n' + j + '/d' + j) + '\\%', M_P_OUBLI, 'Multiplication par 100 oubliée'),
-        erreur(ev('10*' + m_(j)) + '\\%', M_P_TROP, 'Un rang de trop'),
-    ]
+    else:
+        erreurs = [
+            erreur(ev(m_(j) + '/10') + '\\%', M_P_MOINS, 'Un rang de moins'),
+            erreur(ev('n' + j + '/d' + j) + '\\%', M_P_OUBLI, 'Multiplication par 100 oubliée'),
+            erreur(ev('10*' + m_(j)) + '\\%', M_P_TROP, 'Un rang de trop'),
+        ]
+    # Cas réel : le nombre sans le signe (« 25 » vaut 25, pas 25 %)
+    sans_signe = erreur(pct(j), 'N\'oublie pas le signe $\\%$ : $' + pct(j) + '$ tout seul, ce '
+                        'n\'est pas $' + pct(j) + '~\\%$.', 'Signe % oublié')
+    return [sans_signe] + erreurs
 
 
-def tableau_n5():
-    return ('| Écriture décimale | Fraction | Pourcentage |\n|---|---|---|\n'
-            '| $' + dec('1') + '$ | $?$ | $?$ |\n'
-            '| $?$ | $' + frac('2') + '$ | $?$ |\n'
-            '| $?$ | $?$ | $' + pct('3') + '\\,\\%$ |\n'
-            '| $?$ | $' + frac('4') + '$ | $?$ |')
+def egalites_n5():
+    """Une égalité par nombre (décimal = fraction = pourcentage), une case donnée par ligne.
+
+    Décision de David du 2026-11-23 : le tableau à trois colonnes de cases débordait sur un
+    téléphone (390 px, colonne « Pourcentage » coupée). L'élève écrit le signe % lui-même :
+    une case suivie de « % » jugeait faux « 25 % » tapé, sans message (essai du 2026-11-23).
+    """
+    return ('$$' + dec('1') + '=?=?$$\n\n'
+            '$$?=' + frac('2') + '=?$$\n\n'
+            '$$?=?=' + pct('3') + '~\\%$$\n\n'
+            '$$?=' + frac('4') + '=?$$')
 
 
 def cases_n5(usuelles):
@@ -594,9 +608,9 @@ def conditions_n5(usuelles):
 
 
 N5_A = variation(
-    'Complète le tableau : sur chaque ligne, les trois écritures désignent le même nombre. '
-    'Dans la colonne « Fraction », écris une fraction (toute fraction égale convient) ; dans la '
-    'colonne « Pourcentage », écris le signe $\\%$.\n\n' + tableau_n5(),
+    'Complète les égalités : sur chaque ligne, l\'écriture décimale, la fraction et le '
+    'pourcentage désignent le même nombre. Au milieu, écris une fraction (toute fraction égale '
+    'convient) ; à droite, écris le pourcentage avec le signe $\\%$.\n\n' + egalites_n5(),
     vars_n5(True),
     cases_n5(True),
     [
@@ -611,9 +625,9 @@ N5_A = variation(
 )
 
 N5_B = variation(
-    'Complète le tableau : sur chaque ligne, les trois écritures désignent le même nombre. '
-    'Dans la colonne « Fraction », écris une fraction de dénominateur $100$ ; dans la colonne '
-    '« Pourcentage », écris le signe $\\%$.\n\n' + tableau_n5(),
+    'Complète les égalités : sur chaque ligne, l\'écriture décimale, la fraction et le '
+    'pourcentage désignent le même nombre. Au milieu, écris une fraction de dénominateur $100$ ; '
+    'à droite, écris le pourcentage avec le signe $\\%$.\n\n' + egalites_n5(),
     vars_n5(False),
     cases_n5(False),
     [
@@ -664,13 +678,19 @@ SPECS_N5 = [
     spec('v0 : tout juste', 0, V5A, 'correct', JUSTE_5A),
     spec('v0 : fraction égale non simplifiée acceptée (25/100)', 0, V5A, 'correct',
          remplace(JUSTE_5A, 0, '\\frac{25}{100}')),
-    spec('v0 : décimal dans la colonne Fraction refusé', 0, V5A, 'bad_form',
+    spec('v0 : décimal dans la case fraction refusé', 0, V5A, 'bad_form',
          remplace(JUSTE_5A, 0, '0,25')),
     spec('v0 : F1 = 25/10', 0, V5A, 'incorrect', remplace(JUSTE_5A, 0, '\\frac{25}{10}'),
          M_F_PETIT),
     spec('v0 : F1 = 25/1 000', 0, V5A, 'incorrect',
          remplace(JUSTE_5A, 0, '\\frac{25}{1\\,000}'), M_F_GRAND),
     spec('v0 : F1 = 1/25', 0, V5A, 'incorrect', remplace(JUSTE_5A, 0, '\\frac{1}{25}'), M_F_UN),
+    spec('v0 : P1 = 25 sans le signe', 0, V5A, 'incorrect', remplace(JUSTE_5A, 1, '25'),
+         'N\'oublie pas le signe $\\%$ : $25$ tout seul, ce n\'est pas $25~\\%$.'),
+    spec('v0 : P1 = 0,25 refusé', 0, V5A, 'bad_form', remplace(JUSTE_5A, 1, '0{,}25'),
+         violations=['percent', 'form']),
+    spec('v0 : P2 = 50 sans le signe', 0, V5A, 'incorrect', remplace(JUSTE_5A, 3, '50'),
+         'N\'oublie pas le signe $\\%$ : $50$ tout seul, ce n\'est pas $50~\\%$.'),
     spec('v0 : P1 = 2,5 %', 0, V5A, 'incorrect', remplace(JUSTE_5A, 1, '2,5\\%'), M_P_MOINS),
     spec('v0 : P1 = 0,25 %', 0, V5A, 'incorrect', remplace(JUSTE_5A, 1, '0,25\\%'), M_P_OUBLI),
     spec('v0 : P1 = 250 %', 0, V5A, 'incorrect', remplace(JUSTE_5A, 1, '250\\%'), M_P_TROP),
@@ -697,6 +717,10 @@ SPECS_N5 = [
     spec('v1 : F1 = 37/10', 1, V5B, 'incorrect', remplace(JUSTE_5B, 0, '\\frac{37}{10}'),
          M_F_PETIT),
     spec('v1 : F1 = 1/37', 1, V5B, 'incorrect', remplace(JUSTE_5B, 0, '\\frac{1}{37}'), M_F_UN),
+    spec('v1 : P1 = 37 sans le signe', 1, V5B, 'incorrect', remplace(JUSTE_5B, 1, '37'),
+         'N\'oublie pas le signe $\\%$ : $37$ tout seul, ce n\'est pas $37~\\%$.'),
+    spec('v1 : P4 = 0,41 refusé', 1, V5B, 'bad_form', remplace(JUSTE_5B, 7, '0{,}41'),
+         violations=['percent', 'form']),
     spec('v1 : P1 = 0,37 %', 1, V5B, 'incorrect', remplace(JUSTE_5B, 1, '0,37\\%'), M_P_OUBLI),
     spec('v1 : D2 = 0,5 (zéro oublié)', 1, V5B, 'incorrect', remplace(JUSTE_5B, 2, '0,5'),
          M_D_MOINS),
@@ -712,11 +736,11 @@ SPECS_N5 = [
 
 N5 = modele(
     'Compléter un tableau d\'écritures : décimal, fraction, pourcentage',
-    'Tableau à compléter, une écriture donnée par ligne : écriture décimale, fraction, '
+    'Égalités à compléter, une écriture donnée par ligne : écriture décimale, fraction, '
     'pourcentage (0,25 = 1/4 = 25 %) ; fractions usuelles (toute fraction égale acceptée) ou '
     'centièmes (fraction sur 100 exigée) (pièges : pourcentage recopié, un rang de trop ou de '
     'moins, trait de fraction lu comme une virgule, 0,5 = 1/5)',
-    2, 90, [N5_A, N5_B], SPECS_N5, OPTIONS_FRACTIONS)
+    2, 90, [N5_A, N5_B], SPECS_N5, OPTIONS_N5)
 
 
 # =============================================================================================
