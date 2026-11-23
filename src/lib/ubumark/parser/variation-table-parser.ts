@@ -791,6 +791,16 @@ function parseVariationRowEntries(
 			// Limite cachée autour d'une marque (`||, ?-inf, +inf`) : une case par limite
 			const parts = value.split(',').map((p) => p.trim());
 			if (VARIATION_MARKERS.includes(parts[0]) && parts.slice(1).some((p) => p.startsWith('?'))) {
+				// Seule la double barre porte des limites à l'écran et au PDF (phase 0) : une
+				// limite cachée autour de `|h|` ou `d` n'aurait pas de case
+				if (parts[0] !== '||') {
+					refuse(
+						lineNumber,
+						lines[i],
+						`une limite ne se cache qu'autour d'une double barre (||), pas autour de « ${parts[0]} »`
+					);
+					continue;
+				}
 				const read = readHiddenLimits(key, parts, (m) => refuse(lineNumber, lines[i], m));
 				if (!read) continue;
 				if (written.has(key)) {

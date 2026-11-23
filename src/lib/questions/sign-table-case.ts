@@ -155,7 +155,7 @@ export function infinityToken(answer: string): '-\\infty' | '+\\infty' | '\\inft
 /**
  * Case valeur d'un tableau où un infini est en jeu (attendu ou répondu) : jugée au
  * jeton, signe compris — ∞ sans signe est faux (Q2 du chantier
- * `variation-limite-infinie`). null : ni l'un ni l'autre n'est un infini, au juge
+ * `variation-limite-infinie`, tenu par `hiddenValueAnswer`). null : ni l'un ni l'autre n'est un infini, au juge
  * ordinaire.
  */
 export function infiniteCellVerdict(blank: InstanceBlank, userAnswer: string): boolean | null {
@@ -163,7 +163,9 @@ export function infiniteCellVerdict(blank: InstanceBlank, userAnswer: string): b
 	const expected = infinityToken(blank.expectedAnswer);
 	const given = infinityToken(userAnswer);
 	if (expected === null && given === null) return null;
-	return expected !== null && expected !== '\\infty' && given === expected;
+	// ∞ sans signe n'est jamais la vraie réponse (`hiddenValueAnswer` signe toujours) ;
+	// attendu `\infty`, c'est une erreur prévue (`inf`) que l'élève doit pouvoir déclencher
+	return expected !== null && given === expected;
 }
 
 /** Les numéros des cases d'un tableau affiché (première case posée par `case: N`) */

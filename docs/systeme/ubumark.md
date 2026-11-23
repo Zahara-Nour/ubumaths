@@ -452,7 +452,7 @@ signe d'un intervalle (`-inf,-3: ?-`), marque d'un point (`-3: ?z`, `?||`, `?rie
 barre » ; `?0` = `?z`), et dans une ligne `variation:` (chantier `variations-a-completer`,
 `variation-table-hidden-variation.test.ts`) valeur d'un point (`-2: ?4, top`, case `valeur`), limite (chantier `variation-limite-infinie`,
 `questions/__tests__/tableau-limite-infinie.test.ts` : infinie au bord, `+inf: ?+inf, top`, réponse
-`+\infty` ; autour d'une marque `||` / `|h|` / `d`, infinie ou finie, `3: ||, ?-inf, ?+inf`, forme
+`+\infty` ; autour d'une double barre seulement (`|h|`, `d` refusés : ni case à l'écran ni au PDF), infinie ou finie, `3: ||, ?-inf, ?+inf`, forme
 longue `||, ?-inf, bottom, +inf, top`, un seul côté `||, left, ?-inf, bottom` ; `readHiddenLimits` :
 une case `valeur` par limite, `HiddenCell.side` gauche / droite, gauche d'abord) et flèche d'un
 intervalle de deux valeurs voisines (`-2,2: ?flèche` ou `?fleche`, case `fleche`, réponse `↗` / `↘` lue sur
@@ -469,7 +469,7 @@ d'un `?` en tête de valeur ; `nested` pour un bloc en retrait ou cité (seul le
 retiré : le retrait des cellules compte). Refusés, message « Ligne N : … » et bloc rendu en source : `?` sur
 ±∞ du domaine, dans une étiquette ou une clé, `?|h|`, `?d`, signe caché sur
 un point, marque cachée sur un intervalle, clé hors du domaine ; dans une ligne `variation:`, `?` sur une
-marque (`||`, `|h|`, `d`), sur une hauteur ou un côté autour d'une marque (`||, -inf, ?bottom, …`,
+marque (`||`, `|h|`, `d`), une limite autour de `|h|` ou `d`, sur une hauteur ou un côté autour d'une double barre (`||, -inf, ?bottom, …`,
 `||, ?left, …`), limites illisibles, valeur sans position, flèche sur un point ou sur deux
 colonnes, flèche sans flèche à dessiner (valeurs à la même hauteur, centrée, asymptote), cellule écrite deux
 fois. Un bloc sans `?` donne l'arbre d'avant (ni `cases`, ni

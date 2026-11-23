@@ -7,21 +7,19 @@ homographique : −∞, à gauche et à droite de la valeur interdite, +∞).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, code complet (pas de PR)._
+_Mis à jour le 2026-11-23, revue faite et corrigée, PR en cours d'ouverture._
 
-- **État** : phase 0 validée ; tout le code fait et vert, impression PDF comprise (case vide
-  à la place d'une limite cachée autour de `||`, compilé par `scripts/fiches/compile-prod.mjs`
-  et vu à l'œil) ; suites `ubumark` + `questions` + `utils` + composants vertes,
-  `check:incremental` 0, `types:cliquet` tenu ; doc `docs/systeme/ubumark.md` et
-  `questions.md` à jour (garde `docs:check-a-jour` verte). 5 anciens tests de refus (limite
-  cachée) devenus tests d'acceptation · **Prochaine action** : revue `code-reviewer` (opus)
-  lancée le 2026-11-23 — si ses findings ne sont pas dans l'historique, la RELANCER sur
-  `git diff origin/main...HEAD -- src` ; corriger, puis push + PR + `pnpm pr:merger`
-  · **En attente de David** : rien · **Pièges en cours** : branche NON poussée ; un message
-  d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à signaler à David) ;
-  défaut ancien de vartable : `(pos, "||", v)` dessine `v` des deux côtés de la barre si le
-  domaine continue après (hors périmètre) · **Worktree / branche** :
-  `../ubumaths-wt-variation-limite-infinie`, `feat/variation-limite-infinie`.
+- **État** : code complet et vert (PDF compris) ; revue `code-reviewer` opus faite : (1) erreur
+  prévue `inf` (∞ sans signe) jamais reconnue → corrigé (`infiniteCellVerdict`) ; (2) limite
+  cachée autour de `|h|` / `d` sans case → refusée (phase 0 : double barre seulement) ; (3) la
+  hauteur de la case dit le signe → déjà tranché en phase 0 (« à la hauteur écrite ») ;
+  (4) `{+\infty}` (accolades) jugé faux → laissé (verdict prudent, MathLive ne l'écrit pas).
+  Tests rouges sans correctif, verts avec · **Prochaine action** : PR, `pnpm pr:merger`, puis
+  versement du journal · **En attente de David** : rien · **Pièges en cours** : un message
+  d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à signaler à David) ; défaut
+  ancien de vartable : `(pos, "||", v)` dessine `v` des deux côtés si le domaine continue
+  (hors périmètre) · **Worktree / branche** : `../ubumaths-wt-variation-limite-infinie`,
+  `feat/variation-limite-infinie`.
 
 ## Historique
 

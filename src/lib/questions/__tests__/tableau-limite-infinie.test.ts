@@ -160,6 +160,13 @@ describe('limite infinie cachée : lecture du bloc', () => {
 		expect(errors.map((e) => e.message).join(' ')).toMatch(/infini/);
 	});
 
+	it('erreur (revue) : une limite ne se cache qu’autour d’une double barre, ni |h| ni d', () => {
+		expect(
+			parse(['  -inf: 2, top', '  3: |h|, ?-inf, +inf', '  +inf: 2, bottom']).errors
+		).not.toEqual([]);
+		expect(parse(['  -inf: 2, top', '  3: d, left, ?-inf, bottom']).errors).not.toEqual([]);
+	});
+
 	it('erreur : on ne cache ni une hauteur ni un côté autour de la double barre', () => {
 		expect(parse(['  3: ||, -inf, ?bottom, +inf, top']).errors).not.toEqual([]);
 		expect(parse(['  3: ||, ?left, -inf, bottom']).errors).not.toEqual([]);
@@ -300,6 +307,16 @@ describe('limite cachée : erreurs prévues et QCM', () => {
 		expect(
 			errorsOf(signes, [{ expectedAnswer: '', expectedErrors: [{ answer: '+', message: ERREUR }] }])
 		).not.toEqual([]);
+	});
+
+	it('revue : l’erreur prévue « ∞ sans signe » (`inf`) est reconnue', () => {
+		const seule = tableau(['  -inf: 2, top', '  3: ||, ?-inf, +inf', '  +inf: 2, bottom']);
+		const inst = generate(seule, [
+			{ expectedAnswer: '', expectedErrors: [{ answer: 'inf', message: 'SANS SIGNE' }] }
+		]);
+		expect(remarks(inst, ['\\infty'])).toContain('SANS SIGNE');
+		expect(cellsOf(inst, ['\\infty'])).not.toContain('correct');
+		expect(remarks(inst, ['-\\infty'])).not.toContain('SANS SIGNE');
 	});
 
 	it('nominal (14) : un tableau à une seule case cachée, avec erreurs prévues, se pose en QCM', () => {
