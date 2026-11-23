@@ -1,11 +1,14 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
 import {
 	calc,
 	card,
+	cardAction,
 	cardLocator,
 	normalizeLatex,
 	openAtelier,
 	allowClipboard,
+	readClipboard,
 	showCards
 } from './helpers/atelier';
 import {
@@ -125,6 +128,28 @@ test('#1422 — valeur exacte sous la barre, π écrit en maths', async ({ page 
 	// Une fraction s'écrit en texte, pas en maths (elle débordait de la ligne)
 	await typeCell(page, 'A4', '=2/3');
 	expect(await readCell(page, 'A4')).toMatchObject({ shown: '2/3', latex: null });
+	// Le nom lu par VoiceOver / TalkBack : la case et sa valeur
+	await expect(cellLocator(page, 'A4')).toHaveAttribute('aria-label', 'A4 : 2/3');
+	// Une formule en maths reste dans la hauteur de sa ligne
+	for (const address of ['A1', 'A2']) {
+		const overflow = await cellLocator(page, address).evaluate(
+			(cell) => cell.scrollHeight - cell.clientHeight
+		);
+		expect(overflow, address).toBeLessThanOrEqual(1);
+	}
+});
+
+test('#1422 — liste à formules : sa carte, et sa suppression quand la grille la cite', async ({
+	page
+}) => {
+	await typeColumn(page, 'A1', ['=1/3', '=2/3', '1']);
+	await nameColumn(page, 'A', 'L');
+	await expect(cardLocator(page, 'L')).toContainText('1/3 ;');
+	await typeCell(page, 'B1', '=A1*2');
+	await cardAction(page, 'L', 'Supprimer');
+	await expect(page.getByRole('alertdialog').or(page.getByRole('dialog'))).toContainText(
+		'1 cellule de la grille la cite'
+	);
 });
 
 test(
@@ -923,3 +948,61 @@ test('grille de Données au téléphone (390 × 659) : des cases à toucher, la 
 	expect(await typeCell(page, 'A1', '12')).toBe('');
 	expect((await readCell(page, 'A1')).shown).toBe('12');
 });
+
+test(
+	'#1411 — coller un tableau de LibreOffice, copier vers un tableur, CSV pour Excel',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		await allowClipboard(page);
+		// Un tableau copié dans LibreOffice ou Excel : texte à tabulations, titres en tête
+		await selectCell(page, 'B1');
+		await page.evaluate(() => {
+			const data = new DataTransfer();
+			data.setData('text/plain', 'Taille\tMasse\n152\t41,5\n160\t48\n');
+			document.activeElement?.dispatchEvent(
+				new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true })
+			);
+		});
+		await expect.poll(() => shownIn(page, 'B2')).toBe('160');
+		expect(await shownIn(page, 'C1')).toBe('41,5');
+		await expect(page.locator('input.titre').nth(1)).toHaveValue('Taille');
+
+		// Vers un tableur : décimaux à virgule
+		await typeCell(page, 'E1', '=1/4');
+		await typeCell(page, 'E2', '=1/3');
+		await selectZone(page, 'C1', 'C2');
+		await page.keyboard.press('ControlOrMeta+C');
+		expect(await readClipboard(page)).toBe('41,5\n48');
+		// Après ⌘C, les flèches marchent encore
+		await selectCell(page, 'C1');
+		await page.keyboard.press('ControlOrMeta+C');
+		await page.keyboard.press('ArrowDown');
+		await expect(cellLocator(page, 'C2')).toHaveClass(/\bactive\b/);
+
+		// Dans la grille, ⌘C puis ⌘V garde la valeur exacte
+		await selectCell(page, 'E2');
+		await page.keyboard.press('ControlOrMeta+C');
+		await selectCell(page, 'F2');
+		await page.keyboard.press('ControlOrMeta+V');
+		await expect.poll(() => shownIn(page, 'F2')).toBe(await shownIn(page, 'E2'));
+		expect((await readCell(page, 'F2')).bar).toBe('=1/3');
+
+		// Taper dans une case puis cliquer ailleurs garde la valeur
+		await selectCell(page, 'G1');
+		await page.locator('#atelier-barre-cellule').fill('7');
+		await cellLocator(page, 'H3').click();
+		await expect.poll(() => shownIn(page, 'G1')).toBe('7');
+
+		// « Télécharger en CSV » : BOM (accents dans Excel), « ; », virgule décimale
+		const [download] = await Promise.all([
+			page.waitForEvent('download'),
+			page.getByRole('button', { name: 'Télécharger en CSV' }).click()
+		]);
+		const path = await download.path();
+		const bytes = await readFile(path);
+		expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+		const text = bytes.subarray(3).toString('utf8');
+		expect(text.split(/\r?\n/)[0]).toContain('Taille;Masse');
+		expect(text).toContain('41,5');
+	}
+);
