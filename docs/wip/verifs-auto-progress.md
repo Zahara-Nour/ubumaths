@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, PR #1337 (`fix/verifs-1337`) ; écarts sortis dans `ecarts-verifs`._
+_Mis à jour le 2026-11-23, après #3045 ; écarts sortis dans `ecarts-verifs`._
 
-- **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). #3037 en prod (v0.104.0). #1536 : la vue garde l'échelle de l'ouverture quand « Mes objets » (ouvert vide au téléphone) se replie au 1er objet et que la toile grandit (242 → 388 px) ; le test visait à l'échelle du moment, il garde désormais celle de l'ouverture (22 verts sur ordi-chrome, iphone, android). #1337 : le test, pas l'appli (au vrai, « Mes objets » se replie seul et la console garde 329 px) ; le test replie « Mes objets » avant de retaper, vert sur ordi-chrome, ordi-safari, iphone, android. Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → #1536 ✅ → #1337 ✅ → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
-- **Prochaine action** : merger la PR #1337, puis rendus WebKit (dont lot 3 iPhone : intermittent ligne 368, courbe absente après `retypeCard` clavier ouvert, en plus de E16), worktree neuf.
+- **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). #3037 en prod (v0.104.0). #1536 : la vue garde l'échelle de l'ouverture quand « Mes objets » (ouvert vide au téléphone) se replie au 1er objet et que la toile grandit (242 → 388 px) ; le test visait à l'échelle du moment, il garde désormais celle de l'ouverture (22 verts sur ordi-chrome, iphone, android). #1337 : le test, pas l'appli (au vrai, « Mes objets » se replie seul et la console garde 329 px) ; le test replie « Mes objets » avant de retaper (#3045), vert sur ordi-chrome, ordi-safari, iphone, android. Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → #1536 ✅ → #1337 ✅ → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
+- **Prochaine action** : rendus WebKit (dont lot 3 iPhone : intermittent ligne 368, courbe absente après `retypeCard` clavier ouvert, en plus de E16), worktree neuf.
 - **En attente de David** : tâche de nuit (après R12). Les écarts à lui présenter (E1…) vivent dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md), chantier à part (`/reprendre ecarts-verifs`).
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets », pas une carte née d'une colonne (`showCards`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne ajoutée à [ecarts-verifs-progress.md](ecarts-verifs-progress.md), pas ici ; un `test:verifs` muet peut être bloqué (2 h 41 le 2026-11-23, cause inconnue) → `--global-timeout`.
-- **Worktree / branche** : `ubumaths-wt-verifs-1337` · `fix/verifs-1337`.
+- **Worktree / branche** : aucun (retiré après #3045).
 
 ## Phase 0 (validée le 2026-10-25)
 
