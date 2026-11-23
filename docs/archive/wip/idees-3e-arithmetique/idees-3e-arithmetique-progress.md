@@ -107,3 +107,4 @@ _Mis à jour le 2026-11-23, chantier clos._
   fraction encore simplifiable passe de ½ point à 0 (`bad_form`, motifs `reducedFractions` et
   `form`) ; l'élève lit « la fraction peut être simplifiée ». Les 4 specs de ½ point réécrites.
 - Migration `20261123170711_…_publies_contenu.sql` ; tests d'intégration verts.
+- #3046 mergée, `db:migrate` fait ; vérifié en prod : options `reducedFractions: strict`, 4 variations.
