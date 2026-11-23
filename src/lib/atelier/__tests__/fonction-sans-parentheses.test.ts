@@ -340,6 +340,38 @@ describe('un nombre collé suivi d’une commande ou d’une parenthèse', () =>
 	});
 });
 
+// E1 (2026-11-23) : le clavier MathLive écrit `\cos2\pi` ; le nombre seul
+// devenait l'argument (π·cos(2), sin(2)·x), sans refus
+describe('touche de fonction suivie d’un nombre puis d’un facteur', () => {
+	it.each([
+		['\\cos2\\pi', '« cos 2 » : écris cos(…) avec des parenthèses.'],
+		['\\cos 2\\pi', '« cos 2 » : écris cos(…) avec des parenthèses.'],
+		['\\sin2x', '« sin 2 » : écris sin(…) avec des parenthèses.'],
+		['\\sin 2x', '« sin 2 » : écris sin(…) avec des parenthèses.'],
+		['\\ln2x', '« ln 2 » : écris ln(…) avec des parenthèses.'],
+		['\\sin2\\theta', '« sin 2 » : écris sin(…) avec des parenthèses.'],
+		['\\sin2(x)', '« sin 2 » : écris sin(…) avec des parenthèses.'],
+		['1+\\tan 0,5x', '« tan 0,5 » : écris tan(…) avec des parenthèses.']
+	])('« %s »', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	// Le nombre seul, ou suivi d'un produit écrit, reste l'argument
+	it.each([
+		['\\cos2', 'cos(2)'],
+		['\\cos 2', 'cos(2)'],
+		['\\cos2+1', '1+cos(2)'],
+		['x\\cos 2', 'cos(2)x'],
+		['\\cos2\\cdot x', 'cos(2)x'],
+		['\\cos\\pi', '-1'],
+		['\\sin x', 'sin(x)'],
+		['\\cos\\left(2\\pi\\right)', '1']
+	])('« %s » reste lu', (text, output) => {
+		const result = runInput(session(), text);
+		expect(result.kind === 'calcul' && result.output).toBe(output);
+	});
+});
+
 describe('ce qui n’est pas une fonction collée reste lu', () => {
 	function calcul(text: string, s: CalcSession = session()) {
 		const result = runInput(s, text);

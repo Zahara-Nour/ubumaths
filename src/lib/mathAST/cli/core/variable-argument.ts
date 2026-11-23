@@ -91,6 +91,17 @@ const BARE_FUNCTION_TAIL =
 const GLUED_FUNCTION =
 	/(?<![A-Za-z\\][A-Za-z]|\\|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(?:(?<numberOnly>\d+(?:[.,]\d+)?)(?=\(|\\(?!(?:right|cdot|times|div|leq?|geq?|neq)(?![A-Za-z]))[A-Za-z])|(?<argument>\d+(?:[.,]\d+)?(?:[A-Za-z]|[α-ωΑ-Ωϑϕ])?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!²³\\]))/g;
 
+/**
+ * Une touche de fonction du clavier MathLive (`\cos`, `\sin`…) suivie d'un
+ * nombre PUIS d'un facteur collé : `\cos2\pi`, `\sin 2x`, `\ln2(x)`. Le parseur
+ * prend le nombre seul pour argument (π·cos(2), sin(2)·x) alors qu'on lit
+ * cos(2π) : refus neutre, comme `numberOnly` (E1, 2026-11-23). Le nombre seul
+ * (`\cos 2`), suivi d'un opérateur ou d'un produit écrit (`\cos2\cdot x`),
+ * reste lu. `\sqrt` n'est pas visé : son argument est entre accolades.
+ */
+const LATEX_FUNCTION_NUMBER =
+	/\\(sin|cos|tan|ln|log|exp)(?![A-Za-z])\s*(\d+(?:[.,]\d+)?)\s*(?=[A-Za-z(α-ωΑ-Ωϑϕπ]|\\(?!(?:right|cdot|times|div|leq?|geq?|neq)(?![A-Za-z]))[A-Za-z])/;
+
 /** Les fonctions hyperboliques : `sinh` n'est pas sin(h). */
 const HYPERBOLIC = /^(?:sin|cos|tan)h$/;
 
@@ -429,13 +440,20 @@ export function bareFunctionRefusal(input: string): string | null {
 function gluedFunction(
 	input: string
 ): { index: number; typed: string; name: string; argument: string | null } | null {
+	let found: { index: number; typed: string; name: string; argument: string | null } | null = null;
 	for (const match of input.matchAll(GLUED_FUNCTION)) {
 		const [typed, name] = match;
 		if (HYPERBOLIC.test(typed)) continue;
 		const argument = match.groups?.argument ?? null;
-		return { index: match.index, typed, name, argument };
+		found = { index: match.index, typed, name, argument };
+		break;
 	}
-	return null;
+	const latex = LATEX_FUNCTION_NUMBER.exec(input);
+	if (latex !== null && (found === null || latex.index < found.index)) {
+		const [, name, number] = latex;
+		return { index: latex.index, typed: `${name} ${number}`, name, argument: null };
+	}
+	return found;
 }
 
 // =============================================================================
