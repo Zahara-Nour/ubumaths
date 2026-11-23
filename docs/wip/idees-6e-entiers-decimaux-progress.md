@@ -6,18 +6,18 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, lot écrit, PR du lot ouverte._
+_Mis à jour le 2026-11-23, après #3044 (et #3042)._
 
-- **État** : lot écrit et vérifié (6 neufs / 18 variations, 23 variations sur 13 publiés) ; essai en base
-  locale fait (6 brouillons locaux, aperçus sans erreur) ; outil `migration-contenu.ts` étendu aux `options`
-  (#3042, décision de David) ; a2ae7206 et d7781eed : `reducedFractions: off` · **Prochaine action** :
-  merge de la PR du lot, puis David lance `create-questions --publier` (neufs-a, neufs-b), puis
-  migrations de rangement et de contenu (`migration-contenu.ts --dir …-publies`, après #3042) ·
-  **Ensuite** : outils n° 54 et n° 53 · **En attente de David** : N5, tableau trop large sur iPhone
-  (colonne « Pourcentage » coupée) · **Pièges en cours** : relancer un script `publies-*.py` réécrit les
-  JSON au format `json.dump` → `pnpm format` sur ses JSON ensuite · **Worktree / branche** :
-  `../ubumaths-wt-idees-6e-entiers-decimaux-lot`, `feat/idees-6e-entiers-decimaux-lot` ; l'ancien worktree
-  `../ubumaths-wt-idees-6e-entiers-decimaux` est à retirer (rien de non poussé).
+- **État** : lot mergé (#3044 : 6 neufs / 18 variations, 23 variations sur 13 publiés, fichiers seuls) ;
+  outil `migration-contenu.ts` étendu aux `options` (#3042) · **Prochaine action** : David lance
+  `create-questions --publier` sur `scripts/questions/idees-6e-entiers-decimaux-neufs-a` et `-neufs-b`
+  (prod) ; puis, worktree neuf : ids commités, migrations de rangement et de contenu
+  (`migration-contenu.ts --dir scripts/questions/idees-6e-entiers-decimaux-publies`), `security-auditor`,
+  relecture dans `/dev/modeles` · **Ensuite** : outils n° 54 et n° 53 · **En attente de David** : N5,
+  tableau trop large sur iPhone (colonne « Pourcentage » coupée) : (a) deux tableaux ou (b) une égalité par
+  ligne (reco b) · **Pièges en cours** : relancer un `publies-*.py` → `pnpm format` sur ses JSON ; euro des
+  specs en `\,\text{€}`, jamais `\euro` (liste blanche) · **Worktree / branche** : aucun ; branche
+  `docs/idees-6e-entiers-decimaux` (journal d'avant le lot, sans PR) à supprimer.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -167,3 +167,5 @@ des modèles de questions.
   sessions idee-3, idee-tale, idee-1re prévenues. F3 v4, v6 et F6 revenus à une case (fiche validée).
 - 2026-11-23 : essai en base locale (6 brouillons), aperçus `pnpm voir` sans erreur ; N5 : colonne
   « Pourcentage » hors de l'écran sur iPhone.
+- 2026-11-23 : #3042 (outil) et #3044 (lot) mergés ; CI du lot rouge une fois : `\euro` dans 4 specs de F10,
+  refusé par la liste blanche des réponses → `\,\text{€}`.
