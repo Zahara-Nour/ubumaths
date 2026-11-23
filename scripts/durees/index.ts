@@ -1,6 +1,6 @@
 /**
- * `pnpm durees` : les durées de la CI, des PR et de la mise en prod
- * =================================================================
+ * `pnpm durees` : les durées de la CI, des PR, de la mise en prod et du Mac mini
+ * ==============================================================================
  *
  * Compare la durée de chaque phase à la référence écrite dans
  * scripts/durees/reference.json, pour voir une phase devenue nettement plus lente.
@@ -22,14 +22,19 @@
  *                                installée deviendrait la normale.
  *
  * Alerte : médiane des dernières 24 heures d'au moins 1,5 fois la référence, sur
- * au moins 5 mesures (mise en prod : les 5 dernières, s'il y en a eu une dans la
- * journée). Une seule PR lente ne déclenche rien.
+ * au moins 5 mesures (mise en prod et suite d'intégration de la nuit : les 5
+ * dernières, s'il y en a eu une dans la journée). Une seule PR lente ne déclenche rien.
  *
- * Sources : les exécutions de quality.yml sur les PR et leurs jobs (GitHub), les
- * PR mergées, et le journal que `pnpm deploy:prod` tient sur le Mac mini
- * (~/.local/state/durees/mises-en-prod.csv). Les jobs d'une exécution finie ne
- * changent plus : ils sont gardés dans ~/.local/state/durees/runs-v1/, seules
- * les exécutions nouvelles sont lues chez GitHub.
+ * Sources :
+ *   - GitHub : les exécutions de quality.yml sur les PR et leurs jobs, les PR
+ *     mergées, les exécutions de nightly-integration.yml (la nuit et sur les PR ;
+ *     seule une suite entière compte) ;
+ *   - le Mac mini, sous ~/.local/state/durees/ : `mises-en-prod.csv`, tenu par
+ *     `pnpm deploy:prod`, et `local.csv`, où `check:incremental`, `test:server`,
+ *     `test:client`, `test:integration`, le pre-push et `pnpm pr:merger` notent
+ *     leur durée quand ils sont verts et ont tout joué (scripts/durees/noter.sh).
+ * Les jobs d'une exécution finie ne changent plus : ils sont gardés dans
+ * ~/.local/state/durees/runs-v1/, seules les exécutions nouvelles sont lues chez GitHub.
  *
  * Sorties : 0 fait · 1 erreur (GitHub illisible, référence absente).
  * Règles et tests : logique.ts, scripts/__tests__/durees.test.ts.
@@ -43,11 +48,14 @@ import { fileURLToPath } from 'node:url';
 import {
 	comparer,
 	estComplete,
+	estRare,
 	lireArguments,
+	lireJournalLocal,
 	lireJournalProd,
 	lireReference,
 	mesuresDeLaPr,
 	mesuresDuRun,
+	mesuresIntegration,
 	messageAlerte,
 	nouvelleReference,
 	tableau,
@@ -75,6 +83,12 @@ const ETAT = process.env.DUREES_ETAT ?? join(homedir(), '.local/state/durees');
 /** `v1` : à changer si `mesuresDuRun` change, les mesures gardées seraient fausses. */
 const CACHE = join(ETAT, 'runs-v1');
 const JOURNAL_PROD = join(ETAT, 'mises-en-prod.csv');
+/** Tenu par scripts/durees/noter.sh. */
+const JOURNAL_LOCAL = join(ETAT, 'local.csv');
+const CHAMPS_RUN =
+	'databaseId,event,headBranch,headSha,conclusion,status,attempt,createdAt,updatedAt';
+/** La suite de la nuit : une par jour, on lit les dernières quel que soit leur âge. */
+const NUITS_LUES = 10;
 /** Le canal de la surveillance du Mac mini (scripts/surveillance-machine.sh). */
 const CANAL =
 	process.env.DUREES_CANAL ?? join(homedir(), '.config/surveillance-machine/ntfy-topic');
@@ -136,9 +150,43 @@ function lireRuns(depuis: string): Run[] {
 		'--limit',
 		'2000',
 		'--json',
-		'databaseId,headBranch,headSha,conclusion,status,attempt,createdAt,updatedAt'
+		CHAMPS_RUN
 	);
 	return JSON.parse(sortie) as Run[];
+}
+
+/**
+ * Les exécutions de nightly-integration.yml : celles des PR créées depuis
+ * `depuis` (AAAA-MM-JJ), et les dernières de la nuit.
+ */
+function lireRunsIntegration(depuis: string): Run[] {
+	const lister = (...filtre: string[]) =>
+		JSON.parse(
+			gh('run', 'list', '--workflow', 'nightly-integration.yml', ...filtre, '--json', CHAMPS_RUN)
+		) as Run[];
+	return [
+		...lister('--event', 'pull_request', '--created', `>=${depuis}`, '--limit', '2000'),
+		...lister('--event', 'schedule', '--limit', String(NUITS_LUES))
+	];
+}
+
+function lireJobs(run: Run): Job[] {
+	return gh(
+		'api',
+		'--paginate',
+		`repos/{owner}/{repo}/actions/runs/${run.databaseId}/jobs?per_page=100`,
+		'--jq',
+		'.jobs[]'
+	)
+		.split('\n')
+		.filter(Boolean)
+		.map((ligne) => JSON.parse(ligne) as Job);
+}
+
+/** Écrit à côté puis renommé : une écriture interrompue ne laisse pas un fichier tronqué. */
+function garder(fichier: string, lu: RunLu): void {
+	writeFileSync(`${fichier}.tmp`, JSON.stringify(lu));
+	renameSync(`${fichier}.tmp`, fichier);
 }
 
 /** Les mesures d'une exécution finie, lues chez GitHub la première fois seulement. */
@@ -146,22 +194,20 @@ function lireRun(run: Run): RunLu {
 	const fichier = join(CACHE, `${run.databaseId}-${run.attempt}.json`);
 	const garde = lireCache(fichier);
 	if (garde !== null) return garde;
-	const sortie = gh(
-		'api',
-		'--paginate',
-		`repos/{owner}/{repo}/actions/runs/${run.databaseId}/jobs?per_page=100`,
-		'--jq',
-		'.jobs[]'
-	);
-	const jobs = sortie
-		.split('\n')
-		.filter(Boolean)
-		.map((ligne) => JSON.parse(ligne) as Job);
+	const jobs = lireJobs(run);
 	const lu: RunLu = { complete: estComplete(run, jobs), mesures: mesuresDuRun(run, jobs) };
-	// Écrit à côté puis renommé : une écriture interrompue ne laisse pas un fichier tronqué.
-	writeFileSync(`${fichier}.tmp`, JSON.stringify(lu));
-	renameSync(`${fichier}.tmp`, fichier);
+	garder(fichier, lu);
 	return lu;
+}
+
+/** Pareil pour une exécution finie de la suite d'intégration (`complete` = suite entière). */
+function lireRunIntegration(run: Run): Mesure[] {
+	const fichier = join(CACHE, `integration-${run.databaseId}-${run.attempt}.json`);
+	const garde = lireCache(fichier);
+	if (garde !== null) return garde.mesures;
+	const mesures = mesuresIntegration(run, lireJobs(run));
+	garder(fichier, { complete: mesures.length > 0, mesures });
+	return mesures;
 }
 
 function lirePrMergees(depuis: string): PrMergee[] {
@@ -181,9 +227,9 @@ function lirePrMergees(depuis: string): PrMergee[] {
 }
 
 /**
- * Les mesures de la CI et des PR prises depuis `depuis` (ISO 8601), et TOUTES
- * celles de la mise en prod : elle est trop rare pour une fenêtre de 7 jours, la
- * règle lit ses 5 dernières (`comparer` écarte ce qui précède la référence).
+ * Les mesures de la CI, des PR et du Mac mini prises depuis `depuis` (ISO 8601),
+ * et TOUTES celles des phases rares (mise en prod, suite de la nuit) : la règle
+ * lit leurs 5 dernières (`comparer` écarte ce qui précède la référence).
  */
 function lireMesures(depuis: string): Mesure[] {
 	mkdirSync(CACHE, { recursive: true });
@@ -198,9 +244,16 @@ function lireMesures(depuis: string): Mesure[] {
 		mesures.push(...lu.mesures);
 	}
 	for (const pr of lirePrMergees(jour)) mesures.push(...mesuresDeLaPr(pr, runs, completes));
+	for (const run of lireRunsIntegration(jour)) {
+		// Une exécution rouge, annulée ou relancée n'est jamais une mesure : pas lue.
+		if (run.status !== 'completed' || run.conclusion !== 'success' || run.attempt !== 1) continue;
+		mesures.push(...lireRunIntegration(run));
+	}
 	if (existsSync(JOURNAL_PROD))
 		mesures.push(...lireJournalProd(readFileSync(JOURNAL_PROD, 'utf8')));
-	return mesures.filter((m) => m.phase.startsWith('prod:') || m.date >= depuis);
+	if (existsSync(JOURNAL_LOCAL))
+		mesures.push(...lireJournalLocal(readFileSync(JOURNAL_LOCAL, 'utf8')));
+	return mesures.filter((m) => estRare(m.phase) || m.date >= depuis);
 }
 
 /** Le plus récent de : la date de la référence, il y a `jours` jours. */
@@ -224,7 +277,7 @@ async function envoyer(message: string): Promise<void> {
 function refaireLaReference(depuisDemande: string | undefined): void {
 	const ancienne = chargerReference();
 	const depuis = depuisDemande ?? fenetre(ancienne, 7);
-	// Mise en prod : depuis la date demandée, sinon depuis celle de la référence (pas 7 jours).
+	// Phases rares : depuis la date demandée, sinon depuis celle de la référence (pas 7 jours).
 	const depuisProd = depuisDemande ?? ancienne.depuis;
 	const { reference, gardees } = nouvelleReference(
 		ancienne,

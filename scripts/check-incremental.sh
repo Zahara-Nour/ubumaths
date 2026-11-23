@@ -109,6 +109,8 @@ fi
 # Timestamped BEFORE the run, so a file edited *during* the run still counts as
 # newer than the marker and is not silently swallowed by guard 3.
 touch "$state_dir/run-started"
+# Début du vrai passage, pour `pnpm durees` : un rejeu (garde 3) n'est pas une mesure.
+debut_durees=$(date +%s)
 
 # FRESH=1 → drop svelte-check's transpile cache (cures ghosts) and force a sync.
 if [ "${FRESH:-0}" = "1" ]; then
@@ -222,4 +224,8 @@ printf '%s\n' "$report"
 printf '%s\n' "$report" >"$last_output"
 echo "$status" >"$last_status"
 mv -f "$state_dir/run-started" "$marker"
+# Durée d'un passage vert, pour `pnpm durees` (ne peut pas faire échouer : cf. noter.sh).
+if [ "$status" -eq 0 ]; then
+	bash "$(dirname "${BASH_SOURCE[0]}")/durees/noter.sh" check-incremental "$debut_durees"
+fi
 exit "$status"

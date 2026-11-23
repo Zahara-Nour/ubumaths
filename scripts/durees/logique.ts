@@ -2,16 +2,22 @@
  * `pnpm durees` : les règles (pures, testées dans scripts/__tests__/durees.test.ts)
  * ===============================================================================
  *
- * Ce que GitHub dit des exécutions de quality.yml et des PR, ce que
- * `pnpm deploy:prod` a noté, et ce que la commande en conclut. Aucun appel à
- * `gh` ni au disque ici : cf. index.ts.
+ * Ce que GitHub dit des exécutions de quality.yml, de nightly-integration.yml
+ * et des PR, ce que `pnpm deploy:prod` et les commandes du Mac mini ont noté, et
+ * ce que la commande en conclut. Aucun appel à `gh` ni au disque ici : cf. index.ts.
  *
  * Une « phase » se nomme :
  *   - `ci`                      la CI entière d'une PR de code ;
  *   - `pr`                      de l'ouverture au merge, PR à un seul push ;
  *   - `job:<nom du job>`        un job de quality.yml ;
  *   - `etape:<job> / <étape>`   une étape suivie (ETAPES_SUIVIES) ;
- *   - `prod:<étape>`            une étape de `pnpm deploy:prod`.
+ *   - `integration:nuit`        la suite d'intégration entière, la nuit ;
+ *   - `integration:pr`          la suite d'intégration entière, sur une PR ;
+ *   - `prod:<étape>`            une étape de `pnpm deploy:prod` ;
+ *   - `local:<commande>`        une commande du Mac mini (scripts/durees/noter.sh).
+ *
+ * Une phase « rare » (au plus une mesure par jour : mise en prod, suite de la
+ * nuit) ne peut pas réunir 5 mesures en 24 heures : `estRare`.
  */
 
 import { z } from 'zod';
@@ -20,9 +26,11 @@ import { z } from 'zod';
 // Types
 // ============================================================================
 
-/** Une exécution de quality.yml, telle que `gh run list --json` la rend. */
+/** Une exécution d'un workflow, telle que `gh run list --json` la rend. */
 export type Run = {
 	databaseId: number;
+	/** `pull_request`, `schedule`… Lu pour nightly-integration.yml seulement. */
+	event?: string;
 	headBranch: string;
 	headSha: string;
 	conclusion: string | null;
@@ -101,6 +109,15 @@ export const SEUIL = 1.5;
 export const MESURES_MIN = 5;
 /** Sous 20 s, une phase n'entre pas dans la référence : 4 s contre 6 s n'est que du bruit. */
 export const PLANCHER_S = 20;
+/**
+ * Sur le Mac mini, pas d'attente d'un runner : `check:incremental` dure 18 s et
+ * 27 s y serait un vrai signal. Le plancher y est plus bas.
+ */
+export const PLANCHER_LOCAL_S = 5;
+/** La suite d'intégration entière tourne en 4 morceaux (nightly-integration.yml, job `portee`). */
+export const MORCEAUX_SUITE_ENTIERE = 4;
+/** Étape du job « Integration scope » jouée seulement quand aucune liste de tests n'est retenue. */
+export const ETAPE_SUITE_COMPLETE = 'Tests de migration de données laissés de côté';
 
 /** Les seules étapes suivies à part de leur job. */
 export const ETAPES_SUIVIES = new Set([
@@ -119,6 +136,14 @@ const SCHEMA_REFERENCE = z.object({
 const LIBELLES: Record<string, string> = {
 	ci: 'CI entière (PR de code)',
 	pr: 'Ouverture → merge (un push)',
+	'integration:nuit': 'Tests d’intégration : suite entière, la nuit',
+	'integration:pr': 'Tests d’intégration : suite entière, sur une PR',
+	'local:check-incremental': 'Mac mini : check:incremental',
+	'local:test-server': 'Mac mini : test:server (suite entière)',
+	'local:test-client': 'Mac mini : test:client (suite entière)',
+	'local:test-integration': 'Mac mini : test:integration (suite entière)',
+	'local:pre-push': 'Mac mini : pre-push',
+	'local:pr-merger': 'Mac mini : pr:merger (attente de la CI comprise)',
 	'prod:ci-version': 'Mise en prod : CI de la version',
 	'prod:vercel': 'Mise en prod : construction Vercel',
 	'prod:bascule': 'Mise en prod : bascule du site'
@@ -177,8 +202,19 @@ export function formaterDuree(secondes: number): string {
 	return reste === 0 ? `${minutes} min` : `${minutes} min ${String(reste).padStart(2, '0')}`;
 }
 
+/** Vrai pour une phase mesurée au plus une fois par jour : mise en prod, suite de la nuit. */
+export function estRare(phase: string): boolean {
+	return phase.startsWith('prod:') || phase === 'integration:nuit';
+}
+
+/** La durée sous laquelle une phase n'entre pas dans la référence. */
+function plancher(phase: string): number {
+	return phase.startsWith('local:') ? PLANCHER_LOCAL_S : PLANCHER_S;
+}
+
 export function libelle(phase: string): string {
 	if (LIBELLES[phase]) return LIBELLES[phase];
+	if (phase.startsWith('local:')) return `Mac mini : ${phase.slice(6)}`;
 	if (phase.startsWith('job:')) return phase.slice(4);
 	if (phase.startsWith('etape:'))
 		return `  dont ${phase.slice(6).split(' / ')[1] ?? phase.slice(6)}`;
@@ -238,6 +274,72 @@ export function mesuresDeLaPr(pr: PrMergee, runs: Run[], completes: Set<number>)
 	return duree === null ? [] : [{ phase: 'pr', secondes: duree, date: pr.mergedAt }];
 }
 
+/**
+ * La suite d'intégration (nightly-integration.yml) : une mesure seulement quand
+ * elle a tout joué. Sur une PR, le job `portee` ne retient souvent que les tests
+ * touchés (un seul morceau), ou aucun (passage déjà vert, aucun test atteint :
+ * l'étape des tests est sautée) : ces exécutions ne comptent pas. Une PR à plus
+ * de 40 tests touchés tourne aussi en 4 morceaux : la suite complète se reconnaît
+ * à l'étape ETAPE_SUITE_COMPLETE du job de portée, sautée dès qu'une liste de
+ * tests est retenue. La nuit, tous
+ * les tests ; sur une PR, la suite sans les tests de migration de données : deux
+ * phases. Une exécution lancée à la main n'est pas comptée.
+ */
+export function mesuresIntegration(run: Run, jobs: Job[]): Mesure[] {
+	if (run.status !== 'completed' || run.conclusion !== 'success' || run.attempt !== 1) return [];
+	const phase =
+		run.event === 'schedule'
+			? 'integration:nuit'
+			: run.event === 'pull_request'
+				? 'integration:pr'
+				: null;
+	if (phase === null) return [];
+	const morceaux = jobs.filter(
+		(j) =>
+			j.name.endsWith(`/${MORCEAUX_SUITE_ENTIERE})`) &&
+			j.name.startsWith('Integration tests (shard ')
+	);
+	const joues = morceaux.filter(
+		(j) =>
+			j.conclusion === 'success' &&
+			(j.steps ?? []).some(
+				(e) => e.name.startsWith('Run integration tests') && e.conclusion === 'success'
+			)
+	);
+	if (morceaux.length !== MORCEAUX_SUITE_ENTIERE || joues.length !== MORCEAUX_SUITE_ENTIERE)
+		return [];
+	const complete = jobs.some(
+		(j) =>
+			j.name === 'Integration scope' &&
+			(j.steps ?? []).some(
+				(e) => e.name.startsWith(ETAPE_SUITE_COMPLETE) && e.conclusion === 'success'
+			)
+	);
+	if (!complete) return [];
+	const duree = secondesEntre(run.createdAt, run.updatedAt);
+	return duree === null ? [] : [{ phase, secondes: duree, date: run.createdAt }];
+}
+
+/**
+ * Le journal du Mac mini (scripts/durees/noter.sh) : `date;commande;secondes`,
+ * une ligne par commande verte qui a tout joué.
+ */
+export function lireJournalLocal(texte: string): Mesure[] {
+	const lues: Mesure[] = [];
+	for (const ligne of texte.split('\n')) {
+		const [date, commande, secondes] = ligne.split(';');
+		if (
+			!date ||
+			!/^[a-z0-9-]+$/.test(commande ?? '') ||
+			!/^\d+$/.test(secondes ?? '') ||
+			Number.isNaN(Date.parse(date))
+		)
+			continue;
+		lues.push({ phase: `local:${commande}`, secondes: Number(secondes), date });
+	}
+	return lues;
+}
+
 /** Le journal de `pnpm deploy:prod` : `date;version;étape;secondes`, une ligne par étape. */
 export function lireJournalProd(texte: string): Mesure[] {
 	const lues: Mesure[] = [];
@@ -251,24 +353,27 @@ export function lireJournalProd(texte: string): Mesure[] {
 }
 
 /**
- * Les mesures « du jour » d'une phase. CI et PR : les dernières 24 heures. Mise
- * en prod (rare) : les 5 dernières, et seulement si la plus récente a moins de
- * 24 heures, pour ne pas répéter la même alerte chaque nuit.
+ * Les mesures « du jour » d'une phase. CI, PR, Mac mini : les dernières 24 heures.
+ * Phase rare (mise en prod, suite de la nuit) : les 5 dernières, et seulement si
+ * la plus récente a moins de 24 heures, pour ne pas répéter la même alerte chaque nuit.
  */
 function duJour(phase: string, mesures: Mesure[], maintenant: Date): Mesure[] {
 	const limite = new Date(maintenant.getTime() - JOUR_MS).toISOString();
-	if (!phase.startsWith('prod:')) return mesures.filter((m) => m.date >= limite);
+	if (!estRare(phase)) return mesures.filter((m) => m.date >= limite);
 	const dernieres = [...mesures].sort((a, b) => a.date.localeCompare(b.date)).slice(-MESURES_MIN);
 	return dernieres.length > 0 && dernieres[dernieres.length - 1].date >= limite ? dernieres : [];
 }
 
 function rang(phase: string): string {
-	// CI entière et PR en tête, puis les jobs (leurs étapes juste dessous), puis la mise en prod.
+	// CI entière et PR en tête, puis les jobs (leurs étapes juste dessous), puis les
+	// tests d'intégration, la mise en prod, le Mac mini.
 	if (phase === 'ci') return '0';
 	if (phase === 'pr') return '1';
 	if (phase.startsWith('job:')) return `2${phase.slice(4)}`;
 	if (phase.startsWith('etape:')) return `2${phase.slice(6).split(' / ')[0]} /`;
-	return `3${phase}`;
+	if (phase.startsWith('integration:')) return `3${phase}`;
+	if (phase.startsWith('local:')) return `5${phase}`;
+	return `4${phase}`;
 }
 
 /** Une ligne par phase de la référence ou mesurée, la journée et les 7 jours face à la référence. */
@@ -300,7 +405,7 @@ export function comparer(mesures: Mesure[], reference: Reference, maintenant: Da
 		});
 	// Trop courte pour entrer un jour dans la référence (« CI Summary », 4 s) : pas montrée.
 	return lignes.filter(
-		(l) => l.reference !== null || (l.semaine ?? l.jour ?? PLANCHER_S) >= PLANCHER_S
+		(l) => l.reference !== null || (l.semaine ?? l.jour ?? plancher(l.phase)) >= plancher(l.phase)
 	);
 }
 
@@ -344,9 +449,10 @@ export function tableau(lignes: Ligne[]): string {
 
 /**
  * La référence refaite sur les mesures prises depuis `depuis` : médiane de chaque
- * phase qui a au moins 5 mesures (et dure au moins 20 s). Les autres gardent
- * leur valeur ; `gardees` les nomme. `depuisProd` : la même date pour la mise en
- * prod, trop rare pour tenir dans la fenêtre de la CI.
+ * phase qui a au moins 5 mesures (et dure au moins 20 s, 5 s sur le Mac mini).
+ * Les autres gardent leur valeur ; `gardees` les nomme. `depuisProd` : la même
+ * date pour les phases rares (mise en prod, suite de la nuit), qui ne tiennent
+ * pas dans la fenêtre de la CI.
  */
 export function nouvelleReference(
 	ancienne: Reference,
@@ -354,15 +460,13 @@ export function nouvelleReference(
 	depuis: string,
 	depuisProd: string = depuis
 ): { reference: Reference; gardees: string[] } {
-	const lisibles = mesures.filter(
-		(m) => m.date >= (m.phase.startsWith('prod:') ? depuisProd : depuis)
-	);
+	const lisibles = mesures.filter((m) => m.date >= (estRare(m.phase) ? depuisProd : depuis));
 	const phases: Record<string, number> = { ...ancienne.phases };
 	const gardees: string[] = [];
 	for (const phase of new Set([...Object.keys(ancienne.phases), ...lisibles.map((m) => m.phase)])) {
 		const valeurs = lisibles.filter((m) => m.phase === phase).map((m) => m.secondes);
 		const milieu = mediane(valeurs);
-		if (valeurs.length >= MESURES_MIN && milieu !== null && milieu >= PLANCHER_S)
+		if (valeurs.length >= MESURES_MIN && milieu !== null && milieu >= plancher(phase))
 			phases[phase] = milieu;
 		else if (phase in ancienne.phases) gardees.push(phase);
 	}
