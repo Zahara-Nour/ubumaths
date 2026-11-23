@@ -6,15 +6,15 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, outil n° 54 lancé._
+_Mis à jour le 2026-11-23, outil n° 54 livré (#3052)._
 
 - **État** : rubrique 6N1 PUBLIÉE (6 neufs, 23 variations sur 13 publiés, relecture validée) · **Prochaine
   action** : l'outil n° 54 (droite graduée avec zoom) vit dans son chantier
-  [droite-zoom](droite-zoom-progress.md) (phase 0 validée, PR 1 l'outil, PR 2 les modèles 6N1H-3 et
+  [droite-zoom](droite-zoom-progress.md) (outil mergé, #3052 ; reste la PR 2, les modèles 6N1H-3 et
   6N1H-4) ; puis outil n° 53 (labyrinthe), phase 0 d'abord ; puis verser ce journal en archive ·
   **En attente de David** : renommer N5 (c178356b) dans l'éditeur en « Écrire un nombre en décimal, en
   fraction et en pourcentage » (écriture en prod, la sienne) · **Pièges en cours** : aucun ·
-  **Worktree / branche** : `ubumaths-wt-droite-zoom` / `feat/droite-zoom`.
+  **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
