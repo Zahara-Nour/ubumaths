@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3031._
+_Mis à jour le 2026-11-23, après #3031 et la phase 0 de R6._
 
-- **État** : lot 10 mergé (#3031) ; liste à 391 lignes non cochées (418 le matin). Rouges connus de `test:verifs` : `each_key_duplicate` (#1674, #1703, #1620), #1369 ; #2731 (carnet) instable.
-- **Prochaine action** : présenter à David les 10 écarts du § « Lot 10 rejoué », un par un ; puis le découpage de la suite (R6, R13, R12, tri des 391 lignes) — ne rien coder avant sa validation de l'ordre.
-- **En attente de David** : les écarts (écart 1/10, #1369, posé) ; phase 0 de R6 (§ « R6 »).
+- **État** : lot 10 mergé (#3031) ; liste à 391 lignes. Ordre validé : R6 → tri des lignes → R12 → R13. Phase 0 de R6 validée (§ « R6 ») : 5 projets + Firefox 390 px partiel, `test:verifs:tout`.
+- **Prochaine action** : coder R6 dans un worktree neuf `ubumaths-wt-verifs-auto-r6` (branche `test/verifs-auto-r6`) : projets dans `playwright.verifs.config.ts` (et captures téléphone), marquage « bureau seulement », garde moteur absent, durées avant / après, PR + revue `code-reviewer` Sonnet.
+- **En attente de David** : écart 1/10 (#1369, `cos2π` lu π·cos(2)) — corriger ou laisser ; puis écarts 2 à 10 (§ « Lot 10 rejoué ») un par un ; tâche de nuit à confirmer (après R12).
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; étapes de « Comment ? » chargées à la demande ; ligne de console longue → `shootLine` ; une ligne de la liste peut être périmée par une décision postérieure : chercher la décision avant de crier à l'écart ; ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : aucun (retiré après #3031).
 
@@ -164,9 +164,10 @@ David : « les captures et résultats du 26 octobre sont périmés », « juge l
 
 David : « tu parles de Safari mais pas des autres navigateurs », puis « pars sur les trois projets ». Sur iPhone, tous les navigateurs utilisent WebKit ; sur Android, Chrome / Samsung / Edge utilisent Chromium, Firefox utilise Gecko (Playwright ne simule pas le toucher de Firefox Android).
 
-- **Décision** : `pnpm test:verifs` en trois projets de plus que le bureau : **iPhone + WebKit** (toute la suite), **Android + Chromium** (toute la suite), **Firefox à 390 px** (sous-ensemble : clavier MathLive, graphiques, constructions).
+- **Décision (révisée, David « et le cas du desktop ? » puis « je valide »)** : cinq projets, toute la suite : **ordinateur Chrome/Edge** (Chromium, l'actuel), **ordinateur Safari** (WebKit), **ordinateur Firefox** (Gecko), **iPhone** (WebKit), **Android** (Chromium) ; plus **Firefox à 390 px** sur un sous-ensemble (clavier MathLive, graphiques, constructions).
+- **Comportements validés (phase 0)** : `--project <nom>` pour un seul navigateur ; test sans sens au téléphone (`Ctrl+D`, survol) marqué « bureau seulement », sauté ailleurs, attendu jamais changé ; rouge propre à un moteur = écart soumis à David (candidat : verso de carte retournée en miroir sous WebKit, vu par `pnpm voir`) ; moteur absent → arrêt avec la ligne d'installation ; durées avant / après dans la PR ; R6 ne sort aucune ligne de la liste, le tri s'en servira.
+- **Jour / nuit (David : « lancer la suite complète la nuit »)** : le jour, `pnpm test:verifs` = ordinateur Chrome seul (ou `--project`) ; `pnpm test:verifs:tout` = tous les projets. Tâche de nuit sur le Mac mini (`test:verifs:tout` sur `main`, base locale, notification seulement d'un rouge nouveau) : après R12, dont elle prend le filtre — à confirmer par David.
 - **Ordre du découpage validé** (David, 2026-11-23, « je valide ») : R6 → tri des 391 lignes par paquets d'environ 50 (les plus anciennes d'abord) → R12 → R13.
-- **Phase 0 de R6 (comportements)** : soumise à David le 2026-11-23, en attente.
 
 ## Plan d'ensemble
 
