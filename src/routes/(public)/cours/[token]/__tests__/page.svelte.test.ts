@@ -49,7 +49,7 @@ function donnees() {
 									document: {
 										id: 'doc-1',
 										title: 'Polycopié',
-										description: null,
+										description: 'À lire avant le cours',
 										sourceType: 'upload' as const,
 										mimeType: 'application/pdf',
 										fileSize: 1200,
@@ -125,6 +125,32 @@ describe('/cours/[token]', () => {
 		for (const href of hrefs(container as HTMLElement)) {
 			expect(href).not.toMatch(/\/dashboard|\/exercises|\/api\/documents|\/revision/);
 		}
+	});
+
+	it('niveau connu : en toutes lettres, jamais le code brut', async () => {
+		const data = donnees();
+		data.course.classGrade = '1_SPE';
+		const { container } = await render(Page, { data });
+		const texte = container.textContent!.replace(/\s+/g, ' ');
+		expect(texte).toContain('4e B · 1ère spécialité maths');
+		expect(texte).not.toContain('1_SPE');
+	});
+
+	it('hiérarchie : chapitre en h2, section en h3, documents en lignes sans titre HTML', async () => {
+		const { container } = await render(Page, { data: donnees() });
+		const titres = (tag: string) =>
+			[...container.querySelectorAll(tag)].map((h) => h.textContent!.trim());
+		expect(titres('h2')).toContain('Fractions');
+		expect(titres('h3')).toContain('Le cours');
+		// Le titre d'un document n'est pas un titre : la règle globale `main h3` le
+		// grossirait à la taille d'une section.
+		const lien = container.querySelector(`a[href="/cours/${JETON}/document/doc-1"]`);
+		expect(lien).not.toBeNull();
+		expect(lien!.closest('ul')).not.toBeNull();
+		expect(lien!.querySelector('h1, h2, h3, h4, h5, h6')).toBeNull();
+		// Ni type ni taille sous le titre ; la description du professeur, si.
+		expect(lien!.textContent).toContain('À lire avant le cours');
+		expect(lien!.textContent).not.toMatch(/Ko|KB|1200/);
 	});
 
 	it('sans chapitre : un message, pas une page vide', async () => {
