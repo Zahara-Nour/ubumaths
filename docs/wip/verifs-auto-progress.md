@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, tri du paquet 1 en cours (aucune PR ouverte)._
+_Mis à jour le 2026-11-24, paquet 1 du tri fini (PR à ouvrir)._
 
-- **État** : grille → #1536 → #1337 → rouges WebKit (#3053) → #1469 (#3056) ✅ ; **tri des 391 lignes en cours, paquet 1 (13-16 octobre, 53 lignes)** : 34 sorties, 3 restent, 6 écarts E21-E26, 16 lignes fiches/PDF chez un agent (cf. § Tri — paquet 1). Puis R12 → R13 (ordre validé).
-- **Prochaine action** : récupérer le travail de l'agent des fiches (fichiers NON commités : `e2e/verifs/fiches.spec.ts`, `helpers/fiches.ts` = 16 lignes fiches/PDF ; PNG dans `.captures/verifs/fiches/`) : rejouer, juger, verdict par ligne ; puis retirer les lignes sorties de `verifications-manuelles.md` (rien n'y est encore retiré), réécrire #1385, #1450, #1451/#1452 ; revue `code-reviewer` (Sonnet) ; PR. Puis paquet 2 (17-21 octobre).
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E26 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; barre de mise en forme qui saute de 37 px (§ #1469) : la stabiliser ou non ?
-- **Pièges en cours** : `--output=<dossier>` par lancement ; `--workers 4` ; `networkidle` avant un clic juste après `goto` (bouton pas hydraté) ; changement de compte = rechargement de page (WebKit coupe la navigation suivante) ; `ls` est un alias (`/bin/ls`) ; base locale = conteneur `supabase_db_ubumaths` (jamais `-test`) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-tri`, `test/verifs-tri` (1 commit de tests + journal), serveur de dev 5178 lancé par la session. Reste aussi `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+- **État** : grille → #1536 → #1337 → rouges WebKit (#3053) → #1469 (#3056) ✅ ; **tri des 391 lignes : paquet 1 (13-16 octobre) fini** : 47 lignes retirées, 6 réduites (344 restent), écarts E21 à E27. Puis paquets suivants, R12, R13 (ordre validé).
+- **Prochaine action** : revue `code-reviewer` (Sonnet) des tests du paquet 1, PR `test/verifs-tri`, merge ; puis paquet 2 (lignes du 17 au 21 octobre), worktree neuf.
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E27 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; barre de mise en forme qui saute de 37 px (§ #1469) : la stabiliser ou non ?
+- **Pièges en cours** : `--output=<dossier>` par lancement ; `--workers 4` ; `networkidle` avant un clic juste après `goto` ; changement de compte = rechargement (WebKit coupe la navigation suivante) ; `fiches.spec.ts` remet son décor à zéro : jamais deux lancements en même temps ; base locale = `supabase_db_ubumaths` (jamais `-test`) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-tri`, `test/verifs-tri`, serveur de dev 5178. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
 
 ## Tri — paquet 1 : lignes du 13 au 16 octobre (2026-11-23)
 
@@ -19,7 +19,9 @@ _Mis à jour le 2026-11-23, tri du paquet 1 en cours (aucune PR ouverte)._
 - **Sorties à l'œil de la session** : #1415 (±600 : plus aucune asymptote, étiquettes en fractions dans leur boîte), #1442 (vue Graphe au téléphone), #1375 (étapes clair et sombre, iPhone). #1421 mesuré : la case suit dès l'image suivante, aucune tâche longue.
 - **Sorties avec un écart** (dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md)) : #1294 → E21 (aucune énigme publiée en prod, la tâche tourne) ; #1388 → E22 (croix « Fermer » 16 px), E23 (consigne coupée au téléphone), E24 (clavier MathLive sur le champ de la console) ; #1377 → E25 (exemple fixe « 2x × 3 = 6x ») ; #1358 → E26 (cadres décalés au toucher sur `/demo/structure`).
 - **Sorties par l'agent chapitres/figures, rejouées par la session (5 verts)** : #1341 (`figures.spec.ts`), #1387, #1390/#1392, #1394 (`chapitres.spec.ts`, données « Verifs … » créées puis effacées ; PDF orphelins dans le stockage local).
-- **Restent** : #1385 (vrai clavier d'iPhone) ; #1450, #1451/#1452 (fiches T_COMP toujours en brouillon en prod, retouchées le 2026-11-22 : relecture du contenu et publication = David).
+- **Sorties par l'agent fiches, rejouées par la session (19 verts, `fiches.spec.ts`)** : #1280→#1297 (polices du corrigé lues par poppler, image vue), #1344, #1352, #1370, #1379, #1386, #1396, #1428, #1429, #1433/#1438, #1441/#1443, #1445/#1446, #1454, #1457 (prof). **Périmé par l'ADR 0030** (`cd714d6170`, 2026-10-15) : numérotation romaine, case « afficher les points », styles Contrôle/Examen/Devoirs/Quiz ; le test suit la décision. Écart E27 : titre d'exercice à formule brut chez l'élève.
+- **Réduites, faisables par la session plus tard** : #1348 (lot ZIP par élève), #1389/#1396 (cahier de texte partagé, page à jeton).
+- **Restent pour David** : #1457 (PDF 18 pt imprimé) ; #1385 (vrai clavier d'iPhone) ; #1450, #1451/#1452 (fiches T_COMP toujours en brouillon en prod, retouchées le 2026-11-22 : relecture du contenu et publication = David).
 - **Remarque** : iPhone 15, Atelier vide, console ouverte : l'historique n'a qu'environ 120 px de haut (une étape à la fois).
 
 ## #1469 sous Firefox (2026-11-23)
