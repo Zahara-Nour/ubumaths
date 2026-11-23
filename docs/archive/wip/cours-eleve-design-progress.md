@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-23, après #3058._
 
-- **État** : code, tests, doc faits sur la branche ; PR à ouvrir · **Prochaine action** : PR, CI, merge, puis archiver ce journal · **En attente de David** : son avis sur le rendu en prod (après une mise en prod qu'il demandera) · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-cours-eleve-design` / `feat/cours-eleve-design`
+- **État** : chantier clos, #3058 mergée, journal archivé · **Prochaine action** : aucune · **En attente de David** : mise en prod quand il le voudra, puis son avis sur le rendu réel · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Demande (2026-11-23)
 
