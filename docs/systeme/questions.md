@@ -1277,7 +1277,10 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    `submitEvaluationAttempt`) ; illisible → 400, rien d'écrit.
 1. **Bouton « impossible »** (case à `impossibleLabel`) : jugé en premier, sans rien lire ;
    l'attendue `impossible` n'atteint jamais le parseur (ni normalisation, ni `{{eval:}}`, ni unité
-   au tirage ; affichée `\text{<texte>}` par `expectedAnswerLatex` et `{{solution}}`).
+   au tirage ; affichée `\text{<texte>}` par `expectedAnswerLatex` et `{{solution}}`). Une erreur prévue
+   `impossible` (clic sur un tirage qui a une réponse) est traitée de même ; casse ignorée. Une case à
+   bouton n'est jamais changée en QCM (`canBeChoice`) ; bouton réservé aux cases ordinaires de
+   formule (ni opération, ni construction, ni bloc), sinon le tirage est en erreur.
 2. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
    `equivalent`, `predicate` (`isPrime`, `isEven`…), `custom`. Une règle violée → faux, avec son
    message français. `rulesSuffice` : les règles **décident seules**, `expectedAnswer` n'est plus

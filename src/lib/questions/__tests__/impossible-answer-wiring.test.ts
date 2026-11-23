@@ -10,6 +10,7 @@ import { generateInstance } from '../generator/instance-generator';
 import { questionTemplateSchema, blankSchema, blankDefaultsSchema } from '../template-schema';
 import { gradeQuestion } from '../grading';
 import { buildExpectedResult } from '../expected-result';
+import { asChoiceInstance } from '../choice-from-errors';
 import {
 	validateAnswer,
 	validateAnswerDetailed,
@@ -280,5 +281,117 @@ describe('réponse attendue affichée et correction', () => {
 		const instance = generated(factorTemplate('blankDefaults', { c: '7' }));
 		const result = buildExpectedResult(instance, { values: [BUTTON], latex: [BUTTON] });
 		expect(result.status).toBe('correct');
+	});
+});
+
+// ============================================================================
+// Revue de la PR : erreur prévue « impossible », cases de bloc, nature de réponse, casse
+// ============================================================================
+
+/** Modèle à erreur prévue « l'élève a cliqué le bouton » sur un tirage factorisable */
+function withButtonError(c: string): QuestionTemplate {
+	const template = factorTemplate('blankDefaults', { c });
+	const [variation] = template.variations;
+	return {
+		...template,
+		variations: [
+			{
+				...variation,
+				blanks: [
+					{
+						expectedAnswer: '{{if:delta<0|impossible|(x-2)(x-3)}}',
+						expectedErrors: [{ answer: 'impossible', message: 'Δ ≥ 0 : il y a des racines.' }]
+					}
+				]
+			}
+		]
+	} as QuestionTemplate;
+}
+
+describe('erreur prévue « impossible » (bouton cliqué à tort)', () => {
+	it('générateur : jamais lue par le parseur, affichée en texte du bouton', () => {
+		const [error] = generated(withButtonError('6')).blanks![0].expectedErrors!;
+		expect(error.answer).toBe('impossible');
+		expect(error.answerLatex).toBe(BUTTON);
+	});
+
+	it('clic sur un tirage factorisable : faux, AVEC le message de l’erreur prévue', () => {
+		const instance = generated(withButtonError('6'));
+		const verdict = validateAnswerDetailed(instance, { values: [BUTTON], latex: [BUTTON] });
+		expect(verdict.status).toBe('incorrect');
+		expect(
+			JSON.stringify(buildExpectedResult(instance, { values: [BUTTON], latex: [BUTTON] }))
+		).toContain('Δ ≥ 0 : il y a des racines.');
+	});
+
+	it('expression fausse sur un tirage factorisable : pas ce message', () => {
+		const instance = generated(withButtonError('6'));
+		const answer = '(x+2)(x+3)';
+		expect(
+			JSON.stringify(buildExpectedResult(instance, { values: [answer], latex: [answer] }))
+		).not.toContain('Δ ≥ 0');
+	});
+
+	it('sans bouton : erreur de génération lisible', () => {
+		const template = withButtonError('6');
+		const result = generateInstance({ ...template, shared: undefined } as QuestionTemplate, 1);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toContain(
+			"La case 1 attend « impossible » mais n'a pas de bouton « impossible » (impossibleLabel)."
+		);
+	});
+
+	it('jamais proposée en QCM : une case à bouton reste en saisie', () => {
+		expect(asChoiceInstance(generated(withButtonError('6')), 1)).toBeNull();
+	});
+});
+
+describe('impossibleLabel de blankDefaults : cases ordinaires seulement', () => {
+	it('case d’un bloc ```operation : pas de bouton ; case ordinaire voisine : bouton', () => {
+		const template: QuestionTemplate = {
+			...factorTemplate('blankDefaults', { c: '6' }),
+			variations: [
+				{
+					statement: templateMarkdown(
+						['Factorise : $?$', '', '```operation', 'calcul: 45 + 37', '```'].join('\n')
+					),
+					blanks: [{ expectedAnswer: '(x-2)(x-3)' }, { expectedAnswer: '' }]
+				}
+			]
+		} as QuestionTemplate;
+		const [ordinary, operation] = generated(template).blanks!;
+		expect(ordinary.impossibleLabel).toBe(LABEL);
+		expect(operation.operation).toBe(true);
+		expect(operation.impossibleLabel).toBeUndefined();
+	});
+
+	it('attendue « impossible » sur une case à nature de réponse : message dédié', () => {
+		const result = generateInstance(
+			factorTemplate('blankDefaults', { c: '7', answerKind: 'equation' }),
+			1
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toContain(
+			'La case 1 attend « impossible », mais le bouton « impossible » est réservé aux cases ordinaires (sans nature de réponse).'
+		);
+	});
+});
+
+describe('casse : « Impossible » écrit par le prof', () => {
+	it('gardé hors du parseur, comme « impossible »', () => {
+		const template = factorTemplate('blankDefaults', { c: '7' });
+		const [variation] = template.variations;
+		const capital = {
+			...template,
+			variations: [
+				{ ...variation, blanks: [{ expectedAnswer: '{{if:delta<0|Impossible|(x-2)(x-3)}}' }] }
+			]
+		} as QuestionTemplate;
+		const blank = generated(capital).blanks![0];
+		expect(blank.expectedAnswer).toBe('impossible');
+		expect(blank.expectedAnswerLatex).toBe(BUTTON);
+		expect(statusOf(BUTTON, blank)).toBe('correct');
 	});
 });

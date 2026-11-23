@@ -39,17 +39,23 @@ export function impossibleAnswerLatex(label: string): string {
 	return `\\text{${label.trim()}}`;
 }
 
-/** L'attendue de ce tirage dit-elle « pas de réponse » ? */
+/**
+ * L'attendue de ce tirage dit-elle « pas de réponse » ? Casse ignorée : `Impossible` écrit par
+ * le prof ne doit pas devenir le produit de lettres i·m·p·o·s·s·i·b·l·e (revue de la PR).
+ */
 export function isImpossibleExpected(expected: string | undefined): boolean {
-	return expected?.trim() === IMPOSSIBLE_EXPECTED;
+	return expected?.trim().toLowerCase() === IMPOSSIBLE_EXPECTED;
 }
 
 /**
  * La réponse de l'élève est-elle le bouton ? Espaces de MathLive ignorés
- * (`\text{pas factorisable}`, `\text{pas\ factorisable}`, espaces autour).
+ * (`\text{pas factorisable}`, `\text{pas\ factorisable}`, espaces autour) et apostrophe
+ * typographique ’ relue ' par MathLive.
  */
 export function isImpossibleAnswer(answer: string | undefined, label: string): boolean {
 	if (answer === undefined) return false;
-	const normaliser = (latex: string) => latex.replace(/\\ /g, ' ').replace(/\s+/g, ' ').trim();
+	// MathLive relit l'apostrophe typographique ’ en ' (mesuré) : les deux côtés sont ramenés à '
+	const normaliser = (latex: string) =>
+		latex.replace(/\\ /g, ' ').replace(/’/g, "'").replace(/\s+/g, ' ').trim();
 	return normaliser(answer) === normaliser(impossibleAnswerLatex(label));
 }

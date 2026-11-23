@@ -227,6 +227,27 @@ function robotSceneImpossible(
  * (`utils/random.ts`) : la source principale ne doit pas être consommée, sinon tous
  * les tirages suivants bougeraient ; une corrélation avec elle est sans effet ici.
  */
+/**
+ * Attendue (ou erreur prévue) `impossible` sur la case `index` : seulement sur une case
+ * ordinaire qui porte un bouton (`impossibleLabel`) ; sinon le tirage échoue, message pour l'auteur.
+ */
+function assertImpossibleAllowed(
+	index: number,
+	isOrdinaryMathBlank: boolean,
+	impossibleLabel: string | undefined
+): asserts impossibleLabel is string {
+	if (!isOrdinaryMathBlank) {
+		throw new Error(
+			`La case ${index + 1} attend « ${IMPOSSIBLE_EXPECTED} », mais le bouton « ${IMPOSSIBLE_EXPECTED} » est réservé aux cases ordinaires (sans nature de réponse).`
+		);
+	}
+	if (impossibleLabel === undefined) {
+		throw new Error(
+			`La case ${index + 1} attend « ${IMPOSSIBLE_EXPECTED} » mais n'a pas de bouton « ${IMPOSSIBLE_EXPECTED} » (impossibleLabel).`
+		);
+	}
+}
+
 function expectedErrorsSeed(seed: number): number {
 	return Math.imul(seed ^ 0x9e3779b9, 0x85ebca6b) >>> 0;
 }
@@ -1419,18 +1440,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				const isMathBlank = blankResult.blankTypes[i] === 'math';
 				const answerKind = blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind;
-				// Bouton « impossible » : case mathématique ordinaire seulement (ignoré sinon)
-				const impossibleLabel =
-					isMathBlank && answerKind === undefined
-						? (blank.impossibleLabel ?? resolvedVariation.blankDefaults?.impossibleLabel)
-						: undefined;
+				// Bouton « impossible » : case mathématique ordinaire seulement (ignoré sinon) — ni
+				// nature de réponse, ni case d'un bloc (opération, geste à construire)
+				const isOrdinaryMathBlank =
+					isMathBlank && answerKind === undefined && blockAnswer === undefined;
+				const impossibleLabel = isOrdinaryMathBlank
+					? (blank.impossibleLabel ?? resolvedVariation.blankDefaults?.impossibleLabel)
+					: undefined;
 				// Tirage sans réponse : `impossible` n'est pas une expression (lu i·m·p·o…)
 				const impossibleDraw = isMathBlank && isImpossibleExpected(rawExpected);
-				if (impossibleDraw && impossibleLabel === undefined) {
-					throw new Error(
-						`La case ${i + 1} attend « ${IMPOSSIBLE_EXPECTED} » mais n'a pas de bouton « ${IMPOSSIBLE_EXPECTED} » (impossibleLabel).`
-					);
-				}
+				if (impossibleDraw) assertImpossibleAllowed(i, isOrdinaryMathBlank, impossibleLabel);
 				const normalized = impossibleDraw
 					? IMPOSSIBLE_EXPECTED
 					: isMathBlank
@@ -1442,7 +1461,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Option du modèle : `1x-1y+0=0` → `x-y=0` (case mathématique sans unité ni
 				// ensemble ; une formule illisible reste telle quelle)
 				const isCleanable =
-					!impossibleDraw &&
 					cleanCoefficients &&
 					isMathBlank &&
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
@@ -1451,11 +1469,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					answerKind !== 'matrice';
 				// Unité imposée : l'attendu s'écrit dans cette unité (`1.5[km]` → `1500[m]`)
 				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
-				const expectedAnswer = isCleanable
-					? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-					: required && !impossibleDraw
-						? expectedInRequiredUnit(resolvedExpected, required)
-						: resolvedExpected;
+				const expectedAnswer = impossibleDraw
+					? IMPOSSIBLE_EXPECTED
+					: isCleanable
+						? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
+						: required
+							? expectedInRequiredUnit(resolvedExpected, required)
+							: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,
@@ -1586,6 +1606,17 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							const raw = resolveVariableConditionals(error.answer, resolvedVariables, {
 								strict: true
 							});
+							// Erreur prévue « l'élève a cliqué le bouton » (tirage qui a une réponse) :
+							// pas une expression, jamais lue par le parseur
+							if (isImpossibleExpected(raw)) {
+								assertImpossibleAllowed(i, isOrdinaryMathBlank, impossibleLabel);
+								return {
+									answer: IMPOSSIBLE_EXPECTED,
+									answerLatex: impossibleAnswerLatex(impossibleLabel),
+									message: error.message,
+									...(error.label !== undefined && { label: error.label })
+								};
+							}
 							const normalizedError = normalizeAnswerExpression(raw, resolvedVariables);
 							const resolvedError = normalizedError.includes('{{')
 								? resolveExpression(normalizedError, resolvedVariables, errorRandom)

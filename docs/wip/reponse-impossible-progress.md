@@ -8,19 +8,14 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, code écrit, corrections de la revue en cours (PR pas encore ouverte)._
+_Mis à jour le 2026-11-23, corrections de la revue commitées, PR ouverte._
 
-- **État** : moteur + interface + doc commités sur la branche (33 tests, 0 erreur de typecheck) ;
-  revue `code-reviewer` (Opus) : 2 importants, 3 mineurs, en correction · **Prochaine action** :
-  corrections NON COMMITÉES dans le worktree (interface faite : aller-retour MathLive ’ → ',
-  bouton réservé aux vraies cases ; moteur en cours au moment du /clear : erreur prévue
-  `impossible`, boutons parasites, message) → `git diff`, relancer les tests `impossible-answer*`,
-  finir ce qui manque, commiter ; `security-auditor` non requis (ni RLS ni API), ouvrir la PR ; puis
-  seconde PR : variations Δ < 0 de 604f83b7 (Q6) · **En attente de David** : essai du bouton par
-  `pnpm lien` (modèle d'essai local `632e3012-…`, fichier dans le dossier tmp du job) ·
-  **Pièges en cours** : la base locale a été recopiée de la prod par une autre session vers 06:12
-  (modèle d'essai perdu, recréé) ; MathLive change ’ en ' dans `\text{}` · **Worktree / branche** :
-  `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`, serveur 5176.
+- **État** : outil codé, revu (Opus), corrections commitées (39 + 4 tests), PR ouverte, CI en
+  cours · **Prochaine action** : CI verte → merger ; puis seconde PR : variations Δ < 0 de 604f83b7
+  (Q6) · **En attente de David** : essai du bouton par `pnpm lien` (modèle d'essai local
+  `632e3012-…`) · **Pièges en cours** : la base locale a été recopiée de la prod par une autre
+  session vers 06:12 (modèle d'essai perdu, recréé) ; MathLive change ’ en ' dans `\text{}` ·
+  **Worktree / branche** : `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`, serveur 5176.
 
 ## Historique
 

@@ -404,10 +404,20 @@
 
 	let container: HTMLDivElement | undefined = $state();
 
-	/** Cases ordinaires à bouton « impossible » (index de la case + texte du bouton) */
+	/**
+	 * Cases ordinaires à bouton « impossible » (index de la case + texte du bouton) : seulement
+	 * une vraie case de formule, écrite `\placeholder[N]{}` dans l'énoncé. Une grille d'opération,
+	 * un choix, une construction ou un geste n'en ont pas, même si `blankDefaults` porte un texte.
+	 */
 	let impossibleBlanks = $derived(
 		blanks.flatMap((blank, index) =>
-			blank.type === 'math' && !blank.answerKind && blank.impossibleLabel
+			blank.type === 'math' &&
+			!blank.answerKind &&
+			!blank.choice &&
+			!blank.construction &&
+			!blank.construire &&
+			blank.impossibleLabel &&
+			new RegExp(`\\\\placeholder\\[${index}\\]`).test(statement)
 				? [{ index, label: blank.impossibleLabel }]
 				: []
 		)
