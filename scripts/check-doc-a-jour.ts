@@ -83,8 +83,41 @@ const DEFERRAL = /^Doc-reportée:[ \t]*\S/m;
 // FONCTIONS
 // ============================================================================
 
+const prefixes = new Map<string, string>();
+
+/**
+ * Début d'un glob écrit sans caractère spécial, en minuscules : un fichier qui ne commence
+ * pas par lui ne peut pas correspondre au glob. Vide dès qu'un doute existe (chemin à
+ * normaliser), le glob est alors toujours essayé.
+ */
+export function literalPrefix(glob: string): string {
+	// Un segment `.` ou `..`, où qu'il soit, fait remonter le glob au-dessus de son début
+	if (/(^|\/)\.\.?(\/|$)/.test(glob)) return '';
+	const special = glob.search(/[*?[\]{}()!+@\\]/);
+	const prefix = special === -1 ? glob : glob.slice(0, special);
+	if (prefix.startsWith('/') || prefix.includes('//')) return '';
+	return prefix.toLowerCase();
+}
+
+/**
+ * `matchesGlob`, précédé d'un test sur le début littéral du glob. `matchesGlob` recompile
+ * le glob à chaque appel : sur tout le dépôt (fichiers × docs × globs, des millions
+ * d'appels) la couverture prenait 25 s en local et 72 s en CI, mesurés le 2026-11-23.
+ * La comparaison ignore la casse, comme `matchesGlob` sur macOS : le test ne refuse
+ * jamais un fichier que `matchesGlob` accepterait.
+ */
+export function matches(file: string, glob: string): boolean {
+	let prefix = prefixes.get(glob);
+	if (prefix === undefined) {
+		prefix = literalPrefix(glob);
+		prefixes.set(glob, prefix);
+	}
+	if (prefix !== '' && !file.toLowerCase().startsWith(prefix)) return false;
+	return matchesGlob(file, glob);
+}
+
 const matchesAny = (file: string, globs: string[]): boolean =>
-	globs.some((glob) => matchesGlob(file, glob));
+	globs.some((glob) => matches(file, glob));
 
 /** Le code qu'une doc décrit : liste `couvre:` de son en-tête YAML (forme bloc ou en ligne). */
 export function parseCouvre(markdown: string): string[] {
@@ -152,7 +185,7 @@ export function holesTouched(
 	const byNote = new Map<string, string[]>();
 	for (const file of changed) {
 		if (!isUndescribed(file, docs, config)) continue;
-		const hole = config.trous.find((t) => matchesGlob(file, t.glob));
+		const hole = config.trous.find((t) => matches(file, t.glob));
 		if (!hole) continue;
 		const files = byNote.get(hole.note) ?? [];
 		files.push(file);
@@ -164,7 +197,7 @@ export function holesTouched(
 /** Trous périmés : leur glob ne désigne plus aucun fichier gardé que nulle doc ne décrit. */
 export function staleHoles(files: string[], docs: DocCoverage[], config: CoverageConfig): Hole[] {
 	const undescribed = files.filter((f) => isUndescribed(f, docs, config));
-	return config.trous.filter((t) => !undescribed.some((f) => matchesGlob(f, t.glob)));
+	return config.trous.filter((t) => !undescribed.some((f) => matches(f, t.glob)));
 }
 
 /** Fichiers de code qu'aucune doc ne décrit, hors exclus et trous connus. */
