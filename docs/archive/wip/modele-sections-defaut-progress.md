@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-23, après #3055._
 
-- **État** : code, tests et doc faits sur la branche ; PR à ouvrir · **Prochaine action** : PR, CI, merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-modele-sections-defaut` / `feat/modele-sections-defaut`
+- **État** : chantier clos, #3055 mergée, journal archivé · **Prochaine action** : aucune · **En attente de David** : mise en prod (`pnpm deploy:prod`) quand il le voudra ; dire s'il faut aussi poser les six sections sur les modèles existants qui n'en ont pas · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Demande (2026-11-23)
 
