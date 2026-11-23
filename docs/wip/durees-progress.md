@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3034._
+_Mis à jour le 2026-11-23, après #3038._
 
-- **État** : PR 1 (#3032) et PR 2 (#3034) mergées ; PR 3 (`fix/durees-sans-reference`, `pr:merger` et `test:integration` local en « simple information », sans référence) en cours. `pnpm durees` montre la CI, les PR, la mise en prod, la suite d'intégration entière (la nuit, sur une PR) et les commandes du Mac mini (`check:incremental`, `test:server`, `test:client`, `test:integration`, pre-push, `pnpm pr:merger`, notées dans `~/.local/state/durees/local.csv`). Relevé de 6 h 40 installé sous launchd. Worktree et branche retirés.
+- **État** : PR 1 (#3032), PR 2 (#3034) et PR 3 (#3038 : `pr:merger` et `test:integration` local en « simple information », sans référence ni alerte) mergées. `pnpm durees` montre la CI, les PR, la mise en prod, la suite d'intégration entière (la nuit, sur une PR) et les commandes du Mac mini (`check:incremental`, `test:server`, `test:client`, `test:integration`, pre-push, `pnpm pr:merger`, notées dans `~/.local/state/durees/local.csv`). Relevé de 6 h 40 installé sous launchd. Worktree et branche retirés.
 - **Prochaine action** : laisser les mesures s'accumuler (5 par phase ; 5 nuits pour la suite de la nuit, soit vers le 2026-11-28), puis montrer le tableau à David et lui proposer la référence des phases nouvelles. Ensuite : versement dans `docs/systeme/` ou `docs/pratiques/` et archivage du journal.
 - **En attente de David** : valider la référence des phases nouvelles, par `pnpm durees --reference` puis une PR (lui seul), et dire alors si le pre-push (7 s, juste au-dessus du plancher) reste lui aussi en simple information. Le reste est tranché (« Tranché par David », points 4 et 5).
-- **Pièges en cours** : `pr:merger` et `test:integration` local n'ont jamais de référence (PR 3, `estSimpleInformation` dans `scripts/durees/logique.ts`), `pnpm durees --reference` peut donc être lancée sans les y faire entrer ; `/data` est ignoré par git, d'où la référence sous `scripts/durees/` ; un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; aucune mesure d'avant #3025 (`depuis` de la référence) ; `pnpm durees --reference` refait TOUTES les phases, pas seulement les nouvelles ; la suite entière des tests est rare en local, ses lignes resteront souvent « trop peu » ; les durées locales dépendent de la charge du Mac mini ; les autres worktrees ne notent rien tant qu'ils n'ont pas repris `main`.
-- **Worktree / branche** : `ubumaths-wt-durees-sans-reference` / `fix/durees-sans-reference`, retirés au merge de la PR 3.
+- **Pièges en cours** : `pr:merger` et `test:integration` local n'ont jamais de référence (#3038, `estSimpleInformation` dans `scripts/durees/logique.ts`), `pnpm durees --reference` peut donc être lancée sans les y faire entrer ; `/data` est ignoré par git, d'où la référence sous `scripts/durees/` ; un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; aucune mesure d'avant #3025 (`depuis` de la référence) ; `pnpm durees --reference` refait TOUTES les phases, pas seulement les nouvelles ; la suite entière des tests est rare en local, ses lignes resteront souvent « trop peu » ; les durées locales dépendent de la charge du Mac mini ; les autres worktrees ne notent rien tant qu'ils n'ont pas repris `main`.
+- **Worktree / branche** : aucun.
 
 ## La demande (David, 2026-11-23)
 
