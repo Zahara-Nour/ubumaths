@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-23, après #3057._
 
-- **État** : code, tests et doc faits sur la branche ; PR à ouvrir · **Prochaine action** : PR, CI, merge ; puis, à la prochaine mise en prod lancée juste après un merge, vérifier que la CI de la version démarre sans attendre celle du merge · **En attente de David** : rien · **Pièges en cours** : le groupe de concurrence ne se vérifie que sur GitHub, à la prochaine mise en prod · **Worktree / branche** : `../ubumaths-wt-deploy-sans-attente` / `ci/deploy-sans-attente`
+- **État** : #3057 mergée (pas encore exercée par une mise en prod) · **Prochaine action** : à la prochaine mise en prod lancée juste après un merge, vérifier sur GitHub que la CI de la version démarre sans attendre celle du merge (deux runs « Code Quality » en même temps sur `main`), puis archiver ce journal · **En attente de David** : rien · **Pièges en cours** : si la CI de version attend encore, regarder le groupe de concurrence calculé du run · **Worktree / branche** : retirés
 
 ## Demande (2026-11-23)
 
