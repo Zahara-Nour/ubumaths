@@ -72,7 +72,8 @@ Fiche d'exercices en anglais, sans titre libre :
 - **Signalement** : dans l'éditeur, une fiche qui a une version anglaise et une notion sans nom
   anglais affiche sous ses notions « Sans nom anglais : Loi géométrique — la version anglaise
   n'imprimera pas les notions ».
-- **Erreur** : un nom anglais vide ou trop long est refusé par la base (comme un nom français).
+- **Erreur** : un nom anglais vide est refusé par la base, comme un nom français (`btrim(name) <> ''`) ;
+  la base n'impose pas de longueur aux noms français, pas davantage aux noms anglais.
 
 ## Découpage (à valider)
 
