@@ -18,13 +18,17 @@ import {
 } from '#lib/utils/answer-validator.ts';
 import type { InstanceBlank, QuestionInstance, QuestionTemplate } from '../types';
 import { templateMarkdown, type ResolvedMarkdown } from '#lib/ubumark/index.ts';
+import { IMPOSSIBLE_ANSWER } from '../impossible-answer';
 
 // ============================================================================
 // Constantes
 // ============================================================================
 
 const LABEL = 'pas factorisable';
-const BUTTON = '\\text{pas factorisable}';
+/** Réponse enregistrée quand l'élève enfonce le bouton (marque réservée, impossible à taper) */
+const BUTTON = IMPOSSIBLE_ANSWER;
+/** Texte du bouton, tel que la correction et le prof le voient */
+const BUTTON_LATEX = '\\text{pas factorisable}';
 
 // ============================================================================
 // Functions
@@ -145,7 +149,7 @@ describe('générateur', () => {
 			const blank = generated(factorTemplate(where, { c: '7' })).blanks![0];
 			expect(blank.impossibleLabel).toBe(LABEL);
 			expect(blank.expectedAnswer).toBe('impossible');
-			expect(blank.expectedAnswerLatex).toBe(BUTTON);
+			expect(blank.expectedAnswerLatex).toBe(BUTTON_LATEX);
 		}
 	);
 
@@ -190,12 +194,8 @@ describe('générateur', () => {
 describe('validateur : case seule', () => {
 	it.each([
 		['tirage impossible + bouton', 'impossible', BUTTON, 'correct'],
-		[
-			'tirage impossible + bouton (espace MathLive)',
-			'impossible',
-			'\\text{pas\\ factorisable}',
-			'correct'
-		],
+		// Le texte du bouton tapé dans la case n'est PAS le bouton (décision de David, 2026-11-23)
+		['tirage impossible + texte du bouton tapé', 'impossible', BUTTON_LATEX, 'incorrect'],
 		['tirage impossible + expression', 'impossible', '(x-2)(x-3)', 'incorrect'],
 		['tirage impossible + texte quelconque', 'impossible', '\\text{impossible}', 'incorrect'],
 		['tirage réel + bouton', '(x-2)(x-3)', BUTTON, 'incorrect'],
@@ -282,6 +282,16 @@ describe('réponse attendue affichée et correction', () => {
 		const result = buildExpectedResult(instance, { values: [BUTTON], latex: [BUTTON] });
 		expect(result.status).toBe('correct');
 	});
+
+	it('réponse de l’élève montrée en texte du bouton, jamais la marque', () => {
+		// Tirage factorisable : seule la réponse de l'élève peut dire « pas factorisable »
+		const instance = generated(factorTemplate('blankDefaults', { c: '6' }));
+		const shown = JSON.stringify(
+			buildExpectedResult(instance, { values: [BUTTON], latex: [BUTTON] })
+		);
+		expect(shown).not.toContain(JSON.stringify(BUTTON).slice(1, -1));
+		expect(shown).toContain('pas factorisable');
+	});
 });
 
 // ============================================================================
@@ -312,7 +322,7 @@ describe('erreur prévue « impossible » (bouton cliqué à tort)', () => {
 	it('générateur : jamais lue par le parseur, affichée en texte du bouton', () => {
 		const [error] = generated(withButtonError('6')).blanks![0].expectedErrors!;
 		expect(error.answer).toBe('impossible');
-		expect(error.answerLatex).toBe(BUTTON);
+		expect(error.answerLatex).toBe(BUTTON_LATEX);
 	});
 
 	it('clic sur un tirage factorisable : faux, AVEC le message de l’erreur prévue', () => {
@@ -391,7 +401,7 @@ describe('casse : « Impossible » écrit par le prof', () => {
 		} as QuestionTemplate;
 		const blank = generated(capital).blanks![0];
 		expect(blank.expectedAnswer).toBe('impossible');
-		expect(blank.expectedAnswerLatex).toBe(BUTTON);
+		expect(blank.expectedAnswerLatex).toBe(BUTTON_LATEX);
 		expect(statusOf(BUTTON, blank)).toBe('correct');
 	});
 });

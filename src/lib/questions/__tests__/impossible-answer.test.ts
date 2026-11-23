@@ -1,13 +1,22 @@
 import { describe, it, expect } from 'vitest';
-import { impossibleAnswerLatex, isImpossibleAnswer } from '../impossible-answer';
+import { IMPOSSIBLE_ANSWER, impossibleAnswerLatex, isImpossibleAnswer } from '../impossible-answer';
 
 describe('isImpossibleAnswer', () => {
-	it("reconnaît l'apostrophe typographique relue ' par MathLive", () => {
-		expect(isImpossibleAnswer("\\text{n'existe pas}", 'n’existe pas')).toBe(true);
-		expect(isImpossibleAnswer(impossibleAnswerLatex('n’existe pas'), 'n’existe pas')).toBe(true);
+	it('reconnaît la marque du bouton, et elle seule', () => {
+		expect(isImpossibleAnswer(IMPOSSIBLE_ANSWER)).toBe(true);
 	});
-	it('refuse une autre expression', () => {
-		expect(isImpossibleAnswer("\\text{n'existe}", 'n’existe pas')).toBe(false);
-		expect(isImpossibleAnswer('2x+1', 'n’existe pas')).toBe(false);
+	it('le texte du bouton tapé dans la case n’est pas le bouton', () => {
+		expect(isImpossibleAnswer(impossibleAnswerLatex('pas factorisable'))).toBe(false);
+		expect(isImpossibleAnswer('\\text{impossible}')).toBe(false);
+		expect(isImpossibleAnswer('impossible')).toBe(false);
+	});
+	it('refuse une expression ou une case vide', () => {
+		expect(isImpossibleAnswer('2x+1')).toBe(false);
+		expect(isImpossibleAnswer('')).toBe(false);
+		expect(isImpossibleAnswer(undefined)).toBe(false);
+	});
+	it('marque impossible à taper : un caractère de contrôle, jamais du LaTeX', () => {
+		expect(IMPOSSIBLE_ANSWER).toMatch(/[\u0001-\u001f]/);
+		expect(IMPOSSIBLE_ANSWER.trim()).toBe(IMPOSSIBLE_ANSWER);
 	});
 });

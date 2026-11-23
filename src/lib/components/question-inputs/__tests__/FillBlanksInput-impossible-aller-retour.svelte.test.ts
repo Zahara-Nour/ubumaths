@@ -1,15 +1,14 @@
 /**
- * FillBlanksInput — bouton « impossible » : aller-retour avec MathLive.
- * Taper dans une AUTRE case de la même formule relit toutes les cases (MathPrompt) :
- * le texte du bouton doit en ressortir reconnu. Mesuré : MathLive relit ’ en ' (accents et
- * espaces intacts), d'où la tolérance de `isImpossibleAnswer`.
+ * FillBlanksInput — bouton « impossible » et relecture MathLive.
+ * Taper dans une AUTRE case de la même formule relit toutes les cases (MathPrompt) : la case
+ * du bouton enfoncé, vide et verrouillée, ne doit pas effacer la marque du bouton.
  */
 
 import { describe, it, expect } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import FillBlanksInput from '../FillBlanksInput.svelte';
-import { isImpossibleAnswer } from '#lib/questions/impossible-answer.ts';
+import { IMPOSSIBLE_ANSWER } from '#lib/questions/impossible-answer.ts';
 import type { ResolvedMarkdown } from '#lib/ubumark/index.ts';
 import type { InstanceBlank } from '#lib/questions/types.ts';
 import type { MathfieldElement } from 'mathlive';
@@ -30,20 +29,19 @@ describe('FillBlanksInput — bouton « impossible » et relecture MathLive', ()
 		it(`bouton ${pressedIndex} enfoncé, frappe dans la case ${otherIndex} : reste enfoncé`, async () => {
 			const values = $state<string[]>([]);
 			const screen = await render(FillBlanksInput, { props: { statement, blanks, values } });
-			const label = labels[pressedIndex];
-			const button = screen.getByRole('button', { name: new RegExp(label) });
+			const button = screen.getByRole('button', { name: new RegExp(labels[pressedIndex]) });
 			await userEvent.click(button);
 			await expect.element(button).toHaveAttribute('aria-pressed', 'true');
 
+			await customElements.whenDefined('math-field');
 			const field = document.querySelector('math-field') as MathfieldElement;
 			// Frappe dans l'autre case : MathPrompt relit toutes les cases
 			field.focus();
-			field.setPromptValue(String(otherIndex), '', { silenceNotifications: true });
-			field.executeCommand(['insert', '2']);
+			field.setPromptValue(String(otherIndex), '2', { silenceNotifications: true });
 			field.dispatchEvent(new Event('input', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 200));
+			await expect.poll(() => values[otherIndex]).toBe('2');
 
-			expect(isImpossibleAnswer(values[pressedIndex], label)).toBe(true);
+			expect(values[pressedIndex]).toBe(IMPOSSIBLE_ANSWER);
 			await expect.element(button).toHaveAttribute('aria-pressed', 'true');
 		});
 	}

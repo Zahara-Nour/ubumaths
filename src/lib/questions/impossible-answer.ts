@@ -6,9 +6,11 @@
  * n'existe pas.
  * - Attendue : le prof écrit `impossible` (`IMPOSSIBLE_EXPECTED`) dans `expectedAnswer` sur les
  *   tirages sans réponse (souvent `{{if:delta<0|impossible|…}}`).
- * - Réponse de l'élève : le bouton cliqué écrit dans la case le LaTeX `\text{<texte du bouton>}`
- *   (`impossibleAnswerLatex`). C'est cette chaîne qui est enregistrée, et le prof la voit telle
- *   quelle dans ses résultats (« pas factorisable »).
+ * - Réponse de l'élève : le bouton a son état à part (décision de David, 2026-11-23). Enfoncé, il
+ *   vide la case et la verrouille ; la valeur enregistrée est alors la marque réservée
+ *   `IMPOSSIBLE_ANSWER`, impossible à taper. Le juge la regarde avant de lire la case.
+ * - Affichage (correction, résultats du prof) : la marque se montre en texte du bouton,
+ *   `\text{<texte du bouton>}` (`impossibleAnswerLatex`), jamais telle quelle.
  */
 
 // ============================================================================
@@ -17,6 +19,13 @@
 
 /** Réponse attendue d'un tirage sans réponse, écrite par le prof dans `expectedAnswer` */
 export const IMPOSSIBLE_EXPECTED = 'impossible';
+
+/**
+ * Valeur de la case quand le bouton est enfoncé : un caractère de contrôle (U+001F) qu'aucun
+ * clavier ni MathLive ne produit, suivi d'un mot lisible en base. Jamais du LaTeX : le texte du
+ * bouton tapé dans la case n'est pas le bouton.
+ */
+export const IMPOSSIBLE_ANSWER = '\u001Fimpossible';
 
 /** Texte du bouton proposé par défaut dans le formulaire du prof */
 export const DEFAULT_IMPOSSIBLE_LABEL = 'impossible';
@@ -34,7 +43,7 @@ export const IMPOSSIBLE_LABEL_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M} '’-]*$/u;
 // Functions
 // ============================================================================
 
-/** LaTeX écrit dans la case quand l'élève clique le bouton (`\text{pas factorisable}`) */
+/** Texte du bouton en LaTeX, pour l'affichage (`\text{pas factorisable}`) */
 export function impossibleAnswerLatex(label: string): string {
 	return `\\text{${label.trim()}}`;
 }
@@ -47,15 +56,7 @@ export function isImpossibleExpected(expected: string | undefined): boolean {
 	return expected?.trim().toLowerCase() === IMPOSSIBLE_EXPECTED;
 }
 
-/**
- * La réponse de l'élève est-elle le bouton ? Espaces de MathLive ignorés
- * (`\text{pas factorisable}`, `\text{pas\ factorisable}`, espaces autour) et apostrophe
- * typographique ’ relue ' par MathLive.
- */
-export function isImpossibleAnswer(answer: string | undefined, label: string): boolean {
-	if (answer === undefined) return false;
-	// MathLive relit l'apostrophe typographique ’ en ' (mesuré) : les deux côtés sont ramenés à '
-	const normaliser = (latex: string) =>
-		latex.replace(/\\ /g, ' ').replace(/’/g, "'").replace(/\s+/g, ' ').trim();
-	return normaliser(answer) === normaliser(impossibleAnswerLatex(label));
+/** La réponse de l'élève est-elle le bouton enfoncé ? (la marque seule, rien de tapé) */
+export function isImpossibleAnswer(answer: string | undefined): boolean {
+	return answer === IMPOSSIBLE_ANSWER;
 }

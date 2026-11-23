@@ -1328,9 +1328,7 @@ function impossibleVerdict(
 ): boolean | undefined {
 	const label = blank.impossibleLabel;
 	if (label === undefined) return undefined;
-	const pressed =
-		isImpossibleAnswer(userAnswer, label) ||
-		(userAnswerLatex !== undefined && isImpossibleAnswer(userAnswerLatex, label));
+	const pressed = isImpossibleAnswer(userAnswer) || isImpossibleAnswer(userAnswerLatex);
 	const expected = isImpossibleExpected(blank.expectedAnswer);
 	if (!pressed && !expected) return undefined;
 	return pressed && expected;
@@ -2294,14 +2292,10 @@ function validateBlanksOrderIndependent(
 	// Réponse hostile ou démesurée (garde Q58) : fausse, avec son message. Les cases
 	// « intervalles » ont leur propre garde (dans `validateBlankValue`).
 	const ordinaryBlanks = blanks.every((blank) => blank.answerKind !== 'intervalles');
-	// Le bouton « impossible » (`\text{…}`) n'est pas une expression : jamais mesuré
+	// Le bouton « impossible » (sa marque) n'est pas une expression : jamais mesuré
 	const isButton = (answer: string, latex: string | undefined) =>
-		blanks.some(
-			(blank) =>
-				blank.impossibleLabel !== undefined &&
-				(isImpossibleAnswer(answer, blank.impossibleLabel) ||
-					(latex !== undefined && isImpossibleAnswer(latex, blank.impossibleLabel)))
-		);
+		blanks.some((blank) => blank.impossibleLabel !== undefined) &&
+		(isImpossibleAnswer(answer) || isImpossibleAnswer(latex));
 	if (
 		ordinaryBlanks &&
 		userAnswers.some(
