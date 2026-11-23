@@ -5,16 +5,13 @@ skill `idees-rubrique`. Relevé : [idees-3e-arithmetique-releve.md](idees-3e-ari
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3035._
+_Mis à jour le 2026-11-23, Q3 tranchée, PR de rangement en cours._
 
-- **État** : lot mergé (#3035, fichiers seuls) : 6 modèles neufs dans
-  `scripts/questions/idees-3e-arithmetique-neufs/` + 3 variations de 90dca27a dans `-publies/` ;
-  rien en prod · **Prochaine action** : David lance `create-questions --dir
-scripts/questions/idees-3e-arithmetique-neufs --publier` (brouillons), je commite les id ; puis
-  migrations de rangement (F1 → 3-010, F3 à F7 sans point) et de contenu (90dca27a) ·
-  **En attente de David** : Q3 (F1 en modèle neuf au lieu de 77ab770d, puissances exigées) ·
-  **Pièges en cours** : réservation de 77ab770d à lever si Q3 = oui · **Worktree / branche** :
-  aucun (retiré) ; nouveau worktree sur `origin/main` pour la PR suivante.
+- **État** : 6 brouillons en prod (créés par David) ; branche prête (id commités, migrations de
+  rangement et de contenu générées, tests d'intégration verts) · **Prochaine action** : ouvrir la
+  PR, merger, `db:migrate` (4 conditions), puis relecture dans `/dev/modeles?noeud=` ·
+  **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
+  `ubumaths-wt-idees-3e-arithmetique`, `feat/idees-3e-arithmetique-rangement`.
 
 ## Historique
 
@@ -69,3 +66,19 @@ scripts/questions/idees-3e-arithmetique-neufs --publier` (brouillons), je commit
   par ses règles seules (`rulesSuffice`).
 - F2 : 90dca27a n'a pas d'options, une fraction simplifiable reste `unoptimal_form` (½ point),
   comme sa variation d'origine (la fiche disait « refusée »).
+
+### 2026-11-23 — brouillons en prod, migrations générées
+
+- David a lancé `create-questions --publier` : 6 brouillons en prod (vérifié en lecture seule), id
+  commités sur `feat/idees-3e-arithmetique-rangement`.
+- Sous-notions choisies là où sont les modèles de collège voisins : F1 décomposition en facteurs
+  premiers (3-010) ; F3 critères de divisibilité ; F4 primalité ; F5 et F6 multiples et diviseurs
+  (comme 0bd51758, PGCD et PPCM de 2de) ; F7 Nombres et calculs > Entiers : division > division
+  euclidienne (modèles de 6e), plutôt que la division euclidienne d'Arithmétique (Terminale).
+- Migrations : `20261123115206_…_neufs_rangement_tags.sql`, `20261123115216_…_publies_contenu.sql`
+  (90dca27a +3 variations). Tests d'intégration verts.
+- Correctif de test : « un modèle absent parmi d'autres » échouait sur un lot d'un seul modèle publié
+  (aucune assertion) ; sauté quand le lot a moins de deux modèles.
+- David suit mes recommandations : **Q3 oui** (F1 reste un modèle neuf, 77ab770d libéré dans le
+  tableau, commit direct sur `main`) ; sous-notions gardées telles que ci-dessus (F7 en division
+  euclidienne des Entiers).

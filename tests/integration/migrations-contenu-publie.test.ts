@@ -309,15 +309,19 @@ describe.each(TOUS)('$nom', ({ migration, modeles }) => {
 		});
 	});
 
-	it('un modèle absent parmi d’autres : les présents sont migrés, sans erreur', async () => {
-		const [absent, ...presents] = modeles;
-		await enTransaction(async () => {
-			await poserEtatProd(pg, modeles);
-			await pg.query('delete from public.question_templates where id = $1', [absent.id]);
-			await pg.query(readFileSync(migration, 'utf-8'));
-			for (const m of presents) expect(contenuDe(await lireEtat(pg, m.id), m)).toEqual(m.apres);
-		});
-	});
+	// Un lot d'un seul modèle n'a pas d'« autres » : rien à vérifier.
+	it.skipIf(modeles.length < 2)(
+		'un modèle absent parmi d’autres : les présents sont migrés, sans erreur',
+		async () => {
+			const [absent, ...presents] = modeles;
+			await enTransaction(async () => {
+				await poserEtatProd(pg, modeles);
+				await pg.query('delete from public.question_templates where id = $1', [absent.id]);
+				await pg.query(readFileSync(migration, 'utf-8'));
+				for (const m of presents) expect(contenuDe(await lireEtat(pg, m.id), m)).toEqual(m.apres);
+			});
+		}
+	);
 
 	it('modèles absents (base locale) : ne fait rien, sans erreur', async () => {
 		await enTransaction(async () => {
