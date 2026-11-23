@@ -1,5 +1,5 @@
 {
-	"migration": "supabase/migrations/20261123165942_questions_idees_1re_derivation_publies_contenu.sql",
+	"migration": "supabase/migrations/20261123173052_questions_idees_1re_derivation_publies_contenu.sql",
 	"modeles": [
 		{
 			"id": "0140fdfa-1066-4885-b0ab-c597ff503283",
@@ -792,7 +792,8 @@
 				"ajoutees": [4],
 				"corrigees": [],
 				"specs": true,
-				"description": false
+				"description": false,
+				"options": false
 			}
 		},
 		{
@@ -1714,7 +1715,8 @@
 				"ajoutees": [4],
 				"corrigees": [],
 				"specs": true,
-				"description": false
+				"description": false,
+				"options": false
 			}
 		},
 		{
@@ -2566,7 +2568,8 @@
 				"ajoutees": [3],
 				"corrigees": [],
 				"specs": true,
-				"description": false
+				"description": false,
+				"options": false
 			}
 		},
 		{
@@ -3643,7 +3646,8 @@
 				"ajoutees": [7, 8],
 				"corrigees": [],
 				"specs": true,
-				"description": false
+				"description": false,
+				"options": false
 			}
 		},
 		{
@@ -4702,7 +4706,8 @@
 				"ajoutees": [4, 5],
 				"corrigees": [],
 				"specs": true,
-				"description": false
+				"description": false,
+				"options": false
 			}
 		},
 		{
@@ -5558,7 +5563,8 @@
 				"ajoutees": [3, 4, 5],
 				"corrigees": [],
 				"specs": true,
-				"description": false
+				"description": false,
+				"options": false
 			}
 		},
 		{
@@ -6658,7 +6664,8 @@
 				"ajoutees": [4, 5, 6],
 				"corrigees": [],
 				"specs": true,
-				"description": false
+				"description": false,
+				"options": false
 			}
 		}
 	]

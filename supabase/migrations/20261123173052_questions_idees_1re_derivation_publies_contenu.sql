@@ -8,8 +8,8 @@
 --   8997f7c6 « Dériver un produit » (8997f7c6.json) : variation(s) ajoutée(s) : 4, 5 ; specs modifiées
 --   d58208eb « Lire un nombre dérivé sur un graphique » (d58208eb.json) : variation(s) ajoutée(s) : 3, 4, 5 ; specs modifiées
 --   f1440b52 « Dériver un quotient » (f1440b52.json) : variation(s) ajoutée(s) : 4, 5, 6 ; specs modifiées
---   Champs écrits : variations, specs, description. Titre, nœud, points, tags, niveaux,
---   statut : inchangés. Aucune variation retirée ni déplacée (indices des réponses d'élèves).
+--   Champs écrits : variations, specs, description, et options là où l'en-tête le dit. Titre,
+--   nœud, points, tags, niveaux, statut : inchangés. Aucune variation retirée ni déplacée (indices des réponses d'élèves).
 -- ============================================================================
 -- Fichier GÉNÉRÉ par scripts/questions/migration-contenu.ts — ne pas éditer à la main.
 -- Source : scripts/questions/idees-1re-derivation-publies. Contenu relevé en prod le 2026-11-23.
