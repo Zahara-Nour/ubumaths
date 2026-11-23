@@ -21,7 +21,8 @@ import {
 	allowClipboard,
 	readClipboard,
 	showCards,
-	gotoRedirected
+	gotoRedirected,
+	waitVirtualKeyboard
 } from './helpers/atelier';
 
 /**
@@ -1204,6 +1205,7 @@ async function typeInMathConsole(page: Page, keys: string): Promise<void> {
 	await expect(async () => {
 		await field.click();
 		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
+		await waitVirtualKeyboard(page, field);
 		await page.keyboard.type(keys);
 		expect(await mathValue(field)).not.toBe('');
 	}).toPass();
