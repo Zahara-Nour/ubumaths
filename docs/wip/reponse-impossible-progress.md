@@ -8,14 +8,16 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, corrections de la revue commitées, PR ouverte._
+_Mis à jour le 2026-11-23, corrections de la revue commitées ; refonte du bouton validée, à coder._
 
-- **État** : outil codé, revu (Opus), corrections commitées (39 + 4 tests), PR ouverte, CI en
-  cours · **Prochaine action** : CI verte → merger ; puis seconde PR : variations Δ < 0 de 604f83b7
-  (Q6) · **En attente de David** : essai du bouton par `pnpm lien` (modèle d'essai local
-  `632e3012-…`) · **Pièges en cours** : la base locale a été recopiée de la prod par une autre
-  session vers 06:12 (modèle d'essai perdu, recréé) ; MathLive change ’ en ' dans `\text{}` ·
-  **Worktree / branche** : `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`, serveur 5176.
+- **État** : outil codé, revu (Opus), corrections commitées (41 + 4 tests verts), PR PAS ouverte ·
+  **Prochaine action** : refonte validée par David (section « 2026-11-23 — bouton : état à part »
+  ci-dessous) : bouton à état propre, case vidée et grisée, juge qui regarde le bouton d'abord ;
+  tests d'abord, puis doc, revue `code-reviewer` (Opus), PR · **En attente de David** : rien ·
+  **Pièges en cours** : la base locale a été recopiée de la prod par une autre session vers 06:12
+  (modèle d'essai perdu : le recréer, `create-questions.ts --dir` en base locale) ; MathLive change
+  ’ en ' dans `\text{}` · **Worktree / branche** : `../ubumaths-wt-reponse-impossible`,
+  `feat/reponse-impossible` (serveur arrêté).
 
 ## Historique
 
@@ -77,3 +79,20 @@ Questions (recommandation entre parenthèses) :
   `impossible` (témoin `frac` : 164).
 - Revue Opus : erreur prévue `impossible` lue en lettres ; aller-retour MathLive non testé (’ → ')
   ; boutons parasites par `blankDefaults` ; casse ; message trompeur. Tout corrigé avant la PR.
+
+### 2026-11-23 — bouton : état à part (décision de David)
+
+- David, après essai : « quand je clique sur le bouton, le champ MathLive se remplit avec le contenu
+  du bouton. ce n'est pas ce qu'on veut […] le juge doit d'abord regarder si le bouton a été
+  activé ». Aujourd'hui le bouton écrit `\text{<texte>}` dans la case et le juge le reconnaît.
+- Validé (« je valide les modifications ») :
+  - clic → bouton enfoncé, case VIDÉE et GRISÉE (on ne tape plus dedans) ; second clic → bouton
+    relâché, case libre et vide ;
+  - juge : bouton enfoncé → juste si l'attendue est `impossible`, faux sinon, sans lire la case ;
+    sinon la case est jugée comme aujourd'hui ;
+  - enregistré : une marque réservée au bouton, impossible à taper ; le prof voit toujours le texte
+    du bouton dans ses résultats (Q5 inchangée) ;
+  - changement de la phase 0 : taper n'annule plus le bouton (case grisée tant qu'il est enfoncé).
+- Conséquences à revoir : `isImpossibleAnswer` (plus de `\text{}` relu par MathLive, le test
+  d'aller-retour ’ → ' change de sens), affichage de la réponse au prof, erreurs prévues
+  `impossible`.
