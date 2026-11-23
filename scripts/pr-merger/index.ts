@@ -28,6 +28,8 @@
  * Sans <n> : la PR de la branche courante. `--essai` : dit ce qui serait fait, sans
  * attendre ni la CI ni le verrou, et s'arrête avant le merge.
  * PR déjà mergée : seulement le rangement. Ne joue jamais `pnpm db:migrate`.
+ * Une PR mergée par ce lancement : sa durée (attente de la CI comprise) est notée
+ * pour `pnpm durees` (scripts/durees/noter.sh).
  * Ne reconnaît pas une tâche planifiée : c'est à la session de ne pas la lancer
  * (CLAUDE.md § Git Workflow).
  *
@@ -36,6 +38,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -120,6 +123,15 @@ function fichiersDeLaPr(n: string): string[] {
 	const r = gh('pr', 'diff', n, '--name-only');
 	if (!r.ok) arreter(1, '⛔ Fichiers de la PR illisibles :', r.sortie, 'Rien n’est mergé.');
 	return r.stdout.split('\n').filter(Boolean);
+}
+
+/** Le texte de scripts/durees/noter.sh, ou `null` : une durée non notée n'arrête rien. */
+function lireLeNoteur(): string | null {
+	try {
+		return readFileSync(resolve(SCRIPTS, 'durees/noter.sh'), 'utf8');
+	} catch {
+		return null;
+	}
 }
 
 function deployEnCours(): boolean {
@@ -283,6 +295,10 @@ function ranger(branche: string): string[] {
 }
 
 async function main(): Promise<void> {
+	const debut = Math.floor(Date.now() / 1000);
+	// Lu maintenant : lancée depuis le worktree qu'elle retire, la commande ne
+	// trouverait plus le script au moment de noter sa durée.
+	const noteur = lireLeNoteur();
 	const args = process.argv.slice(2);
 	const essai = args.includes('--essai');
 	const reste = args.filter((a) => a !== '--essai');
@@ -346,6 +362,9 @@ async function main(): Promise<void> {
 
 	const restes = ranger(pr.headRefName);
 	for (const r of restes) dire(`⚠️ ${r}`);
+	// Un rangement seul (PR déjà mergée) n'a pas tout joué : pas une mesure.
+	if (!dejaMergee && noteur !== null)
+		spawnSync('bash', ['-s', '--', 'pr-merger', String(debut)], { input: noteur });
 
 	const suite = ['« Reprendre ici » du journal du chantier'];
 	if (aMigrer.length > 0)

@@ -53,6 +53,20 @@ Référence validée par David (« oui ») sur les 6 exécutions complètes des 
 - **Phases de moins de 20 s** (« CI Summary », « Porte de la CI ») : jamais dans la référence, pas montrées.
 - **Relevé du matin** : launchd sur le Mac mini (6 h 40), pas un workflow GitHub : le canal ntfy n'existe que sur la machine.
 
+## PR 2 : le Mac mini et les tests d'intégration (2026-11-23)
+
+Ce qui est mesuré, et les choix faits en codant (à confirmer par David avec la référence) :
+
+- **Journal du Mac mini** : `~/.local/state/durees/local.csv`, une ligne `date;commande;secondes` écrite par `scripts/durees/noter.sh`. Commandes : `check:incremental`, `test:server`, `test:client`, `test:integration` (par `scripts/durees/chrono.sh`), le pre-push, `pnpm pr:merger`.
+- **Verte et entière seulement**, même règle que la CI : un rejeu de `check:incremental` ne compte pas ; un test lancé avec un chemin ou une option non plus (c'est le cas ordinaire en local : la suite entière y est rare, ces lignes resteront souvent « trop peu de mesures ») ; un `pr:merger` qui ne fait que ranger non plus.
+- **`pr:merger`** : durée entière, attente de la CI comprise (c'est ce que dit la phase 0). Elle double donc en partie « ouverture → merge ».
+- **Plancher à 5 s sur le Mac mini** (20 s pour la CI) : `check:incremental` dure 18 s, il n'entrerait jamais dans la référence sinon.
+- **Rien n'est noté** en CI, sur Vercel, ni depuis un test (variable `VITEST`) : les tests des scripts lancent les vrais `check-incremental.sh` et `pr-merger`, ils auraient rempli le journal de fausses durées.
+- **Tests d'intégration** : seule une suite entière compte = 4 morceaux qui ont tous joué l'étape des tests, première tentative verte. Deux phases, parce que le contenu diffère : la nuit (tous les tests) et sur une PR (sans les tests de migration de données). Limite connue : une PR qui joue plus de 40 tests touchés tourne aussi en 4 morceaux et compte comme entière ; GitHub ne donne pas la portée, et le cas est rare.
+- **Suite de la nuit** : une par jour, donc la règle de la mise en prod (les 5 dernières, alerte seulement s'il y en a eu une dans la journée). Le cron de 2 h 17 UTC part en fait vers 9 h 45 à 10 h 45 UTC : la mesure a une vingtaine d'heures au relevé de 6 h 40.
+- **Premières mesures** (2026-11-23) : suite entière sur une PR 6 min 46 (2 mesures) ; suite de la nuit du 22 : 6 min 58 (avant la date de la référence, donc pas lue) ; `check:incremental` 31 s à froid dans un worktree neuf.
+- **Référence** : aucune pour ces phases tant que David ne l'a pas validée ; il faut 5 mesures par phase (5 nuits pour la suite de la nuit).
+
 ## Revue de la PR 1 (`code-reviewer`, 2026-11-23) : les 6 points corrigés avant l'ouverture
 
 `deploy-prod.sh` : aucun risque trouvé (les notes de durée ne peuvent pas le faire échouer).
