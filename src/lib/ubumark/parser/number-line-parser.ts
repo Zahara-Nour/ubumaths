@@ -29,6 +29,11 @@
  * l'intervalle que l'élève dessine (bornes sur des graduations) ; masqué dans
  * l'énoncé envoyé : `representer: ?` (demi-droite), `representer: ? ; ?` (borné).
  *
+ * Zoom (outil n° 54, `docs/wip/droite-zoom-progress.md`) : `zoom: 12.4 ; 12.5 ; step 0.01`
+ * (+ `major 10`, `labels 12.4, 12.5`) — une droite agrandie sous la précédente, ses deux
+ * bouts sur des graduations de la droite du dessus ; 4 zooms au plus, sans étiquette si
+ * `labels` n'est pas écrit ; ni `placer:`, ni `representer:`, ni `segments:`, ni `scale: log`.
+ *
  * @module ubumark/parser/number-line-parser
  */
 
@@ -63,7 +68,8 @@ const BLOCK_KEYS = [
 	'points',
 	'segments',
 	'arrows',
-	'hidden'
+	'hidden',
+	'zoom'
 ];
 
 // ============================================================================
@@ -523,6 +529,179 @@ function parseRepresenter(
 }
 
 // ============================================================================
+// ZOOMS
+// ============================================================================
+
+/** Zooms à la suite au plus (6N1H-4 en demande 4) */
+const MAX_ZOOMS = 4;
+/** Graduations au plus sur une droite (principale ou zoom) */
+const MAX_GRADUATIONS = 500;
+
+/** Une ligne `zoom:` lue : sa valeur et où elle est */
+interface ZoomLine {
+	value: string;
+	lineNum: number;
+	content: string;
+}
+
+/**
+ * Bout de zoom `value` sur la droite du dessus (`above`) : le message s'il est
+ * dehors ou entre deux graduations, sinon null
+ */
+function zoomEndError(shown: string, value: number, above: NumberLineConfig): string | null {
+	const startNum = numericValue(above.start);
+	const endNum = numericValue(above.end);
+	const stepNum = numericValue(above.step);
+	const tolerance = 1e-9 * Math.max(1, Math.abs(stepNum));
+	if (value < startNum - tolerance || value > endNum + tolerance) {
+		return `zoom : ${shown} est hors de la droite du dessus (de ${frenchNumber(startNum)} à ${frenchNumber(endNum)})`;
+	}
+	const steps = (value - startNum) / stepNum;
+	if (Math.abs(steps - Math.round(steps)) * stepNum > tolerance) {
+		return `zoom : ${shown} n’est pas sur une graduation de la droite du dessus (de ${frenchNumber(stepNum)} en ${frenchNumber(stepNum)} depuis ${frenchNumber(startNum)})`;
+	}
+	return null;
+}
+
+/**
+ * `zoom: 12.4 ; 12.5 ; step 0.01 ; major 10 ; labels 12.4, 12.5` : la droite
+ * agrandie, ou null (messages ajoutés à `errors`). `above` : la droite du dessus.
+ */
+function parseZoom(
+	zoom: ZoomLine,
+	above: NumberLineConfig,
+	errors: NumberLineParseError[]
+): NumberLineConfig | null {
+	const at = { line: zoom.lineNum, content: zoom.content };
+	const fail = (message: string) => {
+		errors.push({ message, ...at });
+		return null;
+	};
+	const parts = zoom.value.split(';').map((p) => p.trim());
+	if (parts.length < 2 || !parts[0] || !parts[1]) {
+		return fail('zoom : début ; fin ; step … (zoom: 12.4 ; 12.5 ; step 0.01)');
+	}
+	const [startWritten, endWritten, ...options] = parts;
+	let stepWritten: string | undefined;
+	let major = 1;
+	let labelsWritten: string | undefined;
+	for (const option of options) {
+		const match = option.match(/^(step|major|labels)\s+(.+)$/i);
+		if (!match) {
+			return fail(`zoom : « ${option} » inconnu (step, major ou labels)`);
+		}
+		const [, name, written] = match;
+		const key = name.toLowerCase();
+		if (key === 'step') stepWritten = written.trim();
+		else if (key === 'labels') labelsWritten = written.trim();
+		else {
+			major = Number(written.trim());
+			if (!Number.isInteger(major) || major < 1) {
+				return fail(`zoom : major « ${written.trim()} », entier positif`);
+			}
+		}
+	}
+	if (stepWritten === undefined)
+		return fail('zoom : step manquant (zoom: 12.4 ; 12.5 ; step 0.01)');
+
+	const before = errors.length;
+	const start = resolveExpression(startWritten, errors, zoom.lineNum, zoom.content);
+	const end = resolveExpression(endWritten, errors, zoom.lineNum, zoom.content);
+	const step = resolveExpression(stepWritten, errors, zoom.lineNum, zoom.content);
+	if (!start || !end || !step || errors.length > before) return null;
+
+	const startNum = safeNumericValue(start);
+	const endNum = safeNumericValue(end);
+	const stepNum = safeNumericValue(step);
+	if (![startNum, endNum, stepNum].every(Number.isFinite)) return fail('zoom : valeur illisible');
+	if (startNum >= endNum) {
+		return fail(
+			`zoom : le début (${frenchNumber(startNum)}) doit être plus petit que la fin (${frenchNumber(endNum)})`
+		);
+	}
+	// Tolérance : 12.5 - 12.4 vaut 0.0999…, `step 0.1` est pourtant juste
+	const length = endNum - startNum;
+	const tolerance = 1e-9 * Math.max(1, length);
+	if (stepNum <= 0 || stepNum > length + tolerance) {
+		return fail(
+			`zoom : step ${frenchNumber(stepNum)} doit être positif et pas plus grand que le zoom`
+		);
+	}
+	// Le pas tombe juste sur la fin : sinon le bout du zoom, relié au pointillé, n'aurait pas de graduation
+	const steps = length / stepNum;
+	if (Math.abs(steps - Math.round(steps)) * stepNum > tolerance) {
+		return fail(
+			`zoom : step ${frenchNumber(stepNum)} ne tombe pas juste de ${frenchNumber(startNum)} à ${frenchNumber(endNum)}`
+		);
+	}
+	const ticks = Math.round(steps) + 1;
+	if (ticks > MAX_GRADUATIONS) {
+		return fail(`zoom : ${ticks} graduations, ${MAX_GRADUATIONS} au plus (augmenter step)`);
+	}
+	for (const value of [startNum, endNum]) {
+		const message = zoomEndError(frenchNumber(value), value, above);
+		if (message) return fail(message);
+	}
+
+	const labels = labelsWritten ? parseValueList(labelsWritten, errors) : [];
+	if (errors.length > before) return null;
+	const labelOutside = labels.find((label) => {
+		const v = safeNumericValue(label);
+		return !(v >= startNum - tolerance && v <= endNum + tolerance);
+	});
+	if (labelOutside) {
+		return fail(
+			`zoom : labels ${labelOutside.expression} est hors du zoom (de ${frenchNumber(startNum)} à ${frenchNumber(endNum)})`
+		);
+	}
+
+	return {
+		start,
+		end,
+		step,
+		major,
+		labels,
+		hidden: [],
+		arrows: false,
+		scale: 'linear',
+		autoLabels: false
+	};
+}
+
+/**
+ * Les zooms d'une droite, chacun dans la droite du dessus ; null si l'un est refusé
+ * (messages ajoutés à `errors`)
+ */
+function parseZooms(
+	zoomLines: ZoomLine[],
+	main: NumberLineConfig,
+	others: { placer: boolean; representer: boolean; segments: boolean },
+	errors: NumberLineParseError[]
+): NumberLineConfig[] | null {
+	if (zoomLines.length > MAX_ZOOMS) {
+		errors.push({ message: `zoom : ${MAX_ZOOMS} zooms au plus (${zoomLines.length} écrits)` });
+		return null;
+	}
+	const refused = [
+		others.placer && 'placer:',
+		others.representer && 'representer:',
+		others.segments && 'segments:',
+		main.scale === 'log' && 'scale: log'
+	].filter(Boolean);
+	if (refused.length > 0) {
+		errors.push({ message: `zoom : pas encore possible avec ${refused.join(', ')}` });
+		return null;
+	}
+	const zooms: NumberLineConfig[] = [];
+	for (const zoomLine of zoomLines) {
+		const zoom = parseZoom(zoomLine, zooms.at(-1) ?? main, errors);
+		if (!zoom) return null;
+		zooms.push(zoom);
+	}
+	return zooms;
+}
+
+// ============================================================================
 // CONTENT PARSING
 // ============================================================================
 
@@ -549,6 +728,7 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 	let placerExpr: string | undefined;
 	let representerExpr: string | undefined;
 	let caseIndex: number | undefined;
+	const zoomLines: ZoomLine[] = [];
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i].trim();
@@ -620,6 +800,9 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 					caseIndex = Number(value);
 				}
 				break;
+			case 'zoom':
+				zoomLines.push({ value, lineNum, content: line });
+				break;
 			case 'arrows':
 				arrows = value.toLowerCase() === 'true';
 				break;
@@ -688,7 +871,6 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 		});
 	}
 
-	const MAX_GRADUATIONS = 500;
 	if (stepNum > 0) {
 		const estimatedTicks = Math.ceil((endNum - startNum) / stepNum) + 1;
 		if (estimatedTicks > MAX_GRADUATIONS) {
@@ -796,11 +978,29 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 		scale
 	};
 
+	const zooms =
+		zoomLines.length > 0
+			? parseZooms(
+					zoomLines,
+					config,
+					{
+						placer: placerExpr !== undefined,
+						representer: representerExpr !== undefined,
+						segments: segments.length > 0
+					},
+					errors
+				)
+			: null;
+	if (errors.length > 0) {
+		return { node: null, errors, warnings };
+	}
+
 	const node: NumberLineNode = {
 		type: 'number-line',
 		config,
 		points,
 		segments,
+		...(zooms && { zooms }),
 		...(placer && { placer }),
 		...(representer && { representer }),
 		...(caseIndex !== undefined && { caseIndex })

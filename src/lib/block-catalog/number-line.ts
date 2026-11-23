@@ -97,6 +97,19 @@ export const numberLineEntry: BlockCatalogEntry = {
 			]
 		},
 		{
+			title: 'Zooms',
+			settings: [
+				{
+					key: 'zoom',
+					values:
+						'début ; fin ; step pas, puis major n et labels a, b si besoin (zoom: 12.4 ; 12.5 ; step 0.01)',
+					defaultValue: 'aucun',
+					description:
+						'Une droite agrandie sous la précédente, reliée par deux pointillés au morceau qu’elle agrandit. Début et fin sur des graduations de la droite du dessus ; une ligne zoom: par zoom, 4 au plus, chacun dans le précédent. Sans labels, aucun nombre écrit : l’élève les retrouve. Les points se dessinent sur toutes les droites où ils tombent. Ni placer:, ni representer:, ni segments:, ni scale: log avec un zoom.'
+				}
+			]
+		},
+		{
 			title: 'Dans une question : placer un point',
 			settings: [
 				{
@@ -190,6 +203,21 @@ export const numberLineEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'x ⩾ 2 : crochet tourné vers les solutions en 2, trait jusqu’au bout de la flèche. -inf s’écrit à gauche (]-inf, 3]) ; l’infini est toujours exclu.'
+		},
+		{
+			title: 'Lire au millième par zooms successifs',
+			source: fence(
+				'line',
+				'start: 12',
+				'end: 13',
+				'step: 0.1',
+				'labels: 12, 13',
+				'points: A=12.4, C=12.5, B=12.473',
+				'zoom: 12.4 ; 12.5 ; step 0.01',
+				'zoom: 12.47 ; 12.48 ; step 0.001'
+			),
+			explanation:
+				'Chaque zoom agrandit le morceau entre deux graduations de la droite du dessus ; B se lit sur le dernier. Les zooms n’ont aucun nombre écrit : l’élève les retrouve.'
 		},
 		{
 			title: 'Placer un nombre (question)',
