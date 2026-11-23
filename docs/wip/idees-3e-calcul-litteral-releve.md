@@ -42,6 +42,35 @@ la dernière réduite) ; entiers relatifs non nuls seulement ; lettre souvent ti
   (a·10 ou a·100 ± b, a ∈ [2 ; 9], b ∈ [1 ; 4] pour les carrés, [1 ; 9] pour le produit). Réponse
   numérique. Correction : les deux méthodes côte à côte.
 
+### Lot B (3L11-6 à 3L11-17), lu le 2026-11-23
+
+- **3L11-6** — Factoriser avec un facteur commun apparent : `c(ax+b) ± x(ax+b)`, `(ax+b)(cx+d) ±
+(ax+b)(ex+f)` (4 ordres des facteurs). a ∈ [1 ; 3], b ∈ ±[1 ; 5], c ∈ [2 ; 5], d ∈ ±[2 ; 5],
+  e ∈ [1 ; 6], f ∈ ±[1 ; 5]. Jugé « factorisé » (égal, pas une somme). Correction : facteur commun
+  en vert.
+- **3L11-7** — `(ax+b)²`, `(b+ax)²`, `(ax−b)²`, `(b−ax)²` par la double distributivité ; a, b ∈
+  [1 ; 11], lettre tirée. Jugement laxiste (une forme non développée passe).
+- **3L11-8** — Yohaku multiplicatif 2 × 2 : cases `ax+b` (a, b ∈ [1 ; 10]), produits des lignes et
+  des colonnes donnés ; remplir la grille (plusieurs solutions). Seuls les produits sont vérifiés.
+- **3L11-9** — Rose multiplicative : valeurs `ax+b` autour d'un cercle, produits deux à deux à
+  calculer (ou facteurs à retrouver). Figure en rose.
+- **3L11-10** — Table de double distributivité : `(x+b)(x+d)`, `(ax±b)(cx±d)` ; a, b, c, d ∈ [2 ; 9].
+  Table 2 × 2 à remplir, puis développement, puis développement réduit.
+- **3L11-11** — Sommes de monômes à plusieurs lettres (x, y, z, a, b, c, k), degré 2 à 3,
+  coefficients entiers [−10 ; 10] ou fractions ; réduite exigée, fractions irréductibles.
+  (Programme suisse.)
+- **3L11-12** — Produit de 2 ou 3 monômes à plusieurs lettres (ex. 3x²y × (−2xy³)) ; réduit exigé.
+- **3L11-13** — `(P) + (Q)`, `(P) − (Q)`, `−(P) ± (Q)`, polynômes à plusieurs lettres, degré ≤ 3 ;
+  réduit exigé.
+- **3L11-14** — Distributivité simple et double sur des polynômes à 2 lettres, degré ≤ 2, signe
+  moins devant possible ; réduit exigé.
+- **3L11-15** — Identités remarquables : `(x±a)²`, `(x+a)(x−a)`, `(ax±by)²`, `(ax+by)(ax−by)` (et
+  `(x+a)(x+b)`, suisse) ; coefficients [1 ; 10] ou fractions. Réduite exigée, sans ×.
+- **3L11-16** — Identité à trous : `x² + …… + 9 = (……)²` ; trouver le terme central puis la forme
+  factorisée ; `(x±a)²`, `(ax±b)²`, coefficients [1 ; 12] ou fractions.
+- **3L11-17** — Table de simple distributivité `a(bx+c)`, `ax(bx+c)` (1 ligne, 2 colonnes) puis
+  développement réduit sans ×.
+
 ### Lot D (3L13-6 à 3L16), lu le 2026-11-23
 
 - **3L13-6** — Problèmes résolus par une équation : parking (véhicules à 2 et 4 roues, total
