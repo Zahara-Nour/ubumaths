@@ -2,19 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3049 ; #3051 ouverte._
+_Mis à jour le 2026-11-23, après #3051._
 
-- **État** : #3049 en prod (rangement + contenu). Série de relecture enregistrée par David
-  (`1cea2ab1`), id commité, PR #3051 ouverte (CI à suivre puis `pnpm pr:merger 3051`). David a
-  validé les 9 modèles dans le chat (« je valide les modèles », 2026-11-23 ; aucun verdict en base).
-  `publier-lot.ts` en simulation : les 2 brouillons passent le contrôle.
-- **Prochaine action** : merger #3051 ; donner à David
+- **État** : #3049 en prod (rangement + contenu) ; #3051 (série de relecture `1cea2ab1`) mergée.
+  David a validé les 9 modèles dans le chat (« je valide les modèles », 2026-11-23 ; aucun verdict
+  en base). `publier-lot.ts` en simulation : les 2 brouillons passent le contrôle.
+- **Prochaine action** : après la publication par David, vérifier en prod ; tableau de répartition :
+  rubrique « publiée » ; clôture (versement du journal).
+- **En attente de David** :
   `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-1re-derivation-neufs --publier`
-  (depuis le dépôt principal à jour) ; vérifier en prod ; tableau de répartition : rubrique
-  « publiée » ; clôture (versement du journal).
-- **En attente de David** : la commande `publier-lot … --publier`.
+  (depuis le dépôt principal à jour).
 - **Pièges en cours** : base LOCALE : migration de contenu jouée sous l'ancien nom `20261123165942`.
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-derivation-serie`, `chore/idees-1re-derivation-serie` (retiré par `pr:merger`).
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Journal
 
