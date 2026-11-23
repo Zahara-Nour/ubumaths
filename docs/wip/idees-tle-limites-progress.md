@@ -5,15 +5,14 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3015._
+_Mis à jour le 2026-11-23, rubrique publiée._
 
-- **État** : série de relecture des 7 publiés enregistrée en prod (`f3e6eb2c`, fichier
-  `scripts/series/T_SPE-relecture-limites-publies.json`) · **Prochaine action** : lire les verdicts
-  de `/dev/modeles`, corriger les « À revoir », puis `publier-lot.ts` en simulation · **En attente
-  de David** : relecture dans `/dev/modeles?serie=f3e6eb2c-d5c7-4551-bbf7-2e0c7d051693` (publiés) et
-  `/dev/modeles?noeud=T_SPE~e6e7e3e3-bf3c-482c-8e47-275a639b9bfe&statut=draft` (4 brouillons) ·
-  **Pièges en cours** : `{{e}}` interdit (Euler) ; F3 attend l'outil n° 50 de
-  `outils-manquants.md` · **Worktree / branche** : aucun (retiré après #3015).
+- **État** : rubrique publiée — 4 modèles neufs publiés en prod le 2026-11-23 (vérifié), 15
+  variations des 7 publiés en ligne ; relecture validée par David · **Prochaine action** : F3 seul,
+  quand l'outil n° 50 de `outils-manquants.md` existera (cacher une limite infinie dans un tableau
+  de variations) ; sinon clore le chantier (versement, archivage du journal) · **En attente de
+  David** : rien · **Pièges en cours** : `{{e}}` interdit (Euler) · **Worktree / branche** :
+  aucun.
 
 ## Historique
 
@@ -102,3 +101,10 @@ _Mis à jour le 2026-11-23, après #3015._
 - Série « Relecture — limites de fonctions de Terminale, 7 modèles publiés complétés » : simulation
   verte, enregistrée en prod par David (`f3e6eb2c-d5c7-4551-bbf7-2e0c7d051693`). Brouillons relus
   sur la notion (`?noeud=T_SPE~e6e7e3e3-…&statut=draft`).
+
+### 2026-11-23 — relecture validée, publication
+
+- David : « je valide les modèles » (série `f3e6eb2c` et les 4 brouillons, dans `/dev/modeles`).
+  `publier-lot.ts` en simulation vert, publication lancée par David ; les 4 sont `published` en
+  prod (MCP lecture seule). Tableau de répartition : « publiée (2026-11-23) », réservations des 7
+  modèles publiés levées.
