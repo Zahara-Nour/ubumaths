@@ -207,6 +207,18 @@ export function estRare(phase: string): boolean {
 	return phase.startsWith('prod:') || phase === 'integration:nuit';
 }
 
+/**
+ * Phases montrées en simple information : jamais de référence, donc jamais
+ * d'alerte. `pr:merger` compte l'attente de la CI, déjà surveillée par « CI
+ * entière » et « ouverture → merge » ; `test:integration` du Mac mini compte le
+ * démarrage de la pile, et la suite est déjà surveillée en CI.
+ */
+const SIMPLE_INFORMATION = new Set(['local:pr-merger', 'local:test-integration']);
+
+export function estSimpleInformation(phase: string): boolean {
+	return SIMPLE_INFORMATION.has(phase);
+}
+
 /** La durée sous laquelle une phase n'entre pas dans la référence. */
 function plancher(phase: string): number {
 	return phase.startsWith('local:') ? PLANCHER_LOCAL_S : PLANCHER_S;
@@ -387,7 +399,8 @@ export function comparer(mesures: Mesure[], reference: Reference, maintenant: Da
 			const siennes = lisibles.filter((m) => m.phase === phase);
 			const jour = duJour(phase, siennes, maintenant).map((m) => m.secondes);
 			const semaine = siennes.filter((m) => m.date >= semaineDepuis).map((m) => m.secondes);
-			const ref = reference.phases[phase] ?? null;
+			// Une phase en simple information ignore même une référence écrite à la main.
+			const ref = estSimpleInformation(phase) ? null : (reference.phases[phase] ?? null);
 			const medianeJour = mediane(jour);
 			let verdict: Verdict = 'normal';
 			if (ref === null) verdict = 'sans-reference';
@@ -426,6 +439,10 @@ function cellule(valeur: number | null, n: number): string {
 	return valeur === null ? '—' : `${formaterDuree(valeur)} (${n})`;
 }
 
+function sansReference(phase: string): string {
+	return estSimpleInformation(phase) ? 'simple information' : 'pas de référence';
+}
+
 /** Le tableau de `pnpm durees` : entre parenthèses, le nombre de mesures. */
 export function tableau(lignes: Ligne[]): string {
 	const entete = ['Phase', 'Référence', '24 h', '7 jours', ''];
@@ -434,7 +451,7 @@ export function tableau(lignes: Ligne[]): string {
 		l.reference === null ? '—' : formaterDuree(l.reference),
 		cellule(l.jour, l.nJour),
 		cellule(l.semaine, l.nSemaine),
-		l.verdict === 'lent' ? '⚠️  LENT' : l.verdict === 'sans-reference' ? 'pas de référence' : ''
+		l.verdict === 'lent' ? '⚠️  LENT' : l.verdict === 'sans-reference' ? sansReference(l.phase) : ''
 	]);
 	const largeurs = entete.map((_, i) => Math.max(...[entete, ...corps].map((r) => r[i].length)));
 	return [entete, ...corps]
@@ -450,7 +467,8 @@ export function tableau(lignes: Ligne[]): string {
 /**
  * La référence refaite sur les mesures prises depuis `depuis` : médiane de chaque
  * phase qui a au moins 5 mesures (et dure au moins 20 s, 5 s sur le Mac mini).
- * Les autres gardent leur valeur ; `gardees` les nomme. `depuisProd` : la même
+ * Les autres gardent leur valeur ; `gardees` les nomme. Une phase en simple
+ * information n'y entre jamais, et en sort si elle y était. `depuisProd` : la même
  * date pour les phases rares (mise en prod, suite de la nuit), qui ne tiennent
  * pas dans la fenêtre de la CI.
  */
@@ -464,6 +482,10 @@ export function nouvelleReference(
 	const phases: Record<string, number> = { ...ancienne.phases };
 	const gardees: string[] = [];
 	for (const phase of new Set([...Object.keys(ancienne.phases), ...lisibles.map((m) => m.phase)])) {
+		if (estSimpleInformation(phase)) {
+			delete phases[phase];
+			continue;
+		}
 		const valeurs = lisibles.filter((m) => m.phase === phase).map((m) => m.secondes);
 		const milieu = mediane(valeurs);
 		if (valeurs.length >= MESURES_MIN && milieu !== null && milieu >= plancher(phase))

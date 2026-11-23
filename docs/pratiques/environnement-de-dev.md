@@ -215,7 +215,10 @@ pour voir une phase devenue nettement plus lente que la normale.
   laquelle aucune mesure n'est lue. **David seul la change**, par `pnpm durees --reference
 [--depuis AAAA-MM-JJ]` après un changement voulu, puis une PR ; jamais d'ajustement automatique
   (une lenteur installée deviendrait la normale). Une phase n'y entre qu'avec 5 mesures et 20 s
-  (5 s pour une commande du Mac mini : `check:incremental` en dure 18) ;
+  (5 s pour une commande du Mac mini : `check:incremental` en dure 18). `pnpm pr:merger` et
+  `test:integration` du Mac mini n'y entrent jamais : le tableau les montre en « simple
+  information », sans alerte (l'attente de la CI et la suite d'intégration sont déjà surveillées
+  côté CI) ;
 - **mesures** : jobs et étapes des exécutions de `quality.yml` sur les PR, lus chez GitHub (une
   exécution finie est gardée dans `~/.local/state/durees/runs-v1/`, seules les nouvelles sont lues).
   Une exécution où un job est sauté (PR de contenu) ne compte pas : elle ferait baisser la médiane.
