@@ -142,6 +142,11 @@ import { expectedMatrixLatex } from '../matrices/matrix-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '#lib/utils/random.ts';
 import { expectedInRequiredUnit } from '#lib/questions/units/required-unit.ts';
+import {
+	IMPOSSIBLE_EXPECTED,
+	impossibleAnswerLatex,
+	isImpossibleExpected
+} from '#lib/questions/impossible-answer.ts';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -1413,16 +1418,31 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					);
 				}
 				const isMathBlank = blankResult.blankTypes[i] === 'math';
-				const normalized = isMathBlank
-					? normalizeAnswerExpression(rawExpected, resolvedVariables)
-					: rawExpected;
+				const answerKind = blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind;
+				// Bouton « impossible » : case mathématique ordinaire seulement (ignoré sinon)
+				const impossibleLabel =
+					isMathBlank && answerKind === undefined
+						? (blank.impossibleLabel ?? resolvedVariation.blankDefaults?.impossibleLabel)
+						: undefined;
+				// Tirage sans réponse : `impossible` n'est pas une expression (lu i·m·p·o…)
+				const impossibleDraw = isMathBlank && isImpossibleExpected(rawExpected);
+				if (impossibleDraw && impossibleLabel === undefined) {
+					throw new Error(
+						`La case ${i + 1} attend « ${IMPOSSIBLE_EXPECTED} » mais n'a pas de bouton « ${IMPOSSIBLE_EXPECTED} » (impossibleLabel).`
+					);
+				}
+				const normalized = impossibleDraw
+					? IMPOSSIBLE_EXPECTED
+					: isMathBlank
+						? normalizeAnswerExpression(rawExpected, resolvedVariables)
+						: rawExpected;
 				const resolvedExpected = normalized.includes('{{')
 					? resolveExpression(normalized, resolvedVariables, random)
 					: normalized;
 				// Option du modèle : `1x-1y+0=0` → `x-y=0` (case mathématique sans unité ni
 				// ensemble ; une formule illisible reste telle quelle)
-				const answerKind = blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind;
 				const isCleanable =
+					!impossibleDraw &&
 					cleanCoefficients &&
 					isMathBlank &&
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
@@ -1433,7 +1453,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
 				const expectedAnswer = isCleanable
 					? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-					: required
+					: required && !impossibleDraw
 						? expectedInRequiredUnit(resolvedExpected, required)
 						: resolvedExpected;
 
@@ -1487,6 +1507,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					...(answerKind === 'intervalles' && openableBounds && { openableBounds: true }),
 					// Argument « à 2π près » : case ordinaire seulement
 					...(answerKind === undefined && angleModulo && { angleModulo }),
+					...(impossibleLabel !== undefined && { impossibleLabel }),
 					...calculusFields,
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })
@@ -1510,18 +1531,20 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					// Ensemble en notation intervalle : ni expression ni calcul, rendu à part
 					// Vecteur : rendu en colonne ; matrice : en pmatrix
 					resolved.expectedAnswerLatex =
-						resolved.answerKind === 'intervalles'
-							? expectedIntervalsLatex(resolved.expectedAnswer)
-							: resolved.answerKind === 'vecteur'
-								? expectedVectorLatex(resolved.expectedAnswer)
-								: resolved.answerKind === 'matrice'
-									? expectedMatrixLatex(resolved.expectedAnswer)
-									: convertToLatex(
-											resolved.expectedAnswer,
-											genericFunctions,
-											isCleanable,
-											capitalPairs
-										);
+						impossibleDraw && impossibleLabel !== undefined
+							? impossibleAnswerLatex(impossibleLabel)
+							: resolved.answerKind === 'intervalles'
+								? expectedIntervalsLatex(resolved.expectedAnswer)
+								: resolved.answerKind === 'vecteur'
+									? expectedVectorLatex(resolved.expectedAnswer)
+									: resolved.answerKind === 'matrice'
+										? expectedMatrixLatex(resolved.expectedAnswer)
+										: convertToLatex(
+												resolved.expectedAnswer,
+												genericFunctions,
+												isCleanable,
+												capitalPairs
+											);
 				}
 				if (operationAnswer !== undefined) {
 					resolved.operation = true;

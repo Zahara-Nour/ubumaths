@@ -106,6 +106,7 @@ import {
 	parseChoiceAnswer
 } from '#lib/questions/choice-case.ts';
 import { isSignCellCorrect, isSignTableCell } from '#lib/questions/sign-table-case.ts';
+import { isImpossibleAnswer, isImpossibleExpected } from '#lib/questions/impossible-answer.ts';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -826,6 +827,9 @@ function validateBlankValue(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): boolean {
+	// Bouton « impossible » ou tirage sans réponse : jugé sans rien lire
+	const impossible = impossibleVerdict(userAnswer, undefined, blank);
+	if (impossible !== undefined) return impossible;
 	// Droite à représenter : borne(s), côté et crochets
 	if (isLineToRepresentBlank(blank)) {
 		return isRepresentedIntervalCorrect(userAnswer, blank.expectedAnswer);
@@ -963,6 +967,7 @@ function roundingOnlyFeedback(
 ): string | undefined {
 	if (
 		!blank.precision ||
+		impossibleVerdict(userAnswer, undefined, blank) !== undefined ||
 		blank.answerKind === 'intervalles' ||
 		blank.answerKind === 'vecteur' ||
 		blank.answerKind === 'matrice' ||
@@ -1310,6 +1315,27 @@ function choiceBlankResult(
 	return wrong;
 }
 
+/**
+ * Case à bouton « impossible » (`impossibleLabel`), jugée AVANT toute lecture mathématique :
+ * bouton ET tirage sans réponse → juste ; l'un sans l'autre → faux (ni message de forme ni
+ * « trop complexe ») ; ni l'un ni l'autre → `undefined`, la chaîne habituelle juge.
+ * L'attendue `impossible` n'atteint ainsi jamais le parseur.
+ */
+function impossibleVerdict(
+	userAnswer: string,
+	userAnswerLatex: string | undefined,
+	blank: InstanceBlank
+): boolean | undefined {
+	const label = blank.impossibleLabel;
+	if (label === undefined) return undefined;
+	const pressed =
+		isImpossibleAnswer(userAnswer, label) ||
+		(userAnswerLatex !== undefined && isImpossibleAnswer(userAnswerLatex, label));
+	const expected = isImpossibleExpected(blank.expectedAnswer);
+	if (!pressed && !expected) return undefined;
+	return pressed && expected;
+}
+
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
 function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
 	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
@@ -1332,6 +1358,12 @@ function validateSingleBlank(
 	// 0. Empty answer — skip all checks
 	if (!userAnswer.trim()) {
 		return { isCorrect: false, status: 'empty' };
+	}
+
+	// Bouton « impossible » ou tirage sans réponse : jugé sans rien lire
+	const impossible = impossibleVerdict(userAnswer, userAnswerLatex, blank);
+	if (impossible !== undefined) {
+		return impossible ? { isCorrect: true, status: 'correct' } : { isCorrect: false };
 	}
 
 	// Case « figure » (bloc ```figure-a-completer) : chaîne à part, cf. questions/construction/
@@ -2142,6 +2174,10 @@ function matchedAnswerForm(
 
 	// Case à construire appariée : valeur écrite par le composant, forme jamais jugée
 	if (blank.construire) return { status: 'correct', violations: [] };
+	// Bouton « impossible » apparié (tirage sans réponse) : rien à lire ni à mettre en forme
+	if (impossibleVerdict(userAnswer, blankLatex, blank) === true) {
+		return { status: 'correct', violations: [] };
+	}
 
 	// Case « intervalles » appariée (valeur déjà juste) : écriture jugée par son propre module,
 	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)
@@ -2258,9 +2294,21 @@ function validateBlanksOrderIndependent(
 	// Réponse hostile ou démesurée (garde Q58) : fausse, avec son message. Les cases
 	// « intervalles » ont leur propre garde (dans `validateBlankValue`).
 	const ordinaryBlanks = blanks.every((blank) => blank.answerKind !== 'intervalles');
+	// Le bouton « impossible » (`\text{…}`) n'est pas une expression : jamais mesuré
+	const isButton = (answer: string, latex: string | undefined) =>
+		blanks.some(
+			(blank) =>
+				blank.impossibleLabel !== undefined &&
+				(isImpossibleAnswer(answer, blank.impossibleLabel) ||
+					(latex !== undefined && isImpossibleAnswer(latex, blank.impossibleLabel)))
+		);
 	if (
 		ordinaryBlanks &&
-		userAnswers.some((answer, i) => isBlankAnswerTooComplex(answer, userAnswersLatex?.[i]))
+		userAnswers.some(
+			(answer, i) =>
+				!isButton(answer, userAnswersLatex?.[i]) &&
+				isBlankAnswerTooComplex(answer, userAnswersLatex?.[i])
+		)
 	) {
 		return { isCorrect: false, feedback: ANSWER_TOO_COMPLEX_FEEDBACK };
 	}

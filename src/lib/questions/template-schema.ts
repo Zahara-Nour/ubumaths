@@ -29,6 +29,7 @@ import {
 import { genericFunctionNamesSchema } from './generic-functions';
 import { capitalPairsSchema } from './capital-pairs';
 import { hintSchema, refineHints } from './hint';
+import { IMPOSSIBLE_LABEL_MAX, IMPOSSIBLE_LABEL_PATTERN } from './impossible-answer';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -356,6 +357,17 @@ const calculusFieldsShape = {
 	initial: z.string().min(1).max(CALCULUS_TEXT_MAX).optional()
 };
 
+/** Texte du bouton « impossible » : rien qui casse le `\text{…}` écrit dans la case */
+const impossibleLabelSchema = z
+	.string()
+	.trim()
+	.min(1)
+	.max(IMPOSSIBLE_LABEL_MAX)
+	.regex(
+		IMPOSSIBLE_LABEL_PATTERN,
+		'Texte du bouton : lettres, espaces, apostrophes et traits d’union seulement'
+	);
+
 export const blankDefaultsSchema = z.object({
 	precision: precisionSchema.optional(),
 	requiredForm: requiredFormSchema.optional(),
@@ -364,6 +376,7 @@ export const blankDefaultsSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	acceptCombinatorialNotation: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
+	impossibleLabel: impossibleLabelSchema.optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
 	angleModulo: z.enum(ANGLE_MODULOS).optional(),
@@ -383,6 +396,7 @@ export const blankSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	acceptCombinatorialNotation: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
+	impossibleLabel: impossibleLabelSchema.optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
 	openableBounds: z.boolean().optional(),
 	angleModulo: z.enum(ANGLE_MODULOS).optional(),
@@ -619,6 +633,7 @@ const blankDefaultsStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		acceptCombinatorialNotation: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
+		impossibleLabel: impossibleLabelSchema.optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
 		angleModulo: z.enum(ANGLE_MODULOS).optional(),
@@ -640,6 +655,7 @@ const blankStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		acceptCombinatorialNotation: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
+		impossibleLabel: impossibleLabelSchema.optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
 		openableBounds: z.boolean().optional(),
 		angleModulo: z.enum(ANGLE_MODULOS).optional(),
