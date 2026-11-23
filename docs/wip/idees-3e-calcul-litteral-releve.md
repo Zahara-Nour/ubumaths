@@ -2,8 +2,8 @@
 
 Chantier [`idees-3e-calcul-litteral`](idees-3e-calcul-litteral-progress.md). 47 exercices d'une
 autre plateforme (codes 3L10 à 3L16, anciennes versions exclues), lus dans leur code source par
-quatre agents. Le tableau « Relevé » (verdicts ✅ / 🟡 / ❌ face à nos modèles) reste à écrire ; nos
-modèles relevés en prod sont dans le journal.
+quatre agents. Verdicts face à nos modèles : § Verdicts, en fin de fichier ; fiches de phase 0 dans le
+journal.
 
 ## Notes de lecture brutes
 
@@ -134,3 +134,71 @@ la dernière réduite) ; entiers relatifs non nuls seulement ; lettre souvent ti
   moyen, difficile).
 - **3L16** — Ratio d'un motif itératif (hérite de la 4e) : ratio « a : b : c » au rang suivant, au
   rang +2, puis au rang n (expressions en n). Une case par terme.
+
+## Verdicts (2026-11-23)
+
+Comparés aux modèles de prod (MCP, lecture seule, variations et variables lues) : les 18 modèles de
+3e des points 3-008, 3-011 à 3-016, 3-054, 3-058 et « Réduire une somme » (sans point), plus les
+voisins de 4e (4-022 à 4-025, 4-055, 4-070, 4-071, 4-081), de 5e (5-036, 5-039) et de 2de.
+Bornes : `docs/systeme/programmes/bornes/cycle4.md`. En 3e, **aucun point d'équation du premier
+degré** : ax + b = c, ax + b = cx + d et la mise en équation sont des points de 4e (4-024, 4-025,
+4-071) ; une idée de leur 3e qui en relève va donc à un modèle de 4e. Fiches (F = variation d'un
+modèle publié, N = modèle neuf) : journal, § Phase 0.
+
+Vérifié dans leur code avant verdict : 3L15-2 fait bien saisir ∅ (`\emptyset`) ; 3L11-16 est un
+texte à trous (`\ldots\ldots` remplacés par des champs).
+
+| Id        | Nos modèles                                                                                        | Verdict                                                                                                 | Fiche  |
+| --------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------ |
+| 3L10      | c32ebff9 (3-011 : q·k ± (r·m + s), deux lettres différentes, sans réduire) ; 843c3186, aeb86af9    | 🟡 manque « supprimer les parenthèses **puis réduire** », la différence de deux parenthèses, le degré 2 | F1     |
+| 3L10-1    | c32ebff9                                                                                           | 🟡 même manque (k ± (ax + b), kx ± (ax + b) réduits)                                                    | F1     |
+| 3L10-2    | c32ebff9                                                                                           | 🟡 même manque (deux parenthèses)                                                                       | F1     |
+| 3L11      | 54107079, 32a81f6f (4-022 : k(a + bx) dans les deux ordres, signés ; x(a + bx) avec x seul devant) | 🟡 manque kx(ax + b) avec k ≠ 1 et k(ax + b) + c                                                        | F2     |
+| 3L11-0    | 54107079                                                                                           | 🟡 même manque                                                                                          | F2     |
+| 3L11-1    | 1703620c (positifs), 9fefb94c (signés), 3-013                                                      | ✅                                                                                                      | —      |
+| 3L11-1b   | 9fefb94c                                                                                           | ✅                                                                                                      | —      |
+| 3L11-2    | 93a5f7a9 (3-012 : nombre × nombre × lettre) ; 77b82211 (deux lettres, degré 1)                     | 🟡 manque ax × bx = abx² et l'expression déjà réduite (ax + bx²)                                        | F3, F4 |
+| 3L11-3    | 9fefb94c (double produit seul)                                                                     | ❌ développer **et réduire** une expression composée : e − (ax + b)(cx + d), k(ax + b)(cx + d)…         | N1     |
+| 3L11-3b   | aucun                                                                                              | ❌ P ± Q, avec le signe moins devant un produit                                                         | N1     |
+| 3L11-4    | 2120ce5f, d7f2568a, dac2e771, 11607586 (4-070, dont abx² + acx)                                    | ✅ (deux lettres 7a + 21b absentes, sans intérêt propre)                                                | —      |
+| 3L11-5    | aucun                                                                                              | ❌ calculer 103², 98², 302 × 298 avec une identité remarquable                                          | N2     |
+| 3L11-6    | dcaabf69 (3-054, 5 variations)                                                                     | 🟡 manque la forme d'entrée c(ax + b) ± x(ax + b) et le « moins » avec le facteur commun en second      | F5     |
+| 3L11-7    | 18e2afca v2 à v4 ((ax ± b)², a ∈ [2 ; 5])                                                          | 🟡 manque l'ordre inversé (b − ax)², (b + ax)²                                                          | F6     |
+| 3L11-8    | aucun                                                                                              | ❌ grille à contraintes (plusieurs solutions) : outil, même famille que le n° 53                        | —      |
+| 3L11-9    | 1703620c, 9fefb94c                                                                                 | ✅ pour l'idée (des doubles produits) ; la rose est une forme, rien à reprendre                         | —      |
+| 3L11-10   | aucun                                                                                              | ❌ développer avec un tableau 2 × 2 à remplir (nos tableaux ont des trous)                              | N3     |
+| 3L11-11   | 77b82211 (degré 1)                                                                                 | 🟡 manque les termes en x² et en xy ; les coefficients fractionnaires (programme suisse) : rien         | F4     |
+| 3L11-12   | 93a5f7a9                                                                                           | 🟡 manque le produit de monômes (exemple du BO (a²b) × (bc))                                            | F3     |
+| 3L11-13   | c32ebff9                                                                                           | 🟡 (P) ± (Q) : même idée que 3L10                                                                       | F1     |
+| 3L11-14   | 9fefb94c (une lettre)                                                                              | 🟡 deux lettres, (2x + 3y)(x − y) : une variation de N1, si David la veut                               | N1     |
+| 3L11-15   | 18e2afca, 32cf5766, a6a6c491                                                                       | ✅ pour une lettre ; (ax + by)² : même variation à deux lettres que N1                                  | —      |
+| 3L11-16   | aucun en 3e ; d1648508 (2de, 2-262)                                                                | ❌ factoriser a² ± 2ab + b² (au programme : 3-058, « les trois identités »), et l'identité à trous      | N4     |
+| 3L11-17   | 54107079                                                                                           | 🟡 le tableau de simple distributivité                                                                  | F2     |
+| 3L12      | ff8082bd (x² − a²), ff9bb2fb ((bx)² − a²)                                                          | ✅ (le coefficient fractionnaire est rare au collège : rien)                                            | —      |
+| 3L12-1    | 32cf5766, a6a6c491, 18e2afca v4                                                                    | ✅                                                                                                      | —      |
+| 3L12-2    | ff9bb2fb, dcaabf69                                                                                 | 🟡 facteur commun **puis** identité (2x² − 18) ; « somme-produit » hors programme : rien                | F7     |
+| 3L12-3    | aucun                                                                                              | factorisation par groupements : hors programme → rien                                                   | —      |
+| 3L12-4    | ff9bb2fb, dcaabf69                                                                                 | 🟡 même idée (facteur commun puis identité) ; le mélange des méthodes = une série, pas un modèle        | F7     |
+| 3L13      | c81c5852 (4-024, solutions fractionnaires), dcf060e6, 53834a24, 779ee55a                           | 🟡 manque x/a = b et ax/b = c ; le « solveur » ligne par ligne = outil                                  | F8     |
+| 3L13-0    | dcf060e6, c81c5852, e32c95b0                                                                       | ✅                                                                                                      | —      |
+| 3L13-1    | 779ee55a, 8c173562 (4-025 : ax + b = cx + d seul) ; 834c734f v2 (2de)                              | 🟡 manque k(ax + b) = cx + d et k − (ax + b) = cx + d                                                   | F9     |
+| 3L13-2    | 44a3062b (4-055, quatrième proportionnelle en tableau)                                             | 🟡 manque l'égalité de quotients écrite (x/4 = 3/5, 4/x = 5/3)                                          | F10    |
+| 3L13-3    | 5e2db3d1 (4-071 : choisir l'équation parmi trois, 3 contextes)                                     | ❌ résoudre le problème jusqu'au nombre (âges, entiers consécutifs, basket, périmètre…)                 | N5     |
+| 3L13-4    | aucun                                                                                              | ❌ rectangle aux côtés en x : même modèle                                                               | N5     |
+| 3L13-5    | 43c4f21f v2, v3 (4-023, programmes A et B du premier degré), 15dd2a0f                              | 🟡 programmes équivalents **avec une identité remarquable** ((x + a)² − x²…) : 3e                       | N6     |
+| 3L13-6    | 5e2db3d1                                                                                           | ❌ parking, cinéma, fleurs : même modèle                                                                | N5     |
+| 3L13-7    | aucun                                                                                              | motifs itératifs : idée de 4e-5e, hors de cette rubrique → « Idées en attente »                         | —      |
+| 3L14      | 2ab49a6f (3-015, 5 variations, solutions fractionnaires comprises)                                 | ✅                                                                                                      | —      |
+| 3L14DNB-0 | 15dd2a0f, 43c4f21f, 2ab49a6f                                                                       | 🟡 rien à saisir chez eux ; l'idée « quels nombres de départ donnent 0 ? » (produit nul)                | F11    |
+| 3L14DNB-1 | 43c4f21f                                                                                           | même idée que N6 (démontrer A = 2B)                                                                     | N6     |
+| 3L14DNB-2 | 15dd2a0f                                                                                           | même idée que F11                                                                                       | F11    |
+| 3L15      | 2ab49a6f v3 (x(ax + b) = 0), v4 (facteur commun puis produit nul)                                  | 🟡 manque ax² + bx = 0, a²x² − b² = 0, (ax + b)² = 0 ; les cas où x² s'élimine : rien (pas de point)    | F11    |
+| 3L15-1    | 3806ee3d (3-008 : n² ≤ 144, a non carré ≤ 23, 0 ou négatif)                                        | 🟡 manque x² = carré d'une fraction (49/9)                                                              | F12    |
+| 3L15-2    | 3806ee3d v2 (x² = −n → ∅)                                                                          | 🟡 manque kx² + c = 0 (se ramener à x² = a), ∅ compris                                                  | F12    |
+| 3L15-3    | —                                                                                                  | synthèse tirée d'autres exercices : une série, pas un modèle                                            | —      |
+| 3L16      | aucun                                                                                              | ratio d'un motif : avec 3L13-7, « Idées en attente »                                                    | —      |
+| (3-017)   | aucun                                                                                              | analyse-synthèse non évaluable (décision de David, 2026-11-04) : rien                                   | —      |
+
+Bilan (47 exercices + le point 3-017, recompté sur le tableau) : 9 ✅, 23 🟡, 9 ❌ (dont 3L11-8, un
+outil), 7 sans verdict propre (hors programme, série, motifs, « même idée que »). Si tout est
+oui : **6 modèles neufs** (N1 à N6) et des variations sur **12 modèles publiés** (F1 à F12).
