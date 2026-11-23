@@ -502,7 +502,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["25\\euro"]
+			"answers": ["25\\,\\text{€}"]
 		},
 		{
 			"description": "F10 prix : troncature",
@@ -515,7 +515,7 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Le chiffre des dixièmes est $6$ : $5$ ou plus, on arrondit au-dessus."
 			},
-			"answers": ["24\\euro"]
+			"answers": ["24\\,\\text{€}"]
 		},
 		{
 			"description": "F10 prix : arrondi à la dizaine",
@@ -528,7 +528,7 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as arrondi à la dizaine d'euros : on demande l'arrondi à l'euro."
 			},
-			"answers": ["20\\euro"]
+			"answers": ["20\\,\\text{€}"]
 		},
 		{
 			"description": "F10 prix : trop précis",
@@ -541,7 +541,7 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Ta réponse est trop précise : on demande l'arrondi à l'euro."
 			},
-			"answers": ["24{,}7\\euro"]
+			"answers": ["24{,}7\\,\\text{€}"]
 		},
 		{
 			"description": "F10 longueur : 5,123 m → 5,12 m",
