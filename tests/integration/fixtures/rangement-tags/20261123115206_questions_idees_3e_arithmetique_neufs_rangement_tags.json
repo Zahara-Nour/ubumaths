@@ -1,0 +1,60 @@
+{
+	"migration": "supabase/migrations/20261123115206_questions_idees_3e_arithmetique_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "1550954d-ed8b-4ffd-b4b7-83ced8ec7dbd",
+			"title": "Décomposer un entier en facteurs premiers, sans aide",
+			"fichier": "f01-decomposer-en-facteurs-premiers-sans-aide.json",
+			"branche": "Arithmétique",
+			"notion": "Nombres premiers",
+			"sousNotion": "décomposition en facteurs premiers",
+			"point": "3-010"
+		},
+		{
+			"id": "f7d51551-3e17-4930-87aa-61835ed9692e",
+			"title": "Trouver un chiffre pour que le nombre soit divisible",
+			"fichier": "f03-chiffre-manquant-divisible.json",
+			"branche": "Arithmétique",
+			"notion": "Divisibilité",
+			"sousNotion": "critères de divisibilité",
+			"point": null
+		},
+		{
+			"id": "415db113-8612-4bef-87b7-9006a863e057",
+			"title": "Reconnaître un nombre premier",
+			"fichier": "f04-reconnaitre-un-nombre-premier.json",
+			"branche": "Arithmétique",
+			"notion": "Nombres premiers",
+			"sousNotion": "primalité",
+			"point": null
+		},
+		{
+			"id": "49a3d8ad-6467-45d1-8ee6-729241538c05",
+			"title": "Problème de partage en lots identiques",
+			"fichier": "f05-partage-en-lots-identiques.json",
+			"branche": "Arithmétique",
+			"notion": "Divisibilité",
+			"sousNotion": "multiples et diviseurs",
+			"point": null
+		},
+		{
+			"id": "f4a88e1a-9c84-4a40-ae1d-6095d771a134",
+			"title": "Engrenages et évènements qui reviennent ensemble",
+			"fichier": "f06-engrenages-evenements.json",
+			"branche": "Arithmétique",
+			"notion": "Divisibilité",
+			"sousNotion": "multiples et diviseurs",
+			"point": null
+		},
+		{
+			"id": "1c7a2f93-b51f-4d0c-9945-f145292597ae",
+			"title": "Atteindre un multiple",
+			"fichier": "f07-atteindre-un-multiple.json",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : division",
+			"sousNotion": "division euclidienne",
+			"point": null
+		}
+	],
+	"niveaux": []
+}
