@@ -6,16 +6,15 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3018._
+_Mis à jour le 2026-11-23, série de relecture publiée (PR à merger)._
 
-- **État** : migrations de rangement et de contenu (#3018) jouées en prod (`db:migrate`), vérifiées : 6
-  brouillons sur leur nœud et leur point, 590169c4 à {CM2, 6}, 16 variations ajoutées aux 10 publiés ·
-  **Prochaine action** : relecture dans `/dev/modeles` par David : brouillons par `?point=` (6-101,
-  6-106, 6-115, 6-118, 6-123), série de relecture des 10 publiés à créer (`scripts/series/creer-serie.ts`,
-  David la publie) ; puis verdicts lus en base, corrections, `publier-lot.ts` · **En attente de David** :
+- **État** : #3018 jouée en prod ; série de relecture des 10 publiés enregistrée par David
+  (f5275c46, `scripts/series/6-relecture-decimaux-publies.json`) · **Prochaine action** : relecture
+  dans `/dev/modeles` par David : brouillons par `?point=` (6-101, 6-106, 6-115, 6-118, 6-123), et la
+  série f5275c46 ; puis verdicts lus en base, corrections, `publier-lot.ts` · **En attente de David** :
   la relecture.
 - **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu.
-- **Worktree / branche** : aucun (anciens worktrees supprimés le 2026-11-23, migration périmée jetée avec l'accord de David).
+- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux-serie` / `chore/idees-6e-decimaux-serie` (fichier de la série).
 
 ## Décisions de David (2026-11-22)
 
@@ -81,3 +80,4 @@ tableau. Q3 : migration de rangement sans accès nouveau. 10 modèles publiés r
   « Décimaux : numération » (voisins sur « forme fractionnaire »), les autres sur leur sous-notion ;
   590169c4 à {CM2}. Migrations de rangement et de contenu écrites, tests verts et rouges sans elles.
 - 2026-11-22 : #3018 mergée, `db:migrate` joué (seules nos 2 migrations en attente), état vérifié en prod.
+- 2026-11-23 : série de relecture des 10 publiés simulée puis publiée par David (f5275c46).
