@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, enquête #1536 tranchée (test, pas l'app), PR ouverte._
+_Mis à jour le 2026-11-23, après #3040 (#1536 : le test, pas l'app)._
 
 - **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). #3037 en prod (v0.104.0). #1536 : la vue garde l'échelle de l'ouverture quand « Mes objets » (ouvert vide au téléphone) se replie au 1er objet et que la toile grandit (242 → 388 px) ; le test visait à l'échelle du moment, il garde désormais celle de l'ouverture (22 verts sur ordi-chrome, iphone, android). Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → #1536 ✅ → #1337 → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
-- **Prochaine action** : merger la PR de #1536 ; puis #1337 (bandeau d'atelier partagé + « Mes objets » ouvert à l'iPhone), worktree neuf.
+- **Prochaine action** : #1337 (bandeau d'atelier partagé + « Mes objets » ouvert à l'iPhone), worktree neuf.
 - **En attente de David** : notification qui couvre la barre d'outils au téléphone (Android) ; écart 1/10 (#1369) et 2 à 10 ; écart 11 (saut de la toile au 1er objet, ci-dessous) ; tâche de nuit (après R12). Laissés (reco acceptée) : Tab sur « Options » sous Safari, Échap à l'iPhone.
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets », pas une carte née d'une colonne (`showCards`) ; ne JAMAIS changer l'attendu seul ; un `test:verifs` muet peut être bloqué (2 h 41 le 2026-11-23, cause inconnue) → `--global-timeout`.
-- **Worktree / branche** : `ubumaths-wt-verifs-auto-geometrie` · `test/verifs-auto-geometrie` · serveur de dev sur 5178.
+- **Worktree / branche** : aucun (retiré après #3040).
 
 ## Phase 0 (validée le 2026-10-25)
 
