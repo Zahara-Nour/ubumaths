@@ -10,7 +10,7 @@ homographique : −∞, à gauche et à droite de la valeur interdite, +∞).
 _Mis à jour le 2026-11-23, chantier ouvert._
 
 - **État** : relevé du code fait, phase 0 écrite (ci-dessous) · **Prochaine action** : coder
-  après les réponses · **En attente de David** : validation de la phase 0, questions Q1 et Q2 ·
+  après les réponses · **En attente de David** : Q3 (QCM d'un tableau à plusieurs cases) ·
   **Pièges en cours** : `{{e}}` interdit (Euler) · **Worktree / branche** :
   `../ubumaths-wt-variation-limite-infinie`, `feat/variation-limite-infinie`.
 
@@ -86,3 +86,27 @@ L'élève voit le tableau avec ses flèches, et une case à la place de chaque l
   limite finie.
 - **Q2 — ∞ sans signe ?** (a) faux ; (b) compté comme +∞. Je recommande (a) : en Terminale on
   attend le signe.
+
+**Réponses de David (2026-11-23)**
+
+- **Q1 → case de calcul**, « on peut ajouter des erreurs prévues pour pouvoir basculer en QCM
+  facilement ».
+- **Q2 → (a)** : ∞ sans signe est faux.
+
+**Ce que la réponse à Q1 ajoute** (relevé : aujourd'hui une case de tableau ne prend **aucune**
+erreur prévue, refus dans `instance-generator.ts` ; le QCM ne vaut que pour une question à **une
+seule case**, `canBeChoice` dans `choice-from-errors.ts`)
+
+13. Une case **valeur** d'un tableau (limite ou valeur cachée) accepte des erreurs prévues, comme
+    une case de calcul ordinaire : l'élève qui répond +∞ au lieu de −∞ lit le message de l'auteur
+    (« regarde le signe de x − 3 juste à gauche de 3 »). Les cases signe, marque et flèche n'en
+    prennent pas (elles se choisissent déjà).
+14. Un tableau à **une seule** case cachée, avec des erreurs prévues, peut se poser en QCM : la
+    case affiche « … » dans le tableau, les choix (bonne réponse + jusqu'à trois erreurs
+    prévues, mélangés) sont sous le tableau.
+
+- **Q3 — tableau à plusieurs cases cachées, en QCM ?** (a) pas dans ce chantier : l'auteur écrit
+  une variation par limite cachée pour la version QCM, et le QCM à plusieurs cases va dans
+  `outils-manquants.md` ; (b) dans ce chantier : chaque case du tableau devient son propre petit
+  choix. Je recommande (a) : le QCM à plusieurs cases n'existe nulle part aujourd'hui, c'est un
+  outil à part, qui servira aussi hors des tableaux.
