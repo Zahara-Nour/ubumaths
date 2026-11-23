@@ -285,6 +285,12 @@ export interface Alternative {
 	readonly summary?: readonly RenderedStep[];
 	/** Une simplification qui change le domaine (tidy-conditions) : sa réponse et ses conditions. */
 	readonly domain?: DomainFacts;
+	/**
+	 * La phrase de la note que l'autre écriture rend caduque, retirée quand elle
+	 * est montrée : « On peut simplifier davantage pour x ≠ −1… » ne se lit plus
+	 * sous `x − 1, pour x ≠ −1` (E9 du chantier ecarts-verifs).
+	 */
+	readonly outdatedNote?: string;
 }
 
 /** Ce qu'une saisie a produit. */
@@ -3781,12 +3787,11 @@ function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean):
 	// dit, dans les deux modes (tidy-conditions § 5, L1)
 	if (assumed) return result;
 	if (mode === 'keep') {
+		const further = simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined);
 		return {
 			...result,
-			note: joinedNote(
-				result.note,
-				simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined)
-			)
+			note: joinedNote(result.note, further),
+			alternative: { ...alternative, outdatedNote: further }
 		};
 	}
 	// Sans écriture mathématique de départ (« rien à factoriser »), rien à basculer
@@ -4035,7 +4040,17 @@ function alternativeWithDecimalComma(alternative: Alternative | undefined): {
 } {
 	return alternative === undefined
 		? {}
-		: { alternative: { ...alternative, latex: decimalCommaLatex(alternative.latex) } };
+		: {
+				alternative: {
+					...alternative,
+					latex: decimalCommaLatex(alternative.latex),
+					// La note passe à la virgule (`decimalCommaProse`) : la phrase à
+					// retirer aussi, sinon elle ne s'y retrouve plus (revue de E9)
+					...(alternative.outdatedNote !== undefined && {
+						outdatedNote: decimalCommaProse(alternative.outdatedNote)
+					})
+				}
+			};
 }
 
 /**

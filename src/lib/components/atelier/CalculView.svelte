@@ -518,6 +518,19 @@
 	}
 
 	/**
+	 * La note montrée : sans la phrase que l'autre écriture, une fois basculée,
+	 * rend caduque (« On peut simplifier davantage… » sous la simplification).
+	 */
+	function shownNote(entry: Entry): string | undefined {
+		const outdated = entry.alternative?.outdatedNote;
+		if (entry.note === undefined || outdated === undefined || !toggled.includes(entry.id)) {
+			return entry.note;
+		}
+		const rest = entry.note.replace(outdated, '').trim();
+		return rest === '' ? undefined : rest;
+	}
+
+	/**
 	 * Le rendu mathématique d'une ligne, ou `null` s'il n'y en a pas de sûr.
 	 *
 	 * Le repli est le TEXTE, échappé par Svelte : si la conversion échoue, on
@@ -652,9 +665,9 @@
 					{:else}
 						<span class="texte">{entry.text}</span>
 					{/if}
-					{#if entry.note !== undefined}
+					{#if shownNote(entry) !== undefined}
 						<!-- Montrée même quand la réponse est composée en mathématiques -->
-						<span class="note">{entry.note}</span>
+						<span class="note">{shownNote(entry)}</span>
 					{/if}
 					<!-- Les boutons de la ligne : au survol ou au focus, toujours au toucher -->
 					<span class="outils-ligne">

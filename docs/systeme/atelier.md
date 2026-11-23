@@ -1368,7 +1368,8 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   bougent pas (Q8), chacune se bascule à la main.
 - **Note** (mode « garder ») : « On peut simplifier davantage pour x ≠ 0 : ajoute « avec x ≠ 0 »
   (ou « dans ℝ \ {0} »). » — `dans` seulement si une seule lettre ; l'une et l'autre se recopient
-  telles quelles.
+  telles quelles. Elle part quand la ligne montre la simplification (« Simplifier pour x ≠ 0 ») et
+  revient avec « Sans simplifier » (`Alternative.outdatedNote`, `shownNote` de `CalculView`, E9).
 - **`avec CONDITION` / `dans ENSEMBLE`**, sur une expression tapée et sur `.simplifier`,
   `.factoriser`, `.développer` (pas `.résoudre`, qui garde son `dans` ; pas une définition ni une
   équation) : coupés avant le calcul, puis lus. `avec` : les conditions de `parseStudentDomain`
