@@ -5,16 +5,17 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, F3 en brouillon en prod, PR de rangement en cours._
+_Mis à jour le 2026-11-23, après #3043 (F3 rangé en prod)._
 
-- **État** : rubrique publiée sauf F3 ; F3 créé en prod en brouillon par David (`d6eaa761`) ;
-  migration de rangement générée (« Limites de fonctions > limite en un point », TSPE-415) sur
-  `feat/idees-tle-limites-f3-prod` · **Prochaine action** : merge de la PR de rangement,
-  `db:migrate`, vérifier en prod, puis relecture de F3 dans `/dev/modeles` et publication
-  (`publier-lot.ts`) · **En attente de David** : relecture de F3 après le rangement ·
+- **État** : rubrique publiée sauf F3 ; F3 (`d6eaa761`) en brouillon en prod, rangé sur
+  « Limites de fonctions > limite en un point », TSPE-415 (vérifié par le MCP) ·
+  **Prochaine action** : David relit F3 dans `/dev/modeles`
+  (`?noeud=T_SPE~9910b648-e692-4e78-a5b4-ea82bd3da38c&statut=draft`) ; sur son accord,
+  `publier-lot.ts` en simulation, publication lancée par David, tableau de répartition à jour,
+  puis clôture du chantier (versement) · **En attente de David** : relecture de F3 ·
   **Pièges en cours** : `{{e}}` interdit (Euler) ; la commande est
-  `pnpm tsx scripts/create-questions.ts` (pas de script `pnpm create-questions`) ·
-  **Worktree / branche** : `ubumaths-wt-idees-tle-limites-f3-prod` / `feat/idees-tle-limites-f3-prod`.
+  `pnpm tsx scripts/create-questions.ts` · **Worktree / branche** : aucun (nouveau sur
+  `origin/main` si un correctif de F3 est demandé).
 
 ## Historique
 
@@ -134,3 +135,8 @@ _Mis à jour le 2026-11-23, F3 en brouillon en prod, PR de rangement en cours._
 - Rangement : « Fonctions > Limites de fonctions > limite en un point », TSPE-415, voisin de
   04ec9518 (homographique (x + b)/(x − a), même point). Migration générée par
   `migration-rangement.ts` (F3 rangé, 4 ignorés) ; `migrations-rangement-tags.test.ts` vert.
+
+### 2026-11-23 — #3043 mergée, rangement en prod
+
+- `migration list --linked` : seule la migration du lot en attente ; `db:migrate` ; en prod,
+  d6eaa761 est sur « limite en un point » avec TSPE-415, toujours `draft`.
