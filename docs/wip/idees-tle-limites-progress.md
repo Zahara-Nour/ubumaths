@@ -5,15 +5,16 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, F3 écrit (branche `feat/idees-tle-limites-f3`)._
+_Mis à jour le 2026-11-23, après #3029 (F3 écrit, fichiers sur `main`)._
 
-- **État** : rubrique publiée sauf F3. F3 écrit (modèle neuf `f03-limites-tableau-homographique`,
-  2 variations, 13 specs vertes), essayé en base locale · **Prochaine action** : PR des fichiers,
-  puis brouillon en prod **après le `deploy:prod`** qui livre #3027 (la 0.102.0 ne l'a pas), puis
-  rangement (TSPE-415), relecture dans `/dev/modeles`, publication · **En attente de David** :
-  `deploy:prod`, puis `create-questions --publier` · **Pièges en cours** : `{{e}}` interdit
-  (Euler) ; le script n'écrit que les noms passés en argument (les 4 premiers ont changé en prod) ·
-  **Worktree / branche** : `ubumaths-wt-idees-tle-limites-f3`, `feat/idees-tle-limites-f3`.
+- **État** : rubrique publiée sauf F3 ; F3 (`f03-limites-tableau-homographique`, 2 variations,
+  13 specs) mergé en fichiers, pas encore en prod · **Prochaine action** : après le `deploy:prod`
+  qui livre #3027 (absent de la 0.102.0), David lance `create-questions --dir
+scripts/questions/idees-tle-limites-neufs --publier` ; je commite l'id, rangement TSPE-415 par
+  migration, relecture dans `/dev/modeles`, publication · **En attente de David** : `deploy:prod`
+  puis `create-questions --publier` · **Pièges en cours** : `{{e}}` interdit (Euler) ; le script
+  `idees-tle-limites-neufs.py` n'écrit que les noms passés en argument · **Worktree / branche** :
+  aucun (nouveau worktree sur `origin/main` pour la suite).
 
 ## Historique
 
