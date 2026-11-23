@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, à l'ouverture (aucune PR)._
+_Mis à jour le 2026-11-23, à l'ouverture de la PR 1._
 
-- **État** : chantier ouvert le 2026-11-23 à la demande de David, à la suite d'`environnement-workflow` (clos). **Phase 0 validée par David (« je valide »)**, trois questions tranchées (ci-dessous). Rien n'est codé.
-- **Prochaine action** : PR 1 = CI, PR et mise en prod (aucune commande existante à modifier, sauf `pnpm deploy:prod` qui note ses étapes) : fichier de référence, relevé nocturne, alerte, `pnpm durees`. Commencer par relever les durées réelles sur les PR ouvertes depuis #3025 pour écrire la référence, et la faire valider par David.
-- **En attente de David** : la validation des chiffres de la référence, une fois mesurés.
-- **Pièges en cours** : un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; #3024, ouverte neuf minutes après la pose du cache Prettier, était encore lente (cache de `main` pas refait) : écarter de la référence les PR d'avant #3025 ; les durées locales dépendent de la charge du Mac mini (une vingtaine de worktrees, un gros process à la fois).
-- **Worktree / branche** : aucun.
+- **État** : PR 1 (CI, PR, mise en prod) ouverte depuis `feat/durees`, revue `code-reviewer` faite et ses 6 corrections appliquées. Contenu : référence validée par David (`scripts/durees/reference.json`), `pnpm durees` (tableau, `--releve`, `--reference`), `pnpm deploy:prod` note ses étapes, relevé de 6 h 40 ajouté à l'installeur launchd.
+- **Prochaine action** : PR 1 mergée (`pnpm pr:merger`) → **David lance `pnpm surveillance:installer` dans le dépôt principal** (c'est lui qui installe le relevé du matin dans launchd), puis `pnpm durees --releve --essai` pour voir. Ensuite PR 2 = le local (`check:incremental`, tests, pre-push, `pnpm pr:merger` notent leur durée dans un journal du Mac mini).
+- **En attente de David** : lancer l'installeur après le merge.
+- **Pièges en cours** : `/data` est ignoré par git, d'où la référence sous `scripts/durees/` ; un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; aucune mesure d'avant #3025 (`depuis` de la référence) ; une exécution avec un job sauté (PR de contenu) ne compte pas ; les tests d'intégration ne tournent pas dans `quality.yml` (`nightly-integration.yml`, pas encore mesuré : à décider avec David) ; « bascule du site » n'a pas de référence tant qu'il n'y a pas 5 mises en prod notées.
+- **Worktree / branche** : `ubumaths-wt-durees` / `feat/durees`.
 
 ## La demande (David, 2026-11-23)
 
@@ -42,3 +42,26 @@ Relevés le 2026-11-23 pendant `environnement-workflow` ; détail dans [son jour
 | Mise en prod v0.102.0                          | —                            | CI de la version 7 min, construction Vercel 3 min |
 
 Mesures du 2026-11-22, avant les modifications (238 runs) : CI médiane 7 min, p90 9 ; Type Check 395 s (dont svelte-check 371 s) ; tests client 343 et 369 s ; tests serveur 210 à 308 s ; Build 106 s ; intégration, morceaux récents 200 à 245 s.
+
+## PR 1 : CI, PR, mise en prod (2026-11-23)
+
+Référence validée par David (« oui ») sur les 6 exécutions complètes des PR #3025 à #3030 : médiane de chaque phase, alerte à 1,5 fois. Détails de conception retenus en codant :
+
+- **Exécution complète seulement** : un job sauté (PR de contenu, #3029 : CI en 3 min 36, tests serveur en 2 s) et l'exécution entière est écartée.
+- **CI entière** : première tentative verte seulement (une relance ne rejoue que les jobs rouges). **Ouverture → merge** : PR mergée avec une seule exécution de CI.
+- **Mise en prod** : trop rare pour 5 mesures en 24 heures → médiane des 5 dernières, alerte seulement le lendemain d'une mise en prod. `deploy:prod` ne note la CI de la version que s'il a créé la version dans ce lancement et sans relance.
+- **Phases de moins de 20 s** (« CI Summary », « Porte de la CI ») : jamais dans la référence, pas montrées.
+- **Relevé du matin** : launchd sur le Mac mini (6 h 40), pas un workflow GitHub : le canal ntfy n'existe que sur la machine.
+
+## Revue de la PR 1 (`code-reviewer`, 2026-11-23) : les 6 points corrigés avant l'ouverture
+
+`deploy-prod.sh` : aucun risque trouvé (les notes de durée ne peuvent pas le faire échouer).
+
+1. **Bloquant, alerte de mise en prod morte** (`index.ts`, `lireMesures` et `fenetre`) : la fenêtre de 7 jours s'applique aussi au journal `mises-en-prod.csv`, alors que la règle est « les 5 dernières ». Avec 2 mises en prod par semaine, jamais 5 mesures. Ne filtrer les phases `prod:` que sur `depuis` de la référence ; pareil pour `--reference`.
+2. **Arguments** (`index.ts`, `main`) : sans `--depuis`, le premier argument n'est jamais contrôlé (`pnpm durees --releves` affiche le tableau). Exiger une valeur après `--depuis`, refuser `--reference` avec `--releve` ou `--essai`, refuser `--essai` seul.
+3. **Date de la mesure `pr`** (`logique.ts`, `mesuresDeLaPr`) : dater du merge, pas de l'ouverture, sinon une PR ouverte la veille et mergée lentement sort de la fenêtre de 24 heures.
+4. **Cache** (`index.ts`, `lireRun`) : écrire dans un `.tmp` puis renommer ; un JSON illisible vaut « absent » (relu chez GitHub).
+5. **Forme de `reference.json`** : la contrôler à la lecture (Zod), le fichier pouvant être édité à la main.
+6. **Installeur** : ajouter aussi le dossier de `node` au PATH du plist (pnpm et node peuvent ne pas être voisins).
+
+Laissés : chemin du dépôt non échappé dans le XML (même choix que le premier plist) ; `HOME` non défini ; la CI entière inclut l'attente du runner (voulu, comme la référence).

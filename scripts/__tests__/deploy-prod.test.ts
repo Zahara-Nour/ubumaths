@@ -885,6 +885,37 @@ describe('deploy-prod.sh — après : la construction de Vercel et le site', () 
 		expect(readFileSync(`${etats}.vercel`, 'utf8')).toContain(`commits/${version().sha}/status`);
 	});
 
+	it('note la durée de ses étapes pour pnpm durees, sous le nom de la version', () => {
+		pousser('success', 'src/a.ts');
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(0);
+		const journal = readFileSync(join(racine, '.local/state/durees/mises-en-prod.csv'), 'utf8');
+		const lignes = journal.trim().split('\n');
+		expect(lignes.map((l) => l.split(';')[2])).toEqual(['ci-version', 'vercel', 'bascule']);
+		for (const l of lignes) {
+			expect(l).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z;v0\.\d+\.0;[a-z-]+;\d+$/);
+		}
+	});
+
+	it('journal des durées impossible à écrire : la mise en prod se fait quand même', () => {
+		pousser('success', 'src/a.ts');
+		writeFileSync(join(racine, 'pas-un-dossier'), '');
+		decor = { DUREES_ETAT: join(racine, 'pas-un-dossier') };
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('--verifier ne note aucune durée', () => {
+		pousser('success', 'src/a.ts');
+		decor = { DUREES_ETAT: join(racine, 'durees-verifier') };
+		expect(deployer().status).toBe(0);
+		rmSync(join(racine, 'durees-verifier'), { recursive: true });
+		const r = deployer('--verifier');
+		expect(r.status, r.sortie).toBe(0);
+		expect(existsSync(join(racine, 'durees-verifier'))).toBe(false);
+	});
+
 	it('construction en échec : erreur, lien donné, production reste avancée', () => {
 		pousser('success', 'src/a.ts');
 		decor = { VERCEL: 'failure' };

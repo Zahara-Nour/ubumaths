@@ -1,0 +1,23 @@
+{
+	"depuis": "2026-11-23T06:17:00.000Z",
+	"phases": {
+		"ci": 434,
+		"pr": 468,
+		"job:Type Check": 348,
+		"etape:Type Check / Run svelte-check": 320,
+		"job:Client Tests (browser, shard 1/2)": 376,
+		"job:Client Tests (browser, shard 2/2)": 392,
+		"job:Server Tests (shard 1/4)": 380,
+		"job:Server Tests (shard 2/4)": 238,
+		"job:Server Tests (shard 3/4)": 338,
+		"job:Server Tests (shard 4/4)": 305,
+		"job:Build": 112,
+		"job:Lint": 92,
+		"etape:Lint / Run Prettier check": 27,
+		"job:Types des tests (cliquet)": 119,
+		"job:Garde SECURITY DEFINER": 106,
+		"job:Security Audit": 30,
+		"prod:ci-version": 420,
+		"prod:vercel": 180
+	}
+}

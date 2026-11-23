@@ -2,6 +2,9 @@
 # Installe (ou retire) la surveillance du Mac mini dans launchd : toutes les
 # 5 minutes, scripts/surveillance-machine.sh du DÉPÔT PRINCIPAL (il suit main).
 #
+# Installe aussi le relevé des durées (`pnpm durees --releve`, scripts/durees/) :
+# chaque matin à 6 h 40, depuis le dépôt principal, même canal ntfy.
+#
 # Usage : surveillance-machine-installer.sh [--desinstaller]
 #
 # Crée au besoin le canal ntfy (nom aléatoire, ~/.config/surveillance-machine/
@@ -14,10 +17,14 @@ PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 CONFIG="$HOME/.config/surveillance-machine"
 ETAT="$HOME/.local/state/surveillance-machine"
 DOMAINE="gui/$(id -u)"
+LABEL_DUREES="local.durees-releve"
+PLIST_DUREES="$HOME/Library/LaunchAgents/$LABEL_DUREES.plist"
+ETAT_DUREES="$HOME/.local/state/durees"
 
 if [ "${1:-}" = "--desinstaller" ]; then
 	launchctl bootout "$DOMAINE/$LABEL" 2>/dev/null || true
-	rm -f "$PLIST"
+	launchctl bootout "$DOMAINE/$LABEL_DUREES" 2>/dev/null || true
+	rm -f "$PLIST" "$PLIST_DUREES"
 	echo "Surveillance retirée (canal et journal gardés dans $CONFIG et $ETAT)."
 	exit 0
 fi
@@ -67,6 +74,53 @@ EOF
 
 launchctl bootout "$DOMAINE/$LABEL" 2>/dev/null || true
 launchctl bootstrap "$DOMAINE" "$PLIST"
+
+# ── Relevé des durées, chaque matin ───────────────────────────────────────────
+# launchd ne lit pas le profil du shell : le dossier de node et de pnpm (mise,
+# nvm…) est relevé ici, une fois. Sans pnpm, node ou gh, le relevé n'est pas installé.
+dossier_pnpm="$(dirname "$(command -v pnpm || true)")"
+dossier_node="$(dirname "$(command -v node || true)")"
+dossier_gh="$(dirname "$(command -v gh || true)")"
+if [ "$dossier_pnpm" = "." ] || [ "$dossier_node" = "." ] || [ "$dossier_gh" = "." ]; then
+	echo "⚠️  pnpm, node ou gh introuvable : relevé des durées non installé."
+else
+	mkdir -p "$ETAT_DUREES"
+	cat >"$PLIST_DUREES" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>$LABEL_DUREES</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-c</string>
+		<string>cd "$depot" &amp;&amp; pnpm durees --releve</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>$dossier_pnpm:$dossier_node:$dossier_gh:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+	</dict>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>6</integer>
+		<key>Minute</key>
+		<integer>40</integer>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>$ETAT_DUREES/launchd.log</string>
+	<key>StandardErrorPath</key>
+	<string>$ETAT_DUREES/launchd.log</string>
+</dict>
+</plist>
+EOF
+	launchctl bootout "$DOMAINE/$LABEL_DUREES" 2>/dev/null || true
+	launchctl bootstrap "$DOMAINE" "$PLIST_DUREES"
+	echo "✅ Relevé des durées installé : pnpm durees --releve, chaque matin à 6 h 40."
+fi
 
 echo "✅ Surveillance installée : $script, toutes les 5 minutes."
 echo "   Canal ntfy à suivre dans l'appli : $(cat "$CONFIG/ntfy-topic")"
