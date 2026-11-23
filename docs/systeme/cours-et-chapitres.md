@@ -309,6 +309,13 @@ de `content_snapshot` / `current_version` sur le modèle, ni de numéros de vers
 lié ; la règle de stockage élève de prod (`chapters/…`) est retirée — le serveur sert les fichiers
 après la garde de publication.
 
+- **Sections par défaut** : un chapitre créé à la main reçoit six sections (Préparation, Le cours,
+  Les exercices, Méthodes, Résumé, Bilan) par le déclencheur `seed_default_chapter_sections`. Un
+  modèle créé **de zéro** (`createChapterTemplate`, page « Nouveau modèle ») reçoit les mêmes,
+  posées par le code (`DEFAULT_SECTION_TITLES` dans `chapter-sections.ts`, miroir du déclencheur ;
+  test `tests/integration/modele-sections-par-defaut.test.ts`). Un modèle fait **depuis un
+  chapitre** (`createTemplateFromChapter`) copie les sections du chapitre, sans les six en plus.
+  Un chapitre créé depuis un modèle reçoit les sections du modèle et peut en ajouter de propres.
 - **Contenu du modèle** : les fonctions du chapitre prennent un propriétaire `ContentOwner`
   (sections : `chapter-sections.ts` ; insertions : `insertDocument`, `insertChecklistItem`,
   `insertExercise`, `insertWorksheet` ; séries : `linkSeries`, `setSeriesForm`). Les fichiers d'un
