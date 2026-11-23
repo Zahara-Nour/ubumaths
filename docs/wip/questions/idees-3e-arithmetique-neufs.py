@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-3e-arithmetique dans
 scripts/questions/idees-3e-arithmetique-neufs/.
 
-Phase 0 validée par David le 2026-11-23 (journal docs/wip/idees-3e-arithmetique-progress.md) :
+Phase 0 validée par David le 2026-11-23 (journal docs/archive/wip/idees-3e-arithmetique/idees-3e-arithmetique-progress.md) :
 F3 (chiffre manquant), F4 (nombre premier), F5 (partage en lots), F6 (engrenages et évènements),
 F7 (atteindre un multiple). Q1 : F4 à F7 hors programme de 3e, rangés SANS point ; Q2 : F3 sans
 point (le point de 3e des critères de divisibilité manque au référentiel). On reprend l'idée de

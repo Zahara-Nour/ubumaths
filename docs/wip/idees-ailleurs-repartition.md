@@ -134,7 +134,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 
 | Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session         |
 | ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ----------------------- |
-| Arithmétique                             | 3A1       | 26        | phase 0 validée (2026-11-23)                               | `idees-3e-arithmetique` |
+| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique` |
 | Puissances                               | 3C1       | 5         | libre                                                      |                         |
 | Calcul littéral, équations               | 3L1       | 55        | libre                                                      |                         |
 | Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                         |
@@ -178,7 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 90dca27a Simplifier une fraction (plusieurs étapes)          | `idees-3e-arithmetique`                                     | 2026-11-23 |                                      |
 | 4bcbbaae Le nombre de dizaines, de centièmes…                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 4d825d44 Le chiffre d'un rang                                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | a2ae7206 Fraction décimale et écriture décimale              | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
@@ -218,5 +217,8 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
 - `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le
   plus grand reste possible dans une division euclidienne par d ? » (3A10), niveau 6e, aucun modèle.
+- `idees-3e-arithmetique` (2026-11-23, question à David) : refuser une fraction non simplifiée dans
+  90dca27a (aujourd'hui ½ point), par une migration de ses options quand `migration-contenu.ts` saura
+  les écrire (branche `feat/migration-contenu-options`).
 - `idees-6e-entiers-decimaux` (2026-11-23, David) : pourcentage approché d'une fraction (37/213 ≈ 17 %,
   6N1F-4), hors bornes de 6e, pour la session de la 5e ou de la 4e (ade95ae4 n'a que des cas exacts).
