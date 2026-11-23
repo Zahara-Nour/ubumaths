@@ -119,6 +119,18 @@ describe('Droite avec zoom — erreurs', () => {
 		expect(errorsOf('zoom: 12.4 ; 12.5 ; step 1')).toContain('step');
 	});
 
+	it('step égal au zoom : accepté malgré l’arrondi (12,5 − 12,4 = 0,0999…)', () => {
+		expect(nodeOf('zoom: 12.4 ; 12.5 ; step 0.1').zooms).toHaveLength(1);
+	});
+
+	it('step qui ne tombe pas juste sur la fin', () => {
+		expect(errorsOf('zoom: 12.4 ; 12.5 ; step 0.03')).toContain('ne tombe pas juste');
+	});
+
+	it('labels hors du zoom', () => {
+		expect(errorsOf('zoom: 12.4 ; 12.5 ; step 0.01 ; labels 12.4, 12.6')).toContain('hors du zoom');
+	});
+
 	it('trop de graduations', () => {
 		expect(errorsOf('zoom: 12 ; 13 ; step 0.0001')).toContain('500');
 	});
@@ -201,6 +213,15 @@ describe('Droite avec zoom — PDF', () => {
 		expect(dashed[0]).toMatch(/\(0, -?[\d.]+\)/);
 		expect(dashed[1]).toMatch(/^ {2}line\(\(6, /);
 		expect(dashed[1]).toMatch(/\(12, -?[\d.]+\)/);
+	});
+
+	it('le pointillé part sous le nombre écrit de la graduation, sans le barrer', () => {
+		// 12 est écrit (labels: 12, 13) : départ sous l'étiquette ; 12,1 ne l'est pas : sous la graduation
+		const typst = generateNumberLineTypst(nodeOf('zoom: 12 ; 12.1 ; step 0.01'));
+		const [left, right] = typst.split('\n').filter((l) => l.includes('dashed'));
+		const yTop = (l: string) => Number(l.match(/^ {2}line\(\(-?[\d.]+, (-?[\d.]+)\)/)![1]);
+		expect(yTop(left)).toBeLessThan(-0.5);
+		expect(yTop(right)).toBeGreaterThan(-0.5);
 	});
 
 	it('sans zoom : PDF inchangé (un seul axe, aucun pointillé)', () => {

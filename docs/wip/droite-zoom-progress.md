@@ -43,3 +43,7 @@ le précédent, deux pointillés vers le morceau agrandi.
   dans Chromium, script de la session). Remarque : sur la 1re droite, un point très proche d'un autre
   (B = 12,473 et C = 12,5) a son nom collé au sien (« BC ») ; c'est la règle de toujours pour deux points
   proches, l'auteur choisit ses points.
+- Revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigés avec un test chacun : pointillé qui barrait le
+  nombre écrit de sa graduation (part désormais dessous, `isLabeledAt`), `step` égal au zoom refusé à
+  tort (arrondi 12,5 − 12,4), pas qui ne tombe pas juste sur la fin (refusé), `labels` hors du zoom
+  (refusés). Revu au PDF : grands nombres (40 000 à 50 000, deux zooms), pointillés sous « 46 000 ».

@@ -619,12 +619,22 @@ function parseZoom(
 			`zoom : le début (${frenchNumber(startNum)}) doit être plus petit que la fin (${frenchNumber(endNum)})`
 		);
 	}
-	if (stepNum <= 0 || stepNum > endNum - startNum) {
+	// Tolérance : 12.5 - 12.4 vaut 0.0999…, `step 0.1` est pourtant juste
+	const length = endNum - startNum;
+	const tolerance = 1e-9 * Math.max(1, length);
+	if (stepNum <= 0 || stepNum > length + tolerance) {
 		return fail(
 			`zoom : step ${frenchNumber(stepNum)} doit être positif et pas plus grand que le zoom`
 		);
 	}
-	const ticks = Math.ceil((endNum - startNum) / stepNum - 1e-9) + 1;
+	// Le pas tombe juste sur la fin : sinon le bout du zoom, relié au pointillé, n'aurait pas de graduation
+	const steps = length / stepNum;
+	if (Math.abs(steps - Math.round(steps)) * stepNum > tolerance) {
+		return fail(
+			`zoom : step ${frenchNumber(stepNum)} ne tombe pas juste de ${frenchNumber(startNum)} à ${frenchNumber(endNum)}`
+		);
+	}
+	const ticks = Math.round(steps) + 1;
 	if (ticks > MAX_GRADUATIONS) {
 		return fail(`zoom : ${ticks} graduations, ${MAX_GRADUATIONS} au plus (augmenter step)`);
 	}
@@ -635,6 +645,15 @@ function parseZoom(
 
 	const labels = labelsWritten ? parseValueList(labelsWritten, errors) : [];
 	if (errors.length > before) return null;
+	const labelOutside = labels.find((label) => {
+		const v = safeNumericValue(label);
+		return !(v >= startNum - tolerance && v <= endNum + tolerance);
+	});
+	if (labelOutside) {
+		return fail(
+			`zoom : labels ${labelOutside.expression} est hors du zoom (de ${frenchNumber(startNum)} à ${frenchNumber(endNum)})`
+		);
+	}
 
 	return {
 		start,

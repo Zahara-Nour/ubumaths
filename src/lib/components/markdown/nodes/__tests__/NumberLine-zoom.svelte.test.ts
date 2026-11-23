@@ -82,6 +82,22 @@ describe('Droite avec zoom — écran', () => {
 		expect(left.getAttribute('stroke-dasharray')).toBeTruthy();
 	});
 
+	it('le pointillé part sous le nombre écrit de la graduation, sans le barrer', async () => {
+		// 12 est écrit : départ sous son étiquette ; 12,1 ne l'est pas : sous la graduation
+		const svg = await svgOf([
+			'start: 12',
+			'end: 13',
+			'step: 0.1',
+			'labels: 12, 13',
+			'zoom: 12 ; 12.1 ; step 0.01'
+		]);
+		const [left, right] = [...svg.querySelectorAll('line.nl-zoom-link')];
+		const label = svg.querySelector('.number-line-label')!.closest('foreignObject')!;
+		const labelTop = Number(label.getAttribute('y'));
+		expect(Number(left.getAttribute('y1'))).toBeGreaterThan(labelTop + 15);
+		expect(Number(right.getAttribute('y1'))).toBeLessThan(labelTop);
+	});
+
 	it('un point sur toutes les droites où il tombe', async () => {
 		const svg = await svgOf(LINES);
 		const names = [...svg.querySelectorAll('.point-label')].map((e) => e.textContent?.trim());

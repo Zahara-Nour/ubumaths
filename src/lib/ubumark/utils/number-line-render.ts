@@ -228,6 +228,17 @@ export function pointsInside(
 	});
 }
 
+/**
+ * La graduation de `value` porte-t-elle un nombre écrit ? (un pointillé de zoom qui en part
+ * commence sous ce nombre, sinon il le barre)
+ */
+export function isLabeledAt(config: NumberLineConfig, value: number): boolean {
+	const tolerance = numVal(config.step) * 0.001;
+	return computeGraduations(config).some(
+		(g) => g.label !== null && Math.abs(g.value - value) < tolerance
+	);
+}
+
 // =========================================================================
 // ARROW POSITIONS
 // =========================================================================

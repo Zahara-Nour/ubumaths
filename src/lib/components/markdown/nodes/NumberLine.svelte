@@ -46,6 +46,7 @@
 		computeGraduations,
 		computeLineExtents,
 		pointsInside,
+		isLabeledAt,
 		resolveNumberLineColors,
 		bracketDirection,
 		bracketPoints,
@@ -96,6 +97,8 @@
 	const SVG_HEIGHT = 120;
 	/** Écart vertical (px) entre une droite et son zoom */
 	const ZOOM_ROW_GAP = 110;
+	/** Départ d'un pointillé sous un nombre écrit (px sous le haut de l'étiquette) */
+	const LINK_BELOW_LABEL = 16;
 
 	// =========================================================================
 	// COMPUTED VALUES
@@ -169,13 +172,22 @@
 			const above = rows[k];
 			const aboveStart = numVal(above.config.start);
 			const aboveEnd = numVal(above.config.end);
-			const top = above.lineY + MAJOR_TICK_HEIGHT / 2;
 			const bottom = row.lineY - MAJOR_TICK_HEIGHT / 2;
+			/** Sous la graduation, ou sous son nombre écrit s'il y en a un */
+			const top = (v: NumberLineConfig['start']) =>
+				isLabeledAt(above.config, numVal(v))
+					? above.lineY + LABEL_Y_OFFSET + LINK_BELOW_LABEL
+					: above.lineY + MAJOR_TICK_HEIGHT / 2;
 			const fromX = (v: NumberLineConfig['start']) =>
 				valueToX(numVal(v), aboveStart, aboveEnd, 'linear', width);
 			return [
-				{ x1: fromX(row.config.start), y1: top, x2: row.lineStartX, y2: bottom },
-				{ x1: fromX(row.config.end), y1: top, x2: row.lineEndX, y2: bottom }
+				{
+					x1: fromX(row.config.start),
+					y1: top(row.config.start),
+					x2: row.lineStartX,
+					y2: bottom
+				},
+				{ x1: fromX(row.config.end), y1: top(row.config.end), x2: row.lineEndX, y2: bottom }
 			];
 		})
 	);

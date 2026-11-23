@@ -615,10 +615,12 @@ lisent, on ne les vise pas. L'élève ne voit jamais l'avertissement ; la correc
 principale garde ses étiquettes aux grandes graduations). Chaque zoom est vérifié contre la droite
 **du dessus** (la principale ou le zoom précédent) : bouts sur ses graduations (« n'est pas sur une
 graduation de la droite du dessus », « hors de la droite du dessus »), début < fin, pas positif et
-pas plus grand que le zoom, 500 graduations au plus, morceau inconnu refusé. Refusé avec un zoom :
+pas plus grand que le zoom (tolérance d'arrondi) et qui tombe juste sur la fin, `labels` dans le zoom,
+500 graduations au plus, morceau inconnu refusé. Refusé avec un zoom :
 `placer:`, `representer:`, `segments:`, `scale: log` (« pas encore possible avec … »). Dessin, écran et
 PDF : chaque zoom sous le précédent (`ZOOM_ROW_GAP` = 110 px, `ZOOM_GAP` = 2 cm), même largeur, relié
 par deux pointillés (`nl-zoom-link`) des bouts agrandis sur la droite du dessus aux bouts du zoom ; un
+pointillé part sous le nombre écrit de sa graduation s'il y en a un (`isLabeledAt`) ; un
 point se dessine sur **toutes** les droites où il tombe (`pointsInside`, bouts compris), même couleur.
 Écran : `aria-label` « Droite graduée, avec N zooms ». Vérifié au rendu : page
 `/aide-ecriture/blocs/droite-graduee` (exemple « Lire au millième par zooms successifs ») et PDF compilé

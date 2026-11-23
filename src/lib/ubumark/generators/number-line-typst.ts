@@ -27,6 +27,7 @@ import type {
 import {
 	numVal,
 	pointsInside,
+	isLabeledAt,
 	computeGraduations,
 	mapValueToRange,
 	NL_DEFAULT_POINT_COLOR,
@@ -268,6 +269,8 @@ function generatePoints(
 
 /** Écart vertical (cm) entre une droite et son zoom */
 const ZOOM_GAP = 2;
+/** Départ d'un pointillé sous un nombre écrit (cm sous le centre de l'étiquette) */
+const LINK_BELOW_LABEL = 0.3;
 
 /**
  * Un zoom à l'ordonnée `y` : son axe, ses graduations, les points qui y tombent, et
@@ -288,13 +291,16 @@ function generateZoom(
 	const aboveY = y + ZOOM_GAP;
 	const halfTick = opts.majorTickHeight / 2;
 	const fromX = (v: number) => mapValueToRange(v, aboveStart, aboveEnd, opts.lineWidth, 'linear');
-	const link = (xTop: number, xBottom: number) =>
-		`  line((${fmt(xTop)}, ${fmt(aboveY - halfTick)}), (${fmt(xBottom)}, ${fmt(y + halfTick)}), stroke: (dash: "dashed", thickness: 0.5pt))`;
+	/** Sous la graduation, ou sous son nombre écrit s'il y en a un */
+	const topY = (v: number) =>
+		isLabeledAt(above, v) ? aboveY + opts.labelOffset - LINK_BELOW_LABEL : aboveY - halfTick;
+	const link = (value: number, xBottom: number) =>
+		`  line((${fmt(fromX(value))}, ${fmt(topY(value))}), (${fmt(xBottom)}, ${fmt(y + halfTick)}), stroke: (dash: "dashed", thickness: 0.5pt))`;
 
 	return [
 		'  // Zoom',
-		link(fromX(startNum), 0),
-		link(fromX(endNum), opts.lineWidth),
+		link(startNum, 0),
+		link(endNum, opts.lineWidth),
 		generateAxis(startNum, endNum, false, opts, y),
 		generateGraduations(zoom, y, opts),
 		inside.length > 0 ? generatePoints(inside, startNum, endNum, 'linear', y, opts) : ''
