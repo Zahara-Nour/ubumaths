@@ -110,6 +110,17 @@ la PR touche la config ESLint, une règle maison, les dépendances, `.gitignore`
 `lint-nocturne.yml` relit tout l'arbre chaque nuit sur `main` et y enregistre le cache ESLint que
 les PR restaurent (`main` ne lance pas le Lint sur push).
 
+**Cache Prettier** : `prettier --check .` revérifie tout l'arbre en ~270 s sans cache, ~30 s avec. Une
+PR ne restaure que son propre cache ou celui de `main`, et `main` ne lance pas le Lint sur push :
+`lint-nocturne.yml` enregistre donc aussi ce cache sur `main` chaque nuit (comme la CI complète du
+commit de version de `pnpm deploy:prod`). La clé porte les versions installées de Prettier, de ses
+deux plugins et de Tailwind (`scripts/ci-cle-prettier.sh`), plus `.prettierrc` et `.prettierignore`.
+Elle ne porte pas l'empreinte du lockfile entier, qu'une mise à jour de n'importe quelle dépendance
+changeait : jusqu'à la mise en prod suivante, la première CI de chaque PR repartait à froid
+(2026-11-23). Les quatre versions sont nécessaires : le cache de Prettier ne s'invalide de lui-même
+que sur sa version, celle de Node et ses options, pas sur celle d'un plugin. Après une montée de l'un
+des quatre, la première CI de chaque PR est froide jusqu'au nocturne suivant.
+
 **Cache ESLint et config Svelte** : `eslint.config.js` retire `version` de la config Svelte qu'il
 passe au parseur. SvelteKit y met `Date.now()` à chaque chargement ; ESLint compte la config dans
 l'empreinte de son cache, qui changeait donc à chaque lancement : les ~1 300 fichiers Svelte étaient
@@ -523,6 +534,7 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
 | 2026-11-21 | **`pnpm db:neuf`** : remise à neuf de la base de dev en une commande (prod vérifiée avant d'effacer, reset, contenu de la prod, élèves fictifs), sous un seul verrou, avec confirmation                                                                                                                                                                                                                                                                                                                                                                                            | `db:reset && db:seed-riche` relâchait le verrou entre les deux et effaçait la base avant de savoir si la prod répondait.                                                                                                                                                                                                                                                                                                             |
 | 2026-11-21 | **base locale : toutes les tables classées** (chantier `seed-complet`) : trois listes `COPIE` / `INVENTE` / `JAMAIS`, un test refuse une table non classée ; 21 tables de contenu de plus copiées (dictionnaire, relectures, styles de fiches, tournois, réglages du prof…)                                                                                                                                                                                                                                                                                                        |
 | 2026-11-22 | **intégration ciblée, migrations de rangement générées** : une migration « nœud et tag » ajoutée, générée par `scripts/questions/migration-rangement.ts`, et sa fixture ajoutée du même nom (`tests/integration/fixtures/rangement-tags/`) ne lancent que `migrations-rangement-tags.test.ts` ; fixture sans sa migration, fixture existante modifiée, ou migration de rangement sans fixture dans une PR qui n'apporte aucun test → suite complète ; `scripts/lib/migration-rangement.ts` est dans le filtre `paths` de `nightly-integration.yml` (la suite rejoue le générateur) | chaque lot demandait une migration d'environ 200 lignes et un test d'environ 300 lignes recopiés d'un gabarit (265 migrations de ce type) ; une migration écrite à la main garde son test propre.                                                                                                                                                                                                                                    |
+| 2026-11-23 | **cache Prettier de la CI** : clé sur les versions de Prettier, de ses plugins et de Tailwind (`scripts/ci-cle-prettier.sh`) au lieu du lockfile entier, et cache enregistré chaque nuit sur `main` par `lint-nocturne.yml` ; la première CI d'une PR ne revérifie plus tout l'arbre (~270 s → ~30 s)                                                                                                                                                                                                                                                                              |
 
 ## Écarts connus
 

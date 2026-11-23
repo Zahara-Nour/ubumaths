@@ -125,14 +125,23 @@ jobs:
 
       # Cache prettier, stratégie `content` (un checkout réécrit les dates) : seuls
       # les fichiers modifiés sont revérifiés. Sans cache : 162 s sur les 220 s du
-      # job (run du 2026-10-09). Même schéma de clés que le cache ESLint plus bas.
+      # job (run du 2026-10-09). La clé porte les versions de Prettier, de ses
+      # plugins et de Tailwind (scripts/ci-cle-prettier.sh), pas l'empreinte du
+      # lockfile entier : toute mise à jour de dépendance la changeait, et la
+      # première CI de chaque PR repartait à froid (~270 s, 2026-11-23). Une PR
+      # ne restaure que son propre cache ou celui de main : lint-nocturne.yml
+      # l'enregistre sur main chaque nuit, sous la même clé.
+      - name: Clé du cache Prettier
+        id: prettier-cle
+        run: echo "versions=$(bash scripts/ci-cle-prettier.sh)" >> "$GITHUB_OUTPUT"
+
       - name: Restore Prettier cache
         uses: actions/cache@v6
         with:
           path: .prettier-cache
-          key: prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-${{ github.sha }}
+          key: prettier-${{ runner.os }}-${{ steps.prettier-cle.outputs.versions }}-${{ hashFiles('.prettierrc', '.prettierignore') }}-${{ github.sha }}
           restore-keys: |
-            prettier-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.prettierrc', '.prettierignore') }}-
+            prettier-${{ runner.os }}-${{ steps.prettier-cle.outputs.versions }}-${{ hashFiles('.prettierrc', '.prettierignore') }}-
 
       - name: Run Prettier check
         run: pnpm prettier --check . --cache --cache-strategy content --cache-location .prettier-cache
