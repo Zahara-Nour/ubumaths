@@ -59,7 +59,7 @@ worktree frère ──► commit ──► push ──► PR ──► CI (quali
    `git add -u data/…`.
 3. **Push** : le hook pre-push vérifie le formatage, `lint:fast`, les liens et renvois de la doc, la
    couverture doc, « code modifié ⇒ doc modifiée » et le filtre de chemins de l'intégration.
-4. **PR → CI 100 % verte → `gh pr merge --merge` → branche supprimée.** Un merge sur `main` ne
+4. **PR → CI 100 % verte → `pnpm pr:merger <n>` (attend la CI, merge, range ; à la main : `gh pr merge --merge`) → branche supprimée.** Un merge sur `main` ne
    déploie **rien**.
 5. **Mise en prod** : `pnpm deploy:prod`, **uniquement sur demande de David** (ADR 0021). Il crée la
    version, attend sa CI, puis avance la branche `production`, que Vercel construit.

@@ -8,6 +8,7 @@ couvre:
   - scripts/garde-main-a-jour.sh
   - scripts/garde-deploy-en-cours.sh
   - scripts/garde-migrations-horodatage.sh
+  - 'scripts/pr-merger/**'
   - scripts/ci-nature-changement.sh
   - scripts/ci-tests-contenu.sh
   - scripts/vercel-ignore-build.sh
@@ -91,6 +92,16 @@ Branches : `fix/<slug>` · `feat/<slug>` · `refactor/<slug>` · `perf/<slug>` �
    - **Sur main, après le merge** : Type Check et Build seulement ; la CI complète repasse sur le commit de version de `pnpm deploy:prod`.
    - ⛔ **Branche déjà poussée : jamais `git pull --rebase origin main` dessus.** Le rebase réécrit les commits poussés → push refusé, et le seul push qui passe est `--force` (liste `ask`). Pour la remettre à jour : `git merge origin/main`, ou rien (GitHub merge quand même). Rattrapage si c'est fait : `git merge origin/<branche>` (le commit en double est identique, sans conflit), puis push normal (#1603, 2026-10-22).
 6. **Revue proportionnée au risque** : CLAUDE.md § Planning, point 4.
+   **Étapes 7 à 9 en une commande : `pnpm pr:merger <n>`** (sans numéro : la PR de la branche courante ; `--essai` dit ce qui serait fait, sans attendre ni merger). Elle se lance dès la revue faite, CI finie ou non, de préférence en tâche de fond (elle attend la CI jusqu'à une heure) :
+   - elle lit les contrôles du **dernier commit** de la PR, attend ceux qui tournent, et ne continue que s'ils sont tous verts (« sauté » vaut vert) **et** que « CI Summary » est là : une liste vide, ou les seuls contrôles d'un workflow annexe juste après un push, ne valent jamais « vert ». Un contrôle rouge ou annulé, une PR en brouillon, en conflit, fermée ou `BLOCKED` (relu deux minutes au plus : GitHub met quelques secondes à le lever après le dernier contrôle vert) : elle s'arrête sans rien merger ;
+   - PR qui touche `supabase/migrations/` : elle joue `pnpm check:migrations --pr <n>` ;
+   - `pnpm deploy:prod` en cours : elle attend que le verrou « deploy » soit rendu ;
+   - elle merge par `gh pr merge --merge --match-head-commit <sha>` (le commit mergé est celui dont elle a lu les contrôles ; `Base branch was modified` : une relance), puis relit l'état et ne range rien sans `MERGED` ;
+   - rangement : dépôt principal mis à jour (`git pull --ff-only`, jamais de rebase sous les pieds d'une autre session : s'il est refusé, elle le dit et range le reste), worktree de la branche retiré (ses fichiers ignorés, `.env.local` et `node_modules`, partent avec lui), branche locale supprimée (`-d`), `git worktree list`. Un worktree qui n'est pas propre, ou une branche locale avec des commits jamais poussés, restent en place et sont nommés. PR déjà mergée : elle fait seulement ce rangement ;
+   - sorties : 0 fait, 1 refus, 2 attente dépassée (CI ou verrou). Elle finit par « Reste à faire ».
+
+   Elle **ne fait pas** : la revue (elle rappelle seulement celle qu'attend une PR qui touche `supabase/`, l'API ou l'auth), `pnpm db:migrate`, le bloc « Reprendre ici », l'arrêt d'un serveur de dev du worktree. Elle **refuse** dans une session Claude sans personne devant (`CLAUDE_CODE_SESSION_ATTENDED=0`, le cas d'une tâche planifiée). Les étapes 7 à 9 ci-dessous disent ce qu'elle fait, et restent le geste à la main si elle n'est pas disponible. Code : `scripts/pr-merger/`, tests `scripts/__tests__/pr-merger.test.ts`.
+
 7. PR qui touche `supabase/migrations/` : d'abord **`pnpm check:migrations --pr <n>`**, qui relit `origin/main` à l'instant ([§ 4](#4-base-de-données)) ; la CI a pu tourner sur un `main` périmé. Puis `gh pr merge --merge` — **toujours un merge commit**, jamais de squash. `Base branch was modified` : relancer une fois ; `BLOCKED` : attendre la fin des contrôles, jamais `--admin`.
 8. **Supprimer la branche locale** (`git branch -d <b>`) **seulement après avoir lu `MERGED`** ; la branche distante est supprimée par GitHub au merge (réglage du dépôt depuis le 2026-11-22 ; le squash y est aussi désactivé). Une branche distante restée là (PR d'avant le réglage) : `git push origin --delete <b>`, **seulement après avoir lu `MERGED`** (`gh pr view <n> --json state -q .state`), dans une commande **séparée** du merge : si `gh pr merge` échoue, la suite tourne quand même, et **supprimer la branche distante d'une PR ouverte la FERME** sans merge (#1601, 2026-10-22).
    - Rattrapage : les commits restent dans le dépôt local → `git branch <b> <sha>` + `git push origin <b>` + `gh pr reopen <n>` ; la réouverture **relance toute la CI**, à re-surveiller avant de merger.
