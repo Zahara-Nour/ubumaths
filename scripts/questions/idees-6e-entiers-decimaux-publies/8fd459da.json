@@ -1,0 +1,105 @@
+{
+	"id": "8fd459da-05ef-4053-a52e-5bd2f2ac1a44",
+	"title": "Définition d'un pourcentage",
+	"description": "convertir une fraction de dénominateur $100$ en pourcentage.",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 10,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}%"
+				}
+			],
+			"statement": "Écris cette fraction sous forme de pourcentage.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..100"
+				},
+				{
+					"name": "expression1",
+					"expression": "a/100"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** Une fraction de dénominateur $100$ s’écrit en pourcentage : $\\dfrac{p}{100} = p\\,\\%$.",
+					"$$\\begin{align} \\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{100} &= \\textcolor{{{color:primary.0}}}{{{a}}}\\,\\% \\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["71\\%"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "71"
+			},
+			"description": "71 %",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\%"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1"
+			},
+			"description": "borne 1 %",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["100\\%"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "100"
+			},
+			"description": "borne 100 %",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}71"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["percent"]
+			},
+			"variables": {
+				"a": "71"
+			},
+			"description": "décimal 0,71 perfectible",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{71}{100}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["percent"]
+			},
+			"variables": {
+				"a": "71"
+			},
+			"description": "fraction recopiée perfectible",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["71"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "71"
+			},
+			"description": "oubli du symbole %",
+			"variationIndex": 0
+		}
+	]
+}
