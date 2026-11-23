@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, R6 en PR (revue faite, suites corrigées)._
+_Mis à jour le 2026-11-23, après #3036 (R6 mergé)._
 
-- **État** : R6 sur `test/verifs-auto-r6` : six projets, gestes du téléphone (David : « je suis tes recos »), Firefox réglé (`CFFIXED_USER_HOME`). `test:verifs:tout` : 662 verts / 79 rouges en 14,5 min (avant : Chrome seul 2,9 min ; premier passage 341 rouges). Détail : § « R6 — premier passage » et « R6 — rouges restants ».
-- **Prochaine action** : PR R6 au vert → merger ; puis la réponse de David sur la grille de Données au téléphone (PR à part).
-- **En attente de David** : (1) **grille de Données invisible au téléphone** (< ~400 px de large, prod comprise) : corriger dans une PR à part ? (2) écarts moteur : #1469 Firefox, Tab sur bouton (WebKit), #1337 / #1536 / Échap à l'iPhone, rendus WebKit de `e^(x/2)` et `f⁻¹` ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12).
+- **État** : R6 mergé (#3036) : six projets (`pnpm test:verifs` = ordinateur Chrome ; `--project` ; `pnpm test:verifs:tout` ≈ 15 min), gestes du téléphone, Firefox réglé sur macOS 27. 79 rouges en suite complète, détaillés au § « R6 — rouges restants ». Ordre validé : R6 → tri des 391 lignes (paquets de ~50, les plus anciennes d'abord) → R12 → R13.
+- **Prochaine action** : la réponse de David sur la grille de Données au téléphone (correctif en PR à part, worktree neuf) ; sinon, le tri des lignes.
+- **En attente de David** : (1) **grille de Données invisible au téléphone** (2 px à 393 px de large, prod comprise) : la corriger ? (2) écarts moteur : Tab sur « Options » (WebKit), #1469 (Firefox), #1337 / #1536 / Échap (iPhone), rendus WebKit de `e^(x/2)` et `f⁻¹` ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12).
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; carnet rouge en suite complète, vert seul sous `with-db-lock.sh` ; `calc` déplie « Mes objets » au téléphone (`leavePanelAlone` pour les tests du repli) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `ubumaths-wt-verifs-auto-r6` · `test/verifs-auto-r6` · serveur de dev sur 5177.
+- **Worktree / branche** : aucun (retiré après #3036).
 
 ## Phase 0 (validée le 2026-10-25)
 
