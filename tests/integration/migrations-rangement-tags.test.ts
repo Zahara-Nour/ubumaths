@@ -169,8 +169,12 @@ async function enTransaction(pg: Client, corps: () => Promise<void>): Promise<vo
 	}
 }
 
-/** Les comportements que TOUTE migration générée doit tenir */
-function eprouver(obtenir: () => { pg: Client; cas: Cas }): void {
+/**
+ * Les comportements que TOUTE migration générée doit tenir. `lot` (fixture, connue à la déclaration) :
+ * un cas sans objet pour ce lot est SAUTÉ, pas vide (vitest exige au moins une assertion) ; sans
+ * `lot` (cas synthétique, bâti au `beforeAll`), tous les cas tournent.
+ */
+function eprouver(obtenir: () => { pg: Client; cas: Cas }, lot?: Cas): void {
 	it('migration : chaque modèle EXACTEMENT sur son nœud, avec son seul point ; niveaux posés ; `updated_at` préservé ; rollback : l’état d’avant', async () => {
 		const { pg, cas } = obtenir();
 		await enTransaction(pg, async () => {
@@ -213,37 +217,41 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }): void {
 		});
 	});
 
-	it('TOUT ou RIEN : un modèle à ranger manquant fait échouer la migration', async () => {
-		const { pg, cas } = obtenir();
-		if (cas.ranges.length < 2) return;
-		await enTransaction(pg, async () => {
-			await poserEtatProd(pg, cas);
-			await pg.query('delete from public.question_templates where id = $1', [cas.ranges[0].id]);
-			await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
-				new RegExp(
-					`identifiants partiellement présents : ${cas.ranges.length - 1} modèle\\(s\\) sur ${cas.ranges.length}`
-				)
-			);
-		});
-	});
+	it.skipIf(lot !== undefined && lot.ranges.length < 2)(
+		'TOUT ou RIEN : un modèle à ranger manquant fait échouer la migration',
+		async () => {
+			const { pg, cas } = obtenir();
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await pg.query('delete from public.question_templates where id = $1', [cas.ranges[0].id]);
+				await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
+					new RegExp(
+						`identifiants partiellement présents : ${cas.ranges.length - 1} modèle\\(s\\) sur ${cas.ranges.length}`
+					)
+				);
+			});
+		}
+	);
 
-	it('un modèle rangé à la main depuis le relevé fait échouer la migration', async () => {
-		const { pg, cas } = obtenir();
-		if (cas.ranges.length === 0) return;
-		await enTransaction(pg, async () => {
-			await poserEtatProd(pg, cas);
-			await pg.query(
-				`update public.question_templates
+	it.skipIf(lot !== undefined && lot.ranges.length === 0)(
+		'un modèle rangé à la main depuis le relevé fait échouer la migration',
+		async () => {
+			const { pg, cas } = obtenir();
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await pg.query(
+					`update public.question_templates
 				    set classification_node_id = (select id from public.classification_nodes
 				                                   where kind = 'notion' and archived_at is null limit 1)
 				  where id = $1`,
-				[cas.ranges.at(-1)?.id]
-			);
-			await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
-				/modèles déjà rangés depuis le relevé : 1/
-			);
-		});
-	});
+					[cas.ranges.at(-1)?.id]
+				);
+				await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
+					/modèles déjà rangés depuis le relevé : 1/
+				);
+			});
+		}
+	);
 
 	it('migration déjà jouée : la rejouer refuse', async () => {
 		const { pg, cas } = obtenir();
@@ -256,70 +264,79 @@ function eprouver(obtenir: () => { pg: Client; cas: Cas }): void {
 		});
 	});
 
-	it('niveaux retouchés depuis le relevé : la migration échoue, et rien n’est rangé', async () => {
-		const { pg, cas } = obtenir();
-		const dernier = cas.niveaux.at(-1);
-		if (!dernier) return;
-		await enTransaction(pg, async () => {
-			await poserEtatProd(pg, cas);
-			await pg.query(
-				`update public.question_templates set grades = grades || array['CE1'] where id = $1`,
-				[dernier.id]
-			);
-			await pg.query('savepoint s');
-			await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
-				new RegExp(`niveaux de ${dernier.id.slice(0, 8)} changés depuis le relevé`)
-			);
-			await pg.query('rollback to savepoint s');
-			const etat = await lireEtat(pg, cas);
-			expect(cas.ranges.every((m) => etat.noeuds.get(m.id) === '∅')).toBe(true);
-			expect(etat.tags).toEqual([]);
-		});
-	});
+	it.skipIf(lot !== undefined && lot.niveaux.length === 0)(
+		'niveaux retouchés depuis le relevé : la migration échoue, et rien n’est rangé',
+		async () => {
+			const { pg, cas } = obtenir();
+			const dernier = cas.niveaux.at(-1);
+			if (!dernier) throw new Error('lot sans niveau ajouté');
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await pg.query(
+					`update public.question_templates set grades = grades || array['CE1'] where id = $1`,
+					[dernier.id]
+				);
+				await pg.query('savepoint s');
+				await expect(pg.query(readFileSync(cas.migration, 'utf-8'))).rejects.toThrow(
+					new RegExp(`niveaux de ${dernier.id.slice(0, 8)} changés depuis le relevé`)
+				);
+				await pg.query('rollback to savepoint s');
+				const etat = await lireEtat(pg, cas);
+				expect(cas.ranges.every((m) => etat.noeuds.get(m.id) === '∅')).toBe(true);
+				expect(etat.tags).toEqual([]);
+			});
+		}
+	);
 
-	it('rollback : un modèle déplacé à la main depuis la migration garde son nouveau nœud', async () => {
-		const { pg, cas } = obtenir();
-		const deplace = cas.ranges.find((m) => m.point === null);
-		if (!deplace) return;
-		await enTransaction(pg, async () => {
-			await poserEtatProd(pg, cas);
-			await pg.query(readFileSync(cas.migration, 'utf-8'));
-			await pg.query(
-				`update public.question_templates t
+	it.skipIf(lot !== undefined && !lot.ranges.some((m) => m.point === null))(
+		'rollback : un modèle déplacé à la main depuis la migration garde son nouveau nœud',
+		async () => {
+			const { pg, cas } = obtenir();
+			const deplace = cas.ranges.find((m) => m.point === null);
+			if (!deplace) throw new Error('lot sans modèle rangé sans point');
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await pg.query(readFileSync(cas.migration, 'utf-8'));
+				await pg.query(
+					`update public.question_templates t
 				    set classification_node_id = (select n.id from public.classification_nodes n
 				                                   where n.kind = 'notion' and n.archived_at is null
 				                                     and n.id <> t.classification_node_id
 				                                   order by n.id limit 1)
 				  where t.id = $1`,
-				[deplace.id]
-			);
-			const ailleurs = (await lireEtat(pg, cas)).noeuds.get(deplace.id);
-			expect(ailleurs).not.toBe(cheminDe(deplace));
-			await pg.query(extractRollback(cas.migration));
-			const annule = await lireEtat(pg, cas);
-			expect(annule.noeuds.get(deplace.id)).toBe(ailleurs);
-			expect(
-				cas.ranges.filter((m) => m.id !== deplace.id).map((m) => annule.noeuds.get(m.id))
-			).toEqual(cas.ranges.filter((m) => m.id !== deplace.id).map(() => '∅'));
-		});
-	});
+					[deplace.id]
+				);
+				const ailleurs = (await lireEtat(pg, cas)).noeuds.get(deplace.id);
+				expect(ailleurs).not.toBe(cheminDe(deplace));
+				await pg.query(extractRollback(cas.migration));
+				const annule = await lireEtat(pg, cas);
+				expect(annule.noeuds.get(deplace.id)).toBe(ailleurs);
+				expect(
+					cas.ranges.filter((m) => m.id !== deplace.id).map((m) => annule.noeuds.get(m.id))
+				).toEqual(cas.ranges.filter((m) => m.id !== deplace.id).map(() => '∅'));
+			});
+		}
+	);
 
-	it('rollback : il ne rend pas les niveaux d’un modèle retouché depuis la migration', async () => {
-		const { pg, cas } = obtenir();
-		const premier = cas.niveaux[0];
-		if (!premier) return;
-		await enTransaction(pg, async () => {
-			await poserEtatProd(pg, cas);
-			await pg.query(readFileSync(cas.migration, 'utf-8'));
-			const retouche = [...premier.apres, 'CE1'];
-			await pg.query('update public.question_templates set grades = $2::text[] where id = $1', [
-				premier.id,
-				retouche
-			]);
-			await pg.query(extractRollback(cas.migration));
-			expect((await lireEtat(pg, cas)).grades.get(premier.id)).toEqual(retouche);
-		});
-	});
+	it.skipIf(lot !== undefined && lot.niveaux.length === 0)(
+		'rollback : il ne rend pas les niveaux d’un modèle retouché depuis la migration',
+		async () => {
+			const { pg, cas } = obtenir();
+			const premier = cas.niveaux[0];
+			if (!premier) throw new Error('lot sans niveau ajouté');
+			await enTransaction(pg, async () => {
+				await poserEtatProd(pg, cas);
+				await pg.query(readFileSync(cas.migration, 'utf-8'));
+				const retouche = [...premier.apres, 'CE1'];
+				await pg.query('update public.question_templates set grades = $2::text[] where id = $1', [
+					premier.id,
+					retouche
+				]);
+				await pg.query(extractRollback(cas.migration));
+				expect((await lireEtat(pg, cas)).grades.get(premier.id)).toEqual(retouche);
+			});
+		}
+	);
 }
 
 /** Un point posé sur une sous-notion, un point posé sur une notion : pris dans la base locale */
@@ -523,5 +540,5 @@ describe.each(casDesFixtures())('$migration', (cas) => {
 		await cleanupAllTestData();
 	});
 
-	eprouver(() => ({ pg, cas }));
+	eprouver(() => ({ pg, cas }), cas);
 });

@@ -1,0 +1,363 @@
+{
+	"id": "111ba9c5-8069-4416-8699-7de77939ae77",
+	"title": "Lire un nombre décimal sur le matériel",
+	"description": "Écrire le nombre décimal représenté par des gros cubes (unités), plaques (dixièmes), barres (centièmes) et petits cubes (millièmes) du bloc collection ; avec ou sans rang vide (pièges : lu comme un entier, plaques et barres échangées, lu à l'envers, rang vide sauté)",
+	"grades": ["6"],
+	"level": 10,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : numération > décomposition",
+		"point": "6-102"
+	},
+	"variations": [
+		{
+			"statement": "Dans ce matériel, le gros cube vaut $1$ unité, la plaque $1$ dixième, la barre $1$ centième et le petit cube $1$ millième.\n\n```collection\nmilliers: {{u}}\ncentaines: {{d}}\ndizaines: {{c}}\nunités: {{m}}\n```\n\nQuel nombre est représenté ? $?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..7"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["d != c", "d != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+d/10+c/100+m/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1000*u+100*d+10*c+m}}",
+							"message": "Ici le gros cube vaut $1$ unité, pas $1\\,000$ : la plaque, la barre et le petit cube sont des parties de l'unité, il faut une virgule.",
+							"label": "Lu comme un nombre entier"
+						},
+						{
+							"answer": "{{eval:u+c/10+d/100+m/1000;d}}",
+							"message": "La plaque est plus grande que la barre : elle vaut un dixième, la barre un centième.",
+							"label": "Plaques et barres échangées"
+						},
+						{
+							"answer": "{{eval:u+m/10+c/100+d/1000;d}}",
+							"message": "Les petits cubes sont les plus petits objets : ce sont les millièmes, le dernier chiffre après la virgule.",
+							"label": "Lu à l'envers"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:u>0|${{u}}$ {{if:u<=1|gros cube|gros cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}. |}}{{if:d>0|${{d}}$ {{if:d<=1|plaque|plaques}} : ${{d}}$ {{if:d<=1|dixième|dixièmes}}. |}}{{if:c>0|${{c}}$ {{if:c<=1|barre|barres}} : ${{c}}$ {{if:c<=1|centième|centièmes}}. |}}${{m}}$ {{if:m<=1|petit cube|petits cubes}} : ${{m}}$ {{if:m<=1|millième|millièmes}}.",
+					"$${{u}}+\\dfrac{ {{d}} }{10}+\\dfrac{ {{c}} }{100}+\\dfrac{ {{m}} }{1\\,000}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$$"
+				]
+			},
+			"hint": "Chaque sorte d'objet donne un chiffre : les gros cubes les unités, les plaques les dixièmes, les barres les centièmes, les petits cubes les millièmes."
+		},
+		{
+			"statement": "Dans ce matériel, le gros cube vaut $1$ unité, la plaque $1$ dixième, la barre $1$ centième et le petit cube $1$ millième.\n\n```collection\nmilliers: {{u}}\ncentaines: {{d}}\ndizaines: {{c}}\nunités: {{m}}\n```\n\nQuel nombre est représenté ? $?$",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "0|1"
+				},
+				{
+					"name": "u",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:z*a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(1-z)*b"
+				},
+				{
+					"name": "m",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != m", "b != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+d/10+c/100+m/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1000*u+100*d+10*c+m}}",
+							"message": "Ici le gros cube vaut $1$ unité, pas $1\\,000$ : la plaque, la barre et le petit cube sont des parties de l'unité, il faut une virgule.",
+							"label": "Lu comme un nombre entier"
+						},
+						{
+							"answer": "{{eval:u+(d+c)/10+m/100;d}}",
+							"message": "Il n'y a aucune {{if:z==0|plaque : le chiffre des dixièmes est $0$|barre : le chiffre des centièmes est $0$}}, il faut l'écrire.",
+							"label": "Rang vide sauté"
+						},
+						{
+							"answer": "{{eval:u+m/10+c/100+d/1000;d}}",
+							"message": "Les petits cubes sont les plus petits objets : ce sont les millièmes, le dernier chiffre après la virgule.",
+							"label": "Lu à l'envers"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:u>0|${{u}}$ {{if:u<=1|gros cube|gros cubes}} : ${{u}}$ {{if:u<=1|unité|unités}}. |}}{{if:d>0|${{d}}$ {{if:d<=1|plaque|plaques}} : ${{d}}$ {{if:d<=1|dixième|dixièmes}}. |}}{{if:c>0|${{c}}$ {{if:c<=1|barre|barres}} : ${{c}}$ {{if:c<=1|centième|centièmes}}. |}}${{m}}$ {{if:m<=1|petit cube|petits cubes}} : ${{m}}$ {{if:m<=1|millième|millièmes}}.",
+					"Aucune {{if:z==0|plaque : $0$ au rang des dixièmes|barre : $0$ au rang des centièmes}}.",
+					"$${{u}}+\\dfrac{ {{d}} }{10}+\\dfrac{ {{c}} }{100}+\\dfrac{ {{m}} }{1\\,000}=\\textcolor{{{color:primary.0}}}{ {{solution}} }$$"
+				]
+			},
+			"hint": "Chaque sorte d'objet donne un chiffre : les gros cubes les unités, les plaques les dixièmes, les barres les centièmes, les petits cubes les millièmes."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 1,374",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"d": "3",
+				"c": "7",
+				"m": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,374"]
+		},
+		{
+			"description": "a : 1,374 écrit avec un point",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"d": "3",
+				"c": "7",
+				"m": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1.374"]
+		},
+		{
+			"description": "a : lu comme un entier (1374)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"d": "3",
+				"c": "7",
+				"m": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ici le gros cube vaut $1$ unité, pas $1\\,000$ : la plaque, la barre et le petit cube sont des parties de l'unité, il faut une virgule."
+			},
+			"answers": ["1374"]
+		},
+		{
+			"description": "a : plaques et barres échangées (1,734)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"d": "3",
+				"c": "7",
+				"m": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La plaque est plus grande que la barre : elle vaut un dixième, la barre un centième."
+			},
+			"answers": ["1,734"]
+		},
+		{
+			"description": "a : lu à l'envers (1,473)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"d": "3",
+				"c": "7",
+				"m": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les petits cubes sont les plus petits objets : ce sont les millièmes, le dernier chiffre après la virgule."
+			},
+			"answers": ["1,473"]
+		},
+		{
+			"description": "a : sans gros cube, 0,528",
+			"variationIndex": 0,
+			"variables": {
+				"u": "0",
+				"d": "5",
+				"c": "2",
+				"m": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,528"]
+		},
+		{
+			"description": "a : sans gros cube, lu comme un entier (528)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "0",
+				"d": "5",
+				"c": "2",
+				"m": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ici le gros cube vaut $1$ unité, pas $1\\,000$ : la plaque, la barre et le petit cube sont des parties de l'unité, il faut une virgule."
+			},
+			"answers": ["528"]
+		},
+		{
+			"description": "b : pas de plaque, 2,063",
+			"variationIndex": 1,
+			"variables": {
+				"z": "0",
+				"u": "2",
+				"a": "4",
+				"b": "6",
+				"d": "0",
+				"c": "6",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,063"]
+		},
+		{
+			"description": "b : pas de plaque, rang sauté (2,63)",
+			"variationIndex": 1,
+			"variables": {
+				"z": "0",
+				"u": "2",
+				"a": "4",
+				"b": "6",
+				"d": "0",
+				"c": "6",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a aucune plaque : le chiffre des dixièmes est $0$, il faut l'écrire."
+			},
+			"answers": ["2,63"]
+		},
+		{
+			"description": "b : pas de plaque, lu comme un entier (2063)",
+			"variationIndex": 1,
+			"variables": {
+				"z": "0",
+				"u": "2",
+				"a": "4",
+				"b": "6",
+				"d": "0",
+				"c": "6",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ici le gros cube vaut $1$ unité, pas $1\\,000$ : la plaque, la barre et le petit cube sont des parties de l'unité, il faut une virgule."
+			},
+			"answers": ["2063"]
+		},
+		{
+			"description": "b : pas de barre, 1,407",
+			"variationIndex": 1,
+			"variables": {
+				"z": "1",
+				"u": "1",
+				"a": "4",
+				"b": "6",
+				"d": "4",
+				"c": "0",
+				"m": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1,407"]
+		},
+		{
+			"description": "b : pas de barre, rang sauté (1,47)",
+			"variationIndex": 1,
+			"variables": {
+				"z": "1",
+				"u": "1",
+				"a": "4",
+				"b": "6",
+				"d": "4",
+				"c": "0",
+				"m": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a aucune barre : le chiffre des centièmes est $0$, il faut l'écrire."
+			},
+			"answers": ["1,47"]
+		},
+		{
+			"description": "b : pas de barre, lu à l'envers (1,704)",
+			"variationIndex": 1,
+			"variables": {
+				"z": "1",
+				"u": "1",
+				"a": "4",
+				"b": "6",
+				"d": "4",
+				"c": "0",
+				"m": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les petits cubes sont les plus petits objets : ce sont les millièmes, le dernier chiffre après la virgule."
+			},
+			"answers": ["1,704"]
+		},
+		{
+			"description": "b : pas de plaque, lu à l'envers (2,36)",
+			"variationIndex": 1,
+			"variables": {
+				"z": "0",
+				"u": "2",
+				"a": "4",
+				"b": "6",
+				"d": "0",
+				"c": "6",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les petits cubes sont les plus petits objets : ce sont les millièmes, le dernier chiffre après la virgule."
+			},
+			"answers": ["2,36"]
+		}
+	]
+}

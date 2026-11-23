@@ -104,7 +104,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | ---------------------------------- | ----- | --------- | -------------------- | ------------------- |
 | Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`  |
 | Nombres entiers et décimaux        | 6N1   | 38        | libre                |                     |
-| Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux` |
+| Nombres décimaux                   | 6N2   | 55        | prise (2026-11-23)   | `idees-6e-decimaux` |
 | Fractions                          | 6N3   | 53        | libre                |                     |
 | Algèbre                            | 6N4   | 9         | libre                |                     |
 | Résolution de problèmes            | 6N5   | 24        | libre                |                     |
@@ -171,5 +171,3 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   « compléments sur la dérivation ».
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
-- `idees-6e-decimaux` (plus tard, David, 2026-11-22) : le matériel décimal, cube, plaque, barre, petit cube
-  (6N2autoB-2), en attente d'un bloc `collection` qui représente les décimaux.
