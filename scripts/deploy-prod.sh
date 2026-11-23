@@ -120,6 +120,20 @@ arreter() {
 	exit 1
 }
 
+# Note la durée d'une étape pour `pnpm durees` (scripts/durees/) : une ligne
+# « date;version;étape;secondes » dans le journal du Mac mini. $1 = l'étape,
+# $2 = son début (date +%s), $3 = le commit de la version. Ne fait jamais échouer
+# la mise en prod : un journal impossible à écrire est ignoré.
+JOURNAL_DUREES="${DUREES_ETAT:-$HOME/.local/state/durees}/mises-en-prod.csv"
+noter_duree() {
+	local nom
+	nom="$(git tag --points-at "$3" 2>/dev/null | grep '^v' | head -1 || true)"
+	{
+		mkdir -p "$(dirname "$JOURNAL_DUREES")" &&
+			echo "$(date -u +%Y-%m-%dT%H:%M:%SZ);${nom:-$3};$1;$(($(date +%s) - $2))" >>"$JOURNAL_DUREES"
+	} 2>/dev/null || true
+}
+
 # --- Après la mise en prod : la construction de Vercel, puis le site -----------
 # L'identifiant de la construction en ligne (SvelteKit : l'heure de la
 # construction). Vide si le site ne répond pas.
@@ -140,7 +154,8 @@ etat_vercel() {
 # ici : `production` a déjà avancé, et c'est David qui décide de la suite.
 REVOIR="Rien n'est défait. Pour revérifier seul : pnpm deploy:prod --verifier"
 verifier_le_site() {
-	local sha="$1" avant="$2" attendu=0 lu etat lien sortie nom servi accueil
+	local sha="$1" avant="$2" attendu=0 lu etat lien sortie nom servi accueil debut
+	debut="$(date +%s)"
 	nom="$(git tag --points-at "$sha" | grep '^v' | head -1 || true)"
 	[ -n "$nom" ] || nom="$(decrire "$sha")"
 	while :; do
@@ -159,6 +174,10 @@ verifier_le_site() {
 		sleep "$PAUSE"
 		attendu=$((attendu + (PAUSE > 0 ? PAUSE : 1)))
 	done
+	# Durées notées seulement à la suite d'une livraison ($avant lu) : `--verifier`
+	# arrive après coup, il ne mesurerait rien.
+	[ -z "$avant" ] || noter_duree vercel "$debut" "$sha"
+	debut="$(date +%s)"
 	# Construit ne veut pas dire servi : le domaine bascule après les contrôles de Vercel.
 	if [ -n "$avant" ]; then
 		# Lecture vide (site injoignable un instant, pendant la bascule) : ce n'est
@@ -174,6 +193,7 @@ verifier_le_site() {
 			sleep "$PAUSE"
 			attendu=$((attendu + (PAUSE > 0 ? PAUSE : 1)))
 		done
+		noter_duree bascule "$debut" "$sha"
 	fi
 	# Mode maintenance (pnpm maintenance:on) : tout répond 503 avec la page de
 	# maintenance (src/lib/server/maintenance.ts), ce n'est pas une panne. Un 503
@@ -480,6 +500,9 @@ if [ "$essai" = 1 ]; then
 fi
 
 # --- 2. la version ------------------------------------------------------------
+# Début de la CI de la version, si elle est créée ici ; vide sinon (version déjà
+# là, CI relancée) : l'attente ne serait pas la durée d'une CI, rien n'est noté.
+debut_ci=""
 if git tag --points-at "$cible" | grep -q '^v'; then
 	version="$cible"
 	echo "Déjà une version : $(git tag --points-at "$cible" | grep '^v' | head -1)."
@@ -492,6 +515,7 @@ else
 	git push -q origin main "refs/tags/$tag" ||
 		arreter "⛔ Push de la version refusé (main a-t-il bougé ?)." "Version $tag locale, non publiée : à examiner."
 	echo "🏷  $tag poussée sur main : $(decrire "$version")"
+	debut_ci="$(date +%s)"
 fi
 
 # --- 3. la CI de la version ---------------------------------------------------
@@ -506,6 +530,7 @@ while :; do
 	failure | cancelled | timed_out)
 		if relancer "$version" "$etat"; then
 			attendu=0
+			debut_ci=""
 			continue
 		fi
 		arreter "⛔ « $CHECK » = $etat sur la version $(decrire "$version")." "Rien n'est mis en prod. Lire la CI de la version, corriger par une PR, merger, puis relancer pnpm deploy:prod. $CONSEIL"
@@ -517,6 +542,8 @@ while :; do
 	sleep "$PAUSE"
 	attendu=$((attendu + PAUSE))
 done
+
+[ -z "$debut_ci" ] || noter_duree ci-version "$debut_ci" "$version"
 
 # --- 4. la mise en prod -------------------------------------------------------
 build_avant="$(build_en_ligne)"

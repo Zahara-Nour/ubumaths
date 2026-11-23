@@ -36,6 +36,7 @@ couvre:
   - scripts/surveillance-machine-installer.sh
   - scripts/menage-machine.sh
   - scripts/machine-commun.sh
+  - 'scripts/durees/**'
 ---
 
 # Environnement de dev : la carte
@@ -203,6 +204,29 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
   (charge, pression, swap, CPU de Chrome et Brave, serveurs de dev, processus Claude, Go libres du
   disque), 14 jours gardés ; colonnes changées → l'ancien fichier devient `historique-ancien.csv`. Après un gel : `pnpm surveillance:historique` (2 dernières heures) ;
 - `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter, envoyer ni écrire.
+
+**Durées de la CI, des PR et de la mise en prod** : `pnpm durees` (`scripts/durees/`), pour voir une
+phase devenue nettement plus lente que la normale.
+
+- **référence** : `scripts/durees/reference.json`, la durée normale de chaque phase en secondes (CI
+  entière d'une PR de code, ouverture → merge d'une PR à un seul push, chaque job de `quality.yml`,
+  les étapes svelte-check et Prettier, les étapes de la mise en prod) et la date `depuis` avant
+  laquelle aucune mesure n'est lue. **David seul la change**, par `pnpm durees --reference
+[--depuis AAAA-MM-JJ]` après un changement voulu, puis une PR ; jamais d'ajustement automatique
+  (une lenteur installée deviendrait la normale). Une phase n'y entre qu'avec 5 mesures et 20 s ;
+- **mesures** : jobs et étapes des exécutions de `quality.yml` sur les PR, lus chez GitHub (une
+  exécution finie est gardée dans `~/.local/state/durees/runs-v1/`, seules les nouvelles sont lues).
+  Une exécution où un job est sauté (PR de contenu) ne compte pas : elle ferait baisser la médiane.
+  Mise en prod : `pnpm deploy:prod` note la CI de la version, la construction Vercel et la bascule
+  du site dans `~/.local/state/durees/mises-en-prod.csv` (rien avec `--verifier`, ni pour une CI
+  relancée) ;
+- `pnpm durees` : le tableau, référence, médiane des dernières 24 heures et des 7 derniers jours ;
+- **alerte** : chaque matin à 6 h 40, launchd lance `pnpm durees --releve` depuis le dépôt principal
+  (installé par `pnpm surveillance:installer`, journal `~/.local/state/durees/launchd.log`).
+  Médiane du jour d'au moins 1,5 fois la référence sur au moins 5 mesures → notification par le
+  canal de la surveillance ; rien sinon. Une seule PR lente ne déclenche rien. Mise en prod : les
+  5 dernières, et seulement s'il y en a eu une dans la journée. `--releve --essai` : affiche sans
+  envoyer.
 
 **Ménage quand la charge est trop grande** : `pnpm menage` (`--essai` pour voir sans rien fermer),
 `scripts/menage-machine.sh`. Ferme les onglets Chrome et Brave au-delà de 20 % de CPU (le navigateur
