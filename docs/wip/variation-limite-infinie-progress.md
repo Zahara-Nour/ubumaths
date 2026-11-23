@@ -10,7 +10,7 @@ homographique : −∞, à gauche et à droite de la valeur interdite, +∞).
 _Mis à jour le 2026-11-23, chantier ouvert._
 
 - **État** : relevé du code fait, phase 0 écrite (ci-dessous) · **Prochaine action** : coder
-  après les réponses · **En attente de David** : Q3 (QCM d'un tableau à plusieurs cases) ·
+  après les réponses · **En attente de David** : périmètre des erreurs prévues (quels types de cases) ·
   **Pièges en cours** : `{{e}}` interdit (Euler) · **Worktree / branche** :
   `../ubumaths-wt-variation-limite-infinie`, `feat/variation-limite-infinie`.
 
@@ -110,3 +110,7 @@ seule case**, `canBeChoice` dans `choice-from-errors.ts`)
   `outils-manquants.md` ; (b) dans ce chantier : chaque case du tableau devient son propre petit
   choix. Je recommande (a) : le QCM à plusieurs cases n'existe nulle part aujourd'hui, c'est un
   outil à part, qui servira aussi hors des tableaux.
+- **Q3 → (a)**, et « un qcm sur plusieurs cases, je trouve ça illisible » : **pas** d'outil
+  « QCM à plusieurs cases » à noter dans `outils-manquants.md`.
+- David demande de revoir pour quels types de cases les erreurs prévues sont censées marcher
+  (relevé ci-dessous, en attente de sa décision).
