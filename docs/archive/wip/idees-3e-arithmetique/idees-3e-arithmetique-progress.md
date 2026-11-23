@@ -99,3 +99,11 @@ _Mis à jour le 2026-11-23, chantier clos._
   brouillons passent. David lance `--publier` ; vérifié en prod : 6 `published`.
 - Tableau de répartition : 3A1 « publiée », réservation de 90dca27a levée, question sur ses options
   notée en « Idées en attente ». Journal et relevé archivés ici.
+
+### 2026-11-23 — 90dca27a : fraction non simplifiée refusée
+
+- David valide (consigne « Simplifie le plus possible », point 3-001) ; outil prêt (#3042).
+- `options.constraints.reducedFractions: "strict"` sur 90dca27a, pour ses 4 variations : une
+  fraction encore simplifiable passe de ½ point à 0 (`bad_form`, motifs `reducedFractions` et
+  `form`) ; l'élève lit « la fraction peut être simplifiée ». Les 4 specs de ½ point réécrites.
+- Migration `20261123170711_…_publies_contenu.sql` ; tests d'intégration verts.

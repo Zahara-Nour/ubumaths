@@ -217,8 +217,5 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
 - `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le
   plus grand reste possible dans une division euclidienne par d ? » (3A10), niveau 6e, aucun modèle.
-- `idees-3e-arithmetique` (2026-11-23, question à David) : refuser une fraction non simplifiée dans
-  90dca27a (aujourd'hui ½ point), par une migration de ses options quand `migration-contenu.ts` saura
-  les écrire (branche `feat/migration-contenu-options`).
 - `idees-6e-entiers-decimaux` (2026-11-23, David) : pourcentage approché d'une fraction (37/213 ≈ 17 %,
   6N1F-4), hors bornes de 6e, pour la session de la 5e ou de la 4e (ade95ae4 n'a que des cas exacts).
