@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-23, après l'écriture en prod de #3039._
 
 - **État** : outil n° 51 en prod (v0.103.0) ; 604f83b7 écrit en prod par David et vérifié (MCP :
   publié, 11 variations, « pas factorisable » sur V8-V10, 52 specs) · **Prochaine action** :
-  clore le chantier : ligne 51 de `outils-manquants.md` → fait ; versement (la doc système est
+  clore le chantier : ligne 51 de `outils-manquants.md` (« En cours » → fait, avec les ids) ; versement (la doc système est
   déjà à jour depuis #3026, `docs/systeme/questions.md`) ; archiver ce journal dans
   `docs/archive/wip/` ; commit doc direct sur `main` · **En attente de David** : rien ·
   **Pièges en cours** : un `{{if}}` dans le motif de `requiredForm` sort parenthésé,
