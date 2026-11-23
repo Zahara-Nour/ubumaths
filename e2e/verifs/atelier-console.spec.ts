@@ -20,7 +20,8 @@ import {
 	type Answer,
 	allowClipboard,
 	showCards,
-	leavePanelAlone
+	leavePanelAlone,
+	gotoRedirected
 } from './helpers/atelier';
 import { openView, readCell, typeCell } from './helpers/grille';
 
@@ -229,8 +230,7 @@ test('#1340 — /cas mène à l’atelier ; .aide, .valeurs, .exporter', async (
 	await expect(notice).toHaveText('Rien à exporter pour l’instant.');
 
 	for (const address of ['/cas', '/cas?x=1']) {
-		// La page redirige aussitôt : WebKit interrompt le chargement attendu
-		await page.goto(address, { waitUntil: 'commit' });
+		await gotoRedirected(page, address);
 		await expect(page).toHaveURL(/\/atelier/);
 	}
 	await openAtelier(page);
@@ -494,7 +494,7 @@ test(
 
 test('#1692 — tableur V4 retiré : /spreadsheet mène à l’atelier', async ({ page }) => {
 	for (const address of ['/spreadsheet', '/spreadsheet/00000000-0000-0000-0000-000000000000']) {
-		await page.goto(address, { waitUntil: 'commit' });
+		await gotoRedirected(page, address);
 		await expect(page).toHaveURL(/\/atelier/);
 	}
 	await openView(page, 'Données');

@@ -136,12 +136,20 @@ test('lecture graphique — losange glissé ou au clavier, lectures de la consol
 	expect(await xTicks(page)).toEqual(ticks);
 	await expect(page.locator('.image-readings g[data-source="curseur"]')).toHaveCount(1);
 
-	// Au clavier : une flèche avance d'un pas de la sous-grille, qui suit l'échelle
-	// (`ReadingSliders.svelte`) : 0,5 sur ordinateur, 1 sur l'écran plus serré du téléphone
+	// Au clavier : une flèche va à la ligne suivante de la sous-grille (0,5 sur
+	// ordinateur). Au téléphone, l'échelle change le pas (`ReadingSliders.svelte`,
+	// 1 ou 2) : la flèche avance, et reste sur un demi
 	await handle.focus();
 	await page.keyboard.press('ArrowRight');
-	const minorStep = isNarrow(page) ? 1 : 0.5;
-	await expect(handle).toHaveAttribute('aria-valuenow', String(dragged + minorStep));
+	if (isNarrow(page)) {
+		await expect
+			.poll(async () => Number(await handle.getAttribute('aria-valuenow')))
+			.toBeGreaterThan(dragged);
+		const next = Number(await handle.getAttribute('aria-valuenow'));
+		expect(next * 2).toBe(Math.round(next * 2));
+	} else {
+		await expect(handle).toHaveAttribute('aria-valuenow', String(dragged + 0.5));
+	}
 
 	// f(2) dans la console : pointillés de 2 à 4, qui restent
 	await calc(page, 'f(2)');

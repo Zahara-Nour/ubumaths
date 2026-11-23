@@ -14,7 +14,9 @@ import {
 	retypeCard,
 	steps,
 	typeInCard,
-	showCards
+	showCards,
+	ownTexts,
+	isNarrow
 } from './helpers/atelier';
 
 /**
@@ -108,11 +110,8 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	const variations = await calc(page, '.variations f');
 	const table = variations.line.locator('.tableau');
 	const bounds = table.locator('.vt-domain-point');
-	// Les bornes sont des formules : leur texte est le LaTeX. Le texte direct seulement :
-	// sous Chromium mobile, MathLive y ajoute son rendu (shadow DOM), que `toHaveText` lirait
-	await expect
-		.poll(() => bounds.evaluateAll((points) => points.map((point) => point.textContent?.trim())))
-		.toEqual(['0', '+\\infty']);
+	// Les bornes sont des formules : leur texte (direct) est le LaTeX
+	await expect.poll(() => ownTexts(bounds)).toEqual(['0', '+\\infty']);
 	// 0 fermé
 	await expect(bounds.first()).not.toHaveClass(/vt-open/);
 	expect(normalizeLatex(await steps(variations))).toContain('croissante');
@@ -124,7 +123,7 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	await calc(page, 'f(x) = x^2 sur [0;5[');
 	const open = await calc(page, '.variations f');
 	const openBounds = open.line.locator('.tableau .vt-domain-point');
-	await expect(openBounds.last()).toHaveText('5');
+	await expect.poll(async () => (await ownTexts(openBounds)).at(-1)).toBe('5');
 	await expect(openBounds.last()).toHaveClass(/vt-open/);
 
 	await calc(page, 's(x) = sin(x) sur [0;\\pi]');
@@ -448,10 +447,13 @@ test('cartes valeur, suite, liste (lot 4a) — curseur, bornes, escalier, liste,
 	await expect.poll(() => fieldValue(page, 'a')).toBe('2');
 	// Rien de rangé pendant la frappe : Échap rend la valeur d'avant (un clic dans la
 	// console, lui, rangerait la carte en sortant du champ)
-	await retypeCard(page, 'a', '5');
-	await page.waitForTimeout(300);
-	await page.keyboard.press('Escape');
-	await expect.poll(() => fieldValue(page, 'a')).toBe('2');
+	// Pas de touche Échap au clavier d'un téléphone : cette preuve-là, sur ordinateur
+	if (!isNarrow(page)) {
+		await retypeCard(page, 'a', '5');
+		await page.waitForTimeout(300);
+		await page.keyboard.press('Escape');
+		await expect.poll(() => fieldValue(page, 'a')).toBe('2');
+	}
 	await retypeCard(page, 'a', '5');
 	await page.keyboard.press('Enter');
 	expectLatex(await calc(page, 'a'), '5');
@@ -568,10 +570,13 @@ test('cartes point et courbe (lot 4b) — une ligne, Entrée range, lien, couleu
 	await expect(a.locator('.egal')).toHaveText('=');
 	// Taper `(1;5)` sans Entrée ne change rien ; Entrée range
 	// (même preuve que pour une valeur : Échap rend la définition d'avant)
-	await retypeCard(page, 'A', '(1;5');
-	await page.waitForTimeout(300);
-	await page.keyboard.press('Escape');
-	await expect.poll(() => fieldValue(page, 'A')).toBe('(1;2)');
+	// Pas de touche Échap au clavier d'un téléphone : cette preuve-là, sur ordinateur
+	if (!isNarrow(page)) {
+		await retypeCard(page, 'A', '(1;5');
+		await page.waitForTimeout(300);
+		await page.keyboard.press('Escape');
+		await expect.poll(() => fieldValue(page, 'A')).toBe('(1;2)');
+	}
 	await retypeCard(page, 'A', '(1;5');
 	await page.keyboard.press('Enter');
 	expect((await calc(page, 'A')).text).toContain('A(1;5)');

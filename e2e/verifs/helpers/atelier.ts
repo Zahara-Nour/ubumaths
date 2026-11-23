@@ -64,6 +64,27 @@ export async function calc(page: Page, input: string): Promise<Answer> {
 	return { line, latex, text, refused };
 }
 
+/**
+ * Ouvre une adresse retirée qui redirige vers une autre : WebKit interrompt le
+ * chargement par la redirection, même en n'attendant que son début. Cette
+ * interruption-là seulement est attendue ; l'arrivée se vérifie ensuite.
+ */
+export async function gotoRedirected(page: Page, address: string): Promise<void> {
+	await page.goto(address).catch((error: unknown) => {
+		if (!String(error).includes('is interrupted by another navigation')) throw error;
+	});
+}
+
+/**
+ * Le texte direct d'une formule (son LaTeX) : sous Chromium mobile, MathLive y
+ * ajoute son rendu (shadow DOM), que `toHaveText` lirait en plus.
+ */
+export function ownTexts(formulas: Locator): Promise<string[]> {
+	return formulas.evaluateAll((elements) =>
+		elements.map((element) => element.textContent?.trim() ?? '')
+	);
+}
+
 /** Téléphone : l'Atelier passe à une colonne à 720 px et moins (`ObjectPanel.svelte`) */
 export function isNarrow(page: Page): boolean {
 	return (page.viewportSize()?.width ?? Infinity) <= 720;

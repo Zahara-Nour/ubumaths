@@ -20,7 +20,8 @@ import {
 	type Answer,
 	allowClipboard,
 	readClipboard,
-	showCards
+	showCards,
+	gotoRedirected
 } from './helpers/atelier';
 
 /**
@@ -772,8 +773,7 @@ test('#1710 — « Comment ? » de .limite : décimaux, facteur commun', async (
 
 test('#1709 — /calc retirée : redirigée vers /atelier', async ({ page }) => {
 	for (const address of ['/calc', '/calc/', '/calc?share=abc']) {
-		// La page redirige aussitôt : WebKit interrompt le chargement attendu
-		await page.goto(address, { waitUntil: 'commit' });
+		await gotoRedirected(page, address);
 		await expect(page).toHaveURL(/\/atelier$/);
 	}
 	const sum = await calc(page, '2+3*4');
