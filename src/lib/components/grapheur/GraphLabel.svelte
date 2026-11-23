@@ -16,7 +16,6 @@
 	import { convertLatexToMarkup } from 'mathlive';
 	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import {
-		LABEL_BOX_MARGIN,
 		labelBoxCenterY,
 		labelBoxHeight,
 		labelBoxSpan,
@@ -66,16 +65,9 @@
 		accent?: string | null;
 	} = $props();
 
-	// ==========================================================================
-	// Constants
-	// ==========================================================================
-
-	/**
-	 * Distance kept between the point and its label. Box sizes (a fraction is
-	 * two storeys tall) and the flip near the right edge live in `label-box.ts`,
-	 * shared with the asymptote label placement (E6).
-	 */
-	const MARGIN = LABEL_BOX_MARGIN;
+	// Box sizes (a fraction is two storeys tall), the flip near the right edge
+	// and the drop below the point near the top live in `label-box.ts`, shared
+	// with the asymptote label placement (E6).
 
 	// ==========================================================================
 	// Derived State
