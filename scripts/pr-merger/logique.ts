@@ -94,7 +94,8 @@ export function verdictDesControles(controles: Controle[]): Verdict {
 			rouges.push(`${nom} (${(c.conclusion ?? 'sans conclusion').toLowerCase()})`);
 			continue;
 		}
-		if (nom === SYNTHESE) synthese = true;
+		// La synthèse doit avoir RÉUSSI : sautée, elle n'a rien vérifié.
+		if (nom === SYNTHESE && c.conclusion === 'SUCCESS') synthese = true;
 	}
 
 	if (rouges.length > 0) return { etat: 'rouge', noms: rouges };

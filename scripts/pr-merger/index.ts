@@ -14,9 +14,19 @@
  *      dont les contrôles ont été lus ; `Base branch was modified` → une relance ;
  *   5. état relu : rien n'est rangé sans `MERGED` ;
  *   6. worktree de la branche retiré, branche locale supprimée (`-d`), dépôt
- *      principal mis à jour ; un worktree qui n'est pas propre reste en place.
+ *      principal mis à jour (`git pull --ff-only` : jamais de rebase sous les pieds
+ *      d'une autre session) ; un worktree avec des fichiers modifiés ou non suivis,
+ *      ou une branche avec des commits jamais poussés, restent en place.
  *
- * Sans <n> : la PR de la branche courante. `--essai` : s'arrête avant le merge.
+ * Limites assumées :
+ *   - les fichiers IGNORÉS du worktree (.env.local, node_modules) partent avec lui ;
+ *   - le verrou est lu juste avant le merge, pas tenu : un `deploy:prod` lancé dans
+ *     la seconde qui suit passe (même fenêtre que le hook garde-commandes.py), et
+ *     un verrou illisible (python3 absent) vaut « libre » ;
+ *   - un contrôle rouge non exigé par la protection de main arrête aussi le merge.
+ *
+ * Sans <n> : la PR de la branche courante. `--essai` : dit ce qui serait fait, sans
+ * attendre ni la CI ni le verrou, et s'arrête avant le merge.
  * PR déjà mergée : seulement le rangement. Ne joue jamais `pnpm db:migrate`.
  * Refuse dans une session Claude sans personne devant (tâche planifiée : elle ne
  * merge jamais, CLAUDE.md § Git Workflow).
@@ -47,11 +57,14 @@ const CHAMPS =
 	'number,state,isDraft,baseRefName,headRefName,headRefOid,mergeable,mergeStateStatus,statusCheckRollup';
 
 /** Secondes entre deux lectures de GitHub ou du verrou. */
-const PAUSE = Number(process.env.PR_MERGER_PAUSE ?? 20);
+const PAUSE = secondes(process.env.PR_MERGER_PAUSE, 20);
 /** Attente la plus longue de la CI, puis du verrou de mise en prod. */
-const ATTENTE_MAX = Number(process.env.PR_MERGER_ATTENTE_MAX ?? 3600);
-/** Attente la plus longue d'un run pas encore enregistré (juste après un push). */
-const ATTENTE_ABSENT = Number(process.env.PR_MERGER_ATTENTE_ABSENT ?? 120);
+const ATTENTE_MAX = secondes(process.env.PR_MERGER_ATTENTE_MAX, 3600);
+/**
+ * Attente la plus longue d'un run pas encore enregistré (juste après un push), et
+ * de GitHub qui dit encore `BLOCKED` quelques secondes après le dernier contrôle vert.
+ */
+const ATTENTE_ABSENT = secondes(process.env.PR_MERGER_ATTENTE_ABSENT, 120);
 /** Remplaçable par un bouchon dans les tests. */
 const GARDE_MIGRATIONS =
 	process.env.PR_MERGER_GARDE_MIGRATIONS ??
@@ -60,6 +73,12 @@ const GARDE_MIGRATIONS =
 // ============================================================================
 // Fonctions
 // ============================================================================
+
+/** Une valeur illisible ne doit pas donner NaN : `attendu >= NaN` attendrait sans fin. */
+function secondes(valeur: string | undefined, defaut: number): number {
+	const lu = Number(valeur ?? defaut);
+	return Number.isFinite(lu) && lu >= 0 ? lu : defaut;
+}
 
 function dire(message: string): void {
 	console.log(message);
@@ -108,9 +127,10 @@ function deployEnCours(): boolean {
 }
 
 /** Attend les contrôles du dernier commit ; rend la PR telle que lue au vert. */
-async function attendreLesControles(n: string, premiere: Pr): Promise<Pr> {
+async function attendreLesControles(n: string, premiere: Pr, essai: boolean): Promise<Pr> {
 	let pr = premiere;
 	let attendu = 0;
+	let attenduBloque = 0;
 	let annonce = '';
 	for (;;) {
 		const motif = refus(pr);
@@ -118,6 +138,17 @@ async function attendreLesControles(n: string, premiere: Pr): Promise<Pr> {
 		const verdict = verdictDesControles(pr.statusCheckRollup ?? []);
 		const commit = pr.headRefOid.slice(0, 10);
 		if (verdict.etat === 'vert') {
+			// GitHub met quelques secondes à lever `BLOCKED` après le dernier contrôle
+			// vert : relire avant de conclure qu'une règle de main refuse le merge.
+			if (pr.mergeStateStatus === 'BLOCKED' && !essai && attenduBloque < ATTENTE_ABSENT) {
+				if (attenduBloque === 0)
+					dire('⏳ Contrôles verts, GitHub dit encore `BLOCKED` : relecture…');
+				await pause(PAUSE);
+				attenduBloque += Math.max(PAUSE, 1);
+				pr = lirePr([n]);
+				if (pr.state === 'MERGED') return pr;
+				continue;
+			}
 			dire(`✅ Contrôles verts sur ${commit}.`);
 			return pr;
 		}
@@ -128,7 +159,7 @@ async function attendreLesControles(n: string, premiere: Pr): Promise<Pr> {
 				...verdict.noms.map((nom) => `   - ${nom}`),
 				'Rien n’est mergé.'
 			);
-		const limite = verdict.etat === 'absent' ? ATTENTE_ABSENT : ATTENTE_MAX;
+		const limite = essai ? 0 : verdict.etat === 'absent' ? ATTENTE_ABSENT : ATTENTE_MAX;
 		if (attendu >= limite) {
 			if (verdict.etat === 'absent')
 				arreter(
@@ -157,10 +188,10 @@ async function attendreLesControles(n: string, premiere: Pr): Promise<Pr> {
 	}
 }
 
-async function attendreLeVerrou(): Promise<void> {
+async function attendreLeVerrou(essai: boolean): Promise<void> {
 	let attendu = 0;
 	while (deployEnCours()) {
-		if (attendu >= ATTENTE_MAX)
+		if (attendu >= (essai ? 0 : ATTENTE_MAX))
 			arreter(
 				2,
 				`⛔ \`pnpm deploy:prod\` tient encore le verrou après ${attendu} s.`,
@@ -191,18 +222,21 @@ function ranger(branche: string): string[] {
 	const principal = worktrees[0].chemin;
 	const wt = worktrees.find((w) => w.branche === branche);
 	// Le worktree d'où la commande est lancée va peut-être disparaître.
+	const depuis = process.cwd();
 	process.chdir(principal);
 
-	// Dépôt principal sur main : le mettre à jour (le merge y arrive). Un pull en
-	// échec ne se rattrape pas ici (CLAUDE.md : s'arrêter, prévenir David).
+	// Dépôt principal sur main : le rattraper (le merge y arrive). `--ff-only` et
+	// pas `--rebase` : le dépôt est partagé, un rebase réécrirait le commit pas
+	// encore poussé d'une autre session pendant qu'elle travaille. Refusé (main
+	// local en avance, fichier modifié en travers) : dit, sans rien rattraper ici.
 	const fetch = git(principal, 'fetch', '-q', 'origin', 'main');
 	if (!fetch.ok) restes.push(`\`git fetch origin main\` en échec : ${fetch.sortie}`);
 	if (worktrees[0].branche === 'main') {
-		const pull = git(principal, 'pull', '--rebase', '-q');
+		const pull = git(principal, 'pull', '--ff-only', '-q');
 		if (pull.ok) dire('✅ Dépôt principal à jour.');
 		else
 			restes.push(
-				`dépôt principal pas mis à jour (\`git pull --rebase\` en échec, prévenir David) :\n${pull.sortie}`
+				`dépôt principal pas mis à jour (\`git pull --ff-only\` refusé : main local en avance ou fichier en travers ; \`git pull --rebase\` à la main) :\n${pull.sortie}`
 			);
 	}
 
@@ -236,6 +270,8 @@ function ranger(branche: string): string[] {
 			return restes;
 		}
 		dire(`✅ Worktree retiré : ${wt.chemin}`);
+		if (depuis === wt.chemin || depuis.startsWith(`${wt.chemin}/`))
+			dire(`ℹ️ Le dossier courant du terminal n’existe plus : cd ${principal}`);
 	}
 	const suppression = git(principal, 'branch', '-d', branche);
 	if (suppression.ok) dire(`✅ Branche locale supprimée : ${branche}`);
@@ -253,6 +289,11 @@ async function main(): Promise<void> {
 	if (reste.length > 1 || (reste[0] !== undefined && !/^\d+$/.test(reste[0])))
 		arreter(1, 'usage : pnpm pr:merger [<numéro de PR>] [--essai]');
 
+	// Variable posée par Claude Code dans l'environnement de ses commandes : « 1 »
+	// quand quelqu'un suit la session, « 0 » sinon (lu dans la version 2.1.326 le
+	// 2026-11-23 ; pas documentée, pas encore vue dans une vraie tâche planifiée).
+	// Absente (terminal de David) : la commande passe. La règle de CLAUDE.md reste
+	// la référence, cette garde n'en est que le filet.
 	if (process.env.CLAUDE_CODE_SESSION_ATTENDED === '0')
 		arreter(
 			1,
@@ -269,7 +310,7 @@ async function main(): Promise<void> {
 	if (dejaMergee) {
 		dire('ℹ️ Déjà mergée : rangement seulement.');
 	} else {
-		pr = await attendreLesControles(n, pr);
+		pr = await attendreLesControles(n, pr, essai);
 	}
 	if (pr.state !== 'MERGED') {
 		const bloque = blocage(pr);
@@ -291,7 +332,7 @@ async function main(): Promise<void> {
 			dire('✅ Migrations : horodatages libres sur origin/main.');
 		}
 
-		await attendreLeVerrou();
+		await attendreLeVerrou(essai);
 
 		if (essai) {
 			dire(

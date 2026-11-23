@@ -99,6 +99,11 @@ describe('pr:merger : règles', () => {
 		expect(verdictDesControles(VERT.slice(0, 2))).toEqual({ etat: 'absent' });
 	});
 
+	it('synthèse sautée : elle n’a rien vérifié, absent', () => {
+		const sautee = { ...VERT[2], conclusion: 'SKIPPED' };
+		expect(verdictDesControles([VERT[0], VERT[1], sautee])).toEqual({ etat: 'absent' });
+	});
+
 	it('un contrôle qui tourne : en cours, nommé', () => {
 		expect(verdictDesControles(EN_COURS)).toEqual({ etat: 'en-cours', noms: ['Type Check'] });
 	});
@@ -373,6 +378,29 @@ describe('pr:merger : de bout en bout', () => {
 		expect(lu('merges')).toContain(`--match-head-commit ${autre}`);
 	});
 
+	it('verte mais encore `BLOCKED` une lecture : relit, puis merge', () => {
+		variables = { PR_MERGER_ATTENTE_ABSENT: '5' };
+		github_dit({ mergeStateStatus: 'BLOCKED' }, {});
+		const r = merger();
+		expect(r.sortie).toContain('encore `BLOCKED`');
+		expect(r.status).toBe(0);
+		expect(existsSync(wt)).toBe(false);
+	});
+
+	it('--essai sur une CI en cours : le dit sans attendre', () => {
+		github_dit({ statusCheckRollup: EN_COURS }, {});
+		const r = merger(['12', '--essai']);
+		expect(r.status).toBe(2);
+		expect(lu('lectures').trim()).toBe('1');
+		expect(lu('merges')).toBe('');
+	});
+
+	it('durée illisible dans l’environnement : valeur par défaut, pas d’attente sans fin', () => {
+		variables = { PR_MERGER_ATTENTE_ABSENT: 'bientot', PR_MERGER_ATTENTE_MAX: 'jamais' };
+		github_dit({ statusCheckRollup: EN_COURS }, {});
+		expect(merger().status).toBe(0);
+	});
+
 	it('CI qui ne finit pas : exit 2, rien de mergé', () => {
 		variables = { PR_MERGER_ATTENTE_MAX: '0' };
 		github_dit({ statusCheckRollup: EN_COURS });
@@ -524,6 +552,19 @@ describe('pr:merger : de bout en bout', () => {
 		expect(r.sortie).toContain('commits absents de main');
 		expect(existsSync(wt)).toBe(true);
 		expect(brancheLocale()).toBe(true);
+	});
+
+	it('dépôt principal avec un commit pas encore poussé : jamais réécrit, signalé, le reste rangé', () => {
+		writeFileSync(join(principal, 'doc.md'), 'doc d’une autre session\n');
+		git(principal, 'add', 'doc.md');
+		git(principal, 'commit', '-q', '-m', 'doc');
+		const avant = git(principal, 'rev-parse', 'main');
+		const r = merger();
+		expect(r.status).toBe(0);
+		expect(git(principal, 'rev-parse', 'main')).toBe(avant);
+		expect(r.sortie).toContain('dépôt principal pas mis à jour');
+		expect(existsSync(wt)).toBe(false);
+		expect(brancheLocale()).toBe(false);
 	});
 
 	it('branche locale sans worktree : supprimée', () => {
