@@ -1,0 +1,60 @@
+{
+	"migration": "supabase/migrations/20261123170618_questions_idees_6e_entiers_decimaux_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "e831225e-20fc-4aad-9c51-994dd2032de8",
+			"title": "Recomposer un nombre décimal",
+			"fichier": "idees-6e-entiers-decimaux-neufs-a/n1-recomposer-nombre-decimal.json",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : numération",
+			"sousNotion": "décomposition",
+			"point": "6-101"
+		},
+		{
+			"id": "d9c8ff67-3f11-4a45-94c4-1068627c700e",
+			"title": "Écrire un nombre sans zéros inutiles",
+			"fichier": "idees-6e-entiers-decimaux-neufs-a/n2-ecrire-sans-zeros-inutiles.json",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : numération",
+			"sousNotion": "décomposition",
+			"point": "6-101"
+		},
+		{
+			"id": "b7d28fdd-58ad-4b27-acc1-891820883536",
+			"title": "Le nombre mystère",
+			"fichier": "idees-6e-entiers-decimaux-neufs-a/n3-nombre-mystere.json",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : numération",
+			"sousNotion": "décomposition",
+			"point": "6-101"
+		},
+		{
+			"id": "8166ccbf-cdc7-4d47-aa6f-8db2cbd80267",
+			"title": "Lire et écrire un nombre décimal (jusqu'à 999 999,999)",
+			"fichier": "idees-6e-entiers-decimaux-neufs-b/n4-lire-ecrire-nombre-decimal-6e.json",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : numération",
+			"sousNotion": "décomposition",
+			"point": "6-101"
+		},
+		{
+			"id": "c178356b-4366-4d0e-ad9b-c286269f1ab4",
+			"title": "Compléter un tableau d'écritures : décimal, fraction, pourcentage",
+			"fichier": "idees-6e-entiers-decimaux-neufs-b/n5-tableau-ecritures-decimal-fraction-pourcentage.json",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : numération",
+			"sousNotion": "forme fractionnaire",
+			"point": "6-106"
+		},
+		{
+			"id": "a153437d-3c06-4e4e-94ad-dd8ca5168f83",
+			"title": "Nombre mixte et écriture décimale",
+			"fichier": "idees-6e-entiers-decimaux-neufs-b/n6-nombre-mixte-ecriture-decimale.json",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : numération",
+			"sousNotion": "forme fractionnaire",
+			"point": "6-106"
+		}
+	],
+	"niveaux": []
+}

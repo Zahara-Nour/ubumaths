@@ -6,18 +6,18 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3044 (et #3042)._
+_Mis à jour le 2026-11-23, PR de rangement et de contenu en cours._
 
-- **État** : lot mergé (#3044 : 6 neufs / 18 variations, 23 variations sur 13 publiés, fichiers seuls) ;
-  outil `migration-contenu.ts` étendu aux `options` (#3042) · **Prochaine action** : David lance
-  `create-questions --publier` sur `scripts/questions/idees-6e-entiers-decimaux-neufs-a` et `-neufs-b`
-  (prod) ; puis, worktree neuf : ids commités, migrations de rangement et de contenu
-  (`migration-contenu.ts --dir scripts/questions/idees-6e-entiers-decimaux-publies`), `security-auditor`,
-  relecture dans `/dev/modeles` · **Ensuite** : outils n° 54 et n° 53 · **En attente de David** : N5,
-  tableau trop large sur iPhone (colonne « Pourcentage » coupée) : (a) deux tableaux ou (b) une égalité par
-  ligne (reco b) · **Pièges en cours** : relancer un `publies-*.py` → `pnpm format` sur ses JSON ; euro des
-  specs en `\,\text{€}`, jamais `\euro` (liste blanche) · **Worktree / branche** : aucun ; branche
-  `docs/idees-6e-entiers-decimaux` (journal d'avant le lot, sans PR) à supprimer.
+- **État** : 6 brouillons créés en prod par David (ids commités) ; PR `feat/idees-6e-entiers-decimaux-rangement` :
+  migration de rangement (6 neufs : N1-N4 → Entiers : numération > décomposition, 6-101 ; N5, N6 → Décimaux :
+  numération > forme fractionnaire, 6-106) et migration de contenu (23 variations sur 13 publiés, options de
+  a2ae7206 et d7781eed) ; N5 réécrit (une égalité par ligne, % tapé par l'élève) · **Prochaine action** :
+  merge, `db:migrate` (4 conditions), puis David : `create-questions --dir scripts/questions/idees-6e-entiers-decimaux-neufs-b --publier --mettre-a-jour`
+  (contenu de N5), puis relecture dans `/dev/modeles` · **Ensuite** : outils n° 54 et n° 53 · **En attente
+  de David** : titre de N5 (« Compléter un tableau d'écritures… », il n'y a plus de tableau) à changer dans
+  l'éditeur s'il le veut · **Pièges en cours** : relancer un `*.py` du lot → réinjecter id et `rangement`, puis
+  `pnpm format` · **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers-decimaux-rangement`,
+  `feat/idees-6e-entiers-decimaux-rangement` ; branche `docs/idees-6e-entiers-decimaux` à supprimer.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -169,3 +169,8 @@ des modèles de questions.
   « Pourcentage » hors de l'écran sur iPhone.
 - 2026-11-23 : #3042 (outil) et #3044 (lot) mergés ; CI du lot rouge une fois : `\euro` dans 4 specs de F10,
   refusé par la liste blanche des réponses → `\,\text{€}`.
+- 2026-11-23 : David a créé les 6 brouillons en prod (`create-questions --publier`) ; ids commités. N5 : tableau
+  remplacé par une égalité par ligne (choix b de David) ; un « 25 % » tapé dans une case suivie d'un % écrit était
+  jugé faux sans message → le % est tapé par l'élève, erreur prévue « 25 » sans le signe ; contrainte pourcentage
+  `strict` sur N5. Rendu iPhone vérifié (`pnpm voir`, copie locale). Migrations générées : rangement (intégration
+  31 verts) et contenu (intégration 76 verts), garde des niveaux sans écart.

@@ -1,4 +1,5 @@
 {
+	"id": "a153437d-3c06-4e4e-94ad-dd8ca5168f83",
 	"title": "Nombre mixte et écriture décimale",
 	"description": "Passer d'une écriture à l'autre : 3,47 = 3 + 47/100 = 347/100 ; 6/5 = 1 + 1/5 = 1,2 ; 0,125 = 12,5 % (pièges : un zéro de trop ou de moins au dénominateur, zéro oublié, entier ajouté au numérateur, trait de fraction lu comme une virgule, multiplication par 100 oubliée)",
 	"grades": ["6"],
@@ -852,5 +853,9 @@
 			},
 			"answers": ["4\\%"]
 		}
-	]
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : numération > forme fractionnaire",
+		"point": "6-106"
+	}
 }

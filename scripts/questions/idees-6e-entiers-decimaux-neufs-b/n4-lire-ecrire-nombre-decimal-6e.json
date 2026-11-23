@@ -1,4 +1,5 @@
 {
+	"id": "8166ccbf-cdc7-4d47-aa6f-8db2cbd80267",
 	"title": "Lire et écrire un nombre décimal (jusqu'à 999 999,999)",
 	"description": "Écrire en chiffres un décimal donné en lettres, avec « virgule » ou « … unités et … millièmes », jusqu'à 999 999,999 ; compléter son écriture en lettres avec des étiquettes (pièges : zéros oubliés après « mille » ou après la virgule, « mille » écrit 000, un rang de trop, accord de vingt et cent)",
 	"grades": ["6"],
@@ -555,5 +556,9 @@
 			},
 			"answers": ["1", "5", "6", "2"]
 		}
-	]
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
 }

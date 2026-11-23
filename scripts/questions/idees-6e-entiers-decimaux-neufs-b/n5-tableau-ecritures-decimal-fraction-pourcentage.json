@@ -1,6 +1,7 @@
 {
+	"id": "c178356b-4366-4d0e-ad9b-c286269f1ab4",
 	"title": "Compléter un tableau d'écritures : décimal, fraction, pourcentage",
-	"description": "Tableau à compléter, une écriture donnée par ligne : écriture décimale, fraction, pourcentage (0,25 = 1/4 = 25 %) ; fractions usuelles (toute fraction égale acceptée) ou centièmes (fraction sur 100 exigée) (pièges : pourcentage recopié, un rang de trop ou de moins, trait de fraction lu comme une virgule, 0,5 = 1/5)",
+	"description": "Égalités à compléter, une écriture donnée par ligne : écriture décimale, fraction, pourcentage (0,25 = 1/4 = 25 %) ; fractions usuelles (toute fraction égale acceptée) ou centièmes (fraction sur 100 exigée) (pièges : pourcentage recopié, un rang de trop ou de moins, trait de fraction lu comme une virgule, 0,5 = 1/5)",
 	"grades": ["6"],
 	"level": 2,
 	"delay": 90,
@@ -8,12 +9,13 @@
 	"options": {
 		"constraints": {
 			"spacesFromFourDigits": true,
-			"reducedFractions": "off"
+			"reducedFractions": "off",
+			"percent": "strict"
 		}
 	},
 	"variations": [
 		{
-			"statement": "Complète le tableau : sur chaque ligne, les trois écritures désignent le même nombre. Dans la colonne « Fraction », écris une fraction (toute fraction égale convient) ; dans la colonne « Pourcentage », écris le signe $\\%$.\n\n| Écriture décimale | Fraction | Pourcentage |\n|---|---|---|\n| ${{eval:n1/d1;d}}$ | $?$ | $?$ |\n| $?$ | $\\dfrac{ {{n2}} }{ {{d2}} }$ | $?$ |\n| $?$ | $?$ | ${{eval:(100*n3/d3)}}\\,\\%$ |\n| $?$ | $\\dfrac{ {{n4}} }{ {{d4}} }$ | $?$ |",
+			"statement": "Complète les égalités : sur chaque ligne, l'écriture décimale, la fraction et le pourcentage désignent le même nombre. Au milieu, écris une fraction (toute fraction égale convient) ; à droite, écris le pourcentage avec le signe $\\%$.\n\n$${{eval:n1/d1;d}}=?=?$$\n\n$$?=\\dfrac{ {{n2}} }{ {{d2}} }=?$$\n\n$$?=?={{eval:(100*n3/d3)}}~\\%$$\n\n$$?=\\dfrac{ {{n4}} }{ {{d4}} }=?$$",
 			"variables": [
 				{
 					"name": "c1",
@@ -93,6 +95,11 @@
 					"expectedAnswer": "{{eval:(100*n1/d1)}}\\%",
 					"expectedErrors": [
 						{
+							"answer": "{{eval:(100*n1/d1)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n1/d1)}}$ tout seul, ce n'est pas ${{eval:(100*n1/d1)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
 							"answer": "{{eval:(100*n1/d1)/10;d}}\\%",
 							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
 							"label": "Un rang de moins"
@@ -135,6 +142,11 @@
 				{
 					"expectedAnswer": "{{eval:(100*n2/d2)}}\\%",
 					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n2/d2)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n2/d2)}}$ tout seul, ce n'est pas ${{eval:(100*n2/d2)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
 						{
 							"answer": "{{eval:d2;d}}\\%",
 							"message": "Le pourcentage n'est pas le dénominateur : écris d'abord la fraction avec le dénominateur $100$.",
@@ -220,6 +232,11 @@
 					"expectedAnswer": "{{eval:(100*n4/d4)}}\\%",
 					"expectedErrors": [
 						{
+							"answer": "{{eval:(100*n4/d4)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n4/d4)}}$ tout seul, ce n'est pas ${{eval:(100*n4/d4)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
 							"answer": "{{eval:d4;d}}\\%",
 							"message": "Le pourcentage n'est pas le dénominateur : écris d'abord la fraction avec le dénominateur $100$.",
 							"label": "Dénominateur pris pour le pourcentage"
@@ -247,7 +264,7 @@
 			"hint": "Pour chaque ligne, cherche d'abord la fraction de dénominateur $100$ : le pourcentage est son numérateur, et diviser par $100$ donne l'écriture décimale."
 		},
 		{
-			"statement": "Complète le tableau : sur chaque ligne, les trois écritures désignent le même nombre. Dans la colonne « Fraction », écris une fraction de dénominateur $100$ ; dans la colonne « Pourcentage », écris le signe $\\%$.\n\n| Écriture décimale | Fraction | Pourcentage |\n|---|---|---|\n| ${{eval:n1/d1;d}}$ | $?$ | $?$ |\n| $?$ | $\\dfrac{ {{n2}} }{ {{d2}} }$ | $?$ |\n| $?$ | $?$ | ${{eval:(100*n3/d3)}}\\,\\%$ |\n| $?$ | $\\dfrac{ {{n4}} }{ {{d4}} }$ | $?$ |",
+			"statement": "Complète les égalités : sur chaque ligne, l'écriture décimale, la fraction et le pourcentage désignent le même nombre. Au milieu, écris une fraction de dénominateur $100$ ; à droite, écris le pourcentage avec le signe $\\%$.\n\n$${{eval:n1/d1;d}}=?=?$$\n\n$$?=\\dfrac{ {{n2}} }{ {{d2}} }=?$$\n\n$$?=?={{eval:(100*n3/d3)}}~\\%$$\n\n$$?=\\dfrac{ {{n4}} }{ {{d4}} }=?$$",
 			"variables": [
 				{
 					"name": "n1",
@@ -323,6 +340,11 @@
 					"expectedAnswer": "{{eval:(100*n1/d1)}}\\%",
 					"expectedErrors": [
 						{
+							"answer": "{{eval:(100*n1/d1)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n1/d1)}}$ tout seul, ce n'est pas ${{eval:(100*n1/d1)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
 							"answer": "{{eval:(100*n1/d1)/10;d}}\\%",
 							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
 							"label": "Un rang de moins"
@@ -365,6 +387,11 @@
 				{
 					"expectedAnswer": "{{eval:(100*n2/d2)}}\\%",
 					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*n2/d2)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n2/d2)}}$ tout seul, ce n'est pas ${{eval:(100*n2/d2)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
 						{
 							"answer": "{{eval:(100*n2/d2)/10;d}}\\%",
 							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
@@ -450,6 +477,11 @@
 					"expectedAnswer": "{{eval:(100*n4/d4)}}\\%",
 					"expectedErrors": [
 						{
+							"answer": "{{eval:(100*n4/d4)}}",
+							"message": "N'oublie pas le signe $\\%$ : ${{eval:(100*n4/d4)}}$ tout seul, ce n'est pas ${{eval:(100*n4/d4)}}~\\%$.",
+							"label": "Signe % oublié"
+						},
+						{
 							"answer": "{{eval:(100*n4/d4)/10;d}}\\%",
 							"message": "Tu n'as pas décalé la virgule assez loin : pour un pourcentage, multiplie par $100$, c'est-à-dire deux rangs vers la droite.",
 							"label": "Un rang de moins"
@@ -532,7 +564,7 @@
 			]
 		},
 		{
-			"description": "v0 : décimal dans la colonne Fraction refusé",
+			"description": "v0 : décimal dans la case fraction refusé",
 			"variationIndex": 0,
 			"variables": {
 				"c1": "104",
@@ -631,6 +663,75 @@
 				"expectedErrorMessage": "Les chiffres après la virgule vont au numérateur, et le dénominateur dit leur rang ($10$ pour des dixièmes, $100$ pour des centièmes)."
 			},
 			"answers": ["\\frac{1}{25}", "25\\%", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P1 = 25 sans le signe",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe $\\%$ : $25$ tout seul, ce n'est pas $25~\\%$."
+			},
+			"answers": ["\\frac{1}{4}", "25", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P1 = 0,25 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["percent", "form"]
+			},
+			"answers": ["\\frac{1}{4}", "0{,}25", "0,5", "50\\%", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
+		},
+		{
+			"description": "v0 : P2 = 50 sans le signe",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "104",
+				"n1": "1",
+				"d1": "4",
+				"c2": "102",
+				"n2": "1",
+				"d2": "2",
+				"c3": "304",
+				"n3": "3",
+				"d3": "4",
+				"c4": "310",
+				"n4": "3",
+				"d4": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe $\\%$ : $50$ tout seul, ce n'est pas $50~\\%$."
+			},
+			"answers": ["\\frac{1}{4}", "25\\%", "0,5", "50", "0,75", "\\frac{3}{4}", "0,3", "30\\%"]
 		},
 		{
 			"description": "v0 : P1 = 2,5 %",
@@ -1176,6 +1277,62 @@
 			]
 		},
 		{
+			"description": "v1 : P1 = 37 sans le signe",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le signe $\\%$ : $37$ tout seul, ce n'est pas $37~\\%$."
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"41\\%"
+			]
+		},
+		{
+			"description": "v1 : P4 = 0,41 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"n1": "37",
+				"d1": "100",
+				"n2": "5",
+				"d2": "100",
+				"n3": "82",
+				"d3": "100",
+				"n4": "41",
+				"d4": "100"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["percent", "form"]
+			},
+			"answers": [
+				"\\frac{37}{100}",
+				"37\\%",
+				"0,05",
+				"5\\%",
+				"0,82",
+				"\\frac{82}{100}",
+				"0,41",
+				"0{,}41"
+			]
+		},
+		{
 			"description": "v1 : P1 = 0,37 %",
 			"variationIndex": 1,
 			"variables": {
@@ -1399,5 +1556,9 @@
 				"41\\%"
 			]
 		}
-	]
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : numération > forme fractionnaire",
+		"point": "6-106"
+	}
 }
