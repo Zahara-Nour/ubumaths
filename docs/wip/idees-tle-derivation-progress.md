@@ -6,13 +6,16 @@ Idées reprises d'ailleurs, rubrique « Compléments sur la dérivation » de Te
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, phase 0 publiée._
+_Mis à jour le 2026-11-23, phase 0 validée._
 
-- **État** : relevé fait, phase 0 publiée (page à cocher https://claude.ai/artifact/M7SzozkJJarxg9q1xPNDGE,
-  17 fiches, 2 questions) · **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`),
-  réserver les 11 modèles publiés retenus dans le tableau, écrire le lot · **En attente de David** :
-  verdicts F1 à F19, Q1, Q2 · **Pièges en cours** : `{{e}}` interdit (Euler) ; bornes ±∞ des tableaux
-  laissées vides (outil n° 50 non requis) · **Worktree / branche** :
+- **État** : phase 0 **validée** (lot complet : 5 modèles neufs, 12 variations ; 16 variations de
+  11 modèles publiés, réservés dans le tableau, 13d3ed972) · **Prochaine action** : écrire le lot,
+  sur le modèle de `docs/wip/questions/idees-tle-limites-neufs.py` et `-publies.py` (scripts
+  `docs/wip/questions/idees-tle-derivation-neufs.py` et `-publies.py`) ; fiches détaillées dans la
+  page https://claude.ai/artifact/M7SzozkJJarxg9q1xPNDGE (source : la section « 2026-11-23 — phase 0 »
+  ci-dessous) · **En attente de David** : rien · **Pièges en cours** : `{{e}}` interdit (Euler) ;
+  bornes ±∞ des tableaux de F6 et F7 laissées vides (outil n° 50 non requis) ; une seule case par
+  variation ; `create-questions` par `pnpm tsx scripts/create-questions.ts` · **Worktree / branche** :
   `../ubumaths-wt-idees-tle-derivation`, `feat/idees-tle-derivation`.
 
 ## Historique
@@ -32,3 +35,11 @@ _Mis à jour le 2026-11-23, phase 0 publiée._
   l'inégalité de F18 donné, ou deux cases.
 - Question d'accès : personne (rangement de modèles, variations ajoutées).
 - Questions ouvertes, sans réponse = non tranchées : F1 à F19, Q1, Q2.
+
+### 2026-11-23 — phase 0 validée
+
+- David, à mes recommandations (tout oui, Q1 et Q2 aux choix recommandés) : « je te suis ». Donc
+  F1 à F18 oui, F19 rien ; **Q1** : F12 = un modèle neuf sur TSPE-590 (f″ donnée → f, f″ donnée → f′)
+  et une variation de 37ce7759 (f donnée → f″) ; **Q2** : le sens de l'inégalité de F18 est écrit
+  dans l'énoncé, une seule case (la tangente).
+- Les 11 modèles publiés sont réservés dans le tableau de répartition (13d3ed972).
