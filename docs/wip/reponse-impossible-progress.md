@@ -8,16 +8,15 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, revue de la refonte traitée, PR ouverte._
+_Mis à jour le 2026-11-23, après #3026._
 
-- **État** : outil complet (bouton à état propre), revu deux fois (Opus), PR ouverte (cf.
-  `gh pr list --search head:feat/reponse-impossible`) · **Prochaine action** : PR mergée → seconde
-  PR du chantier (Q6 : variations Δ < 0 de « Factoriser un trinôme à l'aide de ses racines »,
-  604f83b7), une fois l'outil en prod · **En attente de David** : son essai sur
-  `/dev/modeles?titre=Essai` (base locale) ; le `deploy:prod` qui livrera l'outil · **Pièges en
-  cours** : `create-questions.ts` vise la PROD par défaut (lit `.env`) → `set -a; source
-./.env.local; set +a` avant ; modèle d'essai local `632e3012` · **Worktree / branche** :
-  `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`.
+- **État** : outil n° 51 mergé sur `main` (#3026 : case « expression, ou bien : impossible »,
+  bouton à état propre), PAS encore en prod · **Prochaine action** : seconde PR du chantier (Q6 :
+  variations Δ < 0 de « Factoriser un trinôme à l'aide de ses racines », 604f83b7), une fois
+  l'outil en prod ; nouveau worktree · **En attente de David** : le `deploy:prod` qui livrera
+  l'outil · **Pièges en cours** : `create-questions.ts` vise la PROD par défaut (lit `.env`) →
+  `set -a; source ./.env.local; set +a` avant ; modèle d'essai local `632e3012` · **Worktree /
+  branche** : aucun (retiré après #3026).
 
 ## Historique
 
@@ -111,3 +110,9 @@ Questions (recommandation entre parenthèses) :
   (vérifié rouge sans le vidage, vert avec) ; frappe après un clic qui laisse le curseur dans la
   case (Safari) : mesuré, MathLive refuse l'insertion dans une case verrouillée, test ajouté ;
   aller-retour en vraie frappe ; doc : le verrouillage au réaffichage est une garde défensive.
+
+### 2026-11-23 — #3026 mergée
+
+- CI d'abord rouge (cliquet des types de tests : `getPromptRange` rend `Range | null`), corrigée ;
+  puis PR en conflit avec `main` (tableau des natures, imports de `sign-table-case.ts`) : GitHub ne
+  lançait plus la CI ; fusion de `origin/main`, CI verte, mergée à la main.
