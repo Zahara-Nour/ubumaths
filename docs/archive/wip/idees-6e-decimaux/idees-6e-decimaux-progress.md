@@ -82,3 +82,5 @@ tableau. Q3 : migration de rangement sans accès nouveau. 10 modèles publiés r
 - 2026-11-22 : #3018 mergée, `db:migrate` joué (seules nos 2 migrations en attente), état vérifié en prod.
 - 2026-11-23 : série de relecture des 10 publiés simulée puis publiée par David (f5275c46).
 - 2026-11-23 : David valide tous les modèles ; publication des 6 brouillons par `publier-lot.ts` (David), statuts vérifiés en prod ; chantier clos, journal archivé.
+- 2026-11-23 : suite, le matériel décimal (6N2autoB-2) : modèle 111ba9c5 publié (#3024), journal
+  [idees-6e-decimaux-materiel-progress.md](idees-6e-decimaux-materiel-progress.md).
