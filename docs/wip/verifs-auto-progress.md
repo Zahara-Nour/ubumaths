@@ -2,13 +2,25 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3045 ; écarts sortis dans `ecarts-verifs`._
+_Mis à jour le 2026-11-23, PR « rouges WebKit » ouverte (branche `test/verifs-webkit`)._
 
-- **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). #3037 en prod (v0.104.0). #1536 : la vue garde l'échelle de l'ouverture quand « Mes objets » (ouvert vide au téléphone) se replie au 1er objet et que la toile grandit (242 → 388 px) ; le test visait à l'échelle du moment, il garde désormais celle de l'ouverture (22 verts sur ordi-chrome, iphone, android). #1337 : le test, pas l'appli (au vrai, « Mes objets » se replie seul et la console garde 329 px) ; le test replie « Mes objets » avant de retaper (#3045), vert sur ordi-chrome, ordi-safari, iphone, android. Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → #1536 ✅ → #1337 ✅ → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
-- **Prochaine action** : rendus WebKit (dont lot 3 iPhone : intermittent ligne 368, courbe absente après `retypeCard` clavier ouvert, en plus de E16), worktree neuf.
-- **En attente de David** : tâche de nuit (après R12). Les écarts à lui présenter (E1…) vivent dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md), chantier à part (`/reprendre ecarts-verifs`).
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets », pas une carte née d'une colonne (`showCards`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne ajoutée à [ecarts-verifs-progress.md](ecarts-verifs-progress.md), pas ici ; un `test:verifs` muet peut être bloqué (2 h 41 le 2026-11-23, cause inconnue) → `--global-timeout`.
-- **Worktree / branche** : aucun (retiré après #3045).
+- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit (cette PR) → #1469 → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) n'est plus ici : c'est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; #1369 = E1, corrigé sur `main` par #3050 ; carnet en suite complète).
+- **Prochaine action** : merger la PR, puis #1469 (Firefox : 1er clic après un format = zone A1:A2), worktree neuf.
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19 à présenter dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; 4 projets à 8 workers saturent le serveur de dev (rouges « toBeVisible » à l'ouverture) → `--workers 4` ; un rouge intermittent se reproduit sous charge (`--repeat-each 16 --workers 8`) ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; `test:verifs` muet → `--global-timeout`.
+- **Worktree / branche** : `../ubumaths-wt-verifs-webkit`, `test/verifs-webkit`, serveur 5177.
+
+## Rouges WebKit (2026-11-23)
+
+Gestes des tests seulement, attendus inchangés :
+
+- **Clavier MathLive au toucher** (`waitVirtualKeyboard`) : au focus d'un champ, MathLive ouvre son clavier, et le champ perd puis reprend le focus (sonde `focusin`/`focusout` : clignement à `mathVirtualKeyboard.visible = true`). Lot 3 ligne 368 (iPhone, 2 sur 16 sous charge) : le champ déjà vidé était rangé vide à la sortie, la courbe disparaissait ; 0 sur 32 après. #1385 iPhone : « résoudre » perdait ses premières lettres (« dre »).
+- **`typeMath`** : après un rechargement, MathLive perd parfois plusieurs frappes (« ex2=4 », « + » au lieu de « 2+ », ordinateur aussi) : 1er caractère seul, recommencé sur un champ vidé sans touche (sous Safari, Retour arrière hors du champ revient à la page précédente : page blanche), puis le reste.
+- **`gotoRedirected`** : attend le `load` du document d'arrivée et le réseau calme. `toHaveURL(/\/atelier/)` était déjà vrai sur l'adresse d'avant, et SvelteKit relit `__data.json?…x-sveltekit-invalidated` au démarrage : la page suivante interrompait la redirection (#1340, #1692).
+- **Barre d'icônes au téléphone** : les annonces empilées couvrent les cartes, et sonner arrête leur minuteur sous la souris de Playwright (écartée, WebKit iPhone ne le voit pas toujours). Le test les balaie, comme au doigt (E18).
+- **Revue `code-reviewer` (Sonnet)** : cas frères corrigés (`typeInMathConsole` d'`atelier-calcul`, `3*4` de #1423 : clavier attendu), `arrived` de `gotoRedirected` sans rejet orphelin. Copie de `typeMath` dans `captures/` : clavier attendu aussi (captures iPhone). Laissé : `Alt+Tab` conditionné au moteur et non à l'OS (Mac mini seul).
+- **Capture #1385 (iPhone)**, rouge avant cette PR (3 sur 3) : le bouton clavier au bout du champ d'une carte est recouvert par son contenu sous WebKit. Geste de l'élève au toucher : il touche le champ, le clavier s'ouvre seul (`focusCardField`). Image vérifiée : clavier de la carte, sans « Commandes ».
+- **E16** (Tab sans focus sur un bouton sous Safari, laissé) : sous WebKit, le test fait ⌥ Tab, le geste de l'utilisateur de Safari.
 
 ## Phase 0 (validée le 2026-10-25)
 

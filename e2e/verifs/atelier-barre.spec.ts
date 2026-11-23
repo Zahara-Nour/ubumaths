@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { calc, card, cardLocator, openAtelier, retypeCard } from './helpers/atelier';
+import { calc, card, cardLocator, isNarrow, openAtelier, retypeCard } from './helpers/atelier';
 import { openView, setConsole } from './helpers/grille';
 
 /**
@@ -122,6 +122,11 @@ test('barre d’icônes de l’Atelier — infobulles, grisés, Enregistrer puis
 	await load(page, saved);
 	await expect.poll(async () => (await card(page, 'f')).latex).toBe('x^3');
 	await expect(cardLocator(page, 'a')).toBeVisible();
+	// Au téléphone, les annonces empilées (« enregistré », « vidé », « chargé »)
+	// couvrent les cartes, et sonner arrête leur minuteur tant que la souris de
+	// Playwright les survole (écartée, WebKit iPhone ne le voit pas toujours).
+	// L'élève les balaie du doigt : on les balaie, une à une
+	if (isNarrow(page)) await swipeToastsAway(page);
 	await cardLocator(page, 'f').getByRole('button', { name: 'Couleur et trait de f' }).click();
 	await expect(page.getByRole('radio', { name: 'framboise' })).toBeChecked();
 	await page.keyboard.press('Escape');
@@ -230,3 +235,20 @@ test(
 		await expect.poll(async () => (await card(page, 'a')).latex).toBe('7');
 	}
 );
+
+/** Balaie les annonces (sonner) vers le haut, une à une, jusqu'à ce qu'il n'y en ait plus */
+async function swipeToastsAway(page: Page): Promise<void> {
+	const toasts = page.locator('[data-sonner-toast]');
+	await expect(async () => {
+		const box = (await toasts.count()) > 0 ? await toasts.first().boundingBox() : null;
+		if (box !== null) {
+			const x = box.x + box.width / 2;
+			const y = box.y + box.height / 2;
+			await page.mouse.move(x, y);
+			await page.mouse.down();
+			await page.mouse.move(x, y - 80, { steps: 8 });
+			await page.mouse.up();
+		}
+		expect(await toasts.count()).toBe(0);
+	}).toPass({ timeout: 30_000 });
+}

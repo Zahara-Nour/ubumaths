@@ -21,7 +21,8 @@ import {
 	allowClipboard,
 	showCards,
 	leavePanelAlone,
-	gotoRedirected
+	gotoRedirected,
+	waitVirtualKeyboard
 } from './helpers/atelier';
 import { openView, readCell, typeCell } from './helpers/grille';
 
@@ -59,16 +60,25 @@ async function calcMath(page: Page, keys: string): Promise<Locator> {
 
 /**
  * Tape au vrai clavier dans le champ mathématique vide. Juste après un
- * rechargement ou un changement de réglage, MathLive perd la première frappe :
- * on recommence tant que le champ reste vide.
+ * rechargement ou un changement de réglage, MathLive perd les premières
+ * frappes (sous charge, plusieurs : « résoudre x^2=4 » devenait « ex2=4 ») :
+ * le premier caractère seul, recommencé sur un champ vide tant qu'il n'est pas
+ * arrivé, puis le reste.
  */
 async function typeMath(page: Page, keys: string): Promise<void> {
 	const field = mathConsole(page);
 	await expect(async () => {
+		// Vidé sans touche : sous Safari, Retour arrière hors du champ (frappe
+		// perdue) revient à la page précédente
+		await field.evaluate((element) => {
+			(element as HTMLElement & { value: string }).value = '';
+		});
 		await field.click();
-		await page.keyboard.type(keys);
+		await waitVirtualKeyboard(page, field);
+		await page.keyboard.type(keys.slice(0, 1));
 		expect(await mathValue(field)).not.toBe('');
 	}).toPass();
+	await page.keyboard.type(keys.slice(1));
 }
 
 /** Ajoute puis efface un chiffre au bout du champ d'une carte, puis Entrée */
@@ -344,6 +354,7 @@ test(
 
 		// #1423 : `3*4` → la croix ×, puis 12
 		await field.click();
+		await waitVirtualKeyboard(page, field);
 		await page.keyboard.type('3*4');
 		expect(await mathValue(field)).toContain('\\times');
 		expect(await mathValue(field)).not.toContain('\\cdot');
