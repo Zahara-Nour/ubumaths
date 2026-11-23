@@ -230,6 +230,11 @@ export interface HiddenCell {
 	 * '' si masquée (évaluation)
 	 */
 	answer: string;
+	/**
+	 * Limite cachée autour d'une marque (`3: ||, ?-inf, ?+inf`) : de quel côté de la
+	 * double barre. Absent pour toute autre case.
+	 */
+	side?: LimitSide;
 }
 
 // ============================================================================

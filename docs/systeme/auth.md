@@ -236,6 +236,11 @@ ou sous `/constructions/essais` (`/construction-demo`), sous-pages et query stri
 
 ### Les chemins d'entrée
 
+- **Boutons des comptes fictifs (serveur de dev seulement)** : sous le formulaire de `/auth/login`,
+  trois boutons envoient un compte fictif de la base locale à la même action `login`. Chargés sous
+  `import.meta.env.DEV`, absents du build (garde de CI « Comptes fictifs absents du build ») ; ni
+  route ni chemin d'authentification nouveau →
+  [tester-sur-un-autre-appareil.md](../pratiques/tester-sur-un-autre-appareil.md#se-connecter-sans-rien-taper).
 - **E-mail + mot de passe** (`/auth/login`, action `login`) : Zod → limite par IP **et** par
   e-mail → `signInWithPassword` côté serveur (les cookies sont posés par le handle). Les deux
   limites sont **levées sous `pnpm dev` depuis la boucle locale** (`127.0.0.1`, `::1`,

@@ -52,6 +52,23 @@ Ce qu'elle fait :
   reconnaître un lien dont le serveur est arrêté. Un lien fait à la main apparaît avec le chantier
   du serveur qui écoute derrière, ou « ? ».
 
+### Se connecter sans rien taper
+
+Sur le serveur de dev, la page de connexion (`/auth/login`) porte sous son formulaire trois boutons,
+« Prof », « Élève », « Admin » : un appui connecte au compte fictif et mène au tableau de bord.
+« Élève » prend `eleve01@local.test` (base remplie par `pnpm db:neuf`), à défaut
+`student@local.test`. Pour changer de compte : se déconnecter, la page de connexion revient.
+
+- Les boutons envoient le compte à l'action de connexion de la page, la même que le formulaire :
+  aucune route nouvelle. Tous les comptes refusés (Supabase arrêté, base vide) : message sous les
+  boutons, avec `pnpm db:start` et `pnpm db:neuf`.
+- Cachés quand le serveur ne vise pas la base locale ; **absents du build** (chargés sous
+  `import.meta.env.DEV`, garde de CI « Comptes fictifs absents du build »).
+- Les comptes sont tenus à un seul endroit, `src/lib/dev/local-accounts.ts`, lu aussi par
+  `pnpm voir --compte` et `pnpm lien`. Code : `src/lib/components/dev/DevAccountButtons.svelte` ;
+  tests `src/lib/dev/__tests__/local-accounts.test.ts` et `e2e/verifs/connexion-dev.spec.ts`
+  (`VERIFS_PORT=<port> pnpm test:verifs connexion-dev`).
+
 Ce qu'elle refuse : le dépôt principal ; un serveur dont rien ne prouve qu'il vise la base locale
 (`.env.local` absent, adresse de Supabase distante : même garde que `pnpm voir --compte`) ; un
 serveur lancé à l'ancienne, avec `PUBLIC_SUPABASE_URL=https://<mac>.ts.net:8443` (elle donne la

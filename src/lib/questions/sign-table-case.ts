@@ -136,6 +136,38 @@ export function isSignCellCorrect(userAnswer: string, expected: string): boolean
 	return userAnswer.trim() !== '' && signCellToken(userAnswer) === signCellToken(expected);
 }
 
+/**
+ * Infini écrit par l'élève ou l'auteur, ramené à un jeton : `-\infty`, `+\infty`, ou
+ * `\infty` (sans signe) ; null si ce n'est pas un infini. `−∞`, `-inf`, `+ \infty`
+ * comptent.
+ */
+export function infinityToken(answer: string): '-\\infty' | '+\\infty' | '\\infty' | null {
+	const token = answer
+		.replace(/\s+|\\[,;! ]/g, '')
+		.replace(/[−–]/g, '-')
+		.replace(/∞|\\infty|inf/g, 'INF');
+	if (token === '-INF') return '-\\infty';
+	if (token === '+INF') return '+\\infty';
+	if (token === 'INF') return '\\infty';
+	return null;
+}
+
+/**
+ * Case valeur d'un tableau où un infini est en jeu (attendu ou répondu) : jugée au
+ * jeton, signe compris — ∞ sans signe est faux (Q2 du chantier
+ * `variation-limite-infinie`, tenu par `hiddenValueAnswer`). null : ni l'un ni l'autre n'est un infini, au juge
+ * ordinaire.
+ */
+export function infiniteCellVerdict(blank: InstanceBlank, userAnswer: string): boolean | null {
+	if (blank.cellule !== 'valeur') return null;
+	const expected = infinityToken(blank.expectedAnswer);
+	const given = infinityToken(userAnswer);
+	if (expected === null && given === null) return null;
+	// ∞ sans signe n'est jamais la vraie réponse (`hiddenValueAnswer` signe toujours) ;
+	// attendu `\infty`, c'est une erreur prévue (`inf`) que l'élève doit pouvoir déclencher
+	return expected !== null && given === expected;
+}
+
 /** Les numéros des cases d'un tableau affiché (première case posée par `case: N`) */
 export function signTableCaseIndices(node: VariationTableNode): number[] {
 	const first = node.caseIndex;

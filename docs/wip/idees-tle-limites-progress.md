@@ -5,15 +5,16 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3015._
+_Mis à jour le 2026-11-23, après #3029 (F3 écrit, fichiers sur `main`)._
 
-- **État** : série de relecture des 7 publiés enregistrée en prod (`f3e6eb2c`, fichier
-  `scripts/series/T_SPE-relecture-limites-publies.json`) · **Prochaine action** : lire les verdicts
-  de `/dev/modeles`, corriger les « À revoir », puis `publier-lot.ts` en simulation · **En attente
-  de David** : relecture dans `/dev/modeles?serie=f3e6eb2c-d5c7-4551-bbf7-2e0c7d051693` (publiés) et
-  `/dev/modeles?noeud=T_SPE~e6e7e3e3-bf3c-482c-8e47-275a639b9bfe&statut=draft` (4 brouillons) ·
-  **Pièges en cours** : `{{e}}` interdit (Euler) ; F3 attend l'outil n° 50 de
-  `outils-manquants.md` · **Worktree / branche** : aucun (retiré après #3015).
+- **État** : rubrique publiée sauf F3 ; F3 (`f03-limites-tableau-homographique`, 2 variations,
+  13 specs) mergé en fichiers, pas encore en prod · **Prochaine action** : après le `deploy:prod`
+  qui livre #3027 (absent de la 0.102.0), David lance `create-questions --dir
+scripts/questions/idees-tle-limites-neufs --publier` ; je commite l'id, rangement TSPE-415 par
+  migration, relecture dans `/dev/modeles`, publication · **En attente de David** : `deploy:prod`
+  puis `create-questions --publier` · **Pièges en cours** : `{{e}}` interdit (Euler) ; le script
+  `idees-tle-limites-neufs.py` n'écrit que les noms passés en argument · **Worktree / branche** :
+  aucun (nouveau worktree sur `origin/main` pour la suite).
 
 ## Historique
 
@@ -102,3 +103,25 @@ _Mis à jour le 2026-11-23, après #3015._
 - Série « Relecture — limites de fonctions de Terminale, 7 modèles publiés complétés » : simulation
   verte, enregistrée en prod par David (`f3e6eb2c-d5c7-4551-bbf7-2e0c7d051693`). Brouillons relus
   sur la notion (`?noeud=T_SPE~e6e7e3e3-…&statut=draft`).
+
+### 2026-11-23 — relecture validée, publication
+
+- David : « je valide les modèles » (série `f3e6eb2c` et les 4 brouillons, dans `/dev/modeles`).
+  `publier-lot.ts` en simulation vert, publication lancée par David ; les 4 sont `published` en
+  prod (MCP lecture seule). Tableau de répartition : « publiée (2026-11-23) », réservations des 7
+  modèles publiés levées.
+
+### 2026-11-23 — F3 écrit (outil n° 50 livré par #3027)
+
+- Fiche validée le 2026-11-22, écrite telle quelle : « Compléter les limites dans le tableau de
+  variations d'une fonction homographique », TSPE-415, niveau 2. (a) k/(x − α), (b)
+  (ax + b)/(cx + d), c ∈ {1, 2}, a/c entier ou demi, racine du numérateur ≠ α ; α ≠ 0. Flèches et
+  hauteurs données, quatre cases (−∞, α à gauche, α à droite, +∞).
+- Erreurs prévues : borne recopiée, numérateur recopié, termes constants b/d, signe du
+  dénominateur, ∞ sans signe (`inf`), quotient par 0 pris pour 0. Corrigé : « à gauche de α (pour
+  x < α) », comme 04ec9518, pas d'exposant ⁻/⁺.
+- Vérifié : `question:specs` 13/13, 600 tirages ; 145 formules d'aperçu passées à `validateLatex`
+  et aux accolades, 0 problème ; créé en base locale (id local non commité), aperçu admin capturé
+  (`pnpm voir`, tableau et cases en place, 0 erreur de console). Pas de saisie au navigateur :
+  Chrome n'ouvre pas `[::1]` et `localhost` partagerait les cookies du port 5173.
+- #3027 n'est pas dans `production` (0.102.0) : le brouillon en prod attend le `deploy:prod`.

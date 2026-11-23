@@ -4,6 +4,13 @@
 > merge. Chaque session qui livre quelque chose qu'aucun test ne voit (rendu à l'écran, clavier
 > MathLive, prod) ajoute ici une ligne, au moment du merge. David coche, puis la ligne part.
 >
+> **Règle du 2026-11-23 (David)** : la session vérifie d'abord elle-même, avec `pnpm voir`,
+> `pnpm test:verifs` et Claude dans Chrome
+> ([comment](../pratiques/tests.md#vérifier-à-lécran-soi-même-avant-de-demander-à-david)). Une ligne
+> n'arrive ici que pour ce qu'elle ne peut pas voir (vrai iPhone, vidéoprojecteur, prod connectée,
+> courriel vers une vraie adresse), et dit ce qui a déjà été vu. Les lignes plus anciennes se
+> vident par le chantier `verifs-auto`.
+>
 > **Où** : « dev » = une branche à jour sur un serveur local ; « prod » = chiph.re, après un
 > `pnpm deploy:prod`. Une ligne « prod » reste en attente tant que la PR n'est pas déployée.
 >

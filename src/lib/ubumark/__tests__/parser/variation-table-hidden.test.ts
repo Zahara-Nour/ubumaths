@@ -165,11 +165,8 @@ describe('refus avec message en français', () => {
 		['? sur -inf', 'variable: x\ndomain: ?-inf, 0, +inf\n\nsign: f(x)', /infini/],
 		['? sur +inf', 'variable: x\ndomain: -inf, 0, ?+inf\n\nsign: f(x)', /infini/],
 		['? dans une étiquette', 'variable: x\ndomain: -inf, 0, +inf\n\nsign: ?f(x)', /étiquette/],
-		[
-			'? sur un infini dans une ligne variation',
-			'variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  -inf: ?-inf, bottom\n  0: 3, top',
-			/infini/
-		],
+		// `-inf: ?-inf, bottom` (limite infinie cachée au bord) est lu depuis le chantier
+		// `variation-limite-infinie` : tests dans `questions/__tests__/tableau-limite-infinie.test.ts`
 		['?|h|', [...BASE, '  -3: ?|h|'].join('\n'), /\|h\|/],
 		['?d', [...BASE, '  -3: ?d'].join('\n'), /discontinuité|« d »|\bd\b/],
 		['signe caché sur un point', [...BASE, '  -3: ?+'].join('\n'), /point/],

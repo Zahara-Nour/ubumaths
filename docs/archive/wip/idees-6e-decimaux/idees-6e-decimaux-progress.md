@@ -1,20 +1,20 @@
 # Chantier `idees-6e-decimaux` : idées reprises d'ailleurs, rubrique « Nombres décimaux » de 6e
 
-Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
-[idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) (section Sixième, ligne 6N2 prise le
+Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md). Tableau :
+[idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md) (section Sixième, ligne 6N2 prise le
 2026-11-22). Relevé : [idees-6e-decimaux-releve.md](idees-6e-decimaux-releve.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3020._
+_Mis à jour le 2026-11-23, chantier clos._
 
-- **État** : #3018 jouée en prod ; série de relecture des 10 publiés enregistrée par David
-  (f5275c46, `scripts/series/6-relecture-decimaux-publies.json`) · **Prochaine action** : relecture
-  dans `/dev/modeles` par David : brouillons par `?point=` (6-101, 6-106, 6-115, 6-118, 6-123), et la
-  série f5275c46 ; puis verdicts lus en base, corrections, `publier-lot.ts` · **En attente de David** :
-  la relecture.
-- **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu.
-- **Worktree / branche** : aucun (#3020 mergée, worktree supprimé).
+- **État** : rubrique **publiée** : les 6 modèles neufs (a2ae7206, 67954fbb, 44d352a2, a29bf7c7,
+  33ff7000, c04b78f8) et les 16 variations des 10 publiés (série de relecture f5275c46) validés par
+  David et publiés (vérifié par MCP) ; journal archivé · **Prochaine action** : aucune · **En attente
+  de David** : rien (idée reportée : le matériel décimal, 6N2autoB-2, dans « Idées en attente » du
+  tableau).
+- **Pièges retenus** : ni essai en base locale ni jeu dans l'aperçu pendant ce chantier.
+- **Worktree / branche** : aucun.
 
 ## Décisions de David (2026-11-22)
 
@@ -81,3 +81,6 @@ tableau. Q3 : migration de rangement sans accès nouveau. 10 modèles publiés r
   590169c4 à {CM2}. Migrations de rangement et de contenu écrites, tests verts et rouges sans elles.
 - 2026-11-22 : #3018 mergée, `db:migrate` joué (seules nos 2 migrations en attente), état vérifié en prod.
 - 2026-11-23 : série de relecture des 10 publiés simulée puis publiée par David (f5275c46).
+- 2026-11-23 : David valide tous les modèles ; publication des 6 brouillons par `publier-lot.ts` (David), statuts vérifiés en prod ; chantier clos, journal archivé.
+- 2026-11-23 : suite, le matériel décimal (6N2autoB-2) : modèle 111ba9c5 publié (#3024), journal
+  [idees-6e-decimaux-materiel-progress.md](idees-6e-decimaux-materiel-progress.md).

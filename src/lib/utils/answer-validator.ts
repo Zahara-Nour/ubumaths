@@ -105,7 +105,11 @@ import {
 	isChoiceBlank,
 	parseChoiceAnswer
 } from '#lib/questions/choice-case.ts';
-import { isSignCellCorrect, isSignTableCell } from '#lib/questions/sign-table-case.ts';
+import {
+	infiniteCellVerdict,
+	isSignCellCorrect,
+	isSignTableCell
+} from '#lib/questions/sign-table-case.ts';
 import { isImpossibleAnswer, isImpossibleExpected } from '#lib/questions/impossible-answer.ts';
 
 // ============================================================================
@@ -864,6 +868,9 @@ function validateBlankValue(
 	}
 	// Signe ou marque d'un tableau de signes : le même jeton
 	if (isSignTableCell(blank)) return isSignCellCorrect(userAnswer, blank.expectedAnswer);
+	// Limite infinie d'un tableau : le même infini, signe compris
+	const infinite = infiniteCellVerdict(blank, userAnswer);
+	if (infinite !== null) return infinite;
 
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
@@ -1466,6 +1473,12 @@ function validateSingleBlank(
 		return isSignCellCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
+	}
+
+	// Limite infinie d'un tableau de variations : le même infini, signe compris (∞ seul : faux)
+	const infinite = infiniteCellVerdict(blank, userAnswerLatex || userAnswer);
+	if (infinite !== null) {
+		return infinite ? { isCorrect: true, status: 'correct' } : { isCorrect: false };
 	}
 
 	// Case « choix » (bloc ```choix) : indices cochés, barème du QCM

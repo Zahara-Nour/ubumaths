@@ -64,6 +64,11 @@ Les 200 retours les plus récents sont gardés, les plus anciens effacés.
 - **Garde** : étape « Bouton signaler absent du build » de la CI (`quality.yml`), qui cherche
   l'adresse de la route, l'identifiant du bouton et le nom du tampon d'erreurs dans tout le build.
 
+Le même dossier (`src/lib/dev/`, `src/lib/components/dev/`) porte un autre outil du serveur de dev,
+sans lien avec le bouton : la connexion en un geste aux comptes fictifs
+([tester-sur-un-autre-appareil.md](tester-sur-un-autre-appareil.md#se-connecter-sans-rien-taper)),
+avec sa propre garde de CI, « Comptes fictifs absents du build ».
+
 ## Refus de la route
 
 - **Connexion venue d'une autre machine** : seules les connexions par l'adresse de bouclage passent
