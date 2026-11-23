@@ -163,8 +163,9 @@ test('#1424 — poignée tirée jusqu’à A8, copier-coller en C5, lien partag�
 	// Tirer la poignée (coin bas-droit de A2) jusqu'à A8, au vrai pointeur
 	const handle = cellLocator(page, 'A2').locator('.poignee');
 	await expect(handle).toBeVisible();
-	// A8 à l'écran avant de mesurer : au téléphone, la vue défile
-	await cellLocator(page, 'A8').scrollIntoViewIfNeeded();
+	// A8 à l'écran avant de mesurer : au téléphone, la vue défile. Au plus court :
+	// Firefox centre A8 avec `scrollIntoViewIfNeeded`, A2 et sa poignée sortent de la grille
+	await cellLocator(page, 'A8').evaluate((cell) => cell.scrollIntoView({ block: 'nearest' }));
 	const from = await handle.boundingBox();
 	const to = await cellLocator(page, 'A8').boundingBox();
 	if (from === null || to === null) throw new Error('poignée ou case A8 sans boîte');
