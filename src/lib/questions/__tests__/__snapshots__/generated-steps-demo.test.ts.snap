@@ -111,7 +111,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 2,
+    "id": 8,
     "rule": "simplify",
     "schoolLevel": "lycee",
     "title": "On simplifie",
@@ -560,7 +560,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité composition differenti
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 2,
+    "id": 3,
     "rule": "simplify",
     "schoolLevel": "lycee",
     "title": "On simplifie",

@@ -69,7 +69,7 @@ export function withTidyStep(
 	// n'apparaît que si le renderer en a donné (verbosité « detailed »)
 	const last = steps.at(-1);
 	const step: RenderedStep = {
-		id: steps.length + 1,
+		id: nextStepId(steps),
 		rule: 'simplify',
 		title: 'On simplifie',
 		...(last?.explanation !== undefined && {
@@ -103,7 +103,7 @@ export function withRequestedFormStep(
 	if (derivativeLatex === tidied.derivativeLatex) return tidied;
 	const last = tidied.steps.at(-1);
 	const step: RenderedStep = {
-		id: tidied.steps.length + 1,
+		id: nextStepId(tidied.steps),
 		rule: form === 'factorisee' ? 'factor-result' : 'expand-result',
 		title: requestedFormTitle(form),
 		...(last?.explanation !== undefined && {
@@ -116,4 +116,16 @@ export function withRequestedFormStep(
 		...(last?.schoolLevel !== undefined && { schoolLevel: last.schoolLevel })
 	};
 	return { steps: [...tidied.steps, step], derivative: result, derivativeLatex };
+}
+
+/**
+ * Un `id` qu'aucune étape ne porte encore, sous-étapes comprises : les `id` du
+ * moteur suivent l'ordre des étapes sources (une sous-étape passe avant son
+ * parent), si bien que `steps.length + 1` retombait sur celui de la dernière
+ * étape (E10 du chantier ecarts-verifs).
+ */
+function nextStepId(steps: readonly RenderedStep[]): number {
+	const ids = (list: readonly RenderedStep[]): number[] =>
+		list.flatMap((step) => [step.id, ...ids(step.subSteps ?? [])]);
+	return Math.max(0, ...ids(steps)) + 1;
 }

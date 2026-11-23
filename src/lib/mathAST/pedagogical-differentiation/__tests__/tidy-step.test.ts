@@ -14,10 +14,17 @@ import {
 	PedagogicalDifferentiationRenderer,
 	withTidyStep
 } from '../index';
+import { withRequestedFormStep } from '../tidy-step';
+import type { RenderedStep } from '../../common/step-renderer-base';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 import { finalDerivative } from '../final-form';
 import type { MathNode } from '../../types';
+
+/** Les `id` de toutes les étapes, sous-étapes comprises. */
+function allIds(steps: readonly RenderedStep[]): number[] {
+	return steps.flatMap((step) => [step.id, ...allIds(step.subSteps ?? [])]);
+}
 
 function derive(latex: string) {
 	const f = parseLatex(latex) as MathNode;
@@ -48,7 +55,6 @@ describe('withTidyStep : la dernière ligne est la dérivée rangée', () => {
 
 		expect(last?.title).toBe('On simplifie');
 		expect(last?.rule).toBe('simplify');
-		expect(last?.id).toBe(steps.length);
 		expect(last?.expressionLatex).toBe(expressionLatex);
 		expect(derivativeLatex).toBe(derivative);
 	});
@@ -135,5 +141,27 @@ describe('withTidyStep : la forme finale de f′', () => {
 		});
 
 		expect(withTidyStep([], result.derivative, f).derivativeLatex).not.toContain('\\left|');
+	});
+});
+
+// E10 (ecarts-verifs) : les `id` du moteur comptent aussi les sous-étapes
+// (règle de la puissance = 2, sa sous-étape = 1). L'étape ajoutée prenait
+// `steps.length + 1` = 2, le même `id` que la précédente : « Comment ? »
+// plantait au rendu (`each_key_duplicate`).
+describe('étapes ajoutées : un id que personne d’autre ne porte', () => {
+	it.each(['(e^x)^2', '\\frac{x}{x+1}', 'x\\ln(x)', 'e^{3x}', '3x^2 - x + 1'])(
+		'(%s)′ avec « On simplifie »',
+		(input) => {
+			const ids = allIds(derive(input).steps);
+			expect(new Set(ids).size).toBe(ids.length);
+		}
+	);
+
+	it('« On développe » après les étapes du moteur', () => {
+		const f = parseLatex('(x+1)^3') as MathNode;
+		const { steps } = withRequestedFormStep(derive('(x+1)^3'), 'developpee', f);
+		expect(steps.at(-1)?.title).toBe('On développe');
+		const ids = allIds(steps);
+		expect(new Set(ids).size).toBe(ids.length);
 	});
 });
