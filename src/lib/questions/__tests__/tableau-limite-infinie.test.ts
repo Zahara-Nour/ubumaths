@@ -20,6 +20,7 @@ import {
 	parseVariationTableContent,
 	revealVariationBody
 } from '#lib/ubumark/parser/variation-table-parser.ts';
+import { generateVariationTableTypst } from '#lib/ubumark/generators/variation-table-typst.ts';
 
 // Fixtures
 
@@ -169,6 +170,53 @@ describe('limite infinie cachée : lecture du bloc', () => {
 			'  3: ||, -inf, +inf',
 			'  -inf: -inf, bottom'
 		]);
+	});
+});
+
+describe('limite cachée : impression PDF', () => {
+	const BOX = 'box(width: 1.4em';
+	const typstOf = (variation: string[], hiddenCells: 'blank' | 'filled' = 'blank') => {
+		const { node } = parse(variation);
+		if (!node) throw new Error('tableau non lu');
+		const sortie = generateVariationTableTypst(node, { hiddenCells });
+		// Ligne `variation:` seule : la ligne des x écrit ±∞ en clair
+		return sortie.split('contents: (')[1] ?? '';
+	};
+
+	it('nominal (2) : les deux limites cachées autour de la double barre sont des cases vides', () => {
+		const sortie = typstOf(['  -inf: 2, top', '  3: ||, ?-inf, ?+inf', '  +inf: 2, bottom']);
+		expect(sortie).toMatch(/\(bottom, top, "\|\|", box\(width: 1\.4em[^)]*\), box\(width: 1\.4em/);
+		expect(sortie).not.toContain('infinity');
+	});
+
+	it('nominal (2) : une seule limite cachée, l’autre reste écrite', () => {
+		const sortie = typstOf([
+			'  -inf: 2, top',
+			'  3: ||, -inf, bottom, ?+inf, top',
+			'  +inf: 2, bottom'
+		]);
+		expect(sortie).toMatch(/"\|\|", \$-infinity\$, box\(width: 1\.4em/);
+		expect(sortie).not.toContain('+infinity');
+	});
+
+	it('nominal (4) : limite d’un seul côté cachée', () => {
+		const sortie = typstOf(['  -inf: 2, top', '  3: ||, left, ?-inf, bottom']);
+		expect(sortie).toMatch(/\(bottom, "\|\|", box\(width: 1\.4em/);
+		expect(sortie).not.toContain('infinity');
+	});
+
+	it('nominal (1) : limite cachée au bord, case vide', () => {
+		const sortie = typstOf(['  -inf: 2, top', '  3: ||, -inf, +inf', '  +inf: ?2, bottom']);
+		expect(sortie).toContain(`(bottom, ${BOX}`);
+	});
+
+	it('corrigé imprimé (`filled`) : les limites sortent en clair', () => {
+		const sortie = typstOf(
+			['  -inf: 2, top', '  3: ||, ?-inf, ?+inf', '  +inf: 2, bottom'],
+			'filled'
+		);
+		expect(sortie).toContain('"||", $-infinity$, $+infinity$');
+		expect(sortie).not.toContain(BOX);
 	});
 });
 

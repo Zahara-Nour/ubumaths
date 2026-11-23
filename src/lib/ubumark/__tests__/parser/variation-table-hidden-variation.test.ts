@@ -122,17 +122,25 @@ describe('ordre de lecture', () => {
 	});
 });
 
+// Refusées jusqu'au chantier `variation-limite-infinie` (phase 0 du 2026-11-23) : une
+// limite se cache aux bords et autour d'une double barre
+describe('limites cachées : acceptées', () => {
+	const acceptees: [string, string][] = [
+		['valeur cachée sur -inf', withRow('  -inf: ?-inf, bottom', ...ROW.slice(1))],
+		['valeur cachée sur +inf', withRow(...ROW.slice(0, 3), '  +inf: ?+inf, top')],
+		['valeur cachée sur -\\infty', withRow('  -inf: ?-\\infty, bottom', ...ROW.slice(1))],
+		['? sur une limite double', withRow(ROW[0], '  -2: ||, ?-inf, +inf', ROW[2], ROW[3])]
+	];
+	for (const [nom, texte] of acceptees) {
+		it(`lit : ${nom}`, () => {
+			expect(parseOk(texte).cases?.length).toBe(1);
+		});
+	}
+});
+
 describe('refus avec message en français', () => {
 	const refus: [string, string, RegExp][] = [
-		['valeur cachée sur -inf', withRow('  -inf: ?-inf, bottom', ...ROW.slice(1)), /infini/],
-		['valeur cachée sur +inf', withRow(...ROW.slice(0, 3), '  +inf: ?+inf, top'), /infini/],
-		['valeur cachée sur -\\infty', withRow('  -inf: ?-\\infty, bottom', ...ROW.slice(1)), /infini/],
 		['? sur une asymptote', withRow(ROW[0], '  -2: ?||, -inf, +inf', ROW[2], ROW[3]), /\|\|/],
-		[
-			'? sur une limite double',
-			withRow(ROW[0], '  -2: ||, ?-inf, +inf', ROW[2], ROW[3]),
-			/limite|\|\|/
-		],
 		['? sans valeur ni position', withRow(ROW[0], '  -2: ?', ROW[2], ROW[3]), /position/],
 		['flèche sur un point', withRow(...ROW, '  -2: ?flèche'), /intervalle/],
 		['flèche hors du domaine', withRow(...ROW, '  -2,7: ?flèche'), /domaine/],
