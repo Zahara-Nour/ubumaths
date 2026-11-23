@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3031 et la phase 0 de R6._
+_Mis à jour le 2026-11-23, R6 en cours (premier passage des six projets)._
 
-- **État** : lot 10 mergé (#3031) ; liste à 391 lignes. Ordre validé : R6 → tri des lignes → R12 → R13. Phase 0 de R6 validée (§ « R6 ») : 5 projets + Firefox 390 px partiel, `test:verifs:tout`.
-- **Prochaine action** : coder R6 dans un worktree neuf `ubumaths-wt-verifs-auto-r6` (branche `test/verifs-auto-r6`) : projets dans `playwright.verifs.config.ts` (et captures téléphone), marquage « bureau seulement », garde moteur absent, durées avant / après, PR + revue `code-reviewer` Sonnet.
-- **En attente de David** : écart 1/10 (#1369, `cos2π` lu π·cos(2)) — corriger ou laisser ; puis écarts 2 à 10 (§ « Lot 10 rejoué ») un par un ; tâche de nuit à confirmer (après R12).
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; étapes de « Comment ? » chargées à la demande ; ligne de console longue → `shootLine` ; une ligne de la liste peut être périmée par une décision postérieure : chercher la décision avant de crier à l'écart ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #3031).
+- **État** : R6 codé sur `test/verifs-auto-r6` (commit `ad3bac404`) : projets `ordi-chrome` (défaut), `ordi-safari`, `ordi-firefox`, `iphone`, `android`, `firefox-390` (`e2e/verifs/projets.ts`), `pnpm test:verifs:tout`, étiquettes `@bureau` / `@clavier-mathlive`, garde moteur absent, projet `iphone` des captures. Premier passage : § « R6 — premier passage ».
+- **Prochaine action** : selon la réponse de David (ampleur de l'adaptation téléphone, Firefox bloqué).
+- **En attente de David** : (1) adapter ~70 tests au téléphone dans R6 ou en lots à part ; (2) Firefox ne démarre pas sur le Mac mini ; écart 1/10 (#1369) et écarts 2 à 10 (§ « Lot 10 rejoué ») ; tâche de nuit (après R12).
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; carnet rouge en suite complète, vert seul sous `with-db-lock.sh` ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `ubumaths-wt-verifs-auto-r6` · `test/verifs-auto-r6` · serveur de dev sur 5177.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -168,6 +168,14 @@ David : « tu parles de Safari mais pas des autres navigateurs », puis « pars 
 - **Comportements validés (phase 0)** : `--project <nom>` pour un seul navigateur ; test sans sens au téléphone (`Ctrl+D`, survol) marqué « bureau seulement », sauté ailleurs, attendu jamais changé ; rouge propre à un moteur = écart soumis à David (candidat : verso de carte retournée en miroir sous WebKit, vu par `pnpm voir`) ; moteur absent → arrêt avec la ligne d'installation ; durées avant / après dans la PR ; R6 ne sort aucune ligne de la liste, le tri s'en servira.
 - **Jour / nuit (David : « lancer la suite complète la nuit »)** : le jour, `pnpm test:verifs` = ordinateur Chrome seul (ou `--project`) ; `pnpm test:verifs:tout` = tous les projets. Tâche de nuit sur le Mac mini (`test:verifs:tout` sur `main`, base locale, notification seulement d'un rouge nouveau) : après R12, dont elle prend le filtre — à confirmer par David.
 - **Ordre du découpage validé** (David, 2026-11-23, « je valide ») : R6 → tri des 391 lignes par paquets d'environ 50 (les plus anciennes d'abord) → R12 → R13.
+
+## R6 — premier passage (2026-11-23)
+
+- **Avant** (Chrome seul, ancienne config) : 150 tests, **2,9 min**, 5 rouges : #1674, #1703, #1620 (bug `each_key_duplicate` de « Comment ? », mis de côté), #1369 (écart 1/10), carnet #2731 (vert rejoué seul sous `with-db-lock.sh`).
+- **`test:verifs:tout`** : 769 tests, **15,4 min**, 424 verts, 341 rouges.
+  - **Firefox (172)** : ne démarre pas. `Could not find profile folder`, même lancé à la main hors bac à sable, même après `playwright install --force firefox` (Firefox 159, build 1572, macOS 27.0).
+  - **Ordinateur Safari (14)** : les 4 rouges connus ; 7 × `grantPermissions: clipboard-write` inconnu de WebKit (réglage du test) ; #1709 / redirections « navigation interrompue » (course de redirection sous WebKit) ; cartes lot 3 `toBeFocused` après Tab (Safari ne met pas le focus sur un bouton au Tab : candidat écart moteur) ; #1425 délai.
+  - **iPhone (78) et Android (72)** : presque les mêmes tests → la **mise en page téléphone**, pas le moteur. Causes : la console couvre la vue Données et la sous-barre recouvre A1 au défilement (~39) ; cartes de « Mes objets » attendues dans le panneau d'ordinateur (~30) ; grapheur : dézoom attendu > 400, l'écran étroit s'arrête à 400 (14).
 
 ## Plan d'ensemble
 
