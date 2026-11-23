@@ -74,6 +74,14 @@ describe('message des noms réservés : ce que représente le nom et quoi faire'
 		);
 	});
 
+	// E5 (2026-11-23) : « par exemple "k" » alors que k était déjà pris
+	it('propose un nom que le script n’utilise pas', () => {
+		expect(() => run('k = 1\ne = 5')).toThrow('Choisir un autre nom, par exemple "m".');
+		expect(() => run('k = 1\nm = 2\nn = 3\ne = 5')).toThrow(
+			'Choisir un autre nom, par exemple "p".'
+		);
+	});
+
 	it('\\pi = 5 → dit que π est le nombre π', () => {
 		expect(() => run('\\pi = 5')).toThrow(
 			'"π" est une constante réservée : c\'est le nombre π (≈ 3,14). Choisir un autre nom.'
