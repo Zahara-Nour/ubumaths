@@ -121,6 +121,62 @@
 					"$${{k}} \\times {{f}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
 				]
 			}
+		},
+		{
+			"statement": "Écris ce nombre en chiffres.\n\n$${{k1}}~\\text{{{if:R==4|dizaines de mille|{{if:R==5|centaines de mille|{{if:R==6|millions|{{if:R==7|dizaines de millions|{{if:R==8|centaines de millions|milliards}}}}}}}}}} et }{{k2}}~\\text{{{if:R==4|milliers|{{if:R==5|dizaines de mille|{{if:R==6|centaines de mille|{{if:R==7|millions|{{if:R==8|dizaines de millions|centaines de millions}}}}}}}}}}} = ?$$",
+			"variables": [
+				{
+					"name": "k1",
+					"expression": "2..99"
+				},
+				{
+					"name": "k2",
+					"expression": "11..99"
+				},
+				{
+					"name": "R",
+					"expression": "4..9"
+				},
+				{
+					"name": "tq",
+					"expression": "eval:floor(k2/10)"
+				},
+				{
+					"name": "uq",
+					"expression": "eval:mod(k2,10)"
+				}
+			],
+			"conditions": ["mod(k2,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k1*10^R+k2*10^(R-1)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*k1+k2)*10^(R-1)}}",
+							"message": "Tu as écrit ${{k1}}$ et ${{k2}}$ l'un après l'autre : il faut additionner ${{k1}}$ {{if:R==4|dizaines de mille|{{if:R==5|centaines de mille|{{if:R==6|millions|{{if:R==7|dizaines de millions|{{if:R==8|centaines de millions|milliards}}}}}}}}}} et ${{k2}}$ {{if:R==4|milliers|{{if:R==5|dizaines de mille|{{if:R==6|centaines de mille|{{if:R==7|millions|{{if:R==8|dizaines de millions|centaines de millions}}}}}}}}}}.",
+							"label": "Nombres juxtaposés"
+						},
+						{
+							"answer": "{{eval:(10*k1+uq)*10^(R-1)}}",
+							"message": "Tu as oublié la retenue : ${{k2}}$ {{if:R==4|milliers|{{if:R==5|dizaines de mille|{{if:R==6|centaines de mille|{{if:R==7|millions|{{if:R==8|dizaines de millions|centaines de millions}}}}}}}}}} $= {{eval:k2*10^(R-1)}}$, cela ajoute ${{tq}}$ au rang des {{if:R==4|dizaines de mille|{{if:R==5|centaines de mille|{{if:R==6|millions|{{if:R==7|dizaines de millions|{{if:R==8|centaines de millions|milliards}}}}}}}}}}.",
+							"label": "Retenue oubliée"
+						},
+						{
+							"answer": "{{eval:(k1+k2)*10^R}}",
+							"message": "Tu as additionné ${{k1}}$ et ${{k2}}$ comme si c'étaient des {{if:R==4|dizaines de mille|{{if:R==5|centaines de mille|{{if:R==6|millions|{{if:R==7|dizaines de millions|{{if:R==8|centaines de millions|milliards}}}}}}}}}} : ${{k2}}$ {{if:R==4|milliers|{{if:R==5|dizaines de mille|{{if:R==6|centaines de mille|{{if:R==7|millions|{{if:R==8|dizaines de millions|centaines de millions}}}}}}}}}}, ce n'est que ${{eval:k2*10^(R-1)}}$.",
+							"label": "Tout compté dans la grande unité"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{k1}}$ {{if:R==4|dizaines de mille|{{if:R==5|centaines de mille|{{if:R==6|millions|{{if:R==7|dizaines de millions|{{if:R==8|centaines de millions|milliards}}}}}}}}}} $= {{eval:k1*10^R}}$ et ${{k2}}$ {{if:R==4|milliers|{{if:R==5|dizaines de mille|{{if:R==6|centaines de mille|{{if:R==7|millions|{{if:R==8|dizaines de millions|centaines de millions}}}}}}}}}} $= {{k2}} \\times {{eval:10^(R-1)}} = {{eval:k2*10^(R-1)}}$.",
+					"On additionne : les ${{k2}}$ {{if:R==4|milliers|{{if:R==5|dizaines de mille|{{if:R==6|centaines de mille|{{if:R==7|millions|{{if:R==8|dizaines de millions|centaines de millions}}}}}}}}}} ajoutent ${{tq}}$ au rang des {{if:R==4|dizaines de mille|{{if:R==5|centaines de mille|{{if:R==6|millions|{{if:R==7|dizaines de millions|{{if:R==8|centaines de millions|milliards}}}}}}}}}}.",
+					"$${{eval:k1*10^R}} + {{eval:k2*10^(R-1)}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Écris chaque partie en chiffres, puis additionne-les. Attention à la retenue !"
 		}
 	],
 	"testSpecs": [
@@ -228,6 +284,101 @@
 			},
 			"description": "Erreur : 7 000 000",
 			"variationIndex": 1
+		},
+		{
+			"description": "F5 : 35 millions et 12 centaines de mille = 36 200 000",
+			"variationIndex": 2,
+			"variables": {
+				"k1": "35",
+				"k2": "12",
+				"R": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36\\,200\\,000"]
+		},
+		{
+			"description": "F5 : sans espaces",
+			"variationIndex": 2,
+			"variables": {
+				"k1": "35",
+				"k2": "12",
+				"R": "6"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["36200000"]
+		},
+		{
+			"description": "F5 : juxtaposés (351 200 000)",
+			"variationIndex": 2,
+			"variables": {
+				"k1": "35",
+				"k2": "12",
+				"R": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $35$ et $12$ l'un après l'autre : il faut additionner $35$ millions et $12$ centaines de mille."
+			},
+			"answers": ["351\\,200\\,000"]
+		},
+		{
+			"description": "F5 : retenue oubliée (35 200 000)",
+			"variationIndex": 2,
+			"variables": {
+				"k1": "35",
+				"k2": "12",
+				"R": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la retenue : $12$ centaines de mille $= 1200000$, cela ajoute $1$ au rang des millions."
+			},
+			"answers": ["35\\,200\\,000"]
+		},
+		{
+			"description": "F5 : tout en millions (47 000 000)",
+			"variationIndex": 2,
+			"variables": {
+				"k1": "35",
+				"k2": "12",
+				"R": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné $35$ et $12$ comme si c'étaient des millions : $12$ centaines de mille, ce n'est que $1200000$."
+			},
+			"answers": ["47\\,000\\,000"]
+		},
+		{
+			"description": "F5 : 7 milliards et 45 centaines de millions = 11 500 000 000",
+			"variationIndex": 2,
+			"variables": {
+				"k1": "7",
+				"k2": "45",
+				"R": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["11\\,500\\,000\\,000"]
+		},
+		{
+			"description": "F5 : 23 dizaines de mille et 68 milliers = 298 000",
+			"variationIndex": 2,
+			"variables": {
+				"k1": "23",
+				"k2": "68",
+				"R": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["298\\,000"]
 		}
 	]
 }

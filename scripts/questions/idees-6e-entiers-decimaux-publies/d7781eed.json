@@ -114,6 +114,72 @@
 					"On divise : ${{a}} \\div {{b}} = {{eval:floor(1000*a/b)/1000;d}}\\ldots$ La division ne s'arrête jamais : $\\frac{{{a}}}{{{b}}}$ ne peut pas s'écrire avec un dénominateur $10$, $100$, $1~000$… Ce n'est **pas** un nombre décimal."
 				]
 			}
+		},
+		{
+			"statement": "Montre que $\\dfrac{ {{a}} }{ {{b}} }$ est un nombre décimal : écris-le sous la forme d'une fraction décimale, avec le plus petit dénominateur possible : $10$, $100$ ou $1000$.\n\n$$\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{?}{?}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|4|5|20|25|50|200|250|500"
+				},
+				{
+					"name": "a",
+					"expression": "1..49"
+				},
+				{
+					"name": "q",
+					"expression": "eval:1+min(mod(10,b),1)+min(mod(100,b),1)"
+				},
+				{
+					"name": "D",
+					"expression": "eval:10^q"
+				},
+				{
+					"name": "f",
+					"expression": "eval:D/b"
+				}
+			],
+			"conditions": ["mod(a,2)!=0", "mod(a,5)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*f}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+D-b}}",
+							"message": "Tu as ajouté le même nombre en haut et en bas : cela change la fraction. Il faut multiplier le numérateur et le dénominateur par le même nombre.",
+							"label": "Même nombre ajouté"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Tu as changé le dénominateur sans changer le numérateur : si tu multiplies ${{b}}$ par ${{f}}$, multiplie aussi ${{a}}$ par ${{f}}$.",
+							"label": "Numérateur inchangé"
+						},
+						{
+							"answer": "{{f}}",
+							"message": "Tu as écrit le nombre par lequel on multiplie : le numérateur, c'est ${{a}}$ multiplié par ce nombre.",
+							"label": "Multiplicateur au numérateur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{D}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*D}}",
+							"message": "Ce n'est pas le plus petit dénominateur possible : ${{b}}$ divise déjà ${{D}}$.",
+							"label": "Pas le plus petit dénominateur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{b}} \\times {{f}} = {{D}}$ : on multiplie le numérateur et le dénominateur par ${{f}}$.",
+					"$$\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{ {{a}} \\times {{f}} }{ {{b}} \\times {{f}} }=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{eval:a*f}} }{ {{D}} }}$$",
+					"C'est une fraction décimale : $\\dfrac{ {{a}} }{ {{b}} } = {{eval:a/b;d}}$ est un nombre décimal."
+				]
+			},
+			"hint": "Par quel nombre faut-il multiplier ${{b}}$ pour obtenir $10$, $100$ ou $1000$ ?"
 		}
 	],
 	"testSpecs": [
@@ -201,6 +267,107 @@
 			},
 			"description": "3/7 : non",
 			"variationIndex": 3
+		},
+		{
+			"description": "F6 : 7/25 = 28/100",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28", "100"]
+		},
+		{
+			"description": "F6 : même nombre ajouté (82)",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté le même nombre en haut et en bas : cela change la fraction. Il faut multiplier le numérateur et le dénominateur par le même nombre."
+			},
+			"answers": ["82", "100"]
+		},
+		{
+			"description": "F6 : numérateur inchangé (7)",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as changé le dénominateur sans changer le numérateur : si tu multiplies $25$ par $4$, multiplie aussi $7$ par $4$."
+			},
+			"answers": ["7", "100"]
+		},
+		{
+			"description": "F6 : multiplicateur au numérateur (4)",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit le nombre par lequel on multiplie : le numérateur, c'est $7$ multiplié par ce nombre."
+			},
+			"answers": ["4", "100"]
+		},
+		{
+			"description": "F6 : 280/1 000, pas le plus petit dénominateur",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce n'est pas le plus petit dénominateur possible : $25$ divise déjà $100$."
+			},
+			"answers": ["280", "1\\,000"]
+		},
+		{
+			"description": "F6 : 3/2 = 15/10",
+			"variationIndex": 4,
+			"variables": {
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15", "10"]
+		},
+		{
+			"description": "F6 : 9/250 = 36/1 000",
+			"variationIndex": 4,
+			"variables": {
+				"b": "250",
+				"a": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36", "1\\,000"]
+		},
+		{
+			"description": "F6 : 1000 sans espace",
+			"variationIndex": 4,
+			"variables": {
+				"b": "250",
+				"a": "9"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["36", "1000"]
 		}
 	]
 }

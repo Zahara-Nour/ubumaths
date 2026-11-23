@@ -154,6 +154,104 @@
 					"{{if:q==0|${{a}}.{{b}} = {{a}}.{{b}}0$ : les deux nombres sont égaux, donc c'est **vrai**.|{{if:q==1|${{a}}.{{b}} = {{a}}.{{b}}0$ et ${{c}}{{d}} < {{b}}0$ : ${{a}}.{{c}}{{d}} < {{a}}.{{b}}$, donc c'est **vrai**.|${{a}}.{{b}} = {{a}}.{{b}}0$ et ${{b}}0 > {{c}}{{d}}$ : ${{a}}.{{b}} > {{a}}.{{c}}{{d}}$, donc c'est **faux**.}}}}"
 				]
 			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$${{if:s==0|{{A}}.{{B}}|{{eval:A-t}}.{{d1}}{{d2}}{{d3}}{{if:w==4|\\,{{d4}}|}}}} \\ldots {{if:s==0|{{eval:A-t}}.{{d1}}{{d2}}{{d3}}{{if:w==4|\\,{{d4}}|}}|{{A}}.{{B}}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "A",
+					"expression": "3..30"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "B",
+					"expression": "11..99"
+				},
+				{
+					"name": "w",
+					"expression": "3..4"
+				},
+				{
+					"name": "d1",
+					"expression": "2..9"
+				},
+				{
+					"name": "d2",
+					"expression": "0..9"
+				},
+				{
+					"name": "d3",
+					"expression": "1..9"
+				},
+				{
+					"name": "d4",
+					"expression": "1..9"
+				},
+				{
+					"name": "R",
+					"expression": "eval:2*(1-s)"
+				}
+			],
+			"conditions": ["mod(B,10)!=0", "d1>floor(B/10)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer deux décimaux.** On compare d'abord les parties entières ; si elles sont égales, on compare les chiffres des dixièmes, puis des centièmes, et ainsi de suite.",
+					"Les parties entières sont différentes : ${{A}} > {{eval:A-t}}$. On n'a pas besoin des chiffres après la virgule : avoir plus de décimales ne rend pas un nombre plus grand.",
+					"$${{if:s==0|{{A}}.{{B}}|{{eval:A-t}}.{{d1}}{{d2}}{{d3}}{{if:w==4|\\,{{d4}}|}}}} \\textcolor{{{color:primary.0}}}{{{if:R==2|>|<}}} {{if:s==0|{{eval:A-t}}.{{d1}}{{d2}}{{d3}}{{if:w==4|\\,{{d4}}|}}|{{A}}.{{B}}}}$$"
+				]
+			},
+			"hint": "Commence par comparer les parties entières, avant de regarder les chiffres après la virgule."
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$${{if:z==0|{{if:s==0|0.0{{a}}{{b}}|0.0{{a}}0\\,{{b}}}}|0.{{a}}0{{b}}}} \\ldots {{if:z==0|{{if:s==0|0.0{{a}}0\\,{{b}}|0.0{{a}}{{b}}}}|0.{{b}}0{{a}}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "R",
+					"expression": "eval:(1-z)*2*(1-s)+z*2*min(max(a-b,0),1)"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer deux décimaux.** On compare d'abord les parties entières ; si elles sont égales, on compare les chiffres des dixièmes, puis des centièmes, et ainsi de suite.",
+					"{{if:z==0|Les deux nombres ont le même chiffre des dixièmes ($0$) et le même chiffre des centièmes (${{a}}$). Au rang des millièmes : ${{b}}$ contre $0$, donc $0.0{{a}}{{b}} > 0.0{{a}}0\\,{{b}}$.|Les parties entières sont égales ($0$). Au rang des dixièmes : ${{a}}$ contre ${{b}}$. Le zéro placé ensuite ne change rien à cette comparaison.}}",
+					"$${{if:z==0|{{if:s==0|0.0{{a}}{{b}}|0.0{{a}}0\\,{{b}}}}|0.{{a}}0{{b}}}} \\textcolor{{{color:primary.0}}}{{{if:R==2|>|<}}} {{if:z==0|{{if:s==0|0.0{{a}}0\\,{{b}}|0.0{{a}}{{b}}}}|0.{{b}}0{{a}}}}$$"
+				]
+			},
+			"hint": "Compare les chiffres rang par rang, en partant des dixièmes : un zéro placé entre deux chiffres compte."
 		}
 	],
 	"testSpecs": [
@@ -317,6 +415,166 @@
 			},
 			"description": "3,4 ⩽ 3,12 : faux",
 			"variationIndex": 3
+		},
+		{
+			"description": "F9 entiers : 12,45 > 11,987 6",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"A": "12",
+				"t": "1",
+				"B": "45",
+				"w": "4",
+				"d1": "9",
+				"d2": "8",
+				"d3": "7",
+				"d4": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F9 entiers : plus de décimales lu plus grand",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"A": "12",
+				"t": "1",
+				"B": "45",
+				"w": "4",
+				"d1": "9",
+				"d2": "8",
+				"d3": "7",
+				"d4": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9 entiers : 9,876 < 11,35",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"A": "11",
+				"t": "2",
+				"B": "35",
+				"w": "3",
+				"d1": "8",
+				"d2": "7",
+				"d3": "6",
+				"d4": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9 entiers : 9,876 > 11,35",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"A": "11",
+				"t": "2",
+				"B": "35",
+				"w": "3",
+				"d1": "8",
+				"d2": "7",
+				"d3": "6",
+				"d4": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F9 zéros : 0,047 > 0,040 7",
+			"variationIndex": 5,
+			"variables": {
+				"z": "0",
+				"s": "0",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F9 zéros : 0,047 < 0,040 7 (plus de chiffres)",
+			"variationIndex": 5,
+			"variables": {
+				"z": "0",
+				"s": "0",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9 zéros : 0,040 7 < 0,047",
+			"variationIndex": 5,
+			"variables": {
+				"z": "0",
+				"s": "1",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9 zéros : 0,305 < 0,503",
+			"variationIndex": 5,
+			"variables": {
+				"z": "1",
+				"s": "0",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F9 zéros : 0,305 = 0,503 (mêmes chiffres)",
+			"variationIndex": 5,
+			"variables": {
+				"z": "1",
+				"s": "0",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F9 zéros : 0,806 > 0,608",
+			"variationIndex": 5,
+			"variables": {
+				"z": "1",
+				"s": "1",
+				"a": "8",
+				"b": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
 		}
 	]
 }

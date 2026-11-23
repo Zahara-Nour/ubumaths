@@ -6,20 +6,17 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après la validation de la phase 0._
+_Mis à jour le 2026-11-23, gros lot en cours d'écriture._
 
-- **État** : phase 0 VALIDÉE par David le 2026-11-23 (toutes mes recommandations : F1 à F13, N1 à
-  N6 tels qu'écrits ; Q1 modèle neuf de 6e ; Q3 noté en attente ; Q4 rien de plus) ; 13 modèles
-  publiés réservés dans le tableau (`main`, cd34ff15af) · **Prochaine action** : écrire le gros
-  lot, dans un worktree neuf sur `origin/main` (sujet `idees-6e-entiers-decimaux-lot`) : scripts
-  `docs/wip/questions/idees-6e-entiers-decimaux-<x>.py` pour N1 à N6, export des 13 modèles
-  publiés dans `scripts/questions/idees-6e-entiers-decimaux-publies/` et variations ajoutées à la
-  fin (F1 à F13), specs, essai en base locale · **Ensuite** (David, 2026-11-23) : lancer la
-  construction des outils juste après le lot : n° 54 droite graduée avec zoom, et n° 53
-  labyrinthe (à confirmer avec David : « les outils » = les deux) · **En attente de David** :
-  rien · **Pièges en cours** : un lien vers ce journal depuis `main` casse le pre-push tant que la
-  branche n'est pas mergée · **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers-decimaux`,
-  `docs/idees-6e-entiers-decimaux` (poussée, journal et relevé seulement).
+- **État** : phase 0 validée ; gros lot en écriture dans le worktree `../ubumaths-wt-idees-6e-entiers-decimaux-lot`
+  (branche `feat/idees-6e-entiers-decimaux-lot`, journal et relevé repris de `docs/idees-6e-entiers-decimaux`,
+  qui n'aura pas de PR) ; export de prod des 13 publiés commité ; scripts `neufs-a.py` (N1-N3),
+  `neufs-b.py` (N4-N6), `publies-a.py` (F1-F6), `publies-b.py` (F7-F13) · **Prochaine action** :
+  relire les sorties, essai en base locale, PR du lot (revue : aucune, contenu), puis `--publier` par David
+  · **Ensuite** (David, 2026-11-23) : outils n° 54 (droite graduée avec zoom) et n° 53 (labyrinthe)
+  · **En attente de David** : rien · **Pièges en cours** : un lien vers ce journal depuis `main` casse
+  le pre-push tant que la branche n'est pas mergée · **Worktree / branche** : ci-dessus ; l'ancien worktree
+  `../ubumaths-wt-idees-6e-entiers-decimaux` est à retirer (rien de non poussé).
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 

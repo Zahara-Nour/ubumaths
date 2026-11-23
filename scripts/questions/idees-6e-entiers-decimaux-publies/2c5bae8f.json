@@ -193,6 +193,104 @@
 					"$${{if:s==0|{{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times \\frac{1}{{{eval:10^b}}}|\\frac{1}{{{eval:10^b}}} = {{if:a==0|1|\\frac{1}{{{eval:10^a}}}}} \\div \\textcolor{{{color:primary.0}}}{{{solution}}}}}$$"
 				]
 			}
+		},
+		{
+			"statement": "Complète.\n\n$$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = ?~\\text{{{if:w==0|millième|{{if:w==1|centième|{{if:w==2|dixième|{{if:w==3|unité|{{if:w==4|dizaine|{{if:w==5|centaine|millier}}}}}}}}}}}}}$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..5"
+				},
+				{
+					"name": "w",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "eval:w-u"
+				}
+			],
+			"conditions": ["p>=1", "p<=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(-p);d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10^p}}",
+							"message": "C'est l'inverse : il faut ${{eval:10^p}}$ {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} pour faire $1$ {{if:w==0|millième|{{if:w==1|centième|{{if:w==2|dixième|{{if:w==3|unité|{{if:w==4|dizaine|{{if:w==5|centaine|millier}}}}}}}}}}}}, le nombre cherché est plus petit que $1$.",
+							"label": "Rapport à l'envers"
+						},
+						{
+							"answer": "{{eval:10^(-p-1);d}}",
+							"message": "Tu as compté un rang de trop : des {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} aux {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}, on monte de ${{p}}$ rang{{if:p>1|s|}}.",
+							"label": "Un rang de trop"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Unités de numération.** D'un rang au rang juste à sa gauche, on multiplie par $10$. Des {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} aux {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|{{if:w==3|unités|{{if:w==4|dizaines|{{if:w==5|centaines|milliers}}}}}}}}}}}}, on monte de ${{p}}$ rang{{if:p>1|s|}} : $1$ {{if:w==0|millième|{{if:w==1|centième|{{if:w==2|dixième|{{if:w==3|unité|{{if:w==4|dizaine|{{if:w==5|centaine|millier}}}}}}}}}}}} $= {{eval:10^p}}$ {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}.",
+					"Donc $1$ {{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}, c'est ${{eval:10^p}}$ fois moins : $1 \\div {{eval:10^p}} = {{solution}}$.",
+					"$$1~\\text{{{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\text{{{if:w==0|millième|{{if:w==1|centième|{{if:w==2|dixième|{{if:w==3|unité|{{if:w==4|dizaine|{{if:w==5|centaine|millier}}}}}}}}}}}}}$$"
+				]
+			},
+			"hint": "Combien de {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} faut-il pour faire $1$ {{if:w==0|millième|{{if:w==1|centième|{{if:w==2|dixième|{{if:w==3|unité|{{if:w==4|dizaine|{{if:w==5|centaine|millier}}}}}}}}}}}} ? $1$ {{if:u==0|millième|{{if:u==1|centième|{{if:u==2|dixième|{{if:u==3|unité|{{if:u==4|dizaine|{{if:u==5|centaine|millier}}}}}}}}}}}} n'en est qu'une partie."
+		},
+		{
+			"statement": "Complète.\n\n$${{N}}~\\text{{{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}} = ?~\\text{{{if:big==1|unités|unité}}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "N",
+					"expression": "digits:n"
+				},
+				{
+					"name": "u",
+					"expression": "0..2"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3-u"
+				},
+				{
+					"name": "big",
+					"expression": "eval:min(floor(N/(2*10^p)),1)"
+				}
+			],
+			"conditions": ["mod(N,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N/10^p;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N*10^p}}",
+							"message": "C'est l'inverse : il faut ${{eval:10^p}}$ {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} pour faire $1$ unité, il y a donc moins d'unités que de {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}.",
+							"label": "Rapport à l'envers"
+						},
+						{
+							"answer": "{{eval:N/10^(p+1);d}}",
+							"message": "Tu as décalé la virgule d'un rang de trop : $1$ unité $= {{eval:10^p}}$ {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}, on divise par ${{eval:10^p}}$.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:N/10^(p-1);d}}",
+							"message": "{{if:p==1|Tu as recopié le nombre de dixièmes : $10$ dixièmes font $1$ unité, il faut diviser par $10$.|Tu n'as pas décalé la virgule assez loin : $1$ unité $= {{eval:10^p}}$ {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}, on divise par ${{eval:10^p}}$.}}",
+							"label": "Un rang de moins"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1$ unité $= {{eval:10^p}}$ {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} : on cherche combien de fois ${{eval:10^p}}$ dans ${{N}}$, on divise par ${{eval:10^p}}$. Le chiffre des unités de ${{N}}$ devient le chiffre des {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}}.",
+					"$${{N}} \\div {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Combien de {{if:u==0|millièmes|{{if:u==1|centièmes|{{if:u==2|dixièmes|{{if:u==3|unités|{{if:u==4|dizaines|{{if:u==5|centaines|milliers}}}}}}}}}}}} faut-il pour faire $1$ unité ? Divise par ce nombre."
 		}
 	],
 	"testSpecs": [
@@ -431,6 +529,188 @@
 			},
 			"description": "F1 : division, rapport à l'envers (0,1)",
 			"variationIndex": 5
+		},
+		{
+			"description": "F4 v6 : 1 centième = 0,1 dixième",
+			"variationIndex": 6,
+			"variables": {
+				"u": "1",
+				"w": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}1"]
+		},
+		{
+			"description": "F4 v6 : point décimal accepté",
+			"variationIndex": 6,
+			"variables": {
+				"u": "1",
+				"w": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0.1"]
+		},
+		{
+			"description": "F4 v6 : rapport à l'envers (10)",
+			"variationIndex": 6,
+			"variables": {
+				"u": "1",
+				"w": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'inverse : il faut $10$ centièmes pour faire $1$ dixième, le nombre cherché est plus petit que $1$."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "F4 v6 : un rang de trop (0,01)",
+			"variationIndex": 6,
+			"variables": {
+				"u": "1",
+				"w": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté un rang de trop : des centièmes aux dixièmes, on monte de $1$ rang."
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "F4 v6 : 1 dizaine = 0,01 millier",
+			"variationIndex": 6,
+			"variables": {
+				"u": "4",
+				"w": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "F4 v6 : dizaine → millier, rapport à l'envers (100)",
+			"variationIndex": 6,
+			"variables": {
+				"u": "4",
+				"w": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'inverse : il faut $100$ dizaines pour faire $1$ millier, le nombre cherché est plus petit que $1$."
+			},
+			"answers": ["100"]
+		},
+		{
+			"description": "F4 v6 : un rang de moins (0,1)",
+			"variationIndex": 6,
+			"variables": {
+				"u": "4",
+				"w": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0{,}1"]
+		},
+		{
+			"description": "F4 v7 : 347 centièmes = 3,47 unités",
+			"variationIndex": 7,
+			"variables": {
+				"n": "3",
+				"N": "347",
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}47"]
+		},
+		{
+			"description": "F4 v7 : rapport à l'envers (34 700)",
+			"variationIndex": 7,
+			"variables": {
+				"n": "3",
+				"N": "347",
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est l'inverse : il faut $100$ centièmes pour faire $1$ unité, il y a donc moins d'unités que de centièmes."
+			},
+			"answers": ["34\\,700"]
+		},
+		{
+			"description": "F4 v7 : un rang de trop (0,347)",
+			"variationIndex": 7,
+			"variables": {
+				"n": "3",
+				"N": "347",
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as décalé la virgule d'un rang de trop : $1$ unité $= 100$ centièmes, on divise par $100$."
+			},
+			"answers": ["0{,}347"]
+		},
+		{
+			"description": "F4 v7 : un rang de moins (34,7)",
+			"variationIndex": 7,
+			"variables": {
+				"n": "3",
+				"N": "347",
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as pas décalé la virgule assez loin : $1$ unité $= 100$ centièmes, on divise par $100$."
+			},
+			"answers": ["34{,}7"]
+		},
+		{
+			"description": "F4 v7 : 47 millièmes = 0,047 unité",
+			"variationIndex": 7,
+			"variables": {
+				"n": "2",
+				"N": "47",
+				"u": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}047"]
+		},
+		{
+			"description": "F4 v7 : 2 358 dixièmes = 235,8 unités",
+			"variationIndex": 7,
+			"variables": {
+				"n": "4",
+				"N": "2358",
+				"u": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["235{,}8"]
+		},
+		{
+			"description": "F4 v7 : dixièmes recopiés (2 358)",
+			"variationIndex": 7,
+			"variables": {
+				"n": "4",
+				"N": "2358",
+				"u": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le nombre de dixièmes : $10$ dixièmes font $1$ unité, il faut diviser par $10$."
+			},
+			"answers": ["2\\,358"]
 		}
 	]
 }

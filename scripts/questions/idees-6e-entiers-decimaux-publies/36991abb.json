@@ -102,6 +102,94 @@
 					"$$\\pi \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
 				]
 			}
+		},
+		{
+			"statement": "La calculatrice affiche :\n\n$${{a}} \\div {{d}} = {{I}}.{{c1}}{{c2}}{{c3}}\\,{{c4}}{{c5}}{{c6}}\\,{{c7}}\\ldots$$\n\nDonne la valeur arrondie {{if:k==0|à l'unité|{{if:k==1|au dixième|au centième}}}} de ${{a}} \\div {{d}}$.\n\n$${{a}} \\div {{d}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "7|11|13"
+				},
+				{
+					"name": "a",
+					"expression": "10..99"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "I",
+					"expression": "eval:floor(a/d)"
+				},
+				{
+					"name": "c1",
+					"expression": "eval:mod(floor(a*10^1/d),10)"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:mod(floor(a*10^2/d),10)"
+				},
+				{
+					"name": "c3",
+					"expression": "eval:mod(floor(a*10^3/d),10)"
+				},
+				{
+					"name": "c4",
+					"expression": "eval:mod(floor(a*10^4/d),10)"
+				},
+				{
+					"name": "c5",
+					"expression": "eval:mod(floor(a*10^5/d),10)"
+				},
+				{
+					"name": "c6",
+					"expression": "eval:mod(floor(a*10^6/d),10)"
+				},
+				{
+					"name": "c7",
+					"expression": "eval:mod(floor(a*10^7/d),10)"
+				},
+				{
+					"name": "v",
+					"expression": "eval:round(a*10^k/d)/10^k;d"
+				},
+				{
+					"name": "H",
+					"expression": "eval:mod(floor(a*10^(k+1)/d),10)"
+				}
+			],
+			"conditions": ["mod(a,d)!=0", "mod(round(a*10^k/d),10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(a*10^k/d)/10^k;d}}",
+							"message": "Le chiffre {{if:k==0|des dixièmes|{{if:k==1|des centièmes|des millièmes}}}} est ${{H}}$ : $5$ ou plus, on arrondit au-dessus.",
+							"label": "Troncature"
+						},
+						{
+							"answer": "{{eval:round(a*10^(k+1)/d)/10^(k+1);d}}",
+							"message": "Tu as arrondi {{if:k==0|au dixième|{{if:k==1|au centième|au millième}}}} : on demande l'arrondi {{if:k==0|à l'unité|{{if:k==1|au dixième|au centième}}}}.",
+							"label": "Arrondi un rang trop loin"
+						},
+						{
+							"answer": "{{eval:round(a*10^(max(k-1,0))/d)/10^(max(k-1,0));d}}",
+							"message": "Tu as arrondi {{if:k==2|au dixième|à l'unité}} : on demande l'arrondi {{if:k==0|à l'unité|{{if:k==1|au dixième|au centième}}}}.",
+							"label": "Arrondi un rang trop tôt"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La division ne s'arrête pas : on regarde le chiffre juste après le rang demandé, celui {{if:k==0|des dixièmes|{{if:k==1|des centièmes|des millièmes}}}}.",
+					"Le chiffre {{if:k==0|des dixièmes|{{if:k==1|des centièmes|des millièmes}}}} est $\\textcolor{{{color:primary.1}}}{{{H}}}$ : {{if:H>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{a}} \\div {{d}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Repère le chiffre juste après le rang demandé : c'est lui qui décide si on arrondit au-dessus ou non."
 		}
 	],
 	"testSpecs": [
@@ -182,6 +270,155 @@
 			},
 			"description": "Erreur : 3,15",
 			"variationIndex": 2
+		},
+		{
+			"description": "F11 : 20 ÷ 7 au dixième, 2,9",
+			"variationIndex": 3,
+			"variables": {
+				"d": "7",
+				"a": "20",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}9"]
+		},
+		{
+			"description": "F11 : point décimal",
+			"variationIndex": 3,
+			"variables": {
+				"d": "7",
+				"a": "20",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2.9"]
+		},
+		{
+			"description": "F11 : troncature (2,8)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "7",
+				"a": "20",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le chiffre des centièmes est $5$ : $5$ ou plus, on arrondit au-dessus."
+			},
+			"answers": ["2{,}8"]
+		},
+		{
+			"description": "F11 : arrondi au centième (2,86)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "7",
+				"a": "20",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au centième : on demande l'arrondi au dixième."
+			},
+			"answers": ["2{,}86"]
+		},
+		{
+			"description": "F11 : arrondi à l'unité (3)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "7",
+				"a": "20",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à l'unité : on demande l'arrondi au dixième."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F11 : 40 ÷ 13 au centième, 3,08",
+			"variationIndex": 3,
+			"variables": {
+				"d": "13",
+				"a": "40",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}08"]
+		},
+		{
+			"description": "F11 : 40 ÷ 13, troncature (3,07)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "13",
+				"a": "40",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le chiffre des millièmes est $6$ : $5$ ou plus, on arrondit au-dessus."
+			},
+			"answers": ["3{,}07"]
+		},
+		{
+			"description": "F11 : 40 ÷ 13, au dixième (3,1)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "13",
+				"a": "40",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au dixième : on demande l'arrondi au centième."
+			},
+			"answers": ["3{,}1"]
+		},
+		{
+			"description": "F11 : 22 ÷ 7 à l'unité, 3",
+			"variationIndex": 3,
+			"variables": {
+				"d": "7",
+				"a": "22",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F11 : 22 ÷ 7 à l'unité, au dixième (3,1)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "7",
+				"a": "22",
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au dixième : on demande l'arrondi à l'unité."
+			},
+			"answers": ["3{,}1"]
+		},
+		{
+			"description": "F11 : 50 ÷ 11 à l'unité, 5",
+			"variationIndex": 3,
+			"variables": {
+				"d": "11",
+				"a": "50",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
 		}
 	]
 }
