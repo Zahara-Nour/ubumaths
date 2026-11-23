@@ -5,15 +5,13 @@ skill `idees-rubrique`. Relevé : [idees-3e-arithmetique-releve.md](idees-3e-ari
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, PR de rangement prête, pas encore ouverte._
+_Mis à jour le 2026-11-23, Q3 tranchée, PR de rangement en cours._
 
 - **État** : 6 brouillons en prod (créés par David) ; branche prête (id commités, migrations de
-  rangement et de contenu générées, tests d'intégration verts) · **Prochaine action** : réponse Q3
-  → `security-auditor`, ouvrir la PR, merger, `db:migrate` (4 conditions), puis relecture dans
-  `/dev/modeles?noeud=` · **En attente de David** : Q3 (F1 modèle neuf au lieu de 77ab770d,
-  puissances exigées) ; sous-notions choisies (voir historique) · **Pièges en cours** : réservation
-  de 77ab770d à lever si Q3 = oui · **Worktree / branche** : `ubumaths-wt-idees-3e-arithmetique`,
-  `feat/idees-3e-arithmetique-rangement`.
+  rangement et de contenu générées, tests d'intégration verts) · **Prochaine action** : ouvrir la
+  PR, merger, `db:migrate` (4 conditions), puis relecture dans `/dev/modeles?noeud=` ·
+  **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
+  `ubumaths-wt-idees-3e-arithmetique`, `feat/idees-3e-arithmetique-rangement`.
 
 ## Historique
 
@@ -81,3 +79,6 @@ _Mis à jour le 2026-11-23, PR de rangement prête, pas encore ouverte._
   (90dca27a +3 variations). Tests d'intégration verts.
 - Correctif de test : « un modèle absent parmi d'autres » échouait sur un lot d'un seul modèle publié
   (aucune assertion) ; sauté quand le lot a moins de deux modèles.
+- David suit mes recommandations : **Q3 oui** (F1 reste un modèle neuf, 77ab770d libéré dans le
+  tableau, commit direct sur `main`) ; sous-notions gardées telles que ci-dessus (F7 en division
+  euclidienne des Entiers).
