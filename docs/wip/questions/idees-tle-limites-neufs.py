@@ -3,8 +3,8 @@
 Phase 0 validée par David le 2026-11-22 (journal docs/wip/idees-tle-limites-progress.md, page à
 cocher https://claude.ai/artifact/1F96L4GrKY7ThQKZsvWoL7) : F1 (deux modèles de lecture sur
 courbe, Q1), F2 (composition), Q2 (quantité conjuguée, modèle sans point). F3 (tableau de
-variations d'une homographique) attend une décision : le bloc ```variation refuse de cacher une
-limite infinie.
+variations d'une homographique) a attendu l'outil n° 50 (limite cachée, #3027) ; écrit le
+2026-11-23.
 
 Grades T_SPE. Ni theme, ni domain, ni subdomain, ni id : le rangement (nœud du point + tag) se fera
 par migration, après la création en brouillon.
@@ -489,8 +489,192 @@ Q2 = modele(
     3, [Q2_A, Q2_B], SPECS_Q2)
 
 
-ecrire('f01a-lecture-limite-courbe-plus-infini', lecture_courbe('+'))
-ecrire('f01b-lecture-limite-courbe-moins-infini', lecture_courbe('-'))
-ecrire('f02-limite-par-composition', F2)
-ecrire('q02-quantite-conjuguee-sans-point', Q2)
-print('4 modèles écrits dans', DOSSIER)
+# =============================================================================================
+# F3 — TSPE-415 : les quatre limites d'une fonction homographique dans son tableau de variations.
+# Débloqué par l'outil n° 50 (#3027, limite cachée : `+inf: ?0, top`, `a: ||, ?-inf, ?+inf`).
+# Flèches et hauteurs données (les variations relèvent de la rubrique dérivation) ; les quatre
+# limites sont des cases, lues dans l'ordre du tableau : −∞, α à gauche, α à droite, +∞.
+# α ≠ 0 : x − α s'écrit toujours avec son terme constant.
+# =============================================================================================
+
+DEF_F3 = '\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}'
+CONSIGNE_F3 = ('Complète le tableau avec les limites de $f$ aux bornes de son ensemble de '
+               'définition.')
+SANS_SIGNE = ('Une limite infinie a toujours un signe : écris $+\\infty$ ou $-\\infty$.')
+
+
+def tableau_f3(gauche, droite, decroit, cache=True):
+    """Tableau de f sur ℝ \\ {α} ; decroit = condition du gabarit (f décroissante des deux côtés)."""
+    q = '?' if cache else ''
+    return bloc('variation', 'variable: x', 'domain: -inf, {{al}}, +inf', 'variation: f(x)',
+                '  -inf: ' + q + gauche + ', {{if:' + decroit + '|top|bottom}}',
+                '  {{al}}: ||, {{if:' + decroit + '|' + q + '-inf, ' + q + '+inf|' + q + '+inf, '
+                + q + '-inf}}',
+                '  +inf: ' + q + droite + ', {{if:' + decroit + '|bottom|top}}')
+
+
+def lim_f3(borne):
+    return '\\displaystyle\\lim_{x\\to ' + borne + '}f(x)'
+
+
+# F3 a : f(x) = k/(x − α). k > 0 : décroissante des deux côtés.
+F3_A = variation(
+    'Soit $f$ la fonction définie sur $' + DEF_F3 + '$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-al;+}}}$. '
+    'Voici son tableau de variations, sans ses limites.\n\n'
+    + tableau_f3('0', '0', 'k>0') + '\n\n' + CONSIGNE_F3,
+    [var('k', '1..6;±'), var('al', '-4..4')],
+    [
+        case('', [
+            erreur(MINF,
+                   'Tu as recopié la borne : en $-\\infty$, le numérateur reste égal à ${{k}}$ et le '
+                   'dénominateur devient très grand, donc le quotient se rapproche de $0$.',
+                   'Borne recopiée'),
+            erreur('{{k}}',
+                   'Le numérateur vaut ${{k}}$, mais il est divisé par un dénominateur qui tend vers '
+                   'l\'infini.', 'Numérateur recopié'),
+        ]),
+        case('', [
+            erreur('{{if:k>0|' + PINF + '|' + MINF + '}}',
+                   'Regarde le signe du dénominateur juste à gauche de ${{al}}$ : pour $x<{{al}}$, '
+                   '$x{{eval:-al;+}}$ est négatif.', 'Signe à gauche'),
+            erreur('inf', SANS_SIGNE, 'Infini sans signe'),
+            erreur('0',
+                   'Le dénominateur tend vers $0$, le numérateur non : le quotient devient très grand '
+                   'en valeur absolue, il ne tend pas vers $0$.', 'Quotient par 0 pris pour 0'),
+        ]),
+        case('', [
+            erreur('{{if:k>0|' + MINF + '|' + PINF + '}}',
+                   'Regarde le signe du dénominateur juste à droite de ${{al}}$ : pour $x>{{al}}$, '
+                   '$x{{eval:-al;+}}$ est positif.', 'Signe à droite'),
+            erreur('inf', SANS_SIGNE, 'Infini sans signe'),
+            erreur('0',
+                   'Le dénominateur tend vers $0$, le numérateur non : le quotient devient très grand '
+                   'en valeur absolue, il ne tend pas vers $0$.', 'Quotient par 0 pris pour 0'),
+        ]),
+        case('', [
+            erreur(PINF,
+                   'Tu as recopié la borne : en $+\\infty$, le numérateur reste égal à ${{k}}$ et le '
+                   'dénominateur devient très grand, donc le quotient se rapproche de $0$.',
+                   'Borne recopiée'),
+            erreur('{{k}}',
+                   'Le numérateur vaut ${{k}}$, mais il est divisé par un dénominateur qui tend vers '
+                   'l\'infini.', 'Numérateur recopié'),
+        ]),
+    ],
+    [
+        'En $-\\infty$ et en $+\\infty$, le numérateur vaut ${{k}}$ et le dénominateur tend vers '
+        'l\'infini : $' + lim_f3('-\\infty') + '=' + lim_f3('+\\infty') + '=' + PRIMAIRE + '{0}$.',
+        'En ${{al}}$, le numérateur vaut ${{k}}$ et le dénominateur tend vers $0$ : '
+        'négatif à gauche de ${{al}}$, positif à droite.',
+        'Le numérateur est {{if:k>0|positif|négatif}} : à gauche de ${{al}}$ (pour $x<{{al}}$), '
+        '$f(x)$ tend vers $' + PRIMAIRE + '{ {{if:k>0|-|+}}\\infty }$ ; à droite (pour '
+        '$x>{{al}}$), vers $' + PRIMAIRE + '{ {{if:k>0|+|-}}\\infty }$.',
+        tableau_f3('0', '0', 'k>0', cache=False),
+    ],
+    'En $\\pm\\infty$ : que devient un nombre fixe divisé par un nombre de plus en plus grand ? '
+    'En ${{al}}$ : cherche le signe de $x{{eval:-al;+}}$ juste à gauche et juste à droite.',
+    ['al != 0'],
+)
+
+# F3 b : f(x) = (ax + b)/(cx + d), d = −cα, c ∈ {1, 2}, a/c entier ou demi (gcd(a, c) = 1).
+# f(x) = a/c + S/(c(x − α)) avec S = aα + b ≠ 0 (racine du numérateur ≠ α) : S > 0 → décroissante.
+L_F3 = '{{if:c==1|{{a}}|{{if:a<0|-}}\\frac{ {{eval:abs(a)}} }{2}}}'
+F3_B = variation(
+    'Soit $f$ la fonction définie sur $' + DEF_F3 + '$ par $f(x)=\\dfrac{' + coef('a')
+    + 'x{{b;+}}}{ {{if:c==2|2}}x{{d;+}}}$. Voici son tableau de variations, sans ses limites.\n\n'
+    + tableau_f3(L_F3, L_F3, 'S>0') + '\n\n' + CONSIGNE_F3,
+    [var('c', '1|2'), var('a', '1..7;±'), var('al', '-4..4'), var('b', '1..9;±'),
+     var('d', 'eval:-c*al'), var('S', 'eval:a*al+b')],
+    [
+        case('', [
+            erreur(MINF,
+                   'Le numérateur et le dénominateur tendent tous deux vers l\'infini : c\'est une '
+                   'forme indéterminée, factorise par $x$ avant de conclure.', 'Forme indéterminée'),
+            erreur('\\frac{ {{b}} }{ {{d}} }',
+                   'Tu as divisé les termes constants : en l\'infini, ce sont les termes en $x$ qui '
+                   'l\'emportent.', 'Termes constants'),
+        ]),
+        case('', [
+            erreur('{{if:S>0|' + PINF + '|' + MINF + '}}',
+                   'Le numérateur tend vers ${{S}}$ ; regarde le signe du dénominateur juste à gauche '
+                   'de ${{al}}$ : il est négatif.', 'Signe à gauche'),
+            erreur('inf', SANS_SIGNE, 'Infini sans signe'),
+        ]),
+        case('', [
+            erreur('{{if:S>0|' + MINF + '|' + PINF + '}}',
+                   'Le numérateur tend vers ${{S}}$ ; regarde le signe du dénominateur juste à droite '
+                   'de ${{al}}$ : il est positif.', 'Signe à droite'),
+            erreur('inf', SANS_SIGNE, 'Infini sans signe'),
+        ]),
+        case('', [
+            erreur(PINF,
+                   'Le numérateur et le dénominateur tendent tous deux vers l\'infini : c\'est une '
+                   'forme indéterminée, factorise par $x$ avant de conclure.', 'Forme indéterminée'),
+            erreur('\\frac{ {{b}} }{ {{d}} }',
+                   'Tu as divisé les termes constants : en l\'infini, ce sont les termes en $x$ qui '
+                   'l\'emportent.', 'Termes constants'),
+        ]),
+    ],
+    [
+        'En $\\pm\\infty$, on factorise par $x$ : $f(x)=\\dfrac{ {{a}}{{if:b>0|+|-}}\\frac{ '
+        '{{eval:abs(b)}} }{x} }{ {{c}}{{if:d>0|+|-}}\\frac{ {{eval:abs(d)}} }{x} }$, et les '
+        'fractions en $\\frac{1}{x}$ tendent vers $0$. '
+        'Donc $' + lim_f3('-\\infty') + '=' + lim_f3('+\\infty') + '=' + PRIMAIRE + '{' + L_F3
+        + '}$.',
+        'En ${{al}}$, le numérateur tend vers ${{a}}\\times{{al;()}}{{b;+}}={{S}}$ '
+        'et le dénominateur tend vers $0$ : négatif à gauche de ${{al}}$, positif à droite.',
+        'Donc, à gauche de ${{al}}$ (pour $x<{{al}}$), $f(x)$ tend vers $' + PRIMAIRE
+        + '{ {{if:S>0|-|+}}\\infty }$ ; à droite (pour $x>{{al}}$), vers $' + PRIMAIRE
+        + '{ {{if:S>0|+|-}}\\infty }$.',
+        tableau_f3(L_F3, L_F3, 'S>0', cache=False),
+    ],
+    'En $\\pm\\infty$ : factorise le numérateur et le dénominateur par $x$. En ${{al}}$ : calcule '
+    'le numérateur en ${{al}}$, puis cherche le signe du dénominateur de chaque côté.',
+    ['al != 0', 'gcd(a,c)==1', 'S != 0'],
+)
+
+V_A = {'k': '3', 'al': '2'}
+V_A2 = {'k': '-4', 'al': '-1'}
+# b : (3x + 1)/(2x − 4), α = 2, S = 7 > 0 ; (−x + 5)/(x + 3), α = −3, S = 8 > 0 ;
+# (x − 6)/(x − 1), α = 1, S = −5 < 0
+V_B = {'c': '2', 'a': '3', 'al': '2', 'b': '1', 'd': '-4', 'S': '7'}
+V_B2 = {'c': '1', 'a': '-1', 'al': '-3', 'b': '5', 'd': '3', 'S': '8'}
+V_B3 = {'c': '1', 'a': '1', 'al': '1', 'b': '-6', 'd': '-1', 'S': '-5'}
+SPECS_F3 = [
+    spec('a : 3/(x − 2)', 0, V_A, 'correct', ['0', MINF, PINF, '0']),
+    spec('a : −4/(x + 1)', 0, V_A2, 'correct', ['0', PINF, MINF, '0']),
+    spec('a : −∞ et +∞ en ∞ (bornes recopiées)', 0, V_A, 'incorrect', [MINF, MINF, PINF, PINF]),
+    spec('a : signes échangés en α', 0, V_A, 'incorrect', ['0', PINF, MINF, '0']),
+    spec('a : ∞ sans signe', 0, V_A, 'incorrect', ['0', '\\infty', PINF, '0']),
+    spec('a : 0 en α', 0, V_A, 'incorrect', ['0', MINF, '0', '0']),
+    spec('b : (3x + 1)/(2x − 4)', 1, V_B, 'correct', ['\\frac{3}{2}', MINF, PINF, '\\frac{3}{2}']),
+    spec('b : 3/2 écrit 1,5', 1, V_B, 'correct', ['1.5', MINF, PINF, '1.5']),
+    spec('b : (−x + 5)/(x + 3)', 1, V_B2, 'correct', ['-1', MINF, PINF, '-1']),
+    spec('b : (x − 6)/(x − 1)', 1, V_B3, 'correct', ['1', PINF, MINF, '1']),
+    spec('b : termes constants', 1, V_B, 'incorrect', ['-\\frac{1}{4}', MINF, PINF, '\\frac{3}{2}']),
+    spec('b : forme indéterminée prise pour −∞', 1, V_B, 'incorrect',
+         [MINF, MINF, PINF, '\\frac{3}{2}']),
+    spec('b : signes échangés en α', 1, V_B3, 'incorrect', ['1', MINF, PINF, '1']),
+]
+
+F3 = modele(
+    'Compléter les limites dans le tableau de variations d\'une fonction homographique',
+    'Les quatre limites de k/(x − α) ou de (ax + b)/(cx + d) dans son tableau de variations : en '
+    '±∞ et de part et d\'autre de la valeur interdite (pièges : borne recopiée, termes constants, '
+    'signe du dénominateur, ∞ sans signe)',
+    2, [F3_A, F3_B], SPECS_F3)
+
+
+# Les quatre premiers sont en prod et leurs fichiers ont changé depuis (mise en forme, rangement) :
+# un nom en second argument n'écrit que lui (F3 : f03-limites-tableau-homographique).
+MODELES = {
+    'f01a-lecture-limite-courbe-plus-infini': lambda: lecture_courbe('+'),
+    'f01b-lecture-limite-courbe-moins-infini': lambda: lecture_courbe('-'),
+    'f02-limite-par-composition': lambda: F2,
+    'f03-limites-tableau-homographique': lambda: F3,
+    'q02-quantite-conjuguee-sans-point': lambda: Q2,
+}
+choisis = sys.argv[2:] or list(MODELES)
+for nom in choisis:
+    ecrire(nom, MODELES[nom]())
+print(len(choisis), 'modèle(s) écrit(s) dans', DOSSIER)
