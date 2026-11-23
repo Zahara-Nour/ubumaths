@@ -96,6 +96,8 @@ export async function stepsAs(answer: Answer, choice: 'Résumé' | 'Détaillé')
 async function shownSteps(answer: Answer): Promise<string> {
 	const box = answer.line.locator('.etapes');
 	await expect(box).toBeVisible();
+	// Les étapes se chargent au premier dépliage (`StepsOnDemand`) : attendre la fin
+	await expect(box.locator('p.chargement')).toHaveCount(0, { timeout: 30 * 1000 });
 	const text = await box.evaluate((element) => {
 		const copy = element.cloneNode(true) as HTMLElement;
 		for (const math of copy.querySelectorAll('math-span')) {

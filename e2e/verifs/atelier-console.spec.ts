@@ -179,7 +179,8 @@ test('#1292, #1313, #1318 — « Résumé / Détaillé » : ligne par ligne, ret
 	// Le résumé retire les explications, pas les étapes ni la réponse
 	expect(summary.length).toBeLessThan(detailed.length);
 	expect(stepNumbers(summary)).toEqual(stepNumbers(detailed));
-	expect(stepNumbers(summary)).toHaveLength(3);
+	// #2360 : une 4e étape conclut sur l'ensemble S
+	expect(stepNumbers(summary)).toHaveLength(4);
 	expect(isSubsequence(summary, detailed)).toBe(true);
 	expect(alignedBlocks(summary)).toEqual(alignedBlocks(detailed));
 	// La réponse affichée de la ligne n'a pas changé
@@ -509,8 +510,9 @@ test('#1807 — « Simplifier pour x ≠ … » et « Sans simplifier »', async
 	expectLatex(developed, '-x + \\dfrac{x}{x}');
 	expect(await simplifyFor(developed, 'x ≠ 0')).toContain(normalizeLatex('-x + 1'));
 
+	// #1819 : ln(x²) → 2 ln x a son bouton, pour x > 0
 	const log = await calc(page, '.simplifier ln(x^2)');
-	expect(await log.line.getByRole('button', { name: /Simplifier pour/ }).count()).toBe(0);
+	await expect(log.line.getByRole('button', { name: 'Simplifier pour x > 0' })).toBeVisible();
 });
 
 test('#1811 — réglage « Simplifications qui changent le domaine »', async ({ page }) => {
