@@ -6,6 +6,11 @@
 	"level": 4,
 	"delay": 20,
 	"status": "published",
+	"options": {
+		"constraints": {
+			"reducedFractions": "strict"
+		}
+	},
 	"variations": [
 		{
 			"blanks": [
@@ -229,8 +234,8 @@
 		{
 			"answers": ["\\frac{4}{6}"],
 			"expected": {
-				"status": "unoptimal_form",
-				"constraintViolations": ["reducedFractions"]
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
 			},
 			"variables": {
 				"a": "6",
@@ -305,8 +310,8 @@
 				"q": "5"
 			},
 			"expected": {
-				"status": "unoptimal_form",
-				"constraintViolations": ["reducedFractions"]
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
 			},
 			"answers": ["\\frac{33}{15}"]
 		},
@@ -368,8 +373,8 @@
 				"q": "17"
 			},
 			"expected": {
-				"status": "unoptimal_form",
-				"constraintViolations": ["reducedFractions"]
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
 			},
 			"answers": ["\\frac{14}{34}"]
 		},
@@ -453,8 +458,8 @@
 				"q": "5"
 			},
 			"expected": {
-				"status": "unoptimal_form",
-				"constraintViolations": ["reducedFractions"]
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
 			},
 			"answers": ["\\frac{21}{15}"]
 		},

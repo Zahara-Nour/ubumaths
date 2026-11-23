@@ -1,0 +1,564 @@
+{
+	"id": "8166ccbf-cdc7-4d47-aa6f-8db2cbd80267",
+	"title": "Lire et écrire un nombre décimal (jusqu'à 999 999,999)",
+	"description": "Écrire en chiffres un décimal donné en lettres, avec « virgule » ou « … unités et … millièmes », jusqu'à 999 999,999 ; compléter son écriture en lettres avec des étiquettes (pièges : zéros oubliés après « mille » ou après la virgule, « mille » écrit 000, un rang de trop, accord de vingt et cent)",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris en chiffres le nombre « **{{if:m==1|mille|{{if:m==2|deux-mille|{{if:m==7|sept-mille|{{if:m==15|quinze-mille|{{if:m==21|vingt-et-un-mille|{{if:m==40|quarante-mille|{{if:m==80|quatre-vingt-mille|{{if:m==96|quatre-vingt-seize-mille|{{if:m==105|cent-cinq-mille|{{if:m==200|deux-cent-mille|{{if:m==312|trois-cent-douze-mille|{{if:m==480|quatre-cent-quatre-vingt-mille|{{if:m==700|sept-cent-mille|neuf-cent-quatre-vingt-dix-neuf-mille}}}}}}}}}}}}}}}}}}}}}}}}}}{{if:c==0||{{if:c==5|-cinq|{{if:c==18|-dix-huit|{{if:c==70|-soixante-dix|{{if:c==80|-quatre-vingts|{{if:c==91|-quatre-vingt-onze|{{if:c==100|-cent|{{if:c==204|-deux-cent-quatre|{{if:c==380|-trois-cent-quatre-vingts|{{if:c==500|-cinq-cents|{{if:c==671|-six-cent-soixante-et-onze|-neuf-cent-quatre-vingt-dix-neuf}}}}}}}}}}}}}}}}}}}}}} virgule {{if:k==1003|trois|{{if:k==1008|huit|{{if:k==2005|zéro cinq|{{if:k==2016|seize|{{if:k==2047|quarante-sept|{{if:k==2071|soixante-et-onze|{{if:k==3007|zéro zéro sept|{{if:k==3025|zéro vingt-cinq|{{if:k==3108|cent-huit|{{if:k==3802|huit-cent-deux|neuf-cent-quatre-vingt-dix-neuf}}}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2|7|15|21|40|80|96|105|200|312|480|700|999"
+				},
+				{
+					"name": "c",
+					"expression": "0|5|18|70|80|91|100|204|380|500|671|999"
+				},
+				{
+					"name": "k",
+					"expression": "1003|1008|2005|2016|2047|2071|3007|3025|3108|3802|3999"
+				},
+				{
+					"name": "p",
+					"expression": "eval:floor(k/1000)"
+				},
+				{
+					"name": "n",
+					"expression": "eval:mod(k,1000)"
+				},
+				{
+					"name": "x",
+					"expression": "eval:1000*m+c+n/10^p;d"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m*10^(1+min(floor(c/10),1)+min(floor(c/100),1))+c+n/10^p;d}}",
+							"message": "Il manque des zéros dans la partie entière : après « mille », il faut toujours trois chiffres (centaines, dizaines, unités).",
+							"label": "Zéros de la partie entière oubliés"
+						},
+						{
+							"answer": "{{eval:m*10^(3+(1+min(floor(c/10),1)+min(floor(c/100),1)))+c+n/10^p;d}}",
+							"message": "Tu as écrit « mille » avec ses trois zéros, puis la suite à côté : ce qui suit « mille » prend la place de ces trois zéros.",
+							"label": "« mille » écrit 000, suite collée"
+						},
+						{
+							"answer": "{{eval:1000*m+c+n/10^(1+min(floor(n/10),1)+min(floor(n/100),1));d}}",
+							"message": "Il manque un zéro après la virgule : un « zéro » qui se dit s'écrit aussi.",
+							"label": "Zéro de la partie décimale oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La partie entière.** « {{if:m==1|mille|{{if:m==2|deux-mille|{{if:m==7|sept-mille|{{if:m==15|quinze-mille|{{if:m==21|vingt-et-un-mille|{{if:m==40|quarante-mille|{{if:m==80|quatre-vingt-mille|{{if:m==96|quatre-vingt-seize-mille|{{if:m==105|cent-cinq-mille|{{if:m==200|deux-cent-mille|{{if:m==312|trois-cent-douze-mille|{{if:m==480|quatre-cent-quatre-vingt-mille|{{if:m==700|sept-cent-mille|neuf-cent-quatre-vingt-dix-neuf-mille}}}}}}}}}}}}}}}}}}}}}}}}}}{{if:c==0||{{if:c==5|-cinq|{{if:c==18|-dix-huit|{{if:c==70|-soixante-dix|{{if:c==80|-quatre-vingts|{{if:c==91|-quatre-vingt-onze|{{if:c==100|-cent|{{if:c==204|-deux-cent-quatre|{{if:c==380|-trois-cent-quatre-vingts|{{if:c==500|-cinq-cents|{{if:c==671|-six-cent-soixante-et-onze|-neuf-cent-quatre-vingt-dix-neuf}}}}}}}}}}}}}}}}}}}}}} » : ${{m}}$ millier{{if:m>1|s|}}{{if:c>0| et ${{c}}$ unité{{if:c>1|s|}}|}} ; après « mille », trois chiffres (centaines, dizaines, unités) : ${{m}}\\,{{if:3==3|{{if:c<10|00|{{if:c<100|0|}}}}|{{if:3==2|{{if:c<10|0|}}|}}}}{{c}}$.",
+					"**Après la virgule.** « {{if:k==1003|trois|{{if:k==1008|huit|{{if:k==2005|zéro cinq|{{if:k==2016|seize|{{if:k==2047|quarante-sept|{{if:k==2071|soixante-et-onze|{{if:k==3007|zéro zéro sept|{{if:k==3025|zéro vingt-cinq|{{if:k==3108|cent-huit|{{if:k==3802|huit-cent-deux|neuf-cent-quatre-vingt-dix-neuf}}}}}}}}}}}}}}}}}}}} » : on écrit ${{if:p==3|{{if:n<10|00|{{if:n<100|0|}}}}|{{if:p==2|{{if:n<10|0|}}|}}}}{{n}}$ après la virgule (un « zéro » qui se dit s'écrit aussi).",
+					"$$\\textcolor{{{color:primary.0}}}{{{m}}\\,{{if:3==3|{{if:c<10|00|{{if:c<100|0|}}}}|{{if:3==2|{{if:c<10|0|}}|}}}}{{c}}{,}{{if:p==3|{{if:n<10|00|{{if:n<100|0|}}}}|{{if:p==2|{{if:n<10|0|}}|}}}}{{n}}}$$"
+				]
+			},
+			"hint": "Coupe le nom au mot « mille » : ce qui est avant donne les milliers, ce qui suit remplit les trois chiffres des centaines, des dizaines et des unités. Après la virgule, écris les chiffres dans l'ordre où on les dit."
+		},
+		{
+			"statement": "Écris en chiffres le nombre « **{{if:m==1|mille|{{if:m==2|deux-mille|{{if:m==7|sept-mille|{{if:m==15|quinze-mille|{{if:m==21|vingt-et-un-mille|{{if:m==40|quarante-mille|{{if:m==80|quatre-vingt-mille|{{if:m==96|quatre-vingt-seize-mille|{{if:m==105|cent-cinq-mille|{{if:m==200|deux-cent-mille|{{if:m==312|trois-cent-douze-mille|{{if:m==480|quatre-cent-quatre-vingt-mille|{{if:m==700|sept-cent-mille|neuf-cent-quatre-vingt-dix-neuf-mille}}}}}}}}}}}}}}}}}}}}}}}}}}{{if:c==0||{{if:c==5|-cinq|{{if:c==18|-dix-huit|{{if:c==70|-soixante-dix|{{if:c==80|-quatre-vingts|{{if:c==91|-quatre-vingt-onze|{{if:c==100|-cent|{{if:c==204|-deux-cent-quatre|{{if:c==380|-trois-cent-quatre-vingts|{{if:c==500|-cinq-cents|{{if:c==671|-six-cent-soixante-et-onze|-neuf-cent-quatre-vingt-dix-neuf}}}}}}}}}}}}}}}}}}}}}} unités et {{if:k==1003|trois dixièmes|{{if:k==1009|neuf dixièmes|{{if:k==2005|cinq centièmes|{{if:k==2023|vingt-trois centièmes|{{if:k==2047|quarante-sept centièmes|{{if:k==2081|quatre-vingt-un centièmes|{{if:k==3007|sept millièmes|{{if:k==3023|vingt-trois millièmes|{{if:k==3065|soixante-cinq millièmes|{{if:k==3108|cent-huit millièmes|{{if:k==3205|deux-cent-cinq millièmes|neuf-cent-quatre-vingt-dix-neuf millièmes}}}}}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2|7|15|21|40|80|96|105|200|312|480|700|999"
+				},
+				{
+					"name": "c",
+					"expression": "0|5|18|70|80|91|100|204|380|500|671|999"
+				},
+				{
+					"name": "k",
+					"expression": "1003|1009|2005|2023|2047|2081|3007|3023|3065|3108|3205|3999"
+				},
+				{
+					"name": "p",
+					"expression": "eval:floor(k/1000)"
+				},
+				{
+					"name": "n",
+					"expression": "eval:mod(k,1000)"
+				},
+				{
+					"name": "x",
+					"expression": "eval:1000*m+c+n/10^p;d"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1000*m+c+n/10^(1+min(floor(n/10),1)+min(floor(n/100),1));d}}",
+							"message": "Ce sont des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} : il faut ${{p}}$ chiffre{{if:p>1|s|}} après la virgule, complète avec des zéros.",
+							"label": "Zéros après la virgule oubliés"
+						},
+						{
+							"answer": "{{eval:1000*m+c+n/10^(p+1);d}}",
+							"message": "Tu as mis un chiffre de trop après la virgule : des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}, c'est ${{p}}$ chiffre{{if:p>1|s|}} après la virgule.",
+							"label": "Un rang de trop"
+						},
+						{
+							"answer": "{{eval:m*10^(1+min(floor(c/10),1)+min(floor(c/100),1))+c+n/10^p;d}}",
+							"message": "Il manque des zéros dans la partie entière : après « mille », il faut toujours trois chiffres (centaines, dizaines, unités).",
+							"label": "Zéros de la partie entière oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La partie entière.** « {{if:m==1|mille|{{if:m==2|deux-mille|{{if:m==7|sept-mille|{{if:m==15|quinze-mille|{{if:m==21|vingt-et-un-mille|{{if:m==40|quarante-mille|{{if:m==80|quatre-vingt-mille|{{if:m==96|quatre-vingt-seize-mille|{{if:m==105|cent-cinq-mille|{{if:m==200|deux-cent-mille|{{if:m==312|trois-cent-douze-mille|{{if:m==480|quatre-cent-quatre-vingt-mille|{{if:m==700|sept-cent-mille|neuf-cent-quatre-vingt-dix-neuf-mille}}}}}}}}}}}}}}}}}}}}}}}}}}{{if:c==0||{{if:c==5|-cinq|{{if:c==18|-dix-huit|{{if:c==70|-soixante-dix|{{if:c==80|-quatre-vingts|{{if:c==91|-quatre-vingt-onze|{{if:c==100|-cent|{{if:c==204|-deux-cent-quatre|{{if:c==380|-trois-cent-quatre-vingts|{{if:c==500|-cinq-cents|{{if:c==671|-six-cent-soixante-et-onze|-neuf-cent-quatre-vingt-dix-neuf}}}}}}}}}}}}}}}}}}}}}} » : ${{m}}$ millier{{if:m>1|s|}}{{if:c>0| et ${{c}}$ unité{{if:c>1|s|}}|}} ; après « mille », trois chiffres (centaines, dizaines, unités) : ${{m}}\\,{{if:3==3|{{if:c<10|00|{{if:c<100|0|}}}}|{{if:3==2|{{if:c<10|0|}}|}}}}{{c}}$.",
+					"**Après la virgule.** Des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}} : ${{p}}$ chiffre{{if:p>1|s|}} après la virgule (dixièmes, centièmes, millièmes) ; ${{n}}$ {{if:p==1|dixième|{{if:p==2|centième|millième}}}}{{if:n>1|s|}} sur ${{p}}$ chiffre{{if:p>1|s|}} : ${{if:p==3|{{if:n<10|00|{{if:n<100|0|}}}}|{{if:p==2|{{if:n<10|0|}}|}}}}{{n}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{m}}\\,{{if:3==3|{{if:c<10|00|{{if:c<100|0|}}}}|{{if:3==2|{{if:c<10|0|}}|}}}}{{c}}{,}{{if:p==3|{{if:n<10|00|{{if:n<100|0|}}}}|{{if:p==2|{{if:n<10|0|}}|}}}}{{n}}}$$"
+				]
+			},
+			"hint": "Coupe le nom au mot « mille » pour la partie entière. Après la virgule, des dixièmes prennent un chiffre, des centièmes deux, des millièmes trois : complète avec des zéros si besoin."
+		},
+		{
+			"statement": "Complète l'écriture en lettres de ce nombre avec les étiquettes.\n\n```trous\n{{if:t==0|$2\\,080{,}5$ se lit deux-[mille]-quatre-[vingts] unités et cinq [dixièmes].|{{if:t==1|$300\\,400{,}07$ se lit trois-[cent]-[mille]-quatre-[cents] unités et sept [centièmes].|{{if:t==2|$80\\,000{,}045$ se lit quatre-[vingt]-[mille] unités et quarante-cinq [millièmes].|{{if:t==3|$1\\,200{,}3$ se lit [mille]-deux-[cents] unités et trois [dixièmes].|{{if:t==4|$71\\,081{,}61$ se lit soixante-[et]-onze-mille-quatre-[vingt]-un unités et soixante-[et]-un [centièmes].|{{if:t==5|$500\\,200{,}009$ se lit cinq-[cent]-[mille]-deux-[cents] unités et neuf [millièmes].|{{if:t==6|$40\\,280{,}08$ se lit quarante-[mille]-deux-[cent]-quatre-[vingts] unités et huit [centièmes].|{{if:t==7|$6\\,100{,}25$ se lit six-[mille]-[cent] unités et vingt-cinq [centièmes].|{{if:t==8|$200\\,080{,}3$ se lit deux-[cent]-[mille]-quatre-[vingts] unités et trois [dixièmes].|$21\\,300{,}006$ se lit vingt-[et]-un-[mille]-trois-[cents] unités et six [millièmes].}}}}}}}}}}}}}}}}}}\n{{if:t==0|intrus: milles ; vingt ; centièmes|{{if:t==1|intrus: milles ; dixièmes ; millièmes|{{if:t==2|intrus: vingts ; milles ; centièmes|{{if:t==3|intrus: milles ; cent ; centièmes|{{if:t==4|intrus: vingts ; dixièmes ; millièmes|{{if:t==5|intrus: milles ; centièmes ; dixièmes|{{if:t==6|intrus: milles ; cents ; vingt ; dixièmes|{{if:t==7|intrus: milles ; cents ; millièmes|{{if:t==8|intrus: cents ; milles ; vingt ; centièmes|intrus: milles ; cent ; centièmes}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**La règle.** Tous les mots sont reliés par des traits d'union ; « mille » ne prend jamais de s ; « vingt » et « cent » prennent un s seulement quand ils sont multipliés et terminent le nombre (quatre-vingts, deux-cents, mais quatre-vingt-un, deux-cent-mille) ; « et » s'écrit dans 21, 31, 41, 51, 61 et 71. Après la virgule, le dernier chiffre donne le rang : un chiffre, des dixièmes ; deux, des centièmes ; trois, des millièmes.",
+					"On écrit : **{{if:t==0|deux-mille-quatre-vingts unités et cinq dixièmes|{{if:t==1|trois-cent-mille-quatre-cents unités et sept centièmes|{{if:t==2|quatre-vingt-mille unités et quarante-cinq millièmes|{{if:t==3|mille-deux-cents unités et trois dixièmes|{{if:t==4|soixante-et-onze-mille-quatre-vingt-un unités et soixante-et-un centièmes|{{if:t==5|cinq-cent-mille-deux-cents unités et neuf millièmes|{{if:t==6|quarante-mille-deux-cent-quatre-vingts unités et huit centièmes|{{if:t==7|six-mille-cent unités et vingt-cinq centièmes|{{if:t==8|deux-cent-mille-quatre-vingts unités et trois dixièmes|vingt-et-un-mille-trois-cents unités et six millièmes}}}}}}}}}}}}}}}}}}**."
+				]
+			},
+			"hint": "« vingt » et « cent » ne prennent un s que s'ils sont multipliés et terminent le nombre ; « mille » ne prend jamais de s. Compte les chiffres après la virgule pour trouver le rang."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 305 080,05",
+			"variationIndex": 0,
+			"variables": {
+				"m": "305",
+				"c": "80",
+				"k": "2005",
+				"p": "2",
+				"n": "5",
+				"x": "305080.05"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["305\\,080{,}05"]
+		},
+		{
+			"description": "v0 : virgule simple",
+			"variationIndex": 0,
+			"variables": {
+				"m": "305",
+				"c": "80",
+				"k": "2005",
+				"p": "2",
+				"n": "5",
+				"x": "305080.05"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["305\\,080,05"]
+		},
+		{
+			"description": "v0 : sans espace",
+			"variationIndex": 0,
+			"variables": {
+				"m": "305",
+				"c": "80",
+				"k": "2005",
+				"p": "2",
+				"n": "5",
+				"x": "305080.05"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["305080,05"]
+		},
+		{
+			"description": "v0 : zéros de la partie entière oubliés (30 580,05)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "305",
+				"c": "80",
+				"k": "2005",
+				"p": "2",
+				"n": "5",
+				"x": "305080.05"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque des zéros dans la partie entière : après « mille », il faut toujours trois chiffres (centaines, dizaines, unités)."
+			},
+			"answers": ["30\\,580,05"]
+		},
+		{
+			"description": "v0 : « mille » écrit 000 (30 500 080,05)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "305",
+				"c": "80",
+				"k": "2005",
+				"p": "2",
+				"n": "5",
+				"x": "305080.05"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit « mille » avec ses trois zéros, puis la suite à côté : ce qui suit « mille » prend la place de ces trois zéros."
+			},
+			"answers": ["30\\,500\\,080,05"]
+		},
+		{
+			"description": "v0 : zéro décimal oublié (305 080,5)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "305",
+				"c": "80",
+				"k": "2005",
+				"p": "2",
+				"n": "5",
+				"x": "305080.05"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque un zéro après la virgule : un « zéro » qui se dit s'écrit aussi."
+			},
+			"answers": ["305\\,080,5"]
+		},
+		{
+			"description": "v0 : fraction refusée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "305",
+				"c": "80",
+				"k": "2005",
+				"p": "2",
+				"n": "5",
+				"x": "305080.05"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{30\\,508\\,005}{100}"]
+		},
+		{
+			"description": "v0 : 2 005,3",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"c": "5",
+				"k": "1003",
+				"p": "1",
+				"n": "3",
+				"x": "2005.3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2\\,005,3"]
+		},
+		{
+			"description": "v0 : 2 005,3 zéros oubliés (25,3)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"c": "5",
+				"k": "1003",
+				"p": "1",
+				"n": "3",
+				"x": "2005.3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque des zéros dans la partie entière : après « mille », il faut toujours trois chiffres (centaines, dizaines, unités)."
+			},
+			"answers": ["25,3"]
+		},
+		{
+			"description": "v1 : 40 018,007",
+			"variationIndex": 1,
+			"variables": {
+				"m": "40",
+				"c": "18",
+				"k": "3007",
+				"p": "3",
+				"n": "7",
+				"x": "40018.007"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40\\,018,007"]
+		},
+		{
+			"description": "v1 : zéros décimaux oubliés (40 018,7)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "40",
+				"c": "18",
+				"k": "3007",
+				"p": "3",
+				"n": "7",
+				"x": "40018.007"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont des millièmes : il faut $3$ chiffres après la virgule, complète avec des zéros."
+			},
+			"answers": ["40\\,018,7"]
+		},
+		{
+			"description": "v1 : un rang de trop (40 018,000 7)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "40",
+				"c": "18",
+				"k": "3007",
+				"p": "3",
+				"n": "7",
+				"x": "40018.007"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis un chiffre de trop après la virgule : des millièmes, c'est $3$ chiffres après la virgule."
+			},
+			"answers": ["40\\,018,0007"]
+		},
+		{
+			"description": "v1 : zéros de la partie entière oubliés (4 018,007)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "40",
+				"c": "18",
+				"k": "3007",
+				"p": "3",
+				"n": "7",
+				"x": "40018.007"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque des zéros dans la partie entière : après « mille », il faut toujours trois chiffres (centaines, dizaines, unités)."
+			},
+			"answers": ["4\\,018,007"]
+		},
+		{
+			"description": "v1 : 999 999,999",
+			"variationIndex": 1,
+			"variables": {
+				"m": "999",
+				"c": "999",
+				"k": "3999",
+				"p": "3",
+				"n": "999",
+				"x": "999999.999"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["999\\,999,999"]
+		},
+		{
+			"description": "v1 : 15 671,23",
+			"variationIndex": 1,
+			"variables": {
+				"m": "15",
+				"c": "671",
+				"k": "2023",
+				"p": "2",
+				"n": "23",
+				"x": "15671.23"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15\\,671,23"]
+		},
+		{
+			"description": "v1 : 15 671,023",
+			"variationIndex": 1,
+			"variables": {
+				"m": "15",
+				"c": "671",
+				"k": "2023",
+				"p": "2",
+				"n": "23",
+				"x": "15671.23"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis un chiffre de trop après la virgule : des centièmes, c'est $2$ chiffres après la virgule."
+			},
+			"answers": ["15\\,671,023"]
+		},
+		{
+			"description": "v2 : deux-mille-quatre-vingts unités et cinq dixièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1"]
+		},
+		{
+			"description": "v2 : trois-cent-mille-quatre-cents unités et sept centièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "5", "1", "2"]
+		},
+		{
+			"description": "v2 : quatre-vingt-mille unités et quarante-cinq millièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1"]
+		},
+		{
+			"description": "v2 : mille-deux-cents unités et trois dixièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1"]
+		},
+		{
+			"description": "v2 : soixante-et-onze-mille-quatre-vingt-un unités et soixante-et-un centièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "5", "1"]
+		},
+		{
+			"description": "v2 : cinq-cent-mille-deux-cents unités et neuf millièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "5", "1", "2"]
+		},
+		{
+			"description": "v2 : quarante-mille-deux-cent-quatre-vingts unités et huit centièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7", "6", "4", "1"]
+		},
+		{
+			"description": "v2 : six-mille-cent unités et vingt-cinq centièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "4", "1"]
+		},
+		{
+			"description": "v2 : deux-cent-mille-quatre-vingts unités et trois dixièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7", "6", "4", "1"]
+		},
+		{
+			"description": "v2 : vingt-et-un-mille-trois-cents unités et six millièmes",
+			"variationIndex": 2,
+			"variables": {
+				"t": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "5", "1", "2"]
+		},
+		{
+			"description": "v2 : mille et vingts échangés",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4", "5", "1"]
+		},
+		{
+			"description": "v2 : cent et cents échangés",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1", "5", "6", "2"]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
+}

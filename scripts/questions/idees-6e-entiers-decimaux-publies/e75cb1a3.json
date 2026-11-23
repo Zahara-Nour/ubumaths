@@ -1,0 +1,559 @@
+{
+	"id": "e75cb1a3-56f6-4498-b6bf-06e852b3252d",
+	"title": "Arrondir un nombre décimal",
+	"description": "Arrondir à l'unité, au dixième, au centième un décimal à 2 ou 3 décimales (retenue comprise : 3,96 → 4)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"statement": "Donne la valeur arrondie à l'unité de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/100;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a+floor(D/50)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(D/10)"
+				}
+			],
+			"conditions": ["D!=50"],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des dixièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:{{h}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"statement": "Donne la valeur arrondie au dixième de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/1000;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:round((1000*a+D)/100)/10;d"
+				},
+				{
+					"name": "h",
+					"expression": "eval:mod(floor(D/10),10)"
+				}
+			],
+			"conditions": ["mod(D,100)!=50", "floor(D/100)!=9"],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des centièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:{{h}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"statement": "Donne la valeur arrondie au centième de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/1000;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:round((1000*a+D)/10)/100;d"
+				},
+				{
+					"name": "h",
+					"expression": "eval:mod(D,10)"
+				}
+			],
+			"conditions": ["mod(D,10)!=0", "mod(floor(D/10),10)!=9"],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des millièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ : {{if:{{h}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"statement": "Donne la valeur arrondie au dixième de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "d",
+					"expression": "5..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+0.9+d/100;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a+1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir.** On regarde le chiffre juste après le rang demandé : s'il vaut $5$ ou plus, on ajoute $1$ au rang demandé ; sinon, on le garde. Puis on efface les chiffres suivants.",
+					"Le chiffre des centièmes est $\\textcolor{{{color:primary.1}}}{{{d}}}$ : {{if:{{d}}>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$9$ dixièmes $+ 1$ dixième $= 10$ dixièmes $= 1$ unité : ${{a}}.9 + 0.1 = {{v}}$. On n'écrit pas de zéro inutile après la virgule.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "{{if:g==0|Une planche mesure ${{x}}~\\unit{m}$. Donne sa longueur arrondie au centimètre.|{{if:g==1|Un colis pèse ${{x}}~\\unit{kg}$. Donne sa masse arrondie à la centaine de grammes.|Un livre coûte ${{x}}~\\unit{€}$. Donne son prix arrondi à l'euro.}}}}\n\n$${{x}}~\\unit{{{if:g==0|m|{{if:g==1|kg|€}}}}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "M",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "dec",
+					"expression": "eval:3-floor(g/2)"
+				},
+				{
+					"name": "rg",
+					"expression": "eval:2-g"
+				},
+				{
+					"name": "x",
+					"expression": "eval:M/10^dec;d"
+				},
+				{
+					"name": "R",
+					"expression": "eval:round(M/10^(dec-rg))"
+				},
+				{
+					"name": "v",
+					"expression": "eval:R/10^rg;d"
+				},
+				{
+					"name": "H",
+					"expression": "eval:mod(floor(M/10^(dec-rg-1)),10)"
+				}
+			],
+			"conditions": ["mod(M,10)!=0", "mod(R,10)!=0", "mod(M,10^(dec-rg))!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}\\unit{{{if:g==0|m|{{if:g==1|kg|€}}}}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(M/10^(dec-rg))/10^rg;d}}\\unit{{{if:g==0|m|{{if:g==1|kg|€}}}}}",
+							"message": "Le chiffre {{if:g==0|des millièmes|{{if:g==1|des centièmes|des dixièmes}}}} est ${{H}}$ : $5$ ou plus, on arrondit au-dessus.",
+							"label": "Troncature"
+						},
+						{
+							"answer": "{{eval:round(M/10^(dec-rg+1))/10^(rg-1);d}}\\unit{{{if:g==0|m|{{if:g==1|kg|€}}}}}",
+							"message": "Tu as arrondi {{if:g==0|au dixième de mètre|{{if:g==1|au kilogramme|à la dizaine d'euros}}}} : on demande l'arrondi {{if:g==0|au centimètre|{{if:g==1|à la centaine de grammes|à l'euro}}}}.",
+							"label": "Arrondi au rang au-dessus"
+						},
+						{
+							"answer": "{{eval:round(M/10^(dec-rg-1))/10^(rg+1);d}}\\unit{{{if:g==0|m|{{if:g==1|kg|€}}}}}",
+							"message": "Ta réponse est trop précise : on demande l'arrondi {{if:g==0|au centimètre|{{if:g==1|à la centaine de grammes|à l'euro}}}}.",
+							"label": "Arrondi trop précis"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir une grandeur.** {{if:g==0|$1~\\unit{cm} = 0.01~\\unit{m}$ : arrondir au centimètre, c'est arrondir au centième de mètre.|{{if:g==1|$100~\\unit{g} = 0.1~\\unit{kg}$ : arrondir à la centaine de grammes, c'est arrondir au dixième de kilogramme.|Arrondir à l'euro, c'est arrondir à l'unité.}}}}",
+					"Le chiffre qui suit celui {{if:g==0|des centièmes|{{if:g==1|des dixièmes|des unités}}}} est le chiffre {{if:g==0|des millièmes|{{if:g==1|des centièmes|des dixièmes}}}} ; il vaut $\\textcolor{{{color:primary.1}}}{{{H}}}$ : {{if:H>=5|$5$ ou plus, on arrondit au-dessus|moins de $5$, on garde le chiffre}}.",
+					"$${{x}}~\\unit{{{if:g==0|m|{{if:g==1|kg|€}}}}} \\approx \\textcolor{{{color:primary.0}}}{{{v}}~\\unit{{{if:g==0|m|{{if:g==1|kg|€}}}}}}$$"
+				]
+			},
+			"hint": "Repère le rang demandé ({{if:g==0|un centimètre, c'est un centième de mètre|{{if:g==1|cent grammes, c'est un dixième de kilogramme|l'euro, c'est l'unité}}}}), puis regarde le chiffre juste après."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"D": "63",
+				"a": "12",
+				"h": "6",
+				"v": "13",
+				"x": "12.63"
+			},
+			"description": "12,63 → 13",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"D": "63",
+				"a": "12",
+				"h": "6",
+				"v": "13",
+				"x": "12.63"
+			},
+			"description": "Erreur : troncature (12)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["13,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"D": "478",
+				"a": "13",
+				"h": "7",
+				"v": "13.5",
+				"x": "13.478"
+			},
+			"description": "13,478 → 13,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["13,4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"D": "478",
+				"a": "13",
+				"h": "7",
+				"v": "13.5",
+				"x": "13.478"
+			},
+			"description": "Erreur : troncature (13,4)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["13,48"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"D": "478",
+				"a": "13",
+				"h": "7",
+				"v": "13.5",
+				"x": "13.478"
+			},
+			"description": "Erreur : arrondi au centième (13,48)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5,21"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"D": "213",
+				"a": "5",
+				"h": "3",
+				"v": "5.21",
+				"x": "5.213"
+			},
+			"description": "5,213 → 5,21",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"d": "6",
+				"v": "4",
+				"x": "3.96"
+			},
+			"description": "3,96 → 4",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["4,0"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"variables": {
+				"a": "3",
+				"d": "6",
+				"v": "4",
+				"x": "3.96"
+			},
+			"description": "3,96 → 4,0 : forme à améliorer",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3,10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"d": "6",
+				"v": "4",
+				"x": "3.96"
+			},
+			"description": "Erreur : 3,10",
+			"variationIndex": 3
+		},
+		{
+			"description": "F10 longueur : 2,437 m → 2,44 m",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"M": "2437"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}44\\,\\mathrm{m}"]
+		},
+		{
+			"description": "F10 longueur : en centimètres",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"M": "2437"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["244\\,\\mathrm{cm}"]
+		},
+		{
+			"description": "F10 longueur : troncature",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"M": "2437"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le chiffre des millièmes est $7$ : $5$ ou plus, on arrondit au-dessus."
+			},
+			"answers": ["2{,}43\\,\\mathrm{m}"]
+		},
+		{
+			"description": "F10 longueur : arrondi au dixième",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"M": "2437"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au dixième de mètre : on demande l'arrondi au centimètre."
+			},
+			"answers": ["2{,}4\\,\\mathrm{m}"]
+		},
+		{
+			"description": "F10 longueur : recopiée",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"M": "2437"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta réponse est trop précise : on demande l'arrondi au centimètre."
+			},
+			"answers": ["2{,}437\\,\\mathrm{m}"]
+		},
+		{
+			"description": "F10 masse : 3,462 kg → 3,5 kg",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"M": "3462"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}5\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "F10 masse : en grammes",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"M": "3462"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3\\,500\\,\\mathrm{g}"]
+		},
+		{
+			"description": "F10 masse : troncature",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"M": "3462"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le chiffre des centièmes est $6$ : $5$ ou plus, on arrondit au-dessus."
+			},
+			"answers": ["3{,}4\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "F10 masse : arrondi au kilogramme",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"M": "3462"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi au kilogramme : on demande l'arrondi à la centaine de grammes."
+			},
+			"answers": ["3\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "F10 masse : trop précis",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"M": "3462"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta réponse est trop précise : on demande l'arrondi à la centaine de grammes."
+			},
+			"answers": ["3{,}46\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "F10 prix : 24,68 € → 25 €",
+			"variationIndex": 4,
+			"variables": {
+				"g": "2",
+				"M": "2468"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25\\,\\text{€}"]
+		},
+		{
+			"description": "F10 prix : troncature",
+			"variationIndex": 4,
+			"variables": {
+				"g": "2",
+				"M": "2468"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le chiffre des dixièmes est $6$ : $5$ ou plus, on arrondit au-dessus."
+			},
+			"answers": ["24\\,\\text{€}"]
+		},
+		{
+			"description": "F10 prix : arrondi à la dizaine",
+			"variationIndex": 4,
+			"variables": {
+				"g": "2",
+				"M": "2468"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as arrondi à la dizaine d'euros : on demande l'arrondi à l'euro."
+			},
+			"answers": ["20\\,\\text{€}"]
+		},
+		{
+			"description": "F10 prix : trop précis",
+			"variationIndex": 4,
+			"variables": {
+				"g": "2",
+				"M": "2468"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ta réponse est trop précise : on demande l'arrondi à l'euro."
+			},
+			"answers": ["24{,}7\\,\\text{€}"]
+		},
+		{
+			"description": "F10 longueur : 5,123 m → 5,12 m",
+			"variationIndex": 4,
+			"variables": {
+				"g": "0",
+				"M": "5123"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5{,}12\\,\\mathrm{m}"]
+		}
+	]
+}

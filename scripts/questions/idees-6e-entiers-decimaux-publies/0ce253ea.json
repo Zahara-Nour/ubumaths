@@ -1,0 +1,390 @@
+{
+	"id": "0ce253ea-fd79-4810-81c3-5a0dc2e9d38d",
+	"title": "Placer un nombre décimal",
+	"description": "Placer un nombre décimal sur une demi-droite graduée : en dixièmes, en centièmes (droite agrandie), en demis ou en quarts, puis deux points sur la même droite",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 45,
+	"status": "published",
+	"variations": [
+		{
+			"statement": "Place le nombre ${{eval:(10*n+k)/10;d}}$ sur la demi-droite graduée.\n\n```line\nstart: {{n}}\nend: {{eval:(10*n+15)/10;d}}\nstep: 0.1\nmajor: 10\nplacer: {{eval:(10*n+k)/10;d}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				}
+			],
+			"conditions": ["k!=10"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre deux entiers qui se suivent, l'unité est partagée en $10$ : chaque petit intervalle vaut $0.1$.",
+					"${{eval:(10*n+k)/10;d}}$, c'est ${{k}}$ petits intervalles à partir de ${{n}}$ : ${{n}} + {{k}} \\times 0.1 = \\textcolor{{{color:primary.0}}}{{{eval:(10*n+k)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{eval:(100*a+10*b+k)/100;d}}$ sur la demi-droite graduée.\n\n```line\nstart: {{eval:(10*a+b)/10;d}}\nend: {{eval:(100*a+10*b+15)/100;d}}\nstep: 0.01\nmajor: 10\nlabels: {{eval:(10*a+b)/10;d}}, {{eval:(10*a+b+1)/10;d}}\nplacer: {{eval:(100*a+10*b+k)/100;d}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				}
+			],
+			"conditions": ["k!=10"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{eval:(10*a+b)/10;d}}$ et ${{eval:(10*a+b+1)/10;d}}$, le dixième est partagé en $10$ : chaque petit intervalle vaut $0.01$.",
+					"${{eval:(100*a+10*b+k)/100;d}}$, c'est ${{k}}$ petits intervalles à partir de ${{eval:(10*a+b)/10;d}}$ : ${{eval:(10*a+b)/10;d}} + {{k}} \\times 0.01 = \\textcolor{{{color:primary.0}}}{{{eval:(100*a+10*b+k)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{eval:k/q;d}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: 4\nstep: {{eval:1/q;d}}\nmajor: {{q}}\nplacer: {{eval:k/q;d}}\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|4"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:4*q-1}}"
+				}
+			],
+			"conditions": ["mod(k,q)!=0"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** L'unité est partagée en ${{q}}$ : chaque petit intervalle vaut ${{eval:1/q;d}}$.",
+					"${{eval:k/q;d}}$, c'est ${{k}}$ petits intervalles à partir de $0$ : ${{k}} \\times {{eval:1/q;d}} = \\textcolor{{{color:primary.0}}}{{{eval:k/q;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place les points $A({{eval:(10*n+k)/10;d}})$ et $B({{eval:(10*n+m)/10;d}})$ sur la demi-droite graduée.\n\n```line\nstart: {{n}}\nend: {{eval:(10*n+15)/10;d}}\nstep: 0.1\nmajor: 10\nplacer: A={{eval:(10*n+k)/10;d}} ; B={{eval:(10*n+m)/10;d}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				},
+				{
+					"name": "m",
+					"expression": "1..14"
+				}
+			],
+			"conditions": ["k!=10", "m!=10", "abs(k-m)>=3"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre deux entiers qui se suivent, l'unité est partagée en $10$ : chaque petit intervalle vaut $0.1$.",
+					"$A$ est à ${{k}}$ petits intervalles de ${{n}}$, $B$ à ${{m}}$ petits intervalles : $A(\\textcolor{{{color:primary.0}}}{{{eval:(10*n+k)/10;d}}})$, $B(\\textcolor{{{color:primary.0}}}{{{eval:(10*n+m)/10;d}}})$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{X}}$ sur la demi-droite graduée.\n\n```line\nstart: {{L1}}\nend: {{eval:(1000*a+10*B+15)/1000;d}}\nstep: 0.001\nmajor: 10\nlabels: {{L1}}, {{L2}}\nplacer: {{X}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "B",
+					"expression": "1..98"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				},
+				{
+					"name": "L1",
+					"expression": "eval:(100*a+B)/100;d"
+				},
+				{
+					"name": "L2",
+					"expression": "eval:(100*a+B+1)/100;d"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(1000*a+10*B+k)/1000;d"
+				}
+			],
+			"conditions": ["k!=10"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{L1}}$ et ${{L2}}$, le centième est partagé en $10$ : chaque petit intervalle vaut $0.001$.",
+					"${{X}}$, c'est ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} à partir de ${{L1}}$ : ${{L1}} + {{k}} \\times 0.001 = \\textcolor{{{color:primary.0}}}{{{X}}}$."
+				]
+			},
+			"hint": "Commence par trouver ce que vaut un petit intervalle : entre ${{L1}}$ et ${{L2}}$, combien y a-t-il de bonds ?"
+		},
+		{
+			"statement": "Place le nombre ${{X}}$ sur la demi-droite graduée.\n\n```line\nstart: {{L1}}\nend: {{eval:(10*m+15)*10^w}}\nstep: {{eval:10^w}}\nmajor: 10\nlabels: {{L1}}, {{L2}}\nplacer: {{X}}\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "4..5"
+				},
+				{
+					"name": "m",
+					"expression": "1..99"
+				},
+				{
+					"name": "k",
+					"expression": "1..14"
+				},
+				{
+					"name": "L1",
+					"expression": "eval:m*10^(w+1)"
+				},
+				{
+					"name": "L2",
+					"expression": "eval:(m+1)*10^(w+1)"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(10*m+k)*10^w"
+				}
+			],
+			"conditions": ["k!=10"],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Entre ${{L1}}$ et ${{L2}}$, l'écart est de ${{eval:10^(w+1)}}$, partagé en $10$ : chaque petit intervalle vaut ${{eval:10^w}}$.",
+					"${{X}}$, c'est ${{k}}$ petit{{if:k>1|s|}} intervalle{{if:k>1|s|}} à partir de ${{L1}}$ : ${{L1}} + {{k}} \\times {{eval:10^w}} = \\textcolor{{{color:primary.0}}}{{{X}}}$."
+				]
+			},
+			"hint": "Calcule l'écart entre les deux nombres écrits, puis partage-le entre les petits intervalles."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2.3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "2,3 placé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur : 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3.3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "13",
+				"n": "2"
+			},
+			"description": "3,3 placé (après 3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2.4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "2"
+			},
+			"description": "Erreur : 2,4 (un intervalle de trop)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2.37"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"description": "Loupe : 2,37 placé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2.44"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"k": "7"
+			},
+			"description": "Erreur : 2,44 (0,07 compté depuis 2,37)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0.75"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"q": "4"
+			},
+			"description": "Quarts : 0,75 placé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"q": "4"
+			},
+			"description": "Erreur : 3 quarts lus 3 unités",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2.3", "2.8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"m": "8",
+				"n": "2"
+			},
+			"description": "Deux points : A 2,3 ; B 2,8",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2.8", "2.3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"m": "8",
+				"n": "2"
+			},
+			"description": "Erreur : A et B échangés",
+			"variationIndex": 3
+		},
+		{
+			"description": "F8 millièmes : 2,315 placé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2.315"]
+		},
+		{
+			"description": "F8 millièmes : 2,36 (intervalle lu 0,01)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2.316"]
+		},
+		{
+			"description": "F8 millièmes : 2,322 placé (après 2,32)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2.322"]
+		},
+		{
+			"description": "F8 millièmes : 2,312 (compté depuis 2,31 au lieu de 2,32)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2.312"]
+		},
+		{
+			"description": "F8 grand : 3 730 000 placé",
+			"variationIndex": 5,
+			"variables": {
+				"w": "4",
+				"m": "37",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3730000"]
+		},
+		{
+			"description": "F8 grand : 3 740 000 (graduations comptées)",
+			"variationIndex": 5,
+			"variables": {
+				"w": "4",
+				"m": "37",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3740000"]
+		},
+		{
+			"description": "F8 grand : pas 100 000, 1 300 000 placé",
+			"variationIndex": 5,
+			"variables": {
+				"w": "5",
+				"m": "1",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1300000"]
+		}
+	]
+}

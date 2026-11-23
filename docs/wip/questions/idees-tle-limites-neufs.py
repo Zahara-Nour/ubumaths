@@ -1,6 +1,6 @@
 """Écrit les modèles neufs du chantier idees-tle-limites dans scripts/questions/idees-tle-limites-neufs/.
 
-Phase 0 validée par David le 2026-11-22 (journal docs/wip/idees-tle-limites-progress.md, page à
+Phase 0 validée par David le 2026-11-22 (journal docs/archive/wip/idees-tle-limites/idees-tle-limites-progress.md, page à
 cocher https://claude.ai/artifact/1F96L4GrKY7ThQKZsvWoL7) : F1 (deux modèles de lecture sur
 courbe, Q1), F2 (composition), Q2 (quantité conjuguée, modèle sans point). F3 (tableau de
 variations d'une homographique) a attendu l'outil n° 50 (limite cachée, #3027) ; écrit le

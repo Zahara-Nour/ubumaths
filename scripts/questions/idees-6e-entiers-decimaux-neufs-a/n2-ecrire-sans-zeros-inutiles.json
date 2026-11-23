@@ -1,0 +1,638 @@
+{
+	"id": "d9c8ff67-3f11-4a45-94c4-1068627c700e",
+	"title": "Écrire un nombre sans zéros inutiles",
+	"description": "Réécrire un nombre décimal (004 012,500) ou un grand entier (000 012 004 300) sans ses zéros inutiles, classes séparées (pièges : zéro utile retiré au milieu, après la virgule ou à la fin d'un entier)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true,
+			"zeros": "strict"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris ce nombre sans les zéros inutiles.\n\n$${{if:T>5|{{u5}}|}}{{if:T>4|{{u4}}|}}{{if:T>3|{{u3}}\\,|}}{{if:T>2|{{u2}}|}}{{if:T>1|{{u1}}|}}{{u0}}{,}{{q1}}{{if:TD>1|{{q2}}|}}{{if:TD>2|{{q3}}|}}{{if:TD>3|\\,0|}}=?$$",
+			"variables": [
+				{
+					"name": "nI",
+					"expression": "3..5"
+				},
+				{
+					"name": "kz",
+					"expression": "1..3"
+				},
+				{
+					"name": "g0",
+					"expression": "1..9"
+				},
+				{
+					"name": "g1",
+					"expression": "1..9"
+				},
+				{
+					"name": "g2",
+					"expression": "1..9"
+				},
+				{
+					"name": "g3",
+					"expression": "1..9"
+				},
+				{
+					"name": "g4",
+					"expression": "1..9"
+				},
+				{
+					"name": "I",
+					"expression": "eval:g0*10^0*min(max((nI)-(1)+1,0),1)*min(abs(kz-0),1)+g1*10^1*min(max((nI)-(2)+1,0),1)*min(abs(kz-1),1)+g2*10^2*min(max((nI)-(3)+1,0),1)*min(abs(kz-2),1)+g3*10^3*min(max((nI)-(4)+1,0),1)*min(abs(kz-3),1)+g4*10^4*min(max((nI)-(5)+1,0),1)*min(abs(kz-4),1)"
+				},
+				{
+					"name": "lz",
+					"expression": "1|2"
+				},
+				{
+					"name": "T",
+					"expression": "eval:nI+lz"
+				},
+				{
+					"name": "nD",
+					"expression": "1..3"
+				},
+				{
+					"name": "dz",
+					"expression": "0|1"
+				},
+				{
+					"name": "h1",
+					"expression": "1..9"
+				},
+				{
+					"name": "h2",
+					"expression": "1..9"
+				},
+				{
+					"name": "h3",
+					"expression": "1..9"
+				},
+				{
+					"name": "Dm",
+					"expression": "eval:100*h1*(1-dz)+10*h2*min(max((nD)-(2)+1,0),1)+h3*min(max((nD)-(3)+1,0),1)"
+				},
+				{
+					"name": "tz",
+					"expression": "1|2"
+				},
+				{
+					"name": "TD",
+					"expression": "eval:nD+tz"
+				},
+				{
+					"name": "Ir",
+					"expression": "eval:floor(I/10^(kz+1))*10^kz+mod(I,10^kz)"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:mod(floor(I/10^0),10)"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:mod(floor(I/10^1),10)"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:mod(floor(I/10^2),10)"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:mod(floor(I/10^3),10)"
+				},
+				{
+					"name": "u4",
+					"expression": "eval:mod(floor(I/10^4),10)"
+				},
+				{
+					"name": "u5",
+					"expression": "eval:mod(floor(I/10^5),10)"
+				},
+				{
+					"name": "q1",
+					"expression": "eval:mod(floor(Dm/10^2),10)"
+				},
+				{
+					"name": "q2",
+					"expression": "eval:mod(floor(Dm/10^1),10)"
+				},
+				{
+					"name": "q3",
+					"expression": "eval:mod(floor(Dm/10^0),10)"
+				}
+			],
+			"conditions": ["kz <= nI-2", "T <= 6", "nD >= 1+dz", "TD <= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:I+Dm/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:Ir+Dm/1000;d}}",
+							"message": "Tu as retiré un zéro utile : un zéro placé entre deux chiffres de la partie entière garde le rang des autres chiffres.",
+							"label": "Zéro intérieur retiré"
+						},
+						{
+							"answer": "{{eval:I+Dm/100;d}}",
+							"message": "Tu as retiré un zéro utile : le zéro juste après la virgule dit qu'il n'y a aucun dixième.",
+							"label": "Zéro des dixièmes retiré"
+						},
+						{
+							"answer": "{{eval:Ir+Dm*(1+9*dz)/1000;d}}",
+							"message": "Tu as retiré tous les zéros : seuls les zéros au début de la partie entière et à la fin de la partie décimale sont inutiles.",
+							"label": "Tous les zéros retirés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les zéros écrits au début de la partie entière et ceux de la fin de la partie décimale ne changent pas la valeur du nombre : on les retire. Les autres zéros gardent le rang des chiffres : on les garde.",
+					"$${{if:T>5|{{u5}}|}}{{if:T>4|{{u4}}|}}{{if:T>3|{{u3}}\\,|}}{{if:T>2|{{u2}}|}}{{if:T>1|{{u1}}|}}{{u0}}{,}{{q1}}{{if:TD>1|{{q2}}|}}{{if:TD>2|{{q3}}|}}{{if:TD>3|\\,0|}}=\\textcolor{{{color:primary.0}}}{{{eval:I+Dm/1000;d}}}$$"
+				]
+			},
+			"hint": "Un zéro au début de la partie entière ou à la fin de la partie décimale ne change pas la valeur du nombre ; un zéro placé entre deux chiffres, ou juste après la virgule, si."
+		},
+		{
+			"statement": "Écris ce nombre sans les zéros inutiles.\n\n$${{if:T>11|{{u11}}|}}{{if:T>10|{{u10}}|}}{{if:T>9|{{u9}}\\,|}}{{if:T>8|{{u8}}|}}{{if:T>7|{{u7}}|}}{{if:T>6|{{u6}}\\,|}}{{if:T>5|{{u5}}|}}{{if:T>4|{{u4}}|}}{{if:T>3|{{u3}}\\,|}}{{if:T>2|{{u2}}|}}{{if:T>1|{{u1}}|}}{{u0}}=?$$",
+			"variables": [
+				{
+					"name": "nA",
+					"expression": "1..4"
+				},
+				{
+					"name": "a1",
+					"expression": "1..9"
+				},
+				{
+					"name": "a2",
+					"expression": "1..9"
+				},
+				{
+					"name": "a3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a4",
+					"expression": "1..9"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a1*10^0*min(max((nA)-(1)+1,0),1)+a2*10^1*min(max((nA)-(2)+1,0),1)+a3*10^2*min(max((nA)-(3)+1,0),1)+a4*10^3*min(max((nA)-(4)+1,0),1)"
+				},
+				{
+					"name": "B",
+					"expression": "1..99"
+				},
+				{
+					"name": "cH",
+					"expression": "1..9"
+				},
+				{
+					"name": "cT",
+					"expression": "0..9"
+				},
+				{
+					"name": "C",
+					"expression": "eval:100*cH+10*cT"
+				},
+				{
+					"name": "N",
+					"expression": "eval:A*10^6+B*1000+C"
+				},
+				{
+					"name": "lz",
+					"expression": "1..3"
+				},
+				{
+					"name": "T",
+					"expression": "eval:nA+6+lz"
+				},
+				{
+					"name": "nB",
+					"expression": "eval:1+min(max((B)-(10)+1,0),1)"
+				},
+				{
+					"name": "tz",
+					"expression": "eval:2-min(cT,1)"
+				},
+				{
+					"name": "Cn",
+					"expression": "eval:C/10^tz"
+				},
+				{
+					"name": "nC",
+					"expression": "eval:3-tz"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:mod(floor(N/10^0),10)"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:mod(floor(N/10^1),10)"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:mod(floor(N/10^2),10)"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:mod(floor(N/10^3),10)"
+				},
+				{
+					"name": "u4",
+					"expression": "eval:mod(floor(N/10^4),10)"
+				},
+				{
+					"name": "u5",
+					"expression": "eval:mod(floor(N/10^5),10)"
+				},
+				{
+					"name": "u6",
+					"expression": "eval:mod(floor(N/10^6),10)"
+				},
+				{
+					"name": "u7",
+					"expression": "eval:mod(floor(N/10^7),10)"
+				},
+				{
+					"name": "u8",
+					"expression": "eval:mod(floor(N/10^8),10)"
+				},
+				{
+					"name": "u9",
+					"expression": "eval:mod(floor(N/10^9),10)"
+				},
+				{
+					"name": "u10",
+					"expression": "eval:mod(floor(N/10^10),10)"
+				},
+				{
+					"name": "u11",
+					"expression": "eval:mod(floor(N/10^11),10)"
+				}
+			],
+			"conditions": ["mod(B,10) != 0", "T <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(A*10^nB+B)*1000+C}}",
+							"message": "Tu as retiré des zéros utiles au milieu du nombre : après la première classe, chaque classe garde ses trois chiffres.",
+							"label": "Zéros du milieu retirés"
+						},
+						{
+							"answer": "{{eval:N/10^tz}}",
+							"message": "Tu as retiré les zéros de la fin : dans un nombre entier, ils sont utiles, ils donnent leur rang aux autres chiffres.",
+							"label": "Zéros de fin retirés"
+						},
+						{
+							"answer": "{{eval:(A*10^nB+B)*10^nC+Cn}}",
+							"message": "Tu as retiré tous les zéros : dans un nombre entier, seuls les zéros écrits au début sont inutiles.",
+							"label": "Tous les zéros retirés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un nombre entier, seuls les zéros écrits au début (à gauche) ne changent pas sa valeur : on les retire. Les zéros du milieu et de la fin gardent le rang des autres chiffres.",
+					"$${{if:T>11|{{u11}}|}}{{if:T>10|{{u10}}|}}{{if:T>9|{{u9}}\\,|}}{{if:T>8|{{u8}}|}}{{if:T>7|{{u7}}|}}{{if:T>6|{{u6}}\\,|}}{{if:T>5|{{u5}}|}}{{if:T>4|{{u4}}|}}{{if:T>3|{{u3}}\\,|}}{{if:T>2|{{u2}}|}}{{if:T>1|{{u1}}|}}{{u0}}=\\textcolor{{{color:primary.0}}}{ {{N}} }$$"
+				]
+			},
+			"hint": "Dans un nombre entier, seuls les zéros écrits au début sont inutiles. Garde des classes de trois chiffres, sauf la première."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 004 012,500 → 4 012,5",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "4",
+				"kz": "2",
+				"g0": "2",
+				"g1": "1",
+				"g2": "5",
+				"g3": "4",
+				"g4": "9",
+				"lz": "2",
+				"nD": "1",
+				"dz": "0",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4\\,012,5"]
+		},
+		{
+			"description": "v0 : sans espace",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "4",
+				"kz": "2",
+				"g0": "2",
+				"g1": "1",
+				"g2": "5",
+				"g3": "4",
+				"g4": "9",
+				"lz": "2",
+				"nD": "1",
+				"dz": "0",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["4012,5"]
+		},
+		{
+			"description": "v0 : zéros de fin gardés",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "4",
+				"kz": "2",
+				"g0": "2",
+				"g1": "1",
+				"g2": "5",
+				"g3": "4",
+				"g4": "9",
+				"lz": "2",
+				"nD": "1",
+				"dz": "0",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["zeros", "form"]
+			},
+			"answers": ["4\\,012,500"]
+		},
+		{
+			"description": "v0 : zéros de tête gardés",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "4",
+				"kz": "2",
+				"g0": "2",
+				"g1": "1",
+				"g2": "5",
+				"g3": "4",
+				"g4": "9",
+				"lz": "2",
+				"nD": "1",
+				"dz": "0",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["zeros", "form"]
+			},
+			"answers": ["004\\,012,5"]
+		},
+		{
+			"description": "v0 : zéro intérieur retiré (412,5)",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "4",
+				"kz": "2",
+				"g0": "2",
+				"g1": "1",
+				"g2": "5",
+				"g3": "4",
+				"g4": "9",
+				"lz": "2",
+				"nD": "1",
+				"dz": "0",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré un zéro utile : un zéro placé entre deux chiffres de la partie entière garde le rang des autres chiffres."
+			},
+			"answers": ["412,5"]
+		},
+		{
+			"description": "v0 : 0 608,030 → 608,03",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "3",
+				"kz": "1",
+				"g0": "8",
+				"g1": "1",
+				"g2": "6",
+				"g3": "4",
+				"g4": "9",
+				"lz": "1",
+				"nD": "2",
+				"dz": "1",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["608,03"]
+		},
+		{
+			"description": "v0 : zéro des dixièmes retiré (608,3)",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "3",
+				"kz": "1",
+				"g0": "8",
+				"g1": "1",
+				"g2": "6",
+				"g3": "4",
+				"g4": "9",
+				"lz": "1",
+				"nD": "2",
+				"dz": "1",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré un zéro utile : le zéro juste après la virgule dit qu'il n'y a aucun dixième."
+			},
+			"answers": ["608,3"]
+		},
+		{
+			"description": "v0 : tous les zéros retirés (68,3)",
+			"variationIndex": 0,
+			"variables": {
+				"nI": "3",
+				"kz": "1",
+				"g0": "8",
+				"g1": "1",
+				"g2": "6",
+				"g3": "4",
+				"g4": "9",
+				"lz": "1",
+				"nD": "2",
+				"dz": "1",
+				"h1": "5",
+				"h2": "3",
+				"h3": "8",
+				"tz": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré tous les zéros : seuls les zéros au début de la partie entière et à la fin de la partie décimale sont inutiles."
+			},
+			"answers": ["68,3"]
+		},
+		{
+			"description": "v1 : 000 012 004 300 → 12 004 300",
+			"variationIndex": 1,
+			"variables": {
+				"nA": "2",
+				"a1": "2",
+				"a2": "1",
+				"a3": "5",
+				"a4": "5",
+				"B": "4",
+				"cH": "3",
+				"cT": "0",
+				"lz": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12\\,004\\,300"]
+		},
+		{
+			"description": "v1 : sans espaces",
+			"variationIndex": 1,
+			"variables": {
+				"nA": "2",
+				"a1": "2",
+				"a2": "1",
+				"a3": "5",
+				"a4": "5",
+				"B": "4",
+				"cH": "3",
+				"cT": "0",
+				"lz": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["12004300"]
+		},
+		{
+			"description": "v1 : zéros de tête gardés",
+			"variationIndex": 1,
+			"variables": {
+				"nA": "2",
+				"a1": "2",
+				"a2": "1",
+				"a3": "5",
+				"a4": "5",
+				"B": "4",
+				"cH": "3",
+				"cT": "0",
+				"lz": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["zeros", "form"]
+			},
+			"answers": ["012\\,004\\,300"]
+		},
+		{
+			"description": "v1 : zéros du milieu retirés (124 300)",
+			"variationIndex": 1,
+			"variables": {
+				"nA": "2",
+				"a1": "2",
+				"a2": "1",
+				"a3": "5",
+				"a4": "5",
+				"B": "4",
+				"cH": "3",
+				"cT": "0",
+				"lz": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré des zéros utiles au milieu du nombre : après la première classe, chaque classe garde ses trois chiffres."
+			},
+			"answers": ["124\\,300"]
+		},
+		{
+			"description": "v1 : zéros de fin retirés (120 043)",
+			"variationIndex": 1,
+			"variables": {
+				"nA": "2",
+				"a1": "2",
+				"a2": "1",
+				"a3": "5",
+				"a4": "5",
+				"B": "4",
+				"cH": "3",
+				"cT": "0",
+				"lz": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré les zéros de la fin : dans un nombre entier, ils sont utiles, ils donnent leur rang aux autres chiffres."
+			},
+			"answers": ["120\\,043"]
+		},
+		{
+			"description": "v1 : tous les zéros retirés (1 243)",
+			"variationIndex": 1,
+			"variables": {
+				"nA": "2",
+				"a1": "2",
+				"a2": "1",
+				"a3": "5",
+				"a4": "5",
+				"B": "4",
+				"cH": "3",
+				"cT": "0",
+				"lz": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as retiré tous les zéros : dans un nombre entier, seuls les zéros écrits au début sont inutiles."
+			},
+			"answers": ["1\\,243"]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
+}

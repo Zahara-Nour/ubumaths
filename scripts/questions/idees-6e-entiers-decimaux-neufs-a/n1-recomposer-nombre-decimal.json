@@ -1,0 +1,747 @@
+{
+	"id": "e831225e-20fc-4aad-9c51-994dd2032de8",
+	"title": "Recomposer un nombre décimal",
+	"description": "Écrire un nombre décimal donné par une somme de produits dans le désordre (7 × 100 + 3 × 1 + 5 × 0,01), compléter sa décomposition, le retrouver à partir de groupements (23 dixièmes et 5 centièmes) ou en mots (3 unités et 7 centièmes) (pièges : zéros des rangs vides oubliés, groupement juxtaposé, dizaines et dixièmes confondus)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris ce nombre en écriture décimale.\n\n$${{if:ordre==0|{{c}}\\times {{eval:10^r3;d}}+{{a}}\\times {{eval:10^r1;d}}+{{d}}\\times {{eval:10^r4;d}}+{{b}}\\times {{eval:10^r2;d}}|{{if:ordre==1|{{b}}\\times {{eval:10^r2;d}}+{{d}}\\times {{eval:10^r4;d}}+{{a}}\\times {{eval:10^r1;d}}+{{c}}\\times {{eval:10^r3;d}}|{{d}}\\times {{eval:10^r4;d}}+{{b}}\\times {{eval:10^r2;d}}+{{c}}\\times {{eval:10^r3;d}}+{{a}}\\times {{eval:10^r1;d}}}}}}=?$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "0..3"
+				},
+				{
+					"name": "g1",
+					"expression": "1|2"
+				},
+				{
+					"name": "g2",
+					"expression": "1|2"
+				},
+				{
+					"name": "g3",
+					"expression": "1|2"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:h"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:h-g1"
+				},
+				{
+					"name": "r3",
+					"expression": "eval:h-g1-g2"
+				},
+				{
+					"name": "r4",
+					"expression": "eval:h-g1-g2-g3"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "ordre",
+					"expression": "0..2"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*10^(r1+3)+b*10^(r2+3)+c*10^(r3+3)+d*10^(r4+3)"
+				},
+				{
+					"name": "m",
+					"expression": "eval:1+min(max((r2)-(0)+1,0),1)+min(max((r3)-(0)+1,0),1)"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:1000*a+100*b+10*c+d"
+				},
+				{
+					"name": "Ic",
+					"expression": "eval:floor(Q/10^(4-m))"
+				},
+				{
+					"name": "Dc",
+					"expression": "eval:mod(Q,10^(4-m))"
+				}
+			],
+			"conditions": ["r4 >= -3", "r4 <= -1", "g1+g2+g3 >= 4", "g1+g2+g3 <= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:floor(N/1000)+Dc/10^(4-m);d}}",
+							"message": "Après la virgule, tu as oublié le zéro d'un rang vide : chaque rang sans chiffre s'écrit $0$.",
+							"label": "Zéro oublié après la virgule"
+						},
+						{
+							"answer": "{{eval:Ic+mod(N,1000)/1000;d}}",
+							"message": "Avant la virgule, tu as oublié le zéro d'un rang vide : chaque rang sans chiffre s'écrit $0$.",
+							"label": "Zéro oublié avant la virgule"
+						},
+						{
+							"answer": "{{eval:Ic+Dc/10^(4-m);d}}",
+							"message": "Tu as écrit les chiffres collés, sans les zéros des rangs vides : chaque rang sans chiffre s'écrit $0$.",
+							"label": "Zéros des rangs vides oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque produit place un chiffre à son rang : ${{a}}\\times {{eval:10^r1;d}}$, c'est ${{a}}$ {{if:r1==3|{{if:a>1|milliers|millier}}|{{if:r1==2|{{if:a>1|centaines|centaine}}|{{if:r1==1|{{if:a>1|dizaines|dizaine}}|{{if:r1==0|{{if:a>1|unités|unité}}|{{if:r1==-1|{{if:a>1|dixièmes|dixième}}|{{if:r1==-2|{{if:a>1|centièmes|centième}}|{{if:a>1|millièmes|millième}}}}}}}}}}}}}} ; ${{b}}\\times {{eval:10^r2;d}}$, ${{b}}$ {{if:r2==3|{{if:b>1|milliers|millier}}|{{if:r2==2|{{if:b>1|centaines|centaine}}|{{if:r2==1|{{if:b>1|dizaines|dizaine}}|{{if:r2==0|{{if:b>1|unités|unité}}|{{if:r2==-1|{{if:b>1|dixièmes|dixième}}|{{if:r2==-2|{{if:b>1|centièmes|centième}}|{{if:b>1|millièmes|millième}}}}}}}}}}}}}} ; ${{c}}\\times {{eval:10^r3;d}}$, ${{c}}$ {{if:r3==3|{{if:c>1|milliers|millier}}|{{if:r3==2|{{if:c>1|centaines|centaine}}|{{if:r3==1|{{if:c>1|dizaines|dizaine}}|{{if:r3==0|{{if:c>1|unités|unité}}|{{if:r3==-1|{{if:c>1|dixièmes|dixième}}|{{if:r3==-2|{{if:c>1|centièmes|centième}}|{{if:c>1|millièmes|millième}}}}}}}}}}}}}} ; ${{d}}\\times {{eval:10^r4;d}}$, ${{d}}$ {{if:r4==3|{{if:d>1|milliers|millier}}|{{if:r4==2|{{if:d>1|centaines|centaine}}|{{if:r4==1|{{if:d>1|dizaines|dizaine}}|{{if:r4==0|{{if:d>1|unités|unité}}|{{if:r4==-1|{{if:d>1|dixièmes|dixième}}|{{if:r4==-2|{{if:d>1|centièmes|centième}}|{{if:d>1|millièmes|millième}}}}}}}}}}}}}}.",
+					"Les rangs sans chiffre s'écrivent $0$ : ${{if:ordre==0|{{c}}\\times {{eval:10^r3;d}}+{{a}}\\times {{eval:10^r1;d}}+{{d}}\\times {{eval:10^r4;d}}+{{b}}\\times {{eval:10^r2;d}}|{{if:ordre==1|{{b}}\\times {{eval:10^r2;d}}+{{d}}\\times {{eval:10^r4;d}}+{{a}}\\times {{eval:10^r1;d}}+{{c}}\\times {{eval:10^r3;d}}|{{d}}\\times {{eval:10^r4;d}}+{{b}}\\times {{eval:10^r2;d}}+{{c}}\\times {{eval:10^r3;d}}+{{a}}\\times {{eval:10^r1;d}}}}}}=\\textcolor{{{color:primary.0}}}{{{eval:N/1000;d}}}$."
+				]
+			},
+			"hint": "Range les produits du plus grand rang au plus petit : multiplier par $100$, c'est le rang des centaines ; par $0{,}01$, celui des centièmes. Un rang sans chiffre s'écrit $0$."
+		},
+		{
+			"statement": "Complète la décomposition de ce nombre.\n\n$${{eval:N/1000;d}}=(?\\times {{eval:10^R1;d}})+(?\\times {{eval:10^R2;d}})+(?\\times {{eval:10^R3;d}})+(?\\times {{eval:10^R4;d}})$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "z",
+					"expression": "1..3"
+				},
+				{
+					"name": "d1",
+					"expression": "1..9"
+				},
+				{
+					"name": "d2",
+					"expression": "1..9"
+				},
+				{
+					"name": "d3",
+					"expression": "1..9"
+				},
+				{
+					"name": "d4",
+					"expression": "1..9"
+				},
+				{
+					"name": "R1",
+					"expression": "eval:h-(0+min(max((1-z)-(1)+1,0),1))"
+				},
+				{
+					"name": "R2",
+					"expression": "eval:h-(1+min(max((2-z)-(1)+1,0),1))"
+				},
+				{
+					"name": "R3",
+					"expression": "eval:h-(2+min(max((3-z)-(1)+1,0),1))"
+				},
+				{
+					"name": "R4",
+					"expression": "eval:h-(3+min(max((4-z)-(1)+1,0),1))"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d1*10^(R1+3)+d2*10^(R2+3)+d3*10^(R3+3)+d4*10^(R4+3)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(floor(N/10^(h-0+3)),10)}}",
+							"message": "Ce n'est pas le chiffre des {{if:R1==3|milliers|{{if:R1==2|centaines|{{if:R1==1|dizaines|{{if:R1==0|unités|{{if:R1==-1|dixièmes|{{if:R1==-2|centièmes|millièmes}}}}}}}}}}}} : le zéro de ${{eval:N/1000;d}}$ occupe un rang, compte-le.",
+							"label": "Rang décalé par le zéro"
+						},
+						{
+							"answer": "{{eval:mod(floor(N/10^(3-R1)),10)}}",
+							"message": "Tu as confondu les rangs de part et d'autre des unités : multiplier par ${{eval:10^R1;d}}$, c'est le rang des {{if:R1==3|milliers|{{if:R1==2|centaines|{{if:R1==1|dizaines|{{if:R1==0|unités|{{if:R1==-1|dixièmes|{{if:R1==-2|centièmes|millièmes}}}}}}}}}}}}.",
+							"label": "Dizaines et dixièmes confondus"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{d2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(floor(N/10^(h-1+3)),10)}}",
+							"message": "Ce n'est pas le chiffre des {{if:R2==3|milliers|{{if:R2==2|centaines|{{if:R2==1|dizaines|{{if:R2==0|unités|{{if:R2==-1|dixièmes|{{if:R2==-2|centièmes|millièmes}}}}}}}}}}}} : le zéro de ${{eval:N/1000;d}}$ occupe un rang, compte-le.",
+							"label": "Rang décalé par le zéro"
+						},
+						{
+							"answer": "{{eval:mod(floor(N/10^(3-R2)),10)}}",
+							"message": "Tu as confondu les rangs de part et d'autre des unités : multiplier par ${{eval:10^R2;d}}$, c'est le rang des {{if:R2==3|milliers|{{if:R2==2|centaines|{{if:R2==1|dizaines|{{if:R2==0|unités|{{if:R2==-1|dixièmes|{{if:R2==-2|centièmes|millièmes}}}}}}}}}}}}.",
+							"label": "Dizaines et dixièmes confondus"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{d3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(floor(N/10^(h-2+3)),10)}}",
+							"message": "Ce n'est pas le chiffre des {{if:R3==3|milliers|{{if:R3==2|centaines|{{if:R3==1|dizaines|{{if:R3==0|unités|{{if:R3==-1|dixièmes|{{if:R3==-2|centièmes|millièmes}}}}}}}}}}}} : le zéro de ${{eval:N/1000;d}}$ occupe un rang, compte-le.",
+							"label": "Rang décalé par le zéro"
+						},
+						{
+							"answer": "{{eval:mod(floor(N/10^(3-R3)),10)}}",
+							"message": "Tu as confondu les rangs de part et d'autre des unités : multiplier par ${{eval:10^R3;d}}$, c'est le rang des {{if:R3==3|milliers|{{if:R3==2|centaines|{{if:R3==1|dizaines|{{if:R3==0|unités|{{if:R3==-1|dixièmes|{{if:R3==-2|centièmes|millièmes}}}}}}}}}}}}.",
+							"label": "Dizaines et dixièmes confondus"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{d4}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(floor(N/10^(h-3+3)),10)}}",
+							"message": "Ce n'est pas le chiffre des {{if:R4==3|milliers|{{if:R4==2|centaines|{{if:R4==1|dizaines|{{if:R4==0|unités|{{if:R4==-1|dixièmes|{{if:R4==-2|centièmes|millièmes}}}}}}}}}}}} : le zéro de ${{eval:N/1000;d}}$ occupe un rang, compte-le.",
+							"label": "Rang décalé par le zéro"
+						},
+						{
+							"answer": "{{eval:mod(floor(N/10^(3-R4)),10)}}",
+							"message": "Tu as confondu les rangs de part et d'autre des unités : multiplier par ${{eval:10^R4;d}}$, c'est le rang des {{if:R4==3|milliers|{{if:R4==2|centaines|{{if:R4==1|dizaines|{{if:R4==0|unités|{{if:R4==-1|dixièmes|{{if:R4==-2|centièmes|millièmes}}}}}}}}}}}}.",
+							"label": "Dizaines et dixièmes confondus"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit le rang de chaque chiffre de ${{eval:N/1000;d}}$ : le chiffre multiplié par ${{eval:10^R1;d}}$ est celui des {{if:R1==3|milliers|{{if:R1==2|centaines|{{if:R1==1|dizaines|{{if:R1==0|unités|{{if:R1==-1|dixièmes|{{if:R1==-2|centièmes|millièmes}}}}}}}}}}}}, et ainsi de suite. Le zéro n'apparaît pas dans la décomposition, mais il occupe un rang.",
+					"$${{eval:N/1000;d}}=(\\textcolor{{{color:primary.0}}}{ {{d1}} }\\times {{eval:10^R1;d}})+(\\textcolor{{{color:primary.0}}}{ {{d2}} }\\times {{eval:10^R2;d}})+(\\textcolor{{{color:primary.0}}}{ {{d3}} }\\times {{eval:10^R3;d}})+(\\textcolor{{{color:primary.0}}}{ {{d4}} }\\times {{eval:10^R4;d}})$$"
+				]
+			},
+			"hint": "Écris sous chaque chiffre de ${{eval:N/1000;d}}$ son rang : multiplier par $10$, c'est le rang des dizaines ; par $0{,}1$, celui des dixièmes."
+		},
+		{
+			"statement": "Quel nombre est égal à ${{A}}$ {{if:ra==-1|dixièmes|centièmes}} et ${{B}}$ {{if:rb==-2|{{if:B>1|centièmes|centième}}|{{if:B>1|millièmes|millième}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1|2"
+				},
+				{
+					"name": "g",
+					"expression": "1|2"
+				},
+				{
+					"name": "A",
+					"expression": "11..999"
+				},
+				{
+					"name": "B",
+					"expression": "1..9"
+				},
+				{
+					"name": "ra",
+					"expression": "eval:-u1"
+				},
+				{
+					"name": "rb",
+					"expression": "eval:-u1-g"
+				},
+				{
+					"name": "nA",
+					"expression": "eval:2+min(max((A)-(100)+1,0),1)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:A*10^(3-u1)+B*10^(3-u1-g)"
+				}
+			],
+			"conditions": ["mod(A,10) != 0", "u1+g <= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:A+B/10;d}}",
+							"message": "Tu as écrit ${{A}}$ et ${{B}}$ de part et d'autre de la virgule : ${{A}}$ {{if:ra==-1|dixièmes|centièmes}}, ce n'est pas ${{A}}$ unités.",
+							"label": "Nombres juxtaposés"
+						},
+						{
+							"answer": "{{eval:(A*10^(3-u1)+B*10^(2-u1))/1000;d}}",
+							"message": "Il manque un zéro : il n'y a aucun centième, ce rang s'écrit $0$.",
+							"label": "Rang vide oublié"
+						},
+						{
+							"answer": "{{eval:(10*A+B)/10^(nA+1);d}}",
+							"message": "Tu as écrit ${{A}}$ juste après la virgule : ${{A}}$ {{if:ra==-1|dixièmes|centièmes}}, c'est plus d'une unité.",
+							"label": "Groupement écrit après la virgule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:u1==1|$10$ dixièmes font $1$ unité : ${{A}}$ dixièmes, c'est ${{eval:A/10;d}}$.|$100$ centièmes font $1$ unité : ${{A}}$ centièmes, c'est ${{eval:A/100;d}}$.}} Et ${{B}}$ {{if:rb==-2|{{if:B>1|centièmes|centième}}|{{if:B>1|millièmes|millième}}}}, c'est ${{eval:B*10^rb;d}}$.",
+					"$${{eval:A*10^ra;d}}+{{eval:B*10^rb;d}}=\\textcolor{{{color:primary.0}}}{{{eval:N/1000;d}}}$$"
+				]
+			},
+			"hint": "Convertis d'abord le premier nombre : $10$ dixièmes font $1$ unité, $100$ centièmes font $1$ unité."
+		},
+		{
+			"statement": "Quel nombre est égal à ${{a}}$ {{if:rI==0|{{if:a>1|unités|unité}}|{{if:rI==1|{{if:a>1|dizaines|dizaine}}|{{if:a>1|centaines|centaine}}}}}}{{if:cas==0| et |, }}${{b}}$ {{if:rb==-1|{{if:b>1|dixièmes|dixième}}|{{if:b>1|centièmes|centième}}}}{{if:cas==0|| et ${{c}}$ {{if:c>1|millièmes|millième}}}} ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "rI",
+					"expression": "0..2"
+				},
+				{
+					"name": "cas",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "rb",
+					"expression": "eval:-2+(1-min(abs((cas)-(1)),1))"
+				},
+				{
+					"name": "hc",
+					"expression": "eval:min(cas,1)"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*10^(rI+3)+b*10^(rb+3)+hc*c"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*10^rI+b/10+hc*c/100;d}}",
+							"message": "Tu as oublié le zéro du rang vide après la virgule : {{if:cas==1|il n'y a aucun centième|il n'y a aucun dixième}}, ce rang s'écrit $0$.",
+							"label": "Zéro oublié après la virgule"
+						},
+						{
+							"answer": "{{eval:a*10^rI+mod(N,1000)/10000;d}}",
+							"message": "Tu as écrit les chiffres trop loin après la virgule : les dixièmes sont au premier rang après la virgule, les centièmes au deuxième, les millièmes au troisième.",
+							"label": "Rangs décimaux décalés"
+						},
+						{
+							"answer": "{{eval:a+mod(N,1000)/1000;d}}",
+							"message": "${{a}}$ {{if:rI==0|{{if:a>1|unités|unité}}|{{if:rI==1|{{if:a>1|dizaines|dizaine}}|{{if:a>1|centaines|centaine}}}}}}, ce n'est pas ${{a}}$ {{if:a>1|unités|unité}} : il manque {{if:rI==1|un zéro|deux zéros}} avant la virgule.",
+							"label": "Zéros oubliés avant la virgule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On place chaque chiffre à son rang dans le tableau de numération : ${{a}}$ au rang des {{if:rI==0|unités|{{if:rI==1|dizaines|centaines}}}}, ${{b}}$ au rang des {{if:rb==-1|dixièmes|centièmes}}{{if:cas==0||, ${{c}}$ au rang des millièmes}}.",
+					"Les rangs vides s'écrivent $0$ : le nombre est $\\textcolor{{{color:primary.0}}}{{{eval:N/1000;d}}}$."
+				]
+			},
+			"hint": "Place chaque chiffre dans un tableau de numération ; un rang sans chiffre s'écrit $0$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 703,504",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"g1": "2",
+				"g2": "1",
+				"g3": "2",
+				"a": "7",
+				"b": "3",
+				"c": "5",
+				"d": "4",
+				"ordre": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["703,504"]
+		},
+		{
+			"description": "v0 : zéro oublié après la virgule",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"g1": "2",
+				"g2": "1",
+				"g3": "2",
+				"a": "7",
+				"b": "3",
+				"c": "5",
+				"d": "4",
+				"ordre": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Après la virgule, tu as oublié le zéro d'un rang vide : chaque rang sans chiffre s'écrit $0$."
+			},
+			"answers": ["703,54"]
+		},
+		{
+			"description": "v0 : zéro oublié avant la virgule",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"g1": "2",
+				"g2": "1",
+				"g3": "2",
+				"a": "7",
+				"b": "3",
+				"c": "5",
+				"d": "4",
+				"ordre": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avant la virgule, tu as oublié le zéro d'un rang vide : chaque rang sans chiffre s'écrit $0$."
+			},
+			"answers": ["73,504"]
+		},
+		{
+			"description": "v0 : tous les zéros oubliés",
+			"variationIndex": 0,
+			"variables": {
+				"h": "2",
+				"g1": "2",
+				"g2": "1",
+				"g3": "2",
+				"a": "7",
+				"b": "3",
+				"c": "5",
+				"d": "4",
+				"ordre": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit les chiffres collés, sans les zéros des rangs vides : chaque rang sans chiffre s'écrit $0$."
+			},
+			"answers": ["73,54"]
+		},
+		{
+			"description": "v0 : 7 030,05 (milliers, espacé)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"g1": "2",
+				"g2": "1",
+				"g3": "2",
+				"a": "7",
+				"b": "3",
+				"c": "1",
+				"d": "5",
+				"ordre": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7\\,031,05"]
+		},
+		{
+			"description": "v0 : 7031,05 sans espace",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"g1": "2",
+				"g2": "1",
+				"g3": "2",
+				"a": "7",
+				"b": "3",
+				"c": "1",
+				"d": "5",
+				"ordre": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["7031,05"]
+		},
+		{
+			"description": "v1 : 3 054,7 = 3 × 1 000 + 5 × 10 + 4 × 1 + 7 × 0,1",
+			"variationIndex": 1,
+			"variables": {
+				"h": "3",
+				"z": "1",
+				"d1": "3",
+				"d2": "5",
+				"d3": "4",
+				"d4": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "5", "4", "7"]
+		},
+		{
+			"description": "v1 : zéro sauté (case 2 : 0)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "3",
+				"z": "1",
+				"d1": "3",
+				"d2": "5",
+				"d3": "4",
+				"d4": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce n'est pas le chiffre des dizaines : le zéro de $3054.7$ occupe un rang, compte-le."
+			},
+			"answers": ["3", "0", "4", "7"]
+		},
+		{
+			"description": "v1 : dizaines et dixièmes confondus (case 2 : 7)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "3",
+				"z": "1",
+				"d1": "3",
+				"d2": "5",
+				"d3": "4",
+				"d4": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as confondu les rangs de part et d'autre des unités : multiplier par $10$, c'est le rang des dizaines."
+			},
+			"answers": ["3", "7", "4", "7"]
+		},
+		{
+			"description": "v1 : 21,604 (h = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"z": "3",
+				"d1": "2",
+				"d2": "1",
+				"d3": "6",
+				"d4": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "1", "6", "4"]
+		},
+		{
+			"description": "v2 : 23 dixièmes et 5 centièmes = 2,35",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "1",
+				"g": "1",
+				"A": "23",
+				"B": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,35"]
+		},
+		{
+			"description": "v2 : juxtaposés (23,5)",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "1",
+				"g": "1",
+				"A": "23",
+				"B": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $23$ et $5$ de part et d'autre de la virgule : $23$ dixièmes, ce n'est pas $23$ unités."
+			},
+			"answers": ["23,5"]
+		},
+		{
+			"description": "v2 : après la virgule (0,235)",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "1",
+				"g": "1",
+				"A": "23",
+				"B": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit $23$ juste après la virgule : $23$ dixièmes, c'est plus d'une unité."
+			},
+			"answers": ["0,235"]
+		},
+		{
+			"description": "v2 : 23 dixièmes et 5 millièmes = 2,305",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "1",
+				"g": "2",
+				"A": "23",
+				"B": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,305"]
+		},
+		{
+			"description": "v2 : rang vide oublié (2,35)",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "1",
+				"g": "2",
+				"A": "23",
+				"B": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque un zéro : il n'y a aucun centième, ce rang s'écrit $0$."
+			},
+			"answers": ["2,35"]
+		},
+		{
+			"description": "v2 : 347 centièmes et 1 millième = 3,471",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "2",
+				"g": "1",
+				"A": "347",
+				"B": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3,471"]
+		},
+		{
+			"description": "v3 : 3 unités et 7 centièmes = 3,07",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"rI": "0",
+				"cas": "0",
+				"b": "7",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3,07"]
+		},
+		{
+			"description": "v3 : zéro oublié (3,7)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"rI": "0",
+				"cas": "0",
+				"b": "7",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le zéro du rang vide après la virgule : il n'y a aucun dixième, ce rang s'écrit $0$."
+			},
+			"answers": ["3,7"]
+		},
+		{
+			"description": "v3 : trop loin (3,007)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"rI": "0",
+				"cas": "0",
+				"b": "7",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as écrit les chiffres trop loin après la virgule : les dixièmes sont au premier rang après la virgule, les centièmes au deuxième, les millièmes au troisième."
+			},
+			"answers": ["3,007"]
+		},
+		{
+			"description": "v3 : 4 dizaines, 2 dixièmes et 6 millièmes = 40,206",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"rI": "1",
+				"cas": "1",
+				"b": "2",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["40,206"]
+		},
+		{
+			"description": "v3 : zéro des centièmes oublié (40,26)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"rI": "1",
+				"cas": "1",
+				"b": "2",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le zéro du rang vide après la virgule : il n'y a aucun centième, ce rang s'écrit $0$."
+			},
+			"answers": ["40,26"]
+		},
+		{
+			"description": "v3 : dizaines prises pour des unités (4,206)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"rI": "1",
+				"cas": "1",
+				"b": "2",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$4$ dizaines, ce n'est pas $4$ unités : il manque un zéro avant la virgule."
+			},
+			"answers": ["4,206"]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
+}

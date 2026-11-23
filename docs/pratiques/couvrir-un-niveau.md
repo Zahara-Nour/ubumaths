@@ -253,8 +253,9 @@ d'additionner.", "label": "Soustraction au lieu d'addition"}]`. `answer` s'écri
    multiple « coche les… » ou une saisie) ; la consigne dit ce que la forme exigée refuse
    (« une puissance de $(-3)$ », « en écriture décimale ») : une bonne réponse refusée sans que
    la consigne l'ait demandé est un défaut. **Régler le modèle entier dès sa création** (espaces
-   des grands nombres, remarque « produits », zéros) : sur un modèle publié,
-   `migration-contenu.ts` ne change que variations, specs et description.
+   des grands nombres, remarque « produits », zéros). Sur un modèle publié, `migration-contenu.ts`
+   change aussi les `options` (depuis le 2026-11-23), mais elles jugent **toutes** ses variations,
+   celles déjà en prod comprises : ses specs d'origine doivent rester vertes.
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
    `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
    Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire
@@ -369,7 +370,10 @@ lancer. Le script relève chaque modèle du dossier en prod (apparié par l'`id`
 niveau concordants) : brouillon → ignoré ; publié identique → rien ; publié qui diffère → migré.
 Variation **ajoutée à la fin** ou **corrigée** (signalée en en-tête) : acceptée ; variation
 **retirée ou déplacée** : refus (les réponses des élèves gardent l'indice de leur variation) ;
-autre champ différent de la prod, `checkTemplate` rouge : refus, rien n'est écrit. Sortie :
+**options** changées : écrites et gardées comme le reste, signalées « ⚠️ options modifiées »
+(elles jugent aussi les variations déjà en prod ; `checkTemplate` rejoue leurs specs) ; options
+absentes du fichier mais présentes en prod : refus ; autre champ différent de la prod (niveaux,
+délai, `shared`…), `checkTemplate` rouge : refus, rien n'est écrit. Sortie :
 `supabase/migrations/<horodatage>_questions_<lot>_contenu.sql` (un seul bloc, tout ou rien ;
 garde = contenu exact relevé ; modèle absent → rien ; rollback gardé en commentaire) et sa
 fixture `tests/integration/fixtures/contenu-publie/`, rejouée par

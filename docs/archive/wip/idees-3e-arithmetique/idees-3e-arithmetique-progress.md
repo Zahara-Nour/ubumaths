@@ -5,15 +5,12 @@ skill `idees-rubrique`. Relevé : [idees-3e-arithmetique-releve.md](idees-3e-ari
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3041._
+_Mis à jour le 2026-11-23, chantier clos._
 
-- **État** : #3041 mergée, `db:migrate` fait et vérifié en prod : 6 brouillons rangés (F1 tagué
-  3-010, F3 à F7 sans tag), 90dca27a à 4 variations · **Prochaine action** : lire les verdicts « À
-  revoir » de David (`question_template_reviews`), corriger, puis `publier-lot.ts` en simulation ·
-  **En attente de David** : relecture dans `/dev/modeles` (liens dans l'historique) ; option de
-  90dca27a (fraction non simplifiée refusée ?) quand `migration-contenu.ts` saura écrire les options
-  (branche `feat/migration-contenu-options` d'une autre session) · **Pièges en cours** : aucun ·
-  **Worktree / branche** : aucun (retiré) ; nouveau worktree sur `origin/main` pour la suite.
+- **État** : rubrique publiée : 6 modèles neufs publiés par David, 90dca27a à 4 variations ;
+  journal archivé · **Prochaine action** : aucune · **En attente de David** : refuser une fraction
+  non simplifiée dans 90dca27a, noté dans « Idées en attente » du tableau de répartition ·
+  **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -95,3 +92,19 @@ _Mis à jour le 2026-11-23, après #3041._
   `3~3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3` (90dca27a).
 - Une autre session (`idees-6e-entiers-decimaux`) rend `migration-contenu.ts` capable d'écrire les
   options d'un publié : de quoi refuser une fraction non simplifiée dans 90dca27a, si David le veut.
+
+### 2026-11-23 — publiée, chantier clos
+
+- David valide les 6 modèles. Garde des niveaux verte ; `publier-lot.ts` en simulation : 6
+  brouillons passent. David lance `--publier` ; vérifié en prod : 6 `published`.
+- Tableau de répartition : 3A1 « publiée », réservation de 90dca27a levée, question sur ses options
+  notée en « Idées en attente ». Journal et relevé archivés ici.
+
+### 2026-11-23 — 90dca27a : fraction non simplifiée refusée
+
+- David valide (consigne « Simplifie le plus possible », point 3-001) ; outil prêt (#3042).
+- `options.constraints.reducedFractions: "strict"` sur 90dca27a, pour ses 4 variations : une
+  fraction encore simplifiable passe de ½ point à 0 (`bad_form`, motifs `reducedFractions` et
+  `form`) ; l'élève lit « la fraction peut être simplifiée ». Les 4 specs de ½ point réécrites.
+- Migration `20261123170711_…_publies_contenu.sql` ; tests d'intégration verts.
+- #3046 mergée, `db:migrate` fait ; vérifié en prod : options `reducedFractions: strict`, 4 variations.
