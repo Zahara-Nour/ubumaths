@@ -1,0 +1,50 @@
+{
+	"id": "1cea2ab1-495a-4cca-9f9c-bb25457b4b03",
+	"title": "Relecture — dérivation de 1re, 7 modèles publiés complétés",
+	"grade": "1_SPE",
+	"description": "Relecture dans /dev/modeles des 7 modèles publiés de 1re spé auxquels le chantier idees-1re-derivation a ajouté 13 variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Taux de variation et nombre dérivé",
+			"templateId": "46913a48-c97f-4f00-9cdc-b98214b8420b",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Lire un nombre dérivé sur un graphique",
+			"templateId": "d58208eb-48f8-4a77-b5bb-55cddcd845ab",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer une dérivée",
+			"templateId": "74d77343-34b9-4259-94c2-c9e2c473b052",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Dériver un polynôme",
+			"templateId": "1666b8e9-8225-4e66-8b8c-4d5190806ed1",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Dériver l'inverse d'une fonction",
+			"templateId": "0140fdfa-1066-4885-b0ab-c597ff503283",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Dériver un produit",
+			"templateId": "8997f7c6-4a99-44e0-bd03-e76c7e69c596",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Dériver un quotient",
+			"templateId": "f1440b52-5a2b-4e6a-a112-7182b029d023",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

@@ -6,16 +6,15 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, rubrique publiée._
+_Mis à jour le 2026-11-23, outil n° 54 livré (#3052)._
 
-- **État** : rubrique 6N1 PUBLIÉE (tableau à jour, réservations levées) : 6 modèles neufs publiés (rangés, tagués
-  6-101 / 6-106), 23 variations sur 13 publiés en prod, relecture validée par David (« je valide tout ») ·
-  **Prochaine action** : outils demandés par David « juste après le lot » : n° 54 (droite graduée avec zoom)
-  puis n° 53 (labyrinthe), chacun en chantier d'outil (phase 0 d'abord) ; puis verser ce journal en archive ·
-  **En attente de David** : confirmer que « les outils » = les deux (54 et 53) et l'ordre ; titre de N5 (dit
-  encore « tableau ») à changer dans l'éditeur s'il le veut ; suppression de la branche
-  `docs/idees-6e-entiers-decimaux` (jamais mergée, contenu repris par #3044 ; `git branch -D`) ·
-  **Pièges en cours** : aucun · **Worktree / branche** : aucun (#3048, série de relecture, en cours de merge).
+- **État** : rubrique 6N1 PUBLIÉE (6 neufs, 23 variations sur 13 publiés, relecture validée) · **Prochaine
+  action** : l'outil n° 54 (droite graduée avec zoom) vit dans son chantier
+  [droite-zoom](droite-zoom-progress.md) (outil mergé, #3052 ; reste la PR 2, les modèles 6N1H-3 et
+  6N1H-4) ; puis outil n° 53 (labyrinthe), phase 0 d'abord ; puis verser ce journal en archive ·
+  **En attente de David** : renommer N5 (c178356b) dans l'éditeur en « Écrire un nombre en décimal, en
+  fraction et en pourcentage » (écriture en prod, la sienne) · **Pièges en cours** : aucun ·
+  **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -177,3 +176,5 @@ des modèles de questions.
 - 2026-11-23 : migrations poussées par David (`db push --include-all`), vérifiées en base ; série de relecture
   f9db7096 enregistrée par David (#3048) ; relecture validée ; 6 neufs publiés par David (`publier-lot.ts`),
   vérifiés en base (6 `published`). Rubrique passée à « publiée » dans le tableau.
+- 2026-11-23 : #3048 mergé. David suit les recos : outils 54 puis 53 ; titre de N5 proposé ; branche de la
+  phase 0 supprimée (contenu identique sur main).

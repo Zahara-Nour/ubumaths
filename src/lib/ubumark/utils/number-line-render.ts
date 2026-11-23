@@ -11,6 +11,7 @@ import type {
 	NumberLineValue,
 	NumberLineConfig,
 	NumberLineNode,
+	NumberLinePoint,
 	NumberLineSegment
 } from '#lib/ubumark/types/number-line.ts';
 import { resolveAuthorColor, type AuthorColor } from '#lib/theme/author-color.ts';
@@ -194,7 +195,7 @@ export function computeGraduations(
 				hidden = config.hidden.some((h) => compareNumericNodes(h.ast, matchingLabel.ast) === 0);
 				label = hidden ? '?' : valLatex(matchingLabel);
 			}
-		} else if (isMajor) {
+		} else if (isMajor && config.autoLabels !== false) {
 			label = formatAutoLabel(val);
 			const matchingHidden = config.hidden.find((hv) => Math.abs(numVal(hv) - val) < tolerance);
 			if (matchingHidden) {
@@ -208,6 +209,34 @@ export function computeGraduations(
 	}
 
 	return grads;
+}
+
+// =========================================================================
+// ZOOMS (outil n° 54)
+// =========================================================================
+
+/** Les points qui tombent sur une droite de `startNum` à `endNum` (un zoom), bouts compris */
+export function pointsInside(
+	points: NumberLinePoint[],
+	startNum: number,
+	endNum: number
+): NumberLinePoint[] {
+	const tolerance = 1e-9 * Math.max(1, Math.abs(endNum - startNum));
+	return points.filter((p) => {
+		const v = numVal(p.value);
+		return v >= startNum - tolerance && v <= endNum + tolerance;
+	});
+}
+
+/**
+ * La graduation de `value` porte-t-elle un nombre écrit ? (un pointillé de zoom qui en part
+ * commence sous ce nombre, sinon il le barre)
+ */
+export function isLabeledAt(config: NumberLineConfig, value: number): boolean {
+	const tolerance = numVal(config.step) * 0.001;
+	return computeGraduations(config).some(
+		(g) => g.label !== null && Math.abs(g.value - value) < tolerance
+	);
 }
 
 // =========================================================================

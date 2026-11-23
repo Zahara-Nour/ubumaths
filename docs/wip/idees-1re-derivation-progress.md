@@ -2,20 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3049._
+_Mis à jour le 2026-11-23, après #3051._
 
-- **État** : #3049 mergée, `db:migrate` fait (rangement + contenu) et vérifié en prod : F1 `904fb546`
-  et F2 `d1cf9d7c` en brouillon, rangés et tagués (1SPE-260, 1SPE-272) ; 13 variations ajoutées aux
-  7 publiés. Réservations des 7 modèles levées.
-- **Prochaine action** : série de relecture (`scripts/series/1_SPE-relecture-derivation-publies.json`,
-  branche `chore/idees-1re-derivation-serie`, worktree `../ubumaths-wt-idees-1re-derivation-serie`,
-  simulation verte) : David l'enregistre, je commite l'id (PR). Puis lire les verdicts
-  (`question_template_reviews`), corriger, `publier-lot.ts` en simulation, publication par David.
-- **En attente de David** : `creer-serie.ts --publier` ; relecture des 2 brouillons
-  (`/dev/modeles?point=1SPE-260` et `?point=1SPE-272`) et de la série.
-- **Pièges en cours** : base LOCALE : la migration de contenu y a été jouée sous l'ancien nom
-  `20261123165942` (re-horodatée `173052` avant la PR) : `db:a-jour` peut la voir comme nouvelle.
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-derivation-serie`, `chore/idees-1re-derivation-serie`.
+- **État** : #3049 en prod (rangement + contenu) ; #3051 (série de relecture `1cea2ab1`) mergée.
+  David a validé les 9 modèles dans le chat (« je valide les modèles », 2026-11-23 ; aucun verdict
+  en base). `publier-lot.ts` en simulation : les 2 brouillons passent le contrôle.
+- **Prochaine action** : après la publication par David, vérifier en prod ; tableau de répartition :
+  rubrique « publiée » ; clôture (versement du journal).
+- **En attente de David** :
+  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-1re-derivation-neufs --publier`
+  (depuis le dépôt principal à jour).
+- **Pièges en cours** : base LOCALE : migration de contenu jouée sous l'ancien nom `20261123165942`.
+- **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Journal
 
@@ -61,3 +59,8 @@ _Mis à jour le 2026-11-23, après #3049._
   de l'en-tête du rangement, sans effet). Tests d'intégration des deux fixtures verts.
 - CI verte, merge par `pr:merger`, `migration list --linked` (seules les deux du lot en attente),
   `db:migrate`, état vérifié par le MCP.
+
+### 2026-11-23 — relecture validée
+
+- Série de relecture `1cea2ab1` enregistrée par David ; PR #3051 pour l'id. David : « je valide les
+  modèles ». `publier-lot.ts` en simulation : 2 brouillons passent le contrôle.
