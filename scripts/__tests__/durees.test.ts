@@ -529,9 +529,43 @@ describe('tableau', () => {
 		expect(texte).toContain('LENT');
 		expect(texte).toContain('CI entière');
 	});
+
+	it('pr:merger et test:integration du Mac mini : « simple information », jamais « pas de référence »', () => {
+		const texte = tableau(
+			comparer(
+				[
+					...mesures('local:pr-merger', [480, 480]),
+					...mesures('local:test-integration', [300]),
+					...mesures('local:check-incremental', [18])
+				],
+				REFERENCE,
+				MAINTENANT
+			)
+		);
+		const ligne = (debut: string) => texte.split('\n').find((l) => l.includes(debut)) ?? '';
+		expect(ligne('pr:merger')).toContain('simple information');
+		expect(ligne('test:integration')).toContain('simple information');
+		expect(ligne('check:incremental')).toContain('pas de référence');
+	});
 });
 
 describe('nouvelleReference', () => {
+	it('pr:merger et test:integration du Mac mini restent sans référence, même avec 5 mesures', () => {
+		const { reference, gardees } = nouvelleReference(
+			{ ...REFERENCE, phases: { ...REFERENCE.phases, 'local:pr-merger': 400 } },
+			[
+				...mesures('local:pr-merger', [480, 480, 480, 480, 480]),
+				...mesures('local:test-integration', [300, 300, 300, 300, 300]),
+				...mesures('local:pre-push', [9, 9, 9, 9, 9])
+			],
+			REFERENCE.depuis
+		);
+		expect(reference.phases['local:pr-merger']).toBeUndefined();
+		expect(reference.phases['local:test-integration']).toBeUndefined();
+		expect(reference.phases['local:pre-push']).toBe(9);
+		expect(gardees).not.toContain('local:pr-merger');
+	});
+
 	it('une phase du Mac mini de moins de 20 s entre dans la référence, la suite de la nuit depuis sa propre date', () => {
 		const { reference } = nouvelleReference(
 			REFERENCE,
