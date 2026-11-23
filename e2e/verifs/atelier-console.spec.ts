@@ -490,6 +490,20 @@ test('#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’ic�
 	// Reste à la main : la vue Graphe utilisable à 390 px
 });
 
+// E7 (2026-11-23) : à 393 px, le dernier bouton (plein écran) était coupé au bord
+test('E7 — téléphone : la barre d’icônes tient en entier dans l’écran', async ({ page }) => {
+	for (const width of [375, 393]) {
+		await page.setViewportSize({ width, height: 800 });
+		const buttons = page.getByRole('toolbar', { name: 'Outils de l’atelier' }).getByRole('button');
+		await expect(buttons.last()).toBeVisible();
+		for (const button of await buttons.all()) {
+			const box = await button.boundingBox();
+			expect(box, await button.getAttribute('aria-label')).not.toBeNull();
+			expect(box!.x + box!.width, `${width} px`).toBeLessThanOrEqual(width);
+		}
+	}
+});
+
 test('#1692 — tableur V4 retiré : /spreadsheet mène à l’atelier', async ({ page }) => {
 	for (const address of ['/spreadsheet', '/spreadsheet/00000000-0000-0000-0000-000000000000']) {
 		await gotoRedirected(page, address);
