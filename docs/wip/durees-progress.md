@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3032._
+_Mis à jour le 2026-11-23, après #3034._
 
-- **État** : PR 1 mergée (#3032) : référence validée par David (`scripts/durees/reference.json`), `pnpm durees` (tableau, `--releve`, `--reference`), `pnpm deploy:prod` note ses étapes, relevé de 6 h 40 dans l'installeur launchd. Worktree et branche retirés. Relevé du matin **installé** sur le Mac mini le 2026-11-23 (accord de David) et essayé sous launchd : sortie 0, « RAS ».
-- **Prochaine action** : PR 2 = le local (`check:incremental`, tests, pre-push, `pnpm pr:merger` notent leur durée dans un journal du Mac mini ; `pnpm durees` les montre). Phase 0 déjà validée (ordre tranché, point 3). **Tests d'intégration : David a dit oui le 2026-11-23**, les mesurer aussi dans la PR 2 (`nightly-integration.yml` : la nocturne et les PR qui touchent la base ; attention, une PR peut n'y jouer qu'une partie des tests ou aucun, ces exécutions ne doivent pas compter).
-- **En attente de David** : la validation de la référence des tests d'intégration et des phases locales, une fois mesurées.
-- **Pièges en cours** : `/data` est ignoré par git, d'où la référence sous `scripts/durees/` ; un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; aucune mesure d'avant #3025 (`depuis` de la référence) ; une exécution avec un job sauté (PR de contenu) ne compte pas ; « bascule du site » n'a pas de référence tant qu'il n'y a pas 5 mises en prod notées ; les durées locales dépendent de la charge du Mac mini.
-- **Worktree / branche** : aucun (à créer pour la PR 2 : `ubumaths-wt-durees-local`).
+- **État** : PR 1 (#3032) et PR 2 (#3034) mergées. `pnpm durees` montre la CI, les PR, la mise en prod, la suite d'intégration entière (la nuit, sur une PR) et les commandes du Mac mini (`check:incremental`, `test:server`, `test:client`, `test:integration`, pre-push, `pnpm pr:merger`, notées dans `~/.local/state/durees/local.csv`). Relevé de 6 h 40 installé sous launchd. Worktree et branche retirés.
+- **Prochaine action** : laisser les mesures s'accumuler (5 par phase ; 5 nuits pour la suite de la nuit, soit vers le 2026-11-28), puis montrer le tableau à David et lui proposer la référence des phases nouvelles. Ensuite : versement dans `docs/systeme/` ou `docs/pratiques/` et archivage du journal.
+- **En attente de David** : (1) valider la référence des phases nouvelles, par `pnpm durees --reference` puis une PR (lui seul) ; (2) dire si `pr:merger` (attente de la CI comprise, très variable, double « ouverture → merge ») et `test:integration` local (démarrage de la pile compris) doivent pouvoir alerter, ou rester sans référence, en simple information ; (3) confirmer les choix de la PR 2 (section « PR 2 » : tests ciblés non comptés, plancher de 5 s en local).
+- **Pièges en cours** : `/data` est ignoré par git, d'où la référence sous `scripts/durees/` ; un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; aucune mesure d'avant #3025 (`depuis` de la référence) ; `pnpm durees --reference` refait TOUTES les phases, pas seulement les nouvelles ; la suite entière des tests est rare en local, ses lignes resteront souvent « trop peu » ; les durées locales dépendent de la charge du Mac mini ; les autres worktrees ne notent rien tant qu'ils n'ont pas repris `main`.
+- **Worktree / branche** : aucun.
 
 ## La demande (David, 2026-11-23)
 
