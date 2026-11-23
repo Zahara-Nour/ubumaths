@@ -134,7 +134,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 
 | Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session         |
 | ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ----------------------- |
-| Arithmétique                             | 3A1       | 26        | prise (2026-11-23)                                         | `idees-3e-arithmetique` |
+| Arithmétique                             | 3A1       | 26        | phase 0 (2026-11-23)                                       | `idees-3e-arithmetique` |
 | Puissances                               | 3C1       | 5         | libre                                                      |                         |
 | Calcul littéral, équations               | 3L1       | 55        | libre                                                      |                         |
 | Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                         |
@@ -195,3 +195,5 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   « compléments sur la dérivation ».
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
+- `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le
+  plus grand reste possible dans une division euclidienne par d ? » (3A10), niveau 6e, aucun modèle.
