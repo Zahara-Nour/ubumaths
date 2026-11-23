@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, PR B en cours (E9, E10)._
+_Mis à jour le 2026-11-23, après #3054._
 
-- **État** : PR A mergée (#3050). PR B (E9, E10) codée et vérifiée à l'écran sur `fix/ecarts-verifs-etapes`. Restent : **C** E4, E5 (3) · **D** E12, E13. Laissés : E8, E11, E14, E16, E17.
-- **Prochaine action** : revue `code-reviewer` (Opus), PR B, CI, merge ; puis PR C ou D.
-- **En attente de David** : E18, E19 (ajoutés par `verifs-auto`) ; **E20** (nouveau, démasqué par E10) : `.dériver x/(x+1)` écrit `\frac{x+1-x}{(x+1)^2}` à l'étape « Règle du quotient », réduit à l'étape suivante. Le test #1703 refuse `x + 1 - x` dans toute étape ; la ligne dit « pas resté écrit ». Laquelle des deux lectures ?
-- **Pièges en cours** : `verifs-auto` AJOUTE ici ses nouveaux écarts (numéro suivant). Ne jamais changer l'attendu d'un test de `e2e/verifs/`. Le parseur garde les parenthèses de `(a+b)/c` (réécriture en ligne, unités `1/(2[s])`) : seul le LaTeX d'un `\dfrac` les tait. Chrome n'atteint pas `localhost` : `pnpm lien`. Tests client lourds : par dossier (navigateur de test qui tombe sous la charge).
-- **Worktree / branche** : `ubumaths-wt-ecarts-verifs-etapes`, `fix/ecarts-verifs-etapes`.
+- **État** : PR A (#3050) et PR B (#3054, E9, E10) mergées, pas en prod. Restent à corriger : **C** E4, E5 (3) · **D** E12, E13. Laissés : E8, E11, E14, E16, E17.
+- **Prochaine action** : PR C (E4 lettres qui se chevauchent sur les constructions, moteur de géométrie ; E5 (3) fondu du point caché hors cadre), agent `geometry-expert` ; ou PR D (E12 Firefox, E13 WebKit) selon David.
+- **En attente de David** : E18, E19 (ajoutés par `verifs-auto`) ; **E20** (démasqué par E10) : `.dériver x/(x+1)` écrit `\frac{x+1-x}{(x+1)^2}` à l'étape « Règle du quotient », réduit à l'étape suivante. Le test #1703 refuse `x + 1 - x` dans toute étape ; la ligne dit « pas resté écrit ». Laquelle des deux lectures ?
+- **Pièges en cours** : `verifs-auto` AJOUTE ici ses nouveaux écarts (numéro suivant : E21). Ne jamais changer l'attendu d'un test de `e2e/verifs/`. Chrome n'atteint pas `localhost` : `pnpm lien`. Tests client lourds : par dossier (le navigateur de test tombe sous la charge).
+- **Worktree / branche** : aucun (celui de #3054 retiré).
 
 ## Comment s'en servir
 
