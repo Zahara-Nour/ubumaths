@@ -189,6 +189,18 @@ de contenu appliquée en prod.
 | 08f9ad7b Abscisse d'un point d'inflexion                            | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
 | c4775a3a Intervalle de convexité ou de concavité par le signe de f″ | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
 | e814175b Inégalité déduite de la convexité (tangente)               | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
+| 54107079 Développer                                                 | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| 93a5f7a9 Réduire un produit                                         | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| 77b82211 Réduire une somme                                          | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| dcaabf69 Factoriser avec un facteur commun                          | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| 18e2afca Développer (a + b)² et (a − b)²                            | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| ff9bb2fb Factoriser a² − b²                                         | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| c81c5852 Équation linéaire du premier degré (ax + b = c)            | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| 779ee55a Équation linéaire du premier degré (ax + b = cx + d)       | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| 44a3062b Calculer une quatrième proportionnelle                     | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| 2ab49a6f Résoudre une équation produit nul                          | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| 3806ee3d Résoudre x² = a                                            | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| c32ebff9 Enlever les parenthèses                                    | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
 
 ## Idées en attente
 
@@ -210,3 +222,6 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
   plus grand reste possible dans une division euclidienne par d ? » (3A10), niveau 6e, aucun modèle.
 - `idees-6e-entiers-decimaux` (2026-11-23, David) : pourcentage approché d'une fraction (37/213 ≈ 17 %,
   6N1F-4), hors bornes de 6e, pour la session de la 5e ou de la 4e (ade95ae4 n'a que des cas exacts).
+- `idees-3e-calcul-litteral` (2026-11-23, recommandation suivie par David) : motifs qui se répètent (3L13-7 :
+  nombre de formes du motif n, expression en n, numéro du motif qui utilise N formes ; 3L16 : ratio d'un
+  motif), idée de 4e-5e (4-021 ou 5e), pour la session d'une rubrique de calcul littéral de 4e ou de 5e.
