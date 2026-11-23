@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3031 et la phase 0 de R6._
+_Mis à jour le 2026-11-23, R6 en PR (revue faite, suites corrigées)._
 
-- **État** : lot 10 mergé (#3031) ; liste à 391 lignes. Ordre validé : R6 → tri des lignes → R12 → R13. Phase 0 de R6 validée (§ « R6 ») : 5 projets + Firefox 390 px partiel, `test:verifs:tout`.
-- **Prochaine action** : coder R6 dans un worktree neuf `ubumaths-wt-verifs-auto-r6` (branche `test/verifs-auto-r6`) : projets dans `playwright.verifs.config.ts` (et captures téléphone), marquage « bureau seulement », garde moteur absent, durées avant / après, PR + revue `code-reviewer` Sonnet.
-- **En attente de David** : écart 1/10 (#1369, `cos2π` lu π·cos(2)) — corriger ou laisser ; puis écarts 2 à 10 (§ « Lot 10 rejoué ») un par un ; tâche de nuit à confirmer (après R12).
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; étapes de « Comment ? » chargées à la demande ; ligne de console longue → `shootLine` ; une ligne de la liste peut être périmée par une décision postérieure : chercher la décision avant de crier à l'écart ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #3031).
+- **État** : R6 sur `test/verifs-auto-r6` : six projets, gestes du téléphone (David : « je suis tes recos »), Firefox réglé (`CFFIXED_USER_HOME`). `test:verifs:tout` : 662 verts / 79 rouges en 14,5 min (avant : Chrome seul 2,9 min ; premier passage 341 rouges). Détail : § « R6 — premier passage » et « R6 — rouges restants ».
+- **Prochaine action** : PR R6 au vert → merger ; puis la réponse de David sur la grille de Données au téléphone (PR à part).
+- **En attente de David** : (1) **grille de Données invisible au téléphone** (< ~400 px de large, prod comprise) : corriger dans une PR à part ? (2) écarts moteur : #1469 Firefox, Tab sur bouton (WebKit), #1337 / #1536 / Échap à l'iPhone, rendus WebKit de `e^(x/2)` et `f⁻¹` ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12).
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; carnet rouge en suite complète, vert seul sous `with-db-lock.sh` ; `calc` déplie « Mes objets » au téléphone (`leavePanelAlone` pour les tests du repli) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `ubumaths-wt-verifs-auto-r6` · `test/verifs-auto-r6` · serveur de dev sur 5177.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -168,6 +168,23 @@ David : « tu parles de Safari mais pas des autres navigateurs », puis « pars 
 - **Comportements validés (phase 0)** : `--project <nom>` pour un seul navigateur ; test sans sens au téléphone (`Ctrl+D`, survol) marqué « bureau seulement », sauté ailleurs, attendu jamais changé ; rouge propre à un moteur = écart soumis à David (candidat : verso de carte retournée en miroir sous WebKit, vu par `pnpm voir`) ; moteur absent → arrêt avec la ligne d'installation ; durées avant / après dans la PR ; R6 ne sort aucune ligne de la liste, le tri s'en servira.
 - **Jour / nuit (David : « lancer la suite complète la nuit »)** : le jour, `pnpm test:verifs` = ordinateur Chrome seul (ou `--project`) ; `pnpm test:verifs:tout` = tous les projets. Tâche de nuit sur le Mac mini (`test:verifs:tout` sur `main`, base locale, notification seulement d'un rouge nouveau) : après R12, dont elle prend le filtre — à confirmer par David.
 - **Ordre du découpage validé** (David, 2026-11-23, « je valide ») : R6 → tri des 391 lignes par paquets d'environ 50 (les plus anciennes d'abord) → R12 → R13.
+
+## R6 — premier passage (2026-11-23)
+
+- **Avant** (Chrome seul, ancienne config) : 150 tests, **2,9 min**, 5 rouges : #1674, #1703, #1620 (bug `each_key_duplicate` de « Comment ? », mis de côté), #1369 (écart 1/10), carnet #2731 (vert rejoué seul sous `with-db-lock.sh`).
+- **`test:verifs:tout`** : 769 tests, **15,4 min**, 424 verts, 341 rouges.
+  - **Firefox (172)** : ne démarre pas. `Could not find profile folder`, même lancé à la main hors bac à sable, même après `playwright install --force firefox` (Firefox 159, build 1572, macOS 27.0).
+  - **Ordinateur Safari (14)** : les 4 rouges connus ; 7 × `grantPermissions: clipboard-write` inconnu de WebKit (réglage du test) ; #1709 / redirections « navigation interrompue » (course de redirection sous WebKit) ; cartes lot 3 `toBeFocused` après Tab (Safari ne met pas le focus sur un bouton au Tab : candidat écart moteur) ; #1425 délai.
+  - **Firefox réglé** (David : « cherche une solution maintenant ») : macOS 27 refuse à Firefox `~/Library/Application Support/Firefox` (confidentialité) ; `CFFIXED_USER_HOME` vers un dossier à lui (`projets.ts`). Ordinateur Firefox ensuite : 4 rouges connus + presse-papiers ; `allowClipboard` / `readClipboard` (permissions Chromium seulement, coller ⌘V ailleurs) → tous verts sauf **#1469 sous Firefox, écart moteur** : après « Format de nombre », le 1er clic sur A2 étend la sélection en zone A1:A2 au lieu de choisir A2 (2e clic : A2 choisie) ; Chrome : A2 dès le 1er clic. Firefox 390 px : mêmes rouges de mise en page que le téléphone.
+  - **iPhone (78) et Android (72)** : presque les mêmes tests → la **mise en page téléphone**, pas le moteur. Causes : la console couvre la vue Données et la sous-barre recouvre A1 au défilement (~39) ; cartes de « Mes objets » attendues dans le panneau d'ordinateur (~30) ; grapheur : dézoom attendu > 400, l'écran étroit s'arrête à 400 (14).
+
+## R6 — rouges restants (2026-11-23, `test:verifs:tout` après les gestes du téléphone)
+
+- **Connus, tous projets** : #1674, #1703, #1620 (`each_key_duplicate`, mis de côté), #1369 (écart 1/10). Carnet : rouge en suite complète, vert seul.
+- **Grille de Données invisible au téléphone** (~22 rouges par projet téléphone, dont barre d'icônes, #1442, #1692, #1697) : à 393 px de large, la zone de la grille fait 2 px ; barre, mise en forme, consigne et boutons prennent toute la hauteur. Mesuré à 659, 750 et 844 px de haut ; à 700 px de large : 222 px, 30 cases. **Même chose en prod (chiph.re).** Correctif proposé : `DataView.svelte`, hauteur minimale de la grille au téléphone et défilement de la vue. Pas fait : à trancher par David.
+- **Écarts moteur à présenter** : Tab sur « Options » d'une carte (lot 3) : focus absent sous WebKit (ordinateur Safari et iPhone) ; #1469 Firefox (1er clic après un format = zone A1:A2) ; iPhone : #1337 (bandeau d'atelier partagé + « Mes objets » ouvert : plus de place pour la console à 659 px), #1536 (points posés décalés sur la toile), Échap vide une carte au lieu de rendre sa valeur (lots 4a / 4b ; preuve d'Échap faite sur ordinateur seulement, pas de touche Échap au téléphone) ; captures WebKit : exposant de `e^(x/2)` et `f⁻¹` décollé (#1338).
+- **Revue `code-reviewer` (Sonnet)** : corrigés : seuil du dézoom > 400 gardé sur ordinateur, tests « 390 px » (#1442, #1546) rendus aux téléphones, `readClipboard` qui attend le collage (`try/finally`), « Signaler » masqué sur tout le contexte, `VERIFS_PROJETS` recalculé par le processus principal. Laissés : Échap sans équivalent au téléphone (noté ci-dessus), `showCards({ afterLoad })` attend 5 s sans objet, `calc` déplie toujours « Mes objets » (le repli n'est vérifié que par #1442 / #1546), motif `ordi-*` exige les trois moteurs, `--ui` ne voit qu'`ordi-chrome`, captures iPhone sans `openAtelier` (bouton Signaler et panneau replié visibles).
+- **Adaptations des tests (gestes, jamais l'attendu)** : `showCards` / `leavePanelAlone`, `allowClipboard` / `readClipboard`, `gotoRedirected`, `ownTexts` (rendu MathLive en shadow DOM sous Chromium mobile), pas de la sous-grille au téléphone, dézoom ≥ 400, `@bureau` (raccourcis, clic droit, poignée, tests « ordinateur » ou qui posent eux-mêmes 390 px).
 
 ## Plan d'ensemble
 

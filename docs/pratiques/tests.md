@@ -57,7 +57,7 @@ En cas de doute : « est-ce que ça peut vivre à côté de son code ? » Si oui
 | `tests/integration/**/*.test.ts`              | vitest **`integration`** (node, séquentiel)     | `vitest.integration.config.ts`   | `pnpm test:integration`                          |
 | `garde-fonctions-security-definer.test.ts`    | vitest **`definer-guard`** (seul)               | `vitest.definer-guard.config.ts` | `pnpm test:definer-guard`                        |
 | `e2e/**/*.spec.ts`                            | Playwright (chromium, firefox, webkit)          | `playwright.config.ts`           | `pnpm test:e2e`                                  |
-| `e2e/verifs/*.spec.ts`                        | Playwright (chromium), serveur de dev           | `playwright.verifs.config.ts`    | `pnpm test:verifs` (`VERIFS_PORT`, `VERIFS_URL`) |
+| `e2e/verifs/*.spec.ts`                        | Playwright (6 navigateurs), serveur de dev      | `playwright.verifs.config.ts`    | `pnpm test:verifs` (`VERIFS_PORT`, `VERIFS_URL`) |
 | `eslint-rules/require-zod-validation.test.js` | node                                            | —                                | `pnpm test:lint-rules`                           |
 
 Détails qui comptent :
@@ -97,6 +97,18 @@ avec `VERIFS_URL`). La lancer sous le verrou `supabase` (celui de la base de dev
 `VERIFS_PORT=<port> bash scripts/with-db-lock.sh pnpm test:verifs carnet`. Les courriels sont lus
 dans `.captures/courriels/`, les captures d'écran (téléphone, clair et sombre) écrites dans
 `.captures/verifs/carnet/`.
+
+**Navigateurs de `pnpm test:verifs`** (`e2e/verifs/projets.ts`) : sans `--project`, l'ordinateur
+Chrome seul (le jour) ; `--project <nom>` pour un autre (`ordi-safari`, `ordi-firefox`, `iphone`,
+`android`, `firefox-390`, motif `ordi-*` admis) ; `pnpm test:verifs:tout` pour tous (environ 15 min).
+Un moteur absent arrête tout avec la ligne `pnpm exec playwright install …`. Un test sans sens au
+téléphone (raccourci `Ctrl+…`, clic droit, poignée) porte l'étiquette `@bureau` : sauté sur
+`iphone`, `android`, `firefox-390`. Firefox à 390 px ne joue que les graphiques, les constructions
+et `@clavier-mathlive`. Le carnet ne tourne que sur `ordi-chrome` (décor partagé de la base).
+Au téléphone, les outils communs font les gestes de l'élève : `calc` déplie « Mes objets »
+(`showCards`, sauf `leavePanelAlone`). Firefox sur macOS 27 démarre avec un dossier personnel à
+lui (`CFFIXED_USER_HOME`), sinon il s'arrête (« Could not find profile folder »). Captures « à
+l'œil » au format iPhone : `pnpm test:verifs:captures --project iphone`.
 
 **Intégration : PR ou nightly ? Les deux.** Le workflow `nightly-integration.yml` se déclenche
 (1) chaque nuit, (2) sur toute PR qui touche un fichier de son filtre `paths` (`supabase/**`,

@@ -158,73 +158,75 @@ test('barre d’icônes de l’Atelier — infobulles, grisés, Enregistrer puis
 	await expect(page.locator('article.objet')).toHaveCount(before);
 });
 
-test('#1530 — Repartir de zéro garde la console, Ctrl+Z après Charger, « Annuler » périmé', async ({
-	page
-}, testInfo) => {
-	await calc(page, 'f(x) = x^2');
-	await calc(page, 'a = 2');
-	const lines = page.locator('ol.historique > li');
-	await expect(lines).toHaveCount(2);
+test(
+	'#1530 — Repartir de zéro garde la console, Ctrl+Z après Charger, « Annuler » périmé',
+	{ tag: '@bureau' },
+	async ({ page }, testInfo) => {
+		await calc(page, 'f(x) = x^2');
+		await calc(page, 'a = 2');
+		const lines = page.locator('ol.historique > li');
+		await expect(lines).toHaveCount(2);
 
-	// Repartir de zéro : la confirmation dit que la console garde ses lignes
-	await toolButton(page, 'Repartir de zéro').click();
-	const confirm = page.getByRole('dialog', { name: 'Repartir de zéro ?' });
-	await expect(confirm).toContainText('La console garde ses lignes');
-	await page.getByRole('button', { name: 'Vider l’atelier', exact: true }).click();
-	await expect(page.locator('article.objet')).toHaveCount(0);
-	// Les deux lignes restent, « Atelier vidé. » s'ajoute
-	await expect(lines).toHaveCount(3);
-	await expect(lines.last()).toContainText('Atelier vidé.');
-	// Ctrl+Z rend f et a
-	await page.locator('body').click({ position: { x: 5, y: 5 } });
-	await page.keyboard.press('ControlOrMeta+Z');
-	await expect(cardLocator(page, 'f')).toBeVisible();
-	await expect(cardLocator(page, 'a')).toBeVisible();
+		// Repartir de zéro : la confirmation dit que la console garde ses lignes
+		await toolButton(page, 'Repartir de zéro').click();
+		const confirm = page.getByRole('dialog', { name: 'Repartir de zéro ?' });
+		await expect(confirm).toContainText('La console garde ses lignes');
+		await page.getByRole('button', { name: 'Vider l’atelier', exact: true }).click();
+		await expect(page.locator('article.objet')).toHaveCount(0);
+		// Les deux lignes restent, « Atelier vidé. » s'ajoute
+		await expect(lines).toHaveCount(3);
+		await expect(lines.last()).toContainText('Atelier vidé.');
+		// Ctrl+Z rend f et a
+		await page.locator('body').click({ position: { x: 5, y: 5 } });
+		await page.keyboard.press('ControlOrMeta+Z');
+		await expect(cardLocator(page, 'f')).toBeVisible();
+		await expect(cardLocator(page, 'a')).toBeVisible();
 
-	// Une loi, le repère de Géométrie masqué, Charger un fichier puis Ctrl+Z : P(X=3) se
-	// calcule encore, le repère reste masqué
-	const saved = testInfo.outputPath('atelier.atelier.json');
-	const download = page.waitForEvent('download');
-	await toolButton(page, 'Enregistrer l’atelier').click();
-	await (await download).saveAs(saved);
-	// La loi se tape `.binomiale X 10 0,5` ; « X suit B(10 ; 0,5) », la réponse de la
-	// console, tapé tel quel dit la commande à taper (ligne récrite, 2026-10-26)
-	const copied = await calc(page, 'X suit B(10;0,5)');
-	expect(copied.refused).toBe(true);
-	expect(copied.text).toContain('tape .binomiale X 10 0,5');
-	await calc(page, '.binomiale X 10 0,5');
-	await openView(page, 'Géométrie');
-	await setConsole(page, false);
-	const axes = page.getByRole('checkbox', { name: 'Repère' });
-	await axes.uncheck();
-	await load(page, saved);
-	// La confirmation dit que la console garde ses lignes (plus « l'historique effacé »)
-	const confirmLoad = page.getByRole('dialog', { name: 'Charger cet atelier ?' });
-	await expect(confirmLoad).toContainText('La console garde ses lignes');
-	await expect(confirmLoad).not.toContainText('historique effacé');
-	await page.getByRole('button', { name: 'Charger', exact: true }).click();
-	await expect(toast(page, 'Atelier chargé.')).toBeVisible();
-	await page.locator('body').click({ position: { x: 5, y: 5 } });
-	await page.keyboard.press('ControlOrMeta+Z');
-	await expect(axes).not.toBeChecked();
-	expect((await calc(page, 'P(X=3)')).refused).toBe(false);
+		// Une loi, le repère de Géométrie masqué, Charger un fichier puis Ctrl+Z : P(X=3) se
+		// calcule encore, le repère reste masqué
+		const saved = testInfo.outputPath('atelier.atelier.json');
+		const download = page.waitForEvent('download');
+		await toolButton(page, 'Enregistrer l’atelier').click();
+		await (await download).saveAs(saved);
+		// La loi se tape `.binomiale X 10 0,5` ; « X suit B(10 ; 0,5) », la réponse de la
+		// console, tapé tel quel dit la commande à taper (ligne récrite, 2026-10-26)
+		const copied = await calc(page, 'X suit B(10;0,5)');
+		expect(copied.refused).toBe(true);
+		expect(copied.text).toContain('tape .binomiale X 10 0,5');
+		await calc(page, '.binomiale X 10 0,5');
+		await openView(page, 'Géométrie');
+		await setConsole(page, false);
+		const axes = page.getByRole('checkbox', { name: 'Repère' });
+		await axes.uncheck();
+		await load(page, saved);
+		// La confirmation dit que la console garde ses lignes (plus « l'historique effacé »)
+		const confirmLoad = page.getByRole('dialog', { name: 'Charger cet atelier ?' });
+		await expect(confirmLoad).toContainText('La console garde ses lignes');
+		await expect(confirmLoad).not.toContainText('historique effacé');
+		await page.getByRole('button', { name: 'Charger', exact: true }).click();
+		await expect(toast(page, 'Atelier chargé.')).toBeVisible();
+		await page.locator('body').click({ position: { x: 5, y: 5 } });
+		await page.keyboard.press('ControlOrMeta+Z');
+		await expect(axes).not.toBeChecked();
+		expect((await calc(page, 'P(X=3)')).refused).toBe(false);
 
-	// Atelier sans objet ni grille, avec des lignes : Repartir de zéro grisé
-	await toolButton(page, 'Repartir de zéro').click();
-	await page.getByRole('button', { name: 'Vider l’atelier', exact: true }).click();
-	await expect(toolButton(page, 'Repartir de zéro')).toHaveAttribute('aria-disabled', 'true');
+		// Atelier sans objet ni grille, avec des lignes : Repartir de zéro grisé
+		await toolButton(page, 'Repartir de zéro').click();
+		await page.getByRole('button', { name: 'Vider l’atelier', exact: true }).click();
+		await expect(toolButton(page, 'Repartir de zéro')).toHaveAttribute('aria-disabled', 'true');
 
-	// Charger, modifier une carte, puis « Annuler » du message : « D'autres changements ont
-	// suivi », rien n'est défait
-	await load(page, saved);
-	await expect(toast(page, 'Atelier chargé.')).toBeVisible();
-	await calc(page, 'a = 7');
-	await page
-		.getByRole('region', { name: /^Notifications/ })
-		.getByRole('listitem')
-		.filter({ hasText: 'Atelier chargé.' })
-		.getByRole('button', { name: 'Annuler', exact: true })
-		.click();
-	await expect(toast(page, /D[’']autres changements ont suivi/)).toBeVisible();
-	await expect.poll(async () => (await card(page, 'a')).latex).toBe('7');
-});
+		// Charger, modifier une carte, puis « Annuler » du message : « D'autres changements ont
+		// suivi », rien n'est défait
+		await load(page, saved);
+		await expect(toast(page, 'Atelier chargé.')).toBeVisible();
+		await calc(page, 'a = 7');
+		await page
+			.getByRole('region', { name: /^Notifications/ })
+			.getByRole('listitem')
+			.filter({ hasText: 'Atelier chargé.' })
+			.getByRole('button', { name: 'Annuler', exact: true })
+			.click();
+		await expect(toast(page, /D[’']autres changements ont suivi/)).toBeVisible();
+		await expect.poll(async () => (await card(page, 'a')).latex).toBe('7');
+	}
+);

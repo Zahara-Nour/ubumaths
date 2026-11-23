@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { calc, cardLocator, openAtelier } from './helpers/atelier';
+import { calc, cardLocator, openAtelier, showCards } from './helpers/atelier';
 import { nameColumn, openView, typeColumn } from './helpers/grille';
 
 /**
@@ -142,6 +142,7 @@ test('#1746 — Python → atelier : liste, effectifs, booléens refusés, lien 
 	await expect(atelier.getByText(/1 objet ajouté dans ton atelier/)).toBeVisible();
 	// Recharger l'onglet → « déjà été ouverte… », ton atelier s'ouvre (L gardée)
 	await atelier.reload();
+	await showCards(atelier, { afterLoad: true });
 	await expect(atelier.getByText(/a déjà été ouverte/)).toBeVisible();
 	await expect(cardLocator(atelier, 'L')).toBeVisible();
 	await atelier.close();
@@ -201,5 +202,6 @@ test('#1697 — Q1 : du code écrit dans /python, rouvert depuis l’atelier →
 	await writeCode(again, 'print(2)');
 	await again.waitForTimeout(800);
 	await again.reload();
+	await showCards(again, { afterLoad: true });
 	await expect.poll(() => code(again)).toBe('print(2)');
 });

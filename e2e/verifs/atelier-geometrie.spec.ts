@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
-import { calc, card, cardLocator, normalizeLatex, openAtelier } from './helpers/atelier';
+import {
+	calc,
+	card,
+	cardLocator,
+	normalizeLatex,
+	openAtelier,
+	showCards,
+	leavePanelAlone
+} from './helpers/atelier';
 import { openView, setConsole } from './helpers/grille';
 
 /**
@@ -312,6 +320,7 @@ test('#1627 — petit point de couleur, cartes sans nature, console en bas, noms
 test('#1546 — téléphone (390 px) : « Mes objets » replié, la place rendue, le compte suit', async ({
 	page
 }) => {
+	leavePanelAlone(page);
 	await page.setViewportSize({ width: 390, height: 844 });
 	// Atelier vide : panneau déplié, sans flèche
 	const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
@@ -354,12 +363,17 @@ test('#1546 — téléphone (390 px) : « Mes objets » replié, la place rendue
 	await expect(f.locator('math-field')).toBeVisible();
 });
 
-test('#1546 — ordinateur : rien ne change, « Mes objets » déplié sans flèche', async ({ page }) => {
-	await calc(page, 'A = (1 ; 2)');
-	await calc(page, 'B = (3 ; 0)');
-	await page.reload();
-	const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
-	await expect(panel).toBeVisible();
-	await expect(cardLocator(page, 'A')).toBeVisible();
-	await expect(panel.getByRole('button', { name: 'Mes objets', exact: true })).toHaveCount(0);
-});
+test(
+	'#1546 — ordinateur : rien ne change, « Mes objets » déplié sans flèche',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		await calc(page, 'A = (1 ; 2)');
+		await calc(page, 'B = (3 ; 0)');
+		await page.reload();
+		await showCards(page, { afterLoad: true });
+		const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
+		await expect(panel).toBeVisible();
+		await expect(cardLocator(page, 'A')).toBeVisible();
+		await expect(panel.getByRole('button', { name: 'Mes objets', exact: true })).toHaveCount(0);
+	}
+);

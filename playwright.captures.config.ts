@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { requestedProjects } from './e2e/verifs/projets';
 
 /**
  * Captures des vérifications « à l'œil » (`e2e/verifs/captures/`)
@@ -15,6 +16,10 @@ import { defineConfig, devices } from '@playwright/test';
  * adresse que localhost.
  *
  * Port : `VERIFS_PORT` (5176 par défaut), comme `playwright.verifs.config.ts`.
+ *
+ * iPhone (moteur de Safari, WebKit) : `pnpm test:verifs:captures --project iphone`,
+ * ou avec les autres par `VERIFS_TOUT=1`. Ses captures portent `-iphone` dans
+ * leur nom et « iPhone (Safari) » sur la page à cocher.
  */
 
 const port = Number(process.env.VERIFS_PORT ?? 5176);
@@ -22,6 +27,11 @@ const port = Number(process.env.VERIFS_PORT ?? 5176);
 // lancements en même temps se gâteraient leurs traces. Posé dans l'environnement
 // avant le départ des workers, qui relisent cette config et en héritent.
 process.env.CAPTURES_RUN ??= String(Date.now());
+// Le projet `iphone` n'est déclaré que demandé : sans `--project`, Playwright
+// lancerait tous les projets déclarés. Décidé dans le processus principal,
+// transmis aux workers par l'environnement (comme `CAPTURES_RUN`).
+process.env.CAPTURES_IPHONE ??=
+	process.env.VERIFS_TOUT === '1' || requestedProjects(process.argv).includes('iphone') ? '1' : '0';
 
 export default defineConfig({
 	testDir: './e2e/verifs/captures',
@@ -44,7 +54,10 @@ export default defineConfig({
 			name: 'captures',
 			dependencies: ['comptes'],
 			use: { ...devices['Desktop Chrome'] }
-		}
+		},
+		...(process.env.CAPTURES_IPHONE === '1'
+			? [{ name: 'iphone', dependencies: ['comptes'], use: { ...devices['iPhone 15'] } }]
+			: [])
 	],
 	webServer: {
 		command: `pnpm dev --port ${port} --strictPort`,

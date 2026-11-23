@@ -17,7 +17,11 @@ import {
 	openAtelier,
 	steps,
 	stepsAs,
-	type Answer
+	type Answer,
+	allowClipboard,
+	readClipboard,
+	showCards,
+	gotoRedirected
 } from './helpers/atelier';
 
 /**
@@ -540,6 +544,7 @@ test('#1333 — grapheur : aire sous une courbe avec un pôle dans l’intervall
 	page
 }) => {
 	await page.goto('/grapheur');
+	await showCards(page, { afterLoad: true });
 	await calc(page, 'f(x) = 3x^2/(x^3-2)');
 	await calc(page, 'g(x) = x^2');
 	await setConsole(page, false);
@@ -768,7 +773,7 @@ test('#1710 — « Comment ? » de .limite : décimaux, facteur commun', async (
 
 test('#1709 — /calc retirée : redirigée vers /atelier', async ({ page }) => {
 	for (const address of ['/calc', '/calc/', '/calc?share=abc']) {
-		await page.goto(address);
+		await gotoRedirected(page, address);
 		await expect(page).toHaveURL(/\/atelier$/);
 	}
 	const sum = await calc(page, '2+3*4');
@@ -1234,54 +1239,62 @@ async function pressVirtualKey(page: Page, label: string): Promise<void> {
 		.click();
 }
 
-test('#1368 — « Écriture mathématique » : touche ln du clavier virtuel, \\ln x tapé : calculés', async ({
-	page
-}) => {
-	await chooseSetting(page, 'Écriture mathématique');
-	// La vraie touche ln : elle insère \ln(▢) à parenthèses, on y tape x
-	await typeInMathConsole(page, '1');
-	await page.keyboard.press('Backspace');
-	await pressVirtualKey(page, 'ln');
-	await page.keyboard.type('x');
-	expect(normalizeLatex(await mathValue(mathConsole(page)))).toBe('\\ln(x)');
-	const key = await submitMathLine(page);
-	expect(key.refused).toBe(false);
-	expectLatex(key, '\\ln\\left( x \\right)');
+test(
+	'#1368 — « Écriture mathématique » : touche ln du clavier virtuel, \\ln x tapé : calculés',
+	{ tag: '@clavier-mathlive' },
+	async ({ page }) => {
+		await chooseSetting(page, 'Écriture mathématique');
+		// La vraie touche ln : elle insère \ln(▢) à parenthèses, on y tape x
+		await typeInMathConsole(page, '1');
+		await page.keyboard.press('Backspace');
+		await pressVirtualKey(page, 'ln');
+		await page.keyboard.type('x');
+		expect(normalizeLatex(await mathValue(mathConsole(page)))).toBe('\\ln(x)');
+		const key = await submitMathLine(page);
+		expect(key.refused).toBe(false);
+		expectLatex(key, '\\ln\\left( x \\right)');
 
-	// \ln x tapé tel quel (sans parenthèses, LaTeX) : lu ln de x, calculé
-	await typeInMathConsole(page, '\\ln x');
-	expect(normalizeLatex(await mathValue(mathConsole(page)))).toBe('\\lnx');
-	const typed = await submitMathLine(page);
-	expect(typed.refused).toBe(false);
-	expectLatex(typed, '\\ln\\left( x \\right)');
-	// `ln x` sans parenthèses refusé : même refus qu'au clavier (test « #1368 » plus haut)
-});
+		// \ln x tapé tel quel (sans parenthèses, LaTeX) : lu ln de x, calculé
+		await typeInMathConsole(page, '\\ln x');
+		expect(normalizeLatex(await mathValue(mathConsole(page)))).toBe('\\lnx');
+		const typed = await submitMathLine(page);
+		expect(typed.refused).toBe(false);
+		expectLatex(typed, '\\ln\\left( x \\right)');
+		// `ln x` sans parenthèses refusé : même refus qu'au clavier (test « #1368 » plus haut)
+	}
+);
 
-test('#1369 — « Écriture mathématique » : cos2π refusé, « écris cos(…) »', async ({ page }) => {
-	await chooseSetting(page, 'Écriture mathématique');
-	await typeInMathConsole(page, 'cos2pi');
-	const glued = await submitMathLine(page);
-	expect(glued.refused, `réponse : « ${glued.text} »`).toBe(true);
-	expect(glued.text).toContain('écris cos(');
-});
+test(
+	'#1369 — « Écriture mathématique » : cos2π refusé, « écris cos(…) »',
+	{ tag: '@clavier-mathlive' },
+	async ({ page }) => {
+		await chooseSetting(page, 'Écriture mathématique');
+		await typeInMathConsole(page, 'cos2pi');
+		const glued = await submitMathLine(page);
+		expect(glued.refused, `réponse : « ${glued.text} »`).toBe(true);
+		expect(glued.text).toContain('écris cos(');
+	}
+);
 
-test('#1369 — « Écriture mathématique » : \\sin x (touche sin) lu normalement', async ({
-	page
-}) => {
-	await chooseSetting(page, 'Écriture mathématique');
-	await typeInMathConsole(page, '1');
-	await page.keyboard.press('Backspace');
-	await pressVirtualKey(page, 'sin');
-	await page.keyboard.type('x');
-	const key = await submitMathLine(page);
-	expect(key.refused).toBe(false);
-	expectLatex(key, '\\sin\\left( x \\right)');
+test(
+	'#1369 — « Écriture mathématique » : \\sin x (touche sin) lu normalement',
+	{ tag: '@clavier-mathlive' },
+	async ({ page }) => {
+		await chooseSetting(page, 'Écriture mathématique');
+		await typeInMathConsole(page, '1');
+		await page.keyboard.press('Backspace');
+		await pressVirtualKey(page, 'sin');
+		await page.keyboard.type('x');
+		const key = await submitMathLine(page);
+		expect(key.refused).toBe(false);
+		expectLatex(key, '\\sin\\left( x \\right)');
 
-	await typeInMathConsole(page, '\\sin x');
-	const typed = await submitMathLine(page);
-	expect(typed.refused).toBe(false);
-	expectLatex(typed, '\\sin\\left( x \\right)');
-});
+		await typeInMathConsole(page, '\\sin x');
+		const typed = await submitMathLine(page);
+		expect(typed.refused).toBe(false);
+		expectLatex(typed, '\\sin\\left( x \\right)');
+	}
+);
 
 test('#1374 — définitions en erreur : circulaire, dépendance, fonction prise pour un nombre', async ({
 	page
@@ -1332,8 +1345,8 @@ test('#1404 — conversions, intégrales refusées, réciproque à paramètres',
 });
 
 test('#1417 — Copier, Copier en LaTeX, valeur approchée copiée', async ({ page }) => {
-	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-	const clipboard = () => page.evaluate(() => navigator.clipboard.readText());
+	await allowClipboard(page);
+	const clipboard = () => readClipboard(page);
 	const notice = page.locator('p.retour');
 
 	const developed = await calc(page, '.développer (2x-1)(x+3)');

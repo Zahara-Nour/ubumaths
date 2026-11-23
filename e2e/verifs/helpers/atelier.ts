@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 /**
  * La console de l'Atelier (`/atelier`), pilotée comme un élève : on tape une
@@ -16,7 +16,18 @@ export interface Answer {
 	refused: boolean;
 }
 
+/** Le bouton « Signaler » du serveur de dev (jamais en prod) : au téléphone, il couvre des boutons */
+const HIDE_REPORT_BUTTON = 'button[aria-controls="signaler-dev"] { display: none !important; }';
+
 export async function openAtelier(page: Page): Promise<void> {
+	// Posé à chaque chargement, sur toutes les pages du contexte (lien ouvert, fenêtre de Python)
+	await page.context().addInitScript((css) => {
+		addEventListener('DOMContentLoaded', () => {
+			const style = document.createElement('style');
+			style.textContent = css;
+			document.head.append(style);
+		});
+	}, HIDE_REPORT_BUTTON);
 	await page.goto('/atelier');
 	await expect(consoleInput(page)).toBeVisible();
 }
@@ -48,7 +59,59 @@ export async function calc(page: Page, input: string): Promise<Answer> {
 	const latex = (await math.count()) > 0 ? await math.getAttribute('data-latex') : null;
 	const text = ((await line.locator('.reponse').innerText()) ?? '').replace(/\s+/g, ' ').trim();
 	const refused = ((await line.getAttribute('class')) ?? '').includes('refus');
+	// Au téléphone, « Mes objets » se replie dès son premier objet : l'élève le déplie pour voir ses cartes
+	await showCards(page);
 	return { line, latex, text, refused };
+}
+
+/**
+ * Ouvre une adresse retirée qui redirige vers une autre : WebKit interrompt le
+ * chargement par la redirection, même en n'attendant que son début. Cette
+ * interruption-là seulement est attendue ; l'arrivée se vérifie ensuite.
+ */
+export async function gotoRedirected(page: Page, address: string): Promise<void> {
+	await page.goto(address).catch((error: unknown) => {
+		if (!String(error).includes('is interrupted by another navigation')) throw error;
+	});
+}
+
+/**
+ * Le texte direct d'une formule (son LaTeX) : sous Chromium mobile, MathLive y
+ * ajoute son rendu (shadow DOM), que `toHaveText` lirait en plus.
+ */
+export function ownTexts(formulas: Locator): Promise<string[]> {
+	return formulas.evaluateAll((elements) =>
+		elements.map((element) => element.textContent?.trim() ?? '')
+	);
+}
+
+/** Téléphone : l'Atelier passe à une colonne à 720 px et moins (`ObjectPanel.svelte`) */
+export function isNarrow(page: Page): boolean {
+	return (page.viewportSize()?.width ?? Infinity) <= 720;
+}
+
+/** Les pages dont le test règle lui-même « Mes objets » (tests du repli au téléphone) */
+const panelLeftAlone = new WeakSet<Page>();
+
+/** `calc` et les cartes ne déplient plus « Mes objets » : le test le règle lui-même */
+export function leavePanelAlone(page: Page): void {
+	panelLeftAlone.add(page);
+}
+
+/**
+ * Déplie « Mes objets » au téléphone, s'il est replié ; sur ordinateur il l'est
+ * toujours. `afterLoad` : juste après un chargement (rechargement, lien), le
+ * temps que les cartes reviennent et que la flèche paraisse.
+ */
+export async function showCards(page: Page, options: { afterLoad?: boolean } = {}): Promise<void> {
+	if (!isNarrow(page) || panelLeftAlone.has(page)) return;
+	const toggle = page.getByRole('button', { name: 'Mes objets', exact: true });
+	if (options.afterLoad) {
+		await toggle.waitFor({ state: 'attached', timeout: 5000 }).catch(() => undefined);
+	}
+	if ((await toggle.count()) === 0) return;
+	if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
+	await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 }
 
 /**
@@ -163,6 +226,7 @@ export async function cards(page: Page): Promise<Card[]> {
 
 /** La carte de ce nom, lue ; échoue si elle n'est pas affichée */
 export async function card(page: Page, name: string): Promise<Card> {
+	await showCards(page);
 	await expect(cardLocator(page, name)).toBeVisible();
 	const found = (await cards(page)).find((each) => each.name === name);
 	if (found === undefined) throw new Error(`carte ${name} introuvable`);
@@ -171,6 +235,7 @@ export async function card(page: Page, name: string): Promise<Card> {
 
 /** Choisit une action du menu « Options » d'une carte (« Dériver », « Réciproque »…) */
 export async function cardAction(page: Page, name: string, action: string): Promise<void> {
+	await showCards(page);
 	await cardLocator(page, name)
 		.getByRole('button', { name: `Options de ${name}` })
 		.click();
@@ -179,6 +244,7 @@ export async function cardAction(page: Page, name: string, action: string): Prom
 
 /** Met le focus dans le champ d'une carte (MathLive) */
 export async function focusCardField(page: Page, name: string): Promise<void> {
+	await showCards(page);
 	const field = cardLocator(page, name).locator('math-field');
 	// Juste après un calcul, la console reprend le focus au premier clic
 	await expect(async () => {
@@ -245,4 +311,54 @@ export async function retypeCard(page: Page, name: string, keys: string): Promis
 /** Le LaTeX que montre le champ d'une carte */
 export async function fieldValue(page: Page, name: string): Promise<string> {
 	return normalizeLatex(await mathValue(cardLocator(page, name).locator('math-field')));
+}
+
+/**
+ * Le presse-papiers lu et écrit par le test, selon le moteur : Chromium veut
+ * les deux permissions ; WebKit et Firefox ne les connaissent pas
+ * (`grantPermissions` refuse, « Unknown permission ») et laissent la page s'en
+ * servir sans elles.
+ */
+export async function allowClipboard(page: Page): Promise<void> {
+	if (test.info().project.use.defaultBrowserType === 'chromium') {
+		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	}
+}
+
+/**
+ * Le texte du presse-papiers. Chromium le rend à `readText()` ; WebKit refuse
+ * `readText()` hors d'un geste de l'utilisateur : on colle (⌘/Ctrl+V) dans un
+ * champ provisoire, comme un élève, puis on le retire et on rend le focus.
+ */
+export async function readClipboard(page: Page): Promise<string> {
+	if (test.info().project.use.defaultBrowserType === 'chromium') {
+		return page.evaluate(() => navigator.clipboard.readText());
+	}
+	const focused = await page.evaluateHandle(() => document.activeElement);
+	const field = page.locator('#verifs-presse-papiers');
+	try {
+		await page.evaluate(() => {
+			const relay = document.createElement('textarea');
+			relay.id = 'verifs-presse-papiers';
+			relay.style.position = 'fixed';
+			relay.style.inset = '0 auto auto 0';
+			document.body.append(relay);
+		});
+		// Le collage arrive après coup : coller dans un champ vide jusqu'à lire quelque chose
+		let text = '';
+		await expect(async () => {
+			await field.fill('');
+			await field.focus();
+			await page.keyboard.press('ControlOrMeta+V');
+			text = await field.inputValue();
+			expect(text).not.toBe('');
+		}).toPass({ timeout: 5000 });
+		return text;
+	} finally {
+		// ⚠️ Le focus quitte la page un instant : une carte en cours de frappe serait rangée
+		await page.evaluate((element) => {
+			document.getElementById('verifs-presse-papiers')?.remove();
+			if (element instanceof HTMLElement) element.focus();
+		}, focused);
+	}
 }

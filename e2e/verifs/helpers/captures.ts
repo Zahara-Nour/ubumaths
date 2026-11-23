@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import type { Locator, Page } from '@playwright/test';
+import { test, type Locator, type Page } from '@playwright/test';
 
 /**
  * Captures pour la page à cocher (`pnpm verifs:captures-page`)
@@ -43,6 +43,11 @@ export interface Shot {
 	 * récent de chaque ligne. Absent des fiches d'avant le 2026-11-23.
 	 */
 	run?: string;
+	/**
+	 * Le projet qui l'a prise : `iphone` (WebKit) ; absent = Chromium (projet
+	 * `captures`, et fiches d'avant R6).
+	 */
+	browser?: string;
 }
 
 // ============================================================================
@@ -57,6 +62,9 @@ function slug(text: string): string {
 		.replace(/^-|-$/g, '')
 		.toLowerCase();
 }
+
+/** Le projet des captures Chromium, celui de toujours */
+const DEFAULT_BROWSER = 'captures';
 
 /** Thème de la page : l'appli suit celui du système (ModeWatcher) */
 export async function setTheme(page: Page, theme: Theme): Promise<void> {
@@ -93,7 +101,9 @@ export async function shoot(
 	const theme = options.theme ?? 'clair';
 	const width = page.viewportSize()?.width ?? 0;
 	const order = options.order ?? nextOrder(line);
-	const file = `${slug(line.pr)}--${String(order).padStart(2, '0')}-${slug(caption)}-${theme}-${width}.jpg`;
+	const project = test.info().project.name;
+	const browser = project === DEFAULT_BROWSER ? undefined : project;
+	const file = `${slug(line.pr)}--${String(order).padStart(2, '0')}-${slug(caption)}-${theme}-${width}${browser ? `-${browser}` : ''}.jpg`;
 	mkdirSync(CAPTURES_DIR, { recursive: true });
 	const screenshot = { path: `${CAPTURES_DIR}/${file}`, type: 'jpeg', quality: 80 } as const;
 	if (options.target) await options.target.screenshot(screenshot);
@@ -107,7 +117,8 @@ export async function shoot(
 		width,
 		file,
 		order,
-		run: process.env.CAPTURES_RUN ?? '0'
+		run: process.env.CAPTURES_RUN ?? '0',
+		...(browser ? { browser } : {})
 	};
 	writeFileSync(
 		`${CAPTURES_DIR}/${file.replace(/\.jpg$/, '.json')}`,
