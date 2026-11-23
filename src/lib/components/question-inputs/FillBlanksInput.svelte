@@ -69,6 +69,7 @@
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '#lib/components/markdown/nodes/ParagraphNode.svelte';
 	import MathBlock from '#lib/components/markdown/nodes/MathBlock.svelte';
+	import { IMPOSSIBLE_ANSWER, isImpossibleAnswer } from '#lib/questions/impossible-answer.ts';
 	import MathPrompt from '#lib/components/markdown/nodes/MathPrompt.svelte';
 	import HeadingNode from '#lib/components/markdown/nodes/HeadingNode.svelte';
 	import StaticBlockNode from '#lib/components/markdown/nodes/StaticBlockNode.svelte';
@@ -403,6 +404,83 @@
 
 	let container: HTMLDivElement | undefined = $state();
 
+	/**
+	 * Cases ordinaires à bouton « impossible » (index de la case + texte du bouton) : seulement
+	 * une vraie case de formule, écrite `\placeholder[N]{}` dans l'énoncé. Une grille d'opération,
+	 * un choix, une construction ou un geste n'en ont pas, même si `blankDefaults` porte un texte.
+	 */
+	let impossibleBlanks = $derived(
+		blanks.flatMap((blank, index) =>
+			blank.type === 'math' &&
+			!blank.answerKind &&
+			!blank.choice &&
+			!blank.construction &&
+			!blank.construire &&
+			blank.impossibleLabel &&
+			new RegExp(`\\\\placeholder\\[${index}\\]`).test(statement)
+				? [{ index, label: blank.impossibleLabel }]
+				: []
+		)
+	);
+
+	/**
+	 * Bouton enfoncé = valeur de la case égale à la marque réservée `IMPOSSIBLE_ANSWER`, que rien
+	 * de tapé ne produit : l'état du bouton est à part (décision de David, 2026-11-23).
+	 */
+	function isImpossiblePressed(index: number): boolean {
+		return isImpossibleAnswer(values[index]);
+	}
+
+	/** Champ MathLive qui porte la case `index` (MathLive chargé seulement) */
+	function mathFieldOfBlank(index: number): MathfieldElement | undefined {
+		const fields = container?.querySelectorAll<MathfieldElement>('math-field') ?? [];
+		return Array.from(fields).find(
+			(field) =>
+				typeof field.getPrompts === 'function' && field.getPrompts().includes(String(index))
+		);
+	}
+
+	/** Case du bouton : vidée et verrouillée (grisée par MathLive) quand il est enfoncé, libre sinon */
+	function syncImpossiblePrompt(index: number, pressed: boolean) {
+		const field = mathFieldOfBlank(index);
+		if (!field) return;
+		const id = String(index);
+		if (pressed && field.getPromptValue(id) !== '') {
+			field.setPromptValue(id, '', { silenceNotifications: true });
+		}
+		if (field.getPromptState(id)[1] !== pressed) field.setPromptState(id, undefined, pressed);
+	}
+
+	/** Clic : bouton enfoncé, case vidée et verrouillée ; second clic : case libre et vide */
+	function toggleImpossible(index: number) {
+		if (effectiveDisabled) return;
+		const pressed = !isImpossiblePressed(index);
+		values[index] = pressed ? IMPOSSIBLE_ANSWER : '';
+		valuesLatex[index] = values[index];
+		syncImpossiblePrompt(index, pressed);
+	}
+
+	// Garde défensive : valeur qui porte déjà la marque (aucun parent ne la remonte aujourd'hui ;
+	// clic avant le chargement de MathLive) → case verrouillée dès que MathLive est là
+	$effect(() => {
+		const states = impossibleBlanks.map(({ index }) => ({
+			index,
+			pressed: isImpossiblePressed(index)
+		}));
+		if (!container || states.length === 0 || showCorrectAnswers) return;
+		let cancelled = false;
+		void customElements.whenDefined('math-field').then(() => {
+			// Les champs se montent après la définition : un tour de plus
+			requestAnimationFrame(() => {
+				if (cancelled) return;
+				for (const { index, pressed } of states) syncImpossiblePrompt(index, pressed);
+			});
+		});
+		return () => {
+			cancelled = true;
+		};
+	});
+
 	/** Champ MathLive (sans importer mathlive à l'exécution : le composant est rendu côté serveur) */
 	function isMathField(target: EventTarget | null): target is MathfieldElement {
 		return target instanceof HTMLElement && target.tagName === 'MATH-FIELD';
@@ -714,6 +792,10 @@
 	 */
 	function handleInputChange(index: number, value: string) {
 		if (effectiveDisabled) return;
+
+		// Bouton « impossible » enfoncé : la case verrouillée relue vide (frappe dans une autre case
+		// de la formule) ne l'efface pas ; seul un second clic sur le bouton le relâche
+		if (isImpossiblePressed(index)) return;
 
 		// Update values array
 		if (index >= 0 && index < blanks.length) {
@@ -1525,6 +1607,24 @@
 		{/each}
 	{/if}
 
+	<!-- Cases « expression, ou bien : impossible » : un bouton par case, état = marque de la case -->
+	{#if impossibleBlanks.length > 0 && !flashMode}
+		<div class="mt-2 flex flex-wrap gap-2">
+			{#each impossibleBlanks as { index, label } (index)}
+				{@const pressed = isImpossiblePressed(index)}
+				<button
+					type="button"
+					class="impossible-toggle"
+					aria-pressed={pressed}
+					disabled={effectiveDisabled}
+					onclick={() => toggleImpossible(index)}
+				>
+					{impossibleBlanks.length > 1 ? `Case ${index + 1} : ${label}` : label}
+				</button>
+			{/each}
+		</div>
+	{/if}
+
 	<!-- Messages par blanc (après correction) -->
 	<div role="status" aria-live="polite" aria-label="Messages par blanc">
 		{#if blankMessages.length > 0}
@@ -1549,6 +1649,34 @@
 </div>
 
 <style>
+	/* Bouton « impossible » : contour sobre, plein quand il est enfoncé ; cible tactile ≥ 44 px */
+	.impossible-toggle {
+		min-height: 2.75rem;
+		padding: 0.25rem 1rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md, 0.5rem);
+		background: var(--color-background);
+		color: var(--color-foreground);
+		font-size: 0.95rem;
+		cursor: pointer;
+	}
+
+	.impossible-toggle[aria-pressed='true'] {
+		border-color: var(--color-primary);
+		background: var(--color-primary);
+		color: var(--color-primary-foreground);
+	}
+
+	.impossible-toggle:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 2px;
+	}
+
+	.impossible-toggle:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
 	.fill-blanks-container {
 		width: 100%;
 	}
