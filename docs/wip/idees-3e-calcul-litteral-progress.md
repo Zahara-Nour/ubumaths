@@ -9,10 +9,10 @@ Idées reprises d'ailleurs, rubrique « Calcul littéral, équations » de Trois
 _Mis à jour le 2026-11-23, relevé en cours._
 
 - **État** : rubrique prise (commit `55af8a2c0` sur `main`) ; nos modèles relevés en prod (ci-dessous) ;
-  lecture du code des 47 exercices **à refaire** (les quatre agents tournaient au `/clear`, leurs
-  rapports sont perdus) · **Prochaine action** : relancer les quatre agents (lots A 3L10 à 3L11-5,
-  B 3L11-6 à 3L11-17, C 3L12 à 3L13-5, D 3L13-6 à 3L16), écrire le relevé, puis phase 0 (page à
-  cocher) · **En attente de David** : rien encore ·
+  notes de lecture des lots A (3L10 à 3L11-5) et D (3L13-6 à 3L16) dans le relevé · **Prochaine
+  action** : lots B (3L11-6 à 3L11-17) et C (3L12 à 3L13-5) — si leurs notes manquent au relevé,
+  relancer ces deux agents (Sonnet) ; puis tableau des verdicts, phase 0 (page à cocher) ·
+  **En attente de David** : rien encore ·
   **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-calcul-litteral`,
   `feat/idees-3e-calcul-litteral`.
 

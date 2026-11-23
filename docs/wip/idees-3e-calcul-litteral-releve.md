@@ -41,3 +41,35 @@ la dernière réduite) ; entiers relatifs non nuls seulement ; lettre souvent ti
 - **3L11-5** — Calcul mental par la distributivité ou une identité remarquable : 103², 98², 302 × 298
   (a·10 ou a·100 ± b, a ∈ [2 ; 9], b ∈ [1 ; 4] pour les carrés, [1 ; 9] pour le produit). Réponse
   numérique. Correction : les deux méthodes côte à côte.
+
+### Lot D (3L13-6 à 3L16), lu le 2026-11-23
+
+- **3L13-6** — Problèmes résolus par une équation : parking (véhicules à 2 et 4 roues, total
+  20-49), cinéma (adultes 50-89, enfants 30-59, prix enfant 4-9 €, écart 2-7 €), fleurs (trois
+  sortes). Solution entière, une case numérique. Correction : « Soit x… », équation, résolution.
+- **3L13-7** — Motifs itératifs (hérite d'un exercice de 4e) : 4 motifs dessinés ; nombre de formes
+  du motif suivant, du motif 10, du 100, expression en n, puis numéro du motif qui utilise N formes
+  (« plus grand motif construit avec 2026 formes » : partie entière de la solution). Cases numériques,
+  expression en n jugée par calcul formel.
+- **3L14** — Produit nul : `(x±b)(x+d)`, `(x±b)(cx+d)`, `(ax+b)(cx±d)` ; solutions entières
+  (b, d ≤ 20 ; a, c ∈ [2 ; 6]) ou fractionnaires (a, c ∈ [2 ; 9]) ; jamais de solution double. Une
+  case « sol1 ; sol2 », ordre libre, fractions simplifiées.
+- **3L14DNB-0** — Brevet 2024 : programme de calcul et Scratch ; résultat pour un nombre, expression
+  en x, vérifier `(x+a)(x−b)`, nombres donnant 0 (produit nul), compléter le Scratch. Aucune saisie.
+- **3L14DNB-1** — Brevet 2024 : programme A (carré, ×2, + 2bx, − 2c) et programme B (Scratch,
+  (x + x1)(x − x2)) ; résultat avec un départ négatif, choisir l'expression de B parmi trois,
+  démontrer A = 2B. Aucune saisie.
+- **3L14DNB-2** — Brevet 2024 : schéma à deux branches multipliées ; résultats pour deux départs,
+  choisir les expressions justes parmi quatre (deux justes), départs donnant 0, développer et
+  réduire. Aucune saisie ; schéma en boîtes et flèches.
+- **3L15** — Second degré ramené au premier : `ax² + bx = 0`, `a²x² − b² = 0`, `a²x² = b²`,
+  `(ax+b)² = 0`, `bcx² + a = bx(cx+d)`, `(ax+b)(cx+d) = acx²`. Niveau facile = positifs. Solutions
+  fractionnaires possibles ; une case « x1 ; x2 ».
+- **3L15-1** — x² = a : a = k² (k ≤ 20), a = carré d'une fraction (dénominateur ≤ 10), a non carré
+  (2-50, réponse √a et −√a). Jamais sans solution. Une case « a ; −a ».
+- **3L15-2** — ±(1 à 3)x² + c = 0 : solutions entières, fractionnaires ou en racine, **ou aucune**
+  (saisir ∅). Une case, liste ou ∅.
+- **3L15-3** — Synthèse : une question tirée parmi 3L13, 3L14, 3L15 selon un niveau (facile,
+  moyen, difficile).
+- **3L16** — Ratio d'un motif itératif (hérite de la 4e) : ratio « a : b : c » au rang suivant, au
+  rang +2, puis au rang n (expressions en n). Une case par terme.
