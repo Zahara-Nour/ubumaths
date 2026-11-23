@@ -6,16 +6,17 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, gros lot en cours d'écriture._
+_Mis à jour le 2026-11-23, lot écrit, PR du lot ouverte._
 
-- **État** : phase 0 validée ; gros lot en écriture dans le worktree `../ubumaths-wt-idees-6e-entiers-decimaux-lot`
-  (branche `feat/idees-6e-entiers-decimaux-lot`, journal et relevé repris de `docs/idees-6e-entiers-decimaux`,
-  qui n'aura pas de PR) ; export de prod des 13 publiés commité ; scripts `neufs-a.py` (N1-N3),
-  `neufs-b.py` (N4-N6), `publies-a.py` (F1-F6), `publies-b.py` (F7-F13) · **Prochaine action** :
-  relire les sorties, essai en base locale, PR du lot (revue : aucune, contenu), puis `--publier` par David
-  · **Ensuite** (David, 2026-11-23) : outils n° 54 (droite graduée avec zoom) et n° 53 (labyrinthe)
-  · **En attente de David** : rien · **Pièges en cours** : un lien vers ce journal depuis `main` casse
-  le pre-push tant que la branche n'est pas mergée · **Worktree / branche** : ci-dessus ; l'ancien worktree
+- **État** : lot écrit et vérifié (6 neufs / 18 variations, 23 variations sur 13 publiés) ; essai en base
+  locale fait (6 brouillons locaux, aperçus sans erreur) ; outil `migration-contenu.ts` étendu aux `options`
+  (#3042, décision de David) ; a2ae7206 et d7781eed : `reducedFractions: off` · **Prochaine action** :
+  merge de la PR du lot, puis David lance `create-questions --publier` (neufs-a, neufs-b), puis
+  migrations de rangement et de contenu (`migration-contenu.ts --dir …-publies`, après #3042) ·
+  **Ensuite** : outils n° 54 et n° 53 · **En attente de David** : N5, tableau trop large sur iPhone
+  (colonne « Pourcentage » coupée) · **Pièges en cours** : relancer un script `publies-*.py` réécrit les
+  JSON au format `json.dump` → `pnpm format` sur ses JSON ensuite · **Worktree / branche** :
+  `../ubumaths-wt-idees-6e-entiers-decimaux-lot`, `feat/idees-6e-entiers-decimaux-lot` ; l'ancien worktree
   `../ubumaths-wt-idees-6e-entiers-decimaux` est à retirer (rien de non poussé).
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
@@ -155,3 +156,14 @@ des modèles de questions.
 - 2026-11-23 : David valide toutes les recommandations de la phase 0 et demande de lancer la
   construction des outils juste après le lot (Q2 passe de « plus tard » à « juste après ») ;
   13 modèles réservés et pourcentage approché noté dans « Idées en attente » (`main`).
+- 2026-11-23 : gros lot écrit par 4 agents (`neufs-a.py` N1-N3, `neufs-b.py` N4-N6, `publies-a.py` F1-F6,
+  `publies-b.py` F7-F13) ; 19 fichiers verts (`question:specs`), sonde des droites 0 problème, origine des
+  13 publiés intacte. Écarts : N1 v1 et F4 v6 à 2 erreurs prévues ; N3 ~70 % d'indices « plus grand / plus
+  petit de k » ; N5 tableau tourné (écritures en colonnes) ; F7 v6, F10, F11 tirages écartés pour éviter
+  « à améliorer » ; F13 de 2 % à 98 %.
+- 2026-11-23 : F3 v4 et F6 se heurtaient à « fractions irréductibles » (28/100 « à améliorer ») ; le
+  générateur de migration de contenu refusait de changer `options`, sans raison écrite (exclusion ajoutée
+  par la session de l'outil, hors de la phase 0 du 2026-11-20). David : étendre l'outil (B1) → #3042 ;
+  sessions idee-3, idee-tale, idee-1re prévenues. F3 v4, v6 et F6 revenus à une case (fiche validée).
+- 2026-11-23 : essai en base locale (6 brouillons), aperçus `pnpm voir` sans erreur ; N5 : colonne
+  « Pourcentage » hors de l'écran sur iPhone.
