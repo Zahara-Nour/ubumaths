@@ -28,6 +28,7 @@
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { ChevronDown, CircleQuestionMark } from '@lucide/svelte';
 	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '#lib/questions/form-options.ts';
+	import { IMPOSSIBLE_LABEL_MAX } from '#lib/questions/impossible-answer.ts';
 	import type { CalculusEditorState } from '#lib/questions/calculus/calculus-editor.ts';
 
 	interface Props {
@@ -56,6 +57,10 @@
 		sharedBlankVector: boolean;
 		sharedBlankVectorCollinear: boolean;
 		sharedBlankMatrix: boolean;
+		/** Case ordinaire : bouton « impossible » (la réponse peut ne pas exister) */
+		sharedBlankImpossible: boolean;
+		/** Texte du bouton « impossible » */
+		sharedBlankImpossibleLabel: string;
 		/** Case « primitive » ou « solution-ed » et ses champs */
 		sharedBlankCalculus: CalculusEditorState;
 		sharedValidationRulesJson: string;
@@ -86,6 +91,8 @@
 		sharedBlankVector = $bindable(),
 		sharedBlankVectorCollinear = $bindable(),
 		sharedBlankMatrix = $bindable(),
+		sharedBlankImpossible = $bindable(),
+		sharedBlankImpossibleLabel = $bindable(),
 		sharedBlankCalculus = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
@@ -345,6 +352,29 @@
 							{/if}
 							<!-- Matrice dans une case : coefficients comparés par valeur (clavier « Matrice ») -->
 							<MyCheckbox bind:checked={sharedBlankMatrix} label="Réponse : matrice" />
+							<!-- Case ordinaire : bouton « pas factorisable » quand la réponse peut ne pas exister -->
+							{#if !sharedBlankIntervals && !sharedBlankEquation && !sharedBlankVector && !sharedBlankMatrix && !sharedBlankCalculus.primitive && !sharedBlankCalculus.solution}
+								<MyCheckbox
+									bind:checked={sharedBlankImpossible}
+									label="Bouton « impossible » (la réponse peut ne pas exister)"
+								/>
+								{#if sharedBlankImpossible}
+									<div class="space-y-1 pl-6">
+										<Input
+											type="text"
+											bind:value={sharedBlankImpossibleLabel}
+											maxlength={IMPOSSIBLE_LABEL_MAX}
+											aria-label="Texte du bouton"
+											placeholder="Texte du bouton"
+										/>
+										<p class="text-xs text-muted-foreground">
+											Sur les tirages sans réponse, écrire impossible comme réponse attendue (par
+											ex.
+											{'{{if:delta<0|impossible|…}}'}).
+										</p>
+									</div>
+								{/if}
+							{/if}
 							<!-- Primitive de f : x^3+C juste pour 3x^2 (dérivée de la réponse comparée à f) -->
 							<MyCheckbox
 								bind:checked={sharedBlankCalculus.primitive}

@@ -147,6 +147,9 @@ export function canBeChoice(instance: QuestionInstance): boolean {
 			blank.precision.type === 'none' ||
 			isRounding(blank.precision)) &&
 		blank.neverChoice !== true &&
+		// Bouton « impossible » : en QCM, le texte du bouton ne serait proposé que sur les
+		// tirages sans réponse (il la donnerait) → reste en saisie, bouton sur tous les tirages
+		blank.impossibleLabel === undefined &&
 		(blank.expectedErrors?.length ?? 0) > 0 &&
 		blank.expressionName === undefined &&
 		(String(instance.statement).split('\\placeholder[0]{}').length === 2 ||

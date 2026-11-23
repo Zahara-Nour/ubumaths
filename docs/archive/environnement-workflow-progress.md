@@ -2,6 +2,18 @@
 
 ## Reprendre ici
 
+_Mis à jour le 2026-11-23, à la clôture._
+
+- **État** : **chantier clos le 2026-11-23** (David : « clos »). Livré : `pnpm voir` (#2995), `pnpm lien` (#2997), bouton « Signaler » et `pnpm retours` (#3000), gardes du pre-push et règle `mention-outil` (#3002), contrôles de `pnpm deploy:prod` avant et après (#3004), Supabase local relayé par le serveur de dev (#3005), `pnpm db:types` depuis les migrations et contrôle « prod = dépôt » (#3013, #3016), générateur « nœud et tag » (#3019), `pnpm pr:merger` (#3022, #3028), cache Prettier de la CI (#3023), couverture de doc en 3-4 s (#3025).
+- **Où est le durable** : `docs/pratiques/` — `voir-une-page.md`, `tester-sur-un-autre-appareil.md`, `signaler-depuis-la-page.md`, `git-workflow.md` § 3 (`pnpm pr:merger`, un seul push), `base-de-donnees.md` (types), `environnement-de-dev.md` (CI, cache Prettier), `couvrir-un-niveau.md` § 6-7 (rangement), `tests.md` § « Vérifier à l'écran soi-même » (règle du 2026-11-23 : la session vérifie le rendu elle-même).
+- **Non fait, à reprendre dans un futur chantier** : point 6 (`pnpm pret`, après la remesure des CI rouges vers le 2026-11-29) ; point 8 (tsgo en CI, avec un raccourcissement des tests client, décision #1023 à rouvrir) ; pistes à distance R2, R5, R6, R8 à R14 (jamais retenues) ; D (worktrees non sauvegardés, Time Machine absent, pas de staging).
+- **Point 6 (`pnpm pret`), avis de la session écrit à la demande de David le 2026-11-23 (rien de tranché)** : ne pas faire la commande. Le pre-push bloque déjà sur la doc à jour, le filtre de l'intégration, le lint rapide, les liens et le format (#3002), et personne ne peut l'oublier. Des 29 CI rouges du 2026-11-22, 18 venaient de la doc (réglé) ; restent les tests (client 7, serveur 5). Les attraper en local demande soit la suite complète (trop lourde : ~6 min par moitié en CI, un gros process à la fois, une vingtaine de worktrees), soit les seuls tests touchés par le diff, qui ne voient pas un test cassé à distance (part non mesurée). **À faire à la place** : la remesure vers le 2026-11-29, puis lire les rouges restants un par un — très peu : abandonner ; surtout des tests du fichier modifié : ajouter « les tests touchés » au pre-push, sans nouvelle commande ; tests cassés à distance : c'est le rôle de la CI.
+- **Lié** : les 418 lignes non cochées de `docs/wip/verifications-manuelles.md` relèvent du chantier `verifs-auto` (`docs/wip/verifs-auto-progress.md`).
+- **Reste mineur** : un commentaire de `scripts/lib/migration-rangement.ts` cite encore ce journal à son ancien chemin (`docs/wip/`).
+- **Worktree / branche** : aucun.
+
+## Dernier bloc « Reprendre ici » avant la clôture (2026-11-23, après #3028)
+
 _Mis à jour le 2026-11-23, après #3028._
 
 - **État** : outils à distance mergés et essayés par David sur l'iPhone (`pnpm voir` #2995, `pnpm lien` #2997, bouton « Signaler » et `pnpm retours` #3000 : son retour a été lu). **Lot A, points 1 à 3 mergés (#3002)** : « doc à jour » et filtre de chemins de l'intégration bloquants au pre-push, règle commitlint `mention-outil`. **Point 4 fait par David le 2026-11-22** : squash désactivé, branche distante supprimée au merge (`git-workflow.md` § 3 à jour). **Lot A terminé.** **Point 10 mergé (#3004)** : `pnpm deploy:prod` compare les migrations du commit à celles jouées en prod avant de créer la version (`--migration-apres <horodatage>` pour une destructive), puis, verrou rendu, attend la construction de Vercel et vérifie le site (`--verifier` rejoue ce contrôle seul).

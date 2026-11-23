@@ -1,0 +1,416 @@
+{
+	"id": "49a3d8ad-6467-45d1-8ee6-729241538c05",
+	"rangement": {
+		"noeud": "Arithmétique > Divisibilité > multiples et diviseurs",
+		"point": null
+	},
+	"title": "Problème de partage en lots identiques",
+	"description": "Comme au brevet : le plus grand nombre de lots identiques et leur composition, à partir des décompositions ou des nombres seuls (252 roses et 180 tulipes → 36 bouquets de 7 roses et 5 tulipes), et « peut-on faire N lots ? » (pièges : un diviseur commun qui n'est pas le plus grand, composition échangée)",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:c==0|Un fleuriste a ${{A}}$ roses et ${{B}}$ tulipes.|{{if:c==1|Un chocolatier a ${{A}}$ chocolats noirs et ${{B}}$ chocolats au lait.|Un professeur a ${{A}}$ crayons et ${{B}}$ gommes.}}}} Il veut faire le plus grand nombre possible de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} identiques, en utilisant {{if:c==0|toutes les fleurs|{{if:c==1|tous les chocolats|tous les crayons et toutes les gommes}}}}.\n\nOn donne : ${{A}} = {{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}}\\times {{u}}$ et ${{B}} = {{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}}\\times {{v}}$.\n\nIl peut faire $?$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}, de $?$ {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} et $?$ {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}} chacun.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "1..2"
+				},
+				{
+					"name": "y",
+					"expression": "1..2"
+				},
+				{
+					"name": "g",
+					"expression": "eval:2^x*3^y"
+				},
+				{
+					"name": "u",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "v",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				}
+			],
+			"conditions": ["u!=v", "A<=400", "B<=400"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:g/2}}",
+							"message": "Avec ${{eval:g/2}}$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}, chacun aurait ${{eval:2*u}}$ {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} et ${{eval:2*v}}$ {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}} : on peut encore les partager en deux. Cherche le plus grand nombre de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}.",
+							"label": "Diviseur commun, pas le plus grand"
+						},
+						{
+							"answer": "2",
+							"message": "$2$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}, c'est possible, mais on demande le plus GRAND nombre de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}.",
+							"label": "Plus petit diviseur commun"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{u}}",
+					"expectedErrors": [
+						{
+							"answer": "{{v}}",
+							"message": "Tu as échangé : ${{v}}$, ce sont les {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}} de chaque lot.",
+							"label": "Composition échangée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{v}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u}}",
+							"message": "Tu as échangé : ${{u}}$, ce sont les {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} de chaque lot.",
+							"label": "Composition échangée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} doit diviser ${{A}}$ et ${{B}}$ : c'est un diviseur commun, et on veut le plus grand.",
+					"$${{A}} = \\textcolor{{{color:primary.0}}}{{{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}}}\\times {{u}} \\quad\\text{et}\\quad {{B}} = \\textcolor{{{color:primary.0}}}{{{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}}}\\times {{v}}$$",
+					"Les facteurs communs donnent ${{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}} = \\textcolor{{{color:primary.0}}}{{{g}}}$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}. Chacun contient ${{A}} \\div {{g}} = \\textcolor{{{color:primary.1}}}{{{u}}}$ {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} et ${{B}} \\div {{g}} = \\textcolor{{{color:primary.1}}}{{{v}}}$ {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}}."
+				]
+			},
+			"hint": "Repère les facteurs premiers qui sont dans les deux décompositions."
+		},
+		{
+			"statement": "{{if:c==0|Un fleuriste a ${{A}}$ roses et ${{B}}$ tulipes.|{{if:c==1|Un chocolatier a ${{A}}$ chocolats noirs et ${{B}}$ chocolats au lait.|Un professeur a ${{A}}$ crayons et ${{B}}$ gommes.}}}} Il veut faire le plus grand nombre possible de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} identiques, en utilisant {{if:c==0|toutes les fleurs|{{if:c==1|tous les chocolats|tous les crayons et toutes les gommes}}}}.\n\nIl peut faire $?$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}, de $?$ {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} et $?$ {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}} chacun.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "1..2"
+				},
+				{
+					"name": "y",
+					"expression": "1..2"
+				},
+				{
+					"name": "g",
+					"expression": "eval:2^x*3^y"
+				},
+				{
+					"name": "u",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "v",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				}
+			],
+			"conditions": ["u!=v", "A<=400", "B<=400"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:g/2}}",
+							"message": "Avec ${{eval:g/2}}$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}, chacun aurait ${{eval:2*u}}$ {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} et ${{eval:2*v}}$ {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}} : on peut encore les partager en deux. Cherche le plus grand nombre de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}.",
+							"label": "Diviseur commun, pas le plus grand"
+						},
+						{
+							"answer": "2",
+							"message": "$2$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}, c'est possible, mais on demande le plus GRAND nombre de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}.",
+							"label": "Plus petit diviseur commun"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{u}}",
+					"expectedErrors": [
+						{
+							"answer": "{{v}}",
+							"message": "Tu as échangé : ${{v}}$, ce sont les {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}} de chaque lot.",
+							"label": "Composition échangée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{v}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u}}",
+							"message": "Tu as échangé : ${{u}}$, ce sont les {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} de chaque lot.",
+							"label": "Composition échangée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} doit diviser ${{A}}$ et ${{B}}$ : c'est un diviseur commun, et on veut le plus grand.",
+					"$${{A}} = \\textcolor{{{color:primary.0}}}{{{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}}}\\times {{u}} \\quad\\text{et}\\quad {{B}} = \\textcolor{{{color:primary.0}}}{{{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}}}\\times {{v}}$$",
+					"Les facteurs communs donnent ${{if:x==1|2|2^{ {{x}} }}}\\times {{if:y==1|3|3^{ {{y}} }}} = \\textcolor{{{color:primary.0}}}{{{g}}}$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}}. Chacun contient ${{A}} \\div {{g}} = \\textcolor{{{color:primary.1}}}{{{u}}}$ {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} et ${{B}} \\div {{g}} = \\textcolor{{{color:primary.1}}}{{{v}}}$ {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}}."
+				]
+			},
+			"hint": "Décompose ${{A}}$ et ${{B}}$ en facteurs premiers, puis repère les facteurs communs."
+		},
+		{
+			"statement": "{{if:c==0|Un fleuriste a ${{A}}$ roses et ${{B}}$ tulipes.|{{if:c==1|Un chocolatier a ${{A}}$ chocolats noirs et ${{B}}$ chocolats au lait.|Un professeur a ${{A}}$ crayons et ${{B}}$ gommes.}}}} Il veut faire des {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} identiques, en utilisant {{if:c==0|toutes les fleurs|{{if:c==1|tous les chocolats|tous les crayons et toutes les gommes}}}}.\n\nPeut-il faire exactement ${{N}}$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} ?\n\n```choix\nmelanger: non\n- Oui.\n- Non, car ${{N}}$ ne divise pas ${{A}}$.\n- Non, car ${{N}}$ ne divise pas ${{B}}$.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "1..2"
+				},
+				{
+					"name": "y",
+					"expression": "1..2"
+				},
+				{
+					"name": "g",
+					"expression": "eval:2^x*3^y"
+				},
+				{
+					"name": "u",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "v",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "A",
+					"expression": "eval:g*u"
+				},
+				{
+					"name": "B",
+					"expression": "eval:g*v"
+				},
+				{
+					"name": "s",
+					"expression": "2|3"
+				},
+				{
+					"name": "d",
+					"expression": "eval:g/s"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "N",
+					"expression": "{{if:k==0|{{d}}|{{if:k==1|{{eval:d*v}}|{{eval:d*u}}}}}}"
+				}
+			],
+			"conditions": ["u!=v", "A<=400", "B<=400"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Faire ${{N}}$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} identiques en utilisant tout, c'est partager ${{A}}$ et ${{B}}$ en ${{N}}$ parts égales : ${{N}}$ doit diviser ${{A}}$ ET ${{B}}$.",
+					"{{if:k==0|${{A}} = {{N}} \\times {{eval:A/N}}$ et ${{B}} = {{N}} \\times {{eval:B/N}}$ : **oui** : ${{N}}$ {{if:c==0|bouquets|{{if:c==1|ballotins|pochettes}}}} de ${{eval:A/N}}$ {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} et ${{eval:B/N}}$ {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}}.|{{if:k==1|${{A}} = ({{N}} \\times {{eval:floor(A/N)}}) + {{eval:mod(A,N)}}$ : la division ne tombe pas juste, $\\textcolor{{{color:primary.0}}}{{{N}} \\text{ ne divise pas } {{A}}}$.|${{B}} = ({{N}} \\times {{eval:floor(B/N)}}) + {{eval:mod(B,N)}}$ : la division ne tombe pas juste, $\\textcolor{{{color:primary.0}}}{{{N}} \\text{ ne divise pas } {{B}}}$.}}}}"
+				]
+			},
+			"hint": "Chaque lot doit avoir le même nombre de {{if:c==0|roses|{{if:c==1|chocolats noirs|crayons}}}} : ${{N}}$ doit diviser ${{A}}$. Et pour les {{if:c==0|tulipes|{{if:c==1|chocolats au lait|gommes}}}} ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 252 et 180 → 36, 7, 5",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"x": "2",
+				"y": "2",
+				"u": "7",
+				"v": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36", "7", "5"]
+		},
+		{
+			"description": "a : 18 lots seulement",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"x": "2",
+				"y": "2",
+				"u": "7",
+				"v": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec $18$ bouquets, chacun aurait $14$ roses et $10$ tulipes : on peut encore les partager en deux. Cherche le plus grand nombre de bouquets."
+			},
+			"answers": ["18", "14", "10"]
+		},
+		{
+			"description": "a : 2 lots",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"x": "2",
+				"y": "2",
+				"u": "7",
+				"v": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$2$ bouquets, c'est possible, mais on demande le plus GRAND nombre de bouquets."
+			},
+			"answers": ["2", "7", "5"]
+		},
+		{
+			"description": "a : composition échangée",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"x": "2",
+				"y": "2",
+				"u": "7",
+				"v": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé : $5$, ce sont les tulipes de chaque lot."
+			},
+			"answers": ["36", "5", "7"]
+		},
+		{
+			"description": "b : 84 et 60 → 12, 7, 5",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"y": "1",
+				"u": "7",
+				"v": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12", "7", "5"]
+		},
+		{
+			"description": "b : 6 lots",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"y": "1",
+				"u": "7",
+				"v": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec $6$ ballotins, chacun aurait $14$ chocolats noirs et $10$ chocolats au lait : on peut encore les partager en deux. Cherche le plus grand nombre de ballotins."
+			},
+			"answers": ["6", "14", "10"]
+		},
+		{
+			"description": "c : 84 et 60, 6 lots → oui",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"y": "1",
+				"u": "7",
+				"v": "5",
+				"s": "2",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c : 84 et 60, 30 lots → ne divise pas 84",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"y": "1",
+				"u": "7",
+				"v": "5",
+				"s": "2",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "c : 30 lots, mauvaise raison",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"y": "1",
+				"u": "7",
+				"v": "5",
+				"s": "2",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "c : 84 et 60, 42 lots → ne divise pas 60",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"x": "2",
+				"y": "1",
+				"u": "7",
+				"v": "5",
+				"s": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		}
+	]
+}

@@ -14,6 +14,8 @@
  * - rangement : worktree retiré, branche locale supprimée, dépôt principal à jour ;
  *   worktree pas propre ou commits locaux jamais poussés → tout reste en place ;
  * - PR déjà mergée → rangement seul ; `--essai` → rien ;
+ * - une PR mergée par la commande note sa durée pour `pnpm durees`, même lancée
+ *   depuis le worktree qu'elle retire ; un rangement seul ou un essai, rien ;
  * - session Claude en arrière-plan (`CLAUDE_CODE_SESSION_ATTENDED=0`) → pas de refus.
  *
  * Dépôts jetables : un dépôt nu tient lieu de GitHub, `gh` est un bouchon qui lit
@@ -245,6 +247,12 @@ function lu(nom: string): string {
 	return existsSync(f) ? readFileSync(f, 'utf8') : '';
 }
 
+/** Les lignes du journal des durées, quand le test en a demandé un (`DUREES_ETAT`). */
+function dureesNotees(): string[] {
+	const f = join(racine, 'durees/local.csv');
+	return existsSync(f) ? readFileSync(f, 'utf8').split('\n').filter(Boolean) : [];
+}
+
 function brancheLocale(): boolean {
 	return (
 		spawnSync('git', ['rev-parse', '-q', '--verify', `refs/heads/${BRANCHE}`], {
@@ -360,6 +368,20 @@ describe('pr:merger : de bout en bout', () => {
 		expect(lu('merges')).toContain('pr merge 12 --merge');
 		expect(existsSync(wt)).toBe(false);
 		expect(brancheLocale()).toBe(false);
+	});
+
+	it('PR mergée : durée notée pour `pnpm durees` ; rangement seul ou essai : rien', () => {
+		variables = { DUREES_ETAT: join(racine, 'durees') };
+		expect(merger(['12', '--essai']).status).toBe(0);
+		expect(dureesNotees()).toHaveLength(0);
+		// Depuis le worktree qu'elle retire : le script qui note n'existe plus à la fin.
+		expect(merger([], wt).status).toBe(0);
+		expect(existsSync(wt)).toBe(false);
+		expect(dureesNotees()).toHaveLength(1);
+		expect(dureesNotees()[0]).toMatch(/^\d{4}-\d{2}-\d{2}T[\d:]+Z;pr-merger;\d+$/);
+		// Déjà mergée : le second lancement ne fait que ranger.
+		expect(merger().status).toBe(0);
+		expect(dureesNotees()).toHaveLength(1);
 	});
 
 	it('CI en cours puis verte : attend, puis merge', () => {

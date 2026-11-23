@@ -32,6 +32,8 @@
 	import * as Alert from '#lib/components/ui/alert/index.ts';
 	import { Loader2 } from '@lucide/svelte';
 	import MyPasswordInput from '#lib/components/MyPasswordInput.svelte';
+	import { browser } from '$app/env';
+	import type { Component } from 'svelte';
 	import { GOOGLE_LOGIN_ENABLED } from '#lib/config/google-login.ts';
 
 	// Feature flag: Google OAuth login button (single source of truth in
@@ -51,6 +53,19 @@
 
 	// Extract error from URL query params (for OAuth callback errors)
 	let urlError = $derived(page.url.searchParams.get('error'));
+
+	// Connexion en un geste aux comptes fictifs : serveur de dev seulement.
+	// `import.meta.env.DEV` est remplacé par `false` au build, qui n'embarque donc ni
+	// les boutons ni les comptes (garde de CI « Comptes fictifs absents du build »).
+	let DevAccountButtons = $state<Component | null>(null);
+	$effect(() => {
+		if (!browser || DevAccountButtons) return;
+		if (import.meta.env.DEV) {
+			import('#lib/components/dev/DevAccountButtons.svelte')
+				.then((module) => (DevAccountButtons = module.default))
+				.catch((e) => console.debug('[Comptes fictifs] Chargement impossible :', e));
+		}
+	});
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-background px-4">
@@ -230,6 +245,11 @@
 				Nouvel élève ?
 				<a href={resolve('auth/register')} class="text-primary hover:underline">Créer un compte</a>
 			</p>
+
+			<!-- Comptes fictifs : serveur de dev seulement -->
+			{#if DevAccountButtons}
+				<DevAccountButtons />
+			{/if}
 		</Card.Content>
 	</Card.Root>
 </div>

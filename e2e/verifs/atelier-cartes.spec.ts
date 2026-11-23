@@ -13,7 +13,10 @@ import {
 	openAtelier,
 	retypeCard,
 	steps,
-	typeInCard
+	typeInCard,
+	showCards,
+	ownTexts,
+	isNarrow
 } from './helpers/atelier';
 
 /**
@@ -72,6 +75,7 @@ test('#1305 — intervalle d’une carte : tapé au clavier, gardé au rechargem
 		"n'est pas dans l'ensemble de définition de f, [0 ; +∞["
 	);
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await expectCardLatex(page, 'f', 'x^2\\text{ sur }[0;+\\infty[');
 	expect((await calc(page, 'f(-1)')).refused).toBe(true);
 
@@ -106,8 +110,8 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	const variations = await calc(page, '.variations f');
 	const table = variations.line.locator('.tableau');
 	const bounds = table.locator('.vt-domain-point');
-	// Les bornes sont des formules : leur texte est le LaTeX
-	await expect(bounds).toHaveText(['0', '+\\infty']);
+	// Les bornes sont des formules : leur texte (direct) est le LaTeX
+	await expect.poll(() => ownTexts(bounds)).toEqual(['0', '+\\infty']);
 	// 0 fermé
 	await expect(bounds.first()).not.toHaveClass(/vt-open/);
 	expect(normalizeLatex(await steps(variations))).toContain('croissante');
@@ -119,7 +123,7 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	await calc(page, 'f(x) = x^2 sur [0;5[');
 	const open = await calc(page, '.variations f');
 	const openBounds = open.line.locator('.tableau .vt-domain-point');
-	await expect(openBounds.last()).toHaveText('5');
+	await expect.poll(async () => (await ownTexts(openBounds)).at(-1)).toBe('5');
 	await expect(openBounds.last()).toHaveClass(/vt-open/);
 
 	await calc(page, 's(x) = sin(x) sur [0;\\pi]');
@@ -128,8 +132,9 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	// En dernier : « Comment ? » casse la page (each_key_duplicate, comme #1674)
 	await calc(page, 'f(x) = x^2 sur [0;+\\infty[');
 	const solved = await calc(page, '.résoudre f(x)=4');
-	expectLatex(solved, 'x = 2');
-	expect(await steps(solved)).toContain('on ne garde que');
+	expectLatex(solved, 'S = \\{ 2 \\}');
+	// « On ne garde que les solutions qui sont dans [0 ; +∞[ », étape à part depuis #2360
+	expect(await steps(solved)).toContain('On ne garde que');
 });
 
 test('#1309 — max(… ; …) dans une carte', async ({ page }) => {
@@ -205,6 +210,12 @@ test('#1328 — bouton « Réciproque », refus de .réciproque', async ({ page 
 		.filter((pair) => pair.includes(','))
 		.map((pair) => Number(pair.split(',')[0]));
 	expect(Math.min(...xs)).toBeCloseTo(startX, 0);
+	// Dans Calcul, les 3 étapes : x en fonction de y, y renommé x, départ et arrivée
+	const detail = await steps(await calc(page, '.réciproque f'));
+	expect(detail).toMatch(/Étape 1 On exprime x en fonction de y/);
+	expect(detail).toMatch(/Étape 2 On renomme y en x/);
+	expect(detail).toMatch(/Étape 3 Ensemble de départ et ensemble d.arrivée/);
+	expect(detail).not.toMatch(/Étape 4/);
 
 	await calc(page, 'g(x) = x^2');
 	const twoWays = await calc(page, '.réciproque g');
@@ -238,7 +249,7 @@ test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien
 		'f est définie sur [0 ; +∞[ (ensemble choisi) ; sans ce choix'
 	);
 	await calc(page, 'g(x) = f(x)+1');
-	expectLatex(await calc(page, '.résoudre g(x)=5'), 'x = 2');
+	expectLatex(await calc(page, '.résoudre g(x)=5'), 'S = \\{ 2 \\}');
 
 	await calc(page, 'f(x) = x^2 sur ]0;2]');
 	expectLatex(await calc(page, '.intégrer f de 0 à 2'), '\\dfrac{8}{3}');
@@ -259,6 +270,7 @@ test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien
 
 	// Le lien : demi-parabole, pleine en 0
 	await page.goto(`/atelier?f=${encodeURIComponent('x^2 sur [0;+∞[')}`);
+	await showCards(page, { afterLoad: true });
 	await expect(cardLocator(page, 'f')).toBeVisible();
 	await expect(curves(page)).toHaveCount(1);
 	await expect(page.locator('circle.endpoint-closed')).toHaveCount(1);
@@ -435,10 +447,13 @@ test('cartes valeur, suite, liste (lot 4a) — curseur, bornes, escalier, liste,
 	await expect.poll(() => fieldValue(page, 'a')).toBe('2');
 	// Rien de rangé pendant la frappe : Échap rend la valeur d'avant (un clic dans la
 	// console, lui, rangerait la carte en sortant du champ)
-	await retypeCard(page, 'a', '5');
-	await page.waitForTimeout(300);
-	await page.keyboard.press('Escape');
-	await expect.poll(() => fieldValue(page, 'a')).toBe('2');
+	// Pas de touche Échap au clavier d'un téléphone : cette preuve-là, sur ordinateur
+	if (!isNarrow(page)) {
+		await retypeCard(page, 'a', '5');
+		await page.waitForTimeout(300);
+		await page.keyboard.press('Escape');
+		await expect.poll(() => fieldValue(page, 'a')).toBe('2');
+	}
 	await retypeCard(page, 'a', '5');
 	await page.keyboard.press('Enter');
 	expectLatex(await calc(page, 'a'), '5');
@@ -555,10 +570,13 @@ test('cartes point et courbe (lot 4b) — une ligne, Entrée range, lien, couleu
 	await expect(a.locator('.egal')).toHaveText('=');
 	// Taper `(1;5)` sans Entrée ne change rien ; Entrée range
 	// (même preuve que pour une valeur : Échap rend la définition d'avant)
-	await retypeCard(page, 'A', '(1;5');
-	await page.waitForTimeout(300);
-	await page.keyboard.press('Escape');
-	await expect.poll(() => fieldValue(page, 'A')).toBe('(1;2)');
+	// Pas de touche Échap au clavier d'un téléphone : cette preuve-là, sur ordinateur
+	if (!isNarrow(page)) {
+		await retypeCard(page, 'A', '(1;5');
+		await page.waitForTimeout(300);
+		await page.keyboard.press('Escape');
+		await expect.poll(() => fieldValue(page, 'A')).toBe('(1;2)');
+	}
 	await retypeCard(page, 'A', '(1;5');
 	await page.keyboard.press('Enter');
 	expect((await calc(page, 'A')).text).toContain('A(1;5)');
@@ -596,6 +614,7 @@ test('cartes point et courbe (lot 4b) — une ligne, Entrée range, lien, couleu
 	await (await openOptions(page, 'c')).getByRole('menuitemcheckbox', { name: 'Curseur' }).click();
 	await expect(cardLocator(page, 'c').getByRole('slider', { name: 'Curseur de c' })).toBeVisible();
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await expect(cardLocator(page, 'c').getByRole('slider', { name: 'Curseur de c' })).toBeVisible();
 
 	// Suite en escalier qui ne peut plus l'être (sa définition ne la cite plus) : retour

@@ -60,6 +60,7 @@ import type { HiddenCellKind } from '#lib/ubumark/types/variation-table.ts';
 import { isSignTableCell, signCellToken } from './sign-table-case';
 import { blankErrorGuess, errorGuessSentence } from './error-kinds';
 import { expectedErrorOf } from './expected-errors';
+import { impossibleAnswerLatex, isImpossibleAnswer } from './impossible-answer';
 import {
 	validateAnswerDetailed,
 	type BlankVerdict,
@@ -558,7 +559,12 @@ function blankViews(
 		const detail = verdict?.blanks[index];
 		const value = answer?.values?.[index] ?? blank.prefilled ?? '';
 		// Réponse retenue par le validateur (sans « x = » recopié), sinon telle que saisie
-		const typed = detail?.answer ?? (context === 'math' ? answer?.latex?.[index] || value : value);
+		const raw = detail?.answer ?? (context === 'math' ? answer?.latex?.[index] || value : value);
+		// Bouton « impossible » enfoncé : montré en texte du bouton, jamais sa marque
+		const typed =
+			blank.impossibleLabel !== undefined && (isImpossibleAnswer(raw) || isImpossibleAnswer(value))
+				? impossibleAnswerLatex(blank.impossibleLabel)
+				: raw;
 		// Neutralisée : la réponse peut être lue par le professeur (autre utilisateur).
 		// Case graphique : réponse montrée en texte (R8)
 		const student =

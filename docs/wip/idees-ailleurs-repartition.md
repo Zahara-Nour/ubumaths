@@ -36,7 +36,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | --------------------------------- | ----- | --------- | -------------------- | ------------------------ |
 | Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`       |
 | Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre` |
-| Dérivation                        | 1AN1  | 12        | libre                |                          |
+| Dérivation                        | 1AN1  | 12        | prise (2026-11-23)   | `idees-1re-derivation`   |
 | Variations                        | 1AN2  | 5         | libre                |                          |
 | Fonction exponentielle            | 1AN3  | 11        | libre                |                          |
 | Fonctions trigonométriques        | 1AN4  | 6         | libre                |                          |
@@ -134,7 +134,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 
 | Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session         |
 | ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ----------------------- |
-| Arithmétique                             | 3A1       | 26        | phase 0 (2026-11-23)                                       | `idees-3e-arithmetique` |
+| Arithmétique                             | 3A1       | 26        | phase 0 validée (2026-11-23)                               | `idees-3e-arithmetique` |
 | Puissances                               | 3C1       | 5         | libre                                                      |                         |
 | Calcul littéral, équations               | 3L1       | 55        | libre                                                      |                         |
 | Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                         |
@@ -178,6 +178,7 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 90dca27a Simplifier une fraction (plusieurs étapes)          | `idees-3e-arithmetique`                                     | 2026-11-23 |                                      |
 | 4bcbbaae Le nombre de dizaines, de centièmes…                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 4d825d44 Le chiffre d'un rang                                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | a2ae7206 Fraction décimale et écriture décimale              | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
@@ -191,6 +192,13 @@ de contenu appliquée en prod.
 | 36991abb Arrondir un quotient, arrondir π                    | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 2e982062 Intercaler un nombre décimal                        | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 8fd459da Définition d'un pourcentage                         | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
+| 46913a48 Taux de variation et nombre dérivé                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| d58208eb Lire un nombre dérivé sur un graphique              | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 74d77343 Calculer une dérivée                                | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 1666b8e9 Dériver un polynôme                                 | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 0140fdfa Dériver l'inverse d'une fonction                    | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| 8997f7c6 Dériver un produit                                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
+| f1440b52 Dériver un quotient                                 | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
 
 ## Idées en attente
 

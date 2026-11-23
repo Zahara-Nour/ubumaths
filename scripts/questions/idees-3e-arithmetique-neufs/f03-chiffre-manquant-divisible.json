@@ -1,0 +1,407 @@
+{
+	"id": "f7d51551-3e17-4930-87aa-61835ed9692e",
+	"rangement": {
+		"noeud": "Arithmétique > Divisibilité > critères de divisibilité",
+		"point": null
+	},
+	"title": "Trouver un chiffre pour que le nombre soit divisible",
+	"description": "Chiffre manquant d'un nombre de 4 chiffres pour qu'il soit divisible par 9 (une case), par 3, par 2 ou 5, par 2 et 3 à la fois (cocher tous les chiffres qui conviennent) (pièges : reste au lieu du complément, critère de 3 au lieu de 9, un critère sur deux)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel chiffre faut-il écrire à la place de $\\square$ pour que le nombre ${{a}}\\,{{b}}\\square{{d}}$ soit divisible par $9$ ?\n\nLe chiffre manquant est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..9"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a+b+d"
+				},
+				{
+					"name": "x",
+					"expression": "eval:9-mod(S,9)"
+				}
+			],
+			"conditions": ["mod(S,9)!=0", "mod(S,9)!=6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(S,9)}}",
+							"message": "Avec ${{eval:mod(S,9)}}$, la somme des chiffres vaut ${{eval:S+mod(S,9)}}$, qui n'est pas un multiple de $9$ : il faut compléter ${{S}}$ jusqu'au multiple de $9$ suivant.",
+							"label": "Reste au lieu du complément"
+						},
+						{
+							"answer": "{{eval:mod(x+3,9)}}",
+							"message": "Avec ce chiffre, la somme des chiffres vaut ${{eval:S+mod(x+3,9)}}$ : c'est un multiple de $3$, mais pas de $9$. Le nombre serait divisible par $3$, pas par $9$.",
+							"label": "Critère de 3 au lieu de 9"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Divisibilité par $9$.** Un nombre est divisible par $9$ si la somme de ses chiffres est divisible par $9$.",
+					"Sans le chiffre manquant : ${{a}} + {{b}} + {{d}} = {{S}}$. Le multiple de $9$ suivant est ${{eval:S+x}}$ : il manque ${{eval:S+x}} - {{S}} = {{x}}$. Ajouter $9$ de plus donnerait ${{eval:x+9}}$, qui n'est pas un chiffre.",
+					"$$\\square = \\textcolor{{{color:primary.0}}}{{{x}}}$$"
+				]
+			},
+			"hint": "Additionne les chiffres connus, puis cherche le multiple de $9$ qui suit."
+		},
+		{
+			"statement": "Quels chiffres peut-on écrire à la place de $\\square$ pour que le nombre ${{a}}\\,{{if:h==1|\\square{{k1}}{{k2}}|{{if:h==2|{{k1}}\\square{{k2}}|{{k1}}{{k2}}\\square}}}}$ soit divisible par $3$ ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $0$\n- $1$\n- $2$\n- $3$\n- $4$\n- $5$\n- $6$\n- $7$\n- $8$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k1",
+					"expression": "0..9"
+				},
+				{
+					"name": "k2",
+					"expression": "0..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a+k1+k2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(3-mod(S,3),3)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}};{{eval:r+3}};{{eval:r+6}}{{if:r==0|;9|}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Divisibilité par $3$.** Un nombre est divisible par $3$ si la somme de ses chiffres est divisible par $3$.",
+					"Sans le chiffre manquant : ${{a}} + {{k1}} + {{k2}} = {{S}}$. Pour obtenir un multiple de $3$, on peut ajouter ${{r}}$, ${{eval:r+3}}$, ${{eval:r+6}}${{if:r==0|, $9$|}}.",
+					"Les chiffres qui conviennent : $\\textcolor{{{color:primary.0}}}{{{r}}, {{eval:r+3}}, {{eval:r+6}}{{if:r==0|, 9|}}}$."
+				]
+			},
+			"hint": "Additionne les chiffres connus. Quels chiffres, ajoutés à cette somme, donnent un multiple de $3$ ?"
+		},
+		{
+			"statement": "Quels chiffres peut-on écrire à la place de $\\square$ pour que le nombre ${{a}}\\,{{b}}{{c}}\\square$ soit divisible par ${{k}}$ ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $0$\n- $1$\n- $2$\n- $3$\n- $4$\n- $5$\n- $6$\n- $7$\n- $8$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|5"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "c",
+					"expression": "0..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==2|0;2;4;6;8|0;5}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==2|**Divisibilité par $2$.** Un nombre est divisible par $2$ si son chiffre des unités est $0$, $2$, $4$, $6$ ou $8$.|**Divisibilité par $5$.** Un nombre est divisible par $5$ si son chiffre des unités est $0$ ou $5$.}}",
+					"Le chiffre manquant est celui des unités : $\\textcolor{{{color:primary.0}}}{{{if:k==2|0, 2, 4, 6, 8|0, 5}}}$. Les autres chiffres ne comptent pas."
+				]
+			},
+			"hint": "Pour la divisibilité par ${{k}}$, seul le chiffre des unités compte."
+		},
+		{
+			"statement": "Quels chiffres peut-on écrire à la place de $\\square$ pour que le nombre ${{a}}\\,{{b}}{{c}}\\square$ soit divisible à la fois par $2$ et par $3$ ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $0$\n- $1$\n- $2$\n- $3$\n- $4$\n- $5$\n- $6$\n- $7$\n- $8$\n- $9$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "c",
+					"expression": "0..9"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a+b+c"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(3-mod(S,3),3)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:r==0|0;6|{{if:r==1|4|2;8}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Par $3$** : la somme des chiffres connus vaut ${{a}} + {{b}} + {{c}} = {{S}}$ ; on peut ajouter ${{r}}$, ${{eval:r+3}}$, ${{eval:r+6}}${{if:r==0|, $9$|}}.",
+					"**Par $2$** : le chiffre des unités doit être pair.",
+					"Les deux à la fois : $\\textcolor{{{color:primary.0}}}{{{if:r==0|0, 6|{{if:r==1|4|2, 8}}}}}$."
+				]
+			},
+			"hint": "Cherche d'abord les chiffres qui marchent pour $3$, puis garde ceux qui marchent aussi pour $2$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 12□4 par 9 → 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "a : reste au lieu du complément",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec $7$, la somme des chiffres vaut $14$, qui n'est pas un multiple de $9$ : il faut compléter $7$ jusqu'au multiple de $9$ suivant."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "a : critère de 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec ce chiffre, la somme des chiffres vaut $12$ : c'est un multiple de $3$, mais pas de $9$. Le nombre serait divisible par $3$, pas par $9$."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "a : 5□38 par 9 → 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"d": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "b : 41□7 par 3 → 0, 3, 6, 9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"k1": "1",
+				"k2": "7",
+				"h": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;3;6;9"]
+		},
+		{
+			"description": "b : 9 oublié (½)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"k1": "1",
+				"k2": "7",
+				"h": "2"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0;3;6"]
+		},
+		{
+			"description": "b : 1 coché en trop",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"k1": "1",
+				"k2": "7",
+				"h": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;1;3;6;9"]
+		},
+		{
+			"description": "b : 250□ par 3 → 2, 5, 8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k1": "5",
+				"k2": "0",
+				"h": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2;5;8"]
+		},
+		{
+			"description": "c : 207□ par 2",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "2",
+				"b": "0",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;2;4;6;8"]
+		},
+		{
+			"description": "c : par 2, le 7 du nombre coché",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "2",
+				"b": "0",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "c : 207□ par 5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"a": "2",
+				"b": "0",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;5"]
+		},
+		{
+			"description": "c : par 5, 0 oublié (½)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"a": "2",
+				"b": "0",
+				"c": "7"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "d : 351□ par 2 et 3 → 0, 6",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;6"]
+		},
+		{
+			"description": "d : par 3 seulement",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;3;6;9"]
+		},
+		{
+			"description": "d : 206□ → 4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "d : par 2 seulement",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2;4;6;8"]
+		}
+	]
+}

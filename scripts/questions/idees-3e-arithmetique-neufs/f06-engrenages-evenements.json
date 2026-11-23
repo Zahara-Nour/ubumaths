@@ -1,0 +1,375 @@
+{
+	"id": "f4a88e1a-9c84-4a40-ae1d-6095d771a134",
+	"rangement": {
+		"noeud": "Arithmétique > Divisibilité > multiples et diviseurs",
+		"point": null
+	},
+	"title": "Engrenages et évènements qui reviennent ensemble",
+	"description": "Plus petit multiple commun en situation : deux voitures ou deux bus qui se retrouvent au départ (durée et nombre de tours), deux roues dentées (tours pour que les marques se retrouvent, dents de l'autre roue) (pièges : produit au lieu du plus petit multiple commun, diviseur au lieu de multiple, tours échangés)",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:c==0|Deux voitures télécommandées partent ensemble de la ligne de départ d'un circuit. La rouge fait un tour en ${{a}}$ secondes, la bleue en ${{b}}$ secondes.|Deux bus partent ensemble du terminus. Le bus A fait sa boucle en ${{a}}$ minutes, le bus B en ${{b}}$ minutes ; chacun repart aussitôt.}}\n\nIls se retrouvent ensemble au départ, pour la première fois, au bout de $?$ {{if:c==0|secondes|minutes}}.\n\nÀ ce moment, {{if:c==0|la rouge|le bus A}} a fait $?$ tours et {{if:c==0|la bleue|le bus B}} $?$ tours.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "g",
+					"expression": "2..15"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:g*m"
+				},
+				{
+					"name": "b",
+					"expression": "eval:g*n"
+				},
+				{
+					"name": "L",
+					"expression": "eval:g*m*n"
+				}
+			],
+			"conditions": ["gcd(m,n)==1", "m!=n", "m<n", "a>=12", "b<=90"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*b}}",
+							"message": "${{eval:a*b}}$ est bien un multiple de ${{a}}$ et de ${{b}}$, mais pas le premier : cherche le plus petit multiple commun.",
+							"label": "Produit des deux durées"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Tu as cherché un diviseur commun : ici, il faut une durée qui soit un multiple de ${{a}}$ et de ${{b}}$.",
+							"label": "Diviseur au lieu de multiple"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{m}}",
+							"message": "Tu as échangé : {{if:c==0|la rouge|le bus A}} met moins de temps par tour, donc fait plus de tours.",
+							"label": "Tours échangés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}",
+							"message": "Tu as échangé : {{if:c==0|la bleue|le bus B}} met plus de temps par tour, donc fait moins de tours.",
+							"label": "Tours échangés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ils se retrouvent au départ au bout d'une durée qui est un multiple de ${{a}}$ et de ${{b}}$ : on cherche le plus petit multiple commun.",
+					"${{a}} = {{g}} \\times {{m}}$ et ${{b}} = {{g}} \\times {{n}}$, et ${{m}}$ et ${{n}}$ n'ont pas de diviseur commun : le plus petit multiple commun est ${{g}} \\times {{m}} \\times {{n}} = \\textcolor{{{color:primary.0}}}{{{L}}}$.",
+					"${{L}} \\div {{a}} = \\textcolor{{{color:primary.1}}}{{{n}}}$ tours pour {{if:c==0|la rouge|le bus A}}, ${{L}} \\div {{b}} = \\textcolor{{{color:primary.1}}}{{{m}}}$ tours pour {{if:c==0|la bleue|le bus B}}."
+				]
+			},
+			"hint": "Écris les multiples de ${{b}}$ : quel est le premier qui est aussi un multiple de ${{a}}$ ?"
+		},
+		{
+			"statement": "Deux roues dentées s'engrènent : la première a ${{d1}}$ dents, la seconde ${{d2}}$. On marque les deux dents qui se touchent. Combien de tours chaque roue doit-elle faire pour que les deux marques se retrouvent face à face, pour la première fois ?\n\nLa première roue fait $?$ tours, la seconde $?$ tours.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..15"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "d1",
+					"expression": "eval:g*m"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:g*n"
+				},
+				{
+					"name": "L",
+					"expression": "eval:g*m*n"
+				}
+			],
+			"conditions": ["gcd(m,n)==1", "m!=n", "d1>=8", "d1<=25", "d2>=8", "d2<=25"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{d2}}",
+							"message": "Avec ${{d2}}$ tours, les marques se retrouvent bien, mais pas pour la première fois : ${{d1}} \\times {{d2}}$ n'est pas le plus petit multiple commun.",
+							"label": "Produit des nombres de dents"
+						},
+						{
+							"answer": "{{m}}",
+							"message": "Tu as échangé : la roue qui a le moins de dents fait le plus de tours.",
+							"label": "Tours échangés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{d1}}",
+							"message": "Avec ${{d1}}$ tours, les marques se retrouvent bien, mais pas pour la première fois : ${{d1}} \\times {{d2}}$ n'est pas le plus petit multiple commun.",
+							"label": "Produit des nombres de dents"
+						},
+						{
+							"answer": "{{n}}",
+							"message": "Tu as échangé : la roue qui a le plus de dents fait le moins de tours.",
+							"label": "Tours échangés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque instant, les deux roues ont fait passer le même nombre de dents. Les marques se retrouvent quand ce nombre est un multiple de ${{d1}}$ et de ${{d2}}$ : on cherche le plus petit.",
+					"${{d1}} = {{g}} \\times {{m}}$ et ${{d2}} = {{g}} \\times {{n}}$ : le plus petit multiple commun est ${{g}} \\times {{m}} \\times {{n}} = {{L}}$ dents.",
+					"${{L}} \\div {{d1}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ tours pour la première, ${{L}} \\div {{d2}} = \\textcolor{{{color:primary.1}}}{{{m}}}$ tours pour la seconde."
+				]
+			},
+			"hint": "Compte les dents qui passent : quel est le premier nombre qui est un multiple de ${{d1}}$ et de ${{d2}}$ ?"
+		},
+		{
+			"statement": "Deux roues dentées s'engrènent. La première a ${{d1}}$ dents. Pendant qu'elle fait ${{t1}}$ tours, la seconde en fait ${{t2}}$. Combien de dents a la seconde roue ?\n\nLa seconde roue a $?$ dents.",
+			"variables": [
+				{
+					"name": "d1",
+					"expression": "8..30"
+				},
+				{
+					"name": "t1",
+					"expression": "2..9"
+				},
+				{
+					"name": "t2",
+					"expression": "2..9"
+				},
+				{
+					"name": "D",
+					"expression": "eval:d1*t1"
+				},
+				{
+					"name": "d2",
+					"expression": "eval:D/t2"
+				}
+			],
+			"conditions": ["t1!=t2", "mod(D,t2)==0", "d2>=8", "d2<=40", "d2!=d1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d2}}",
+					"expectedErrors": [
+						{
+							"answer": "\\dfrac{ {{eval:d1*t2}} }{ {{t1}} }",
+							"message": "La roue qui fait le moins de tours a le plus de dents : regarde qui tourne le plus vite.",
+							"label": "Rapport inversé"
+						},
+						{
+							"answer": "{{D}}",
+							"message": "${{D}}$, c'est le nombre de dents qui sont passées : la seconde roue les fait passer en ${{t2}}$ tours.",
+							"label": "Dents passées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux roues font passer le même nombre de dents : ${{d1}} \\times {{t1}} = {{D}}$ dents.",
+					"La seconde fait passer ces ${{D}}$ dents en ${{t2}}$ tours : ${{D}} \\div {{t2}} = \\textcolor{{{color:primary.0}}}{{{d2}}}$ dents."
+				]
+			},
+			"hint": "Combien de dents passent quand la première roue fait ${{t1}}$ tours ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 12 s et 18 s → 36, 3, 2",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"g": "6",
+				"m": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36", "3", "2"]
+		},
+		{
+			"description": "a : produit 216",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"g": "6",
+				"m": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$216$ est bien un multiple de $12$ et de $18$, mais pas le premier : cherche le plus petit multiple commun."
+			},
+			"answers": ["216", "18", "12"]
+		},
+		{
+			"description": "a : diviseur commun 6",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"g": "6",
+				"m": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as cherché un diviseur commun : ici, il faut une durée qui soit un multiple de $12$ et de $18$."
+			},
+			"answers": ["6", "3", "2"]
+		},
+		{
+			"description": "a : tours échangés",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"g": "6",
+				"m": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as échangé : la rouge met moins de temps par tour, donc fait plus de tours."
+			},
+			"answers": ["36", "2", "3"]
+		},
+		{
+			"description": "a : bus 20 et 30 min → 60",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"g": "10",
+				"m": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["60", "3", "2"]
+		},
+		{
+			"description": "b : 12 et 18 dents → 3 et 2 tours",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"m": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "2"]
+		},
+		{
+			"description": "b : produit des dents",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"m": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec $18$ tours, les marques se retrouvent bien, mais pas pour la première fois : $12 \\times 18$ n'est pas le plus petit multiple commun."
+			},
+			"answers": ["18", "12"]
+		},
+		{
+			"description": "b : 15 et 25 dents → 5 et 3",
+			"variationIndex": 1,
+			"variables": {
+				"g": "5",
+				"m": "3",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "3"]
+		},
+		{
+			"description": "c : 12 dents, 5 tours contre 4 → 15",
+			"variationIndex": 2,
+			"variables": {
+				"d1": "12",
+				"t1": "5",
+				"t2": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "c : rapport inversé",
+			"variationIndex": 2,
+			"variables": {
+				"d1": "12",
+				"t1": "5",
+				"t2": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La roue qui fait le moins de tours a le plus de dents : regarde qui tourne le plus vite."
+			},
+			"answers": ["9{,}6"]
+		},
+		{
+			"description": "c : dents passées",
+			"variationIndex": 2,
+			"variables": {
+				"d1": "12",
+				"t1": "5",
+				"t2": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$60$, c'est le nombre de dents qui sont passées : la seconde roue les fait passer en $4$ tours."
+			},
+			"answers": ["60"]
+		}
+	]
+}

@@ -270,6 +270,8 @@ export interface BlankDefaults extends CalculusBlankFields {
 	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` */
 	answerKind?: AnswerKind;
+	/** Voir `TemplateBlank.impossibleLabel` */
+	impossibleLabel?: string;
 	/** Voir `TemplateBlank.vectorMode` */
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` */
@@ -374,6 +376,15 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * `questions/calculus/`.
 	 */
 	answerKind?: AnswerKind;
+	/**
+	 * Case ordinaire (sans `answerKind`) seulement : texte d'un bouton posé à côté de la case
+	 * (« pas factorisable », « pas de solution » ; « impossible » par défaut dans le formulaire),
+	 * que l'élève clique quand la réponse n'existe pas. Présent = bouton affiché sur TOUS les
+	 * tirages (sinon il donnerait la réponse). La réponse attendue vaut alors `impossible`
+	 * (`IMPOSSIBLE_EXPECTED`) sur les tirages sans réponse, souvent par `{{if:…}}`. Voir
+	 * `questions/impossible-answer.ts` (chantier `reponse-impossible`, outil n° 51).
+	 */
+	impossibleLabel?: string;
 	/**
 	 * Case `answerKind: 'vecteur'` seulement (ignoré sinon) : `'exact'` (défaut) =
 	 * mêmes coordonnées que l'attendue ; `'colineaire'` = tout vecteur colinéaire
@@ -905,6 +916,8 @@ export interface InstanceBlank extends CalculusBlankFields {
 	acceptCombinatorialNotation?: boolean;
 	/** Voir `TemplateBlank.answerKind` (fusionné avec blankDefaults) */
 	answerKind?: AnswerKind;
+	/** Voir `TemplateBlank.impossibleLabel` (fusionné avec blankDefaults, case ordinaire seulement) */
+	impossibleLabel?: string;
 	/** Voir `TemplateBlank.vectorMode` (fusionné avec blankDefaults) */
 	vectorMode?: VectorMode;
 	/** Voir `TemplateBlank.openableBounds` (fusionné avec blankDefaults, case intervalles seulement) */

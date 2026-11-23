@@ -23,6 +23,7 @@ import type { TemplateMarkdown, ResolvedMarkdown } from '#lib/ubumark/index.ts';
 import { templateMarkdown, resolvedMarkdown } from '#lib/ubumark/index.ts';
 import { resolveMarkdownContent, resolveVariableConditionals } from './content-resolver';
 import { parseChoiceAnswer } from '../choice-case';
+import { impossibleAnswerLatex, isImpossibleExpected } from '../impossible-answer';
 
 // ============================================================================
 // TYPES
@@ -200,7 +201,11 @@ export function buildCorrectionContext(
 				? (parseChoiceAnswer(b.expectedAnswer, b.choice.choices.length) ?? [])
 						.map((index) => b.choice?.choices[index] ?? '')
 						.join(' ; ')
-				: b.expectedAnswer
+				: // Tirage sans réponse : le texte du bouton (`\text{pas factorisable}`), jamais
+					// `impossible` lu comme un produit de lettres
+					b.impossibleLabel !== undefined && isImpossibleExpected(b.expectedAnswer)
+					? impossibleAnswerLatex(b.impossibleLabel)
+					: b.expectedAnswer
 		);
 	}
 

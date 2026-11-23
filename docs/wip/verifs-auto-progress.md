@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1829._
+_Mis à jour le 2026-11-23, après #3040 ; écarts sortis dans `ecarts-verifs`._
 
-- **État** : lots 1-9 mergés (#1773 → #1824) ; écarts du lot 9 corrigés (#1829 : brouillon de `/python`, grille seule partagée / enregistrée / rejouée, confirmation de Charger, `X suit B(…)` tapé, étiquettes `x = e`, `x = π/2`). Suite complète : rouges = `each_key_duplicate` seulement (#1674, #1703, #1620, #1307). Pas encore en prod.
-- **Prochaine action** : reste de la liste — lignes « à l'œil » (page à cocher avec captures), lignes prof / élève (comptes locaux, `db:seed-riche`).
-- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : prendre un port libre (5181) ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe (`retypeCard`) ; un clic dans la console RANGE une carte en cours de frappe ; un CSV / un collage se pose à la case CHOISIE ; prettier réaligne le tableau → conflits à chaque rebase/merge de `main` : reprendre la version de `main` et rejouer ses lignes par script ; push forcé = liste `ask` (préférer merger `origin/main` dans la branche) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1829).
+- **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). #3037 en prod (v0.104.0). #1536 : la vue garde l'échelle de l'ouverture quand « Mes objets » (ouvert vide au téléphone) se replie au 1er objet et que la toile grandit (242 → 388 px) ; le test visait à l'échelle du moment, il garde désormais celle de l'ouverture (22 verts sur ordi-chrome, iphone, android). Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → #1536 ✅ → #1337 → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
+- **Prochaine action** : #1337 (bandeau d'atelier partagé + « Mes objets » ouvert à l'iPhone), worktree neuf.
+- **En attente de David** : tâche de nuit (après R12). Les écarts à lui présenter (E1…) vivent dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md), chantier à part (`/reprendre ecarts-verifs`).
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets », pas une carte née d'une colonne (`showCards`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne ajoutée à [ecarts-verifs-progress.md](ecarts-verifs-progress.md), pas ici ; un `test:verifs` muet peut être bloqué (2 h 41 le 2026-11-23, cause inconnue) → `--global-timeout`.
+- **Worktree / branche** : aucun (retiré après #3040).
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -135,6 +135,47 @@ Vu en passant : un CSV se pose à partir de la case choisie (« posées à parti
 
 Revue (`code-reviewer`) : le brouillon venait de TOUTE affectation de `code` (exemple, fichier du cloud : il écrasait le code local que lit la migration) → accesseur dédié `editorCode`, lié à l'éditeur ; `destroy()` range le brouillon au lieu de le jeter ; le rejeu d'un historique vidait une grille seule sans demander → confirmation sur `isBlank` ; « Garder » d'une grille seule disait « rien à garder » → `MergeReport.grid`. Noté, pas corrigé (d'avant la PR) : un `saveTimeout` de `saveToStorage` en attente marque « enregistré » un code tapé juste après (`_lastSavedCode`), et un réglage (taille, thème) aussi ; `B(10,0,5)` sans séparateur lisible donne un conseil faux (rare).
 
+## Lot 10 — captures « à l'œil » (2026-10-26)
+
+Outillage : `playwright.captures.config.ts` (projet `comptes` : connexion par le formulaire aux comptes locaux de `dev_accounts.sql`, refusée hors localhost), `helpers/captures.ts` (`shoot`, `shootBothThemes`, `around`), `scripts/verifs-captures-page.ts` (page HTML autonome, images en data URI, verdicts dans la capacité `db`, file d'écriture avec nouvel essai). Pages déménagées : `/construction-demo` → `/constructions/essais` (prof), `/test-font` → `/dev/polices`, `/test-structure` → `/dev/structure` (admin).
+
+Captures : Atelier (#1315, #1328, #1338, #1634, #1630, #1617, #1313/#1318, #1362/#1363, #1364, #1385, #1413, #1415-#1419, #1424, #1442, #1469), constructions (#1621 → #1653), `/dev` (#1793, #1798, #1312/#1322, #1346). Tests de restes : #1658/#1660 (bouton Variations), #1319, #1503, #1535, #1333 (grapheur), #1368, #1369 (mode maths), #1421, #1424, #1426, #1437.
+
+## Lot 10 rejoué sur le code du 2026-11-23
+
+David : « les captures et résultats du 26 octobre sont périmés », « juge les captures toi-même », « les lignes peuvent être anciennes, la vérif n'a peut-être plus lieu d'être ». L'ancienne page à cocher n'est plus utilisée.
+
+- **Attendus changés, chacun par une décision écrite** : `.résoudre` répond par S (`S = {2}`, `S = ]-∞ ; 5]`, #2360, Q2 du 2026-11-03), 4e étape « ensemble des solutions » ; `.simplifier 0.5/x` → `1/(2x)` (Q9, 2026-11-02) ; `.simplifier ln(x^2)` a son bouton « Simplifier pour x > 0 » (#1819). Tests seuls réparés : étapes chargées à la demande, `combobox` des formats, bouton « Signaler » du serveur de dev masqué au téléphone.
+- **Sorties de la liste (27)** : par les captures #1313/#1318, #1315 (et `/grapheur`), #1328 (+ test des 3 étapes), #1338, #1362/#1363, #1364, #1413, #1424, #1469, #1617, #1630, #1634, #1643, #1312/#1322 (formule grossie), #1346 ; par les tests #1658/#1660, #1319, #1503, #1535, #1368, #1426, #1437 ; #1466 (relecture d'une grille sans `formats` : `persistence.ts` `salvageFormats`) ; #1321, #1502, #1655, #1359 rejouées en local (composants réels, modèle local pour #1655). #1793/#1798 : vues par David sur iPad le 2026-11-09, captures retirées. #1385 réduite au vrai clavier d'iPhone.
+- **Écarts à présenter à David** : déplacés le 2026-11-23 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) (E1 à E11, mêmes numéros).
+- **Restent dans la liste, faisables par la session plus tard** : #1421 (« sans saccade »), #1649 (lecture continue, construction publique sur chiph.re), reste de #1621/#1626/#1629.
+
+## R6 — navigateurs du téléphone (David, 2026-11-23)
+
+David : « tu parles de Safari mais pas des autres navigateurs », puis « pars sur les trois projets ». Sur iPhone, tous les navigateurs utilisent WebKit ; sur Android, Chrome / Samsung / Edge utilisent Chromium, Firefox utilise Gecko (Playwright ne simule pas le toucher de Firefox Android).
+
+- **Décision (révisée, David « et le cas du desktop ? » puis « je valide »)** : cinq projets, toute la suite : **ordinateur Chrome/Edge** (Chromium, l'actuel), **ordinateur Safari** (WebKit), **ordinateur Firefox** (Gecko), **iPhone** (WebKit), **Android** (Chromium) ; plus **Firefox à 390 px** sur un sous-ensemble (clavier MathLive, graphiques, constructions).
+- **Comportements validés (phase 0)** : `--project <nom>` pour un seul navigateur ; test sans sens au téléphone (`Ctrl+D`, survol) marqué « bureau seulement », sauté ailleurs, attendu jamais changé ; rouge propre à un moteur = écart soumis à David (candidat : verso de carte retournée en miroir sous WebKit, vu par `pnpm voir`) ; moteur absent → arrêt avec la ligne d'installation ; durées avant / après dans la PR ; R6 ne sort aucune ligne de la liste, le tri s'en servira.
+- **Jour / nuit (David : « lancer la suite complète la nuit »)** : le jour, `pnpm test:verifs` = ordinateur Chrome seul (ou `--project`) ; `pnpm test:verifs:tout` = tous les projets. Tâche de nuit sur le Mac mini (`test:verifs:tout` sur `main`, base locale, notification seulement d'un rouge nouveau) : après R12, dont elle prend le filtre — à confirmer par David.
+- **Ordre du découpage validé** (David, 2026-11-23, « je valide ») : R6 → tri des 391 lignes par paquets d'environ 50 (les plus anciennes d'abord) → R12 → R13.
+
+## R6 — premier passage (2026-11-23)
+
+- **Avant** (Chrome seul, ancienne config) : 150 tests, **2,9 min**, 5 rouges : #1674, #1703, #1620 (bug `each_key_duplicate` de « Comment ? », mis de côté), #1369 (écart 1/10), carnet #2731 (vert rejoué seul sous `with-db-lock.sh`).
+- **`test:verifs:tout`** : 769 tests, **15,4 min**, 424 verts, 341 rouges.
+  - **Firefox (172)** : ne démarre pas. `Could not find profile folder`, même lancé à la main hors bac à sable, même après `playwright install --force firefox` (Firefox 159, build 1572, macOS 27.0).
+  - **Ordinateur Safari (14)** : les 4 rouges connus ; 7 × `grantPermissions: clipboard-write` inconnu de WebKit (réglage du test) ; #1709 / redirections « navigation interrompue » (course de redirection sous WebKit) ; cartes lot 3 `toBeFocused` après Tab (Safari ne met pas le focus sur un bouton au Tab : candidat écart moteur) ; #1425 délai.
+  - **Firefox réglé** (David : « cherche une solution maintenant ») : macOS 27 refuse à Firefox `~/Library/Application Support/Firefox` (confidentialité) ; `CFFIXED_USER_HOME` vers un dossier à lui (`projets.ts`). Ordinateur Firefox ensuite : 4 rouges connus + presse-papiers ; `allowClipboard` / `readClipboard` (permissions Chromium seulement, coller ⌘V ailleurs) → tous verts sauf **#1469 sous Firefox, écart moteur** : après « Format de nombre », le 1er clic sur A2 étend la sélection en zone A1:A2 au lieu de choisir A2 (2e clic : A2 choisie) ; Chrome : A2 dès le 1er clic. Firefox 390 px : mêmes rouges de mise en page que le téléphone.
+  - **iPhone (78) et Android (72)** : presque les mêmes tests → la **mise en page téléphone**, pas le moteur. Causes : la console couvre la vue Données et la sous-barre recouvre A1 au défilement (~39) ; cartes de « Mes objets » attendues dans le panneau d'ordinateur (~30) ; grapheur : dézoom attendu > 400, l'écran étroit s'arrête à 400 (14).
+
+## R6 — rouges restants (2026-11-23, `test:verifs:tout` après les gestes du téléphone)
+
+- **Connus, tous projets** : #1674, #1703, #1620 (`each_key_duplicate`, mis de côté), #1369 (écart 1/10). Carnet : rouge en suite complète, vert seul.
+- **Grille de Données invisible au téléphone** (~22 rouges par projet téléphone, dont barre d'icônes, #1442, #1692, #1697) : à 393 px de large, la zone de la grille fait 2 px ; barre, mise en forme, consigne et boutons prennent toute la hauteur. Mesuré à 659, 750 et 844 px de haut ; à 700 px de large : 222 px, 30 cases. **Même chose en prod (chiph.re).** Correctif proposé : `DataView.svelte`, hauteur minimale de la grille au téléphone et défilement de la vue. Pas fait : à trancher par David.
+- **Écarts moteur** : déplacés le 2026-11-23 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) (E12 à E17) ; #1536 tranché (test, #3040, écart E11) ; #1337 reste ici, prochaine étape.
+- **Revue `code-reviewer` (Sonnet)** : corrigés : seuil du dézoom > 400 gardé sur ordinateur, tests « 390 px » (#1442, #1546) rendus aux téléphones, `readClipboard` qui attend le collage (`try/finally`), « Signaler » masqué sur tout le contexte, `VERIFS_PROJETS` recalculé par le processus principal. Laissés : Échap sans équivalent au téléphone (noté ci-dessus), `showCards({ afterLoad })` attend 5 s sans objet, `calc` déplie toujours « Mes objets » (le repli n'est vérifié que par #1442 / #1546), motif `ordi-*` exige les trois moteurs, `--ui` ne voit qu'`ordi-chrome`, captures iPhone sans `openAtelier` (bouton Signaler et panneau replié visibles).
+- **Adaptations des tests (gestes, jamais l'attendu)** : `showCards` / `leavePanelAlone`, `allowClipboard` / `readClipboard`, `gotoRedirected`, `ownTexts` (rendu MathLive en shadow DOM sous Chromium mobile), pas de la sous-grille au téléphone, dézoom ≥ 400, `@bureau` (raccourcis, clic droit, poignée, tests « ordinateur » ou qui posent eux-mêmes 390 px).
+
 ## Plan d'ensemble
 
 1. Pilote Atelier (~20 lignes) → puis le reste des ~126 lignes Atelier.
@@ -149,3 +190,25 @@ Revue (`code-reviewer`) : le brouillon venait de TOUTE affectation de `code` (ex
 - **Bug trouvé** : « Comment ? » de `.dériver (e^x)^2` (et `.dériver x*e^x` seul) ne s'ouvre pas, `each_key_duplicate` (deux étapes de même `id`) dans `GeneratedStepsCorrection`. Chantier à part (David) ; test #1674 laissé rouge.
 - **Prod** : la suite tourne contre chiph.re (`VERIFS_URL`), mais la prod n'a pas encore `data-latex` → 19 rouges « réponse en texte », textes visibles conformes. Ligne ajoutée en tête de `verifications-manuelles.md`.
 - `playwright.config.ts` ignore `verifs/**` (`pnpm test:e2e` ne les lance pas) ; la CI ne lance aucun e2e.
+
+## Recommandations venues d'`environnement-workflow` (2026-11-23)
+
+Écrites à la demande de David (« oui fais le ») à la clôture du chantier `environnement-workflow`
+([journal archivé](../archive/environnement-workflow-progress.md)). Ce sont des recommandations de
+cette session-là, que David a acceptées d'y voir notées ; le découpage reste à valider par lui à la
+reprise.
+
+- **Consigne de David du 2026-11-23** : limiter le plus possible les vérifications à la main ; la
+  session vérifie elle-même ([tests.md](../pratiques/tests.md#vérifier-à-lécran-soi-même-avant-de-demander-à-david)).
+  `docs/wip/verifications-manuelles.md` compte 418 lignes non cochées ce jour-là.
+- **R6 — format iPhone et moteur de Safari dans `pnpm test:verifs`** : aujourd'hui un seul projet,
+  Chrome sur grand écran (`playwright.verifs.config.ts`). Beaucoup de lignes disent « téléphone puis
+  ordinateur » : sans ce format, leur moitié « téléphone » reste à David. WebKit est déjà installé
+  (`pnpm voir` s'en sert).
+- **R13 — vérifier la prod après chaque `pnpm deploy:prod`** : rejouer les tests sur `chiph.re`
+  (`VERIFS_URL` existe déjà), résultat envoyé à David. Pages publiques seulement : une session
+  n'entre aucun mot de passe réel.
+- **R12 — notifications** (petite, peut se faire à part) : seulement ce qui demande un geste de
+  David (« lien prêt », « question en attente ») ; pas « CI verte », la session merge seule.
+- **Essayé à distance le 2026-11-23** : `VERIFS_PORT=<port> pnpm test:verifs` (barre de l'Atelier et
+  carnet, 5 verts) depuis un worktree neuf, base locale remplie par `pnpm db:seed-riche`.
