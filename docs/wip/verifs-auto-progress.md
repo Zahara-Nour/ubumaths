@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, R6 codé, revue en cours, PR pas encore ouverte._
+_Mis à jour le 2026-11-23, R6 en PR (revue faite, suites corrigées)._
 
 - **État** : R6 sur `test/verifs-auto-r6` : six projets, gestes du téléphone (David : « je suis tes recos »), Firefox réglé (`CFFIXED_USER_HOME`). `test:verifs:tout` : 662 verts / 79 rouges en 14,5 min (avant : Chrome seul 2,9 min ; premier passage 341 rouges). Détail : § « R6 — premier passage » et « R6 — rouges restants ».
-- **Prochaine action** : finir la revue `code-reviewer`, ouvrir la PR, merger au vert.
+- **Prochaine action** : PR R6 au vert → merger ; puis la réponse de David sur la grille de Données au téléphone (PR à part).
 - **En attente de David** : (1) **grille de Données invisible au téléphone** (< ~400 px de large, prod comprise) : corriger dans une PR à part ? (2) écarts moteur : #1469 Firefox, Tab sur bouton (WebKit), #1337 / #1536 / Échap à l'iPhone, rendus WebKit de `e^(x/2)` et `f⁻¹` ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12).
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; carnet rouge en suite complète, vert seul sous `with-db-lock.sh` ; `calc` déplie « Mes objets » au téléphone (`leavePanelAlone` pour les tests du repli) ; ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : `ubumaths-wt-verifs-auto-r6` · `test/verifs-auto-r6` · serveur de dev sur 5177.
@@ -183,6 +183,7 @@ David : « tu parles de Safari mais pas des autres navigateurs », puis « pars 
 - **Connus, tous projets** : #1674, #1703, #1620 (`each_key_duplicate`, mis de côté), #1369 (écart 1/10). Carnet : rouge en suite complète, vert seul.
 - **Grille de Données invisible au téléphone** (~22 rouges par projet téléphone, dont barre d'icônes, #1442, #1692, #1697) : à 393 px de large, la zone de la grille fait 2 px ; barre, mise en forme, consigne et boutons prennent toute la hauteur. Mesuré à 659, 750 et 844 px de haut ; à 700 px de large : 222 px, 30 cases. **Même chose en prod (chiph.re).** Correctif proposé : `DataView.svelte`, hauteur minimale de la grille au téléphone et défilement de la vue. Pas fait : à trancher par David.
 - **Écarts moteur à présenter** : Tab sur « Options » d'une carte (lot 3) : focus absent sous WebKit (ordinateur Safari et iPhone) ; #1469 Firefox (1er clic après un format = zone A1:A2) ; iPhone : #1337 (bandeau d'atelier partagé + « Mes objets » ouvert : plus de place pour la console à 659 px), #1536 (points posés décalés sur la toile), Échap vide une carte au lieu de rendre sa valeur (lots 4a / 4b ; preuve d'Échap faite sur ordinateur seulement, pas de touche Échap au téléphone) ; captures WebKit : exposant de `e^(x/2)` et `f⁻¹` décollé (#1338).
+- **Revue `code-reviewer` (Sonnet)** : corrigés : seuil du dézoom > 400 gardé sur ordinateur, tests « 390 px » (#1442, #1546) rendus aux téléphones, `readClipboard` qui attend le collage (`try/finally`), « Signaler » masqué sur tout le contexte, `VERIFS_PROJETS` recalculé par le processus principal. Laissés : Échap sans équivalent au téléphone (noté ci-dessus), `showCards({ afterLoad })` attend 5 s sans objet, `calc` déplie toujours « Mes objets » (le repli n'est vérifié que par #1442 / #1546), motif `ordi-*` exige les trois moteurs, `--ui` ne voit qu'`ordi-chrome`, captures iPhone sans `openAtelier` (bouton Signaler et panneau replié visibles).
 - **Adaptations des tests (gestes, jamais l'attendu)** : `showCards` / `leavePanelAlone`, `allowClipboard` / `readClipboard`, `gotoRedirected`, `ownTexts` (rendu MathLive en shadow DOM sous Chromium mobile), pas de la sous-grille au téléphone, dézoom ≥ 400, `@bureau` (raccourcis, clic droit, poignée, tests « ordinateur » ou qui posent eux-mêmes 390 px).
 
 ## Plan d'ensemble
