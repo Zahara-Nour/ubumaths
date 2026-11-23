@@ -1,0 +1,213 @@
+{
+	"id": "77b82211-31f1-43c2-a2f4-04a55efb066e",
+	"title": "Réduire une somme",
+	"description": "Coefficients relatifs",
+	"grades": ["3"],
+	"level": 6,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "p",
+				"expression": "a|b|c"
+			},
+			{
+				"name": "q",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "r",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "s",
+				"expression": "a|b|c!p"
+			},
+			{
+				"name": "t",
+				"expression": "1..9;±"
+			},
+			{
+				"name": "u",
+				"expression": "1..9;±"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{eval:qp}}{{eval:rp;+}}{{eval:ts;+}}{{eval:us;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{eval:qp}}{{eval:rp;+}}{{eval:ts;+}}{{eval:us;+}}               &= ({{q}}{{eval:r;+}}) \\times {{p}} + ({{t}}{{eval:u;+}}) \\times {{s}} \\\\               &= {{eval:q+(r)}} \\times {{p}} {{eval:t+(u);+}} \\times {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression2}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{eval:qp}}{{eval:rs;+}}{{eval:tp;+}}{{eval:us;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{eval:qp}}{{eval:rs;+}}{{eval:tp;+}}{{eval:us;+}}               &= ({{q}}{{eval:t;+}}) \\times {{p}} + ({{r}}{{eval:u;+}}) \\times {{s}} \\\\               &= {{eval:q+(t)}} \\times {{p}} {{eval:r+(u);+}} \\times {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression3}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression3}}$$",
+			"variables": [
+				{
+					"name": "expression3",
+					"expression": "{{eval:qp}}{{eval:rs;+}}{{eval:ts;+}}{{eval:up;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{eval:qp}}{{eval:rs;+}}{{eval:ts;+}}{{eval:up;+}}               &= ({{q}}{{eval:u;+}}) \\times {{p}} + ({{r}}{{eval:t;+}}) \\times {{s}} \\\\               &= {{eval:q+(u)}} \\times {{p}} {{eval:r+(t);+}} \\times {{s}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7b-13c"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "bonne réponse 7b-13c",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7c-6c+4b+3b"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "expression recopiée -7c-6c+4b+3b",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-13c+7b"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "-13c+7b",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3b-3c"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "bonne réponse -3b-3c",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-7c-6b+4c+3b"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "expression recopiée -7c-6b+4c+3b",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2b-4c"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "bonne réponse -2b-4c",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-7c-6b+4b+3c"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "c|c",
+				"q": "-7",
+				"r": "-6",
+				"s": "b|b",
+				"t": "4",
+				"u": "3"
+			},
+			"description": "expression recopiée -7c-6b+4b+3c",
+			"variationIndex": 2
+		}
+	]
+}

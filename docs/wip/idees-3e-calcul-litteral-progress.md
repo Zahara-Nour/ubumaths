@@ -17,7 +17,7 @@ _Mis à jour le 2026-11-23, phase 0 envoyée._
   (F8, F9, F10, N5 vont à des modèles ou points de 4e) · **Worktree / branche** :
   `../ubumaths-wt-idees-3e-calcul-litteral`, `feat/idees-3e-calcul-litteral`.
 
-## Phase 0 (2026-11-23, en attente de David)
+## Phase 0 (2026-11-23, validée par David le jour même)
 
 Page à cocher : https://claude.ai/artifact/EvCcEkmmjkvZ1qaupra5x6 (Oui / Non / Autrement + note,
 collection `verdicts`).
@@ -120,6 +120,11 @@ d'accès de la migration de rangement : personne ne gagne d'accès, on range des
   Le choix Oui / Non vient après les deux expressions : il se déduit, il ne se devine pas.
 
 ### Questions à David
+
+Réponse de David (2026-11-23) : « je suis tes recos », à la liste des recommandations (toutes les
+fiches, et Q1 à Q4). Donc : Q1 pas de deux lettres ; Q2 N2 sur 3-016 ; Q3 outils n° 55 et 56 notés
+(commit sur `main`) ; Q4 motifs notés dans « Idées en attente ». Les 12 modèles publiés sont réservés
+dans le tableau de répartition ; exports de prod dans `scripts/questions/idees-3e-calcul-litteral-publies/`.
 
 1. **N1, deux lettres** : ajouter (v4) (2x + 3y)(x − y) (3L11-14, 3L11-15) ? Le BO de 3e n'en
    parle pas ; je recommande **non**.

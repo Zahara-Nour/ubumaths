@@ -1,0 +1,857 @@
+{
+	"id": "93a5f7a9-61f2-4553-a529-6f89c37b569c",
+	"title": "Réduire un produit",
+	"description": "Coefficients relatifs",
+	"grades": ["3"],
+	"level": 7,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "p",
+				"expression": "a|b|c|x|y|z"
+			},
+			{
+				"name": "q",
+				"expression": "2..9"
+			},
+			{
+				"name": "r",
+				"expression": "2..9"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "p*(-q)*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}}               &= {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression2}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "(-q)*p*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times {{p}} \\times {{r}}               &= \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}} \\times {{p}} \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression3}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression3}}$$",
+			"variables": [
+				{
+					"name": "expression3",
+					"expression": "r*(-q)*p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{{{r}} \\times (-{{q}})}} \\times {{p}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression4}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression4}}$$",
+			"variables": [
+				{
+					"name": "expression4",
+					"expression": "p*q*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}}               &= {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression5}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression5}}$$",
+			"variables": [
+				{
+					"name": "expression5",
+					"expression": "q*p*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{q}} \\times {{p}} \\times (-{{r}})               &= \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}} \\times {{p}} \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression6}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression6}}$$",
+			"variables": [
+				{
+					"name": "expression6",
+					"expression": "(-r)*q*p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times {{q}}}} \\times {{p}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{eval:q*r}})}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression7}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression7}}$$",
+			"variables": [
+				{
+					"name": "expression7",
+					"expression": "p*(-q)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}}               &= {{p}} \\times \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression8}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression8}}$$",
+			"variables": [
+				{
+					"name": "expression8",
+					"expression": "(-q)*p*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times {{p}} \\times (-{{r}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}} \\times {{p}} \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression9}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression9}}$$",
+			"variables": [
+				{
+					"name": "expression9",
+					"expression": "(-r)*(-q)*p"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times (-{{q}})}} \\times {{p}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times {{p}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression10}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression10}}$$",
+			"variables": [
+				{
+					"name": "expression10",
+					"expression": "(-p)*(-q)*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}}               &=  (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression11}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression11}}$$",
+			"variables": [
+				{
+					"name": "expression11",
+					"expression": "(-q)*(-p)*r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times (-{{p}}) \\times {{r}}               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times {{r}}}} \\times (-{{p}}) \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression12}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression12}}$$",
+			"variables": [
+				{
+					"name": "expression12",
+					"expression": "r*(-q)*(-p)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{{{r}} \\times (-{{q}})}} \\times (-{{p}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression13}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression13}}$$",
+			"variables": [
+				{
+					"name": "expression13",
+					"expression": "(-p)*q*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}}               &=  (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression14}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression14}}$$",
+			"variables": [
+				{
+					"name": "expression14",
+					"expression": "q*(-p)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{q}} \\times (-{{p}}) \\times (-{{r}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{q}} \\times (-{{r}})}} \\times (-{{p}}) \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression15}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression15}}$$",
+			"variables": [
+				{
+					"name": "expression15",
+					"expression": "(-r)*q*(-p)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times {{q}}}} \\times (-{{p}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{({{eval:-q*r}})}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression16}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression16}}$$",
+			"variables": [
+				{
+					"name": "expression16",
+					"expression": "(-p)*(-q)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{p}}) \\times \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}}               &=  (-{{p}}) \\times  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression17}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression17}}$$",
+			"variables": [
+				{
+					"name": "expression17",
+					"expression": "(-q)*(-p)*(-r)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               (-{{q}}) \\times (-{{p}}) \\times (-{{r}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{(-{{q}}) \\times (-{{r}})}} \\times (-{{p}}) \\\\               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression18}}}}"
+				}
+			],
+			"statement": "Réduis :\n\n$${{expression18}}$$",
+			"variables": [
+				{
+					"name": "expression18",
+					"expression": "(-r)*(-q)*(-p)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\bold{\\textcolor{{{color:primary.0}}}{(-{{r}}) \\times (-{{q}})}} \\times (-{{p}})               &=  \\bold{\\textcolor{{{color:primary.0}}}{{{eval:q*r}}}} \\times (-{{p}}) \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["z*(-3)*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée z*(-3)*3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(-3)*z*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*z*3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3*(-3)*z"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*(-3)*z",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["z*3*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée z*3*(-3)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3*z*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*z*(-3)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["(-3)*3*z"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*3*z",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["z*(-3)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée z*(-3)*(-3)",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["(-3)*z*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*z*(-3)",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 8
+		},
+		{
+			"answers": ["(-3)*(-3)*z"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-3)*z",
+			"variationIndex": 8
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 9
+		},
+		{
+			"answers": ["(-z)*(-3)*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-z)*(-3)*3",
+			"variationIndex": 9
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 10
+		},
+		{
+			"answers": ["(-3)*(-z)*3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-z)*3",
+			"variationIndex": 10
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 11
+		},
+		{
+			"answers": ["3*(-3)*(-z)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*(-3)*(-z)",
+			"variationIndex": 11
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 12
+		},
+		{
+			"answers": ["(-z)*3*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-z)*3*(-3)",
+			"variationIndex": 12
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 13
+		},
+		{
+			"answers": ["3*(-z)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée 3*(-z)*(-3)",
+			"variationIndex": 13
+		},
+		{
+			"answers": ["9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse 9z",
+			"variationIndex": 14
+		},
+		{
+			"answers": ["(-3)*3*(-z)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*3*(-z)",
+			"variationIndex": 14
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 15
+		},
+		{
+			"answers": ["(-z)*(-3)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-z)*(-3)*(-3)",
+			"variationIndex": 15
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 16
+		},
+		{
+			"answers": ["(-3)*(-z)*(-3)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-z)*(-3)",
+			"variationIndex": 16
+		},
+		{
+			"answers": ["-9z"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "bonne réponse -9z",
+			"variationIndex": 17
+		},
+		{
+			"answers": ["(-3)*(-3)*(-z)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["brackets", "signs", "products", "form"]
+			},
+			"variables": {
+				"p": "z|z",
+				"q": "3",
+				"r": "3"
+			},
+			"description": "expression recopiée (-3)*(-3)*(-z)",
+			"variationIndex": 17
+		}
+	]
+}

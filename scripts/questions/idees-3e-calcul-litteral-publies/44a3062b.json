@@ -1,0 +1,175 @@
+{
+	"id": "44a3062b-4e55-44e8-b40d-ac7218b58cb7",
+	"title": "Calculer une quatrième proportionnelle",
+	"description": "En utilisant le coefficient de proportionnalité qui est fractionnaire",
+	"grades": ["4"],
+	"level": 3,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "2..9"
+			},
+			{
+				"name": "b",
+				"expression": "2..9!cd(a)"
+			},
+			{
+				"name": "c",
+				"expression": "2..9!cd(b),a"
+			}
+		],
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c/b}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  {{b}}  \\\\                        ?  &  {{c}}                       \\end{array}$",
+			"correction": {
+				"steps": [
+					"${{solution:0}}$, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c/b}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &  {{a}}  \\\\                       {{c}}  &  ?                        \\end{array}$",
+			"correction": {
+				"steps": [
+					"${{solution:0}}$, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{b}}  &   ? \\\\                       {{c}}  &  {{eval:a*c/b}}                       \\end{array}$",
+			"correction": {
+				"steps": [
+					"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{solution:0}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{eval:a*c/b}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        ?  &   {{b}} \\\\                        {{eval:a*c/b}}  &   {{c}}                       \\end{array}$",
+			"correction": {
+				"steps": [
+					"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{c}}$ et ${{solution:0}} \\textcolor{{{color:primary.0}}}{\\times \\frac{{{c}}}{{{b}}}} = {{eval:a*c/b}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{27}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v0 fraction",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["13{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v0 décimal exact",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3{,}11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "4"
+			},
+			"description": "v0 arrondi",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{28}{9}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "4"
+			},
+			"description": "v1 fraction",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "4"
+			},
+			"description": "v2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v3",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "v3 erreur",
+			"variationIndex": 3
+		}
+	]
+}
