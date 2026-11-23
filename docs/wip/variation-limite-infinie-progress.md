@@ -21,8 +21,9 @@ _Mis à jour le 2026-11-23, code en cours (pas de PR)._
   appliquée (David à distance n'a pas vu la demande d'autorisation), puis suite complète des
   tests du tableau, `check:incremental`, doc système (`docs/systeme/questions.md`, syntaxe),
   revue `code-reviewer` (opus : correction des réponses), PR · **En attente de David** :
-  rien · **Pièges en cours** : David à distance = pas de commande qui demande une
-  autorisation ; un message d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à
+  rien · **Pièges en cours** : demande d'autorisation à distance : notification ntfy
+  (nom de session) en place depuis le 2026-11-23, reçue par David ; branche commitée mais
+  NON poussée (le pre-push exige la doc `docs/systeme/questions.md`) ; un message d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à
   signaler à David) · **Worktree / branche** : `../ubumaths-wt-variation-limite-infinie`,
   `feat/variation-limite-infinie`.
 
