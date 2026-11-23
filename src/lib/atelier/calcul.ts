@@ -4040,7 +4040,17 @@ function alternativeWithDecimalComma(alternative: Alternative | undefined): {
 } {
 	return alternative === undefined
 		? {}
-		: { alternative: { ...alternative, latex: decimalCommaLatex(alternative.latex) } };
+		: {
+				alternative: {
+					...alternative,
+					latex: decimalCommaLatex(alternative.latex),
+					// La note passe à la virgule (`decimalCommaProse`) : la phrase à
+					// retirer aussi, sinon elle ne s'y retrouve plus (revue de E9)
+					...(alternative.outdatedNote !== undefined && {
+						outdatedNote: decimalCommaProse(alternative.outdatedNote)
+					})
+				}
+			};
 }
 
 /**

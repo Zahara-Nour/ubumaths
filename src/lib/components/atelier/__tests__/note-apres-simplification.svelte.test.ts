@@ -64,4 +64,14 @@ describe('la note « On peut simplifier davantage » suit la bascule', () => {
 		await tick();
 		expect(note(racine)).toContain(NOTE);
 	});
+
+	// Revue : la note passe à la virgule décimale après coup ; la phrase à retirer aussi
+	it('une note à virgule décimale part aussi', async () => {
+		const racine = afficher('.simplifier ln(x^2)*0.25');
+		expect(note(racine)).toContain('Pour x > 0, on peut écrire 0,5');
+
+		cliquer(bouton(racine, 'Simplifier pour x > 0'));
+		await tick();
+		expect(note(racine)).not.toContain('on peut écrire');
+	});
 });
