@@ -163,6 +163,8 @@ test('#1424 — poignée tirée jusqu’à A8, copier-coller en C5, lien partag�
 	// Tirer la poignée (coin bas-droit de A2) jusqu'à A8, au vrai pointeur
 	const handle = cellLocator(page, 'A2').locator('.poignee');
 	await expect(handle).toBeVisible();
+	// A8 à l'écran avant de mesurer : au téléphone, la vue défile
+	await cellLocator(page, 'A8').scrollIntoViewIfNeeded();
 	const from = await handle.boundingBox();
 	const to = await cellLocator(page, 'A8').boundingBox();
 	if (from === null || to === null) throw new Error('poignée ou case A8 sans boîte');
@@ -466,6 +468,8 @@ test('#1410 — la grille : saisie répartie, colonne nommée en liste, nom reti
 	}
 
 	await nameColumn(page, 'A', 'L');
+	// Au téléphone, « Mes objets » replié : l'élève le déplie pour voir la carte
+	await showCards(page);
 	await expect(cardLocator(page, 'L')).toBeVisible();
 	await expect(page.locator('tr.apercus')).toContainText('n = 4');
 
@@ -497,6 +501,7 @@ test('#1413 — lignes incomplètes écartées : ajustement, nuage, .stats, .cro
 	await nameColumn(page, 'B', 'M');
 
 	const withM = async (action: string) => {
+		await showCards(page);
 		await cardLocator(page, 'L').getByRole('button', { name: 'Options de L' }).click();
 		await page.getByRole('menuitem', { name: 'Avec une autre liste' }).click();
 		await page.getByRole('menuitem', { name: action }).click();
@@ -784,6 +789,8 @@ async function openCsv(
 	page: Page,
 	file: string | { name: string; mimeType: string; buffer: Buffer }
 ): Promise<void> {
+	// Au téléphone, la console ouverte couvre la vue et ce bouton
+	await setConsole(page, false);
 	const chooser = page.waitForEvent('filechooser');
 	await page.getByRole('button', { name: 'Ouvrir un CSV…' }).click();
 	await (await chooser).setFiles(file);
@@ -885,4 +892,33 @@ test('#1473 — « Ouvrir un CSV… » : Excel, LibreOffice, Google Sheets, alle
 	});
 	await expect(page.getByText('Ce fichier n’est pas un tableau CSV')).toBeVisible();
 	await expect.poll(() => shownIn(page, 'B1')).toBe('2.25');
+});
+
+/** Les cases de la grille qu'un doigt atteint : visibles, et rien par-dessus leur milieu */
+function touchableCells(page: Page): Promise<number> {
+	return page.locator('td[role="gridcell"]').evaluateAll(
+		(cells) =>
+			cells.filter((cell) => {
+				const box = cell.getBoundingClientRect();
+				if (box.width === 0 || box.height === 0) return false;
+				const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+				return hit !== null && (hit === cell || cell.contains(hit));
+			}).length
+	);
+}
+
+test('grille de Données au téléphone (390 × 659) : des cases à toucher, la vue défile', async ({
+	page
+}) => {
+	// La hauteur visible d'un iPhone 15 dans Safari (barres comprises)
+	await page.setViewportSize({ width: 390, height: 659 });
+	await setConsole(page, false);
+	// Sans la place réservée, la grille tombait à 2 px de haut (en prod le 2026-11-23)
+	const zone = page.locator('.donnees .defilement');
+	await zone.scrollIntoViewIfNeeded();
+	expect((await zone.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(150);
+	await expect.poll(() => touchableCells(page)).toBeGreaterThanOrEqual(10);
+	// Une case se touche et se remplit, comme sur ordinateur
+	expect(await typeCell(page, 'A1', '12')).toBe('');
+	expect((await readCell(page, 'A1')).shown).toBe('12');
 });

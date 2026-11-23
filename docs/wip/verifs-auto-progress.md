@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3036 (R6 mergé)._
+_Mis à jour le 2026-11-23, grille de Données au téléphone en PR._
 
-- **État** : R6 mergé (#3036) : six projets (`pnpm test:verifs` = ordinateur Chrome ; `--project` ; `pnpm test:verifs:tout` ≈ 15 min), gestes du téléphone, Firefox réglé sur macOS 27. 79 rouges en suite complète, détaillés au § « R6 — rouges restants ». Ordre validé : R6 → tri des 391 lignes (paquets de ~50, les plus anciennes d'abord) → R12 → R13.
-- **Prochaine action** : la réponse de David sur la grille de Données au téléphone (correctif en PR à part, worktree neuf) ; sinon, le tri des lignes.
-- **En attente de David** : (1) **grille de Données invisible au téléphone** (2 px à 393 px de large, prod comprise) : la corriger ? (2) écarts moteur : Tab sur « Options » (WebKit), #1469 (Firefox), #1337 / #1536 / Échap (iPhone), rendus WebKit de `e^(x/2)` et `f⁻¹` ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12).
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; carnet rouge en suite complète, vert seul sous `with-db-lock.sh` ; `calc` déplie « Mes objets » au téléphone (`leavePanelAlone` pour les tests du repli) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #3036).
+- **État** : R6 mergé (#3036). Correctif de la grille de Données au téléphone (David : « go ») sur `fix/atelier-grille-telephone` : à ≤ 720 px la grille garde `min(14rem, 60dvh)` et la vue défile ; test « grille de Données au téléphone (390 × 659) » rouge avant (2 px), vert après sur ordi-chrome, iphone, android. Ordre recommandé et suivi (David : « je suis tes recos » / « go ») : grille → enquête #1536 → #1337 → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
+- **Prochaine action** : merger la PR de la grille ; puis l'enquête #1536 (points décalés sur la toile à l'iPhone : vrai ou test ?) dans un worktree neuf.
+- **En attente de David** : notification qui couvre la barre d'outils au téléphone (barre d'icônes, Android) ; laisser « Tab sur Options » (réglage de Safari) et « Échap à l'iPhone » (pas de touche) ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12).
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets » (pas une carte née d'une colonne : `showCards`) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `ubumaths-wt-verifs-auto-grille` · `fix/atelier-grille-telephone` · serveur de dev sur 5178.
 
 ## Phase 0 (validée le 2026-10-25)
 

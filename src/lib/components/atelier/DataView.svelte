@@ -1482,6 +1482,22 @@
 		background: var(--color-card);
 	}
 
+	/* Téléphone (une colonne, ≤ 720 px, comme « Mes objets ») : la barre, la mise en
+	   forme, la consigne et les boutons prennent toute la hauteur, et la grille, qui
+	   n'a que le reste, tombait à 2 px (2026-11-23). Elle garde de quoi montrer
+	   quelques lignes, et c'est la vue qui défile. */
+	@media (max-width: 720px) {
+		.donnees {
+			overflow-y: auto;
+		}
+
+		.defilement {
+			flex: 1 0 auto;
+			min-height: min(14rem, 60dvh);
+			max-height: 70dvh;
+		}
+	}
+
 	table {
 		border-collapse: separate;
 		border-spacing: 0;
