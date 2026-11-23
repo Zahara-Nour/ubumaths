@@ -30,7 +30,9 @@ async function mathField(): Promise<MathfieldElement> {
 /** Vraie frappe MathLive dans la case `id` : curseur dans la case, insertion, événement `input` */
 async function typeInPrompt(field: MathfieldElement, id: string, latex: string) {
 	field.focus();
-	field.selection = field.getPromptRange(id);
+	const range = field.getPromptRange(id);
+	if (!range) throw new Error(`case ${id} introuvable`);
+	field.selection = { ranges: [range] };
 	field.executeCommand(['insert', latex]);
 	field.dispatchEvent(new Event('input', { bubbles: true }));
 	await new Promise((resolve) => setTimeout(resolve, 50));
