@@ -19,7 +19,8 @@ import {
 	stepsAs,
 	type Answer,
 	allowClipboard,
-	readClipboard
+	readClipboard,
+	showCards
 } from './helpers/atelier';
 
 /**
@@ -542,6 +543,7 @@ test('#1333 — grapheur : aire sous une courbe avec un pôle dans l’intervall
 	page
 }) => {
 	await page.goto('/grapheur');
+	await showCards(page, { afterLoad: true });
 	await calc(page, 'f(x) = 3x^2/(x^3-2)');
 	await calc(page, 'g(x) = x^2');
 	await setConsole(page, false);
@@ -770,7 +772,8 @@ test('#1710 — « Comment ? » de .limite : décimaux, facteur commun', async (
 
 test('#1709 — /calc retirée : redirigée vers /atelier', async ({ page }) => {
 	for (const address of ['/calc', '/calc/', '/calc?share=abc']) {
-		await page.goto(address);
+		// La page redirige aussitôt : WebKit interrompt le chargement attendu
+		await page.goto(address, { waitUntil: 'commit' });
 		await expect(page).toHaveURL(/\/atelier$/);
 	}
 	const sum = await calc(page, '2+3*4');

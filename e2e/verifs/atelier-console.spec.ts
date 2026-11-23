@@ -18,7 +18,9 @@ import {
 	stepsAs,
 	typeInCard,
 	type Answer,
-	allowClipboard
+	allowClipboard,
+	showCards,
+	leavePanelAlone
 } from './helpers/atelier';
 import { openView, readCell, typeCell } from './helpers/grille';
 
@@ -202,6 +204,7 @@ test('#1292, #1313, #1318 — « Résumé / Détaillé » : ligne par ligne, ret
 
 	// #1292 : le choix est retenu après rechargement
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	const afterReload = await calc(page, '.résoudre 5x-1\\geq 4');
 	await steps(afterReload);
 	expect(await pressedChoice(afterReload)).toContain('Résumé');
@@ -226,7 +229,8 @@ test('#1340 — /cas mène à l’atelier ; .aide, .valeurs, .exporter', async (
 	await expect(notice).toHaveText('Rien à exporter pour l’instant.');
 
 	for (const address of ['/cas', '/cas?x=1']) {
-		await page.goto(address);
+		// La page redirige aussitôt : WebKit interrompt le chargement attendu
+		await page.goto(address, { waitUntil: 'commit' });
 		await expect(page).toHaveURL(/\/atelier/);
 	}
 	await openAtelier(page);
@@ -253,6 +257,7 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	await calc(page, '2+3');
 	const before = (await cards(page)).map((each) => each.name);
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 
 	const lines = historyLines(page);
 	await expect(lines).toHaveCount(4);
@@ -280,6 +285,7 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	const link = await page.getByLabel('Lien de partage').inputValue();
 	const other = await page.context().newPage();
 	await other.goto(link);
+	await showCards(other, { afterLoad: true });
 	await expect(cardLocator(other, 'f')).toBeVisible();
 	await expect(other.locator('ol.historique > li')).toHaveCount(0);
 	await other.close();
@@ -293,6 +299,7 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	const kept = await lines.count();
 	expect(kept).toBeGreaterThanOrEqual(5);
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await expect(lines).toHaveCount(kept);
 	await expect(page.locator('article.objet')).toHaveCount(0);
 });
@@ -312,6 +319,7 @@ test(
 		expect(await field.getAttribute('placeholder')).toMatch(/f\(x\)/);
 
 		await page.reload();
+		await showCards(page, { afterLoad: true });
 		await expect(mathConsole(page)).toBeVisible();
 
 		// #1388 : la ligne de l'historique écrite en maths, sans point
@@ -349,6 +357,7 @@ test(
 
 		// Rechargée, la ligne revient écrite de même
 		await page.reload();
+		await showCards(page, { afterLoad: true });
 		await expect(historyLines(page).first().locator('.saisie')).toContainText('résoudre');
 		await expect(historyLines(page).first().locator('.saisie')).not.toContainText('.résoudre');
 
@@ -389,7 +398,7 @@ async function mathFieldButtons(field: Locator): Promise<{ menu: boolean; keyboa
 
 test(
 	'#1425 — pas de menu ☰ ni de menu au clic droit dans les champs mathématiques',
-	{ tag: '@clavier-mathlive' },
+	{ tag: ['@clavier-mathlive', '@bureau'] },
 	async ({ page }) => {
 		const menu = page.locator('.ui-menu-container');
 		await chooseSetting(page, 'Écriture mathématique');
@@ -444,45 +453,48 @@ async function expectNotCovered(button: Locator): Promise<void> {
 	).toBe(true);
 }
 
-test('#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’icônes, défile à 8 objets', async ({
-	page
-}) => {
-	await page.setViewportSize({ width: 390, height: 844 });
-	await page.reload();
-	const panel = page.locator('aside.panneau');
-	const scrolls = () =>
-		panel.evaluate((element) =>
-			[element, ...element.querySelectorAll('*')].some(
-				(node) =>
-					node.scrollHeight > node.clientHeight + 1 &&
-					['auto', 'scroll'].includes(getComputedStyle(node).overflowY)
-			)
-		);
-	for (const name of ['a', 'b']) await calc(page, `${name} = 1`);
-	await consoleButton(page).click();
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	// Replié au téléphone depuis #1546 (plus récent que la ligne) : on le déplie
-	await expect(panel).toHaveClass(/replie/);
-	await panel.locator('button.replier').click();
-	await expect(panel.locator('.compte')).toHaveText(/2\s+objets/);
-	// Contre-épreuve : avec 2 objets, rien ne défile
-	expect(await scrolls()).toBe(false);
-	for (const name of ['c', 'k', 's', 'p', 'q', 'r']) await calc(page, `${name} = 1`);
-	await consoleButton(page).click();
-	await expect(panel.locator('.compte')).toHaveText(/8\s+objets/);
-	// Ni le panneau ni ses boutons « + Fonction… » ne passent sous « Partager », « Réglages »
-	for (const name of ['Partager', 'Réglages']) {
-		await expectNotCovered(page.getByRole('button', { name, exact: true }));
+test(
+	'#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’icônes, défile à 8 objets',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		leavePanelAlone(page);
+		await page.setViewportSize({ width: 390, height: 844 });
+		await page.reload();
+		const panel = page.locator('aside.panneau');
+		const scrolls = () =>
+			panel.evaluate((element) =>
+				[element, ...element.querySelectorAll('*')].some(
+					(node) =>
+						node.scrollHeight > node.clientHeight + 1 &&
+						['auto', 'scroll'].includes(getComputedStyle(node).overflowY)
+				)
+			);
+		for (const name of ['a', 'b']) await calc(page, `${name} = 1`);
+		await consoleButton(page).click();
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+		// Replié au téléphone depuis #1546 (plus récent que la ligne) : on le déplie
+		await expect(panel).toHaveClass(/replie/);
+		await panel.locator('button.replier').click();
+		await expect(panel.locator('.compte')).toHaveText(/2\s+objets/);
+		// Contre-épreuve : avec 2 objets, rien ne défile
+		expect(await scrolls()).toBe(false);
+		for (const name of ['c', 'k', 's', 'p', 'q', 'r']) await calc(page, `${name} = 1`);
+		await consoleButton(page).click();
+		await expect(panel.locator('.compte')).toHaveText(/8\s+objets/);
+		// Ni le panneau ni ses boutons « + Fonction… » ne passent sous « Partager », « Réglages »
+		for (const name of ['Partager', 'Réglages']) {
+			await expectNotCovered(page.getByRole('button', { name, exact: true }));
+		}
+		await expectNotCovered(panel.getByRole('button', { name: '+ Fonction' }));
+		// Avec 8 objets, le panneau défile
+		expect(await scrolls()).toBe(true);
+		// Reste à la main : la vue Graphe utilisable à 390 px
 	}
-	await expectNotCovered(panel.getByRole('button', { name: '+ Fonction' }));
-	// Avec 8 objets, le panneau défile
-	expect(await scrolls()).toBe(true);
-	// Reste à la main : la vue Graphe utilisable à 390 px
-});
+);
 
 test('#1692 — tableur V4 retiré : /spreadsheet mène à l’atelier', async ({ page }) => {
 	for (const address of ['/spreadsheet', '/spreadsheet/00000000-0000-0000-0000-000000000000']) {
-		await page.goto(address);
+		await page.goto(address, { waitUntil: 'commit' });
 		await expect(page).toHaveURL(/\/atelier/);
 	}
 	await openView(page, 'Données');
@@ -542,6 +554,7 @@ test('#1811 — réglage « Simplifications qui changent le domaine »', async (
 	).toBe(normalizeLatex(kept.latex ?? ''));
 
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	const again = await openSettings(page);
 	await expect(
 		again.getByRole('radio', { name: 'Simplifier en disant la condition' })
@@ -550,72 +563,75 @@ test('#1811 — réglage « Simplifications qui changent le domaine »', async (
 	expectLatex(await calc(page, '.simplifier ln(x)-ln(x) dans ]0;+∞[ ∩ ]-∞;5]'), '0');
 });
 
-test('console de l’Atelier — ouverte, fermée, raccourcis, poignée, lignes, menu', async ({
-	page
-}) => {
-	// Plus d'onglet Calcul ; /atelier ouvre la console
-	await expect(
-		page
-			.getByRole('navigation', { name: "Vues de l'atelier" })
-			.getByRole('button', { name: 'Calcul' })
-	).toHaveCount(0);
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+test(
+	'console de l’Atelier — ouverte, fermée, raccourcis, poignée, lignes, menu',
+	{ tag: '@bureau' },
+	async ({ page }) => {
+		// Plus d'onglet Calcul ; /atelier ouvre la console
+		await expect(
+			page
+				.getByRole('navigation', { name: "Vues de l'atelier" })
+				.getByRole('button', { name: 'Calcul' })
+		).toHaveCount(0);
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
 
-	// Lignes : « > », « --> », « a est correctement défini »
-	const defined = await calc(page, 'a = 2');
-	await expect(defined.line.locator('.invite')).toHaveText('>');
-	await expect(defined.line.locator('.fleche')).toHaveText('-->');
-	expect(defined.text).toContain('a est correctement défini.');
-	await expect(defined.line.locator('.nom-defini')).toHaveText('a');
+		// Lignes : « > », « --> », « a est correctement défini »
+		const defined = await calc(page, 'a = 2');
+		await expect(defined.line.locator('.invite')).toHaveText('>');
+		await expect(defined.line.locator('.fleche')).toHaveText('-->');
+		expect(defined.text).toContain('a est correctement défini.');
+		await expect(defined.line.locator('.nom-defini')).toHaveText('a');
 
-	// Ctrl+Entrée ferme, même depuis le champ ; Échap aussi, focus au bouton
-	const field = page.getByLabel('Calcul, définition ou commande');
-	await field.focus();
-	await page.keyboard.press('Control+Enter');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	await page.keyboard.press('Control+Enter');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
-	await field.focus();
-	await page.keyboard.press('Escape');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	await expect(consoleButton(page)).toBeFocused();
+		// Ctrl+Entrée ferme, même depuis le champ ; Échap aussi, focus au bouton
+		const field = page.getByLabel('Calcul, définition ou commande');
+		await field.focus();
+		await page.keyboard.press('Control+Enter');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+		await page.keyboard.press('Control+Enter');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		await field.focus();
+		await page.keyboard.press('Escape');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+		await expect(consoleButton(page)).toBeFocused();
 
-	// La touche sous Échap hors d'un champ ouvre / ferme ; dans un champ, elle tape
-	// (le focus est sur le bouton Console, hors d'un champ)
-	await page.keyboard.press('Backquote');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
-	await field.focus();
-	await field.fill('');
-	await page.keyboard.press('Backquote');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
-	await expect(field).not.toHaveValue('');
-	await field.fill('');
+		// La touche sous Échap hors d'un champ ouvre / ferme ; dans un champ, elle tape
+		// (le focus est sur le bouton Console, hors d'un champ)
+		await page.keyboard.press('Backquote');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		await field.focus();
+		await field.fill('');
+		await page.keyboard.press('Backquote');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		await expect(field).not.toHaveValue('');
+		await field.fill('');
 
-	// Poignée : les flèches changent la hauteur
-	const handle = page.getByRole('separator', { name: 'Hauteur de la console' });
-	const height = Number(await handle.getAttribute('aria-valuenow'));
-	await handle.focus();
-	await handle.press('ArrowDown');
-	expect(Number(await handle.getAttribute('aria-valuenow'))).not.toBe(height);
+		// Poignée : les flèches changent la hauteur
+		const handle = page.getByRole('separator', { name: 'Hauteur de la console' });
+		const height = Number(await handle.getAttribute('aria-valuenow'));
+		await handle.focus();
+		await handle.press('ArrowDown');
+		expect(Number(await handle.getAttribute('aria-valuenow'))).not.toBe(height);
 
-	// Action de carte console fermée : un nombre sur le bouton
-	await calc(page, 'f(x) = x^2');
-	await page.keyboard.press('Control+Enter');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	await cardAction(page, 'f', 'Variations');
-	await expect(consoleButton(page)).toHaveAccessibleDescription('1 nouveau résultat');
+		// Action de carte console fermée : un nombre sur le bouton
+		await calc(page, 'f(x) = x^2');
+		await page.keyboard.press('Control+Enter');
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+		await cardAction(page, 'f', 'Variations');
+		await expect(consoleButton(page)).toHaveAccessibleDescription('1 nouveau résultat');
 
-	// Menu ⋮ : copier / télécharger l'historique ubumark
-	await consoleButton(page).click();
-	await page.getByRole('button', { name: 'Menu de la console' }).click();
-	await expect(
-		page.getByRole('menuitem', { name: 'Copier l’historique pour une fiche' })
-	).toBeVisible();
-	const download = page.waitForEvent('download');
-	await page.getByRole('menuitem', { name: 'Télécharger l’historique (ubumark)' }).click();
-	expect((await download).suggestedFilename()).toBeTruthy();
+		// Menu ⋮ : copier / télécharger l'historique ubumark
+		await consoleButton(page).click();
+		await page.getByRole('button', { name: 'Menu de la console' }).click();
+		await expect(
+			page.getByRole('menuitem', { name: 'Copier l’historique pour une fiche' })
+		).toBeVisible();
+		const download = page.waitForEvent('download');
+		await page.getByRole('menuitem', { name: 'Télécharger l’historique (ubumark)' }).click();
+		expect((await download).suggestedFilename()).toBeTruthy();
 
-	// /grapheur : console fermée
-	await page.goto('/grapheur');
-	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-});
+		// /grapheur : console fermée
+		await page.goto('/grapheur');
+		await showCards(page, { afterLoad: true });
+		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+	}
+);

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { calc, openAtelier } from './helpers/atelier';
+import { calc, isNarrow, openAtelier, showCards } from './helpers/atelier';
 import { openView, setConsole } from './helpers/grille';
 
 /**
@@ -29,7 +29,8 @@ async function plotZoomedOut(page: Page, definition: string): Promise<void> {
 	await setConsole(page, false);
 	const zoomOut = page.getByRole('button', { name: 'Zoom arrière' });
 	for (let click = 0; click < ZOOM_OUT_CLICKS; click++) await zoomOut.click();
-	// Le dézoom a eu lieu : la plus grande graduation de l'axe des x dépasse 400
+	// Le dézoom a eu lieu : une graduation de l'axe des x atteint 400 (au téléphone,
+	// graduées de 200 en 200, la plus grande sous ±577 est 400 tout juste)
 	const ticks = page.locator('.x-axis-ticks .axis-label');
 	await expect
 		.poll(async () =>
@@ -39,7 +40,7 @@ async function plotZoomedOut(page: Page, definition: string): Promise<void> {
 				)
 			)
 		)
-		.toBeGreaterThan(400);
+		.toBeGreaterThanOrEqual(400);
 }
 
 /** Les asymptotes verticales dessinées (un tracé non vide) */
@@ -135,10 +136,12 @@ test('lecture graphique — losange glissé ou au clavier, lectures de la consol
 	expect(await xTicks(page)).toEqual(ticks);
 	await expect(page.locator('.image-readings g[data-source="curseur"]')).toHaveCount(1);
 
-	// Au clavier : une flèche avance d'un pas de la sous-grille (0,5)
+	// Au clavier : une flèche avance d'un pas de la sous-grille, qui suit l'échelle
+	// (`ReadingSliders.svelte`) : 0,5 sur ordinateur, 1 sur l'écran plus serré du téléphone
 	await handle.focus();
 	await page.keyboard.press('ArrowRight');
-	await expect(handle).toHaveAttribute('aria-valuenow', String(dragged + 0.5));
+	const minorStep = isNarrow(page) ? 1 : 0.5;
+	await expect(handle).toHaveAttribute('aria-valuenow', String(dragged + minorStep));
 
 	// f(2) dans la console : pointillés de 2 à 4, qui restent
 	await calc(page, 'f(2)');
@@ -172,6 +175,7 @@ async function halfWidth(page: Page): Promise<number> {
 /** `/grapheur` : définit `f` dans la console, la referme, puis `clicks` fois « Zoom arrière » */
 async function grapheur(page: Page, definition: string, clicks: number): Promise<void> {
 	await page.goto('/grapheur');
+	await showCards(page, { afterLoad: true });
 	await calc(page, `f(x) = ${definition}`);
 	await setConsole(page, false);
 	const zoomOut = page.getByRole('button', { name: 'Zoom arrière' });

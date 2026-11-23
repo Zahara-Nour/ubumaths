@@ -16,7 +16,18 @@ export interface Answer {
 	refused: boolean;
 }
 
+/** Le bouton « Signaler » du serveur de dev (jamais en prod) : au téléphone, il couvre des boutons */
+const HIDE_REPORT_BUTTON = 'button[aria-controls="signaler-dev"] { display: none !important; }';
+
 export async function openAtelier(page: Page): Promise<void> {
+	// Posé à chaque chargement de la page (rechargement compris)
+	await page.addInitScript((css) => {
+		addEventListener('DOMContentLoaded', () => {
+			const style = document.createElement('style');
+			style.textContent = css;
+			document.head.append(style);
+		});
+	}, HIDE_REPORT_BUTTON);
 	await page.goto('/atelier');
 	await expect(consoleInput(page)).toBeVisible();
 }
@@ -48,7 +59,38 @@ export async function calc(page: Page, input: string): Promise<Answer> {
 	const latex = (await math.count()) > 0 ? await math.getAttribute('data-latex') : null;
 	const text = ((await line.locator('.reponse').innerText()) ?? '').replace(/\s+/g, ' ').trim();
 	const refused = ((await line.getAttribute('class')) ?? '').includes('refus');
+	// Au téléphone, « Mes objets » se replie dès son premier objet : l'élève le déplie pour voir ses cartes
+	await showCards(page);
 	return { line, latex, text, refused };
+}
+
+/** Téléphone : l'Atelier passe à une colonne à 720 px et moins (`ObjectPanel.svelte`) */
+export function isNarrow(page: Page): boolean {
+	return (page.viewportSize()?.width ?? Infinity) <= 720;
+}
+
+/** Les pages dont le test règle lui-même « Mes objets » (tests du repli au téléphone) */
+const panelLeftAlone = new WeakSet<Page>();
+
+/** `calc` et les cartes ne déplient plus « Mes objets » : le test le règle lui-même */
+export function leavePanelAlone(page: Page): void {
+	panelLeftAlone.add(page);
+}
+
+/**
+ * Déplie « Mes objets » au téléphone, s'il est replié ; sur ordinateur il l'est
+ * toujours. `afterLoad` : juste après un chargement (rechargement, lien), le
+ * temps que les cartes reviennent et que la flèche paraisse.
+ */
+export async function showCards(page: Page, options: { afterLoad?: boolean } = {}): Promise<void> {
+	if (!isNarrow(page) || panelLeftAlone.has(page)) return;
+	const toggle = page.getByRole('button', { name: 'Mes objets', exact: true });
+	if (options.afterLoad) {
+		await toggle.waitFor({ state: 'attached', timeout: 5000 }).catch(() => undefined);
+	}
+	if ((await toggle.count()) === 0) return;
+	if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
+	await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 }
 
 /**
@@ -163,6 +205,7 @@ export async function cards(page: Page): Promise<Card[]> {
 
 /** La carte de ce nom, lue ; échoue si elle n'est pas affichée */
 export async function card(page: Page, name: string): Promise<Card> {
+	await showCards(page);
 	await expect(cardLocator(page, name)).toBeVisible();
 	const found = (await cards(page)).find((each) => each.name === name);
 	if (found === undefined) throw new Error(`carte ${name} introuvable`);
@@ -171,6 +214,7 @@ export async function card(page: Page, name: string): Promise<Card> {
 
 /** Choisit une action du menu « Options » d'une carte (« Dériver », « Réciproque »…) */
 export async function cardAction(page: Page, name: string, action: string): Promise<void> {
+	await showCards(page);
 	await cardLocator(page, name)
 		.getByRole('button', { name: `Options de ${name}` })
 		.click();
@@ -179,6 +223,7 @@ export async function cardAction(page: Page, name: string, action: string): Prom
 
 /** Met le focus dans le champ d'une carte (MathLive) */
 export async function focusCardField(page: Page, name: string): Promise<void> {
+	await showCards(page);
 	const field = cardLocator(page, name).locator('math-field');
 	// Juste après un calcul, la console reprend le focus au premier clic
 	await expect(async () => {

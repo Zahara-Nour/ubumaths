@@ -13,7 +13,8 @@ import {
 	openAtelier,
 	retypeCard,
 	steps,
-	typeInCard
+	typeInCard,
+	showCards
 } from './helpers/atelier';
 
 /**
@@ -72,6 +73,7 @@ test('#1305 — intervalle d’une carte : tapé au clavier, gardé au rechargem
 		"n'est pas dans l'ensemble de définition de f, [0 ; +∞["
 	);
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await expectCardLatex(page, 'f', 'x^2\\text{ sur }[0;+\\infty[');
 	expect((await calc(page, 'f(-1)')).refused).toBe(true);
 
@@ -106,8 +108,11 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	const variations = await calc(page, '.variations f');
 	const table = variations.line.locator('.tableau');
 	const bounds = table.locator('.vt-domain-point');
-	// Les bornes sont des formules : leur texte est le LaTeX
-	await expect(bounds).toHaveText(['0', '+\\infty']);
+	// Les bornes sont des formules : leur texte est le LaTeX. Le texte direct seulement :
+	// sous Chromium mobile, MathLive y ajoute son rendu (shadow DOM), que `toHaveText` lirait
+	await expect
+		.poll(() => bounds.evaluateAll((points) => points.map((point) => point.textContent?.trim())))
+		.toEqual(['0', '+\\infty']);
 	// 0 fermé
 	await expect(bounds.first()).not.toHaveClass(/vt-open/);
 	expect(normalizeLatex(await steps(variations))).toContain('croissante');
@@ -266,6 +271,7 @@ test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien
 
 	// Le lien : demi-parabole, pleine en 0
 	await page.goto(`/atelier?f=${encodeURIComponent('x^2 sur [0;+∞[')}`);
+	await showCards(page, { afterLoad: true });
 	await expect(cardLocator(page, 'f')).toBeVisible();
 	await expect(curves(page)).toHaveCount(1);
 	await expect(page.locator('circle.endpoint-closed')).toHaveCount(1);
@@ -603,6 +609,7 @@ test('cartes point et courbe (lot 4b) — une ligne, Entrée range, lien, couleu
 	await (await openOptions(page, 'c')).getByRole('menuitemcheckbox', { name: 'Curseur' }).click();
 	await expect(cardLocator(page, 'c').getByRole('slider', { name: 'Curseur de c' })).toBeVisible();
 	await page.reload();
+	await showCards(page, { afterLoad: true });
 	await expect(cardLocator(page, 'c').getByRole('slider', { name: 'Curseur de c' })).toBeVisible();
 
 	// Suite en escalier qui ne peut plus l'être (sa définition ne la cite plus) : retour
