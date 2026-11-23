@@ -8,16 +8,17 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, PR de la seconde partie (Q6) ouverte._
+_Mis à jour le 2026-11-23, après #3039._
 
-- **État** : outil n° 51 en prod (v0.103.0) ; 3 variations « si c'est possible » ajoutées à
-  604f83b7 dans `scripts/questions/1spe-factoriser-impossible/` (lot `factoriser-impossible-1spe`
-  de `update-published-questions.ts`), PR ouverte · **Prochaine action** : merge, puis David écrit
-  en prod (commande `!` du lot), puis vérification par le MCP en lecture, puis clôture du chantier
-  · **En attente de David** : la commande d'écriture en prod · **Pièges en cours** : un `{{if}}`
-  dans un motif de `requiredForm` sort parenthésé (et parfois « (if:m==2) ») : inutilisable ·
-  **Worktree / branche** : `ubumaths-wt-reponse-impossible-factoriser`,
-  `feat/reponse-impossible-factoriser`.
+- **État** : outil n° 51 en prod (v0.103.0) ; #3039 mergée : 3 variations « si c'est possible »
+  de 604f83b7 dans le lot `factoriser-impossible-1spe`, PAS encore écrites en prod ·
+  **Prochaine action** : après l'écriture par David, vérifier 604f83b7 en prod (MCP en lecture :
+  11 variations, `impossibleLabel` sur V8-V10), puis clore le chantier (versement, archive du
+  journal, ligne 51 de `outils-manquants.md`) · **En attente de David** :
+  `pnpm tsx scripts/update-published-questions.ts --lot factoriser-impossible-1spe` (simulation)
+  puis `--publier`, depuis le dépôt principal · **Pièges en cours** : un `{{if}}` dans le motif de
+  `requiredForm` sort parenthésé, inutilisable · **Worktree / branche** : aucun (retiré après
+  #3039).
 
 ## Historique
 
@@ -143,3 +144,7 @@ Instantané de 604f83b7 lu en prod = celui de `idees-1re-second-degre-publies` (
   avec deux issues (le bouton ne donne toujours pas la réponse) : V9 Δ < 0 ou Δ > 0 ; V10 Δ < 0 ou
   Δ = 0. V8 (a = 1) inchangée. 'product' écarté : il jugerait juste 2(x² − 2x − 3).
 - `pnpm question:specs` : 54 specs vertes (17 neuves), 3 300 tirages, verdict importable.
+
+### 2026-11-23 — #3039 mergée
+
+- CI verte, mergée par `pnpm pr:merger`. Reste l'écriture en prod (David).
