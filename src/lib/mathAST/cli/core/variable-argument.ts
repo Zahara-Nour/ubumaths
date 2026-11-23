@@ -91,16 +91,45 @@ const BARE_FUNCTION_TAIL =
 const GLUED_FUNCTION =
 	/(?<![A-Za-z\\][A-Za-z]|\\|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(?:(?<numberOnly>\d+(?:[.,]\d+)?)(?=\(|\\(?!(?:right|cdot|times|div|leq?|geq?|neq)(?![A-Za-z]))[A-Za-z])|(?<argument>\d+(?:[.,]\d+)?(?:[A-Za-z]|[α-ωΑ-Ωϑϕ])?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!²³\\]))/g;
 
+/** Les lettres grecques en commande LaTeX, et leur signe (cité dans le refus) */
+const GREEK_COMMANDS: Readonly<Record<string, string>> = {
+	pi: 'π',
+	alpha: 'α',
+	beta: 'β',
+	gamma: 'γ',
+	delta: 'δ',
+	epsilon: 'ε',
+	varepsilon: 'ε',
+	theta: 'θ',
+	vartheta: 'ϑ',
+	lambda: 'λ',
+	mu: 'μ',
+	rho: 'ρ',
+	sigma: 'σ',
+	tau: 'τ',
+	phi: 'φ',
+	varphi: 'φ',
+	omega: 'ω'
+};
+
 /**
  * Une touche de fonction du clavier MathLive (`\cos`, `\sin`…) suivie d'un
  * nombre PUIS d'un facteur collé : `\cos2\pi`, `\sin 2x`, `\ln2(x)`. Le parseur
  * prend le nombre seul pour argument (π·cos(2), sin(2)·x) alors qu'on lit
- * cos(2π) : refus neutre, comme `numberOnly` (E1, 2026-11-23). Le nombre seul
- * (`\cos 2`), suivi d'un opérateur ou d'un produit écrit (`\cos2\cdot x`),
- * reste lu. `\sqrt` n'est pas visé : son argument est entre accolades.
+ * cos(2π) : refus neutre, comme `numberOnly` (E1, 2026-11-23). Le facteur est
+ * une LISTE BLANCHE (revue de E1) : des lettres (pas un mot-clé de commande,
+ * `en x=1`), une lettre grecque, `(`, `\left`, `\sqrt`, `\frac`. Le nombre seul
+ * (`\cos 2`), suivi d'un opérateur, d'un produit écrit (`\cos2\cdot x`), d'une
+ * relation (`\ln 2 \approx 0,69`, `\leqslant`), d'un espace (`\quad`) ou d'un
+ * texte (`\text{ cm}`) reste lu. `\sqrt` n'est pas visé : son argument est
+ * entre accolades.
  */
-const LATEX_FUNCTION_NUMBER =
-	/\\(sin|cos|tan|ln|log|exp)(?![A-Za-z])\s*(\d+(?:[.,]\d+)?)\s*(?=[A-Za-z(α-ωΑ-Ωϑϕπ]|\\(?!(?:right|cdot|times|div|leq?|geq?|neq)(?![A-Za-z]))[A-Za-z])/;
+const LATEX_FUNCTION_NUMBER = new RegExp(
+	String.raw`\\(sin|cos|tan|ln|log|exp)(?![A-Za-z])\s*(\d+(?:[.,]\d+)?)\s*` +
+		String.raw`(?:(?<letters>(?!(?:en|pour|de|dans|ordre|et|sur)(?![A-Za-z]))[A-Za-z]+|[α-ωΑ-Ωϑϕπ])` +
+		String.raw`|\\(?<greek>${Object.keys(GREEK_COMMANDS).join('|')})(?![A-Za-z])` +
+		String.raw`|(?=\(|\\(?:left|sqrt|[dt]?frac)(?![A-Za-z])))`
+);
 
 /** Les fonctions hyperboliques : `sinh` n'est pas sin(h). */
 const HYPERBOLIC = /^(?:sin|cos|tan)h$/;
@@ -451,7 +480,9 @@ function gluedFunction(
 	const latex = LATEX_FUNCTION_NUMBER.exec(input);
 	if (latex !== null && (found === null || latex.index < found.index)) {
 		const [, name, number] = latex;
-		return { index: latex.index, typed: `${name} ${number}`, name, argument: null };
+		// Cité comme l'élève le voit : « cos 2π », « sin 2x » ; rien après « sin 2 » devant `(`
+		const factor = latex.groups?.letters ?? GREEK_COMMANDS[latex.groups?.greek ?? ''] ?? '';
+		return { index: latex.index, typed: `${name} ${number}${factor}`, name, argument: null };
 	}
 	return found;
 }
