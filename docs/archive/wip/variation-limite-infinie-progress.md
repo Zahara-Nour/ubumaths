@@ -1,25 +1,20 @@
 # Chantier `variation-limite-infinie` — journal
 
-Outil n° 50 de [outils-manquants.md](outils-manquants.md) : cacher une limite infinie dans un
+Outil n° 50 de [outils-manquants.md](../../wip/outils-manquants.md) : cacher une limite infinie dans un
 tableau de variations (` ```variation `), pour que l'élève la complète. Né du chantier
-[`idees-tle-limites`](idees-tle-limites-progress.md), fiche F3 (point TSPE-415, fonction
+[`idees-tle-limites`](../../wip/idees-tle-limites-progress.md), fiche F3 (point TSPE-415, fonction
 homographique : −∞, à gauche et à droite de la valeur interdite, +∞).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, revue faite et corrigée, PR en cours d'ouverture._
+_Mis à jour le 2026-11-23, après #3027 : chantier clos, journal archivé._
 
-- **État** : code complet et vert (PDF compris) ; revue `code-reviewer` opus faite : (1) erreur
-  prévue `inf` (∞ sans signe) jamais reconnue → corrigé (`infiniteCellVerdict`) ; (2) limite
-  cachée autour de `|h|` / `d` sans case → refusée (phase 0 : double barre seulement) ; (3) la
-  hauteur de la case dit le signe → déjà tranché en phase 0 (« à la hauteur écrite ») ;
-  (4) `{+\infty}` (accolades) jugé faux → laissé (verdict prudent, MathLive ne l'écrit pas).
-  Tests rouges sans correctif, verts avec · **Prochaine action** : PR, `pnpm pr:merger`, puis
-  versement du journal · **En attente de David** : rien · **Pièges en cours** : un message
-  d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à signaler à David) ; défaut
-  ancien de vartable : `(pos, "||", v)` dessine `v` des deux côtés si le domaine continue
-  (hors périmètre) · **Worktree / branche** : `../ubumaths-wt-variation-limite-infinie`,
-  `feat/variation-limite-infinie`.
+- **État** : livré (#3027 mergée) ; doc versée dans `docs/systeme/ubumark.md` et
+  `questions.md` ; outil n° 50 passé en « Livré » d'`outils-manquants.md` · **Prochaine
+  action** : aucune ici ; la fiche F3 du chantier `idees-tle-limites` est débloquée ·
+  **En attente de David** : rien · **Pièges** : un message d'erreur prévue d'intervalle
+  s'ajoute à la remarque du juge ; vartable : `(pos, "||", v)` dessine `v` des deux côtés si
+  le domaine continue (hors périmètre) · **Worktree / branche** : retirés.
 
 ## Historique
 
