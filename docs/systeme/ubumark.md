@@ -607,6 +607,23 @@ Droite à placer : le prof (aperçu, éditeur) est averti quand, sur un téléph
 donne 12. Une droite d'affichage (sans `placer:`) n'est pas avertie : ses graduations fines se
 lisent, on ne les vise pas. L'élève ne voit jamais l'avertissement ; la correction ne le répète pas.
 
+**Zooms** (outil n° 54, chantier [droite-zoom](../wip/droite-zoom-progress.md), 6N1H-3, 6N1H-4) —
+`src/lib/ubumark/__tests__/number-line/number-line-zoom.test.ts`, `NumberLine-zoom.svelte.test.ts` :
+`zoom: 12.4 ; 12.5 ; step 0.01` (puis `major 10`, `labels 12.4, 12.5` au besoin), une ligne par zoom,
+**4 au plus** (`MAX_ZOOMS`). Nœud : `zooms`, liste de `NumberLineConfig` (`arrows: false`, `scale: linear`,
+`autoLabels: false` : **aucune étiquette** sans `labels`, l'élève retrouve les valeurs ; la droite
+principale garde ses étiquettes aux grandes graduations). Chaque zoom est vérifié contre la droite
+**du dessus** (la principale ou le zoom précédent) : bouts sur ses graduations (« n'est pas sur une
+graduation de la droite du dessus », « hors de la droite du dessus »), début < fin, pas positif et
+pas plus grand que le zoom, 500 graduations au plus, morceau inconnu refusé. Refusé avec un zoom :
+`placer:`, `representer:`, `segments:`, `scale: log` (« pas encore possible avec … »). Dessin, écran et
+PDF : chaque zoom sous le précédent (`ZOOM_ROW_GAP` = 110 px, `ZOOM_GAP` = 2 cm), même largeur, relié
+par deux pointillés (`nl-zoom-link`) des bouts agrandis sur la droite du dessus aux bouts du zoom ; un
+point se dessine sur **toutes** les droites où il tombe (`pointsInside`, bouts compris), même couleur.
+Écran : `aria-label` « Droite graduée, avec N zooms ». Vérifié au rendu : page
+`/aide-ecriture/blocs/droite-graduee` (exemple « Lire au millième par zooms successifs ») et PDF compilé
+par typst.ts 0.6.1-rc5.
+
 **Graduations décimales** (`NumberLine-etiquettes-decimales.svelte.test.ts`, `number-line-typst.test.ts`)
 — une graduation écrite (`labels: 1.4, 1.5`) passe par `toLocaleDecimal` : `1{,}4` à l'écran (langue
 du contenu, `readContentLocale`), `1","4` dans le PDF (option `language` de `generateNumberLineTypst`,
