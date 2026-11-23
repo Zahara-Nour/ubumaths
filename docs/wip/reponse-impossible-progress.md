@@ -8,17 +8,15 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3039._
+_Mis à jour le 2026-11-23, après l'écriture en prod de #3039._
 
-- **État** : outil n° 51 en prod (v0.103.0) ; #3039 mergée : 3 variations « si c'est possible »
-  de 604f83b7 dans le lot `factoriser-impossible-1spe`, PAS encore écrites en prod ·
-  **Prochaine action** : après l'écriture par David, vérifier 604f83b7 en prod (MCP en lecture :
-  11 variations, `impossibleLabel` sur V8-V10), puis clore le chantier (versement, archive du
-  journal, ligne 51 de `outils-manquants.md`) · **En attente de David** :
-  `pnpm tsx scripts/update-published-questions.ts --lot factoriser-impossible-1spe` (simulation)
-  puis `--publier`, depuis le dépôt principal · **Pièges en cours** : un `{{if}}` dans le motif de
-  `requiredForm` sort parenthésé, inutilisable · **Worktree / branche** : aucun (retiré après
-  #3039).
+- **État** : outil n° 51 en prod (v0.103.0) ; 604f83b7 écrit en prod par David et vérifié (MCP :
+  publié, 11 variations, « pas factorisable » sur V8-V10, 52 specs) · **Prochaine action** :
+  clore le chantier : ligne 51 de `outils-manquants.md` → fait ; versement (la doc système est
+  déjà à jour depuis #3026, `docs/systeme/questions.md`) ; archiver ce journal dans
+  `docs/archive/wip/` ; commit doc direct sur `main` · **En attente de David** : rien ·
+  **Pièges en cours** : un `{{if}}` dans le motif de `requiredForm` sort parenthésé,
+  inutilisable · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -148,3 +146,8 @@ Instantané de 604f83b7 lu en prod = celui de `idees-1re-second-degre-publies` (
 ### 2026-11-23 — #3039 mergée
 
 - CI verte, mergée par `pnpm pr:merger`. Reste l'écriture en prod (David).
+
+### 2026-11-23 — écrit en prod
+
+- David : « publié ». MCP en lecture : 604f83b7 publié, 11 variations, `impossibleLabel` « pas
+  factorisable » sur V8 à V10, 52 specs (31 + 21 ; le « 54 » annoncé avant était faux).
