@@ -44,6 +44,24 @@ const CONTENT_TABLES: Record<SectionContentKind, string> = {
 	series: 'chapter_series'
 };
 
+/**
+ * Les six sections par défaut, dans l'ordre.
+ *
+ * ⚠️ Miroir du déclencheur `seed_default_chapter_sections` (migration
+ * `20260915260000`), qui les pose sur un chapitre de classe créé à la main.
+ * `createChapterTemplate` les pose sur un modèle créé de zéro. Le test
+ * d'intégration `modele-sections-par-defaut` vérifie que les deux listes sont
+ * les mêmes.
+ */
+export const DEFAULT_SECTION_TITLES = [
+	'Préparation',
+	'Le cours',
+	'Les exercices',
+	'Méthodes',
+	'Résumé',
+	'Bilan'
+] as const;
+
 export type SectionOrderUpdate = { id: string; displayOrder: number };
 
 export type SectionAssignment = {
