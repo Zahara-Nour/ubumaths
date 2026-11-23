@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, à l'ouverture._
+_Mis à jour le 2026-11-23, phase 0._
 
-- **État** : phase 0 écrite (questions ci-dessous), rien de codé · **Prochaine action** : réponses de David aux questions 1 à 5, puis découpage · **En attente de David** : questions 1 à 5 · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais` · `feat/notions-en-anglais`
+- **État** : questions 1 à 5 tranchées (« je suis tes recos », 2026-11-23) ; comportements et découpage écrits, rien de codé · **Prochaine action** : PR 1 (ADR 0043 + migration) · **En attente de David** : validation des comportements et du découpage · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais` · `feat/notions-en-anglais`
 
 ## L'idée
 
@@ -48,3 +48,40 @@ de catégorie — écart 9 de `docs/systeme/fiches-et-pdf.md`.
    (rien d'imprimé en français) ; B — le nom français à la place. Exemple : « Loi géométrique »
    pas encore traduite → A imprime « Technical practice », B imprime « Loi géométrique ·
    Technical practice ». Reco : A, avec une garde qui signale les nœuds sans anglais.
+
+**Réponse de David (2026-11-23)** : « je suis tes recos » — les cinq recommandations sont
+retenues : (1) branches, notions et sous-notions ; (2) tout l'arbre, proposé en un lot, relu sur
+une page à cocher ; (3) l'admin, par migration, sans écran ; (4) stockage B, champ de traductions
+`translations.en.name` sur le nœud, question d'accès tranchée (personne ne lit rien de nouveau,
+les noms anglais se lisent comme les noms français) ; (5) nœud sans anglais → rien en français,
+catégorie seule, avec un signalement.
+
+## Comportements (à valider)
+
+Fiche d'exercices en anglais, sans titre libre :
+
+- **Nominal** : notion « Suites arithmétiques » (« Arithmetic sequences »), catégorie
+  Entraînement technique → titre « Arithmetic sequences », « technical practice » en petit
+  dessous, bas de page « Arithmetic sequences · Technical practice ».
+- **Branche** : deux notions de « Suites » → « Sequences » en grand, les deux notions anglaises
+  dessous, la catégorie en petit ; bas de page « Sequences · Technical practice ».
+- **Limite — un nom manque** : il suffit qu'**un** des noms à imprimer (notion ou branche) n'ait
+  pas d'anglais pour qu'on n'imprime **aucune** notion : catégorie seule, comme aujourd'hui.
+  Jamais de mélange français / anglais.
+- **Limite — fiche française** : rien ne change.
+- **Signalement** : dans l'éditeur, une fiche qui a une version anglaise et une notion sans nom
+  anglais affiche sous ses notions « Sans nom anglais : Loi géométrique — la version anglaise
+  n'imprimera pas les notions ».
+- **Erreur** : un nom anglais vide ou trop long est refusé par la base (comme un nom français).
+
+## Découpage (à valider)
+
+1. **PR 1 — ADR 0043 + migration** : champ de traductions sur les nœuds (vide par défaut, forme
+   vérifiée par la base), les deux fonctions des liens de partage rendent aussi le nom anglais
+   des notions ; tests d'intégration rouges puis verts ; `db:migrate`, `db:types`.
+2. **PR 2 — code** : PDF anglais avec les noms anglais (notions, branche, tous les chemins :
+   éditeur, élève, partage, corrigé), règle « un nom manque → catégorie seule », signalement
+   dans l'éditeur ; doc `fiches-et-pdf.md` (écart 9 retiré).
+3. **PR 3 — traductions** : je propose les ~640 noms, page à cocher pour la relecture, puis
+   migration de données (remplit les traductions, n'efface rien) après tes réponses. Elle peut
+   se faire en parallèle de la PR 2.
