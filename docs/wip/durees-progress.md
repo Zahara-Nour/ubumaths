@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-11-23, après #3032._
 
-- **État** : PR 1 mergée (#3032) : référence validée par David (`scripts/durees/reference.json`), `pnpm durees` (tableau, `--releve`, `--reference`), `pnpm deploy:prod` note ses étapes, relevé de 6 h 40 dans l'installeur launchd. Worktree et branche retirés. Le relevé du matin n'est **pas encore installé** sur le Mac mini.
+- **État** : PR 1 mergée (#3032) : référence validée par David (`scripts/durees/reference.json`), `pnpm durees` (tableau, `--releve`, `--reference`), `pnpm deploy:prod` note ses étapes, relevé de 6 h 40 dans l'installeur launchd. Worktree et branche retirés. Relevé du matin **installé** sur le Mac mini le 2026-11-23 (accord de David) et essayé sous launchd : sortie 0, « RAS ».
 - **Prochaine action** : PR 2 = le local (`check:incremental`, tests, pre-push, `pnpm pr:merger` notent leur durée dans un journal du Mac mini ; `pnpm durees` les montre). Phase 0 déjà validée (ordre tranché, point 3) ; poser à David la question des tests d'intégration ci-dessous avant de coder.
-- **En attente de David** : (1) lancer `pnpm surveillance:installer` dans le dépôt principal, puis `pnpm durees --releve --essai` pour voir ; (2) dire s'il veut aussi mesurer les tests d'intégration (`nightly-integration.yml`, hors `quality.yml`, donc absents de la PR 1).
+- **En attente de David** : dire s'il veut aussi mesurer les tests d'intégration (`nightly-integration.yml`, hors `quality.yml`, donc absents de la PR 1).
 - **Pièges en cours** : `/data` est ignoré par git, d'où la référence sous `scripts/durees/` ; un runner GitHub lent arrive tous les jours, ne jamais alerter sur une seule mesure ; aucune mesure d'avant #3025 (`depuis` de la référence) ; une exécution avec un job sauté (PR de contenu) ne compte pas ; « bascule du site » n'a pas de référence tant qu'il n'y a pas 5 mises en prod notées ; les durées locales dépendent de la charge du Mac mini.
 - **Worktree / branche** : aucun (à créer pour la PR 2 : `ubumaths-wt-durees-local`).
 
