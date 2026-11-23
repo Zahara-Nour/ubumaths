@@ -7,12 +7,24 @@ homographique : −∞, à gauche et à droite de la valeur interdite, +∞).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, chantier ouvert._
+_Mis à jour le 2026-11-23, code en cours (pas de PR)._
 
-- **État** : relevé du code fait, phase 0 écrite (ci-dessous) · **Prochaine action** : coder
-  après les réponses · **En attente de David** : périmètre des erreurs prévues (quels types de cases) ·
-  **Pièges en cours** : `{{e}}` interdit (Euler) · **Worktree / branche** :
-  `../ubumaths-wt-variation-limite-infinie`, `feat/variation-limite-infinie`.
+- **État** : phase 0 validée (Q1 case de calcul + erreurs prévues, Q2 (a), Q3 (a), périmètre
+  « 1 et 2 » : erreurs prévues + QCM sur les cases valeur d'un tableau, tests des erreurs
+  prévues sur intervalle/équation/vecteur/matrice). Fait et vert : parseur (`side` sur
+  `HiddenCell`, `readHiddenLimits`), juge des infinis (`infinityToken`, `infiniteCellVerdict`),
+  masquage d'évaluation, erreurs prévues de tableau, QCM (`withSingleCellShown`), affichage
+  écran (`VariationTable.svelte`). Tests : `tableau-limite-infinie.test.ts` (19),
+  `VariationTable-limite-cachee.svelte.test.ts` (5), `expected-errors-answer-kinds.test.ts` (22)
+  · **Prochaine action** : impression PDF (`variation-table-typst.ts` : la limite cachée y
+  sort EN CLAIR, `generateHiddenVariationRow` ignore les marques) — modif écrite non
+  appliquée (David à distance n'a pas vu la demande d'autorisation), puis suite complète des
+  tests du tableau, `check:incremental`, doc système (`docs/systeme/questions.md`, syntaxe),
+  revue `code-reviewer` (opus : correction des réponses), PR · **En attente de David** :
+  rien · **Pièges en cours** : David à distance = pas de commande qui demande une
+  autorisation ; un message d'erreur prévue d'intervalle s'ajoute à la remarque du juge (à
+  signaler à David) · **Worktree / branche** : `../ubumaths-wt-variation-limite-infinie`,
+  `feat/variation-limite-infinie`.
 
 ## Historique
 

@@ -536,7 +536,16 @@ function maskVariation(block: VariationToFill): MaskLine {
 		const isPoint = !plainKey.includes(',');
 		const inVariationRow = block.node?.rows[ranks[rank]]?.type === 'variation';
 		let shownValue = value;
-		if (inVariationRow && isPoint && parts.length === 2) {
+		const limitsLine =
+			inVariationRow &&
+			isPoint &&
+			VARIATION_LINE_MARKERS.includes(parts[0]) &&
+			parts.slice(1).some((part) => part.startsWith('?'));
+		if (limitsLine) {
+			// Limites cachées autour d'une marque : `?` à leur place, hauteurs écrites (la
+			// forme courte `||, ?-inf, +inf` les déduirait de la limite)
+			shownValue = maskedLimits(block, ranks[rank], plainKey, parts) ?? MASKED_VALUE;
+		} else if (inVariationRow && isPoint && parts.length === 2) {
 			// Valeur d'une ligne variation: (cachée ou non) : hauteur gardée, sauf à côté
 			// d'une flèche cachée
 			const position = arrows?.centered.has(plainKey) ? 'center' : parts[1];
@@ -548,6 +557,40 @@ function maskVariation(block: VariationToFill): MaskLine {
 		if (renamed === plainKey && shownValue === value) return null;
 		return `${renamed}${separator}${shownValue}`;
 	};
+}
+
+/** Marques d'une ligne `variation:` autour desquelles une limite se cache */
+const VARIATION_LINE_MARKERS = ['||', '|h|', 'd'];
+
+/**
+ * Limites autour d'une marque, celles cachées remplacées par `?` :
+ * `||, ?, bottom, +inf, top` (deux limites) ou `||, left, ?, bottom` (une seule).
+ * null si la cellule n'a pas été lue (le parseur a refusé le bloc).
+ */
+function maskedLimits(
+	block: VariationToFill,
+	rowIndex: number,
+	key: string,
+	parts: readonly string[]
+): string | null {
+	const row = block.node?.rows[rowIndex];
+	const value = row?.type === 'variation' ? row.values.get(key) : undefined;
+	if (!value?.marker) return null;
+	const hiddenSides = new Set(
+		(block.node?.cases ?? [])
+			.filter((cell) => cell.row === rowIndex && cell.key === key)
+			.map((cell) => cell.side)
+	);
+	if (value.limits) {
+		const [left, right] = value.limits;
+		const shown = (limit: typeof left, side: 'left' | 'right') =>
+			`${hiddenSides.has(side) ? MASKED_VALUE : limit.expression}, ${limit.position}`;
+		return `${parts[0]}, ${shown(left, 'left')}, ${shown(right, 'right')}`;
+	}
+	if (value.limitSide) {
+		return `${parts[0]}, ${value.limitSide}, ${MASKED_VALUE}, ${value.position}`;
+	}
+	return null;
 }
 
 /**
