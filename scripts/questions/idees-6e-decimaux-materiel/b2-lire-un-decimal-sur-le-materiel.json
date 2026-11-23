@@ -99,6 +99,7 @@
 					"expression": "1..9"
 				}
 			],
+			"conditions": ["a != m", "b != m"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:u+d/10+c/100+m/1000;d}}",
@@ -339,6 +340,24 @@
 				"expectedErrorMessage": "Les petits cubes sont les plus petits objets : ce sont les millièmes, le dernier chiffre après la virgule."
 			},
 			"answers": ["1,704"]
+		},
+		{
+			"description": "b : pas de plaque, lu à l'envers (2,36)",
+			"variationIndex": 1,
+			"variables": {
+				"z": "0",
+				"u": "2",
+				"a": "4",
+				"b": "6",
+				"d": "0",
+				"c": "6",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les petits cubes sont les plus petits objets : ce sont les millièmes, le dernier chiffre après la virgule."
+			},
+			"answers": ["2,36"]
 		}
 	]
 }

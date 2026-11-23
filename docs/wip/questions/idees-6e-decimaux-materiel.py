@@ -98,6 +98,9 @@ MODELE = {
                 {"name": "c", "expression": "eval:(1-z)*b"},
                 {"name": "m", "expression": "1..9"},
             ],
+            # Sans barre (z = 1), « lu à l'envers » vaudrait la réponse si plaques = petits cubes ;
+            # sans plaque (z = 0), « rang sauté » et « lu à l'envers » se confondraient si barres = petits cubes
+            "conditions": ["a != m", "b != m"],
             "blanks": [
                 {
                     "expectedAnswer": REPONSE,
@@ -162,6 +165,7 @@ MODELE["testSpecs"] = [
     spec("b : pas de barre, rang sauté (1,47)", 1, V1c, ["1,47"],
          "Il n'y a aucune barre : le chiffre des centièmes est $0$, il faut l'écrire."),
     spec("b : pas de barre, lu à l'envers (1,704)", 1, V1c, ["1,704"], ENVERS),
+    spec("b : pas de plaque, lu à l'envers (2,36)", 1, V1d, ["2,36"], ENVERS),
 ]
 
 
@@ -169,7 +173,13 @@ def main():
     dossier = Path(sys.argv[1])
     dossier.mkdir(parents=True, exist_ok=True)
     chemin = dossier / "b2-lire-un-decimal-sur-le-materiel.json"
-    chemin.write_text(json.dumps(MODELE, ensure_ascii=False, indent="\t") + "\n")
+    # L'id écrit par create-questions --publier est gardé
+    modele = MODELE
+    if chemin.exists():
+        ancien = json.loads(chemin.read_text())
+        if "id" in ancien:
+            modele = {"id": ancien["id"], **MODELE}
+    chemin.write_text(json.dumps(modele, ensure_ascii=False, indent="\t") + "\n")
     print(chemin)
 
 
