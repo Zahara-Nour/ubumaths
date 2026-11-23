@@ -1,6 +1,6 @@
 /**
- * `pnpm durees` — durées de la CI, des PR et de la mise en prod
- * =============================================================
+ * `pnpm durees` — durées de la CI, des PR, de la mise en prod et du Mac mini
+ * =========================================================================
  *
  * Gardé ici (scripts/durees/logique.ts) :
  * - une exécution de CI ne donne des mesures que si elle est complète : un seul
@@ -12,6 +12,11 @@
  * - alerte : médiane d'au moins 1,5 fois la référence ET au moins 5 mesures ;
  *   une seule PR lente ne déclenche rien ;
  * - mise en prod : les 5 dernières, et seulement s'il y en a eu une dans la journée ;
+ * - tests d'intégration : seule une suite entière compte (4 morceaux, tests joués
+ *   dans chacun, aucune liste de tests retenue) ; une PR qui n'en joue qu'une partie, ou aucun, n'est pas une
+ *   mesure ; la suite de la nuit suit la règle de la mise en prod (une par jour) ;
+ * - journal du Mac mini : une ligne par commande verte, les lignes illisibles
+ *   sautées ; une phase locale courte (check:incremental, 18 s) est montrée ;
  * - une faute de frappe dans les options affiche l'usage, jamais le tableau ;
  * - un fichier de référence mal formé est refusé à la lecture ;
  * - la référence ne bouge que par `nouvelleReference` : au moins 5 mesures par
@@ -23,11 +28,13 @@ import {
 	comparer,
 	formaterDuree,
 	lireArguments,
+	lireJournalLocal,
 	lireJournalProd,
 	lireReference,
 	mediane,
 	mesuresDeLaPr,
 	mesuresDuRun,
+	mesuresIntegration,
 	messageAlerte,
 	nouvelleReference,
 	tableau,
@@ -195,6 +202,103 @@ describe('lireJournalProd', () => {
 	});
 });
 
+describe('mesuresIntegration', () => {
+	/** Un morceau de la suite : son job, et l'étape qui joue les tests. */
+	function morceau(k: number, total: number, tests: string | null = 'success'): Job {
+		return job(`Integration tests (shard ${k}/${total})`, 300, {
+			steps: [
+				{ name: 'Checkout code', conclusion: tests === null ? 'skipped' : 'success' },
+				{
+					name: `Run integration tests (shard ${k}/${total})`,
+					conclusion: tests ?? 'skipped'
+				}
+			]
+		});
+	}
+	/** Le job de portée : l'étape des exclusions n'est jouée qu'en suite complète. */
+	const portee = (complete: boolean) =>
+		job('Integration scope', 30, {
+			steps: [
+				{
+					name: 'Tests de migration de données laissés de côté (PR en suite complète)',
+					conclusion: complete ? 'success' : 'skipped'
+				}
+			]
+		});
+	const filtre = job('Integration paths filter', 35);
+	const autres = [portee(true), filtre];
+	const entiere = [...autres, ...[1, 2, 3, 4].map((k) => morceau(k, 4))];
+	const nuit = run({ event: 'schedule', headBranch: 'main' });
+	const pr = run({ event: 'pull_request' });
+
+	it('mesure la suite entière de la nuit, et celle d’une PR, à part', () => {
+		expect(mesuresIntegration(nuit, entiere)).toEqual([
+			{ phase: 'integration:nuit', secondes: 420, date: '2026-11-23T10:00:00Z' }
+		]);
+		expect(mesuresIntegration(pr, entiere)).toEqual([
+			{ phase: 'integration:pr', secondes: 420, date: '2026-11-23T10:00:00Z' }
+		]);
+	});
+
+	it('ne compte pas une PR qui ne joue que les tests touchés (un seul morceau)', () => {
+		expect(mesuresIntegration(pr, [...autres, morceau(1, 1)])).toEqual([]);
+	});
+
+	it('ne compte pas un passage où les tests ne sont pas relancés (déjà vert, aucun test atteint)', () => {
+		const sautes = [...autres, ...[1, 2, 3, 4].map((k) => morceau(k, 4, null))];
+		expect(mesuresIntegration(pr, sautes)).toEqual([]);
+		expect(mesuresIntegration(pr, [...autres, morceau(1, 1, null)])).toEqual([]);
+	});
+
+	it('ne compte pas une suite rouge, relancée, en cours, ou lancée à la main', () => {
+		const rouge = [
+			...autres,
+			morceau(1, 4),
+			morceau(2, 4),
+			morceau(3, 4),
+			morceau(4, 4, 'failure')
+		];
+		expect(mesuresIntegration(run({ event: 'schedule', conclusion: 'failure' }), rouge)).toEqual(
+			[]
+		);
+		expect(mesuresIntegration(run({ event: 'schedule', attempt: 2 }), entiere)).toEqual([]);
+		expect(
+			mesuresIntegration(
+				run({ event: 'schedule', status: 'in_progress', conclusion: null }),
+				entiere
+			)
+		).toEqual([]);
+		expect(mesuresIntegration(run({ event: 'workflow_dispatch' }), entiere)).toEqual([]);
+	});
+
+	it('ne compte pas une PR à plus de 40 tests touchés : 4 morceaux, mais une liste de tests', () => {
+		const touches = [portee(false), filtre, ...[1, 2, 3, 4].map((k) => morceau(k, 4))];
+		expect(mesuresIntegration(pr, touches)).toEqual([]);
+	});
+
+	it('ne compte pas une suite dont un morceau manque', () => {
+		expect(mesuresIntegration(nuit, entiere.slice(0, -1))).toEqual([]);
+	});
+});
+
+describe('lireJournalLocal', () => {
+	it('lit les commandes notées sur le Mac mini et saute les lignes illisibles', () => {
+		const texte = [
+			'2026-11-23T08:00:00Z;check-incremental;18',
+			'2026-11-23T08:10:00Z;pre-push;12',
+			'ligne cassée',
+			'2026-11-23T08:10:00Z;pre-push;abc',
+			'2026-11-23T08:10:00Z;Pas Une Phase;12',
+			'pas une date;pre-push;12',
+			''
+		].join('\n');
+		expect(lireJournalLocal(texte)).toEqual([
+			{ phase: 'local:check-incremental', secondes: 18, date: '2026-11-23T08:00:00Z' },
+			{ phase: 'local:pre-push', secondes: 12, date: '2026-11-23T08:10:00Z' }
+		]);
+	});
+});
+
 describe('comparer', () => {
 	it('signale une médiane d’au moins 1,5 fois la référence sur au moins 5 mesures', () => {
 		const lignes = comparer(
@@ -288,6 +392,72 @@ describe('comparer', () => {
 			verdict: 'trop-peu'
 		});
 	});
+
+	it('suite de la nuit : une par jour, donc les 5 dernières, comme la mise en prod', () => {
+		const nuits = ['19', '20', '21', '22', '23'].flatMap((jour) =>
+			mesures('integration:nuit', [900], `2026-11-${jour}T09:45:00Z`)
+		);
+		const reference = {
+			depuis: '2026-11-01T00:00:00Z',
+			phases: { 'integration:nuit': 420 }
+		};
+		expect(
+			comparer(nuits, reference, MAINTENANT).find((l) => l.phase === 'integration:nuit')
+		).toMatchObject({ nJour: 5, jour: 900, verdict: 'lent' });
+		// Pas de suite la nuit dernière : rien à redire, l'alerte a déjà été donnée.
+		expect(
+			comparer(nuits.slice(0, 4), reference, MAINTENANT).find((l) => l.phase === 'integration:nuit')
+		).toMatchObject({ nJour: 0, verdict: 'trop-peu' });
+	});
+
+	it('suite entière d’une PR : la règle ordinaire, les dernières 24 heures', () => {
+		const lignes = comparer(
+			mesures('integration:pr', [900, 900, 900, 900, 900]),
+			{ depuis: REFERENCE.depuis, phases: { 'integration:pr': 400 } },
+			MAINTENANT
+		);
+		expect(lignes.find((l) => l.phase === 'integration:pr')).toMatchObject({
+			nJour: 5,
+			verdict: 'lent'
+		});
+	});
+
+	it('montre une phase du Mac mini de moins de 20 s, mais pas de moins de 5 s', () => {
+		const lignes = comparer(
+			[
+				...mesures('local:check-incremental', [18, 18, 19]),
+				...mesures('local:pre-push', [3, 3, 4])
+			],
+			REFERENCE,
+			MAINTENANT
+		);
+		expect(lignes.find((l) => l.phase === 'local:check-incremental')).toMatchObject({
+			semaine: 18,
+			verdict: 'sans-reference'
+		});
+		expect(lignes.find((l) => l.phase === 'local:pre-push')).toBeUndefined();
+	});
+
+	it('range la CI, puis les tests d’intégration, la mise en prod, le Mac mini', () => {
+		const lignes = comparer(
+			[
+				...mesures('local:pre-push', [30]),
+				...mesures('prod:vercel', [180]),
+				...mesures('integration:pr', [400]),
+				...mesures('integration:nuit', [420]),
+				...mesures('job:Lint', [90])
+			],
+			{ depuis: REFERENCE.depuis, phases: {} },
+			MAINTENANT
+		);
+		expect(lignes.map((l) => l.phase)).toEqual([
+			'job:Lint',
+			'integration:nuit',
+			'integration:pr',
+			'prod:vercel',
+			'local:pre-push'
+		]);
+	});
 });
 
 describe('messageAlerte', () => {
@@ -362,6 +532,20 @@ describe('tableau', () => {
 });
 
 describe('nouvelleReference', () => {
+	it('une phase du Mac mini de moins de 20 s entre dans la référence, la suite de la nuit depuis sa propre date', () => {
+		const { reference } = nouvelleReference(
+			REFERENCE,
+			[
+				...mesures('local:check-incremental', [18, 18, 18, 18, 18], '2026-12-02T10:00:00Z'),
+				...mesures('integration:nuit', [420, 420, 420, 420, 420], '2026-11-24T10:00:00Z')
+			],
+			'2026-12-01T00:00:00Z',
+			REFERENCE.depuis
+		);
+		expect(reference.phases['local:check-incremental']).toBe(18);
+		expect(reference.phases['integration:nuit']).toBe(420);
+	});
+
 	it('remplace la valeur des phases qui ont au moins 5 mesures, garde les autres', () => {
 		const { reference, gardees } = nouvelleReference(
 			REFERENCE,

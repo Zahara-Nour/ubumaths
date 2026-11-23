@@ -2,6 +2,8 @@
 # pour la garde du déploiement et, plus bas, pour « code modifié ⇒ doc modifiée ».
 refs_poussees="$(cat)"
 printf '%s\n' "$refs_poussees" | bash scripts/garde-deploy-en-cours.sh push || exit 1
+# Début des contrôles, pour `pnpm durees` (noté tout en bas, si tout est vert).
+debut_durees=$(date +%s)
 # Fichiers SUIVIS uniquement (cf. scripts/format-check-tracked.sh) : la CI voit un
 # clone frais, donc un fichier non commité ne peut pas la faire rougir. Vérifier
 # tout l'arbre bloquait des push pour le brouillon non suivi d'une autre session,
@@ -65,6 +67,8 @@ if printf '%s\n' "$refs_poussees" | grep -q " $(git rev-parse HEAD) "; then
 	fi
 else
 	echo "pre-push : le commit courant ne part pas, « code modifié ⇒ doc modifiée » non vérifié."
+	# Il n'a pas tout joué : sa durée n'est pas une mesure.
+	debut_durees=""
 fi
 
 # Filtre de chemins de la suite d'intégration : 13 des 20 rouges de la semaine (~2 s).
@@ -72,3 +76,6 @@ echo "pre-push : filtre de chemins de l'intégration…"
 if ! pnpm check:integration-paths; then
 	exit 1
 fi
+
+# Durée d'un pre-push vert, pour `pnpm durees` (ne peut pas faire échouer : cf. noter.sh).
+[ -z "$debut_durees" ] || bash scripts/durees/noter.sh pre-push "$debut_durees"

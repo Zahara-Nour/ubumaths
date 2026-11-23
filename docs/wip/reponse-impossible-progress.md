@@ -8,15 +8,13 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3026._
+_Mis à jour le 2026-11-23, après le deploy:prod v0.103.0._
 
-- **État** : outil n° 51 mergé sur `main` (#3026 : case « expression, ou bien : impossible »,
-  bouton à état propre), PAS encore en prod · **Prochaine action** : seconde PR du chantier (Q6 :
-  variations Δ < 0 de « Factoriser un trinôme à l'aide de ses racines », 604f83b7), une fois
-  l'outil en prod ; nouveau worktree · **En attente de David** : le `deploy:prod` qui livrera
-  l'outil · **Pièges en cours** : `create-questions.ts` vise la PROD par défaut (lit `.env`) →
-  `set -a; source ./.env.local; set +a` avant ; modèle d'essai local `632e3012` · **Worktree /
-  branche** : aucun (retiré après #3026).
+- **État** : outil n° 51 (#3026) EN PROD (v0.103.0) · **Prochaine action** : seconde PR (Q6 :
+  variations Δ < 0 de « Factoriser un trinôme à l'aide de ses racines », 604f83b7) ; nouveau
+  worktree · **En attente de David** : rien · **Pièges en cours** : `create-questions.ts` vise la
+  PROD par défaut (lit `.env`) → `set -a; source ./.env.local; set +a` avant ; modèle d'essai
+  local `632e3012` · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -116,3 +114,7 @@ Questions (recommandation entre parenthèses) :
 - CI d'abord rouge (cliquet des types de tests : `getPromptRange` rend `Range | null`), corrigée ;
   puis PR en conflit avec `main` (tableau des natures, imports de `sign-table-case.ts`) : GitHub ne
   lançait plus la CI ; fusion de `origin/main`, CI verte, mergée à la main.
+
+### 2026-11-23 — en prod
+
+- David : « commence par déployer ». `pnpm deploy:prod` → v0.103.0 en ligne, 54 chemins répondent.
