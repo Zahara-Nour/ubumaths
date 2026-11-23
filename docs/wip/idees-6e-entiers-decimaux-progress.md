@@ -6,17 +6,16 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3047._
+_Mis à jour le 2026-11-23, rubrique publiée._
 
-- **État** : #3047 mergé (ids des 6 brouillons, migrations de rangement et de contenu, N5 en égalités) ; seules
-  ces 2 migrations sont en attente en prod (`--dry-run --include-all` vérifié) · **Prochaine action** (David) :
-  `pnpm exec supabase db push --include-all` (horodatages antérieurs à une migration déjà en prod), puis
-  `create-questions --dir scripts/questions/idees-6e-entiers-decimaux-neufs-b --publier --mettre-a-jour`
-  (contenu de N5) ; ensuite je vérifie en base et prépare la relecture dans `/dev/modeles` (6 brouillons :
-  `?point=6-101` et `?point=6-106` ; 13 publiés : série de relecture) · **Ensuite** : outils n° 54 et n° 53 ·
-  **En attente de David** : les deux commandes ci-dessus ; titre de N5 (plus de tableau) à changer dans
-  l'éditeur s'il le veut · **Pièges en cours** : relancer un `*.py` du lot → réinjecter id et `rangement`,
-  puis `pnpm format` · **Worktree / branche** : aucun ; branche `docs/idees-6e-entiers-decimaux` à supprimer.
+- **État** : rubrique 6N1 PUBLIÉE (tableau à jour, réservations levées) : 6 modèles neufs publiés (rangés, tagués
+  6-101 / 6-106), 23 variations sur 13 publiés en prod, relecture validée par David (« je valide tout ») ·
+  **Prochaine action** : outils demandés par David « juste après le lot » : n° 54 (droite graduée avec zoom)
+  puis n° 53 (labyrinthe), chacun en chantier d'outil (phase 0 d'abord) ; puis verser ce journal en archive ·
+  **En attente de David** : confirmer que « les outils » = les deux (54 et 53) et l'ordre ; titre de N5 (dit
+  encore « tableau ») à changer dans l'éditeur s'il le veut ; suppression de la branche
+  `docs/idees-6e-entiers-decimaux` (jamais mergée, contenu repris par #3044 ; `git branch -D`) ·
+  **Pièges en cours** : aucun · **Worktree / branche** : aucun (#3048, série de relecture, en cours de merge).
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -175,3 +174,6 @@ des modèles de questions.
   31 verts) et contenu (intégration 76 verts), garde des niveaux sans écart.
 - 2026-11-23 : #3047 mergé. `db:migrate` refusé (« inserted before the last migration on remote ») ;
   `--dry-run --include-all` : seules nos 2 migrations ; le push réel est laissé à David (écriture en prod).
+- 2026-11-23 : migrations poussées par David (`db push --include-all`), vérifiées en base ; série de relecture
+  f9db7096 enregistrée par David (#3048) ; relecture validée ; 6 neufs publiés par David (`publier-lot.ts`),
+  vérifiés en base (6 `published`). Rubrique passée à « publiée » dans le tableau.

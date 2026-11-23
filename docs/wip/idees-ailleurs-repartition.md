@@ -103,7 +103,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Rubrique                           | Codes | Exercices | État                 | Sujet / session             |
 | ---------------------------------- | ----- | --------- | -------------------- | --------------------------- |
 | Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`          |
-| Nombres entiers et décimaux        | 6N1   | 38        | prise (2026-11-23)   | `idees-6e-entiers-decimaux` |
+| Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
 | Fractions                          | 6N3   | 53        | libre                |                             |
 | Algèbre                            | 6N4   | 9         | libre                |                             |
@@ -178,19 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 4bcbbaae Le nombre de dizaines, de centièmes…                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 4d825d44 Le chiffre d'un rang                                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| a2ae7206 Fraction décimale et écriture décimale              | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 2c5bae8f Liens entre les unités de numération                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 8d7edbde Grands nombres jusqu'aux milliards                  | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| d7781eed Reconnaître un nombre décimal                       | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 8adac6d1 Repérer un nombre décimal                           | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 0ce253ea Placer un nombre décimal                            | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| a1b46489 Comparer deux nombres décimaux                      | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| e75cb1a3 Arrondir un nombre décimal                          | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 36991abb Arrondir un quotient, arrondir π                    | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 2e982062 Intercaler un nombre décimal                        | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
-| 8fd459da Définition d'un pourcentage                         | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 46913a48 Taux de variation et nombre dérivé                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
 | d58208eb Lire un nombre dérivé sur un graphique              | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
 | 74d77343 Calculer une dérivée                                | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
