@@ -12,8 +12,8 @@ _Mis à jour le 2026-11-23, phase 0 validée._
   11 modèles publiés, réservés dans le tableau, 13d3ed972) · **Prochaine action** : écrire le lot,
   sur le modèle de `docs/wip/questions/idees-tle-limites-neufs.py` et `-publies.py` (scripts
   `docs/wip/questions/idees-tle-derivation-neufs.py` et `-publies.py`) ; fiches détaillées dans la
-  page https://claude.ai/artifact/M7SzozkJJarxg9q1xPNDGE (source : la section « 2026-11-23 — phase 0 »
-  ci-dessous) · **En attente de David** : rien · **Pièges en cours** : `{{e}}` interdit (Euler) ;
+  page https://claude.ai/artifact/M7SzozkJJarxg9q1xPNDGE et dans [idees-tle-derivation-fiches.md](idees-tle-derivation-fiches.md)
+  · **En attente de David** : rien · **Pièges en cours** : `{{e}}` interdit (Euler) ;
   bornes ±∞ des tableaux de F6 et F7 laissées vides (outil n° 50 non requis) ; une seule case par
   variation ; `create-questions` par `pnpm tsx scripts/create-questions.ts` · **Worktree / branche** :
   `../ubumaths-wt-idees-tle-derivation`, `feat/idees-tle-derivation`.
