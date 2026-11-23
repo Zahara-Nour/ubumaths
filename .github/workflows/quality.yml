@@ -394,6 +394,22 @@ jobs:
           fi
           echo "::notice::Bouton « signaler » absent du build"
 
+      # Les boutons de connexion aux comptes fictifs et la liste de ces comptes
+      # (src/lib/dev/local-accounts.ts) ne vivent que sur le serveur de dev
+      # (docs/pratiques/tester-sur-un-autre-appareil.md).
+      - name: Comptes fictifs absents du build
+        run: |
+          if [ ! -d .svelte-kit/output/client ] || [ ! -d .svelte-kit/output/server ]; then
+            echo "::error::Sortie du build introuvable (.svelte-kit/output) : la garde ne vérifie rien."
+            exit 1
+          fi
+          bad=$(grep -rlE -- 'comptes-fictifs-dev|local-teacher|local-eleve|local-admin|local-student' .svelte-kit/output || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Les comptes fictifs du serveur de dev sont dans le build : $bad"
+            exit 1
+          fi
+          echo "::notice::Comptes fictifs absents du build"
+
   # Server tests (node env): the real regression gate — fast, deterministic,
   # no browser. Sharded for parallelism.
   # PR de contenu : les 4 jobs restent (checks exigés par la protection de main),

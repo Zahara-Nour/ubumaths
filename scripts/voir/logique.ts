@@ -7,6 +7,8 @@
  * `index.ts`. Tests : `scripts/__tests__/voir.test.ts`.
  */
 
+import { LOCAL_ACCOUNTS } from '../../src/lib/dev/local-accounts.ts';
+
 // Types
 
 export type AccountName = 'prof' | 'eleve' | 'admin';
@@ -32,19 +34,8 @@ export interface DevServer {
 
 // Constantes
 
-/**
- * Comptes fictifs de la base locale, essayés dans l'ordre. Élève : celui de
- * `pnpm db:neuf` (dans une classe, avec de l'activité), à défaut celui du seed
- * de base (`supabase/seed/dev_accounts.sql`), qui existe toujours.
- */
-export const ACCOUNTS: Record<AccountName, { email: string; password: string }[]> = {
-	prof: [{ email: 'teacher@local.test', password: 'local-teacher' }],
-	eleve: [
-		{ email: 'eleve01@local.test', password: 'local-eleve' },
-		{ email: 'student@local.test', password: 'local-student' }
-	],
-	admin: [{ email: 'admin@local.test', password: 'local-admin' }]
-};
+/** Comptes fictifs de la base locale : source unique dans `src/lib/dev/local-accounts.ts`. */
+export const ACCOUNTS = LOCAL_ACCOUNTS;
 
 /** Hauteur maximale de l'image, en pixels CSS : au-delà, l'image est coupée. */
 export const MAX_HEIGHT = 6000;
