@@ -125,6 +125,59 @@
 					"$${{if:t==0|({{a}}x+{{b}})^2 = ({{a}}x)^2 + 2 \\times {{a}}x \\times {{b}} + {{b}}^2|{{if:t==1|({{a}}x-{{b}})^2 = ({{a}}x)^2 - 2 \\times {{a}}x \\times {{b}} + {{b}}^2|({{a}}x-{{b}})({{a}}x+{{b}}) = ({{a}}x)^2 - {{b}}^2}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
 				]
 			}
+		},
+		{
+			"statement": "Développe et réduis :\n\n$$({{b}}{{if:w==0|+|-}}{{a}}x)^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2}}{{if:w==0|+|-}}{{eval:2*a*b}}x+{{eval:a^2}}x^2",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b^2}}+{{eval:a^2}}x^2",
+							"message": "Tu as oublié le double produit : le carré d'une somme ou d'une différence n'est pas la somme des carrés.",
+							"label": "Double produit oublié"
+						},
+						{
+							"answer": "{{if:w==1|{{eval:b^2}}-{{eval:a^2}}x^2|{{eval:b^2}}{{if:w==0|+|-}}{{eval:2*a*b}}x+{{eval:a^2}}x^2}}",
+							"message": "Le carré d'une différence n'est pas la différence des carrés : il y a un double produit, et le dernier carré est positif.",
+							"label": "b² − a²x²"
+						},
+						{
+							"answer": "{{eval:b^2}}{{if:w==0|-|+}}{{eval:2*a*b}}x+{{eval:a^2}}x^2",
+							"message": "Vérifie le signe du double produit : il est celui du signe entre les deux termes.",
+							"label": "Signe du double produit"
+						},
+						{
+							"answer": "{{eval:b^2}}{{if:w==0|+|-}}{{eval:2*a*b}}x+{{a}}x^2",
+							"message": "Le carré porte sur le nombre ET sur $x$ : il faut élever le coefficient au carré.",
+							"label": "(ax)² écrit ax²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:w==0|**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$.|**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$.}} Ici, $a={{b}}$ et $b={{a}}x$ : le terme en $x$ est le second.",
+					"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+					"$$({{b}}{{if:w==0|+|-}}{{a}}x)^2 = {{b}}^2 {{if:w==0|+|-}} 2 \\times {{b}} \\times {{a}}x + ({{a}}x)^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Reconnais l'identité remarquable, puis repère qui joue le rôle de $a$ et qui joue le rôle de $b$."
 		}
 	],
 	"testSpecs": [
@@ -330,6 +383,129 @@
 			},
 			"description": "Non réduit 9x² + 3x + 3x + 1",
 			"variationIndex": 4
+		},
+		{
+			"description": "F6 : (3 − 2x)² = 9 − 12x + 4x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9-12x+4x^2"]
+		},
+		{
+			"description": "F6 : ordre décroissant 4x² − 12x + 9",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4x^2-12x+9"]
+		},
+		{
+			"description": "F6 : non réduit",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["9-6x-6x+4x^2"]
+		},
+		{
+			"description": "F6 : double produit oublié",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le double produit : le carré d'une somme ou d'une différence n'est pas la somme des carrés."
+			},
+			"answers": ["9+4x^2"]
+		},
+		{
+			"description": "F6 : 9 − 4x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'une différence n'est pas la différence des carrés : il y a un double produit, et le dernier carré est positif."
+			},
+			"answers": ["9-4x^2"]
+		},
+		{
+			"description": "F6 : signe du double produit",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe du double produit : il est celui du signe entre les deux termes."
+			},
+			"answers": ["9+12x+4x^2"]
+		},
+		{
+			"description": "F6 : (2x)² écrit 2x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré porte sur le nombre ET sur $x$ : il faut élever le coefficient au carré."
+			},
+			"answers": ["9-12x+2x^2"]
+		},
+		{
+			"description": "F6 : (5 + 3x)² = 25 + 30x + 9x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "0",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25+30x+9x^2"]
+		},
+		{
+			"description": "F6 : signe du double produit (somme)",
+			"variationIndex": 5,
+			"variables": {
+				"w": "0",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe du double produit : il est celui du signe entre les deux termes."
+			},
+			"answers": ["25-30x+9x^2"]
 		}
 	]
 }
