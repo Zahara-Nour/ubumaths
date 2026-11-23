@@ -35,7 +35,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Rubrique                          | Codes | Exercices | État                 | Sujet / session          |
 | --------------------------------- | ----- | --------- | -------------------- | ------------------------ |
 | Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`       |
-| Fonctions polynomiales de degré 2 | 1AL2  | 22        | prise (2026-11-22)   | `idees-1re-second-degre` |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre` |
 | Dérivation                        | 1AN1  | 12        | libre                |                          |
 | Variations                        | 1AN2  | 5         | libre                |                          |
 | Fonction exponentielle            | 1AN3  | 11        | libre                |                          |
@@ -161,15 +161,6 @@ de contenu appliquée en prod.
 | ae70373c Limite d'une fonction par comparaison ou encadrement                           | `idees-tle-limites`                                         | 2026-11-22 |                                      |
 | 806c10f4 Limite d'une fonction par opérations, sans forme indéterminée                  | `idees-tle-limites`                                         | 2026-11-22 |                                      |
 | 7844be9a Limite d'une fonction : lever une forme indéterminée par le terme prépondérant | `idees-tle-limites`                                         | 2026-11-22 |                                      |
-| 604f83b7 Factoriser un trinôme à l'aide de ses racines                                  | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| b09c430a Calculer le discriminant                                                       | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| 9e1d084e Résoudre une inéquation du second degré                                        | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| afe51ac4 Signe d'un trinôme sous forme factorisée                                       | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| aab8e41c Polynôme s'annulant en deux réels donnés                                       | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| 87140df3 Déterminer la forme canonique                                                  | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| 18e26873 Déterminer les racines d'un polynôme du second degré                           | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| 56b1803f Déterminer les coordonnées du sommet                                           | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
-| a9aece33 Calculer la forme canonique                                                    | `idees-1re-second-degre`                                    | 2026-11-22 |                                      |
 | 2c5bae8f Liens entre les unités de numération                                           | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
 | 819df2a9 Calculer un produit (CM2-042)                                                  | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |
 | 590169c4 Calculer un quotient (CM2-043)                                                 | `idees-6e-decimaux`                                         | 2026-11-22 |                                      |

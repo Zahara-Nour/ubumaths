@@ -6,19 +6,13 @@ Idées reprises d'ailleurs, rubrique « Fonctions polynomiales de degré 2 » de
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3021._
+_Mis à jour le 2026-11-23, chantier clos._
 
-- **État** : #3017 et #3021 mergées ; migrations en prod ; série de relecture des 9 publiés créée en
-  prod (`1bfc8da3-4992-4f74-9804-62e64b5952dc`) ; aucun verdict encore (16 modèles, vérifié en
-  prod le 2026-11-23) · **Prochaine action** : après la relecture de David, lire les verdicts
-  (`question_template_reviews`), corriger les « À revoir » dans un worktree neuf, `publier-lot.ts
---dir scripts/questions/idees-1re-second-degre-neufs` en simulation · **En attente de David** :
-  relecture — brouillons dans `/dev/modeles?noeud=1_SPE~<id>&statut=draft` pour discriminant
-  (34c8c2c8-8911-4952-bd9a-edbe69e61552), formes (41026638-14a2-4b1c-8767-85e1ea185d3f), variations
-  (8445a032-09ce-4eb3-bf34-703bfc97fa5b), Inéquations (600a88c8-4245-4105-a587-bcccb20d079d) ;
-  publiés dans `/dev/modeles?serie=1bfc8da3-4992-4f74-9804-62e64b5952dc` · **Pièges en cours** :
-  F5 sur « variations » (voisin sur « parabole ») · **Worktree / branche** : aucun (retiré après
-  #3021).
+- **État** : rubrique **publiée** : les 7 modèles neufs sont publiés et validés par David ; les 13
+  variations des 9 publiés aussi (série de relecture `1bfc8da3-4992-4f74-9804-62e64b5952dc`) ;
+  journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges
+  retenus** : « pas factorisable » attend l'outil n° 51 de `docs/wip/outils-manquants.md` ·
+  **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -91,3 +85,11 @@ _Mis à jour le 2026-11-23, après #3021._
   vérifiées en prod (MCP lecture seule).
 - Série de relecture des 9 publiés : `scripts/series/1_SPE-relecture-second-degre-publies.json`,
   simulation verte (9 questions, 9 min).
+
+### 2026-11-23 — #3021 mergée, rubrique publiée
+
+- Série de relecture créée en prod par David, id commité (#3021).
+- David : « je valide les modèles » (aucun verdict enregistré dans `/dev/modeles`) ; simulation de
+  `publier-lot.ts` verte ; David a lancé `--publier` : les 7 neufs sont `published` (vérifié, MCP
+  lecture seule).
+- Rubrique « publiée » au tableau de répartition, 9 réservations levées ; journal archivé.
