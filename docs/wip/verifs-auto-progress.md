@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-23, R6 en cours (premier passage des six projets)._
 
 - **État** : R6 codé sur `test/verifs-auto-r6` (commit `ad3bac404`) : projets `ordi-chrome` (défaut), `ordi-safari`, `ordi-firefox`, `iphone`, `android`, `firefox-390` (`e2e/verifs/projets.ts`), `pnpm test:verifs:tout`, étiquettes `@bureau` / `@clavier-mathlive`, garde moteur absent, projet `iphone` des captures. Premier passage : § « R6 — premier passage ».
-- **Prochaine action** : selon la réponse de David (ampleur de l'adaptation téléphone, Firefox bloqué).
-- **En attente de David** : (1) adapter ~70 tests au téléphone dans R6 ou en lots à part ; (2) Firefox ne démarre pas sur le Mac mini ; écart 1/10 (#1369) et écarts 2 à 10 (§ « Lot 10 rejoué ») ; tâche de nuit (après R12).
+- **Prochaine action** : selon la réponse de David sur l'adaptation téléphone. Firefox réglé (`CFFIXED_USER_HOME`, commit `3b8ef4d`).
+- **En attente de David** : (1) adapter ~70 tests au téléphone dans R6 ou en PR à part ; (2) écart Firefox #1469 (1er clic après un format = zone A1:A2) ; écart 1/10 (#1369) et écarts 2 à 10 (§ « Lot 10 rejoué ») ; tâche de nuit (après R12).
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; carnet rouge en suite complète, vert seul sous `with-db-lock.sh` ; ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : `ubumaths-wt-verifs-auto-r6` · `test/verifs-auto-r6` · serveur de dev sur 5177.
 
@@ -175,6 +175,7 @@ David : « tu parles de Safari mais pas des autres navigateurs », puis « pars 
 - **`test:verifs:tout`** : 769 tests, **15,4 min**, 424 verts, 341 rouges.
   - **Firefox (172)** : ne démarre pas. `Could not find profile folder`, même lancé à la main hors bac à sable, même après `playwright install --force firefox` (Firefox 159, build 1572, macOS 27.0).
   - **Ordinateur Safari (14)** : les 4 rouges connus ; 7 × `grantPermissions: clipboard-write` inconnu de WebKit (réglage du test) ; #1709 / redirections « navigation interrompue » (course de redirection sous WebKit) ; cartes lot 3 `toBeFocused` après Tab (Safari ne met pas le focus sur un bouton au Tab : candidat écart moteur) ; #1425 délai.
+  - **Firefox réglé** (David : « cherche une solution maintenant ») : macOS 27 refuse à Firefox `~/Library/Application Support/Firefox` (confidentialité) ; `CFFIXED_USER_HOME` vers un dossier à lui (`projets.ts`). Ordinateur Firefox ensuite : 4 rouges connus + presse-papiers ; `allowClipboard` / `readClipboard` (permissions Chromium seulement, coller ⌘V ailleurs) → tous verts sauf **#1469 sous Firefox, écart moteur** : après « Format de nombre », le 1er clic sur A2 étend la sélection en zone A1:A2 au lieu de choisir A2 (2e clic : A2 choisie) ; Chrome : A2 dès le 1er clic. Firefox 390 px : mêmes rouges de mise en page que le téléphone.
   - **iPhone (78) et Android (72)** : presque les mêmes tests → la **mise en page téléphone**, pas le moteur. Causes : la console couvre la vue Données et la sous-barre recouvre A1 au défilement (~39) ; cartes de « Mes objets » attendues dans le panneau d'ordinateur (~30) ; grapheur : dézoom attendu > 400, l'écran étroit s'arrête à 400 (14).
 
 ## Plan d'ensemble
