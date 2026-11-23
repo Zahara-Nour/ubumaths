@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3037 (grille de Données au téléphone), en prod en v0.104.0._
+_Mis à jour le 2026-11-23, enquête #1536 tranchée (test, pas l'app), PR ouverte._
 
-- **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → enquête #1536 → #1337 → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
-- **Prochaine action** : enquête #1536 (points posés décalés sur la toile à l'iPhone : vrai ou test ?), worktree neuf `ubumaths-wt-verifs-auto-geometrie` ; voir à l'écran avant de conclure.
-- **En attente de David** : notification qui couvre la barre d'outils au téléphone (Android) ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12). Laissés (reco acceptée) : Tab sur « Options » sous Safari, Échap à l'iPhone.
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets », pas une carte née d'une colonne (`showCards`) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `ubumaths-wt-verifs-auto-geometrie` · `test/verifs-auto-geometrie` (enquête #1536 commencée, serveur sur 5178).
+- **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). #3037 en prod (v0.104.0). #1536 : la vue garde l'échelle de l'ouverture quand « Mes objets » (ouvert vide au téléphone) se replie au 1er objet et que la toile grandit (242 → 388 px) ; le test visait à l'échelle du moment, il garde désormais celle de l'ouverture (22 verts sur ordi-chrome, iphone, android). Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → #1536 ✅ → #1337 → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
+- **Prochaine action** : merger la PR de #1536 ; puis #1337 (bandeau d'atelier partagé + « Mes objets » ouvert à l'iPhone), worktree neuf.
+- **En attente de David** : notification qui couvre la barre d'outils au téléphone (Android) ; écart 1/10 (#1369) et 2 à 10 ; écart 11 (saut de la toile au 1er objet, ci-dessous) ; tâche de nuit (après R12). Laissés (reco acceptée) : Tab sur « Options » sous Safari, Échap à l'iPhone.
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets », pas une carte née d'une colonne (`showCards`) ; ne JAMAIS changer l'attendu seul ; un `test:verifs` muet peut être bloqué (2 h 41 le 2026-11-23, cause inconnue) → `--global-timeout`.
+- **Worktree / branche** : `ubumaths-wt-verifs-auto-geometrie` · `test/verifs-auto-geometrie` · serveur de dev sur 5178.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -158,6 +158,7 @@ David : « les captures et résultats du 26 octobre sont périmés », « juge l
   8. #1385 — un blanc d'environ 90 px sous `1/4 + 1/3 = 7/12` au téléphone.
   9. Étapes : parenthèses en trop dans les fractions (`(x²−1)/(x+1)` de #1617, `(3×x²−x)/(x²+1)` d'une limite) ; la note « On peut simplifier davantage pour x ≠ −1 » reste après « Simplifier pour x ≠ −1 ».
   10. Rappel : `each_key_duplicate` (mis de côté par David) fait aussi tomber `/dev/correction-generee` en erreur 500 en dev.
+  11. #1536 (2026-11-23) — au téléphone, la Géométrie s'ouvre avec « Mes objets » déplié (vide, ses « + » sont la seule entrée, f3a111a936) : toile de 242 px ; au premier point posé, le panneau se replie et la toile saute à 388 px, la figure se recentre sans changer d'échelle. Le point tombe bien sous le doigt ; c'est un saut de mise en page, voulu ou non : à David.
 - **Restent dans la liste, faisables par la session plus tard** : #1421 (« sans saccade »), #1649 (lecture continue, construction publique sur chiph.re), reste de #1621/#1626/#1629.
 
 ## R6 — navigateurs du téléphone (David, 2026-11-23)
@@ -182,7 +183,7 @@ David : « tu parles de Safari mais pas des autres navigateurs », puis « pars 
 
 - **Connus, tous projets** : #1674, #1703, #1620 (`each_key_duplicate`, mis de côté), #1369 (écart 1/10). Carnet : rouge en suite complète, vert seul.
 - **Grille de Données invisible au téléphone** (~22 rouges par projet téléphone, dont barre d'icônes, #1442, #1692, #1697) : à 393 px de large, la zone de la grille fait 2 px ; barre, mise en forme, consigne et boutons prennent toute la hauteur. Mesuré à 659, 750 et 844 px de haut ; à 700 px de large : 222 px, 30 cases. **Même chose en prod (chiph.re).** Correctif proposé : `DataView.svelte`, hauteur minimale de la grille au téléphone et défilement de la vue. Pas fait : à trancher par David.
-- **Écarts moteur à présenter** : Tab sur « Options » d'une carte (lot 3) : focus absent sous WebKit (ordinateur Safari et iPhone) ; #1469 Firefox (1er clic après un format = zone A1:A2) ; iPhone : #1337 (bandeau d'atelier partagé + « Mes objets » ouvert : plus de place pour la console à 659 px), #1536 (points posés décalés sur la toile), Échap vide une carte au lieu de rendre sa valeur (lots 4a / 4b ; preuve d'Échap faite sur ordinateur seulement, pas de touche Échap au téléphone) ; captures WebKit : exposant de `e^(x/2)` et `f⁻¹` décollé (#1338).
+- **Écarts moteur à présenter** : Tab sur « Options » d'une carte (lot 3) : focus absent sous WebKit (ordinateur Safari et iPhone) ; #1469 Firefox (1er clic après un format = zone A1:A2) ; iPhone : #1337 (bandeau d'atelier partagé + « Mes objets » ouvert : plus de place pour la console à 659 px), #1536 (points posés décalés sur la toile : **test**, tranché le 2026-11-23, écart 11), Échap vide une carte au lieu de rendre sa valeur (lots 4a / 4b ; preuve d'Échap faite sur ordinateur seulement, pas de touche Échap au téléphone) ; captures WebKit : exposant de `e^(x/2)` et `f⁻¹` décollé (#1338).
 - **Revue `code-reviewer` (Sonnet)** : corrigés : seuil du dézoom > 400 gardé sur ordinateur, tests « 390 px » (#1442, #1546) rendus aux téléphones, `readClipboard` qui attend le collage (`try/finally`), « Signaler » masqué sur tout le contexte, `VERIFS_PROJETS` recalculé par le processus principal. Laissés : Échap sans équivalent au téléphone (noté ci-dessus), `showCards({ afterLoad })` attend 5 s sans objet, `calc` déplie toujours « Mes objets » (le repli n'est vérifié que par #1442 / #1546), motif `ordi-*` exige les trois moteurs, `--ui` ne voit qu'`ordi-chrome`, captures iPhone sans `openAtelier` (bouton Signaler et panneau replié visibles).
 - **Adaptations des tests (gestes, jamais l'attendu)** : `showCards` / `leavePanelAlone`, `allowClipboard` / `readClipboard`, `gotoRedirected`, `ownTexts` (rendu MathLive en shadow DOM sous Chromium mobile), pas de la sous-grille au téléphone, dézoom ≥ 400, `@bureau` (raccourcis, clic droit, poignée, tests « ordinateur » ou qui posent eux-mêmes 390 px).
 

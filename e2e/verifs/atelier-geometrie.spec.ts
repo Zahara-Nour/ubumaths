@@ -29,10 +29,21 @@ test.beforeEach(async ({ page }) => {
 	await openAtelier(page);
 });
 
-/** Ouvre la Géométrie, console fermée */
+/**
+ * L'échelle de la vue, en pixels par unité, prise à l'ouverture de la Géométrie.
+ * La vue la garde quand la toile change de taille : au téléphone, « Mes objets »,
+ * ouvert tant qu'il est vide, se replie au premier objet et la toile grandit
+ * (242 → 388 px à 393 × 659) ; la vue se recentre sans changer d'échelle.
+ */
+const scaleAtOpening = new WeakMap<Page, number>();
+
+/** Ouvre la Géométrie, console fermée, et note l'échelle de la vue */
 async function openFigure(page: Page): Promise<void> {
 	await openView(page, 'Géométrie');
 	await setConsole(page, false);
+	const box = await page.locator('.figure .toile').boundingBox();
+	if (box === null) throw new Error('toile introuvable');
+	scaleAtOpening.set(page, Math.min(Math.floor(box.width), Math.floor(box.height)) / UNITS_ACROSS);
 }
 
 /** Les définitions préparées dans la console, puis la Géométrie ouverte */
@@ -42,12 +53,16 @@ async function prepare(page: Page, lines: string[]): Promise<void> {
 	await openFigure(page);
 }
 
-/** Le point de l'écran du point (x ; y) du repère : origine au centre, repère orthonormé */
+/**
+ * Le point de l'écran du point (x ; y) du repère : origine au centre de la toile
+ * d'aujourd'hui, échelle de l'ouverture (`scaleAtOpening`), repère orthonormé
+ */
 async function screenOf(page: Page, x: number, y: number): Promise<{ x: number; y: number }> {
 	const box = await page.locator('.figure .toile').boundingBox();
 	if (box === null) throw new Error('toile introuvable');
 	const [width, height] = [Math.floor(box.width), Math.floor(box.height)];
-	const pixelsPerUnit = Math.min(width, height) / UNITS_ACROSS;
+	const pixelsPerUnit = scaleAtOpening.get(page);
+	if (pixelsPerUnit === undefined) throw new Error('Géométrie pas ouverte par openFigure');
 	return { x: box.x + width / 2 + x * pixelsPerUnit, y: box.y + height / 2 - y * pixelsPerUnit };
 }
 
