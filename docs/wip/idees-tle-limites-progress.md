@@ -5,13 +5,13 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, rubrique publiée._
+_Mis à jour le 2026-11-23, rubrique publiée ; F3 en attente (David)._
 
 - **État** : rubrique publiée — 4 modèles neufs publiés en prod le 2026-11-23 (vérifié), 15
   variations des 7 publiés en ligne ; relecture validée par David · **Prochaine action** : F3 seul,
   quand l'outil n° 50 de `outils-manquants.md` existera (cacher une limite infinie dans un tableau
-  de variations) ; sinon clore le chantier (versement, archivage du journal) · **En attente de
-  David** : rien · **Pièges en cours** : `{{e}}` interdit (Euler) · **Worktree / branche** :
+  de variations) ; chantier **laissé ouvert** pour F3, pas de clôture (David, 2026-11-23) ·
+  **En attente de David** : rien · **Pièges en cours** : `{{e}}` interdit (Euler) · **Worktree / branche** :
   aucun.
 
 ## Historique
