@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.106.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.105.0...v0.106.0) (2026-11-23)
+
+### ✨ Features
+
+- **cours:** plan du cours plus lisible pour l'élève, documents en lignes compactes ([f569b4a](https://github.com/Zahara-Nour/ubumaths/commit/f569b4a1fa48dd0e30f4788bde5754df34130cc7))
+
+### 🐛 Bug Fixes
+
+- **atelier:** la grille qui bouge sous le pointeur immobile ne sélectionne plus une zone ([b744216](https://github.com/Zahara-Nour/ubumaths/commit/b744216e5c66d436300864ca17f5442ed5eff084)), closes [#1469](https://github.com/Zahara-Nour/ubumaths/issues/1469) [#1424](https://github.com/Zahara-Nour/ubumaths/issues/1424)
+
+### 📚 Documentation
+
+- **wip:** cours-eleve-design, [#3058](https://github.com/Zahara-Nour/ubumaths/issues/3058) mergée, journal archivé ([766917b](https://github.com/Zahara-Nour/ubumaths/commit/766917b3349c469ebb693a08b51c3a7d72193514))
+- **wip:** deploy-sans-attente, [#3057](https://github.com/Zahara-Nour/ubumaths/issues/3057) mergée ([e8ae89b](https://github.com/Zahara-Nour/ubumaths/commit/e8ae89b9801e8e2ae0f3a38829374deaa20467d8))
+- **wip:** verifs-auto, reprendre ici apres [#3056](https://github.com/Zahara-Nour/ubumaths/issues/3056) ([1648d21](https://github.com/Zahara-Nour/ubumaths/commit/1648d21d9e4fe4bc816e0212026a681a20728c8d))
+
 ## [0.105.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.104.0...v0.105.0) (2026-11-23)
 
 ### ✨ Features

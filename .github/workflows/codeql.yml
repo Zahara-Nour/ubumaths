@@ -33,6 +33,11 @@ on:
 jobs:
   analyze:
     name: Analyze (javascript-typescript)
+    # Pas sur un commit de version (`chore(release): …`, poussé par `pnpm deploy:prod`) :
+    # il ne change que le numéro de `package.json` et le CHANGELOG, le code JS/TS est
+    # celui du merge analysé quelques minutes plus tôt (~15 min de runner pour rien,
+    # 2026-11-23). Le cron du lundi n'a pas de `head_commit` : il tourne toujours.
+    if: "${{ !startsWith(github.event.head_commit.message, 'chore(release): ') }}"
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

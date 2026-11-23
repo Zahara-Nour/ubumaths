@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3057._
+_Mis à jour le 2026-11-24, après la mise en prod de v0.106.0._
 
-- **État** : #3057 mergée (pas encore exercée par une mise en prod) · **Prochaine action** : à la prochaine mise en prod lancée juste après un merge, vérifier sur GitHub que la CI de la version démarre sans attendre celle du merge (deux runs « Code Quality » en même temps sur `main`), puis archiver ce journal · **En attente de David** : rien · **Pièges en cours** : si la CI de version attend encore, regarder le groupe de concurrence calculé du run · **Worktree / branche** : retirés
+- **État** : chantier clos, vérifié en vrai, journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Demande (2026-11-23)
 
@@ -31,3 +31,9 @@ rien. **David : A.**
   sans annulation) et le gain était nul.
 - Tests `scripts/__tests__/deploy-prod.test.ts` (vus rouges avant le code), 62 verts.
 - Doc : `git-workflow.md` § 5, `environnement-de-dev.md`, amendement de l'ADR 0021.
+
+## Vérifié en vrai (2026-11-23, v0.106.0)
+
+Mise en prod lancée 4 min après le merge de #3058 : « ⏩ CI allégée en cours… non attendue » ;
+CI de la version créée à 22:51:48 et démarrée aussitôt (13 jobs), pendant que celle du merge
+(22:48:06) tournait encore. v0.106.0 en ligne, 54 chemins répondent.
