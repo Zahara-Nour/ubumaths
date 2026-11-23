@@ -9,9 +9,12 @@ Idées reprises d'ailleurs, rubrique « Calcul littéral, équations » de Trois
 _Mis à jour le 2026-11-23, relevé en cours._
 
 - **État** : rubrique prise (commit `55af8a2c0` sur `main`) ; nos modèles relevés en prod (ci-dessous) ;
-  notes de lecture des lots A, B et D dans le relevé · **Prochaine action** : lot C (3L12 à
-  3L13-5) — si ses notes manquent au relevé, relancer cet agent (Sonnet) ; puis tableau des
-  verdicts, phase 0 (page à cocher) ·
+  notes de lecture des **47 exercices** dans le relevé (lots A à D) · **Prochaine action** : écrire
+  le tableau des verdicts ✅ / 🟡 / ❌ (notes du relevé face aux modèles relevés plus bas), puis les
+  fiches de phase 0 et la page à cocher · **Pistes déjà vues** : rien pour 3-017 (analyse-synthèse) ;
+  pas de factoriser a² ± 2ab + b² en 3e ; facteur commun puis identité (2x² − 18) ; programmes de
+  calcul équivalents ; problèmes à mettre en équation (13 contextes) ; x² = a sans solution ;
+  « solveur » à étapes = idée d'outil à confronter à `outils-manquants.md` ·
   **En attente de David** : rien encore ·
   **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-calcul-litteral`,
   `feat/idees-3e-calcul-litteral`.

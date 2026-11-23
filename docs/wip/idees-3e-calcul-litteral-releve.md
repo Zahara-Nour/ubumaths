@@ -71,6 +71,38 @@ la dernière réduite) ; entiers relatifs non nuls seulement ; lettre souvent ti
 - **3L11-17** — Table de simple distributivité `a(bx+c)`, `ax(bx+c)` (1 ligne, 2 colonnes) puis
   développement réduit sans ×.
 
+### Lot C (3L12 à 3L13-5), lu le 2026-11-23
+
+- **3L12** — Factoriser `x² − a²`, `b²x² − a²`, `(n/d)²x² − a²` ; a ∈ [1 ; 9], b ∈ [2 ; 9] premiers
+  entre eux ; fraction n/d < 1, d ≤ 10. Jugé « factorisé » (produit égal, ordre libre).
+- **3L12-1** — Développer `(L − a)(L + a)`, `(bL − a)(bL + a)`, `(n/d L − a)(n/d L + a)` ; lettre
+  tirée ; a ∈ [1 ; 9]. Jugement laxiste (forme non développée acceptée).
+- **3L12-2** — Factoriser par mise en évidence et/ou identité remarquable (dont « somme-produit »
+  (x+s1)(x+s2), hors programme français), plusieurs lettres ; facteur extérieur ∈ {±2, ±3, ±5, −1}.
+  Factorisation stricte : chaque facteur a le même nombre de termes que l'attendu.
+- **3L12-3** — Factoriser par groupements (ax + ay + bx + by), plusieurs lettres. Hors programme
+  français. Factorisation stricte.
+- **3L12-4** — 3L12-2 avec la seule lettre x : facteur commun, identité, facteur commun puis
+  identité (ex. 2x² − 18 = 2(x − 3)(x + 3)), somme-produit. Factorisation stricte.
+- **3L13** — Équations du 1er degré (ax + b = 0, ax + b = c, ax = b, x + b = c, ax + b = cx + d,
+  x/a = b, ax/b = c), coefficients ∈ ±[2 ; 13], solutions presque toujours fractionnaires. Saisie dans
+  un « solveur » : l'élève écrit les équations successives, chaque ligne est contrôlée, conclusion
+  x = fraction simplifiée.
+- **3L13-0** — Mêmes formes, solutions entières (∈ [−9 ; 9] hors 0, ±1) ; une case « x = ».
+- **3L13-1** — `ax + b = cx + d`, `k(ax + b) = cx + d`, `k − (ax + b) = cx + d` ; a, b, d ∈ ±[1 ; 9],
+  k ∈ [2 ; 9] ; fractions fréquentes (case « solutions entières »). Solveur à étapes.
+- **3L13-2** — Équation de proportion (x/b = a/c, b/x = c/a…), x = ab/c ; entiers, relatifs,
+  décimaux ; inconnue parfois une longueur (GO, AB…). Solveur.
+- **3L13-3** — 13 problèmes à mettre en équation : basket (paniers à 2 et 3 points), achats,
+  polygone, deux programmes de calcul égaux, tarifs (inéquation), spectacle, triangle isocèle,
+  Thalès (2), somme de nombres consécutifs, âges père / fils. Réponse numérique (avec unité pour les
+  longueurs, liste pour consécutifs et âges). Figures pour isocèle et Thalès.
+- **3L13-4** — Rectangle aux côtés en x : côtés opposés égaux (ax + b = cx + d) ou périmètre donné,
+  puis aire. Figure du rectangle, réponse « Aire = … cm² ».
+- **3L13-5** — Deux programmes de calcul équivalents ? Tester avec deux nombres (4 cases), puis
+  exprimer chacun en x (2 cases) ; formes ax + b = a(x + b/a), (x + a)² = x² + 2ax + a²,
+  (x + a)(x − a) = x² − a², (x + a)² − x², (x + a)² − a² = x(x + 2a). a, b ∈ ±[2 ; 5].
+
 ### Lot D (3L13-6 à 3L16), lu le 2026-11-23
 
 - **3L13-6** — Problèmes résolus par une équation : parking (véhicules à 2 et 4 roues, total
