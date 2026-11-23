@@ -2,13 +2,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3056 (#1469 sous Firefox)._
+_Mis à jour le 2026-11-23, tri du paquet 1 en cours (aucune PR ouverte)._
 
-- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit ✅ (#3053) → #1469 ✅ (#3056) → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; carnet en suite complète). `atelier-donnees` vert sur ordi-firefox.
-- **Prochaine action** : tri des 391 lignes de `verifications-manuelles.md`, worktree neuf.
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19 à présenter dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; la barre de mise en forme qui saute de 37 px quand « Décimales » apparaît (cf. § #1469 ci-dessous) : la stabiliser ou non ?
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; 4 projets à 8 workers saturent le serveur de dev (rouges « toBeVisible » à l'ouverture, `goto` du lien partagé > 60 s) → `--workers 4`, rejouer seul ; un rouge intermittent se reproduit sous charge (`--repeat-each 16 --workers 8`) ; au toucher, attendre le clavier MathLive avant de taper (`waitVirtualKeyboard`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; `test:verifs` muet → `--global-timeout` ; port 5176 souvent pris par une autre session → `VERIFS_PORT=5177` et son propre `pnpm dev`.
-- **Worktree / branche** : aucun (retiré après #3056 ; reste le dossier `../ubumaths-wt-verifs-webkit`, seul `.svelte-kit`, à effacer avec l'accord de David).
+- **État** : grille → #1536 → #1337 → rouges WebKit (#3053) → #1469 (#3056) ✅ ; **tri des 391 lignes en cours, paquet 1 (13-16 octobre, 53 lignes)** : 30 sorties, 3 restent, 6 écarts E21-E26 (cf. § Tri — paquet 1). Puis R12 → R13 (ordre validé).
+- **Prochaine action** : récupérer le travail de deux agents lancés dans le worktree (fichiers NON commités : `e2e/verifs/fiches.spec.ts` = 16 lignes fiches/PDF ; `e2e/verifs/chapitres.spec.ts`, `figures.spec.ts` = #1341, #1387, #1390/#1392, #1394 ; PNG dans `.captures/verifs/fiches|chapitres/`) : rejouer, juger, verdict par ligne ; puis retirer les lignes sorties de `verifications-manuelles.md` (rien n'y est encore retiré), réécrire #1385, #1450, #1451/#1452 ; revue `code-reviewer` (Sonnet) ; PR. Puis paquet 2 (17-21 octobre).
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E26 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; barre de mise en forme qui saute de 37 px (§ #1469) : la stabiliser ou non ?
+- **Pièges en cours** : `--output=<dossier>` par lancement ; `--workers 4` ; `networkidle` avant un clic juste après `goto` (bouton pas hydraté) ; changement de compte = rechargement de page (WebKit coupe la navigation suivante) ; `ls` est un alias (`/bin/ls`) ; base locale = conteneur `supabase_db_ubumaths` (jamais `-test`) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-tri`, `test/verifs-tri` (1 commit de tests + journal), serveur de dev 5178 lancé par la session. Reste aussi `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+
+## Tri — paquet 1 : lignes du 13 au 16 octobre (2026-11-23)
+
+53 lignes. Worktree `ubumaths-wt-verifs-tri`, branche `test/verifs-tri`, serveur de dev 5178, base locale (`db:seed-riche`).
+
+- **Sorties, par un test (nouveau ou existant), vert sur ordinateur, iPhone et Android** : #1292, #1417, #1427, #1410, #1434 (`atelier-tactile.spec.ts` : cibles ≥ 24 px, `tap`, guillemets courbes d'iOS) ; #1422 (nom lu « A4 : 2/3 », formule dans sa ligne, carte d'une liste à formules, confirmation de suppression) ; #1411 (ordi Chrome et Safari : collage d'un tableau, copie à virgule, ⌘C/⌘V garde `=1/3`, flèches après ⌘C, CSV avec BOM et « ; ») ; #1303, #1295, #1308 (`changement-de-compte.spec.ts`, Chrome et Safari, comptes élèves locaux) ; #1307 et #1674 verts depuis E10 (#3054) ; #1333, #1369, #1375, #1442 (tests R6 verts sur les téléphones).
+- **Sorties par les tests unitaires de leur PR, rendu vu dans l'Atelier** : #1201, #1212, #1215, #1283, #1329, #1377 (décimal à virgule : oui) ; #1262 (cas `\ln|x|` et `2|x|` ajoutés à `answer-validator-vert.test.ts`) ; #1410 (ancien atelier : `grille.test.ts` § 7) ; #1439, #1444.
+- **Sorties à l'œil de la session** : #1415 (±600 : plus aucune asymptote, étiquettes en fractions dans leur boîte), #1442 (vue Graphe au téléphone), #1375 (étapes clair et sombre, iPhone). #1421 mesuré : la case suit dès l'image suivante, aucune tâche longue.
+- **Sorties avec un écart** (dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md)) : #1294 → E21 (aucune énigme publiée en prod, la tâche tourne) ; #1388 → E22 (croix « Fermer » 16 px), E23 (consigne coupée au téléphone), E24 (clavier MathLive sur le champ de la console) ; #1377 → E25 (exemple fixe « 2x × 3 = 6x ») ; #1358 → E26 (cadres décalés au toucher sur `/demo/structure`).
+- **Restent** : #1385 (vrai clavier d'iPhone) ; #1450, #1451/#1452 (fiches T_COMP toujours en brouillon en prod, retouchées le 2026-11-22 : relecture du contenu et publication = David).
+- **Remarque** : iPhone 15, Atelier vide, console ouverte : l'historique n'a qu'environ 120 px de haut (une étape à la fois).
 
 ## #1469 sous Firefox (2026-11-23)
 
