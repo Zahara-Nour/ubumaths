@@ -2,13 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3053 (rouges WebKit)._
+_Mis à jour le 2026-11-23, correctif #1469 (Firefox) en PR._
 
-- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit ✅ (#3053) → #1469 → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; carnet en suite complète).
-- **Prochaine action** : #1469 (Firefox : 1er clic après un format = zone A1:A2), worktree neuf.
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19 à présenter dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; 4 projets à 8 workers saturent le serveur de dev (rouges « toBeVisible » à l'ouverture) → `--workers 4` ; un rouge intermittent se reproduit sous charge (`--repeat-each 16 --workers 8`) ; au toucher, attendre le clavier MathLive avant de taper (`waitVirtualKeyboard`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; `test:verifs` muet → `--global-timeout`.
-- **Worktree / branche** : aucun (retiré après #3053 ; reste le dossier `../ubumaths-wt-verifs-webkit` avec son seul `.svelte-kit`, à effacer avec l'accord de David).
+- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit ✅ (#3053) → #1469 ✅ (PR `fix/firefox-format-selection`, à merger) → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; carnet en suite complète). `atelier-donnees` vert sur ordi-firefox.
+- **Prochaine action** : tri des 391 lignes de `verifications-manuelles.md`, worktree neuf.
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19 à présenter dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; la barre de mise en forme qui saute de 37 px quand « Décimales » apparaît (cf. § #1469 ci-dessous) : la stabiliser ou non ?
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; 4 projets à 8 workers saturent le serveur de dev (rouges « toBeVisible » à l'ouverture, `goto` du lien partagé > 60 s) → `--workers 4`, rejouer seul ; un rouge intermittent se reproduit sous charge (`--repeat-each 16 --workers 8`) ; au toucher, attendre le clavier MathLive avant de taper (`waitVirtualKeyboard`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; `test:verifs` muet → `--global-timeout` ; port 5176 souvent pris par une autre session → `VERIFS_PORT=5177` et son propre `pnpm dev`.
+- **Worktree / branche** : `../ubumaths-wt-verifs-auto-firefox` · `fix/firefox-format-selection` (reste aussi le dossier `../ubumaths-wt-verifs-webkit`, seul `.svelte-kit`, à effacer avec l'accord de David).
+
+## #1469 sous Firefox (2026-11-23)
+
+Pas un écart moteur à tolérer : un vrai bug, visible par un élève sous Firefox.
+
+- **Cause** (sonde `pointerdown` / `pointerenter` / `pointerup`) : A1 en « Nombre » montre « Décimales » dans la barre de mise en forme ; le clic sur A2 la retire, « Effacer la mise en forme » remonte d'une ligne (barre 68 → 32 px, sous-barre 29,6 → 28 px) et la grille monte de 37,6 px sous la souris encore appuyée. Firefox envoie alors `pointerenter A3, buttons=1` sans mouvement, puis `pointerup` sur A3 : `enterCell` étendait la zone. Chrome n'envoie `pointerenter` qu'au prochain mouvement réel.
+- **Correctif** (`DataView.svelte`) : le glisser ne commence qu'à 4 px (`DRAG_START`) du point d'appui (`pressedAt`), oublié ensuite. Tests unitaires : pointeur immobile → pas de zone (rouge avant) ; pointeur glissé → zone.
+- **Reste, question pour David** : la barre saute toujours de 37 px au clic (désagréable aussi sous Chrome). La stabiliser (« Décimales » toujours là, grisée quand le format n'en a pas) est un choix d'interface, non fait.
+- **#1424 poignée, rouge sous Firefox sur `main`** (déjà rouge sans le correctif) : `scrollIntoViewIfNeeded` centrait A8 sous Firefox, A2 et sa poignée sortaient de la grille, le pointeur appuyait sur une case. Geste du test : `scrollIntoView({ block: 'nearest' })`, attendu inchangé. Vert sur les 5 projets.
 
 ## Rouges WebKit (2026-11-23)
 

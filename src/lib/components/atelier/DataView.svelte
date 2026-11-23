@@ -120,6 +120,8 @@
 		{ value: 'right', label: 'Aligner à droite', icon: AlignRight }
 	];
 
+	/** Le pointeur appuyé dans une case glisse à partir de ce déplacement (px). */
+	const DRAG_START = 4;
 	const MIN_ROWS = 10;
 	const MIN_COLUMNS = 5;
 	const ROW_MARGIN = 10;
@@ -148,6 +150,13 @@
 	);
 	/** Un glisser de souris en cours, depuis une cellule. */
 	let dragging = $state(false);
+	/**
+	 * Où le pointeur a été appuyé, tant que le glisser n'a pas commencé (`null` ensuite) :
+	 * il commence à `DRAG_START` px de là. Firefox envoie `pointerenter` quand la grille
+	 * bouge sous un pointeur immobile (barre de mise en forme qui change de hauteur au
+	 * clic, #1469).
+	 */
+	let pressedAt: { x: number; y: number } | null = null;
 	/** La poignée tirée : la dernière ligne visée par la recopie, sinon `null` (§5). */
 	let filling = $state<number | null>(null);
 	/** « Recopier vers le bas… » : le champ « jusqu'à la ligne » est-il ouvert ? (Q-L2-2) */
@@ -631,6 +640,7 @@
 		leaveDraft(column, row);
 		select(column, row, event.shiftKey);
 		dragging = event.button === 0 && !event.shiftKey;
+		pressedAt = { x: event.clientX, y: event.clientY };
 		focusSelected();
 	}
 
@@ -641,6 +651,11 @@
 			return;
 		}
 		if (!dragging || (event.buttons & 1) === 0) return;
+		if (pressedAt !== null) {
+			const moved = Math.hypot(event.clientX - pressedAt.x, event.clientY - pressedAt.y);
+			if (moved < DRAG_START) return;
+			pressedAt = null;
+		}
 		select(column, row, true);
 	}
 
