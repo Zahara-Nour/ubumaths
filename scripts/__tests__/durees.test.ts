@@ -360,6 +360,18 @@ describe('comparer', () => {
 		});
 	});
 
+	it('pr:merger : une référence écrite à la main est ignorée, jamais « lent »', () => {
+		const lignes = comparer(
+			mesures('local:pr-merger', [900, 900, 900, 900, 900]),
+			{ ...REFERENCE, phases: { ...REFERENCE.phases, 'local:pr-merger': 400 } },
+			MAINTENANT
+		);
+		expect(lignes.find((l) => l.phase === 'local:pr-merger')).toMatchObject({
+			reference: null,
+			verdict: 'sans-reference'
+		});
+	});
+
 	it('ne montre pas une phase sans référence de moins de 20 s', () => {
 		const lignes = comparer(mesures('job:CI Summary', [4, 4, 4, 4, 4]), REFERENCE, MAINTENANT);
 		expect(lignes.find((l) => l.phase === 'job:CI Summary')).toBeUndefined();
