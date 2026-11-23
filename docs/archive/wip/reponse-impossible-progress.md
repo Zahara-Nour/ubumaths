@@ -1,22 +1,23 @@
 # Chantier `reponse-impossible` — journal
 
-Outil n° 51 de [outils-manquants.md](outils-manquants.md) : une case « expression, ou bien :
+Outil n° 51 de [outils-manquants.md](../../wip/outils-manquants.md) : une case « expression, ou bien :
 impossible ». L'élève tape une expression, ou clique un bouton (« pas factorisable », « pas de
 solution »…) quand la réponse n'existe pas. Né du chantier
-[`idees-1re-second-degre`](../archive/wip/idees-1re-second-degre/idees-1re-second-degre-progress.md)
+[`idees-1re-second-degre`](idees-1re-second-degre/idees-1re-second-degre-progress.md)
 (Q1 : factoriser un trinôme quand Δ < 0, point 1SPE-253).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après l'écriture en prod de #3039._
+_Mis à jour le 2026-11-23 : chantier clos._
 
-- **État** : outil n° 51 en prod (v0.103.0) ; 604f83b7 écrit en prod par David et vérifié (MCP :
-  publié, 11 variations, « pas factorisable » sur V8-V10, 52 specs) · **Prochaine action** :
-  clore le chantier : ligne 51 de `outils-manquants.md` (« En cours » → fait, avec les ids) ; versement (la doc système est
-  déjà à jour depuis #3026, `docs/systeme/questions.md`) ; archiver ce journal dans
-  `docs/archive/wip/` ; commit doc direct sur `main` · **En attente de David** : rien ·
-  **Pièges en cours** : un `{{if}}` dans le motif de `requiredForm` sort parenthésé,
-  inutilisable · **Worktree / branche** : aucun.
+- **État** : clos. Outil n° 51 livré (v0.103.0, #3026 et #3039) ; modèle 604f83b7 publié en prod,
+  bouton « pas factorisable » sur V9 à V11 (les trois « si c'est possible ») ; doc système
+  `docs/systeme/questions.md` · **Prochaine action** : aucune · **En attente de David** : rien ·
+  **Pièges** : un `{{if}}` dans le motif de `requiredForm` sort parenthésé, inutilisable ; le
+  bouton n'apparaît pas en flash-card ni en classe (voulu) · **Worktree / branche** : aucun.
+
+_Numérotation : les variations du modèle se comptent de 1 à 11 ; le journal disait « V8 à V10 »
+(rang parmi les nouvelles), ce sont V9 à V11 dans le modèle._
 
 ## Historique
 
@@ -151,3 +152,9 @@ Instantané de 604f83b7 lu en prod = celui de `idees-1re-second-degre-publies` (
 
 - David : « publié ». MCP en lecture : 604f83b7 publié, 11 variations, `impossibleLabel` « pas
   factorisable » sur V8 à V10, 52 specs (31 + 21 ; le « 54 » annoncé avant était faux).
+
+### 2026-11-23 — clos
+
+- David a relu en prod : le bouton n'est que dans les variations « si c'est possible » (V9 à V11),
+  à chaque tirage ; consigne jugée cohérente. Outil n° 51 versé dans « Livré » de
+  `outils-manquants.md`, journal archivé.
