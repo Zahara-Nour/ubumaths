@@ -6,15 +6,15 @@ d'outil. Ligne n° 54 de [outils-manquants.md](outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, avant l'ouverture de la PR 1._
+_Mis à jour le 2026-11-23, après #3052._
 
-- **État** : PR 1 (outil : parseur, écran, PDF, catalogue, doc) codée, tests verts, rendu vu à l'écran et
-  au PDF · **Prochaine action** : PR 1 ouverte → CI → merge ; puis PR 2 : modèles 6N1H-3 et 6N1H-4
-  (brouillons, relecture dans `/dev/modeles`) ; puis outil n° 53 (labyrinthe), phase 0 d'abord ·
-  **En attente de David** : rien · **Pièges en cours** : `outils-manquants.md` est modifié non commité
-  dans le dépôt principal (autre session) : ne pas le toucher dans cette PR ; après le merge, y passer
-  n° 54 à « Fait » et ajouter « placer un point sur un zoom » (Q2) · **Worktree / branche** :
-  `ubumaths-wt-droite-zoom` / `feat/droite-zoom`.
+- **État** : PR 1 (outil `zoom:` du bloc ` ```line `, écran + PDF + catalogue + doc) MERGÉE (#3052) ;
+  `outils-manquants.md` : n° 54 livré, n° 58 ajouté (placer un point sur un zoom) · **Prochaine
+  action** : PR 2, modèles 6N1H-3 et 6N1H-4 (skill `idees-rubrique` / `couvrir-niveau` : brouillons,
+  relecture dans `/dev/modeles`), worktree neuf `ubumaths-wt-droite-zoom-modeles` ; puis outil n° 53
+  (labyrinthe), phase 0 d'abord · **En attente de David** : renommer N5 (c178356b) dans l'éditeur
+  (cf. journal `idees-6e-entiers-decimaux`) · **Pièges en cours** : aucun · **Worktree / branche** :
+  aucun.
 
 ## Phase 0 (2026-11-23, validée par David : « je suis tes recos »)
 
@@ -47,3 +47,5 @@ le précédent, deux pointillés vers le morceau agrandi.
   nombre écrit de sa graduation (part désormais dessous, `isLabeledAt`), `step` égal au zoom refusé à
   tort (arrondi 12,5 − 12,4), pas qui ne tombe pas juste sur la fin (refusé), `labels` hors du zoom
   (refusés). Revu au PDF : grands nombres (40 000 à 50 000, deux zooms), pointillés sous « 46 000 ».
+
+- 2026-11-23 : #3052 mergée (CI verte, `pnpm pr:merger`).
