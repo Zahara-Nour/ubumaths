@@ -6,17 +6,19 @@ Idées reprises d'ailleurs, rubrique « Fonctions polynomiales de degré 2 » de
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, migrations écrites (PR ouverte)._
+_Mis à jour le 2026-11-23, série de relecture créée en prod (PR de l'id ouverte)._
 
-- **État** : 7 brouillons créés en prod (ids commités) ; migrations de contenu (13 variations, 9
-  publiés) et de rangement (7 brouillons) écrites, tests d'intégration verts et vérifiés rouges sans
-  elles, `security-auditor` sans finding ; PR ouverte · **Prochaine action** : CI verte → merge →
-  `db:migrate` depuis `main` (`migration list --linked` d'abord : une autre migration en attente =
-  stop), puis relecture dans `/dev/modeles` (`?noeud=` / `?point=` pour les brouillons, série de
-  relecture pour les 9 publiés) · **En attente de David** : rien avant le merge · **Pièges en
-  cours** : F5 (f900ea05, 1SPE-402) rangé sur « variations », alors que son voisin 1acb6d47 est
-  sur « parabole » ; 18e26873 a `orderIndependent` · **Worktree / branche** :
-  `../ubumaths-wt-idees-1re-second-degre`, `docs/idees-1re-second-degre`.
+- **État** : #3017 mergée, migrations en prod ; série de relecture des 9 publiés créée en prod
+  (`1bfc8da3-4992-4f74-9804-62e64b5952dc`), id commité sur `chore/idees-1re-second-degre-serie`
+  · **Prochaine action** : merger la PR de l'id ; lire les verdicts de `/dev/modeles`
+  (`question_template_reviews`), corriger les « À revoir », `publier-lot.ts --dir
+scripts/questions/idees-1re-second-degre-neufs` en simulation · **En attente de David** :
+  relecture — brouillons dans `/dev/modeles?noeud=1_SPE~<id>&statut=draft` pour discriminant
+  (34c8c2c8-8911-4952-bd9a-edbe69e61552), formes (41026638-14a2-4b1c-8767-85e1ea185d3f), variations
+  (8445a032-09ce-4eb3-bf34-703bfc97fa5b), Inéquations (600a88c8-4245-4105-a587-bcccb20d079d) ;
+  publiés dans `/dev/modeles?serie=1bfc8da3-4992-4f74-9804-62e64b5952dc` · **Pièges en cours** :
+  F5 sur « variations » (voisin sur « parabole ») · **Worktree / branche** :
+  `../ubumaths-wt-idees-1re-second-degre`, `chore/idees-1re-second-degre-serie`.
 
 ## Historique
 
@@ -82,3 +84,10 @@ _Mis à jour le 2026-11-22, migrations écrites (PR ouverte)._
   variations.
 - Preuve : corps des deux migrations vidé → 10 tests rouges ; restaurés → 59 verts.
   `security-auditor` : aucun finding.
+
+### 2026-11-22 — #3017 mergée, migrations en prod
+
+- `db:migrate` depuis `main` : seules les 2 migrations du chantier étaient en attente ; appliquées,
+  vérifiées en prod (MCP lecture seule).
+- Série de relecture des 9 publiés : `scripts/series/1_SPE-relecture-second-degre-publies.json`,
+  simulation verte (9 questions, 9 min).
