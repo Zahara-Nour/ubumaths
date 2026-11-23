@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3054._
+_Mis à jour le 2026-11-24, après #3059._
 
-- **État** : PR A (#3050) et PR B (#3054, E9, E10) mergées, pas en prod. Restent à corriger : **C** E4, E5 (3) · **D** E12, E13. Laissés : E8, E11, E14, E16, E17.
+- **État** : PR A (#3050) et PR B (#3054, E9, E10) mergées et en prod (v0.106.0) ; #3059 (E20 : test #1703 adapté à la lecture de David) mergée, test seul. Restent à corriger : **C** E4, E5 (3) · **D** E12, E13. Laissés : E8, E11, E14, E16, E17.
 - **Prochaine action** : PR C (E4 lettres qui se chevauchent sur les constructions, moteur de géométrie ; E5 (3) fondu du point caché hors cadre), agent `geometry-expert` ; ou PR D (E12 Firefox, E13 WebKit) selon David.
-- **En attente de David** : E18, E19 (ajoutés par `verifs-auto`). E20 tranché le 2026-11-23 (étape intermédiaire permise), test #1703 adapté.
+- **En attente de David** : E18, E19 (ajoutés par `verifs-auto`, à présenter).
 - **Pièges en cours** : `verifs-auto` AJOUTE ici ses nouveaux écarts (numéro suivant : E21). Ne jamais changer l'attendu d'un test de `e2e/verifs/`. Chrome n'atteint pas `localhost` : `pnpm lien`. Tests client lourds : par dossier (le navigateur de test tombe sous la charge).
-- **Worktree / branche** : aucun (celui de #3054 retiré).
+- **Worktree / branche** : aucun (celui de #3059 retiré).
 
 ## Comment s'en servir
 
