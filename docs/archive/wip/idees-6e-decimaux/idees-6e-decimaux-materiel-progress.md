@@ -1,21 +1,18 @@
 # Chantier `idees-6e-decimaux-materiel` : le matériel décimal (6N2autoB-2)
 
-Suite du chantier [`idees-6e-decimaux`](../archive/wip/idees-6e-decimaux/idees-6e-decimaux-progress.md),
-clos le 2026-11-23. Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md).
+Suite du chantier [`idees-6e-decimaux`](idees-6e-decimaux-progress.md),
+clos le 2026-11-23. Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3024._
+_Mis à jour le 2026-11-23, chantier clos._
 
-- **État** : #3024 mergée, migration de rangement jouée en prod et vérifiée (111ba9c5 en brouillon,
-  version corrigée, sur « Décimaux : numération > décomposition », tag 6-102, niveau 10, `updated_at`
-  préservé, triggers actifs) · **Prochaine action** : relecture par David dans
-  `/dev/modeles?point=6-102`, puis `publier-lot.ts --dir scripts/questions/idees-6e-decimaux-materiel`
-  (David, `--publier`) ; ensuite ligne 6N2 du tableau à « publiée », journal archivé · **En attente de
-  David** : la relecture.
-- **Pièges en cours** : lettre `e` réservée (Euler) ; `question:specs` ne voit pas une erreur prévue
-  égale à la réponse (énumérer les tirages).
-- **Worktree / branche** : aucun (supprimés après #3024).
+- **État** : 111ba9c5 « Lire un nombre décimal sur le matériel » validé par David et publié (vérifié
+  par MCP) ; ligne 6N2 du tableau à « publiée » ; journal archivé · **Prochaine action** : aucune ·
+  **En attente de David** : rien.
+- **Pièges retenus** : lettre `e` réservée (Euler) ; `question:specs` ne voit pas une erreur prévue
+  égale à la réponse (énumérer les tirages) ; un verdict « outil manquant » se vérifie dans le code.
+- **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -31,3 +28,4 @@ _Mis à jour le 2026-11-23, après #3024._
   petits cubes sans barre ; entre elles si barres = petits cubes sans plaque) : conditions ajoutées,
   énumération complète sans collision.
 - 2026-11-23 : #3024 mergée ; `db:migrate` (seule migration en attente), état vérifié en prod.
+- 2026-11-23 : validé et publié par David ; chantier clos, journal archivé.
