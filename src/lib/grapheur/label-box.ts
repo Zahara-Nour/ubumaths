@@ -26,7 +26,7 @@ export function labelBoxWidth(text: string): number {
 }
 
 /** Hauteur de la boîte : une fraction prend deux étages. */
-export function labelBoxHeight(latex: string | undefined): number {
+export function labelBoxHeight(latex: string | null | undefined): number {
 	return latex && /\\[dt]?frac/.test(latex) ? STACKED_HEIGHT : LINE_HEIGHT;
 }
 
