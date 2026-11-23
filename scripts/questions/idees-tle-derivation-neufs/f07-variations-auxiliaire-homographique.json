@@ -1,0 +1,141 @@
+{
+	"title": "Variations d'une fonction auxiliaire ou homographique",
+	"description": "Signe de la dérivée et variations de g(x) = eˣ − ax − b (minimum en ln a, tableau à compléter) et de (px + q)/(rx + t) (signe de pt − qr, choix du tableau) (pièges : e^a au lieu de ln a, signe de b, mêmes variations des deux côtés de la valeur interdite)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $g$ la fonction définie sur $\\mathbb{R}$ par $g(x)=e^{x}-{{a}}x{{eval:-b;+}}$.\n\nÉtudie le signe de $g'(x)$, puis complète le tableau de variations de $g$.\n\n```variation\nvariable: x\ndomain: -inf, ?\\ln{ {{a}} }, +inf\n\nsign: g'(x)\n  -inf,\\ln{ {{a}} }: ?-\n  \\ln{ {{a}} }: z\n  \\ln{ {{a}} },+inf: ?+\n\nvariation: g(x)\n  \\ln{ {{a}} }: ?{{eval:a-b}}-{{a}}\\ln{ {{a}} }, bottom\n  -inf,\\ln{ {{a}} }: ?flèche\n  \\ln{ {{a}} },+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "e^{ {{a}} }",
+							"message": "$e^{x}={{a}}$ équivaut à $x=\\ln {{a}}$ : la fonction réciproque de l'exponentielle est le logarithme.",
+							"label": "e^a au lieu de ln a"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "$g'(x)=e^{x}-{{a}}$ s'annule quand $e^{x}={{a}}$, c'est-à-dire pour $x=\\ln {{a}}$.",
+							"label": "a au lieu de ln a"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+b}}-{{a}}\\ln{ {{a}} }",
+							"message": "Attention au signe du terme constant : $g(\\ln {{a}})={{a}}-{{a}}\\ln {{a}}{{eval:-b;+}}$.",
+							"label": "Signe de b"
+						},
+						{
+							"answer": "{{eval:-b}}",
+							"message": "Tu as pris $e^{\\ln {{a}}}=1$ et oublié $-{{a}}\\ln {{a}}$ ; or $e^{\\ln {{a}}}={{a}}$.",
+							"label": "Valeur en 0"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g'(x)=e^{x}-{{a}}$. Or $e^{x}-{{a}}\\geqslant 0\\iff e^{x}\\geqslant {{a}}\\iff x\\geqslant\\ln {{a}}$ (la fonction exponentielle est strictement croissante).",
+					"$g'$ est négative avant $\\ln {{a}}$, positive après : $g$ est décroissante puis croissante, de minimum en $x=\\textcolor{{{color:primary.0}}}{\\ln {{a}} }$.",
+					"$g(\\ln {{a}})=e^{\\ln {{a}}}-{{a}}\\ln {{a}}{{eval:-b;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:a-b}}-{{a}}\\ln {{a}} }$."
+				]
+			},
+			"hint": "Résous $g'(x)\\geqslant 0$ : quelle fonction « défait » l'exponentielle ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : eˣ − 3x − 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln(3)", "-", "+", "↘", "2-3\\ln(3)", "↗"]
+		},
+		{
+			"description": "a : ln 3 sans parenthèses",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln3", "-", "+", "↘", "2-3\\ln3", "↗"]
+		},
+		{
+			"description": "a : e^a au lieu de ln a",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["e^{3}", "-", "+", "↘", "2-3\\ln(3)", "↗"]
+		},
+		{
+			"description": "a : signe de b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\ln(3)", "-", "+", "↘", "4-3\\ln(3)", "↗"]
+		},
+		{
+			"description": "a : flèches inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\ln(3)", "-", "+", "↗", "2-3\\ln(3)", "↘"]
+		}
+	]
+}
