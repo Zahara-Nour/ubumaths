@@ -6,7 +6,7 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #3018._
+_Mis à jour le 2026-11-23, après #3018._
 
 - **État** : migrations de rangement et de contenu (#3018) jouées en prod (`db:migrate`), vérifiées : 6
   brouillons sur leur nœud et leur point, 590169c4 à {CM2, 6}, 16 variations ajoutées aux 10 publiés ·
@@ -14,11 +14,8 @@ _Mis à jour le 2026-11-22, après #3018._
   6-106, 6-115, 6-118, 6-123), série de relecture des 10 publiés à créer (`scripts/series/creer-serie.ts`,
   David la publie) ; puis verdicts lus en base, corrections, `publier-lot.ts` · **En attente de David** :
   la relecture.
-- **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu ; l'ancien worktree
-  `ubumaths-wt-idees-6e-decimaux` porte une migration de contenu périmée non suivie (`20261122182230_…`),
-  à jeter avec le worktree (accord de David demandé).
-- **Worktree / branche** : aucun de travail ; `ubumaths-wt-idees-6e-decimaux` (branche mergée) en attente
-  de suppression.
+- **Pièges en cours** : ni essai en base locale ni jeu dans l'aperçu.
+- **Worktree / branche** : aucun (anciens worktrees supprimés le 2026-11-23, migration périmée jetée avec l'accord de David).
 
 ## Décisions de David (2026-11-22)
 
