@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot 10 en cours (pas encore de PR)._
+_Mis à jour le 2026-11-23, lot 10 rejoué sur le code du jour, PR à ouvrir._
 
-- **État** : lot 10 = 29 lignes « à l'œil » en captures (`pnpm test:verifs:captures`, comptes LOCAUX prof/admin) + 12 tests de restes (11 verts, #1369 `cos2π` en mode maths ROUGE). Page à cocher publiée : https://claude.ai/artifact/VUx4PraH4htaPFsGXrDnUB (collection `verdicts`, une fiche par ligne).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), sortir les lignes OK de `verifications-manuelles.md`, ouvrir la PR (revue `code-reviewer` Sonnet).
-- **En attente de David** : la page à cocher ; écarts : #1369 (π·cos(2) sans refus), #1333 (« aire = — » sans message), #1421 (carte de liste sans champ), #1793/#1798 (« Juste » au lieu de « Bravo »), lecteur de construction écrasé par une longue ligne d'arrêt, #1466 (à la main ou retirée), #1359/#1321/#1502/#1655 sans page locale, `/dev/correction-generee` cassée (cartes de 40 px).
-- **Pièges en cours** : serveur de dev sur 5181 ; captures dans `.captures/` (ignoré), traces dans `.captures/.runs/` (pas `test-results/`, vidé par `pnpm test:verifs`) ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe ; prettier réaligne le tableau → conflits au merge de `main` ; ne JAMAIS changer l'attendu seul.
+- **État** : branche à jour de `main` (merge, sans push forcé). Suite `test:verifs` : 144 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1620), #1369 (`cos2π`), et #2731 (carnet, instable, autre chantier). 29 captures refaites et jugées par la session (règle du 2026-11-23, plus de page à cocher) : 27 lignes sorties de `verifications-manuelles.md` (418 → 391).
+- **Prochaine action** : merger la PR du lot 10 ; présenter à David les écarts un par un (liste § « Lot 10 rejoué ») ; puis proposer le découpage de la suite (R6, R13, R12, tri des 391 lignes) et attendre sa validation avant de coder.
+- **En attente de David** : les écarts du lot 10 ; l'ordre du découpage de la suite.
+- **Pièges en cours** : serveur de dev sur 5181 ; deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` à chacun ; étapes de « Comment ? » chargées à la demande (`p.chargement`) ; captures d'une ligne de console longue → `shootLine` ; `.captures/` garde les vieilles fiches (champ `run`) ; une ligne de la liste peut être périmée par une décision postérieure : chercher la décision avant de crier à l'écart ; ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : `../ubumaths-wt-verifs-auto`, `test/verifs-auto-lot-10`.
 
 ## Phase 0 (validée le 2026-10-25)
@@ -140,6 +140,25 @@ Revue (`code-reviewer`) : le brouillon venait de TOUTE affectation de `code` (ex
 Outillage : `playwright.captures.config.ts` (projet `comptes` : connexion par le formulaire aux comptes locaux de `dev_accounts.sql`, refusée hors localhost), `helpers/captures.ts` (`shoot`, `shootBothThemes`, `around`), `scripts/verifs-captures-page.ts` (page HTML autonome, images en data URI, verdicts dans la capacité `db`, file d'écriture avec nouvel essai). Pages déménagées : `/construction-demo` → `/constructions/essais` (prof), `/test-font` → `/dev/polices`, `/test-structure` → `/dev/structure` (admin).
 
 Captures : Atelier (#1315, #1328, #1338, #1634, #1630, #1617, #1313/#1318, #1362/#1363, #1364, #1385, #1413, #1415-#1419, #1424, #1442, #1469), constructions (#1621 → #1653), `/dev` (#1793, #1798, #1312/#1322, #1346). Tests de restes : #1658/#1660 (bouton Variations), #1319, #1503, #1535, #1333 (grapheur), #1368, #1369 (mode maths), #1421, #1424, #1426, #1437.
+
+## Lot 10 rejoué sur le code du 2026-11-23
+
+David : « les captures et résultats du 26 octobre sont périmés », « juge les captures toi-même », « les lignes peuvent être anciennes, la vérif n'a peut-être plus lieu d'être ». L'ancienne page à cocher n'est plus utilisée.
+
+- **Attendus changés, chacun par une décision écrite** : `.résoudre` répond par S (`S = {2}`, `S = ]-∞ ; 5]`, #2360, Q2 du 2026-11-03), 4e étape « ensemble des solutions » ; `.simplifier 0.5/x` → `1/(2x)` (Q9, 2026-11-02) ; `.simplifier ln(x^2)` a son bouton « Simplifier pour x > 0 » (#1819). Tests seuls réparés : étapes chargées à la demande, `combobox` des formats, bouton « Signaler » du serveur de dev masqué au téléphone.
+- **Sorties de la liste (27)** : par les captures #1313/#1318, #1315 (et `/grapheur`), #1328 (+ test des 3 étapes), #1338, #1362/#1363, #1364, #1413, #1424, #1469, #1617, #1630, #1634, #1643, #1312/#1322 (formule grossie), #1346 ; par les tests #1658/#1660, #1319, #1503, #1535, #1368, #1426, #1437 ; #1466 (relecture d'une grille sans `formats` : `persistence.ts` `salvageFormats`) ; #1321, #1502, #1655, #1359 rejouées en local (composants réels, modèle local pour #1655). #1793/#1798 : vues par David sur iPad le 2026-11-09, captures retirées. #1385 réduite au vrai clavier d'iPhone.
+- **Écarts à présenter à David, un par un** :
+  1. #1369 — en « Écriture mathématique », `cos2π` est lu π·cos(2), sans refus.
+  2. #1333 — aire sous une courbe avec un pôle : « aire = — » sans phrase (`areaRefusal` ne parle que d'un ensemble déclaré).
+  3. Lecteur de construction étiré par une longue consigne ou un message d'arrêt (jusqu'à 1 229 px, texte coupé) : #1653, #1621, #1623 ; plus léger #1643, #1647.
+  4. Lettres qui se chevauchent sur les constructions : « e » sur « C* » (#1633, #1621), « s » sur « I » (#1637, #1647), « P » sur le carré d'angle droit (#1623) ; doute : un petit « 1 » sur P en `@mesure` (#1653).
+  5. #1626 — le message « "e" est une constante réservée » propose « k », déjà pris, et son cadre coupe le texte ; le fondu du point caché de k reste hors du cadre de la page d'essais (x > 6).
+  6. #1415-#1419 — à ±10, l'étiquette `x = 5π/2` chevauche `3π/2`.
+  7. #1442 — au téléphone, la dernière icône de la barre de l'Atelier est coupée au bord.
+  8. #1385 — un blanc d'environ 90 px sous `1/4 + 1/3 = 7/12` au téléphone.
+  9. Étapes : parenthèses en trop dans les fractions (`(x²−1)/(x+1)` de #1617, `(3×x²−x)/(x²+1)` d'une limite) ; la note « On peut simplifier davantage pour x ≠ −1 » reste après « Simplifier pour x ≠ −1 ».
+  10. Rappel : `each_key_duplicate` (mis de côté par David) fait aussi tomber `/dev/correction-generee` en erreur 500 en dev.
+- **Restent dans la liste, faisables par la session plus tard** : #1421 (« sans saccade »), #1649 (lecture continue, construction publique sur chiph.re), reste de #1621/#1626/#1629.
 
 ## Plan d'ensemble
 
