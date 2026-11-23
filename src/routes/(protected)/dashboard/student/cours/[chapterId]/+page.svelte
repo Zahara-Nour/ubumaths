@@ -16,20 +16,23 @@
 	 */
 
 	import { refreshAll } from '$app/navigation';
-	import { Button } from '#lib/components/ui/button/index.ts';
 	import BackLink from '#lib/components/navigation/BackLink.svelte';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import {
 		ChapterProgressIndicator,
 		ChapterRevisionButton,
 		ChapterSeriesCard,
-		DocumentCard,
 		ChecklistSection
 	} from '#lib/components/cours/index.ts';
+	import ResourceRow from '#lib/components/cours/ResourceRow.svelte';
+	import { documentKind, groupPlanItems } from '#lib/components/cours/plan-groups.ts';
 	import { getChapterColorClasses } from '#lib/types/chapters.ts';
 	import { BookMarked } from '@lucide/svelte';
 	import WorksheetCard from '#lib/components/student/worksheets/WorksheetCard.svelte';
 	import type { PageData, ActionData } from './$types';
+
+	// Types
+	type PlanItem = PageData['plan'][number]['items'][number];
 
 	interface Props {
 		data: PageData;
@@ -39,6 +42,22 @@
 	let { data, form }: Props = $props();
 
 	let colorClasses = $derived(getChapterColorClasses(data.chapter.color));
+
+	/**
+	 * Documents et exercices s'affichent en lignes compactes, regroupées dans un
+	 * même cadre ; fiches (échéance, état), objectifs (cases) et séries restent
+	 * des blocs. Même rendu que le lien de consultation.
+	 */
+	function isRow(item: PlanItem): boolean {
+		return item.kind === 'document' || item.kind === 'exercise';
+	}
+
+	/** Comme `DocumentCard` : fichier servi par `/api/documents`, Drive en lien externe. */
+	function documentHrefs(doc: Extract<PlanItem, { kind: 'document' }>['document']) {
+		if (doc.sourceType === 'google_drive') return { view: doc.googleDriveUrl, download: null };
+		if (!doc.storagePath) return { view: null, download: null };
+		return { view: `/api/documents/${doc.id}`, download: `/api/documents/${doc.id}?download` };
+	}
 
 	/** Le plan est vide tant que rien n'est publié — pas quand rien n'existe. */
 	let planVide = $derived(data.plan.length === 0);
@@ -62,31 +81,23 @@
 		</p>
 	</div>
 
-	<Card.Root class="mb-6 {colorClasses.border} border-2">
-		<Card.Header class={colorClasses.bg}>
-			<div class="flex items-start justify-between gap-4">
-				<div class="flex-1">
-					<div class="mb-2 flex items-center gap-2">
-						<BookMarked class="h-6 w-6 {colorClasses.text}" />
-						<Card.Title class="text-2xl"
-							><h1 class="text-2xl! leading-none!">{data.chapter.title}</h1></Card.Title
-						>
-					</div>
-					{#if data.chapter.description}
-						<Card.Description class="text-base">
-							{data.chapter.description}
-						</Card.Description>
-					{/if}
-				</div>
-				<ChapterProgressIndicator progress={data.chapter.progress} />
+	<!-- Chapitre : un bandeau, comme sur le lien de consultation. -->
+	<div class="mb-8 space-y-4 border-b-2 border-foreground pb-4">
+		<!-- Sur téléphone, la progression passe sous le titre : à côté, elle l'écrase. -->
+		<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+			<div class="min-w-0 flex-1 space-y-1.5">
+				<p class="text-xs font-semibold tracking-wider uppercase {colorClasses.text}">Chapitre</p>
+				<h1 class="text-2xl! leading-tight! text-balance">{data.chapter.title}</h1>
+				{#if data.chapter.description}
+					<p class="text-muted-foreground">{data.chapter.description}</p>
+				{/if}
 			</div>
-		</Card.Header>
+			<ChapterProgressIndicator progress={data.chapter.progress} />
+		</div>
 		{#if data.revisionDeck && data.revisionDeck.deckSize > 0}
-			<Card.Content class="pt-4">
-				<ChapterRevisionButton chapterId={data.chapter.id} deck={data.revisionDeck} />
-			</Card.Content>
+			<ChapterRevisionButton chapterId={data.chapter.id} deck={data.revisionDeck} />
 		{/if}
-	</Card.Root>
+	</div>
 
 	{#if data.worksheetsUnavailable}
 		<!--
@@ -109,39 +120,51 @@
 			</Card.Content>
 		</Card.Root>
 	{:else}
-		<div class="space-y-10">
+		<div class="flex flex-col gap-6">
 			{#each data.plan as section (section.id)}
-				<section class="space-y-4">
+				<section class="flex flex-col gap-2">
 					<!--
 						« Non classé » n'a pas de titre : l'élève voit les ressources, pas
 						l'étiquette du rangement en cours du professeur.
 					-->
 					{#if section.title}
-						<h2 class="border-b pb-2 text-xl font-semibold">{section.title}</h2>
+						<!-- Section : une étiquette, plus petite que les ressources qu'elle range. -->
+						<h2
+							class="[font-family:inherit] text-xs! leading-normal! font-semibold tracking-wider text-muted-foreground uppercase"
+						>
+							{section.title}
+						</h2>
 					{/if}
 
-					{#each section.items as item, index (`${section.id}-${index}`)}
-						{#if item.kind === 'document'}
-							<DocumentCard document={item.document} />
-						{:else if item.kind === 'exercise'}
-							<Card.Root class="transition-shadow hover:shadow-md">
-								<Card.Content class="flex items-center justify-between p-4">
-									<h3 class="flex-1 font-medium">{item.title}</h3>
-									<Button
-										href="/dashboard/student/exercises/{item.exerciseId}"
-										variant="outline"
-										size="sm"
-									>
-										Ouvrir
-									</Button>
-								</Card.Content>
-							</Card.Root>
-						{:else if item.kind === 'worksheet'}
-							<WorksheetCard worksheet={item.worksheet} />
-						{:else if item.kind === 'checklist'}
-							<ChecklistSection items={item.items} progress={data.chapter.progress} />
-						{:else if item.kind === 'series'}
-							<ChapterSeriesCard series={item.series} />
+					{#each groupPlanItems(section.items, isRow) as group, groupIndex (`${section.id}-${groupIndex}`)}
+						{#if group.kind === 'rows'}
+							<ul class="divide-y overflow-hidden rounded-xl border bg-card">
+								{#each group.items as item, itemIndex (`${section.id}-${groupIndex}-${itemIndex}`)}
+									{#if item.kind === 'document'}
+										{@const hrefs = documentHrefs(item.document)}
+										<ResourceRow
+											title={item.document.title}
+											description={item.document.description}
+											kind={documentKind(item.document.sourceType, item.document.mimeType)}
+											href={hrefs.view}
+											newTab
+											downloadHref={hrefs.download}
+										/>
+									{:else if item.kind === 'exercise'}
+										<ResourceRow
+											title={item.title}
+											kind="exercise"
+											href="/dashboard/student/exercises/{item.exerciseId}"
+										/>
+									{/if}
+								{/each}
+							</ul>
+						{:else if group.item.kind === 'worksheet'}
+							<WorksheetCard worksheet={group.item.worksheet} />
+						{:else if group.item.kind === 'checklist'}
+							<ChecklistSection items={group.item.items} progress={data.chapter.progress} />
+						{:else if group.item.kind === 'series'}
+							<ChapterSeriesCard series={group.item.series} />
 						{/if}
 					{/each}
 				</section>
