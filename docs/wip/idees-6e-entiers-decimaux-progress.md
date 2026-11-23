@@ -6,18 +6,17 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, PR de rangement et de contenu en cours._
+_Mis à jour le 2026-11-23, après #3047._
 
-- **État** : 6 brouillons créés en prod par David (ids commités) ; PR `feat/idees-6e-entiers-decimaux-rangement` :
-  migration de rangement (6 neufs : N1-N4 → Entiers : numération > décomposition, 6-101 ; N5, N6 → Décimaux :
-  numération > forme fractionnaire, 6-106) et migration de contenu (23 variations sur 13 publiés, options de
-  a2ae7206 et d7781eed) ; N5 réécrit (une égalité par ligne, % tapé par l'élève) · **Prochaine action** :
-  merge, `db:migrate` (4 conditions), puis David : `create-questions --dir scripts/questions/idees-6e-entiers-decimaux-neufs-b --publier --mettre-a-jour`
-  (contenu de N5), puis relecture dans `/dev/modeles` · **Ensuite** : outils n° 54 et n° 53 · **En attente
-  de David** : titre de N5 (« Compléter un tableau d'écritures… », il n'y a plus de tableau) à changer dans
-  l'éditeur s'il le veut · **Pièges en cours** : relancer un `*.py` du lot → réinjecter id et `rangement`, puis
-  `pnpm format` · **Worktree / branche** : `../ubumaths-wt-idees-6e-entiers-decimaux-rangement`,
-  `feat/idees-6e-entiers-decimaux-rangement` ; branche `docs/idees-6e-entiers-decimaux` à supprimer.
+- **État** : #3047 mergé (ids des 6 brouillons, migrations de rangement et de contenu, N5 en égalités) ; seules
+  ces 2 migrations sont en attente en prod (`--dry-run --include-all` vérifié) · **Prochaine action** (David) :
+  `pnpm exec supabase db push --include-all` (horodatages antérieurs à une migration déjà en prod), puis
+  `create-questions --dir scripts/questions/idees-6e-entiers-decimaux-neufs-b --publier --mettre-a-jour`
+  (contenu de N5) ; ensuite je vérifie en base et prépare la relecture dans `/dev/modeles` (6 brouillons :
+  `?point=6-101` et `?point=6-106` ; 13 publiés : série de relecture) · **Ensuite** : outils n° 54 et n° 53 ·
+  **En attente de David** : les deux commandes ci-dessus ; titre de N5 (plus de tableau) à changer dans
+  l'éditeur s'il le veut · **Pièges en cours** : relancer un `*.py` du lot → réinjecter id et `rangement`,
+  puis `pnpm format` · **Worktree / branche** : aucun ; branche `docs/idees-6e-entiers-decimaux` à supprimer.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -174,3 +173,5 @@ des modèles de questions.
   jugé faux sans message → le % est tapé par l'élève, erreur prévue « 25 » sans le signe ; contrainte pourcentage
   `strict` sur N5. Rendu iPhone vérifié (`pnpm voir`, copie locale). Migrations générées : rangement (intégration
   31 verts) et contenu (intégration 76 verts), garde des niveaux sans écart.
+- 2026-11-23 : #3047 mergé. `db:migrate` refusé (« inserted before the last migration on remote ») ;
+  `--dry-run --include-all` : seules nos 2 migrations ; le push réel est laissé à David (écriture en prod).
