@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.104.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.103.0...v0.104.0) (2026-11-23)
+
+### ✨ Features
+
+- **questions:** factoriser un trinome, trois variations si possible (bouton pas factorisable) ([925c591](https://github.com/Zahara-Nour/ubumaths/commit/925c591ebaa5abe6a7d7271e02581214038e1f80))
+- **questions:** idees 3e arithmetique, 6 modeles neufs et 3 variations de 90dca27a ([def544b](https://github.com/Zahara-Nour/ubumaths/commit/def544b3e45ed20b794f2a44ae6406e857075763))
+
+### 🐛 Bug Fixes
+
+- **atelier:** la grille de Données visible au téléphone ([9b628e8](https://github.com/Zahara-Nour/ubumaths/commit/9b628e8fdc20816ea5587ecad8fc486beab4b7c9))
+- **outillage:** pnpm durees, pr:merger et test:integration local sans référence ([7d6cee7](https://github.com/Zahara-Nour/ubumaths/commit/7d6cee7a10b556b73621bac0548496109c314a8f))
+
+### 📚 Documentation
+
+- **tests:** navigateurs de test:verifs ([474fbab](https://github.com/Zahara-Nour/ubumaths/commit/474fbab54284da3c16f577308be07769a6bcf112))
+- **wip:** durees, alertes et choix de la PR 2 tranches par David ([75fd334](https://github.com/Zahara-Nour/ubumaths/commit/75fd334a581a68147219b5ff8ef88b4b86ac1209))
+- **wip:** durees, PR 3 mergée ([#3038](https://github.com/Zahara-Nour/ubumaths/issues/3038)) ([542195b](https://github.com/Zahara-Nour/ubumaths/commit/542195bcb8ece3b7c92cf7642a2bd7f894d48c57))
+- **wip:** idees-3e-arithmetique, reprendre ici apres [#3035](https://github.com/Zahara-Nour/ubumaths/issues/3035) ([be9624e](https://github.com/Zahara-Nour/ubumaths/commit/be9624e70a62faa1744150f4e652a0d7ac486e6e))
+- **wip:** reponse-impossible clos, outil 51 livre, journal archive ([712a3b9](https://github.com/Zahara-Nour/ubumaths/commit/712a3b9f6e5906af4614363a6ef138b694a16af4))
+- **wip:** reponse-impossible, outil en prod (v0.103.0) ([596b0cb](https://github.com/Zahara-Nour/ubumaths/commit/596b0cb53164dca13c3223386c41e6a49ac4796b))
+- **wip:** reponse-impossible, reprendre ici apres [#3039](https://github.com/Zahara-Nour/ubumaths/issues/3039) ([eac6687](https://github.com/Zahara-Nour/ubumaths/commit/eac6687f3221ec0d24e9c76d2a0ccc1a675d08a0))
+- **wip:** reponse-impossible, reprendre ici corrige ([2fdf6fc](https://github.com/Zahara-Nour/ubumaths/commit/2fdf6fc5afa982a4aa0e5130e6c6f9dbb9dd0535))
+- **wip:** reponse-impossible, variations en prod, reste la cloture ([29f7a9c](https://github.com/Zahara-Nour/ubumaths/commit/29f7a9cce927915693a08cce3c7236f0f068e98e))
+- **wip:** verifs-auto, Firefox réglé, écart [#1469](https://github.com/Zahara-Nour/ubumaths/issues/1469) ([0bc05e6](https://github.com/Zahara-Nour/ubumaths/commit/0bc05e6176356c73d9955016bd50289f2160443c))
+- **wip:** verifs-auto, grille de Données au téléphone mergée ([#3037](https://github.com/Zahara-Nour/ubumaths/issues/3037)) ([51a150e](https://github.com/Zahara-Nour/ubumaths/commit/51a150ef37c4657c2a03c40b978afaba04305be8))
+- **wip:** verifs-auto, R6 en PR ([a9f228d](https://github.com/Zahara-Nour/ubumaths/commit/a9f228d3098ae9c9e0140ceb53c5d755c765ba9c))
+- **wip:** verifs-auto, R6 mergé ([#3036](https://github.com/Zahara-Nour/ubumaths/issues/3036)) ([364d1c2](https://github.com/Zahara-Nour/ubumaths/commit/364d1c222f0a51947aecdd8337dd867b92c48359))
+- **wip:** verifs-auto, R6 premier passage des six projets ([a93ddb8](https://github.com/Zahara-Nour/ubumaths/commit/a93ddb8341c0ec4d4b0bc0b80bc89db46fa3850f))
+- **wip:** verifs-auto, R6 rouges restants et grille invisible au téléphone ([4c544ec](https://github.com/Zahara-Nour/ubumaths/commit/4c544ecfd7cbab00bb8d47a61be3b6262d58580e))
+
 ## [0.103.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.102.0...v0.103.0) (2026-11-23)
 
 ### ✨ Features
