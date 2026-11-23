@@ -2,20 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, lot écrit (aucune PR encore)._
+_Mis à jour le 2026-11-23, après #3049._
 
-- **État** : lot écrit et commité sur `feat/idees-1re-derivation` (2 commits) : F1, F2 neufs
-  (`scripts/questions/idees-1re-derivation-neufs/`, avec `rangement`) ; 13 variations sur 7
-  publiés (`…-publies/`) ; migration de contenu `20261123165942_…_publies_contenu.sql` + fixture.
-  Simulation verte, sonde des courbes 0 problème, formules valides, rendu vu à l'écran.
-- **Prochaine action** : après les brouillons en prod, commiter les ids, `migration-rangement.ts
---dir …-neufs`, merger `origin/main` (branche en retard), revue (`security-auditor`), PR.
-- **En attente de David** : `create-questions --publier` des 2 neufs en PROD (commande dans le
-  dernier message de la session).
-- **Pièges en cours** : 46913a48, d58208eb, 1666b8e9 aussi en 1re techno (l1t-7) ; messages
-  d'erreur prévue réécrits à la résolution (pas de parenthèses autour d'une variable) ; `{{e}}`
-  interdit ; migration de contenu déjà jouée en base LOCALE (`db:a-jour`).
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-derivation`, `feat/idees-1re-derivation`.
+- **État** : #3049 mergée, `db:migrate` fait (rangement + contenu) et vérifié en prod : F1 `904fb546`
+  et F2 `d1cf9d7c` en brouillon, rangés et tagués (1SPE-260, 1SPE-272) ; 13 variations ajoutées aux
+  7 publiés. Réservations des 7 modèles levées.
+- **Prochaine action** : série de relecture (`scripts/series/1_SPE-relecture-derivation-publies.json`,
+  branche `chore/idees-1re-derivation-serie`, worktree `../ubumaths-wt-idees-1re-derivation-serie`,
+  simulation verte) : David l'enregistre, je commite l'id (PR). Puis lire les verdicts
+  (`question_template_reviews`), corriger, `publier-lot.ts` en simulation, publication par David.
+- **En attente de David** : `creer-serie.ts --publier` ; relecture des 2 brouillons
+  (`/dev/modeles?point=1SPE-260` et `?point=1SPE-272`) et de la série.
+- **Pièges en cours** : base LOCALE : la migration de contenu y a été jouée sous l'ancien nom
+  `20261123165942` (re-horodatée `173052` avant la PR) : `db:a-jour` peut la voir comme nouvelle.
+- **Worktree / branche** : `../ubumaths-wt-idees-1re-derivation-serie`, `chore/idees-1re-derivation-serie`.
 
 ## Journal
 
@@ -52,3 +52,12 @@ _Mis à jour le 2026-11-23, lot écrit (aucune PR encore)._
   courbe de degré 3, pente 1/3.
 - Rangement : F1 « Fonctions > Dérivation > nombre dérivé », 1SPE-260, niveau 2 ; F2
   « … > tangente », 1SPE-272, niveau 3 (niveaux relevés en prod).
+
+### 2026-11-23 — #3049 mergée, migrations en prod
+
+- Brouillons créés en prod par David (ids commités). Migration de rangement générée ; migration de
+  contenu re-horodatée (`165942` → `173052`) : trois migrations d'autres sessions étaient déjà en
+  prod après `165942`. `security-auditor` : aucun finding bloquant (notes : texte commun « niveaux »
+  de l'en-tête du rangement, sans effet). Tests d'intégration des deux fixtures verts.
+- CI verte, merge par `pr:merger`, `migration list --linked` (seules les deux du lot en attente),
+  `db:migrate`, état vérifié par le MCP.

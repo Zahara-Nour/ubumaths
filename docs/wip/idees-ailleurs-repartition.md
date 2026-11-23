@@ -178,13 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 46913a48 Taux de variation et nombre dérivé                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
-| d58208eb Lire un nombre dérivé sur un graphique              | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
-| 74d77343 Calculer une dérivée                                | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
-| 1666b8e9 Dériver un polynôme                                 | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
-| 0140fdfa Dériver l'inverse d'une fonction                    | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
-| 8997f7c6 Dériver un produit                                  | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
-| f1440b52 Dériver un quotient                                 | `idees-1re-derivation`                                      | 2026-11-23 |                                      |
 
 ## Idées en attente
 
