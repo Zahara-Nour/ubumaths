@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, correctif #1469 (Firefox) en PR._
+_Mis à jour le 2026-11-23, après #3056 (#1469 sous Firefox)._
 
-- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit ✅ (#3053) → #1469 ✅ (PR `fix/firefox-format-selection`, à merger) → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; carnet en suite complète). `atelier-donnees` vert sur ordi-firefox.
+- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit ✅ (#3053) → #1469 ✅ (#3056) → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; carnet en suite complète). `atelier-donnees` vert sur ordi-firefox.
 - **Prochaine action** : tri des 391 lignes de `verifications-manuelles.md`, worktree neuf.
 - **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19 à présenter dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; la barre de mise en forme qui saute de 37 px quand « Décimales » apparaît (cf. § #1469 ci-dessous) : la stabiliser ou non ?
 - **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; 4 projets à 8 workers saturent le serveur de dev (rouges « toBeVisible » à l'ouverture, `goto` du lien partagé > 60 s) → `--workers 4`, rejouer seul ; un rouge intermittent se reproduit sous charge (`--repeat-each 16 --workers 8`) ; au toucher, attendre le clavier MathLive avant de taper (`waitVirtualKeyboard`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; `test:verifs` muet → `--global-timeout` ; port 5176 souvent pris par une autre session → `VERIFS_PORT=5177` et son propre `pnpm dev`.
-- **Worktree / branche** : `../ubumaths-wt-verifs-auto-firefox` · `fix/firefox-format-selection` (reste aussi le dossier `../ubumaths-wt-verifs-webkit`, seul `.svelte-kit`, à effacer avec l'accord de David).
+- **Worktree / branche** : aucun (retiré après #3056 ; reste le dossier `../ubumaths-wt-verifs-webkit`, seul `.svelte-kit`, à effacer avec l'accord de David).
 
 ## #1469 sous Firefox (2026-11-23)
 
