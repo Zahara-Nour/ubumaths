@@ -28,8 +28,8 @@
  * Sans <n> : la PR de la branche courante. `--essai` : dit ce qui serait fait, sans
  * attendre ni la CI ni le verrou, et s'arrête avant le merge.
  * PR déjà mergée : seulement le rangement. Ne joue jamais `pnpm db:migrate`.
- * Refuse dans une session Claude sans personne devant (tâche planifiée : elle ne
- * merge jamais, CLAUDE.md § Git Workflow).
+ * Ne reconnaît pas une tâche planifiée : c'est à la session de ne pas la lancer
+ * (CLAUDE.md § Git Workflow).
  *
  * Sorties : 0 fait · 1 refus · 2 attente dépassée (CI, verrou).
  * Tests : scripts/__tests__/pr-merger.test.ts.
@@ -289,17 +289,10 @@ async function main(): Promise<void> {
 	if (reste.length > 1 || (reste[0] !== undefined && !/^\d+$/.test(reste[0])))
 		arreter(1, 'usage : pnpm pr:merger [<numéro de PR>] [--essai]');
 
-	// Variable posée par Claude Code dans l'environnement de ses commandes : « 1 »
-	// quand quelqu'un suit la session, « 0 » sinon (lu dans la version 2.1.326 le
-	// 2026-11-23 ; pas documentée, pas encore vue dans une vraie tâche planifiée).
-	// Absente (terminal de David) : la commande passe. La règle de CLAUDE.md reste
-	// la référence, cette garde n'en est que le filet.
-	if (process.env.CLAUDE_CODE_SESSION_ATTENDED === '0')
-		arreter(
-			1,
-			'⛔ Session Claude sans personne devant (tâche planifiée) : elle ne merge jamais.',
-			'Elle s’arrête à l’ouverture de la PR et laisse le merge à David (CLAUDE.md § Git Workflow).'
-		);
+	// Pas de garde « tâche planifiée » ici : la seule variable que pose Claude Code
+	// (`CLAUDE_CODE_SESSION_ATTENDED=0`) dit « personne devant le terminal », ce qui
+	// est aussi le cas d'une session ordinaire en arrière-plan (refus à tort le
+	// 2026-11-23). La règle de CLAUDE.md § Git Workflow fait foi.
 
 	let pr = lirePr(reste);
 	const n = String(pr.number);

@@ -14,7 +14,7 @@
  * - rangement : worktree retiré, branche locale supprimée, dépôt principal à jour ;
  *   worktree pas propre ou commits locaux jamais poussés → tout reste en place ;
  * - PR déjà mergée → rangement seul ; `--essai` → rien ;
- * - session Claude sans personne devant → refus avant tout appel à GitHub.
+ * - session Claude en arrière-plan (`CLAUDE_CODE_SESSION_ATTENDED=0`) → pas de refus.
  *
  * Dépôts jetables : un dépôt nu tient lieu de GitHub, `gh` est un bouchon qui lit
  * la PR dans un fichier JSON et fait le merge dans le dépôt nu. git ne tourne
@@ -590,12 +590,12 @@ describe('pr:merger : de bout en bout', () => {
 		expect(existsSync(wt)).toBe(true);
 	});
 
-	it('session Claude sans personne devant : refus avant tout appel à GitHub', () => {
+	it('session Claude en arrière-plan (personne devant le terminal) : pas de refus', () => {
 		variables = { CLAUDE_CODE_SESSION_ATTENDED: '0' };
 		const r = merger();
-		expect(r.status).toBe(1);
-		expect(r.sortie).toContain('ne merge jamais');
-		expect(lu('appels')).toBe('');
+		expect(r.status).toBe(0);
+		expect(r.sortie).not.toContain('ne merge jamais');
+		expect(lu('merges')).not.toBe('');
 	});
 
 	it('argument qui n’est pas un numéro : usage, aucun appel', () => {
