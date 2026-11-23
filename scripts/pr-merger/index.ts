@@ -1,0 +1,326 @@
+/**
+ * `pnpm pr:merger [<n>] [--essai]` : merger une PR et ranger derrière elle
+ * =======================================================================
+ *
+ * Les gestes 7 à 9 du flux d'une PR (docs/pratiques/git-workflow.md § 3), dans
+ * l'ordre, chacun arrêtant tout s'il échoue :
+ *
+ *   1. contrôles du DERNIER commit de la PR : attendus s'ils tournent, tous verts
+ *      (« sauté » vaut vert), contrôle de synthèse présent ; jamais « vert » sur
+ *      une liste vide ;
+ *   2. PR qui touche supabase/migrations/ : `pnpm check:migrations --pr <n>` ;
+ *   3. `pnpm deploy:prod` en cours (verrou « deploy ») : attendu ;
+ *   4. `gh pr merge --merge --match-head-commit <sha>` : le commit mergé est celui
+ *      dont les contrôles ont été lus ; `Base branch was modified` → une relance ;
+ *   5. état relu : rien n'est rangé sans `MERGED` ;
+ *   6. worktree de la branche retiré, branche locale supprimée (`-d`), dépôt
+ *      principal mis à jour ; un worktree qui n'est pas propre reste en place.
+ *
+ * Sans <n> : la PR de la branche courante. `--essai` : s'arrête avant le merge.
+ * PR déjà mergée : seulement le rangement. Ne joue jamais `pnpm db:migrate`.
+ * Refuse dans une session Claude sans personne devant (tâche planifiée : elle ne
+ * merge jamais, CLAUDE.md § Git Workflow).
+ *
+ * Sorties : 0 fait · 1 refus · 2 attente dépassée (CI, verrou).
+ * Tests : scripts/__tests__/pr-merger.test.ts.
+ */
+
+import { spawnSync } from 'node:child_process';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+	blocage,
+	fichiersSensibles,
+	lireWorktrees,
+	migrations,
+	refus,
+	verdictDesControles,
+	type Pr
+} from './logique.ts';
+
+// ============================================================================
+// Constantes
+// ============================================================================
+
+const SCRIPTS = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const CHAMPS =
+	'number,state,isDraft,baseRefName,headRefName,headRefOid,mergeable,mergeStateStatus,statusCheckRollup';
+
+/** Secondes entre deux lectures de GitHub ou du verrou. */
+const PAUSE = Number(process.env.PR_MERGER_PAUSE ?? 20);
+/** Attente la plus longue de la CI, puis du verrou de mise en prod. */
+const ATTENTE_MAX = Number(process.env.PR_MERGER_ATTENTE_MAX ?? 3600);
+/** Attente la plus longue d'un run pas encore enregistré (juste après un push). */
+const ATTENTE_ABSENT = Number(process.env.PR_MERGER_ATTENTE_ABSENT ?? 120);
+/** Remplaçable par un bouchon dans les tests. */
+const GARDE_MIGRATIONS =
+	process.env.PR_MERGER_GARDE_MIGRATIONS ??
+	`bash ${resolve(SCRIPTS, 'garde-migrations-horodatage.sh')}`;
+
+// ============================================================================
+// Fonctions
+// ============================================================================
+
+function dire(message: string): void {
+	console.log(message);
+}
+
+function arreter(code: number, ...lignes: string[]): never {
+	for (const l of lignes) console.error(l);
+	process.exit(code);
+}
+
+function lancer(commande: string, args: string[], cwd?: string) {
+	const r = spawnSync(commande, args, { cwd, encoding: 'utf8' });
+	return {
+		ok: r.status === 0,
+		stdout: (r.stdout ?? '').trim(),
+		sortie: `${r.stdout ?? ''}${r.stderr ?? ''}`.trim()
+	};
+}
+
+function gh(...args: string[]) {
+	return lancer('gh', args);
+}
+
+function git(cwd: string, ...args: string[]) {
+	return lancer('git', ['-C', cwd, ...args]);
+}
+
+function pause(secondes: number): Promise<void> {
+	return new Promise((fin) => setTimeout(fin, secondes * 1000));
+}
+
+function lirePr(cible: string[]): Pr {
+	const r = gh('pr', 'view', ...cible, '--json', CHAMPS);
+	if (!r.ok) arreter(1, '⛔ PR illisible :', r.sortie, 'Rien n’est mergé.');
+	return JSON.parse(r.stdout) as Pr;
+}
+
+function fichiersDeLaPr(n: string): string[] {
+	const r = gh('pr', 'diff', n, '--name-only');
+	if (!r.ok) arreter(1, '⛔ Fichiers de la PR illisibles :', r.sortie, 'Rien n’est mergé.');
+	return r.stdout.split('\n').filter(Boolean);
+}
+
+function deployEnCours(): boolean {
+	return lancer('python3', [resolve(SCRIPTS, 'lib/lock.py'), '--tenu', 'deploy']).ok;
+}
+
+/** Attend les contrôles du dernier commit ; rend la PR telle que lue au vert. */
+async function attendreLesControles(n: string, premiere: Pr): Promise<Pr> {
+	let pr = premiere;
+	let attendu = 0;
+	let annonce = '';
+	for (;;) {
+		const motif = refus(pr);
+		if (motif) arreter(1, `⛔ #${n} : ${motif}.`, 'Rien n’est mergé.');
+		const verdict = verdictDesControles(pr.statusCheckRollup ?? []);
+		const commit = pr.headRefOid.slice(0, 10);
+		if (verdict.etat === 'vert') {
+			dire(`✅ Contrôles verts sur ${commit}.`);
+			return pr;
+		}
+		if (verdict.etat === 'rouge')
+			arreter(
+				1,
+				`⛔ #${n} : contrôle(s) rouge(s) sur ${commit} :`,
+				...verdict.noms.map((nom) => `   - ${nom}`),
+				'Rien n’est mergé.'
+			);
+		const limite = verdict.etat === 'absent' ? ATTENTE_ABSENT : ATTENTE_MAX;
+		if (attendu >= limite) {
+			if (verdict.etat === 'absent')
+				arreter(
+					1,
+					`⛔ #${n} : aucun verdict de la CI sur ${commit} (pas de « CI Summary »), et rien ne tourne.`,
+					'Rien n’est mergé. Run pas encore enregistré, ou CI non déclenchée : gh pr checks ' + n
+				);
+			arreter(
+				2,
+				`⛔ #${n} : la CI de ${commit} tourne encore après ${attendu} s :`,
+				...verdict.noms.map((nom) => `   - ${nom}`),
+				'Rien n’est mergé. Relancer la commande plus tard.'
+			);
+		}
+		const quoi =
+			verdict.etat === 'absent'
+				? `⏳ Pas encore de CI sur ${commit}, attente de son enregistrement…`
+				: `⏳ CI en cours sur ${commit} (${verdict.noms.length} contrôle(s)), attente…`;
+		// Une ligne par changement, pas une par lecture : la sortie reste lisible.
+		if (quoi !== annonce) dire(quoi);
+		annonce = quoi;
+		await pause(PAUSE);
+		attendu += Math.max(PAUSE, 1);
+		pr = lirePr([n]);
+		if (pr.state === 'MERGED') return pr;
+	}
+}
+
+async function attendreLeVerrou(): Promise<void> {
+	let attendu = 0;
+	while (deployEnCours()) {
+		if (attendu >= ATTENTE_MAX)
+			arreter(
+				2,
+				`⛔ \`pnpm deploy:prod\` tient encore le verrou après ${attendu} s.`,
+				'Rien n’est mergé. Relancer la commande après la mise en prod.'
+			);
+		if (attendu === 0) dire('⏳ `pnpm deploy:prod` en cours : attente de la fin de la livraison…');
+		await pause(PAUSE);
+		attendu += Math.max(PAUSE, 1);
+	}
+}
+
+function merger(n: string, sha: string): void {
+	const args = ['pr', 'merge', n, '--merge', '--match-head-commit', sha];
+	let r = gh(...args);
+	if (!r.ok && /Base branch was modified/i.test(r.sortie)) {
+		dire('🔁 `Base branch was modified` : une relance.');
+		r = gh(...args);
+	}
+	if (!r.ok) arreter(1, `⛔ #${n} : \`gh pr merge\` a échoué :`, r.sortie, 'Rien n’est rangé.');
+}
+
+/** Rangement d'après-merge. Rend ce qui n'a pas pu être rangé. */
+function ranger(branche: string): string[] {
+	const restes: string[] = [];
+	const liste = git(process.cwd(), 'worktree', 'list', '--porcelain');
+	if (!liste.ok) return [`worktrees illisibles : ${liste.sortie}`];
+	const worktrees = lireWorktrees(liste.stdout);
+	const principal = worktrees[0].chemin;
+	const wt = worktrees.find((w) => w.branche === branche);
+	// Le worktree d'où la commande est lancée va peut-être disparaître.
+	process.chdir(principal);
+
+	// Dépôt principal sur main : le mettre à jour (le merge y arrive). Un pull en
+	// échec ne se rattrape pas ici (CLAUDE.md : s'arrêter, prévenir David).
+	const fetch = git(principal, 'fetch', '-q', 'origin', 'main');
+	if (!fetch.ok) restes.push(`\`git fetch origin main\` en échec : ${fetch.sortie}`);
+	if (worktrees[0].branche === 'main') {
+		const pull = git(principal, 'pull', '--rebase', '-q');
+		if (pull.ok) dire('✅ Dépôt principal à jour.');
+		else
+			restes.push(
+				`dépôt principal pas mis à jour (\`git pull --rebase\` en échec, prévenir David) :\n${pull.sortie}`
+			);
+	}
+
+	if (!git(principal, 'rev-parse', '-q', '--verify', `refs/heads/${branche}`).ok) {
+		if (wt)
+			restes.push(`worktree ${wt.chemin} sans branche locale « ${branche} » : laissé en place`);
+		return restes;
+	}
+	if (wt && wt.chemin === principal) {
+		restes.push(`le dépôt principal est sur « ${branche} » : ni worktree ni branche retirés`);
+		return restes;
+	}
+	// Des commits locaux jamais poussés ne sont pas dans le merge : on ne retire rien.
+	if (!git(principal, 'merge-base', '--is-ancestor', branche, 'origin/main').ok) {
+		restes.push(
+			`la branche locale « ${branche} » a des commits absents de main : branche${wt ? ' et worktree' : ''} gardés`
+		);
+		return restes;
+	}
+	if (wt) {
+		const etat = git(wt.chemin, 'status', '--porcelain');
+		if (!etat.ok || etat.stdout) {
+			restes.push(
+				`worktree ${wt.chemin} pas propre, laissé en place avec sa branche :\n${etat.ok ? etat.stdout : etat.sortie}`
+			);
+			return restes;
+		}
+		const retrait = git(principal, 'worktree', 'remove', wt.chemin);
+		if (!retrait.ok) {
+			restes.push(`worktree ${wt.chemin} non retiré : ${retrait.sortie}`);
+			return restes;
+		}
+		dire(`✅ Worktree retiré : ${wt.chemin}`);
+	}
+	const suppression = git(principal, 'branch', '-d', branche);
+	if (suppression.ok) dire(`✅ Branche locale supprimée : ${branche}`);
+	else restes.push(`branche locale « ${branche} » non supprimée : ${suppression.sortie}`);
+	// La branche distante est supprimée par GitHub au merge : oublier sa trace.
+	git(principal, 'fetch', '-q', '--prune', 'origin');
+	dire(git(principal, 'worktree', 'list').stdout);
+	return restes;
+}
+
+async function main(): Promise<void> {
+	const args = process.argv.slice(2);
+	const essai = args.includes('--essai');
+	const reste = args.filter((a) => a !== '--essai');
+	if (reste.length > 1 || (reste[0] !== undefined && !/^\d+$/.test(reste[0])))
+		arreter(1, 'usage : pnpm pr:merger [<numéro de PR>] [--essai]');
+
+	if (process.env.CLAUDE_CODE_SESSION_ATTENDED === '0')
+		arreter(
+			1,
+			'⛔ Session Claude sans personne devant (tâche planifiée) : elle ne merge jamais.',
+			'Elle s’arrête à l’ouverture de la PR et laisse le merge à David (CLAUDE.md § Git Workflow).'
+		);
+
+	let pr = lirePr(reste);
+	const n = String(pr.number);
+	dire(`PR #${n} · ${pr.headRefName} · ${pr.headRefOid.slice(0, 10)}`);
+
+	const dejaMergee = pr.state === 'MERGED';
+	let aMigrer: string[] = [];
+	if (dejaMergee) {
+		dire('ℹ️ Déjà mergée : rangement seulement.');
+	} else {
+		pr = await attendreLesControles(n, pr);
+	}
+	if (pr.state !== 'MERGED') {
+		const bloque = blocage(pr);
+		if (bloque) arreter(1, `⛔ #${n} : ${bloque}.`, 'Rien n’est mergé.');
+
+		const fichiers = fichiersDeLaPr(n);
+		aMigrer = migrations(fichiers);
+		const sensibles = fichiersSensibles(fichiers);
+		if (sensibles.length > 0)
+			dire(
+				`ℹ️ PR sensible (${sensibles.length} fichier(s), dont ${sensibles[0]}) : revue \`code-reviewer\` + \`security-auditor\` attendue avant le merge. La commande ne la vérifie pas.`
+			);
+
+		if (aMigrer.length > 0) {
+			const [commande, ...debut] = GARDE_MIGRATIONS.split(' ');
+			const garde = lancer(commande, [...debut, '--pr', n]);
+			if (garde.sortie) dire(garde.sortie);
+			if (!garde.ok) arreter(1, `⛔ #${n} : la garde des migrations refuse.`, 'Rien n’est mergé.');
+			dire('✅ Migrations : horodatages libres sur origin/main.');
+		}
+
+		await attendreLeVerrou();
+
+		if (essai) {
+			dire(
+				`✅ Essai : #${n} serait mergée (commit ${pr.headRefOid.slice(0, 10)}). Rien n’est fait.`
+			);
+			return;
+		}
+		merger(n, pr.headRefOid);
+	} else if (essai) {
+		dire('✅ Essai : le rangement serait fait. Rien n’est fait.');
+		return;
+	}
+
+	const etat = lirePr([n]).state;
+	if (etat !== 'MERGED')
+		arreter(1, `⛔ #${n} : état relu « ${etat} », pas MERGED.`, 'Rien n’est rangé.');
+	dire(`✅ #${n} : MERGED.`);
+
+	const restes = ranger(pr.headRefName);
+	for (const r of restes) dire(`⚠️ ${r}`);
+
+	const suite = ['« Reprendre ici » du journal du chantier'];
+	if (aMigrer.length > 0)
+		suite.push(
+			`\`pnpm db:migrate\` si les 4 conditions sont réunies (${aMigrer.length} migration(s))`
+		);
+	else if (dejaMergee) suite.push('`pnpm db:migrate` si la PR portait une migration');
+	if (restes.length > 0) suite.push('le rangement signalé ci-dessus');
+	dire(`👉 Reste à faire : ${suite.join(' ; ')}.`);
+}
+
+await main();
