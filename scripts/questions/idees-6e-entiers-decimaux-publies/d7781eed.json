@@ -8,7 +8,8 @@
 	"status": "published",
 	"options": {
 		"constraints": {
-			"spacesFromFourDigits": true
+			"spacesFromFourDigits": true,
+			"reducedFractions": "off"
 		}
 	},
 	"variations": [
@@ -116,7 +117,7 @@
 			}
 		},
 		{
-			"statement": "Montre que $\\dfrac{ {{a}} }{ {{b}} }$ est un nombre décimal : écris-le sous la forme d'une fraction décimale, avec le plus petit dénominateur possible : $10$, $100$ ou $1000$.\n\n$$\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{?}{?}$$",
+			"statement": "Montre que $\\dfrac{ {{a}} }{ {{b}} }$ est un nombre décimal : écris-le sous la forme d'une fraction de numérateur entier et de dénominateur $10$, $100$ ou $1000$.\n\n$$\\dfrac{ {{a}} }{ {{b}} }=?$$",
 			"variables": [
 				{
 					"name": "b",
@@ -137,37 +138,34 @@
 				{
 					"name": "f",
 					"expression": "eval:D/b"
+				},
+				{
+					"name": "nd",
+					"expression": "eval:1+min(floor(b/10),1)+min(floor(b/100),1)"
 				}
 			],
 			"conditions": ["mod(a,2)!=0", "mod(a,5)!=0"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:a*f}}",
+					"expectedAnswer": "\\frac{ {{eval:a*f}} }{ {{D}} }",
+					"requiredForm": {
+						"pattern": "n:integer / w:eq(10)|eq(100)|eq(1000)"
+					},
 					"expectedErrors": [
 						{
-							"answer": "{{eval:a+D-b}}",
+							"answer": "\\frac{ {{eval:a+D-b}} }{ {{D}} }",
 							"message": "Tu as ajouté le même nombre en haut et en bas : cela change la fraction. Il faut multiplier le numérateur et le dénominateur par le même nombre.",
 							"label": "Même nombre ajouté"
 						},
 						{
-							"answer": "{{a}}",
+							"answer": "\\frac{ {{a}} }{ {{D}} }",
 							"message": "Tu as changé le dénominateur sans changer le numérateur : si tu multiplies ${{b}}$ par ${{f}}$, multiplie aussi ${{a}}$ par ${{f}}$.",
 							"label": "Numérateur inchangé"
 						},
 						{
-							"answer": "{{f}}",
-							"message": "Tu as écrit le nombre par lequel on multiplie : le numérateur, c'est ${{a}}$ multiplié par ce nombre.",
-							"label": "Multiplicateur au numérateur"
-						}
-					]
-				},
-				{
-					"expectedAnswer": "{{D}}",
-					"expectedErrors": [
-						{
-							"answer": "{{eval:10*D}}",
-							"message": "Ce n'est pas le plus petit dénominateur possible : ${{b}}$ divise déjà ${{D}}$.",
-							"label": "Pas le plus petit dénominateur"
+							"answer": "{{eval:a+b/10^nd;d}}",
+							"message": "Une fraction n'est pas un nombre à virgule : $\\dfrac{ {{a}} }{ {{b}} }$, c'est ${{a}} \\div {{b}}$.",
+							"label": "Barre de fraction lue comme une virgule"
 						}
 					]
 				}
@@ -278,10 +276,48 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["28", "100"]
+			"answers": ["\\frac{28}{100}"]
 		},
 		{
-			"description": "F6 : même nombre ajouté (82)",
+			"description": "F6 : 7/25 = 280/1 000, juste aussi",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{280}{1\\,000}"]
+		},
+		{
+			"description": "F6 : 7/25 recopié refusé (dénominateur non décimal)",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{7}{25}"]
+		},
+		{
+			"description": "F6 : écriture décimale refusée",
+			"variationIndex": 4,
+			"variables": {
+				"b": "25",
+				"a": "7"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["0{,}28"]
+		},
+		{
+			"description": "F6 : même nombre ajouté (82/100)",
 			"variationIndex": 4,
 			"variables": {
 				"b": "25",
@@ -291,10 +327,10 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as ajouté le même nombre en haut et en bas : cela change la fraction. Il faut multiplier le numérateur et le dénominateur par le même nombre."
 			},
-			"answers": ["82", "100"]
+			"answers": ["\\frac{82}{100}"]
 		},
 		{
-			"description": "F6 : numérateur inchangé (7)",
+			"description": "F6 : numérateur inchangé (7/100)",
 			"variationIndex": 4,
 			"variables": {
 				"b": "25",
@@ -304,10 +340,10 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as changé le dénominateur sans changer le numérateur : si tu multiplies $25$ par $4$, multiplie aussi $7$ par $4$."
 			},
-			"answers": ["7", "100"]
+			"answers": ["\\frac{7}{100}"]
 		},
 		{
-			"description": "F6 : multiplicateur au numérateur (4)",
+			"description": "F6 : barre lue comme une virgule (7,25)",
 			"variationIndex": 4,
 			"variables": {
 				"b": "25",
@@ -315,22 +351,9 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "Tu as écrit le nombre par lequel on multiplie : le numérateur, c'est $7$ multiplié par ce nombre."
+				"expectedErrorMessage": "Une fraction n'est pas un nombre à virgule : $\\dfrac{7}{25}$, c'est $7 \\div 25$."
 			},
-			"answers": ["4", "100"]
-		},
-		{
-			"description": "F6 : 280/1 000, pas le plus petit dénominateur",
-			"variationIndex": 4,
-			"variables": {
-				"b": "25",
-				"a": "7"
-			},
-			"expected": {
-				"status": "incorrect",
-				"expectedErrorMessage": "Ce n'est pas le plus petit dénominateur possible : $25$ divise déjà $100$."
-			},
-			"answers": ["280", "1\\,000"]
+			"answers": ["7{,}25"]
 		},
 		{
 			"description": "F6 : 3/2 = 15/10",
@@ -342,7 +365,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["15", "10"]
+			"answers": ["\\frac{15}{10}"]
 		},
 		{
 			"description": "F6 : 9/250 = 36/1 000",
@@ -354,7 +377,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["36", "1\\,000"]
+			"answers": ["\\frac{36}{1\\,000}"]
 		},
 		{
 			"description": "F6 : 1000 sans espace",
@@ -367,7 +390,7 @@
 				"status": "unoptimal_form",
 				"constraintViolations": ["spaces"]
 			},
-			"answers": ["36", "1000"]
+			"answers": ["\\frac{36}{1000}"]
 		}
 	]
 }

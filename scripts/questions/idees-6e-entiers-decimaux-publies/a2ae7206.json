@@ -8,7 +8,8 @@
 	"status": "published",
 	"options": {
 		"constraints": {
-			"spacesFromFourDigits": true
+			"spacesFromFourDigits": true,
+			"reducedFractions": "off"
 		}
 	},
 	"variations": [
@@ -215,7 +216,7 @@
 			"hint": "Place chaque chiffre à son rang : $\\dfrac{1}{10} = 0{,}1$, $\\dfrac{1}{100} = 0{,}01$, $\\dfrac{1}{1000} = 0{,}001$. Un rang sans chiffre s'écrit $0$."
 		},
 		{
-			"statement": "Écris ce nombre sous la forme d'une fraction décimale, avec le plus petit dénominateur possible : $10$, $100$ ou $1000$.\n\n$${{x}}=\\dfrac{?}{?}$$",
+			"statement": "Écris ce nombre sous la forme d'une fraction décimale : numérateur entier, dénominateur $10$, $100$ ou $1000$ (pas d'écriture à virgule).\n\n$${{x}}=?$$",
 			"variables": [
 				{
 					"name": "k",
@@ -269,37 +270,25 @@
 			"conditions": [],
 			"blanks": [
 				{
-					"expectedAnswer": "{{N}}",
+					"expectedAnswer": "\\frac{ {{N}} }{ {{eval:10^p}} }",
+					"requiredForm": {
+						"pattern": "n:integer / w:eq(10)|eq(100)|eq(1000)"
+					},
 					"expectedErrors": [
 						{
-							"answer": "{{M}}",
+							"answer": "\\frac{ {{M}} }{ {{eval:10^(p-1)}} }",
 							"message": "Tu as oublié le zéro de ${{x}}$ : il a ${{p}}$ chiffres après la virgule, zéro compris, c'est ${{N}}$ {{if:p==2|centième|millième}}{{if:N>1|s|}}.",
 							"label": "Zéro intérieur oublié"
 						},
 						{
-							"answer": "{{F}}",
-							"message": "Tu as oublié la partie entière : ${{x}}$, c'est ${{N}}$ {{if:p==2|centième|millième}}{{if:N>1|s|}}, pas seulement ${{F}}$.",
-							"label": "Partie entière oubliée"
-						},
-						{
-							"answer": "{{x}}",
-							"message": "Le numérateur d'une fraction décimale est un nombre entier : combien de {{if:p==2|centième|millième}}{{if:N>1|s|}} y a-t-il dans ${{x}}$ ?",
-							"label": "Virgule gardée"
-						}
-					]
-				},
-				{
-					"expectedAnswer": "{{eval:10^p}}",
-					"expectedErrors": [
-						{
-							"answer": "{{eval:10^(p+1)}}",
-							"message": "Tu as mis un zéro de trop : ${{x}}$ a ${{p}}$ chiffres après la virgule, il faut ${{p}}$ zéros au dénominateur.",
+							"answer": "\\frac{ {{N}} }{ {{eval:10^(p+1)}} }",
+							"message": "Tu as mis un zéro de trop au dénominateur : ${{x}}$ a ${{p}}$ chiffres après la virgule, il faut ${{p}}$ zéros.",
 							"label": "Un zéro de trop"
 						},
 						{
-							"answer": "{{eval:10^(p-1)}}",
-							"message": "Il manque un zéro : ${{x}}$ a ${{p}}$ chiffres après la virgule, zéro compris, il faut ${{p}}$ zéros au dénominateur.",
-							"label": "Zéro manquant"
+							"answer": "\\frac{ {{F}} }{ {{eval:10^p}} }",
+							"message": "Tu as oublié la partie entière : ${{x}}$, c'est ${{N}}$ {{if:p==2|centième|millième}}{{if:N>1|s|}}, pas seulement ${{F}}$.",
+							"label": "Partie entière oubliée"
 						}
 					]
 				}
@@ -368,7 +357,7 @@
 			"hint": "Il y a moins de {{if:p==1|dixièmes|centièmes}} dans la première fraction que dans la deuxième : change d'abord $1$ unité en ${{D}}$ {{if:p==1|dixièmes|centièmes}}."
 		},
 		{
-			"statement": "Écris ce nombre sous la forme d'une seule fraction décimale.\n\n$${{a}}+\\dfrac{ {{b}} }{100}=\\dfrac{?}{100}$$",
+			"statement": "Écris ce nombre sous la forme d'une seule fraction décimale : numérateur entier, dénominateur $10$, $100$ ou $1000$.\n\n$${{a}}+\\dfrac{ {{b}} }{100}=?$$",
 			"variables": [
 				{
 					"name": "a",
@@ -386,22 +375,25 @@
 			"conditions": ["mod(b,10)!=0"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:100*a+b}}",
+					"expectedAnswer": "\\frac{ {{eval:100*a+b}} }{100}",
+					"requiredForm": {
+						"pattern": "n:integer / w:eq(10)|eq(100)|eq(1000)"
+					},
 					"expectedErrors": [
 						{
-							"answer": "{{eval:a+b}}",
+							"answer": "\\frac{ {{eval:a+b}} }{100}",
 							"message": "Tu as ajouté ${{a}}$ au numérateur comme si c'étaient des centièmes : ${{a}}$ unités, ce sont ${{eval:100*a}}$ centièmes.",
 							"label": "Unités comptées en centièmes"
 						},
 						{
-							"answer": "{{J}}",
+							"answer": "\\frac{ {{J}} }{100}",
 							"message": "Tu as écrit ${{a}}$ et ${{b}}$ côte à côte : ${{b}}$ centièmes s'écrit avec deux chiffres après la virgule, et ${{a}}$ unités, ce sont ${{eval:100*a}}$ centièmes.",
 							"label": "Chiffres côte à côte"
 						},
 						{
-							"answer": "{{eval:a+b/100;d}}",
-							"message": "Le numérateur d'une fraction décimale est un nombre entier : combien de centièmes y a-t-il en tout ?",
-							"label": "Virgule au numérateur"
+							"answer": "\\frac{ {{eval:a+b}} }{101}",
+							"message": "Tu as additionné les numérateurs et les dénominateurs : on n'additionne que des fractions de même dénominateur. Écris d'abord ${{a}}$ en centièmes.",
+							"label": "Numérateurs et dénominateurs additionnés"
 						}
 					]
 				}
@@ -796,10 +788,69 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["307", "100"]
+			"answers": ["\\frac{307}{100}"]
 		},
 		{
-			"description": "F3 v4 : zéro intérieur oublié (37)",
+			"description": "F3 v4 : 3 070/1 000, juste aussi",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "1",
+				"q": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3\\,070}{1\\,000}"]
+		},
+		{
+			"description": "F3 v4 : 3,07 en écriture décimale refusé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "1",
+				"q": "7"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3{,}07"]
+		},
+		{
+			"description": "F3 v4 : entier + fraction refusé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "1",
+				"q": "7"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["3+\\frac{7}{100}"]
+		},
+		{
+			"description": "F3 v4 : dénominateur non décimal refusé (307/100 = 614/200)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "1",
+				"q": "7"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{614}{200}"]
+		},
+		{
+			"description": "F3 v4 : zéro intérieur oublié (37/10)",
 			"variationIndex": 4,
 			"variables": {
 				"k": "1",
@@ -811,10 +862,25 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as oublié le zéro de $3.07$ : il a $2$ chiffres après la virgule, zéro compris, c'est $307$ centièmes."
 			},
-			"answers": ["37", "100"]
+			"answers": ["\\frac{37}{10}"]
 		},
 		{
-			"description": "F3 v4 : partie entière oubliée (7)",
+			"description": "F3 v4 : un zéro de trop (307/1 000)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "1",
+				"q": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as mis un zéro de trop au dénominateur : $3.07$ a $2$ chiffres après la virgule, il faut $2$ zéros."
+			},
+			"answers": ["\\frac{307}{1\\,000}"]
+		},
+		{
+			"description": "F3 v4 : partie entière oubliée (7/100)",
 			"variationIndex": 4,
 			"variables": {
 				"k": "1",
@@ -826,52 +892,7 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as oublié la partie entière : $3.07$, c'est $307$ centièmes, pas seulement $7$."
 			},
-			"answers": ["7", "100"]
-		},
-		{
-			"description": "F3 v4 : virgule gardée (3,07)",
-			"variationIndex": 4,
-			"variables": {
-				"k": "1",
-				"a": "3",
-				"b": "1",
-				"q": "7"
-			},
-			"expected": {
-				"status": "incorrect",
-				"expectedErrorMessage": "Le numérateur d'une fraction décimale est un nombre entier : combien de centièmes y a-t-il dans $3.07$ ?"
-			},
-			"answers": ["3{,}07", "100"]
-		},
-		{
-			"description": "F3 v4 : un zéro de trop (1 000)",
-			"variationIndex": 4,
-			"variables": {
-				"k": "1",
-				"a": "3",
-				"b": "1",
-				"q": "7"
-			},
-			"expected": {
-				"status": "incorrect",
-				"expectedErrorMessage": "Tu as mis un zéro de trop : $3.07$ a $2$ chiffres après la virgule, il faut $2$ zéros au dénominateur."
-			},
-			"answers": ["307", "1\\,000"]
-		},
-		{
-			"description": "F3 v4 : zéro manquant (10)",
-			"variationIndex": 4,
-			"variables": {
-				"k": "1",
-				"a": "3",
-				"b": "1",
-				"q": "7"
-			},
-			"expected": {
-				"status": "incorrect",
-				"expectedErrorMessage": "Il manque un zéro : $3.07$ a $2$ chiffres après la virgule, zéro compris, il faut $2$ zéros au dénominateur."
-			},
-			"answers": ["307", "10"]
+			"answers": ["\\frac{7}{100}"]
 		},
 		{
 			"description": "F3 v4 : 0,07 = 7/100",
@@ -885,10 +906,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["7", "100"]
+			"answers": ["\\frac{7}{100}"]
 		},
 		{
-			"description": "F3 v4 : 0,07, zéro manquant (7/10)",
+			"description": "F3 v4 : 0,07, zéro oublié (7/10)",
 			"variationIndex": 4,
 			"variables": {
 				"k": "0",
@@ -898,9 +919,23 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "Il manque un zéro : $0.07$ a $2$ chiffres après la virgule, zéro compris, il faut $2$ zéros au dénominateur."
+				"expectedErrorMessage": "Tu as oublié le zéro de $0.07$ : il a $2$ chiffres après la virgule, zéro compris, c'est $7$ centièmes."
 			},
-			"answers": ["7", "10"]
+			"answers": ["\\frac{7}{10}"]
+		},
+		{
+			"description": "F3 v4 : 3,04 = 304/100, simplifiable mais juste",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "1",
+				"q": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{304}{100}"]
 		},
 		{
 			"description": "F3 v4 : 12,405 = 12 405/1 000",
@@ -914,7 +949,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["12\\,405", "1\\,000"]
+			"answers": ["\\frac{12\\,405}{1\\,000}"]
 		},
 		{
 			"description": "F3 v4 : 12405 sans espace",
@@ -929,10 +964,10 @@
 				"status": "unoptimal_form",
 				"constraintViolations": ["spaces"]
 			},
-			"answers": ["12405", "1\\,000"]
+			"answers": ["\\frac{12405}{1\\,000}"]
 		},
 		{
-			"description": "F3 v4 : 12,405, zéro oublié (1 245)",
+			"description": "F3 v4 : 12,405, zéro oublié (1 245/100)",
 			"variationIndex": 4,
 			"variables": {
 				"k": "2",
@@ -944,7 +979,7 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as oublié le zéro de $12.405$ : il a $3$ chiffres après la virgule, zéro compris, c'est $12405$ millièmes."
 			},
-			"answers": ["1\\,245", "1\\,000"]
+			"answers": ["\\frac{1\\,245}{100}"]
 		},
 		{
 			"description": "F3 v5 : 5 + 3/10 − 7/10 = 4,6",
@@ -1044,10 +1079,48 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["437"]
+			"answers": ["\\frac{437}{100}"]
 		},
 		{
-			"description": "F3 v6 : unités comptées en centièmes (41)",
+			"description": "F3 v6 : 4 370/1 000, juste aussi",
+			"variationIndex": 6,
+			"variables": {
+				"a": "4",
+				"b": "37"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{4\\,370}{1\\,000}"]
+		},
+		{
+			"description": "F3 v6 : écriture décimale refusée",
+			"variationIndex": 6,
+			"variables": {
+				"a": "4",
+				"b": "37"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["4{,}37"]
+		},
+		{
+			"description": "F3 v6 : somme recopiée refusée",
+			"variationIndex": 6,
+			"variables": {
+				"a": "4",
+				"b": "37"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["4+\\frac{37}{100}"]
+		},
+		{
+			"description": "F3 v6 : unités comptées en centièmes (41/100)",
 			"variationIndex": 6,
 			"variables": {
 				"a": "4",
@@ -1057,10 +1130,10 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as ajouté $4$ au numérateur comme si c'étaient des centièmes : $4$ unités, ce sont $400$ centièmes."
 			},
-			"answers": ["41"]
+			"answers": ["\\frac{41}{100}"]
 		},
 		{
-			"description": "F3 v6 : virgule au numérateur (4,37)",
+			"description": "F3 v6 : numérateurs et dénominateurs additionnés (41/101)",
 			"variationIndex": 6,
 			"variables": {
 				"a": "4",
@@ -1068,9 +1141,9 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "Le numérateur d'une fraction décimale est un nombre entier : combien de centièmes y a-t-il en tout ?"
+				"expectedErrorMessage": "Tu as additionné les numérateurs et les dénominateurs : on n'additionne que des fractions de même dénominateur. Écris d'abord $4$ en centièmes."
 			},
-			"answers": ["4{,}37"]
+			"answers": ["\\frac{41}{101}"]
 		},
 		{
 			"description": "F3 v6 : 6 + 7/100 = 607/100",
@@ -1082,10 +1155,10 @@
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["607"]
+			"answers": ["\\frac{607}{100}"]
 		},
 		{
-			"description": "F3 v6 : chiffres côte à côte (67)",
+			"description": "F3 v6 : chiffres côte à côte (67/100)",
 			"variationIndex": 6,
 			"variables": {
 				"a": "6",
@@ -1095,19 +1168,19 @@
 				"status": "incorrect",
 				"expectedErrorMessage": "Tu as écrit $6$ et $7$ côte à côte : $7$ centièmes s'écrit avec deux chiffres après la virgule, et $6$ unités, ce sont $600$ centièmes."
 			},
-			"answers": ["67"]
+			"answers": ["\\frac{67}{100}"]
 		},
 		{
-			"description": "F3 v6 : 18 + 5/100 = 1 805/100",
+			"description": "F3 v6 : 18 + 6/100 = 1 806/100, simplifiable mais juste",
 			"variationIndex": 6,
 			"variables": {
 				"a": "18",
-				"b": "5"
+				"b": "6"
 			},
 			"expected": {
 				"status": "correct"
 			},
-			"answers": ["1\\,805"]
+			"answers": ["\\frac{1\\,806}{100}"]
 		}
 	]
 }

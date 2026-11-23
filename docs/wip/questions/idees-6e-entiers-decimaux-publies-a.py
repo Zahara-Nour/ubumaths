@@ -22,11 +22,12 @@ Pièges du lot :
   sont justes, 4 et 5 sont des intrus, 2 et 3 justes ou intrus selon t2, t3 (2 à 4 justes). Une
   réponse calculée peut répéter l'indice 0 (`0;1;{{eval:2*t2}};{{eval:3*t3}}`).
 - Décimaux tirés en entiers (millièmes, centièmes) puis affichés par `;d`.
-- Fraction décimale (F3 v4, v6 ; F6) : PAS en une case. La contrainte « Fractions irréductibles »
-  (`reducedFractions`, réglée au niveau du modèle seulement, que ce script ne change pas) note
-  `unoptimal_form` toute fraction simplifiable : 28/100, 304/100, 436/100. D'où des cases
-  numérateur / dénominateur (`\\dfrac{?}{?}`, « le plus petit dénominateur possible ») ou le
-  dénominateur 100 donné (F3 v6).
+- Fraction décimale exigée (F3 v4, v6 ; F6) : une case, motif
+  `n:integer / w:eq(10)|eq(100)|eq(1000)`, toute fraction égale de cette forme est juste (28/100
+  comme 280/1 000). La contrainte « Fractions irréductibles » noterait « à améliorer » toute
+  fraction décimale simplifiable : elle est coupée (`reducedFractions: off`) dans les options de
+  a2ae7206 et d7781eed SEULEMENT (décision de David du 2026-11-23 ; le générateur de migrations
+  de contenu écrit les options). Les options sont la seule autre clé que le script change.
 - Une variable ne porte pas de mot (« millions » est lu comme un nom de variable) : les noms de
   rangs s'écrivent dans le texte par `{{if:}}` ; un message est limité à 500 caractères (F5).
 
@@ -39,6 +40,9 @@ import sys
 DOSSIER = sys.argv[1]
 
 PRIMAIRE = '\\textcolor{{{color:primary.0}}}'
+
+FRACTION_DECIMALE = {'pattern': 'n:integer / w:eq(10)|eq(100)|eq(1000)'}
+SANS_REDUCTION = {'reducedFractions': 'off'}
 
 # id court → (variations, specs) d'origine en prod (export du 2026-11-23)
 ORIGINE = {'4bcbbaae': (2, 6), '4d825d44': (2, 5), 'a2ae7206': (3, 19), '2c5bae8f': (6, 18),
@@ -90,10 +94,13 @@ def selon(v, valeurs, debut=0):
     return texte
 
 
-def ajouter(court, variations, specs):
+def ajouter(court, variations, specs, contraintes=None):
     chemin = os.path.join(DOSSIER, court + '.json')
     with open(chemin, encoding='utf-8') as f:
         m = json.load(f)
+    if contraintes:
+        # réglages d'origine gardés (spacesFromFourDigits), contraintes ajoutées
+        m['options']['constraints'].update(contraintes)
     nv, ns = ORIGINE[court]
     m['variations'] = m['variations'][:nv]
     m['testSpecs'] = m['testSpecs'][:ns]
@@ -345,8 +352,8 @@ F3_RANG_VIDE = variation(
 F3_PLURIEL = '{{if:p==2|centième|millième}}{{if:N>1|s|}}'
 
 F3_VERS_FRACTION = variation(
-    'Écris ce nombre sous la forme d\'une fraction décimale, avec le plus petit dénominateur '
-    'possible : $10$, $100$ ou $1000$.\n\n$${{x}}=\\dfrac{?}{?}$$',
+    'Écris ce nombre sous la forme d\'une fraction décimale : numérateur entier, dénominateur '
+    '$10$, $100$ ou $1000$ (pas d\'écriture à virgule).\n\n$${{x}}=?$$',
     [var('k', '0..2'), var('a', '1..30'), var('b', '1..9'), var('q', '1..9'),
      var('z0', 'eval:1-min(k,1)'), var('z2', 'eval:max(k-1,0)'), var('z1', 'eval:1-z0-z2'),
      var('p', 'eval:2+z2'),
@@ -354,27 +361,17 @@ F3_VERS_FRACTION = variation(
      var('M', 'eval:z0*q+z1*(10*a+q)+z2*(100*a+10*b+q)'),
      var('F', 'eval:z0*q+z1*q+z2*(100*b+q)'),
      var('x', 'eval:N/10^p;d')],
-    [
-        case('{{N}}', [
-            erreur('{{M}}',
-                   'Tu as oublié le zéro de ${{x}}$ : il a ${{p}}$ chiffres après la virgule, '
-                   'zéro compris, c\'est ${{N}}$ ' + F3_PLURIEL + '.', 'Zéro intérieur oublié'),
-            erreur('{{F}}',
-                   'Tu as oublié la partie entière : ${{x}}$, c\'est ${{N}}$ ' + F3_PLURIEL
-                   + ', pas seulement ${{F}}$.', 'Partie entière oubliée'),
-            erreur('{{x}}',
-                   'Le numérateur d\'une fraction décimale est un nombre entier : combien de '
-                   + F3_PLURIEL + ' y a-t-il dans ${{x}}$ ?', 'Virgule gardée'),
-        ]),
-        case('{{eval:10^p}}', [
-            erreur('{{eval:10^(p+1)}}',
-                   'Tu as mis un zéro de trop : ${{x}}$ a ${{p}}$ chiffres après la virgule, il '
-                   'faut ${{p}}$ zéros au dénominateur.', 'Un zéro de trop'),
-            erreur('{{eval:10^(p-1)}}',
-                   'Il manque un zéro : ${{x}}$ a ${{p}}$ chiffres après la virgule, zéro compris, '
-                   'il faut ${{p}}$ zéros au dénominateur.', 'Zéro manquant'),
-        ]),
-    ],
+    [case('\\frac{ {{N}} }{ {{eval:10^p}} }', [
+        erreur('\\frac{ {{M}} }{ {{eval:10^(p-1)}} }',
+               'Tu as oublié le zéro de ${{x}}$ : il a ${{p}}$ chiffres après la virgule, zéro '
+               'compris, c\'est ${{N}}$ ' + F3_PLURIEL + '.', 'Zéro intérieur oublié'),
+        erreur('\\frac{ {{N}} }{ {{eval:10^(p+1)}} }',
+               'Tu as mis un zéro de trop au dénominateur : ${{x}}$ a ${{p}}$ chiffres après la '
+               'virgule, il faut ${{p}}$ zéros.', 'Un zéro de trop'),
+        erreur('\\frac{ {{F}} }{ {{eval:10^p}} }',
+               'Tu as oublié la partie entière : ${{x}}$, c\'est ${{N}}$ ' + F3_PLURIEL + ', pas '
+               'seulement ${{F}}$.', 'Partie entière oubliée'),
+    ], FRACTION_DECIMALE)],
     [
         '${{x}}$ a ${{p}}$ chiffres après la virgule (le zéro compte) : c\'est ${{N}}$ '
         + F3_PLURIEL + '.',
@@ -417,21 +414,22 @@ F3_DIFFERENCE = variation(
 )
 
 F3_UNE_FRACTION = variation(
-    'Écris ce nombre sous la forme d\'une seule fraction décimale.\n\n'
-    '$${{a}}+\\dfrac{ {{b}} }{100}=\\dfrac{?}{100}$$',
+    'Écris ce nombre sous la forme d\'une seule fraction décimale : numérateur entier, '
+    'dénominateur $10$, $100$ ou $1000$.\n\n$${{a}}+\\dfrac{ {{b}} }{100}=?$$',
     [var('a', '1..20'), var('b', '1..99'), var('J', 'eval:a*10^(1+min(floor(b/10),1))+b')],
-    [case('{{eval:100*a+b}}', [
-        erreur('{{eval:a+b}}',
+    [case('\\frac{ {{eval:100*a+b}} }{100}', [
+        erreur('\\frac{ {{eval:a+b}} }{100}',
                'Tu as ajouté ${{a}}$ au numérateur comme si c\'étaient des centièmes : ${{a}}$ '
                'unités, ce sont ${{eval:100*a}}$ centièmes.', 'Unités comptées en centièmes'),
-        erreur('{{J}}',
+        erreur('\\frac{ {{J}} }{100}',
                'Tu as écrit ${{a}}$ et ${{b}}$ côte à côte : ${{b}}$ centièmes s\'écrit avec deux '
                'chiffres après la virgule, et ${{a}}$ unités, ce sont ${{eval:100*a}}$ '
                'centièmes.', 'Chiffres côte à côte'),
-        erreur('{{eval:a+b/100;d}}',
-               'Le numérateur d\'une fraction décimale est un nombre entier : combien de centièmes '
-               'y a-t-il en tout ?', 'Virgule au numérateur'),
-    ])],
+        erreur('\\frac{ {{eval:a+b}} }{101}',
+               'Tu as additionné les numérateurs et les dénominateurs : on n\'additionne que des '
+               'fractions de même dénominateur. Écris d\'abord ${{a}}$ en centièmes.',
+               'Numérateurs et dénominateurs additionnés'),
+    ], FRACTION_DECIMALE)],
     [
         '${{a}}$ unités, ce sont ${{eval:100*a}}$ centièmes : ${{a}}=\\dfrac{ {{eval:100*a}} '
         '}{100}$.',
@@ -469,34 +467,37 @@ SPECS_A2 = [
          {'s': '1', 'o': '1', 'a': '12', 'b': '5', 'c': '3'}, 'incorrect', ['12{,}53'],
          'Tu as écrit $5$ et $3$ côte à côte : $3$ millièmes s\'écrit au troisième rang après la '
          'virgule, et le rang des dixièmes reste vide : on y écrit $0$.'),
-    # v4 : décimal → fraction décimale (deux cases)
-    spec('F3 v4 : 3,07 = 307/100', 1, E307, 'correct', ['307', '100']),
-    spec('F3 v4 : zéro intérieur oublié (37)', 1, E307, 'incorrect', ['37', '100'],
+    # v4 : décimal → fraction décimale (une case)
+    spec('F3 v4 : 3,07 = 307/100', 1, E307, 'correct', ['\\frac{307}{100}']),
+    spec('F3 v4 : 3 070/1 000, juste aussi', 1, E307, 'correct', ['\\frac{3\\,070}{1\\,000}']),
+    spec('F3 v4 : 3,07 en écriture décimale refusé', 1, E307, 'bad_form', ['3{,}07'],
+         violations=['form']),
+    spec('F3 v4 : entier + fraction refusé', 1, E307, 'bad_form', ['3+\\frac{7}{100}'],
+         violations=['form']),
+    spec('F3 v4 : dénominateur non décimal refusé (307/100 = 614/200)', 1, E307, 'bad_form',
+         ['\\frac{614}{200}'], violations=['form']),
+    spec('F3 v4 : zéro intérieur oublié (37/10)', 1, E307, 'incorrect', ['\\frac{37}{10}'],
          'Tu as oublié le zéro de $3.07$ : il a $2$ chiffres après la virgule, zéro compris, '
          'c\'est $307$ centièmes.'),
-    spec('F3 v4 : partie entière oubliée (7)', 1, E307, 'incorrect', ['7', '100'],
+    spec('F3 v4 : un zéro de trop (307/1 000)', 1, E307, 'incorrect', ['\\frac{307}{1\\,000}'],
+         'Tu as mis un zéro de trop au dénominateur : $3.07$ a $2$ chiffres après la virgule, il '
+         'faut $2$ zéros.'),
+    spec('F3 v4 : partie entière oubliée (7/100)', 1, E307, 'incorrect', ['\\frac{7}{100}'],
          'Tu as oublié la partie entière : $3.07$, c\'est $307$ centièmes, pas seulement $7$.'),
-    spec('F3 v4 : virgule gardée (3,07)', 1, E307, 'incorrect', ['3{,}07', '100'],
-         'Le numérateur d\'une fraction décimale est un nombre entier : combien de centièmes y '
-         'a-t-il dans $3.07$ ?'),
-    spec('F3 v4 : un zéro de trop (1 000)', 1, E307, 'incorrect', ['307', '1\\,000'],
-         'Tu as mis un zéro de trop : $3.07$ a $2$ chiffres après la virgule, il faut $2$ zéros '
-         'au dénominateur.'),
-    spec('F3 v4 : zéro manquant (10)', 1, E307, 'incorrect', ['307', '10'],
-         'Il manque un zéro : $3.07$ a $2$ chiffres après la virgule, zéro compris, il faut $2$ '
-         'zéros au dénominateur.'),
     spec('F3 v4 : 0,07 = 7/100', 1, {'k': '0', 'a': '3', 'b': '1', 'q': '7'}, 'correct',
-         ['7', '100']),
-    spec('F3 v4 : 0,07, zéro manquant (7/10)', 1, {'k': '0', 'a': '3', 'b': '1', 'q': '7'},
-         'incorrect', ['7', '10'],
-         'Il manque un zéro : $0.07$ a $2$ chiffres après la virgule, zéro compris, il faut $2$ '
-         'zéros au dénominateur.'),
+         ['\\frac{7}{100}']),
+    spec('F3 v4 : 0,07, zéro oublié (7/10)', 1, {'k': '0', 'a': '3', 'b': '1', 'q': '7'},
+         'incorrect', ['\\frac{7}{10}'],
+         'Tu as oublié le zéro de $0.07$ : il a $2$ chiffres après la virgule, zéro compris, '
+         'c\'est $7$ centièmes.'),
+    spec('F3 v4 : 3,04 = 304/100, simplifiable mais juste', 1,
+         {'k': '1', 'a': '3', 'b': '1', 'q': '4'}, 'correct', ['\\frac{304}{100}']),
     spec('F3 v4 : 12,405 = 12 405/1 000', 1, {'k': '2', 'a': '12', 'b': '4', 'q': '5'},
-         'correct', ['12\\,405', '1\\,000']),
+         'correct', ['\\frac{12\\,405}{1\\,000}']),
     spec('F3 v4 : 12405 sans espace', 1, {'k': '2', 'a': '12', 'b': '4', 'q': '5'},
-         'unoptimal_form', ['12405', '1\\,000'], violations=['spaces']),
-    spec('F3 v4 : 12,405, zéro oublié (1 245)', 1, {'k': '2', 'a': '12', 'b': '4', 'q': '5'},
-         'incorrect', ['1\\,245', '1\\,000'],
+         'unoptimal_form', ['\\frac{12405}{1\\,000}'], violations=['spaces']),
+    spec('F3 v4 : 12,405, zéro oublié (1 245/100)', 1, {'k': '2', 'a': '12', 'b': '4', 'q': '5'},
+         'incorrect', ['\\frac{1\\,245}{100}'],
          'Tu as oublié le zéro de $12.405$ : il a $3$ chiffres après la virgule, zéro compris, '
          'c\'est $12405$ millièmes.'),
     # v5 : différence avec emprunt
@@ -516,21 +517,31 @@ SPECS_A2 = [
     spec('F3 v5 : centièmes, emprunt oublié (12,95)', 2,
          {'p': '2', 'a': '12', 'b': '4', 'c': '9'}, 'incorrect', ['12{,}95'],
          'Tu as pris $1$ unité pour faire $104 - 9$, mais tu ne l\'as pas enlevée à $12$.'),
-    # v6 : une seule fraction décimale (dénominateur 100 donné)
-    spec('F3 v6 : 4 + 37/100 = 437/100', 3, {'a': '4', 'b': '37'}, 'correct', ['437']),
-    spec('F3 v6 : unités comptées en centièmes (41)', 3, {'a': '4', 'b': '37'}, 'incorrect',
-         ['41'],
+    # v6 : une seule fraction décimale (une case)
+    spec('F3 v6 : 4 + 37/100 = 437/100', 3, {'a': '4', 'b': '37'}, 'correct',
+         ['\\frac{437}{100}']),
+    spec('F3 v6 : 4 370/1 000, juste aussi', 3, {'a': '4', 'b': '37'}, 'correct',
+         ['\\frac{4\\,370}{1\\,000}']),
+    spec('F3 v6 : écriture décimale refusée', 3, {'a': '4', 'b': '37'}, 'bad_form', ['4{,}37'],
+         violations=['form']),
+    spec('F3 v6 : somme recopiée refusée', 3, {'a': '4', 'b': '37'}, 'bad_form',
+         ['4+\\frac{37}{100}'], violations=['form']),
+    spec('F3 v6 : unités comptées en centièmes (41/100)', 3, {'a': '4', 'b': '37'}, 'incorrect',
+         ['\\frac{41}{100}'],
          'Tu as ajouté $4$ au numérateur comme si c\'étaient des centièmes : $4$ unités, ce sont '
          '$400$ centièmes.'),
-    spec('F3 v6 : virgule au numérateur (4,37)', 3, {'a': '4', 'b': '37'}, 'incorrect',
-         ['4{,}37'],
-         'Le numérateur d\'une fraction décimale est un nombre entier : combien de centièmes y '
-         'a-t-il en tout ?'),
-    spec('F3 v6 : 6 + 7/100 = 607/100', 3, {'a': '6', 'b': '7'}, 'correct', ['607']),
-    spec('F3 v6 : chiffres côte à côte (67)', 3, {'a': '6', 'b': '7'}, 'incorrect', ['67'],
+    spec('F3 v6 : numérateurs et dénominateurs additionnés (41/101)', 3, {'a': '4', 'b': '37'},
+         'incorrect', ['\\frac{41}{101}'],
+         'Tu as additionné les numérateurs et les dénominateurs : on n\'additionne que des '
+         'fractions de même dénominateur. Écris d\'abord $4$ en centièmes.'),
+    spec('F3 v6 : 6 + 7/100 = 607/100', 3, {'a': '6', 'b': '7'}, 'correct',
+         ['\\frac{607}{100}']),
+    spec('F3 v6 : chiffres côte à côte (67/100)', 3, {'a': '6', 'b': '7'}, 'incorrect',
+         ['\\frac{67}{100}'],
          'Tu as écrit $6$ et $7$ côte à côte : $7$ centièmes s\'écrit avec deux chiffres après la '
          'virgule, et $6$ unités, ce sont $600$ centièmes.'),
-    spec('F3 v6 : 18 + 5/100 = 1 805/100', 3, {'a': '18', 'b': '5'}, 'correct', ['1\\,805']),
+    spec('F3 v6 : 18 + 6/100 = 1 806/100, simplifiable mais juste', 3, {'a': '18', 'b': '6'},
+         'correct', ['\\frac{1\\,806}{100}']),
 ]
 
 
@@ -719,38 +730,30 @@ SPECS_8D = [
 # =============================================================================================
 # d7781eed — 6-104, reconnaître un nombre décimal. F6 : « Montre que a/b est un nombre décimal »,
 # b parmi 2, 4, 5, 20, 25, 50, 200, 250, 500 ; a premier avec 10 (fraction irréductible).
-# D = plus petit dénominateur 10, 100 ou 1 000 multiple de b, f = D/b. Deux cases (numérateur,
-# dénominateur) : une fraction décimale tapée en une case est toujours simplifiable (f divise D),
-# et la contrainte « Fractions irréductibles » du modèle la noterait « à améliorer ».
+# D = plus petit dénominateur 10, 100 ou 1 000 multiple de b, f = D/b ; toute fraction égale de
+# dénominateur 10, 100 ou 1 000 est juste. nd = nombre de chiffres de b.
 # =============================================================================================
 
 F6 = variation(
     'Montre que $\\dfrac{ {{a}} }{ {{b}} }$ est un nombre décimal : écris-le sous la forme d\'une '
-    'fraction décimale, avec le plus petit dénominateur possible : $10$, $100$ ou $1000$.\n\n'
-    '$$\\dfrac{ {{a}} }{ {{b}} }=\\dfrac{?}{?}$$',
+    'fraction de numérateur entier et de dénominateur $10$, $100$ ou $1000$.\n\n'
+    '$$\\dfrac{ {{a}} }{ {{b}} }=?$$',
     [var('b', '2|4|5|20|25|50|200|250|500'), var('a', '1..49'),
      var('q', 'eval:1+min(mod(10,b),1)+min(mod(100,b),1)'), var('D', 'eval:10^q'),
-     var('f', 'eval:D/b')],
-    [
-        case('{{eval:a*f}}', [
-            erreur('{{eval:a+D-b}}',
-                   'Tu as ajouté le même nombre en haut et en bas : cela change la fraction. Il '
-                   'faut multiplier le numérateur et le dénominateur par le même nombre.',
-                   'Même nombre ajouté'),
-            erreur('{{a}}',
-                   'Tu as changé le dénominateur sans changer le numérateur : si tu multiplies '
-                   '${{b}}$ par ${{f}}$, multiplie aussi ${{a}}$ par ${{f}}$.',
-                   'Numérateur inchangé'),
-            erreur('{{f}}',
-                   'Tu as écrit le nombre par lequel on multiplie : le numérateur, c\'est ${{a}}$ '
-                   'multiplié par ce nombre.', 'Multiplicateur au numérateur'),
-        ]),
-        case('{{D}}', [
-            erreur('{{eval:10*D}}',
-                   'Ce n\'est pas le plus petit dénominateur possible : ${{b}}$ divise déjà '
-                   '${{D}}$.', 'Pas le plus petit dénominateur'),
-        ]),
-    ],
+     var('f', 'eval:D/b'), var('nd', 'eval:1+min(floor(b/10),1)+min(floor(b/100),1)')],
+    [case('\\frac{ {{eval:a*f}} }{ {{D}} }', [
+        erreur('\\frac{ {{eval:a+D-b}} }{ {{D}} }',
+               'Tu as ajouté le même nombre en haut et en bas : cela change la fraction. Il faut '
+               'multiplier le numérateur et le dénominateur par le même nombre.',
+               'Même nombre ajouté'),
+        erreur('\\frac{ {{a}} }{ {{D}} }',
+               'Tu as changé le dénominateur sans changer le numérateur : si tu multiplies '
+               '${{b}}$ par ${{f}}$, multiplie aussi ${{a}}$ par ${{f}}$.',
+               'Numérateur inchangé'),
+        erreur('{{eval:a+b/10^nd;d}}',
+               'Une fraction n\'est pas un nombre à virgule : $\\dfrac{ {{a}} }{ {{b}} }$, c\'est '
+               '${{a}} \\div {{b}}$.', 'Barre de fraction lue comme une virgule'),
+    ], FRACTION_DECIMALE)],
     [
         '${{b}} \\times {{f}} = {{D}}$ : on multiplie le numérateur et le dénominateur par '
         '${{f}}$.',
@@ -764,30 +767,36 @@ F6 = variation(
 )
 
 SPECS_D7 = [
-    spec('F6 : 7/25 = 28/100', 0, {'b': '25', 'a': '7'}, 'correct', ['28', '100']),
-    spec('F6 : même nombre ajouté (82)', 0, {'b': '25', 'a': '7'}, 'incorrect', ['82', '100'],
+    spec('F6 : 7/25 = 28/100', 0, {'b': '25', 'a': '7'}, 'correct', ['\\frac{28}{100}']),
+    spec('F6 : 7/25 = 280/1 000, juste aussi', 0, {'b': '25', 'a': '7'}, 'correct',
+         ['\\frac{280}{1\\,000}']),
+    spec('F6 : 7/25 recopié refusé (dénominateur non décimal)', 0, {'b': '25', 'a': '7'},
+         'bad_form', ['\\frac{7}{25}'], violations=['form']),
+    spec('F6 : écriture décimale refusée', 0, {'b': '25', 'a': '7'}, 'bad_form', ['0{,}28'],
+         violations=['form']),
+    spec('F6 : même nombre ajouté (82/100)', 0, {'b': '25', 'a': '7'}, 'incorrect',
+         ['\\frac{82}{100}'],
          'Tu as ajouté le même nombre en haut et en bas : cela change la fraction. Il faut '
          'multiplier le numérateur et le dénominateur par le même nombre.'),
-    spec('F6 : numérateur inchangé (7)', 0, {'b': '25', 'a': '7'}, 'incorrect', ['7', '100'],
+    spec('F6 : numérateur inchangé (7/100)', 0, {'b': '25', 'a': '7'}, 'incorrect',
+         ['\\frac{7}{100}'],
          'Tu as changé le dénominateur sans changer le numérateur : si tu multiplies $25$ par '
          '$4$, multiplie aussi $7$ par $4$.'),
-    spec('F6 : multiplicateur au numérateur (4)', 0, {'b': '25', 'a': '7'}, 'incorrect',
-         ['4', '100'],
-         'Tu as écrit le nombre par lequel on multiplie : le numérateur, c\'est $7$ multiplié par '
-         'ce nombre.'),
-    spec('F6 : 280/1 000, pas le plus petit dénominateur', 0, {'b': '25', 'a': '7'},
-         'incorrect', ['280', '1\\,000'],
-         'Ce n\'est pas le plus petit dénominateur possible : $25$ divise déjà $100$.'),
-    spec('F6 : 3/2 = 15/10', 0, {'b': '2', 'a': '3'}, 'correct', ['15', '10']),
-    spec('F6 : 9/250 = 36/1 000', 0, {'b': '250', 'a': '9'}, 'correct', ['36', '1\\,000']),
-    spec('F6 : 1000 sans espace', 0, {'b': '250', 'a': '9'}, 'unoptimal_form', ['36', '1000'],
-         violations=['spaces']),
+    spec('F6 : barre lue comme une virgule (7,25)', 0, {'b': '25', 'a': '7'}, 'incorrect',
+         ['7{,}25'],
+         'Une fraction n\'est pas un nombre à virgule : $\\dfrac{7}{25}$, c\'est $7 \\div 25$.'),
+    spec('F6 : 3/2 = 15/10', 0, {'b': '2', 'a': '3'}, 'correct', ['\\frac{15}{10}']),
+    spec('F6 : 9/250 = 36/1 000', 0, {'b': '250', 'a': '9'}, 'correct',
+         ['\\frac{36}{1\\,000}']),
+    spec('F6 : 1000 sans espace', 0, {'b': '250', 'a': '9'}, 'unoptimal_form',
+         ['\\frac{36}{1000}'], violations=['spaces']),
 ]
 
 
 ajouter('4bcbbaae', [F1_DECIMAL, F1_GRAND], SPECS_4B)
 ajouter('4d825d44', [F2], SPECS_4D)
-ajouter('a2ae7206', [F3_RANG_VIDE, F3_VERS_FRACTION, F3_DIFFERENCE, F3_UNE_FRACTION], SPECS_A2)
+ajouter('a2ae7206', [F3_RANG_VIDE, F3_VERS_FRACTION, F3_DIFFERENCE, F3_UNE_FRACTION], SPECS_A2,
+        SANS_REDUCTION)
 ajouter('2c5bae8f', [F4_PLUS_GRANDE, F4_VERS_UNITES], SPECS_2C)
 ajouter('8d7edbde', [F5], SPECS_8D)
-ajouter('d7781eed', [F6], SPECS_D7)
+ajouter('d7781eed', [F6], SPECS_D7, SANS_REDUCTION)
