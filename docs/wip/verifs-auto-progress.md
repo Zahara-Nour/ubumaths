@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, lot 10 rejoué sur le code du jour, PR à ouvrir._
+_Mis à jour le 2026-11-23, après #3031._
 
-- **État** : branche à jour de `main` (merge, sans push forcé). Suite `test:verifs` : 144 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1620), #1369 (`cos2π`), et #2731 (carnet, instable, autre chantier). 29 captures refaites et jugées par la session (règle du 2026-11-23, plus de page à cocher) : 27 lignes sorties de `verifications-manuelles.md` (418 → 391).
-- **Prochaine action** : merger la PR du lot 10 ; présenter à David les écarts un par un (liste § « Lot 10 rejoué ») ; puis proposer le découpage de la suite (R6, R13, R12, tri des 391 lignes) et attendre sa validation avant de coder.
-- **En attente de David** : les écarts du lot 10 ; l'ordre du découpage de la suite.
-- **Pièges en cours** : serveur de dev sur 5181 ; deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` à chacun ; étapes de « Comment ? » chargées à la demande (`p.chargement`) ; captures d'une ligne de console longue → `shootLine` ; `.captures/` garde les vieilles fiches (champ `run`) ; une ligne de la liste peut être périmée par une décision postérieure : chercher la décision avant de crier à l'écart ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-auto`, `test/verifs-auto-lot-10`.
+- **État** : lot 10 mergé (#3031) ; liste à 391 lignes non cochées (418 le matin). Rouges connus de `test:verifs` : `each_key_duplicate` (#1674, #1703, #1620), #1369 ; #2731 (carnet) instable.
+- **Prochaine action** : présenter à David les 10 écarts du § « Lot 10 rejoué », un par un ; puis le découpage de la suite (R6, R13, R12, tri des 391 lignes) — ne rien coder avant sa validation de l'ordre.
+- **En attente de David** : les écarts ; l'ordre du découpage.
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; étapes de « Comment ? » chargées à la demande ; ligne de console longue → `shootLine` ; une ligne de la liste peut être périmée par une décision postérieure : chercher la décision avant de crier à l'écart ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #3031).
 
 ## Phase 0 (validée le 2026-10-25)
 
