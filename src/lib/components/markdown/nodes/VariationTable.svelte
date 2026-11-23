@@ -41,6 +41,7 @@
 		variationRowForDisplay,
 		withImplicitEndpoints
 	} from '#lib/ubumark/parser/variation-table-parser.ts';
+	import { variationTableTitle } from '#lib/ubumark/utils/variation-table-title.ts';
 
 	interface Props {
 		node: VariationTableNode;
@@ -57,6 +58,9 @@
 	}
 
 	let { node, class: className = '', hiddenCells = 'blank', cell, answers }: Props = $props();
+
+	/** La légende lue par les lecteurs d'écran : elle nomme la fonction (E15) */
+	const title = $derived(variationTableTitle(node));
 
 	/** Cellules cachées, par ligne (`'domain'` ou rang dans `rows`), clé et côté d'une limite */
 	let hiddenByKey = $derived(
@@ -370,8 +374,8 @@
 	data-deborde-droite={hiddenRight ? '' : undefined}
 >
 	<div class="vt-defilement" data-vt-defilement {@attach watchOverflow}>
-		<table class="vt-grid" aria-label="Tableau de variations de {node.variable}">
-			<caption class="sr-only">Tableau de variations de la fonction {node.variable}</caption>
+		<table class="vt-grid" aria-label={title}>
+			<caption class="sr-only">{title}</caption>
 			<!-- Header row with variable and domain points -->
 			<thead class="vt-header">
 				<tr>
