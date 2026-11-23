@@ -5,13 +5,15 @@ skill `idees-rubrique`. Relevé : [idees-3e-arithmetique-releve.md](idees-3e-ari
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, Q3 tranchée, PR de rangement en cours._
+_Mis à jour le 2026-11-23, après #3041._
 
-- **État** : 6 brouillons en prod (créés par David) ; branche prête (id commités, migrations de
-  rangement et de contenu générées, tests d'intégration verts) · **Prochaine action** : ouvrir la
-  PR, merger, `db:migrate` (4 conditions), puis relecture dans `/dev/modeles?noeud=` ·
-  **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
-  `ubumaths-wt-idees-3e-arithmetique`, `feat/idees-3e-arithmetique-rangement`.
+- **État** : #3041 mergée, `db:migrate` fait et vérifié en prod : 6 brouillons rangés (F1 tagué
+  3-010, F3 à F7 sans tag), 90dca27a à 4 variations · **Prochaine action** : lire les verdicts « À
+  revoir » de David (`question_template_reviews`), corriger, puis `publier-lot.ts` en simulation ·
+  **En attente de David** : relecture dans `/dev/modeles` (liens dans l'historique) ; option de
+  90dca27a (fraction non simplifiée refusée ?) quand `migration-contenu.ts` saura écrire les options
+  (branche `feat/migration-contenu-options` d'une autre session) · **Pièges en cours** : aucun ·
+  **Worktree / branche** : aucun (retiré) ; nouveau worktree sur `origin/main` pour la suite.
 
 ## Historique
 
@@ -82,3 +84,14 @@ _Mis à jour le 2026-11-23, Q3 tranchée, PR de rangement en cours._
 - David suit mes recommandations : **Q3 oui** (F1 reste un modèle neuf, 77ab770d libéré dans le
   tableau, commit direct sur `main`) ; sous-notions gardées telles que ci-dessus (F7 en division
   euclidienne des Entiers).
+
+### 2026-11-23 — #3041 mergée, migrations en prod
+
+- #3041 mergée ; `migration list --linked` : seules nos 2 migrations en attente ; `db:migrate` fait.
+  Vérifié en prod : nœuds et tags comme prévu, 90dca27a publié à 4 variations.
+- Relecture (niveau 3) : `/dev/modeles?noeud=3~d8014b42-3550-41bb-8998-eb3140546bbc` (F1),
+  `3~476ce05e-94d1-496f-9d16-d1ec12ce562b` (F3), `3~429a84a5-9dfa-48df-80a1-0849005916e7` (F4),
+  `3~28de56e3-64d8-4a43-97cd-a070b551fbe1` (F5, F6), `3~52e22cd5-41f6-42fc-b5b7-024e84a89e9e` (F7),
+  `3~3e2f28ab-8ab7-469a-bb82-bfb19b4ed4f3` (90dca27a).
+- Une autre session (`idees-6e-entiers-decimaux`) rend `migration-contenu.ts` capable d'écrire les
+  options d'un publié : de quoi refuser une fraction non simplifiée dans 90dca27a, si David le veut.
