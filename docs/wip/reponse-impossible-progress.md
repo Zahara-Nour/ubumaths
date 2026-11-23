@@ -8,13 +8,16 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après le deploy:prod v0.103.0._
+_Mis à jour le 2026-11-23, PR de la seconde partie (Q6) ouverte._
 
-- **État** : outil n° 51 (#3026) EN PROD (v0.103.0) · **Prochaine action** : seconde PR (Q6 :
-  variations Δ < 0 de « Factoriser un trinôme à l'aide de ses racines », 604f83b7) ; nouveau
-  worktree · **En attente de David** : rien · **Pièges en cours** : `create-questions.ts` vise la
-  PROD par défaut (lit `.env`) → `set -a; source ./.env.local; set +a` avant ; modèle d'essai
-  local `632e3012` · **Worktree / branche** : aucun.
+- **État** : outil n° 51 en prod (v0.103.0) ; 3 variations « si c'est possible » ajoutées à
+  604f83b7 dans `scripts/questions/1spe-factoriser-impossible/` (lot `factoriser-impossible-1spe`
+  de `update-published-questions.ts`), PR ouverte · **Prochaine action** : merge, puis David écrit
+  en prod (commande `!` du lot), puis vérification par le MCP en lecture, puis clôture du chantier
+  · **En attente de David** : la commande d'écriture en prod · **Pièges en cours** : un `{{if}}`
+  dans un motif de `requiredForm` sort parenthésé (et parfois « (if:m==2) ») : inutilisable ·
+  **Worktree / branche** : `ubumaths-wt-reponse-impossible-factoriser`,
+  `feat/reponse-impossible-factoriser`.
 
 ## Historique
 
@@ -118,3 +121,25 @@ Questions (recommandation entre parenthèses) :
 ### 2026-11-23 — en prod
 
 - David : « commence par déployer ». `pnpm deploy:prod` → v0.103.0 en ligne, 54 chemins répondent.
+
+### 2026-11-23 — seconde PR (Q6) : phase 0
+
+Worktree `ubumaths-wt-reponse-impossible-factoriser`, branche `feat/reponse-impossible-factoriser`.
+Instantané de 604f83b7 lu en prod = celui de `idees-1re-second-degre-publies` (8 variations).
+
+- Nominal : « Factorise, si c'est possible, P(x) = x² − 4x + 7. » Bouton « pas factorisable » ;
+  clic → juste ; correction : Δ < 0, pas de racine, pas factorisable. Tirage Δ > 0 de la même
+  variation : clic → faux, correction (x − 2)(x − 3). Expression tapée quand Δ < 0 → faux.
+- R1 bouton sur les nouvelles variations seulement (« si c'est possible ») · R2 deux variations :
+  a = 1 (Δ < 0 ou Δ > 0, une chance sur deux) ; a = ±2, ±3 (Δ < 0, Δ = 0, Δ > 0, un tiers chacun)
+  · R3 texte « pas factorisable » · R4 question d'accès : personne.
+- David : « je valide ».
+
+### 2026-11-23 — seconde PR : codée
+
+- R2 changé à l'écriture, faute d'outil : un `{{if}}` dans le motif de `requiredForm` n'est pas
+  résolu proprement (motif parenthésé, cas « (if:m==2) »), donc une seule variation ne peut pas
+  exiger `a(x − x₁)(x − x₂)` ET `a(x − x₀)²`. La variation a = ±2, ±3 est coupée en deux, chacune
+  avec deux issues (le bouton ne donne toujours pas la réponse) : V9 Δ < 0 ou Δ > 0 ; V10 Δ < 0 ou
+  Δ = 0. V8 (a = 1) inchangée. 'product' écarté : il jugerait juste 2(x² − 2x − 3).
+- `pnpm question:specs` : 54 specs vertes (17 neuves), 3 300 tirages, verdict importable.
