@@ -1,4 +1,9 @@
 {
+	"id": "d6eaa761-e8ff-4c08-a8c8-c3de1c4bbd83",
+	"rangement": {
+		"noeud": "Fonctions > Limites de fonctions > limite en un point",
+		"point": "TSPE-415"
+	},
 	"title": "Compléter les limites dans le tableau de variations d'une fonction homographique",
 	"description": "Les quatre limites de k/(x − α) ou de (ax + b)/(cx + d) dans son tableau de variations : en ±∞ et de part et d'autre de la valeur interdite (pièges : borne recopiée, termes constants, signe du dénominateur, ∞ sans signe)",
 	"grades": ["T_SPE"],
