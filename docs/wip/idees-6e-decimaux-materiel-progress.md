@@ -5,18 +5,17 @@ clos le 2026-11-23. Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, PR ouverte._
+_Mis à jour le 2026-11-23, après #3024._
 
-- **État** : brouillon 111ba9c5 en prod (ancienne version) ; migration de rangement (6-102,
-  « Décimaux : numération > décomposition », niveau 10) vérifiée ; revues faites (`security-auditor` :
-  rien de bloquant ; `code-reviewer` : erreurs prévues égales à la réponse ou entre elles, corrigé
-  par les conditions `a != m`, `b != m`, 0 collision sur les 4 032 tirages) · **Prochaine action** :
-  CI, merge, `db:migrate` ; David met à jour le brouillon en prod (`create-questions --publier
---mettre-a-jour`), puis le relit dans `/dev/modeles?point=6-102` ; `publier-lot.ts` · **En attente
-  de David** : la mise à jour du brouillon, puis la relecture.
-- **Pièges en cours** : lettre `e` réservée (Euler) ; le dessin ne porte aucune valeur, l'énoncé fixe
-  gros cube = 1 unité ; `question:specs` ne voit pas une erreur prévue égale à la réponse.
-- **Worktree / branche** : `ubumaths-wt-idees-6e-decimaux-materiel` / `feat/idees-6e-decimaux-materiel`.
+- **État** : #3024 mergée, migration de rangement jouée en prod et vérifiée (111ba9c5 en brouillon,
+  version corrigée, sur « Décimaux : numération > décomposition », tag 6-102, niveau 10, `updated_at`
+  préservé, triggers actifs) · **Prochaine action** : relecture par David dans
+  `/dev/modeles?point=6-102`, puis `publier-lot.ts --dir scripts/questions/idees-6e-decimaux-materiel`
+  (David, `--publier`) ; ensuite ligne 6N2 du tableau à « publiée », journal archivé · **En attente de
+  David** : la relecture.
+- **Pièges en cours** : lettre `e` réservée (Euler) ; `question:specs` ne voit pas une erreur prévue
+  égale à la réponse (énumérer les tirages).
+- **Worktree / branche** : aucun (supprimés après #3024).
 
 ## Historique
 
@@ -31,3 +30,4 @@ _Mis à jour le 2026-11-23, PR ouverte._
 - 2026-11-23 : revues. Erreurs prévues de la variation b confondues (avec la réponse si plaques =
   petits cubes sans barre ; entre elles si barres = petits cubes sans plaque) : conditions ajoutées,
   énumération complète sans collision.
+- 2026-11-23 : #3024 mergée ; `db:migrate` (seule migration en attente), état vérifié en prod.
