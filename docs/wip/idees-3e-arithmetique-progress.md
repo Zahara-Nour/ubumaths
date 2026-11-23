@@ -5,20 +5,16 @@ skill `idees-rubrique`. Relevé : [idees-3e-arithmetique-releve.md](idees-3e-ari
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, phase 0 validée, aucune PR._
+_Mis à jour le 2026-11-23, lot écrit, PR des fichiers à ouvrir._
 
-- **État** : phase 0 validée par David (« je valide tout ») : F1 à F8 oui, Q1 oui (F4 à F7 sans
-  point), Q2 oui (F3 sans point, point de 3e des critères à noter pour le référentiel) ; rien
-  d'écrit encore · **Prochaine action** : écrire le lot dans le worktree, sur le gabarit de
-  `docs/wip/questions/idees-6e-decimaux-neufs.py` et `-publies.py` : scripts
-  `idees-3e-arithmetique-neufs.py` (F3 à F7) et `-publies.py` (F1 sur 77ab770d, F2 sur 90dca27a) ·
-  **En attente de David** : rien · **Pièges en cours** : F1 = case libre jugée comme le brouillon
-  629c231b (options `constraints: {spaces: off, products: off}` ; `8 × 45`, `2³ × 9 × 5` et `360`
-  → `bad_form` contrainte `form` ; vérifier d'où vient ce jugement avant d'écrire) ; F4 « donner un
-  diviseur » = règle `divisor` + `range`, `rulesSuffice` (comme b7304fcb) ; F3 « cocher » = choix
-  `plusieurs: oui` ; nombres ⩾ 1 000 : espaces · **Worktree / branche** :
-  `../ubumaths-wt-idees-3e-arithmetique`, branche `docs/idees-3e-arithmetique` vide, à recréer en
-  `feat/idees-3e-arithmetique` sur `origin/main`.
+- **État** : lot écrit et vert (`question:specs`, `create-questions` en simulation, aperçu local
+  vu) : 6 modèles neufs (F1, F3 à F7, 16 variations) + 3 variations de 90dca27a (F2) · **Prochaine
+  action** : PR des fichiers, puis David lance `create-questions --publier` (neufs) ; migrations
+  de rangement (F1 → 3-010 ; F3 à F7 sans point) et de contenu (90dca27a) · **En attente de
+  David** : Q3 (F1 en modèle neuf au lieu de 77ab770d, puissances exigées) · **Pièges en cours** :
+  réservation de 77ab770d à lever si Q3 = oui ; id locaux retirés des fichiers après l'essai
+  local · **Worktree / branche** : `../ubumaths-wt-idees-3e-arithmetique`,
+  `feat/idees-3e-arithmetique`.
 
 ## Historique
 
@@ -51,3 +47,25 @@ _Mis à jour le 2026-11-23, phase 0 validée, aucune PR._
   en 3e est à signaler au chantier du référentiel.
 - Modèles publiés réservés au tableau : 77ab770d (F1), 90dca27a (F2).
 - Lot attendu : 5 modèles neufs (15 variations), 5 variations de 2 modèles publiés.
+
+### 2026-11-23 — lot écrit
+
+- Scripts : `docs/wip/questions/idees-3e-arithmetique-neufs.py` (→ `scripts/questions/idees-3e-arithmetique-neufs/`)
+  et `-publies.py` (→ `scripts/questions/idees-3e-arithmetique-publies/90dca27a.json`, export de prod).
+- Neufs : F1 décomposition sans aide (2 var., 16 specs), F3 chiffre manquant (4 var., 16), F4 nombre
+  premier (3 var., 17), F5 partage en lots (3 var., 10), F6 engrenages (3 var., 11), F7 atteindre un
+  multiple (2 var., 8). Publié : 90dca27a + 3 variations (13 specs). Tout vert ; 6 brouillons créés
+  dans la base LOCALE et vus dans l'aperçu admin (`pnpm voir`), id locaux retirés des fichiers.
+- **Écart à la phase 0, question Q3 à David** : F1 devait s'ajouter à 77ab770d. Sans `products: off`,
+  la bonne réponse `2^3 × 3^2 × 5` est jugée « produit à calculer » (½ point) selon l'ordre des
+  facteurs (`5 × 3^2 × 2^3` passe) ; or les options d'un modèle publié sont figées par
+  `migration-contenu.ts`. F1 est donc un modèle neuf (point visé 3-010), réglé `products: off`.
+  Autre écart : la case est jugée par la comparaison de forme ordinaire (ADR 0013), donc
+  `2 × 2 × 3 × 5` est `bad_form` comme `4 × 15` (pas « accepté » comme l'annonçait la fiche) ;
+  l'énoncé demande les puissances, comme le brouillon 629c231b.
+- Bug relevé, non corrigé ici : la remarque « produits » dépend de l'ordre des facteurs
+  (`2^3\times3^2\times5` remarqué, `5\times3^2\times2^3` non).
+- F4 b (donner un diviseur) : pas d'erreurs prévues, le générateur les refuse sur une case jugée
+  par ses règles seules (`rulesSuffice`).
+- F2 : 90dca27a n'a pas d'options, une fraction simplifiable reste `unoptimal_form` (½ point),
+  comme sa variation d'origine (la fiche disait « refusée »).
