@@ -156,6 +156,7 @@ Un refus RLS rend **zéro ligne, sans erreur** : `if (error) throw` ne le voit p
 - [ ] `pnpm svelte:autofix` sur les `.svelte` modifiés · `pnpm check:incremental` = 0 erreur
 - [ ] `pnpm types:cliquet` tenu (`--maj` après corrections)
 - [ ] Revue selon le risque (point 4 ci-dessus)
+- [ ] **Rendu vérifié à l'écran par la session**, pas par David : `pnpm voir`, `pnpm test:verifs`, Claude dans Chrome par le lien de `pnpm lien`. Une ligne dans `docs/wip/verifications-manuelles.md` seulement pour ce qu'elle ne peut pas voir, en disant ce qu'elle a déjà vu → [tests.md](docs/pratiques/tests.md#vérifier-à-lécran-soi-même-avant-de-demander-à-david)
 - [ ] Zod · pas de `any` · MySelect/MyCheckbox · runes
 - [ ] **Doc à jour dans la même PR** : doc dont le `couvre:` touche un fichier modifié → mise à jour (skill `doc-a-jour`) ou ligne `Doc-inchangée: <raison>` ; zone sans doc → doc d'abord ou `Doc-reportée: <raison>` si David reporte. Garde : `pnpm docs:check-a-jour --depuis origin/main` (sans `--depuis`, elle ne vérifie rien).
 

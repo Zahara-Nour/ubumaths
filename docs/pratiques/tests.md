@@ -350,3 +350,23 @@ Accessibilité (`axe-core` dans les e2e, agent `accessibility-tester`), régress
 Vérifié contre le code le 2026-10-10.
 
 Vérifié contre le code le 2026-10-10.
+
+## Vérifier à l'écran soi-même avant de demander à David
+
+David est presque toujours à distance et veut le moins possible de vérifications à la main
+(2026-11-23). Avant le merge, la session regarde elle-même ce qu'elle livre. Les trois moyens ont
+été essayés à distance le 2026-11-23 :
+
+| Moyen                           | Pour quoi                                                                                            | Comment                                                                                                                              |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm voir <page> [--compte …]` | le rendu d'une page (format iPhone, moteur de Safari), les erreurs de console, les requêtes en échec | [voir-une-page.md](voir-une-page.md)                                                                                                 |
+| `pnpm test:verifs`              | un parcours : cliquer, taper, lire un courriel capturé ; le test reste et se rejoue                  | `e2e/verifs/`, `VERIFS_PORT=<port du worktree>`                                                                                      |
+| Claude dans Chrome              | un geste ponctuel dans un vrai Chrome, la prod publique                                              | `https://chiph.re`, ou le lien de `pnpm lien` ; **jamais `localhost`** ([pourquoi](tester-sur-un-autre-appareil.md#les-deux-pièges)) |
+
+Les pages connectées se vérifient en local, avec les comptes fictifs (`pnpm voir --compte`,
+`pnpm test:verifs`).
+
+Reste à David, et à lui seul : le vrai iPhone (clavier, barres de Safari, zones de sécurité), le
+vidéoprojecteur, la prod avec un vrai compte (la session n'entre aucun mot de passe réel), un
+courriel reçu sur une vraie adresse. Seules ces vérifications deviennent une ligne de
+`docs/wip/verifications-manuelles.md`, et la ligne dit ce que la session a déjà vu.
