@@ -4,7 +4,7 @@
 #
 #   noter.sh <phase> <début>      <début> = `date +%s` pris avant la commande
 #
-# Appelé par scripts/durees/chrono.sh (tests), scripts/check-incremental.sh,
+# Appelé par scripts/durees/chrono.mjs (tests), scripts/check-incremental.sh,
 # .husky/pre-push et scripts/pr-merger/index.ts, seulement quand la commande a
 # réussi et a tout joué : une exécution rouge ou partielle n'est pas une mesure.
 #

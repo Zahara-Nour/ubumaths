@@ -116,6 +116,8 @@ export const PLANCHER_S = 20;
 export const PLANCHER_LOCAL_S = 5;
 /** La suite d'intégration entière tourne en 4 morceaux (nightly-integration.yml, job `portee`). */
 export const MORCEAUX_SUITE_ENTIERE = 4;
+/** Étape du job « Integration scope » jouée seulement quand aucune liste de tests n'est retenue. */
+export const ETAPE_SUITE_COMPLETE = 'Tests de migration de données laissés de côté';
 
 /** Les seules étapes suivies à part de leur job. */
 export const ETAPES_SUIVIES = new Set([
@@ -276,7 +278,10 @@ export function mesuresDeLaPr(pr: PrMergee, runs: Run[], completes: Set<number>)
  * La suite d'intégration (nightly-integration.yml) : une mesure seulement quand
  * elle a tout joué. Sur une PR, le job `portee` ne retient souvent que les tests
  * touchés (un seul morceau), ou aucun (passage déjà vert, aucun test atteint :
- * l'étape des tests est sautée) : ces exécutions ne comptent pas. La nuit, tous
+ * l'étape des tests est sautée) : ces exécutions ne comptent pas. Une PR à plus
+ * de 40 tests touchés tourne aussi en 4 morceaux : la suite complète se reconnaît
+ * à l'étape ETAPE_SUITE_COMPLETE du job de portée, sautée dès qu'une liste de
+ * tests est retenue. La nuit, tous
  * les tests ; sur une PR, la suite sans les tests de migration de données : deux
  * phases. Une exécution lancée à la main n'est pas comptée.
  */
@@ -303,6 +308,14 @@ export function mesuresIntegration(run: Run, jobs: Job[]): Mesure[] {
 	);
 	if (morceaux.length !== MORCEAUX_SUITE_ENTIERE || joues.length !== MORCEAUX_SUITE_ENTIERE)
 		return [];
+	const complete = jobs.some(
+		(j) =>
+			j.name === 'Integration scope' &&
+			(j.steps ?? []).some(
+				(e) => e.name.startsWith(ETAPE_SUITE_COMPLETE) && e.conclusion === 'success'
+			)
+	);
+	if (!complete) return [];
 	const duree = secondesEntre(run.createdAt, run.updatedAt);
 	return duree === null ? [] : [{ phase, secondes: duree, date: run.createdAt }];
 }

@@ -223,7 +223,9 @@ pour voir une phase devenue nettement plus lente que la normale.
   du site dans `~/.local/state/durees/mises-en-prod.csv` (rien avec `--verifier`, ni pour une CI
   relancée) ;
 - **tests d'intégration** (`nightly-integration.yml`, lus chez GitHub) : seule une **suite entière**
-  compte, c'est-à-dire 4 morceaux qui ont tous joué leurs tests, première tentative verte. Une PR
+  compte, c'est-à-dire 4 morceaux qui ont tous joué leurs tests, sans liste de tests retenus (étape
+  « Tests de migration de données laissés de côté » jouée dans le job de portée), première
+  tentative verte. Une PR
   qui ne joue que les tests touchés (un morceau), ou aucun (passage déjà vert, aucun test atteint),
   n'est pas une mesure ; une exécution lancée à la main non plus. Deux phases : la nuit (tous les
   tests) et sur une PR (sans les tests de migration de données) ;
@@ -231,8 +233,9 @@ pour voir une phase devenue nettement plus lente que la normale.
   et `pnpm pr:merger` notent leur durée dans `~/.local/state/durees/local.csv`
   (`date;commande;secondes`, par `scripts/durees/noter.sh`), seulement quand ils sont **verts et
   ont tout joué** : pas un rejeu de `check:incremental`, pas un test lancé avec un chemin ou une
-  option (`scripts/durees/chrono.sh` lance alors la commande telle quelle), pas un `pr:merger` qui
-  ne fait que ranger. `pr:merger` compte l'attente de la CI. Rien n'est noté en CI, sur Vercel, ni
+  option (`scripts/durees/chrono.mjs` lance alors la commande telle quelle), pas un pre-push qui
+  n'emporte pas le commit courant (suppression de branche, tag), pas un `pr:merger` qui ne fait
+  que ranger. `pr:merger` compte l'attente de la CI. Rien n'est noté en CI, sur Vercel, ni
   depuis un test ; une note impossible à écrire n'arrête jamais la commande. Ces durées dépendent
   de la charge de la machine ;
 - `pnpm durees` : le tableau, référence, médiane des dernières 24 heures et des 7 derniers jours ;

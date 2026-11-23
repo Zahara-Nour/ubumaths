@@ -13,7 +13,7 @@
  *   une seule PR lente ne déclenche rien ;
  * - mise en prod : les 5 dernières, et seulement s'il y en a eu une dans la journée ;
  * - tests d'intégration : seule une suite entière compte (4 morceaux, tests joués
- *   dans chacun) ; une PR qui n'en joue qu'une partie, ou aucun, n'est pas une
+ *   dans chacun, aucune liste de tests retenue) ; une PR qui n'en joue qu'une partie, ou aucun, n'est pas une
  *   mesure ; la suite de la nuit suit la règle de la mise en prod (une par jour) ;
  * - journal du Mac mini : une ligne par commande verte, les lignes illisibles
  *   sautées ; une phase locale courte (check:incremental, 18 s) est montrée ;
@@ -215,7 +215,18 @@ describe('mesuresIntegration', () => {
 			]
 		});
 	}
-	const autres = [job('Integration scope', 30), job('Integration paths filter', 35)];
+	/** Le job de portée : l'étape des exclusions n'est jouée qu'en suite complète. */
+	const portee = (complete: boolean) =>
+		job('Integration scope', 30, {
+			steps: [
+				{
+					name: 'Tests de migration de données laissés de côté (PR en suite complète)',
+					conclusion: complete ? 'success' : 'skipped'
+				}
+			]
+		});
+	const filtre = job('Integration paths filter', 35);
+	const autres = [portee(true), filtre];
 	const entiere = [...autres, ...[1, 2, 3, 4].map((k) => morceau(k, 4))];
 	const nuit = run({ event: 'schedule', headBranch: 'main' });
 	const pr = run({ event: 'pull_request' });
@@ -258,6 +269,11 @@ describe('mesuresIntegration', () => {
 			)
 		).toEqual([]);
 		expect(mesuresIntegration(run({ event: 'workflow_dispatch' }), entiere)).toEqual([]);
+	});
+
+	it('ne compte pas une PR à plus de 40 tests touchés : 4 morceaux, mais une liste de tests', () => {
+		const touches = [portee(false), filtre, ...[1, 2, 3, 4].map((k) => morceau(k, 4))];
+		expect(mesuresIntegration(pr, touches)).toEqual([]);
 	});
 
 	it('ne compte pas une suite dont un morceau manque', () => {

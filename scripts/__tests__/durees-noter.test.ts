@@ -1,5 +1,5 @@
 /**
- * Le journal des durées du Mac mini — `scripts/durees/noter.sh` et `chrono.sh`
+ * Le journal des durées du Mac mini — `scripts/durees/noter.sh` et `chrono.mjs`
  * ===========================================================================
  *
  * `check:incremental`, les tests, le pre-push et `pnpm pr:merger` notent leur
@@ -10,11 +10,12 @@
  *   pas tout joué : elle tourne, sans être notée ;
  * - rien n'est noté en CI ni sur Vercel, ni depuis un test (vitest) : le journal
  *   est celui du Mac mini, pas d'un runner ni d'un décor ;
- * - un journal impossible à écrire ne fait jamais échouer la commande.
+ * - un journal impossible à écrire ne fait jamais échouer la commande ;
+ * - l'enveloppe tuée seule (SIGTERM) emporte sa commande : pas de vitest orphelin.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import {
 	existsSync,
 	mkdtempSync,
@@ -27,7 +28,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 const NOTER = resolve(__dirname, '../durees/noter.sh');
-const CHRONO = resolve(__dirname, '../durees/chrono.sh');
+const CHRONO = resolve(__dirname, '../durees/chrono.mjs');
 
 let racine: string;
 
@@ -39,7 +40,7 @@ function env(extra: Record<string, string> = {}): NodeJS.ProcessEnv {
 }
 
 function lancer(script: string, args: string[], extra?: Record<string, string>) {
-	const r = spawnSync('bash', [script, ...args], {
+	const r = spawnSync(script.endsWith('.mjs') ? process.execPath : 'bash', [script, ...args], {
 		cwd: racine,
 		env: env(extra),
 		encoding: 'utf8'
@@ -103,7 +104,7 @@ describe('noter.sh', () => {
 	});
 });
 
-describe('chrono.sh', () => {
+describe('chrono.mjs', () => {
 	it('note la commande verte lancée sans argument', () => {
 		const r = lancer(CHRONO, ['test-server', 'echo', 'tout', '--']);
 		expect(r.status).toBe(0);
@@ -144,5 +145,36 @@ describe('chrono.sh', () => {
 		const r = lancer(CHRONO, ['test-server', 'echo', 'tout']);
 		expect(r.sortie).toBe('tout\n');
 		expect(journal()).toHaveLength(1);
+	});
+
+	it('tuée seule par SIGTERM, elle emporte sa commande et ne note rien', async () => {
+		const pidFile = join(racine, 'pid');
+		const enveloppe = spawn(
+			process.execPath,
+			[CHRONO, 'test-server', 'bash', '-c', `echo $$ > ${pidFile}; exec sleep 30`, '--'],
+			{ cwd: racine, env: env(), stdio: 'ignore' }
+		);
+		const fin = new Promise<number | null>((r) => enveloppe.on('exit', (code) => r(code)));
+		while (!existsSync(pidFile) || readFileSync(pidFile, 'utf8').trim() === '')
+			await new Promise((r) => setTimeout(r, 20));
+		const pid = Number(readFileSync(pidFile, 'utf8').trim());
+		enveloppe.kill('SIGTERM');
+		expect(await fin).toBe(128 + 15);
+		const vivante = () => {
+			try {
+				process.kill(pid, 0);
+				return true;
+			} catch {
+				return false;
+			}
+		};
+		for (let i = 0; i < 50 && vivante(); i++) await new Promise((r) => setTimeout(r, 20));
+		expect(vivante()).toBe(false);
+		expect(journal()).toHaveLength(0);
+	});
+
+	it('commande introuvable : 127', () => {
+		expect(lancer(CHRONO, ['test-server', 'commande-qui-n-existe-pas', '--']).status).toBe(127);
+		expect(journal()).toHaveLength(0);
 	});
 });

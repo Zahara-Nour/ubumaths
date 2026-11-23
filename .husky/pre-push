@@ -67,6 +67,8 @@ if printf '%s\n' "$refs_poussees" | grep -q " $(git rev-parse HEAD) "; then
 	fi
 else
 	echo "pre-push : le commit courant ne part pas, « code modifié ⇒ doc modifiée » non vérifié."
+	# Il n'a pas tout joué : sa durée n'est pas une mesure.
+	debut_durees=""
 fi
 
 # Filtre de chemins de la suite d'intégration : 13 des 20 rouges de la semaine (~2 s).
@@ -76,4 +78,4 @@ if ! pnpm check:integration-paths; then
 fi
 
 # Durée d'un pre-push vert, pour `pnpm durees` (ne peut pas faire échouer : cf. noter.sh).
-bash scripts/durees/noter.sh pre-push "$debut_durees"
+[ -z "$debut_durees" ] || bash scripts/durees/noter.sh pre-push "$debut_durees"
