@@ -39,38 +39,46 @@ test.beforeEach(async ({ page }) => {
 /** Déplie « Comment ? » d'une réponse et la capture, étapes comprises */
 async function shootSteps(page: Page, line: Line, answer: Answer, caption: string): Promise<void> {
 	await steps(answer);
-	await unclip(answer.line);
-	await shootBothThemes(page, line, caption, { target: answer.line });
+	await shootLine(page, line, caption, answer.line);
 }
 
 /**
- * Libère la ligne de l'historique : la console flotte au-dessus du graphique avec
- * une hauteur bornée et fait défiler son historique, une ligne dépliée plus haute
- * qu'elle sortait rognée de la capture. Pour la capture seulement : chaque
- * ancêtre perd sa hauteur bornée et son défilement.
+ * Capture une ligne de l'historique en entier. La console flotte au-dessus du
+ * graphique, fixée à la fenêtre, avec une hauteur bornée et un historique qui
+ * défile : une ligne dépliée plus haute qu'elle sortait rognée. Le temps de la
+ * capture, chaque ancêtre perd sa hauteur bornée et son défilement, la fenêtre
+ * s'agrandit ; tout est remis en place ensuite, pour les captures suivantes.
  */
-async function unclip(target: Locator): Promise<void> {
+async function shootLine(page: Page, line: Line, caption: string, target: Locator): Promise<void> {
+	const size = page.viewportSize();
 	await target.evaluate((element) => {
 		for (
 			let node = element.parentElement;
 			node && node !== document.body;
 			node = node.parentElement
 		) {
+			node.dataset.verifsStyle = node.style.cssText;
 			node.style.setProperty('overflow', 'visible', 'important');
 			node.style.setProperty('max-height', 'none', 'important');
 			node.style.setProperty('height', 'auto', 'important');
 		}
 	});
-	// La console est fixée à la fenêtre : rien n'est peint sous son bord bas
-	const box = await target.boundingBox();
-	const size = target.page().viewportSize();
-	if (box && size && box.y + box.height > size.height) {
-		await target.page().setViewportSize({
-			width: size.width,
-			height: Math.ceil(box.y + box.height) + 40
+	try {
+		const box = await target.boundingBox();
+		if (box && size && box.y + box.height > size.height) {
+			await page.setViewportSize({ width: size.width, height: Math.ceil(box.y + box.height) + 40 });
+		}
+		await target.scrollIntoViewIfNeeded();
+		await shootBothThemes(page, line, caption, { target });
+	} finally {
+		await page.evaluate(() => {
+			for (const node of document.querySelectorAll<HTMLElement>('[data-verifs-style]')) {
+				node.style.cssText = node.dataset.verifsStyle ?? '';
+				delete node.dataset.verifsStyle;
+			}
 		});
+		if (size) await page.setViewportSize(size);
 	}
-	await target.scrollIntoViewIfNeeded();
 }
 
 test('#1634 — Propriétés d’un cercle : fractions, π et racines', async ({ page }) => {
@@ -130,9 +138,10 @@ test('#1617 — « Simplifier pour x ≠ −1 » : le « Comment ? » résumé',
 	await expect(answer.line.getByRole('button', { name: 'Sans simplifier' })).toBeVisible();
 	await steps(answer);
 	const summary = answer.line.getByRole('button', { name: 'Résumé' });
-	if ((await summary.count()) > 0) await summary.click();
-	await unclip(answer.line);
-	await shootBothThemes(page, line, 'résumé', { target: answer.line });
+	await expect(summary).toBeVisible();
+	await summary.click();
+	await expect(summary).toHaveAttribute('aria-pressed', 'true');
+	await shootLine(page, line, 'résumé', answer.line);
 });
 
 test('#1313, #1318 — « Comment ? » des intégrales', async ({ page }) => {
@@ -153,8 +162,7 @@ test('#1362, #1363 — phrases des limites', async ({ page }) => {
 	};
 	for (const input of ['.limite ln(x) en 0', '.limite sqrt(x) en -1', '.limite sin(x) en +∞']) {
 		const answer = await calc(page, input);
-		await answer.line.scrollIntoViewIfNeeded();
-		await shootBothThemes(page, line, input, { target: answer.line });
+		await shootLine(page, line, input, answer.line);
 	}
 });
 

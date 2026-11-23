@@ -54,8 +54,18 @@ async function typeScript(page: Page, lines: string[]): Promise<void> {
 	await editor.click();
 	await page.keyboard.press('ControlOrMeta+a');
 	await page.keyboard.insertText(lines.join('\n') + '\n');
-	// La validation est différée (300 ms) ; le lecteur recharge ensuite le script
-	await page.waitForTimeout(900);
+	await expect(editor).toContainText(lines.at(-1) ?? '');
+	// La validation est différée (300 ms) ; le lecteur recharge ensuite le script :
+	// attendre que son nombre d'étapes ne bouge plus
+	const total = page.getByText(/Etape \d+ \/ \d+/);
+	let previous = '';
+	await expect(async () => {
+		await page.waitForTimeout(400);
+		const now = await total.innerText();
+		const stable = now === previous;
+		previous = now;
+		expect(stable).toBe(true);
+	}).toPass({ timeout: 15000 });
 }
 
 /** Texte des consignes affichées sous la figure (auteur + sous-étape + arrêt) */
@@ -97,11 +107,16 @@ async function playSteps(
 		const text = await instructionText(page);
 		texts.push(text);
 		if (PROBE) console.log(`[${caption}] ${i}/${total} ${text}`);
-		if (!PROBE && shots < MAX_SHOTS_PER_RUN && pick(i, total, text)) {
+		// Le plafond ne coupe jamais la dernière étape choisie
+		const room = shots < MAX_SHOTS_PER_RUN || i === total;
+		if (!PROBE && room && pick(i, total, text)) {
 			shots++;
 			await shoot(page, line, `${caption} — étape ${i}/${total}`, { target: player(page) });
 		}
 	}
+	// Un choix qui ne prend plus rien (consigne changée) ne passe pas en silence
+	if (!PROBE && pick !== none)
+		expect(shots, `aucune capture pour « ${caption} »`).toBeGreaterThan(0);
 	return texts;
 }
 
@@ -360,7 +375,11 @@ test('#1633 — lettres des points auxiliaires sur la figure', async ({ page }) 
 	const textes = (
 		await playSteps(page, line, [...pts, d], 'parallèle @euclide @double_perpendiculaire', key)
 	).join(' ');
-	for (const nom of ['A*', 'B*', 'Q', 'C*', 'D*', 'R']) expect(textes).toContain(nom);
+	// Le nom seul, pas une lettre d'un mot (« Règle » contient R)
+	for (const nom of ['A*', 'B*', 'Q', 'C*', 'D*', 'R']) {
+		const escaped = nom.replace('*', '\\*');
+		expect(textes).toMatch(new RegExp(`(^|[^\\p{L}])${escaped}(?![\\p{L}*′])`, 'u'));
+	}
 	const avecQ = await playSteps(
 		page,
 		line,

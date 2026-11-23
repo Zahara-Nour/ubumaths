@@ -22,10 +22,16 @@ export function storageStatePath(role: Role): string {
 
 /** Se connecte avec le compte local de ce rôle, par le formulaire */
 export async function login(page: Page, role: Role): Promise<void> {
-	await page.goto('/auth/login');
+	const response = await page.goto('/auth/login');
 	const { hostname } = new URL(page.url());
 	if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
 		throw new Error(`Comptes locaux refusés hors de localhost (${hostname})`);
+	}
+	// Un serveur local peut viser la base de PROD (worktree sans `.env.local`,
+	// tunnel) : sa CSP nomme la base qu'il sert (`supabaseConnectSources`)
+	const csp = (await response?.headerValue('content-security-policy')) ?? '';
+	if (!/http:\/\/(127\.0\.0\.1|localhost):54321(\s|;|$)/.test(csp)) {
+		throw new Error('Comptes locaux refusés : ce serveur ne sert pas la base Supabase locale');
 	}
 	const email = page.locator('#email');
 	// Connexion Google proposée : le formulaire par email est replié

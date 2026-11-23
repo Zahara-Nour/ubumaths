@@ -38,6 +38,11 @@ export interface Shot {
 	file: string;
 	/** Ordre des captures d'une même ligne */
 	order: number;
+	/**
+	 * Le lancement qui l'a prise (`CAPTURES_RUN`) : la page ne garde que le plus
+	 * récent de chaque ligne. Absent des fiches d'avant le 2026-11-23.
+	 */
+	run?: string;
 }
 
 // ============================================================================
@@ -95,7 +100,15 @@ export async function shoot(
 	else if (options.around)
 		await page.screenshot({ ...screenshot, clip: await zoneAround(options.around) });
 	else await page.screenshot(screenshot);
-	const shot: Shot = { ...line, caption, theme, width, file, order };
+	const shot: Shot = {
+		...line,
+		caption,
+		theme,
+		width,
+		file,
+		order,
+		run: process.env.CAPTURES_RUN ?? '0'
+	};
 	writeFileSync(
 		`${CAPTURES_DIR}/${file.replace(/\.jpg$/, '.json')}`,
 		JSON.stringify(shot, null, 2)

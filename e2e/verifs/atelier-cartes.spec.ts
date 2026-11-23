@@ -129,7 +129,8 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	await calc(page, 'f(x) = x^2 sur [0;+\\infty[');
 	const solved = await calc(page, '.résoudre f(x)=4');
 	expectLatex(solved, 'S = \\{ 2 \\}');
-	expect(await steps(solved)).toMatch(/on ne garde que/i);
+	// « On ne garde que les solutions qui sont dans [0 ; +∞[ », étape à part depuis #2360
+	expect(await steps(solved)).toContain('On ne garde que');
 });
 
 test('#1309 — max(… ; …) dans une carte', async ({ page }) => {

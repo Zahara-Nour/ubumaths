@@ -55,6 +55,18 @@ function readSheets(): Sheet[] {
 		.map((file) => JSON.parse(readFileSync(`${CAPTURES_DIR}/${file}`, 'utf8')) as Shot);
 	const byLine = new Map<string, Shot[]>();
 	for (const shot of shots) byLine.set(shot.pr, [...(byLine.get(shot.pr) ?? []), shot]);
+	// `.captures/` garde les fiches des lancements passés (captures retirées ou
+	// renommées depuis) : de chaque ligne, seul son dernier lancement
+	for (const [pr, lineShots] of byLine) {
+		const latest = lineShots.reduce(
+			(max, shot) => ((shot.run ?? '') > max ? (shot.run ?? '') : max),
+			''
+		);
+		byLine.set(
+			pr,
+			lineShots.filter((shot) => (shot.run ?? '') === latest)
+		);
+	}
 	return [...byLine.entries()]
 		.sort(([a], [b]) => prNumber(b) - prNumber(a))
 		.map(([pr, lineShots]) => {

@@ -1078,6 +1078,9 @@ test('#1503 — carte d = 10^3*2[m] : retoucher le champ garde le ×', async ({ 
 	await page.keyboard.press('Backspace');
 	await page.keyboard.press('Enter');
 	// Le champ s'est rangé (carte relue) : le × reste un ×, pas un ·
+	// Le champ garde le focus : rien ne signale la relecture. On vérifie une ABSENCE
+	// (× jamais changé en ·) : laisser passer la validation différée (300 ms)
+	await page.waitForTimeout(1000);
 	await expect.poll(async () => (await card(page, 'd')).message).toBeNull();
 	const latex = normalizeLatex((await card(page, 'd')).latex ?? '');
 	expect(latex).toContain('\\times');
