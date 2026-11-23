@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, grille de Données au téléphone en PR._
+_Mis à jour le 2026-11-23, après #3037 (grille de Données au téléphone)._
 
-- **État** : R6 mergé (#3036). Correctif de la grille de Données au téléphone (David : « go ») sur `fix/atelier-grille-telephone` : à ≤ 720 px la grille garde `min(14rem, 60dvh)` et la vue défile ; test « grille de Données au téléphone (390 × 659) » rouge avant (2 px), vert après sur ordi-chrome, iphone, android. Ordre recommandé et suivi (David : « je suis tes recos » / « go ») : grille → enquête #1536 → #1337 → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
-- **Prochaine action** : merger la PR de la grille ; puis l'enquête #1536 (points décalés sur la toile à l'iPhone : vrai ou test ?) dans un worktree neuf.
-- **En attente de David** : notification qui couvre la barre d'outils au téléphone (barre d'icônes, Android) ; laisser « Tab sur Options » (réglage de Safari) et « Échap à l'iPhone » (pas de touche) ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12).
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets » (pas une carte née d'une colonne : `showCards`) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `ubumaths-wt-verifs-auto-grille` · `fix/atelier-grille-telephone` · serveur de dev sur 5178.
+- **État** : R6 mergé (#3036) ; grille de Données visible au téléphone (#3037, à ≤ 720 px elle garde `min(14rem, 60dvh)` et la vue défile ; était à 2 px en prod). Ordre suivi (David : « je suis tes recos » / « go ») : grille ✅ → enquête #1536 → #1337 → rendus WebKit → #1469 → tri des 391 lignes → R12 → R13.
+- **Prochaine action** : enquête #1536 (points posés décalés sur la toile à l'iPhone : vrai ou test ?), worktree neuf `ubumaths-wt-verifs-auto-geometrie` ; voir à l'écran avant de conclure.
+- **En attente de David** : la mise en prod de #3037 (`pnpm deploy:prod`, à sa demande) ; notification qui couvre la barre d'outils au téléphone (Android) ; écart 1/10 (#1369) et 2 à 10 ; tâche de nuit (après R12). Laissés (reco acceptée) : Tab sur « Options » sous Safari, Échap à l'iPhone.
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; `calc` déplie « Mes objets », pas une carte née d'une colonne (`showCards`) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retirés après #3036 et #3037).
 
 ## Phase 0 (validée le 2026-10-25)
 
