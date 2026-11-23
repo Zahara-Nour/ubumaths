@@ -128,8 +128,8 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	// En dernier : « Comment ? » casse la page (each_key_duplicate, comme #1674)
 	await calc(page, 'f(x) = x^2 sur [0;+\\infty[');
 	const solved = await calc(page, '.résoudre f(x)=4');
-	expectLatex(solved, 'x = 2');
-	expect(await steps(solved)).toContain('on ne garde que');
+	expectLatex(solved, 'S = \\{ 2 \\}');
+	expect(await steps(solved)).toMatch(/on ne garde que/i);
 });
 
 test('#1309 — max(… ; …) dans une carte', async ({ page }) => {
@@ -205,6 +205,12 @@ test('#1328 — bouton « Réciproque », refus de .réciproque', async ({ page 
 		.filter((pair) => pair.includes(','))
 		.map((pair) => Number(pair.split(',')[0]));
 	expect(Math.min(...xs)).toBeCloseTo(startX, 0);
+	// Dans Calcul, les 3 étapes : x en fonction de y, y renommé x, départ et arrivée
+	const detail = await steps(await calc(page, '.réciproque f'));
+	expect(detail).toMatch(/Étape 1 On exprime x en fonction de y/);
+	expect(detail).toMatch(/Étape 2 On renomme y en x/);
+	expect(detail).toMatch(/Étape 3 Ensemble de départ et ensemble d.arrivée/);
+	expect(detail).not.toMatch(/Étape 4/);
 
 	await calc(page, 'g(x) = x^2');
 	const twoWays = await calc(page, '.réciproque g');
@@ -238,7 +244,7 @@ test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien
 		'f est définie sur [0 ; +∞[ (ensemble choisi) ; sans ce choix'
 	);
 	await calc(page, 'g(x) = f(x)+1');
-	expectLatex(await calc(page, '.résoudre g(x)=5'), 'x = 2');
+	expectLatex(await calc(page, '.résoudre g(x)=5'), 'S = \\{ 2 \\}');
 
 	await calc(page, 'f(x) = x^2 sur ]0;2]');
 	expectLatex(await calc(page, '.intégrer f de 0 à 2'), '\\dfrac{8}{3}');

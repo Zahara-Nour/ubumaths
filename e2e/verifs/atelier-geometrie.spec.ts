@@ -338,6 +338,8 @@ test('#1546 — téléphone (390 px) : « Mes objets » replié, la place rendue
 
 	// La toile de Géométrie ; un point posé à la barre d'outils : 3 objets, toujours replié
 	await openFigure(page);
+	// Le bouton « Signaler » du serveur de dev (jamais en prod) couvre l'outil Point à 390 px
+	await page.addStyleTag({ content: 'button[aria-controls="signaler-dev"] { display: none; }' });
 	await chooseTool(page, 'Point');
 	await clickAt(page, -3, -3);
 	await expect(panel).toContainText('3 objets');

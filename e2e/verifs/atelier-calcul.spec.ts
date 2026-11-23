@@ -197,16 +197,17 @@ test('#1658, #1660 — Variations par le bouton « Variations » d’une carte :
 test('#1625 — racine d’un décimal, décimaux sous une barre à variable', async ({ page }) => {
 	expectLatex(await calc(page, 'sqrt(0.5)'), '\\dfrac{\\sqrt{2}}{2}');
 	expectLatex(await calc(page, 'sqrt(0.25)'), '0{,}5');
-	expectLatex(await calc(page, '.simplifier 0.5/x'), '\\dfrac{0{,}5}{x}');
+	// Q9 (David, 2026-11-02) : un décimal sous une barre à lettre se chasse aussi
+	expectLatex(await calc(page, '.simplifier 0.5/x'), '\\dfrac{1}{2x}');
 });
 
 test('#1302 — résoudre avec un paramètre', async ({ page }) => {
 	expectLatex(
 		await calc(page, '.résoudre e^(2x+1)=a'),
-		'x = \\dfrac{\\ln(a) - 1}{2} \\quad \\text{si } a > 0'
+		'S = \\{ \\dfrac{\\ln(a) - 1}{2} \\} \\quad \\text{si } a > 0'
 	);
 	// Avant : 1000
-	expectLatex(await calc(page, '.résoudre \\log_2(x)=3'), 'x = 8');
+	expectLatex(await calc(page, '.résoudre \\log_2(x)=3'), 'S = \\{ 8 \\}');
 	const square = await calc(page, '.résoudre x^2=a');
 	expectLatex(
 		square,
@@ -406,7 +407,7 @@ test('#1253 — équations avec une valeur absolue', async ({ page }) => {
 
 test('#1278, #1279 — inéquations : terme soustrait en bleu, relation gardée', async ({ page }) => {
 	const first = await calc(page, '.résoudre 3x-4\\leq 2x+1');
-	expectLatex(first, 'x \\leqslant 5');
+	expectLatex(first, 'S = ]-\\infty ; 5]');
 	const firstSteps = await steps(first);
 	expectStepsContaining(firstSteps, 'On soustrait $2x$ aux deux membres');
 	expectStepsContaining(firstSteps, '3x - 4 \\textcolor{blue}{- 2x}');
@@ -641,7 +642,7 @@ test('#1361 — .limite dans la console', async ({ page }) => {
 
 test('5f-4 — « Comment ? » de .résoudre : décimaux et radicaux gardés', async ({ page }) => {
 	const decimal = await calc(page, '.résoudre 2x=0,6');
-	expectLatex(decimal, 'x = 0{,}3');
+	expectLatex(decimal, 'S = \\{ 0{,}3 \\}');
 	expectStepsContaining(await steps(decimal), 'Solution : $x = 0{,}3$');
 
 	const affine = await calc(page, '.résoudre 0,5x+1=2');
@@ -666,7 +667,7 @@ test('5f-4 — « Comment ? » de .résoudre : décimaux et radicaux gardés', a
 		'On résout $\\dfrac{x}{2} - 0{,}5 = 1$ \\dfrac{x}{2} - 0{,}5 = 1'
 	);
 
-	expectLatex(await calc(page, '.résoudre 3x=2'), 'x = \\dfrac{2}{3}');
+	expectLatex(await calc(page, '.résoudre 3x=2'), 'S = \\{ \\dfrac{2}{3} \\}');
 });
 
 test('#1735 (Q50) — « Comment ? » de .résoudre sur une inéquation', async ({ page }) => {
@@ -688,8 +689,8 @@ test('#1735 (Q50) — « Comment ? » de .résoudre sur une inéquation', async 
 	expectLatex(rational, 'S = ]\\dfrac{1}{2} ; +\\infty[');
 	expect(rational.text).not.toContain('1 / 2');
 
-	expectLatex(await calc(page, '.résoudre 2x<0,6'), 'x < 0{,}3');
-	expectLatex(await calc(page, '.résoudre 2x<\\sqrt{2}'), 'x < \\dfrac{\\sqrt{2}}{2}');
+	expectLatex(await calc(page, '.résoudre 2x<0,6'), 'S = ]-\\infty ; 0{,}3[');
+	expectLatex(await calc(page, '.résoudre 2x<\\sqrt{2}'), 'S = ]-\\infty ; \\dfrac{\\sqrt{2}}{2}[');
 
 	const decimalRoot = await calc(page, '.résoudre (x-0,5)/(x+1)>0');
 	expectLatex(decimalRoot, 'S = ]-\\infty ; -1[ \\cup ]0{,}5 ; +\\infty[');
@@ -705,24 +706,28 @@ test('#1741 (Q51, Q52) — « Comment ? » de .résoudre : × ou ÷, développer
 		return detail;
 	}
 
-	await firstMove('x/4=0,5', 'x = 2', 'On multiplie les deux membres par $4$');
-	await firstMove('x/3<0,1', 'x < 0{,}3', 'On multiplie les deux membres par $3$');
+	await firstMove('x/4=0,5', 'S = \\{ 2 \\}', 'On multiplie les deux membres par $4$');
+	await firstMove('x/3<0,1', 'S = ]-\\infty ; 0{,}3[', 'On multiplie les deux membres par $3$');
 	await firstMove(
 		'\\frac{2}{3}x=1',
-		'x = \\dfrac{3}{2}',
+		'S = \\{ \\dfrac{3}{2} \\}',
 		'On multiplie les deux membres par $\\dfrac{3}{2}$'
 	);
-	await firstMove('0,5x=1', 'x = 2', 'On divise les deux membres par $0{,}5$');
-	const bracket = await firstMove('0,5(x+1)=2', 'x = 3', 'On divise les deux membres par $0{,}5$');
+	await firstMove('0,5x=1', 'S = \\{ 2 \\}', 'On divise les deux membres par $0{,}5$');
+	const bracket = await firstMove(
+		'0,5(x+1)=2',
+		'S = \\{ 3 \\}',
+		'On divise les deux membres par $0{,}5$'
+	);
 	expectStepsContaining(bracket, 'x + 1 &= 4');
 	expectStepsContaining(bracket, 'Étape 3 On soustrait $1$ aux deux membres');
-	await firstMove('-(x-3)=0', 'x = 3', 'On multiplie les deux membres par $-1$');
-	await firstMove('2(x+1)+3=7', 'x = 1', 'On soustrait $3$ aux deux membres');
-	await firstMove('3(x-1)=2x+1', 'x = 4', 'On développe');
-	await firstMove('3+(x-1)=5', 'x = 3', 'On supprime les parenthèses');
+	await firstMove('-(x-3)=0', 'S = \\{ 3 \\}', 'On multiplie les deux membres par $-1$');
+	await firstMove('2(x+1)+3=7', 'S = \\{ 1 \\}', 'On soustrait $3$ aux deux membres');
+	await firstMove('3(x-1)=2x+1', 'S = \\{ 4 \\}', 'On développe');
+	await firstMove('3+(x-1)=5', 'S = \\{ 3 \\}', 'On supprime les parenthèses');
 	await firstMove(
 		'-2(x+1)\\le4',
-		'x \\geqslant -3',
+		'S = [-3 ; +\\infty[',
 		'On divise les deux membres par $-2$ (changement de sens car $-2$ est négatif)'
 	);
 });
@@ -826,7 +831,7 @@ test('#1663 — valeur exacte affichée (console)', async ({ page }) => {
 		await calc(page, '.résoudre x^2-x-1=0'),
 		'S = \\left\\{ \\dfrac{1 - \\sqrt{5}}{2} \\,;\\, \\dfrac{1 + \\sqrt{5}}{2} \\right\\}'
 	);
-	expectLatex(await calc(page, '.résoudre 2x = 0,6'), 'x = 0{,}3');
+	expectLatex(await calc(page, '.résoudre 2x = 0,6'), 'S = \\{ 0{,}3 \\}');
 	expectLatexContaining(
 		await calc(page, '.résoudre 2^n > 1000'),
 		'n > \\dfrac{\\ln(1000)}{\\ln(2)}'
@@ -1148,7 +1153,7 @@ test('#1367 — paramètre non défini : (a ≠ 0), dériver, carte f′ en atte
 	expectLatexContaining(await calc(page, '.intégrer h'), '(a \\neq 0)');
 	expectLatex(await calc(page, '.dériver a x'), 'a');
 	expect((await calc(page, '.résoudre a x = 3')).text).toContain('Le résultat dépend de a');
-	expectLatex(await calc(page, '.résoudre x + a = 0'), 'x = -a');
+	expectLatex(await calc(page, '.résoudre x + a = 0'), 'S = \\{ -a \\}');
 	// En dernier (a = 2 posé ensuite) : la carte f′ attend a comme f, puis f′ = 2
 	await calc(page, 'f(x) = a x');
 	await cardAction(page, 'f', 'Dériver');

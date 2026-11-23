@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
 	calc,
 	cardAction,
@@ -39,8 +39,38 @@ test.beforeEach(async ({ page }) => {
 /** Déplie « Comment ? » d'une réponse et la capture, étapes comprises */
 async function shootSteps(page: Page, line: Line, answer: Answer, caption: string): Promise<void> {
 	await steps(answer);
-	await answer.line.scrollIntoViewIfNeeded();
+	await unclip(answer.line);
 	await shootBothThemes(page, line, caption, { target: answer.line });
+}
+
+/**
+ * Libère la ligne de l'historique : la console flotte au-dessus du graphique avec
+ * une hauteur bornée et fait défiler son historique, une ligne dépliée plus haute
+ * qu'elle sortait rognée de la capture. Pour la capture seulement : chaque
+ * ancêtre perd sa hauteur bornée et son défilement.
+ */
+async function unclip(target: Locator): Promise<void> {
+	await target.evaluate((element) => {
+		for (
+			let node = element.parentElement;
+			node && node !== document.body;
+			node = node.parentElement
+		) {
+			node.style.setProperty('overflow', 'visible', 'important');
+			node.style.setProperty('max-height', 'none', 'important');
+			node.style.setProperty('height', 'auto', 'important');
+		}
+	});
+	// La console est fixée à la fenêtre : rien n'est peint sous son bord bas
+	const box = await target.boundingBox();
+	const size = target.page().viewportSize();
+	if (box && size && box.y + box.height > size.height) {
+		await target.page().setViewportSize({
+			width: size.width,
+			height: Math.ceil(box.y + box.height) + 40
+		});
+	}
+	await target.scrollIntoViewIfNeeded();
 }
 
 test('#1634 — Propriétés d’un cercle : fractions, π et racines', async ({ page }) => {
@@ -80,7 +110,13 @@ test('#1630 — Propriétés sur téléphone : le panneau sous la carte', async 
 	}
 	await cardAction(page, 's', 'Propriétés');
 	await expect(page.locator('.proprietes')).toBeVisible();
-	await shootBothThemes(page, line, 'segment s');
+	// La carte d'abord, le panneau dessous ; puis le bas du panneau (rien ne déborde)
+	await cardLocator(page, 's').evaluate((card) => card.scrollIntoView({ block: 'start' }));
+	await shootBothThemes(page, line, 'carte s, panneau dessous');
+	await page
+		.locator('.proprietes')
+		.evaluate((properties) => properties.scrollIntoView({ block: 'end' }));
+	await shootBothThemes(page, line, 'bas du panneau');
 });
 
 test('#1617 — « Simplifier pour x ≠ −1 » : le « Comment ? » résumé', async ({ page }) => {
@@ -95,6 +131,7 @@ test('#1617 — « Simplifier pour x ≠ −1 » : le « Comment ? » résumé',
 	await steps(answer);
 	const summary = answer.line.getByRole('button', { name: 'Résumé' });
 	if ((await summary.count()) > 0) await summary.click();
+	await unclip(answer.line);
 	await shootBothThemes(page, line, 'résumé', { target: answer.line });
 });
 

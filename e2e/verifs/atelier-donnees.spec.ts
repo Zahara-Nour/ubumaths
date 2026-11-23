@@ -577,7 +577,7 @@ async function shownText(page: Page, address: string): Promise<string> {
 
 /** Choisit un format de nombre (« Nombre », « Pourcentage », « Monnaie ») pour la sélection */
 async function chooseFormat(page: Page, format: string): Promise<void> {
-	await page.getByRole('button', { name: /^Format de nombre/ }).click();
+	await page.getByRole('combobox', { name: /^Format de nombre/ }).click();
 	await page.getByRole('option', { name: new RegExp(`^${format}`) }).click();
 }
 
@@ -618,7 +618,7 @@ test('#1469 — gras, formats Nombre / Pourcentage / Monnaie, copier-coller, rec
 	await chooseFormat(page, 'Pourcentage');
 	// Le format pose une espace insécable fine avant % et € : comparée en espace simple
 	await expect.poll(() => shownText(page, 'A2')).toBe('13 %');
-	await page.getByRole('button', { name: /^Décimales/ }).click();
+	await page.getByRole('combobox', { name: /^Décimales/ }).click();
 	await page.getByRole('option', { name: /^1\b/ }).click();
 	await expect.poll(() => shownText(page, 'A2')).toBe('12,5 %');
 	// « Monnaie » sur 12,5 → 12,50 €

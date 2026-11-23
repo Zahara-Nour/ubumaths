@@ -14,258 +14,14 @@ import { storageStatePath } from '../helpers/comptes';
 
 test.use({ storageState: storageStatePath('admin') });
 
-// ============================================================================
-// /dev/carte-question : cases « figure »
-// ============================================================================
-
-/** Fenêtres des deux questions de la page (`fenetre:` du bloc) */
-const CARRE = { width: 12, height: 8 };
-const ALIGNES = { width: 10, height: 6 };
+// Les lignes #1793 et #1798 (`/dev/carte-question`, cases « figure ») ont été
+// vérifiées par David sur tablette le 2026-11-09 et sont sorties de la liste :
+// leurs captures sont retirées.
 
 /** L'en-tête collant masquerait le haut des captures cadrées sur un élément */
 async function sansEntete(page: Page): Promise<void> {
 	await page.addStyleTag({ content: 'header { position: static !important; }' });
 }
-
-/** Ouvre la carte question et choisit la question dont l'intitulé est donné */
-async function openCard(page: Page, label: string): Promise<void> {
-	await page.goto('/dev/carte-question');
-	await sansEntete(page);
-	// Le clic peut précéder l'hydratation : on le rejoue tant que la liste ne s'ouvre pas
-	await expect(async () => {
-		await page.getByRole('button', { name: /^Question :/ }).click();
-		await expect(page.getByRole('option', { name: label })).toBeVisible({ timeout: 1500 });
-	}).toPass({ timeout: 20000 });
-	await page.getByRole('option', { name: label }).click();
-	await expect(zone(page)).toBeVisible();
-}
-
-function zone(page: Page): Locator {
-	return page.getByTestId('zone-de-trace');
-}
-
-/** La carte « Component Preview » : ce que les captures cadrent */
-function preview(page: Page): Locator {
-	return page.locator('[data-slot="card"]').filter({ hasText: 'Component Preview' });
-}
-
-type Window = { width: number; height: number };
-
-/** Un toucher à la souris, en unités de la figure (l'origine en bas à gauche) */
-async function tap(page: Page, win: Window, x: number, y: number): Promise<void> {
-	const box = await zone(page).boundingBox();
-	if (box === null) throw new Error('zone de tracé invisible');
-	// `click` fait défiler jusqu'à la zone (la carte est sous le pli)
-	await zone(page).click({
-		position: { x: (x / win.width) * box.width, y: ((win.height - y) / win.height) * box.height }
-	});
-}
-
-/** Des segments, chacun par deux touchers */
-async function draw(
-	page: Page,
-	win: Window,
-	...segments: [number, number, number, number][]
-): Promise<void> {
-	for (const [x1, y1, x2, y2] of segments) {
-		await tap(page, win, x1, y1);
-		await tap(page, win, x2, y2);
-	}
-}
-
-/** La figure de la face avant : la face arrière (correction) en rend une copie */
-function front(page: Page): Locator {
-	return page.locator('.figure-a-completer').first();
-}
-
-function valider(page: Page): Locator {
-	return page.getByRole('button', { name: 'Valider' });
-}
-
-test('#1793 — Terminer un carré (CP-060) sur quadrillage', async ({ page }) => {
-	const line: Line = {
-		pr: '#1793',
-		title: 'Terminer un carré, case « figure » sur quadrillage',
-		look: 'Chaque toucher va au nœud le plus proche ; les 3 côtés au-dessus ou au-dessous → « Bravo », traits verts ; un côté en deux morceaux → juste ; rectangle au lieu de carré → « Ce n’est pas un carré… » + bonne figure en pointillés du côté tracé ; trait séparé dans l’alignement d’un côté → « Tu as tracé un trait de trop. » ; côté trop long → « Un de tes traits dépasse de la figure. » ; côté donné prolongé puis figure fermée (5 × 3) → « Le côté déjà tracé ne doit pas être prolongé… » ; Effacer = dernier segment ; au clavier (Tab) : curseur, flèches, Entrée ; au clic : pas de curseur. (La variation rectangle n’existe pas sur la page de dev.)'
-	};
-	const card = preview(page);
-	const message = { timeout: 2000 };
-
-	/** Repart d'une carte neuve */
-	async function fresh(): Promise<void> {
-		await openCard(page, 'Terminer un carré (CP-060)');
-	}
-
-	await test.step('3 côtés au-dessus, touchers approximatifs : traits verts', async () => {
-		await fresh();
-		// Chaque clic va au nœud le plus proche
-		await draw(page, CARRE, [5.3, 3.8, 4.8, 7.2], [5.1, 6.9, 2.2, 7.1], [1.8, 7.2, 2.1, 4.3]);
-		await expect(front(page).getByTestId('segment-eleve')).toHaveCount(3);
-		await shootBothThemes(page, line, 'trois côtés tracés au-dessus', { target: card });
-		await valider(page).click();
-		await expect(front(page).locator('.droite-juste')).toHaveCount(3);
-		await shootBothThemes(page, line, 'après Valider : traits verts', { target: card });
-		// La ligne dit « Bravo » ; la carte affiche « Juste »
-		await expect.soft(card, 'message « Bravo »').toContainText('Bravo', message);
-	});
-
-	await test.step('3 côtés au-dessous', async () => {
-		await fresh();
-		await draw(page, CARRE, [5, 4, 5, 1], [5, 1, 2, 1], [2, 1, 2, 4]);
-		await valider(page).click();
-		await expect(front(page).locator('.droite-juste')).toHaveCount(3);
-		await shootBothThemes(page, line, 'trois côtés au-dessous', { target: card });
-		await expect.soft(card, 'message « Bravo »').toContainText('Bravo', message);
-	});
-
-	await test.step('un côté en deux morceaux : juste', async () => {
-		await fresh();
-		await draw(page, CARRE, [5, 4, 5, 5], [5, 5, 5, 7], [5, 7, 2, 7], [2, 7, 2, 4]);
-		await valider(page).click();
-		await expect(front(page).locator('.droite-juste')).toHaveCount(4);
-		await shootBothThemes(page, line, 'un côté en deux morceaux', { target: card });
-		await expect.soft(card).toContainText('Juste', message);
-	});
-
-	await test.step('rectangle : pas un carré, bonne figure en pointillés', async () => {
-		await fresh();
-		await draw(page, CARRE, [5, 4, 5, 6], [5, 6, 2, 6], [2, 6, 2, 4]);
-		await valider(page).click();
-		await expect(front(page).getByTestId('bon-segment')).toHaveCount(3);
-		await shootBothThemes(page, line, 'rectangle : bonne figure en pointillés', { target: card });
-		await expect.soft(card).toContainText('Ce n’est pas un carré', message);
-	});
-
-	await test.step('un trait séparé dans l’alignement d’un côté', async () => {
-		await fresh();
-		await draw(page, CARRE, [5, 4, 5, 7], [5, 7, 2, 7], [2, 7, 2, 4], [8, 4, 10, 4]);
-		await valider(page).click();
-		await expect(card).toContainText('Tentative 1');
-		await shootBothThemes(page, line, 'trait de trop', { target: card });
-		await expect.soft(card).toContainText('Tu as tracé un trait de trop.', message);
-	});
-
-	await test.step('un côté trop long', async () => {
-		await fresh();
-		await draw(page, CARRE, [5, 4, 5, 7], [5, 7, 2, 7], [2, 7, 2, 2]);
-		await valider(page).click();
-		await expect(card).toContainText('Tentative 1');
-		await shootBothThemes(page, line, 'côté trop long', { target: card });
-		await expect.soft(card).toContainText('Un de tes traits dépasse de la figure.', message);
-	});
-
-	await test.step('le côté donné prolongé, figure fermée (5 × 3)', async () => {
-		await fresh();
-		await draw(page, CARRE, [2, 4, 7, 4], [7, 4, 7, 7], [7, 7, 2, 7], [2, 7, 2, 4]);
-		await valider(page).click();
-		await expect(card).toContainText('Tentative 1');
-		await shootBothThemes(page, line, 'côté donné prolongé', { target: card });
-		await expect.soft(card).toContainText('Le côté déjà tracé ne doit pas être prolongé', message);
-	});
-
-	await test.step('Effacer enlève le dernier segment', async () => {
-		await fresh();
-		await draw(page, CARRE, [5, 4, 5, 7], [5, 7, 2, 7]);
-		await expect(front(page).getByTestId('segment-eleve')).toHaveCount(2);
-		await shootBothThemes(page, line, 'avant Effacer : 2 segments', { target: card });
-		await page.getByRole('button', { name: 'Effacer' }).click();
-		await expect(front(page).getByTestId('segment-eleve')).toHaveCount(1);
-		await shootBothThemes(page, line, 'après Effacer : 1 segment', { target: card });
-	});
-
-	await test.step('clavier : Tab, curseur, flèches, Entrée', async () => {
-		await fresh();
-		// Tab depuis le champ qui précède la carte : un vrai focus clavier
-		await page.locator('#max-attempts').focus();
-		for (
-			let i = 0;
-			i < 12 && !(await zone(page).evaluate((el) => el === document.activeElement));
-			i++
-		) {
-			await page.keyboard.press('Tab');
-		}
-		await expect(zone(page)).toBeFocused();
-		await expect(front(page).getByTestId('curseur')).toBeVisible();
-		await shootBothThemes(page, line, 'Tab : le curseur apparaît', { target: card });
-		await page.keyboard.press('Enter');
-		await page.keyboard.press('ArrowUp');
-		await page.keyboard.press('ArrowUp');
-		await page.keyboard.press('Enter');
-		await expect(front(page).getByTestId('segment-eleve')).toHaveCount(1);
-		await shootBothThemes(page, line, 'flèches puis Entrée : un segment', { target: card });
-	});
-
-	await test.step('souris : pas de curseur', async () => {
-		await fresh();
-		await tap(page, CARRE, 5, 4);
-		await expect(front(page).getByTestId('depart')).toBeVisible();
-		await expect(front(page).getByTestId('curseur')).toHaveCount(0);
-		await shootBothThemes(page, line, 'au clic : départ posé, pas de curseur', { target: card });
-	});
-});
-
-test('#1798 — Points alignés ? (CP-058), figure + oui / non', async ({ page }) => {
-	const line: Line = {
-		pr: '#1798',
-		title: 'Points alignés, figure + oui / non',
-		look: '« non » tapé sans droite → Valider grisé ; droite (AB) + « non » → « Bravo » ; droite (AC) → « Ta droite passe par A et C, pas par B. », sans « Blanc 1 » ni « Les blancs suivants » ; droite (AB) + « oui » → faux. (Copie corrigée d’une évaluation et temps écoulé : pas sur la page de dev.)'
-	};
-	const card = preview(page);
-	const message = { timeout: 2000 };
-
-	async function fresh(): Promise<void> {
-		await openCard(page, 'Points alignés ? (CP-058)');
-	}
-	/** La case oui / non */
-	function ouiNon(): Locator {
-		return front(page).locator('xpath=ancestor::*[@data-slot="card"][1]').locator('input').first();
-	}
-
-	await test.step('« non » sans droite : Valider grisé', async () => {
-		await fresh();
-		await ouiNon().fill('non');
-		await expect(valider(page)).toBeDisabled();
-		await shootBothThemes(page, line, '« non » tapé, aucune droite : Valider grisé', {
-			target: card
-		});
-	});
-
-	await test.step('droite (AB) + « non »', async () => {
-		await fresh();
-		await draw(page, ALIGNES, [2, 3, 8, 5]);
-		await ouiNon().fill('non');
-		await valider(page).click();
-		await expect(card).toContainText('Tentative 1');
-		await shootBothThemes(page, line, 'droite (AB) + « non »', { target: card });
-		await expect.soft(card, 'message « Bravo »').toContainText('Bravo', message);
-	});
-
-	await test.step('droite (AC)', async () => {
-		await fresh();
-		await draw(page, ALIGNES, [2, 3, 5, 4]);
-		await ouiNon().fill('non');
-		await valider(page).click();
-		await expect(card).toContainText('Tentative 1');
-		await shootBothThemes(page, line, 'droite (AC)', { target: card });
-		await expect.soft(card).toContainText('Ta droite passe par A et C, pas par B.', message);
-		await expect.soft(card).not.toContainText('Blanc 1', message);
-		await expect.soft(card).not.toContainText('Les blancs suivants', message);
-	});
-
-	await test.step('droite (AB) + « oui » : faux', async () => {
-		await fresh();
-		await draw(page, ALIGNES, [2, 3, 8, 5]);
-		await ouiNon().fill('oui');
-		await valider(page).click();
-		await expect(card).toContainText('Tentative 1');
-		await shootBothThemes(page, line, 'droite (AB) + « oui » : faux', { target: card });
-		await expect.soft(card).not.toContainText('Juste', message);
-	});
-});
-
-// ============================================================================
-// /dev/polices : jeu Chiphre Math
-// ============================================================================
 
 /** Formules des lignes #1312 / #1322 : fraction, racines, `\mathbf`, `\text`, `\textbf` */
 const POLICES_LATEX = [
@@ -321,6 +77,15 @@ test('#1312/#1322 — Chiphre Math : trait des lettres, racines, gras, manuscrit
 		await shootBothThemes(page, line, 'Chiphre Math : fractions, racines, \\mathbf, \\text', {
 			target: bloc
 		});
+		// À la taille d'écran, les bouts arrondis et le petit trait de la racine ne se
+		// voient pas : la première formule grossie (racine, fraction, racine cubique)
+		const first = bloc.locator('math-field').first();
+		await first.evaluate((field) => (field.style.zoom = '4'));
+		await page.waitForTimeout(300);
+		await shootBothThemes(page, line, 'Chiphre Math : racines et fractions grossies', {
+			target: first
+		});
+		await first.evaluate((field) => (field.style.zoom = ''));
 		await shootBothThemes(page, line, 'Chiphre Math : galerie, équation quadratique', {
 			target: galerie(page, 'Équation quadratique')
 		});

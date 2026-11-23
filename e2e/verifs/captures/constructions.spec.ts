@@ -541,6 +541,14 @@ test('#1621 — double perpendiculaire au compas puis à l’équerre', async ({
 		'@equerre @double_perpendiculaire',
 		any(matching(/glisser|perpendiculaire e à|pose l'équerre avec un bord/), last)
 	);
+	// Les marqueurs d'angle droit ne se dessinent qu'en `@complet` (constructions.md)
+	await playSteps(
+		page,
+		line,
+		script('@equerre @double_perpendiculaire @complet'),
+		'@equerre @complet : marqueurs d’angle droit en F et en P',
+		last
+	);
 	const texts = await playSteps(
 		page,
 		line,

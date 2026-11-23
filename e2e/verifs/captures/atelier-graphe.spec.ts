@@ -35,6 +35,13 @@ test('#1315 — creux et plein, intérieur du creux en sombre', async ({ page })
 	await shootBothThemes(page, line, 'le creux, de près', {
 		around: page.locator('circle.endpoint-open')
 	});
+
+	// /grapheur : la même fonction, le même creux et le même plein
+	await page.goto('/grapheur');
+	await calc(page, 'f(x) = x+1 sur ]0;5]');
+	await setConsole(page, false);
+	await expect(page.locator('circle.endpoint-open')).toHaveCount(1);
+	await shootBothThemes(page, line, '/grapheur, f(x) = x+1 sur ]0;5]');
 });
 
 test('#1328 — Réciproque de sqrt(x+2) : demi-parabole symétrique', async ({ page }) => {
