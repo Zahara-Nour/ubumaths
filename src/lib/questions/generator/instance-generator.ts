@@ -71,6 +71,7 @@ import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
 import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import {
 	readSignTableCases,
+	infinityToken,
 	signTableAnswerLatex,
 	signTableCaseIndices,
 	type SignTableAnswer
@@ -1381,7 +1382,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// (`answerKind`, unité, précision… jugeraient la valeur de x comme autre chose)
 				const signTableAnswer = signTableAnswers.get(i);
 				if (signTableAnswer) {
-					return {
+					const tableBlank: InstanceBlank = {
 						expectedAnswer: signTableAnswer.answer,
 						type: blankResult.blankTypes[i],
 						cellule: signTableAnswer.kind,
@@ -1389,6 +1390,35 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						// Valeur de x jugée par équivalence (phase 0) : `1,5` vaut `\frac{3}{2}`
 						...(signTableAnswer.kind === 'valeur' && { acceptDecimal: true })
 					};
+					// Case valeur (valeur, limite) : erreurs prévues comme une case de calcul
+					// (chantier `variation-limite-infinie`) ; signe, marque, flèche : refusées plus bas
+					const tableErrors = templateBlank.expectedErrors ?? [];
+					if (signTableAnswer.kind === 'valeur' && tableErrors.length > 0) {
+						tableBlank.expectedErrors = tableErrors.map((error, k) => {
+							try {
+								const raw = resolveVariableConditionals(error.answer, resolvedVariables, {
+									strict: true
+								});
+								const normalized = normalizeAnswerExpression(raw, resolvedVariables);
+								const answer = normalized.includes('{{')
+									? resolveExpression(normalized, resolvedVariables, errorRandom)
+									: normalized;
+								return {
+									answer,
+									answerLatex:
+										infinityToken(answer) ??
+										convertToLatex(answer, genericFunctions, false, capitalPairs),
+									message: error.message,
+									...(error.label !== undefined && { label: error.label })
+								};
+							} catch (cause) {
+								const reason = cause instanceof Error ? cause.message : String(cause);
+								throw new Error(`Case ${i + 1}, erreur prévue ${k + 1} : ${reason}`);
+							}
+						});
+					}
+					if (templateBlank.neverChoice === true) tableBlank.neverChoice = true;
+					return tableBlank;
 				}
 				const operationAnswer = operationAnswers.get(i);
 				const buildAnswer = buildAnswers.get(i);
