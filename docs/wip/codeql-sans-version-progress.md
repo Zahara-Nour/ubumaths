@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-24, après #3060._
 
-- **État** : changement fait sur la branche ; PR à ouvrir · **Prochaine action** : PR, CI, merge ; à la prochaine mise en prod, vérifier que CodeQL est « skipped » sur le commit de version, puis archiver · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-codeql-sans-version` / `ci/codeql-sans-version`
+- **État** : #3060 mergée, pas encore exercée par une mise en prod · **Prochaine action** : à la prochaine mise en prod, vérifier sur GitHub que « CodeQL / Analyze » est « skipped » sur le commit `chore(release)`, puis archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ## Demande (2026-11-24)
 
