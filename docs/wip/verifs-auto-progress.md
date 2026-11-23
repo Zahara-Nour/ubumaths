@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, PR « rouges WebKit » ouverte (branche `test/verifs-webkit`)._
+_Mis à jour le 2026-11-23, après #3053 (rouges WebKit)._
 
-- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit (cette PR) → #1469 → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) n'est plus ici : c'est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; #1369 = E1, corrigé sur `main` par #3050 ; carnet en suite complète).
-- **Prochaine action** : merger la PR, puis #1469 (Firefox : 1er clic après un format = zone A1:A2), worktree neuf.
+- **État** : grille ✅ → #1536 ✅ → #1337 ✅ → rouges WebKit ✅ (#3053) → #1469 → tri des 391 lignes → R12 → R13 (ordre validé : « je suis tes recos » / « go »). Le rendu des exposants WebKit (`e^(x/2)`, `f⁻¹`) est E13, PR D de `ecarts-verifs`. Suite complète sur ordi-chrome, ordi-safari, iphone, android (4 workers) : seuls restent les rouges connus (#1674, #1703, #1620 = E10 ; carnet en suite complète).
+- **Prochaine action** : #1469 (Firefox : 1er clic après un format = zone A1:A2), worktree neuf.
 - **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19 à présenter dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
-- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; 4 projets à 8 workers saturent le serveur de dev (rouges « toBeVisible » à l'ouverture) → `--workers 4` ; un rouge intermittent se reproduit sous charge (`--repeat-each 16 --workers 8`) ; au téléphone la vue Données défile : mesurer une case APRÈS l'avoir amenée à l'écran ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; `test:verifs` muet → `--global-timeout`.
-- **Worktree / branche** : `../ubumaths-wt-verifs-webkit`, `test/verifs-webkit`, serveur 5177.
+- **Pièges en cours** : deux `pnpm test:verifs` en même temps se vident `test-results/` → `--output=<dossier>` ; 4 projets à 8 workers saturent le serveur de dev (rouges « toBeVisible » à l'ouverture) → `--workers 4` ; un rouge intermittent se reproduit sous charge (`--repeat-each 16 --workers 8`) ; au toucher, attendre le clavier MathLive avant de taper (`waitVirtualKeyboard`) ; ne JAMAIS changer l'attendu seul ; un écart trouvé → ligne dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; `test:verifs` muet → `--global-timeout`.
+- **Worktree / branche** : aucun (retiré après #3053 ; reste le dossier `../ubumaths-wt-verifs-webkit` avec son seul `.svelte-kit`, à effacer avec l'accord de David).
 
 ## Rouges WebKit (2026-11-23)
 
