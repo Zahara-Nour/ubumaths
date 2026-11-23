@@ -5,7 +5,7 @@ Idées reprises d'ailleurs, rubrique « Limites de fonctions » de Terminale sp�
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, série de relecture enregistrée._
+_Mis à jour le 2026-11-23, après #3015._
 
 - **État** : série de relecture des 7 publiés enregistrée en prod (`f3e6eb2c`, fichier
   `scripts/series/T_SPE-relecture-limites-publies.json`) · **Prochaine action** : lire les verdicts
@@ -13,8 +13,7 @@ _Mis à jour le 2026-11-22, série de relecture enregistrée._
   de David** : relecture dans `/dev/modeles?serie=f3e6eb2c-d5c7-4551-bbf7-2e0c7d051693` (publiés) et
   `/dev/modeles?noeud=T_SPE~e6e7e3e3-bf3c-482c-8e47-275a639b9bfe&statut=draft` (4 brouillons) ·
   **Pièges en cours** : `{{e}}` interdit (Euler) ; F3 attend l'outil n° 50 de
-  `outils-manquants.md` · **Worktree / branche** : `ubumaths-wt-idees-tle-limites-serie`,
-  `chore/idees-tle-limites-serie` (PR du fichier de série).
+  `outils-manquants.md` · **Worktree / branche** : aucun (retiré après #3015).
 
 ## Historique
 
