@@ -178,7 +178,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 77ab770d Décomposer en facteurs premiers                     | `idees-3e-arithmetique`                                     | 2026-11-23 |                                      |
 | 90dca27a Simplifier une fraction (plusieurs étapes)          | `idees-3e-arithmetique`                                     | 2026-11-23 |                                      |
 | 4bcbbaae Le nombre de dizaines, de centièmes…                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
 | 4d825d44 Le chiffre d'un rang                                | `idees-6e-entiers-decimaux`                                 | 2026-11-23 |                                      |
