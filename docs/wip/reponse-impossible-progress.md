@@ -8,16 +8,16 @@ solution »…) quand la réponse n'existe pas. Né du chantier
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, corrections de la revue commitées ; refonte du bouton validée, à coder._
+_Mis à jour le 2026-11-23, refonte du bouton commitée (377cf83ac), revue Opus lancée._
 
-- **État** : outil codé, revu (Opus), corrections commitées (41 + 4 tests verts), PR PAS ouverte ·
-  **Prochaine action** : refonte validée par David (section « 2026-11-23 — bouton : état à part »
-  ci-dessous) : bouton à état propre, case vidée et grisée, juge qui regarde le bouton d'abord ;
-  tests d'abord, puis doc, revue `code-reviewer` (Opus), PR · **En attente de David** : rien ·
-  **Pièges en cours** : la base locale a été recopiée de la prod par une autre session vers 06:12
-  (modèle d'essai perdu : le recréer, `create-questions.ts --dir` en base locale) ; MathLive change
-  ’ en ' dans `\text{}` · **Worktree / branche** : `../ubumaths-wt-reponse-impossible`,
-  `feat/reponse-impossible` (serveur arrêté).
+- **État** : bouton à état propre codé (marque `IMPOSSIBLE_ANSWER`, case vidée et verrouillée,
+  juge sur la marque, affichage en texte du bouton), tests verts, doc à jour ; PR PAS ouverte ·
+  **Prochaine action** : lire/traiter la revue `code-reviewer` (Opus) du commit 377cf83ac (la
+  relancer si son rapport est perdu), puis push + PR · **En attente de David** : son essai sur
+  `/dev/modeles?titre=Essai` (serveur 5176 du worktree, lien du tailnet) · **Pièges en cours** :
+  `create-questions.ts` vise la PROD par défaut (lit `.env`) → `set -a; source ./.env.local; set +a`
+  avant ; modèle d'essai local `632e3012` (fichier : tmp du job, `factoriser-ou-pas.json`) ·
+  **Worktree / branche** : `../ubumaths-wt-reponse-impossible`, `feat/reponse-impossible`.
 
 ## Historique
 
@@ -96,3 +96,11 @@ Questions (recommandation entre parenthèses) :
 - Conséquences à revoir : `isImpossibleAnswer` (plus de `\text{}` relu par MathLive, le test
   d'aller-retour ’ → ' change de sens), affichage de la réponse au prof, erreurs prévues
   `impossible`.
+
+### 2026-11-23 — bouton : état à part, codé
+
+- Marque réservée `IMPOSSIBLE_ANSWER` (`\u001Fimpossible`) enregistrée quand le bouton est enfoncé ;
+  le texte du bouton tapé n'est plus le bouton. Case vidée et verrouillée (`setPromptState(…, true)`),
+  état retrouvé au réaffichage ; `handleInputChange` ignore la case verrouillée relue vide.
+- `blankViews` (`expected-result.ts`) montre la marque en texte du bouton. Tests rouges puis verts
+  (44 serveur, 6 composant) ; suites voisines vertes ; specs du modèle d'essai local mises à jour.
