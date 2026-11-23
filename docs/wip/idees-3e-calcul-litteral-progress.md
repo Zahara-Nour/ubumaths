@@ -6,16 +6,19 @@ Idées reprises d'ailleurs, rubrique « Calcul littéral, équations » de Trois
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, phase 0 envoyée._
+_Mis à jour le 2026-11-23, lot écrit, en attente des brouillons en prod._
 
-- **État** : verdicts écrits (relevé, § Verdicts : 9 ✅, 23 🟡, 9 ❌) ; fiches F1-F12, N1-N6 et
-  questions Q1-Q4 dans § Phase 0 ; page à cocher https://claude.ai/artifact/EvCcEkmmjkvZ1qaupra5x6
-  (collection `verdicts`) · **Prochaine action** : lire les verdicts de David (`ArtifactData list`
-  de `verdicts`), les consigner ici, puis écrire le gros lot (skill `idees-rubrique` § 3) ·
-  **En attente de David** : la page à cocher (23 fiches, dont Q1 deux lettres, Q2 point de N2,
-  Q3 deux outils, Q4 motifs) · **Pièges en cours** : en 3e, aucun point d'équation du premier degré
-  (F8, F9, F10, N5 vont à des modèles ou points de 4e) · **Worktree / branche** :
-  `../ubumaths-wt-idees-3e-calcul-litteral`, `feat/idees-3e-calcul-litteral`.
+- **État** : phase 0 validée ; lot écrit et commité (6 neufs `…-neufs/`, 24 variations de 12 publiés
+  `…-publies/`), `create-questions` en simulation vert ; migration de contenu générée
+  (`20261123193909_…_publies_contenu.sql`), test d'intégration vert ; neufs joués en base locale,
+  N3, N4, N6 vus à l'écran · **Prochaine action** : après les brouillons en prod, commiter les ids,
+  choisir les sous-notions, générer la migration de rangement (`migration-rangement.ts`), ouvrir UNE
+  PR (rangement + contenu), `security-auditor`, merge, `db:migrate` · **En attente de David** :
+  `create-questions --dir scripts/questions/idees-3e-calcul-litteral-neufs --publier` depuis le
+  worktree (écriture en prod) ; avis sur l'écart N6 (programmes non équivalents une fois sur deux) ·
+  **Pièges en cours** : N3, le tableau à cases déborde sur iPhone ; prod : corrigé de dcaabf69 v1 à
+  nombres soudés (non corrigé) · **Worktree / branche** : `../ubumaths-wt-idees-3e-calcul-litteral`,
+  `feat/idees-3e-calcul-litteral`.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -139,6 +142,25 @@ dans le tableau de répartition ; exports de prod dans `scripts/questions/idees-
    recommande de les mettre dans « Idées en attente » du tableau de répartition.
 
 ## Historique
+
+### 2026-11-23 — lot écrit
+
+- Écrit par deux agents (`pedagogy-expert`), relu par moi : simulation verte (neufs 128 specs, publiés
+  12 fichiers sans refus), variations publiées d'origine intactes (comparées au commit d'export),
+  tirages lus (N1, N6, F1, F11, F12). Scripts : `docs/wip/questions/idees-3e-calcul-litteral-{neufs,publies}.py`.
+- Écarts aux fiches : F12 v4, le cas fractionnaire prend k = 4 ou 9 (avec k de 1 à 3, jamais de
+  fraction) ; F1, F2, F5, F7 sans `requiredForm` (la forme stricte par défaut refuse déjà le non
+  réduit) ; « 2(x² − 9) », « développé » : specs `bad_form`, pas erreurs prévues (même valeur) ;
+  moins de trois erreurs prévues là où il n'y en a pas de vraies (F1 v3, F5, F7, F8, F10, N3) ;
+  F11, F12 (`intervalles`) sans erreurs prévues. N1 : coefficients de x de −5 à 5. N4 : a de 2 à 9,
+  pgcd(a, b) = 1 en v2, signe du terme du milieu donné dans la variation à trous. **N6 : une fois sur
+  deux, un programme est changé pour ne PAS être équivalent** (sinon « Oui » toujours juste) : écart
+  de l'agent, à valider par David.
+- Base locale : 6 neufs créés (ids locaux retirés des fichiers ensuite), aperçu admin sans erreur de
+  console ; N3 : le tableau 2 × 2 à cases est plus large qu'un iPhone (seconde colonne coupée).
+- Défaut de prod relevé, non corrigé : corrigé de dcaabf69 v1, `{{eval:(b)*x+(c)}}{{eval:-(d)*x-(f)}}`
+  peut souder deux nombres.
+- Migration de contenu générée (+24 variations, 0 corrigée), `migrations-contenu-publie.test.ts` vert.
 
 ### 2026-11-23 — rubrique prise
 
