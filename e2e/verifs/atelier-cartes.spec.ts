@@ -16,7 +16,8 @@ import {
 	typeInCard,
 	showCards,
 	ownTexts,
-	isNarrow
+	isNarrow,
+	leavePanelAlone
 } from './helpers/atelier';
 
 /**
@@ -275,6 +276,16 @@ test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien
 	await expect(curves(page)).toHaveCount(1);
 	await expect(page.locator('circle.endpoint-closed')).toHaveCount(1);
 	await expect(page.locator('circle.endpoint-open')).toHaveCount(0);
+
+	// Au téléphone, l'élève replie « Mes objets » pour revenir à la console : avec
+	// le bandeau de l'atelier partagé, déplié, il ne lui laisse que son en-tête
+	// (iPhone 15, 659 px de haut ; replié, la console garde 329 px)
+	if (isNarrow(page)) {
+		leavePanelAlone(page);
+		const toggle = page.getByRole('button', { name: 'Mes objets', exact: true });
+		await toggle.click();
+		await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+	}
 
 	// L'ensemble hérité se lit par .domaine : le champ de la carte ne montre que
 	// l'ensemble PROPRE (décision d de #1337)
