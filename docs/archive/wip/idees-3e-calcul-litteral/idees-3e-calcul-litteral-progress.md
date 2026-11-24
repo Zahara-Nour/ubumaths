@@ -6,16 +6,13 @@ Idées reprises d'ailleurs, rubrique « Calcul littéral, équations » de Trois
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3062._
+_Mis à jour le 2026-11-24, chantier clos._
 
-- **État** : #3062 mergée, `db:migrate` fait, vérifié en prod : 6 neufs rangés et tagués, en
-  brouillon ; 12 publiés complétés (24 variations, dcaabf69 v1 corrigée) · **Prochaine action** :
-  relecture (skill `idees-rubrique` § 5) : brouillons dans `/dev/modeles?point=` (3-013, 3-016,
-  3-058, 4-071) ; série de relecture des 12 publiés (`scripts/series/creer-serie.ts`, David la
-  publie) ; puis verdicts « À revoir », corrections, `publier-lot.ts` en simulation, David publie ·
-  **En attente de David** : rien avant la relecture · **Pièges en cours** : N3 (62528060) reste en
-  brouillon jusqu'à l'outil n° 57 (tableau à cases sur téléphone) · **Worktree / branche** : aucun
-  (retiré par `pr:merger`) ; la suite se fait dans un nouveau worktree sur `origin/main`.
+- **État** : rubrique publiée : 5 modèles neufs publiés par David (N1, N2, N4, N5, N6), 12 publiés
+  complétés de 24 variations, le tout validé par David ; journal archivé · **Prochaine action** :
+  aucune · **En attente de David** : rien · **Pièges en cours** : N3 (62528060, « Développer avec un
+  tableau ») reste en brouillon jusqu'à l'outil n° 57 de `outils-manquants.md` ; à publier quand il
+  sera fait · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -139,6 +136,17 @@ dans le tableau de répartition ; exports de prod dans `scripts/questions/idees-
    recommande de les mettre dans « Idées en attente » du tableau de répartition.
 
 ## Historique
+
+### 2026-11-24 — relecture, publication, clôture
+
+- David valide tout (« je valide tout ») : les 6 neufs et les 24 variations des 12 publiés ; aucun
+  verdict « À revoir » en base.
+- Les séries de relecture préparées (3e : 8 modèles ; 4e : 4 modèles, une série n'accepte que son
+  niveau) n'ont pas servi, branche `chore/idees-3e-calcul-litteral-relecture` non poussée.
+- `publier-lot.ts` sur une copie du dossier des neufs sans N3 (le script publie tout le dossier) :
+  simulation verte, David publie ; vérifié en prod : 8c291e87, ea76da91, eef988e6, bf8a9d2d,
+  bfbd40fc publiés, 62528060 en brouillon.
+- Tableau de répartition : rubrique « publiée », 12 réservations levées.
 
 ### 2026-11-24 — #3062 mergée, migrations en prod
 

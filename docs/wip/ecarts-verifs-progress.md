@@ -4,13 +4,13 @@
 
 _Mis à jour le 2026-11-24, après #3067._
 
-- **État** : PR A (#3050), B (#3054), #3059, C (#3063, E4), D (#3067, E12, E13 `f⁻¹`, E18) mergées ; #3063 et #3067 pas encore en prod. E20-E49 tranchés par David le 2026-11-24 (table) ; **E50, E51, E52 à présenter** (paquet 5 du tri). Découpage E à J proposé ci-dessous, à valider.
-- **Prochaine action** : PR E (toucher et petits écrans) dès le découpage validé, puis F à J.
-- **En attente de David** : le découpage E à J ; `e^(x/2)` (E13, rendu de MathLive lui-même) : (a) exposant écrit `x/2` en ligne, (b) laisser et signaler à MathLive (reco) ; au téléphone, une annonce « Annuler » masquée si une autre arrive (compromis de E18, gardé sauf avis contraire). Tranché le 2026-11-24 : E5 (3) laissé ; noms des constructions mobiles d'un pas à l'autre ; E19 laissé.
+- **État** : PR A (#3050), B (#3054), #3059, C (#3063, E4), D (#3067, E12, E13 `f⁻¹`, E18) mergées ; #3063 et #3067 pas encore en prod. E20-E49 tranchés par David le 2026-11-24 (table) ; **E50, E51, E52 à présenter** (paquet 5 du tri). Découpage E à J validé par David le 2026-11-24.
+- **Prochaine action** : PR E (E22, E23, E24, E26, E38, E41 : toucher et petits écrans), puis F à J dans l'ordre du découpage.
+- **En attente de David** : E50, E51, E52 (à trancher). Tranché le 2026-11-24 : découpage E à J validé ; `e^(x/2)` laissé (rendu de MathLive ; signalement à MathLive à proposer à David avant de l'envoyer) ; « Annuler » masqué au téléphone si une autre annonce arrive : gardé ; E5 (3) laissé ; noms des constructions mobiles d'un pas à l'autre ; E19 laissé.
 - **Pièges en cours** : `verifs-auto` AJOUTE ici ses nouveaux écarts (numéro suivant : E53). Ne jamais changer l'attendu d'un test de `e2e/verifs/`. Chrome n'atteint pas `localhost` : `pnpm lien`. Tests client lourds : par dossier. Les traits des droites/cercles ne sont pas des obstacles de `placeLabels`.
 - **Worktree / branche** : aucun (ceux de #3063 et #3067 retirés).
 
-## Découpage E12-E49 (proposé le 2026-11-24)
+## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |
 | --- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |

@@ -1,7 +1,7 @@
 """Ajoute les variations validées aux 11 modèles publiés exportés de prod dans
 scripts/questions/idees-tle-derivation-publies/ (chantier idees-tle-derivation).
 
-Phase 0 validée par David le 2026-11-23 (fiches docs/wip/idees-tle-derivation-fiches.md) :
+Phase 0 validée par David le 2026-11-23 (fiches docs/archive/wip/idees-tle-derivation/idees-tle-derivation-fiches.md) :
 F1 (50feeefd), F2 (f52b93c4), F8 (e3e19d28), F9 (225c8682), F10 (cfd13223), F12 c et F13
 (37ce7759), F14 (98f9d4b2), F15 (eeb72d3a), F16 (08f9ad7b), F17 (c4775a3a), F18 (e814175b, Q2 :
 sens de l'inégalité écrit, une case). Les variations s'ajoutent À LA FIN (les réponses des élèves

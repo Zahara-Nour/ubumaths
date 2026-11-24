@@ -6,17 +6,13 @@ Idées reprises d'ailleurs, rubrique « Compléments sur la dérivation » de Te
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, migrations écrites (PR à ouvrir)._
+_Mis à jour le 2026-11-24, chantier clos (après #3068 et #3070)._
 
-- **État** : 5 brouillons créés en prod par David (ids commités) ; F7 b remis (choix de quatre
-  tableaux, choix (a) de David, outil n° 57 à comparer plus tard) ; migrations de rangement
-  (5 modèles) et de contenu (16 variations sur 11 publiés) écrites, tests d'intégration verts ·
-  **Prochaine action** : `security-auditor`, PR, `db:migrate`, relecture dans `/dev/modeles` ·
-  **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b dans le brouillon
-  74d73d4e) · **Pièges en cours** : sous-notion « Convexité > lecture graphique » archivée → F11 en
-  « caractérisations », F12 en « dérivée seconde » · **Worktree / branche** :
-  `../ubumaths-wt-idees-tle-derivation`, `feat/idees-tle-derivation`.
+- **État** : rubrique publiée — 5 modèles neufs publiés (F5, F6, F7 avec F7 b, F11, F12) et
+  16 variations ajoutées à 11 modèles publiés, relus et validés par David ; série de relecture
+  c9a6ae1b · **Prochaine action** : aucune · **En attente de David** : rien · **Suite** : outil
+  n° 59 (flèche cachée autour d'une double barre), puis comparer avec F7 b · **Worktree /
+  branche** : aucun.
 
 ## Historique
 
@@ -56,7 +52,7 @@ scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b da
 - Publiés (+16) : 50feeefd +2, f52b93c4 +2, e3e19d28 +1, 225c8682 +1, cfd13223 +1, 37ce7759 +2
   (F12 c, F13), 98f9d4b2 +1, eeb72d3a +2, 08f9ad7b +1, c4775a3a +1, e814175b +2.
 - **F7 b retiré, question à David** : `-inf,3: ?flèche` est refusé autour d'une double barre
-  (« ni centrée, ni asymptote »), et une limite écrite donnerait la flèche. Outil n° 57 de
+  (« ni centrée, ni asymptote »), et une limite écrite donnerait la flèche. Outil n° 59 de
   `outils-manquants.md` (18d10940d, `main`). Choix : (a) choix de quatre tableaux (décroissante des
   deux côtés, croissante, creux, bosse ; écrit, specs vertes, hors du modèle) ; (b) attendre
   l'outil ; (c) laisser F7 b.
@@ -74,7 +70,7 @@ scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b da
 - David a créé les 5 brouillons en prod ; ids commités (da157de6, 1a82084b, 74d73d4e, 91841156,
   02253f0a).
 - F7 b : David choisit (a), le choix de quatre tableaux, « on fera l'outil après pour voir si c'est
-  mieux » (outil n° 57). `INCLURE_F7B = True` ; 9 specs vertes. Le brouillon en prod n'a encore que
+  mieux » (outil n° 59). `INCLURE_F7B = True` ; 9 specs vertes. Le brouillon en prod n'a encore que
   F7 a : mise à jour par `create-questions --mettre-a-jour --publier` (David).
 - Rangement relevé en prod : F5 « Dérivation > fonctions composées » (TSPE-413), F6 et F7
   « Dérivation > variations et extremums » (TSPE-416), F11 « Convexité > caractérisations »
@@ -83,3 +79,15 @@ scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b da
 - Migrations `20261124062316_…_rangement_tags` et `20261124062325_…_publies_contenu` (+1 ou +2
   variations par modèle, 16 en tout) ; tests d'intégration verts (125).
 - Doc système inchangée : les migrations rangent et complètent du contenu, sans toucher au schéma.
+- #3068 mergée ; `security-auditor` sans finding bloquant. `db:migrate` refusé à la session par le
+  classifieur (écriture en prod) : laissé à David.
+
+### 2026-11-24 — relecture, publication, clôture
+
+- `db:migrate` et mise à jour de F7 (F7 b) lancés par David ; vérifié en prod : 5 modèles rangés,
+  F7 à 2 variations, 16 variations sur les 11 publiés.
+- Série de relecture c9a6ae1b (11 publiés), enregistrée par David, fichier commité (#3070).
+- David : « je valide tout » ; 5 modèles publiés par `publier-lot.ts --publier` (vérifié en prod).
+- Tableau de répartition : rubrique publiée, 11 réservations levées, idées en attente TSA1-44,
+  TSA2-34, TSA2-52 retirées (reprises en F7). Outil de la flèche cachée renuméroté 59 (le n° 57
+  était pris deux fois).

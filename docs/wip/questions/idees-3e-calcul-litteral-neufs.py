@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-calcul-litteral-neufs/.
 
 Phase 0 validée par David le 2026-11-23 (« je suis tes recos » ; journal
-docs/wip/idees-3e-calcul-litteral-progress.md, § Phase 0 › Modèles neufs (3e)) : N1 à N6.
+docs/archive/wip/idees-3e-calcul-litteral/idees-3e-calcul-litteral-progress.md, § Phase 0 › Modèles neufs (3e)) : N1 à N6.
 Q1 : pas de variation à deux lettres dans N1 ; Q2 : N2 sur le point 3-016.
 
 Points prévus (rangement par migration, après la création en brouillon) :
