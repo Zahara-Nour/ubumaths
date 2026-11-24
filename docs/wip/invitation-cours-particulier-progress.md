@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR 1 prête (migration + tests), avant ouverture._
+_Mis à jour le 2026-11-25, après #3119._
 
-- **État** : PR 1 sur la branche — migration `20261124224822` (table `private_lesson_invitations`, `schools.is_private_lessons` posé sur Akadada, `get_private_lesson_invitation`), 21 tests d'intégration verts (rouges sans la migration), security-auditor sans bloquant, code-reviewer corrigé · **Prochaine action** : PR ouverte → CI → merge → `db:migrate` ; puis PR 2 (admin) · **En attente de David** : durée de conservation des invitations expirées / annulées (purge, cf. « Dette pour les PR 2 et 3 ») · **Pièges en cours** : voir « Dette pour les PR 2 et 3 » ; le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes (classe d'invitation née fermée → adhésion côté serveur) · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier` / `feat/invitation-cours-particulier`
+- **État** : PR 1 mergée (#3119) — migration `20261124224822` (table `private_lesson_invitations`, `schools.is_private_lessons`, `get_private_lesson_invitation`), 21 tests d'intégration · **Prochaine action** : vérifier que `db:migrate` est passé (`migration list --linked` : plus rien en attente ; MCP : `select is_private_lessons from schools where name = 'Akadada'` = true), puis PR 2 (admin : formulaire, liste, renvoyer/annuler, courriel d'invitation, **purge à 30 jours**, décision 8) dans un worktree neuf `../ubumaths-wt-invitation-cours-particulier-admin` · **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm db:migrate` (refusée à Claude par le classifieur le 2026-11-25) · **Pièges en cours** : « Dette pour les PR 2 et 3 » ci-dessous ; le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes (classe d'invitation née fermée → adhésion côté serveur) · **Worktree / branche** : aucun (celui de la PR 1 est retiré)
 
 ## But
 
@@ -23,6 +23,10 @@ le compte, la classe et recueille CGU + consentement en une fois.
 6. Formulaire réservé aux **moins de 15 ans** (consentement toujours exigé, quel que soit le niveau).
 7. **Question d'accès** : seuls l'admin et le prof lisent les invitations (prénom, adresse du parent) ;
    la page du parent ne voit que l'invitation de son propre lien.
+
+8. **Conservation** (2026-11-25) : une invitation expirée, annulée ou utilisée est **effacée 30 jours
+   après sa fin** (date d'expiration, d'annulation ou d'utilisation), par une tâche de nuit. Pendant
+   ces 30 jours, une expirée reste dans la liste et peut être renvoyée. Codé avec la PR 2.
 
 ## Phase 0 — comportements (validés le 2026-11-24)
 
@@ -83,11 +87,11 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
   création échoue ; `used_at` + `student_id` + `class_id` ensemble à la fin.
 - **Essais en local** : la base locale n'a pas d'Akadada (le réglage n'y est pas posé) → une graine
   ou une école de test réglée à la main pour essayer les PR 2 et 3.
-- **Conservation** : rien ne purge les invitations expirées, annulées ou utilisées (prénom +
-  adresse du parent). Question à David : au bout de combien de temps les effacer ?
+- **Conservation** : tranchée (décision 8, 30 jours après la fin) ; purge à coder en PR 2.
 
 ## Historique
 
 - 2026-11-24 : chantier ouvert ; décisions 1 à 7 de David ; phase 0 écrite.
 - 2026-11-24 : phase 0 validée par David, point A compris (réglage « école de cours particuliers »).
 - 2026-11-24 : PR 1 écrite (migration + 21 tests) ; revues security-auditor (aucun bloquant) et code-reviewer (niveaux, format d'adresse, réservation `claimed_at`, plafond d'envois, assertions strictes : corrigés).
+- 2026-11-25 : #3119 mergée (PR 1) ; décision 8 de David (purge à 30 jours) ; `db:migrate` refusé à Claude par le classifieur, laissé à David.
