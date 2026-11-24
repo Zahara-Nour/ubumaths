@@ -343,9 +343,8 @@ F6 = modele(
 # F7 — TSPE-416. a : fonction auxiliaire g(x) = eˣ − ax − b, minimum en ln a (domaine écrit
 # `\ln{a}` : le parseur du tableau refuse `\ln(a)` dans une clé). b : homographique.
 # ⚠️ b ne suit pas la fiche : une flèche cachée autour d'une double barre est refusée par le
-# parseur (« ni centrée, ni asymptote »). Outil n° 57 de docs/wip/outils-manquants.md. Question à
-# David (journal, 2026-11-23) : F7_B (choix de quatre tableaux) est écrit mais HORS du modèle tant
-# qu'il n'a pas tranché (comme F3 des limites) ; INCLURE_F7B = True l'y remet.
+# parseur (« ni centrée, ni asymptote »). Outil n° 57 de docs/wip/outils-manquants.md. David a
+# choisi le 2026-11-24 le choix de quatre tableaux, en attendant l'outil (on comparera ensuite).
 # =============================================================================================
 
 LN = '\\ln{ {{a}} }'
@@ -467,7 +466,7 @@ SPECS_F7 = [
          {'r': '1', 'al': '-2', 't': '2', 'p': '3', 'q': '-1', 'd': '7'}, 'incorrect', ['2']),
 ]
 
-INCLURE_F7B = False
+INCLURE_F7B = True
 F7 = modele(
     'Variations d\'une fonction auxiliaire ou homographique',
     'Signe de la dérivée et variations de g(x) = eˣ − ax − b (minimum en ln a, tableau à '
