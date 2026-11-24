@@ -10,6 +10,16 @@ _Mis à jour le 2026-11-24, après #3064 (paquet 2 du tri)._
 - **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; gestes à deux doigts = `Fingers` (CDP, Android seulement) ; « Desktop Chrome » de Playwright se dit Windows ; présence notée une fois par jour et par processus du serveur (repère `.captures/verifs/presence/`) ; `fiches.spec.ts` remet son décor à zéro ; agents sur des élèves distincts ; rouges sous charge → rejouer seuls ; types de `e2e/verifs` : `tsgo -p` d'un tsconfig limité à `e2e/verifs` (`types: ["node"]`, `typeRoots`) ; ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : aucun (celui de #3064 retiré). Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
 
+## Tri — paquet 3 : lignes du 23 au 25 octobre (2026-11-24)
+
+77 lignes. Worktree `ubumaths-wt-verifs-tri-3`, branche `test/verifs-tri-3`, serveur 5179. Cinq agents : opérations posées (élèves 21-25) ; constructions (01-03) ; pages démo / aide / dev / programme ; Mathoux (10-15) ; modèles de questions (16-20). La session : Atelier et prod.
+
+- **Contre la prod** (`VERIFS_URL=https://chiph.re`, pages publiques, 2 workers) : `atelier-calcul` 70 verts, #1674, #1703, #1620 compris → la ligne « verifs-auto » et les lignes « test rouge » #1674, #1703, #1620 sortent.
+- **Atelier** (`atelier-paquet3.spec.ts`, ordi, iPhone, Android) : #1663 (ordonnées exactes du tableau, minimum −1,5 ; l'exercice `fonctions/597` n'existe pas en local), #1656 (carte « Dériver » = `.dériver`, quotient réduit, signe devant), #1709 (infobulle « Les touches de calcul » du clavier de la console), #1710 (rien ne déborde au téléphone), #1684 (tracée pour x > 0, vu) ; #1673, #1624 déjà couverts.
+- **Écart** : E32 (formules lues en anglais par les lecteurs d'écran, balises SSML comprises).
+- **Remarque outillage** : les projets de `pnpm test:verifs` tournent en `en-US` (défaut de Playwright) ; MathLive suit la langue du navigateur (infobulles en anglais dans les tests, en français chez un élève). À proposer : `locale: 'fr-FR'` dans `e2e/verifs/projets.ts`.
+- **Restent tels quels** : #1784 (question à David : les réponses « domaine gardé » de `.développer`), #1682 et #1625 (mis de côté par David), #1692 (proposer la suppression de la table du tableur V4 : migration destructive, à David), #1594 (Brevo), #1712 (relecture du lot A1 du CP).
+
 ## Tri — paquet 2 : lignes du 17 au 22 octobre (2026-11-24)
 
 44 lignes. Worktree `ubumaths-wt-verifs-tri-2`, branche `test/verifs-tri-2`, serveur 5179. Trois agents (gamification ; connexion, QR, constructions ; programme, fiches, unités) sur des élèves distincts ; la session fait les lignes Atelier.
