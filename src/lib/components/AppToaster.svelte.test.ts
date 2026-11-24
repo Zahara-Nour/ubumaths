@@ -13,6 +13,8 @@ describe('AppToaster', () => {
 	afterEach(() => {
 		toast.dismiss();
 		vi.restoreAllMocks();
+		// mobileStore est un singleton : lui rendre la vraie largeur
+		window.dispatchEvent(new Event('resize'));
 	});
 
 	it('au téléphone, une seule annonce visible à la fois (la plus récente)', async () => {
@@ -32,12 +34,11 @@ describe('AppToaster', () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1280);
 		window.dispatchEvent(new Event('resize'));
 		render(AppToaster);
-		toast.success('Un.');
-		toast.success('Deux.');
-		toast.success('Trois.');
+		// Six annonces : le défaut de sonner (3) ne suffirait pas
+		for (const n of ['Un.', 'Deux.', 'Trois.', 'Quatre.', 'Cinq.', 'Six.']) toast.success(n);
 		flushSync();
 		await tick();
 		await new Promise((r) => setTimeout(r, 400));
-		expect(visibleCount()).toBe(3);
+		expect(visibleCount()).toBe(5);
 	});
 });
