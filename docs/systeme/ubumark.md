@@ -8,6 +8,7 @@ couvre:
   - src/lib/components/exercises/LaTeXImportDialog.svelte
   - src/lib/utils/markdown-cache.ts
   - src/lib/utils/latex-break-points.ts
+  - 'src/lib/utils/formula-speech/**'
   - scripts/check-ubumark.ts
 ---
 
