@@ -2,20 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, lot joué en base locale, PR des fichiers en cours._
+_Mis à jour le 2026-11-24, après #3116._
 
 - **État** : phase 0 validée ; lot écrit (scripts `docs/wip/questions/…-{publies,neufs}.py` →
   `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`) et joué en base locale
-  (§ Historique) : 30 variations sur 30 justes / fausses comme prévu. PR des fichiers seuls.
-- **Prochaine action** : après le merge, étape 6 de `couvrir-un-niveau.md` : David lance
+  (§ Historique) : 30 variations sur 30 justes / fausses comme prévu. Fichiers mergés (#3116).
+- **Prochaine action** : étape 6 de `couvrir-un-niveau.md` : David lance
   `create-questions --dir scripts/questions/idees-3e-fonctions-affines-neufs --publier` en prod
   (brouillons), je commite les ids, puis rangement (`migration-rangement.ts`) et contenu des 3
   publiés (`migration-contenu.ts`, lit la prod) dans une même PR, `security-auditor`.
-- **En attente de David** : le `create-questions --publier` en prod, après le merge.
+- **En attente de David** : le `create-questions --publier` en prod (commande ci-dessus, `!`).
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
   Page à cocher (non remplie) : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions-affines`,
-  `feat/idees-3e-fonctions-affines`.
+- **Worktree / branche** : aucun (retiré après #3116) ; la suite dans un worktree neuf
+  `../ubumaths-wt-idees-3e-fonctions-affines-rangement`.
 
 ## Phase 0 (2026-11-24)
 
