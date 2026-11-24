@@ -6,15 +6,15 @@ d'outil. Ligne n° 54 de [outils-manquants.md](outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3052._
+_Mis à jour le 2026-11-24, phase 0 de la PR 2 écrite._
 
-- **État** : PR 1 (outil `zoom:` du bloc ` ```line `, écran + PDF + catalogue + doc) MERGÉE (#3052) ;
-  `outils-manquants.md` : n° 54 livré, n° 58 ajouté (placer un point sur un zoom) · **Prochaine
-  action** : PR 2, modèles 6N1H-3 et 6N1H-4 (skill `idees-rubrique` / `couvrir-niveau` : brouillons,
-  relecture dans `/dev/modeles`), worktree neuf `ubumaths-wt-droite-zoom-modeles` ; puis outil n° 53
-  (labyrinthe), phase 0 d'abord · **En attente de David** : renommer N5 (c178356b) dans l'éditeur
-  (cf. journal `idees-6e-entiers-decimaux`) · **Pièges en cours** : aucun · **Worktree / branche** :
-  aucun.
+- **État** : PR 1 (outil) MERGÉE (#3052) ; PR 2 (modèles 6N1H-3, 6N1H-4) : phase 0 écrite (§ PR 2
+  ci-dessous), rien codé · **Prochaine action** : après validation, gros lot (script
+  `docs/wip/questions/droite-zoom-modeles.py`), brouillons, relecture dans `/dev/modeles` ; puis outil
+  n° 53 (labyrinthe), phase 0 d'abord · **En attente de David** : Q1 à Q3 de la phase 0 de la PR 2 ;
+  renommer N5 (c178356b) dans l'éditeur (cf. journal `idees-6e-entiers-decimaux`) · **Pièges en
+  cours** : aucun · **Worktree / branche** : `ubumaths-wt-droite-zoom-modeles`,
+  `feat/droite-zoom-modeles`.
 
 ## Phase 0 (2026-11-23, validée par David : « je suis tes recos »)
 
@@ -49,3 +49,47 @@ le précédent, deux pointillés vers le morceau agrandi.
   (refusés). Revu au PDF : grands nombres (40 000 à 50 000, deux zooms), pointillés sous « 46 000 ».
 
 - 2026-11-23 : #3052 mergée (CI verte, `pnpm pr:merger`).
+
+## PR 2 : les modèles (phase 0, 2026-11-24, en attente de David)
+
+Relevé : lignes 6N1H-3 et 6N1H-4 de [idees-6e-entiers-decimaux-releve.md](idees-6e-entiers-decimaux-releve.md).
+Chez eux : une droite, puis une ou plusieurs droites agrandies dessous, reliées par des pointillés ;
+l'élève tape l'abscisse au clavier. Chez nous : la même chose avec `zoom:` (outil n° 54), réponse en
+case numérique, comme 8adac6d1 « Repérer un nombre décimal ».
+
+**Recommandation : un modèle neuf** « Lire une abscisse grâce à des zooms », point 6-108 (« Repérer un
+nombre décimal sur une demi-droite graduée »), même nœud que 8adac6d1. Pas des variations de
+8adac6d1 : lire par zooms successifs est une méthode à part (d'une droite à l'autre, le pas est
+divisé par 10), le prof doit pouvoir la donner seule ; 8adac6d1 a déjà 7 variations. Grades : 6e.
+Les nombres restent sous le milliard (6-103).
+
+Variations (du plus simple au plus dur), point B à lire, étiquettes aux deux bouts de la 1re droite
+seulement :
+
+- **v0 au dixième, 1 zoom** : droite de 0 en 1, de O à O + 9 (O de 5 à 10) ; zoom entre les deux
+  entiers qui encadrent B, partagé en 10. Ex. B = 8,6.
+- **v1 au centième, 1 zoom** : droite de n à n + 1 au dixième ; zoom entre les deux dixièmes qui
+  encadrent B, au centième. Ex. B = 12,47.
+- **v2 au millième, 2 zooms** (l'exercice phare de 6N1H-3). Ex. B = 12,473.
+- **v3 au millième, 2 zooms, trois écritures** : décimal, entier + fraction décimale < 1, une seule
+  fraction décimale (même forme que 8adac6d1 v6 : `requiredForm` sur les deux dernières cases).
+- **v4 grand entier, 2 zooms** (6N1H-4) : droite de m × 10^(w+1) à (m + 1) × 10^(w+1), pas 10^w,
+  w de 3 à 5. Ex. 40 000 à 50 000 (pas 1 000), puis 46 000 à 47 000, puis 46 300 à 46 400 :
+  B = 46 370.
+- **v5 grand entier, 3 zooms** : 1re droite des millions, 3 000 000 à 4 000 000 (pas 100 000),
+  puis 3 500 000, 3 520 000, 3 527 000 : B = 3 527 400.
+
+Chiffres tirés de 2 à 8 (comme chez eux : jamais sur une graduation du dessus ni au bord).
+Chaque variation : `testSpecs`, trois erreurs prévues, coup de pouce (« Sur chaque droite agrandie,
+un petit intervalle vaut dix fois moins que sur la droite du dessus »). Erreurs typiques : garder le
+pas de la droite du dessus (12,4 + 7 × 0,1), s'arrêter au premier zoom (12,47 au lieu de 12,473),
+graduations comptées au lieu des intervalles.
+
+Questions :
+
+- **Q1. Bouts des zooms écrits ou non ?** Chez eux, rien n'est écrit sur les zooms : l'élève retrouve
+  lui-même 12,4 et 12,5. Reco : **rien d'écrit** (c'est le cœur de l'exercice), et le corrigé les
+  écrit.
+- **Q2. Un modèle neuf** (reco) **ou des variations de 8adac6d1** ?
+- **Q3. Question d'accès de la migration de rangement** : personne ne gagne d'accès (on range un
+  modèle de questions). D'accord ?
