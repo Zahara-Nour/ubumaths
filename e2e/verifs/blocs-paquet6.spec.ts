@@ -870,8 +870,8 @@ test('#2462 — ÉCART : à l’écran, la droite graduée de Q1 et de Q2 est de
 	// Écart constaté : `ListNode.svelte` ne rend pas le nœud `number-line` (seule la source brute a
 	// disparu, grâce au parseur de #2462) : rien n'est dessiné à la place de la droite. La doc
 	// (`ubumark.md`) demande pourtant que chaque bloc soit rendu dans `ListNode` et `StaticBlockNode`.
-	test.fail();
 	await openRepereExercise(page);
+	test.fail();
 	const lines = page.locator('.number-line-container');
 	await expect(lines).toHaveCount(2, { timeout: 5000 });
 	const geometry = await lines.evaluateAll((els) =>

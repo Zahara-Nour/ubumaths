@@ -630,7 +630,6 @@ test.describe('#2509 — évaluation de rattrapage', { tag: '@bureau' }, () => {
 	}) => {
 		// Écart constaté : `GET /api/worksheets/<id>` ne rend pas `translations` (la liste de colonnes lue par
 		// la page n'a pas la clé), donc l'onglet PDF imprime le titre français malgré la traduction en base
-		test.fail();
 		const [row] = await sql<{ translations: { en?: { title?: string } } | null }>(
 			`select translations from worksheets where id = $1`,
 			[RATTRAPAGE_ID]
@@ -639,6 +638,9 @@ test.describe('#2509 — évaluation de rattrapage', { tag: '@bureau' }, () => {
 		expect(english, 'titre anglais en base').not.toBe('');
 		await login(page, TEACHER.email, TEACHER.password);
 		const textEn = pdfText(await englishPdf(page)).join('\n');
+		// Le PDF anglais est bien celui lu (sinon un PDF vide passerait pour l'écart)
+		expect(textEn).toContain('Calculators are not allowed.');
+		test.fail();
 		expect(textEn, 'titre anglais imprimé').toContain(english);
 	});
 });

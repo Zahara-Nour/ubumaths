@@ -742,8 +742,9 @@ test.describe('#2482 — modèles de message : accolades conservées', { tag: '@
 		// ÉCART : l'onglet « Prévisualisation » plante la page (« ERREUR 500 », Svelte
 		// `effect_update_depth_exceeded` dans `updatePreview`, message-templates/+page.svelte) :
 		// l'aperçu de la ligne est inatteignable.
+		// Le symptôme, en positif : un sélecteur cassé ne doit pas passer pour l'écart
+		await expect(page.getByText('Erreur 500', { exact: false }).first()).toBeVisible();
 		test.fail();
-		await page.waitForTimeout(1000);
 		await expect(page.getByText('Erreur 500', { exact: false })).toHaveCount(0);
 		await expect(
 			dialog.getByText('Corps', { exact: true }).locator('xpath=following-sibling::div')
@@ -760,7 +761,8 @@ test.describe('#2482 — modèles de message : accolades conservées', { tag: '@
 		await expect(dialog.getByText('Corps du message *')).toBeVisible();
 		// ÉCART : « Corps du message » n'a plus de champ de saisie depuis la migration ContentField
 		// (f72a1940a5) ; on ne peut qu'y insérer des variables. La ligne demande de saisir
-		// `Bonjour {{studentName}}`.
+		// `Bonjour {{studentName}}`. Le symptôme, en positif : seul le bouton d'insertion est offert.
+		await expect(dialog.getByRole('button', { name: 'Insérer variable/filtre' })).toBeVisible();
 		test.fail();
 		await expect(dialog.getByRole('textbox', { name: /Corps du message/ })).toBeVisible();
 	});
@@ -780,6 +782,10 @@ test.describe('#2482 — modèles de message : accolades conservées', { tag: '@
 		// ÉCART : l'insertion est refusée par la base (« Erreur lors de la création », code 42501,
 		// « new row violates row-level security policy ») : la page n'envoie pas `created_by`,
 		// que la politique `teacher_manage_class_templates` exige égal à `auth.uid()`.
+		// Le symptôme, en positif : un sélecteur cassé ne doit pas passer pour l'écart
+		await expect(
+			page.locator('[data-sonner-toast]').filter({ hasText: 'Erreur lors de la création' })
+		).toBeVisible();
 		test.fail();
 		await expect(
 			page.locator('[data-sonner-toast]').filter({ hasText: 'Modèle créé avec succès' })

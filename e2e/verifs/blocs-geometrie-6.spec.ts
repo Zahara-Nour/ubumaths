@@ -1222,7 +1222,7 @@ test.describe('#2475, #2477 — lot 12b du CE2, modèles joués en aperçu admin
 		page
 	}) => {
 		const modele = await modeleDeLaBase('1c0ba52e');
-		test.skip(modele === null, 'modèle 1c0ba52e absent de la base locale');
+		expect(modele, 'modèle 1c0ba52e absent de la base locale').not.toBeNull();
 		const { seed, instance } = graine(modele!, (i) => blocDe(i).includes('grille: 1'));
 		const bloc = blocDe(instance);
 		const win = fenetreDe(bloc);
@@ -1239,7 +1239,7 @@ test.describe('#2475, #2477 — lot 12b du CE2, modèles joués en aperçu admin
 		page
 	}) => {
 		const modele = await modeleDeLaBase('1c0ba52e');
-		test.skip(modele === null, 'modèle 1c0ba52e absent de la base locale');
+		expect(modele, 'modèle 1c0ba52e absent de la base locale').not.toBeNull();
 		const { seed, instance } = graine(modele!, (i) => !blocDe(i).includes('grille'));
 		const bloc = blocDe(instance);
 		const win = fenetreDe(bloc);
@@ -1256,7 +1256,7 @@ test.describe('#2475, #2477 — lot 12b du CE2, modèles joués en aperçu admin
 		page
 	}) => {
 		const modele = await modeleDeLaBase('d0f7d7a8');
-		test.skip(modele === null, 'modèle d0f7d7a8 absent de la base locale');
+		expect(modele, 'modèle d0f7d7a8 absent de la base locale').not.toBeNull();
 		const { seed, instance } = graine(modele!, () => true);
 		const bloc = blocDe(instance);
 		const win = fenetreDe(bloc);
@@ -1273,7 +1273,7 @@ test.describe('#2475, #2477 — lot 12b du CE2, modèles joués en aperçu admin
 		page
 	}) => {
 		const modele = await modeleDeLaBase('d73d429b');
-		test.skip(modele === null, 'modèle d73d429b absent de la base locale');
+		expect(modele, 'modèle d73d429b absent de la base locale').not.toBeNull();
 		const { seed, instance } = graine(modele!, () => true);
 		const bloc = blocDe(instance);
 		const win = fenetreDe(bloc);
@@ -1298,7 +1298,7 @@ test.describe('#2475, #2477 — lot 12b du CE2, modèles joués en aperçu admin
 			page
 		}) => {
 			const modele = await modeleDeLaBase(debut);
-			test.skip(modele === null, `modèle ${debut} absent de la base locale`);
+			expect(modele, `modèle ${debut} absent de la base locale`).not.toBeNull();
 			// Pour la variation 2 : un [AB] oblique (ni horizontal ni vertical)
 			const { seed, instance } = graine(modele!, (i) => {
 				if ((i.selectedVariationIndex ?? 0) !== variation) return false;
@@ -1335,7 +1335,7 @@ test.describe('#2475, #2477 — lot 12b du CE2, modèles joués en aperçu admin
 			page
 		}) => {
 			const modele = await modeleDeLaBase('f4b94b4f');
-			test.skip(modele === null, 'modèle f4b94b4f absent de la base locale');
+			expect(modele, 'modèle f4b94b4f absent de la base locale').not.toBeNull();
 			const { seed, instance } = graine(modele!, (i) => {
 				const bloc = blocDe(i);
 				const a = pointDe(bloc, 'A');
@@ -1427,7 +1427,7 @@ test.describe('#2472 — somme de deux vecteurs (modèle 51192dc4, plusieurs tir
 			page
 		}) => {
 			const modele = await modeleDeLaBase('51192dc4');
-			test.skip(modele === null, 'modèle 51192dc4 absent de la base locale');
+			expect(modele, 'modèle 51192dc4 absent de la base locale').not.toBeNull();
 			const { seed, instance } = tiragesDistincts(modele!, 3)[rang];
 			const v = vecteursDe(instance);
 			await ouvrirModele(page, modele!, seed);
@@ -1451,7 +1451,7 @@ test.describe('#2472 — somme de deux vecteurs (modèle 51192dc4, plusieurs tir
 
 	test('#2472 — u⃗ seul → « … seul … »', async ({ page }) => {
 		const modele = await modeleDeLaBase('51192dc4');
-		test.skip(modele === null, 'modèle 51192dc4 absent de la base locale');
+		expect(modele, 'modèle 51192dc4 absent de la base locale').not.toBeNull();
 		const { seed, instance } = tiragesDistincts(modele!, 1)[0];
 		const v = vecteursDe(instance);
 		await ouvrirModele(page, modele!, seed);
@@ -1463,7 +1463,7 @@ test.describe('#2472 — somme de deux vecteurs (modèle 51192dc4, plusieurs tir
 
 	test('#2472 — la somme juste (extrémité de u⃗ + v⃗) → vert', async ({ page }) => {
 		const modele = await modeleDeLaBase('51192dc4');
-		test.skip(modele === null, 'modèle 51192dc4 absent de la base locale');
+		expect(modele, 'modèle 51192dc4 absent de la base locale').not.toBeNull();
 		const { seed, instance } = graine(modele!, (i) => {
 			const v = vecteursDe(i);
 			return Math.abs(v.xa + v.a + v.c) <= 5 && Math.abs(v.ya + v.b + v.d) <= 5;

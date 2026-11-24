@@ -296,7 +296,7 @@ test.describe('#2566 — filtre par niveau de /automaths', { tag: '@bureau' }, (
 		const emptyGrade = ['T_EXP', 'T_GEN'].find(
 			(code) => !catalogue.templates.some((template) => (template.grades ?? []).includes(code))
 		);
-		test.skip(emptyGrade === undefined, 'tous les niveaux ont des modèles sur cette base');
+		expect(emptyGrade, 'un niveau sans modèle parmi T_EXP et T_GEN').toBeDefined();
 		const names: Record<string, string> = {
 			T_EXP: 'Terminale maths expertes',
 			T_GEN: 'Terminale générale'
@@ -305,9 +305,13 @@ test.describe('#2566 — filtre par niveau de /automaths', { tag: '@bureau' }, (
 		expect(new URL(page.url()).searchParams.get('niveau')).toBe(emptyGrade);
 		// Un niveau qui a un programme s'ouvre sur « Programme » : ses points, sans question
 		const toggle = page.getByRole('group', { name: 'Parcourir par' });
-		if ((await toggle.count()) > 0) {
+		// La Terminale générale n'a pas de programme de maths (tronc commun) : pas de bascule
+		if (emptyGrade === 'T_EXP') {
+			await expect(toggle).toHaveCount(1);
 			await expect(page.getByText('Pas encore de question').first()).toBeVisible();
 			await toggle.getByRole('button', { name: 'Notions', exact: true }).click();
+		} else {
+			await expect(toggle).toHaveCount(0);
 		}
 		await expect(page.getByText('Aucune question pour ce niveau.')).toBeVisible();
 	});

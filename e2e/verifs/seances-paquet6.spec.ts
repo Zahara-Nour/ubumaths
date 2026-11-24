@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { buildSeriesLink, type SeriesItem } from '../../src/lib/validation/series';
 import { buddyMessages } from '../../src/lib/config/buddy-messages';
 import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
-import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
+import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock, refreshLock } from './helpers/verrou';
 
 /**
  * Séances de l'élève — paquet 6 du tri — base LOCALE
@@ -86,6 +86,11 @@ test.beforeAll(async () => {
 		'select id, gidouilles::text from profiles where id = any($1)',
 		[ALL_IDS]
 	);
+});
+
+// Le fichier dure plus que les 30 min au bout desquelles un verrou est repris
+test.beforeEach(() => {
+	if (lockHeld) refreshLock('eleves-16-20');
 });
 
 test.afterAll(async () => {
@@ -1308,7 +1313,7 @@ async function logoutStudent(page: Page): Promise<void> {
 	await page.waitForURL((url) => !url.pathname.startsWith('/dashboard'));
 }
 
-test('#2544 — Mathoux en sieste : en arrivant sur une page de l’espace élève, le Palotin entre, annonce la sieste avec le lien, repart ; recharger avant 10 min → rien ; un autre élève sur le même navigateur peut avoir son passage tout de suite', async ({
+test('#2544 — Mathoux en sieste (réponse simulée de `/api/student/mathoux`) : en arrivant sur une page de l’espace élève, le Palotin entre, annonce la sieste avec le lien, repart ; recharger avant 10 min → rien ; un autre élève sur le même navigateur peut avoir son passage tout de suite', async ({
 	page
 }) => {
 	test.setTimeout(300_000);

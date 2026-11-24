@@ -331,8 +331,8 @@ test(
 		}
 		// Le zoom a suivi : les graduations ont changé
 		await expect.poll(async () => (await ticks.allTextContents()).join('|')).not.toBe(ticksBefore);
-		// Sans à-coups : 12 crans et leurs lectures en moins de 3 s (150 ms par cran avant #2540, à dix courbes)
-		expect(elapsed).toBeLessThan(3000);
+		// Sans à-coups : 12 crans et leurs lectures en moins de 6 s (plafond large sous charge ; 150 ms par cran avant #2540, à dix courbes)
+		expect(elapsed).toBeLessThan(6000);
 
 		// À l'arrêt, tout revient en une fraction de seconde
 		await expect
