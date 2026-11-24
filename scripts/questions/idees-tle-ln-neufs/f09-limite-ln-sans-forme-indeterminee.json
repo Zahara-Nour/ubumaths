@@ -1,0 +1,513 @@
+{
+	"id": "99326dee-fede-4759-ae26-788fac2d614f",
+	"rangement": {
+		"noeud": "Fonctions > Logarithmes > courbe",
+		"point": "TSPE-441"
+	},
+	"title": "Limite d'une fonction avec ln, sans forme indéterminée",
+	"description": "Limites en 0 ou en +∞ de ln x + axⁿ, axⁿ ln x, a ln x / xⁿ (opérations, sans forme indéterminée), et de ln(axⁿ + k), ln(k + a/xⁿ) (composition) (pièges : croissances comparées appliquées à tort, signe de a, ln oublié)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\ln x+{{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "+\\infty",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Il n'y a pas de forme indéterminée ici : les croissances comparées ne servent pas. Cherche la limite de chaque terme.",
+							"label": "Croissance comparée à tort"
+						},
+						{
+							"answer": "-\\infty",
+							"message": "$\\ln x$ tend vers $+\\infty$ en $+\\infty$, pas vers $-\\infty$.",
+							"label": "Limite de ln x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}\\ln x=+\\infty$ et $\\displaystyle\\lim_{x\\to+\\infty}{{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}=+\\infty$.",
+					"Par somme, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$ : pas de forme indéterminée."
+				]
+			},
+			"hint": "Cherche la limite de chacun des deux termes en $+\\infty$, puis additionne."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\ln x{{if:a>0|+}}{{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\infty",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "${{if:n==1|x|x^{ {{n}} }}}$ tend vers $0$, mais $\\ln x$ tend vers $-\\infty$ quand $x$ tend vers $0$.",
+							"label": "ln x → 0"
+						},
+						{
+							"answer": "+\\infty",
+							"message": "$\\ln x$ tend vers $-\\infty$ en $0$, pas vers $+\\infty$.",
+							"label": "Limite de ln x"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Le terme ${{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}$ tend vers $0$ : c'est $\\ln x$ qui donne la limite.",
+							"label": "Coefficient a"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to0}\\ln x=-\\infty$ et $\\displaystyle\\lim_{x\\to0}{{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}=0$.",
+					"Par somme, $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{-\\infty}$."
+				]
+			},
+			"hint": "Cherche la limite de chacun des deux termes en $0$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}\\ln x$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "$x\\ln x$ tend vers $0$ en $0$, pas en $+\\infty$ : en $+\\infty$, les deux facteurs tendent vers $+\\infty$.",
+							"label": "Croissance comparée à tort"
+						},
+						{
+							"answer": "{{if:a>0|-\\infty|+\\infty}}",
+							"message": "Le coefficient ${{a}}$ est {{if:a>0|positif|négatif}} : il garde le signe du produit.",
+							"label": "Signe de a"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{x\\to+\\infty}{{if:n==1|x|x^{ {{n}} }}}=+\\infty$ et $\\displaystyle\\lim_{x\\to+\\infty}\\ln x=+\\infty$, donc leur produit tend vers $+\\infty$.",
+					"Multiplié par ${{a}}$, {{if:a>0|positif|négatif}} : $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			},
+			"hint": "Cherche la limite de chaque facteur en $+\\infty$ : y a-t-il une forme indéterminée ?"
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|-\\infty|+\\infty}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Il n'y a pas de forme indéterminée ici : les croissances comparées ne servent pas. Cherche la limite de chaque terme.",
+							"label": "Croissance comparée à tort"
+						},
+						{
+							"answer": "{{if:a>0|+\\infty|-\\infty}}",
+							"message": "En $0$, $\\ln x$ tend vers $-\\infty$ : le numérateur tend vers {{if:a>0|$-\\infty$|$+\\infty$}}.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $0$ : ${{if:a==1||{{if:a==-1|-|{{a}}}}}}\\ln x$ tend vers {{if:a>0|$-\\infty$|$+\\infty$}} et ${{if:n==1|x|x^{ {{n}} }}}$ tend vers $0$ en restant positif.",
+					"Un quotient dont le numérateur tend vers l'infini et le dénominateur vers $0^{+}$ tend vers l'infini : $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{{{if:a>0|-\\infty|+\\infty}}}$."
+				]
+			},
+			"hint": "Cherche séparément la limite du numérateur et celle du dénominateur en $0$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\ln\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}+{{k}}\\right)$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "+\\infty",
+					"expectedErrors": [
+						{
+							"answer": "\\ln {{k}}",
+							"message": "C'est en $0$ que ${{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}+{{k}}$ tend vers ${{k}}$ ; en $+\\infty$, il tend vers $+\\infty$.",
+							"label": "ln k"
+						},
+						{
+							"answer": "0",
+							"message": "Composition : $X={{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}+{{k}}$ tend vers $+\\infty$, et $\\ln X$ aussi.",
+							"label": "Zéro"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $X={{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}+{{k}}$ : $\\displaystyle\\lim_{x\\to+\\infty}X=+\\infty$.",
+					"Et $\\displaystyle\\lim_{X\\to+\\infty}\\ln X=+\\infty$. Par composition, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{+\\infty}$."
+				]
+			},
+			"hint": "Pose $X$ l'expression dans le logarithme : vers quoi tend-elle ?"
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\ln\\left({{k}}+\\dfrac{ {{a}} }{{{if:n==1|x|x^{ {{n}} }}}}\\right)$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\ln {{k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}",
+							"message": "L'expression dans le logarithme tend vers ${{k}}$, donc $f(x)$ tend vers $\\ln {{k}}$ : il manque le logarithme.",
+							"label": "ln oublié"
+						},
+						{
+							"answer": "0",
+							"message": "$\\dfrac{ {{a}} }{{{if:n==1|x|x^{ {{n}} }}}}$ tend vers $0$, mais il reste ${{k}}$ dans le logarithme.",
+							"label": "Zéro"
+						},
+						{
+							"answer": "+\\infty",
+							"message": "$\\dfrac{ {{a}} }{{{if:n==1|x|x^{ {{n}} }}}}$ tend vers $0$ en $+\\infty$ : l'expression dans le logarithme a une limite finie.",
+							"label": "Infini"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $X={{k}}+\\dfrac{ {{a}} }{{{if:n==1|x|x^{ {{n}} }}}}$ : $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{ {{a}} }{{{if:n==1|x|x^{ {{n}} }}}}=0$, donc $X$ tend vers ${{k}}$.",
+					"$\\ln$ est continue en ${{k}}$ : par composition, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{\\ln {{k}}}$."
+				]
+			},
+			"hint": "Vers quoi tend l'expression dans le logarithme ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : ln x + 2x²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "a : croissance comparée à tort",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas de forme indéterminée ici : les croissances comparées ne servent pas. Cherche la limite de chaque terme."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : −∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "b : ln x − 3x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "b : 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : +∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "c : −2x² ln x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "c : 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "c : signe de a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "c : 3x ln x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "d : 3 ln x / x²",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "d : 0",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "d : signe",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "d : −ln x / x",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-1",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "e : ln(2x³ + 5)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"n": "3",
+				"k": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "e : ln k",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"n": "3",
+				"k": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\ln5"]
+		},
+		{
+			"description": "f : ln(3 + 2/x)",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln3"]
+		},
+		{
+			"description": "f : ln(3) avec parenthèses",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln(3)"]
+		},
+		{
+			"description": "f : ln oublié",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "f : 0",
+			"variationIndex": 5,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}

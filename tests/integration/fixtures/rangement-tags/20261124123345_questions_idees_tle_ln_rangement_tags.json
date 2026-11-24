@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261124123345_questions_idees_tle_ln_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "a6e58402-43a7-486e-8a78-086112252e04",
+			"title": "Ensemble de définition d'une fonction avec ln",
+			"fichier": "f06-ensemble-definition-ln.json",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sousNotion": "réciproque de l'exponentielle",
+			"point": "TSPE-438"
+		},
+		{
+			"id": "99326dee-fede-4759-ae26-788fac2d614f",
+			"title": "Limite d'une fonction avec ln, sans forme indéterminée",
+			"fichier": "f09-limite-ln-sans-forme-indeterminee.json",
+			"branche": "Fonctions",
+			"notion": "Logarithmes",
+			"sousNotion": "courbe",
+			"point": "TSPE-441"
+		}
+	],
+	"niveaux": []
+}
