@@ -21,6 +21,9 @@ import { gotoSettled } from './helpers/pages';
  * Ce que ces tests ne voient pas (sensation au doigt, aimantation « confortable », PDF) : voir le rapport.
  *
  * Captures à l'œil : `.captures/verifs/blocs-geometrie/`.
+ *
+ * Limite connue : un worker tué entre la création du modèle et l'enregistrement de son identifiant
+ * peut laisser un brouillon « Verifs4 … » dans la base locale (jamais en prod : serveur et base locaux seulement).
  */
 
 test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
@@ -1249,6 +1252,7 @@ test.describe('#1826 — figure de travail et case choix', () => {
 		const body = (await response.json()) as { template?: { id: string } };
 		expect(response.status(), JSON.stringify(body)).toBe(201);
 		const id = body.template?.id ?? '';
+		expect(id).not.toBe('');
 		createdIds.push(id);
 		await page.goto(`/dashboard/admin/questions/${id}/edit`);
 		await page.waitForLoadState('networkidle');

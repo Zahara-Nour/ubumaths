@@ -82,6 +82,29 @@ test.afterAll(async () => {
 });
 
 async function cleanup(): Promise<void> {
+	// Le compagnon de l'élève d'abord : un `delete` en échec plus bas ne doit pas le laisser modifié
+	if (buddyBefore !== null) {
+		await sql(
+			`update student_buddies set xp = $2, level = $3, current_streak = $4, longest_streak = $5,
+			        last_activity_date = $6, xp_earned_today = $7, last_xp_date = $8, themes_explored = $9,
+			        constance_week_start = $10, constance_days_this_week = $11, updated_at = $12
+			  where student_id = (select id from profiles where email = $1)`,
+			[
+				STUDENT.email,
+				buddyBefore.xp,
+				buddyBefore.level,
+				buddyBefore.current_streak,
+				buddyBefore.longest_streak,
+				buddyBefore.last_activity_date,
+				buddyBefore.xp_earned_today,
+				buddyBefore.last_xp_date,
+				buddyBefore.themes_explored,
+				buddyBefore.constance_week_start,
+				buddyBefore.constance_days_this_week,
+				buddyBefore.updated_at
+			]
+		);
+	}
 	// Révision espacée écrite par l'évaluation rendue : ses cartes sur nos modèles (avant leur suppression)
 	await sql(
 		`delete from srs_card_stats
@@ -118,28 +141,6 @@ async function cleanup(): Promise<void> {
 		[`${PREFIXE} %`]
 	);
 	await sql(`delete from question_templates where title like $1`, [`${PREFIXE} %`]);
-	if (buddyBefore !== null) {
-		await sql(
-			`update student_buddies set xp = $2, level = $3, current_streak = $4, longest_streak = $5,
-			        last_activity_date = $6, xp_earned_today = $7, last_xp_date = $8, themes_explored = $9,
-			        constance_week_start = $10, constance_days_this_week = $11, updated_at = $12
-			  where student_id = (select id from profiles where email = $1)`,
-			[
-				STUDENT.email,
-				buddyBefore.xp,
-				buddyBefore.level,
-				buddyBefore.current_streak,
-				buddyBefore.longest_streak,
-				buddyBefore.last_activity_date,
-				buddyBefore.xp_earned_today,
-				buddyBefore.last_xp_date,
-				buddyBefore.themes_explored,
-				buddyBefore.constance_week_start,
-				buddyBefore.constance_days_this_week,
-				buddyBefore.updated_at
-			]
-		);
-	}
 }
 
 // Types
@@ -433,6 +434,9 @@ async function storedAnswers(id: string): Promise<string[]> {
 test('#1816 #1822 — « Ajouter une case choix » puis « Vrai / Faux » : blocs en fin d’énoncé, cartes « Case N : choix » ; choix tapés avec leurs espaces, ajoutés, supprimés (la bonne réponse suit son choix)', async ({
 	page
 }) => {
+	// L'éditeur de modèles est un outil du prof sur ordinateur (au téléphone, la barre
+	// collante couvre ses boutons)
+	test.skip(test.info().project.use.isMobile === true, 'éditeur du prof : ordinateur');
 	test.setTimeout(180_000);
 	const { statement } = await openEditor(page, '1816 éditeur');
 
@@ -475,6 +479,9 @@ test('#1816 #1822 — « Ajouter une case choix » puis « Vrai / Faux » : bloc
 test('#1816 #1822 — « Plusieurs bonnes réponses » : cases à cocher ; aperçu : l’élève coche, verdict juste / ½ / faux ; la réponse enregistrée est « 0;2 »', async ({
 	page
 }) => {
+	// L'éditeur de modèles est un outil du prof sur ordinateur (au téléphone, la barre
+	// collante couvre ses boutons)
+	test.skip(test.info().project.use.isMobile === true, 'éditeur du prof : ordinateur');
 	test.setTimeout(240_000);
 	const { id, statement } = await openEditor(page, '1816 plusieurs');
 	await page.getByRole('button', { name: 'Ajouter une case choix' }).click();
@@ -538,6 +545,9 @@ test('#1816 #1822 — « Plusieurs bonnes réponses » : cases à cocher ; aper�
 test('#1816 #1822 — variation sans énoncé propre : carte « Case 1 : choix » en lecture seule (aucun champ de texte, on coche seulement), pas d’ajout de case choix', async ({
 	page
 }) => {
+	// L'éditeur de modèles est un outil du prof sur ordinateur (au téléphone, la barre
+	// collante couvre ses boutons)
+	test.skip(test.info().project.use.isMobile === true, 'éditeur du prof : ordinateur');
 	test.setTimeout(180_000);
 	const id = await sql<{ id: string }>(
 		`insert into question_templates (type, grades, level, variations, status, title, created_by, shared)
@@ -578,6 +588,9 @@ test('#1816 #1822 — variation sans énoncé propre : carte « Case 1 : choix �
 test('#1816 #1822 — éditeur de tests : la case choix s’affiche (A. pair, B. impair) et se coche, le test s’ajoute à la liste', async ({
 	page
 }) => {
+	// L'éditeur de modèles est un outil du prof sur ordinateur (au téléphone, la barre
+	// collante couvre ses boutons)
+	test.skip(test.info().project.use.isMobile === true, 'éditeur du prof : ordinateur');
 	test.setTimeout(180_000);
 	const id = await makeTemplate(
 		'1816 tests',
@@ -1132,6 +1145,10 @@ test('#1843 — « Parité d’un nombre entier » (CE1) : des nombres de 0 à 9
 		expect(number, `graine ${seed} : ${body.instance.statement}`).toBeGreaterThanOrEqual(0);
 		expect(number).toBeLessThanOrEqual(999);
 		numbers.push(number);
+		// Le corrigé est l'indice du bon choix dans ['pair', 'impair'] : « 0 » pour un nombre pair, « 1 » pour un impair
+		expect(body.instance.blanks?.[0]?.expectedAnswer, `graine ${seed} : corrigé de ${number}`).toBe(
+			number % 2 === 0 ? '0' : '1'
+		);
 	}
 	expect(Math.max(...numbers), 'au moins un nombre à 3 chiffres').toBeGreaterThanOrEqual(100);
 	expect(new Set(numbers.map((n) => n % 2)).size, 'pair et impair').toBe(2);

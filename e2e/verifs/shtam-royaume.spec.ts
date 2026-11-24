@@ -105,8 +105,12 @@ test('#1991 — le Shtam en journal : bandeau, une, pages de deux articles', asy
 		}
 		await expectNoHorizontalScroll(page);
 		const next = page.getByRole('link', { name: /Page \d+ →/ }).locator('visible=true');
-		if ((await next.count()) === 0 || pages > 30) break;
-		await next.first().click();
+		if ((await next.count()) === 0) break;
+		expect(pages, 'la boucle de pages ne finit pas : lien « Page n → » sans fin').toBeLessThan(30);
+		// Par son adresse : le lien est redessiné pendant le clic (« element not stable »)
+		const href = await next.first().getAttribute('href');
+		expect(href).not.toBeNull();
+		await page.goto(href ?? '');
 		await page.waitForLoadState('networkidle');
 	}
 	expect(pages).toBeGreaterThanOrEqual(2);
@@ -170,6 +174,11 @@ test('#2138 — une ville : un lieu touché amène sa fiche', async ({ page }, t
 	// Le lieu s'entoure, sa fiche vient
 	await expect(map.locator('g.place.selected')).toHaveCount(1);
 	await expect(map.locator('g.place.selected')).toContainText('Le Grand Marché');
+	// Sa fiche (la liste à côté de la carte) est celle du lieu choisi : titre « Le Grand Marché » et description écrite
+	const sheet = page.getByTestId('city-places').locator('li[aria-current="true"]');
+	await expect(sheet).toHaveCount(1);
+	await expect(sheet.getByRole('heading', { name: 'Le Grand Marché' })).toBeVisible();
+	await expect(sheet.locator('p.description')).not.toBeEmpty();
 	await expectNoHorizontalScroll(page);
 	await shoot(page, '2138-ville', testInfo.project.name);
 });

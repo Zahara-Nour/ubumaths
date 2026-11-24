@@ -101,7 +101,10 @@ test('#1827 — graphe agrandi : toute la fenêtre, Échap réduit sans recadrer
 	await shoot(page, '1827-agrandi', testInfo.project.name);
 	// Échap sur le menu Exporter ouvert : seulement le menu
 	await page.getByRole('button', { name: 'Exporter le graphique' }).click();
+	await expect(page.getByRole('menu')).toBeVisible();
 	await page.keyboard.press('Escape');
+	// Le menu est parti, le graphe reste agrandi
+	await expect(page.getByRole('menu')).toHaveCount(0);
 	await expect(reduce).toBeVisible();
 	// Échap de nouveau : le graphe se réduit
 	await page.keyboard.press('Escape');
@@ -160,7 +163,10 @@ test('#1835 — composée d’une fonction à ensemble', async ({ page }) => {
 	expectLatex(solved, 'S = \\{ 1 \\}');
 	expect(await steps(solved)).toContain('2x doit être dans');
 	const wrong = await calc(page, 'h(x) = f(x^2)');
-	expect(wrong.text.length).toBeGreaterThan(0);
+	// h(x) = f(x^2) est refusée avec un message qui dit pourquoi (x^2 n'est pas de la forme ax + b)
+	expect(wrong.text).toContain('« h » est dans tes objets, mais elle est en erreur');
+	expect(wrong.text).toContain('f est définie sur [0 ; +∞[ : dans f(x^2), x^2 doit y être');
+	expect(wrong.text).toContain('pour une expression de la forme ax + b');
 	// Écart E40 : la carte g (en champ) ne dit plus « sur [0 ; +∞[ », l'ensemble hérité de f
 	test.fail(true, 'écart E40 (#1835) : ensemble hérité absent de la carte g');
 	expect((await card(page, 'g')).interval).toBe('[0 ; +∞[');

@@ -13,7 +13,7 @@ import { join } from 'node:path';
 
 const LOCKS_DIR = '.captures/verifs/verrous';
 const RETRY_MS = 500;
-const WAIT_MAX_MS = 10 * 60 * 1000;
+const WAIT_MAX_MS = 30 * 60 * 1000;
 const STALE_MS = 30 * 60 * 1000;
 
 /** Durée max d'attente du verrou : à ajouter au délai du `beforeAll` (`testInfo.setTimeout`). */

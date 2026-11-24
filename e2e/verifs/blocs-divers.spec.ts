@@ -368,8 +368,6 @@ async function onCircle(slider: Locator, radians: number, radiusFactor = 1): Pro
 }
 
 test.describe('#2189 — cercle trigo à placer', () => {
-	test.describe.configure({ mode: 'serial' });
-
 	test('#2189 — repères 0, π/2, π, 3π/2, 24 graduations, aucun point au départ ; toucher pose M puis N', async ({
 		page,
 		hasTouch
@@ -573,12 +571,12 @@ test('#2179 — exemple « Avec la trotteuse » : trotteuse fine à contrepoids,
 test('#2179 — la petite aiguille (couleur d’accent) tient le contraste d’un trait (3) sur le fond du cadran, clair et sombre', async ({
 	page
 }) => {
-	test.fail(
-		true,
-		'écart : la petite aiguille est en --color-primary (jaune), contraste ≈ 2,2 sur le fond clair du cadran, sous les 3 d’un objet graphique (WCAG 1.4.11)'
-	);
 	await openBloc(page, HORLOGE_PATH);
 	const dial = rendered(page, 'Avec la trotteuse').locator('svg.horloge-cadran');
+	test.fail(
+		true,
+		'écart E44 : la petite aiguille est en --color-primary (jaune), contraste ≈ 2,2 sur le fond clair du cadran, sous les 3 d’un objet graphique (WCAG 1.4.11)'
+	);
 	await expectContrastBothThemes(
 		page,
 		dial,
@@ -993,15 +991,22 @@ test('#2162 — le nom du trait posé, écrit au-dessus de lui dans le dessin, s
 	page,
 	hasTouch
 }) => {
-	test.fail(
-		true,
-		'écart : le nom du trait actif (« Médiane »…) est écrit en --color-primary (jaune) à 10 px, contraste ≈ 2,2 sur le fond clair (WCAG 1.4.3 : 4,5)'
-	);
 	await openBloc(page, BOITE_PATH);
 	const zone = rendered(page, 'Construire la boîte (question)');
 	const svg = zone.locator('svg.boite-dessin');
 	await pressAt(page, await boxSpot(svg, 4), hasTouch);
+	// Le trait actif passe au suivant une fois le minimum posé : on le reprend par son bouton pour voir son nom
+	await press(
+		zone
+			.getByRole('group', { name: 'Trait à placer' })
+			.getByRole('button', { name: 'Min', exact: true }),
+		hasTouch
+	);
 	await expect(svg.locator('.boite-trait-nom')).toHaveText('Min');
+	test.fail(
+		true,
+		'écart E45 : le nom du trait actif (« Médiane »…) est écrit en --color-primary (jaune) à 10 px, contraste ≈ 2,2 sur le fond clair (WCAG 1.4.3 : 4,5)'
+	);
 	await expectContrastBothThemes(page, svg.locator('.boite-trait-nom'), 'nom du trait');
 });
 
@@ -1075,11 +1080,11 @@ test('#2151 — les trois exemples à lire : noms au-dessus des boîtes, graduat
 test('#2151 — le plus petit texte du dessin d’une boîte à lire fait 12 px à l’écran', async ({
 	page
 }) => {
+	await openBloc(page, BOITE_PATH);
 	test.fail(
 		true,
-		'écart : sur la page d’aide, le dessin garde 300 px de large (min-width) : le texte de 10-11 px y tombe à ≈ 7-8 px à l’écran, sur ordinateur comme sur téléphone'
+		'écart E46 : sur la page d’aide, le dessin garde 300 px de large (min-width) : le texte de 10-11 px y tombe à ≈ 7-8 px à l’écran, sur ordinateur comme sur téléphone'
 	);
-	await openBloc(page, BOITE_PATH);
 	await expectReadableDrawing(
 		rendered(page, 'Valeurs écrites').locator('svg').first(),
 		'boîte à lire'
@@ -1126,6 +1131,7 @@ const SCRATCH_EXAMPLES = [
 
 /** Pire contraste d'un dessin Scratch : chaque texte contre la forme dessinée juste derrière lui */
 async function worstScratchContrast(svg: Locator): Promise<{ ratio: number; text: string }> {
+	await scrollTo(svg); // `elementsFromPoint` ne voit que ce qui est dans la fenêtre
 	return svg.evaluate((root) => {
 		const rgb = (css: string): [number, number, number, number] | null => {
 			const m = css.match(/rgba?\(([^)]+)\)/);
@@ -1195,18 +1201,30 @@ test('#2122 — les 4 exemples dessinés en blocs Scratch, lisibles en clair et 
 	await shootThemes(page, rendered(page, 'Bloc personnalisé'), '2122-scratch-perso', info);
 });
 
-test('#2122 — le texte des blocs se lit (4,5 contre la couleur du bloc) et fait 12 px à l’écran', async ({
-	page
-}) => {
-	test.fail(
-		true,
-		'écart : texte blanc sur le jaune « événements » de Scratch (« quand le drapeau vert pressé ») : contraste ≈ 1,65 ; texte des blocs ≈ 9 px à l’écran'
-	);
+test('#2122 — le texte des blocs se lit : 4,5 contre la couleur du bloc', async ({ page }) => {
 	await openBloc(page, SCRATCH_PATH);
+	const worst: Array<{ title: string; ratio: number; text: string }> = [];
 	for (const title of SCRATCH_EXAMPLES) {
 		const svg = rendered(page, title).locator('figure.scratch-bloc svg').first();
-		const { ratio, text } = await worstScratchContrast(svg);
+		worst.push({ title, ...(await worstScratchContrast(svg)) });
+	}
+	// La mesure a bien vu des textes sur des formes (sinon le rapport reste infini et le test ne prouve rien)
+	for (const { title, ratio } of worst)
+		expect(Number.isFinite(ratio), `${title} : mesuré`).toBe(true);
+	test.fail(
+		true,
+		'écart E47 : texte blanc sur le jaune « événements » de Scratch (« quand le drapeau vert pressé ») : contraste ≈ 1,65'
+	);
+	for (const { title, ratio, text } of worst) {
 		expect(ratio, `${title} : texte « ${text} »`).toBeGreaterThanOrEqual(MIN_CONTRAST);
+	}
+});
+
+test('#2122 — le texte des blocs fait 12 px à l’écran', async ({ page }) => {
+	await openBloc(page, SCRATCH_PATH);
+	test.fail(true, 'écart E47 : texte des blocs Scratch ≈ 9 px à l’écran');
+	for (const title of SCRATCH_EXAMPLES) {
+		const svg = rendered(page, title).locator('figure.scratch-bloc svg').first();
 		await expectReadableDrawing(svg, `Scratch « ${title} »`);
 	}
 });
@@ -1293,21 +1311,17 @@ test('#1943 — glisser une étiquette sur une place sans que la page défile (l
 	await scrollTo(zone);
 	const scrollBefore = await pageScroll(page);
 	const moved = await drag(page, await spotIn(tray(2)), await spotIn(place(3)), info);
-	if (moved) {
-		await expect(place(3)).toHaveAccessibleName('Place 3 sur 3, étiquette 2');
-		expect(
-			Math.abs((await pageScroll(page)) - scrollBefore),
-			'la page n’a pas défilé'
-		).toBeLessThan(5);
-		// Glisser une étiquette d'une place à l'autre les échange avec l'occupante
-		await drag(page, await spotIn(tray(1)), await spotIn(place(1)), info);
-		await expect(place(1)).toHaveAccessibleName('Place 1 sur 3, étiquette 1');
-		await drag(page, await spotIn(place(1)), await spotIn(place(3)), info);
-		await expect(place(3)).toHaveAccessibleName('Place 3 sur 3, étiquette 1');
-		await expect(place(1)).toHaveAccessibleName('Place 1 sur 3, étiquette 2');
-	} else {
-		info.annotations.push({ type: 'reste', description: 'glisser au doigt : iPhone réel' });
-	}
+	test.skip(!moved, 'glisser au doigt : iPhone réel (le geste n’est pas rejouable ici)');
+	await expect(place(3)).toHaveAccessibleName('Place 3 sur 3, étiquette 2');
+	expect(Math.abs((await pageScroll(page)) - scrollBefore), 'la page n’a pas défilé').toBeLessThan(
+		5
+	);
+	// Glisser une étiquette d'une place à l'autre les échange avec l'occupante
+	await drag(page, await spotIn(tray(1)), await spotIn(place(1)), info);
+	await expect(place(1)).toHaveAccessibleName('Place 1 sur 3, étiquette 1');
+	await drag(page, await spotIn(place(1)), await spotIn(place(3)), info);
+	await expect(place(3)).toHaveAccessibleName('Place 3 sur 3, étiquette 1');
+	await expect(place(1)).toHaveAccessibleName('Place 1 sur 3, étiquette 2');
 });
 
 // ============================================================================
@@ -1667,12 +1681,12 @@ test('#2027 — les exemples de solides se lisent : arêtes cachées en tirets, 
 test('#2027 — pyramide à base carrée : le nom du sommet D n’est sur aucun trait', async ({
 	page
 }) => {
-	test.fail(
-		true,
-		'écart : sur « Une pyramide à base carrée », la lettre D est traversée par l’arête [AS] (et touche les pointillés de [DC]) ; vérifié aussi à l’œil'
-	);
 	await openBloc(page, SOLIDE_PATH);
 	const svg = rendered(page, 'Une pyramide à base carrée').locator('svg').first();
+	test.fail(
+		true,
+		'écart E48 : sur « Une pyramide à base carrée », la lettre D est traversée par l’arête [AS] (et touche les pointillés de [DC]) ; vérifié aussi à l’œil'
+	);
 	expect(await textsOnStrokes(svg)).toEqual([]);
 });
 
@@ -1742,12 +1756,12 @@ test('#2046 — les 4 exemples de section : orange translucide en clair et en so
 test('#2046 — pavé coupé : les noms des sommets (F, K…) et la cote ne touchent aucun trait', async ({
 	page
 }) => {
-	test.fail(
-		true,
-		'écart : sur « Un pavé coupé parallèlement à une face », la lettre F touche le trait de la section (près de K) ; vérifié aussi à l’œil'
-	);
 	await openBloc(page, SOLIDE_PATH);
 	const svg = rendered(page, SECTION_TITLES[0]).locator('svg').first();
+	test.fail(
+		true,
+		'écart E49 : sur « Un pavé coupé parallèlement à une face », la lettre F touche le trait de la section (près de K) ; vérifié aussi à l’œil'
+	);
 	expect(await textsOnStrokes(svg)).toEqual([]);
 });
 
