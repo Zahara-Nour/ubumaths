@@ -157,6 +157,8 @@ const publicWorksheetSchema = z.object({
 				name: z.string(),
 				kind: z.string().optional(),
 				branch: z.string().nullable().optional(),
+				// Traductions du nœud (ADR 0043) : `withBranches` en tire le nom anglais
+				translations: z.unknown().optional(),
 				position: z.number().int()
 			})
 		)

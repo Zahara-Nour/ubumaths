@@ -73,6 +73,11 @@ export interface PublicWorksheet {
 		name: string;
 		kind?: string;
 		branch?: string | null;
+		/** Traductions du nœud, rendues par la base (ADR 0043) */
+		translations?: unknown;
+		/** Noms anglais de la notion et de sa branche, ajoutés par `withBranches` */
+		name_en?: string | null;
+		branch_en?: string | null;
 		position: number;
 	}>;
 	translations: unknown;

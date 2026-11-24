@@ -28,8 +28,11 @@
 	import type { TreeNode } from '#lib/questions/classification-tree.ts';
 	import {
 		CATEGORY_LABELS,
+		branchNodeOf,
 		branchOf,
 		composedTitle,
+		englishName,
+		missingEnglishNames,
 		isWorksheetCategory,
 		WORKSHEET_CATEGORIES
 	} from '#lib/worksheets/worksheet-title.ts';
@@ -241,6 +244,26 @@
 		)
 	);
 
+	// Version anglaise au titre composé : les noms sans anglais (ADR 0043). Un seul
+	// suffit pour que le PDF anglais n'imprime aucune notion, la catégorie seule.
+	// Noms lus dans l'arbre (une notion ajoutée n'a pas encore ceux du serveur).
+	let missingEnglish = $derived(
+		isEnglishWorksheet && composed
+			? missingEnglishNames(
+					notions.map((n) => {
+						const node = treeById.get(n.node_id);
+						const branch = branchNodeOf(n.node_id, treeById);
+						return {
+							name: n.name,
+							nameEn: node ? englishName(node.translations) : n.name_en,
+							branch: branch?.name ?? n.branch,
+							branchEn: branch ? englishName(branch.translations) : n.branch_en
+						};
+					})
+				)
+			: []
+	);
+
 	// Le style retenu ; absent ou illisible → le style par défaut, comme le PDF
 	let chosenStyle = $derived(styles.find((s) => s.id === styleIdOf(worksheet)));
 	let defaultStyle = $derived(styles.find((s) => s.id === DEFAULT_STYLE_ID));
@@ -313,6 +336,11 @@
 				{:else}
 					<p class="text-sm font-medium">
 						{notions.length > 0 ? notions.map((n) => n.name).join(' · ') : '-'}
+					</p>
+				{/if}
+				{#if missingEnglish.length > 0}
+					<p class="mt-1 text-xs text-muted-foreground" data-testid="notions-sans-anglais">
+						Sans nom anglais : {missingEnglish.join(', ')} — la version anglaise n’imprimera pas les notions.
 					</p>
 				{/if}
 			</div>

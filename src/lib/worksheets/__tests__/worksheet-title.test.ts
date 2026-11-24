@@ -10,8 +10,9 @@
  * - amendé le 2026-11-19 (reprise des 50 fiches) : plusieurs notions pour
  *   toute fiche ; chaque notion commence par une majuscule (sous-notions de
  *   l'arbre écrites en minuscule) ;
- * - fiche en anglais : catégorie traduite, aucune notion imprimée (chantier
- *   séparé) ;
+ * - fiche en anglais : catégorie traduite ; notions et branche sous leur nom
+ *   anglais (ADR 0043, chantier notions-en-anglais, 2026-11-23) ; un seul nom
+ *   à imprimer sans anglais → la catégorie seule, jamais de mélange ;
  * - amendé le 2026-11-20 : deux notions ou plus d'une même branche → la branche
  *   en titre (« Suites · Entraînement technique ») ; au PDF, la branche en
  *   grand, les notions dessous, la catégorie en petit. Une seule notion garde
@@ -26,6 +27,8 @@ import {
 	type TitleNotion,
 	type TitleTreeNode,
 	branchOf,
+	englishName,
+	missingEnglishNames,
 	sharedBranch
 } from '../worksheet-title';
 
@@ -345,5 +348,185 @@ describe('titre d’une fiche dont les notions ont une branche commune', () => {
 			footer: 'Technical practice',
 			flat: 'Technical practice'
 		});
+	});
+});
+
+// =============================================================================
+// Noms anglais des notions (ADR 0043, David, 2026-11-23)
+// =============================================================================
+
+describe('printedTitle en anglais, notions traduites', () => {
+	/** Les deux notions des suites, traduites, branche traduite */
+	const SUITES_EN: TitleNotion[] = [
+		{
+			name: 'Suites arithmétiques',
+			nameEn: 'Arithmetic sequences',
+			branch: 'Suites',
+			branchEn: 'Sequences'
+		},
+		{
+			name: 'Suites géométriques',
+			nameEn: 'Geometric sequences',
+			branch: 'Suites',
+			branchEn: 'Sequences'
+		}
+	];
+
+	it('une notion traduite : son nom anglais en grand, la catégorie dessous', () => {
+		expect(
+			printedTitle({
+				...base,
+				locale: 'en',
+				notions: [{ name: 'Suites arithmétiques', nameEn: 'Arithmetic sequences' }]
+			})
+		).toEqual({
+			main: 'Arithmetic sequences',
+			notions: '',
+			sub: 'technical practice',
+			footer: 'Arithmetic sequences · Technical practice',
+			flat: 'Arithmetic sequences · Technical practice'
+		});
+	});
+
+	it('deux notions d’une branche : la branche anglaise en grand, les notions dessous', () => {
+		expect(printedTitle({ ...base, locale: 'en', notions: SUITES_EN })).toEqual({
+			main: 'Sequences',
+			notions: 'Arithmetic sequences · Geometric sequences',
+			sub: 'technical practice',
+			footer: 'Sequences · Technical practice',
+			flat: 'Arithmetic sequences · Geometric sequences · Technical practice'
+		});
+	});
+
+	it('sous-notion anglaise en minuscule : majuscule en tête', () => {
+		expect(
+			printedTitle({
+				...base,
+				locale: 'en',
+				notions: [{ name: 'loi géométrique', nameEn: 'geometric distribution' }]
+			}).main
+		).toBe('Geometric distribution');
+	});
+
+	it('une notion sans anglais : la catégorie seule, rien en français', () => {
+		const printed = printedTitle({
+			...base,
+			locale: 'en',
+			notions: [
+				SUITES_EN[0],
+				{ name: 'Suites géométriques', branch: 'Suites', branchEn: 'Sequences' }
+			]
+		});
+		expect(printed).toEqual({
+			main: 'Technical practice',
+			notions: '',
+			sub: '',
+			footer: 'Technical practice',
+			flat: 'Technical practice'
+		});
+	});
+
+	it('branche commune sans anglais : la catégorie seule', () => {
+		expect(
+			printedTitle({
+				...base,
+				locale: 'en',
+				notions: SUITES_EN.map((notion) => ({ ...notion, branchEn: null }))
+			}).main
+		).toBe('Technical practice');
+	});
+
+	it('branches différentes : leur nom anglais ne sert pas', () => {
+		expect(
+			printedTitle({
+				...base,
+				locale: 'en',
+				category: 'review',
+				notions: [
+					{ name: 'Suites', nameEn: 'Sequences', branch: 'Suites' },
+					{ name: 'Dérivation', nameEn: 'Derivatives', branch: 'Fonctions' }
+				]
+			})
+		).toMatchObject({
+			main: 'Sequences · Derivatives',
+			notions: '',
+			footer: 'Sequences · Derivatives · Review'
+		});
+	});
+
+	it('deux branches traduites pareil restent deux branches', () => {
+		expect(
+			printedTitle({
+				...base,
+				locale: 'en',
+				notions: [
+					{ name: 'A', nameEn: 'A', branch: 'Branche 1', branchEn: 'Same' },
+					{ name: 'B', nameEn: 'B', branch: 'Branche 2', branchEn: 'Same' }
+				]
+			}).main
+		).toBe('A · B');
+	});
+
+	it('fiche française : les noms anglais ne changent rien', () => {
+		expect(printedTitle({ ...base, notions: SUITES_EN })).toMatchObject({
+			main: 'Suites',
+			notions: 'Suites arithmétiques · Suites géométriques'
+		});
+	});
+
+	it('titre libre en anglais : le titre seul, même notions traduites', () => {
+		expect(
+			printedTitle({
+				...base,
+				locale: 'en',
+				customTitle: true,
+				title: 'Homework',
+				notions: SUITES_EN
+			})
+		).toEqual({ main: 'Homework', notions: '', sub: '', footer: 'Homework', flat: 'Homework' });
+	});
+});
+
+describe('missingEnglishNames', () => {
+	it('les notions sans anglais, avec majuscule', () => {
+		expect(
+			missingEnglishNames([
+				{ name: 'loi géométrique' },
+				{ name: 'Suites arithmétiques', nameEn: 'Arithmetic sequences' }
+			])
+		).toEqual(['Loi géométrique']);
+	});
+
+	it('la branche commune sans anglais, quand elle sert de titre', () => {
+		expect(
+			missingEnglishNames([
+				{ name: 'A', nameEn: 'A', branch: 'Suites' },
+				{ name: 'B', nameEn: 'B', branch: 'Suites' }
+			])
+		).toEqual(['Suites']);
+	});
+
+	it('une seule notion : sa branche ne compte pas', () => {
+		expect(missingEnglishNames([{ name: 'A', nameEn: 'A', branch: 'Suites' }])).toEqual([]);
+	});
+
+	it('aucune notion : rien ne manque', () => {
+		expect(missingEnglishNames([])).toEqual([]);
+	});
+});
+
+describe('englishName', () => {
+	it('lit translations.en.name', () => {
+		expect(englishName({ en: { name: 'Sequences' } })).toBe('Sequences');
+	});
+
+	it('absent, vide, ou de mauvaise forme : null', () => {
+		expect(englishName({})).toBeNull();
+		expect(englishName(null)).toBeNull();
+		expect(englishName({ en: {} })).toBeNull();
+		expect(englishName({ en: { name: '  ' } })).toBeNull();
+		expect(englishName({ en: { name: 3 } })).toBeNull();
+		expect(englishName({ en: 'Sequences' })).toBeNull();
+		expect(englishName([])).toBeNull();
 	});
 });

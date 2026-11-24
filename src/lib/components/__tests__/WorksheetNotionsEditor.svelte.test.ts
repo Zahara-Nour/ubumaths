@@ -3,6 +3,7 @@
  *
  * Toute fiche admet plusieurs notions (ADR 0041, amendé le 2026-11-19) : la
  * liste, un bouton pour ajouter la notion choisie, un pour retirer chacune.
+ * Une notion ajoutée porte son nom anglais, lu dans l'arbre (ADR 0043).
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -14,19 +15,28 @@ import type { WorksheetClassificationView } from '#lib/types/worksheets.ts';
 const NODES: TreeNode[] = [
 	{ id: 'b1', kind: 'branch', name: 'Analyse', parent_id: null, position: 0 },
 	{ id: 'n1', kind: 'notion', name: 'Suites', parent_id: 'b1', position: 0 },
-	{ id: 'n2', kind: 'notion', name: 'Dérivation', parent_id: 'b1', position: 1 }
+	{
+		id: 'n2',
+		kind: 'notion',
+		name: 'Dérivation',
+		parent_id: 'b1',
+		position: 1,
+		translations: { en: { name: 'Derivatives' } }
+	}
 ];
 
 const SUITES: WorksheetClassificationView = {
 	node_id: 'n1',
 	name: 'Suites',
 	kind: 'notion',
+	name_en: null,
 	position: 0
 };
 const DERIVATION: WorksheetClassificationView = {
 	node_id: 'n2',
 	name: 'Dérivation',
 	kind: 'notion',
+	name_en: 'Derivatives',
 	position: 1
 };
 

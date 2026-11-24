@@ -385,6 +385,10 @@ export interface WorksheetClassificationView {
 	kind?: string;
 	/** Nom de la branche de la notion, pour le titre (ADR 0041) ; absent : non lu */
 	branch?: string | null;
+	/** Nom anglais de la notion (ADR 0043) ; `null` : pas traduite ; absent : non lu */
+	name_en?: string | null;
+	/** Nom anglais de sa branche (ADR 0043) ; `null` : pas traduite ; absent : non lu */
+	branch_en?: string | null;
 	position: number;
 }
 
