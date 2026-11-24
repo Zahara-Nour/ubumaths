@@ -4,14 +4,13 @@
 
 _Mis à jour le 2026-11-24, avant toute PR._
 
-- **État** : phase 0 validée (« je suis tes recos », § Phase 0). 3 modèles publiés exportés dans
-  `scripts/questions/idees-3e-fonctions-affines-publies/` et réservés. Lot en cours d'écriture par
-  deux agents, NON commité : `docs/wip/questions/idees-3e-fonctions-affines-{publies,neufs}.py`
-  → `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`.
-- **Prochaine action** : relire ces fichiers DANS LE CODE (agent interrompu = fichiers peut-être
-  incomplets) ; relancer les contrôles (script, `question:specs --file`, `create-questions` en
-  simulation, `sonde-courbes`, diff des publiés = ajouts en fin seulement) ; essai en base
-  locale ; PR des fichiers.
+- **État** : phase 0 validée (« je suis tes recos », § Phase 0). Lot écrit et commité (§ Historique,
+  « lot écrit ») : scripts `docs/wip/questions/idees-3e-fonctions-affines-{publies,neufs}.py` →
+  `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`. Contrôles verts.
+- **Prochaine action** : essai en base locale (`set -a; . ./.env.local; set +a` puis
+  `create-questions --dir …-neufs --publier`, aperçu admin sur un serveur 5176+, puis
+  `git restore` des ids locaux) ; migration de contenu des publiés (`migration-contenu.ts`) ;
+  rendu vu à l'écran ; PR (revue : aucune, contenu).
 - **En attente de David** : rien avant la PR ; avant le rangement, la conséquence de Q1 (N2 rangé
   en géométrie, § Phase 0).
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
@@ -115,7 +114,7 @@ de réponse.
 - 3F23-2 : couvert (15ddcc75, 7c7b7593, brouillon 27ac630c).
 - 3F24DNB-1 : rubrique « brevet », à faire en dernier.
 
-### Questions
+### Questions (tranchées : recommandations suivies)
 
 - **Q1** (N2) : « fonction affine par deux images » n'a pas de point en 3e. Je recommande le point
   de Seconde **2-322** (« Déterminer une équation de droite passant par deux points donnés »),
@@ -123,3 +122,26 @@ de réponse.
 - **Q2** (F2 v7) : antécédent fractionnaire en 3e ? Je recommande oui (fraction irréductible).
 - **Q3** (N1) : formes fractionnaires (ax + b)/c et x/c + b/d ? Je recommande seulement x/c + b
   (un seul quotient, a = 1/c).
+
+## Historique
+
+### 2026-11-24 — lot écrit
+
+- Écrit par deux agents (`pedagogy-expert`), relu par moi dans les JSON, contrôles rejoués : scripts
+  relancés, `question:specs --file` vert pour les 7 fichiers (publiés 19/19, 40/40, 26/26 specs ;
+  neufs 28/28, 19/19, 18/18, 12/12), `sonde-courbes` 0 problème (N3, N4), `create-questions` en
+  simulation : 4 neufs « à créer ». Publiés : variations et specs d'origine identiques à un
+  réexport de la prod (comparaison JSON), ajouts en fin seulement.
+- **Publiés** : 15ddcc75 +3 var. (b + ax ; x ↦ ax + b ; coefficient en demis, erreur « dénominateur
+  oublié ») ; 7c7b7593 +2 (a(x + b) + c ; antécédent fractionnaire, 4 erreurs prévues chacune ;
+  fraction non réduite = forme non optimale `reducedFractions`, décimal refusé) ; 45247528 +3
+  (expression f(x) ; f(m) ; antécédent de k).
+- **Neufs** : N1 6 var. (deux cases a, b ; 1/c accepté en décimal) ; N2 4 var. (grades 3 et 2,
+  rangement 2-322 en géométrie, cf. § Phase 0) ; N3 3 var. ; N4 3 var. (geste `tracer:`, juste par
+  deux points distincts de la droite, `courbe-tracer.ts`).
+- Écarts aux fiches : F1 « b seul » non repris (pas une erreur d'élève vue) ; N3 v2 « 0,5x + 1 »
+  refusé (`acceptDecimal` ne vaut que pour un nombre seul), la consigne demande l'écriture
+  fractionnaire ; 45247528 v6 « multiplier au lieu de diviser » = même valeur que l'image, une
+  seule erreur prévue. À regarder à la relecture : N1 v4 c(ax + b) avec a, b, c de ±2 à ±9
+  (produits jusqu'à 81) ; N4, message du moteur « Ta droite n'est pas celle d'équation … » (mot
+  « équation » en 3e) ; N2 corrigé « −1 × 1 + b » pour a = ±1.
