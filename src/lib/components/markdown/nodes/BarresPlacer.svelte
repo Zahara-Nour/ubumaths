@@ -32,7 +32,8 @@
 	import { COURBE_COLORS } from '#lib/ubumark/types/courbe.ts';
 	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
 	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
-	import { buildStatChartScene, STAT_CHART_CHAR_PX } from '#lib/ubumark/utils/stat-chart-scene.ts';
+	import { buildStatChartScene, type BarScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
+	import { BAR_LABEL_CHAR_PX, fitBarScene } from '#lib/ubumark/utils/stat-chart-fit.ts';
 	import {
 		barMistake,
 		barsToPlace,
@@ -64,14 +65,8 @@
 
 	let { node, answers, showControls = true, class: className = '' }: Props = $props();
 
-	/** Marges autour du cadre, en px : celles de `StatChart.svelte` */
-	const PAD_LEFT_MIN = 40;
-	const TICK_CHAR_PX = 6.2;
-	const PAD_RIGHT = 12;
+	/** Marge au-dessus du cadre, en px : celle de `stat-chart-fit.ts` */
 	const PAD_TOP = 26;
-	const PAD_BOTTOM_FLAT = 26;
-	const AXIS_TITLE_PX = 18;
-	const SIN_45 = Math.SQRT1_2;
 	/** Couleur des barres : palette commune des figures, claire ou sombre */
 	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
 
@@ -91,10 +86,15 @@
 		choosing ? { ...spec, axis: scale === null ? null : scaleAxis(scale) } : spec
 	);
 	let axisMax = $derived(shownSpec.axis?.max ?? (choosing ? SCALE_TICKS : 1));
-	let scene = $derived.by(() => {
-		const built = buildStatChartScene(shownSpec, { locale: locale() });
-		return built.kind === 'barres' ? built : null;
-	});
+	/** Le diagramme de `taille:` ; dessiné : `scene`, à la largeur disponible */
+	let naturalScene = $derived(sceneFor());
+	/** Place disponible, mesurée une fois le composant monté */
+	let available = $state<number>();
+	/** Dessin recalculé à la largeur disponible, jamais rétréci (écart E46) */
+	let fit = $derived(
+		naturalScene ? fitBarScene(naturalScene, available, (w) => sceneFor(w) ?? naturalScene!) : null
+	);
+	let scene = $derived(fit?.scene ?? null);
 	/** Les barres à construire, dans l'ordre des cases */
 	let targets = $derived(barsToPlace(spec));
 	/** Échelle à choisir d'abord : les barres ne bougent pas */
@@ -130,23 +130,11 @@
 	]);
 
 	let count = $derived(scene?.labels.length ?? 1);
-	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
-	let plotHeight = $derived(scene?.pixelSize.height ?? 0);
-	let rotatedExtent = $derived(
-		scene?.rotateLabels ? scene.longestLabel * STAT_CHART_CHAR_PX * SIN_45 : 0
-	);
-	let padBottom = $derived(
-		(scene?.rotateLabels ? 16 + rotatedExtent : PAD_BOTTOM_FLAT) +
-			(scene?.axisTitles.x ? AXIS_TITLE_PX : 0)
-	);
-	let padLeft = $derived.by(() => {
-		if (!scene) return PAD_LEFT_MIN;
-		const ticks = 12 + Math.max(...scene.ticks.map((t) => t.label.length)) * TICK_CHAR_PX;
-		const halfBand = plotWidth / count / 2;
-		return Math.max(PAD_LEFT_MIN, ticks, rotatedExtent - halfBand + 6);
-	});
-	let viewWidth = $derived(padLeft + plotWidth + PAD_RIGHT);
-	let viewHeight = $derived(PAD_TOP + plotHeight + padBottom);
+	let plotWidth = $derived(fit?.plotWidth ?? 0);
+	let plotHeight = $derived(fit?.plotHeight ?? 0);
+	let padLeft = $derived(fit?.padLeft ?? 0);
+	let viewWidth = $derived(fit?.viewWidth ?? 0);
+	let viewHeight = $derived(fit?.viewHeight ?? 0);
 
 	/** Rang dans `targets` de chaque catégorie à construire */
 	let rankOfIndex = $derived(new Map(targets.map((t, k) => [t.index, k])));
@@ -160,6 +148,16 @@
 			? `barre ${target.label} pas construite`
 			: `barre ${target.label} : ${value}`;
 	});
+
+	/** Le diagramme montré, pour le cadre de `taille:` ou de cette largeur */
+	function sceneFor(plotWidth?: number): BarScene | null {
+		const built = buildStatChartScene(shownSpec, {
+			locale: locale(),
+			plotWidth,
+			labelCharPx: BAR_LABEL_CHAR_PX
+		});
+		return built.kind === 'barres' ? built : null;
+	}
 
 	/** Abscisse d'écran d'une position en catégories */
 	function sx(x: number): number {
@@ -321,124 +319,127 @@
 			class:placer-juste={allRight}
 			class:placer-faux={judged && !allRight}
 		>
-			<svg
-				bind:this={svg}
-				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 {viewWidth} {viewHeight}"
-				style:max-width="{viewWidth}px"
-				class="stat-svg barres-dessin"
-				class:placer-verrouille={locked}
-				role="slider"
-				tabindex={locked ? -1 : 0}
-				aria-labelledby={titleId}
-				aria-valuemin={0}
-				aria-valuemax={axisMax}
-				aria-valuenow={values[active] ?? undefined}
-				aria-valuetext={valueText}
-				aria-disabled={locked}
-				onpointerdown={handlePointerDown}
-				onpointermove={handlePointerMove}
-				onpointerup={handlePointerUp}
-				onpointercancel={handlePointerUp}
-				onkeydown={handleKeyDown}
-			>
-				<title id={titleId}
-					>Diagramme en barres à construire : barre {targets[active]?.label ?? ''}</title
+			<div class="stat-mesure" bind:clientWidth={available}>
+				<svg
+					bind:this={svg}
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 {viewWidth} {viewHeight}"
+					style:max-width="{viewWidth}px"
+					class="stat-svg barres-dessin"
+					class:placer-verrouille={locked}
+					role="slider"
+					tabindex={locked ? -1 : 0}
+					aria-labelledby={titleId}
+					aria-valuemin={0}
+					aria-valuemax={axisMax}
+					aria-valuenow={values[active] ?? undefined}
+					aria-valuetext={valueText}
+					aria-disabled={locked}
+					onpointerdown={handlePointerDown}
+					onpointermove={handlePointerMove}
+					onpointerup={handlePointerUp}
+					onpointercancel={handlePointerUp}
+					onkeydown={handleKeyDown}
 				>
+					<title id={titleId}
+						>Diagramme en barres à construire : barre {targets[active]?.label ?? ''}</title
+					>
 
-				<!-- Colonne de la barre choisie -->
-				{#if showControls && !locked && targets[active]}
-					{@const index = targets[active].index}
-					<rect
-						class="barres-colonne-active"
-						x={sx(index)}
-						y={PAD_TOP}
-						width={sx(index + 1) - sx(index)}
-						height={plotHeight}
-					/>
-				{/if}
-
-				<!-- Graduations -->
-				<g class="stat-graduations" aria-hidden="true">
-					{#each scene.ticks as tick, i (i)}
-						<line
-							class="stat-grille"
-							x1={padLeft}
-							y1={sy(tick.value)}
-							x2={padLeft + plotWidth}
-							y2={sy(tick.value)}
-						/>
-						<line x1={padLeft - 4} y1={sy(tick.value)} x2={padLeft} y2={sy(tick.value)} />
-						<text x={padLeft - 6} y={sy(tick.value)} text-anchor="end" dominant-baseline="middle"
-							>{tick.label}</text
-						>
-					{/each}
-				</g>
-
-				<!-- Barres : dessinées, ou posées par l'élève (jamais l'effectif attendu) -->
-				{#each scene.bars as bar, i (i)}
-					{@const k = rankOfIndex.get(i)}
-					{@const posed = k === undefined ? bar.value : values[k]}
-					<!-- Jamais au-dessus de l'axe (réponses relues d'une autre échelle) -->
-					{@const value = posed === null ? null : Math.min(posed, axisMax)}
-					{#if value === null}
-						<line
-							class="barres-attente"
-							x1={sx(bar.left)}
-							y1={sy(0)}
-							x2={sx(bar.right)}
-							y2={sy(0)}
-						/>
-					{:else}
+					<!-- Colonne de la barre choisie -->
+					{#if showControls && !locked && targets[active]}
+						{@const index = targets[active].index}
 						<rect
-							class="stat-barre"
-							class:barres-posee={k !== undefined}
-							class:barres-posee-active={k !== undefined && k === active && showControls}
-							x={sx(bar.left)}
-							y={sy(value)}
-							width={sx(bar.right) - sx(bar.left)}
-							height={sy(0) - sy(value)}
-							style:fill={COLOR_VAR[scene.color]}
+							class="barres-colonne-active"
+							x={sx(index)}
+							y={PAD_TOP}
+							width={sx(index + 1) - sx(index)}
+							height={plotHeight}
 						/>
 					{/if}
-				{/each}
 
-				<!-- Noms des catégories -->
-				<g class="stat-categories" aria-hidden="true">
-					{#each scene.labels as label, i (i)}
-						{@const cx = sx(label.center)}
-						{#if scene.rotateLabels}
-							<text
-								x={cx}
-								y={sy(0) + 10}
-								text-anchor="end"
-								transform="rotate(-45 {cx} {sy(0) + 10})">{label.text}</text
+					<!-- Graduations -->
+					<g class="stat-graduations" aria-hidden="true">
+						{#each scene.ticks as tick, i (i)}
+							<line
+								class="stat-grille"
+								x1={padLeft}
+								y1={sy(tick.value)}
+								x2={padLeft + plotWidth}
+								y2={sy(tick.value)}
+							/>
+							<line x1={padLeft - 4} y1={sy(tick.value)} x2={padLeft} y2={sy(tick.value)} />
+							<text x={padLeft - 6} y={sy(tick.value)} text-anchor="end" dominant-baseline="middle"
+								>{tick.label}</text
 							>
+						{/each}
+					</g>
+
+					<!-- Barres : dessinées, ou posées par l'élève (jamais l'effectif attendu) -->
+					{#each scene.bars as bar, i (i)}
+						{@const k = rankOfIndex.get(i)}
+						{@const posed = k === undefined ? bar.value : values[k]}
+						<!-- Jamais au-dessus de l'axe (réponses relues d'une autre échelle) -->
+						{@const value = posed === null ? null : Math.min(posed, axisMax)}
+						{#if value === null}
+							<line
+								class="barres-attente"
+								x1={sx(bar.left)}
+								y1={sy(0)}
+								x2={sx(bar.right)}
+								y2={sy(0)}
+							/>
 						{:else}
-							<text x={cx} y={sy(0) + 16} text-anchor="middle">{label.text}</text>
+							<rect
+								class="stat-barre"
+								class:barres-posee={k !== undefined}
+								class:barres-posee-active={k !== undefined && k === active && showControls}
+								x={sx(bar.left)}
+								y={sy(value)}
+								width={sx(bar.right) - sx(bar.left)}
+								height={sy(0) - sy(value)}
+								style:fill={COLOR_VAR[scene.color]}
+							/>
 						{/if}
 					{/each}
-				</g>
 
-				<!-- Axes -->
-				<g class="stat-axes" aria-hidden="true">
-					<line x1={padLeft} y1={sy(0)} x2={padLeft + plotWidth} y2={sy(0)} />
-					<line x1={padLeft} y1={sy(0)} x2={padLeft} y2={PAD_TOP - 10} />
-					<polygon
-						points="{padLeft},{PAD_TOP - 14} {padLeft - 3.5},{PAD_TOP - 7} {padLeft +
-							3.5},{PAD_TOP - 7}"
-					/>
-					<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 12}>{scene.axisTitles.y}</text>
-					{#if scene.axisTitles.x}
-						<text
-							class="stat-titre-axe"
-							x={padLeft + plotWidth / 2}
-							y={PAD_TOP + plotHeight + padBottom - 4}
-							text-anchor="middle">{scene.axisTitles.x}</text
+					<!-- Noms des catégories -->
+					<g class="stat-categories" aria-hidden="true">
+						{#each scene.labels as label, i (i)}
+							{@const cx = sx(label.center)}
+							{#if scene.rotateLabels}
+								<text
+									x={cx}
+									y={sy(0) + 10}
+									text-anchor="end"
+									transform="rotate(-45 {cx} {sy(0) + 10})">{label.text}</text
+								>
+							{:else}
+								<text x={cx} y={sy(0) + 16} text-anchor="middle">{label.text}</text>
+							{/if}
+						{/each}
+					</g>
+
+					<!-- Axes -->
+					<g class="stat-axes" aria-hidden="true">
+						<line x1={padLeft} y1={sy(0)} x2={padLeft + plotWidth} y2={sy(0)} />
+						<line x1={padLeft} y1={sy(0)} x2={padLeft} y2={PAD_TOP - 10} />
+						<polygon
+							points="{padLeft},{PAD_TOP - 14} {padLeft - 3.5},{PAD_TOP - 7} {padLeft +
+								3.5},{PAD_TOP - 7}"
+						/>
+						<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 12}>{scene.axisTitles.y}</text
 						>
-					{/if}
-				</g>
-			</svg>
+						{#if scene.axisTitles.x}
+							<text
+								class="stat-titre-axe"
+								x={padLeft + plotWidth / 2}
+								y={viewHeight - 4}
+								text-anchor="middle">{scene.axisTitles.x}</text
+							>
+						{/if}
+					</g>
+				</svg>
+			</div>
 		</div>
 
 		{#if showControls}
@@ -518,10 +519,15 @@
 		white-space: pre-line;
 	}
 
+	/* Mesure la place disponible : jamais élargie par le dessin */
+	.stat-mesure {
+		width: 100%;
+	}
+
 	.stat-svg {
 		display: block;
 		width: 100%;
-		/* En dessous, le texte du SVG (11 px) deviendrait illisible : défiler plutôt */
+		/* En dessous, le dessin ne se resserre plus : il défile dans son cadre */
 		min-width: 300px;
 		height: auto;
 		margin: 0 auto;
@@ -547,7 +553,8 @@
 
 	.stat-svg text {
 		fill: var(--color-foreground);
-		font-size: 11px;
+		/* Le dessin est à l'échelle 1 : 12 px à l'écran (écart E46) */
+		font-size: 12px;
 	}
 
 	.stat-graduations line {
@@ -560,10 +567,6 @@
 		stroke-width: 0.75;
 	}
 
-	.stat-graduations text {
-		font-size: 10px;
-	}
-
 	.stat-axes line {
 		stroke: var(--color-foreground);
 		stroke-width: 1.1;
@@ -574,7 +577,6 @@
 	}
 
 	.stat-svg .stat-titre-axe {
-		font-size: 11px;
 		font-weight: 600;
 	}
 

@@ -952,6 +952,20 @@ Danse = 7            ```                                     ```
   (`src/lib/ubumark/__tests__/stat-chart/simulation-block.test.ts`) ; ou une loi nommée,
   `X ~ G(0,2)`, `U(1 ; 6)`, `U([0 ; 10])`, `E(0,5)`, `N(10 ; 4)` (σ² en 2ᵉ paramètre ; histogramme
   sur μ ± 3σ) — `src/lib/ubumark/__tests__/stat-chart/simulation-laws.test.ts`.
+- **Barres et boîtes à moustaches à l'écran : dessin à la largeur disponible** (écart E46,
+  2026-11-24) — `src/lib/ubumark/utils/stat-chart-fit.ts`, test
+  `src/lib/ubumark/__tests__/stat-chart/fit.test.ts`. Le SVG n'est jamais rétréci par le
+  navigateur : `StatChart` (barres), `BoxPlotChart`, `BarresPlacer` et `BoxPlotPlacer` mesurent
+  leur place (`bind:clientWidth` sur `.stat-mesure`) et `fitBarScene` / `fitBoxPlotScene`
+  rendent un dessin de cette largeur, à l'échelle 1 (texte de 12 px). Place suffisante ou pas
+  encore mesurée (rendu serveur) : le dessin de `taille:`. Plus étroit : la scène est
+  reconstruite pour ce cadre (`buildStatChartScene(spec, { plotWidth })` : noms inclinés,
+  graduations automatiques, rangées de valeurs), la hauteur des barres reste celle de
+  `taille:`. Sous 300 px, ou quand les textes des colonnes se toucheraient (18 px par colonne
+  au moins), le dessin garde sa largeur et défile dans son cadre. Boîtes : axe écrit trop serré
+  pour le cadre → une graduation étiquetée sur `labelStride` (les traits restent tous). Le PDF
+  n'est pas concerné. Les autres genres (histogramme, nuage, circulaire…) gardent l'ancien
+  comportement (dessin rétréci).
 - ` ```barres ` à construire (chantier [reponses-a-placer](../archive/wip/reponses-a-placer-progress.md)
   § 17, 18 ; CP-072, CE1-088, CE2-082) — `src/lib/ubumark/__tests__/stat-chart/barres-placer.test.ts`,
   `BarresPlacer.svelte.test.ts` : `axe: 0 à 20, de 2 en 2` (nœud : `spec.axis`, `{ max, step }` ; part

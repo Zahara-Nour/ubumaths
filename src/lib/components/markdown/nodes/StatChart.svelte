@@ -22,11 +22,13 @@
 	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
 	import {
 		PIE_MARKER_PX,
-		STAT_CHART_CHAR_PX,
 		buildStatChartScene,
+		type BarScene,
+		type BoxPlotScene,
 		type ScenePoint,
 		type StatChartScene
 	} from '#lib/ubumark/utils/stat-chart-scene.ts';
+	import { BAR_LABEL_CHAR_PX, fitBarScene } from '#lib/ubumark/utils/stat-chart-fit.ts';
 	import { readContentLocale } from '../content-locale';
 	import { STAT_TEXT } from '#lib/ubumark/utils/stat-chart-text.ts';
 	import StatChart from './StatChart.svelte';
@@ -51,17 +53,12 @@
 
 	let { node, scene: given, showErrors, class: className = '' }: Props = $props();
 
-	/** Marges autour du cadre des barres, en px (la gauche s'élargit selon les textes) */
-	const PAD_LEFT_MIN = 40;
-	/** Largeur moyenne d'un chiffre de graduation à 10 px */
-	const TICK_CHAR_PX = 6.2;
+	/** Marges autour d'un cadre, en px (celles des barres : `stat-chart-fit.ts`) */
 	const PAD_RIGHT = 12;
 	const PAD_TOP = 26;
-	/** Bas : noms à plat ou inclinés, puis titre de l'axe horizontal */
+	/** Bas : noms à plat, puis titre de l'axe horizontal */
 	const PAD_BOTTOM_FLAT = 26;
 	const AXIS_TITLE_PX = 18;
-
-	const SIN_45 = Math.SQRT1_2;
 
 	const FAILED_MESSAGE = 'Le calcul du diagramme a échoué : il n’a pas été dessiné';
 
@@ -104,7 +101,9 @@
 		const spec = node?.spec;
 		if (!spec || !admitted) return { scene: null, failed: false };
 		try {
-			const built = withinBudget(budget(), () => buildStatChartScene(spec, { locale: locale() }));
+			const built = withinBudget(budget(), () =>
+				buildStatChartScene(spec, { locale: locale(), labelCharPx: BAR_LABEL_CHAR_PX })
+			);
 			return { scene: built, failed: false };
 		} catch {
 			return { scene: null, failed: true };
@@ -122,7 +121,8 @@
 				: (node?.errors ?? [])
 	);
 
-	let bars = $derived(scene?.kind === 'barres' ? scene : null);
+	/** Les barres de `taille:` ; dessinées : `bars`, à la largeur disponible */
+	let naturalBars = $derived(scene?.kind === 'barres' ? scene : null);
 	let pie = $derived(scene?.kind === 'circulaire' ? scene : null);
 	let histogram = $derived(scene?.kind === 'histogramme' ? scene : null);
 	let cumulative = $derived(scene?.kind === 'frequences-cumulees' ? scene : null);
@@ -167,33 +167,54 @@
 
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
 	let plotHeight = $derived(scene?.pixelSize.height ?? 0);
-	/** Étendue d'un nom incliné, horizontale comme verticale */
-	let rotatedExtent = $derived(
-		bars?.rotateLabels ? bars.longestLabel * STAT_CHART_CHAR_PX * SIN_45 : 0
-	);
-	let padBottom = $derived(
-		(bars?.rotateLabels ? 16 + rotatedExtent : PAD_BOTTOM_FLAT) +
-			(bars?.axisTitles.x ? AXIS_TITLE_PX : 0)
-	);
+
+	/** Place disponible pour les barres, mesurée une fois le composant monté */
+	let barsAvailable = $state<number>();
 	/**
-	 * Gauche : la plus longue graduation, et un nom incliné qui part vers la
-	 * gauche depuis le milieu de la première barre (audit a11y : texte rogné).
+	 * Barres à la largeur disponible (écart E46) : le dessin est recalculé, jamais
+	 * rétréci. Scène donnée sans sa spec (loi) : dessinée telle quelle dans le
+	 * cadre resserré.
 	 */
-	let padLeft = $derived.by(() => {
-		if (!bars) return PAD_LEFT_MIN;
-		const ticks = 12 + Math.max(...bars.ticks.map((t) => t.label.length)) * TICK_CHAR_PX;
-		const halfBand = plotWidth / bars.labels.length / 2;
-		return Math.max(PAD_LEFT_MIN, ticks, rotatedExtent - halfBand + 6);
-	});
+	let barFit = $derived(
+		naturalBars
+			? fitBarScene(naturalBars, barsAvailable, node?.spec ? rebuildBars : undefined)
+			: null
+	);
+	let bars = $derived(barFit?.scene ?? null);
+
+	/** La scène de ce bloc pour un cadre de cette largeur (barres, boîtes) */
+	function rebuild(width: number): StatChartScene | null {
+		const spec = node?.spec;
+		if (!spec) return null;
+		try {
+			return buildStatChartScene(spec, {
+				locale: locale(),
+				plotWidth: width,
+				labelCharPx: BAR_LABEL_CHAR_PX
+			});
+		} catch {
+			return null;
+		}
+	}
+
+	function rebuildBars(width: number): BarScene {
+		const built = rebuild(width);
+		return built?.kind === 'barres' ? built : naturalBars!;
+	}
+
+	function rebuildBoxPlot(width: number): BoxPlotScene {
+		const built = rebuild(width);
+		return built?.kind === 'boite-a-moustaches' ? built : boxPlot!;
+	}
 
 	/** Abscisse d'écran d'une position en catégories */
 	function sx(x: number): number {
-		return bars ? padLeft + (x / bars.labels.length) * plotWidth : 0;
+		return barFit ? barFit.padLeft + (x / barFit.scene.labels.length) * barFit.plotWidth : 0;
 	}
 
 	/** Ordonnée d'écran d'une valeur */
 	function sy(value: number): number {
-		return bars ? PAD_TOP + (1 - value / bars.yMax) * plotHeight : 0;
+		return barFit ? barFit.padTop + (1 - value / barFit.scene.yMax) * barFit.plotHeight : 0;
 	}
 
 	/** Abscisse d'écran, dans l'unité des classes */
@@ -481,124 +502,133 @@
 			</div>
 		{:else if boxPlot}
 			<!-- Boîtes à moustaches : composant à part, mêmes title / desc reliés -->
-			<BoxPlotChart scene={boxPlot} {titleId} {descId} />
-		{:else if bars}
-			<svg
-				role="img"
-				aria-labelledby={titleId}
-				aria-describedby={descId}
-				viewBox="0 0 {padLeft + plotWidth + PAD_RIGHT} {PAD_TOP + plotHeight + padBottom}"
-				style:max-width="{padLeft + plotWidth + PAD_RIGHT}px"
-				class="stat-svg"
-			>
-				<title id={titleId}>{scene.accessibleTitle}</title>
-				<desc id={descId}>{scene.description}</desc>
+			<BoxPlotChart
+				scene={boxPlot}
+				rebuild={node?.spec ? rebuildBoxPlot : undefined}
+				{titleId}
+				{descId}
+			/>
+		{:else if bars && barFit}
+			{@const padLeft = barFit.padLeft}
+			{@const plotWidth = barFit.plotWidth}
+			<div class="stat-mesure" bind:clientWidth={barsAvailable}>
+				<svg
+					role="img"
+					aria-labelledby={titleId}
+					aria-describedby={descId}
+					viewBox="0 0 {barFit.viewWidth} {barFit.viewHeight}"
+					style:max-width="{barFit.viewWidth}px"
+					class="stat-svg stat-barres"
+				>
+					<title id={titleId}>{scene.accessibleTitle}</title>
+					<desc id={descId}>{scene.description}</desc>
 
-				{#if bars.secondColor}
-					<!-- Seconde série : hachures diagonales (Q117), lisibles sans la couleur -->
-					<defs>
-						<pattern
-							id={hatchId}
-							width="6"
-							height="6"
-							patternUnits="userSpaceOnUse"
-							patternTransform="rotate(45)"
-						>
-							<line
-								x1="0"
-								y1="0"
-								x2="0"
-								y2="6"
-								stroke-width="2.5"
-								style:stroke={COLOR_VAR[bars.secondColor]}
-							/>
-						</pattern>
-					</defs>
-				{/if}
-
-				<!-- Graduations -->
-				<g class="stat-graduations" aria-hidden="true">
-					{#each bars.ticks as tick, i (i)}
-						<line
-							class="stat-grille"
-							x1={padLeft}
-							y1={sy(tick.value)}
-							x2={padLeft + plotWidth}
-							y2={sy(tick.value)}
-						/>
-						<line x1={padLeft - 4} y1={sy(tick.value)} x2={padLeft} y2={sy(tick.value)} />
-						<text x={padLeft - 6} y={sy(tick.value)} text-anchor="end" dominant-baseline="middle"
-							>{tick.label}</text
-						>
-					{/each}
-				</g>
-
-				<!-- Barres -->
-				{#each bars.bars as bar, i (i)}
-					<rect
-						class="stat-barre"
-						x={sx(bar.left)}
-						y={sy(bar.value)}
-						width={sx(bar.right) - sx(bar.left)}
-						height={sy(0) - sy(bar.value)}
-						class:stat-barre-hachuree={bar.series === 1}
-						class:stat-rectangle-hors={bar.highlighted === false}
-						style:fill={bar.series === 1
-							? `url(#${hatchId})`
-							: bar.highlighted === false
-								? 'var(--color-muted-foreground)'
-								: COLOR_VAR[bars.color]}
-						style:stroke={bar.series === 1 && bars.secondColor
-							? COLOR_VAR[bars.secondColor]
-							: undefined}
-					/>
-					{#if bars.showValues}
-						<text
-							class="stat-valeur"
-							class:stat-valeur-serree={bars.legend !== null}
-							x={(sx(bar.left) + sx(bar.right)) / 2}
-							y={sy(bar.value) - 4}
-							text-anchor="middle">{bar.valueLabel}</text
-						>
-					{/if}
-				{/each}
-
-				<!-- Noms des catégories -->
-				<g class="stat-categories" aria-hidden="true">
-					{#each bars.labels as label, i (i)}
-						{@const cx = sx(label.center)}
-						{#if bars.rotateLabels}
-							<text
-								x={cx}
-								y={sy(0) + 10}
-								text-anchor="end"
-								transform="rotate(-45 {cx} {sy(0) + 10})">{label.text}</text
+					{#if bars.secondColor}
+						<!-- Seconde série : hachures diagonales (Q117), lisibles sans la couleur -->
+						<defs>
+							<pattern
+								id={hatchId}
+								width="6"
+								height="6"
+								patternUnits="userSpaceOnUse"
+								patternTransform="rotate(45)"
 							>
-						{:else}
-							<text x={cx} y={sy(0) + 16} text-anchor="middle">{label.text}</text>
+								<line
+									x1="0"
+									y1="0"
+									x2="0"
+									y2="6"
+									stroke-width="2.5"
+									style:stroke={COLOR_VAR[bars.secondColor]}
+								/>
+							</pattern>
+						</defs>
+					{/if}
+
+					<!-- Graduations -->
+					<g class="stat-graduations" aria-hidden="true">
+						{#each bars.ticks as tick, i (i)}
+							<line
+								class="stat-grille"
+								x1={padLeft}
+								y1={sy(tick.value)}
+								x2={padLeft + plotWidth}
+								y2={sy(tick.value)}
+							/>
+							<line x1={padLeft - 4} y1={sy(tick.value)} x2={padLeft} y2={sy(tick.value)} />
+							<text x={padLeft - 6} y={sy(tick.value)} text-anchor="end" dominant-baseline="middle"
+								>{tick.label}</text
+							>
+						{/each}
+					</g>
+
+					<!-- Barres -->
+					{#each bars.bars as bar, i (i)}
+						<rect
+							class="stat-barre"
+							x={sx(bar.left)}
+							y={sy(bar.value)}
+							width={sx(bar.right) - sx(bar.left)}
+							height={sy(0) - sy(bar.value)}
+							class:stat-barre-hachuree={bar.series === 1}
+							class:stat-rectangle-hors={bar.highlighted === false}
+							style:fill={bar.series === 1
+								? `url(#${hatchId})`
+								: bar.highlighted === false
+									? 'var(--color-muted-foreground)'
+									: COLOR_VAR[bars.color]}
+							style:stroke={bar.series === 1 && bars.secondColor
+								? COLOR_VAR[bars.secondColor]
+								: undefined}
+						/>
+						{#if bars.showValues}
+							<text
+								class="stat-valeur"
+								class:stat-valeur-serree={bars.legend !== null}
+								x={(sx(bar.left) + sx(bar.right)) / 2}
+								y={sy(bar.value) - 4}
+								text-anchor="middle">{bar.valueLabel}</text
+							>
 						{/if}
 					{/each}
-				</g>
 
-				<!-- Axes -->
-				<g class="stat-axes" aria-hidden="true">
-					<line x1={padLeft} y1={sy(0)} x2={padLeft + plotWidth} y2={sy(0)} />
-					<line x1={padLeft} y1={sy(0)} x2={padLeft} y2={PAD_TOP - 10} />
-					<polygon
-						points="{padLeft},{PAD_TOP - 14} {padLeft - 3.5},{PAD_TOP - 7} {padLeft +
-							3.5},{PAD_TOP - 7}"
-					/>
-					<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 12}>{bars.axisTitles.y}</text>
-					{#if bars.axisTitles.x}
-						<text
-							class="stat-titre-axe"
-							x={padLeft + plotWidth / 2}
-							y={PAD_TOP + plotHeight + padBottom - 4}
-							text-anchor="middle">{bars.axisTitles.x}</text
-						>
-					{/if}
-				</g>
-			</svg>
+					<!-- Noms des catégories -->
+					<g class="stat-categories" aria-hidden="true">
+						{#each bars.labels as label, i (i)}
+							{@const cx = sx(label.center)}
+							{#if bars.rotateLabels}
+								<text
+									x={cx}
+									y={sy(0) + 10}
+									text-anchor="end"
+									transform="rotate(-45 {cx} {sy(0) + 10})">{label.text}</text
+								>
+							{:else}
+								<text x={cx} y={sy(0) + 16} text-anchor="middle">{label.text}</text>
+							{/if}
+						{/each}
+					</g>
+
+					<!-- Axes -->
+					<g class="stat-axes" aria-hidden="true">
+						<line x1={padLeft} y1={sy(0)} x2={padLeft + plotWidth} y2={sy(0)} />
+						<line x1={padLeft} y1={sy(0)} x2={padLeft} y2={PAD_TOP - 10} />
+						<polygon
+							points="{padLeft},{PAD_TOP - 14} {padLeft - 3.5},{PAD_TOP - 7} {padLeft +
+								3.5},{PAD_TOP - 7}"
+						/>
+						<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 12}>{bars.axisTitles.y}</text>
+						{#if bars.axisTitles.x}
+							<text
+								class="stat-titre-axe"
+								x={padLeft + plotWidth / 2}
+								y={barFit.viewHeight - 4}
+								text-anchor="middle">{bars.axisTitles.x}</text
+							>
+						{/if}
+					</g>
+				</svg>
+			</div>
 			{#if bars.legend && bars.secondColor}
 				<!-- Légende des deux séries (Q117) : la couleur, puis les hachures -->
 				<ul class="stat-legende-series">
@@ -1118,6 +1148,18 @@
 	.stat-svg text {
 		fill: var(--color-foreground);
 		font-size: 11px;
+	}
+
+	/* Mesure la place disponible : jamais élargie par le dessin */
+	.stat-mesure {
+		width: 100%;
+	}
+
+	/* Barres : dessin à l'échelle 1 (`fitBarScene`), 12 px à l'écran (écart E46) */
+	.stat-barres text,
+	.stat-barres .stat-graduations text,
+	.stat-barres .stat-titre-axe {
+		font-size: 12px;
 	}
 
 	.stat-graduations line {
