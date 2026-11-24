@@ -1,0 +1,248 @@
+{
+	"id": "ff9bb2fb-9104-43af-98a8-344df090f716",
+	"title": "Factoriser $a^2-b^2$",
+	"grades": ["3"],
+	"level": 4,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "1..9"
+			},
+			{
+				"name": "b",
+				"expression": "1..9!a"
+			},
+			{
+				"name": "c",
+				"expression": "x|y|z"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "({{a}}+{{eval:bc}})({{a}}-{{eval:bc}})"
+				}
+			],
+			"statement": "Factorise.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{eval:a^2}}-{{eval:(bc)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}                 {{eval:a^2}}-{{eval:(bc)^2}}               &=  {{a}}^2-({{eval:bc}})^2 \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:bc}}+{{a}})({{eval:bc}}-{{a}})"
+				}
+			],
+			"statement": "Factorise.\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{eval:(bc)^2}}-{{eval:a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}                 {{eval:(bc)^2}} - {{eval:a^2}}               &=  ({{eval:bc}})^2 - {{a}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise le plus possible.\n\n$${{k}}{{c}}^2-{{eval:k*a^2}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}({{c}}+{{a}})({{c}}-{{a}})",
+					"expectedErrors": [
+						{
+							"answer": "({{c}}+{{a}})({{c}}-{{a}})",
+							"message": "Tu as oublié le facteur commun ${{k}}$ : ton produit ne vaut pas l'expression.",
+							"label": "Facteur k oublié"
+						},
+						{
+							"answer": "{{k}}({{c}}-{{a}})^2",
+							"message": "Une différence de deux carrés se factorise en un produit d'une somme par une différence, pas en un carré.",
+							"label": "Carré au lieu de a² − b²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On met d'abord le facteur commun $\\textcolor{{{color:primary.0}}}{{{k}}}$ en facteur.",
+					"$$\\begin{align} {{k}}{{c}}^2-{{eval:k*a^2}} &= \\textcolor{{{color:primary.0}}}{{{k}}}({{c}}^2-{{eval:a^2}}) \\\\ &= \\textcolor{{{color:primary.0}}}{{{k}}}({{c}}^2-{{a}}^2) \\\\ &= {{solution}} \\end{align}$$",
+					"On a utilisé $a^2 - b^2 = (a + b)(a - b)$ : la factorisation est finie, il ne reste que des facteurs du premier degré et un nombre."
+				]
+			},
+			"hint": "Commence par mettre en facteur le nombre commun aux deux termes, puis regarde ce qui reste."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["(7+9z)(7-9z)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "z|z"
+			},
+			"description": "v0 bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(9z+7)(9z-7)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "z|z"
+			},
+			"description": "v1 bonne réponse",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(9z-7)(9z+7)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "z|z"
+			},
+			"description": "facteurs permutés",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(3z+7)(3z-7)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "z|z"
+			},
+			"description": "racine du coefficient mal prise",
+			"variationIndex": 1
+		},
+		{
+			"description": "F7 : 2x² − 18 = 2(x + 3)(x − 3)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "2",
+				"c": "x|x"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2(x+3)(x-3)"]
+		},
+		{
+			"description": "F7 : ordre des facteurs",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "2",
+				"c": "x|x"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2(x-3)(x+3)"]
+		},
+		{
+			"description": "F7 : 2(x² − 9) non fini",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "2",
+				"c": "x|x"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["2(x^2-9)"]
+		},
+		{
+			"description": "F7 : (2x − 6)(x + 3) non fini",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "2",
+				"c": "x|x"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["(2x-6)(x+3)"]
+		},
+		{
+			"description": "F7 : k oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "2",
+				"c": "x|x"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le facteur commun $2$ : ton produit ne vaut pas l'expression."
+			},
+			"answers": ["(x-3)(x+3)"]
+		},
+		{
+			"description": "F7 : carré",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "2",
+				"c": "x|x"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une différence de deux carrés se factorise en un produit d'une somme par une différence, pas en un carré."
+			},
+			"answers": ["2(x-3)^2"]
+		},
+		{
+			"description": "F7 : 3y² − 75 = 3(y + 5)(y − 5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"k": "3",
+				"c": "y|y"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3(y+5)(y-5)"]
+		}
+	]
+}

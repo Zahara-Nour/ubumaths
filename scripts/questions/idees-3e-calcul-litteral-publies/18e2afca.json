@@ -1,0 +1,511 @@
+{
+	"id": "18e2afca-3e36-4dfc-b92b-38c9a6f4bb1a",
+	"title": "Développer (a + b)² et (a − b)²",
+	"description": "Développer avec les identités remarquables : (x + 3)², (x − 5)², (2x + 5)², (3x − 4)², puis l'une des trois identités à reconnaître ((ax + b)², (ax − b)², (ax − b)(ax + b))",
+	"grades": ["3"],
+	"level": 10,
+	"delay": 60,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "x^2+{{eval:2*n}}x+{{eval:n^2}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$$(x+{{n}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$. Ici, $a=x$ et $b={{n}}$.",
+					"$$(x+{{n}})^2 = x^2 + 2 \\times x \\times {{n}} + {{n}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "x^2-{{eval:2*n}}x+{{eval:n^2}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$$(x-{{n}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$. Ici, $a=x$ et $b={{n}}$.",
+					"$$(x-{{n}})^2 = x^2 - 2 \\times x \\times {{n}} + {{n}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2}}x^2+{{eval:2*a*b}}x+{{eval:b^2}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$$({{a}}x+{{b}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$. Ici, $a={{a}}x$ et $b={{b}}$.",
+					"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+					"$$({{a}}x+{{b}})^2 = ({{a}}x)^2 + 2 \\times {{a}}x \\times {{b}} + {{b}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2}}x^2-{{eval:2*a*b}}x+{{eval:b^2}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$$({{a}}x-{{b}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$. Ici, $a={{a}}x$ et $b={{b}}$.",
+					"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+					"$$({{a}}x-{{b}})^2 = ({{a}}x)^2 - 2 \\times {{a}}x \\times {{b}} + {{b}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|{{eval:a^2}}x^2+{{eval:2*a*b}}x+{{eval:b^2}}|{{if:t==1|{{eval:a^2}}x^2-{{eval:2*a*b}}x+{{eval:b^2}}|{{eval:a^2}}x^2-{{eval:b^2}}}}}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{if:t==0|({{a}}x+{{b}})^2|{{if:t==1|({{a}}x-{{b}})^2|({{a}}x-{{b}})({{a}}x+{{b}})}}}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a>=2 || t==2"],
+			"correction": {
+				"steps": [
+					"**Quelle identité ?** {{if:t==0|**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$.|{{if:t==1|**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$.|**Produit d'une somme par une différence** : $(a-b)(a+b)=a^2-b^2$.}}}} Ici, $a={{a}}x$ et $b={{b}}$.",
+					"$${{if:t==0|({{a}}x+{{b}})^2 = ({{a}}x)^2 + 2 \\times {{a}}x \\times {{b}} + {{b}}^2|{{if:t==1|({{a}}x-{{b}})^2 = ({{a}}x)^2 - 2 \\times {{a}}x \\times {{b}} + {{b}}^2|({{a}}x-{{b}})({{a}}x+{{b}}) = ({{a}}x)^2 - {{b}}^2}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis :\n\n$$({{b}}{{if:w==0|+|-}}{{a}}x)^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2}}{{if:w==0|+|-}}{{eval:2*a*b}}x+{{eval:a^2}}x^2",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b^2}}+{{eval:a^2}}x^2",
+							"message": "Tu as oublié le double produit : le carré d'une somme ou d'une différence n'est pas la somme des carrés.",
+							"label": "Double produit oublié"
+						},
+						{
+							"answer": "{{if:w==1|{{eval:b^2}}-{{eval:a^2}}x^2|{{eval:b^2}}{{if:w==0|+|-}}{{eval:2*a*b}}x+{{eval:a^2}}x^2}}",
+							"message": "Le carré d'une différence n'est pas la différence des carrés : il y a un double produit, et le dernier carré est positif.",
+							"label": "b² − a²x²"
+						},
+						{
+							"answer": "{{eval:b^2}}{{if:w==0|-|+}}{{eval:2*a*b}}x+{{eval:a^2}}x^2",
+							"message": "Vérifie le signe du double produit : il est celui du signe entre les deux termes.",
+							"label": "Signe du double produit"
+						},
+						{
+							"answer": "{{eval:b^2}}{{if:w==0|+|-}}{{eval:2*a*b}}x+{{a}}x^2",
+							"message": "Le carré porte sur le nombre ET sur $x$ : il faut élever le coefficient au carré.",
+							"label": "(ax)² écrit ax²"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:w==0|**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$.|**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$.}} Ici, $a={{b}}$ et $b={{a}}x$ : le terme en $x$ est le second.",
+					"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+					"$$({{b}}{{if:w==0|+|-}}{{a}}x)^2 = {{b}}^2 {{if:w==0|+|-}} 2 \\times {{b}} \\times {{a}}x + ({{a}}x)^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Reconnais l'identité remarquable, puis repère qui joue le rôle de $a$ et qui joue le rôle de $b$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["x^2+6x+9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "(x + 3)² = x² + 6x + 9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x^2+9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "Erreur : double produit oublié x² + 9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x^2+3x+9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "3"
+			},
+			"description": "Erreur : double produit sans le 2 x² + 3x + 9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x^2-10x+25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "(x − 5)² = x² − 10x + 25",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x^2+10x+25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "Erreur : signe du double produit x² + 10x + 25",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x^2-25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5"
+			},
+			"description": "Erreur : x² − 25",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4x^2+20x+25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "(2x + 5)² = 4x² + 20x + 25",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["25+20x+4x^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Ordre croissant 25 + 20x + 4x²",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2x^2+20x+25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : (2x)² écrit 2x²",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4x^2+10x+25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : double produit sans le 2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9x^2-24x+16"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"description": "(3x − 4)² = 9x² − 24x + 16",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["9x^2-16"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"description": "Erreur : 9x² − 16",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["9x^2-24x-16"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"description": "Erreur : + b² devenu − 16",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["4x^2-25"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"t": "2"
+			},
+			"description": "(2x − 5)(2x + 5) = 4x² − 25",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["4x^2-20x+25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"t": "2"
+			},
+			"description": "Erreur : traité comme un carré",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["9x^2+6x+1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"t": "0"
+			},
+			"description": "(3x + 1)² = 9x² + 6x + 1",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["9x^2+3x+3x+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"t": "0"
+			},
+			"description": "Non réduit 9x² + 3x + 3x + 1",
+			"variationIndex": 4
+		},
+		{
+			"description": "F6 : (3 − 2x)² = 9 − 12x + 4x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9-12x+4x^2"]
+		},
+		{
+			"description": "F6 : ordre décroissant 4x² − 12x + 9",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4x^2-12x+9"]
+		},
+		{
+			"description": "F6 : non réduit",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["9-6x-6x+4x^2"]
+		},
+		{
+			"description": "F6 : double produit oublié",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le double produit : le carré d'une somme ou d'une différence n'est pas la somme des carrés."
+			},
+			"answers": ["9+4x^2"]
+		},
+		{
+			"description": "F6 : 9 − 4x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'une différence n'est pas la différence des carrés : il y a un double produit, et le dernier carré est positif."
+			},
+			"answers": ["9-4x^2"]
+		},
+		{
+			"description": "F6 : signe du double produit",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe du double produit : il est celui du signe entre les deux termes."
+			},
+			"answers": ["9+12x+4x^2"]
+		},
+		{
+			"description": "F6 : (2x)² écrit 2x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "1",
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré porte sur le nombre ET sur $x$ : il faut élever le coefficient au carré."
+			},
+			"answers": ["9-12x+2x^2"]
+		},
+		{
+			"description": "F6 : (5 + 3x)² = 25 + 30x + 9x²",
+			"variationIndex": 5,
+			"variables": {
+				"w": "0",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25+30x+9x^2"]
+		},
+		{
+			"description": "F6 : signe du double produit (somme)",
+			"variationIndex": 5,
+			"variables": {
+				"w": "0",
+				"a": "3",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie le signe du double produit : il est celui du signe entre les deux termes."
+			},
+			"answers": ["25-30x+9x^2"]
+		}
+	]
+}

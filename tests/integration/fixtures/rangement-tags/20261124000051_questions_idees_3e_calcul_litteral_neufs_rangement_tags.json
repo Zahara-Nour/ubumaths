@@ -1,0 +1,60 @@
+{
+	"migration": "supabase/migrations/20261124000051_questions_idees_3e_calcul_litteral_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "8c291e87-ce64-48e6-aae6-2405b1e17de2",
+			"title": "Développer et réduire une expression",
+			"fichier": "n1-developper-et-reduire.json",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sousNotion": "développement",
+			"point": "3-013"
+		},
+		{
+			"id": "ea76da91-df3e-400f-939c-172556169e87",
+			"title": "Calculer astucieusement avec une identité remarquable",
+			"fichier": "n2-calcul-astucieux-identites.json",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sousNotion": "identités remarquables",
+			"point": "3-016"
+		},
+		{
+			"id": "62528060-640b-4ca5-90fc-7f5ccebe08d9",
+			"title": "Développer avec un tableau",
+			"fichier": "n3-developper-avec-un-tableau.json",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sousNotion": "développement",
+			"point": "3-013"
+		},
+		{
+			"id": "eef988e6-95ca-4336-8b9c-2ea1afa18054",
+			"title": "Factoriser a² + 2ab + b² et a² − 2ab + b²",
+			"fichier": "n4-factoriser-carre-somme-difference.json",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sousNotion": "identités remarquables",
+			"point": "3-058"
+		},
+		{
+			"id": "bf8a9d2d-5d7a-442e-8180-9b55dbc2b53f",
+			"title": "Résoudre un problème par une équation",
+			"fichier": "n5-probleme-par-une-equation.json",
+			"branche": "Algèbre",
+			"notion": "Équations : premier degré",
+			"sousNotion": "ax + b = cx + d",
+			"point": "4-071"
+		},
+		{
+			"id": "bfbd40fc-0d37-4af1-9c4f-4fe5c793a74c",
+			"title": "Programmes de calcul équivalents",
+			"fichier": "n6-programmes-de-calcul-equivalents.json",
+			"branche": "Algèbre",
+			"notion": "Calcul littéral",
+			"sousNotion": "identités remarquables",
+			"point": "3-016"
+		}
+	],
+	"niveaux": []
+}
