@@ -1,4 +1,5 @@
 {
+	"id": "da157de6-0283-42bb-9886-a5c7c3fe3ec5",
 	"title": "Équation de la tangente à la courbe d'une fonction composée",
 	"description": "Équation réduite de la tangente au point d'abscisse a à la courbe de uⁿ, eᵘ ou √u (u du second degré) : calculer u(a), u′(a), puis f(a) et f′(a) (pièges : u′ oublié, signe de a, f(a) pris égal à u(a), 2 de 2√u oublié)",
 	"grades": ["T_SPE"],

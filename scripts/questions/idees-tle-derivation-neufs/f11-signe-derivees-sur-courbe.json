@@ -1,4 +1,5 @@
 {
+	"id": "91841156-6c8a-47db-9bd1-d0d317f3a5fd",
 	"title": "Signe de f′(a) ou de f″(a) lu sur la courbe de f",
 	"description": "Lire sur la courbe de f et sa tangente le signe de f′(b) (pente de la tangente) ou de f″(c) (courbe au-dessus ou en dessous de la tangente, ou la traversant) (pièges : sommet, point d'inflexion, signe de f′ confondu avec celui de f″)",
 	"grades": ["T_SPE"],
