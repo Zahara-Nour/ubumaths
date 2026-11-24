@@ -2945,7 +2945,13 @@ infini hors de l'ensemble est refusé ; une composée affine d'une fonction à e
 (une réponse, pas un refus, comme `.factoriser`) ; avec une lettre autre que la variable
 (`unknownLimit`) : « … : elle peut dépendre du signe de k. » (λ écrit λ) — le moteur ne devine
 plus le signe d'un paramètre (`.limite e^(-kx) en x=+∞` rendait +∞, chantier
-limites-parametres) ; une limite où il ne décide pas reste calculée (`(kx+1)/(x+2)` → k). Sans côté tapé, une fonction définie d'un seul
+limites-parametres) ; une limite où il ne décide pas reste calculée (`(kx+1)/(x+2)` → k).
+Une limite finie à paramètre dit sa condition (V103, `limitParameterCondition` de
+`mathAST/limits/parametric.ts`) : `\lim\limits_{x\to 0} \dfrac{1}{x^2 + k} = \dfrac{1}{k}\text{,}\quad\text{pour }k \neq 0`
+(texte « … = 1/k, pour k ≠ 0 ») ; une condition qui ne s'écrit pas (plusieurs lettres) ou que
+contredit un essai du moteur (k remplacé par −2, …, 3) → `unknownLimit`. Un refus du moteur qui
+vaut la même chose pour tout k est rattrapé terme à terme (`limitForEveryParameter` :
+`x^2+kx` en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞ ; jamais sur un « pas de limite »). Sans côté tapé, une fonction définie d'un seul
 côté du point (`definedSide` du moteur) l'écrit : `.limite ln(x) en 0` →
 `\lim\limits_{x\to 0^+} \ln(x) = -\infty` (aussi `sqrt(x)` en 0, `sqrt(-x)` en `0^-`, `ln(x-1)`
 en 1 ; `f(x)` garde son nom). `does-not-exist` sans côté TAPÉ par l'élève (un côté imposé par l'ensemble choisi, I4, garde la

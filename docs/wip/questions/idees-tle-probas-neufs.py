@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-tle-probas dans scripts/questions/idees-tle-probas-neufs/.
 
 Phase 0 validée par David le 2026-11-24 (« je valide tes recos », journal
-docs/wip/idees-tle-probas-progress.md, fiches docs/wip/idees-tle-probas-fiches.md) : F2 (loi binomiale à
+docs/archive/wip/idees-tle-probas/idees-tle-probas-progress.md, fiches docs/archive/wip/idees-tle-probas/idees-tle-probas-fiches.md) : F2 (loi binomiale à
 la calculatrice, Q1 : oui, TSPE-510) et F3 (du vocabulaire à P(X ⩽ k), avec une table, TSPE-619).
 
 Grades T_SPE. Ni theme, ni domain, ni subdomain, ni id : le rangement (nœud du point + tag) se fera

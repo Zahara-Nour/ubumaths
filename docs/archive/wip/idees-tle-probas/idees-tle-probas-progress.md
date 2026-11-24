@@ -2,16 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, brouillons créés en prod, migrations générées._
+_Mis à jour le 2026-11-24, chantier clos._
 
-- **État** : 2 brouillons en prod (a3aa8f4a F2, 1220760b F3) ; migrations de rangement et de contenu générées
-  et vertes en intégration ; `security-auditor` sans bloquant ; PR à ouvrir, puis CI et merge.
-- **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite relecture dans `/dev/modeles`.
-- **En attente de David** : rien pour l'instant (relecture après le `db:migrate`).
-- **Pièges en cours** : niveau de F3 (6) égal à celui de 4ee9a359 sur le même nœud, sans effet bloquant.
-- **Worktree / branche** : `../ubumaths-wt-idees-tle-probas` · `feat/idees-tle-probas`.
+- **État** : clos. Rubrique TSP1 à TSP4 publiée : 2 neufs (a3aa8f4a TSPE-510, 1220760b TSPE-619) et +8
+  variations sur 5 publiés, série de relecture 1f758fe3, modèles validés par David · **Prochaine action** :
+  aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
-Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Relevé :
+Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md). Relevé :
 [idees-tle-probas-releve.md](idees-tle-probas-releve.md) · fiches :
 [idees-tle-probas-fiches.md](idees-tle-probas-fiches.md) · page à cocher :
 https://claude.ai/artifact/6kVwijQ36onX4iXNpsL1Ga
@@ -72,3 +69,17 @@ https://claude.ai/artifact/6kVwijQ36onX4iXNpsL1Ga
   `question_template_points` écrites, gardes exactes, rollback en commentaire, quoting sûr). Non bloquant :
   le prénom « Noé » d'ecf4d46b v2, déjà en prod, personnage d'énoncé.
 - Correctif #3103 mergé, worktree retiré, journal versé dans `docs/archive/wip/rendu-indice-parentheses/`.
+
+### 2026-11-24 : merge et migrations en prod
+
+- #3106 mergée (CI verte). `migration list --linked` : seules les 2 migrations du lot en attente ;
+  `db:migrate` passé (4 conditions réunies). Relu au MCP : brouillons rangés et tagués, 0943e867 6 var.,
+  4ee9a359 5, 7974722d 2, 95f73515 3, ecf4d46b 3.
+- Série de relecture des 5 publiés écrite et simulée (5 questions, 5 min).
+
+### 2026-11-24 : validation et publication
+
+- David a validé les modèles (aucun verdict « À revoir » en base pour les 7). `publier-lot.ts` en simulation
+  vert (2 brouillons), garde des niveaux verte ; David a lancé `--publier` : a3aa8f4a et 1220760b
+  `published` (relu au MCP).
+- Tableau de répartition : rubrique « publiée », 5 réservations levées. Journal archivé ici.

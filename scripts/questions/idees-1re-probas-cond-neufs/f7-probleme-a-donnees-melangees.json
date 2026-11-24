@@ -1,0 +1,826 @@
+{
+	"rangement": {
+		"noeud": "Probabilités > Probabilités conditionnelles > probabilités totales",
+		"point": "1SPE-340"
+	},
+	"title": "Problème à données mélangées : retrouver P_A(B), puis P(B), puis inverser",
+	"description": "L'énoncé donne P(A), P(A ∩ B) et P_Ā(B) : retrouver P_A(B), calculer P(B) par les probabilités totales, puis une probabilité inverse (arrondie) ou une intersection ; et le sens classique (P(S), P_S(D), P_S̄(D̄)).",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 300,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une agence de voyage organise un séjour. Pour s'y rendre, ${{a}}\\,\\%$ des clients prennent l'avion, les autres le train. ${{m}}\\,\\%$ des clients prennent l'avion **et** l'option « visite guidée ». Parmi les clients qui prennent le train, ${{k}}\\,\\%$ prennent la visite guidée.\n\nOn choisit un client au hasard. On note $A$ l'évènement « le client prend l'avion » et $V$ l'évènement « le client prend la visite guidée ».\n\nCalcule la probabilité qu'un client qui prend l'avion prenne la visite guidée. Donne la valeur exacte.\n\n$P_A(V)=?$\n\nCalcule la probabilité que le client prenne la visite guidée. Donne la valeur exacte.\n\n$P(V)=?$\n\nLe client n'a pas pris la visite guidée. Quelle est la probabilité qu'il ait pris l'avion ? Arrondis au centième.\n\n$P_{\\overline{V}}(A)\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30|35|40|45|55|60|65|70"
+				},
+				{
+					"name": "t",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "30..70"
+				},
+				{
+					"name": "m",
+					"expression": "eval:a*t/10"
+				},
+				{
+					"name": "dv",
+					"expression": "eval:10000-100*a*t/10-(100-a)*k"
+				}
+			],
+			"conditions": [
+				"mod(a*t, 10) = 0",
+				"m >= 20",
+				"m <= a-5",
+				"k != 50",
+				"abs(10000*(a-m)/dv-round(10000*(a-m)/dv)) < 0.49",
+				"mod(round(10000*(a-m)/dv), 10) != 0",
+				"round(10000*(a-m)/dv) != round(100*(a-m)/a)",
+				"round(10000*(a-m)/dv) != round(10000*(a-m)/(10000-dv))",
+				"round(10000*(a-m)/dv) != a-m"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t/10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m/100}}",
+							"message": "Tu as donné $P(A\\cap V)$ : $P_A(V)$ s'obtient en divisant par $P(A)$.",
+							"label": "P(A ∩ V) recopiée"
+						},
+						{
+							"answer": "{{eval:a/m}}",
+							"message": "Ton quotient est à l'envers : $P_A(V)=\\dfrac{P(A\\cap V)}{P(A)}$.",
+							"label": "Quotient à l'envers"
+						},
+						{
+							"answer": "{{eval:a*m/10000}}",
+							"message": "Tu as multiplié : $P_A(V)$ s'obtient en divisant $P(A\\cap V)$ par $P(A)$.",
+							"label": "Produit au lieu du quotient"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*m+(100-a)*k)/10000}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(m+k)/100}}",
+							"message": "Tu as oublié le facteur $P(\\overline{A})$ : $P(\\overline{A}\\cap V)=P(\\overline{A})\\times P_{\\overline{A}}(V)$.",
+							"label": "Facteur P(Ā) oublié"
+						},
+						{
+							"answer": "{{eval:m/100}}",
+							"message": "Il manque le chemin qui passe par $\\overline{A}$.",
+							"label": "Un seul chemin"
+						},
+						{
+							"answer": "{{eval:(100*m+a*k)/10000}}",
+							"message": "Le chemin $\\overline{A}$ puis $V$ se calcule avec $P(\\overline{A})$, pas avec $P(A)$.",
+							"label": "P(A) au lieu de P(Ā)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(10000*(a-m)/dv)/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"acceptDecimal": false,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a-m)/100}}",
+							"message": "Tu as donné $P(A\\cap\\overline{V})$ : il reste à diviser par $P(\\overline{V})$.",
+							"label": "Division oubliée"
+						},
+						{
+							"answer": "{{eval:(a-m)/a}}",
+							"message": "Tu as calculé $P_A(\\overline{V})$ : la condition, ici, est $\\overline{V}$, elle va au dénominateur.",
+							"label": "P_A(V̄) au lieu de P_V̄(A)"
+						},
+						{
+							"answer": "{{eval:round(10000*(a-m)/(10000-dv))/100;d}}",
+							"message": "Tu as divisé par $P(V)$ : la condition est $\\overline{V}$, divise par $P(\\overline{V})$.",
+							"label": "Divisé par P(V)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P_A(V)=\\dfrac{P(A\\cap V)}{P(A)}=\\dfrac{ {{eval:m/100;d}} }{ {{eval:a/100;d}} }=\\textcolor{{{color:primary.0}}}{ {{eval:t/10;d}} }$.",
+					"On peut alors compléter l'arbre pondéré :\n\n```probtree\nA:{{eval:a/100;d}}\n  V:{{eval:t/10;d}}\n  \\overline{V}:{{eval:1-t/10;d}}\n\\overline{A}:{{eval:1-a/100;d}}\n  V:{{eval:k/100;d}}\n  \\overline{V}:{{eval:1-k/100;d}}\n```",
+					"D'après la formule des probabilités totales, $P(V)=P(A\\cap V)+P(\\overline{A}\\cap V)={{eval:m/100;d}}+{{eval:1-a/100;d}}\\times{{eval:k/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(100*m+(100-a)*k)/10000;d}}}$.",
+					"$P(\\overline{V})=1-{{eval:(100*m+(100-a)*k)/10000;d}}={{eval:dv/10000;d}}$ et $P(A\\cap\\overline{V})=P(A)-P(A\\cap V)={{eval:(a-m)/100;d}}$, donc $P_{\\overline{V}}(A)=\\dfrac{ {{eval:(a-m)/100;d}} }{ {{eval:dv/10000;d}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(10000*(a-m)/dv)/100;d}} }$."
+				]
+			},
+			"hint": "Commence par retrouver $P_A(V)=\\dfrac{P(A\\cap V)}{P(A)}$, puis complète l'arbre."
+		},
+		{
+			"statement": "Un salon de coiffure propose une couleur-soin : ${{a}}\\,\\%$ des clients la choisissent. ${{m}}\\,\\%$ des clients choisissent la couleur-soin **et** l'effet « coup de soleil » (des mèches éclaircies). Parmi les clients qui ne choisissent pas la couleur-soin, ${{k}}\\,\\%$ demandent l'effet « coup de soleil ».\n\nOn choisit un client au hasard. On note $C$ l'évènement « le client choisit la couleur-soin » et $E$ l'évènement « le client demande l'effet coup de soleil ».\n\nCalcule $P_C(E)$. Donne la valeur exacte.\n\n$P_C(E)=?$\n\nCalcule la probabilité que le client demande l'effet « coup de soleil ». Donne la valeur exacte.\n\n$P(E)=?$\n\nCalcule la probabilité que le client ne choisisse pas la couleur-soin et ne demande pas l'effet « coup de soleil ». Donne la valeur exacte.\n\n$P(\\overline{C}\\cap\\overline{E})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30|35|40|45|55|60|65|70"
+				},
+				{
+					"name": "t",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "30..70"
+				},
+				{
+					"name": "m",
+					"expression": "eval:a*t/10"
+				},
+				{
+					"name": "dv",
+					"expression": "eval:10000-100*a*t/10-(100-a)*k"
+				}
+			],
+			"conditions": [
+				"mod(a*t, 10) = 0",
+				"m >= 20",
+				"m <= a-5",
+				"k != 50",
+				"100*(100-k) != dv",
+				"dv != (100-a)*k"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t/10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m/100}}",
+							"message": "Tu as donné $P(C\\cap E)$ : $P_C(E)$ s'obtient en divisant par $P(C)$.",
+							"label": "P(C ∩ E) recopiée"
+						},
+						{
+							"answer": "{{eval:a/m}}",
+							"message": "Ton quotient est à l'envers : $P_C(E)=\\dfrac{P(C\\cap E)}{P(C)}$.",
+							"label": "Quotient à l'envers"
+						},
+						{
+							"answer": "{{eval:a*m/10000}}",
+							"message": "Tu as multiplié : $P_C(E)$ s'obtient en divisant $P(C\\cap E)$ par $P(C)$.",
+							"label": "Produit au lieu du quotient"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*m+(100-a)*k)/10000}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(m+k)/100}}",
+							"message": "Tu as oublié le facteur $P(\\overline{C})$ : $P(\\overline{C}\\cap E)=P(\\overline{C})\\times P_{\\overline{C}}(E)$.",
+							"label": "Facteur P(C̄) oublié"
+						},
+						{
+							"answer": "{{eval:m/100}}",
+							"message": "Il manque le chemin qui passe par $\\overline{C}$.",
+							"label": "Un seul chemin"
+						},
+						{
+							"answer": "{{eval:(100*m+a*k)/10000}}",
+							"message": "Le chemin $\\overline{C}$ puis $E$ se calcule avec $P(\\overline{C})$, pas avec $P(C)$.",
+							"label": "P(C) au lieu de P(C̄)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100-a)*(100-k)/10000}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:dv/10000}}",
+							"message": "Tu as donné $P(\\overline{E})$ : on veut les clients qui ne prennent **ni** la couleur-soin **ni** l'effet.",
+							"label": "P(Ē) au lieu de P(C̄ ∩ Ē)"
+						},
+						{
+							"answer": "{{eval:(100-a)*k/10000}}",
+							"message": "Tu as pris $P_{\\overline{C}}(E)$ au lieu de $P_{\\overline{C}}(\\overline{E})$ sur la seconde branche.",
+							"label": "Mauvaise branche"
+						},
+						{
+							"answer": "{{eval:(100-k)/100}}",
+							"message": "Tu as donné $P_{\\overline{C}}(\\overline{E})$ : il faut encore multiplier par $P(\\overline{C})$.",
+							"label": "P(C̄) oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P_C(E)=\\dfrac{P(C\\cap E)}{P(C)}=\\dfrac{ {{eval:m/100;d}} }{ {{eval:a/100;d}} }=\\textcolor{{{color:primary.0}}}{ {{eval:t/10;d}} }$.",
+					"On peut alors compléter l'arbre pondéré :\n\n```probtree\nC:{{eval:a/100;d}}\n  E:{{eval:t/10;d}}\n  \\overline{E}:{{eval:1-t/10;d}}\n\\overline{C}:{{eval:1-a/100;d}}\n  E:{{eval:k/100;d}}\n  \\overline{E}:{{eval:1-k/100;d}}\n```",
+					"D'après la formule des probabilités totales, $P(E)=P(C\\cap E)+P(\\overline{C}\\cap E)={{eval:m/100;d}}+{{eval:1-a/100;d}}\\times{{eval:k/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(100*m+(100-a)*k)/10000;d}}}$.",
+					"$P(\\overline{C}\\cap\\overline{E})=P(\\overline{C})\\times P_{\\overline{C}}(\\overline{E})={{eval:1-a/100;d}}\\times{{eval:1-k/100;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:(100-a)*(100-k)/10000;d}} }$."
+				]
+			},
+			"hint": "Commence par retrouver $P_C(E)=\\dfrac{P(C\\cap E)}{P(C)}$, puis complète l'arbre."
+		},
+		{
+			"statement": "Un snack vend des sandwichs et des desserts. ${{a}}\\,\\%$ des clients achètent un sandwich. Parmi eux, ${{b}}\\,\\%$ achètent aussi un dessert. Parmi les clients qui n'achètent pas de sandwich, ${{c}}\\,\\%$ n'achètent pas de dessert.\n\nOn choisit un client au hasard. On note $S$ l'évènement « le client achète un sandwich » et $D$ l'évènement « le client achète un dessert ».\n\nCalcule la probabilité que le client achète un sandwich et un dessert. Donne la valeur exacte.\n\n$P(S\\cap D)=?$\n\nCalcule la probabilité que le client achète un dessert. Donne la valeur exacte.\n\n$P(D)=?$\n\nLe client a acheté un dessert. Quelle est la probabilité qu'il n'ait pas acheté de sandwich ? Arrondis au centième.\n\n$P_D(\\overline{S})\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30..70"
+				},
+				{
+					"name": "b",
+					"expression": "30..70"
+				},
+				{
+					"name": "c",
+					"expression": "30..70"
+				}
+			],
+			"conditions": [
+				"abs(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c))-round(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c)))) < 0.49",
+				"mod(round(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c))), 10) != 0",
+				"b != 100-c",
+				"c != 50",
+				"round(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c))) != 100-c",
+				"round(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c))) != round(100*a*b/(a*b+(100-a)*(100-c)))",
+				"round(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c))) != round((100-a)*(100-c)/100)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b/10000}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b/100}}",
+							"message": "Tu as donné $P_S(D)$ : il faut encore multiplier par $P(S)$.",
+							"label": "P_S(D) recopiée"
+						},
+						{
+							"answer": "{{eval:a*(100-b)/10000}}",
+							"message": "Tu as calculé $P(S\\cap\\overline{D})$ : le client prend un dessert.",
+							"label": "Mauvaise branche"
+						},
+						{
+							"answer": "{{eval:(a+b)/100}}",
+							"message": "Tu as additionné : un chemin de l'arbre se calcule par un produit.",
+							"label": "Somme au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(a*b+(100-a)*(100-c))/10000}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*b+(100-a)*c)/10000}}",
+							"message": "Sur la branche $\\overline{S}$, la probabilité de $D$ est $P_{\\overline{S}}(D)=1-P_{\\overline{S}}(\\overline{D})$.",
+							"label": "P_S̄(D̄) prise pour P_S̄(D)"
+						},
+						{
+							"answer": "{{eval:a*b/10000}}",
+							"message": "Il manque le chemin qui passe par $\\overline{S}$.",
+							"label": "Un seul chemin"
+						},
+						{
+							"answer": "{{eval:(a*b+100*(100-c))/10000}}",
+							"message": "Tu as oublié le facteur $P(\\overline{S})$ : $P(\\overline{S}\\cap D)=P(\\overline{S})\\times P_{\\overline{S}}(D)$.",
+							"label": "Facteur P(S̄) oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c)))/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"acceptDecimal": false,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round((100-a)*(100-c)/100)/100;d}}",
+							"message": "Tu as donné $P(\\overline{S}\\cap D)$ : il reste à diviser par $P(D)$.",
+							"label": "Division oubliée"
+						},
+						{
+							"answer": "{{eval:(100-c)/100}}",
+							"message": "Tu as donné $P_{\\overline{S}}(D)$ : la condition, ici, est $D$, elle va au dénominateur.",
+							"label": "P_S̄(D) au lieu de P_D(S̄)"
+						},
+						{
+							"answer": "{{eval:round(100*a*b/(a*b+(100-a)*(100-c)))/100;d}}",
+							"message": "Tu as calculé $P_D(S)$ : on demande la probabilité que le client n'ait pas pris de sandwich.",
+							"label": "P_D(S)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé par un arbre pondéré, avec $P_{\\overline{S}}(D)=1-{{eval:c/100;d}}={{eval:1-c/100;d}}$ :\n\n```probtree\nS:{{eval:a/100;d}}\n  D:{{eval:b/100;d}}\n  \\overline{D}:{{eval:1-b/100;d}}\n\\overline{S}:{{eval:1-a/100;d}}\n  D:{{eval:1-c/100;d}}\n  \\overline{D}:{{eval:c/100;d}}\n```",
+					"$P(S\\cap D)={{eval:a/100;d}}\\times{{eval:b/100;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*b/10000;d}} }$.",
+					"D'après la formule des probabilités totales, $P(D)=P(S\\cap D)+P(\\overline{S}\\cap D)={{eval:a*b/10000;d}}+{{eval:1-a/100;d}}\\times{{eval:1-c/100;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:(a*b+(100-a)*(100-c))/10000;d}} }$.",
+					"$P_D(\\overline{S})=\\dfrac{P(\\overline{S}\\cap D)}{P(D)}=\\dfrac{ {{eval:(100-a)*(100-c)/10000;d}} }{ {{eval:(a*b+(100-a)*(100-c))/10000;d}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(100*(100-a)*(100-c)/(a*b+(100-a)*(100-c)))/100;d}} }$."
+				]
+			},
+			"hint": "Traduis l'énoncé par un arbre pondéré, sans oublier les évènements contraires sur chaque branche."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "P_A(V) = 0,6 ; P(V) = 0,42 ; P_V̄(A) ≈ 0,28",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}6", "0{,}42", "0{,}28"]
+		},
+		{
+			"description": "Fractions 3/5 et 21/50",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{5}", "\\frac{21}{50}", "0{,}28"]
+		},
+		{
+			"description": "Arrondi faux 0,27",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0{,}6", "0{,}42", "0{,}27"]
+		},
+		{
+			"description": "P(A ∩ V) recopiée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P(A\\cap V)$ : $P_A \\left( V \\right)$ s'obtient en divisant par $P \\left( A \\right)$."
+			},
+			"answers": ["0{,}24", "0{,}42", "0{,}28"]
+		},
+		{
+			"description": "Quotient à l'envers",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est à l'envers : $P_A(V)=\\dfrac{P(A\\cap V)}{P(A)}$."
+			},
+			"answers": ["\\frac{5}{3}", "0{,}42", "0{,}28"]
+		},
+		{
+			"description": "Produit",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié : $P_A \\left( V \\right)$ s'obtient en divisant $P(A\\cap V)$ par $P \\left( A \\right)$."
+			},
+			"answers": ["0{,}096", "0{,}42", "0{,}28"]
+		},
+		{
+			"description": "Facteur P(Ā) oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le facteur $P(\\overline{A})$ : $P(\\overline{A}\\cap V)=P(\\overline{A})\\times P_{\\overline{A}}(V)$."
+			},
+			"answers": ["0{,}6", "0{,}54", "0{,}28"]
+		},
+		{
+			"description": "Un seul chemin",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque le chemin qui passe par $\\overline{A}$."
+			},
+			"answers": ["0{,}6", "0{,}24", "0{,}28"]
+		},
+		{
+			"description": "P(A) au lieu de P(Ā)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le chemin $\\overline{A}$ puis $V$ se calcule avec $P(\\overline{A})$, pas avec $P \\left( A \\right)$."
+			},
+			"answers": ["0{,}6", "0{,}36", "0{,}28"]
+		},
+		{
+			"description": "Division oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P(A\\cap\\overline{V})$ : il reste à diviser par $P(\\overline{V})$."
+			},
+			"answers": ["0{,}6", "0{,}42", "0{,}16"]
+		},
+		{
+			"description": "P_A(V̄)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $P_A(\\overline{V})$ : la condition, ici, est $\\overline{V}$, elle va au dénominateur."
+			},
+			"answers": ["0{,}6", "0{,}42", "0{,}4"]
+		},
+		{
+			"description": "Divisé par P(V)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"t": "6",
+				"k": "30"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par $P \\left( V \\right)$ : la condition est $\\overline{V}$, divise par $P(\\overline{V})$."
+			},
+			"answers": ["0{,}6", "0{,}42", "0{,}38"]
+		},
+		{
+			"description": "P_C(E) = 0,5 ; P(E) = 0,46 ; P(C̄ ∩ Ē) = 0,24",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}5", "0{,}46", "0{,}24"]
+		},
+		{
+			"description": "Fractions",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{23}{50}", "\\frac{6}{25}"]
+		},
+		{
+			"description": "P(C ∩ E) recopiée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P(C\\cap E)$ : $P_C \\left( E \\right)$ s'obtient en divisant par $P \\left( C \\right)$."
+			},
+			"answers": ["0{,}3", "0{,}46", "0{,}24"]
+		},
+		{
+			"description": "Quotient à l'envers",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est à l'envers : $P_C(E)=\\dfrac{P(C\\cap E)}{P(C)}$."
+			},
+			"answers": ["2", "0{,}46", "0{,}24"]
+		},
+		{
+			"description": "Produit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié : $P_C \\left( E \\right)$ s'obtient en divisant $P(C\\cap E)$ par $P \\left( C \\right)$."
+			},
+			"answers": ["0{,}18", "0{,}46", "0{,}24"]
+		},
+		{
+			"description": "Facteur P(C̄) oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le facteur $P(\\overline{C})$ : $P(\\overline{C}\\cap E)=P(\\overline{C})\\times P_{\\overline{C}}(E)$."
+			},
+			"answers": ["0{,}5", "0{,}7", "0{,}24"]
+		},
+		{
+			"description": "Un seul chemin",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque le chemin qui passe par $\\overline{C}$."
+			},
+			"answers": ["0{,}5", "0{,}3", "0{,}24"]
+		},
+		{
+			"description": "P(C) au lieu de P(C̄)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le chemin $\\overline{C}$ puis $E$ se calcule avec $P(\\overline{C})$, pas avec $P \\left( C \\right)$."
+			},
+			"answers": ["0{,}5", "0{,}54", "0{,}24"]
+		},
+		{
+			"description": "P(Ē)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P(\\overline{E})$ : on veut les clients qui ne prennent **ni** la couleur-soin **ni** l'effet."
+			},
+			"answers": ["0{,}5", "0{,}46", "0{,}54"]
+		},
+		{
+			"description": "Mauvaise branche",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris $P_{\\overline{C}}(E)$ au lieu de $P_{\\overline{C}}(\\overline{E})$ sur la seconde branche."
+			},
+			"answers": ["0{,}5", "0{,}46", "0{,}16"]
+		},
+		{
+			"description": "P(C̄) oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "60",
+				"t": "5",
+				"k": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P_{\\overline{C}}(\\overline{E})$ : il faut encore multiplier par $P(\\overline{C})$."
+			},
+			"answers": ["0{,}5", "0{,}46", "0{,}6"]
+		},
+		{
+			"description": "0,12 ; 0,36 ; P_D(S̄) ≈ 0,67",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}12", "0{,}36", "0{,}67"]
+		},
+		{
+			"description": "Fractions",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{25}", "\\frac{9}{25}", "0{,}67"]
+		},
+		{
+			"description": "Troncature 0,66",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0{,}12", "0{,}36", "0{,}66"]
+		},
+		{
+			"description": "P_S(D) recopiée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P_S \\left( D \\right)$ : il faut encore multiplier par $P \\left( S \\right)$."
+			},
+			"answers": ["0{,}3", "0{,}36", "0{,}67"]
+		},
+		{
+			"description": "Mauvaise branche",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $P(S\\cap\\overline{D})$ : le client prend un dessert."
+			},
+			"answers": ["0{,}28", "0{,}36", "0{,}67"]
+		},
+		{
+			"description": "Somme",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné : un chemin de l'arbre se calcule par un produit."
+			},
+			"answers": ["0{,}7", "0{,}36", "0{,}67"]
+		},
+		{
+			"description": "P_S̄(D̄) prise pour P_S̄(D)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sur la branche $\\overline{S}$, la probabilité de $D$ est $P_{\\overline{S}}(D)=1-P_{\\overline{S}}(\\overline{D})$."
+			},
+			"answers": ["0{,}12", "0{,}48", "0{,}67"]
+		},
+		{
+			"description": "Un seul chemin",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque le chemin qui passe par $\\overline{S}$."
+			},
+			"answers": ["0{,}12", "0{,}12", "0{,}67"]
+		},
+		{
+			"description": "Facteur P(S̄) oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le facteur $P(\\overline{S})$ : $P(\\overline{S}\\cap D)=P(\\overline{S})\\times P_{\\overline{S}}(D)$."
+			},
+			"answers": ["0{,}12", "0{,}52", "0{,}67"]
+		},
+		{
+			"description": "Division oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P(\\overline{S}\\cap D)$ : il reste à diviser par $P \\left( D \\right)$."
+			},
+			"answers": ["0{,}12", "0{,}36", "0{,}24"]
+		},
+		{
+			"description": "P_S̄(D)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P_{\\overline{S}}(D)$ : la condition, ici, est $D$, elle va au dénominateur."
+			},
+			"answers": ["0{,}12", "0{,}36", "0{,}4"]
+		},
+		{
+			"description": "P_D(S)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "30",
+				"c": "60"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $P_D \\left( S \\right)$ : on demande la probabilité que le client n'ait pas pris de sandwich."
+			},
+			"answers": ["0{,}12", "0{,}36", "0{,}33"]
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
