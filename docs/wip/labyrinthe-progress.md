@@ -6,12 +6,15 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, phase 0 validée._
+_Mis à jour le 2026-11-24, après #3084._
 
-- **État** : phase 0 validée ; PR 1 (bloc, juge, écran, PDF) codée, tests verts, docs à jour ·
-  **Prochaine action** : revue (`code-reviewer`, Opus), PR, merge ; puis PR 2 (modèles 3e et 6-101) ·
-  **En attente de David** : rien · **Pièges en cours** : aucun ·
-  **Worktree / branche** : `ubumaths-wt-labyrinthe`, `feat/labyrinthe`.
+- **État** : PR 1 (bloc ` ```labyrinthe `, juge, écran, PDF, série, catalogue) mergée (#3084) ·
+  **Prochaine action** : PR 2, les modèles : 3e (3A10-7, nombres premiers) et 6e, 6-101 (6N1A-4,
+  chiffre d'un rang) ; phase 0 courte d'abord (énoncés, tailles de grille, nœuds) ·
+  **En attente de David** : dire s'il veut un réglage de la forme des nombres (règle « chiffre ») ·
+  **Pièges en cours** : ne jamais changer le tirage (`tirerLabyrinthe`, `piocher`, `utils/random.ts`)
+  sans le décider : test « golden » ; seule la graine est gardée dans l'énoncé ·
+  **Worktree / branche** : aucun (à créer pour la PR 2).
 
 ## Phase 0 (2026-11-24, validée par David : « je suis tes recos »)
 
@@ -75,3 +78,4 @@ le quadrillage du robot.
 ## Historique
 
 - 2026-11-24 : phase 0 validée ; worktree créé.
+- 2026-11-24 : #3084 mergée (PR 1, l'outil).
