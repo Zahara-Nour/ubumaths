@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, lot écrit et vérifié (b2dbe6db0, non poussé)._
+_Mis à jour le 2026-11-24, lot joué en local, PR des fichiers ouverte._
 
-- **État** : lot écrit : 4 modèles neufs (F2, F5, F6, F7, 14 variations) dans `scripts/questions/idees-1re-probas-cond-neufs/`, F1 et F3 ajoutés à la fin de 31096bae et 69a05f98 (`…-publies/`). Specs toutes vertes, `create-questions` en simulation vert, 3 128 formules passées à `validateLatex`, 0 problème. Page à cocher : https://claude.ai/artifact/GsJy6qx8vPfv2rJVbjNhhM.
-- **Prochaine action** : base locale (`set -a; . ./.env.local; set +a` puis `create-questions --dir …-neufs --publier`, puis `git restore` des ids), jouer chaque modèle dans l'aperçu admin (serveur sur 5176+, `http://[::1]:<port>`), puis PR des fichiers (« revue : aucune, contenu », `Doc-inchangée: contenu`), un seul push.
-- **En attente de David** : rien avant le `create-questions --publier` en prod.
-- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). `migration-contenu.ts` (pour les publiés) n'a pas de simulation : il écrit la migration et sa fixture, il se lance à l'étape 4, après les brouillons en prod. Dans l'aperçu de `question:specs`, les propositions d'un `choix` sont mélangées : l'index attendu suit l'ordre du fichier.
+- **État** : lot écrit (F2, F5, F6, F7 neufs ; F1, F3 en fin de 31096bae et 69a05f98) et joué dans l'aperçu admin local : 19 variations, réponse juste → « Juste », fausse → « Faux », chaque `choix` de F6 a une seule proposition juste sur 4. PR des fichiers ouverte (`gh pr list --search head:feat/idees-1re-probas-cond`). Page à cocher : https://claude.ai/artifact/GsJy6qx8vPfv2rJVbjNhhM.
+- **Prochaine action** : CI verte → `pnpm pr:merger <n>`. Puis étape 6 de `couvrir-un-niveau.md` : David lance `create-questions --dir scripts/questions/idees-1re-probas-cond-neufs --publier` en prod (brouillons), je commite les ids, puis rangement, relecture dans `/dev/modeles`, `migration-contenu.ts` pour F1 et F3.
+- **En attente de David** : le `create-questions --publier` en prod, après le merge.
+- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). `migration-contenu.ts` (pour les publiés) n'a pas de simulation : il écrit la migration et sa fixture, il se lance à l'étape 4, après les brouillons en prod. `create-questions` ne touche jamais un modèle publié, même en local : F1 et F3 ont été copiés en base locale par un PATCH ponctuel. Dans l'aperçu, la variation affichée est numérotée à partir de 1.
 - **Worktree / branche** : `../ubumaths-wt-idees-1re-probas-cond` · `feat/idees-1re-probas-cond`.
 
 ## Historique
@@ -38,3 +38,9 @@ _Mis à jour le 2026-11-24, lot écrit et vérifié (b2dbe6db0, non poussé)._
 - Écarts à la fiche, acceptés : F1 n'a que 2 erreurs prévues pour P(A ∩ B) et P_B(Ā) (tout se lit
   dans l'énoncé) ; F7 V1 sans P(A) = 50 % (l'erreur P(Ā) tomberait juste) ; F6 V2 garde les deux
   leurres de V1 ; les modèles neufs sans `cleanCoefficients` (il réécrit `P_{A}(B)`).
+
+### 2026-11-24 : lot joué en base locale
+
+- 4 modèles neufs créés en brouillon dans la base locale (`create-questions --publier` avec `.env.local`), ids retirés des fichiers ensuite (`git restore`). F1 et F3 copiés dans 31096bae et 69a05f98 locaux (variations, `shared`, `test_specs`).
+- Jeu automatique (Playwright, aperçu admin sur `http://[::1]:5178`) : une graine par variation, les 19 tirées. 17 variations à saisie : réponse attendue → « Juste », `0` → « Faux » (captures relues pour F7 v3 et F1, valeurs refaites à la main). 2 variations `choix` de F6 : chaque proposition essayée, une seule « Juste » sur 4.
+- Seules erreurs de console : des 429 (limite de débit du serveur de dev, dus au rythme du script), aucune liée aux modèles.
