@@ -25,7 +25,8 @@ export const labyrintheEntry: BlockCatalogEntry = {
 					key: 'grille',
 					values: 'colonnes x lignes, 3 à 7 colonnes, 2 à 7 lignes',
 					defaultValue: null,
-					description: 'La taille de la grille, en cases.'
+					description:
+						'La taille de la grille, en cases. Pour qu’elle tienne sur un téléphone sans défiler : 7 colonnes au plus avec des nombres de 3 chiffres (premier, multiple de 2 à 5, chiffre des unités ou des dizaines), 5 avec des nombres de 4 à 6 caractères (1980, 12 345, 34,578), 4 avec les plus longs (12,3456 ; 123 456).'
 				},
 				{
 					key: 'règle',
@@ -86,6 +87,18 @@ export const labyrintheEntry: BlockCatalogEntry = {
 			source: fence('labyrinthe', 'grille: 9 x 4', 'règle: premier', 'parcourir: oui'),
 			message: 'de 3 à 7 colonnes',
 			explanation: 'Au-delà de 7 colonnes, les cases deviennent trop petites pour un téléphone.'
+		},
+		{
+			title: 'Grille trop large pour ses nombres',
+			source: fence(
+				'labyrinthe',
+				'grille: 6 x 4',
+				'règle: chiffre des dix-millièmes = 3',
+				'parcourir: oui'
+			),
+			message: 'au plus 4 colonnes avec des nombres comme 12,3456',
+			explanation:
+				'Des nombres longs élargissent les cases : la grille déborderait de l’écran d’un téléphone et cacherait les sorties.'
 		}
 	],
 	tryIt: fence('labyrinthe', 'grille: 6 x 5', 'règle: multiple de 3', 'parcourir: oui')

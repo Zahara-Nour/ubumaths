@@ -91,6 +91,45 @@ describe('parseLabyrintheContent', () => {
 		);
 		expect(parseLabyrintheContent(bloc('grille: 5 x 3', 'règle: pair')).spec).toBeNull();
 	});
+
+	// Largeurs mesurées à 375 px (iPhone SE) dans la carte de question : 7 colonnes de nombres
+	// de 3 caractères, 5 de 4 à 6 caractères, 4 de 7 caractères (chantier labyrinthe, n° 61)
+	it('grille trop large pour un téléphone : refusée, avec le nombre de colonnes possible', () => {
+		const refus = (grille: string, regle: string) =>
+			messages(bloc(`grille: ${grille}`, `règle: ${regle}`, 'parcourir: oui'));
+		expect(refus('6 x 4', 'chiffre des centaines = 4')).toMatch(
+			/trop large pour un téléphone : au plus 5 colonnes avec des nombres comme 1234/
+		);
+		expect(refus('5 x 3', 'chiffre des dix-millièmes = 3')).toMatch(
+			/au plus 4 colonnes avec des nombres comme 12,3456/
+		);
+		expect(refus('5 x 3', 'chiffre des dizaines de mille = 6')).toMatch(
+			/au plus 4 colonnes avec des nombres comme 123 456/
+		);
+		expect(refus('6 x 3', 'multiple de 99')).toMatch(/au plus 5 colonnes/);
+		expect(refus('6 x 3', 'chiffre des dixièmes = 3')).toMatch(/au plus 5 colonnes/);
+		// Grille déjà refusée pour ses bornes : un seul message
+		expect(
+			parseLabyrintheContent(bloc('grille: 6 x 9', 'règle: chiffre des dix-millièmes = 3')).errors
+		).toHaveLength(1);
+		// Affichage seul aussi : le bloc s'affiche à l'écran (cours, corrigé)
+		expect(
+			messages(bloc('grille: 7 x 7', 'règle: chiffre des dix-millièmes = 0', 'solution: oui'))
+		).toMatch(/au plus 4 colonnes/);
+	});
+
+	it('grilles qui tiennent : acceptées (modèles publiés et catalogue compris)', () => {
+		const accepte = (grille: string, regle: string) =>
+			parseLabyrintheContent(bloc(`grille: ${grille}`, `règle: ${regle}`, 'parcourir: oui')).errors;
+		expect(accepte('7 x 5', 'premier')).toEqual([]);
+		expect(accepte('7 x 3', 'multiple de 4')).toEqual([]);
+		expect(accepte('7 x 3', 'chiffre des dizaines = 4')).toEqual([]);
+		expect(accepte('5 x 4', 'chiffre des centièmes = 7')).toEqual([]);
+		expect(accepte('5 x 4', 'chiffre des unités de mille = 2')).toEqual([]);
+		expect(accepte('5 x 3', 'multiple de 99')).toEqual([]);
+		expect(accepte('4 x 5', 'chiffre des dix-millièmes = 0')).toEqual([]);
+		expect(accepte('4 x 5', 'chiffre des dizaines de mille = 9')).toEqual([]);
+	});
 });
 
 describe('findLabyrinthesAParcourir, avecGraines', () => {

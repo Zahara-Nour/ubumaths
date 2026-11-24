@@ -31,6 +31,7 @@ describe('voir — options', () => {
 		expect(parseArgs(['/demo/atelier'])).toEqual({
 			target: '/demo/atelier',
 			desktop: false,
+			small: false,
 			chromium: false,
 			account: null,
 			port: null
@@ -40,7 +41,19 @@ describe('voir — options', () => {
 	it('lit --ordi, --chrome, --compte et --port, dans n’importe quel ordre', () => {
 		expect(
 			parseArgs(['--ordi', '--compte', 'prof', '/carnet', '--chrome', '--port', '5178'])
-		).toEqual({ target: '/carnet', desktop: true, chromium: true, account: 'prof', port: 5178 });
+		).toEqual({
+			target: '/carnet',
+			desktop: true,
+			small: false,
+			chromium: true,
+			account: 'prof',
+			port: 5178
+		});
+	});
+
+	it('lit --petit (iPhone SE, 375 px) ; refuse --petit avec --ordi', () => {
+		expect(parseArgs(['/carnet', '--petit'])).toMatchObject({ desktop: false, small: true });
+		expect(() => parseArgs(['/carnet', '--petit', '--ordi'])).toThrow(/--petit ou --ordi/);
 	});
 
 	it('refuse l’absence de page, deux pages, une option ou un compte inconnus', () => {
@@ -196,12 +209,16 @@ describe('voir — image et compte rendu', () => {
 		expect(
 			captureName(date, '/demo/atelier?x=1', {
 				desktop: false,
+				small: false,
 				chromium: false,
 				account: null
 			})
 		).toBe('20261122-140509-demo-atelier-iphone-safari');
-		expect(captureName(date, '/', { desktop: true, chromium: true, account: 'prof' })).toBe(
-			'20261122-140509-accueil-ordi-chrome-prof'
-		);
+		expect(
+			captureName(date, '/', { desktop: true, small: false, chromium: true, account: 'prof' })
+		).toBe('20261122-140509-accueil-ordi-chrome-prof');
+		expect(
+			captureName(date, '/carnet', { desktop: false, small: true, chromium: false, account: null })
+		).toBe('20261122-140509-carnet-iphone-se-safari');
 	});
 });
