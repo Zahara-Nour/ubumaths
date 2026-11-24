@@ -90,7 +90,7 @@ couvre:
 
 > Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; `french-math.ts` le 2026-10-23 ; pages de
 > démo et de mise au point le 2026-10-24 ; vitrine `/demo` et clôture du chantier demo-debug le 2026-10-25 ;
-> fiche du bloc patron (gestes) le 2026-10-30 ; fiche de la boîte à moustaches le 2026-11-01, construire la boîte le 2026-11-01 ; cases à compléter des variations (`?`, `?flèche`, `??n` à ne pas écrire), étiquette indicée de l'arbre (`G_1`), fiches collection et monnaie le 2026-11-09 ; fiche du programme tortue le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e) le 2026-11-17 ; fiche du programme de calcul le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16 ; fiche du robot le 2026-11-15 ; fiche du labyrinthe le 2026-11-24.
+> fiche du bloc patron (gestes) le 2026-10-30 ; fiche de la boîte à moustaches le 2026-11-01, construire la boîte le 2026-11-01 ; cases à compléter des variations (`?`, `?flèche`, `??n` à ne pas écrire), étiquette indicée de l'arbre (`G_1`), fiches collection et monnaie le 2026-11-09 ; fiche du programme tortue le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e) le 2026-11-17 ; fiche du programme de calcul le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16 ; fiche du robot le 2026-11-15 ; fiche du labyrinthe le 2026-11-24, grille trop large pour un téléphone (réglage `grille:` et exemple d’erreur) le 2026-11-24.
 > Ce fichier **recense** : il dit ce que fait chaque fichier, qui l'appelle, et s'il est mort.
 > Chaque fichier de l'index est dans le `couvre:` : une PR qui le modifie relit sa ligne.
 > Il ne remplace pas la doc du domaine qui l'utilise ; quand elle existe, elle est citée.

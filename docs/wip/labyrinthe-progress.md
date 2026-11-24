@@ -6,15 +6,16 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après la publication des deux modèles._
+_Mis à jour le 2026-11-24, PR 3 (largeur sur téléphone) ouverte._
 
-- **État** : découpage de la phase 0 fait en entier : PR 1 (bloc, #3084), PR 2 (modèles, #3094,
-  rangement #3102) ; bloc en prod (0.107.0) ; 00f35c55 (M1, 3e) et 9e3a862a (M2, 6-101)
-  **publiés** le 2026-11-24 (validés par David dans la conversation, aucun verdict en base) ·
-  **Prochaine action** : au choix de David, correctif du bloc n° 61 d'`outils-manquants.md`
-  (grilles larges sur iPhone), ou versement du chantier (durable vers `docs/systeme/`, journal en
-  archive) · **En attente de David** : ce choix · **Pièges en cours** : chemins des specs par
-  `labyrinthe-chemins.ts` ; tirage figé (test « golden ») · **Worktree / branche** : aucun.
+- **État** : PR 1 (#3084) et PR 2 (#3094, #3102) mergées, deux modèles publiés ; PR 3 sur
+  `fix/labyrinthe-largeur` : grille resserrée (cases de 34 px) et refus des grilles trop larges
+  (`colonnesSurTelephone`), `pnpm voir --petit` · **Prochaine action** : merge de la PR 3, puis
+  `deploy:prod` (David), puis versement du chantier (journal en archive) · **En attente de David** :
+  34 px au lieu des 36 annoncés (pour garder 7 colonnes de premiers) à confirmer ;
+  `deploy:prod` · **Pièges en cours** : tirage figé (test « golden ») ; chemins des specs par
+  `labyrinthe-chemins.ts` · **Worktree / branche** : `../ubumaths-wt-labyrinthe-largeur`,
+  `fix/labyrinthe-largeur`.
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -94,6 +95,21 @@ Phase 0 validée par David le 2026-11-24 (« go » après ses « tes recos ? »)
 de la graine 0 (bon chemin, sans sa fin, sans son début). Pas d'erreurs prévues : le juge dit
 lui-même pourquoi un chemin est faux.
 
+## PR 3 : la grille sur téléphone (outils-manquants n° 61)
+
+Phase 0 validée par David le 2026-11-24 : largeur visée 375 px (iPhone SE) ; refuser à l'auteur
+une grille trop large plutôt que la réduire en silence.
+
+- Mesuré à 375 px (Playwright, carte de l'aperçu admin : 273 px pour la grille) sur 25 grilles
+  (5 longueurs de nombres × 3 à 7 colonnes). Cases à 36 px : 7 colonnes de `137` débordaient de
+  9 px ; à 34 px elles tiennent. **Écart à la phase 0** (36 px annoncés) : à confirmer par David.
+- Seuils (`colonnesSurTelephone`, d'après `nombreLePlusLong`) : 7 colonnes jusqu'à 3 caractères,
+  5 de 4 à 6, 4 au-delà ; les 15 grilles acceptées tiennent (mesuré), vu à l'écran (7 × 5 premiers).
+- Refus aussi pour un bloc d'affichage ; tests PDF ramenés aux grilles les plus larges acceptées.
+- `pnpm voir --petit` (iPhone SE, 375 px) ajouté pour mesurer.
+- Revue `code-reviewer` : aucun bloquant ; double message (lignes hors bornes) corrigé.
+- Seuls les deux modèles publiés utilisent le bloc en prod ; ils restent acceptés (1 500 tirages).
+
 ## Historique
 
 - 2026-11-24 : phase 0 validée ; worktree créé.
@@ -102,3 +118,4 @@ lui-même pourquoi un chemin est faux.
 - 2026-11-24 : #3094 mergée (PR 2, fichiers des modèles).
 - 2026-11-24 : brouillons créés en prod par David ; #3102 mergée (rangement), `db:migrate` fait.
 - 2026-11-24 : les deux modèles publiés par David (vérifié en base).
+- 2026-11-24 : PR 3 (largeur sur téléphone) écrite, revue faite.

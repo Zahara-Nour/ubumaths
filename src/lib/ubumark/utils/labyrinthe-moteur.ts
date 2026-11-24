@@ -131,6 +131,31 @@ export function ecrireNombre(entier: readonly number[], decimales: readonly numb
 	return decimales.length === 0 ? partie : `${partie},${decimales.join('')}`;
 }
 
+/**
+ * Le plus long des nombres qu'une règle peut tirer, écrit comme dans la grille : il fixe la
+ * largeur des cases (premier : jusqu'à 200 ; multiple de d : jusqu'à max(100, 20 d) ; chiffre :
+ * la forme du rang)
+ */
+export function nombreLePlusLong(regle: Regle): string {
+	if (regle.kind === 'premier') return '199';
+	if (regle.kind === 'multiple') return String(Math.max(100, 20 * regle.diviseur));
+	const forme = formeChiffre(regle.rang, regle.chiffre);
+	const chiffres = Array.from({ length: forme.entiers + forme.decimales }, (_, i) => (i + 1) % 10);
+	return ecrireNombre(chiffres.slice(0, forme.entiers), chiffres.slice(forme.entiers));
+}
+
+/**
+ * Colonnes qui tiennent sur un téléphone de 375 px de large (iPhone SE), dans la carte d'une
+ * question, d'après la longueur des nombres. Mesuré le 2026-11-24 avec des cases d'au moins
+ * 34 px (`LabyrintheGrille.svelte`) : 7 colonnes de 3 caractères, 5 de 4 à 6, 4 de 7.
+ */
+export function colonnesSurTelephone(regle: Regle): number {
+	const longueur = nombreLePlusLong(regle).length;
+	if (longueur <= 3) return 7;
+	if (longueur <= 6) return 5;
+	return 4;
+}
+
 /** Tire `combien` éléments d'une réserve, sans répétition tant qu'elle suffit */
 function piocher<T>(reserve: readonly T[], combien: number, random: RandomSource): T[] {
 	const tirage: T[] = [];

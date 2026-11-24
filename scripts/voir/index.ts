@@ -8,7 +8,8 @@
  * - un compte rendu JSON : adresse finale, titre, erreurs de console, requêtes
  *   en échec.
  *
- * Par défaut : format iPhone, moteur de Safari (WebKit). `--ordi` : grand
+ * Par défaut : format iPhone, moteur de Safari (WebKit). `--petit` : iPhone SE
+ * (375 px) ; `--ordi` : grand
  * écran ; `--chrome` : Chromium ; `--compte prof|eleve|admin` : arriver
  * connecté avec un compte fictif (base locale seulement) ; `--port <n>`.
  *
@@ -25,6 +26,7 @@ import {
 	assertLocalTarget,
 	captureHeight,
 	captureName,
+	formatName,
 	isLocalEnv,
 	isSameServer,
 	isLoginRedirect,
@@ -43,7 +45,7 @@ interface Report {
 	requested: string;
 	final: string;
 	title: string;
-	format: 'iphone' | 'ordi';
+	format: string;
 	engine: 'safari' | 'chrome';
 	account: string | null;
 	image: string;
@@ -151,7 +153,8 @@ async function look(options: VoirOptions): Promise<Report> {
 	}
 
 	const engine = options.chromium ? chromium : webkit;
-	const { defaultBrowserType: _ignored, ...phone } = devices['iPhone 15'];
+	const { defaultBrowserType: _ignored, ...phone } =
+		devices[options.small ? 'iPhone SE (3rd gen)' : 'iPhone 15'];
 	const browser = await engine.launch().catch((error: unknown) => {
 		// Playwright mis à jour sans son navigateur : dire quoi lancer, pas une pile d'appels
 		if (error instanceof Error && error.message.includes("Executable doesn't exist"))
@@ -231,7 +234,7 @@ async function look(options: VoirOptions): Promise<Report> {
 			requested,
 			final: page.url(),
 			title: await page.title(),
-			format: options.desktop ? 'ordi' : 'iphone',
+			format: formatName(options),
 			engine: options.chromium ? 'chrome' : 'safari',
 			account,
 			image,
