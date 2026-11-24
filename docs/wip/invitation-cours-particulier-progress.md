@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, phase 0 écrite._
+_Mis à jour le 2026-11-24, phase 0 validée._
 
-- **État** : phase 0 écrite, rien codé · **Prochaine action** : PR 1 (migration + tests d'intégration) une fois la phase 0 validée · **En attente de David** : validation de la phase 0 (comportements ci-dessous + point A) · **Pièges en cours** : le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes ; la classe d'une invitation naît fermée, donc l'adhésion se fait côté serveur, pas par le trigger · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier` / `feat/invitation-cours-particulier`
+- **État** : phase 0 VALIDÉE par David (comportements + point A : réglage sur l'école), rien codé · **Prochaine action** : PR 1 (migration + tests d'intégration rouges d'abord) · **En attente de David** : rien · **Pièges en cours** : le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes ; la classe d'une invitation naît fermée, donc l'adhésion se fait côté serveur, pas par le trigger · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier` / `feat/invitation-cours-particulier`
 
 ## But
 
@@ -24,7 +24,7 @@ le compte, la classe et recueille CGU + consentement en une fois.
 7. **Question d'accès** : seuls l'admin et le prof lisent les invitations (prénom, adresse du parent) ;
    la page du parent ne voit que l'invitation de son propre lien.
 
-## Phase 0 — comportements (à valider)
+## Phase 0 — comportements (validés le 2026-11-24)
 
 **Nominal**
 
@@ -57,7 +57,7 @@ le compte, la classe et recueille CGU + consentement en une fois.
   valable, message « Réessayez dans un instant ».
 - Mot de passe trop faible → message sur le champ, comme aujourd'hui.
 
-**Point A (à trancher) : comment le code reconnaît Akadada.** Recommandation : un réglage sur
+**Point A (tranché : réglage sur l'école) : comment le code reconnaît Akadada.** Recommandation : un réglage sur
 l'école (« école de cours particuliers »), posé sur Akadada par la migration. Il resservira au
 social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akadada » écrit dans le code.
 
@@ -73,3 +73,4 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 ## Historique
 
 - 2026-11-24 : chantier ouvert ; décisions 1 à 7 de David ; phase 0 écrite.
+- 2026-11-24 : phase 0 validée par David, point A compris (réglage « école de cours particuliers »).
