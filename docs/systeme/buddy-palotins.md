@@ -385,7 +385,14 @@ Decide par David (journal `palotins`, C1 a C14). Logique pure dans
 `parseBuddyGain` (`src/lib/components/buddy/buddy-gain.ts`) le valide avec Zod : absent, `null`,
 mal forme ou `xp_gained` = 0 → rien n'est affiche. `BuddyGainCard.svelte` montre l'avatar (`happy`,
 `excited` si montee), « Giron a gagne 12 pansees », une replique (`session_gain`, ou `daily_cap`
-quand le plafond du jour est atteint) et « Nouveau tour de panse : N ! ». Ou il apparait :
+quand le plafond du jour est atteint) et « Nouveau tour de panse : N ! ».
+
+`daily_cap_reached` est vrai des qu'une reponse a ete tronquee par le plafond du jour, que la
+troncature vienne du calcul local du service (`calculateXpGain` : la base ne voit alors aucun
+depassement, et n'est meme pas appelee si rien ne reste a crediter) ou de `add_buddy_xp`. Un
+palier de Constance hors plafond ne l'efface pas. Avec `xp_gained` = 0 et `daily_cap_reached`
+vrai, la carte s'affiche quand meme et dit « Sa panse est pleine pour aujourd'hui ». Une seance
+qui remplit le plafond au plus juste (rien de tronque) ne l'annonce pas. Ou la carte apparait :
 
 - `/automaths/test` (Entrainement, Course aux nombres) : sous la carte du score de `TestResults` ;
 - revision espacee : ecran « Session terminee » de `ReviewSession` (dernier gain non nul de la

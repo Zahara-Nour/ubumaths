@@ -597,13 +597,8 @@ test.describe('pansées et Constance Royale', () => {
 	}, testInfo) => {
 		onlyDesktopChrome(testInfo);
 		test.setTimeout(150_000);
-		// ÉCART constaté : `addBuddyXpFromTest` plafonne lui-même chaque réponse
-		// (`calculateXpGain`) avant d'appeler la base ; `add_buddy_xp` ne voit donc jamais de
-		// dépassement et ne rend pas `daily_cap_reached`, et quand le plafond est déjà là
-		// (`plan.totalBaseXp` = 0) il n'appelle même pas la base. La carte se tait, alors que
-		// `parseBuddyGain` et la ligne #1471 attendent « panse pleine ».
-		// Le test attend le comportement de la ligne : il passe (test.fail) tant que l'écart dure.
-		test.fail(true, 'écart #1471 : plafond atteint → aucune carte « panse pleine »');
+		// E29 (corrigé) : le service rend `daily_cap_reached` quand son calcul local a tronqué
+		// la séance, même s'il n'appelle pas la base (plafond déjà atteint).
 		await sql(
 			`update student_buddies set xp_earned_today = 100, last_xp_date = (now() at time zone 'utc')::date
 			 where student_id = $1`,
