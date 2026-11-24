@@ -6,17 +6,16 @@ Idées reprises d'ailleurs, rubrique « Compléments sur la dérivation » de Te
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, lot écrit (branche poussée, pas de PR)._
+_Mis à jour le 2026-11-24, migrations écrites (PR à ouvrir)._
 
-- **État** : lot écrit et vérifié (16 fichiers verts, 50 + 204 specs) ; **F7 b retiré du lot**
-  en attendant David · **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-tle-derivation-neufs --publier` (5 brouillons en prod), puis ids commités,
-  migrations de rangement et de contenu (§ 4 du skill `idees-rubrique`), PR · **En attente de
-  David** : F7 b (homographique) — la flèche cachée autour d'une double barre est refusée
-  (outil n° 57) : (a) choix de quatre tableaux, déjà écrit (`INCLURE_F7B = True`) ; (b) attendre
-  l'outil n° 57 ; (c) laisser F7 b · **Pièges en cours** : `{{e}}` interdit (Euler) ; domaine
-  `\ln{a}` (pas `\ln(a)`) dans un tableau ; specs sans la variable `x` ; `create-questions` vise
-  la prod sans `set -a; . ./.env.local` · **Worktree / branche** :
+- **État** : 5 brouillons créés en prod par David (ids commités) ; F7 b remis (choix de quatre
+  tableaux, choix (a) de David, outil n° 57 à comparer plus tard) ; migrations de rangement
+  (5 modèles) et de contenu (16 variations sur 11 publiés) écrites, tests d'intégration verts ·
+  **Prochaine action** : `security-auditor`, PR, `db:migrate`, relecture dans `/dev/modeles` ·
+  **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b dans le brouillon
+  74d73d4e) · **Pièges en cours** : sous-notion « Convexité > lecture graphique » archivée → F11 en
+  « caractérisations », F12 en « dérivée seconde » · **Worktree / branche** :
   `../ubumaths-wt-idees-tle-derivation`, `feat/idees-tle-derivation`.
 
 ## Historique
@@ -69,3 +68,17 @@ scripts/questions/idees-tle-derivation-neufs --publier` (5 brouillons en prod), 
   `validateLatex` + accolades (0 problème). Neufs et copies des variations à courbe (37ce7759,
   98f9d4b2, eeb72d3a) créés en base locale et vus dans l'aperçu (`pnpm voir`, iPhone) : tableaux,
   tangentes, choix de courbes ; ids locaux retirés des fichiers.
+
+### 2026-11-24 — brouillons en prod, F7 b, migrations
+
+- David a créé les 5 brouillons en prod ; ids commités (da157de6, 1a82084b, 74d73d4e, 91841156,
+  02253f0a).
+- F7 b : David choisit (a), le choix de quatre tableaux, « on fera l'outil après pour voir si c'est
+  mieux » (outil n° 57). `INCLURE_F7B = True` ; 9 specs vertes. Le brouillon en prod n'a encore que
+  F7 a : mise à jour par `create-questions --mettre-a-jour --publier` (David).
+- Rangement relevé en prod : F5 « Dérivation > fonctions composées » (TSPE-413), F6 et F7
+  « Dérivation > variations et extremums » (TSPE-416), F11 « Convexité > caractérisations »
+  (TSPE-419), F12 « Convexité > dérivée seconde » (TSPE-590). « Convexité > lecture graphique »
+  est archivée.
+- Migrations `20261124062316_…_rangement_tags` et `20261124062325_…_publies_contenu` (+1 ou +2
+  variations par modèle, 16 en tout) ; tests d'intégration verts (125).
