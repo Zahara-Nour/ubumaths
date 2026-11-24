@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, paquet 1 du tri fini (PR à ouvrir)._
+_Mis à jour le 2026-11-24, après #3061 (paquet 1 du tri)._
 
-- **État** : grille → #1536 → #1337 → rouges WebKit (#3053) → #1469 (#3056) ✅ ; **tri des 391 lignes : paquet 1 (13-16 octobre) fini** : 47 lignes retirées, 6 réduites (344 restent), écarts E21 à E27. Puis paquets suivants, R12, R13 (ordre validé).
-- **Prochaine action** : revue `code-reviewer` (Sonnet) des tests du paquet 1, PR `test/verifs-tri`, merge ; puis paquet 2 (lignes du 17 au 21 octobre), worktree neuf.
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E27 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; barre de mise en forme qui saute de 37 px (§ #1469) : la stabiliser ou non ?
-- **Pièges en cours** : `--output=<dossier>` par lancement ; `--workers 4` ; `networkidle` avant un clic juste après `goto` ; changement de compte = rechargement (WebKit coupe la navigation suivante) ; `fiches.spec.ts` remet son décor à zéro : jamais deux lancements en même temps ; base locale = `supabase_db_ubumaths` (jamais `-test`) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-tri`, `test/verifs-tri`, serveur de dev 5178. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+- **État** : grille → #1536 → #1337 → rouges WebKit (#3053) → #1469 (#3056) ✅ ; tri : **paquet 1 mergé (#3061)**, 391 → 344 lignes ; écarts E21-E27 ajoutés. **Paquet 2 (17-22 octobre, 44 lignes) en cours** dans `../ubumaths-wt-verifs-tri-2` (`test/verifs-tri-2`, serveur 5179) : deux agents (gamification ; connexion, QR, constructions), la session fait les lignes Atelier ; agent programme/fiches à lancer.
+- **Prochaine action** : finir le paquet 2 (verdict par ligne, retrait des lignes sorties), revue, PR ; puis paquets suivants, R12, R13.
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E27 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; barre de mise en forme qui saute de 37 px (§ #1469).
+- **Pièges en cours** : `--output=<dossier>` par lancement ; `--workers 4` ; `networkidle` avant un clic après `goto` ; changement de compte = rechargement (WebKit coupe la navigation suivante, et signale « due to access control checks ») ; `fiches.spec.ts` remet son décor à zéro : jamais deux lancements en même temps ; agents sur des élèves distincts (eleve10-15, eleve21-25) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-tri-2`, `test/verifs-tri-2`. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
 
 ## Tri — paquet 1 : lignes du 13 au 16 octobre (2026-11-23)
 
