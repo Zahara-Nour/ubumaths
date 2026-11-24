@@ -30,7 +30,7 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		title: 'Labyrinthe des nombres premiers',
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
-		grades: ['3e'],
+		grades: ['3'],
 		level: 1
 	} as QuestionTemplate;
 }

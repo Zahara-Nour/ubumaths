@@ -8,8 +8,8 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 _Mis à jour le 2026-11-24, phase 0 validée._
 
-- **État** : phase 0 validée (« je suis tes recos ») ; PR 1 (bloc, juge, écran, PDF) en cours ·
-  **Prochaine action** : tests rouges du bloc ` ```labyrinthe ` sur le modèle du bloc robot ·
+- **État** : phase 0 validée ; PR 1 (bloc, juge, écran, PDF) codée, tests verts, docs à jour ·
+  **Prochaine action** : revue (`code-reviewer`, Opus), PR, merge ; puis PR 2 (modèles 3e et 6-101) ·
   **En attente de David** : rien · **Pièges en cours** : aucun ·
   **Worktree / branche** : `ubumaths-wt-labyrinthe`, `feat/labyrinthe`.
 
@@ -50,6 +50,21 @@ le quadrillage du robot.
   6e, 6-101, chiffre d'un rang) (reco suivie).
 
 ## PR 1 : l'outil
+
+- Tests écrits avant le code (moteur, parseur, juge : rouges faute de module), puis verts : 27 (moteur,
+  parseur, juge), 5 (PDF, compilation réelle), 14 (génération), 4 (éditeur riche), 1 (série), 9 (écran).
+- Code : `types/labyrinthe.ts`, `utils/labyrinthe-moteur.ts` (règles, tirage du chemin et des
+  nombres), `parser/labyrinthe-parser.ts` (`avecGraines`), `utils/labyrinthe-answer.ts` (juge,
+  `cheminDit`), `generators/labyrinthe-typst.ts`, `Labyrinthe.svelte` / `LabyrintheGrille.svelte` /
+  `LabyrintheCorrige.svelte`, branchés là où le robot l'est (générateur, juge, copie corrigée, série
+  d'automatismes, éditeur riche, catalogue `block-catalog/labyrinthe.ts`).
+- Choix faits en route (dans le cadre de la phase 0) : graine posée par le générateur dans le bloc
+  (chaque instance a son labyrinthe) ; `solution: oui` pour le corrigé imprimé et le cours ; seules
+  les cases voisines de la dernière sont touchables (pas de saut possible à l'écran, le juge le
+  refuse quand même) ; forme des nombres d'une règle « chiffre » fixée par le rang (pas de réglage).
+- Vu à l'écran (`pnpm voir /aide-ecriture/blocs/labyrinthe --compte prof`, iPhone) : 1er essai,
+  grille de 6 colonnes coupée et décimaux qui débordaient → colonnes à la largeur des nombres,
+  police réduite dès 4 et 6 caractères ; revu, tout tient (5 colonnes de décimaux comprises).
 
 ## Historique
 

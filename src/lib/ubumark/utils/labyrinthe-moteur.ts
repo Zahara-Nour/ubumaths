@@ -111,7 +111,8 @@ function chiffreA(texte: string, position: number): number {
 
 /** Un nombre écrit (`12,374`, `43 512`) suit-il la règle ? */
 export function suitLaRegle(regle: Regle, nombre: string): boolean {
-	const texte = nombre.replace(/[\s  ]/g, '');
+	// \s couvre les espaces insécables et fines des grands nombres
+	const texte = nombre.replace(/\s/g, '');
 	if (regle.kind === 'chiffre')
 		return chiffreA(texte, positionDuRang(regle.rang)) === regle.chiffre;
 	const n = Number(texte.replace(',', '.'));

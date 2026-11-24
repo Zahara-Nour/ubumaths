@@ -146,7 +146,7 @@ describe('labyrinthe à parcourir : dans la question (FillBlanksInput)', () => {
 						)
 					}
 				],
-				grades: ['6e'],
+				grades: ['6'],
 				level: 1
 			} as QuestionTemplate,
 			42
