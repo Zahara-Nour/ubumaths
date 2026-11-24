@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3069 (`pnpm machine:bilan`)._
+_Mis à jour le 2026-11-24, après #3072._
 
-- **État** : #2906 … #2931, #3069 mergés. `pnpm machine:bilan` sur `main`. PR « 4 alertes » en cours (§ « 2026-11-24 — 4 alertes ») : processus emballé quelconque, programme bloqué, vieilles sessions Claude (≥ 10 de plus de 7 j, 1×/jour), disque qui fond (> 5 Go en 24 h, 1×/jour). Go de David le 2026-11-24 (« ajoute les 4 »), seuils choisis par moi.
+- **État** : #2906 … #2931, #3069 (`pnpm machine:bilan`), #3072 (4 alertes : processus emballé quelconque et programme bloqué sur 2 passages, ≥ 10 sessions Claude de plus de 7 j, disque > 5 Go perdus en 24 h — ces deux-là 1×/jour) mergés ; dépôt principal à jour, launchd lance les nouveaux scripts.
+- **À vérifier** : premières vraies alertes des 4 nouvelles (faux positifs ? WindowServer, zombies) ; ajuster les seuils au besoin (en tête de `surveillance-machine.sh` et de `machine-commun.sh`).
 - **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees à travail unique (2 articles du Shtam jamais commités) ; Time Machine non configuré ; mise à jour de macOS (Preboot 20 Go).
-- **Prochaine action** : merger la PR des 4 alertes ; puis idée 2 (alerte sauvegarde) une fois Time Machine configuré ; sinon clore le chantier.
-- **Pièges** : CI sous Linux → `date_modif` / `date_de`, jamais `stat -f` ni `date -r` nus ; faux `ps` des tests aiguillés par les champs demandés (`ppid=` contient `pid=`…) ; `git -C ""` = dossier courant ; `kern.boottime` bouge de quelques secondes ; disque = `/System/Volumes/Data`.
-- **Worktree / branche** : `ubumaths-wt-surveillance-alertes` / `feat/surveillance-alertes`.
+- **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; sinon clore le chantier (archivage du journal ; doc dans `docs/pratiques/environnement-de-dev.md`).
+- **Pièges** : CI sous Linux → `date_modif` / `date_de`, jamais `stat -f` ni `date -r` nus ; faux `ps` des tests aiguillés par les champs demandés (`ppid=` contient `pid=`) ; `git -C ""` = dossier courant ; `kern.boottime` bouge de quelques secondes ; disque = `/System/Volumes/Data`.
+- **Worktree / branche** : aucun.
 
 ## Contexte
 
