@@ -11,12 +11,27 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 _Mis à jour le 2026-11-24, après la revérification (aucune PR)._
 
 - **État** : chantier repris le 2026-11-24. Les 22 écarts ouverts et les 11 T revérifiés contre `origin/main` : résultat dans [ecarts-a-trier.md](ecarts-a-trier.md) § « État au 2026-11-24 ». Recollecte des sections d'écarts des docs système : [ecarts-a-trier-recollecte.md](ecarts-a-trier-recollecte.md) (225 points jamais triés, non vérifiés ; 17 écarts fermés encore écrits ouverts dans leur doc).
-- **Prochaine action** : selon la réponse de David sur l'harmonisation des suivis. Sans attendre : C14, PR #2451 (ouverte depuis le 2026-11-08, à remettre à jour sur `main` puis merger) ; liste B de la recollecte (17 corrections de doc) ; L20 à écrire dans `ubumark.md` ; puis V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
-- **En attente de David** : la proposition d'harmonisation des suivis (écarts de la doc, écarts des vérifications automatiques, vérifications manuelles) et du lancement automatique, posée le 2026-11-24 ; M4 `DROP worksheet_instances` (destructif, explication avant `db:migrate`) ; T14 ; DPA ; relire `conformite/violation-de-donnees.md`.
+- **Prochaine action** : phase 0 du registre unique (format d'une ligne, preuve rejouable, où il vit) à faire valider par David, puis versement des écarts ouverts et des E ; tri des 225 points par domaine (agents, vérification dans le code). Écarts à corriger ensuite : V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
+- **En attente de David** : M4 `DROP worksheet_instances` (destructif, explication avant `db:migrate`) ; T14 ; DPA ; relire `conformite/violation-de-donnees.md`.
 - **Pièges en cours** : les 225 points de la recollecte sont rapprochés par mots-clés, à vérifier dans le code avant d'en faire des écarts ; sondes mathAST : test vitest temporaire dans le worktree, par le chemin de l'Atelier, jamais `pnpm math` ; `db:migrate` lancé par David ; `docs:check-a-jour --depuis` ne voit que les commits.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-doc` (`chore/ecarts-doc-reverif`, sur `origin/main`, sans commit : sert aux sondes) ; `../ubumaths-wt-ecarts-a-trier` (`chore/ecarts-lexicon-vers-dictionary`, PR #2451).
 
 ---
+
+## Décisions de David (2026-11-24, harmonisation des suivis : « je suis tes recos »)
+
+1. **Un registre unique** pour les écarts de la doc (V, L, M, C, D, T) et les E de `ecarts-verifs-progress.md` : une ligne par écart, avec son type, sa source et sa **preuve rejouable** (le test ou la commande qui dit s'il est encore vrai). `verifications-manuelles.md` reste à part : ce sont des choses à regarder, pas des défauts ; une vérification qui échoue produit un écart, qui entre au registre avec un renvoi vers sa ligne.
+2. **Un écart s'écrit au registre seul.** La doc système décrit ce que fait le code et renvoie au registre ; ses sections « Écarts connus » disparaissent.
+3. **Une seule tâche de nuit** (commune avec `verifs-auto`) : elle rejoue les preuves, `test:verifs` et les gardes de doc, écrit un bilan ou ouvre une PR, ne merge jamais.
+4. **Les 225 points jamais triés** : vérifiés dans le code par des agents, par domaine, avant d'entrer au registre ; seules les décisions de produit vont à David, sur une page à cocher.
+
+Sessions `ecarts-verifs` et `verifs-auto` prévenues le 2026-11-24 (elles continuent ; `verifs-auto` ne crée pas la tâche de nuit de son côté).
+
+## Fait le 2026-11-24
+
+- **C14** : #2451 fermée (27 conflits avec `main`), refaite en **#3077** (`chore/lexicon-vers-dictionary`).
+- **Docs système** (commit direct `fcbec7c17`) : la liste B de la recollecte annonçait 17 lignes périmées ; vérifiées dans le code, **7 l'étaient** et sont corrigées (Renommer et unités dans `atelier.md`, L22 dans `mathast/README.md`, C1 dans `architecture-generale.md`, M20 dans `questions.md`, D18 dans `carte-des-fonctionnalites.md`, `worksheet_instances` dans `base-de-donnees.md`). Les autres disent encore vrai (M7, M10, M16, L11, T5 : écarts fermés par décision, le fait décrit demeure) ou demandent une sonde (ligne « valeur fausse » de `mathast/README.md` § limites, rapprochée à tort de V71 ; `conformite/README.md` rétention). La liste B n'est donc pas fiable ligne à ligne.
+- **L20** : limite des 15 chiffres écrite dans `ubumark.md` → clos. **L12** : clos (« Renommer » actif, provenance disparue, `recomputeAll` mesuré le 2026-10-19 d'après `atelier.md`).
 
 ## Historique
 
