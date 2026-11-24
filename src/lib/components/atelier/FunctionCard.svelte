@@ -233,6 +233,10 @@
 						showPrefix={false}
 						autofocus={selected && object.definition === ''}
 					/>
+					<!-- L'ensemble hérité des fonctions citées n'est pas dans le champ : on l'écrit à côté -->
+					{#if object.inheritedInterval !== undefined && intervalLabel}
+						<span class="intervalle">sur {intervalLabel}</span>
+					{/if}
 				{:else}
 					<span class="formule">
 						{#if rendered}
@@ -504,6 +508,8 @@
 		overflow-wrap: anywhere;
 	}
 	.intervalle {
+		flex: 0 0 auto;
+		align-self: center;
 		margin-left: 0.25em;
 		color: var(--color-muted-foreground);
 	}

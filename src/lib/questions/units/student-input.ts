@@ -58,6 +58,13 @@ const FRACTION_HEAD = new RegExp(
 /** Caractères qui signalent qu'une unité a été tapée (sinon : saisie laissée telle quelle) */
 const UNIT_CHARACTER = /[A-Za-z°€$Ωμ]/;
 
+/**
+ * Tête numérique MAL ÉCRITE : séparateur décimal sans chiffre après (`36,`) ou
+ * sans chiffre avant (`,036`). Jamais lue comme un nombre (rien n'est deviné) :
+ * elle sert seulement à donner le message de forme plutôt que « Unité inconnue ».
+ */
+const MALFORMED_NUMBER_HEAD = new RegExp(String.raw`^\s*[+-]?(?:\d+(?: \d+)*[.,](?!\d)|[.,]\d+)`);
+
 // ============================================================================
 // ACCOLADES
 // ============================================================================
@@ -233,6 +240,33 @@ export function normalizeStudentQuantity(latex: string): string {
 	const parts = splitStudentQuantity(original);
 	if (!parts) return original;
 	return `${parts.head.replace(/ /g, '')}\\unit{${parts.writing}}`;
+}
+
+/**
+ * Saisie d'un trou à unité dont le NOMBRE est mal écrit, suivi d'une unité :
+ * `36,\,mm` (virgule sans décimale), `,036\,m` (pas de zéro devant la virgule).
+ * Rend la grandeur RELUE (`36\unit{mm}`, `0.036\unit{m}`) pour savoir si la valeur
+ * est juste et si l'unité est lisible ; null si le nombre n'est pas mal écrit.
+ * Lecture seulement : l'appelant refuse toujours la saisie (forme ou valeur).
+ *
+ * @example
+ * malformedNumberQuantity('36,\\,mm') // '36\\unit{mm}'
+ * malformedNumberQuantity('0,036\\,m') // null
+ */
+export function malformedNumberQuantity(latex: string): string | null {
+	if (typeof latex !== 'string') return null;
+	const cleaned = cleanStudentQuantityLatex(latex);
+	const head = cleaned.match(MALFORMED_NUMBER_HEAD);
+	if (!head) return null;
+	const rest = cleaned.slice(head[0].length).trim();
+	if (!UNIT_CHARACTER.test(rest)) return null;
+	// `36,` → `36` ; `,036` → `0.036`
+	const value = head[0]
+		.replace(/\s/g, '')
+		.replace(',', '.')
+		.replace(/\.$/, '')
+		.replace(/^([+-]?)\./, (_, sign: string) => `${sign}0.`);
+	return `${value}\\unit{${cleanUnitWriting(rest)}}`;
 }
 
 /**

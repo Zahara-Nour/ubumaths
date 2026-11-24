@@ -168,6 +168,5 @@ test('#1835 — composée d’une fonction à ensemble', async ({ page }) => {
 	expect(wrong.text).toContain('f est définie sur [0 ; +∞[ : dans f(x^2), x^2 doit y être');
 	expect(wrong.text).toContain('pour une expression de la forme ax + b');
 	// Écart E40 : la carte g (en champ) ne dit plus « sur [0 ; +∞[ », l'ensemble hérité de f
-	test.fail(true, 'écart E40 (#1835) : ensemble hérité absent de la carte g');
 	expect((await card(page, 'g')).interval).toBe('[0 ; +∞[');
 });
