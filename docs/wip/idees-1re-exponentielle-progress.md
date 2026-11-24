@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, lot des 6 modèles neufs écrit._
+_Mis à jour le 2026-11-24, PR du lot en préparation._
 
-- **État** : F1 à F6 écrits (`scripts/questions/idees-1re-exponentielle-neufs/`, script
-  `docs/wip/questions/idees-1re-exponentielle-neufs.py`), simulation verte, essayés en base locale ·
-  **Prochaine action** : David lance `create-questions --publier` en prod ; je commite les ids, puis
-  la migration de rangement, la PR et `security-auditor` · **En attente de David** : la création en prod,
-  et sa réponse sur F7 à F10 (variations de 4 modèles publiés), pas tranchées · **Pièges en cours** :
-  les messages des erreurs prévues sont réécrits (`e` → `\exponentialE`) : table `REECRIT` du script ;
-  ids locaux retirés des fichiers · **Worktree / branche** : `../ubumaths-wt-idees-1re-exponentielle`,
+- **État** : 6 brouillons en prod (ids commités), 6 variations ajoutées à 4 publiés ; migrations
+  `20261124134647` (contenu) et `20261124134708` (rangement) générées, fixtures vertes ·
+  **Prochaine action** : `security-auditor`, PR, CI, merge, `db:migrate` (seulement si `migration
+list --linked` ne montre que ces deux migrations), puis relecture dans `/dev/modeles` · **En attente
+  de David** : rien · **Pièges en cours** : messages des erreurs prévues réécrits (`REECRIT` des deux
+  scripts) · **Worktree / branche** : `../ubumaths-wt-idees-1re-exponentielle`,
   `docs/idees-1re-exponentielle`.
 
 ## Journal
@@ -52,3 +51,17 @@ _Mis à jour le 2026-11-24, lot des 6 modèles neufs écrit._
   2 522 formules d'aperçu passées à `validateLatex` + accolades, 0 problème.
 - Base locale : 6 brouillons créés (ids locaux retirés des fichiers). Rendu vu par `pnpm voir` :
   tableau à compléter de F6 (ordinateur) et ensemble S de F2 (iPhone).
+
+### 2026-11-24 — variations validées, brouillons en prod, migrations
+
+- David : « je valide les variations et les modeles » (F7 à F10 compris). 4 modèles publiés réservés
+  dans le tableau (`7e6f0ddd8`).
+- Brouillons créés en prod par David (13 h 44) : a540eb67 (F1), a90f018e (F2), b72f757b (F3),
+  2f0add65 (F4), 4c5c5839 (F5), f61ddbbb (F6).
+- Publiés exportés de prod, variations ajoutées à la fin (script
+  `docs/wip/questions/idees-1re-exponentielle-publies.py`) : 6a5e58da +2 (≤ 1, > 1/e), 68166a11 +2
+  (> 0 → ℝ, ≤ 0 → ∅, case « intervalles »), 227f2c9c +1 (ae^{kx} + bx + c), 15d3aaa0 +1 (tangente
+  en 0 à (ax + b)e^{kx}). Specs 94/94 (anciennes comprises), 950 tirages, 1 525 formules : 0
+  problème.
+- Niveaux relevés en prod dans les 4 sous-notions : ceux du lot s'y insèrent (pas de renumérotation).
+- Migrations générées ; tests d'intégration des deux fixtures verts (165 tests).
