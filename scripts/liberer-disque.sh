@@ -51,6 +51,13 @@ libre_ko() { df -k "$VOLUME_DISQUE" 2>/dev/null | awk 'NR == 2 { print $4 + 0 }'
 go() { LC_ALL=C awk -v k="$1" 'BEGIN { printf "%.1f", k / 1048576 }' | sed 's/\./,/'; }
 taille_ko() { du -sk "$@" 2>/dev/null | awk '{ s += $1 } END { print s + 0 }'; }
 
+# Lance <commande…> avec un délai de <secondes> (pas de `timeout` sur macOS).
+avec_delai() {
+	local s="$1"
+	shift
+	perl -e 'alarm shift; exec @ARGV' "$s" "$@"
+}
+
 # Lance une étape : <libellé> <commande…>. Affiche la commande, mesure le gain.
 etape() {
 	local libelle="$1" avant apres
@@ -60,7 +67,10 @@ etape() {
 		return 0
 	fi
 	avant="$(libre_ko)"
-	"$@" >/dev/null 2>&1
+	if ! "$@" >/dev/null 2>&1; then
+		printf '  %-34s  ÉCHEC    %s\n' "$libelle" "$*"
+		return 0
+	fi
 	apres="$(libre_ko)"
 	printf '  %-34s %6s Go   %s\n' "$libelle" "$(go $(((${apres:-0} - ${avant:-0}) > 0 ? apres - avant : 0)))" "$*"
 }
@@ -72,27 +82,41 @@ echo "Disque : $(go "${debut:-0}") Go libres"
 echo
 
 # ── Gestes sûrs ───────────────────────────────────────────────────────────────
-if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-	etape "Docker (images inutilisées)" docker image prune -a -f
-else
+# Docker : `prune -a` efface toute image sans conteneur. Pile Supabase arrêtée =
+# ses images effacées, re-téléchargées (plusieurs Go) au prochain démarrage :
+# on ne le lance que si la pile tourne.
+if ! command -v docker >/dev/null 2>&1 || ! avec_delai 5 docker info >/dev/null 2>&1; then
 	echo "  Docker : pas lancé, sauté"
+elif ! avec_delai 5 docker ps --format '{{.Names}}' 2>/dev/null | grep -q supabase; then
+	echo "  Docker : pile Supabase arrêtée, sauté (ses images seraient effacées) — pnpm db:start puis relancer"
+else
+	etape "Docker (images sans conteneur)" docker image prune -a -f
 fi
 
 if command -v brew >/dev/null 2>&1; then
-	etape "Homebrew (cache)" brew cleanup --prune=all
+	etape "Homebrew (cache, anciennes versions)" brew cleanup --prune=all
 fi
 
 if [ -d "$CACHE_VSCODE" ] && [ -n "$(ls -A "$CACHE_VSCODE" 2>/dev/null)" ]; then
 	etape "VS Code (mises à jour)" find "$CACHE_VSCODE" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
 fi
 
-# Versions de Claude Code : garder l'actuelle (cible du lien) et celles en usage.
-if [ -d "$VERSIONS_CLAUDE" ]; then
-	actuelle="$(readlink "$LIEN_CLAUDE" 2>/dev/null)"
+# Versions de Claude Code : garder l'actuelle (cible du lien), la plus récente et
+# celles en usage. Lien illisible ou cible absente : on ne touche à rien.
+actuelle=""
+if [ -L "$LIEN_CLAUDE" ] && [ -f "$LIEN_CLAUDE" ]; then
+	cible="$(readlink "$LIEN_CLAUDE")"
+	[[ "$cible" == /* ]] || cible="$(dirname "$LIEN_CLAUDE")/$cible"
+	actuelle="$(cd "$(dirname "$cible")" 2>/dev/null && pwd -P)/$(basename "$cible")"
+fi
+if [ -d "$VERSIONS_CLAUDE" ] && [ -f "$actuelle" ] && [ -n "$(lsof -a -p $$ -d cwd -t 2>/dev/null)" ]; then
+	dossier_versions="$(cd "$VERSIONS_CLAUDE" && pwd -P)"
+	plus_recente="$(ls "$dossier_versions" | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)"
 	a_supprimer=()
-	for f in "$VERSIONS_CLAUDE"/*; do
+	for f in "$dossier_versions"/*; do
 		[ -f "$f" ] || continue
 		[ "$f" = "$actuelle" ] && continue
+		[ "${f##*/}" = "$plus_recente" ] && continue
 		[ -n "$(lsof -t "$f" 2>/dev/null)" ] && continue
 		a_supprimer+=("$f")
 	done
@@ -101,6 +125,8 @@ if [ -d "$VERSIONS_CLAUDE" ]; then
 		for f in "${a_supprimer[@]}"; do noms+=" ${f##*/}"; done
 		etape "Claude Code (${#a_supprimer[@]} versions :$noms)" rm -f "${a_supprimer[@]}"
 	fi
+elif [ -d "$VERSIONS_CLAUDE" ]; then
+	echo "  Claude Code : version actuelle ou lsof illisibles, sauté"
 fi
 
 if command -v pnpm >/dev/null 2>&1; then
@@ -119,24 +145,34 @@ echo
 echo "À faire à la main :"
 rien=1
 
-# Worktrees finis : tout le travail dans origin/main, rien de modifié, aucun
-# processus dont le dossier courant est dedans (serveur de dev, session Claude).
-if [ -n "${DEPOT_COMMUN:-}" ]; then
+# Worktrees finis : la branche a reçu des commits (pas un worktree tout neuf),
+# tous sont dans origin/main, rien de modifié, aucun processus dont le dossier
+# courant est dedans (serveur de dev, session Claude). `production` jamais.
+dossiers_courants="$(lsof -a -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')"
+if [ -n "${DEPOT_COMMUN:-}" ] && [ -z "$dossiers_courants" ]; then
+	echo "  worktrees : lsof illisible, impossible de savoir lesquels sont utilisés — sauté"
+	rien=0
+elif [ -n "${DEPOT_COMMUN:-}" ]; then
 	principal="$(dirname "$DEPOT_COMMUN")"
-	git -C "$principal" fetch -q origin 2>/dev/null
-	dossiers_courants="$(lsof -a -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')"
+	GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=5" \
+		avec_delai 20 git -C "$principal" fetch -q origin 2>/dev/null
 	while read -r ligne; do
 		dossier="${ligne#worktree }"
 		[ "$dossier" = "$principal" ] && continue
 		[ -d "$dossier" ] || continue
 		branche="$(git -C "$dossier" branch --show-current 2>/dev/null)"
-		[ -n "$branche" ] || continue
+		[ -n "$branche" ] && [ "$branche" != main ] && [ "$branche" != production ] || continue
 		[ "$(git -C "$dossier" rev-list --count origin/main..HEAD 2>/dev/null)" = 0 ] || continue
-		[ -z "$(git -C "$dossier" status --porcelain 2>/dev/null)" ] || continue
+		# Branche sans commit à elle depuis sa création : worktree neuf, pas fini.
+		# (lu d'un bloc : `| grep -q` ferait mourir git de SIGPIPE, et pipefail échouer)
+		reflog="$(git -C "$dossier" log -g --format=%gs "refs/heads/$branche" 2>/dev/null)"
+		grep -qv '^branch: Created' <<<"$reflog" || continue
+		etat="$(git -C "$dossier" status --porcelain 2>/dev/null)" || continue
+		[ -z "$etat" ] || continue
 		grep -qxF "$dossier" <<<"$dossiers_courants" && continue
 		grep -qF "$dossier/" <<<"$dossiers_courants" && continue
-		echo "  worktree fini : ${dossier##*/} ($(go "$(taille_ko "$dossier")") Go)"
-		echo "    git -C $principal worktree remove $dossier && git -C $principal branch -d $branche"
+		echo "  worktree fini : ${dossier##*/} ($(go "$(taille_ko "$dossier")") Go, dernier commit $(git -C "$dossier" log -1 --format=%cs 2>/dev/null))"
+		echo "    git -C \"$principal\" worktree remove \"$dossier\" && git -C \"$principal\" branch -d $branche"
 		rien=0
 	done < <(git -C "$principal" worktree list --porcelain 2>/dev/null | grep '^worktree ')
 fi

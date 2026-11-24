@@ -276,11 +276,12 @@ pour voir une phase devenue nettement plus lente que la normale.
   envoyer.
 
 **Libérer de la place sur le disque** (sans redémarrer) : `pnpm disque:liberer` (`--essai` pour voir
-sans rien supprimer), `scripts/liberer-disque.sh`. Supprime seul les images Docker inutilisées, le
-cache Homebrew, les restes de mises à jour de VS Code, les versions de Claude Code ni actuelles ni
-utilisées par une session ouverte, les paquets du magasin pnpm qu'aucun projet n'utilise ; affiche
+sans rien supprimer), `scripts/liberer-disque.sh`. Supprime seul les images Docker sans conteneur (seulement si la pile Supabase tourne : arrêtée, ses images
+seraient effacées), le cache et les anciennes versions de Homebrew, les restes de mises à jour de VS Code, les versions de Claude Code ni actuelle, ni la plus récente, ni
+utilisées par une session ouverte (lien de `claude` illisible : aucune), les paquets du magasin pnpm qu'aucun projet n'utilise ; affiche
 la commande de chaque étape et ce qu'elle a rapporté. Liste seulement, avec la commande à taper :
-les worktrees finis (travail dans `origin/main`, rien de modifié, aucun processus dedans), le cache
+les worktrees finis (branche qui a reçu des commits, tous dans `origin/main`, rien de modifié, aucun
+processus dedans ; un worktree tout neuf n'est jamais « fini »), le cache
 de Brave, la mise à jour de macOS préparée (redémarrage), les sessions Claude de plus de 7 jours.
 Jamais lancée par la surveillance : l'alerte disque la propose.
 

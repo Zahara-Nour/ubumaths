@@ -61,17 +61,25 @@ function ecrireFaux(nom: string, corps: string): void {
 /** Pose les faux outils ; <enUsage> : fichiers ouverts (lsof -t), <cwd> : dossiers courants. */
 function machine(enUsage: string[] = [], cwd: string[] = []): void {
 	writeFileSync(join(racine, 'usage.txt'), enUsage.join('\n') + '\n');
-	writeFileSync(join(racine, 'cwd.txt'), cwd.map((d) => `p1\nfcwd\nn${d}`).join('\n') + '\n');
+	writeFileSync(
+		join(racine, 'cwd.txt'),
+		['/', ...cwd].map((d) => `p1\nfcwd\nn${d}`).join('\n') + '\n'
+	);
 	ecrireFaux(
 		'df',
 		`echo 'Filesystem 1024-blocks Used Available Capacity Mounted on'\necho "/dev/x 1000 500 500 50% $2"`
 	);
-	for (const outil of ['docker', 'brew', 'pnpm']) {
+	ecrireFaux(
+		'docker',
+		`printf '%s\\n' "docker $*" >>"${racine}/appels.log"; [ "$1" = ps ] && echo supabase_db_test; exit 0`
+	);
+	ecrireFaux('ps', 'exit 0'); // aucune session Claude
+	for (const outil of ['brew', 'pnpm']) {
 		ecrireFaux(outil, `printf '%s\\n' "${outil} $*" >>"${racine}/appels.log"; exit 0`);
 	}
 	ecrireFaux(
 		'lsof',
-		`case "$*" in *-t*) f="\${@: -1}"; grep -qxF "$f" "${racine}/usage.txt" && echo 42; exit 0 ;; *cwd*) cat "${racine}/cwd.txt" ;; esac`
+		`case "$*" in *-p*-t*) echo 42; exit 0 ;; *-t*) f="\${@: -1}"; grep -qxF "$f" "${racine}/usage.txt" && echo 42; exit 0 ;; *cwd*) cat "${racine}/cwd.txt" ;; esac`
 	);
 }
 
@@ -162,7 +170,15 @@ describe('liberer-disque', () => {
 	});
 
 	it('worktrees : seul le fini est listé, avec sa commande, et jamais retiré', () => {
+		// fini : un commit à lui, mergé dans main et poussé
 		const fini = worktree('fini');
+		writeFileSync(join(fini, 'f.txt'), 'f\n');
+		git(fini, 'add', 'f.txt');
+		git(fini, 'commit', '-q', '-m', 'travail fini');
+		git(principal, 'merge', '-q', '--no-ff', '-m', 'merge', 'fini');
+		git(principal, 'push', '-q', 'origin', 'main');
+		// neuf : créé depuis main, aucun commit — pas fini, à peine commencé
+		const neuf = worktree('neuf');
 		const modifie = worktree('modifie');
 		writeFileSync(join(modifie, 'a.txt'), 'changé\n');
 		const enAvance = worktree('en-avance');
@@ -174,13 +190,47 @@ describe('liberer-disque', () => {
 		const r = lancer(['--essai']);
 		expect(r.stdout).toContain('worktree fini : wt-fini');
 		expect(r.stdout).toContain(
-			`git -C ${principal} worktree remove ${fini} && git -C ${principal} branch -d fini`
+			`git -C "${principal}" worktree remove "${fini}" && git -C "${principal}" branch -d fini`
 		);
 		expect(r.stdout).not.toContain('wt-modifie');
+		expect(r.stdout).not.toContain(neuf);
 		expect(r.stdout).not.toContain('wt-en-avance');
 		expect(r.stdout).not.toContain('wt-occupe');
 		lancer();
 		expect(existsSync(fini)).toBe(true);
+	});
+
+	it('lien vers la version actuelle illisible : aucune version supprimée', () => {
+		machine();
+		rmSync(join(racine, 'lien-claude'));
+		const r = lancer();
+		expect(r.stdout).toContain('Claude Code : version actuelle ou lsof illisibles, sauté');
+		for (const v of ['2.1.1', '2.1.2', '2.1.3', '2.1.4'])
+			expect(existsSync(join(versions, v))).toBe(true);
+	});
+
+	it('version la plus récente gardée même si le lien pointe sur une plus ancienne', () => {
+		machine();
+		rmSync(join(racine, 'lien-claude'));
+		symlinkSync(join(versions, '2.1.3'), join(racine, 'lien-claude'));
+		lancer();
+		expect(existsSync(join(versions, '2.1.4'))).toBe(true);
+		expect(existsSync(join(versions, '2.1.3'))).toBe(true);
+		expect(existsSync(join(versions, '2.1.1'))).toBe(false);
+	});
+
+	it('Docker : pile Supabase arrêtée → images épargnées', () => {
+		machine();
+		ecrireFaux('docker', `printf '%s\\n' "docker $*" >>"${racine}/appels.log"; exit 0`);
+		const r = lancer();
+		expect(r.stdout).toContain('pile Supabase arrêtée, sauté');
+		expect(appels()).not.toContain('docker image prune');
+	});
+
+	it('étape en échec : dit ÉCHEC, pas « 0,0 Go »', () => {
+		machine();
+		ecrireFaux('brew', 'exit 1');
+		expect(lancer().stdout).toMatch(/Homebrew \(cache, anciennes versions\)\s+ÉCHEC/);
 	});
 
 	it('refuse un argument inconnu', () => {
