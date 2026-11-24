@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3089._
+_Mis à jour le 2026-11-24, après #3089 (migrations en prod, série publiée)._
 
-- **État** : #3089 mergée (6 neufs rangés et tagués, 6 variations de 4 publiés) ; migrations
-  `20261124134647` (contenu) et `20261124134708` (rangement) **pas encore en prod** ·
-  **Prochaine action** : `pnpm db:migrate` depuis le dépôt principal, dès que `migration list --linked`
-  ne montre plus que ces deux-là ; puis vérifier en prod (nœud, tag, variations), relecture dans
-  `/dev/modeles` (brouillons par `?noeud=`, publiés par une série de relecture) · **En attente de
-  David** : feu vert pour `db:migrate` ; `20261124134110` (`idees-tle-ln`) attend aussi et serait poussée
-  avec · **Pièges en cours** : messages des erreurs prévues réécrits (`REECRIT` des deux scripts) ·
-  **Worktree / branche** : aucun (retiré par `pr:merger`).
+- **État** : `20261124134647` et `20261124134708` **en prod** (poussées par la session `idees-tle-ln`) ;
+  vérifié : 6 brouillons sur leur nœud avec leur point, 4 publiés à 4/4/5/6 variations ; série
+  `1_SPE-relecture-exponentielle-publies.json` publiée par David (id `4cec796d`, 4 modèles, 4 min) ·
+  **Prochaine action** : relecture par David dans `/dev/modeles` (brouillons par `?noeud=`, publiés par
+  la série), puis lire les verdicts (`question_template_reviews`), corriger, clôturer · **En attente de
+  David** : la relecture · **Pièges en cours** : aucun · **Worktree / branche** : aucun après le merge de
+  la PR de la série.
 
 ## Journal
 
