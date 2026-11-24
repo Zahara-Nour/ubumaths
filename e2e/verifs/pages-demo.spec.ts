@@ -380,11 +380,8 @@ test.describe('#1700 — /demo/lexique : la fiche d’un mot et la case de répo
 		page,
 		hasTouch
 	}) => {
-		// ÉCART constaté (2026-11-24, base locale) : au doigt, le premier toucher sur la case ferme
-		// la fiche mais le champ ne prend pas le focus, le clavier ne s'ouvre pas (il faut un second
-		// toucher). La ligne dit « la ferme et ouvre le clavier ». Attendu gardé ; `test.fail` (posé juste
-		// avant l'assertion du clavier, après la mise en place) le signale sans rougir la suite, et il
-		// rougira quand l'écart sera corrigé (à retirer alors).
+		// Écart E38 (corrigé) : au doigt, le premier toucher sur la case fermait la fiche sans
+		// ouvrir le clavier (le piège à focus de la fiche, encore en place, reprenait le focus)
 		await openVitrine(page, '/demo/lexique');
 		const question = page
 			.locator('[data-slot="card"]')
@@ -408,7 +405,6 @@ test.describe('#1700 — /demo/lexique : la fiche d’un mot et la case de répo
 		await expect(fiche).toBeHidden();
 		// Le clavier virtuel ne s'ouvre de lui-même qu'au doigt (sur ordinateur, le clavier physique suffit)
 		if (hasTouch) {
-			test.fail(true, 'écart #1700 : le toucher sur la case ferme la fiche sans ouvrir le clavier');
 			await expect
 				.poll(
 					() =>

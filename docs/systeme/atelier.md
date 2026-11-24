@@ -2057,6 +2057,11 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   (clavier virtuel compris). Liste ouverte : **Entrée calcule, Tab choisit**.
 - Une fraction ne se quitte pas toute seule quand on tape un opérateur : on en sort par → ou Tab,
   comme partout dans MathLive (2026-10-14).
+- **Au téléphone** (écarts E23, E24, 2026-11-24) : la consigne du champ vide est courte
+  (« f(x) = x² − 3x + 1, ou un calcul », en texte comme en écriture mathématique : la longue était
+  coupée) ; quand le clavier virtuel de MathLive couvrirait le bas de la console, la saisie
+  (aide de la commande comprise) est épinglée juste au-dessus du clavier et de son bouton « Fermer
+  le clavier » (`keyboardLift`, suivi de `geometrychange`), le temps que son champ a le focus.
 
 - **Les mêmes réponses** : le champ mathématique envoie au moteur le texte que lit `runInput`
   (`calcTextOf`) ; une case vide d'un modèle est refusée avant (la ligne reste, la raison s'affiche).
