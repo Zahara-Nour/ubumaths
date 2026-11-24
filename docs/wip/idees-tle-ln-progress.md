@@ -8,14 +8,15 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, migrations commitées, PR pas encore ouverte._
+_Mis à jour le 2026-11-24, après #3083._
 
-- **État** : brouillons créés en prod par David (a6e58402 F6, 99326dee F9), migrations de rangement et
-  de contenu commitées sur la branche · **Prochaine action** : revue `security-auditor` des deux
-  migrations (relancer si son rapport est perdu), ouvrir la PR, CI verte → `pnpm pr:merger`, puis `db:migrate` (4 conditions,
-  `migration list --linked` d'abord), puis série de relecture des 9 publiés et relecture des neufs
-  dans `/dev/modeles` · **En attente de David** : rien avant le merge · **Pièges en cours** : aucun ·
-  **Worktree / branche** : `../ubumaths-wt-idees-tle-ln` / `feat/idees-tle-ln`.
+- **État** : #3083 mergée (2 neufs rangés + 16 variations, migrations `20261124123345` et
+  `20261124123352`), seules en attente en prod · **Prochaine action** : après le `db:migrate`,
+  vérifier en prod (2 neufs rangés, 16 variations), créer la série de relecture des 9 publiés
+  (`scripts/series/creer-serie.ts`), relecture des neufs dans `/dev/modeles?point=TSPE-438` et
+  `TSPE-441` · **En attente de David** : `pnpm db:migrate` depuis le dépôt principal · **Pièges en
+  cours** : aucun · **Worktree / branche** : aucun (nouveau worktree sur `origin/main` pour la PR
+  suivante).
 
 ## Historique
 
@@ -66,3 +67,10 @@ _Mis à jour le 2026-11-24, migrations commitées, PR pas encore ouverte._
   `20261124123352_…_publies_contenu` (+16 variations sur 9 modèles, aucune corrigée) ; tests
   d'intégration des deux fixtures verts (15 tests du lot) ; garde des niveaux verte.
 - Doc système inchangée : les migrations rangent et complètent du contenu, sans toucher au schéma.
+
+### 2026-11-24 — PR mergée
+
+- `security-auditor` : aucun finding bloquant (point faible connu : la migration de contenu tolère
+  chaque modèle absent un par un, comportement du générateur). #3083 mergée ; `migration list
+--linked` : seules les 2 migrations du lot en attente ; `db:migrate` laissé à David (écriture en
+  prod).
