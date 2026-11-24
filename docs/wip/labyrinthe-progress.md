@@ -13,9 +13,8 @@ _Mis à jour le 2026-11-24, après #3102._
   lecture seule) · **Prochaine action** : relecture par David dans
   `/dev/modeles?titre=labyrinthe` ; compter ses verdicts en base (`question_template_reviews`,
   `reviewed_at` postérieur) ; puis `publier-lot.ts --dir scripts/questions/labyrinthe-modeles` en
-  simulation, David lance `--publier` · **En attente de David** : la relecture ; dire à la session
-  `idees-tle-probas` de ne pas commiter les 2 JSON labyrinthe modifiés dans son worktree
-  (`create-questions --publier` lancé de là ; mêmes lignes déjà sur main) · **Pièges en cours** :
+  simulation, David lance `--publier` · **En attente de David** : la relecture (les 2 JSON
+  modifiés par `--publier` dans le worktree `idees-tle-probas` y ont été restaurés) · **Pièges en cours** :
   chemins des specs par `labyrinthe-chemins.ts` ; tirage figé (test « golden ») ; grilles larges
   (outils-manquants n° 61) · **Worktree / branche** : aucun.
 
