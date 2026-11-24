@@ -1,0 +1,402 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Généralités sur les fonctions",
+		"point": "3-039"
+	},
+	"title": "Calculer des images puis placer les points de la courbe",
+	"description": "Compléter un tableau de valeurs par le calcul (2x − 1, −2x², (x + 2)(x − 1)), puis placer les quatre points de la courbe dans un repère (pièges : signe d'une image, carré d'un négatif, point placé en (y ; x))",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:a*x+b}}$.\n\nComplète le tableau de valeurs de $f$.\n\n| $x$ | $-2$ | $-1$ | $1$ | $2$ |\n|---|---|---|---|---|\n| $f(x)$ | $?$ | $?$ | $?$ | $?$ |\n\nPlace ensuite les points $A$, $B$, $C$ et $D$ de la courbe de $f$ qui ont pour abscisses ces quatre nombres, dans l'ordre du tableau.\n\n```courbe\nx: -3 ; 3\ny: {{eval:min(-1,a*(-2)+b,a*(-1)+b,a*(1)+b,a*(2)+b)-1}} ; {{eval:max(1,a*(-2)+b,a*(-1)+b,a*(1)+b,a*(2)+b)+1}}\ngrille: 1 ; 1\nplacer: A=(-2 ; {{eval:a*(-2)+b}}) ; B=(-1 ; {{eval:a*(-1)+b}}) ; C=(1 ; {{eval:a*(1)+b}}) ; D=(2 ; {{eval:a*(2)+b}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["b!=-2*a", "b!=-4*a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(-2)+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*a+b}}",
+							"message": "Regarde le signe du produit ${{a}}\\times(-2)$ : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif.",
+							"label": "Signe du produit"
+						},
+						{
+							"answer": "{{eval:-2*a}}",
+							"message": "Tu as oublié le terme constant de la formule.",
+							"label": "Terme constant oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*(-1)+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1*a+b}}",
+							"message": "Regarde le signe du produit ${{a}}\\times(-1)$ : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif.",
+							"label": "Signe du produit"
+						},
+						{
+							"answer": "{{eval:-1*a}}",
+							"message": "Tu as oublié le terme constant de la formule.",
+							"label": "Terme constant oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*(1)+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1*a}}",
+							"message": "Tu as oublié le terme constant de la formule.",
+							"label": "Terme constant oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*(2)+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*a}}",
+							"message": "Tu as oublié le terme constant de la formule.",
+							"label": "Terme constant oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par chaque nombre, par exemple $f(-2)={{if:a==1|-2|{{a}}\\times(-2)}}{{b;+}}={{eval:-2*a+b}}$.",
+					"| $x$ | $-2$ | $-1$ | $1$ | $2$ |\n|---|---|---|---|---|\n| $f(x)$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(-2)+b}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(-1)+b}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(1)+b}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(2)+b}}}$ |",
+					"Chaque colonne donne un point de la courbe : l'abscisse est $x$, l'ordonnée son image $f(x)$.",
+					"```courbe\nx: -3 ; 3\ny: {{eval:min(-1,a*(-2)+b,a*(-1)+b,a*(1)+b,a*(2)+b)-1}} ; {{eval:max(1,a*(-2)+b,a*(-1)+b,a*(1)+b,a*(2)+b)+1}}\ngrille: 1 ; 1\npoints: A(-2 ; {{eval:a*(-2)+b}}), B(-1 ; {{eval:a*(-1)+b}}), C(1 ; {{eval:a*(1)+b}}), D(2 ; {{eval:a*(2)+b}})\ntaille: moyenne\ndescription: Les quatre points A, B, C et D de la courbe de f.\n```"
+				]
+			},
+			"hint": "Pour chaque colonne, remplace $x$ par le nombre du haut dans la formule, entre parenthèses. Chaque colonne donne ensuite un point $(x\\,;f(x))$ : l'abscisse d'abord, l'ordonnée ensuite."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:a*x^2}}$.\n\nComplète le tableau de valeurs de $f$.\n\n| $x$ | $-2$ | $-1$ | $1$ | $2$ |\n|---|---|---|---|---|\n| $f(x)$ | $?$ | $?$ | $?$ | $?$ |\n\nPlace ensuite les points $A$, $B$, $C$ et $D$ de la courbe de $f$ qui ont pour abscisses ces quatre nombres, dans l'ordre du tableau.\n\n```courbe\nx: -3 ; 3\ny: {{eval:min(-1,a*(-2)^2,a*(-1)^2,a*(1)^2,a*(2)^2)-1}} ; {{eval:max(1,a*(-2)^2,a*(-1)^2,a*(1)^2,a*(2)^2)+1}}\ngrille: 1 ; 1\nplacer: A=(-2 ; {{eval:a*(-2)^2}}) ; B=(-1 ; {{eval:a*(-1)^2}}) ; C=(1 ; {{eval:a*(1)^2}}) ; D=(2 ; {{eval:a*(2)^2}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(-2)^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a*4}}",
+							"message": "Le carré d'un nombre négatif est positif : $(-2)^2=4$.",
+							"label": "Carré d'un négatif pris négatif"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*(-1)^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a*1}}",
+							"message": "Le carré d'un nombre négatif est positif : $(-1)^2=1$.",
+							"label": "Carré d'un négatif pris négatif"
+						},
+						{
+							"answer": "{{eval:2*a*(-1)}}",
+							"message": "Le carré d'un nombre, c'est ce nombre multiplié par lui-même, pas par $2$.",
+							"label": "Carré pris pour le double"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*(1)^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*a*(1)}}",
+							"message": "Le carré d'un nombre, c'est ce nombre multiplié par lui-même, pas par $2$.",
+							"label": "Carré pris pour le double"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*(2)^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a^2*4}}",
+							"message": "Seul $x$ est au carré : $ax^2$, c'est $a\\times x^2$, pas $(ax)^2$.",
+							"label": "Coefficient mis au carré"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par chaque nombre, entre parenthèses, et on calcule le carré d'abord : $f(-2)={{if:a==1|(-2)^2=4|{{a}}\\times(-2)^2={{a}}\\times4={{eval:4*a}}}}$.",
+					"| $x$ | $-2$ | $-1$ | $1$ | $2$ |\n|---|---|---|---|---|\n| $f(x)$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(-2)^2}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(-1)^2}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(1)^2}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:a*(2)^2}}}$ |",
+					"Chaque colonne donne un point de la courbe : l'abscisse est $x$, l'ordonnée son image $f(x)$.",
+					"```courbe\nx: -3 ; 3\ny: {{eval:min(-1,a*(-2)^2,a*(-1)^2,a*(1)^2,a*(2)^2)-1}} ; {{eval:max(1,a*(-2)^2,a*(-1)^2,a*(1)^2,a*(2)^2)+1}}\ngrille: 1 ; 1\npoints: A(-2 ; {{eval:a*(-2)^2}}), B(-1 ; {{eval:a*(-1)^2}}), C(1 ; {{eval:a*(1)^2}}), D(2 ; {{eval:a*(2)^2}})\ntaille: moyenne\ndescription: Les quatre points A, B, C et D de la courbe de f.\n```"
+				]
+			},
+			"hint": "Pour chaque colonne, remplace $x$ par le nombre du haut dans la formule, entre parenthèses. Chaque colonne donne ensuite un point $(x\\,;f(x))$ : l'abscisse d'abord, l'ordonnée ensuite."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=({{eval:x+a}})({{eval:x+b}})$.\n\nComplète le tableau de valeurs de $f$.\n\n| $x$ | $-2$ | $-1$ | $0$ | $1$ |\n|---|---|---|---|---|\n| $f(x)$ | $?$ | $?$ | $?$ | $?$ |\n\nPlace ensuite les points $A$, $B$, $C$ et $D$ de la courbe de $f$ qui ont pour abscisses ces quatre nombres, dans l'ordre du tableau.\n\n```courbe\nx: -3 ; 3\ny: {{eval:min(-1,((-2)+a)*((-2)+b),((-1)+a)*((-1)+b),((0)+a)*((0)+b),((1)+a)*((1)+b))-1}} ; {{eval:max(1,((-2)+a)*((-2)+b),((-1)+a)*((-1)+b),((0)+a)*((0)+b),((1)+a)*((1)+b))+1}}\ngrille: 1 ; 1\nplacer: A=(-2 ; {{eval:((-2)+a)*((-2)+b)}}) ; B=(-1 ; {{eval:((-1)+a)*((-1)+b)}}) ; C=(0 ; {{eval:((0)+a)*((0)+b)}}) ; D=(1 ; {{eval:((1)+a)*((1)+b)}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..2;±"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((-2)+a)*((-2)+b)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(-2+a)+(-2+b)}}",
+							"message": "Les deux parenthèses se multiplient : calcule la valeur de chacune, puis fais leur produit.",
+							"label": "Somme au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:((-1)+a)*((-1)+b)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(-1+a)+(-1+b)}}",
+							"message": "Les deux parenthèses se multiplient : calcule la valeur de chacune, puis fais leur produit.",
+							"label": "Somme au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:((0)+a)*((0)+b)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(0+a)+(0+b)}}",
+							"message": "Les deux parenthèses se multiplient : calcule la valeur de chacune, puis fais leur produit.",
+							"label": "Somme au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:((1)+a)*((1)+b)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(1+a)+(1+b)}}",
+							"message": "Les deux parenthèses se multiplient : calcule la valeur de chacune, puis fais leur produit.",
+							"label": "Somme au lieu du produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par chaque nombre dans les deux parenthèses, puis on multiplie : $f(-2)=(-2{{a;+}})(-2{{b;+}})=({{eval:a-2}})\\times({{eval:b-2}})={{eval:(a-2)*(b-2)}}$.",
+					"| $x$ | $-2$ | $-1$ | $0$ | $1$ |\n|---|---|---|---|---|\n| $f(x)$ | $\\textcolor{{{color:primary.0}}}{{{eval:((-2)+a)*((-2)+b)}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:((-1)+a)*((-1)+b)}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:((0)+a)*((0)+b)}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:((1)+a)*((1)+b)}}}$ |",
+					"Chaque colonne donne un point de la courbe : l'abscisse est $x$, l'ordonnée son image $f(x)$.",
+					"```courbe\nx: -3 ; 3\ny: {{eval:min(-1,((-2)+a)*((-2)+b),((-1)+a)*((-1)+b),((0)+a)*((0)+b),((1)+a)*((1)+b))-1}} ; {{eval:max(1,((-2)+a)*((-2)+b),((-1)+a)*((-1)+b),((0)+a)*((0)+b),((1)+a)*((1)+b))+1}}\ngrille: 1 ; 1\npoints: A(-2 ; {{eval:((-2)+a)*((-2)+b)}}), B(-1 ; {{eval:((-1)+a)*((-1)+b)}}), C(0 ; {{eval:((0)+a)*((0)+b)}}), D(1 ; {{eval:((1)+a)*((1)+b)}})\ntaille: moyenne\ndescription: Les quatre points A, B, C et D de la courbe de f.\n```"
+				]
+			},
+			"hint": "Pour chaque colonne, remplace $x$ par le nombre du haut dans la formule, entre parenthèses. Chaque colonne donne ensuite un point $(x\\,;f(x))$ : l'abscisse d'abord, l'ordonnée ensuite."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : f(x) = 2x − 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5", "-3", "1", "3", "-2;-5", "-1;-3", "1;1", "2;3"]
+		},
+		{
+			"description": "v0 : signe de 2 × (−2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe du produit $2\\times(-2)$ : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif."
+			},
+			"answers": ["3", "-3", "1", "3", "-2;-5", "-1;-3", "1;1", "2;3"]
+		},
+		{
+			"description": "v0 : terme constant oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le terme constant de la formule."
+			},
+			"answers": ["-5", "-2", "1", "3", "-2;-5", "-1;-3", "1;1", "2;3"]
+		},
+		{
+			"description": "v0 : point B en (y ; x)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-5", "-3", "1", "3", "-2;-5", "-3;-1", "1;1", "2;3"]
+		},
+		{
+			"description": "v0 : point D faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-5", "-3", "1", "3", "-2;-5", "-1;-3", "1;1", "2;2"]
+		},
+		{
+			"description": "v1 : f(x) = −2x²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-8", "-2", "-2", "-8", "-2;-8", "-1;-2", "1;-2", "2;-8"]
+		},
+		{
+			"description": "v1 : (−2)² pris négatif",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre négatif est positif : $\\left( -2 \\right)^2 = 4$."
+			},
+			"answers": ["8", "-2", "-2", "-8", "-2;-8", "-1;-2", "1;-2", "2;-8"]
+		},
+		{
+			"description": "v1 : carré pris pour le double",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre, c'est ce nombre multiplié par lui-même, pas par $2$."
+			},
+			"answers": ["-8", "4", "-2", "-8", "-2;-8", "-1;-2", "1;-2", "2;-8"]
+		},
+		{
+			"description": "v1 : coefficient au carré",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Seul $x$ est au carré : $a x^2$, c'est $a\\times x^2$, pas $\\left( a x \\right)^2$."
+			},
+			"answers": ["-8", "-2", "-2", "16", "-2;-8", "-1;-2", "1;-2", "2;-8"]
+		},
+		{
+			"description": "v1 : point A en (y ; x)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-8", "-2", "-2", "-8", "-8;-2", "-1;-2", "1;-2", "2;-8"]
+		},
+		{
+			"description": "v1 : f(x) = x²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "1", "1", "4", "-2;4", "-1;1", "1;1", "2;4"]
+		},
+		{
+			"description": "v2 : f(x) = (x + 2)(x − 1)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "-2", "-2", "0", "-2;0", "-1;-2", "0;-2", "1;0"]
+		},
+		{
+			"description": "v2 : somme au lieu du produit",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux parenthèses se multiplient : calcule la valeur de chacune, puis fais leur produit."
+			},
+			"answers": ["0", "-1", "-2", "0", "-2;0", "-1;-2", "0;-2", "1;0"]
+		},
+		{
+			"description": "v2 : point C en (y ; x)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "-2", "-2", "0", "-2;0", "-1;-2", "-2;0", "1;0"]
+		}
+	]
+}
