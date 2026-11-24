@@ -37,6 +37,7 @@ couvre:
   - scripts/menage-machine.sh
   - scripts/machine-commun.sh
   - scripts/bilan-machine.sh
+  - scripts/liberer-disque.sh
   - 'scripts/durees/**'
 ---
 
@@ -273,6 +274,16 @@ pour voir une phase devenue nettement plus lente que la normale.
   suite d'intégration de la nuit (une par jour au plus) : les 5 dernières, et seulement s'il y en
   a eu une dans la journée. `--releve --essai` : affiche sans
   envoyer.
+
+**Libérer de la place sur le disque** (sans redémarrer) : `pnpm disque:liberer` (`--essai` pour voir
+sans rien supprimer), `scripts/liberer-disque.sh`. Supprime seul les images Docker sans conteneur (seulement si la pile Supabase tourne : arrêtée, ses images
+seraient effacées), le cache et les anciennes versions de Homebrew, les restes de mises à jour de VS Code, les versions de Claude Code ni actuelle, ni la plus récente, ni
+utilisées par une session ouverte (lien de `claude` illisible : aucune), les paquets du magasin pnpm qu'aucun projet n'utilise ; affiche
+la commande de chaque étape et ce qu'elle a rapporté. Liste seulement, avec la commande à taper :
+les worktrees finis (branche qui a reçu des commits, tous dans `origin/main`, rien de modifié, aucun
+processus dedans ; un worktree tout neuf n'est jamais « fini »), le cache
+de Brave, la mise à jour de macOS préparée (redémarrage), les sessions Claude de plus de 7 jours.
+Jamais lancée par la surveillance : l'alerte disque la propose.
 
 **Ménage quand la charge est trop grande** : `pnpm menage` (`--essai` pour voir sans rien fermer),
 `scripts/menage-machine.sh`. Ferme les onglets Chrome et Brave au-delà de 20 % de CPU (le navigateur

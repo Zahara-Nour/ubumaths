@@ -429,7 +429,7 @@ fi
 read -r disque_total disque_libre < <(df -k "$VOLUME_DISQUE" 2>/dev/null |
 	awk 'NR == 2 { printf "%d %d\n", $2 / 1048576, $4 / 1048576 }')
 if [ -n "${disque_libre:-}" ] && [ "$disque_libre" -lt "$SEUIL_DISQUE_GO" ] && a_renvoyer disque; then
-	alertes+=("Disque : $disque_libre Go libres sur $disque_total Go.")
+	alertes+=("Disque : $disque_libre Go libres sur $disque_total Go. Pour en libérer : pnpm disque:liberer --essai")
 	marquer disque
 	journaliser "alerte : disque $disque_libre Go libres sur $disque_total Go ($VOLUME_DISQUE)"
 fi
@@ -445,7 +445,7 @@ if [ -n "${disque_libre:-}" ] && [ -s "$HISTORIQUE" ]; then
 		c && $1 >= depuis && $1 <= avant && $c != "?" { print $c; exit }' "$HISTORIQUE")"
 	if [ -n "$disque_hier" ] && [ $((disque_hier - disque_libre)) -gt "$SEUIL_DISQUE_BAISSE_GO" ] &&
 		a_renvoyer disque-baisse "$RAPPEL_JOUR_MIN"; then
-		alertes+=("Disque : $((disque_hier - disque_libre)) Go perdus en 24 h ($disque_hier → $disque_libre Go libres).")
+		alertes+=("Disque : $((disque_hier - disque_libre)) Go perdus en 24 h ($disque_hier → $disque_libre Go libres). Ce qui pèse : pnpm machine:bilan")
 		marquer disque-baisse
 		journaliser "alerte : disque $disque_hier → $disque_libre Go libres en 24 h"
 	fi

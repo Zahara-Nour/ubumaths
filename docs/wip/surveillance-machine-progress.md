@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3072._
+_Mis à jour le 2026-11-24, après #3076._
 
-- **État** : #2906 … #2931, #3069 (`pnpm machine:bilan`), #3072 (4 alertes : processus emballé quelconque et programme bloqué sur 2 passages, ≥ 10 sessions Claude de plus de 7 j, disque > 5 Go perdus en 24 h — ces deux-là 1×/jour) mergés ; dépôt principal à jour, launchd lance les nouveaux scripts.
-- **À vérifier** : premières vraies alertes des 4 nouvelles (faux positifs ? WindowServer, zombies) ; ajuster les seuils au besoin (en tête de `surveillance-machine.sh` et de `machine-commun.sh`).
-- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees à travail unique (2 articles du Shtam jamais commités) ; Time Machine non configuré ; mise à jour de macOS (Preboot 20 Go).
-- **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; sinon clore le chantier (archivage du journal ; doc dans `docs/pratiques/environnement-de-dev.md`).
-- **Pièges** : CI sous Linux → `date_modif` / `date_de`, jamais `stat -f` ni `date -r` nus ; faux `ps` des tests aiguillés par les champs demandés (`ppid=` contient `pid=`) ; `git -C ""` = dossier courant ; `kern.boottime` bouge de quelques secondes ; disque = `/System/Volumes/Data`.
+- **État** : mergés #2906 … #2931, #3069 (`pnpm machine:bilan`), #3072 (4 alertes : processus emballé, programme bloqué, vieilles sessions Claude, disque qui fond), #3076 (`pnpm disque:liberer`, gestes sûrs + liste à faire à la main). Guide pour David : `docs/pratiques/alertes-machine.md` (alerte par alerte, toutes les commandes, libérer le disque à la main). launchd lance les scripts du dépôt principal, à jour.
+- **Décisions de David** : jamais de nettoyage automatique (l'alerte propose `pnpm disque:liberer --essai`) ; worktrees finis listés avec leur commande, jamais retirés ; ⛔ ne PAS redémarrer le Mac.
+- **À vérifier** : premières vraies alertes des 4 nouvelles (faux positifs ?), seuils en tête de `surveillance-machine.sh` et `machine-commun.sh`.
+- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees à travail unique (2 articles du Shtam jamais commités) ; Time Machine non configuré ; mise à jour de macOS (Preboot 20 Go, demande un redémarrage) ; cache de Brave 3,7 Go (à vider par David).
+- **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré ; sinon clore le chantier (archivage du journal ; doc dans `docs/pratiques/environnement-de-dev.md` et `alertes-machine.md`).
+- **Pièges** : CI Linux → `date_modif` / `date_de` ; `| grep -q` + pipefail = SIGPIPE (lire d'un bloc) ; faux `ps` des tests aiguillés par les champs (`ppid=` contient `pid=`) ; `git -C ""` = dossier courant ; disque = `/System/Volumes/Data`.
 - **Worktree / branche** : aucun.
 
 ## Contexte
@@ -73,3 +74,10 @@ Restent, côté David :
 - Essai à blanc sur le Mac : « Sessions Claude : 10 ouvertes depuis plus de 7 jours (35 en tout, 6 Go) ». Disque : 20 → 19 Go en 24 h, rien.
 - Tests vérifiés rouges sur le script de `main` (4 nouveaux).
 - Revue Sonnet : emballé et bloqué exigent 2 passages de suite (`emballes-vus`, `bloques-vus`, < 11 min) — WindowServer ou un zombie ramassé juste après le passage ; disque : « plus de 5 » strict ; Mac éteint dans la fenêtre 20-24 h → rien, documenté. Laissés : sessions `claude` enfants comptées (léger surplus), marques par pid jamais nettoyées.
+
+## 2026-11-24 — place sur le disque
+
+- 13 → 26 Go libres, sans redémarrer (David ne veut PAS relancer le Mac) : `docker image prune -a` (anciennes images Supabase, `node:22`), `brew cleanup --prune=all` (1,1 Go), cache VS Code ShipIt (0,9 Go), versions de Claude Code inutilisées 2.1.318 et 2.1.329 (les autres servent à des sessions ouvertes : les supprimer ne libère rien avant leur fermeture), worktrees `idees-format` (#2990) et `idees-format-indice-eleve` (#2992).
+- Laissés : webkit-2359 de Playwright (worktrees en 1.59.1), cache de Brave (3,7 Go, à vider depuis Brave), mise à jour de macOS (Preboot 20 Go, demande un redémarrage).
+- `pnpm disque:liberer` (`scripts/liberer-disque.sh`) refait ces gestes sûrs. David (2026-11-24) : worktrees finis listés avec un exemple de commande ; « j'ai besoin de connaître les commandes utiles pour faire ça sans toi » (section « Libérer de la place » d'`alertes-machine.md`) ; jamais automatique, l'alerte disque propose `pnpm disque:liberer --essai`.
+- Revue Sonnet de `disque:liberer` : version actuelle ET la plus récente de Claude gardées, lien illisible → rien ; lsof muet → section worktrees sautée ; worktree tout neuf (reflog « branch: Created » seul) jamais « fini » ; Docker seulement si la pile Supabase tourne ; ÉCHEC affiché ; délais (perl alarm) sur `docker info` et `git fetch` ; `production` exclue. Piège trouvé : `git log -g | grep -qv` + pipefail = SIGPIPE → faux négatif : lire d'un bloc.

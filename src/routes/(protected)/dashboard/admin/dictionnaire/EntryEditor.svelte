@@ -16,7 +16,7 @@
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import { GRADE_CODES, GRADES, type GradeCode } from '#lib/types/grades.ts';
 	import { markDictionaryEdited } from '#lib/dictionary/fetch-dictionary.ts';
-	import { refreshLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { refreshLexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
 	import {
 		draftToInput,
 		newItemKey,

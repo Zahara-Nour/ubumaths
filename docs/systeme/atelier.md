@@ -196,7 +196,7 @@ Ceux du code et de l'interface :
 | `ListCard.svelte`            | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »                                                                                                                                                                                                               |
 | `CardActionItems.svelte`     | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`                                                                                                                                                                                                                  |
 | `UnavailableItem.svelte`     | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)                                                                                                                                                                                                                 |
-| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]` (l'exposant de `f⁻¹` dans sa propre étiquette : le `⁻` manque à la police, WebKit le décollait), œil, menu Affichage / Actions ; fenêtre de « Tabuler »                                                                                                      |
+| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]` (l'exposant de `f⁻¹` dans sa propre étiquette : le `⁻` manque à la police, WebKit le décollait), œil, menu Affichage / Actions ; fenêtre de « Tabuler » ; en champ de saisie, l'ensemble hérité des fonctions citées s'écrit « sur … » à côté du champ       |
 | `CurveStylePopover.svelte`   | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)                                                                                                                                                                                                       |
 | `CurveStyleSettings.svelte`  | Ses réglages, repris dans le panneau « Propriétés »                                                                                                                                                                                                                                                                           |
 | `DefinitionField.svelte`     | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)                                                                                                                                                                                                               |
@@ -3226,8 +3226,9 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
-- dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
-  sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
+- anciennes dettes, closes : « Renommer » est actif (`actions.ts`) ; pas de palette d'unités, les
+  unités se tapent à la main (décision du 2026-10-11, [grandeurs.md](grandeurs.md)).
+  `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).
   `.relever` sur une figure chargée (intersections, perpendiculaire, périmètre, angle, deux
   mesures composées) : 19 à 23 s pour le balayage, ~8 ms puis ~95 ms de recalcul par pas — le

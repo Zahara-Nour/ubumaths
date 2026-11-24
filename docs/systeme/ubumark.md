@@ -1801,7 +1801,9 @@ Une **grandeur** s'écrit dans une unité tapée, et une durée tapée en h et m
 Un entier EXACT (calculé en rationnels : `10^22`, `2^80`, `factorial(18)` → `6402373705728000`)
 s'écrit toujours en entier, quelle que soit sa taille, avec ou sans `;d`. Un résultat approché
 ≥ 10¹⁵ passe en notation scientifique (mantisse à 15 chiffres significatifs) : au-delà, les
-chiffres d'un flottant seraient inventés. Un petit nombre est toujours développé (`0.0000003`).
+chiffres d'un flottant seraient inventés. **Limite connue** : un résultat approché garde
+15 chiffres significatifs, donc un décimal à 16 chiffres juste sous 10¹⁵ perd sa fin
+(`{{eval:100000000000000.5}}` rend `100000000000001`). Un petit nombre est toujours développé (`0.0000003`).
 Une fraction exacte reste une fraction ; `1 000 000` reste `1000000` (pas de détection de
 puissance simple) ; mantisse 1 : `10^{-7}`. Aucune dépendance au niveau du modèle. `;sci` sur une grandeur écrit le nombre en syntaxe
 maison (`0.0000003[m];sci` → `3*10^{-7}[m]`, `10^{-7}[m]`) ; avec `;hms` ou un calcul littéral,

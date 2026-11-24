@@ -927,7 +927,9 @@ describe('surveillance-machine : disque', () => {
 	it('sous 15 Go libres : signalé', () => {
 		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], disqueLibreGo: 12 });
 		lancer();
-		expect(envois()).toContain('Disque : 12 Go libres sur 228 Go.');
+		expect(envois()).toContain(
+			'Disque : 12 Go libres sur 228 Go. Pour en libérer : pnpm disque:liberer --essai'
+		);
 		expect(historique()[1]).toMatch(/;12$/);
 	});
 

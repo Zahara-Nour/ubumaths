@@ -768,9 +768,6 @@ test('#2276 — le clavier d’une question de durée ne propose QUE les unités
 		);
 		return [...JSON.stringify(units?.rows ?? []).matchAll(/"tooltip":"([^"]*)"/g)].map((m) => m[1]);
 	});
-	// ÉCART : l'attendu `{1[h]}{6[min]}` devient `66[min]` (`singleExpectedDuration`), que `extractUnitFromLatex`
-	// ne lit pas (il veut `\unit{…}`) : le clavier retombe sur le jeu générique (cm, m, km, g, kg, s, min, h, L).
-	test.fail();
 	expect(keys, 'le clavier propose les unités de durée, pas le jeu générique').toEqual([
 		's',
 		'min',

@@ -19,7 +19,7 @@
 <script lang="ts">
 	import { readLexicon } from '#lib/components/markdown/lexicon-context.ts';
 	import LexiconTerm from '#lib/components/markdown/nodes/LexiconTerm.svelte';
-	import { lexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { lexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
 	import type { Reading, ReadingSegment } from '#lib/mathAST/structure/index.ts';
 
 	// Types

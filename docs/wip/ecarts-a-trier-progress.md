@@ -8,18 +8,44 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2366._
+_Mis à jour le 2026-11-24, après #3077._
 
-- **État** : lot B en cours. **Faits** : M4 code (#2340, en prod), M11 (#2342, #2345), M8 (#2343), **D11 + C10 (#2366** : « capacité » → `CurriculumPoint`, liste des drapeaux anti-triche qui rend enfin le point). `ecarts-a-trier.md` remis à jour (tableaux = source unique) : **22 ouverts + 11 T**.
-- **Prochaine action** : C14 (`lexicon/` → `dictionary/`) ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc) ; L36 (message PostgREST brut, relevé par l'audit de #2366). **M4 `DROP worksheet_instances`** : possible depuis le `deploy:prod` du 2026-11-04 (stop + explication à David avant `db:migrate` ; retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`). Reste de C10 : colonne `capacity_point_id` (migration à part, pas planifiée).
-- **En attente de David** : DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
-- **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`) ; `docs:check-a-jour --depuis` ne voit que les commits : la relancer APRÈS le commit (`Doc-inchangée:` dans un commit si besoin) ; corps de commit ≤ 100 caractères par ligne.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier`, une branche par PR du lot (aucune en cours : worktree détaché sur `origin/main`).
+- **État** : chantier repris le 2026-11-24. Écarts ouverts revérifiés contre `main` ([ecarts-a-trier.md](ecarts-a-trier.md) § « État au 2026-11-24 ») ; **C14 fait (#3077)**, L12 et L20 clos, 6 lignes de doc périmées corrigées. Recollecte : [ecarts-a-trier-recollecte.md](ecarts-a-trier-recollecte.md) (225 points jamais triés, non vérifiés ; sa liste B n'est pas fiable ligne à ligne). **Harmonisation tranchée** : registre unique, phase 0 validée.
+- **Prochaine action** : coder le registre unique, phase 0 validée (section « Registre unique : phase 0 validée » ci-dessous), dans l'ordre écrit : registre + commande avec tests, versement, tri des 225 points, tâche de nuit, retrait des sections d'écarts des docs. Écarts à corriger ensuite : V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
+- **En attente de David** : M4 `DROP worksheet_instances` (destructif, explication avant `db:migrate`) ; T14 ; DPA ; relire `conformite/violation-de-donnees.md`.
+- **Pièges en cours** : les 225 points de la recollecte sont rapprochés par mots-clés, à vérifier dans le code avant d'en faire des écarts ; sondes mathAST : test vitest temporaire dans le worktree, par le chemin de l'Atelier, jamais `pnpm math` ; `db:migrate` lancé par David ; `docs:check-a-jour --depuis` ne voit que les commits.
+- **Worktree / branche** : aucun (celui de #3077 retiré au merge). Reste `../ubumaths-wt-ecarts-a-trier` (`chore/ecarts-lexicon-vers-dictionary`, PR #2451 fermée sans merge, remplacée par #3077) : à retirer, la suppression de sa branche non mergée demande l'accord de David.
 
 ---
 
+## Décisions de David (2026-11-24, harmonisation des suivis : « je suis tes recos »)
+
+1. **Un registre unique** pour les écarts de la doc (V, L, M, C, D, T) et les E de `ecarts-verifs-progress.md` : une ligne par écart, avec son type, sa source et sa **preuve rejouable** (le test ou la commande qui dit s'il est encore vrai). `verifications-manuelles.md` reste à part : ce sont des choses à regarder, pas des défauts ; une vérification qui échoue produit un écart, qui entre au registre avec un renvoi vers sa ligne.
+2. **Un écart s'écrit au registre seul.** La doc système décrit ce que fait le code et renvoie au registre ; ses sections « Écarts connus » disparaissent.
+3. **Une seule tâche de nuit** (commune avec `verifs-auto`) : elle rejoue les preuves, `test:verifs` et les gardes de doc, écrit un bilan ou ouvre une PR, ne merge jamais.
+4. **Les 225 points jamais triés** : vérifiés dans le code par des agents, par domaine, avant d'entrer au registre ; seules les décisions de produit vont à David, sur une page à cocher.
+
+Sessions `ecarts-verifs` et `verifs-auto` prévenues le 2026-11-24 (elles continuent ; `verifs-auto` ne crée pas la tâche de nuit de son côté).
+
+## Registre unique : phase 0 validée par David (2026-11-24, « je valide tes recos »)
+
+- **Où** : un seul fichier, `docs/ecarts/registre.md` (commit de doc direct sur `main`, sans CI). Les scripts le lisent ; aucun test ne lit `docs/` (fixtures sous `tests/fixtures/`).
+- **Une ligne** : identifiant (les numéros actuels sont gardés : V35 reste V35, E41 reste E41) · type · domaine · ce que voit l'élève ou le prof · preuve · état. Exemple : `V35 · bug visible · mathAST · le i passe devant √3 · preuve : test « rouge attendu » de tidy-sum-lead.test.ts · à faire (décision du 2026-11-03)`.
+- **Nominal** : chaque nuit, la tâche rejoue la preuve de chaque écart ouvert. Preuve toujours rouge : rien ne bouge. Preuve verte : **la tâche barre elle-même la ligne** (commit de doc sur `main`, validé par David) et l'écrit dans le bilan du matin.
+- **Limites** : un écart sans preuve possible (décision de produit, papier RGPD) porte « preuve : à la main », n'est jamais rejoué et sort dans une liste à part. Un nouvel écart entre par une commande qui donne son numéro (pas deux E53).
+- **Erreur** : une preuve qui ne peut plus tourner (fichier disparu, test renommé) est marquée « preuve cassée » dans le bilan ; une ligne n'est jamais fermée sur une preuve cassée.
+- **Ce que reçoit David** : un bilan par nuit (clos, nouveaux, preuves cassées) ; une page à cocher seulement quand des décisions de produit attendent.
+- **Ordre** : (1) registre + commande (lire, rejouer, numéroter), avec tests ; (2) versement des écarts ouverts d'`ecarts-a-trier.md` et des E d'`ecarts-verifs-progress.md` (prévenir la session `ecarts-verifs` du format) ; (3) tri des 225 points par domaine, vérifiés dans le code par des agents ; (4) tâche de nuit commune avec `verifs-auto` (s'accorder avec cette session sur ce qu'elle lance) ; (5) retrait des sections « Écarts connus » des docs système, remplacées par un renvoi.
+
+## Fait le 2026-11-24
+
+- **C14** : #2451 fermée (27 conflits avec `main`), refaite en **#3077**, mergée (une fixture de corpus, modifiée à tort par le remplacement de chemins, restaurée avant le vert).
+- **Docs système** (commit direct `fcbec7c17`) : la liste B de la recollecte annonçait 17 lignes périmées ; vérifiées dans le code, **7 l'étaient** et sont corrigées (Renommer et unités dans `atelier.md`, L22 dans `mathast/README.md`, C1 dans `architecture-generale.md`, M20 dans `questions.md`, D18 dans `carte-des-fonctionnalites.md`, `worksheet_instances` dans `base-de-donnees.md`). Les autres disent encore vrai (M7, M10, M16, L11, T5 : écarts fermés par décision, le fait décrit demeure) ou demandent une sonde (ligne « valeur fausse » de `mathast/README.md` § limites, rapprochée à tort de V71 ; `conformite/README.md` rétention). La liste B n'est donc pas fiable ligne à ligne.
+- **L20** : limite des 15 chiffres écrite dans `ubumark.md` → clos. **L12** : clos (« Renommer » actif, provenance disparue, `recomputeAll` mesuré le 2026-10-19 d'après `atelier.md`).
+
 ## Historique
 
+- **2026-11-24** — revérification des 22 écarts ouverts et des 11 T par 3 agents (mathAST par sondes, reste du code par lecture, recollecte des docs). 5 corrigés ou réduits, 8 T clos, 225 points jamais triés relevés.
 - **2026-10-18** — revérification de ~110 écarts ouverts par 4 agents (mathAST, atelier, fiches, serveur/RGPD) ; 14 corrigés depuis, V62 aggravé (dérivée fausse), V65 nouveau. Commit 7846bfae6.
 
 ## Décisions de David (2026-11-01, sur mes recos)
