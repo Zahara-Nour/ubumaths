@@ -1219,7 +1219,7 @@ test('#2274 — vecteur nommé, flèche fausse : « …, pas u⃗ (3 ; −2). »
 	const sentence = page.locator('p.text-sm', { hasText: 'Ta flèche représente' }).first();
 	await expect(sentence).toBeVisible();
 	const read = await sentence.evaluate((p) => ({
-		text: (p.textContent ?? '').replace(/ /g, ' ').replace(/\s+/g, ' '),
+		text: (p.textContent ?? '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' '),
 		nodes: [...p.childNodes].map((node) => ({
 			kind: node.nodeType === Node.TEXT_NODE ? 'text' : 'node',
 			text: node.textContent ?? ''
@@ -1227,9 +1227,9 @@ test('#2274 — vecteur nommé, flèche fausse : « …, pas u⃗ (3 ; −2). »
 	}));
 	console.log(`#2274 ${projectName()} : phrase = « ${read.text} »`);
 	// Le texte « …, pas » finit par une espace (ordinaire ou insécable), puis vient la formule
-	const index = read.nodes.findIndex((n) => n.kind === 'text' && /pas[\s ]*$/.test(n.text));
+	const index = read.nodes.findIndex((n) => n.kind === 'text' && /pas[\s\u00a0]*$/.test(n.text));
 	expect(index, 'le texte « …, pas » précède la formule').toBeGreaterThanOrEqual(0);
-	expect(read.nodes[index].text, 'une espace après « pas »').toMatch(/pas[\s ]+$/);
+	expect(read.nodes[index].text, 'une espace après « pas »').toMatch(/pas[\s\u00a0]+$/);
 	expect(read.nodes[index + 1]?.kind, 'la formule suit, à part').toBe('node');
 	await shootThemes(page, sentence, '2274-nomme');
 });
@@ -1258,7 +1258,7 @@ test('#2274 — droite fausse : « Ta droite n’est pas celle d’équation y =
 	);
 	const formula = nodes.findIndex((n) => n.kind === 'node');
 	expect(formula, 'la formule est un élément à part').toBeGreaterThan(0);
-	expect(nodes[formula - 1].text, 'une espace avant la formule').toMatch(/[\s ]$/);
+	expect(nodes[formula - 1].text, 'une espace avant la formule').toMatch(/[\s\u00a0]$/);
 });
 
 // Modèles publiés : 2-299, 2-298, 2-316, 2-445

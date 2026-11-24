@@ -1,10 +1,8 @@
-// TRAVAIL EN COURS (agent arrêté au /clear du 2026-11-24) : déclarations pas encore utilisées.
-// Retirer cette ligne en finissant le fichier.
-/* oxlint-disable no-unused-vars */
 import { mkdir } from 'node:fs/promises';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { buildSeriesLink } from '../../src/lib/validation/series';
-import { calc, hasSteps, openAtelier, steps } from './helpers/atelier';
+// TRAVAIL EN COURS (agent arrêté le 2026-11-24) : `_DROITE_AX_B`, `_VALEUR_ABSOLUE`, `_openPreview`
+// préparés pour des tests pas encore écrits ; retirer le `_` en les utilisant.
 import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
 import { expectNoHorizontalOverflow } from './helpers/pages';
 
@@ -37,8 +35,8 @@ const PREFIXE = 'Verifs5 q5';
 const PRODUIT = 'f0163416-0610-49cc-bf2d-83db744dbf43';
 /** 2-446 « Tableau de signes d'un quotient » : variations 0 et 1 = tableau tout à compléter */
 const QUOTIENT = '9c7ab1c7-d3f3-4c78-96f4-c14e5a657574';
-const DROITE_AX_B = '320f5ac7-b16a-48a7-b136-704d62854138';
-const VALEUR_ABSOLUE = '80a87e34-251c-481a-a086-7b7add231cc9';
+const _DROITE_AX_B = '320f5ac7-b16a-48a7-b136-704d62854138';
+const _VALEUR_ABSOLUE = '80a87e34-251c-481a-a086-7b7add231cc9';
 
 /** (2x+6)(x−1) : racines −3 et 1 cachées, toutes les cases du tableau cachées */
 const TABLEAU = [
@@ -159,7 +157,7 @@ async function openSeries(
 }
 
 /** L'aperçu admin d'un modèle (carte de l'élève avec « Valider » et son corrigé) */
-async function openPreview(page: Page, id: string, seed?: number): Promise<void> {
+async function _openPreview(page: Page, id: string, seed?: number): Promise<void> {
 	await page.goto(`/dashboard/admin/questions/${id}/preview`);
 	await page.waitForLoadState('networkidle');
 	if (seed !== undefined) {
