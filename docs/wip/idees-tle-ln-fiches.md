@@ -1,7 +1,7 @@
 # Fiches de la phase 0 « logarithme népérien » de Terminale (2026-11-24)
 
 Chantier [`idees-tle-ln`](idees-tle-ln-progress.md), relevé : [idees-tle-ln-releve.md](idees-tle-ln-releve.md).
-Copie des fiches de la page à cocher https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT. **En attente de David.**
+Copie des fiches de la page à cocher https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT. Validées par David le 2026-11-24 (« je suis tes recos » : toutes oui, Q1 TSPE-438, Q2 nouveau modèle, Q3 oui).
 
 Toutes les variations ont leurs `testSpecs` (réponses justes sous plusieurs écritures, erreurs
 typiques refusées), trois erreurs prévues par case et un coup de pouce qui ne donne pas la réponse.

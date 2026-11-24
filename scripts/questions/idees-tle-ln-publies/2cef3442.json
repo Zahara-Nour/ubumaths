@@ -1,0 +1,274 @@
+{
+	"id": "2cef3442-e79c-4be5-b139-dce2d32a9fb0",
+	"title": "Croissances comparées : logarithme et puissances",
+	"description": "Limites de ln x / xⁿ en +∞ et de xⁿ ln x en 0 (pièges : ∞ × 0 = 1, limite d'un seul facteur)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{ {{if:k==1||{{k}}}}\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ».",
+					"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}=0$ : la puissance l'emporte sur le logarithme.",
+					"$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:k==1||{{k}}}}{{if:n==1|x|x^{ {{n}} }}}\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $0$, ${{if:n==1|x|x^{ {{n}} }}}$ tend vers $0$ et $\\ln x$ vers $-\\infty$ : forme indéterminée « $0\\times\\infty$ ».",
+					"Par croissances comparées, $\\displaystyle\\lim_{x\\to0}{{if:n==1|x|x^{ {{n}} }}}\\ln x=0$, donc $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]1\\,;+\\infty\\right[$ par $f(x)=\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}{{if:n==1|x|x^{ {{n}} }}}}{\\ln x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "C'est $\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}$ qui tend vers $0$ : ici le quotient est inversé, la puissance est au numérateur.",
+							"label": "Quotient inversé"
+						},
+						{
+							"answer": "{{if:a>0|-\\infty|+\\infty}}",
+							"message": "Le coefficient ${{a}}$ est {{if:a>0|positif|négatif}} : il donne le signe de la limite.",
+							"label": "Signe de a"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ». Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}=0$, et ce quotient est positif pour $x>1$.",
+					"$f(x)={{a}}\\times\\dfrac{1}{\\frac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}}$ : l'inverse d'une quantité qui tend vers $0^{+}$ tend vers $+\\infty$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:a>0|+\\infty|-\\infty}} }$."
+				]
+			},
+			"hint": "Écris $f(x)$ à l'aide de l'inverse de $\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\ln x-{{if:b==1||{{if:b==-1|-|{{b}}}}}}{{if:n==1|x|x^{ {{n}} }}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\infty",
+					"expectedErrors": [
+						{
+							"answer": "+\\infty",
+							"message": "« $+\\infty-\\infty$ » est une forme indéterminée : factorise par ${{if:n==1|x|x^{ {{n}} }}}$ pour voir quel terme l'emporte.",
+							"label": "+∞"
+						},
+						{
+							"answer": "0",
+							"message": "C'est $\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}$ qui tend vers $0$, pas la différence.",
+							"label": "Zéro"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $+\\infty-\\infty$ ». Pour $x>0$, $f(x)={{if:n==1|x|x^{ {{n}} }}}\\left(\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}-{{b}}\\right)$.",
+					"Par croissances comparées, $\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}$ tend vers $0$ : la parenthèse tend vers $-{{b}}$, et ${{if:n==1|x|x^{ {{n}} }}}$ vers $+\\infty$.",
+					"Par produit, $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{-\\infty}$."
+				]
+			},
+			"hint": "Forme indéterminée : factorise par ${{if:n==1|x|x^{ {{n}} }}}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"n": "2"
+			},
+			"description": "v0 : 4 ln x / x² → 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"n": "2"
+			},
+			"description": "v0 : +∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "1"
+			},
+			"description": "v1 : 3x ln x en 0 → 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "1"
+			},
+			"description": "v1 : −∞ (limite de ln seule)",
+			"variationIndex": 1
+		},
+		{
+			"description": "F10a : 3x²/ln x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "F10a : quotient inversé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F10a : −2x/ln x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "F10a : signe de a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "F10b : ln x − 2x",
+			"variationIndex": 3,
+			"variables": {
+				"b": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\infty"]
+		},
+		{
+			"description": "F10b : +∞",
+			"variationIndex": 3,
+			"variables": {
+				"b": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+\\infty"]
+		},
+		{
+			"description": "F10b : 0",
+			"variationIndex": 3,
+			"variables": {
+				"b": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}

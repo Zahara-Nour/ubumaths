@@ -8,12 +8,13 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, phase 0 envoyée._
+_Mis à jour le 2026-11-24, lot écrit._
 
-- **État** : relevé fait, phase 0 publiée (page à cocher) · **Prochaine action** : lire les verdicts
-  (`ArtifactData list verdicts`), puis écrire le gros lot (`docs/wip/questions/idees-tle-ln-*.py`) ·
-  **En attente de David** : verdicts des fiches F1 à F14 et Q1 à Q3 · **Pièges en cours** : aucun ·
-  **Worktree / branche** : `../ubumaths-wt-idees-tle-ln` / `feat/idees-tle-ln`.
+- **État** : phase 0 validée, lot écrit et vérifié (specs, formules, base locale) · **Prochaine
+  action** : David crée les 2 brouillons en prod, puis je commite leurs ids et génère les migrations
+  (rangement + contenu des 9 publiés) · **En attente de David** : `pnpm tsx scripts/create-questions.ts
+--dir scripts/questions/idees-tle-ln-neufs --publier` (depuis le worktree) · **Pièges en cours** :
+  aucun · **Worktree / branche** : `../ubumaths-wt-idees-tle-ln` / `feat/idees-tle-ln`.
 
 ## Historique
 
@@ -33,3 +34,25 @@ _Mis à jour le 2026-11-24, phase 0 envoyée._
   dans a6b6db45 ; Q3 F13 variation (recommandé) ou rien. Question d'accès : personne.
 - À noter pour la rubrique continuité (TSA4) : « f(x) = 0 a deux solutions » sur ax + b + k ln x
   (TSA5-41), à mettre dans « Idées en attente » à la clôture.
+
+### 2026-11-24 — phase 0 validée, lot écrit
+
+- David : « je suis tes recos » → toutes les fiches oui ; Q1 F6 sur TSPE-438 ; Q2 F9 en nouveau
+  modèle ; Q3 F13 ajoutée. 9 modèles publiés réservés dans le tableau (567d97438).
+- Scripts `docs/wip/questions/idees-tle-ln-neufs.py` (→ `scripts/questions/idees-tle-ln-neufs/`) et
+  `idees-tle-ln-publies.py` (→ `scripts/questions/idees-tle-ln-publies/`, 9 modèles exportés de prod
+  le 2026-11-24, variations ajoutées à la fin, relançable).
+- Neufs (11 variations) : F6 ensemble de définition (5 var. : affine, trinôme, quotient, carré → ℝ ∖ {r},
+  x² + c → ℝ) dans « Logarithmes > réciproque de l'exponentielle », TSPE-438 ; F9 limites sans forme
+  indéterminée (6 var., dont ln(axⁿ + k) et ln(k + a/xⁿ) par composition) dans « Logarithmes > courbe »,
+  TSPE-441.
+- Publiés (+16) : ffd5c051 +2, d3301f2d +3, 14036c68 +2, f1963ef2 +1, 50feeefd +2, 2cef3442 +2,
+  7c8b341b +2, 7f13ca89 +1, e814175b +1.
+- Écarts à la fiche, sans changer l'idée : F6 a 5 variations (ℝ ∖ {r} et ℝ séparés) ; F9 en a 6
+  (ln(k + a/xⁿ) → ln k ajoutée : limite finie par composition) ; F3 b accepte le décimal (1,5) ;
+  F12 remet des cases ordinaires (`blankDefaults` vide : le modèle juge en intervalles).
+- Vérifié : `question:specs` vert sur les 11 fichiers (256 specs, 3 150 tirages) ;
+  `create-questions` en simulation vert ; 5 119 formules des aperçus passées à `validateLatex` +
+  accolades (0 problème) ; copies créées en base locale, F12 (tableau avec limites) et F4 b
+  (0,2ˣ affiché avec la virgule) vus dans l'aperçu (`pnpm voir`, iPhone) ; brouillons d'essai
+  supprimés de la base locale.
