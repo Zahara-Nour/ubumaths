@@ -82,3 +82,4 @@ scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b da
   est archivée.
 - Migrations `20261124062316_…_rangement_tags` et `20261124062325_…_publies_contenu` (+1 ou +2
   variations par modèle, 16 en tout) ; tests d'intégration verts (125).
+- Doc système inchangée : les migrations rangent et complètent du contenu, sans toucher au schéma.
