@@ -1,0 +1,586 @@
+{
+	"id": "62528060-640b-4ca5-90fc-7f5ccebe08d9",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > développement",
+		"point": "3-013"
+	},
+	"title": "Développer avec un tableau",
+	"description": "Double distributivité dans un tableau de multiplication à compléter (quatre produits), puis le développement réduit : (x + 3)(x + 5), (2x − 3)(5x + 4) (pièges : x × x = 2x, carré oublié, signe d'un produit, produits croisés oubliés)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète le tableau de multiplication, puis écris le développement sous forme réduite : une expression qu'on peut encore réduire est refusée.\n\n| $\\times$ | ${{eval:c*x}}$ | ${{d}}$ |\n|---|---|---|\n| ${{eval:a*x}}$ | $?$ | $?$ |\n| ${{b}}$ | $?$ | $?$ |\n\n$({{eval:a*x+b}})({{eval:c*x+d}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "c",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c*x^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*x}}",
+							"message": "Tu as additionné : $x\\times x$ s'écrit $x^2$, pas $2x$.",
+							"label": "x × x = 2x"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*d*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*d}}",
+							"message": "Tu as oublié la lettre $x$ : un nombre fois un terme en $x$ donne un terme en $x$.",
+							"label": "x oublié"
+						},
+						{
+							"answer": "{{eval:a*x+d}}",
+							"message": "Dans la case, il faut multiplier les deux termes, pas les additionner.",
+							"label": "Addition au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:b*c*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b*c}}",
+							"message": "Tu as oublié la lettre $x$ : un nombre fois un terme en $x$ donne un terme en $x$.",
+							"label": "x oublié"
+						},
+						{
+							"answer": "{{eval:c*x+b}}",
+							"message": "Dans la case, il faut multiplier les deux termes, pas les additionner.",
+							"label": "Addition au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:b*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b+d}}",
+							"message": "Dans la case, il faut multiplier les deux termes, pas les additionner.",
+							"label": "Addition au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*c*x^2+(a*d+b*c)*x+b*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*c*x^2+b*d}}",
+							"message": "Tu as oublié les deux cases du milieu : la somme des quatre cases donne le développement.",
+							"label": "Produits croisés oubliés"
+						},
+						{
+							"answer": "{{eval:(a*c+a*d+b*c)*x^2+b*d}}",
+							"message": "Tu as additionné des termes en $x^2$ et des termes en $x$ : on ne peut réduire ensemble que les termes de même degré.",
+							"label": "x² et x additionnés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque case est le produit du terme de sa ligne par le terme de sa colonne :",
+					"| $\\times$ | ${{eval:c*x}}$ | ${{d}}$ |\n|---|---|---|\n| ${{eval:a*x}}$ | ${{eval:a*c*x^2}}$ | ${{eval:a*d*x}}$ |\n| ${{b}}$ | ${{eval:b*c*x}}$ | ${{eval:b*d}}$ |",
+					"On additionne les quatre cases, puis on réduit les termes en $x$ :",
+					"$$({{eval:a*x+b}})({{eval:c*x+d}})={{eval:a*c*x^2}}{{eval:a*d*x;+}}{{eval:b*c*x;+}}{{eval:b*d;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a*c*x^2+(a*d+b*c)*x+b*d}}}$$"
+				]
+			},
+			"hint": "Dans chaque case, multiplie le terme de sa ligne par le terme de sa colonne. Ensuite, additionne les quatre cases et regroupe les termes en $x$."
+		},
+		{
+			"statement": "Complète le tableau de multiplication, puis écris le développement sous forme réduite : une expression qu'on peut encore réduire est refusée.\n\n| $\\times$ | ${{eval:c*x}}$ | ${{d}}$ |\n|---|---|---|\n| ${{eval:a*x}}$ | $?$ | $?$ |\n| ${{b}}$ | $?$ | $?$ |\n\n$({{eval:a*x+b}})({{eval:c*x+d}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["a*d+b*c!=0", "a!=c || b!=d", "b+d!=0", "b+d!=b*d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c*x^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*c*x}}",
+							"message": "${{eval:a*x}}\\times{{eval:c*x}}$ contient $x\\times x=x^2$ : n'oublie pas le carré.",
+							"label": "Carré oublié"
+						},
+						{
+							"answer": "{{eval:(a+c)*x^2}}",
+							"message": "Dans la case, il faut multiplier les deux termes, pas les additionner.",
+							"label": "Coefficients additionnés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*d*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a*d*x}}",
+							"message": "Regarde le signe de chaque facteur : deux facteurs de même signe ont un produit positif, de signes contraires un produit négatif.",
+							"label": "Signe du produit"
+						},
+						{
+							"answer": "{{eval:a*d}}",
+							"message": "Tu as oublié la lettre $x$ : un nombre fois un terme en $x$ donne un terme en $x$.",
+							"label": "x oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:b*c*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-b*c*x}}",
+							"message": "Regarde le signe de chaque facteur : deux facteurs de même signe ont un produit positif, de signes contraires un produit négatif.",
+							"label": "Signe du produit"
+						},
+						{
+							"answer": "{{eval:b*c}}",
+							"message": "Tu as oublié la lettre $x$ : un nombre fois un terme en $x$ donne un terme en $x$.",
+							"label": "x oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:b*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-b*d}}",
+							"message": "Regarde le signe de chaque facteur : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif.",
+							"label": "Signe du produit"
+						},
+						{
+							"answer": "{{eval:b+d}}",
+							"message": "Dans la case, il faut multiplier les deux termes, pas les additionner.",
+							"label": "Addition au lieu du produit"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*c*x^2+(a*d+b*c)*x+b*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*c*x^2+b*d}}",
+							"message": "Tu as oublié les deux cases du milieu : la somme des quatre cases donne le développement.",
+							"label": "Produits croisés oubliés"
+						},
+						{
+							"answer": "{{eval:(a*c+a*d+b*c)*x^2+b*d}}",
+							"message": "Tu as additionné des termes en $x^2$ et des termes en $x$ : on ne peut réduire ensemble que les termes de même degré.",
+							"label": "x² et x additionnés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque case est le produit du terme de sa ligne par le terme de sa colonne :",
+					"| $\\times$ | ${{eval:c*x}}$ | ${{d}}$ |\n|---|---|---|\n| ${{eval:a*x}}$ | ${{eval:a*c*x^2}}$ | ${{eval:a*d*x}}$ |\n| ${{b}}$ | ${{eval:b*c*x}}$ | ${{eval:b*d}}$ |",
+					"On additionne les quatre cases, puis on réduit les termes en $x$ :",
+					"$$({{eval:a*x+b}})({{eval:c*x+d}})={{eval:a*c*x^2}}{{eval:a*d*x;+}}{{eval:b*c*x;+}}{{eval:b*d;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a*c*x^2+(a*d+b*c)*x+b*d}}}$$"
+				]
+			},
+			"hint": "Dans chaque case, multiplie le terme de sa ligne par le terme de sa colonne. Ensuite, additionne les quatre cases et regroupe les termes en $x$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : (x + 3)(x + 5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x^2", "5x", "3x", "15", "x^2+8x+15"]
+		},
+		{
+			"description": "v0 : ordre libre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x^2", "5x", "3x", "15", "15+8x+x^2"]
+		},
+		{
+			"description": "v0 : non réduit",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["x^2", "5x", "3x", "15", "x^2+5x+3x+15"]
+		},
+		{
+			"description": "v0 : x × x = 2x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné : $x\\times x$ s'écrit $x^2$, pas $2 x$."
+			},
+			"answers": ["2x", "5x", "3x", "15", "x^2+8x+15"]
+		},
+		{
+			"description": "v0 : x oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la lettre $x$ : un nombre fois un terme en $x$ donne un terme en $x$."
+			},
+			"answers": ["x^2", "5", "3x", "15", "x^2+8x+15"]
+		},
+		{
+			"description": "v0 : x + 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la case, il faut multiplier les deux termes, pas les additionner."
+			},
+			"answers": ["x^2", "x+5", "3x", "15", "x^2+8x+15"]
+		},
+		{
+			"description": "v0 : 3 + x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la case, il faut multiplier les deux termes, pas les additionner."
+			},
+			"answers": ["x^2", "5x", "x+3", "15", "x^2+8x+15"]
+		},
+		{
+			"description": "v0 : 3 + 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la case, il faut multiplier les deux termes, pas les additionner."
+			},
+			"answers": ["x^2", "5x", "3x", "8", "x^2+8x+15"]
+		},
+		{
+			"description": "v0 : croisés oubliés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié les deux cases du milieu : la somme des quatre cases donne le développement."
+			},
+			"answers": ["x^2", "5x", "3x", "15", "x^2+15"]
+		},
+		{
+			"description": "v0 : x² et x additionnés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "1",
+				"b": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné des termes en $x^2$ et des termes en $x$ : on ne peut réduire ensemble que les termes de même degré."
+			},
+			"answers": ["x^2", "5x", "3x", "15", "9x^2+15"]
+		},
+		{
+			"description": "v1 : (2x − 3)(5x + 4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10x^2", "8x", "-15x", "-12", "10x^2-7x-12"]
+		},
+		{
+			"description": "v1 : ordre libre",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10x^2", "8x", "-15x", "-12", "-12-7x+10x^2"]
+		},
+		{
+			"description": "v1 : non réduit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["10x^2", "8x", "-15x", "-12", "10x^2+8x-15x-12"]
+		},
+		{
+			"description": "v1 : carré oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$2x\\times5x$ contient $x\\times x=x^2$ : n'oublie pas le carré."
+			},
+			"answers": ["10x", "8x", "-15x", "-12", "10x^2-7x-12"]
+		},
+		{
+			"description": "v1 : coefficients additionnés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la case, il faut multiplier les deux termes, pas les additionner."
+			},
+			"answers": ["7x^2", "8x", "-15x", "-12", "10x^2-7x-12"]
+		},
+		{
+			"description": "v1 : x oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la lettre $x$ : un nombre fois un terme en $x$ donne un terme en $x$."
+			},
+			"answers": ["10x^2", "8", "-15x", "-12", "10x^2-7x-12"]
+		},
+		{
+			"description": "v1 : signe de −3 × 5x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe de chaque facteur : deux facteurs de même signe ont un produit positif, de signes contraires un produit négatif."
+			},
+			"answers": ["10x^2", "8x", "15x", "-12", "10x^2-7x-12"]
+		},
+		{
+			"description": "v1 : signe de −3 × 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe de chaque facteur : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif."
+			},
+			"answers": ["10x^2", "8x", "-15x", "12", "10x^2-7x-12"]
+		},
+		{
+			"description": "v1 : −3 + 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la case, il faut multiplier les deux termes, pas les additionner."
+			},
+			"answers": ["10x^2", "8x", "-15x", "1", "10x^2-7x-12"]
+		},
+		{
+			"description": "v1 : croisés oubliés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié les deux cases du milieu : la somme des quatre cases donne le développement."
+			},
+			"answers": ["10x^2", "8x", "-15x", "-12", "10x^2-12"]
+		},
+		{
+			"description": "v1 : x² et x additionnés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "5",
+				"b": "-3",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné des termes en $x^2$ et des termes en $x$ : on ne peut réduire ensemble que les termes de même degré."
+			},
+			"answers": ["10x^2", "8x", "-15x", "-12", "3x^2-12"]
+		},
+		{
+			"description": "v1 : (3x − 2)(4x − 5)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "4",
+				"b": "-2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12x^2", "-15x", "-8x", "10", "12x^2-23x+10"]
+		},
+		{
+			"description": "v1 : signe de 3x × −5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "4",
+				"b": "-2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe de chaque facteur : deux facteurs de même signe ont un produit positif, de signes contraires un produit négatif."
+			},
+			"answers": ["12x^2", "15x", "-8x", "10", "12x^2-23x+10"]
+		},
+		{
+			"description": "v1 : signe de −2 × −5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "4",
+				"b": "-2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe de chaque facteur : deux nombres de même signe ont un produit positif, de signes contraires un produit négatif."
+			},
+			"answers": ["12x^2", "-15x", "-8x", "-10", "12x^2-23x+10"]
+		}
+	]
+}

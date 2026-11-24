@@ -1,0 +1,413 @@
+{
+	"id": "3806ee3d-efc7-4f7d-ba23-966101aff103",
+	"title": "Résoudre x² = a",
+	"description": "Résoudre x² = a : deux solutions −√a et √a si a > 0 (x² = 49, x² = 7), une si a = 0, aucune si a < 0 ; ensemble des solutions écrit",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -{{n}} ; {{n}} \\}"
+				}
+			],
+			"statement": "Résous l'équation $x^2={{eval:n*n}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"${{eval:n*n}}>0$ et $\\sqrt{{{eval:n*n}}}={{n}}$ : $x^2={{eval:n*n}}\\iff x={{n}} \\text{ ou } x=-{{n}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -{{n}} ; {{n}} \\}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}"
+				}
+			],
+			"statement": "Résous l'équation $x^2={{a}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..23"
+				}
+			],
+			"conditions": ["mod(a,4) != 0", "mod(a,9) != 0"],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"${{a}}>0$ : $x^2={{a}}\\iff x=\\sqrt{ {{a}} } \\text{ ou } x=-\\sqrt{ {{a}} }$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{ 0 \\}|\\varnothing}}"
+				}
+			],
+			"statement": "Résous l'équation $x^2={{eval:-(t)*(n)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "1..20"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"{{if:t==0|$x^2=0\\iff x=0$ : une seule solution.|${{eval:-(n)}}<0$ et un carré n'est jamais négatif : aucune solution.}}",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\{ 0 \\}|\\varnothing}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $x^2=\\dfrac{ {{eval:p^2}} }{ {{eval:q^2}} }$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..12"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(p)/(q)}} ; {{eval:p/q}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"$\\dfrac{ {{eval:p^2}} }{ {{eval:q^2}} } > 0$ et $\\sqrt{\\dfrac{ {{eval:p^2}} }{ {{eval:q^2}} }} = \\dfrac{\\sqrt{ {{eval:p^2}} }}{\\sqrt{ {{eval:q^2}} }} = \\dfrac{ {{p}} }{ {{q}} }$ : $x = \\dfrac{ {{p}} }{ {{q}} }$ ou $x = -\\dfrac{ {{p}} }{ {{q}} }$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(p)/(q)}} ; {{eval:p/q}} \\}}$."
+				]
+			},
+			"hint": "La racine carrée d'un quotient est le quotient des racines carrées. N'oublie pas la solution négative."
+		},
+		{
+			"statement": "Résous l'équation ${{if:t==0|{{if:k==1||{{k}}}}x^2-{{eval:k*n^2}}|{{if:t==1|{{eval:q^2}}x^2-{{eval:p^2}}|{{if:t==2|{{if:k==1||{{k}}}}x^2-{{eval:k*m}}|{{if:k==1||{{k}}}}x^2+{{c}}}}}}}}=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..3"
+				},
+				{
+					"name": "m",
+					"expression": "2|3|5|6|7|10|11|13|14|15"
+				},
+				{
+					"name": "c",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{ -{{n}} ; {{n}} \\}|{{if:t==1|\\{ {{eval:-(p)/(q)}} ; {{eval:p/q}} \\}|{{if:t==2|\\{ -\\sqrt{ {{m}} } ; \\sqrt{ {{m}} } \\}|\\varnothing}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $x^2$ : ${{if:t==0|{{if:k==1||{{k}}}}x^2-{{eval:k*n^2}}|{{if:t==1|{{eval:q^2}}x^2-{{eval:p^2}}|{{if:t==2|{{if:k==1||{{k}}}}x^2-{{eval:k*m}}|{{if:k==1||{{k}}}}x^2+{{c}}}}}}}}=0 \\iff x^2=\\textcolor{{{color:primary.0}}}{{{if:t==0|{{eval:n^2}}|{{if:t==1|\\dfrac{ {{eval:p^2}} }{ {{eval:q^2}} }|{{if:t==2|{{m}}|{{eval:-(c)/(k)}}}}}}}}}$.",
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"{{if:t==3|${{eval:-(c)/(k)}}<0$ et un carré n'est jamais négatif : aucune solution, $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|Le nombre est positif : deux solutions opposées, $S=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\{ -{{n}} ; {{n}} \\}|{{if:t==1|\\{ {{eval:-(p)/(q)}} ; {{eval:p/q}} \\}|\\{ -\\sqrt{ {{m}} } ; \\sqrt{ {{m}} } \\}}}}}}$.}}"
+				]
+			},
+			"hint": "Commence par isoler $x^2$, puis regarde le signe du nombre obtenu."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\{-7;7\\}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "7"
+			},
+			"description": "x² = 49 : S = {−7 ; 7}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\{7;-7\\}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "7"
+			},
+			"description": "x² = 49 : ordre inversé {7 ; −7}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\{7\\}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "7"
+			},
+			"description": "Erreur : la solution positive seule",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\{-\\sqrt{7};\\sqrt{7}\\}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "x² = 7 : S = {−√7 ; √7}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\{\\sqrt{7}\\}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "Erreur : √7 seul",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\{\\frac{7}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "Erreur : 7/2 (division par 2)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5",
+				"t": "0"
+			},
+			"description": "x² = 0 : S = {0}",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5",
+				"t": "1"
+			},
+			"description": "x² = −5 : S = ∅",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\{-\\sqrt{5};\\sqrt{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5",
+				"t": "1"
+			},
+			"description": "Erreur : x² = −5, S = {−√5 ; √5}",
+			"variationIndex": 2
+		},
+		{
+			"description": "F12a : x² = 49/9 → {−7/3 ; 7/3}",
+			"variationIndex": 3,
+			"variables": {
+				"p": "7",
+				"q": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-\\frac{7}{3};\\frac{7}{3}\\}"]
+		},
+		{
+			"description": "F12a : ordre inverse",
+			"variationIndex": 3,
+			"variables": {
+				"p": "7",
+				"q": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{\\frac{7}{3};-\\frac{7}{3}\\}"]
+		},
+		{
+			"description": "F12a : solution négative oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"p": "7",
+				"q": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\{\\frac{7}{3}\\}"]
+		},
+		{
+			"description": "F12a : racine du numérateur seul",
+			"variationIndex": 3,
+			"variables": {
+				"p": "7",
+				"q": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\{-\\frac{7}{9};\\frac{7}{9}\\}"]
+		},
+		{
+			"description": "F12a : x² = 25/4 → {−2,5 ; 2,5}",
+			"variationIndex": 3,
+			"variables": {
+				"p": "5",
+				"q": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-2{,}5;2{,}5\\}"]
+		},
+		{
+			"description": "F12b : 2x² − 18 = 0 → {−3 ; 3}",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"k": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-3;3\\}"]
+		},
+		{
+			"description": "F12b : solution négative oubliée",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"k": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\{3\\}"]
+		},
+		{
+			"description": "F12b : 4x² − 9 = 0 → {−3/2 ; 3/2}",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"p": "3",
+				"q": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-\\frac{3}{2};\\frac{3}{2}\\}"]
+		},
+		{
+			"description": "F12b : racine du numérateur seul",
+			"variationIndex": 4,
+			"variables": {
+				"t": "1",
+				"p": "3",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\{-\\frac{3}{4};\\frac{3}{4}\\}"]
+		},
+		{
+			"description": "F12b : 3x² − 21 = 0 → {−√7 ; √7}",
+			"variationIndex": 4,
+			"variables": {
+				"t": "2",
+				"k": "3",
+				"m": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-\\sqrt{7};\\sqrt{7}\\}"]
+		},
+		{
+			"description": "F12b : 2x² + 8 = 0 → ∅",
+			"variationIndex": 4,
+			"variables": {
+				"t": "3",
+				"k": "2",
+				"c": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\varnothing"]
+		},
+		{
+			"description": "F12b : des solutions quand il n'y en a pas",
+			"variationIndex": 4,
+			"variables": {
+				"t": "3",
+				"k": "2",
+				"c": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\{-2;2\\}"]
+		}
+	]
+}

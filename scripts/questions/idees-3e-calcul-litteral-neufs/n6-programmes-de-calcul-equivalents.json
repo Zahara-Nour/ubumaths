@@ -1,0 +1,444 @@
+{
+	"id": "bfbd40fc-0d37-4af1-9c4f-4fe5c793a74c",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > identités remarquables",
+		"point": "3-016"
+	},
+	"title": "Programmes de calcul équivalents",
+	"description": "Exprimer deux programmes de calcul en fonction du nombre de départ x, sous forme réduite, puis dire s'ils donnent toujours le même résultat : (x + a)² − x² et 2ax + a², (x + a)(x − a) + a² et x², (x + a)² − a² et x(x + 2a) (pièges : double produit oublié, signe de a² dans (x + a)(x − a))",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "**Programme A**\n\n- Choisir un nombre.\n- Lui ajouter ${{a}}$.\n- Élever le résultat au carré.\n- Soustraire le carré du nombre de départ.\n\n**Programme B**\n\n- Choisir un nombre.\n- Le multiplier par ${{m}}$.\n- Ajouter ${{eval:a^2}}$ au résultat.\n\nOn choisit $x$ comme nombre de départ. Écris le résultat de chaque programme sous forme réduite (une expression qu'on peut encore réduire est refusée).\n\nProgramme A : $?$\n\nProgramme B : $?$\n\nLes deux programmes donnent-ils toujours le même résultat ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "m",
+					"expression": "eval:(2-t)*a"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a*x+a^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a^2}}",
+							"message": "Tu as oublié le double produit : $(x+a)^2$ n'est pas égal à $x^2+a^2$.",
+							"label": "Double produit oublié"
+						},
+						{
+							"answer": "{{eval:2*x^2+2*a*x+a^2}}",
+							"message": "Tu as ajouté le carré du nombre de départ au lieu de le soustraire.",
+							"label": "Carré ajouté au lieu de soustrait"
+						},
+						{
+							"answer": "{{eval:a*x+a^2}}",
+							"message": "Dans le double produit $2\\times x\\times{{a}}$, n'oublie pas le facteur $2$.",
+							"label": "Double produit sans le 2"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:m*x+a^2}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Programme A : $(x+{{a}})^2-x^2=x^2+{{eval:2*a}}x+{{eval:a^2}}-x^2=\\textcolor{{{color:primary.0}}}{{{eval:2*a*x+a^2}}}$.",
+					"Programme B : $\\textcolor{{{color:primary.0}}}{{{eval:m*x+a^2}}}$.",
+					"{{if:t==0|Les deux expressions sont égales : les deux programmes donnent toujours le même résultat, $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|Les deux expressions ne sont pas égales : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, les deux programmes ne donnent pas toujours le même résultat.}}"
+				]
+			},
+			"hint": "Remplace « un nombre » par $x$ et écris chaque étape ; développe avec une identité remarquable, puis réduis."
+		},
+		{
+			"statement": "**Programme A**\n\n- Choisir un nombre.\n- Calculer la somme de ce nombre et de ${{a}}$, puis la différence de ce nombre et de ${{a}}$.\n- Multiplier la somme par la différence.\n- {{if:t==0|Ajouter ${{eval:a^2}}$ au|Soustraire ${{eval:a^2}}$ du}} résultat.\n\n**Programme B**\n\n- Choisir un nombre.\n- L'élever au carré.\n\nOn choisit $x$ comme nombre de départ. Écris le résultat de chaque programme sous forme réduite (une expression qu'on peut encore réduire est refusée).\n\nProgramme A : $?$\n\nProgramme B : $?$\n\nLes deux programmes donnent-ils toujours le même résultat ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x^2-2*t*a^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x^2+2*a^2-2*t*a^2}}",
+							"message": "Le produit $(x+a)(x-a)$ vaut $x^2-a^2$ : le carré de $a$ se soustrait.",
+							"label": "Produit somme × différence : signe"
+						},
+						{
+							"answer": "{{eval:x^2-a^2}}",
+							"message": "Tu as oublié la dernière étape du programme.",
+							"label": "Dernière étape oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "x^2",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*x}}",
+							"message": "Élever au carré, c'est multiplier le nombre par lui-même, pas par $2$.",
+							"label": "Carré pris pour le double"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Programme A : $(x+{{a}})(x-{{a}}){{if:t==0|+|-}}{{eval:a^2}}=x^2-{{eval:a^2}}{{if:t==0|+|-}}{{eval:a^2}}=\\textcolor{{{color:primary.0}}}{{{eval:x^2-2*t*a^2}}}$.",
+					"Programme B : $\\textcolor{{{color:primary.0}}}{x^2}$.",
+					"{{if:t==0|Les deux expressions sont égales : les deux programmes donnent toujours le même résultat, $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|Les deux expressions ne sont pas égales : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, les deux programmes ne donnent pas toujours le même résultat.}}"
+				]
+			},
+			"hint": "Remplace « un nombre » par $x$ et écris chaque étape ; développe avec une identité remarquable, puis réduis."
+		},
+		{
+			"statement": "**Programme A**\n\n- Choisir un nombre.\n- Lui ajouter ${{a}}$.\n- Élever le résultat au carré.\n- Soustraire ${{eval:a^2}}$.\n\n**Programme B**\n\n- Choisir un nombre.\n- Lui ajouter ${{m}}$.\n- Multiplier le résultat par le nombre de départ.\n\nOn choisit $x$ comme nombre de départ. Écris le résultat de chaque programme sous forme réduite (une expression qu'on peut encore réduire est refusée).\n\nProgramme A : $?$\n\nProgramme B : $?$\n\nLes deux programmes donnent-ils toujours le même résultat ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "m",
+					"expression": "eval:(2-t)*a"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x^2+2*a*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x^2}}",
+							"message": "Tu as oublié le double produit : $(x+a)^2$ n'est pas égal à $x^2+a^2$.",
+							"label": "Double produit oublié"
+						},
+						{
+							"answer": "{{eval:x^2+a*x}}",
+							"message": "Dans le double produit $2\\times x\\times{{a}}$, n'oublie pas le facteur $2$.",
+							"label": "Double produit sans le 2"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:x^2+m*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x+m*x}}",
+							"message": "Le résultat entier, $x+{{m}}$, est multiplié par $x$ : mets-le entre parenthèses.",
+							"label": "Parenthèses oubliées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Programme A : $(x+{{a}})^2-{{eval:a^2}}=x^2+{{eval:2*a}}x+{{eval:a^2}}-{{eval:a^2}}=\\textcolor{{{color:primary.0}}}{{{eval:x^2+2*a*x}}}$.",
+					"Programme B : $(x+{{m}})\\times x=\\textcolor{{{color:primary.0}}}{{{eval:x^2+m*x}}}$.",
+					"{{if:t==0|Les deux expressions sont égales : les deux programmes donnent toujours le même résultat, $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|Les deux expressions ne sont pas égales : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, les deux programmes ne donnent pas toujours le même résultat.}}"
+				]
+			},
+			"hint": "Remplace « un nombre » par $x$ et écris chaque étape ; développe avec une identité remarquable, puis réduis."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : équivalents",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"m": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6x+9", "6x+9", "0"]
+		},
+		{
+			"description": "v0 : ordre libre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"m": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9+6x", "9+6x", "0"]
+		},
+		{
+			"description": "v0 : A non réduit",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"m": "6"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["x^2+6x+9-x^2", "6x+9", "0"]
+		},
+		{
+			"description": "v0 : réponse Non",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"m": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6x+9", "6x+9", "1"]
+		},
+		{
+			"description": "v0 : double produit oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"m": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le double produit : $\\left( x + a \\right)^2$ n'est pas égal à $x^2 + a^2$."
+			},
+			"answers": ["9", "6x+9", "0"]
+		},
+		{
+			"description": "v0 : carré ajouté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"m": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté le carré du nombre de départ au lieu de le soustraire."
+			},
+			"answers": ["2x^2+6x+9", "6x+9", "0"]
+		},
+		{
+			"description": "v0 : sans le 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"m": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le double produit $2\\times x\\times3$, n'oublie pas le facteur $2$."
+			},
+			"answers": ["3x+9", "6x+9", "0"]
+		},
+		{
+			"description": "v0 : non équivalents",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6x+9", "3x+9", "1"]
+		},
+		{
+			"description": "v1 : équivalents",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x^2", "x^2", "0"]
+		},
+		{
+			"description": "v1 : signe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le produit $\\left( x + a \\right) \\left( x - a \\right)$ vaut $x^2 - a^2$ : le carré de $a$ se soustrait."
+			},
+			"answers": ["x^2+32", "x^2", "0"]
+		},
+		{
+			"description": "v1 : dernière étape",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la dernière étape du programme."
+			},
+			"answers": ["x^2-16", "x^2", "0"]
+		},
+		{
+			"description": "v1 : B en double",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Élever au carré, c'est multiplier le nombre par lui-même, pas par $2$."
+			},
+			"answers": ["x^2", "2x", "0"]
+		},
+		{
+			"description": "v1 : non équivalents",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x^2-32", "x^2", "1"]
+		},
+		{
+			"description": "v2 : équivalents",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"t": "0",
+				"m": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x^2+10x", "x^2+10x", "0"]
+		},
+		{
+			"description": "v2 : B factorisé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"t": "0",
+				"m": "10"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["x^2+10x", "x(x+10)", "0"]
+		},
+		{
+			"description": "v2 : double produit oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"t": "0",
+				"m": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le double produit : $\\left( x + a \\right)^2$ n'est pas égal à $x^2 + a^2$."
+			},
+			"answers": ["x^2", "x^2+10x", "0"]
+		},
+		{
+			"description": "v2 : sans le 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"t": "0",
+				"m": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le double produit $2\\times x\\times5$, n'oublie pas le facteur $2$."
+			},
+			"answers": ["x^2+5x", "x^2+10x", "0"]
+		},
+		{
+			"description": "v2 : parenthèses oubliées",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"t": "0",
+				"m": "10"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le résultat entier, $x + 10$, est multiplié par $x$ : mets-le entre parenthèses."
+			},
+			"answers": ["x^2+10x", "11x", "0"]
+		},
+		{
+			"description": "v2 : non équivalents",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"t": "1",
+				"m": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x^2+10x", "x^2+5x", "1"]
+		}
+	]
+}

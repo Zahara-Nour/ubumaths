@@ -1,0 +1,564 @@
+{
+	"id": "eef988e6-95ca-4336-8b9c-2ea1afa18054",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > identités remarquables",
+		"point": "3-058"
+	},
+	"title": "Factoriser a² + 2ab + b² et a² − 2ab + b²",
+	"description": "Reconnaître le carré d'une somme ou d'une différence pour factoriser : x² + 6x + 9, x² − 10x + 25, 4x² + 12x + 9, puis une identité à trous x² + … + 9 = (…)² (pièges : factorisé comme a² − b², coefficient de x au lieu de sa moitié, signe)",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Factorise en écrivant le résultat sous la forme d'un carré, comme $(x+1)^2$ : une expression développée est refusée.\n\n$$x^2+{{eval:2*a}}x+{{eval:a^2}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "(x+{{a}})^2",
+					"requiredForm": {
+						"pattern": "u^2",
+						"acceptable": "u*v"
+					},
+					"expectedErrors": [
+						{
+							"answer": "(x+{{a}})(x-{{a}})",
+							"message": "Tu as factorisé comme $a^2-b^2$ : ici, il y a un terme en $x$, c'est le carré d'une somme ou d'une différence.",
+							"label": "Pris pour a² − b²"
+						},
+						{
+							"answer": "(x+{{eval:2*a}})^2",
+							"message": "Tu as pris le coefficient du terme en $x$ : il vaut $2ab$, c'est sa moitié qui va dans la parenthèse.",
+							"label": "Coefficient de x au lieu de sa moitié"
+						},
+						{
+							"answer": "(x^2+{{a}})^2",
+							"message": "Dans la parenthèse, il faut la racine de $x^2$, c'est-à-dire $x$.",
+							"label": "x² gardé dans la parenthèse"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une somme** : $a^2+2ab+b^2=(a+b)^2$.",
+					"$x^2$ est le carré de $x$, ${{eval:a^2}}$ est le carré de ${{a}}$, et le terme du milieu vaut bien $2\\times x\\times {{a}}={{eval:2*a}}x$.",
+					"$$x^2+{{eval:2*a}}x+{{eval:a^2}}=\\textcolor{{{color:primary.0}}}{(x+{{a}})^2}$$"
+				]
+			},
+			"hint": "Reconnais $a^2+2ab+b^2$ : quel nombre a pour carré ${{eval:a^2}}$ ? Vérifie ensuite le terme du milieu."
+		},
+		{
+			"statement": "Factorise en écrivant le résultat sous la forme d'un carré, comme $(x+1)^2$ : une expression développée est refusée.\n\n$$x^2-{{eval:2*a}}x+{{eval:a^2}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "(x-{{a}})^2",
+					"requiredForm": {
+						"pattern": "u^2",
+						"acceptable": "u*v"
+					},
+					"expectedErrors": [
+						{
+							"answer": "(x+{{a}})(x-{{a}})",
+							"message": "Tu as factorisé comme $a^2-b^2$ : ici, il y a un terme en $x$, c'est le carré d'une somme ou d'une différence.",
+							"label": "Pris pour a² − b²"
+						},
+						{
+							"answer": "(x-{{eval:2*a}})^2",
+							"message": "Tu as pris le coefficient du terme en $x$ : il vaut $2ab$, c'est sa moitié qui va dans la parenthèse.",
+							"label": "Coefficient de x au lieu de sa moitié"
+						},
+						{
+							"answer": "(x+{{a}})^2",
+							"message": "Regarde le signe du terme en $x$ : il donne le signe dans la parenthèse.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une différence** : $a^2-2ab+b^2=(a-b)^2$.",
+					"$x^2$ est le carré de $x$, ${{eval:a^2}}$ est le carré de ${{a}}$, et le terme du milieu vaut bien $2\\times x\\times {{a}}={{eval:2*a}}x$.",
+					"$$x^2-{{eval:2*a}}x+{{eval:a^2}}=\\textcolor{{{color:primary.0}}}{(x-{{a}})^2}$$"
+				]
+			},
+			"hint": "Reconnais $a^2-2ab+b^2$ : quel nombre a pour carré ${{eval:a^2}}$ ? Vérifie ensuite le terme du milieu."
+		},
+		{
+			"statement": "Factorise en écrivant le résultat sous la forme d'un carré, comme $(x+1)^2$ : une expression développée est refusée.\n\n$${{eval:b^2*x^2+2*s*a*b*x+a^2}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{b}}x{{eval:s*a;+}})^2",
+					"requiredForm": {
+						"pattern": "u^2",
+						"acceptable": "u*v"
+					},
+					"expectedErrors": [
+						{
+							"answer": "({{b}}x+{{a}})({{b}}x-{{a}})",
+							"message": "Tu as factorisé comme $a^2-b^2$ : ici, il y a un terme en $x$, c'est le carré d'une somme ou d'une différence.",
+							"label": "Pris pour a² − b²"
+						},
+						{
+							"answer": "({{eval:b^2}}x{{eval:s*a;+}})^2",
+							"message": "Il faut le nombre dont le carré est le coefficient de $x^2$ : prends la racine de ce coefficient.",
+							"label": "Racine du coefficient oubliée"
+						},
+						{
+							"answer": "({{b}}x{{eval:-s*a;+}})^2",
+							"message": "Regarde le signe du terme en $x$ : il donne le signe dans la parenthèse.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|**Carré d'une somme** : $a^2+2ab+b^2=(a+b)^2$.|**Carré d'une différence** : $a^2-2ab+b^2=(a-b)^2$.}}",
+					"${{eval:b^2}}x^2=({{b}}x)^2$ et ${{eval:a^2}}={{a}}^2$ ; le terme du milieu vaut bien $2\\times {{b}}x\\times {{a}}={{eval:2*a*b}}x$.",
+					"$${{eval:b^2*x^2+2*s*a*b*x+a^2}}=\\textcolor{{{color:primary.0}}}{({{b}}x{{eval:s*a;+}})^2}$$"
+				]
+			},
+			"hint": "Écris ${{eval:b^2}}x^2$ comme le carré d'un terme, et ${{eval:a^2}}$ comme le carré d'un nombre. Vérifie ensuite le terme du milieu."
+		},
+		{
+			"statement": "Complète l'égalité pour qu'elle soit vraie pour tout nombre $x$ : écris le terme qui manque, puis le membre de droite sous la forme d'un carré.\n\n$x^2{{if:s==1|+|-}}?+{{eval:a^2}}=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*x}}",
+							"message": "Le terme du milieu est le double produit $2ab$ : n'oublie pas le facteur $2$.",
+							"label": "Double produit sans le 2"
+						},
+						{
+							"answer": "{{eval:2*a}}",
+							"message": "Le terme du milieu est un terme en $x$ : n'oublie pas la lettre.",
+							"label": "x oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "(x{{eval:s*a;+}})^2",
+					"requiredForm": {
+						"pattern": "u^2",
+						"acceptable": "u*v"
+					},
+					"expectedErrors": [
+						{
+							"answer": "(x{{eval:2*s*a;+}})^2",
+							"message": "Tu as pris le coefficient du terme en $x$ : il vaut $2ab$, c'est sa moitié qui va dans la parenthèse.",
+							"label": "Coefficient de x au lieu de sa moitié"
+						},
+						{
+							"answer": "(x{{eval:s*a^2;+}})^2",
+							"message": "Dans la parenthèse, il faut le nombre dont le carré est ${{eval:a^2}}$, pas ${{eval:a^2}}$ lui-même.",
+							"label": "a² au lieu de a"
+						},
+						{
+							"answer": "(x{{eval:-s*a;+}})^2",
+							"message": "Regarde le signe du terme en $x$ : il donne le signe dans la parenthèse.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:a^2}}$ est le carré de ${{a}}$ : on cherche le carré d'une {{if:s==1|somme, $(x+{{a}})^2$|différence, $(x-{{a}})^2$}}.",
+					"Le terme du milieu est le double produit : $2\\times x\\times {{a}}={{eval:2*a}}x$.",
+					"$$x^2{{if:s==1|+|-}}\\textcolor{{{color:primary.0}}}{{{eval:2*a}}x}+{{eval:a^2}}=\\textcolor{{{color:primary.0}}}{(x{{eval:s*a;+}})^2}$$"
+				]
+			},
+			"hint": "Quel nombre a pour carré ${{eval:a^2}}$ ? Le terme du milieu est le double produit $2ab$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : x² + 6x + 9 = (x + 3)²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(x+3)^2"]
+		},
+		{
+			"description": "v0 : (3 + x)²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(3+x)^2"]
+		},
+		{
+			"description": "v0 : (x + 3)(x + 3) (½)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["(x+3)(x+3)"]
+		},
+		{
+			"description": "v0 : développé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["x^2+6x+9"]
+		},
+		{
+			"description": "v0 : pris pour a² − b²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as factorisé comme $a^2 - b^2$ : ici, il y a un terme en $x$, c'est le carré d'une somme ou d'une différence."
+			},
+			"answers": ["(x+3)(x-3)"]
+		},
+		{
+			"description": "v0 : (x + 6)²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le coefficient du terme en $x$ : il vaut $2 a b$, c'est sa moitié qui va dans la parenthèse."
+			},
+			"answers": ["(x+6)^2"]
+		},
+		{
+			"description": "v0 : (x² + 3)²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la parenthèse, il faut la racine de $x^2$, c'est-à-dire $x$."
+			},
+			"answers": ["(x^2+3)^2"]
+		},
+		{
+			"description": "v1 : x² − 10x + 25 = (x − 5)²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(x-5)^2"]
+		},
+		{
+			"description": "v1 : (5 − x)²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(5-x)^2"]
+		},
+		{
+			"description": "v1 : développé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["x^2-10x+25"]
+		},
+		{
+			"description": "v1 : pris pour a² − b²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as factorisé comme $a^2 - b^2$ : ici, il y a un terme en $x$, c'est le carré d'une somme ou d'une différence."
+			},
+			"answers": ["(x-5)(x+5)"]
+		},
+		{
+			"description": "v1 : (x − 10)²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le coefficient du terme en $x$ : il vaut $2 a b$, c'est sa moitié qui va dans la parenthèse."
+			},
+			"answers": ["(x-10)^2"]
+		},
+		{
+			"description": "v1 : signe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe du terme en $x$ : il donne le signe dans la parenthèse."
+			},
+			"answers": ["(x+5)^2"]
+		},
+		{
+			"description": "v2 : 4x² + 12x + 9 = (2x + 3)²",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(2x+3)^2"]
+		},
+		{
+			"description": "v2 : (3 + 2x)²",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(3+2x)^2"]
+		},
+		{
+			"description": "v2 : développé",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["4x^2+12x+9"]
+		},
+		{
+			"description": "v2 : pris pour a² − b²",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as factorisé comme $a^2 - b^2$ : ici, il y a un terme en $x$, c'est le carré d'une somme ou d'une différence."
+			},
+			"answers": ["(2x+3)(2x-3)"]
+		},
+		{
+			"description": "v2 : (4x + 3)²",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut le nombre dont le carré est le coefficient de $x^2$ : prends la racine de ce coefficient."
+			},
+			"answers": ["(4x+3)^2"]
+		},
+		{
+			"description": "v2 : signe",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"b": "2",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe du terme en $x$ : il donne le signe dans la parenthèse."
+			},
+			"answers": ["(2x-3)^2"]
+		},
+		{
+			"description": "v2 : 9x² − 24x + 16 = (3x − 4)²",
+			"variationIndex": 2,
+			"variables": {
+				"s": "-1",
+				"b": "3",
+				"a": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["(3x-4)^2"]
+		},
+		{
+			"description": "v3 : x² + … + 9 = (x + 3)²",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6x", "(x+3)^2"]
+		},
+		{
+			"description": "v3 : sans le 2",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le terme du milieu est le double produit $2 a b$ : n'oublie pas le facteur $2$."
+			},
+			"answers": ["3x", "(x+3)^2"]
+		},
+		{
+			"description": "v3 : x oublié",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le terme du milieu est un terme en $x$ : n'oublie pas la lettre."
+			},
+			"answers": ["6", "(x+3)^2"]
+		},
+		{
+			"description": "v3 : (x + 6)²",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris le coefficient du terme en $x$ : il vaut $2 a b$, c'est sa moitié qui va dans la parenthèse."
+			},
+			"answers": ["6x", "(x+6)^2"]
+		},
+		{
+			"description": "v3 : (x + 9)²",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans la parenthèse, il faut le nombre dont le carré est $9$, pas $9$ lui-même."
+			},
+			"answers": ["6x", "(x+9)^2"]
+		},
+		{
+			"description": "v3 : signe",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le signe du terme en $x$ : il donne le signe dans la parenthèse."
+			},
+			"answers": ["6x", "(x-3)^2"]
+		},
+		{
+			"description": "v3 : x² − … + 49 = (x − 7)²",
+			"variationIndex": 3,
+			"variables": {
+				"s": "-1",
+				"a": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14x", "(x-7)^2"]
+		}
+	]
+}
