@@ -34,6 +34,7 @@ pnpm db:neuf                        # base locale EFFACÉE puis remplie (eleveNN
 pnpm voir <page> [--compte prof]    # image iPhone/Safari + erreurs de console de SON serveur de dev → docs/pratiques/voir-une-page.md
 pnpm lien [--stop | --liste]        # lien HTTPS du tailnet + QR code vers SON serveur de dev → docs/pratiques/tester-sur-un-autre-appareil.md
 pnpm retours [<n> | --liste]        # retour envoyé par le bouton « Signaler » de SON serveur de dev → docs/pratiques/signaler-depuis-la-page.md
+pnpm ecarts [rejouer | ajouter …]   # registre des écarts (docs/ecarts/registre.md) : liste, rejeu des preuves, nouveau numéro → docs/pratiques/registre-des-ecarts.md
 pnpm maintenance:on / :off          # mode maintenance prod
 pnpm pr:merger [<n>] [--essai]      # attend la CI de la PR, merge, lit MERGED, retire worktree et branche → docs/pratiques/git-workflow.md § 3
 pnpm durees                         # durées CI / PR / intégration / mise en prod / Mac mini face à la référence (scripts/durees/reference.json, changée par David seul)
