@@ -8,16 +8,16 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR de correction F12 ouverte._
+_Mis à jour le 2026-11-24, après #3088._
 
-- **État** : 2 neufs et +16 variations en prod ; PR `fix/idees-tle-ln-f12` : F12 (7f13ca89 v5)
-  admet $\lim \ln x/x=0$ dans l'énoncé (bornes TCOMP, ltc-1), migration
-  `20261124134110_…_publies_contenu` (1 corrigée), série `scripts/series/T_SPE-relecture-logarithme-publies.json`
-  (9 modèles, simulation verte) · **Prochaine action** : après merge, `db:migrate` et
-  `creer-serie.ts --publier` (David, prod), puis relecture des 9 dans `/dev/modeles` et lecture des
-  verdicts · **En attente de David** : `db:migrate` + publication de la série · **Pièges en cours** :
-  F12 hors bornes TCOMP jusqu'au `db:migrate` · **Worktree / branche** :
-  `ubumaths-wt-idees-tle-ln-f12` / `fix/idees-tle-ln-f12`.
+- **État** : #3088 mergée (F12 admet $\lim \ln x/x=0$ ; migration `20261124134110_…_publies_contenu`,
+  seule en attente en prod ; série `scripts/series/T_SPE-relecture-logarithme-publies.json`, simulation
+  verte) · **Prochaine action** : vérifier en prod F12 corrigée après `db:migrate`, commiter l'id de la
+  série une fois publiée, puis lire les verdicts de relecture des 9 (`question_template_reviews`) et
+  corriger ; puis clôture (tableau, idée TSA5-41) · **En attente de David** : `! pnpm db:migrate` et
+  `! pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/T_SPE-relecture-logarithme-publies.json --publier`,
+  puis relecture dans `/dev/modeles` · **Pièges en cours** : F12 hors bornes TCOMP jusqu'au
+  `db:migrate` · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -104,3 +104,5 @@ _Mis à jour le 2026-11-24, PR de correction F12 ouverte._
   test d'intégration `migrations-contenu-publie` vert. Rendu : mêmes commandes LaTeX que les corrections
   de la variation, vues à l'écran avant #3083.
 - Série `T_SPE-relecture-logarithme-publies.json` (9 modèles, 1 × 60 s, 9 min) : simulation verte en prod.
+- #3088 mergée ; `migration list --linked` : seule `20261124134110` en attente ; `db:migrate` et
+  publication de la série laissés à David (écriture en prod).
