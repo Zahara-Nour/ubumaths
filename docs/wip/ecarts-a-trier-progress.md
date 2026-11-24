@@ -8,18 +8,19 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2366._
+_Mis à jour le 2026-11-24, après la revérification (aucune PR)._
 
-- **État** : lot B en cours. **Faits** : M4 code (#2340, en prod), M11 (#2342, #2345), M8 (#2343), **D11 + C10 (#2366** : « capacité » → `CurriculumPoint`, liste des drapeaux anti-triche qui rend enfin le point). `ecarts-a-trier.md` remis à jour (tableaux = source unique) : **22 ouverts + 11 T**.
-- **Prochaine action** : C14 (`lexicon/` → `dictionary/`) ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc) ; L36 (message PostgREST brut, relevé par l'audit de #2366). **M4 `DROP worksheet_instances`** : possible depuis le `deploy:prod` du 2026-11-04 (stop + explication à David avant `db:migrate` ; retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`). Reste de C10 : colonne `capacity_point_id` (migration à part, pas planifiée).
-- **En attente de David** : DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
-- **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`) ; `docs:check-a-jour --depuis` ne voit que les commits : la relancer APRÈS le commit (`Doc-inchangée:` dans un commit si besoin) ; corps de commit ≤ 100 caractères par ligne.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier`, une branche par PR du lot (aucune en cours : worktree détaché sur `origin/main`).
+- **État** : chantier repris le 2026-11-24. Les 22 écarts ouverts et les 11 T revérifiés contre `origin/main` : résultat dans [ecarts-a-trier.md](ecarts-a-trier.md) § « État au 2026-11-24 ». Recollecte des sections d'écarts des docs système : [ecarts-a-trier-recollecte.md](ecarts-a-trier-recollecte.md) (225 points jamais triés, non vérifiés ; 17 écarts fermés encore écrits ouverts dans leur doc).
+- **Prochaine action** : selon la réponse de David sur l'harmonisation des suivis. Sans attendre : C14, PR #2451 (ouverte depuis le 2026-11-08, à remettre à jour sur `main` puis merger) ; liste B de la recollecte (17 corrections de doc) ; L20 à écrire dans `ubumark.md` ; puis V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
+- **En attente de David** : la proposition d'harmonisation des suivis (écarts de la doc, écarts des vérifications automatiques, vérifications manuelles) et du lancement automatique, posée le 2026-11-24 ; M4 `DROP worksheet_instances` (destructif, explication avant `db:migrate`) ; T14 ; DPA ; relire `conformite/violation-de-donnees.md`.
+- **Pièges en cours** : les 225 points de la recollecte sont rapprochés par mots-clés, à vérifier dans le code avant d'en faire des écarts ; sondes mathAST : test vitest temporaire dans le worktree, par le chemin de l'Atelier, jamais `pnpm math` ; `db:migrate` lancé par David ; `docs:check-a-jour --depuis` ne voit que les commits.
+- **Worktree / branche** : `../ubumaths-wt-ecarts-doc` (`chore/ecarts-doc-reverif`, sur `origin/main`, sans commit : sert aux sondes) ; `../ubumaths-wt-ecarts-a-trier` (`chore/ecarts-lexicon-vers-dictionary`, PR #2451).
 
 ---
 
 ## Historique
 
+- **2026-11-24** — revérification des 22 écarts ouverts et des 11 T par 3 agents (mathAST par sondes, reste du code par lecture, recollecte des docs). 5 corrigés ou réduits, 8 T clos, 225 points jamais triés relevés.
 - **2026-10-18** — revérification de ~110 écarts ouverts par 4 agents (mathAST, atelier, fiches, serveur/RGPD) ; 14 corrigés depuis, V62 aggravé (dérivée fausse), V65 nouveau. Commit 7846bfae6.
 
 ## Décisions de David (2026-11-01, sur mes recos)
