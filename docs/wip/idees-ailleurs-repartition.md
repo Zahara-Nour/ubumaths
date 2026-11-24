@@ -78,7 +78,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Intégration                                                                    | TSA8        | 5         | libre                |                        |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
 | Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                        |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | phase 0 (2026-11-24) | `idees-tle-probas`     |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`     |
 
 ### Maths expertes
 
@@ -164,14 +164,9 @@ de contenu appliquée en prod.
 | ------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
 | 31096bae Traduire un énoncé en notations de probabilités      | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
 | 69a05f98 Probabilité « inverse » à partir d'un arbre          | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
-| ecf4d46b Probabilités totales                                 | `idees-tle-probas`                                          | 2026-11-24 |                                      |
-| 4ee9a359 Seuil par la loi binomiale                           | `idees-tle-probas`                                          | 2026-11-24 |                                      |
-| 7974722d Espérance de aX + bY : linéarité                     | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | 15ddcc75 Déterminer une image par une fonction affine         | `idees-3e-fonctions-affines`                                | 2026-11-24 |                                      |
 | 7c7b7593 Calculer une image ou un antécédent avec une formule | `idees-3e-fonctions-affines`                                | 2026-11-24 |                                      |
 | 45247528 Fonction linéaire et proportionnalité                | `idees-3e-fonctions-affines`                                | 2026-11-24 |                                      |
-| 0943e867 Inégalité de Bienaymé-Tchebychev                     | `idees-tle-probas`                                          | 2026-11-24 |                                      |
-| 95f73515 Inégalité de concentration : majorant                | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
