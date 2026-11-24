@@ -1,18 +1,18 @@
 ---
 title: Valeurs fausses mathAST (V85, V92, V103) — journal
 date: 2026-11-24
-status: phase 0 validée ; correction en cours
+status: #3108 mergée ; écarts restants au registre
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, à l'ouverture de la PR._
+_Mis à jour le 2026-11-24, après #3108._
 
-- **État** : V85, V92 et V103 corrigés, cas frères compris ; revue `code-reviewer` (Opus) faite, ses réponses fausses corrigées (π et e sous la racine, condition de la racine écrite, limites essayées pour chaque valeur de k) ; rendu vu à l'écran (`e2e/verifs/atelier-valeurs-fausses.spec.ts`, capture de « 1/k, pour k ≠ 0 »). PR ouverte.
-- **Prochaine action** : après le merge, sur `main` : clore V85, V92, V103 au registre ; y ajouter l'écart « deux familles » (ci-dessous) et les restes de la revue ; mettre à jour « Reprendre ici » de `ecarts-a-trier` ; archiver ce journal.
+- **État** : #3108 mergée : V85, V92, V103 corrigés et clos au registre ; L117 à L121, V124, V125 ajoutés (deux familles refusées, restes de la revue, décrits plus bas).
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](ecarts-a-trier-progress.md). Archiver ce journal quand L117 à L121, V124 et V125 auront leur test de preuve.
 - **En attente de David** : rien.
-- **Pièges en cours** : `pnpm test:verifs` lancé sans serveur reste accroché après les tests : lancer `pnpm dev --port 5176 --strictPort` d'abord ; sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math`.
-- **Worktree / branche** : `ubumaths-wt-ecarts-valeurs-fausses` · `fix/ecarts-valeurs-fausses` (retirés au merge).
+- **Pièges en cours** : `pnpm test:verifs` lancé sans serveur reste accroché après les tests : lancer `pnpm dev --port 5176 --strictPort` d'abord.
+- **Worktree / branche** : aucun (retirés au merge de #3108).
 
 ---
 
