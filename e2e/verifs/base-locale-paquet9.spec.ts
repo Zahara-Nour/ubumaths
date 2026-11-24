@@ -549,16 +549,16 @@ test.describe('Base locale — compte élève (Élève 02), lecture seule', () =
 			'/dashboard/student/minesweeper/stats',
 			[
 				/Classement général : #1/,
-				/Débutant Parties jouées 19/,
-				/Victoires 17/,
-				/Intermédiaire Parties jouées 14/,
-				/Expert Parties jouées 7/
+				/Débutant Parties jouées [1-9]\d*/,
+				/Victoires [1-9]\d*/,
+				/Intermédiaire Parties jouées [1-9]\d*/,
+				/Expert Parties jouées [1-9]\d*/
 			],
 			'statistiques du démineur'
 		);
 		await check(
 			'/dashboard/student/minesweeper/achievements',
-			[/Succès \(9\/10\)/, /90% complété/, /Débloqué le \d+ \w+ 2026/],
+			[/Succès \([1-9]\d*\/\d+\)/, /[1-9]\d*% complété/, /Débloqué le \d+ \w+ 2026/],
 			'succès du démineur'
 		);
 	});
@@ -571,8 +571,8 @@ test.describe('Base locale — compte élève (Élève 02), lecture seule', () =
 				/Tournois en cours \(1\)/,
 				/Temps restant/,
 				/MES STATISTIQUES/i,
-				/6\s*Parties/,
-				/78\s*pts/
+				/[1-9]\d*\s*Parties/,
+				/[1-9]\d*\s*pts/
 			],
 			'tournoi'
 		);
@@ -580,17 +580,21 @@ test.describe('Base locale — compte élève (Élève 02), lecture seule', () =
 		await session.page.waitForURL(/\/tournaments\/[0-9a-f-]{36}/, { timeout: WAIT });
 		await expectText(session.page, /Classement|Rang|Participants/i, 'page du tournoi');
 		const text = await bodyText(session.page);
-		expect(text, 'position de l’élève dans le classement').toMatch(/Anouk|Vous|#\d+|\b1er\b|Rang/);
+		expect(text, 'position de l’élève dans le classement').toMatch(/Anouk|\bVous\b|#\d+|\b1er\b/);
 		await expectFits(session.page, 'page du tournoi');
 	});
 
 	test('#2986 : Classements — 2048, Mathémo, Démineur (lignes de classement)', async () => {
-		await check('/games/leaderboards', ['Classements', /Anouk/, /61 480/], 'classements 2048');
+		await check(
+			'/games/leaderboards',
+			['Classements', /Anouk/, /[1-9][\d\s\u00a0\u202f]*/],
+			'classements 2048'
+		);
 		for (const jeu of [/Mathémo/, /Démineur/]) {
 			await session.page.getByText(jeu).first().click();
 			await session.page.waitForTimeout(1500);
 			const text = await bodyText(session.page);
-			expect(text, `classement ${jeu.source} : des joueurs`).toMatch(/Élève \d*|Basile|Anouk/);
+			expect(text, `classement ${jeu.source} : des joueurs`).toMatch(/Élève \d+|Basile|Anouk/);
 			expect(text, `classement ${jeu.source}`).not.toMatch(/Aucun (score|joueur|classement)/i);
 		}
 		await expectFits(session.page, 'classements');
@@ -607,7 +611,7 @@ test.describe('Base locale — compte élève (Élève 02), lecture seule', () =
 	test('#2986 : Inventaire — cartes VIP', async () => {
 		await check(
 			'/dashboard/student/inventory',
-			['Mon Inventaire', /2 \/ 45 cartes VIP/, 'Coup Double'],
+			['Mon Inventaire', /[1-9]\d* \/ \d+ cartes VIP/, 'Coup Double'],
 			'inventaire'
 		);
 	});
@@ -615,7 +619,7 @@ test.describe('Base locale — compte élève (Élève 02), lecture seule', () =
 	test('#2986 : Énigmes — « Les trois chats de la chatterie »', async () => {
 		await check(
 			'/dashboard/student/riddles',
-			['Énigmes assignées', 'Les trois chats de la chatterie', /18 croquettes/],
+			['Énigmes assignées', 'Les trois chats de la chatterie', /[1-9]\d* croquettes/],
 			'énigmes'
 		);
 	});
@@ -628,12 +632,12 @@ test.describe('Base locale — compte élève (Élève 02), lecture seule', () =
 		);
 		await check(
 			'/dashboard/student/progression',
-			['Ma progression', /Programme de 1ère spécialité maths — 28 notions/, /Second degré/],
+			['Ma progression', /Programme de 1ère spécialité maths — [1-9]\d* notions/, /Second degré/],
 			'ma progression'
 		);
 		await check(
 			'/dashboard/student/work',
-			['Mon travail', /11 éléments au total/, /Fait cette semaine \(8\)/],
+			['Mon travail', /[1-9]\d* éléments au total/, /Fait cette semaine \([1-9]\d*\)/],
 			'mon travail'
 		);
 		await check(

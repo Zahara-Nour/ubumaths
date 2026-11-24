@@ -63,6 +63,21 @@ async function wipe(): Promise<void> {
 	]);
 }
 
+/**
+ * Décor du lien du cours (dernier test) : chapitres « Verifs9 chapitre … » et jetons `verifs9…`,
+ * balayés sous le verrou au démarrage et à la fin (un arrêt brutal les laisse en base).
+ */
+async function wipeCourse(): Promise<void> {
+	const chapters = await sql<{ id: string }>(
+		`select id from class_chapters where title like 'Verifs9 chapitre%'`
+	);
+	for (const chapter of chapters) {
+		await sql(`delete from chapter_worksheets where chapter_id = $1`, [chapter.id]);
+		await sql(`delete from class_chapters where id = $1`, [chapter.id]);
+	}
+	await sql(`delete from class_course_share_tokens where token like 'verifs9%'`);
+}
+
 /** Copie brouillon d'une fiche du seed (notions, deux premiers exercices) ; le titre reste celui de la source */
 async function copyOf(title: string, tag: string, type?: string): Promise<string> {
 	const src = await sql<{ id: string }>(
@@ -203,7 +218,9 @@ test('#2938 #2939 — liste du prof : titres par branche des fiches reprises, ti
 		custom_title: boolean;
 	}>(
 		`select id, title, type, category, custom_title from worksheets
-		 where created_by = $1 and (description is null or description not like $2)`,
+		 where created_by = $1
+		   and (description is null or (description not like $2 and description not like 'Verifs%'))
+		   and title not like 'Verifs%'`,
 		[TEACHER_ID, `${PREFIX}%`]
 	);
 	expect(all.length).toBe(50);
@@ -606,6 +623,7 @@ test.describe('lecture facilitée des PDF et fiches des élèves', () => {
 		await acquireLock(LOCK);
 		lockHeld = true;
 		await resetStudents();
+		await wipeCourse();
 		const statement = `${LONG_PARAGRAPH}\n\nVerifs9 formule : $\\frac{a+b}{c} + \\sqrt{x}$ et $u_{n+1} = 3u_n - 4$.`;
 		const exercises = [
 			await createExercise9(
@@ -657,7 +675,10 @@ test.describe('lecture facilitée des PDF et fiches des élèves', () => {
 		try {
 			await wipe();
 			await sql(`delete from exercises where created_by = $1 and source = 'verifs9'`, [TEACHER_ID]);
-			await resetStudents();
+			if (lockHeld) {
+				await wipeCourse();
+				await resetStudents();
+			}
 		} finally {
 			if (lockHeld) releaseLock(LOCK);
 		}

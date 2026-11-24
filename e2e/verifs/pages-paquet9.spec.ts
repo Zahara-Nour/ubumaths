@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { GRADES } from '../../src/lib/types/grades';
 import { buildSeriesLink } from '../../src/lib/validation/series';
 import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
 import { TEACHER_ID } from './helpers/fiches';
@@ -19,6 +20,10 @@ import { acquireLock, LOCK_WAIT_MAX_MS, refreshLock, releaseLock } from './helpe
  * - 22 modèles de mise en page « Verifs9 <projet> … » du prof (et leurs styles) ;
  * - le verdict de relecture d'un modèle de série (photographie de la ligne d'avant, remise telle quelle) ;
  * - le mot de passe d'`eleve10` n'est jamais changé (mot de passe actuel FAUX seulement).
+ *
+ * ⚠️ Ne se lance PAS sur deux projets à la fois : les tests de verdict (#2948) visent tous la même
+ * série et la même ligne de relecture (un seul fichier de reprise, `pages-paquet9-verdict.json`).
+ * Un lancement à la fois, un projet après l'autre.
  *
  * Non joué : voir le test #2976 (en local, rien n'est envoyé ni écrit, par décision écrite).
  */
@@ -292,6 +297,9 @@ test.describe('#2949 — profil : mot de passe actuel faux', () => {
 		test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
 		assertLocalServerEnv();
 		await acquireLock(STUDENT_LOCK);
+		// Restes d'un passage interrompu (verrou tenu) : messages du test, participation d'eleve10
+		// (absent du seed), résumé de la conversation vide
+		await sweepChat();
 	});
 	test.afterAll(() => releaseLock(STUDENT_LOCK));
 	test.beforeEach(() => {
@@ -377,30 +385,51 @@ interface ReviewRow {
 	reviewed_by: string | null;
 }
 
+interface ReviewPhoto {
+	templateId: string;
+	row: ReviewRow | null;
+}
+const REVIEW_PATH = '.captures/verifs/pages-paquet9-verdict.json';
+
+/** Remet la ligne de relecture d'avant (ou la retire si elle n'existait pas) */
+async function restoreReview(saved: ReviewPhoto): Promise<void> {
+	await sql(`delete from question_template_reviews where template_id = $1`, [saved.templateId]);
+	if (saved.row) {
+		await sql(
+			`insert into question_template_reviews (template_id, verdict, comment, reviewed_at, reviewed_by)
+			 values ($1, $2, $3, $4, $5)`,
+			[
+				saved.row.template_id,
+				saved.row.verdict,
+				saved.row.comment,
+				saved.row.reviewed_at,
+				saved.row.reviewed_by
+			]
+		);
+	}
+}
+
 test.describe('#2948 — verdict dans /dev/modeles', () => {
 	test.skip(!LOCAL, 'admin local seulement');
 	// Deux tests sur la même ligne de relecture : l'un après l'autre ; connexion admin lente sous charge
 	test.describe.configure({ mode: 'serial' });
 	test.use({ viewport: DESKTOP, actionTimeout: 60_000 });
-	let photo: { templateId: string; row: ReviewRow | null } | null = null;
+	let photo: ReviewPhoto | null = null;
+
+	// Restes d'un passage interrompu : la ligne de relecture photographiée sur disque est remise
+	test.beforeAll(async () => {
+		assertLocalServerEnv();
+		if (existsSync(REVIEW_PATH)) {
+			await restoreReview(JSON.parse(readFileSync(REVIEW_PATH, 'utf8')) as ReviewPhoto);
+			rmSync(REVIEW_PATH, { force: true });
+		}
+	});
 
 	test.afterEach(async () => {
 		// La ligne de relecture de David est remise telle quelle (ou retirée si elle n'existait pas)
 		if (!photo) return;
-		await sql(`delete from question_template_reviews where template_id = $1`, [photo.templateId]);
-		if (photo.row) {
-			await sql(
-				`insert into question_template_reviews (template_id, verdict, comment, reviewed_at, reviewed_by)
-				 values ($1, $2, $3, $4, $5)`,
-				[
-					photo.row.template_id,
-					photo.row.verdict,
-					photo.row.comment,
-					photo.row.reviewed_at,
-					photo.row.reviewed_by
-				]
-			);
-		}
+		await restoreReview(photo);
+		rmSync(REVIEW_PATH, { force: true });
 		photo = null;
 	});
 
@@ -426,6 +455,9 @@ test.describe('#2948 — verdict dans /dev/modeles', () => {
 				[serie.templateId]
 			);
 			photo = { templateId: serie.templateId, row: before ?? null };
+			// Écrit sur disque AVANT le clic : un arrêt brutal laisse de quoi remettre la ligne
+			mkdirSync('.captures/verifs', { recursive: true });
+			writeFileSync(REVIEW_PATH, JSON.stringify(photo));
 
 			await signIn(page, ADMIN);
 			const address = `/dev/modeles?serie=${serie.id}`;
@@ -445,10 +477,7 @@ test.describe('#2948 — verdict dans /dev/modeles', () => {
 					{ timeout: 2000 }
 				);
 			}).toPass({ timeout: 30_000 });
-			await form
-				.getByRole('textarea')
-				.or(form.getByLabel('Commentaire du verdict'))
-				.fill(`${tag()} commentaire`);
+			await form.getByLabel('Commentaire du verdict').fill(`${tag()} commentaire`);
 			await form.getByRole('button', { name: 'Enregistrer le verdict' }).click();
 			await expect(page.getByText('Verdict enregistré')).toBeVisible({ timeout: 15_000 });
 			// La page reste sur la série : même adresse
@@ -559,12 +588,25 @@ for (const [label, viewport] of [
 				const heading = page.getByRole('heading', { level: 2, name: /^Exemples?$/ });
 				await expect(heading).toBeVisible();
 				const section = page.locator('section').filter({ has: heading });
-				// Le niveau est écrit sous le titre de la rubrique, avant le contenu
-				const level = section.locator('dt').first();
-				await expect(level).toHaveText(
-					/^(CP|CE1|CE2|CM1|CM2|6ème|5ème|4ème|3ème|2nde|1re|Terminale|.+)$/
-				);
-				expect((await level.innerText()).trim().length, 'niveau lisible').toBeGreaterThan(1);
+				// Le niveau est écrit sous le titre de la rubrique, avant le contenu : chaque entrée porte le
+				// nom d'un niveau connu (liste fermée) ; en local, la suite exacte est celle de la base
+				const levels = (await section.locator('dt').allInnerTexts()).map((text) => text.trim());
+				expect(levels.length, 'au moins un niveau sous « Exemple »').toBeGreaterThan(0);
+				const known = Object.values(GRADES).map((grade) => grade.displayName);
+				for (const level of levels) expect(known, `niveau « ${level} »`).toContain(level);
+				if (LOCAL) {
+					const [entry] = await sql<{
+						exemples: { items: { grade: keyof typeof GRADES }[] } | null;
+					}>(`select exemples from dictionary_entries where slug = $1`, [slug]);
+					expect(entry, `entrée « ${slug} » en base`).toBeTruthy();
+					const expected = (entry.exemples?.items ?? []).map(
+						(item) => GRADES[item.grade].displayName
+					);
+					expect(levels, `niveaux de « ${slug} » : ceux de la base, dans l'ordre`).toEqual(
+						expected
+					);
+				}
+				await expect(section.locator('dt').first()).toBeVisible();
 				// Les formules sont dessinées : des `math-span`, et aucun reste de code
 				const formulas = section.locator('math-span');
 				expect(await formulas.count(), 'formules de la rubrique').toBeGreaterThan(0);
@@ -749,6 +791,22 @@ const head = (text: string) => ({
 	content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
 });
 
+/** Retire ce qu'un passage interrompu a laissé dans la conversation de classe du seed */
+async function sweepChat(): Promise<void> {
+	await sql(`delete from messages where conversation_id = $1 and content::text like '%Verifs9%'`, [
+		CHAT_CONVERSATION
+	]);
+	await sql(`delete from conversation_participants where conversation_id = $1 and user_id = $2`, [
+		CHAT_CONVERSATION,
+		ELEVE10_ID
+	]);
+	await sql(
+		`update conversations set last_message_id = null, last_message_preview = null, last_message_at = null
+		 where id = $1 and not exists (select 1 from messages where conversation_id = $1)`,
+		[CHAT_CONVERSATION]
+	);
+}
+
 test.describe('#2914 — chat élève : tableau avec du gras et un lien tapé', () => {
 	test.skip(!LOCAL, 'base locale seulement');
 	test.use({ viewport: DESKTOP });
@@ -815,7 +873,7 @@ test.describe('#2914 — chat élève : tableau avec du gras et un lien tapé', 
 				{
 					type: 'table',
 					content: [
-						{ type: 'tableRow', content: [head('Ville'), head('Habitants')] },
+						{ type: 'tableRow', content: [head('Verifs9 Ville'), head('Habitants')] },
 						{ type: 'tableRow', content: [cell('Brumeval', true), cell('12')] },
 						{
 							type: 'tableRow',

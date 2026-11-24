@@ -664,15 +664,14 @@ test('#2937 — corrigé PDF d’une fiche : texte coloré sans code brut, « la
 			/×|3$/.test(b.text) &&
 			b.left > find('soit').left
 	);
-	if (formulaBox) {
-		const orangeFormula = tint(formulaBox);
-		expect(orangeFormula).toBeTruthy();
-		const [t, f] = [
-			orangeText as { r: number; g: number; b: number },
-			orangeFormula as { r: number; g: number; b: number }
-		];
-		expect(Math.abs(t.r - f.r)).toBeLessThan(40);
-		expect(Math.abs(t.g - f.g)).toBeLessThan(40);
-		expect(Math.abs(t.b - f.b)).toBeLessThan(40);
-	}
+	expect(formulaBox, 'formule orange absente du PDF').toBeTruthy();
+	const orangeFormula = tint(formulaBox as PdfBox);
+	expect(orangeFormula).toBeTruthy();
+	const [t, f] = [
+		orangeText as { r: number; g: number; b: number },
+		orangeFormula as { r: number; g: number; b: number }
+	];
+	expect(Math.abs(t.r - f.r)).toBeLessThan(40);
+	expect(Math.abs(t.g - f.g)).toBeLessThan(40);
+	expect(Math.abs(t.b - f.b)).toBeLessThan(40);
 });

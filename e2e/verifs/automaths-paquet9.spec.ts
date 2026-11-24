@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page, type Route } from '@playwright/test';
 import { formatSeriesDuration, seriesTotalSeconds } from '../../src/lib/questions/series-summary';
-import { sql } from './helpers/carnet';
+import { assertLocalServerEnv, sql } from './helpers/carnet';
 import { expectNoHorizontalOverflow, shoot } from './helpers/pages';
 
 /**
@@ -538,15 +538,18 @@ test.describe('#2954 #2955 — « Ce modèle n’a que N questions différentes 
 	const ids: string[] = [];
 
 	async function sweep(): Promise<void> {
-		await sql(`delete from question_templates where title like $1`, [`Verifs9 ${projectName()} %`]);
+		await sql(`delete from question_templates where title like $1`, [
+			`Verifs9 auto ${projectName()} %`
+		]);
 	}
 
 	test.beforeAll(async () => {
+		assertLocalServerEnv();
 		await sweep();
 		titles = {
-			unique: `Verifs9 ${projectName()} unique`,
-			cinq: `Verifs9 ${projectName()} cinq`,
-			beaucoup: `Verifs9 ${projectName()} beaucoup`
+			unique: `Verifs9 auto ${projectName()} unique`,
+			cinq: `Verifs9 auto ${projectName()} cinq`,
+			beaucoup: `Verifs9 auto ${projectName()} beaucoup`
 		};
 		const rows: [string, unknown][] = [
 			[titles.unique, [variation('Verifs9 : combien font 2 + 3 ?\n\n$?$', '5')]],

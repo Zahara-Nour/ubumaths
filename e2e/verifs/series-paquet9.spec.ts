@@ -94,6 +94,15 @@ async function removeOrphanDecor(): Promise<void> {
 	).map((row) => row.id);
 	await removeEvaluations(evaluations);
 	await sql(`delete from series where title like $1`, [prefix]);
+	// Liens courts créés par le test du QR : leur cible contient l'id du modèle du test
+	const templates = (
+		await sql<{ id: string }>(`select id::text from question_templates where title like $1`, [
+			prefix
+		])
+	).map((row) => row.id);
+	for (const id of templates) {
+		await sql(`delete from short_links where target like $1`, [`%${id}%`]);
+	}
 	await sql(`delete from question_templates where title like $1`, [prefix]);
 }
 
@@ -1031,10 +1040,12 @@ test.describe('#2922 — Mêmes nombres pour tous', () => {
 		const copied = await copiedLink(page);
 		await page.getByRole('button', { name: /^QR code de/ }).click();
 		const dialog = page.getByRole('dialog');
-		await expect(dialog.locator('img.qr')).toBeVisible();
 		const shown = await dialog.getByLabel('Adresse du QR code').inputValue();
+		// Le code est noté AVANT toute assertion : un échec ne laisse pas le lien court en base
+		const shortCode = /\/l\/([A-Za-z0-9]{8})$/.exec(shown)?.[1];
+		if (shortCode) createdCodes.add(shortCode);
+		await expect(dialog.locator('img.qr')).toBeVisible();
 		expect(shown).toMatch(/\/l\/[A-Za-z0-9]{8}$/);
-		createdCodes.add(shown.split('/l/')[1]);
 		// Scanner : décoder l'image comme un téléphone, visiter le chemin lu
 		const decoded = await decodeQrOnScreen(page, dialog.locator('img.qr'), '2922-qr');
 		expect(decoded).toBe(shown);

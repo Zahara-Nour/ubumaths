@@ -515,7 +515,14 @@ test('#2946 — « Arrondir un nombre décimal » : les décimaux de l’énonc�
 
 interface LineReading {
 	ticks: number;
-	labels: { text: string; px: number; left: number; right: number }[];
+	labels: {
+		text: string;
+		px: number;
+		left: number;
+		right: number;
+		inkLeft: number;
+		inkRight: number;
+	}[];
 	minGap: number;
 	left: number;
 	right: number;
@@ -535,7 +542,16 @@ async function readLine(line: Locator): Promise<LineReading> {
 			.map((label) => {
 				const formula = label.querySelector('math-span, math-div') ?? label;
 				const box = formula.getBoundingClientRect();
+				// La boîte de l'étiquette (100 px fixes) est plus large que ce qu'elle dessine : on mesure aussi le
+				// rendu lui-même (`.ML__latex`, dans l'ombre de MathLive) pour le recouvrement
+				const glyphs = label.querySelector('math-field, math-span, math-div');
+				const ink =
+					glyphs?.shadowRoot?.querySelector('.ML__latex')?.getBoundingClientRect() ??
+					glyphs?.getBoundingClientRect() ??
+					box;
 				return {
+					inkLeft: ink.left,
+					inkRight: ink.right,
 					text: (label.textContent ?? '').replace(/\s+/g, ''),
 					px: parseFloat(getComputedStyle(formula).fontSize) * scale,
 					left: box.left,
@@ -573,6 +589,14 @@ async function measureLine(page: Page, card: Locator, name: string): Promise<Lin
 	expect(reading.minGap, `${name} : écart entre graduations`).toBeGreaterThanOrEqual(
 		MIN_TICK_GAP_PX
 	);
+	// Aucune étiquette n'en recouvre une autre : chacune finit avant que la suivante commence
+	const byLeft = [...reading.labels].sort((p, q) => p.inkLeft - q.inkLeft);
+	for (let i = 0; i + 1 < byLeft.length; i++) {
+		expect(
+			byLeft[i].inkRight,
+			`${name} : « ${byLeft[i].text} » ne recouvre pas « ${byLeft[i + 1].text} »`
+		).toBeLessThanOrEqual(byLeft[i + 1].inkLeft);
+	}
 	return reading;
 }
 

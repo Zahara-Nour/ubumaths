@@ -358,7 +358,7 @@ test.describe('#2896 — 01 « Tracer un segment de longueur donnée en cm »', 
 	});
 });
 
-test('#2896 — règle graduée : direction donnée à 1 cm puis à 3 cm du 0 (observation du 2e toucher, au toucher comme à la souris)', async ({
+test('#2896 — OBSERVATION (pas un verdict) : règle graduée, 2e toucher à 1 cm du 0 ; la règle se pose à 3 cm (au toucher comme à la souris)', async ({
 	page
 }) => {
 	const jeu = await ouvrir(page, SEGMENT_CM, seg01);
@@ -372,7 +372,11 @@ test('#2896 — règle graduée : direction donnée à 1 cm puis à 3 cm du 0 (o
 	const resume = `1 cm = ${pxParCm.toFixed(1)} px à l'écran : deuxième toucher à 1 cm du 0 → règle ${posee === 1 ? 'posée' : 'NON posée (la consigne « Touche un point dans la direction… » reste)'}`;
 	test.info().annotations.push({ type: 'direction-a-1-cm', description: resume });
 	console.log(`OBSERVATION ${projectName()} : ${resume}`);
-	if (posee === 0) await tapFigure(jeu.zone, jeu.win, jeu.a.x + 3, jeu.a.y);
+	// Verdict : sur un jeu neuf, un deuxième toucher à 3 cm du 0 pose la règle
+	const jeu3 = await ouvrir(page, SEGMENT_CM, seg01);
+	await outil(page, 'regle');
+	await toucheA(jeu3.zone, jeu3.win, jeu3.a, 0.15);
+	await tapFigure(jeu3.zone, jeu3.win, jeu3.a.x + 3, jeu3.a.y);
 	await compte(page, 'regle', 1);
 });
 
