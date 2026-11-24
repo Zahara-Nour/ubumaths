@@ -9,7 +9,7 @@ lecture seule : énoncés, variables et cases des variations). Les ids sont ceux
 intervalle. 1AN33-1 et 1AN33-2 sont des études en plusieurs questions, sans saisie. 1AN33-3 et
 1AN33-4 montrent un tableau de variations dans le corrigé, sans saisie non plus.
 
-**Bornes de 1re** ([1spe.md](../systeme/programmes/bornes/lycee/1spe.md)) :
+**Bornes de 1re** ([1spe.md](../../../systeme/programmes/bornes/lycee/1spe.md)) :
 
 - pas de logarithme, donc une équation se ramène toujours à eᵘ = eᵛ ;
 - dérivées : la seule composée permise est e^{at} (e^{ax + b} = e^b·e^{ax} est déjà utilisé par nos modèles), avec produit et quotient ;

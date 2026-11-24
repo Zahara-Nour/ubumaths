@@ -6,18 +6,17 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3094._
+_Mis à jour le 2026-11-24, après #3102._
 
-- **État** : PR 1 (bloc, #3084) et PR 2 (fichiers des deux modèles, #3094) mergées ; ni le bloc
-  ni les modèles ne sont en prod · **Prochaine action** : après le `deploy:prod` (David), David
-  lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/labyrinthe-modeles --publier`
-  (brouillons) ; puis commiter les id écrits dans les JSON, ajouter `rangement` (M1 : Arithmétique
-  > Nombres premiers > primalité, point null ; M2 : Nombres et calculs > Entiers : numération >
-  > décomposition, 6-101), générer la migration (`migration-rangement.ts`), relecture dans
-  > `/dev/modeles`, publication · **En attente de David** : `deploy:prod`, puis `--publier` ·
-  > **Pièges en cours** : chemins des specs par `labyrinthe-chemins.ts` (graine 0), jamais à la main ;
-  > tirage figé (test « golden ») ; grilles larges débordent sur iPhone (outils-manquants n° 61) ·
-  > **Worktree / branche** : aucun (à créer pour la PR de migration).
+- **État** : bloc en prod (0.107.0) ; brouillons en prod 00f35c55 (M1, primalité, sans point) et
+  9e3a862a (M2, décomposition, 6-101), rangés et tagués par #3102 (`db:migrate` fait, vérifié en
+  lecture seule) · **Prochaine action** : relecture par David dans
+  `/dev/modeles?titre=labyrinthe` ; compter ses verdicts en base (`question_template_reviews`,
+  `reviewed_at` postérieur) ; puis `publier-lot.ts --dir scripts/questions/labyrinthe-modeles` en
+  simulation, David lance `--publier` · **En attente de David** : la relecture (les 2 JSON
+  modifiés par `--publier` dans le worktree `idees-tle-probas` y ont été restaurés) · **Pièges en cours** :
+  chemins des specs par `labyrinthe-chemins.ts` ; tirage figé (test « golden ») ; grilles larges
+  (outils-manquants n° 61) · **Worktree / branche** : aucun.
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -103,3 +102,4 @@ lui-même pourquoi un chemin est faux.
 - 2026-11-24 : #3084 mergée (PR 1, l'outil).
 - 2026-11-24 : PR 2, phase 0 validée ; lot écrit, grilles réduites (débord iPhone).
 - 2026-11-24 : #3094 mergée (PR 2, fichiers des modèles).
+- 2026-11-24 : brouillons créés en prod par David ; #3102 mergée (rangement), `db:migrate` fait.

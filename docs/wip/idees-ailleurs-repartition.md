@@ -38,11 +38,11 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre`  |
 | Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
 | Variations                        | 1AN2  | 5         | libre                |                           |
-| Fonction exponentielle            | 1AN3  | 11        | prise (2026-11-24)   | `idees-1re-exponentielle` |
+| Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle` |
 | Fonctions trigonométriques        | 1AN4  | 6         | libre                |                           |
 | Produit scalaire                  | 1G1   | 10        | libre                |                           |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                           |
-| Probabilités conditionnelles      | 1P1   | 8         | libre                |                           |
+| Probabilités conditionnelles      | 1P1   | 8         | prise (2026-11-24)   | `idees-1re-probas-cond`   |
 | Variables aléatoires réelles      | 1P2   | 1         | libre                |                           |
 
 ### Automatismes de l'épreuve anticipée
@@ -78,7 +78,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Intégration                                                                    | TSA8        | 5         | libre                |                        |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
 | Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                        |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                |                        |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | phase 0 (2026-11-24) | `idees-tle-probas`     |
 
 ### Maths expertes
 
@@ -132,23 +132,23 @@ Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-2
 anciennes versions. Leur rubrique « nombres et calcul » (`3N1`) n'a aucun exercice : elle ne figure
 pas. Le fichier `beta3I12` n'est pas repris.
 
-| Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session            |
-| ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | -------------------------- |
-| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`    |
-| Puissances                               | 3C1       | 5         | libre                                                      |                            |
-| Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral` |
-| Généralités sur les fonctions            | 3F1       | 19        | prise (2026-11-24)                                         | `idees-3e-fonctions`       |
-| Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                            |
-| Proportionnalité                         | 3P1       | 3         | libre                                                      |                            |
-| Statistiques                             | 3S1       | 3         | libre                                                      |                            |
-| Probabilités                             | 3S2       | 5         | libre                                                      |                            |
-| Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                            |
-| Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                            |
-| Trigonométrie                            | 3G3       | 13        | libre                                                      |                            |
-| Espace                                   | 3G4       | 6         | libre                                                      |                            |
-| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                            |
-| Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                            |
-| Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                            |
+| Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session              |
+| ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ---------------------------- |
+| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`      |
+| Puissances                               | 3C1       | 5         | libre                                                      |                              |
+| Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral`   |
+| Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
+| Fonctions affines et linéaires           | 3F2       | 14        | prise (2026-11-24)                                         | `idees-3e-fonctions-affines` |
+| Proportionnalité                         | 3P1       | 3         | libre                                                      |                              |
+| Statistiques                             | 3S1       | 3         | libre                                                      |                              |
+| Probabilités                             | 3S2       | 5         | libre                                                      |                              |
+| Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
+| Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
+| Trigonométrie                            | 3G3       | 13        | libre                                                      |                              |
+| Espace                                   | 3G4       | 6         | libre                                                      |                              |
+| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
+| Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
+| Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 
 ## Autres niveaux
 
@@ -162,9 +162,13 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
-| 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
-| cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| 31096bae Traduire un énoncé en notations de probabilités     | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
+| 69a05f98 Probabilité « inverse » à partir d'un arbre         | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
+| ecf4d46b Probabilités totales                                | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 4ee9a359 Seuil par la loi binomiale                          | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 7974722d Espérance de aX + bY : linéarité                    | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 0943e867 Inégalité de Bienaymé-Tchebychev                    | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 95f73515 Inégalité de concentration : majorant               | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

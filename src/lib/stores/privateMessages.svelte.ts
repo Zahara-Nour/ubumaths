@@ -18,7 +18,7 @@ export interface PrivateMessage {
 	sender_avatar_url: string | null;
 	subject: string;
 	content: unknown; // TipTap JSON
-	plain_text: string;
+	plain_text: string | null;
 	sent_at: string;
 	read_at: string | null;
 	is_starred: boolean;
@@ -36,7 +36,7 @@ export interface SentMessage {
 	message_id: string;
 	subject: string;
 	content: unknown;
-	plain_text: string;
+	plain_text: string | null;
 	sent_at: string;
 	is_group_message: boolean;
 	recipient_count: number;
@@ -89,7 +89,7 @@ export interface MessageDetails {
 	sender_role: string;
 	subject: string;
 	content: unknown;
-	plain_text: string;
+	plain_text: string | null;
 	sent_at: string;
 	edited_at: string | null;
 	is_group_message: boolean;

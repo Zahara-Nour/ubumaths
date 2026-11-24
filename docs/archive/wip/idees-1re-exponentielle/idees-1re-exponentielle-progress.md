@@ -2,19 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, relecture validée, publication à lancer._
+_Mis à jour le 2026-11-24, chantier clos._
 
-- **État** : relecture faite par David (« je valide les modèles ») ; `publier-lot.ts` en simulation
-  vert (6 brouillons) ; garde des niveaux verte ; réservations des 4 publiés levées ·
-  **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/idees-1re-exponentielle-neufs
---publier`, puis je vérifie en base, passe la rubrique 1AN3 à « publiée » et archive le journal ·
-  **En attente de David** : la publication · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
+- **État** : rubrique **publiée** : les 6 modèles neufs sont publiés et validés par David ; les 6
+  variations des 4 publiés sont en prod (série de relecture `4cec796d`) ; journal archivé ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## Journal
 
 ### 2026-11-24 — réservation, relevé, phase 0
 
-- Rubrique 1AN3 (11 exercices) réservée dans [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md)
+- Rubrique 1AN3 (11 exercices) réservée dans [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md)
   (`0212f8817`).
 - Relevé : 1 ✅, 8 🟡, 2 ❌ (équation produit nul, inéquation produit). Aucun brouillon de 1re sur
   l'exponentielle en prod.
@@ -78,3 +76,8 @@ _Mis à jour le 2026-11-24, relecture validée, publication à lancer._
   variations des publiés sont déjà en prod par la migration de contenu.
 - `publier-lot.ts` en simulation : 6 brouillons passent le contrôle. `garde-niveaux-tags.ts` :
   aucun niveau manquant. Réservations des 4 publiés levées dans le tableau de répartition.
+
+### 2026-11-24 — publiée, chantier clos
+
+- David a lancé `publier-lot.ts --publier` : les 6 modèles sont `published` en base (vérifié). Rubrique
+  1AN3 passée à « publiée » dans le tableau de répartition, journal archivé.

@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-fonctions-publies/ (chantier idees-3e-fonctions).
 
 Phase 0 validée par David le 2026-11-24 (« je valide les modèles ») : fiches F1 à F5 du journal
-(docs/wip/idees-3e-fonctions-progress.md, § Phase 0 › Variations de modèles publiés).
+(docs/archive/wip/idees-3e-fonctions/idees-3e-fonctions-progress.md, § Phase 0 › Variations de modèles publiés).
 Les variations s'ajoutent À LA FIN (les réponses des élèves gardent l'indice de leur variation) ;
 la migration de contenu est générée par scripts/questions/migration-contenu.ts. Seuls
 `variations` et `testSpecs` changent : les `options` (cb545bd7 : `form` et `products` off) jugent
