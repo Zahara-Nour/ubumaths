@@ -210,7 +210,8 @@ L'élève ne tape jamais `\unit` : dans un blanc **à unité** (`blank.unit.expe
 
 - Dans un blanc **sans** unité, rien ne change : `5km` reste le produit 5·k·m.
 - Une grandeur incompatible est refusée avec un message (« Cette unité ne mesure pas la bonne grandeur… ») : c'est le garde-fou de `m s` / `ms`. Messages : `src/lib/questions/units/feedback.ts`.
-- **Clavier virtuel** : onglet « Unités » (touches de la grandeur attendue, `src/lib/questions/units/keyboard-units.ts`) ; une touche insère la forme affichée (`\mathrm{km}`), relue par la même normalisation — pas de macro `\unit`.
+- **Clavier virtuel** : onglet « Unités » (touches de la grandeur attendue, `src/lib/questions/units/keyboard-units.ts`) ; une touche insère la forme affichée (`\mathrm{km}`), relue par la même normalisation — pas de macro `\unit`. Les touches se déduisent de la réponse attendue, aussi écrite en syntaxe maison (`66[min]`, `28[mm]`, durée `{1[h]}{6[min]}` : `houseQuantityToLatex`), donc une durée propose `s`, `min`, `h`.
+- **Nombre mal écrit devant l'unité** (`36, mm`, `,036 m`) : le nombre est relu (`malformedNumberQuantity`, lecture seule) pour juger la valeur. Valeur juste → message de forme (`bad_form`) ; valeur fausse → faux, comme la même saisie bien écrite ; unité illisible (`36, xyz`) → « Unité inconnue ».
 - La correction lit les unités avec la même règle que ce document (`parseUnitExpression` délègue à mathAST) ; exposants Unicode (`m²`) admis en réponse.
 
 ## 4. Défauts connus, non corrigés

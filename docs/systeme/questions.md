@@ -1035,7 +1035,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    de (AB) compris, « Tes deux angles sont tracés de part et d'autre de [AB] : trace-les du même côté. »
    (repères de côtés opposés ET un angle faux), « Ton angle ABC mesure 115° au lieu de 65° : tu as lu la
    mauvaise graduation du rapporteur. » (180 − a, repère du côté de C), « Ton angle CAB mesure 45° au
-   lieu de 40°. », puis la longueur. Erreurs de l'auteur, en plus : fenêtre trop allongée
+   lieu de 40°. », puis la longueur. Quand les côtés ne se rejoignent pas, la mauvaise graduation est déjà
+   reconnue sur la direction du côté d'angle, avant de chercher C (`sideScaleFeedbackOf`). Erreurs de l'auteur, en plus : fenêtre trop allongée
    (`protractorWindowError`), rapporteur qui ne tient en A ou en B d'aucun côté de (AB), ou pas du même
    côté aux deux sommets, A et B confondus. Correction : les côtés vers un C où le rapporteur tient, les
    angles codés (`TriangleCorrection.angles`, dessinés comme l'arc du lot 5).
@@ -1300,7 +1301,9 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    formes complexes (`exponentielle`, `algebrique`), ou motif `{ pattern, acceptable? }`
    (motifs `mathAST/pattern`). Violée → `bad_form` ; forme `acceptable` → `unoptimal_form`.
    Virgule nue (`0,5n`) décimale comme `0{,}5n`, sauf écriture à virgule séparatrice
-   (`mathAST/decimal-comma`).
+   (`mathAST/decimal-comma`). Même relecture dans `correction-generator.ts` : une formule du modèle
+   à virgule décimale nue (`0,6x^2-0,6`) que le parseur refuse est relue une seconde fois, sans toucher
+   aux virgules séparatrices ; une formule déjà lisible n'est jamais relue.
 5. **Forme** selon la case : texte → rien ; `requiredForm` → seulement les violations cosmétiques ;
    grandeur → la partie numérique (`studentValueLatex`, la saisie sans ses unités : `2\times3`
    pour `2\times3\,m`) doit être un nombre simple, une fraction ou une notation scientifique ; `precision` / `rulesSuffice` →

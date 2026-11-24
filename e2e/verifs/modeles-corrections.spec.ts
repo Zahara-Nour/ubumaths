@@ -829,19 +829,15 @@ test('#1636 — rendu : a > 0 (2x² − 6x − 20), les facteurs suivent x₁ = 
 	await expectFactorsFollowRoots(page, 1);
 });
 
-// ÉCART constaté le 2026-11-24 (rien corrigé) : pour a < 0 (−2x² + 2x + 24), la correction écrit
+// Écart E34, constaté le 2026-11-24 : pour a < 0 (−2x² + 2x + 24), la correction écrit
 // x₁ = 4 et x₂ = −3, puis « −2(x + 3)(x − 4) » : les facteurs sont dans l'ordre croissant des
-// racines, pas dans celui de x₁, x₂ du texte. `test.fail` : ce test échoue tant que l'écart dure,
-// et se signale « réussi de façon inattendue » le jour où il est corrigé.
-test('#1636 — ÉCART : a < 0 (−2x² + 2x + 24, x₁ = 4, x₂ = −3), la correction écrit (x + 3)(x − 4) au lieu de suivre x₁, x₂', async ({
+// racines, pas dans celui de x₁, x₂ du texte. Corrigé (E34) : la dernière étape écrit les
+// facteurs dans l'ordre de x₁, x₂ selon le signe de a.
+test('#1636 — a < 0 (−2x² + 2x + 24, x₁ = 4, x₂ = −3) : les facteurs suivent x₁, x₂, −2(x − 4)(x + 3)', async ({
 	page
 }) => {
 	test.setTimeout(120_000);
-	await expectFactorsFollowRoots(
-		page,
-		2,
-		'écart #1636 : facteurs dans l’ordre croissant des racines'
-	);
+	await expectFactorsFollowRoots(page, 2);
 });
 
 // ============================================================================
@@ -966,8 +962,7 @@ test.describe('modèles d’essai', () => {
 	}) => {
 		test.setTimeout(120_000);
 		await login(page, ADMIN.email, ADMIN.password);
-		// L'écriture de la ligne (« 0,6x^2-0,6 ») ne se rend pas du tout (voir le test ÉCART ci-dessous) :
-		// avec le point décimal (« 0.6x^2-0.6 »), la correction va jusqu'à la forme factorisée
+		// Avec le point décimal (« 0.6x^2-0.6 ») ; la virgule de la ligne : test suivant
 		const id = await createDraft(page, 'primitive décimale factorisée', {
 			kind: 'integrate',
 			expression: '0.6x^2-0.6',
@@ -979,10 +974,10 @@ test.describe('modèles d’essai', () => {
 		);
 	});
 
-	// ÉCART constaté le 2026-11-24 (rien corrigé) : la ligne écrit `0,6x^2-0,6` ; avec la virgule, la
+	// Écart E35, constaté le 2026-11-24 : la ligne écrit `0,6x^2-0,6` ; avec la virgule, la
 	// correction automatique ne rend AUCUNE étape (ni erreur ni message), avec le point elle est juste.
-	// `test.fail` : échoue tant que l'écart dure, signalé « réussi de façon inattendue » une fois corrigé.
-	test('#1708 — ÉCART : « 0,6x^2-0,6 » (virgule, comme écrit dans la ligne) ne rend aucune étape', async ({
+	// Corrigé (E35) : la correction relit la virgule nue entre deux chiffres comme décimale.
+	test('#1708 — « 0,6x^2-0,6 » (virgule, comme écrit dans la ligne) : même correction qu’avec le point', async ({
 		page
 	}) => {
 		test.setTimeout(120_000);
@@ -996,8 +991,6 @@ test.describe('modèles d’essai', () => {
 			}),
 			{ allowEmpty: true }
 		);
-		// Écart connu : seulement après la mise en place (connexion, brouillon, rendu)
-		test.fail(true, 'écart #1708 : la virgule décimale ne rend aucune étape');
 		expect(rendered).toContain('\\sqrt{3}');
 	});
 

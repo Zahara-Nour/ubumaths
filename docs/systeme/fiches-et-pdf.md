@@ -275,6 +275,7 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   exercices n'y ont ni numéro ni carré, le titre seul (`display.titleOnly`), « Exercice sans
   titre » s'il manque (`untitledExercise`) ; même règle pour le PDF de l'aperçu vue prof. La
   réponse porte `per_student_copies`.
+- Titre d'exercice avec formule, à l'écran de l'élève : rendu en Markdown en ligne (`InlineMarkdown`) dans la liste (`ExerciseListItem`, `ExerciseDisplay`) et dans le titre de la fenêtre de l'exercice (`ExerciseModal`).
 - Signalements (D6) : la liste du prof (`api/worksheets/[id]/reports`, `.../assignments/[id]/reports`),
   la page du signalement et la notification de l'élève citent le numéro de l'exercice **dans la
   copie de l'élève** (`fetchCopyNumbering`, même calcul que la copie ; inconnu → aucun numéro dans

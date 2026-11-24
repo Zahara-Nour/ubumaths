@@ -433,7 +433,7 @@
 				<Tabs.Root bind:value={activeTab}>
 					<Tabs.List class="grid w-full grid-cols-2">
 						<Tabs.Trigger value="statement" disabled={!convertedStatement}>
-							Enonce
+							Énoncé
 							{#if convertedStatement}
 								<span class="ml-1 text-xs text-muted-foreground">
 									({convertedStatement.length} car.)

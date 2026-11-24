@@ -610,7 +610,7 @@ function joinedVertices(
 	b: Position,
 	objects: readonly DrawnObject[],
 	angleSides: readonly AngleSide[] = []
-): { vertices: Position[] } | { verdict: ConstructionVerdict } {
+): { vertices: Position[] } | { verdict: ConstructionVerdict; notJoined?: true } {
 	const [nameA, nameB, nameC] = check.points;
 	const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
 	const eps = tolerance(
@@ -651,7 +651,8 @@ function joinedVertices(
 		if (protractor && (crossesEnd(a, fromB) || crossesEnd(b, fromA))) {
 			return incorrect(vertexEyeballedAnglesFeedback(nameC));
 		}
-		return incorrect(notJoinedFeedback(nameA, nameB, nameC));
+		// Discriminant explicite : E50 y lit la graduation sur la direction des côtés
+		return { ...incorrect(notJoinedFeedback(nameA, nameB, nameC)), notJoined: true };
 	}
 	return { vertices };
 }
@@ -858,6 +859,38 @@ function angleFeedbackOf(
 }
 
 /**
+ * Mauvaise graduation lue sur la DIRECTION d'un côté d'angle tracé en segment, sans C
+ * (écart E50) : le repère qui le porte, centré au sommet, est à 180 − a au lieu de a ;
+ * null sinon. Le repère donne la mesure exacte (le bout du segment peut être arrondi).
+ */
+function sideScaleFeedbackOf(
+	check: TriangleCheck,
+	at: (name: string) => Position,
+	sides: readonly AngleSide[],
+	marks: readonly DrawnRepere[]
+): string | null {
+	for (const g of check.angles) {
+		const v = at(g.vertex);
+		const eps = tolerance(v);
+		for (const side of sides) {
+			if (!near(side.vertex, v, eps)) continue;
+			const mark = marks.find(
+				(m) => near({ x: m.vx, y: m.vy }, v, eps) && distanceToTrait(repereAt(m), side.trait) <= eps
+			);
+			if (!mark) continue;
+			const measured = angleBetween(v, at(g.base), repereAt(mark));
+			if (
+				Math.abs(measured - g.measure) > ANGLE_EPSILON &&
+				Math.abs(measured - (180 - g.measure)) <= ANGLE_EPSILON
+			) {
+				return wrongScaleAngleFeedback(angleName(check, g), measured, g.measure);
+			}
+		}
+	}
+	return null;
+}
+
+/**
  * Triangle quelconque coté en cm (chantier `triangle-cote-cm`, phase 0 validée par
  * David le 2026-11-14). Palette seule (un Report, un point : réponse forgée) ; un
  * seul C (Q17) ; puis, dans l'ordre de la phase 0 : C placé à l'œil, compas
@@ -1034,7 +1067,12 @@ export function judgeTriangle(
 	);
 	const sides = check.angles.length > 0 ? angleSideSegments(objects, marks, construction) : [];
 	const joined = joinedVertices(check, a, b, objects, sides);
-	if ('verdict' in joined) return joined.verdict;
+	if ('verdict' in joined) {
+		// Côtés qui ne se rejoignent pas : une mauvaise graduation se lit déjà sur la direction
+		// d'un côté d'angle (115° au lieu de 65° : les côtés se croisent souvent hors figure, E50)
+		const scale = joined.notJoined ? sideScaleFeedbackOf(check, at, sides, marks) : null;
+		return scale ? { status: 'incorrect', feedback: scale } : joined.verdict;
+	}
 	const { vertices } = joined;
 	// Avec un angle, un seul C, comme en cm : sinon un éventail de [BC] arrêtés sur un côté
 	// d'angle, dont un seul au croisement, serait juste (revue de #2660, point 1)

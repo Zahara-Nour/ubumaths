@@ -1560,6 +1560,17 @@ function validateSingleBlank(
 		if (!result.isCorrect && result.onlyRoundingMissing && result.feedback) {
 			return roundingBadForm(result.feedback);
 		}
+		// Nombre mal écrit devant l'unité (`36, mm`, `36{,}\mathrm{mm}`, `,036 m`), valeur
+		// relue juste : mauvaise forme (une valeur fausse arrive ici `incorrect`, sans ce drapeau)
+		if (!result.isCorrect && result.numberWritingAtFault) {
+			const feedback = CONSTRAINT_FEEDBACK['form'].single;
+			return {
+				isCorrect: false,
+				status: 'bad_form',
+				feedback,
+				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
+			};
+		}
 		if (
 			!result.isCorrect &&
 			(result.unitAtFault || result.durationWritingAtFault || result.roundingAtFault) &&
