@@ -2,20 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3116._
+_Mis à jour le 2026-11-24, PR de rangement et contenu en cours._
 
-- **État** : phase 0 validée ; lot écrit (scripts `docs/wip/questions/…-{publies,neufs}.py` →
-  `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`) et joué en base locale
-  (§ Historique) : 30 variations sur 30 justes / fausses comme prévu. Fichiers mergés (#3116).
-- **Prochaine action** : étape 6 de `couvrir-un-niveau.md` : David lance
-  `create-questions --dir scripts/questions/idees-3e-fonctions-affines-neufs --publier` en prod
-  (brouillons), je commite les ids, puis rangement (`migration-rangement.ts`) et contenu des 3
-  publiés (`migration-contenu.ts`, lit la prod) dans une même PR, `security-auditor`.
-- **En attente de David** : le `create-questions --publier` en prod (commande ci-dessus, `!`).
+- **État** : fichiers mergés (#3116) ; 4 brouillons créés en prod par David (ids commités).
+  PR courante : migrations générées de rangement + tags des 4 neufs et de contenu des 3 publiés
+  (+8 variations), `security-auditor` passé.
+- **Prochaine action** : merge, `pnpm check:migrations --pr <n>`, puis `db:migrate` depuis le
+  dépôt principal (4 conditions de `CLAUDE.md`, `migration list --linked` d'abord) ; vérifier en
+  prod (nœud, un tag, brouillon ; variations des publiés) ; puis relecture dans `/dev/modeles`.
+- **En attente de David** : rien avant le `db:migrate` ; ensuite la relecture des 4 brouillons.
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
-  Page à cocher (non remplie) : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
-- **Worktree / branche** : aucun (retiré après #3116) ; la suite dans un worktree neuf
-  `../ubumaths-wt-idees-3e-fonctions-affines-rangement`.
+  Les JSON des neufs portaient déjà `rangement` depuis #3116 (N4 : « Généralités sur les
+  fonctions », 3-039) : ne pas le réécrire. Page à cocher : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions-affines-rangement`,
+  `feat/idees-3e-fonctions-affines-rangement`.
 
 ## Phase 0 (2026-11-24)
 
@@ -162,3 +162,12 @@ de réponse.
   petite et croise le trait.
 - `migration-contenu.ts` des publiés reportée à l'étape 6 (précédent `idees-1re-probas-cond`) :
   cette PR ne porte que les fichiers.
+
+### 2026-11-24 — brouillons en prod, migrations générées
+
+- David a lancé `create-questions --publier` en prod : 9414e0a3 (N1), 8725107f (N2), 51a8db37
+  (N3), b213f446 (N4), en brouillon ; ids commités sur la branche de rangement.
+- `migration-contenu.ts` : 15ddcc75 +3, 45247528 +3, 7c7b7593 +2 variations, specs ; rien
+  corrigé ni retiré. `migration-rangement.ts` : les 4 neufs rangés (N1 et N3 sous « coefficient
+  directeur et ordonnée à l'origine », 3-044 et 3-067 ; N2 en géométrie, 2-322 ; N4 sous
+  « Généralités sur les fonctions », 3-039).
