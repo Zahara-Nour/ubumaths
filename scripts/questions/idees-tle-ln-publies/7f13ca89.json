@@ -105,7 +105,7 @@
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}{{k;+}}\\ln x$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$, limites comprises.\n\n```variation\nvariable: x\ndomain: 0, ?{{x0}}, +inf\n\nsign: f'(x)\n  0,{{x0}}: ?{{if:a>0|-|+}}\n  {{x0}}: z\n  {{x0}},+inf: ?{{if:a>0|+|-}}\n\nvariation: f(x)\n  0: ?{{if:a>0|+inf|-inf}}, {{if:a>0|top|bottom}}\n  {{x0}}: ?{{eval:a*x0+b}}{{eval:k;+}}\\ln{ {{x0}} }, {{if:a>0|bottom|top}}\n  +inf: ?{{if:a>0|+inf|-inf}}, {{if:a>0|top|bottom}}\n  0,{{x0}}: ?flèche\n  {{x0}},+inf: ?flèche\n```",
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}{{k;+}}\\ln x$. On admet que $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{x}=0$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$, limites comprises.\n\n```variation\nvariable: x\ndomain: 0, ?{{x0}}, +inf\n\nsign: f'(x)\n  0,{{x0}}: ?{{if:a>0|-|+}}\n  {{x0}}: z\n  {{x0}},+inf: ?{{if:a>0|+|-}}\n\nvariation: f(x)\n  0: ?{{if:a>0|+inf|-inf}}, {{if:a>0|top|bottom}}\n  {{x0}}: ?{{eval:a*x0+b}}{{eval:k;+}}\\ln{ {{x0}} }, {{if:a>0|bottom|top}}\n  +inf: ?{{if:a>0|+inf|-inf}}, {{if:a>0|top|bottom}}\n  0,{{x0}}: ?flèche\n  {{x0}},+inf: ?flèche\n```",
 			"variables": [
 				{
 					"name": "A",
@@ -183,7 +183,7 @@
 					"$f'(x)={{a}}{{k;+}}\\times\\dfrac{1}{x}=\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{k;+}}}{x}$. Comme $x>0$, $f'(x)$ a le signe de ${{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{k;+}}$, qui s'annule en $x=\\textcolor{{{color:primary.0}}}{ {{x0}} }$ : {{if:a>0|négatif avant, positif après|positif avant, négatif après}}.",
 					"$f$ est {{if:a>0|décroissante puis croissante, de minimum|croissante puis décroissante, de maximum}} $f({{x0}})={{eval:a*x0}}{{b;+}}{{k;+}}\\ln {{x0}}=\\textcolor{{{color:primary.0}}}{{{eval:a*x0+b}}{{eval:k;+}}\\ln{ {{x0}} }}$.",
 					"En $0$ : $\\displaystyle\\lim_{x\\to0}\\ln x=-\\infty$ et ${{k}}$ est {{if:a>0|négatif|positif}}, donc $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:a>0|+\\infty|-\\infty}} }$.",
-					"En $+\\infty$ : forme indéterminée. $f(x)=x\\left({{a}}{{b;+}}\\times\\dfrac{1}{x}{{k;+}}\\times\\dfrac{\\ln x}{x}\\right)$ et $\\dfrac{\\ln x}{x}\\to 0$ (croissances comparées) : la parenthèse tend vers ${{a}}$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:a>0|+\\infty|-\\infty}} }$."
+					"En $+\\infty$ : forme indéterminée. $f(x)=x\\left({{a}}{{b;+}}\\times\\dfrac{1}{x}{{k;+}}\\times\\dfrac{\\ln x}{x}\\right)$ et $\\dfrac{\\ln x}{x}\\to 0$ (admis dans l'énoncé) : la parenthèse tend vers ${{a}}$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{ {{if:a>0|+\\infty|-\\infty}} }$."
 				]
 			},
 			"hint": "Mets $f'(x)$ au même dénominateur : comme $x>0$, son signe est celui du numérateur.",
