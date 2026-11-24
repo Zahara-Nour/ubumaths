@@ -6,21 +6,19 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3095 et `db:migrate` du rangement._
+_Mis à jour le 2026-11-24, PR des descriptions en cours._
 
-- **État** : #3086 et #3095 mergées. En prod : contenu des 3 publiés complétés (6ad254b4, cb545bd7,
-  d820232a) ; les 3 neufs N1-N3 (6897aa8b, 7c7b7593, 4aaa75c0) **en brouillon, rangés et tagués**
-  (3-040, 3-040, 3-039 ; vérifié au MCP).
-- **Prochaine action** : David relit dans `/dev/modeles?point=3-039` (6ad254b4 + N3),
-  `?point=3-040` (d820232a + N1, N2), `?point=4-062` (cb545bd7) : ces 3 points portent exactement
-  les 6 modèles, aucun verdict au 2026-11-24 (MCP). Pas de série (refuse les brouillons, 3e/4e
-  mêlés). Puis verdicts « À revoir », corrections, `publier-lot.ts` (skill § 5).
-- **Tranché par David (2026-11-24)** : descriptions des 3 publiés complétées, textes en
-  « Descriptions retenues » ci-dessous ; elles partent dans la migration de contenu des
-  corrections (une seule écriture en prod).
-- **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
-  (`TableNode`, `overflow-x-auto`, comportement commun).
-- **Worktree / branche** : aucun (retirés par `pr:merger`) ; un neuf si une PR suit.
+- **État** : 6 modèles validés par David le 2026-11-24 (oral, aucun verdict en base). N1-N3
+  (6897aa8b, 7c7b7593, 4aaa75c0) **publiés** par David (`publier-lot --publier`, vérifié au MCP).
+  PR `feat/idees-3e-fonctions-descriptions` : migration de contenu `20261124191726_…` qui ne
+  change que la description des 3 publiés (textes en « Descriptions retenues »).
+- **Prochaine action** : merger la PR, puis `db:migrate` depuis `main` (`migration list --linked`
+  avant), vérifier les 3 descriptions au MCP ; puis fin de chantier (skill `idees-rubrique` § 6).
+- **En attente de David** : rien.
+- **Pièges en cours** : tableau à 4 cases de N3 qui défile en largeur sur téléphone (`TableNode`,
+  commun) : laissé, à noter dans `outils-manquants.md` si David le demande.
+- **Worktree / branche** : `ubumaths-wt-idees-3e-fonctions-descriptions` ·
+  `feat/idees-3e-fonctions-descriptions`.
 
 ## Phase 0 (2026-11-24, en attente de David)
 
@@ -114,6 +112,17 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
   tarif à coefficients décimaux »
 
 ## Historique
+
+### 2026-11-24 — validation, publication des neufs, migration des descriptions
+
+- David valide les 6 modèles relus dans `/dev/modeles` ; `publier-lot` simulé vert, publication
+  des 3 neufs lancée par David, vérifiée au MCP.
+- Question d'accès de la migration des descriptions tranchée par David : personne ne gagne
+  d'accès. `migration-contenu.ts` : 3 modèles migrés, description seule (+0 variation). Test
+  `migrations-contenu-publie` vert avec (137), rouge avec la migration vidée (5 échecs, tous sur
+  elle).
+- `security-auditor` (Opus) : aucun finding bloquant ; seule la description change (variations et
+  specs égales en jsonb), garde = md5 de la prod, rollback rend l'ancien contenu, aucun accès.
 
 ### 2026-11-24 — rangement des 3 neufs joué en prod (#3095)
 
