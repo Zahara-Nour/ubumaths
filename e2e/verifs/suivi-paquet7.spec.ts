@@ -599,7 +599,7 @@ function card(page: Page, title: string): Locator {
 
 /** Texte sur une ligne : espaces et sauts réunis, espaces insécables compris */
 function flat(text: string): string {
-	return text.replace(/[\s  ]+/g, ' ').trim();
+	return text.replace(/[\s\u00a0\u202f]+/g, ' ').trim();
 }
 
 function percent(rate: number): string {

@@ -755,7 +755,7 @@ async function expectLegible(page: Page, root: Locator, label: string): Promise<
 /** Les cellules d'une ligne de tableau, en texte nettoyé (espace insécable → espace) */
 async function cellsOf(row: Locator): Promise<string[]> {
 	const cells = await row.locator('td').allTextContents();
-	return cells.map((c) => c.replace(/[\s ]+/g, ' ').trim());
+	return cells.map((c) => c.replace(/[\s\u00a0]+/g, ' ').trim());
 }
 
 const questionsCard = (page: Page): Locator => page.getByTestId('bilan-questions');

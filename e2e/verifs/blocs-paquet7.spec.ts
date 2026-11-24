@@ -897,7 +897,7 @@ test.describe('PDF de fiche', { tag: '@bureau' }, () => {
 
 	let fiche = '';
 	let colonnes = '';
-	let ids = { un: '', deux: '' };
+	const ids = { un: '', deux: '' };
 
 	test.beforeAll(async () => {
 		if (projectName() !== 'ordi-chrome') return;
