@@ -6,13 +6,13 @@ status: PR 1 (T20, T25, T27) mergée (#3115) ; PR 2 (T21, T22) en cours, T21 cod
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3115 (PR 2 en cours, non ouverte)._
+_Mis à jour le 2026-11-25, après #3115 (PR 2 non ouverte)._
 
-- **État** : PR 1 mergée (#3115). **PR 2 en cours sur `fix/ecarts-moderation`** : T21 codé et commité (onglet « Messages marqués » de `/dashboard/teacher/moderation/gestion`, lecture par la RLS de `messages`, aucune migration), tests verts, typecheck à 0, vu à l'écran (`pnpm voir`, iPhone, compte prof). T22 : page à cocher envoyée à David (https://claude.ai/artifact/T1AgYjEHmeV8jGhcmzFiPo, réponses dans `relecture/reponses`, à lire avec `ArtifactData`). Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
-- **Prochaine action** : quand David a relu la liste ET répondu à la question d'accès, écrire T22 (migration additive : `check_profanity_simple` redéfinie, mot entier, sans majuscules ni accents ni pluriel ; tests d'intégration rouges d'abord dans `tests/integration/database/chat-triggers.test.ts`), puis revue `code-reviewer` + `security-auditor`, une seule PR pour T21 + T22, barrer T21 et T22 au registre.
-- **En attente de David** : (1) relecture de la liste de mots sur la page à cocher ; (2) question d'accès de la migration T22 : personne ne lit rien de nouveau, mais davantage de messages porteront la mention « signalé automatiquement » (vue de tous dans la conversation) et arriveront dans l'onglet du prof : d'accord ?
-- **Pièges en cours** : T24 hors lot ; la PR n'est PAS ouverte (une seule revue, un seul push) ; `pnpm voir` ne clique pas : pour voir l'onglet, mettre `value="flagged"` le temps de la capture ; pas de lien direct vers une conversation du chat (l'onglet renvoie à `/dashboard/chat`) ; pas d'état « traité » pour un message marqué (liste des 100 plus récents).
-- **Worktree / branche** : `ubumaths-wt-ecarts-moderation` / `fix/ecarts-moderation`.
+- **État** : PR 1 mergée (#3115). **PR 2 prête, NON ouverte**, branche `fix/ecarts-moderation` (2 commits, poussée, en retard de 15 commits sur `main`). T21 : onglet « Messages marqués » (lecture par la RLS de `messages`, aucune migration). T22 : migration `20261124230639_marquage_messages_liste_de_mots.sql` (liste de ~125 mots, mot entier, sans casse ni accents ni « s » final ; `process_message_content` : commentaire seul, C32). Liste et question d'accès **validées par David le 2026-11-25**. Tests : 8 serveur + 48 intégration verts (18 rouges sans la migration), typecheck 0, `db:types:verifier` vert, vu à l'écran (iPhone). Doc `messagerie-et-moderation.md` mise à jour.
+- **Prochaine action** : (1) **relancer les deux revues** (`code-reviewer` Sonnet + `security-auditor` Opus ; lancées le 25 mais perdues au `/clear`, aucun résultat reçu) sur `git diff origin/main...HEAD` ; (2) corriger ; (3) `git merge origin/main` dans le worktree ; (4) `pnpm check:migrations --pr <n>` après ouverture ; (5) barrer T21, T22, C32 au registre (`pnpm ecarts rejouer`, preuves à la main pour T22 et C32 : barrer à la main avec la date) ; (6) ouvrir la PR, CI, `pnpm pr:merger <n>`, puis `db:migrate` depuis la branche mergée (migration additive, rollback en commentaire).
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` autonome seulement si les 4 conditions (tests rouges sans la migration : fait ; `security-auditor` sans finding bloquant : à refaire). Écarts à entrer au registre depuis le dépôt principal : onglet sans lien direct vers la conversation, sans état « traité ». Réponses de la page à cocher : aucune enregistrée (David a validé en conversation). T24 hors lot.
+- **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-moderation` / `fix/ecarts-moderation`.
 
 ---
 
