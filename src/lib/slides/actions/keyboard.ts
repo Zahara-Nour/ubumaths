@@ -21,9 +21,9 @@ export interface KeyboardActionOptions {
  * Default key bindings
  */
 const defaultKeyBindings: Record<string, (store: DeckStore) => void> = {
-	// Horizontal navigation only (skip verticals, like reveal.js)
-	ArrowRight: (store) => store.nextH(),
-	ArrowLeft: (store) => store.prevH(),
+	// Fragments d'abord, puis horizontale (verticales sautées), comme reveal.js
+	ArrowRight: (store) => store.right(),
+	ArrowLeft: (store) => store.left(),
 
 	// Vertical navigation only
 	ArrowDown: (store) => store.down(),

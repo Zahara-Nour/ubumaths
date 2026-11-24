@@ -782,17 +782,11 @@ test('#1737 — /demo/diaporama : diapositive 5, (x+1)² se développe seul, une
 test('#1737 — /demo/diaporama : diapositive 3, chaque appui sur → montre la ligne suivante', async ({
 	page
 }) => {
-	// ÉCART constaté (2026-11-24, base locale) : sur la diapositive 3 (`Slide` ordinaire, lignes
-	// `class="fragment"`), → saute à la diapositive 4 sans montrer aucune ligne ; seule la
-	// diapositive 5 (UbuMarkSlide, défilement automatique) fait apparaître ses fragments. La page
-	// annonce pourtant « Chaque appui sur → montre la ligne suivante ». Attendu gardé ; `test.fail`
-	// (posé juste avant les assertions, après la mise en place) signale l'écart sans rougir la
-	// suite et rougira quand il sera corrigé (à retirer alors).
+	// Écart E36 corrigé : → montrait la diapositive 4 sans aucune ligne (il sautait les fragments)
 	await openDiaporama(page);
 	await gotoSlide(page, 3);
 	await page.keyboard.press('ArrowRight');
 	await nextFrame(page);
-	test.fail(true, 'écart #1737 : les fragments de la diapositive 3 ne se montrent pas au clavier');
 	expect(await currentSlide(page), 'toujours sur la diapositive 3').toBe(3);
 	await expect(page.locator('.slide.active .fragment.visible')).toHaveCount(1);
 });

@@ -248,6 +248,59 @@ describe('deckStore', () => {
 		});
 	});
 
+	// Flèches → et ← (et boutons, balayage) : comme reveal.js, un fragment restant
+	// compte avant la diapositive voisine (écarts E36, E37)
+	describe('flèches - right() / left()', () => {
+		it('right() montre le fragment suivant avant de changer de diapositive', () => {
+			setupSlides(store, [{ h: 0, fragments: 2 }, { h: 1 }]);
+
+			store.right();
+			expect(store.state).toEqual({ h: 0, v: 0, f: 0 });
+			store.right();
+			expect(store.state).toEqual({ h: 0, v: 0, f: 1 });
+			store.right();
+			expect(store.state).toEqual({ h: 1, v: 0, f: -1 });
+		});
+
+		it('right() montre le fragment de la dernière diapositive', () => {
+			setupSlides(store, [{ h: 0 }, { h: 1, fragments: 1 }]);
+			store.goTo(1);
+
+			store.right();
+
+			expect(store.state).toEqual({ h: 1, v: 0, f: 0 });
+		});
+
+		it('right() saute les diapositives verticales, comme nextH()', () => {
+			setupSlides(store, [{ h: 0 }, { h: 0, v: 1 }, { h: 1 }]);
+
+			store.right();
+
+			expect(store.state).toEqual({ h: 1, v: 0, f: -1 });
+		});
+
+		it('left() cache le dernier fragment montré avant de changer de diapositive', () => {
+			setupSlides(store, [{ h: 0 }, { h: 1, fragments: 2 }]);
+			store.goTo(1, 0, 1);
+
+			store.left();
+			expect(store.state).toEqual({ h: 1, v: 0, f: 0 });
+			store.left();
+			expect(store.state).toEqual({ h: 1, v: 0, f: -1 });
+			store.left();
+			expect(store.h).toBe(0);
+		});
+
+		it('left() revient sur la diapositive précédente, fragments tous montrés', () => {
+			setupSlides(store, [{ h: 0, fragments: 3 }, { h: 1 }]);
+			store.goTo(1);
+
+			store.left();
+
+			expect(store.state).toEqual({ h: 0, v: 0, f: 2 });
+		});
+	});
+
 	describe('2D navigation - horizontal', () => {
 		beforeEach(() => {
 			// Setup: 3 horizontal slides, middle one has vertical stack
