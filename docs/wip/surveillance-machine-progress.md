@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2931 (worktrees finis supprimés)._
+_Mis à jour le 2026-11-24, PR `machine:bilan` en cours._
 
 - **État** : #2906, #2910, #2916, #2921, #2930, #2931 mergés ; dépôt principal à jour, launchd lance les scripts. #2931 : worktrees en danger comptés dans le « RAS » (`pnpm surveillance:worktrees` pour les noms), redémarrage signalé (« plantage du système » si rapport `*panic*`).
 - **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees portent du travail qui n'existe nulle part ailleurs (2 articles du Shtam jamais commités !) ; ✅ 6 worktrees finis + 4 dossiers vides supprimés le 2026-11-22 (go de David) ; Time Machine non configuré ; mise à jour de macOS en attente (~15 Go).
 - **À vérifier** : premier « RAS » demain matin (avec « · 4 worktrees en danger ») ; Playwright orphelin (pid 699) fermé.
+- **En cours** : `pnpm machine:bilan` (`scripts/bilan-machine.sh`), branche `feat/machine-bilan`, worktree `ubumaths-wt-machine-bilan` (§ « 2026-11-24 »). Propositions de nouvelles alertes posées à David, sans réponse.
 - **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; sinon clore le chantier (archivage du journal ; doc déjà dans `docs/pratiques/environnement-de-dev.md`).
 - **Pièges** : CI sous Linux → `date_modif` / `date_de` (machine-commun.sh), jamais `stat -f` ni `date -r` nus ; `kern.boottime` bouge de quelques secondes (tolérance 2 min) ; `git status` quote les accents sans `core.quotePath=false` ; disque = `/System/Volumes/Data` ; `chrome_crashpad_handler` toujours en ppid 1.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-machine-bilan` / `feat/machine-bilan`.
 
 ## Contexte
 
@@ -57,3 +58,10 @@ Restent, côté David :
 - Phase 0 : « en danger » = fichiers non commités ou commits poussés nulle part, intouchés depuis 7 jours, dépôt principal exclu, worktrees d'agents compris. Question posée : rappel quotidien dans le « RAS » (ma recommandation) ou notification du lundi → David : « je te suis » en réponse à cette question → rappel dans le « RAS ».
 - Redémarrage : `kern.boottime` comparé à la marque `demarrage` ; premier passage = noté sans envoi ; « (plantage du système) » si `*panic*` ou `Kernel*` dans `/Library/Logs/DiagnosticReports` est plus récent que le démarrage précédent.
 - Essai réel : 4 worktrees en danger (relecture 40 j, shtam-rsa 44 j, questions-2de 14 j, evaluation-numerique 18 j), les mêmes que le relevé à la main ; 2,3 s pour les 18 worktrees (une fois par jour seulement).
+
+## 2026-11-24 — bilan à la demande
+
+- 2026-11-22 : Chrome bloqué depuis 12 jours — processus graphique et 2 extensions à 100 % chacun, processus morts jamais ramassés, « Quitter » sans réponse (AppleEvent -1712). Les 3 processus arrêtés puis Chrome fermé de force (`kill -KILL`) et relancé. La surveillance ne voyait que les extensions, pas le processus graphique ni le blocage.
+- `pnpm machine:bilan` (`scripts/bilan-machine.sh`, lecture seule) : l'état en une page, dont deux choses que la surveillance ne regarde pas — processus emballé quel qu'il soit, parent qui ne ramasse plus ses processus morts (≥ 3) — plus sessions Claude par âge, Preboot, Time Machine, tendance 24 h. Tests : `scripts/__tests__/bilan-machine.test.ts` (vérifiés rouges en cassant le seuil et le nom du processus graphique).
+- Premier passage réel (2026-11-24) : **Brave bloqué** (15 processus morts non ramassés, AppleEvent sans réponse en 10 s), 35 sessions Claude (6,9 Go, 11 de plus de 7 jours), swap 85-96 % sur 24 h, disque 21 → 16 Go libres en 24 h, Preboot 20 Go.
+- Proposé à David, en attente : faire entrer dans la SURVEILLANCE (alertes) le processus emballé quelconque et le navigateur bloqué ; sessions Claude anciennes ; disque qui fond vite.
