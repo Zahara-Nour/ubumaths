@@ -2,14 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, brouillons créés en prod, migrations générées._
+_Mis à jour le 2026-11-24, après #3106 et le `db:migrate`._
 
-- **État** : 2 brouillons en prod (a3aa8f4a F2, 1220760b F3) ; migrations de rangement et de contenu générées
-  et vertes en intégration ; `security-auditor` sans bloquant ; PR à ouvrir, puis CI et merge.
-- **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite relecture dans `/dev/modeles`.
-- **En attente de David** : rien pour l'instant (relecture après le `db:migrate`).
+- **État** : en prod : 2 brouillons rangés et tagués (a3aa8f4a TSPE-510, 1220760b TSPE-619) et 8 variations
+  ajoutées aux 5 publiés. Série de relecture écrite (`scripts/series/T_SPE-relecture-probabilites-publies.json`),
+  simulée verte, pas encore enregistrée.
+- **Prochaine action** : après la relecture de David, lire les verdicts « À revoir » en base
+  (`question_template_reviews`, `reviewed_at` postérieur au 2026-11-24), corriger, puis `publier-lot.ts` en
+  simulation pour les 2 brouillons ; commiter l'id de la série et ce journal dans la PR de fin.
+- **En attente de David** : `creer-serie.ts --publier` (série des 5 publiés) ; relecture dans `/dev/modeles`
+  (brouillons : `?titre=Loi binomiale`).
 - **Pièges en cours** : niveau de F3 (6) égal à celui de 4ee9a359 sur le même nœud, sans effet bloquant.
-- **Worktree / branche** : `../ubumaths-wt-idees-tle-probas` · `feat/idees-tle-probas`.
+- **Worktree / branche** : `../ubumaths-wt-idees-tle-probas` · `feat/idees-tle-probas-relecture`.
 
 Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Relevé :
 [idees-tle-probas-releve.md](idees-tle-probas-releve.md) · fiches :
@@ -72,3 +76,10 @@ https://claude.ai/artifact/6kVwijQ36onX4iXNpsL1Ga
   `question_template_points` écrites, gardes exactes, rollback en commentaire, quoting sûr). Non bloquant :
   le prénom « Noé » d'ecf4d46b v2, déjà en prod, personnage d'énoncé.
 - Correctif #3103 mergé, worktree retiré, journal versé dans `docs/archive/wip/rendu-indice-parentheses/`.
+
+### 2026-11-24 : merge et migrations en prod
+
+- #3106 mergée (CI verte). `migration list --linked` : seules les 2 migrations du lot en attente ;
+  `db:migrate` passé (4 conditions réunies). Relu au MCP : brouillons rangés et tagués, 0943e867 6 var.,
+  4ee9a359 5, 7974722d 2, 95f73515 3, ecf4d46b 3.
+- Série de relecture des 5 publiés écrite et simulée (5 questions, 5 min).

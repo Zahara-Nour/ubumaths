@@ -1,0 +1,37 @@
+{
+	"title": "Relecture — probabilités de Terminale, 5 modèles publiés complétés",
+	"grade": "T_SPE",
+	"description": "Relecture dans /dev/modeles des 5 modèles publiés de Terminale spé auxquels le chantier idees-tle-probas a ajouté des variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Inégalité de Bienaymé-Tchebychev",
+			"templateId": "0943e867-e639-45f5-939d-df7492d0ecaf",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Seuil par la loi binomiale",
+			"templateId": "4ee9a359-c6b1-43af-9082-24cc6cdc8c53",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Espérance de aX + bY : linéarité",
+			"templateId": "7974722d-6328-4388-a4fd-418cc0e25600",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Inégalité de concentration : majorant",
+			"templateId": "95f73515-63c1-45e2-9b99-242335d8ad03",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Probabilités totales",
+			"templateId": "ecf4d46b-02d5-4fd1-86db-eac7b017a257",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
