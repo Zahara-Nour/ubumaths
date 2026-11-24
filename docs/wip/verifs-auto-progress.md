@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, paquet 5 du tri : PR ouverte (dernière mergée : #3066)._
+_Mis à jour le 2026-11-24, après #3074 (paquet 5 du tri)._
 
-- **État** : tri des vérifications manuelles : paquets 1 à 4 mergés (#3061, #3064, #3065, #3066), paquet 5 en PR (branche `test/verifs-tri-5`), **391 → 179 lignes** ; écarts E50 à E52 ajoutés à [ecarts-verifs-progress.md](ecarts-verifs-progress.md), à présenter.
-- **Prochaine action** : merger la PR du paquet 5 (CI verte), puis paquet 6 (lignes à partir du 6 novembre), worktree neuf, agents sur des élèves distincts (verrous `eleves-10-15`, `eleves-16-20`, `eleves-21-25`).
+- **État** : tri des vérifications manuelles : paquets 1 à 5 mergés (#3061, #3064, #3065, #3066, #3074), **391 → 179 lignes** ; écarts E50 à E52 ajoutés à [ecarts-verifs-progress.md](ecarts-verifs-progress.md), à présenter.
+- **Prochaine action** : paquet 6 (lignes à partir du 6 novembre), worktree neuf, agents sur des élèves distincts (verrous `eleves-10-15`, `eleves-16-20`, `eleves-21-25`).
 - **Tranché par David le 2026-11-24 (« je valide tout »)** : écarts E18-E49 selon les recos (état dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md)) ; barre de #1469 : stabiliser (place réservée) ; #1738 : laisser, clause retirée de la ligne ; tâche de nuit : oui, après R12 ; `tsconfig` pour `e2e/` dans la CI : oui ; `locale: 'fr-FR'` pour `test:verifs` : oui ; `../ubumaths-wt-verifs-webkit` effacé. **Ordre** : finir le tri (paquet 6 et suivants), puis les corrections en PR par thème (accessibilité et contrastes E22 E32 E44 E45 E48 E49 ; téléphone E18 E23 E24 E41 ; corrections générées E25 E34 E35 ; le reste), puis R12, R13.
 - **En attente de David** : E50, E51, E52 (nouveaux écarts) ; #2346 (la droite et la courbe du corrigé de |x| < k font-elles doublon ?) ; E33 (miroir de la carte : regarder une question à opération posée sur son iPhone ou son Mac) ; E21 et E42 (contenu).
 - **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; `locator('visible=true')` et navigation par `href` quand un lien est redessiné ; lire des éléments d'un seul coup (`evaluateAll`) après un changement de thème ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur ; décor partagé en `serial`, élèves partagés sous verrou ; **brouillons d'un fichier parallèle : préfixe de titre avec le projet et `parallelIndex`, sinon l'`afterAll` d'un worker efface ceux des autres** ; `test.fail()` juste avant l'assertion de l'écart ; un agent qui a livré mais garde des lancements en fond : l'arrêter (TaskStop) ; ne JAMAIS changer l'attendu seul ; un modèle `published` sans nœud de l'arbre s'affiche dans `/automaths` sous « Non classés » : ceux que créent `questions-paquet5` et `blocs-geometrie-5` y passent le temps de leur test ; le worktree d'un paquet ne s'appelle pas `…-verifs-auto` : avant un `/reprendre`, chercher aussi `ubumaths-wt-verifs-tri-*`.
-- **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-verifs-tri-5`, `test/verifs-tri-5` (PR ouverte).
+- **Worktree / branche** : aucun (celui de #3074 retiré).
 
 ## Tri — paquet 5 : lignes du 3 au 5 novembre (2026-11-24)
 
