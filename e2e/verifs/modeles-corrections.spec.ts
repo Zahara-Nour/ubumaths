@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { ADMIN, assertLocalServerEnv, login, sql } from './helpers/carnet';
+import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 import { buildSeriesLink } from '../../src/lib/validation/series';
 
 /**
@@ -24,8 +25,18 @@ test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale s
 // sinon un worker effacerait le décor d'un autre en plein test.
 test.describe.configure({ mode: 'serial' });
 
-test.beforeAll(() => {
+// Élèves 16 à 20 partagés avec `questions-paquet4.spec.ts` : un seul fichier à la fois
+let lockHeld = false;
+
+test.beforeAll(async () => {
+	test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
 	assertLocalServerEnv();
+	await acquireLock('eleves-16-20');
+	lockHeld = true;
+});
+
+test.afterAll(() => {
+	if (lockHeld) releaseLock('eleves-16-20');
 });
 
 // Constantes
