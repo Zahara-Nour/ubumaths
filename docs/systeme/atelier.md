@@ -803,7 +803,12 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). Ces
   phrases et l'aide d'une fonction tiennent sur une place réservée (`.sous-barre`, une seule à la fois ; une ligne, deux quand la
   vue est étroite, container query sous 40rem) : la grille ne saute pas d'une case à l'autre — elle sautait d'une rangée, et pendant un clic
-  la case sous le pointeur enfoncé changeait, la zone s'étendait (2026-10-26). La carte d'une liste à formules montre ses valeurs et « calculée
+  la case sous le pointeur enfoncé changeait, la zone s'étendait (2026-10-26). **Au téléphone** (une colonne, ≤ 720 px), la
+  vue est plus haute que sa place : la barre de formule reste en haut et le reste (`.corps` : mise en forme, grille, outils,
+  diagrammes) défile dessous ; l'aide d'une fonction s'y colle en haut le temps de l'écrire, par-dessus la grille. Écrire dans
+  la barre ne déplace donc plus la grille (écart E41, 2026-11-24 : il fallait remonter jusqu'à la barre, la grille descendait
+  d'environ 300 px ; une barre `sticky` dans la vue qui défile ne tient pas, WebKit ramène la vue à sa place d'origine à la
+  frappe). Ailleurs, `.corps` est en `display: contents` : rien ne change. La carte d'une liste à formules montre ses valeurs et « calculée
   dans la grille » (`studentDefinitionOf`). Supprimer une liste dont des cellules d'autres colonnes
   se videront (`citingCells` : en chaîne, sans celles déjà vides) demande confirmation : « 3 cellules de la grille la citent : elles
   deviendront vides. » (`citingCellsNote`). La copie vers un autre logiciel et le CSV

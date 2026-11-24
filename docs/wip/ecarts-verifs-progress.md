@@ -60,6 +60,19 @@ Choix pour David :
 - **C** : l'aide se montre aussi sous la case qu'on écrit, en bulle par-dessus la grille, au
   téléphone seulement. La barre ne bouge pas, et l'aide se voit dans la case.
 
+### PR K (2026-11-24) : choix A, par le second essai
+
+- **Retenu : la barre hors de ce qui défile** (`.corps`, `display: contents` hors téléphone). Le
+  premier essai (barre `sticky` dans la vue qui défile) ne tient pas sur iPhone : à la frappe,
+  WebKit ramène la vue à la place d'origine de la barre, et la grille descend quand même (335 →
+  629 px mesurés sans correctif, 358 → 385 puis tout en haut avec la barre `sticky`).
+- L'aide d'une fonction est collée en haut du corps le temps de l'écrire, avec un liseré dessous.
+- Ligne #1813 changée : au téléphone (≤ 720 px), la grille ne bouge pas quand on touche la barre
+  ni pendant la frappe, barre et aide entièrement à l'écran ; d'une case à l'autre, seulement hors
+  téléphone (toucher A1 la fait défiler de 12 px sur iPhone 15). `test.fail` de E41 retiré.
+- Vu : test rouge sans le correctif (iPhone) ; 192 vérifications Atelier vertes (iPhone, Android,
+  Chrome, Safari) ; capture `1813-donnees-iphone.png` regardée.
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |
