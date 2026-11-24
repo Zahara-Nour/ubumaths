@@ -1,0 +1,1103 @@
+{
+	"id": "6dba93c8-b8e6-4888-843b-ac9f821c4a7e",
+	"title": "Lire une abscisse grâce à des zooms",
+	"description": "Lire l'abscisse d'un point sur une droite graduée suivie de droites agrandies : au dixième, au centième, au millième (aussi en fractions décimales), et des grands nombres (dizaines de milliers, millions)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $B$ ?\n\n```line\nstart: {{O}}\nend: {{eval:O+9}}\nstep: 1\nlabels: {{O}}, {{eval:O+9}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.1\n```\n\n$$B : ?$$",
+			"variables": [
+				{
+					"name": "O",
+					"expression": "5..10"
+				},
+				{
+					"name": "u",
+					"expression": "1..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "G",
+					"expression": "eval:O+u"
+				},
+				{
+					"name": "D",
+					"expression": "eval:O+u+1"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(10*(O+u)+a)/10;d"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:O+u+a}}",
+							"message": "Sur la droite agrandie, un petit intervalle ne vaut plus $1$ : l'unité de ${{G}}$ à ${{D}}$ y est partagée en $10$, chaque petit intervalle vaut $0.1$.",
+							"label": "Pas de la droite du dessus gardé"
+						},
+						{
+							"answer": "{{eval:(10*O+a)/10;d}}",
+							"message": "La droite agrandie ne commence pas à ${{O}}$ : regarde entre quelles graduations de la droite du dessus elle est tirée.",
+							"label": "Zoom lu depuis le début de la droite"
+						},
+						{
+							"answer": "{{eval:(10*(O+u)+a+1)/10;d}}",
+							"message": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les bouts de la droite agrandie.** Sur la première droite, $B$ est entre ${{G}}$ et ${{D}}$ : la droite agrandie va de ${{G}}$ à ${{D}}$.",
+					"**Ce que vaut un petit intervalle.** De ${{G}}$ à ${{D}}$, l'unité est partagée en $10$ : chaque petit intervalle vaut $0.1$.",
+					"**Lire le point.** $B$ est à ${{a}}$ petits intervalles de ${{G}}$ : $B = \\textcolor{{{color:primary.0}}}{{{X}}}$.\n\n```line\nstart: {{O}}\nend: {{eval:O+9}}\nstep: 1\nlabels: {{O}}, {{eval:O+9}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.1 ; labels {{G}}, {{D}}\n```"
+				]
+			},
+			"hint": "Sur chaque droite agrandie, un petit intervalle vaut dix fois moins que sur la droite du dessus. Écris d'abord les nombres des deux bouts de chaque droite agrandie."
+		},
+		{
+			"statement": "Quel nombre repère le point $B$ ?\n\n```line\nstart: {{n}}\nend: {{eval:n+1}}\nstep: 0.1\nlabels: {{n}}, {{eval:n+1}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.01\n```\n\n$$B : ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..15"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "G",
+					"expression": "eval:(10*n+a)/10;d"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(10*n+a+1)/10;d"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(100*n+10*a+b)/100;d"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(10*n+a+b)/10;d}}",
+							"message": "Sur la droite agrandie, un petit intervalle ne vaut plus $0.1$ : de ${{G}}$ à ${{D}}$, le dixième est partagé en $10$, chaque petit intervalle vaut $0.01$.",
+							"label": "Pas de la droite du dessus gardé"
+						},
+						{
+							"answer": "{{G}}",
+							"message": "Tu as lu le bout gauche de la droite agrandie : $B$ est plus loin, compte les petits intervalles qui l'en séparent.",
+							"label": "Bout gauche du zoom"
+						},
+						{
+							"answer": "{{eval:(100*n+10*a+b+1)/100;d}}",
+							"message": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les bouts de la droite agrandie.** Sur la première droite, chaque petit intervalle vaut $0.1$ : $B$ est entre ${{G}}$ et ${{D}}$, les bouts de la droite agrandie.",
+					"**Ce que vaut un petit intervalle.** De ${{G}}$ à ${{D}}$, le dixième est partagé en $10$ : chaque petit intervalle vaut $0.01$.",
+					"**Lire le point.** $B$ est à ${{b}}$ petits intervalles de ${{G}}$ : $B = \\textcolor{{{color:primary.0}}}{{{X}}}$.\n\n```line\nstart: {{n}}\nend: {{eval:n+1}}\nstep: 0.1\nlabels: {{n}}, {{eval:n+1}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.01 ; labels {{G}}, {{D}}\n```"
+				]
+			},
+			"hint": "Sur chaque droite agrandie, un petit intervalle vaut dix fois moins que sur la droite du dessus. Écris d'abord les nombres des deux bouts de chaque droite agrandie."
+		},
+		{
+			"statement": "Quel nombre repère le point $B$ ?\n\n```line\nstart: {{n}}\nend: {{eval:n+1}}\nstep: 0.1\nlabels: {{n}}, {{eval:n+1}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.01\nzoom: {{H}} ; {{K}} ; step 0.001\n```\n\n$$B : ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..15"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "G",
+					"expression": "eval:(10*n+a)/10;d"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(10*n+a+1)/10;d"
+				},
+				{
+					"name": "H",
+					"expression": "eval:(100*n+10*a+b)/100;d"
+				},
+				{
+					"name": "K",
+					"expression": "eval:(100*n+10*a+b+1)/100;d"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(1000*n+100*a+10*b+c)/1000;d"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{H}}",
+							"message": "Tu t'es arrêté au premier zoom : $B$ se lit sur la dernière droite agrandie, au millième.",
+							"label": "Arrêt au premier zoom"
+						},
+						{
+							"answer": "{{eval:(100*n+10*a+b+c)/100;d}}",
+							"message": "Sur la dernière droite, un petit intervalle ne vaut plus $0.01$ : de ${{H}}$ à ${{K}}$, le centième est partagé en $10$, chaque petit intervalle vaut $0.001$.",
+							"label": "Pas de la droite du dessus gardé"
+						},
+						{
+							"answer": "{{eval:(1000*n+100*a+10*b+c+1)/1000;d}}",
+							"message": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Premier zoom.** Sur la première droite, chaque petit intervalle vaut $0.1$ : $B$ est entre ${{G}}$ et ${{D}}$. Sur cette droite agrandie, chaque petit intervalle vaut $0.01$.",
+					"**Deuxième zoom.** $B$ y est entre ${{H}}$ et ${{K}}$. Sur la dernière droite, chaque petit intervalle vaut $0.001$.",
+					"**Lire le point.** $B$ est à ${{c}}$ petits intervalles de ${{H}}$ : $B = \\textcolor{{{color:primary.0}}}{{{X}}}$.\n\n```line\nstart: {{n}}\nend: {{eval:n+1}}\nstep: 0.1\nlabels: {{n}}, {{eval:n+1}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.01 ; labels {{G}}, {{D}}\nzoom: {{H}} ; {{K}} ; step 0.001 ; labels {{H}}, {{K}}\n```"
+				]
+			},
+			"hint": "Sur chaque droite agrandie, un petit intervalle vaut dix fois moins que sur la droite du dessus. Écris d'abord les nombres des deux bouts de chaque droite agrandie."
+		},
+		{
+			"statement": "Le point $B$ repère un nombre. Écris ce nombre de trois façons.\n\n```line\nstart: {{n}}\nend: {{eval:n+1}}\nstep: 0.1\nlabels: {{n}}, {{eval:n+1}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.01\nzoom: {{H}} ; {{K}} ; step 0.001\n```\n\nEn écriture décimale : $B = ?$\n\nAvec sa partie entière et une fraction décimale plus petite que $1$ : $B = ?$\n\nAvec une seule fraction décimale : $B = ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..15"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "G",
+					"expression": "eval:(10*n+a)/10;d"
+				},
+				{
+					"name": "D",
+					"expression": "eval:(10*n+a+1)/10;d"
+				},
+				{
+					"name": "H",
+					"expression": "eval:(100*n+10*a+b)/100;d"
+				},
+				{
+					"name": "K",
+					"expression": "eval:(100*n+10*a+b+1)/100;d"
+				},
+				{
+					"name": "X",
+					"expression": "eval:(1000*n+100*a+10*b+c)/1000;d"
+				},
+				{
+					"name": "r",
+					"expression": "eval:100*a+10*b+c"
+				},
+				{
+					"name": "F",
+					"expression": "eval:1000*n+100*a+10*b+c"
+				}
+			],
+			"conditions": ["mod(c,2)==1", "c!=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{H}}",
+							"message": "Tu t'es arrêté au premier zoom : $B$ se lit sur la dernière droite agrandie, au millième.",
+							"label": "Arrêt au premier zoom"
+						},
+						{
+							"answer": "{{eval:(100*n+10*a+b+c)/100;d}}",
+							"message": "Sur la dernière droite, un petit intervalle ne vaut plus $0.01$ : de ${{H}}$ à ${{K}}$, le centième est partagé en $10$, chaque petit intervalle vaut $0.001$.",
+							"label": "Pas de la droite du dessus gardé"
+						},
+						{
+							"answer": "{{eval:(1000*n+100*a+10*b+c+1)/1000;d}}",
+							"message": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{n}}+\\frac{{{r}}}{1000}",
+					"requiredForm": {
+						"pattern": "{{n}} + p:integer & gte(1) & lt(w) / w:integer & (eq(10) | eq(100) | eq(1000))"
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{n}}+\\frac{{{r}}}{100}",
+							"message": "La partie décimale, c'est ${{r}}$ millièmes, pas ${{r}}$ centièmes.",
+							"label": "Millièmes écrits en centièmes"
+						},
+						{
+							"answer": "\\frac{{{r}}}{1000}",
+							"message": "Tu as oublié la partie entière : $B$ est plus grand que ${{n}}$.",
+							"label": "Partie entière oubliée"
+						},
+						{
+							"answer": "{{n}}+\\frac{{{c}}}{1000}",
+							"message": "Tu n'as gardé que le chiffre lu sur le dernier zoom : la partie décimale, c'est $0.{{a}}{{b}}{{c}}$, soit ${{r}}$ millièmes.",
+							"label": "Seul le dernier chiffre gardé"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\frac{{{F}}}{1000}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer & (eq(10) | eq(100) | eq(1000))"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{F}}}{100}",
+							"message": "${{X}}$, ce sont ${{n}}\\,{{a}}{{b}}{{c}}$ millièmes : le dénominateur est $1\\,000$.",
+							"label": "Millièmes écrits en centièmes"
+						},
+						{
+							"answer": "\\frac{{{eval:n+r}}}{1000}",
+							"message": "Tu as ajouté la partie entière au numérateur : ${{n}}$ unité{{if:n>1|s|}}, ce sont ${{n}}\\,000$ millièmes.",
+							"label": "Partie entière ajoutée au numérateur"
+						},
+						{
+							"answer": "\\frac{{{r}}}{1000}",
+							"message": "Tu as oublié la partie entière : $B$ est plus grand que ${{n}}$.",
+							"label": "Partie entière oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Premier zoom.** Sur la première droite, chaque petit intervalle vaut $0.1$ : $B$ est entre ${{G}}$ et ${{D}}$. Sur cette droite agrandie, chaque petit intervalle vaut $0.01$.",
+					"**Deuxième zoom.** $B$ y est entre ${{H}}$ et ${{K}}$. Sur la dernière droite, chaque petit intervalle vaut $0.001$.",
+					"**Lire le point.** $B$ est à ${{c}}$ petits intervalles de ${{H}}$ : $B = \\textcolor{{{color:primary.0}}}{{{X}}}$.\n\n```line\nstart: {{n}}\nend: {{eval:n+1}}\nstep: 0.1\nlabels: {{n}}, {{eval:n+1}}\npoints: B={{X}}\nzoom: {{G}} ; {{D}} ; step 0.01 ; labels {{G}}, {{D}}\nzoom: {{H}} ; {{K}} ; step 0.001 ; labels {{H}}, {{K}}\n```",
+					"**Partie entière et partie décimale.** ${{X}} = {{n}} + 0.{{a}}{{b}}{{c}}$ et $0.{{a}}{{b}}{{c}} = \\frac{{{r}}}{1\\,000}$ : $B = \\textcolor{{{color:primary.0}}}{{{n}} + \\frac{{{r}}}{1\\,000}}$.",
+					"**Une seule fraction décimale.** ${{n}}$ unité{{if:n>1|s|}}, ce sont ${{n}}\\,000$ millièmes ; avec ${{r}}$ millièmes de plus, ${{X}}$ fait ${{n}}\\,{{a}}{{b}}{{c}}$ millièmes : $B = \\textcolor{{{color:primary.0}}}{\\frac{{{n}}\\,{{a}}{{b}}{{c}}}{1\\,000}}$."
+				]
+			},
+			"hint": "Sur chaque droite agrandie, un petit intervalle vaut dix fois moins que sur la droite du dessus. Écris d'abord les nombres des deux bouts de chaque droite agrandie."
+		},
+		{
+			"statement": "Quel nombre repère le point $B$ ?\n\n```line\nstart: {{L}}\nend: {{eval:(m+1)*10^4}}\nstep: 1000\nlabels: {{L}}, {{eval:(m+1)*10^4}}\npoints: B={{X}}\nzoom: {{G1}} ; {{D1}} ; step 100\nzoom: {{G2}} ; {{D2}} ; step 10\n```\n\n$$B : ?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "L",
+					"expression": "eval:m*10^4"
+				},
+				{
+					"name": "G1",
+					"expression": "eval:L+a*10^3"
+				},
+				{
+					"name": "D1",
+					"expression": "eval:L+a*10^3+10^3"
+				},
+				{
+					"name": "G2",
+					"expression": "eval:L+a*10^3+b*10^2"
+				},
+				{
+					"name": "D2",
+					"expression": "eval:L+a*10^3+b*10^2+10^2"
+				},
+				{
+					"name": "X",
+					"expression": "eval:L+a*10^3+b*10^2+c*10^1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{G2}}",
+							"message": "Tu t'es arrêté au bout gauche de la dernière droite agrandie : $B$ est plus loin, compte les petits intervalles qui l'en séparent.",
+							"label": "Bout gauche du dernier zoom"
+						},
+						{
+							"answer": "{{eval:G2+c*10^2}}",
+							"message": "Sur la dernière droite, un petit intervalle ne vaut plus $100$ : de ${{m}}{{a}}\\,{{b}}00$ à ${{m}}{{a}}\\,{{eval:b+1}}00$, il est partagé en $10$, chaque petit intervalle vaut $10$.",
+							"label": "Pas de la droite du dessus gardé"
+						},
+						{
+							"answer": "{{eval:X+10^1}}",
+							"message": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Sur la première droite, de ${{m}}0\\,000$ à ${{eval:m+1}}0\\,000$, chaque petit intervalle vaut $1\\,000$ ; sur chaque droite agrandie, il vaut dix fois moins que sur la droite du dessus.",
+					"**Zoom 1.** $B$ est entre ${{m}}{{a}}\\,000$ et ${{m}}{{eval:a+1}}\\,000$ : sur cette droite agrandie, chaque petit intervalle vaut $100$.",
+					"**Zoom 2.** $B$ est entre ${{m}}{{a}}\\,{{b}}00$ et ${{m}}{{a}}\\,{{eval:b+1}}00$ : sur cette droite agrandie, chaque petit intervalle vaut $10$.",
+					"**Lire le point.** $B$ est à ${{c}}$ petits intervalles de ${{m}}{{a}}\\,{{b}}00$ : $B = \\textcolor{{{color:primary.0}}}{{{m}}{{a}}\\,{{b}}{{c}}0}$.\n\n```line\nstart: {{L}}\nend: {{eval:(m+1)*10^4}}\nstep: 1000\nlabels: {{L}}, {{eval:(m+1)*10^4}}\npoints: B={{X}}\nzoom: {{G1}} ; {{D1}} ; step 100 ; labels {{G1}}, {{D1}}\nzoom: {{G2}} ; {{D2}} ; step 10 ; labels {{G2}}, {{D2}}\n```"
+				]
+			},
+			"hint": "Sur chaque droite agrandie, un petit intervalle vaut dix fois moins que sur la droite du dessus. Écris d'abord les nombres des deux bouts de chaque droite agrandie."
+		},
+		{
+			"statement": "Quel nombre repère le point $B$ ?\n\n```line\nstart: {{L}}\nend: {{eval:(m+1)*10^6}}\nstep: 100000\nlabels: {{L}}, {{eval:(m+1)*10^6}}\npoints: B={{X}}\nzoom: {{G1}} ; {{D1}} ; step 10000\nzoom: {{G2}} ; {{D2}} ; step 1000\nzoom: {{G3}} ; {{D3}} ; step 100\n```\n\n$$B : ?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "d",
+					"expression": "2..8"
+				},
+				{
+					"name": "L",
+					"expression": "eval:m*10^6"
+				},
+				{
+					"name": "G1",
+					"expression": "eval:L+a*10^5"
+				},
+				{
+					"name": "D1",
+					"expression": "eval:L+a*10^5+10^5"
+				},
+				{
+					"name": "G2",
+					"expression": "eval:L+a*10^5+b*10^4"
+				},
+				{
+					"name": "D2",
+					"expression": "eval:L+a*10^5+b*10^4+10^4"
+				},
+				{
+					"name": "G3",
+					"expression": "eval:L+a*10^5+b*10^4+c*10^3"
+				},
+				{
+					"name": "D3",
+					"expression": "eval:L+a*10^5+b*10^4+c*10^3+10^3"
+				},
+				{
+					"name": "X",
+					"expression": "eval:L+a*10^5+b*10^4+c*10^3+d*10^2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{X}}",
+					"expectedErrors": [
+						{
+							"answer": "{{G3}}",
+							"message": "Tu t'es arrêté au bout gauche de la dernière droite agrandie : $B$ est plus loin, compte les petits intervalles qui l'en séparent.",
+							"label": "Bout gauche du dernier zoom"
+						},
+						{
+							"answer": "{{eval:G3+d*10^3}}",
+							"message": "Sur la dernière droite, un petit intervalle ne vaut plus $1\\,000$ : de ${{m}}\\,{{a}}{{b}}{{c}}\\,000$ à ${{m}}\\,{{a}}{{b}}{{eval:c+1}}\\,000$, il est partagé en $10$, chaque petit intervalle vaut $100$.",
+							"label": "Pas de la droite du dessus gardé"
+						},
+						{
+							"answer": "{{eval:X+10^2}}",
+							"message": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante.",
+							"label": "Graduations comptées au lieu des intervalles"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** Sur la première droite, de ${{m}}\\,000\\,000$ à ${{eval:m+1}}\\,000\\,000$, chaque petit intervalle vaut $100\\,000$ ; sur chaque droite agrandie, il vaut dix fois moins que sur la droite du dessus.",
+					"**Zoom 1.** $B$ est entre ${{m}}\\,{{a}}00\\,000$ et ${{m}}\\,{{eval:a+1}}00\\,000$ : sur cette droite agrandie, chaque petit intervalle vaut $10\\,000$.",
+					"**Zoom 2.** $B$ est entre ${{m}}\\,{{a}}{{b}}0\\,000$ et ${{m}}\\,{{a}}{{eval:b+1}}0\\,000$ : sur cette droite agrandie, chaque petit intervalle vaut $1\\,000$.",
+					"**Zoom 3.** $B$ est entre ${{m}}\\,{{a}}{{b}}{{c}}\\,000$ et ${{m}}\\,{{a}}{{b}}{{eval:c+1}}\\,000$ : sur cette droite agrandie, chaque petit intervalle vaut $100$.",
+					"**Lire le point.** $B$ est à ${{d}}$ petits intervalles de ${{m}}\\,{{a}}{{b}}{{c}}\\,000$ : $B = \\textcolor{{{color:primary.0}}}{{{m}}\\,{{a}}{{b}}{{c}}\\,{{d}}00}$.\n\n```line\nstart: {{L}}\nend: {{eval:(m+1)*10^6}}\nstep: 100000\nlabels: {{L}}, {{eval:(m+1)*10^6}}\npoints: B={{X}}\nzoom: {{G1}} ; {{D1}} ; step 10000 ; labels {{G1}}, {{D1}}\nzoom: {{G2}} ; {{D2}} ; step 1000 ; labels {{G2}}, {{D2}}\nzoom: {{G3}} ; {{D3}} ; step 100 ; labels {{G3}}, {{D3}}\n```"
+				]
+			},
+			"hint": "Sur chaque droite agrandie, un petit intervalle vaut dix fois moins que sur la droite du dessus. Écris d'abord les nombres des deux bouts de chaque droite agrandie."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : juste, virgule",
+			"variationIndex": 0,
+			"variables": {
+				"O": "6",
+				"u": "2",
+				"a": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8{,}6"]
+		},
+		{
+			"description": "v0 : juste, point",
+			"variationIndex": 0,
+			"variables": {
+				"O": "6",
+				"u": "2",
+				"a": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8.6"]
+		},
+		{
+			"description": "v0 : pas de 1 gardé",
+			"variationIndex": 0,
+			"variables": {
+				"O": "6",
+				"u": "2",
+				"a": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sur la droite agrandie, un petit intervalle ne vaut plus $1$ : l'unité de $8$ à $9$ y est partagée en $10$, chaque petit intervalle vaut $0.1$."
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "v0 : zoom lu depuis le début",
+			"variationIndex": 0,
+			"variables": {
+				"O": "6",
+				"u": "2",
+				"a": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La droite agrandie ne commence pas à $6$ : regarde entre quelles graduations de la droite du dessus elle est tirée."
+			},
+			"answers": ["6{,}6"]
+		},
+		{
+			"description": "v0 : graduations comptées",
+			"variationIndex": 0,
+			"variables": {
+				"O": "6",
+				"u": "2",
+				"a": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["8{,}7"]
+		},
+		{
+			"description": "v0 : un entier de plus",
+			"variationIndex": 0,
+			"variables": {
+				"O": "10",
+				"u": "5",
+				"a": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15{,}8"]
+		},
+		{
+			"description": "v1 : juste",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12{,}47"]
+		},
+		{
+			"description": "v1 : juste, point",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12.47"]
+		},
+		{
+			"description": "v1 : pas de 0,1 gardé",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sur la droite agrandie, un petit intervalle ne vaut plus $0.1$ : de $12.4$ à $12.5$, le dixième est partagé en $10$, chaque petit intervalle vaut $0.01$."
+			},
+			"answers": ["13{,}1"]
+		},
+		{
+			"description": "v1 : bout gauche",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu le bout gauche de la droite agrandie : $B$ est plus loin, compte les petits intervalles qui l'en séparent."
+			},
+			"answers": ["12{,}4"]
+		},
+		{
+			"description": "v1 : graduations comptées",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["12{,}48"]
+		},
+		{
+			"description": "v1 : zéro final accepté",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"a": "2",
+				"b": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}28"]
+		},
+		{
+			"description": "v2 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12{,}473"]
+		},
+		{
+			"description": "v2 : juste, point",
+			"variationIndex": 2,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12.473"]
+		},
+		{
+			"description": "v2 : arrêt au premier zoom",
+			"variationIndex": 2,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es arrêté au premier zoom : $B$ se lit sur la dernière droite agrandie, au millième."
+			},
+			"answers": ["12{,}47"]
+		},
+		{
+			"description": "v2 : pas de 0,01 gardé",
+			"variationIndex": 2,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sur la dernière droite, un petit intervalle ne vaut plus $0.01$ : de $12.47$ à $12.48$, le centième est partagé en $10$, chaque petit intervalle vaut $0.001$."
+			},
+			"answers": ["12{,}5"]
+		},
+		{
+			"description": "v2 : graduations comptées",
+			"variationIndex": 2,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["12{,}474"]
+		},
+		{
+			"description": "v2 : autre tirage",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"a": "8",
+				"b": "2",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5{,}826"]
+		},
+		{
+			"description": "v3 : juste",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12{,}473", "12+\\frac{473}{1\\,000}", "\\frac{12\\,473}{1\\,000}"]
+		},
+		{
+			"description": "v3 : fraction sans espace",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["12{,}473", "12+\\frac{473}{1\\,000}", "\\frac{12473}{1\\,000}"]
+		},
+		{
+			"description": "v3 : arrêt au premier zoom",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es arrêté au premier zoom : $B$ se lit sur la dernière droite agrandie, au millième."
+			},
+			"answers": ["12{,}47", "12+\\frac{473}{1\\,000}", "\\frac{12\\,473}{1\\,000}"]
+		},
+		{
+			"description": "v3 : millièmes en centièmes",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La partie décimale, c'est $473$ millièmes, pas $473$ centièmes."
+			},
+			"answers": ["12{,}473", "12+\\frac{473}{100}", "\\frac{12\\,473}{1\\,000}"]
+		},
+		{
+			"description": "v3 : partie entière oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié la partie entière : $B$ est plus grand que $12$."
+			},
+			"answers": ["12{,}473", "\\frac{473}{1\\,000}", "\\frac{12\\,473}{1\\,000}"]
+		},
+		{
+			"description": "v3 : seul le dernier chiffre",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as gardé que le chiffre lu sur le dernier zoom : la partie décimale, c'est $0.473$, soit $473$ millièmes."
+			},
+			"answers": ["12{,}473", "12+\\frac{3}{1\\,000}", "\\frac{12\\,473}{1\\,000}"]
+		},
+		{
+			"description": "v3 : fraction sur 100",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$12.473$, ce sont $12\\,473$ millièmes : le dénominateur est $1\\,000$."
+			},
+			"answers": ["12{,}473", "12+\\frac{473}{1\\,000}", "\\frac{12\\,473}{100}"]
+		},
+		{
+			"description": "v3 : partie entière au numérateur",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté la partie entière au numérateur : $12$ unités, ce sont $12\\,000$ millièmes."
+			},
+			"answers": ["12{,}473", "12+\\frac{473}{1\\,000}", "\\frac{485}{1\\,000}"]
+		},
+		{
+			"description": "v3 : décimal dans la 3e case",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["12{,}473", "12+\\frac{473}{1\\,000}", "12{,}473"]
+		},
+		{
+			"description": "v3 : somme dans la 3e case",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12",
+				"a": "4",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["12{,}473", "12+\\frac{473}{1\\,000}", "12+\\frac{473}{1\\,000}"]
+		},
+		{
+			"description": "v3 : une unité",
+			"variationIndex": 3,
+			"variables": {
+				"n": "1",
+				"a": "2",
+				"b": "8",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}287", "1+\\frac{287}{1\\,000}", "\\frac{1\\,287}{1\\,000}"]
+		},
+		{
+			"description": "v4 : juste",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["46\\,370"]
+		},
+		{
+			"description": "v4 : sans espace",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["46370"]
+		},
+		{
+			"description": "v4 : bout gauche du dernier zoom",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es arrêté au bout gauche de la dernière droite agrandie : $B$ est plus loin, compte les petits intervalles qui l'en séparent."
+			},
+			"answers": ["46\\,300"]
+		},
+		{
+			"description": "v4 : pas de 100 gardé",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sur la dernière droite, un petit intervalle ne vaut plus $100$ : de $46\\,300$ à $46\\,400$, il est partagé en $10$, chaque petit intervalle vaut $10$."
+			},
+			"answers": ["47\\,000"]
+		},
+		{
+			"description": "v4 : graduations comptées",
+			"variationIndex": 4,
+			"variables": {
+				"m": "4",
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["46\\,380"]
+		},
+		{
+			"description": "v4 : jusqu'à 100 000",
+			"variationIndex": 4,
+			"variables": {
+				"m": "9",
+				"a": "8",
+				"b": "2",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["98\\,250"]
+		},
+		{
+			"description": "v5 : juste",
+			"variationIndex": 5,
+			"variables": {
+				"m": "3",
+				"a": "5",
+				"b": "2",
+				"c": "7",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3\\,527\\,400"]
+		},
+		{
+			"description": "v5 : sans espace",
+			"variationIndex": 5,
+			"variables": {
+				"m": "3",
+				"a": "5",
+				"b": "2",
+				"c": "7",
+				"d": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"answers": ["3527400"]
+		},
+		{
+			"description": "v5 : bout gauche du dernier zoom",
+			"variationIndex": 5,
+			"variables": {
+				"m": "3",
+				"a": "5",
+				"b": "2",
+				"c": "7",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu t'es arrêté au bout gauche de la dernière droite agrandie : $B$ est plus loin, compte les petits intervalles qui l'en séparent."
+			},
+			"answers": ["3\\,527\\,000"]
+		},
+		{
+			"description": "v5 : pas de 1 000 gardé",
+			"variationIndex": 5,
+			"variables": {
+				"m": "3",
+				"a": "5",
+				"b": "2",
+				"c": "7",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sur la dernière droite, un petit intervalle ne vaut plus $1\\,000$ : de $3\\,527\\,000$ à $3\\,528\\,000$, il est partagé en $10$, chaque petit intervalle vaut $100$."
+			},
+			"answers": ["3\\,531\\,000"]
+		},
+		{
+			"description": "v5 : graduations comptées",
+			"variationIndex": 5,
+			"variables": {
+				"m": "3",
+				"a": "5",
+				"b": "2",
+				"c": "7",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les graduations, celle du bout gauche comprise : compte plutôt les bonds d'une graduation à la suivante."
+			},
+			"answers": ["3\\,527\\,500"]
+		},
+		{
+			"description": "v5 : autre tirage",
+			"variationIndex": 5,
+			"variables": {
+				"m": "9",
+				"a": "2",
+				"b": "8",
+				"c": "3",
+				"d": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9\\,283\\,600"]
+		}
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Décimaux : numération > droite graduée",
+		"point": "6-108"
+	}
+}

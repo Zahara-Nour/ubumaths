@@ -1,0 +1,15 @@
+{
+	"migration": "supabase/migrations/20261124070206_questions_droite_zoom_modeles_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "6dba93c8-b8e6-4888-843b-ac9f821c4a7e",
+			"title": "Lire une abscisse grâce à des zooms",
+			"fichier": "01-lire-une-abscisse-grace-a-des-zooms.json",
+			"branche": "Nombres et calculs",
+			"notion": "Décimaux : numération",
+			"sousNotion": "droite graduée",
+			"point": "6-108"
+		}
+	],
+	"niveaux": []
+}

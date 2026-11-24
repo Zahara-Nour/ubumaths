@@ -36,6 +36,7 @@ couvre:
   - scripts/surveillance-machine-installer.sh
   - scripts/menage-machine.sh
   - scripts/machine-commun.sh
+  - scripts/bilan-machine.sh
   - 'scripts/durees/**'
 ---
 
@@ -179,9 +180,17 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
   par programme (« Playwright × 3 (le plus vieux : 10 j) »). Personne ne lira plus leur résultat ;
   un test dont la session vit encore n'est jamais touché ;
 - serveur de dev de plus de 1,5 Go ou de plus de 6 h, Chrome au-delà de 600 % de CPU ou de 60
-  onglets, swap au-delà de 85 %, extension de Chrome ou de Brave bloquée (plus de 90 % de CPU et
-  plus d'une heure de CPU cumulée) → **signalés seulement** (seuils en tête du script). Une extension
-  bloquée s'arrête par `kill <pid>` (pid dans le journal) : le navigateur la relance ;
+  onglets, swap au-delà de 85 % → **signalés seulement** (seuils en tête du script) ;
+- **processus emballé, quel qu'il soit** (plus de 90 % de CPU et plus d'une heure de CPU cumulée :
+  extension, processus graphique de Chrome — 12 jours à 100 % le 2026-11-22 —, autre programme),
+  deux passages de suite → **signalé seulement**, nommé par son rôle (« Chrome (processus graphique) emballé ») ; un
+  programme hors de la liste des programmes connus devient « un processus » (jamais le nom d'un
+  projet) ; pid au journal, `kill <pid>` (un navigateur relance son processus) ;
+- **programme bloqué** : au moins 3 processus morts depuis plus de 10 min qu'il ne ramasse plus
+  (Chrome le 2026-11-22, Brave le 24 : « Quitter » sans réponse), deux passages de suite → **signalé** (« Brave ne
+  répond plus ») ; le relancer, de force s'il le faut ;
+- **vieilles sessions Claude** : 10 ou plus ouvertes depuis plus de 7 jours → **signalé**, au
+  plus une fois par jour (elles gardent leur contexte en mémoire et remplissent le swap) ;
 - signalement = notification ntfy.sh sur l'iPhone (canal aléatoire dans
   `~/.config/surveillance-machine/ntfy-topic`, message sans chemin ni nom de projet) + journal
   `~/.local/state/surveillance-machine/journal.log` ; même alerte renvoyée au plus une fois par heure.
@@ -189,6 +198,9 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
   résumé dans la notification ;
 - moins de **15 Go libres** sur le volume des données (`/System/Volumes/Data`, pas `/` qui ne
   montre que le système) → **signalé** ;
+- **disque qui fond** : plus de 5 Go perdus en 24 h (Go libres d'il y a 20 à 24 h dans
+  l'historique, face à maintenant ; Mac éteint ou endormi dans cette fenêtre : rien ce jour-là) →
+  **signalé**, au plus une fois par jour ;
 - **« RAS » quotidien** : au premier passage après 9 h, une notification (charge, swap, disque) qui
   prouve que la surveillance tourne, même un jour d'alertes ; Mac endormi à 9 h → au réveil. Il
   ajoute « · N worktrees en danger » quand des worktrees portent des fichiers non commités ou des
@@ -204,6 +216,17 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
   (charge, pression, swap, CPU de Chrome et Brave, serveurs de dev, processus Claude, Go libres du
   disque), 14 jours gardés ; colonnes changées → l'ancien fichier devient `historique-ancien.csv`. Après un gel : `pnpm surveillance:historique` (2 dernières heures) ;
 - `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter, envoyer ni écrire.
+
+**Bilan du Mac mini** : `pnpm machine:bilan` (`scripts/bilan-machine.sh`) affiche l'état de la
+machine en une page, à la demande, sans rien arrêter, envoyer ni écrire : charge, mémoire
+(pression, compressée, swap), programmes qui prennent le plus de mémoire et de CPU, **processus
+emballés** (n'importe quel processus à plus de 90 % de CPU avec plus d'une heure de CPU cumulée,
+nommé par son rôle : « Chrome (processus graphique) »), **parent qui ne ramasse plus ses processus
+morts** (3 ou plus : le programme ne répond sans doute plus — Chrome le 2026-11-22), navigateur
+ouvert depuis plus de 7 jours, sessions Claude par âge, serveurs de dev (port, worktree, âge,
+mémoire), processus de test orphelins, disque libre, volume Preboot au-delà de 10 Go (mise à jour de
+macOS préparée), nombre de worktrees, Time Machine, et la tendance des 24 dernières heures tirée de
+l'historique de la surveillance. Affichage local : les noms de worktree y figurent.
 
 **Durées de la CI, des PR, de la mise en prod et du Mac mini** : `pnpm durees` (`scripts/durees/`),
 pour voir une phase devenue nettement plus lente que la normale.

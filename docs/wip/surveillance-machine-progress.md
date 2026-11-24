@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-22, après #2931 (worktrees finis supprimés)._
+_Mis à jour le 2026-11-24, après #3072._
 
-- **État** : #2906, #2910, #2916, #2921, #2930, #2931 mergés ; dépôt principal à jour, launchd lance les scripts. #2931 : worktrees en danger comptés dans le « RAS » (`pnpm surveillance:worktrees` pour les noms), redémarrage signalé (« plantage du système » si rapport `*panic*`).
-- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees portent du travail qui n'existe nulle part ailleurs (2 articles du Shtam jamais commités !) ; ✅ 6 worktrees finis + 4 dossiers vides supprimés le 2026-11-22 (go de David) ; Time Machine non configuré ; mise à jour de macOS en attente (~15 Go).
-- **À vérifier** : premier « RAS » demain matin (avec « · 4 worktrees en danger ») ; Playwright orphelin (pid 699) fermé.
-- **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; sinon clore le chantier (archivage du journal ; doc déjà dans `docs/pratiques/environnement-de-dev.md`).
-- **Pièges** : CI sous Linux → `date_modif` / `date_de` (machine-commun.sh), jamais `stat -f` ni `date -r` nus ; `kern.boottime` bouge de quelques secondes (tolérance 2 min) ; `git status` quote les accents sans `core.quotePath=false` ; disque = `/System/Volumes/Data` ; `chrome_crashpad_handler` toujours en ppid 1.
+- **État** : #2906 … #2931, #3069 (`pnpm machine:bilan`), #3072 (4 alertes : processus emballé quelconque et programme bloqué sur 2 passages, ≥ 10 sessions Claude de plus de 7 j, disque > 5 Go perdus en 24 h — ces deux-là 1×/jour) mergés ; dépôt principal à jour, launchd lance les nouveaux scripts.
+- **À vérifier** : premières vraies alertes des 4 nouvelles (faux positifs ? WindowServer, zombies) ; ajuster les seuils au besoin (en tête de `surveillance-machine.sh` et de `machine-commun.sh`).
+- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees à travail unique (2 articles du Shtam jamais commités) ; Time Machine non configuré ; mise à jour de macOS (Preboot 20 Go).
+- **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; sinon clore le chantier (archivage du journal ; doc dans `docs/pratiques/environnement-de-dev.md`).
+- **Pièges** : CI sous Linux → `date_modif` / `date_de`, jamais `stat -f` ni `date -r` nus ; faux `ps` des tests aiguillés par les champs demandés (`ppid=` contient `pid=`) ; `git -C ""` = dossier courant ; `kern.boottime` bouge de quelques secondes ; disque = `/System/Volumes/Data`.
 - **Worktree / branche** : aucun.
 
 ## Contexte
@@ -57,3 +57,19 @@ Restent, côté David :
 - Phase 0 : « en danger » = fichiers non commités ou commits poussés nulle part, intouchés depuis 7 jours, dépôt principal exclu, worktrees d'agents compris. Question posée : rappel quotidien dans le « RAS » (ma recommandation) ou notification du lundi → David : « je te suis » en réponse à cette question → rappel dans le « RAS ».
 - Redémarrage : `kern.boottime` comparé à la marque `demarrage` ; premier passage = noté sans envoi ; « (plantage du système) » si `*panic*` ou `Kernel*` dans `/Library/Logs/DiagnosticReports` est plus récent que le démarrage précédent.
 - Essai réel : 4 worktrees en danger (relecture 40 j, shtam-rsa 44 j, questions-2de 14 j, evaluation-numerique 18 j), les mêmes que le relevé à la main ; 2,3 s pour les 18 worktrees (une fois par jour seulement).
+
+## 2026-11-24 — bilan à la demande
+
+- 2026-11-22 : Chrome bloqué depuis 12 jours — processus graphique et 2 extensions à 100 % chacun, processus morts jamais ramassés, « Quitter » sans réponse (AppleEvent -1712). Les 3 processus arrêtés puis Chrome fermé de force (`kill -KILL`) et relancé. La surveillance ne voyait que les extensions, pas le processus graphique ni le blocage.
+- `pnpm machine:bilan` (`scripts/bilan-machine.sh`, lecture seule) : l'état en une page, dont deux choses que la surveillance ne regarde pas — processus emballé quel qu'il soit, parent qui ne ramasse plus ses processus morts (≥ 3) — plus sessions Claude par âge, Preboot, Time Machine, tendance 24 h. Tests : `scripts/__tests__/bilan-machine.test.ts` (vérifiés rouges en cassant le seuil et le nom du processus graphique).
+- Premier passage réel (2026-11-24) : **Brave bloqué** (15 processus morts non ramassés, AppleEvent sans réponse en 10 s), 35 sessions Claude (6,9 Go, 11 de plus de 7 jours), swap 85-96 % sur 24 h, disque 21 → 16 Go libres en 24 h, Preboot 20 Go.
+- Proposé à David, en attente : faire entrer dans la SURVEILLANCE (alertes) le processus emballé quelconque et le navigateur bloqué ; sessions Claude anciennes ; disque qui fond vite.
+- #3069 mergée (revue Sonnet : 5 points corrigés — `lsof` muet, `tmutil` sans pipe, ancien historique, navigateurs à part, `LC_ALL=C ps`). Brave relancé de force le 2026-11-24 (TERM ignoré).
+
+## 2026-11-24 — 4 alertes
+
+- David : « ajoute les 4 ». Fonctions partagées bilan / surveillance dans `machine-commun.sh` : `processus_emballes`, `parents_bloques`, `sessions_claude`, `nom_lisible`, `nom_pour_notification` (hors `PROGRAMMES_CONNUS` → « un processus »).
+- L'alerte « Extension X bloquée » devient « X (extension) emballé » et couvre tout processus. `a_renvoyer <clé> [minutes]` : sessions et disque qui fond, une fois par jour.
+- Essai à blanc sur le Mac : « Sessions Claude : 10 ouvertes depuis plus de 7 jours (35 en tout, 6 Go) ». Disque : 20 → 19 Go en 24 h, rien.
+- Tests vérifiés rouges sur le script de `main` (4 nouveaux).
+- Revue Sonnet : emballé et bloqué exigent 2 passages de suite (`emballes-vus`, `bloques-vus`, < 11 min) — WindowServer ou un zombie ramassé juste après le passage ; disque : « plus de 5 » strict ; Mac éteint dans la fenêtre 20-24 h → rien, documenté. Laissés : sessions `claude` enfants comptées (léger surplus), marques par pid jamais nettoyées.
