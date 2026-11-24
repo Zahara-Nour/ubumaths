@@ -70,6 +70,15 @@ def variation(statement, variables, blanks, steps, hint, conditions=None):
             'blanks': blanks, 'correction': {'steps': steps}, 'hint': hint}
 
 
+RANGEMENT = {
+    'f05-tangente-composee': ('Fonctions > Dérivation > fonctions composées', 'TSPE-413'),
+    'f06-variations-composee': ('Fonctions > Dérivation > variations et extremums', 'TSPE-416'),
+    'f07-variations-auxiliaire-homographique': ('Fonctions > Dérivation > variations et extremums', 'TSPE-416'),
+    'f11-signe-derivees-sur-courbe': ('Fonctions > Convexité > caractérisations', 'TSPE-419'),
+    'f12-reconnaitre-courbe-depuis-f-seconde': ('Fonctions > Convexité > dérivée seconde', 'TSPE-590'),
+}
+
+
 def ecrire(nom, m):
     os.makedirs(DOSSIER, exist_ok=True)
     chemin = os.path.join(DOSSIER, nom + '.json')
@@ -79,6 +88,11 @@ def ecrire(nom, m):
             ancien = json.load(f)
         if 'id' in ancien:
             m = {'id': ancien['id'], **m}
+    # Rangement (nœud + point) relevé en prod le 2026-11-24, lu par migration-rangement.ts
+    if nom in RANGEMENT:
+        noeud, point = RANGEMENT[nom]
+        tete = {k: m[k] for k in ('id',) if k in m}
+        m = {**tete, 'rangement': {'noeud': noeud, 'point': point}, **{k: v for k, v in m.items() if k != 'id'}}
     with open(chemin, 'w', encoding='utf-8') as f:
         json.dump(m, f, ensure_ascii=False, indent=2)
         f.write('\n')

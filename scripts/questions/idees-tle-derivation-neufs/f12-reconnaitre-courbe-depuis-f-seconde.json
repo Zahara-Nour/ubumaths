@@ -1,5 +1,9 @@
 {
 	"id": "02253f0a-6357-4c06-be35-4982684860e2",
+	"rangement": {
+		"noeud": "Fonctions > Convexité > dérivée seconde",
+		"point": "TSPE-590"
+	},
 	"title": "Reconnaître une courbe à partir de celle de f″",
 	"description": "La courbe de f″ (droite) est donnée : reconnaître parmi quatre celle de f (convexité, point d'inflexion) ou celle de f′ (variations) (pièges : courbe opposée, décalée, mauvaise dérivée)",
 	"grades": ["T_SPE"],

@@ -1,5 +1,9 @@
 {
 	"id": "1a82084b-e8c8-4482-8826-8f4a4ed1619a",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "TSPE-416"
+	},
 	"title": "Variations d'une fonction uⁿ, eᵘ ou √u",
 	"description": "Dériver uⁿ, eᵘ ou √u (u du second degré sans racine), étudier le signe de f′ et compléter le tableau de variations : x₀, signes, extremum, flèches (pièges : signe de x₀, u(x₀) au lieu de f(x₀))",
 	"grades": ["T_SPE"],

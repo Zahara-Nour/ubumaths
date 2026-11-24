@@ -1,0 +1,5767 @@
+{
+	"migration": "supabase/migrations/20261124062325_questions_idees_tle_derivation_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "08f9ad7b-7885-474f-b0a1-630a8847140e",
+			"title": "Abscisse d'un point d'inflexion",
+			"fichier": "08f9ad7b.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:-b/(3*a)}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{b;+}}x^2{{c;+}}x{{d;+}}$.\n\nLa courbe de $f$ admet un point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "-9..9"
+							},
+							{
+								"name": "d",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)={{eval:3*a}}x^2{{eval:2*b;+}}x{{c;+}}$ et $f''(x)={{eval:6*a}}x{{eval:2*b;+}}$.",
+								"$f''$ est affine : elle s'annule en changeant de signe en $x=\\textcolor{{{color:primary.0}}}{{{eval:-b/(3*a)}}}$, abscisse du point d'inflexion."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{q}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur $\\mathbb{R}$ telle que, pour tout réel $x$, $f''(x)=(x{{eval:-p;+}})^2(x{{eval:-q;+}})$.\n\nLa courbe de $f$ admet un unique point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "-5..5"
+							},
+							{
+								"name": "q",
+								"expression": "-5..5"
+							}
+						],
+						"conditions": ["p != q"],
+						"correction": {
+							"steps": [
+								"$(x{{eval:-p;+}})^2\\geqslant 0$ : $f''(x)$ est du signe de $x{{eval:-q;+}}$ (et nul en ${{p}}$).",
+								"En $x={{p}}$, $f''$ s'annule **sans changer de signe** : pas d'inflexion.",
+								"En $x={{q}}$, $f''$ change de signe : l'abscisse du point d'inflexion est $\\textcolor{{{color:primary.0}}}{{{q}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(2*a-b)/a}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{b;+}})e^{-x}$.\n\nLa courbe de $f$ admet un point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "-6..6"
+							}
+						],
+						"conditions": ["a-b != 0", "2*a-b != 0"],
+						"correction": {
+							"steps": [
+								"Avec $(uv)'=u'v+uv'$ et $(e^{-x})'=-e^{-x}$ : $f'(x)={{a}}e^{-x}-({{a}}x{{b;+}})e^{-x}$, soit $f'(x)=({{eval:-a}}x{{eval:a-b;+}})e^{-x}$.",
+								"De même : $f''(x)={{eval:-a}}e^{-x}-({{eval:-a}}x{{eval:a-b;+}})e^{-x}$, soit $f''(x)=({{a}}x{{eval:b-2*a;+}})e^{-x}$, du signe de ${{a}}x{{eval:b-2*a;+}}$ car $e^{-x}>0$.",
+								"$f''$ s'annule en changeant de signe en $x=\\textcolor{{{color:primary.0}}}{{{eval:(2*a-b)/a}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-6",
+							"c": "0",
+							"d": "1"
+						},
+						"description": "v0 : x³−6x²+… → 2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-6",
+							"c": "0",
+							"d": "1"
+						},
+						"description": "v0 : racine de f′ (extremum)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-6",
+							"c": "0",
+							"d": "1"
+						},
+						"description": "v0 : −b/a sans le 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "0",
+							"d": "0"
+						},
+						"description": "v0 : fraction 2x³+x² → −1/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{2}{12}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "0",
+							"d": "0"
+						},
+						"description": "v0 : fraction non simplifiée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "1",
+							"q": "-2"
+						},
+						"description": "v1 : (x−1)²(x+2) → −2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "1",
+							"q": "-2"
+						},
+						"description": "v1 : racine double (pas de changement de signe)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "1",
+							"q": "-2"
+						},
+						"description": "v1 : signe de la racine faux",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "1"
+						},
+						"description": "v2 : (x+1)e^{−x} → 1",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "1"
+						},
+						"description": "v2 : racine de ax+b",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "1"
+						},
+						"description": "v2 : racine de f′",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "v2 : 2x+1 → 3/2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "v2 : décimal",
+						"variationIndex": 2
+					}
+				],
+				"description": "f″ s'annule EN CHANGEANT DE SIGNE (piège : racine double de f″, sans changement de signe)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:-b/(3*a)}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{b;+}}x^2{{c;+}}x{{d;+}}$.\n\nLa courbe de $f$ admet un point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "-9..9"
+							},
+							{
+								"name": "d",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)={{eval:3*a}}x^2{{eval:2*b;+}}x{{c;+}}$ et $f''(x)={{eval:6*a}}x{{eval:2*b;+}}$.",
+								"$f''$ est affine : elle s'annule en changeant de signe en $x=\\textcolor{{{color:primary.0}}}{{{eval:-b/(3*a)}}}$, abscisse du point d'inflexion."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{q}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur $\\mathbb{R}$ telle que, pour tout réel $x$, $f''(x)=(x{{eval:-p;+}})^2(x{{eval:-q;+}})$.\n\nLa courbe de $f$ admet un unique point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "-5..5"
+							},
+							{
+								"name": "q",
+								"expression": "-5..5"
+							}
+						],
+						"conditions": ["p != q"],
+						"correction": {
+							"steps": [
+								"$(x{{eval:-p;+}})^2\\geqslant 0$ : $f''(x)$ est du signe de $x{{eval:-q;+}}$ (et nul en ${{p}}$).",
+								"En $x={{p}}$, $f''$ s'annule **sans changer de signe** : pas d'inflexion.",
+								"En $x={{q}}$, $f''$ change de signe : l'abscisse du point d'inflexion est $\\textcolor{{{color:primary.0}}}{{{q}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(2*a-b)/a}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{b;+}})e^{-x}$.\n\nLa courbe de $f$ admet un point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "-6..6"
+							}
+						],
+						"conditions": ["a-b != 0", "2*a-b != 0"],
+						"correction": {
+							"steps": [
+								"Avec $(uv)'=u'v+uv'$ et $(e^{-x})'=-e^{-x}$ : $f'(x)={{a}}e^{-x}-({{a}}x{{b;+}})e^{-x}$, soit $f'(x)=({{eval:-a}}x{{eval:a-b;+}})e^{-x}$.",
+								"De même : $f''(x)={{eval:-a}}e^{-x}-({{eval:-a}}x{{eval:a-b;+}})e^{-x}$, soit $f''(x)=({{a}}x{{eval:b-2*a;+}})e^{-x}$, du signe de ${{a}}x{{eval:b-2*a;+}}$ car $e^{-x}>0$.",
+								"$f''$ s'annule en changeant de signe en $x=\\textcolor{{{color:primary.0}}}{{{eval:(2*a-b)/a}}}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:s*(x^3-3*x0*x^2+3*(x0^2-r^2)*x)+d}}$.\n\nLa courbe de $f$ admet un unique point d'inflexion. Quelle est son **ordonnée** ?\n\n$y=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "s",
+								"expression": "1|-1"
+							},
+							{
+								"name": "x0",
+								"expression": "-2..2"
+							},
+							{
+								"name": "r",
+								"expression": "1..2"
+							},
+							{
+								"name": "d",
+								"expression": "-5..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:s*(x0^3-3*r^2*x0)+d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{x0}}",
+										"message": "${{x0}}$ est l'abscisse du point d'inflexion : son ordonnée est $f({{x0}})$.",
+										"label": "Abscisse donnée"
+									},
+									{
+										"answer": "0",
+										"message": "C'est $f''({{x0}})$ qui est nul : l'ordonnée du point d'inflexion est $f({{x0}})$.",
+										"label": "f″(x₀) donné"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)={{eval:s*(3*x^2-6*x0*x+3*(x0^2-r^2))}}$ et $f''(x)={{eval:s*(6*x-6*x0)}}$, qui s'annule en changeant de signe en $x={{x0}}$.",
+								"L'ordonnée du point d'inflexion est $f({{x0}})=\\textcolor{{{color:primary.0}}}{ {{eval:s*(x0^3-3*r^2*x0)+d}} }$."
+							]
+						},
+						"hint": "Trouve d'abord l'abscisse du point d'inflexion avec $f''$, puis calcule l'image de cette abscisse par $f$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-6",
+							"c": "0",
+							"d": "1"
+						},
+						"description": "v0 : x³−6x²+… → 2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-6",
+							"c": "0",
+							"d": "1"
+						},
+						"description": "v0 : racine de f′ (extremum)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-6",
+							"c": "0",
+							"d": "1"
+						},
+						"description": "v0 : −b/a sans le 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{1}{6}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "0",
+							"d": "0"
+						},
+						"description": "v0 : fraction 2x³+x² → −1/6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-\\frac{2}{12}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"c": "0",
+							"d": "0"
+						},
+						"description": "v0 : fraction non simplifiée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "1",
+							"q": "-2"
+						},
+						"description": "v1 : (x−1)²(x+2) → −2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "1",
+							"q": "-2"
+						},
+						"description": "v1 : racine double (pas de changement de signe)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "1",
+							"q": "-2"
+						},
+						"description": "v1 : signe de la racine faux",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "1"
+						},
+						"description": "v2 : (x+1)e^{−x} → 1",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "1"
+						},
+						"description": "v2 : racine de ax+b",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "1"
+						},
+						"description": "v2 : racine de f′",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "v2 : 2x+1 → 3/2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "v2 : décimal",
+						"variationIndex": 2
+					},
+					{
+						"description": "F16 : x³ − 3x² − 9x + 3 → −8",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"x0": "1",
+							"r": "2",
+							"d": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-8"]
+					},
+					{
+						"description": "F16 : abscisse donnée",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"x0": "1",
+							"r": "2",
+							"d": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$1$ est l'abscisse du point d'inflexion : son ordonnée est $f\\left( 1 \\right)$."
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F16 : f″(x₀)",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"x0": "1",
+							"r": "2",
+							"d": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F16 : s = −1, x0 = −2",
+						"variationIndex": 3,
+						"variables": {
+							"s": "-1",
+							"x0": "-2",
+							"r": "1",
+							"d": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2"]
+					}
+				],
+				"description": "f″ s'annule EN CHANGEANT DE SIGNE (piège : racine double de f″, sans changement de signe)"
+			},
+			"changements": {
+				"ajoutees": [4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "225c8682-ad81-44c1-b821-e94af0530958",
+			"title": "Convexité : lecture sur la courbe de f″",
+			"fichier": "225c8682.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-{{h}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une droite qui coupe l'axe des abscisses.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\mathbb{R}$\n- $\\left[0\\,;+\\infty\\right[$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-3..3"
+							}
+						],
+						"conditions": ["h != 0"],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f''(x)\\geqslant 0$, c'est-à-dire là où la courbe de $f''$ est **au-dessus** de l'axe des abscisses.",
+								"$f''$ s'annule en ${{h}}$ et est positive {{if:s>0|à droite|à gauche}} : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$. (Que $f''$ soit {{if:s>0|croissante|décroissante}} ne dit rien de la convexité de $f$.)"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "2",
+							"s": "1"
+						},
+						"description": "v0 : f″ ≥ 0 à droite",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "2",
+							"s": "1"
+						},
+						"description": "v0 : f″ croissante ≠ f convexe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "-2",
+							"s": "-1"
+						},
+						"description": "v0 : s=−1",
+						"variationIndex": 0
+					}
+				],
+				"description": "Lire l'intervalle où f est convexe sur la courbe de f″ (f″ ⩾ 0)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-{{h}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une droite qui coupe l'axe des abscisses.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\mathbb{R}$\n- $\\left[0\\,;+\\infty\\right[$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-3..3"
+							}
+						],
+						"conditions": ["h != 0"],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f''(x)\\geqslant 0$, c'est-à-dire là où la courbe de $f''$ est **au-dessus** de l'axe des abscisses.",
+								"$f''$ s'annule en ${{h}}$ et est positive {{if:s>0|à droite|à gauche}} : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$. (Que $f''$ soit {{if:s>0|croissante|décroissante}} ne dit rien de la convexité de $f$.)"
+							]
+						}
+					},
+					{
+						"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*0.5*(x-{{a}})*(x-{{b}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une parabole tournée vers le {{if:s>0|haut|bas}} qui coupe l'axe des abscisses en x = {{a}} et x = {{b}}.\n```\n\nSur quel ensemble la fonction $f$ est-elle **convexe** ? Donne un intervalle ou une réunion d'intervalles.\n\n$S=?$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "1|-1"
+							},
+							{
+								"name": "a",
+								"expression": "-3..1"
+							},
+							{
+								"name": "b",
+								"expression": "-1..3"
+							}
+						],
+						"conditions": ["b - a >= 2"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:s>0|]-\\infty;{{a}}]\\cup[{{b}};+\\infty[|[{{a}};{{b}}]}}",
+								"answerKind": "intervalles",
+								"openableBounds": true,
+								"expectedErrors": [
+									{
+										"answer": "{{if:s>0|[{{a}};{{b}}]|]-\\infty;{{a}}]\\cup[{{b}};+\\infty[}}",
+										"message": "C'est l'ensemble où $f''(x)\\leqslant 0$ : $f$ y est concave.",
+										"label": "Concavité donnée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f''(x)\\geqslant 0$, c'est-à-dire là où la courbe de $f''$ est **au-dessus** de l'axe des abscisses.",
+								"$f''$ s'annule en ${{a}}$ et en ${{b}}$ ; elle est positive {{if:s>0|à l'extérieur de ses racines|entre ses racines}} : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{ {{if:s>0|\\left]-\\infty\\,;{{a}}\\right]\\cup\\left[{{b}}\\,;+\\infty\\right[|\\left[{{a}}\\,;{{b}}\\right]}} }$."
+							]
+						},
+						"hint": "Repère où la courbe de $f''$ est au-dessus de l'axe des abscisses."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "2",
+							"s": "1"
+						},
+						"description": "v0 : f″ ≥ 0 à droite",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "2",
+							"s": "1"
+						},
+						"description": "v0 : f″ croissante ≠ f convexe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "-2",
+							"s": "-1"
+						},
+						"description": "v0 : s=−1",
+						"variationIndex": 0
+					},
+					{
+						"description": "F9 : s = 1, extérieur",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"a": "-2",
+							"b": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["]-\\infty;-2]\\cup[1;+\\infty["]
+					},
+					{
+						"description": "F9 : s = 1, bornes ouvertes",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"a": "-2",
+							"b": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["]-\\infty;-2[\\cup]1;+\\infty["]
+					},
+					{
+						"description": "F9 : s = 1, concavité donnée",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"a": "-2",
+							"b": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est l'ensemble où $f''(x)\\leqslant 0$ : $f$ y est concave."
+						},
+						"answers": ["[-2;1]"]
+					},
+					{
+						"description": "F9 : s = −1, entre",
+						"variationIndex": 1,
+						"variables": {
+							"s": "-1",
+							"a": "-1",
+							"b": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[-1;3]"]
+					},
+					{
+						"description": "F9 : s = −1, extérieur à tort",
+						"variationIndex": 1,
+						"variables": {
+							"s": "-1",
+							"a": "-1",
+							"b": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["]-\\infty;-1]\\cup[3;+\\infty["]
+					}
+				],
+				"description": "Lire l'intervalle où f est convexe sur la courbe de f″ (f″ ⩾ 0)"
+			},
+			"changements": {
+				"ajoutees": [2],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "37ce7759-c2fa-4353-a726-f0c942284053",
+			"title": "Convexité : lecture sur la courbe de f",
+			"fichier": "37ce7759.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$\n- $\\mathbb{R}$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							},
+							{
+								"name": "k",
+								"expression": "-1..1"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où sa courbe est « tournée vers le haut » (au-dessus de ses tangentes), concave là où elle est « tournée vers le bas ».",
+								"La courbure change au point d'abscisse ${{h}}$ (point d'inflexion) : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$.",
+								"Attention : l'intervalle $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$ est celui où $f$ est {{if:s>0|décroissante|croissante}}, ce n'est pas une question de convexité."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "1",
+							"k": "0",
+							"s": "1"
+						},
+						"description": "v0 : s=1, bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "1",
+							"k": "0",
+							"s": "1"
+						},
+						"description": "v0 : intervalle de concavité",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "1",
+							"k": "0",
+							"s": "1"
+						},
+						"description": "v0 : intervalle de décroissance",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "-1",
+							"k": "1",
+							"s": "-1"
+						},
+						"description": "v0 : s=−1",
+						"variationIndex": 0
+					}
+				],
+				"description": "Lire l'intervalle où f est convexe sur sa courbe (courbe au-dessus de ses tangentes)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$\n- $\\mathbb{R}$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							},
+							{
+								"name": "k",
+								"expression": "-1..1"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où sa courbe est « tournée vers le haut » (au-dessus de ses tangentes), concave là où elle est « tournée vers le bas ».",
+								"La courbure change au point d'abscisse ${{h}}$ (point d'inflexion) : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$.",
+								"Attention : l'intervalle $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$ est celui où $f$ est {{if:s>0|décroissante|croissante}}, ce n'est pas une question de convexité."
+							]
+						}
+					},
+					{
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: -4 ; 4\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec deux sommets, d'abscisses {{eval:h-1}} et {{eval:h+1}}.\n```\n\nLaquelle de ces courbes peut représenter la fonction **dérivée seconde** $f''$ ?\n\n````choix\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{s}}*(x-{{h}})   violet\n  taille: petite\n  description: Droite qui coupe l'axe des abscisses en x = {{h}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{eval:-s}}*(x-{{h}})   violet\n  taille: petite\n  description: Droite qui coupe l'axe des abscisses en x = {{h}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{s}}*(x-{{eval:h+1}})   violet\n  taille: petite\n  description: Droite qui coupe l'axe des abscisses en x = {{eval:h+1}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{s}}*1.5*((x-{{h}})^2-1)   violet\n  taille: petite\n  description: Parabole qui coupe l'axe des abscisses en x = {{eval:h-1}} et x = {{eval:h+1}}.\n  ```\n````",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "1|-1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f''(x)\\geqslant 0$ là où $f$ est convexe (courbe tournée vers le haut), $f''(x)\\leqslant 0$ là où elle est concave.",
+								"$\\mathcal{C}_f$ est {{if:s>0|concave puis convexe|convexe puis concave}}, avec un point d'inflexion d'abscisse ${{h}}$ : $f''$ est {{if:s>0|négative puis positive|positive puis négative}} et s'annule en ${{h}}$.",
+								"C'est $\\textcolor{{{color:primary.0}}}{\\text{la droite } {{if:s>0|croissante|décroissante}} \\text{ qui coupe l'axe en } {{h}} }$. La parabole qui s'annule aux sommets de $\\mathcal{C}_f$ est celle de $f'$."
+							]
+						},
+						"hint": "Où $\\mathcal{C}_f$ est-elle convexe, où est-elle concave ? Déduis-en le signe de $f''$, et où elle s'annule."
+					},
+					{
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\left[{{eval:c-2}}\\,;{{eval:c+5}}\\right]$, et ses tangentes en deux points.\n\n```courbe\nx: {{eval:c-2.5}} ; {{eval:c+5.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{A}}*sin(\\pi*(x-{{c}})/3)+{{k}} sur [{{eval:c-2}} ; {{eval:c+5}}]   bleu   nom=C_f\ntangente: f ; {{c}}\ntangente: f ; {{eval:c+3}}\ntaille: moyenne\ndescription: Courbe ondulée qui change deux fois de courbure, avec ses tangentes aux points d'abscisses {{c}} et {{eval:c+3}}.\n```\n\nDétermine le plus grand intervalle sur lequel $f$ est **{{if:A>0|concave|convexe}}**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "2|3|-2|-3"
+							},
+							{
+								"name": "c",
+								"expression": "-2..0"
+							},
+							{
+								"name": "k",
+								"expression": "-1..1"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "[{{c}};{{eval:c+3}}]",
+								"answerKind": "intervalles",
+								"openableBounds": true,
+								"expectedErrors": [
+									{
+										"answer": "[{{eval:c-1.5}};{{eval:c+1.5}}]",
+										"message": "Sur cet intervalle, $f$ est {{if:A>0|croissante|décroissante}} : la convexité se lit à la courbure, pas au sens de variation.",
+										"label": "Intervalle de monotonie"
+									},
+									{
+										"answer": "[{{eval:c-2}};{{c}}]",
+										"message": "Sur cet intervalle, la courbe est au-{{if:A>0|dessus|dessous}} de ses tangentes : $f$ y est {{if:A>0|convexe|concave}}.",
+										"label": "Courbure inversée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Aux points d'abscisses ${{c}}$ et ${{eval:c+3}}$, la courbe traverse sa tangente : ce sont deux points d'inflexion, où la courbure change.",
+								"Entre eux, la courbe est {{if:A>0|en dessous|au-dessus}} de ses tangentes : $f$ est {{if:A>0|concave|convexe}} sur $\\textcolor{{{color:primary.0}}}{\\left[{{c}}\\,;{{eval:c+3}}\\right]}$ (et {{if:A>0|convexe|concave}} sur $\\left[{{eval:c-2}}\\,;{{c}}\\right]$ et sur $\\left[{{eval:c+3}}\\,;{{eval:c+5}}\\right]$)."
+							]
+						},
+						"hint": "Repère les points où la courbe traverse sa tangente ; entre eux, est-elle tournée vers le haut ou vers le bas ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "1",
+							"k": "0",
+							"s": "1"
+						},
+						"description": "v0 : s=1, bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "1",
+							"k": "0",
+							"s": "1"
+						},
+						"description": "v0 : intervalle de concavité",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "1",
+							"k": "0",
+							"s": "1"
+						},
+						"description": "v0 : intervalle de décroissance",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "-1",
+							"k": "1",
+							"s": "-1"
+						},
+						"description": "v0 : s=−1",
+						"variationIndex": 0
+					},
+					{
+						"description": "F12c : s = 1, h = 0",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"h": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F12c : opposée",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"h": "0"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F12c : décalée",
+						"variationIndex": 1,
+						"variables": {
+							"s": "-1",
+							"h": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F12c : parabole (f′)",
+						"variationIndex": 1,
+						"variables": {
+							"s": "-1",
+							"h": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3"]
+					},
+					{
+						"description": "F13 : A = 2, c = −1",
+						"variationIndex": 2,
+						"variables": {
+							"A": "2",
+							"c": "-1",
+							"k": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[-1;2]"]
+					},
+					{
+						"description": "F13 : bornes ouvertes",
+						"variationIndex": 2,
+						"variables": {
+							"A": "2",
+							"c": "-1",
+							"k": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["]-1;2["]
+					},
+					{
+						"description": "F13 : intervalle de monotonie",
+						"variationIndex": 2,
+						"variables": {
+							"A": "2",
+							"c": "-1",
+							"k": "0"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Sur cet intervalle, $f$ est croissante : la convexité se lit à la courbure, pas au sens de variation."
+						},
+						"answers": ["[-2.5;0.5]"]
+					},
+					{
+						"description": "F13 : courbure inversée",
+						"variationIndex": 2,
+						"variables": {
+							"A": "2",
+							"c": "-1",
+							"k": "0"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["[-3;-1]"]
+					},
+					{
+						"description": "F13 : A = −3, c = 0",
+						"variationIndex": 2,
+						"variables": {
+							"A": "-3",
+							"c": "0",
+							"k": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[0;3]"]
+					}
+				],
+				"description": "Lire l'intervalle où f est convexe sur sa courbe (courbe au-dessus de ses tangentes)"
+			},
+			"changements": {
+				"ajoutees": [2, 3],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "50feeefd-27d8-4b73-9e97-e3226091fb0a",
+			"title": "Dérivée de eᵘ, ln u et u²",
+			"fichier": "50feeefd.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}xe^{ {{a}}x^{2}{{b;+}} }"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{a}}x^{2}{{b;+}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=e^{u}$ avec $u(x)={{a}}x^{2}{{b;+}}$, donc $f'=u'e^{u}$.",
+								"$u'(x)={{eval:2*a}}x$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}xe^{ {{a}}x^{2}{{b;+}} }}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{ {{a}} }{ {{a}}x{{b;+}} }"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)=\\ln\\left({{a}}x{{b;+}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=\\ln u$ avec $u(x)={{a}}x{{b;+}}>0$ sur l'intervalle, donc $f'=\\dfrac{u'}{u}$.",
+								"$u'(x)={{a}}$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{a}} }{ {{a}}x{{b;+}} }}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{2x}{x^{2}+{{c}}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+{{c}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$x^{2}+{{c}}>0$ pour tout réel $x$ : $f=\\ln u$ avec $u(x)=x^{2}+{{c}}$, donc $f'=\\dfrac{u'}{u}$.",
+								"$u'(x)=2x$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{2x}{x^{2}+{{c}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}\\left({{a}}x{{b;+}}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{a}}x{{b;+}}\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=u^{2}$ avec $u(x)={{a}}x{{b;+}}$, donc $f'=2u'u$.",
+								"$u'(x)={{a}}$, d'où $f'(x)=2\\times{{a;()}}\\times\\left({{a}}x{{b;+}}\\right)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}\\left({{a}}x{{b;+}}\\right)}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "4x\\left(x^{2}{{b;+}}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}{{b;+}}\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=u^{2}$ avec $u(x)=x^{2}{{b;+}}$, donc $f'=2u'u$.",
+								"$u'(x)=2x$, d'où $f'(x)=2\\times2x\\times\\left(x^{2}{{b;+}}\\right)=\\textcolor{{{color:primary.0}}}{4x\\left(x^{2}{{b;+}}\\right)}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["4xe^{2x^2-3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : e^{2x²−3} → 4x e^{2x²−3}",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["e^{2x^2-3}\\times4x"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["products"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : facteur à droite avec × (produit explicite, ½)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["e^{2x^2-3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : (eᵘ)′ = eᵘ",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2xe^{2x^2-3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : u′ oublié à moitié (2x)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3}{3x+2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2"
+						},
+						"description": "v1 : ln(3x+2) → 3/(3x+2)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{3x+2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2"
+						},
+						"description": "v1 : (ln u)′ = 1/u",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2"
+						},
+						"description": "v1 : u′ seul (3)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{2}{2x-5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v1 : ln(2x−5) → 2/(2x−5)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{2x}{x^2+4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "4"
+						},
+						"description": "v2 : ln(x²+4) → 2x/(x²+4)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{x^2+4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "4"
+						},
+						"description": "v2 : (ln u)′ = 1/u",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{2x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "4"
+						},
+						"description": "v2 : 1/(2x) (dérivée de u au dénominateur)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["6(3x-1)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-1"
+						},
+						"description": "v3 : (3x−1)² → 6(3x−1)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["18x-6"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "-1"
+						},
+						"description": "v3 : forme développée 18x − 6 (½, form: warn)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2(3x-1)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-1"
+						},
+						"description": "v3 : (u²)′ = 2u",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["4x(x^2+3)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : (x²+3)² → 4x(x²+3)",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["4x^3+12x"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : développée 4x³ + 12x (½, form: warn)",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["(x^2+3)\\times4x"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["products"]
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : (x²+3)×4x, × explicite (½)",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["2(x^2+3)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : (u²)′ = 2u",
+						"variationIndex": 4
+					}
+				],
+				"description": "Formules (eᵘ)′ = u′eᵘ, (ln u)′ = u′/u, (u²)′ = 2u′u avec u affine ou du second degré (pièges : (eᵘ)′ = eᵘ, (ln u)′ = 1/u, (u²)′ = 2u)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}xe^{ {{a}}x^{2}{{b;+}} }"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{a}}x^{2}{{b;+}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=e^{u}$ avec $u(x)={{a}}x^{2}{{b;+}}$, donc $f'=u'e^{u}$.",
+								"$u'(x)={{eval:2*a}}x$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}xe^{ {{a}}x^{2}{{b;+}} }}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{ {{a}} }{ {{a}}x{{b;+}} }"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)=\\ln\\left({{a}}x{{b;+}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=\\ln u$ avec $u(x)={{a}}x{{b;+}}>0$ sur l'intervalle, donc $f'=\\dfrac{u'}{u}$.",
+								"$u'(x)={{a}}$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{a}} }{ {{a}}x{{b;+}} }}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{2x}{x^{2}+{{c}}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+{{c}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$x^{2}+{{c}}>0$ pour tout réel $x$ : $f=\\ln u$ avec $u(x)=x^{2}+{{c}}$, donc $f'=\\dfrac{u'}{u}$.",
+								"$u'(x)=2x$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{2x}{x^{2}+{{c}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}\\left({{a}}x{{b;+}}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{a}}x{{b;+}}\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=u^{2}$ avec $u(x)={{a}}x{{b;+}}$, donc $f'=2u'u$.",
+								"$u'(x)={{a}}$, d'où $f'(x)=2\\times{{a;()}}\\times\\left({{a}}x{{b;+}}\\right)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}\\left({{a}}x{{b;+}}\\right)}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "4x\\left(x^{2}{{b;+}}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}{{b;+}}\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=u^{2}$ avec $u(x)=x^{2}{{b;+}}$, donc $f'=2u'u$.",
+								"$u'(x)=2x$, d'où $f'(x)=2\\times2x\\times\\left(x^{2}{{b;+}}\\right)=\\textcolor{{{color:primary.0}}}{4x\\left(x^{2}{{b;+}}\\right)}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{{{eval:a*x^2+b*x+c}}}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "c",
+								"expression": "-5..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "\\left({{eval:2*a*x+b}}\\right)e^{{{eval:a*x^2+b*x+c}}}",
+								"expectedErrors": [
+									{
+										"answer": "e^{{{eval:a*x^2+b*x+c}}}",
+										"message": "Tu as oublié de multiplier par $u'(x)$ : $(e^{u})'=u'e^{u}$.",
+										"label": "(eᵘ)′ = eᵘ"
+									},
+									{
+										"answer": "e^{ {{eval:2*a*x+b}} }",
+										"message": "La dérivée ne se calcule pas dans l'exposant : $(e^{u})'=u'e^{u}$, l'exposant reste $u(x)$.",
+										"label": "Exposant dérivé"
+									},
+									{
+										"answer": "{{eval:2*a*x+b}}",
+										"message": "Tu n'as gardé que $u'(x)$ : $(e^{u})'=u'e^{u}$, le facteur $e^{u}$ reste.",
+										"label": "eᵘ oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=e^{u}$ avec $u(x)={{eval:a*x^2+b*x+c}}$, donc $f'=u'e^{u}$.",
+								"$u'(x)={{eval:2*a*x+b}}$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{\\left({{eval:2*a*x+b}}\\right)e^{{{eval:a*x^2+b*x+c}}} }$."
+							]
+						},
+						"hint": "Pose $u(x)$ égal à l'exposant, calcule $u'(x)$, puis applique la formule de la dérivée de $e^{u}$."
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{eval:a*x+b}}\\right)e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.\n\nDétermine sa fonction dérivée, sous forme factorisée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "m",
+								"expression": "-3|-2|-1|2|3"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "\\left({{eval:a*m*x+a+b*m}}\\right)e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a*m}}e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}",
+										"message": "La dérivée d'un produit n'est pas le produit des dérivées : $(uv)'=u'v+uv'$.",
+										"label": "Produit des dérivées"
+									},
+									{
+										"answer": "\\left({{eval:a*x+a+b}}\\right)e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}",
+										"message": "La dérivée de $e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$ est ${{m}}e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$, pas $e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.",
+										"label": "Dérivée de e^(mx)"
+									},
+									{
+										"answer": "{{a}}e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}",
+										"message": "Tu n'as dérivé que le premier facteur : $(uv)'=u'v+uv'$.",
+										"label": "uv′ oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=uv$ avec $u(x)={{eval:a*x+b}}$, $u'(x)={{a}}$, $v(x)=e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$, $v'(x)={{m}}e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.",
+								"$f'(x)={{a}}e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}+\\left({{eval:a*x+b}}\\right)\\times{{m;()}}e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}=\\left({{a}}+{{eval:m*(a*x+b)}}\\right)e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$.",
+								"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{\\left({{eval:a*m*x+a+b*m}}\\right)e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x} }$."
+							]
+						},
+						"hint": "Dérive comme un produit $uv$ ; la dérivée de $e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$ fait sortir le coefficient ${{m}}$. Mets ensuite $e^{{{if:m==1||{{if:m==-1|-|{{m}}}}}}x}$ en facteur."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["4xe^{2x^2-3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : e^{2x²−3} → 4x e^{2x²−3}",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["e^{2x^2-3}\\times4x"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["products"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : facteur à droite avec × (produit explicite, ½)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["e^{2x^2-3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : (eᵘ)′ = eᵘ",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2xe^{2x^2-3}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-3"
+						},
+						"description": "v0 : u′ oublié à moitié (2x)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3}{3x+2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2"
+						},
+						"description": "v1 : ln(3x+2) → 3/(3x+2)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{3x+2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2"
+						},
+						"description": "v1 : (ln u)′ = 1/u",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2"
+						},
+						"description": "v1 : u′ seul (3)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{2}{2x-5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-5"
+						},
+						"description": "v1 : ln(2x−5) → 2/(2x−5)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{2x}{x^2+4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "4"
+						},
+						"description": "v2 : ln(x²+4) → 2x/(x²+4)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{x^2+4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "4"
+						},
+						"description": "v2 : (ln u)′ = 1/u",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{2x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "4"
+						},
+						"description": "v2 : 1/(2x) (dérivée de u au dénominateur)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["6(3x-1)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-1"
+						},
+						"description": "v3 : (3x−1)² → 6(3x−1)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["18x-6"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "-1"
+						},
+						"description": "v3 : forme développée 18x − 6 (½, form: warn)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["2(3x-1)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "-1"
+						},
+						"description": "v3 : (u²)′ = 2u",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["4x(x^2+3)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : (x²+3)² → 4x(x²+3)",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["4x^3+12x"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : développée 4x³ + 12x (½, form: warn)",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["(x^2+3)\\times4x"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["products"]
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : (x²+3)×4x, × explicite (½)",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["2(x^2+3)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "3"
+						},
+						"description": "v4 : (u²)′ = 2u",
+						"variationIndex": 4
+					},
+					{
+						"description": "F1a : e^(2x² − 3x + 1)",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["(4x-3)e^{2x^2-3x+1}"]
+					},
+					{
+						"description": "F1a : facteur après",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["e^{2x^2-3x+1}(4x-3)"]
+					},
+					{
+						"description": "F1a : (eᵘ)′ = eᵘ",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as oublié de multiplier par $u'\\left( x \\right)$ : $(e^{u})'=u'e^{u}$."
+						},
+						"answers": ["e^{2x^2-3x+1}"]
+					},
+					{
+						"description": "F1a : exposant dérivé",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["e^{4x-3}"]
+					},
+					{
+						"description": "F1a : eᵘ oublié",
+						"variationIndex": 5,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["4x-3"]
+					},
+					{
+						"description": "F1b : (2x + 1)e^(3x)",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"m": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["(6x+5)e^{3x}"]
+					},
+					{
+						"description": "F1b : développée (½)",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"m": "3"
+						},
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["6xe^{3x}+5e^{3x}"]
+					},
+					{
+						"description": "F1b : produit des dérivées",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"m": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["6e^{3x}"]
+					},
+					{
+						"description": "F1b : dérivée de e^(mx)",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"m": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["(2x+3)e^{3x}"]
+					},
+					{
+						"description": "F1b : uv′ oublié",
+						"variationIndex": 6,
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"m": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2e^{3x}"]
+					},
+					{
+						"description": "F1b : (−x + 2)e^(−2x)",
+						"variationIndex": 6,
+						"variables": {
+							"a": "-1",
+							"b": "2",
+							"m": "-2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["(2x-5)e^{-2x}"]
+					}
+				],
+				"description": "Formules (eᵘ)′ = u′eᵘ, (ln u)′ = u′/u, (u²)′ = 2u′u avec u affine ou du second degré (pièges : (eᵘ)′ = eᵘ, (ln u)′ = 1/u, (u²)′ = 2u)"
+			},
+			"changements": {
+				"ajoutees": [6, 7],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "98f9d4b2-ebdd-4ed9-81a4-deb2e5b58c07",
+			"title": "Point d'inflexion : lecture graphique",
+			"fichier": "98f9d4b2.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nQuelle est l'abscisse du point d'inflexion de $\\mathcal{C}_f$ ?\n\n```choix\n- ${{h}}$\n- ${{eval:h+1}}$\n- ${{eval:h-1}}$\n- ${{k}}$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							},
+							{
+								"name": "k",
+								"expression": "-2..2"
+							}
+						],
+						"conditions": ["k != h", "k != h+1", "k != h-1"],
+						"correction": {
+							"steps": [
+								"Au point d'inflexion, la courbe **traverse sa tangente** : elle passe de « tournée vers le {{if:s>0|bas|haut}} » à « tournée vers le {{if:s>0|haut|bas}} ».",
+								"C'est le point de coordonnées $({{h}}\\,;{{k}})$ : son abscisse est $\\textcolor{{{color:primary.0}}}{{{h}}}$. Les abscisses ${{eval:h-1}}$ et ${{eval:h+1}}$ sont celles des extremums locaux, pas de l'inflexion."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "0",
+							"k": "2",
+							"s": "1"
+						},
+						"description": "v0 : inflexion",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "0",
+							"k": "2",
+							"s": "1"
+						},
+						"description": "v0 : extremum",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "0",
+							"k": "2",
+							"s": "1"
+						},
+						"description": "v0 : ordonnée",
+						"variationIndex": 0
+					}
+				],
+				"description": "Lire sur la courbe de f l'abscisse de son point d'inflexion (changement de convexité)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nQuelle est l'abscisse du point d'inflexion de $\\mathcal{C}_f$ ?\n\n```choix\n- ${{h}}$\n- ${{eval:h+1}}$\n- ${{eval:h-1}}$\n- ${{k}}$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							},
+							{
+								"name": "k",
+								"expression": "-2..2"
+							}
+						],
+						"conditions": ["k != h", "k != h+1", "k != h-1"],
+						"correction": {
+							"steps": [
+								"Au point d'inflexion, la courbe **traverse sa tangente** : elle passe de « tournée vers le {{if:s>0|bas|haut}} » à « tournée vers le {{if:s>0|haut|bas}} ».",
+								"C'est le point de coordonnées $({{h}}\\,;{{k}})$ : son abscisse est $\\textcolor{{{color:primary.0}}}{{{h}}}$. Les abscisses ${{eval:h-1}}$ et ${{eval:h+1}}$ sont celles des extremums locaux, pas de l'inflexion."
+							]
+						}
+					},
+					{
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\left[{{if:n==0|{{eval:c+0.5}}|{{if:n==1|{{eval:c-1.5}}|{{eval:c-1}}}}}}\\,;{{if:n==0|{{eval:c+2.5}}|{{if:n==1|{{eval:c+1.5}}|{{eval:c+4}}}}}}\\right]$.\n\n```courbe\nx: {{eval:c-2}} ; {{eval:c+4.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{A}}*sin(\\pi*(x-{{c}})/3)+{{k}} sur [{{if:n==0|{{eval:c+0.5}}|{{if:n==1|{{eval:c-1.5}}|{{eval:c-1}}}}}} ; {{if:n==0|{{eval:c+2.5}}|{{if:n==1|{{eval:c+1.5}}|{{eval:c+4}}}}}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe ondulée tracée sur un intervalle borné.\n```\n\nCombien la courbe $\\mathcal{C}_f$ a-t-elle de points d'inflexion ?\n\n$?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "0..2"
+							},
+							{
+								"name": "A",
+								"expression": "2|3|-2|-3"
+							},
+							{
+								"name": "c",
+								"expression": "-1..0"
+							},
+							{
+								"name": "k",
+								"expression": "-1..1"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{n}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:n==1|0|1}}",
+										"message": "Tu as compté les sommets de la courbe (tangente horizontale) : un point d'inflexion est un point où la courbe change de courbure et traverse sa tangente.",
+										"label": "Sommets comptés"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Un point d'inflexion est un point où la courbe change de courbure (de « tournée vers le haut » à « tournée vers le bas », ou l'inverse) : elle y traverse sa tangente.",
+								"{{if:n==0|Ici, la courbe garde la même courbure sur tout l'intervalle : elle n'a $\\textcolor{{{color:primary.0}}}{0}$ point d'inflexion.|{{if:n==1|Ici, la courbure change une seule fois, au point d'abscisse ${{c}}$ : la courbe a $\\textcolor{{{color:primary.0}}}{1}$ point d'inflexion.|Ici, la courbure change deux fois, aux points d'abscisses ${{c}}$ et ${{eval:c+3}}$ : la courbe a $\\textcolor{{{color:primary.0}}}{2}$ points d'inflexion.}}}}"
+							]
+						},
+						"hint": "Suis la courbe de gauche à droite : combien de fois passe-t-elle de « tournée vers le haut » à « tournée vers le bas », ou l'inverse ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "0",
+							"k": "2",
+							"s": "1"
+						},
+						"description": "v0 : inflexion",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "0",
+							"k": "2",
+							"s": "1"
+						},
+						"description": "v0 : extremum",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "0",
+							"k": "2",
+							"s": "1"
+						},
+						"description": "v0 : ordonnée",
+						"variationIndex": 0
+					},
+					{
+						"description": "F14 : n = 0",
+						"variationIndex": 1,
+						"variables": {
+							"n": "0",
+							"A": "2",
+							"c": "0",
+							"k": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F14 : n = 0, sommet compté",
+						"variationIndex": 1,
+						"variables": {
+							"n": "0",
+							"A": "2",
+							"c": "0",
+							"k": "0"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as compté les sommets de la courbe (tangente horizontale) : un point d'inflexion est un point où la courbe change de courbure et traverse sa tangente."
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F14 : n = 1",
+						"variationIndex": 1,
+						"variables": {
+							"n": "1",
+							"A": "-3",
+							"c": "-1",
+							"k": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F14 : n = 2",
+						"variationIndex": 1,
+						"variables": {
+							"n": "2",
+							"A": "3",
+							"c": "-1",
+							"k": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F14 : n = 2, sommet compté",
+						"variationIndex": 1,
+						"variables": {
+							"n": "2",
+							"A": "3",
+							"c": "-1",
+							"k": "-1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					}
+				],
+				"description": "Lire sur la courbe de f l'abscisse de son point d'inflexion (changement de convexité)"
+			},
+			"changements": {
+				"ajoutees": [2],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "c4775a3a-114f-41bb-a469-d29c5484dde7",
+			"title": "Intervalle de convexité ou de concavité par le signe de f″",
+			"fichier": "c4775a3a.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|[{{eval:-b/a}};+\\infty[|]-\\infty;{{eval:-b/a}}]}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur $\\mathbb{R}$ telle que, pour tout réel $x$, $f''(x)={{a}}x{{b;+}}$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **convexe**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..4;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f''(x)\\geqslant 0$.",
+								"On résout ${{a}}x{{b;+}}\\geqslant 0$ : {{if:a>0|$x\\geqslant {{eval:-b/a}}$|on divise par ${{a}}<0$, l'inégalité change de sens : $x\\leqslant {{eval:-b/a}}$}}.",
+								"$f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:a>0|\\left[{{eval:-b/a}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:-b/a}}\\right]}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|]-\\infty;{{eval:-b/(3*a)}}]|[{{eval:-b/(3*a)}};+\\infty[}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{b;+}}x^2{{c;+}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **concave**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)={{eval:3*a}}x^2{{eval:2*b;+}}x{{c;+}}$ et $f''(x)={{eval:6*a}}x{{eval:2*b;+}}$.",
+								"$f$ est concave là où $f''(x)\\leqslant 0$ : ${{eval:6*a}}x{{eval:2*b;+}}\\leqslant 0\\iff {{if:a>0|x\\leqslant {{eval:-b/(3*a)}}|x\\geqslant {{eval:-b/(3*a)}}}}$.",
+								"$f$ est concave sur $\\textcolor{{{color:primary.0}}}{{{if:a>0|\\left]-\\infty\\,;{{eval:-b/(3*a)}}\\right]|\\left[{{eval:-b/(3*a)}}\\,;+\\infty\\right[}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[{{p}};{{q}}]"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur $\\mathbb{R}$ telle que, pour tout réel $x$, $f''(x)=(x{{eval:-p;+}})(x{{eval:-q;+}})$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **concave**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "-6..3"
+							},
+							{
+								"name": "q",
+								"expression": "-3..6"
+							}
+						],
+						"conditions": ["p < q"],
+						"correction": {
+							"steps": [
+								"$f''(x)$ est un trinôme de coefficient dominant $1>0$, de racines ${{p}}$ et ${{q}}$ : il est négatif entre les racines.",
+								"$f''(x)\\leqslant 0\\iff {{p}}\\leqslant x\\leqslant {{q}}$, donc $f$ est concave sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$ (et convexe sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[{{eval:-a-2}};+\\infty["
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=(x{{a;+}})e^{x}$. On admet que $f''(x)=(x{{eval:a+2;+}})e^{x}$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **convexe**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-6..6"
+							}
+						],
+						"conditions": ["a != -2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $e^{x}>0$ : $f''(x)$ est du signe de $x{{eval:a+2;+}}$.",
+								"$f''(x)\\geqslant 0\\iff x\\geqslant {{eval:-a-2}}$, donc $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{\\left[{{eval:-a-2}}\\,;+\\infty\\right[}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["[3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : 2x−6 → [3;+∞[",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : borne ouverte ]3;+∞[ acceptée (openableBounds)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[3;+\\infty]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : crochet fermé sur l'infini [3;+∞]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;3]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : intervalle de concavité donné",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;\\frac{5}{2}]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "5"
+						},
+						"description": "v0 : a<0, −2x+5 → ]−∞;5/2]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[\\frac{5}{2};+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "5"
+						},
+						"description": "v0 : a<0, sens non changé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;2.5]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "5"
+						},
+						"description": "v0 : a<0, décimal",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;1]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-3",
+							"c": "1"
+						},
+						"description": "v1 : x³−3x²+x → ]−∞;1]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[1;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-3",
+							"c": "1"
+						},
+						"description": "v1 : convexité donnée au lieu de concavité",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;0]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-3",
+							"c": "0"
+						},
+						"description": "v1 : racine de f′ confondue",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[2;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"b": "6",
+							"c": "0"
+						},
+						"description": "v1 : a<0 → [r;+∞[",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[-1;3]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : (x+1)(x−3) → [−1;3]",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-1;3["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : bornes ouvertes ]−1;3[ acceptées (openableBounds)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-1;4["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : borne ouverte mais valeur fausse ]−1;4[",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-\\infty;-1]\\cup[3;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : extérieur des racines (convexité)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[-3;1]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : signe des racines inversé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[-3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1"
+						},
+						"description": "v3 : (x+1)eˣ → [−3;+∞[",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["[-1;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1"
+						},
+						"description": "v3 : racine de x+a au lieu de x+a+2",
+						"variationIndex": 3
+					}
+				],
+				"description": "Étudier le signe de f″ pour donner le plus grand intervalle où f est convexe (f″ ≥ 0) ou concave (f″ ≤ 0)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|[{{eval:-b/a}};+\\infty[|]-\\infty;{{eval:-b/a}}]}}"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur $\\mathbb{R}$ telle que, pour tout réel $x$, $f''(x)={{a}}x{{b;+}}$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **convexe**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..4;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f''(x)\\geqslant 0$.",
+								"On résout ${{a}}x{{b;+}}\\geqslant 0$ : {{if:a>0|$x\\geqslant {{eval:-b/a}}$|on divise par ${{a}}<0$, l'inégalité change de sens : $x\\leqslant {{eval:-b/a}}$}}.",
+								"$f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:a>0|\\left[{{eval:-b/a}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:-b/a}}\\right]}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:a>0|]-\\infty;{{eval:-b/(3*a)}}]|[{{eval:-b/(3*a)}};+\\infty[}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{b;+}}x^2{{c;+}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **concave**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "-9..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)={{eval:3*a}}x^2{{eval:2*b;+}}x{{c;+}}$ et $f''(x)={{eval:6*a}}x{{eval:2*b;+}}$.",
+								"$f$ est concave là où $f''(x)\\leqslant 0$ : ${{eval:6*a}}x{{eval:2*b;+}}\\leqslant 0\\iff {{if:a>0|x\\leqslant {{eval:-b/(3*a)}}|x\\geqslant {{eval:-b/(3*a)}}}}$.",
+								"$f$ est concave sur $\\textcolor{{{color:primary.0}}}{{{if:a>0|\\left]-\\infty\\,;{{eval:-b/(3*a)}}\\right]|\\left[{{eval:-b/(3*a)}}\\,;+\\infty\\right[}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[{{p}};{{q}}]"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur $\\mathbb{R}$ telle que, pour tout réel $x$, $f''(x)=(x{{eval:-p;+}})(x{{eval:-q;+}})$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **concave**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "p",
+								"expression": "-6..3"
+							},
+							{
+								"name": "q",
+								"expression": "-3..6"
+							}
+						],
+						"conditions": ["p < q"],
+						"correction": {
+							"steps": [
+								"$f''(x)$ est un trinôme de coefficient dominant $1>0$, de racines ${{p}}$ et ${{q}}$ : il est négatif entre les racines.",
+								"$f''(x)\\leqslant 0\\iff {{p}}\\leqslant x\\leqslant {{q}}$, donc $f$ est concave sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$ (et convexe sur $\\left]-\\infty\\,;{{p}}\\right]$ et sur $\\left[{{q}}\\,;+\\infty\\right[$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "[{{eval:-a-2}};+\\infty["
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=(x{{a;+}})e^{x}$. On admet que $f''(x)=(x{{eval:a+2;+}})e^{x}$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **convexe**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "-6..6"
+							}
+						],
+						"conditions": ["a != -2"],
+						"correction": {
+							"steps": [
+								"Pour tout réel $x$, $e^{x}>0$ : $f''(x)$ est du signe de $x{{eval:a+2;+}}$.",
+								"$f''(x)\\geqslant 0\\iff x\\geqslant {{eval:-a-2}}$, donc $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{\\left[{{eval:-a-2}}\\,;+\\infty\\right[}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{eval:x^2+b*x+c}}\\right)e^{x}$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **concave**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "p",
+								"expression": "-3..2"
+							},
+							{
+								"name": "q",
+								"expression": "-2..3"
+							},
+							{
+								"name": "b",
+								"expression": "eval:-(p+q)-4"
+							},
+							{
+								"name": "c",
+								"expression": "eval:p*q-2*b-2"
+							}
+						],
+						"conditions": ["p < q"],
+						"blanks": [
+							{
+								"expectedAnswer": "[{{p}};{{q}}]",
+								"expectedErrors": [
+									{
+										"answer": "]-\\infty;{{p}}]\\cup[{{q}};+\\infty[",
+										"message": "C'est là que $f''(x)\\geqslant 0$ : $f$ y est convexe.",
+										"label": "Convexité donnée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)=(2x{{b;+}})e^{x}+\\left({{eval:x^2+b*x+c}}\\right)e^{x}=\\left({{eval:x^2+(b+2)*x+b+c}}\\right)e^{x}$.",
+								"De même, $f''(x)=\\left({{eval:x^2+(b+4)*x+2*b+c+2}}\\right)e^{x}=(x{{eval:-p;+}})(x{{eval:-q;+}})e^{x}$.",
+								"$e^{x}>0$ : $f''(x)$ a le signe du trinôme, négatif entre ses racines ${{p}}$ et ${{q}}$. $f$ est concave sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$."
+							]
+						},
+						"hint": "Dérive deux fois avec $(uv)'=u'v+uv'$, en mettant $e^{x}$ en facteur, puis étudie le signe du trinôme obtenu."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["[3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : 2x−6 → [3;+∞[",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : borne ouverte ]3;+∞[ acceptée (openableBounds)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[3;+\\infty]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : crochet fermé sur l'infini [3;+∞]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;3]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-6"
+						},
+						"description": "v0 : intervalle de concavité donné",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;\\frac{5}{2}]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "5"
+						},
+						"description": "v0 : a<0, −2x+5 → ]−∞;5/2]",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["[\\frac{5}{2};+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "5"
+						},
+						"description": "v0 : a<0, sens non changé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;2.5]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"b": "5"
+						},
+						"description": "v0 : a<0, décimal",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["]-\\infty;1]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-3",
+							"c": "1"
+						},
+						"description": "v1 : x³−3x²+x → ]−∞;1]",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[1;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-3",
+							"c": "1"
+						},
+						"description": "v1 : convexité donnée au lieu de concavité",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["]-\\infty;0]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-3",
+							"c": "0"
+						},
+						"description": "v1 : racine de f′ confondue",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[2;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-1",
+							"b": "6",
+							"c": "0"
+						},
+						"description": "v1 : a<0 → [r;+∞[",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["[-1;3]"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : (x+1)(x−3) → [−1;3]",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-1;3["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : bornes ouvertes ]−1;3[ acceptées (openableBounds)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-1;4["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : borne ouverte mais valeur fausse ]−1;4[",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["]-\\infty;-1]\\cup[3;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : extérieur des racines (convexité)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[-3;1]"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"p": "-1",
+							"q": "3"
+						},
+						"description": "v2 : signe des racines inversé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["[-3;+\\infty["],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1"
+						},
+						"description": "v3 : (x+1)eˣ → [−3;+∞[",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["[-1;+\\infty["],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1"
+						},
+						"description": "v3 : racine de x+a au lieu de x+a+2",
+						"variationIndex": 3
+					},
+					{
+						"description": "F17 : (x² − 5x + 6)eˣ → [−1 ; 2]",
+						"variationIndex": 4,
+						"variables": {
+							"p": "-1",
+							"q": "2",
+							"b": "-5",
+							"c": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[-1;2]"]
+					},
+					{
+						"description": "F17 : convexité donnée",
+						"variationIndex": 4,
+						"variables": {
+							"p": "-1",
+							"q": "2",
+							"b": "-5",
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "C'est là que $f''(x)\\geqslant 0$ : $f$ y est convexe."
+						},
+						"answers": ["]-\\infty;-1]\\cup[2;+\\infty["]
+					},
+					{
+						"description": "F17 : racines du facteur (x² − 5x + 6)",
+						"variationIndex": 4,
+						"variables": {
+							"p": "-1",
+							"q": "2",
+							"b": "-5",
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["[2;3]"]
+					}
+				],
+				"description": "Étudier le signe de f″ pour donner le plus grand intervalle où f est convexe (f″ ≥ 0) ou concave (f″ ≤ 0)"
+			},
+			"changements": {
+				"ajoutees": [5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "cfd13223-e81b-427b-8a99-f7c126b9ad19",
+			"title": "Convexité et croissance de la dérivée",
+			"fichier": "cfd13223.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n```choix\n- $f'$ est croissante sur $I$\n- $f$ est croissante sur $I$\n- $f'$ est positive sur $I$\n- $f'$ est décroissante sur $I$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (admis) : pour $f$ deux fois dérivable sur $I$, $f$ est convexe sur $I$ si et seulement si $\\textcolor{{{color:primary.0}}}{f'\\text{ est croissante sur }I}$.",
+								"Ne pas confondre : « $f'$ positive » signifie « $f$ croissante », pas « $f$ convexe »."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$, telle que $f'$ est **décroissante** sur $I$.\n\nAlors :\n\n```choix\n- $f$ est concave sur $I$\n- $f$ est convexe sur $I$\n- $f$ est décroissante sur $I$\n- $f$ est négative sur $I$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : $f$ convexe sur $I$ si et seulement si $f'$ est croissante sur $I$ ; $f$ concave si et seulement si $f'$ est décroissante sur $I$.",
+								"Ici $f'$ décroît, donc $\\textcolor{{{color:primary.0}}}{f\\text{ est concave sur }I}$ ; cela ne dit rien du sens de variation de $f$ (c'est le signe de $f'$ qui le donne)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable et convexe sur un intervalle $I$.\n\nQue peut-on dire de $f'$ sur $I$ ?\n\n```choix\n- $f'$ est croissante sur $I$\n- $f'$ est positive sur $I$\n- $f'$ est décroissante sur $I$\n- $f'$ est constante sur $I$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : $f$ convexe sur $I$ si et seulement si $f'$ est croissante sur $I$.",
+								"Donc $\\textcolor{{{color:primary.0}}}{f'\\text{ est croissante sur }I}$ ; son signe peut changer (par exemple $f(x)=x^2$, $f'(x)=2x$)."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f′ croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ positive",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ décroissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "concave",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : convexe",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : décroissante",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : négative",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f′ croissante",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ positive",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ décroissante",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ constante",
+						"variationIndex": 2
+					}
+				],
+				"description": "À savoir : f deux fois dérivable, convexe ⟺ f′ croissante ; concave ⟺ f′ décroissante ; distracteur : f′ positive (f croissante)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n```choix\n- $f'$ est croissante sur $I$\n- $f$ est croissante sur $I$\n- $f'$ est positive sur $I$\n- $f'$ est décroissante sur $I$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (admis) : pour $f$ deux fois dérivable sur $I$, $f$ est convexe sur $I$ si et seulement si $\\textcolor{{{color:primary.0}}}{f'\\text{ est croissante sur }I}$.",
+								"Ne pas confondre : « $f'$ positive » signifie « $f$ croissante », pas « $f$ convexe »."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$, telle que $f'$ est **décroissante** sur $I$.\n\nAlors :\n\n```choix\n- $f$ est concave sur $I$\n- $f$ est convexe sur $I$\n- $f$ est décroissante sur $I$\n- $f$ est négative sur $I$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : $f$ convexe sur $I$ si et seulement si $f'$ est croissante sur $I$ ; $f$ concave si et seulement si $f'$ est décroissante sur $I$.",
+								"Ici $f'$ décroît, donc $\\textcolor{{{color:primary.0}}}{f\\text{ est concave sur }I}$ ; cela ne dit rien du sens de variation de $f$ (c'est le signe de $f'$ qui le donne)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable et convexe sur un intervalle $I$.\n\nQue peut-on dire de $f'$ sur $I$ ?\n\n```choix\n- $f'$ est croissante sur $I$\n- $f'$ est positive sur $I$\n- $f'$ est décroissante sur $I$\n- $f'$ est constante sur $I$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : $f$ convexe sur $I$ si et seulement si $f'$ est croissante sur $I$.",
+								"Donc $\\textcolor{{{color:primary.0}}}{f'\\text{ est croissante sur }I}$ ; son signe peut changer (par exemple $f(x)=x^2$, $f'(x)=2x$)."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ une fonction deux fois dérivable sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$. Voici le tableau de variations de sa fonction **dérivée** $f'$.\n\n```variation\nvariable: x\ndomain: {{eval:c-3}}, {{c}}, {{eval:c+3}}\n\nvariation: f'(x)\n  {{eval:c-3}}: {{eval:k+3*s}}, {{if:s>0|top|bottom}}\n  {{c}}: {{k}}, {{if:s>0|bottom|top}}\n  {{eval:c+3}}: {{eval:k+2*s}}, {{if:s>0|top|bottom}}\n```\n\nDétermine le plus grand intervalle sur lequel $f$ est **convexe**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "1|-1"
+							},
+							{
+								"name": "c",
+								"expression": "-2..2"
+							},
+							{
+								"name": "k",
+								"expression": "-2..2"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:s>0|[{{c}};{{eval:c+3}}]|[{{eval:c-3}};{{c}}]}}",
+								"answerKind": "intervalles",
+								"openableBounds": true,
+								"expectedErrors": [
+									{
+										"answer": "{{if:s>0|[{{eval:c-3}};{{c}}]|[{{c}};{{eval:c+3}}]}}",
+										"message": "Sur cet intervalle, $f'$ est décroissante : $f$ y est concave.",
+										"label": "Concavité donnée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"À connaître : $f$ est convexe sur un intervalle si et seulement si $f'$ y est **croissante**.",
+								"D'après le tableau, $f'$ est croissante sur $\\textcolor{{{color:primary.0}}}{ {{if:s>0|\\left[{{c}}\\,;{{eval:c+3}}\\right]|\\left[{{eval:c-3}}\\,;{{c}}\\right]}} }$ : c'est là que $f$ est convexe. Le signe de $f'$ ne compte pas ici."
+							]
+						},
+						"hint": "Lis dans le tableau où $f'$ est croissante."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f′ croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ positive",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ décroissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "concave",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : convexe",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : décroissante",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : négative",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "f′ croissante",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ positive",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ décroissante",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : f′ constante",
+						"variationIndex": 2
+					},
+					{
+						"description": "F10 : s = 1, c = 0",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"c": "0",
+							"k": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[0;3]"]
+					},
+					{
+						"description": "F10 : bornes ouvertes",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"c": "0",
+							"k": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["]0;3["]
+					},
+					{
+						"description": "F10 : concavité donnée",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"c": "0",
+							"k": "-1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Sur cet intervalle, $f'$ est décroissante : $f$ y est concave."
+						},
+						"answers": ["[-3;0]"]
+					},
+					{
+						"description": "F10 : s = −1, c = 2",
+						"variationIndex": 3,
+						"variables": {
+							"s": "-1",
+							"c": "2",
+							"k": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[-1;2]"]
+					}
+				],
+				"description": "À savoir : f deux fois dérivable, convexe ⟺ f′ croissante ; concave ⟺ f′ décroissante ; distracteur : f′ positive (f croissante)"
+			},
+			"changements": {
+				"ajoutees": [4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "e3e19d28-b41b-48f3-9aaa-bc8bfeeacea7",
+			"title": "Convexité : lecture sur la courbe de f′",
+			"fichier": "e3e19d28.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-4}} ; {{eval:h+4}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(0.5*(x-{{h}})^2-2)   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : une parabole qui coupe l'axe des abscisses en deux points.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-2}}\\,;{{eval:h+2}}\\right]$\n- $\\mathbb{R}$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f'$ est **croissante** (on ne regarde pas le signe de $f'$, qui donne les variations de $f$).",
+								"Sur le graphique, $f'$ est {{if:s>0|décroissante puis croissante|croissante puis décroissante}}, avec un changement en $x={{h}}$.",
+								"$f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "0",
+							"s": "1"
+						},
+						"description": "v0 : f′ décroissante puis croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "0",
+							"s": "1"
+						},
+						"description": "v0 : là où f′ ≤ 0 (variations de f)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "1",
+							"s": "-1"
+						},
+						"description": "v0 : s=−1, opposé",
+						"variationIndex": 0
+					}
+				],
+				"description": "Lire l'intervalle où f est convexe sur la courbe de f′ (f′ croissante)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-4}} ; {{eval:h+4}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(0.5*(x-{{h}})^2-2)   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : une parabole qui coupe l'axe des abscisses en deux points.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-2}}\\,;{{eval:h+2}}\\right]$\n- $\\mathbb{R}$\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "-1|1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f'$ est **croissante** (on ne regarde pas le signe de $f'$, qui donne les variations de $f$).",
+								"Sur le graphique, $f'$ est {{if:s>0|décroissante puis croissante|croissante puis décroissante}}, avec un changement en $x={{h}}$.",
+								"$f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$."
+							]
+						}
+					},
+					{
+						"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: -4 ; 4\ngrille: 1 ; 1\ng(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : un polynôme de degré 3 avec deux sommets, d'abscisses {{eval:h-1}} et {{eval:h+1}}.\n```\n\nDétermine le plus grand intervalle borné sur lequel $f$ est **{{if:s>0|concave|convexe}}**.\n\n$I=?$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "1|-1"
+							},
+							{
+								"name": "h",
+								"expression": "-2..2"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "[{{eval:h-1}};{{eval:h+1}}]",
+								"answerKind": "intervalles",
+								"openableBounds": true,
+								"expectedErrors": [
+									{
+										"answer": "]-\\infty;{{eval:h-1}}]\\cup[{{eval:h+1}};+\\infty[",
+										"message": "Sur ces intervalles, $f'$ est {{if:s>0|croissante|décroissante}} : $f$ y est {{if:s>0|convexe|concave}}, pas {{if:s>0|concave|convexe}}.",
+										"label": "Convexité inversée"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f$ est convexe là où $f'$ est **croissante**, concave là où $f'$ est **décroissante** (le signe de $f'$ donne les variations de $f$, pas sa convexité).",
+								"Sur le graphique, $f'$ est {{if:s>0|croissante, puis décroissante entre ${{eval:h-1}}$ et ${{eval:h+1}}$, puis croissante|décroissante, puis croissante entre ${{eval:h-1}}$ et ${{eval:h+1}}$, puis décroissante}}.",
+								"$f$ est {{if:s>0|concave|convexe}} sur $\\textcolor{{{color:primary.0}}}{\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]}$."
+							]
+						},
+						"hint": "Repère les sommets de la courbe de $f'$ : entre eux, $f'$ est-elle croissante ou décroissante ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"h": "0",
+							"s": "1"
+						},
+						"description": "v0 : f′ décroissante puis croissante",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "0",
+							"s": "1"
+						},
+						"description": "v0 : là où f′ ≤ 0 (variations de f)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"h": "1",
+							"s": "-1"
+						},
+						"description": "v0 : s=−1, opposé",
+						"variationIndex": 0
+					},
+					{
+						"description": "F8 : s = 1, h = 0",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"h": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[-1;1]"]
+					},
+					{
+						"description": "F8 : bornes ouvertes",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"h": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["]-1;1["]
+					},
+					{
+						"description": "F8 : convexité inversée",
+						"variationIndex": 1,
+						"variables": {
+							"s": "1",
+							"h": "0"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Sur ces intervalles, $f'$ est croissante : $f$ y est convexe, pas concave."
+						},
+						"answers": ["]-\\infty;-1]\\cup[1;+\\infty["]
+					},
+					{
+						"description": "F8 : s = −1, h = 2",
+						"variationIndex": 1,
+						"variables": {
+							"s": "-1",
+							"h": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["[1;3]"]
+					},
+					{
+						"description": "F8 : sommets mal lus",
+						"variationIndex": 1,
+						"variables": {
+							"s": "-1",
+							"h": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["[0;4]"]
+					}
+				],
+				"description": "Lire l'intervalle où f est convexe sur la courbe de f′ (f′ croissante)"
+			},
+			"changements": {
+				"ajoutees": [2],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "e814175b-95f0-4a2d-8689-e76c01ea91e6",
+			"title": "Inégalité déduite de la convexité (tangente)",
+			"fichier": "e814175b.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y=x+1$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x$, $e^{x}\\geqslant x+1$\n- Pour tout réel $x$, $e^{x}\\leqslant x+1$\n- $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$\n```",
+						"correction": {
+							"steps": [
+								"La courbe d'une fonction convexe est **au-dessus** de chacune de ses tangentes, sur tout l'intervalle.",
+								"Donc pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{e^{x}\\geqslant x+1}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=x-1$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$\n- Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$\n- $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- Pour tout réel $x>0$, $\\ln(x)=x-1$\n```",
+						"correction": {
+							"steps": [
+								"La courbe d'une fonction concave est **en dessous** de chacune de ses tangentes.",
+								"Donc pour tout réel $x>0$, $\\textcolor{{{color:primary.0}}}{\\ln(x)\\leqslant x-1}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse ${{a}}$ a pour équation $y={{eval:2*a}}x{{eval:-a^2;+}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$\n- Pour tout réel $x$, $x^2\\leqslant {{eval:2*a}}x{{eval:-a^2;+}}$\n- $x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$ seulement pour $x\\geqslant {{a}}$\n- Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x$\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Convexe : la courbe est au-dessus de sa tangente, donc pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}}$.",
+								"Vérification : $x^2-({{eval:2*a}}x{{eval:-a^2;+}})=(x{{eval:-a;+}})^2\\geqslant 0$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=\\dfrac{1}{2}x+\\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$\n- $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$\n```",
+						"correction": {
+							"steps": [
+								"Concave : la courbe est en dessous de sa tangente, donc pour tout $x\\geqslant 0$, $\\textcolor{{{color:primary.0}}}{\\sqrt{x}\\leqslant\\dfrac{x+1}{2}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "v0 bonne",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v0 sens inversé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v0 restreint à x ≥ 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "v1 bonne",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v1 sens inversé (convexe/concave)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3"
+						},
+						"description": "v2 a=3 bonne",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3"
+						},
+						"description": "v2 a=3 sens inversé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2"
+						},
+						"description": "v2 a=−2 bonne",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "v3 bonne",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v3 sens inversé",
+						"variationIndex": 3
+					}
+				],
+				"description": "Courbe convexe au-dessus de sa tangente, concave en dessous : eˣ ≥ x + 1, ln x ≤ x − 1, x² ≥ 2ax − a², √x ≤ (x + 1)/2 (spécialité seulement)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y=x+1$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x$, $e^{x}\\geqslant x+1$\n- Pour tout réel $x$, $e^{x}\\leqslant x+1$\n- $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$\n```",
+						"correction": {
+							"steps": [
+								"La courbe d'une fonction convexe est **au-dessus** de chacune de ses tangentes, sur tout l'intervalle.",
+								"Donc pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{e^{x}\\geqslant x+1}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=x-1$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$\n- Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$\n- $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- Pour tout réel $x>0$, $\\ln(x)=x-1$\n```",
+						"correction": {
+							"steps": [
+								"La courbe d'une fonction concave est **en dessous** de chacune de ses tangentes.",
+								"Donc pour tout réel $x>0$, $\\textcolor{{{color:primary.0}}}{\\ln(x)\\leqslant x-1}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse ${{a}}$ a pour équation $y={{eval:2*a}}x{{eval:-a^2;+}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$\n- Pour tout réel $x$, $x^2\\leqslant {{eval:2*a}}x{{eval:-a^2;+}}$\n- $x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$ seulement pour $x\\geqslant {{a}}$\n- Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x$\n```",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Convexe : la courbe est au-dessus de sa tangente, donc pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}}$.",
+								"Vérification : $x^2-({{eval:2*a}}x{{eval:-a^2;+}})=(x{{eval:-a;+}})^2\\geqslant 0$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=\\dfrac{1}{2}x+\\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n```choix\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$\n- $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$\n```",
+						"correction": {
+							"steps": [
+								"Concave : la courbe est en dessous de sa tangente, donc pour tout $x\\geqslant 0$, $\\textcolor{{{color:primary.0}}}{\\sqrt{x}\\leqslant\\dfrac{x+1}{2}}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1||{{if:a==-1|-|{{a}}}}}}e^{x}{{eval:b*x^2+c*x+d;+}}$, qui est {{if:a>0|convexe|concave}} sur $\\mathbb{R}$.\n\nComplète avec l'équation de la tangente à sa courbe au point d'abscisse $0$ : pour tout réel $x$, $f(x){{if:a>0|\\geqslant|\\leqslant}}?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "bb",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "eval:bb*a/abs(a)"
+							},
+							{
+								"name": "c",
+								"expression": "-5..5"
+							},
+							{
+								"name": "d",
+								"expression": "-5..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(a+c)*x+a+d}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(a+c)*x+d}}",
+										"message": "$f(0)={{a}}e^{0}{{d;+}}={{eval:a+d}}$ : $e^{0}=1$, pas $0$.",
+										"label": "e⁰ = 0"
+									},
+									{
+										"answer": "{{eval:c*x+a+d}}",
+										"message": "La dérivée de ${{a}}e^{x}$ est ${{a}}e^{x}$ : $f'(0)={{a}}{{c;+}}$.",
+										"label": "Dérivée de a·eˣ oubliée"
+									},
+									{
+										"answer": "{{eval:(a+c)*x}}",
+										"message": "La tangente en $0$ est $y=f'(0)x+f(0)$ : il manque $f(0)$.",
+										"label": "f(0) oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)={{a}}e^{x}{{eval:2*b*x+c;+}}$, donc $f'(0)={{eval:a+c}}$ ; $f(0)={{a}}e^{0}{{d;+}}={{eval:a+d}}$.",
+								"La tangente en $0$ a pour équation $y={{eval:(a+c)*x+a+d}}$. $f$ est {{if:a>0|convexe : sa courbe est au-dessus|concave : sa courbe est en dessous}} de cette tangente, donc pour tout réel $x$, $f(x){{if:a>0|\\geqslant|\\leqslant}}\\textcolor{{{color:primary.0}}}{ {{eval:(a+c)*x+a+d}} }$."
+							]
+						},
+						"hint": "Calcule $f(0)$ et $f'(0)$ : la tangente en $0$ a pour équation $y=f'(0)x+f(0)$."
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:a*x^4+b*x^2+c*x+d}}$, qui est {{if:a>0|convexe|concave}} sur $\\mathbb{R}$.\n\nComplète avec l'équation réduite de la tangente à sa courbe au point d'abscisse ${{x0}}$ : pour tout réel $x$, $f(x){{if:a>0|\\geqslant|\\leqslant}}?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..2;±"
+							},
+							{
+								"name": "bb",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "eval:bb*a/abs(a)"
+							},
+							{
+								"name": "c",
+								"expression": "-5..5"
+							},
+							{
+								"name": "d",
+								"expression": "-5..5"
+							},
+							{
+								"name": "x0",
+								"expression": "-2|-1|1|2"
+							},
+							{
+								"name": "m",
+								"expression": "eval:4*a*x0^3+2*b*x0+c"
+							},
+							{
+								"name": "y0",
+								"expression": "eval:a*x0^4+b*x0^2+c*x0+d"
+							}
+						],
+						"conditions": ["m != y0"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:m*x+y0-m*x0}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:m*x+y0+m*x0}}",
+										"message": "La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : ici $x-a$ s'écrit $x{{eval:-x0;+}}$.",
+										"label": "Signe de x₀"
+									},
+									{
+										"answer": "{{eval:y0*x+m-y0*x0}}",
+										"message": "Tu as échangé $f({{x0}})$ et $f'({{x0}})$ : la pente est $f'({{x0}})={{m}}$.",
+										"label": "f(a) et f′(a) échangés"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f'(x)={{eval:4*a*x^3+2*b*x+c}}$, donc $f'({{x0}})={{m}}$ ; $f({{x0}})={{y0}}$.",
+								"La tangente en ${{x0}}$ : $y={{m}}(x{{eval:-x0;+}}){{y0;+}}$, soit $y={{eval:m*x+y0-m*x0}}$.",
+								"$f$ est {{if:a>0|convexe : sa courbe est au-dessus|concave : sa courbe est en dessous}} de ses tangentes, donc pour tout réel $x$, $f(x){{if:a>0|\\geqslant|\\leqslant}}\\textcolor{{{color:primary.0}}}{ {{eval:m*x+y0-m*x0}} }$."
+							]
+						},
+						"hint": "Calcule $f({{x0}})$ et $f'({{x0}})$ : la tangente a pour équation $y=f'({{x0}})(x{{eval:-x0;+}})+f({{x0}})$, à réduire."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "v0 bonne",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v0 sens inversé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v0 restreint à x ≥ 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "v1 bonne",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v1 sens inversé (convexe/concave)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3"
+						},
+						"description": "v2 a=3 bonne",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3"
+						},
+						"description": "v2 a=3 sens inversé",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2"
+						},
+						"description": "v2 a=−2 bonne",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "v3 bonne",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "v3 sens inversé",
+						"variationIndex": 3
+					},
+					{
+						"description": "F18a : 2eˣ + x² − 3x + 1",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"bb": "1",
+							"b": "1",
+							"c": "-3",
+							"d": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-x+3"]
+					},
+					{
+						"description": "F18a : e⁰ = 0",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"bb": "1",
+							"b": "1",
+							"c": "-3",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$f\\left( 0 \\right) = 2 \\exponentialE^0 + 1 = 3$ : $\\exponentialE^0 = 1$, pas $0$."
+						},
+						"answers": ["-x+1"]
+					},
+					{
+						"description": "F18a : dérivée de a·eˣ oubliée",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"bb": "1",
+							"b": "1",
+							"c": "-3",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-3x+3"]
+					},
+					{
+						"description": "F18a : f(0) oublié",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"bb": "1",
+							"b": "1",
+							"c": "-3",
+							"d": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-x"]
+					},
+					{
+						"description": "F18a : a < 0",
+						"variationIndex": 4,
+						"variables": {
+							"a": "-1",
+							"bb": "2",
+							"b": "-2",
+							"c": "4",
+							"d": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3x-1"]
+					},
+					{
+						"description": "F18b : x⁴ + x² − 2 en 1",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"bb": "1",
+							"b": "1",
+							"c": "0",
+							"d": "-2",
+							"x0": "1",
+							"m": "6",
+							"y0": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["6x-6"]
+					},
+					{
+						"description": "F18b : forme non réduite",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"bb": "1",
+							"b": "1",
+							"c": "0",
+							"d": "-2",
+							"x0": "1",
+							"m": "6",
+							"y0": "0"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["6(x-1)"]
+					},
+					{
+						"description": "F18b : signe de x₀",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"bb": "1",
+							"b": "1",
+							"c": "0",
+							"d": "-2",
+							"x0": "1",
+							"m": "6",
+							"y0": "0"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["6x+6"]
+					},
+					{
+						"description": "F18b : f et f′ échangés",
+						"variationIndex": 5,
+						"variables": {
+							"a": "1",
+							"bb": "1",
+							"b": "1",
+							"c": "0",
+							"d": "-2",
+							"x0": "1",
+							"m": "6",
+							"y0": "0"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["6"]
+					}
+				],
+				"description": "Courbe convexe au-dessus de sa tangente, concave en dessous : eˣ ≥ x + 1, ln x ≤ x − 1, x² ≥ 2ax − a², √x ≤ (x + 1)/2 (spécialité seulement)"
+			},
+			"changements": {
+				"ajoutees": [5, 6],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "eeb72d3a-8a31-494a-afcf-6a6a580dfe69",
+			"title": "Convexité : position par rapport aux tangentes",
+			"fichier": "eeb72d3a.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si, sur $I$, sa courbe représentative est :\n\n```choix\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses sécantes\n- au-dessus de l'axe des abscisses\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (admis) : pour $f$ deux fois dérivable sur $I$, $f$ est convexe sur $I$ si et seulement si sa courbe est $\\textcolor{{{color:primary.0}}}{\\text{au-dessus de chacune de ses tangentes}}$.",
+								"Et en dessous de ses sécantes : les deux positions vont ensemble."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable et convexe sur $\\mathbb{R}$, et $a$ un réel.\n\nPour tout réel $x$ :\n\n```choix\n- $f(x)\\geqslant f'(a)(x-a)+f(a)$\n- $f(x)\\leqslant f'(a)(x-a)+f(a)$\n- $f(x)=f'(a)(x-a)+f(a)$\n- $f(x)\\geqslant f(a)$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : la tangente en $a$ a pour équation $y=f'(a)(x-a)+f(a)$, et la courbe d'une fonction convexe est au-dessus de ses tangentes.",
+								"Donc, pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{f(x)\\geqslant f'(a)(x-a)+f(a)}$.",
+								"$f(x)\\geqslant f(a)$ serait vrai seulement si la tangente en $a$ était horizontale."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable et **concave** sur un intervalle $I$.\n\nSur $I$, sa courbe représentative est :\n\n```choix\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses sécantes\n- en dessous de l'axe des abscisses\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : $f$ concave équivaut à $-f$ convexe ; la courbe de $-f$ est au-dessus de ses tangentes.",
+								"Celle de $f$ est donc $\\textcolor{{{color:primary.0}}}{\\text{en dessous de chacune de ses tangentes}}$ (et au-dessus de ses sécantes)."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "au-dessus des tangentes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : en dessous",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : au-dessus des sécantes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : positive",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "≥ tangente",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : ≤",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : =",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : ≥ f(a)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "sous les tangentes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : au-dessus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : sous les sécantes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : négative",
+						"variationIndex": 2
+					}
+				],
+				"description": "À savoir : f deux fois dérivable, convexe ⟺ courbe au-dessus de ses tangentes ; inégalité f(x) ≥ f′(a)(x − a) + f(a) ; concave : en dessous"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si, sur $I$, sa courbe représentative est :\n\n```choix\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses sécantes\n- au-dessus de l'axe des abscisses\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître (admis) : pour $f$ deux fois dérivable sur $I$, $f$ est convexe sur $I$ si et seulement si sa courbe est $\\textcolor{{{color:primary.0}}}{\\text{au-dessus de chacune de ses tangentes}}$.",
+								"Et en dessous de ses sécantes : les deux positions vont ensemble."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable et convexe sur $\\mathbb{R}$, et $a$ un réel.\n\nPour tout réel $x$ :\n\n```choix\n- $f(x)\\geqslant f'(a)(x-a)+f(a)$\n- $f(x)\\leqslant f'(a)(x-a)+f(a)$\n- $f(x)=f'(a)(x-a)+f(a)$\n- $f(x)\\geqslant f(a)$\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : la tangente en $a$ a pour équation $y=f'(a)(x-a)+f(a)$, et la courbe d'une fonction convexe est au-dessus de ses tangentes.",
+								"Donc, pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{f(x)\\geqslant f'(a)(x-a)+f(a)}$.",
+								"$f(x)\\geqslant f(a)$ serait vrai seulement si la tangente en $a$ était horizontale."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"statement": "Soit $f$ une fonction deux fois dérivable et **concave** sur un intervalle $I$.\n\nSur $I$, sa courbe représentative est :\n\n```choix\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses sécantes\n- en dessous de l'axe des abscisses\n```",
+						"variables": [],
+						"correction": {
+							"steps": [
+								"À connaître : $f$ concave équivaut à $-f$ convexe ; la courbe de $-f$ est au-dessus de ses tangentes.",
+								"Celle de $f$ est donc $\\textcolor{{{color:primary.0}}}{\\text{en dessous de chacune de ses tangentes}}$ (et au-dessus de ses sécantes)."
+							]
+						}
+					},
+					{
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$, et sa tangente $T$ au point $A$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\npoints: A({{eval:h+t}} ; f({{eval:h+t}}))\ntangente: f ; {{eval:h+t}}\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec deux sommets, et sa tangente au point A.\n```\n\nAu voisinage du point $A$, la courbe $\\mathcal{C}_f$ est :\n\n```choix\n- au-dessus de la tangente $T$\n- en dessous de la tangente $T$\n- de part et d'autre de la tangente $T$ (elle la traverse en $A$)\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "1|-1"
+							},
+							{
+								"name": "h",
+								"expression": "-1..1"
+							},
+							{
+								"name": "k",
+								"expression": "-1..1"
+							},
+							{
+								"name": "t",
+								"expression": "-2..2"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:t==0|2|{{if:s*t>0|0|1}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Là où $f$ est convexe, sa courbe est au-dessus de ses tangentes ; là où elle est concave, en dessous ; en un point d'inflexion, elle traverse sa tangente.",
+								"{{if:t==0|$A$ est le point d'inflexion de $\\mathcal{C}_f$ : la courbe est $\\textcolor{{{color:primary.0}}}{\\text{de part et d'autre de } T}$.|Au voisinage de $A$, la courbe est tournée vers le {{if:s*t>0|haut ($f$ convexe)|bas ($f$ concave)}} : elle est $\\textcolor{{{color:primary.0}}}{\\text{ {{if:s*t>0|au-dessus|en dessous}} de } T}$.}}"
+							]
+						},
+						"hint": "Au voisinage de $A$, la courbe est-elle tournée vers le haut, vers le bas, ou change-t-elle de courbure en $A$ ?"
+					},
+					{
+						"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$, et sa tangente au point $A$ d'abscisse $a={{eval:c+1.5*t}}$.\n\n```courbe\nx: {{eval:c-3}} ; {{eval:c+4.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{A}}*sin(\\pi*(x-{{c}})/3)+{{k}}   bleu   nom=C_f\npoints: A({{eval:c+1.5*t}} ; f({{eval:c+1.5*t}}))\ntangente: f ; {{eval:c+1.5*t}}\ntaille: moyenne\ndescription: Courbe ondulée et sa tangente au point A.\n```\n\nQue peut-on dire de $f$ au voisinage de $a$ ?\n\n```choix\n- $f$ est convexe au voisinage de $a$\n- $f$ est concave au voisinage de $a$\n- $\\mathcal{C}_f$ a un point d'inflexion en $A$\n```",
+						"variables": [
+							{
+								"name": "A",
+								"expression": "2|3|-2|-3"
+							},
+							{
+								"name": "c",
+								"expression": "-1..0"
+							},
+							{
+								"name": "k",
+								"expression": "-1..1"
+							},
+							{
+								"name": "t",
+								"expression": "-1..2"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:t*(t-2)==0|2|{{if:A*t<0|0|1}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"La courbe d'une fonction convexe est au-dessus de ses tangentes, celle d'une fonction concave en dessous ; en un point d'inflexion, elle traverse sa tangente.",
+								"{{if:t*(t-2)==0|En $A$, la courbe traverse sa tangente : $\\textcolor{{{color:primary.0}}}{\\mathcal{C}_f\\text{ a un point d'inflexion en }A}$.|Au voisinage de $A$, la courbe est {{if:A*t<0|au-dessus|en dessous}} de sa tangente : $\\textcolor{{{color:primary.0}}}{f\\text{ est {{if:A*t<0|convexe|concave}} au voisinage de }a}$.}}"
+							]
+						},
+						"hint": "Au voisinage de $A$, la courbe est-elle au-dessus de sa tangente, en dessous, ou la traverse-t-elle ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "au-dessus des tangentes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : en dessous",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : au-dessus des sécantes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : positive",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "≥ tangente",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : ≤",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : =",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : ≥ f(a)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {},
+						"description": "sous les tangentes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : au-dessus",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : sous les sécantes",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {},
+						"description": "Erreur : négative",
+						"variationIndex": 2
+					},
+					{
+						"description": "F15a : convexe (t = 1)",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"h": "0",
+							"k": "0",
+							"t": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F15a : concave (t = −2)",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"h": "0",
+							"k": "0",
+							"t": "-2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F15a : inflexion (t = 0)",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"h": "0",
+							"k": "0",
+							"t": "0"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F15a : inflexion prise pour concave",
+						"variationIndex": 3,
+						"variables": {
+							"s": "1",
+							"h": "0",
+							"k": "0",
+							"t": "0"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F15a : s = −1, t = 2 → en dessous",
+						"variationIndex": 3,
+						"variables": {
+							"s": "-1",
+							"h": "0",
+							"k": "0",
+							"t": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F15b : A = 2, t = −1 → convexe",
+						"variationIndex": 4,
+						"variables": {
+							"A": "2",
+							"c": "0",
+							"k": "0",
+							"t": "-1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F15b : A = 2, t = 1 → concave",
+						"variationIndex": 4,
+						"variables": {
+							"A": "2",
+							"c": "0",
+							"k": "0",
+							"t": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F15b : t = 2 → inflexion",
+						"variationIndex": 4,
+						"variables": {
+							"A": "-3",
+							"c": "-1",
+							"k": "1",
+							"t": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F15b : convexe pris pour concave",
+						"variationIndex": 4,
+						"variables": {
+							"A": "2",
+							"c": "0",
+							"k": "0",
+							"t": "-1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					}
+				],
+				"description": "À savoir : f deux fois dérivable, convexe ⟺ courbe au-dessus de ses tangentes ; inégalité f(x) ≥ f′(a)(x − a) + f(a) ; concave : en dessous"
+			},
+			"changements": {
+				"ajoutees": [4, 5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "f52b93c4-ba45-4bb1-8d4f-e9f34f413f65",
+			"title": "Dérivée d'une composée : √u, uⁿ, cos u, sin u",
+			"fichier": "f52b93c4.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{x}{\\sqrt{x^{2}+{{c}}}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{x^{2}+{{c}}}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=\\sqrt{u}$ avec $u(x)=x^{2}+{{c}}>0$, donc $f'=\\dfrac{u'}{2\\sqrt{u}}$.",
+								"$u'(x)=2x$, d'où $f'(x)=\\dfrac{2x}{2\\sqrt{x^{2}+{{c}}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{x}{\\sqrt{x^{2}+{{c}}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*n}}x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}{{b;+}}\\right)^{ {{n}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "n",
+								"expression": "3..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=u^{ {{n}} }$ avec $u(x)=x^{2}{{b;+}}$, donc $f'={{n}}u'u^{ {{eval:n-1}} }$.",
+								"$u'(x)=2x$, d'où $f'(x)={{n}}\\times2x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }=\\textcolor{{{color:primary.0}}}{{{eval:2*n}}x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "-{{a}}\\sin\\left({{a}}x{{b;+}}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left({{a}}x{{b;+}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$(\\cos u)'=-u'\\sin u$ avec $u(x)={{a}}x{{b;+}}$ et $u'(x)={{a}}$.",
+								"$f'(x)=\\textcolor{{{color:primary.0}}}{-{{a}}\\sin\\left({{a}}x{{b;+}}\\right)}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}x\\cos\\left({{if:a==1||{{a}}}}x^{2}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin\\left({{if:a==1||{{a}}}}x^{2}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$(\\sin u)'=u'\\cos u$ avec $u(x)={{if:a==1||{{a}}}}x^{2}$ et $u'(x)={{eval:2*a}}x$.",
+								"$f'(x)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}x\\cos\\left({{if:a==1||{{a}}}}x^{2}\\right)}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{x}{\\sqrt{x^2+5}}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : √(x²+5) → x/√(x²+5)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{2x}{2\\sqrt{x^2+5}}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : 2x/(2√…) non simplifiée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{2\\sqrt{x^2+5}}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : u′ oublié 1/(2√u)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\sqrt{2x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : √(u′) (2x sous la racine)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["6x(x^2-1)^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "-1",
+							"n": "3"
+						},
+						"description": "v1 : (x²−1)³ → 6x(x²−1)²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3(x^2-1)^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "-1",
+							"n": "3"
+						},
+						"description": "v1 : u′ oublié 3(x²−1)²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["6x(x^2-1)^3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "-1",
+							"n": "3"
+						},
+						"description": "v1 : exposant non diminué",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-3\\sin(3x+1)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v2 : cos(3x+1) → −3 sin(3x+1)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3\\sin(3x+1)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v2 : signe oublié",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\sin(3x+1)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v2 : u′ oublié",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["4x\\cos(2x^2)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "v3 : sin(2x²) → 4x cos(2x²)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\cos(4x)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "v3 : cos(4x) (dérivée appliquée à l'intérieur)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\cos(2x^2)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "v3 : u′ oublié",
+						"variationIndex": 3
+					}
+				],
+				"description": "Formule (v∘u)′ = (v′∘u) × u′ appliquée à √(x²+c), (x²+b)ⁿ, cos(ax+b), sin(ax²) (pièges : u′ oublié, exposant non diminué, signe de (cos)′)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{x}{\\sqrt{x^{2}+{{c}}}}"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{x^{2}+{{c}}}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "c",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=\\sqrt{u}$ avec $u(x)=x^{2}+{{c}}>0$, donc $f'=\\dfrac{u'}{2\\sqrt{u}}$.",
+								"$u'(x)=2x$, d'où $f'(x)=\\dfrac{2x}{2\\sqrt{x^{2}+{{c}}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{x}{\\sqrt{x^{2}+{{c}}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*n}}x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}{{b;+}}\\right)^{ {{n}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "n",
+								"expression": "3..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=u^{ {{n}} }$ avec $u(x)=x^{2}{{b;+}}$, donc $f'={{n}}u'u^{ {{eval:n-1}} }$.",
+								"$u'(x)=2x$, d'où $f'(x)={{n}}\\times2x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }=\\textcolor{{{color:primary.0}}}{{{eval:2*n}}x\\left(x^{2}{{b;+}}\\right)^{ {{eval:n-1}} }}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "-{{a}}\\sin\\left({{a}}x{{b;+}}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left({{a}}x{{b;+}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$(\\cos u)'=-u'\\sin u$ avec $u(x)={{a}}x{{b;+}}$ et $u'(x)={{a}}$.",
+								"$f'(x)=\\textcolor{{{color:primary.0}}}{-{{a}}\\sin\\left({{a}}x{{b;+}}\\right)}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}x\\cos\\left({{if:a==1||{{a}}}}x^{2}\\right)"
+							}
+						],
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin\\left({{if:a==1||{{a}}}}x^{2}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$(\\sin u)'=u'\\cos u$ avec $u(x)={{if:a==1||{{a}}}}x^{2}$ et $u'(x)={{eval:2*a}}x$.",
+								"$f'(x)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}x\\cos\\left({{if:a==1||{{a}}}}x^{2}\\right)}$."
+							]
+						}
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{eval:a*x^3+b*x}}\\right)^{ {{n}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "1..5;±"
+							},
+							{
+								"name": "n",
+								"expression": "2..4"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{n}}\\left({{eval:3*a*x^2+b}}\\right)\\left({{eval:a*x^3+b*x}}\\right){{if:n>2|^{ {{eval:n-1}} }}}",
+								"expectedErrors": [
+									{
+										"answer": "{{n}}\\left({{eval:a*x^3+b*x}}\\right){{if:n>2|^{ {{eval:n-1}} }}}",
+										"message": "Tu as oublié de multiplier par $u'(x)$ : $(u^{n})'=n\\,u'\\,u^{n-1}$.",
+										"label": "u′ oublié"
+									},
+									{
+										"answer": "{{n}}\\left({{eval:3*a*x^2+b}}\\right)\\left({{eval:a*x^3+b*x}}\\right)^{ {{n}} }",
+										"message": "L'exposant diminue de $1$ : $(u^{n})'=n\\,u'\\,u^{n-1}$.",
+										"label": "Exposant non diminué"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=u^{ {{n}} }$ avec $u(x)={{eval:a*x^3+b*x}}$, donc $f'={{n}}\\,u'\\,u^{ {{eval:n-1}} }$.",
+								"$u'(x)={{eval:3*a*x^2+b}}$, d'où $f'(x)=\\textcolor{{{color:primary.0}}}{ {{n}}\\left({{eval:3*a*x^2+b}}\\right)\\left({{eval:a*x^3+b*x}}\\right){{if:n>2|^{ {{eval:n-1}} }}} }$."
+							]
+						},
+						"hint": "Pose $u(x)={{eval:a*x^3+b*x}}$, calcule $u'(x)$, puis applique la formule de la dérivée de $u^{n}$."
+					},
+					{
+						"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+						"variables": [
+							{
+								"name": "al",
+								"expression": "1..3"
+							},
+							{
+								"name": "k",
+								"expression": "-2|-1|1|2"
+							},
+							{
+								"name": "b",
+								"expression": "1..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:al*k<0|-}}{{if:al*k==2*floor(al*k/2)|\\frac{{{if:abs(al*k)==2||{{eval:abs(al*k)/2}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}|\\frac{ {{eval:abs(al*k)}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}}}",
+								"expectedErrors": [
+									{
+										"answer": "\\frac{1}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}",
+										"message": "Tu as oublié de multiplier par $u'(x)$ : $(\\sqrt{u})'=\\dfrac{u'}{2\\sqrt{u}}$.",
+										"label": "u′ oublié"
+									},
+									{
+										"answer": "\\frac{ {{eval:al*k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}",
+										"message": "La dérivée de $\\sqrt{u}$ est $\\dfrac{u'}{2\\sqrt{u}}$ : tu as oublié le $2$ du dénominateur.",
+										"label": "2 oublié"
+									},
+									{
+										"answer": "\\frac{ {{al}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}",
+										"message": "La dérivée de $e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$ est ${{k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$ : le coefficient ${{k}}$ sort.",
+										"label": "Dérivée de e^(kx)"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$f=\\sqrt{u}$ avec $u(x)={{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}$, donc $f'=\\dfrac{u'}{2\\sqrt{u}}$.",
+								"$u'(x)={{al}}\\times{{k;()}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}={{eval:al*k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$, d'où $f'(x)=\\dfrac{ {{eval:al*k}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}=\\textcolor{{{color:primary.0}}}{{{if:al*k<0|-}}{{if:al*k==2*floor(al*k/2)|\\frac{{{if:abs(al*k)==2||{{eval:abs(al*k)/2}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}|\\frac{ {{eval:abs(al*k)}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}}{2\\sqrt{{{if:al==1||{{if:al==-1|-|{{al}}}}}}e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+{{b}}}}}}}$."
+							]
+						},
+						"hint": "Pose $u(x)$ égal à l'expression sous la racine, calcule $u'(x)$ (attention à la dérivée de $e^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}$), puis applique la formule de la dérivée de $\\sqrt{u}$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{x}{\\sqrt{x^2+5}}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : √(x²+5) → x/√(x²+5)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{2x}{2\\sqrt{x^2+5}}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : 2x/(2√…) non simplifiée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{2\\sqrt{x^2+5}}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : u′ oublié 1/(2√u)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\sqrt{2x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"c": "5"
+						},
+						"description": "v0 : √(u′) (2x sous la racine)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["6x(x^2-1)^2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "-1",
+							"n": "3"
+						},
+						"description": "v1 : (x²−1)³ → 6x(x²−1)²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3(x^2-1)^2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "-1",
+							"n": "3"
+						},
+						"description": "v1 : u′ oublié 3(x²−1)²",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["6x(x^2-1)^3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "-1",
+							"n": "3"
+						},
+						"description": "v1 : exposant non diminué",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-3\\sin(3x+1)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v2 : cos(3x+1) → −3 sin(3x+1)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3\\sin(3x+1)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v2 : signe oublié",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-\\sin(3x+1)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "v2 : u′ oublié",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["4x\\cos(2x^2)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "v3 : sin(2x²) → 4x cos(2x²)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\cos(4x)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "v3 : cos(4x) (dérivée appliquée à l'intérieur)",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\cos(2x^2)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "v3 : u′ oublié",
+						"variationIndex": 3
+					},
+					{
+						"description": "F2a : (x³ − 2x)³",
+						"variationIndex": 4,
+						"variables": {
+							"a": "1",
+							"b": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3(3x^2-2)(x^3-2x)^2"]
+					},
+					{
+						"description": "F2a : facteurs dans un autre ordre",
+						"variationIndex": 4,
+						"variables": {
+							"a": "1",
+							"b": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3(x^3-2x)^2(3x^2-2)"]
+					},
+					{
+						"description": "F2a : (2x³ + x)², exposant 1",
+						"variationIndex": 4,
+						"variables": {
+							"a": "2",
+							"b": "1",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2(6x^2+1)(2x^3+x)"]
+					},
+					{
+						"description": "F2a : u′ oublié",
+						"variationIndex": 4,
+						"variables": {
+							"a": "1",
+							"b": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as oublié de multiplier par $u'\\left( x \\right)$ : $(u^{n})'=n\\,u'\\,u^{n-1}$."
+						},
+						"answers": ["3(x^3-2x)^2"]
+					},
+					{
+						"description": "F2a : exposant non diminué",
+						"variationIndex": 4,
+						"variables": {
+							"a": "1",
+							"b": "-2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["3(3x^2-2)(x^3-2x)^3"]
+					},
+					{
+						"description": "F2b : √(2e^(−x) + 3)",
+						"variationIndex": 5,
+						"variables": {
+							"al": "2",
+							"k": "-1",
+							"b": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-\\frac{e^{-x}}{\\sqrt{2e^{-x}+3}}"]
+					},
+					{
+						"description": "F2b : non simplifiée par 2 (½)",
+						"variationIndex": 5,
+						"variables": {
+							"al": "2",
+							"k": "-1",
+							"b": "3"
+						},
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"answers": ["-\\frac{2e^{-x}}{2\\sqrt{2e^{-x}+3}}"]
+					},
+					{
+						"description": "F2b : √(3eˣ + 1), 3/(2√…)",
+						"variationIndex": 5,
+						"variables": {
+							"al": "3",
+							"k": "1",
+							"b": "1"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{3e^{x}}{2\\sqrt{3e^{x}+1}}"]
+					},
+					{
+						"description": "F2b : u′ oublié",
+						"variationIndex": 5,
+						"variables": {
+							"al": "2",
+							"k": "-1",
+							"b": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["\\frac{1}{2\\sqrt{2e^{-x}+3}}"]
+					},
+					{
+						"description": "F2b : 2 oublié",
+						"variationIndex": 5,
+						"variables": {
+							"al": "3",
+							"k": "2",
+							"b": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["\\frac{6e^{2x}}{\\sqrt{3e^{2x}+1}}"]
+					},
+					{
+						"description": "F2b : dérivée de e^(kx)",
+						"variationIndex": 5,
+						"variables": {
+							"al": "3",
+							"k": "2",
+							"b": "1"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["\\frac{3e^{2x}}{2\\sqrt{3e^{2x}+1}}"]
+					}
+				],
+				"description": "Formule (v∘u)′ = (v′∘u) × u′ appliquée à √(x²+c), (x²+b)ⁿ, cos(ax+b), sin(ax²) (pièges : u′ oublié, exposant non diminué, signe de (cos)′)"
+			},
+			"changements": {
+				"ajoutees": [5, 6],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

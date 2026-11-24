@@ -1,5 +1,9 @@
 {
 	"id": "74d73d4e-5e5e-431f-ad2d-786f805f4f49",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "TSPE-416"
+	},
 	"title": "Variations d'une fonction auxiliaire ou homographique",
 	"description": "Signe de la dérivée et variations de g(x) = eˣ − ax − b (minimum en ln a, tableau à compléter) et de (px + q)/(rx + t) (signe de pt − qr, choix du tableau) (pièges : e^a au lieu de ln a, signe de b, mêmes variations des deux côtés de la valeur interdite)",
 	"grades": ["T_SPE"],
