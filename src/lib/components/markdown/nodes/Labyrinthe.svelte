@@ -2,7 +2,7 @@
 	Labyrinthe.svelte
 	=================
 
-	Bloc ```labyrinthe (chantier `labyrinthe`, journal `docs/wip/labyrinthe-progress.md`).
+	Bloc ```labyrinthe (chantier `labyrinthe`, journal `docs/archive/wip/labyrinthe/labyrinthe-progress.md`).
 	Sans `parcourir:` : la grille seule (`solution: oui` : le bon chemin teinté). Avec
 	`parcourir: oui` : l'élève trace le chemin de l'entrée à une sortie.
 

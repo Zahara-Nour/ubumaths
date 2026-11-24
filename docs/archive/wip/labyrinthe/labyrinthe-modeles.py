@@ -1,6 +1,6 @@
 """Écrit les deux modèles du chantier labyrinthe dans scripts/questions/labyrinthe-modeles/.
 
-Phase 0 validée par David le 2026-11-24 (journal docs/wip/labyrinthe-progress.md, § PR 2) :
+Phase 0 validée par David le 2026-11-24 (journal docs/archive/wip/labyrinthe/labyrinthe-progress.md, § PR 2) :
 - M1 (3e) « Le labyrinthe des nombres premiers », sans point (primalité hors programme de 3e,
   comme F4 d'idees-3e-arithmetique), 150 s, niveau 5 ; grilles 5 × 4 et 6 × 5 (7 × 5 déborde sur iPhone).
 - M2 (6e, 6-101) « Le labyrinthe du chiffre d'un rang », 120 s, niveau 4 ; entiers (unités à
@@ -19,7 +19,7 @@ Pièges :
   d'erreurs prévues : le juge dit lui-même pourquoi un chemin est faux.
 - Le bloc doit rester au premier niveau (ni dans une liste, ni dans un choix).
 
-Usage : python3 docs/wip/questions/labyrinthe-modeles.py scripts/questions/labyrinthe-modeles
+Usage : python3 docs/archive/wip/labyrinthe/labyrinthe-modeles.py scripts/questions/labyrinthe-modeles
 """
 import json
 import os

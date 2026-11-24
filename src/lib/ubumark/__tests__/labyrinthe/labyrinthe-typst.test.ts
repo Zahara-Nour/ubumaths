@@ -2,7 +2,7 @@
  * Bloc ```labyrinthe → Typst : le texte produit, et une compilation RÉELLE par le compilateur
  * typst.ts (celui de la production, en WebAssembly).
  *
- * Phase 0 (`docs/wip/labyrinthe-progress.md`) : la grille, l'entrée et les sorties ; l'élève
+ * Phase 0 (`docs/archive/wip/labyrinthe/labyrinthe-progress.md`) : la grille, l'entrée et les sorties ; l'élève
  * trace au crayon ; le corrigé imprimé (`solution: oui`) teinte le bon chemin.
  *
  * Témoin : un document cassé est refusé, sinon ce test ne prouverait rien.
