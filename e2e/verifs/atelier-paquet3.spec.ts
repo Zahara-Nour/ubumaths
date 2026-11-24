@@ -70,9 +70,12 @@ test('#1656 — carte « Dériver » : même chose que .dériver ; quotient réd
 	page
 }) => {
 	await calc(page, 'f(x) = x^2/(x-1)^2');
-	const console = await calc(page, '.dériver f');
+	const derived = await calc(page, '.dériver f');
+	expect(derived.latex).not.toBeNull();
 	await cardAction(page, 'f', 'Dériver');
-	expect(normalizeLatex((await card(page, 'f′')).latex ?? '')).toBe(normalizeLatex(console.latex));
+	expect(normalizeLatex((await card(page, 'f′')).latex ?? '')).toBe(
+		normalizeLatex(derived.latex ?? '')
+	);
 	// Dernière étape « On simplifie » : le signe devant la barre
 	const quotient = await calc(page, '.dériver (x+4)/(x-3)');
 	expectLatex(quotient, '-\\dfrac{7}{(x - 3)^2}');
