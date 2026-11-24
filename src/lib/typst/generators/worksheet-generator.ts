@@ -261,7 +261,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	private printedTitle(worksheet: WorksheetRow): PrintedTitle {
 		const notions = [...(worksheet.classifications ?? [])]
 			.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'))
-			.map((notion) => ({ name: notion.name, branch: notion.branch }));
+			.map((notion) => ({
+				name: notion.name,
+				branch: notion.branch,
+				nameEn: notion.name_en,
+				branchEn: notion.branch_en
+			}));
 		return printedTitle({
 			type: worksheet.type,
 			category: isWorksheetCategory(worksheet.category) ? worksheet.category : null,

@@ -18,7 +18,7 @@ export async function loadActiveNodes(supabase: SupabaseClient<Database>): Promi
 		(from, to) =>
 			supabase
 				.from('classification_nodes')
-				.select('id, kind, name, parent_id, position')
+				.select('id, kind, name, parent_id, position, translations')
 				.is('archived_at', null)
 				.order('id')
 				.range(from, to),
