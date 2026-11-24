@@ -123,6 +123,16 @@ export function displayName(name: string): string {
 	return `${derivative.base}${marks}`;
 }
 
+/**
+ * Sépare le nom affiché de son exposant (`f⁻¹` → `f` et `⁻¹`). Le signe `⁻` (U+207B)
+ * manque aux polices à empattement : WebKit le prend dans une police de repli et
+ * décolle `¹` de lui. La carte pose donc l'exposant dans sa propre étiquette.
+ */
+export function splitDisplayExponent(display: string): { base: string; exponent: string } {
+	const match = /^(.*?)([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)$/u.exec(display);
+	return match === null ? { base: display, exponent: '' } : { base: match[1], exponent: match[2] };
+}
+
 /** Borne de la recherche d'un nom indicé — garde-fou, jamais atteinte. */
 const MAX_INDEX = 999;
 

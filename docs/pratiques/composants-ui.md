@@ -281,7 +281,7 @@ lors de la sauvegarde'); toaster.warning('Aucun élève sélectionné'); toaster
 cours…'); toaster.message('Message neutre'); // sans icône de statut
 ```
 
-Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine.
+Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine (`AppToaster.svelte`) : cinq annonces visibles au plus sur ordinateur, une seule (la plus récente) au téléphone.
 
 ---
 

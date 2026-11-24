@@ -11,7 +11,8 @@ import {
 	nextName,
 	nameRejectionMessage,
 	RESERVED_NAMES,
-	PREFERRED_NAMES
+	PREFERRED_NAMES,
+	splitDisplayExponent
 } from '../names';
 
 describe('validateName', () => {
@@ -127,5 +128,16 @@ describe('nameRejectionMessage', () => {
 
 	it('dit pourquoi x est réservé, pas seulement qu’il l’est', () => {
 		expect(nameRejectionMessage('reserved', 'x').toLowerCase()).toContain('variable');
+	});
+});
+
+describe('splitDisplayExponent (E13 : exposant du nom affiché, posé par la page et non par la police)', () => {
+	it('sépare l’exposant de la réciproque', () => {
+		expect(splitDisplayExponent('f⁻¹')).toEqual({ base: 'f', exponent: '⁻¹' });
+	});
+
+	it('laisse un nom sans exposant entier', () => {
+		expect(splitDisplayExponent('f')).toEqual({ base: 'f', exponent: '' });
+		expect(splitDisplayExponent('f′')).toEqual({ base: 'f′', exponent: '' });
 	});
 });
