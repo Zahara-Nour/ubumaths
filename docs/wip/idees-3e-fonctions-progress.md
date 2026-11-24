@@ -81,6 +81,11 @@ on range des modèles de questions.
 
 ### Questions à David
 
+Réponse de David (2026-11-24) : « je valide les modèles » — fiches F1 à F5 et N1 à N3 validées
+telles qu'écrites (page à cocher non remplie). Q3 tranchée par là (F5 sur cb545bd7). **Q1 et Q2
+sans réponse** : reposées. D'ici là, N2 s'écrit sans quotient (le choix qui n'ajoute rien), et
+rien n'est noté dans `outils-manquants.md`.
+
 1. **Quotients** (3F10-2, 3F10-6, 3F12-2 : image par (ax + b)/(cx + d), réponse en fraction) :
    « expression littérale simple » des bornes de 3-040 ? Je recommande **non** (pas de variation).
 2. **Tracer une courbe point par point** (ligne brisée jugée, 3F10-7) : l'ajouter à
