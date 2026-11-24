@@ -2,15 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3111._
+_Mis à jour le 2026-11-24, PR L en cours (branche poussée ou non : voir `git status` du worktree)._
 
 - **État** : A (#3050), B (#3054), #3059, C (#3063), D (#3067), E (#3073), F (#3075), G (#3079), H (#3082 : E36, E37, → / ← / boutons / balayage montrent un fragment avant de changer de diapositive) mergées ; E36, E37 barrés au registre ; E56 corrigé (#3087 : droite graduée dessinée dans un item de liste), barré ; I (#3097 : E29), E29 barré ; **J (#3107 : E32, formules lues en français par un lecteur d'écran, sans balises ; anglais sans balises dans un contenu anglais), E32 barré ; **K (#3111 : E41, au téléphone la barre de formule de Données reste en haut, le reste défile dessous ; ligne #1813 changée), E41 barré** ; #3063 à #3111 pas encore en prod.
-- **Prochaine action** : PR L (E46, tranché B : dessin recalculé à la largeur), nouveau worktree `ubumaths-wt-ecarts-verifs-l`, puis l'ordre de David du 2026-11-24 : E66+E67 (Marché, boutique d'avatars) → E55+E61+E53 → E54 (moteur, Opus) et E57 → E62 → E58 à E60 (retirer la page) → E68, E69 → PR « téléphone » (E63, E70) ; E73 (Automaths, dernière pastille sous Chromium au téléphone, tranché le 2026-11-24 : à corriger) ; E76 à E81 (paquet 9 des vérifs, tranchés le 2026-11-24 : tous à corriger ; E78 demande la question d'accès avant toute migration, E80 un essai sur un build d'abord ; les `test.fail` arrivent avec la PR du paquet 9, `test/verifs-tri-9`) ; E65, E71, E72, E74, E75 : retirer le `test.fail` seulement ; E39 : à creuser puis présenter.
+- **PR L en cours (E46)** : worktree `ubumaths-wt-ecarts-verifs-l`, branche `fix/ecarts-verifs-l`, code commité, revue `code-reviewer` faite et ses findings corrigés (détail : section « PR L » ci-dessous). **Reste** : (1) lire le dernier passage des vérifs (`VERIFS_PORT=5177 pnpm test:verifs e2e/verifs/blocs-divers.spec.ts --project=ordi-chrome --project=iphone --project=ordi-safari --project=android --workers=2 -g "E46|#2151|#2162|#1908|#1947"` ; serveur de dev à lancer soi-même sur 5177) : au passage précédent, seul restait un 11,9995 px sous Safari sur « Choisir l’échelle puis construire », corrigé depuis (marges entières), à confirmer ; (2) supprimer la sonde provisoire non suivie `e2e/verifs/tmp-e46-sonde.spec.ts` (la mienne, jamais commitée) ; (3) `pnpm types:cliquet`, `pnpm docs:check-a-jour --depuis origin/main`, push, PR, CI, `pnpm pr:merger` ; (4) après merge : `pnpm ecarts rejouer --barrer` depuis main pour E46, arrêter le serveur 5177. **À confirmer par David (signalé, sans réponse)** : une étiquette de graduation sur deux sur un axe serré au téléphone ; l'outil `boxSpot` de la vérif #2162 changé (attendus inchangés).
+- **Ensuite** : l'ordre de David du 2026-11-24 : E66+E67 (Marché, boutique d'avatars) → E55+E61+E53 → E54 (moteur, Opus) et E57 → E62 → E58 à E60 (retirer la page) → E68, E69 → PR « téléphone » (E63, E70) ; E73 (Automaths, dernière pastille sous Chromium au téléphone, tranché le 2026-11-24 : à corriger) ; E76 à E81 (paquet 9 des vérifs, tranchés le 2026-11-24 : tous à corriger ; E78 demande la question d'accès avant toute migration, E80 un essai sur un build d'abord ; les `test.fail` arrivent avec la PR du paquet 9, `test/verifs-tri-9`) ; E65, E71, E72, E74, E75 : retirer le `test.fail` seulement ; E39 : à creuser puis présenter.
 - **En attente de David** : relire les tournures de lecture des formules (liste dans « PR J » ci-dessous ; non bloquant, une ligne à changer chacune) ; dire s'il faut regarder la lecture des champs de réponse. **Tranché le 2026-11-24** : E34 publié en prod par David (modèle mis à jour, vu en base ; à vérifier à l’écran après la mise en prod de #3075, puis barrer) ; E53 à corriger (message de forme si la valeur relue est juste, comme E31) dans la PR de E55 et E61 ; primitive factorisée 0,3x(x + 4) confirmée (test de #3075 gardé tel quel) (E58 à E60 : confirmé par David le 2026-11-24, il ne se sert pas de la page des modèles de message, à retirer ; E63 : à corriger avec la PR téléphone, une graduation étiquetée sur deux)
 - **Tranché par David le 2026-11-24 (recos du paquet 6 du tri validées)** : E56 en premier (FAIT, #3087) ; puis E55, E61 et E53 (petits, une PR) ; puis E54 (moteur, revue Opus) et E57 ; E62 : un seul message ; E58 à E60 : retirer la page.
 - **E64 tranché par David le 2026-11-24** : pas de correctif (dans un item de liste, citation et blocs associer / trous / tortue / calcul / robot / labyrinthe non affichés à l’écran ; 0 contenu touché en prod, 34 modèles les utilisent hors liste) ; à reprendre si un auteur en a besoin.
 - **Pièges en cours** : Nouveaux écarts : `pnpm ecarts ajouter` depuis main (suivant : E65 ; E54 à E63 écrits au registre après #3085). Ne jamais changer l'attendu d'un test de `e2e/verifs/` (seule exception : #1813, décidée par David pour E41). `pnpm test:verifs <fichier> --project=ordi-chrome` (projets : ordi-chrome, ordi-safari, ordi-firefox, iphone, android, firefox-390) ; agents en parallèle : `--output=<scratchpad>` et `--workers=1` ou 2 (sinon ENOENT et délais dépassés). Lancer SOI-MÊME `pnpm dev --port 5176` avant `test:verifs` (5176 pris par une autre session : un autre port + `VERIFS_PORT=<port>`) ; l’énoncé d’un exercice est présent en double dans la page (copie cachée) : compter avec `:visible` : le serveur lancé par Playwright meurt avec un lot arrêté. #1636 lit le modèle en BASE : la base locale a la variation 1 corrigée à la main (`jsonb_set`), un `db:neuf` la remet à l'ancienne. Chrome n'atteint pas `localhost` : `pnpm lien`. Un `focusout` qui écrit un `$state` doit attendre (`queueMicrotask`). `pnpm voir` en WebKit montre la carte retournée en miroir (vu aussi sur une variation QCM : antérieur à G).
-- **Worktree / branche** : aucun (celui de la PR K retiré au merge). Registre des écarts : `docs/ecarts/registre.md` (E corrigé avec `test.fail`/`fixme` → retirer le marqueur puis `pnpm ecarts rejouer --barrer` depuis main ; sinon barrer à la main).
+- **Worktree / branche** : `ubumaths-wt-ecarts-verifs-l` / `fix/ecarts-verifs-l` (PR L). Registre des écarts : `docs/ecarts/registre.md` (E corrigé avec `test.fail`/`fixme` → retirer le marqueur puis `pnpm ecarts rejouer --barrer` depuis main ; sinon barrer à la main).
 
 ## PR J : E32, lecture des formules (2026-11-24)
 
@@ -72,6 +73,30 @@ Choix pour David :
   téléphone (toucher A1 la fait défiler de 12 px sur iPhone 15). `test.fail` de E41 retiré.
 - Vu : test rouge sans le correctif (iPhone) ; 192 vérifications Atelier vertes (iPhone, Android,
   Chrome, Safari) ; capture `1813-donnees-iphone.png` regardée.
+
+## PR L : E46, barres et boîtes à la largeur disponible (2026-11-24)
+
+- **Fait** : `src/lib/ubumark/utils/stat-chart-fit.ts` (`fitBarScene`, `fitBoxPlotScene`) ; les
+  quatre composants (barres à lire dans `StatChart`, `BoxPlotChart`, `BarresPlacer`,
+  `BoxPlotPlacer`) mesurent leur place et dessinent à cette largeur, à l'échelle 1, texte de
+  12 px. Place suffisante : le dessin de `taille:`, inchangé (sauf le texte, 12 px au lieu de
+  10-11). Les autres genres (histogramme, nuage, circulaire) ne sont pas touchés.
+- **Sous 300 px, ou trop de colonnes pour la place** (18 px par colonne au moins) : le dessin
+  garde sa largeur et défile dans son cadre (trouvé par la revue : sans `min-width` posé sur le
+  SVG, il était encore rétréci).
+- **Axe écrit trop serré pour le cadre** (boîte, 0 à 20 de 1 en 1, au téléphone) : une
+  graduation étiquetée sur deux, tous les traits gardés (même règle que E63). **À confirmer par
+  David**, signalé le 2026-11-24.
+- **Outil d'une vérif changé, pas son attendu** : `boxSpot` (#2162) cherchait l'étiquette de la
+  graduation à toucher ; il calcule maintenant sa place entre deux étiquettes. Signalé à David.
+- Barres : le haut du cadre passe de 26 à 32 px et le titre de l'axe vertical monte, sinon la
+  valeur écrite sur une première barre haute le touchait à 12 px.
+- **Reste hors de cette PR** : valeurs des barres à deux séries en 8 px (`.stat-valeur-serree`,
+  choix d'une revue passée, « comme dans le PDF ») ; boîte à construire dans la page d'aide au
+  téléphone : place de 276 px, donc dessin de 300 px qui défile (comme avant).
+- Vu : `pnpm voir` iPhone de la page d'aide des boîtes ; captures des barres à lire et de la loi
+  binomiale (iPhone) ; vérifs `blocs-divers` E46 / #2151 / #2162 / #1908 / #1947 sur Chrome,
+  Safari, iPhone, Android.
 
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 

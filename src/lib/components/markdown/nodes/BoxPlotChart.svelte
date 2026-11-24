@@ -46,7 +46,8 @@
 	const AXIS_TITLE_PX = 18;
 
 	/** Place disponible, mesurée une fois le composant monté */
-	let available = $state<number>();
+	let measured = $state<DOMRectReadOnly>();
+	let available = $derived(measured?.width);
 	let fit = $derived(fitBoxPlotScene(natural, available, rebuild));
 	let scene = $derived(fit.scene);
 	let width = $derived(fit.plotWidth);
@@ -62,13 +63,14 @@
 	}
 </script>
 
-<div class="stat-mesure" bind:clientWidth={available}>
+<div class="stat-mesure" bind:contentRect={measured}>
 	<svg
 		role="img"
 		aria-labelledby={titleId}
 		aria-describedby={descId}
 		viewBox="0 0 {fit.viewWidth} {totalHeight}"
 		style:max-width="{fit.viewWidth}px"
+		style:min-width={measured ? `${fit.viewWidth}px` : undefined}
 		class="stat-svg stat-boites"
 	>
 		<title id={titleId}>{scene.accessibleTitle}</title>

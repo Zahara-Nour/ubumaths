@@ -85,7 +85,8 @@
 	/** Le dessin de `taille:` ; dessiné : `scene`, à la largeur disponible */
 	let naturalScene = $derived(sceneFor());
 	/** Place disponible, mesurée une fois le composant monté */
-	let available = $state<number>();
+	let measured = $state<DOMRectReadOnly>();
+	let available = $derived(measured?.width);
 	/** Dessin recalculé à la largeur disponible, jamais rétréci (écart E46) */
 	let fit = $derived(
 		naturalScene
@@ -339,12 +340,13 @@
 			class:placer-juste={allRight}
 			class:placer-faux={judged && !allRight}
 		>
-			<div class="stat-mesure" bind:clientWidth={available}>
+			<div class="stat-mesure" bind:contentRect={measured}>
 				<svg
 					bind:this={svg}
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 {viewWidth} {viewHeight}"
 					style:max-width="{viewWidth}px"
+					style:min-width={measured ? `${viewWidth}px` : undefined}
 					class="stat-svg boite-dessin"
 					class:placer-verrouille={locked}
 					role="slider"

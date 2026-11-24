@@ -16,7 +16,8 @@
  *
  * Le dessin est donc toujours à l'échelle 1 : son texte fait sa taille CSS
  * (12 px). Pur : aucune mesure ici, la largeur disponible vient du composant
- * (`bind:clientWidth`). Le PDF n'est pas concerné.
+ * (`bind:contentRect`), qui pose aussi `min-width: viewWidth` sur le SVG : un
+ * dessin plus large que la place défile, il n'est pas rétréci. Le PDF n'est pas concerné.
  *
  * @module ubumark/utils/stat-chart-fit
  */
@@ -72,7 +73,11 @@ export const BAR_LABEL_CHAR_PX = 7.1;
 /** Marges d'un diagramme en barres, en px */
 const BAR_PAD_LEFT_MIN = 40;
 const BAR_PAD_RIGHT = 12;
-const BAR_PAD_TOP = 26;
+/**
+ * Au-dessus du cadre : le titre de l'axe vertical, puis la valeur écrite sur
+ * une première barre qui monte jusqu'en haut (12 px chacun, sans se toucher)
+ */
+export const BAR_PAD_TOP = 32;
 const BAR_PAD_BOTTOM_FLAT = 26;
 const AXIS_TITLE_PX = 18;
 /** Largeur d'un caractère d'une graduation (12 px, chiffres), en px */
@@ -111,10 +116,13 @@ function viewWidthFor(
 	minimum = STAT_SVG_MIN_WIDTH
 ): number {
 	if (available === undefined || !(available > 0)) return natural;
-	// `clientWidth` est arrondi : 1 px de moins, pour ne jamais dépasser la place
-	// réelle (le navigateur rétrécirait le dessin d'un cheveu : 11,99 px)
-	const room = Math.floor(available) - 1;
-	return Math.min(natural, Math.max(STAT_SVG_MIN_WIDTH, minimum, room));
+	// Place réelle (`contentRect`, pas `clientWidth` qui arrondit), arrondie en
+	// dessous : le navigateur ne rétrécit jamais le dessin d'un cheveu (11,99 px)
+	const room = Math.floor(available);
+	const floor = Number.isFinite(minimum)
+		? Math.max(STAT_SVG_MIN_WIDTH, minimum)
+		: STAT_SVG_MIN_WIDTH;
+	return Math.min(natural, Math.max(floor, room));
 }
 
 function rotatedExtentOf(scene: BarScene): number {
@@ -124,7 +132,9 @@ function rotatedExtentOf(scene: BarScene): number {
 /** Marge gauche qui contient les graduations, quel que soit le cadre */
 function barBasePad(scene: BarScene): number {
 	const ticks = 12 + Math.max(...scene.ticks.map((t) => t.label.length)) * BAR_TICK_CHAR_PX;
-	return Math.max(BAR_PAD_LEFT_MIN, ticks);
+	// Marges entières : un dessin de largeur entière n'est jamais rétréci d'un cheveu
+	// par l'arrondi du navigateur (11,9995 px sous Safari)
+	return Math.ceil(Math.max(BAR_PAD_LEFT_MIN, ticks));
 }
 
 /**
@@ -133,7 +143,7 @@ function barBasePad(scene: BarScene): number {
  */
 function barPadLeft(scene: BarScene, plotWidth: number): number {
 	const halfBand = plotWidth / scene.labels.length / 2;
-	return Math.max(barBasePad(scene), rotatedExtentOf(scene) - halfBand + 6);
+	return Math.ceil(Math.max(barBasePad(scene), rotatedExtentOf(scene) - halfBand + 6));
 }
 
 /**
@@ -147,7 +157,11 @@ function barPadLeftInView(scene: BarScene, viewWidth: number): number {
 	const extent = rotatedExtentOf(scene);
 	const halfBand = (viewWidth - base - BAR_PAD_RIGHT) / count / 2;
 	if (extent - halfBand + 6 <= base) return base;
-	return (extent + 6 - (viewWidth - BAR_PAD_RIGHT) / (2 * count)) / (1 - 1 / (2 * count));
+	const solved = Math.ceil(
+		(extent + 6 - (viewWidth - BAR_PAD_RIGHT) / (2 * count)) / (1 - 1 / (2 * count))
+	);
+	// Nom démesuré : le cadre garde de quoi dessiner ses colonnes (le nom déborde)
+	return Math.max(base, Math.min(solved, viewWidth - BAR_PAD_RIGHT - count * BAR_MIN_BAND_PX));
 }
 
 /**
@@ -169,9 +183,11 @@ function barMinView(scene: BarScene, canRebuild: boolean): number {
 
 function barFit(scene: BarScene, padLeft: number, plotWidth: number): BarFit {
 	const rotatedExtent = rotatedExtentOf(scene);
-	const padBottom =
+	// Entière, comme les marges de côté : hauteur du dessin entière (Safari)
+	const padBottom = Math.ceil(
 		(scene.rotateLabels ? 16 + rotatedExtent : BAR_PAD_BOTTOM_FLAT) +
-		(scene.axisTitles.x ? AXIS_TITLE_PX : 0);
+			(scene.axisTitles.x ? AXIS_TITLE_PX : 0)
+	);
 	const plotHeight = scene.pixelSize.height;
 	return {
 		scene,
@@ -237,7 +253,7 @@ export function tickLabelStride(ticks: readonly SceneTick[], plotWidth: number):
 
 function boxPads(scene: BoxPlotScene): { left: number; right: number } {
 	const half = (tick: SceneTick | undefined) =>
-		Math.max(BOX_PAD_MIN, ((tick?.label.length ?? 0) * SCATTER_LABEL_CHAR_PX) / 2 + 4);
+		Math.ceil(Math.max(BOX_PAD_MIN, ((tick?.label.length ?? 0) * SCATTER_LABEL_CHAR_PX) / 2 + 4));
 	return { left: half(scene.xTicks[0]), right: half(scene.xTicks.at(-1)) };
 }
 

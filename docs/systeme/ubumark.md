@@ -956,7 +956,7 @@ Danse = 7            ```                                     ```
   2026-11-24) — `src/lib/ubumark/utils/stat-chart-fit.ts`, test
   `src/lib/ubumark/__tests__/stat-chart/fit.test.ts`. Le SVG n'est jamais rétréci par le
   navigateur : `StatChart` (barres), `BoxPlotChart`, `BarresPlacer` et `BoxPlotPlacer` mesurent
-  leur place (`bind:clientWidth` sur `.stat-mesure`) et `fitBarScene` / `fitBoxPlotScene`
+  leur place (`bind:contentRect` sur `.stat-mesure`, et `min-width` du SVG = largeur du dessin) et `fitBarScene` / `fitBoxPlotScene`
   rendent un dessin de cette largeur, à l'échelle 1 (texte de 12 px). Place suffisante ou pas
   encore mesurée (rendu serveur) : le dessin de `taille:`. Plus étroit : la scène est
   reconstruite pour ce cadre (`buildStatChartScene(spec, { plotWidth })` : noms inclinés,

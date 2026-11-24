@@ -33,7 +33,11 @@
 	import type { StatChartNode } from '#lib/ubumark/types/stat-chart.ts';
 	import { namedColorScreen, namedColorTable } from '#lib/theme/named-colors.ts';
 	import { buildStatChartScene, type BarScene } from '#lib/ubumark/utils/stat-chart-scene.ts';
-	import { BAR_LABEL_CHAR_PX, fitBarScene } from '#lib/ubumark/utils/stat-chart-fit.ts';
+	import {
+		BAR_LABEL_CHAR_PX,
+		BAR_PAD_TOP,
+		fitBarScene
+	} from '#lib/ubumark/utils/stat-chart-fit.ts';
 	import {
 		barMistake,
 		barsToPlace,
@@ -66,7 +70,7 @@
 	let { node, answers, showControls = true, class: className = '' }: Props = $props();
 
 	/** Marge au-dessus du cadre, en px : celle de `stat-chart-fit.ts` */
-	const PAD_TOP = 26;
+	const PAD_TOP = BAR_PAD_TOP;
 	/** Couleur des barres : palette commune des figures, claire ou sombre */
 	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
 
@@ -89,7 +93,8 @@
 	/** Le diagramme de `taille:` ; dessiné : `scene`, à la largeur disponible */
 	let naturalScene = $derived(sceneFor());
 	/** Place disponible, mesurée une fois le composant monté */
-	let available = $state<number>();
+	let measured = $state<DOMRectReadOnly>();
+	let available = $derived(measured?.width);
 	/** Dessin recalculé à la largeur disponible, jamais rétréci (écart E46) */
 	let fit = $derived(
 		naturalScene ? fitBarScene(naturalScene, available, (w) => sceneFor(w) ?? naturalScene!) : null
@@ -319,12 +324,13 @@
 			class:placer-juste={allRight}
 			class:placer-faux={judged && !allRight}
 		>
-			<div class="stat-mesure" bind:clientWidth={available}>
+			<div class="stat-mesure" bind:contentRect={measured}>
 				<svg
 					bind:this={svg}
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 {viewWidth} {viewHeight}"
 					style:max-width="{viewWidth}px"
+					style:min-width={measured ? `${viewWidth}px` : undefined}
 					class="stat-svg barres-dessin"
 					class:placer-verrouille={locked}
 					role="slider"
@@ -427,7 +433,7 @@
 							points="{padLeft},{PAD_TOP - 14} {padLeft - 3.5},{PAD_TOP - 7} {padLeft +
 								3.5},{PAD_TOP - 7}"
 						/>
-						<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 12}>{scene.axisTitles.y}</text
+						<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 21}>{scene.axisTitles.y}</text
 						>
 						{#if scene.axisTitles.x}
 							<text

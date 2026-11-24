@@ -169,7 +169,8 @@
 	let plotHeight = $derived(scene?.pixelSize.height ?? 0);
 
 	/** Place disponible pour les barres, mesurée une fois le composant monté */
-	let barsAvailable = $state<number>();
+	let barsMeasured = $state<DOMRectReadOnly>();
+	let barsAvailable = $derived(barsMeasured?.width);
 	/**
 	 * Barres à la largeur disponible (écart E46) : le dessin est recalculé, jamais
 	 * rétréci. Scène donnée sans sa spec (loi) : dessinée telle quelle dans le
@@ -510,14 +511,16 @@
 			/>
 		{:else if bars && barFit}
 			{@const padLeft = barFit.padLeft}
+			{@const padTop = barFit.padTop}
 			{@const plotWidth = barFit.plotWidth}
-			<div class="stat-mesure" bind:clientWidth={barsAvailable}>
+			<div class="stat-mesure" bind:contentRect={barsMeasured}>
 				<svg
 					role="img"
 					aria-labelledby={titleId}
 					aria-describedby={descId}
 					viewBox="0 0 {barFit.viewWidth} {barFit.viewHeight}"
 					style:max-width="{barFit.viewWidth}px"
+					style:min-width={barsMeasured ? `${barFit.viewWidth}px` : undefined}
 					class="stat-svg stat-barres"
 				>
 					<title id={titleId}>{scene.accessibleTitle}</title>
@@ -612,12 +615,13 @@
 					<!-- Axes -->
 					<g class="stat-axes" aria-hidden="true">
 						<line x1={padLeft} y1={sy(0)} x2={padLeft + plotWidth} y2={sy(0)} />
-						<line x1={padLeft} y1={sy(0)} x2={padLeft} y2={PAD_TOP - 10} />
+						<line x1={padLeft} y1={sy(0)} x2={padLeft} y2={padTop - 10} />
 						<polygon
-							points="{padLeft},{PAD_TOP - 14} {padLeft - 3.5},{PAD_TOP - 7} {padLeft +
-								3.5},{PAD_TOP - 7}"
+							points="{padLeft},{padTop - 14} {padLeft - 3.5},{padTop - 7} {padLeft + 3.5},{padTop -
+								7}"
 						/>
-						<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 12}>{bars.axisTitles.y}</text>
+						<!-- Au-dessus de la valeur écrite sur une première barre haute (12 px) -->
+						<text class="stat-titre-axe" x={padLeft + 6} y={padTop - 21}>{bars.axisTitles.y}</text>
 						{#if bars.axisTitles.x}
 							<text
 								class="stat-titre-axe"
@@ -1156,9 +1160,9 @@
 	}
 
 	/* Barres : dessin à l'échelle 1 (`fitBarScene`), 12 px à l'écran (écart E46) */
-	.stat-barres text,
-	.stat-barres .stat-graduations text,
-	.stat-barres .stat-titre-axe {
+	.stat-svg.stat-barres text,
+	.stat-svg.stat-barres .stat-graduations text,
+	.stat-svg.stat-barres .stat-titre-axe {
 		font-size: 12px;
 	}
 
@@ -1341,7 +1345,7 @@
 	}
 
 	/* Deux barres par bande : des valeurs plus petites, comme dans le PDF (revue) */
-	.stat-svg .stat-valeur-serree {
+	.stat-svg.stat-barres .stat-valeur-serree {
 		font-size: 8px;
 	}
 

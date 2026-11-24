@@ -58,10 +58,14 @@ describe('barres : dessin à la largeur disponible', () => {
 		expect(wide.plotWidth).toBe(unmeasured.plotWidth);
 	});
 
-	it('téléphone (340 px) : le dessin fait la largeur disponible, à 1 px près (mesure arrondie)', () => {
+	it('téléphone (340 px) : le dessin fait exactement la largeur disponible', () => {
 		const { fit } = bars(BARS, 340);
-		expect(fit.viewWidth).toBe(339);
-		expect(fit.padLeft + fit.plotWidth + fit.padRight).toBeCloseTo(339, 6);
+		expect(fit.viewWidth).toBe(340);
+		expect(fit.padLeft + fit.plotWidth + fit.padRight).toBeCloseTo(340, 6);
+	});
+
+	it('place fractionnaire : arrondie en dessous, jamais plus large que la place', () => {
+		expect(bars(BARS, 340.7).fit.viewWidth).toBe(340);
 	});
 
 	it('la hauteur du cadre reste celle de `taille:`', () => {
@@ -78,7 +82,7 @@ describe('barres : dessin à la largeur disponible', () => {
 		const { natural, fit } = bars(source, 320);
 		expect(natural.rotateLabels).toBe(false);
 		expect(fit.scene.rotateLabels).toBe(true);
-		expect(fit.viewWidth).toBe(319);
+		expect(fit.viewWidth).toBe(320);
 		// Un nom incliné part du milieu de la première colonne vers la gauche
 		const halfBand = fit.plotWidth / fit.scene.labels.length / 2;
 		expect(fit.padLeft + halfBand).toBeGreaterThanOrEqual(fit.rotatedExtent);
@@ -93,6 +97,11 @@ describe('barres : jamais resserrées au point que les textes se touchent', () =
 		const { fit } = bars(MANY, 320);
 		expect(fit.viewWidth).toBeGreaterThan(320);
 		expect(fit.plotWidth / 21).toBeGreaterThanOrEqual(18);
+	});
+
+	it('nom démesuré sur une seule colonne : le cadre garde une largeur positive', () => {
+		const { fit } = bars(`${'x'.repeat(40)} = 4`, 300);
+		expect(fit.plotWidth).toBeGreaterThanOrEqual(18);
 	});
 
 	it('scène donnée sans sa spec (loi) : noms à plat gardés entiers, côte à côte', () => {
@@ -120,8 +129,8 @@ describe('boîtes à moustaches : dessin à la largeur disponible', () => {
 
 	it('téléphone (340 px) : largeur disponible, scène recalculée pour ce cadre', () => {
 		const { fit } = boxes(BOXES, 340);
-		expect(fit.viewWidth).toBe(339);
-		expect(fit.padLeft + fit.plotWidth + fit.padRight).toBeCloseTo(339, 6);
+		expect(fit.viewWidth).toBe(340);
+		expect(fit.padLeft + fit.plotWidth + fit.padRight).toBeCloseTo(340, 6);
 		expect(fit.scene.pixelSize.width).toBeCloseTo(fit.plotWidth, 6);
 	});
 

@@ -944,6 +944,21 @@ test('E46 — barres à construire : le plus petit texte du dessin fait 12 px à
 	await expectNoHorizontalOverflow(page, 'barres à construire');
 });
 
+test('E46 — barres à lire (diagramme, loi binomiale) : texte de 12 px à l’écran, jamais rétréci ; trop de colonnes pour la place : le dessin défile dans son cadre', async ({
+	page
+}) => {
+	await openBloc(page, STATS_PATH);
+	for (const title of ['Diagramme en barres', 'Loi binomiale']) {
+		const svg = rendered(page, title).locator('svg.stat-barres').first();
+		await expect(svg, title).toBeVisible();
+		await expectReadableDrawing(svg, title);
+		// À l'échelle 1 : le dessin n'est pas rétréci par le navigateur
+		const scale = await svg.evaluate((el) => (el as SVGSVGElement).getScreenCTM()?.a ?? 0);
+		expect(scale, `${title} : échelle du dessin`).toBeGreaterThanOrEqual(0.999);
+	}
+	await expectNoHorizontalOverflow(page, 'barres à lire');
+});
+
 test('#2151 — sous 300 px la figure défile dans son cadre sans casser la page', async ({
 	page
 }) => {
