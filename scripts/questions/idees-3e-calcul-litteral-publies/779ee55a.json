@@ -1,0 +1,403 @@
+{
+	"id": "779ee55a-2fc4-4778-b7b0-4ea4b99e5646",
+	"title": "Équation linéaire du premier degré",
+	"description": "Coefficients relatifs - Avec second membre",
+	"grades": ["4"],
+	"level": 6,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a-(b))/(c-(d))}}"
+				}
+			],
+			"statement": "Résous cette équation.\n\n$${{c}}x{{eval:b;+}}={{d}}x{{eval:a;+}}$$\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..9;±!c"
+				},
+				{
+					"name": "p",
+					"expression": "x|x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               {{c}}x\\textcolor{{{color:primary.0}}}{{{eval:b;+}}}=\\textcolor{{{color:primary.1}}}{{{d}}x}{{eval:a;+}}               & \\quad \\lrArr \\quad {{c}}x \\textcolor{{{color:primary.1}}}{{{eval:-(d);+}}x} = {{a}}\\textcolor{{{color:primary.0}}}{{{eval:-(b);+}}} \\\\               & \\quad \\lrArr \\quad  \\textcolor{{{color:primary.2}}}{{{eval:(c-(d))*p}}} = {{eval:a-(b)}} \\\\                & \\quad \\lrArr \\quad  x = \\frac{{{eval:a-(b)}}}{\\textcolor{{{color:primary.2}}}{{{eval:c-(d)}}}} \\\\               {{if:gcd(abs({{a}}-({{b}})), abs({{c}}-({{d}}))) = 1|& \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{a}}-({{b}})), abs({{c}}-({{d}}))) != 1 && ({{a}}-({{b}}))*({{c}}-({{d}}))>0|& \\quad \\lrArr \\quad  x= \\frac{{{eval:abs(a-(b))}}}{{{eval:abs(c-(d))}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}             {{if:gcd(abs({{a}}-({{b}})), abs({{c}}-({{d}}))) != 1 && ({{a}}-({{b}}))*({{c}}-({{d}}))<0|& \\quad \\lrArr \\quad  x= -\\frac{{{eval:abs(a-(b))}}}{{{eval:abs(c-(d))}}} \\\\ & \\quad \\lrArr \\quad  x= {{solution:0}}}}            \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Résous cette équation.\n\n$${{k}}({{eval:a*x+(b)}})={{eval:c*x+(d)}}$$\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["(k)*(a) != c", "d-(k)*(b) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d-(k)*(b))/((k)*(a)-(c))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(d-(b))/((k)*(a)-(c))}}",
+							"message": "En développant, le facteur ${{k}}$ multiplie les deux termes de la parenthèse, le nombre compris.",
+							"label": "k × b oublié"
+						},
+						{
+							"answer": "{{eval:(d+(k)*(b))/((k)*(a)-(c))}}",
+							"message": "Quand un terme change de membre, il change de signe : vérifie le nombre que tu as fait passer à droite.",
+							"label": "Signe en changeant de membre"
+						},
+						{
+							"answer": "{{eval:((k)*(a)-(c))/(d-(k)*(b))}}",
+							"message": "Tu as divisé dans le mauvais sens : de $A x = B$, on tire $x = \\dfrac{B}{A}$.",
+							"label": "Division inversée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe le membre de gauche, puis on regroupe les termes en $x$ à gauche et les nombres à droite.",
+					"$$\\begin{align} {{k}}({{eval:a*x+(b)}})={{eval:c*x+(d)}} & \\quad \\lrArr \\quad \\textcolor{{{color:primary.0}}}{{{eval:(k)*(a)*x}}{{eval:(k)*(b);+}}}={{eval:c*x+(d)}} \\\\ & \\quad \\lrArr \\quad {{eval:(k)*(a)*x}}\\textcolor{{{color:primary.1}}}{{{eval:-(c)*x;+}}}={{d}}\\textcolor{{{color:primary.1}}}{{{eval:-(k)*(b);+}}} \\\\ & \\quad \\lrArr \\quad {{eval:((k)*(a)-(c))*x}}={{eval:d-(k)*(b)}} \\\\ & \\quad \\lrArr \\quad x = {{solution:0}} \\end{align}$$"
+				]
+			},
+			"hint": "Développe d'abord le membre de gauche, puis ramène les termes en $x$ d'un côté et les nombres de l'autre."
+		},
+		{
+			"statement": "Résous cette équation.\n\n$${{k}}-({{eval:a*x+(b)}})={{eval:c*x+(d)}}$$\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [
+				"a+(c) != 0",
+				"a != c",
+				"k-(b)-(d) != 0",
+				"(k+(b)-(d))*(a-(c)) != (d-(k)-(b))*(a+(c))"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k-(b)-(d))/(a+(c))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(k+(b)-(d))/(a+(c))}}",
+							"message": "Le signe $-$ devant la parenthèse change le signe de TOUS ses termes, pas seulement du premier.",
+							"label": "Seul le premier terme a changé de signe"
+						},
+						{
+							"answer": "{{eval:(d-(k)-(b))/(a-(c))}}",
+							"message": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes.",
+							"label": "Signes non changés derrière un −"
+						},
+						{
+							"answer": "{{eval:(a+(c))/(k-(b)-(d))}}",
+							"message": "Tu as divisé dans le mauvais sens : de $A x = B$, on tire $x = \\dfrac{B}{A}$.",
+							"label": "Division inversée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le signe $-$ devant la parenthèse change le signe de chacun de ses termes.",
+					"$$\\begin{align} {{k}}-({{eval:a*x+(b)}})={{eval:c*x+(d)}} & \\quad \\lrArr \\quad {{k}}\\textcolor{{{color:primary.0}}}{{{eval:-(a)*x;+}}{{eval:-(b);+}}}={{eval:c*x+(d)}} \\\\ & \\quad \\lrArr \\quad {{eval:-(a)*x}}\\textcolor{{{color:primary.1}}}{{{eval:-(c)*x;+}}}={{d}}\\textcolor{{{color:primary.1}}}{{{eval:-(k)+(b);+}}} \\\\ & \\quad \\lrArr \\quad {{eval:(-(a)-(c))*x}}={{eval:d-(k)+(b)}} \\\\ & \\quad \\lrArr \\quad x = {{solution:0}} \\end{align}$$"
+				]
+			},
+			"hint": "Enlève d'abord la parenthèse précédée de $-$ en changeant le signe de chacun de ses termes, puis résous comme d'habitude."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2",
+				"c": "3",
+				"d": "-4"
+			},
+			"description": "bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2",
+				"c": "3",
+				"d": "-4"
+			},
+			"description": "signe",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "5",
+				"b": "1",
+				"c": "3",
+				"d": "2"
+			},
+			"description": "c-d = 1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{7}{6}"],
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2",
+				"c": "4",
+				"d": "-2"
+			},
+			"description": "fraction",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{8}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "4",
+				"d": "-2"
+			},
+			"description": "non simplifiée",
+			"variationIndex": 0
+		},
+		{
+			"description": "F9a : 3(2x − 1) = 4x + 5 → 4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "4",
+				"d": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "F9a : 8/2 non simplifiée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "4",
+				"d": "5"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{8}{2}"]
+		},
+		{
+			"description": "F9a : k × b oublié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "4",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En développant, le facteur $3$ multiplie les deux termes de la parenthèse, le nombre compris."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F9a : signe en changeant de membre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "4",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand un terme change de membre, il change de signe : vérifie le nombre que tu as fait passer à droite."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F9a : division inversée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "4",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé dans le mauvais sens : de $A x = B$, on tire $x = \\dfrac{B}{A}$."
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "F9a : −2(x + 3) = x + 1 → −7/3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"a": "1",
+				"b": "3",
+				"c": "1",
+				"d": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{7}{3}"]
+		},
+		{
+			"description": "F9b : 4 − (2x + 3) = x − 8 → 3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F9b : seul le premier terme changé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe $-$ devant la parenthèse change le signe de TOUS ses termes, pas seulement du premier."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "F9b : signes non changés",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une parenthèse précédée de $-$ s'enlève en changeant le signe de chacun de ses termes."
+			},
+			"answers": ["-15"]
+		},
+		{
+			"description": "F9b : division inversée",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé dans le mauvais sens : de $A x = B$, on tire $x = \\dfrac{B}{A}$."
+			},
+			"answers": ["\\frac{1}{3}"]
+		}
+	]
+}

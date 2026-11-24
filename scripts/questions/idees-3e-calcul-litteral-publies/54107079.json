@@ -1,0 +1,1136 @@
+{
+	"id": "54107079-218f-48dd-8df4-3cb4d1f5a801",
+	"title": "Développer",
+	"description": "Coefficients relatifs",
+	"grades": ["4"],
+	"level": 4,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "p",
+				"expression": "2..9"
+			},
+			{
+				"name": "q",
+				"expression": "1..9;±!p,{{eval:-(p)}}"
+			},
+			{
+				"name": "r",
+				"expression": "1..9;±!p,{{eval:-(p)}},q,{{eval:-(q)}}"
+			},
+			{
+				"name": "s",
+				"expression": "a|b|c|x|y|z"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*p}}{{eval:rs*p;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{p}}({{q}}{{eval:rs;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:rs*p}}{{eval:q*p;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{p}}({{eval:rs}}{{eval:q;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{p}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*(-p)}}{{eval:rs*(-p);+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression3}}$$",
+			"variables": [
+				{
+					"name": "expression3",
+					"expression": "-{{p}}({{q}}{{eval:rs;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{p}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:rs*(-p)}}{{eval:q*(-p);+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression4}}$$",
+			"variables": [
+				{
+					"name": "expression4",
+					"expression": "-{{p}}({{eval:rs}}{{eval:q;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{p}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*p}}{{eval:rs*p;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression5}}$$",
+			"variables": [
+				{
+					"name": "expression5",
+					"expression": "({{q}}{{eval:rs;+}})*{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:rs*p}}{{eval:q*p;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression6}}$$",
+			"variables": [
+				{
+					"name": "expression6",
+					"expression": "({{eval:rs}}{{eval:q;+}})*{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{{{p}}}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{p}}}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*(-p)}}{{eval:rs*(-p);+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression7}}$$",
+			"variables": [
+				{
+					"name": "expression7",
+					"expression": "({{q}}{{eval:rs;+}})*(-{{p}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:rs*(-p)}}{{eval:q*(-p);+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression8}}$$",
+			"variables": [
+				{
+					"name": "expression8",
+					"expression": "({{eval:rs}}{{eval:q;+}})*(-{{p}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{p}})}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:qs}}{{eval:rs^2;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression9}}$$",
+			"variables": [
+				{
+					"name": "expression9",
+					"expression": "{{s}}({{q}}{{eval:rs;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{s}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:rs^2}}{{eval:qs;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression10}}$$",
+			"variables": [
+				{
+					"name": "expression10",
+					"expression": "{{s}}({{eval:rs}}{{eval:q;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{{{s}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:qs}}{{eval:rs^2;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression11}}$$",
+			"variables": [
+				{
+					"name": "expression11",
+					"expression": "({{q}}{{eval:rs;+}}){{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{{{s}}}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:rs^2}}{{eval:qs;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression12}}$$",
+			"variables": [
+				{
+					"name": "expression12",
+					"expression": "({{eval:rs}}{{eval:q;+}}){{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{{{s}}}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{{{s}}}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*(-s)}}{{eval:-(r)s^2;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression13}}$$",
+			"variables": [
+				{
+					"name": "expression13",
+					"expression": "-{{s}}({{q}}{{eval:rs;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{s}}}({{q}}{{eval:rs;+}})               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(r)s^2}}{{eval:q*(-s);+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression14}}$$",
+			"variables": [
+				{
+					"name": "expression14",
+					"expression": "-{{s}}({{eval:rs}}{{eval:q;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               \\textcolor{{{color:primary.0}}}{-{{s}}}({{eval:rs}}{{eval:q;+}})               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*(-s)}}{{eval:-(r)s^2;+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression15}}$$",
+			"variables": [
+				{
+					"name": "expression15",
+					"expression": "({{q}}{{eval:rs;+}})*(-{{s}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{q}}{{eval:rs;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}               &=   {{q}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} {{eval:rs;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})} \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(r)s^2}}{{eval:q*(-s);+}}"
+				}
+			],
+			"statement": "Développe et réduis :\n\n$${{expression16}}$$",
+			"variables": [
+				{
+					"name": "expression16",
+					"expression": "({{eval:rs}}{{eval:q;+}})*(-{{s}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}               ({{eval:rs}}{{eval:q;+}}) \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}               &=    {{eval:rs}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}  {{eval:q;+}} \\times \\textcolor{{{color:primary.0}}}{(-{{s}})}\\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis :\n\n$${{eval:k*x}}({{eval:a*x+(b)}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k*a)*x^2+(k*b)*x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(k*a)*x^2+(b)}}",
+							"message": "Tu n'as multiplié que le premier terme de la parenthèse : le facteur multiplie chacun des termes.",
+							"label": "Second terme non multiplié"
+						},
+						{
+							"answer": "{{eval:(k*a+k*b)*x}}",
+							"message": "$x \\times x = x^2$ : le produit de deux termes en $x$ est un terme en $x^2$.",
+							"label": "x × x = x"
+						},
+						{
+							"answer": "{{eval:(k*a)*x^2+(k*b)}}",
+							"message": "Dans le second produit, tu as oublié le $x$ du facteur : il multiplie aussi le nombre.",
+							"label": "x oublié dans le second produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{eval:k*x}}}({{eval:a*x+(b)}}) &= \\textcolor{{{color:primary.0}}}{{{eval:k*x}}} \\times {{if:a<0|({{eval:a*x}})|{{eval:a*x}}}} + \\textcolor{{{color:primary.0}}}{{{eval:k*x}}} \\times {{if:b<0|({{b}})|{{b}}}} \\\\ &= {{solution}} \\end{align}$$",
+					"$x \\times x = x^2$ : le premier produit est un terme en $x^2$."
+				]
+			},
+			"hint": "Multiplie le facteur placé devant la parenthèse par chacun de ses deux termes ; $x \\times x$ s'écrit $x^2$."
+		},
+		{
+			"statement": "Développe et réduis :\n\n$${{if:w==0|{{k}}({{eval:a*x+(b)}}){{eval:c;+}}|{{c}}-{{k}}({{eval:a*x+(b)}})}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1-2*w"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["(s)*(k)*(b)+(c) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((s)*(k)*(a))*x+((s)*(k)*(b)+(c))}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((s)*(k)*(a))*x+((s)*(b)+(c))}}",
+							"message": "Tu n'as multiplié que le premier terme de la parenthèse : le facteur multiplie chacun des termes.",
+							"label": "Second terme non multiplié"
+						},
+						{
+							"answer": "{{if:w==1|{{eval:(-(k)*(a))*x+((k)*(b)+(c))}}|{{eval:((s)*(k)*(a))*x+((s)*(k)*(b)+(c))}}}}",
+							"message": "Le signe $-$ devant le facteur change le signe de chacun des produits, le second compris.",
+							"label": "Signe du second produit"
+						},
+						{
+							"answer": "{{if:w==1|{{eval:((c)-(k))*(a)*x+((c)-(k))*(b)}}|{{eval:((s)*(k)*(a))*x+((s)*(k)*(b)+(c))}}}}",
+							"message": "La multiplication est prioritaire : on développe le produit avant de soustraire, on ne soustrait pas le nombre et le facteur d'abord.",
+							"label": "(c − k)(ax + b) : priorité oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:w==0|On développe d'abord le produit, puis on ajoute le nombre.|La multiplication est prioritaire : on développe d'abord $-{{k}}({{eval:a*x+(b)}})$, le signe $-$ devant le facteur compris.}}",
+					"$$\\begin{align} {{if:w==0|{{k}}({{eval:a*x+(b)}}){{eval:c;+}}|{{c}}-{{k}}({{eval:a*x+(b)}})}} &= {{if:w==0|\\textcolor{{{color:primary.0}}}{{{eval:(k)*(a)*x}}{{eval:(k)*(b);+}}}{{eval:c;+}}|{{c}}\\textcolor{{{color:primary.0}}}{{{eval:-(k)*(a)*x;+}}{{eval:-(k)*(b);+}}}}} \\\\ &= {{solution}} \\end{align}$$"
+				]
+			},
+			"hint": "Développe d'abord le produit (la multiplication est prioritaire), en gardant le signe placé devant le facteur, puis regroupe les nombres."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-63-54x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -63-54x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9(-7-6x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée 9(-7-6x)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-54x-63"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -54x-63",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["9(-6x-7)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée 9(-6x-7)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["63+54x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 63+54x",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-9(-7-6x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée -9(-7-6x)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["42x-63"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "42x-63",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["54x+63"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 54x+63",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-9(-6x-7)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée -9(-6x-7)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-63-54x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -63-54x",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["(-7-6x)*9"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-7-6x)*9",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-54x-63"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -54x-63",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["(-6x-7)*9"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-6x-7)*9",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["63+54x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 63+54x",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["(-7-6x)*(-9)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-7-6x)*(-9)",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["54x+63"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 54x+63",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["(-6x-7)*(-9)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-6x-7)*(-9)",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["-7x-6x^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -7x-6x^2",
+			"variationIndex": 8
+		},
+		{
+			"answers": ["x(-7-6x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée x(-7-6x)",
+			"variationIndex": 8
+		},
+		{
+			"answers": ["-6x^2-7x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -6x^2-7x",
+			"variationIndex": 9
+		},
+		{
+			"answers": ["x(-6x-7)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée x(-6x-7)",
+			"variationIndex": 9
+		},
+		{
+			"answers": ["-7x-6x^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -7x-6x^2",
+			"variationIndex": 10
+		},
+		{
+			"answers": ["(-7-6x)x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-7-6x)x",
+			"variationIndex": 10
+		},
+		{
+			"answers": ["-6x^2-7x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse -6x^2-7x",
+			"variationIndex": 11
+		},
+		{
+			"answers": ["(-6x-7)x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-6x-7)x",
+			"variationIndex": 11
+		},
+		{
+			"answers": ["7x+6x^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 7x+6x^2",
+			"variationIndex": 12
+		},
+		{
+			"answers": ["-x(-7-6x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée -x(-7-6x)",
+			"variationIndex": 12
+		},
+		{
+			"answers": ["6x^2+7x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 6x^2+7x",
+			"variationIndex": 13
+		},
+		{
+			"answers": ["-x(-6x-7)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée -x(-6x-7)",
+			"variationIndex": 13
+		},
+		{
+			"answers": ["7x+6x^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 7x+6x^2",
+			"variationIndex": 14
+		},
+		{
+			"answers": ["(-7-6x)*(-x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-7-6x)*(-x)",
+			"variationIndex": 14
+		},
+		{
+			"answers": ["6x^2+7x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "bonne réponse 6x^2+7x",
+			"variationIndex": 15
+		},
+		{
+			"answers": ["(-6x-7)*(-x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["signs", "products", "form"]
+			},
+			"variables": {
+				"p": "9",
+				"q": "-7",
+				"r": "-6",
+				"s": "x|x"
+			},
+			"description": "expression recopiée (-6x-7)*(-x)",
+			"variationIndex": 15
+		},
+		{
+			"description": "F2a : −3x(2x − 5) = −6x² + 15x",
+			"variationIndex": 16,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-6x^2+15x"]
+		},
+		{
+			"description": "F2a : ordre libre",
+			"variationIndex": 16,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15x-6x^2"]
+		},
+		{
+			"description": "F2a : recopiée",
+			"variationIndex": 16,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["-3x(2x-5)"]
+		},
+		{
+			"description": "F2a : second terme non multiplié",
+			"variationIndex": 16,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as multiplié que le premier terme de la parenthèse : le facteur multiplie chacun des termes."
+			},
+			"answers": ["-6x^2-5"]
+		},
+		{
+			"description": "F2a : x × x = x",
+			"variationIndex": 16,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x \\times x = x^2$ : le produit de deux termes en $x$ est un terme en $x^2$."
+			},
+			"answers": ["9x"]
+		},
+		{
+			"description": "F2a : x oublié",
+			"variationIndex": 16,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le second produit, tu as oublié le $x$ du facteur : il multiplie aussi le nombre."
+			},
+			"answers": ["-6x^2+15"]
+		},
+		{
+			"description": "F2b : 5 − 3(2x − 4) = −6x + 17",
+			"variationIndex": 17,
+			"variables": {
+				"w": "1",
+				"k": "3",
+				"a": "2",
+				"b": "-4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-6x+17"]
+		},
+		{
+			"description": "F2b : 17 − 6x",
+			"variationIndex": 17,
+			"variables": {
+				"w": "1",
+				"k": "3",
+				"a": "2",
+				"b": "-4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17-6x"]
+		},
+		{
+			"description": "F2b : non réduit",
+			"variationIndex": 17,
+			"variables": {
+				"w": "1",
+				"k": "3",
+				"a": "2",
+				"b": "-4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["5-6x+12"]
+		},
+		{
+			"description": "F2b : second terme non multiplié",
+			"variationIndex": 17,
+			"variables": {
+				"w": "1",
+				"k": "3",
+				"a": "2",
+				"b": "-4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as multiplié que le premier terme de la parenthèse : le facteur multiplie chacun des termes."
+			},
+			"answers": ["-6x+9"]
+		},
+		{
+			"description": "F2b : signe du second produit",
+			"variationIndex": 17,
+			"variables": {
+				"w": "1",
+				"k": "3",
+				"a": "2",
+				"b": "-4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe $-$ devant le facteur change le signe de chacun des produits, le second compris."
+			},
+			"answers": ["-6x-7"]
+		},
+		{
+			"description": "F2b : (5 − 3)(2x − 4)",
+			"variationIndex": 17,
+			"variables": {
+				"w": "1",
+				"k": "3",
+				"a": "2",
+				"b": "-4",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La multiplication est prioritaire : on développe le produit avant de soustraire, on ne soustrait pas le nombre et le facteur d'abord."
+			},
+			"answers": ["4x-8"]
+		},
+		{
+			"description": "F2b : 4(−2x + 3) − 7 = −8x + 5",
+			"variationIndex": 17,
+			"variables": {
+				"w": "0",
+				"k": "4",
+				"a": "-2",
+				"b": "3",
+				"c": "-7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-8x+5"]
+		},
+		{
+			"description": "F2b : second terme non multiplié (+ c)",
+			"variationIndex": 17,
+			"variables": {
+				"w": "0",
+				"k": "4",
+				"a": "-2",
+				"b": "3",
+				"c": "-7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as multiplié que le premier terme de la parenthèse : le facteur multiplie chacun des termes."
+			},
+			"answers": ["-8x-4"]
+		}
+	]
+}
