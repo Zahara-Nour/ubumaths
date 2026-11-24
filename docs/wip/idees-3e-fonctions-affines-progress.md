@@ -2,20 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3117 et le `db:migrate`._
+_Mis à jour le 2026-11-24, après la validation des modèles par David._
 
-- **État** : en prod, 4 brouillons rangés et tagués (9414e0a3 N1 3-044, 8725107f N2 2-322,
-  51a8db37 N3 3-067, b213f446 N4 3-039) ; 15ddcc75 (4 var.), 45247528 (7), 7c7b7593 (7)
-  publiés avec leurs nouvelles variations. Vérifié en prod en lecture seule.
-- **Prochaine action** : lire les verdicts de David (`question_template_reviews`, `reviewed_at`
-  postérieur au 2026-11-24), les compter, corriger ; puis `publier-lot.ts --dir …-neufs` en
-  simulation, David lance `--publier`. Fin : tableau de répartition, versement du journal.
-- **En attente de David** : la relecture dans `/dev/modeles` (`?point=3-044`, `3-067`, `3-039`,
-  `2-322` pour les brouillons ; nouvelles variations des publiés : 15ddcc75 v2-v4, 45247528
-  v5-v7, 7c7b7593 v6-v7, par `?point=3-066`, `3-043`, `3-040`).
+- **État** : en prod, 4 brouillons rangés et tagués (9414e0a3, 8725107f, 51a8db37, b213f446) ;
+  15ddcc75, 45247528, 7c7b7593 publiés avec leurs nouvelles variations. David a validé les
+  modèles (« je valide les modeles », aucun verdict « À revoir » en base). `publier-lot` en
+  simulation : 4 brouillons passent le contrôle.
+- **Prochaine action** : après le `--publier` de David, vérifier en prod (4 `published`), puis
+  finir : tableau de répartition (rubrique « publiée », réservations levées), versement du journal
+  selon `couvrir-un-niveau.md`.
+- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/idees-3e-fonctions-affines-neufs --publier` (`!`, dépôt principal).
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
-  À regarder : message de N4 faux (« équation », b + ax), étiquette 𝒟 de N3 v3.
-- **Worktree / branche** : aucun (tout est mergé) ; une correction = worktree neuf.
+- **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-24)
 
@@ -179,3 +178,8 @@ de réponse.
   aucun finding bloquant. `migration list --linked` : seules nos deux en attente.
 - `db:migrate` : les deux appliquées ; vérifié en prod (nœuds, un tag chacun, brouillons ;
   publiés à 4, 7 et 7 variations).
+
+### 2026-11-24 — modèles validés
+
+- David : « je valide les modeles ». `question_template_reviews` : aucune ligne depuis le lot.
+  `publier-lot` en simulation : 4 brouillons passent le contrôle.
