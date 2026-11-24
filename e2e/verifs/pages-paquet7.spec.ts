@@ -588,7 +588,11 @@ async function parcourirAuClavier(page: Page, declencheur: Locator): Promise<voi
 }
 
 test.describe('#2577 — listes déroulantes', () => {
-	test.afterAll(effacerFiches);
+	// Le brouillon « listes » du test branche / notion part avec les fiches
+	test.afterAll(async () => {
+		await effacerFiches();
+		await effacerModelesEtErreurs();
+	});
 
 	test('#2577 — glossaire : le filtre de niveau s’ouvre, choisit, se referme ; son nom de lecteur d’écran annonce le niveau choisi (attribut ARIA)', async ({
 		page

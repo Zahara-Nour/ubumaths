@@ -347,7 +347,8 @@ aussi, après un `=` ou un `+` de premier niveau : `RangerPlacer` pose `provideB
 `utils/latex-break-points.ts`), jamais dans une accolade, un `\left … \right`, un environnement,
 `\{ … \}` ni l'argument optionnel d'une commande, ni après un signe ; l'opérateur finit le morceau,
 suivi de `\;` / `\:`, l'espace que MathLive retire en fin de morceau ; le conteneur porte la lecture
-de la formule entière, les morceaux sont `aria-hidden` — E52) ; flèches ↑ ↓ dans
+de la formule entière (calculée après le montage, MathLive ne sait pas la lire au rendu serveur :
+`math-inline-serveur.test.ts`), les morceaux sont `aria-hidden` — E52) ; flèches ↑ ↓ dans
 la colonne, ← → d'une colonne à l'autre ; consigne lue « Étapes à remettre dans l'ordre » ; PDF :
 étiquettes l'une sous l'autre, puis places numérotées pleine largeur. Juge inchangé (l'étiquette posée,
 place par place) : n'écrire que des étapes qui ne peuvent pas permuter.
