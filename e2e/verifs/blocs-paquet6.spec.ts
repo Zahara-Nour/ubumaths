@@ -864,15 +864,13 @@ test('#2462 — à l’écran, la droite graduée d’un item de liste n’appar
 	await shot(page, '2462-ecran');
 });
 
-test('#2462 — ÉCART : à l’écran, la droite graduée de Q1 et de Q2 est dessinée dans la liste numérotée, dans la largeur de l’item (Q1 : point A dessiné ; Q2 : aucun point)', async ({
+test('#2462 — à l’écran, la droite graduée de Q1 et de Q2 est dessinée dans la liste numérotée, dans la largeur de l’item (Q1 : point A dessiné ; Q2 : aucun point)', async ({
 	page
 }) => {
-	// Écart constaté : `ListNode.svelte` ne rend pas le nœud `number-line` (seule la source brute a
-	// disparu, grâce au parseur de #2462) : rien n'est dessiné à la place de la droite. La doc
-	// (`ubumark.md`) demande pourtant que chaque bloc soit rendu dans `ListNode` et `StaticBlockNode`.
+	// Écart E56, corrigé : `ListNode.svelte` ne rendait pas le nœud `number-line` (rien n'était
+	// dessiné à la place de la droite).
 	await openRepereExercise(page);
-	test.fail();
-	const lines = page.locator('.number-line-container');
+	const lines = page.locator('.number-line-container:visible');
 	await expect(lines).toHaveCount(2, { timeout: 5000 });
 	const geometry = await lines.evaluateAll((els) =>
 		els.map((el) => {
@@ -901,7 +899,8 @@ test('#2462 — ÉCART : à l’écran, la droite graduée de Q1 et de Q2 est de
 		);
 		expect(g.ticks, `droite ${index + 1} : graduée`).toBeGreaterThan(3);
 	});
-	expect(geometry[0].itemText).toContain('Lis l’abscisse');
+	// Apostrophe droite dans l'énoncé de la base : on lit le texte sans elle
+	expect(geometry[0].itemText).toContain('abscisse du point');
 	expect(geometry[1].itemText).toContain('Place le nombre');
 	expect(geometry[0].points, 'Q1 : le point A est dessiné').toBe(1);
 	expect(geometry[1].points, 'Q2 : aucun point à l’énoncé').toBe(0);
