@@ -11,8 +11,7 @@ _Mis à jour le 2026-11-24, avant toute PR._
   `create-questions --dir …-neufs --publier`, aperçu admin sur un serveur 5176+, puis
   `git restore` des ids locaux) ; migration de contenu des publiés (`migration-contenu.ts`) ;
   rendu vu à l'écran ; PR (revue : aucune, contenu).
-- **En attente de David** : rien avant la PR ; avant le rangement, la conséquence de Q1 (N2 rangé
-  en géométrie, § Phase 0).
+- **En attente de David** : rien avant la PR (rangement de N2 tranché : 2-322, en géométrie).
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
   Page à cocher (non remplie) : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions-affines`,
@@ -30,6 +29,8 @@ point 2-322 est rangé sous « Géométrie > Géométrie repérée > équations 
 « point sur le nœud ou sur sa notion » range donc N2 dans ce nœud de géométrie, pas sous
 « Fonctions affines ». Autre choix : N2 sans point, sous « Fonctions > Fonctions affines >
 expression et droite ».
+
+**Tranché par David (2026-11-24)** : on garde 2-322, N2 rangé sous « Géométrie > Géométrie repérée > équations de droites » (ma recommandation, réponse « je te suis »).
 
 Question d'accès de la migration : **personne** ne gagne de lecture (on range et on tague des
 modèles de questions).
