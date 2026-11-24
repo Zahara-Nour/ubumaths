@@ -20,6 +20,8 @@ import { TEACHER_ID } from './helpers/fiches';
 
 // Base locale seulement : contre la prod (`VERIFS_URL`), les comptes `local-*` n'existent pas
 test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
+// Un décor partagé, des tests qui s'enchaînent (#1581 : cahier puis Avancement)
+test.describe.configure({ mode: 'serial' });
 
 // Constantes
 
@@ -120,6 +122,8 @@ test.beforeAll(async () => {
 			`select grade from profiles where email = $1`,
 			[email]
 		);
+		if (rows.length !== 1)
+			throw new Error(`Profil local ${email} absent : base remplie par db:seed-riche ?`);
 		originalGrades.set(email, rows[0].grade);
 	}
 	originalTags = await sql<{ template_id: string; point_id: string }>(

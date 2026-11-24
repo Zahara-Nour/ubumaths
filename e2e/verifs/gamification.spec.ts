@@ -1,3 +1,6 @@
+import { execSync } from 'node:child_process';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { MATHOU_RACES } from '../../src/lib/components/mathoux/mathou-races';
 import { ADMIN, assertLocalServerEnv, login, PHONE, sql, TEACHER } from './helpers/carnet';
@@ -92,8 +95,10 @@ test.afterAll(async () => {
 		]);
 	}
 	for (const table of SNAPSHOT_TABLES) {
+		// Table pas photographiée (beforeAll interrompu) : on n'y touche pas
+		const rows = snapshot.get(table);
+		if (rows === undefined) continue;
 		await sql(`delete from ${table} where student_id = any($1)`, [ALL_IDS]);
-		const rows = snapshot.get(table) ?? [];
 		if (rows.length > 0) {
 			await sql(
 				`insert into ${table} select * from jsonb_populate_recordset(null::${table}, $1::jsonb)`,
@@ -173,6 +178,36 @@ async function visitRow(id: string) {
 }
 
 /**
+ * Mémoire de `studentPresenceHandle` (`notedToday`) : un élève n'est noté qu'une fois par
+ * jour et par PROCESSUS du serveur de dev. La base ne le prouve pas (l'`afterAll` y remet
+ * l'ancienne date) : un repère dans `.captures/` retient « tel processus a noté tel élève
+ * tel jour ». Le test ne se saute que si CE processus l'a déjà noté aujourd'hui ; sinon une
+ * visite non écrite est une régression et le test échoue.
+ */
+function presenceMarker(id: string, day: string): string | null {
+	const port = process.env.VERIFS_PORT ?? '5176';
+	let pid = '';
+	try {
+		pid = execSync(`lsof -tiTCP:${port} -sTCP:LISTEN`, { encoding: 'utf8' }).trim().split('\n')[0];
+	} catch {
+		return null;
+	}
+	return pid === '' ? null : `.captures/verifs/presence/${pid}-${day}-${id}`;
+}
+
+function notedByThisServer(id: string, day: string): boolean {
+	const marker = presenceMarker(id, day);
+	return marker !== null && existsSync(marker);
+}
+
+function rememberNoted(id: string, day: string): void {
+	const marker = presenceMarker(id, day);
+	if (marker === null) return;
+	mkdirSync(dirname(marker), { recursive: true });
+	writeFileSync(marker, '');
+}
+
+/**
  * Une série d'une seule question (l'Entraînement de « Faire grandir » raccourci :
  * 1 question, 10 s), sans réponse : le temps passe, la question est comptée fausse,
  * ce qui suffit à gagner des pansées (3 par réponse, 5 au premier travail du jour).
@@ -243,6 +278,7 @@ test.describe('retour après une longue absence', () => {
 		onlyDesktopChrome(testInfo);
 		test.setTimeout(150_000);
 		const today = await utcToday();
+		const remembered = notedByThisServer(E15.id, today);
 		await sql(
 			`insert into student_last_visits (student_id, last_visit_date, welcome_back_on)
 			 values ($1, (now() at time zone 'utc')::date - 21, null)
@@ -274,12 +310,12 @@ test.describe('retour après une longue absence', () => {
 			.toBe(today)
 			.catch(() => undefined);
 		const row = await visitRow(E15.id);
-		// Si ce serveur a déjà noté eleve15 aujourd'hui, sa mémoire d'instance empêche
-		// d'écrire de nouveau : on le dit au lieu d'échouer sur un état hors de contrôle.
+		// Déjà noté aujourd'hui avant le test : la mémoire du serveur empêche d'écrire de nouveau
 		test.skip(
-			row.last_visit_date !== today,
+			remembered && row.last_visit_date !== today,
 			'eleve15 déjà passé aujourd’hui sur ce serveur : relancer le serveur de dev pour rejouer'
 		);
+		if (row.last_visit_date === today) rememberNoted(E15.id, today);
 
 		// Noté sur une page qui n'est PAS le tableau de bord (#1599) ; retour à fêter noté
 		expect(row.welcome_back_on).toBe(today);
@@ -370,6 +406,7 @@ test.describe('retour après une longue absence', () => {
 	}, testInfo) => {
 		onlyDesktopChrome(testInfo);
 		test.setTimeout(150_000);
+		const remembered = notedByThisServer(E13.id, await utcToday());
 		await sql(
 			`update student_last_visits
 			 set welcome_back_on = (now() at time zone 'utc')::date - 7,
@@ -385,9 +422,10 @@ test.describe('retour après une longue absence', () => {
 		await studentPage(page, E13);
 		const row = await visitRow(E13.id);
 		test.skip(
-			row.last_visit_date !== (await utcToday()),
+			remembered && row.last_visit_date !== (await utcToday()),
 			'eleve13 déjà passé aujourd’hui sur ce serveur : relancer le serveur de dev pour rejouer'
 		);
+		if (row.last_visit_date === (await utcToday())) rememberNoted(E13.id, await utcToday());
 		expect(row.welcome_back_on, 'retour périmé effacé').toBeNull();
 		await page.waitForTimeout(3000);
 		await expectNoBubbleLike(page, PILE_RETURN_LINES);

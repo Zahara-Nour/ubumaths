@@ -1,5 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
-import { assertLocalServerEnv, emailLink, emailsTo, sql, waitForEmail } from './helpers/carnet';
+import {
+	assertLocalServerEnv,
+	emailHtml,
+	emailLink,
+	emailsTo,
+	sql,
+	waitForEmail
+} from './helpers/carnet';
 
 /**
  * Connexion et inscription par le parent — les vérifications manuelles, sur la base locale
@@ -67,8 +74,8 @@ test.describe('#1585 connexion : adresse ou identifiant', () => {
 test.describe('#1592 inscription par le parent', () => {
 	test.describe.configure({ mode: 'serial' });
 
-	let wasOpen = false;
-	let wasGrade: string | null = null;
+	/** Réglage d'origine de la classe, lu avant d'y toucher (null : rien changé, rien à rendre) */
+	let saved: { open: boolean; grade: string | null } | null = null;
 	/** Courriels déjà capturés pour cette adresse (restes d'un passage précédent) */
 	let mailsBefore = 0;
 	let childId: string | null = null;
@@ -82,8 +89,7 @@ test.describe('#1592 inscription par le parent', () => {
 			[CLASS_CODE]
 		);
 		expect(rows).toHaveLength(1);
-		wasOpen = rows[0].registration_open;
-		wasGrade = rows[0].grade;
+		saved = { open: rows[0].registration_open, grade: rows[0].grade };
 		// Niveau 6e (comme la classe de la ligne) : le consentement parental est exigé d'emblée,
 		// alors qu'en 2nde il dépend de l'âge (question posée à l'élève)
 		await sql("update classes set registration_open = true, grade = '6' where join_code = $1", [
@@ -95,11 +101,13 @@ test.describe('#1592 inscription par le parent', () => {
 	test.afterAll(async () => {
 		await removeChild();
 		await resetSignupLimits();
-		await sql('update classes set registration_open = $2, grade = $3 where join_code = $1', [
-			CLASS_CODE,
-			wasOpen,
-			wasGrade
-		]);
+		if (saved !== null) {
+			await sql('update classes set registration_open = $2, grade = $3 where join_code = $1', [
+				CLASS_CODE,
+				saved.open,
+				saved.grade
+			]);
+		}
 	});
 
 	/** Plafonds d'inscription (adresse du parent, classe, poste local) : repartir de zéro avant et après */
@@ -151,7 +159,7 @@ test.describe('#1592 inscription par le parent', () => {
 
 		// Le courriel : identifiant + bouton « Donner mon consentement »
 		const mail = await waitForEmail(PARENT_EMAIL, mailsBefore + 1);
-		const html = await (await import('./helpers/carnet')).emailHtml(mail);
+		const html = await emailHtml(mail);
 		expect(html).toContain(loginId);
 		expect(await emailLink(mail, 'Donner mon consentement')).toMatch(/^\/consent\//);
 		expect(await emailsTo(PARENT_EMAIL)).toHaveLength(mailsBefore + 1);

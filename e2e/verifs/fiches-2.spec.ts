@@ -34,6 +34,8 @@ import {
 
 // Base locale seulement : contre la prod (`VERIFS_URL`), les comptes `local-*` n'existent pas
 test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
+// Un décor partagé, des tests qui s'enchaînent (#1581 : cahier puis Avancement)
+test.describe.configure({ mode: 'serial' });
 
 // Constantes
 
@@ -77,7 +79,8 @@ interface Decor {
 }
 
 let decor: Decor;
-let originalPrintSettings: { text_size: string }[] = [];
+/** Réglage d'origine de l'élève (null : pas encore lu, rien à rendre) */
+let originalPrintSettings: { text_size: string }[] | null = null;
 
 // Functions
 
@@ -268,6 +271,7 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
 	await wipe();
+	if (originalPrintSettings === null) return;
 	await sql(`delete from student_print_settings where student_id = $1`, [STUDENT_ID]);
 	for (const row of originalPrintSettings) {
 		await sql(`insert into student_print_settings (student_id, text_size) values ($1, $2)`, [
