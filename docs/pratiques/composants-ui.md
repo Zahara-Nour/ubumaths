@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/navigation/return-links.ts'
   - 'src/lib/components/rich-text/{RichTextEditor,RichTextDisplay}.svelte'
   - 'src/lib/stores/{toaster,theme,fontSize}.svelte.ts'
+  - src/lib/components/AppToaster.svelte
 ---
 
 # UI Components
