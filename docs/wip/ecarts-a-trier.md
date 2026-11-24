@@ -24,6 +24,8 @@ C16, C17, D12-D15 ajoutés et K19 ouvert (inventaire de la [carte des fonctionna
 
 ## État au 2026-11-24 (revérification)
 
+> **Versés au registre le 2026-11-24** : les écarts encore ouverts de ce fichier vivent désormais dans [docs/ecarts/registre.md](../ecarts/registre.md), qui fait foi (une ligne par écart, avec sa preuve rejouable ; `pnpm ecarts`). Ce fichier reste l'historique : ne plus y ouvrir ni fermer d'écart. Correction relevée au versement : **L25** porte sur `k·x^k` (x sort à 5 et 10 termes, pas à 30), pas sur `k·x^{k-1}` comme l'écrit son tableau (le premier terme n'y a pas de x).
+
 Les 22 écarts ouverts et les 11 T ont été revérifiés contre `origin/main` (`a42f354ed5`) : les écarts mathAST par des sondes vitest passées par le chemin de l'Atelier, les autres par lecture du code. Chaque ligne des tableaux porte sa note « Revérifié le 2026-11-24 ».
 
 - **Toujours vrais (15)** : V17, V34, V35, V39, V48 · L9, L20, L25, L28 bis, L36 (deux routes) · M19 · C13, C14 (PR #2451 jamais mergée) · D6 · suspendus avec le tuteur : V31, L32, L33 (comptés à part).
