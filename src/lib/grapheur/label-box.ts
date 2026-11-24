@@ -60,3 +60,46 @@ export function labelBoxCenterY(y: number, height: number, canvasHeight: number)
 		? canvasHeight - height - LABEL_BOX_MARGIN
 		: below;
 }
+
+/**
+ * Ordonnée du MILIEU de la boîte posée SOUS le point d'ordonnée `y` ; au-dessus
+ * quand elle sortirait par le bas (E28 : valeur de x sous l'axe des abscisses).
+ */
+export function labelBoxCenterYBelow(y: number, height: number, canvasHeight: number): number {
+	const below = y + LABEL_BOX_MARGIN + height;
+	if (below + height / 2 <= canvasHeight - LABEL_BOX_MARGIN) return below;
+	return labelBoxCenterY(y, height, canvasHeight);
+}
+
+/** Le rectangle d'une étiquette posée au point (`x`, `y`), au-dessus ou dessous. */
+export interface LabelRect {
+	readonly left: number;
+	readonly right: number;
+	readonly top: number;
+	readonly bottom: number;
+}
+
+export function labelBoxRect(
+	x: number,
+	y: number,
+	content: { text: string; latex: string | null },
+	canvas: { width: number; height: number },
+	below = false
+): LabelRect {
+	const span = labelBoxSpan(x, content.text, canvas.width);
+	const height = labelBoxHeight(content.latex);
+	const center = below
+		? labelBoxCenterYBelow(y, height, canvas.height)
+		: labelBoxCenterY(y, height, canvas.height);
+	return {
+		left: span.left,
+		right: span.right,
+		top: center - height / 2,
+		bottom: center + height / 2
+	};
+}
+
+/** Deux étiquettes se touchent-elles ? */
+export function labelRectsOverlap(a: LabelRect, b: LabelRect): boolean {
+	return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+}

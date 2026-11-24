@@ -11,7 +11,10 @@ import FlashCard from '../FlashCard.svelte';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
 import type { QuestionInstance, QuestionTemplate } from '#lib/questions/types.ts';
 import { resolvedMarkdown, templateMarkdown } from '#lib/ubumark/index.ts';
-import { LEXICON_VISIBILITY_STORAGE_KEY, setLexiconShown } from '#lib/lexicon/visibility.svelte.ts';
+import {
+	LEXICON_VISIBILITY_STORAGE_KEY,
+	setLexiconShown
+} from '#lib/dictionary/visibility.svelte.ts';
 
 // Le dictionnaire arrive de /api/dictionnaire (ADR 0022) : ici, le jeu de référence figé
 vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
@@ -22,7 +25,7 @@ vi.mock('#lib/dictionary/fetch-dictionary.ts', async () => {
 
 // Souris par défaut ; B4 passe à un écran tactile
 const pointer = vi.hoisted(() => ({ canHover: true }));
-vi.mock('#lib/lexicon/can-hover.svelte.ts', () => ({ canHover: () => pointer.canHover }));
+vi.mock('#lib/dictionary/can-hover.svelte.ts', () => ({ canHover: () => pointer.canHover }));
 
 const TOGGLE = 'Mots du dictionnaire';
 

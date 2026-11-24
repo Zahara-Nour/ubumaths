@@ -53,7 +53,7 @@
 	import InfoPanel from '#lib/components/InfoPanel.svelte';
 	import { navigating } from '$app/state';
 	import type { LayoutData } from './$types';
-	import { Toaster } from 'svelte-sonner';
+	import AppToaster from '#lib/components/AppToaster.svelte';
 	import { ModeWatcher } from 'mode-watcher';
 	import SkeletonPage from '#lib/components/skeleton/SkeletonPage.svelte';
 	import SkeletonDashboard from '#lib/components/skeleton/SkeletonDashboard.svelte';
@@ -62,7 +62,7 @@
 	import { getSkeletonType } from '#lib/utils/skeleton-detector.ts';
 	import ModalStackRenderer from '#lib/components/modals/ModalStackRenderer.svelte';
 	import MathKeyboardClose from '#lib/components/MathKeyboardClose.svelte';
-	import { provideReaderGrade } from '#lib/lexicon/reader-grade.ts';
+	import { provideReaderGrade } from '#lib/dictionary/reader-grade.ts';
 	import type { Component } from 'svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
@@ -184,9 +184,7 @@
 {/if}
 
 <!-- Toast notifications -->
-<!-- gap={12} adds spacing between toasts to prevent overlap -->
-<!-- offset="16px" adds padding from screen edge -->
-<Toaster richColors position="top-right" expand={true} visibleToasts={5} gap={12} offset="16px" />
+<AppToaster />
 
 <!-- Modal Stack Renderer - renders modal stack from modalStack store -->
 <ModalStackRenderer />

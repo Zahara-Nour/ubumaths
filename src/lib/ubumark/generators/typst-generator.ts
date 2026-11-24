@@ -74,6 +74,7 @@ import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
 import { generateTortueTypst } from './tortue-typst';
 import { generateRobotTypst } from './robot-typst';
+import { generateLabyrintheTypst } from './labyrinthe-typst';
 import { generateCalculTypst } from './calcul-typst';
 import { generatePartageTypst } from './partage-typst';
 import { generateEspaceTypst } from './espace-typst';
@@ -578,6 +579,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'robot':
 			// Robot : le quadrillage ; à produire, « Écris le code : » et 15 cases vides
 			return generateRobotTypst(node);
+		case 'labyrinthe':
+			// Labyrinthe : la grille, l'entrée et les sorties ; en solution, le bon chemin teinté
+			return generateLabyrintheTypst(node);
 
 		default:
 			return '';

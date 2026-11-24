@@ -174,6 +174,8 @@
 	$effect(() => {
 		if (!stage || drag || settling || editAt) return;
 		stage.innerHTML = latex.trim() ? convertLatexToMarkup(display(structure?.latex ?? latex)) : '';
+		formulaObserver?.disconnect();
+		if (stage.firstElementChild) formulaObserver?.observe(stage.firstElementChild);
 		frameCache = null;
 		drawOutlines();
 		showFrames(null);
@@ -365,6 +367,21 @@
 	function invalidateFrames() {
 		frameCache = null;
 	}
+
+	/**
+	 * Formule qui change de taille après le rendu (police KaTeX des grandes
+	 * parenthèses chargée après coup) : centrée, elle se déplace, et les contours
+	 * dessinés d'avance au doigt tombaient à gauche des caractères (écart E26).
+	 * Ils se recalent ; pas pendant un déplacement, qui tient ses propres cadres.
+	 */
+	const formulaObserver =
+		typeof ResizeObserver === 'undefined'
+			? null
+			: new ResizeObserver(() => {
+					if (!drag && !settling) handleResize();
+				});
+
+	onDestroy(() => formulaObserver?.disconnect());
 
 	/** Fenêtre redimensionnée (rotation d'une tablette) : les contours se recalent */
 	function handleResize() {
@@ -904,6 +921,15 @@
 		text-align: center;
 		user-select: none;
 		cursor: text;
+	}
+
+	/* Au téléphone, une formule plus petite : à 2,75rem, une fraction dépassait
+	   de l'écran (écart E26) */
+	@media (max-width: 639px) {
+		.field {
+			padding: 2rem 1rem;
+			font-size: 1.75rem;
+		}
 	}
 
 	/* La carte soulevée monte : de la place en haut */

@@ -21,7 +21,8 @@ import {
 	allowClipboard,
 	showCards,
 	leavePanelAlone,
-	gotoRedirected
+	gotoRedirected,
+	waitVirtualKeyboard
 } from './helpers/atelier';
 import { openView, readCell, typeCell } from './helpers/grille';
 
@@ -59,16 +60,25 @@ async function calcMath(page: Page, keys: string): Promise<Locator> {
 
 /**
  * Tape au vrai clavier dans le champ mathématique vide. Juste après un
- * rechargement ou un changement de réglage, MathLive perd la première frappe :
- * on recommence tant que le champ reste vide.
+ * rechargement ou un changement de réglage, MathLive perd les premières
+ * frappes (sous charge, plusieurs : « résoudre x^2=4 » devenait « ex2=4 ») :
+ * le premier caractère seul, recommencé sur un champ vide tant qu'il n'est pas
+ * arrivé, puis le reste.
  */
 async function typeMath(page: Page, keys: string): Promise<void> {
 	const field = mathConsole(page);
 	await expect(async () => {
+		// Vidé sans touche : sous Safari, Retour arrière hors du champ (frappe
+		// perdue) revient à la page précédente
+		await field.evaluate((element) => {
+			(element as HTMLElement & { value: string }).value = '';
+		});
 		await field.click();
-		await page.keyboard.type(keys);
+		await waitVirtualKeyboard(page, field);
+		await page.keyboard.type(keys.slice(0, 1));
 		expect(await mathValue(field)).not.toBe('');
 	}).toPass();
+	await page.keyboard.type(keys.slice(1));
 }
 
 /** Ajoute puis efface un chiffre au bout du champ d'une carte, puis Entrée */
@@ -344,6 +354,7 @@ test(
 
 		// #1423 : `3*4` → la croix ×, puis 12
 		await field.click();
+		await waitVirtualKeyboard(page, field);
 		await page.keyboard.type('3*4');
 		expect(await mathValue(field)).toContain('\\times');
 		expect(await mathValue(field)).not.toContain('\\cdot');
@@ -498,7 +509,7 @@ test('E7 — téléphone : la barre d’icônes tient en entier dans l’écran'
 		await expect(buttons.last()).toBeVisible();
 		for (const button of await buttons.all()) {
 			const box = await button.boundingBox();
-			expect(box, await button.getAttribute('aria-label')).not.toBeNull();
+			expect(box, (await button.getAttribute('aria-label')) ?? undefined).not.toBeNull();
 			expect(box!.x + box!.width, `${width} px`).toBeLessThanOrEqual(width);
 		}
 	}
@@ -591,6 +602,14 @@ test(
 		const defined = await calc(page, 'a = 2');
 		await expect(defined.line.locator('.invite')).toHaveText('>');
 		await expect(defined.line.locator('.fleche')).toHaveText('-->');
+		// « --> » orange (`--accent-console`, #a65800 en clair)
+		await expect(defined.line.locator('.fleche')).toHaveCSS('color', 'rgb(166, 88, 0)');
+		// Les boutons de la ligne paraissent au survol seulement
+		const tools = defined.line.locator('.outils-ligne');
+		await page.mouse.move(2, 2);
+		await expect(tools).toHaveCSS('opacity', '0');
+		await defined.line.hover();
+		await expect(tools).toHaveCSS('opacity', '1');
 		expect(defined.text).toContain('a est correctement défini.');
 		await expect(defined.line.locator('.nom-defini')).toHaveText('a');
 
@@ -610,6 +629,27 @@ test(
 		// (le focus est sur le bouton Console, hors d'un champ)
 		await page.keyboard.press('Backquote');
 		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		// Mac AZERTY (clavier Apple ISO) : la touche sous Échap rend `IntlBackslash`,
+		// touche que Playwright ne sait pas taper : l'événement de cette touche (« @ »).
+		// Seulement si le navigateur se dit Mac (« Desktop Chrome » de Playwright se dit Windows)
+		if (await page.evaluate(() => navigator.userAgent.includes('Macintosh'))) {
+			const underEscape = () =>
+				page.evaluate(() =>
+					document.activeElement?.dispatchEvent(
+						new KeyboardEvent('keydown', {
+							key: '@',
+							code: 'IntlBackslash',
+							bubbles: true,
+							cancelable: true
+						})
+					)
+				);
+			await consoleButton(page).focus();
+			await underEscape();
+			await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+			await underEscape();
+			await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		}
 		await field.focus();
 		await field.fill('');
 		await page.keyboard.press('Backquote');
@@ -623,6 +663,17 @@ test(
 		await handle.focus();
 		await handle.press('ArrowDown');
 		expect(Number(await handle.getAttribute('aria-valuenow'))).not.toBe(height);
+		// Glissée au pointeur, elle change aussi la hauteur
+		const dragged = Number(await handle.getAttribute('aria-valuenow'));
+		const grip = await handle.boundingBox();
+		if (grip === null) throw new Error('poignée sans boîte');
+		await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2 - 80, { steps: 6 });
+		await page.mouse.up();
+		await expect
+			.poll(async () => Number(await handle.getAttribute('aria-valuenow')))
+			.not.toBe(dragged);
 
 		// Action de carte console fermée : un nombre sur le bouton
 		await calc(page, 'f(x) = x^2');

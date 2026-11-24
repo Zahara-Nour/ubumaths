@@ -81,7 +81,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/to-python.ts`              | « Ouvrir dans Python » : `pythonOf` traduit un objet (et ce qu'il cite) en code Python, `pythonPageOf` en fait l'adresse `/python?code=`                                                                              |
 | `src/lib/atelier/from-python.ts`            | « Ouvrir dans l'atelier » depuis `/python` : `offerOf` dit ce que le menu propose pour une liste rapportée par le worker (liste, ses effectifs, ou refus nommé)                                                       |
 | `src/lib/atelier/python-mailbox.ts`         | La boîte aux lettres à usage unique de ce pont : `postToAtelier` dépose dans `localStorage`, `takeFromPython` relit (Zod) et efface                                                                                   |
-| `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)                                                                                                                    |
+| `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`) ; `splitDisplayExponent` sépare l'exposant `⁻¹` du nom affiché                                                     |
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`) ; une définition illisible dit l'aide précise du parseur, comme la ligne de calcul (`invalidExpressionMessage`) |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                          |
 | `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                                                                                      |
@@ -196,7 +196,7 @@ Ceux du code et de l'interface :
 | `ListCard.svelte`            | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »                                                                                                                                                                                                               |
 | `CardActionItems.svelte`     | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`                                                                                                                                                                                                                  |
 | `UnavailableItem.svelte`     | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)                                                                                                                                                                                                                 |
-| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »                                                                                                                                                                                                      |
+| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]` (l'exposant de `f⁻¹` dans sa propre étiquette : le `⁻` manque à la police, WebKit le décollait), œil, menu Affichage / Actions ; fenêtre de « Tabuler » ; en champ de saisie, l'ensemble hérité des fonctions citées s'écrit « sur … » à côté du champ       |
 | `CurveStylePopover.svelte`   | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)                                                                                                                                                                                                       |
 | `CurveStyleSettings.svelte`  | Ses réglages, repris dans le panneau « Propriétés »                                                                                                                                                                                                                                                                           |
 | `DefinitionField.svelte`     | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)                                                                                                                                                                                                               |
@@ -1368,7 +1368,8 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   bougent pas (Q8), chacune se bascule à la main.
 - **Note** (mode « garder ») : « On peut simplifier davantage pour x ≠ 0 : ajoute « avec x ≠ 0 »
   (ou « dans ℝ \ {0} »). » — `dans` seulement si une seule lettre ; l'une et l'autre se recopient
-  telles quelles.
+  telles quelles. Elle part quand la ligne montre la simplification (« Simplifier pour x ≠ 0 ») et
+  revient avec « Sans simplifier » (`Alternative.outdatedNote`, `shownNote` de `CalculView`, E9).
 - **`avec CONDITION` / `dans ENSEMBLE`**, sur une expression tapée et sur `.simplifier`,
   `.factoriser`, `.développer` (pas `.résoudre`, qui garde son `dans` ; pas une définition ni une
   équation) : coupés avant le calcul, puis lus. `avec` : les conditions de `parseStudentDomain`
@@ -2056,6 +2057,11 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   (clavier virtuel compris). Liste ouverte : **Entrée calcule, Tab choisit**.
 - Une fraction ne se quitte pas toute seule quand on tape un opérateur : on en sort par → ou Tab,
   comme partout dans MathLive (2026-10-14).
+- **Au téléphone** (écarts E23, E24, 2026-11-24) : la consigne du champ vide est courte
+  (« f(x) = x² − 3x + 1, ou un calcul », en texte comme en écriture mathématique : la longue était
+  coupée) ; quand le clavier virtuel de MathLive couvrirait le bas de la console, la saisie
+  (aide de la commande comprise) est épinglée juste au-dessus du clavier et de son bouton « Fermer
+  le clavier » (`keyboardLift`, suivi de `geometrychange`), le temps que son champ a le focus.
 
 - **Les mêmes réponses** : le champ mathématique envoie au moteur le texte que lit `runInput`
   (`calcTextOf`) ; une case vide d'un modèle est refusée avant (la ligne reste, la raison s'affiche).
@@ -3220,8 +3226,9 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
-- dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
-  sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
+- anciennes dettes, closes : « Renommer » est actif (`actions.ts`) ; pas de palette d'unités, les
+  unités se tapent à la main (décision du 2026-10-11, [grandeurs.md](grandeurs.md)).
+  `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).
   `.relever` sur une figure chargée (intersections, perpendiculaire, périmètre, angle, deux
   mesures composées) : 19 à 23 s pour le balayage, ~8 ms puis ~95 ms de recalcul par pas — le

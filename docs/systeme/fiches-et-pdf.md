@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03 ; labyrinthe (`labyrinthe) le 2026-11-24.
 
 ## À quoi ça sert
 
@@ -275,6 +275,7 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   exercices n'y ont ni numéro ni carré, le titre seul (`display.titleOnly`), « Exercice sans
   titre » s'il manque (`untitledExercise`) ; même règle pour le PDF de l'aperçu vue prof. La
   réponse porte `per_student_copies`.
+- Titre d'exercice avec formule, à l'écran de l'élève : rendu en Markdown en ligne (`InlineMarkdown`) dans la liste (`ExerciseListItem`, `ExerciseDisplay`) et dans le titre de la fenêtre de l'exercice (`ExerciseModal`).
 - Signalements (D6) : la liste du prof (`api/worksheets/[id]/reports`, `.../assignments/[id]/reports`),
   la page du signalement et la notification de l'élève citent le numéro de l'exercice **dans la
   copie de l'élève** (`fetchCopyNumbering`, même calcul que la copie ; inconnu → aucun numéro dans
@@ -761,7 +762,12 @@ figure dans les cadres de réponse ; le PDF dessine le quadrillage et, à produi
 et 15 cases vides (`generateRobotTypst`). Il se fait sur papier : dans une série d'automatismes
 (`robotsAFiger`), l'énoncé garde le bloc sans `case:`, le corrigé le quadrillage seul (`produire:`
 retirée) suivi de « Un code juste : **…** », le code de la réponse attendue sans sa scène ; une
-case par robot ; bloc en retrait, cité, sans fin ou illisible → refus. Une
+case par robot ; bloc en retrait, cité, sans fin ou illisible → refus. Un **labyrinthe** (` ```labyrinthe `,
+chantier `labyrinthe`) compte une figure dans les cadres de réponse ; le PDF dessine la grille, l'entrée
+et les sorties numérotées (`generateLabyrintheTypst`), l'élève trace au crayon. Dans une série
+d'automatismes (`labyrinthesAFiger`), l'énoncé garde le bloc sans `case:`, le corrigé le même bloc
+(même graine) avec `solution: oui` à la place de `parcourir:` (chemin teinté) suivi de
+« **Sortie N : … → …** » ; une case par labyrinthe ; mêmes refus que le robot. Une
 série d'automatismes refuse toute question à programme (tortue, calcul), elle se fait à l'écran
 (David, 2026-11-14) : « <id> : une question à programme (tortue, calcul) ne peut pas entrer dans
 une série d'automatismes » (`figer`, avant le compte des cases).

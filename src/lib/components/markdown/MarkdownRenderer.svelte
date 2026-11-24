@@ -67,6 +67,7 @@
 	import TrousEtiquettes from './nodes/TrousEtiquettes.svelte';
 	import TortueProgramme from './nodes/TortueProgramme.svelte';
 	import RobotCode from './nodes/RobotCode.svelte';
+	import Labyrinthe from './nodes/Labyrinthe.svelte';
 	import CalculProgramme from './nodes/CalculProgramme.svelte';
 
 	// Raw markdown viewer with syntax highlighting
@@ -85,7 +86,7 @@
 	} from './restricted-rendering';
 	import type { ContentLocale } from '#lib/types/locale.ts';
 	import type { GradeCode } from '#lib/types/grades.ts';
-	import { lexiconRuntime, loadLexiconRuntime } from '#lib/lexicon/runtime-store.svelte.ts';
+	import { lexiconRuntime, loadLexiconRuntime } from '#lib/dictionary/runtime-store.svelte.ts';
 	import { provideLexicon, readLexicon } from './lexicon-context';
 	import { provideInternalLinks, type InternalLinkReader } from './internal-link-context';
 
@@ -439,6 +440,8 @@
 					<CalculProgramme {node} />
 				{:else if node.type === 'robot'}
 					<RobotCode {node} />
+				{:else if node.type === 'labyrinthe'}
+					<Labyrinthe {node} />
 				{/if}
 			{/each}
 		{:else}

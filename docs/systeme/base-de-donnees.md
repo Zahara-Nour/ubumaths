@@ -392,7 +392,8 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   fiche par lien de partage (`get_worksheet_by_share_token`, `get_course_worksheet_by_share_token`)
   la rendent pour chaque exercice, pour que le PDF du visiteur ait les cadres du prof (tests
   `tests/integration/cadres-lignes-par-question.test.ts`, `cadres-lignes-partage.test.ts`).
-- `worksheet_instances` : exercices générés par élève (graine déterministe).
+- `worksheet_instances` : vide, plus lue ni écrite par aucun code (la copie est recalculée,
+  ADR 0023) ; suppression prévue.
 - `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
   vide = fourni par Chiphre (Typst dans le code ; 13 styles, le 13ᵉ « 2 colonnes - paysage » ajouté par
   `20261016104100`, avec sa ligne dans `worksheet_templates`). La fiche désigne son style par
@@ -461,7 +462,7 @@ Code : `src/lib/server/` (`evaluations.ts`, `evaluation-attempts.ts`, `test-mode
 Les mots mathématiques et leurs définitions par niveau (ADR 0022) : `dictionary_entries`, et
 `dictionary_entry_versions` pour l'historique des modifications de l'admin. Code : `src/lib/dictionary/`,
 chargement serveur `src/lib/server/dictionary/load.ts` ; affichage : glossaire public et mots
-cliquables (`src/lib/lexicon/`). Chaque entrée a une adresse fixe `slug` (`/glossaire/<slug>`),
+cliquables (`src/lib/dictionary/`). Chaque entrée a une adresse fixe `slug` (`/glossaire/<slug>`),
 posée à la création et figée par le trigger `dictionary_entries_slug` (droits de l'appelant) :
 détail dans [dictionnaire.md](dictionnaire.md).
 

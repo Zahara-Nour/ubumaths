@@ -8,7 +8,9 @@ import {
 	mathValue,
 	openAtelier,
 	steps,
-	type Answer
+	type Answer,
+	waitVirtualKeyboard,
+	focusCardField
 } from '../helpers/atelier';
 import { setTheme, shoot, shootBothThemes, type Line } from '../helpers/captures';
 import {
@@ -203,7 +205,13 @@ test('#1385 — « Écriture mathématique » au clavier virtuel, sur téléphon
 	if ((await panel.getAttribute('class'))?.includes('replie')) {
 		await panel.locator('button.replier').click();
 	}
-	await cardLocator(page, 'f').locator('[part="virtual-keyboard-toggle"]').click();
+	// Le clavier de la console, encore ouvert, couvre la carte : l'élève le ferme
+	const close = page.getByRole('button', { name: 'Fermer le clavier' });
+	if (await close.isVisible()) await close.click();
+	await expect(page.locator('.ML__keyboard')).toBeHidden();
+	// Au toucher, l'élève touche le champ de la carte : le clavier s'ouvre seul (le
+	// bouton du clavier, au bout du champ, est recouvert par son contenu sous WebKit)
+	await focusCardField(page, 'f');
 	await expect(page.locator('.ML__keyboard')).toBeVisible();
 	await shootBothThemes(page, line, 'clavier virtuel d’une carte');
 });
@@ -216,6 +224,7 @@ async function typeMath(page: Page, keys: string): Promise<void> {
 	const field = mathConsole(page);
 	await expect(async () => {
 		await field.focus();
+		await waitVirtualKeyboard(page, field);
 		await page.keyboard.type(keys.slice(0, 1));
 		expect(await mathValue(field)).not.toBe('');
 	}).toPass();

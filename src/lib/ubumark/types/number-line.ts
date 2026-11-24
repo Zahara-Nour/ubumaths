@@ -129,6 +129,11 @@ export interface NumberLineConfig {
 	arrows: boolean;
 	/** Scale type */
 	scale: NumberLineScale;
+	/**
+	 * Étiquettes aux grandes graduations quand `labels` est vide (défaut : oui).
+	 * Un zoom n'en a pas : l'élève retrouve lui-même les valeurs.
+	 */
+	autoLabels?: boolean;
 }
 
 /**
@@ -198,6 +203,12 @@ export interface NumberLineNode extends BaseNode {
 	 * écrit (chantier `docs/wip/reponses-a-placer-progress.md`). Jamais dessinés.
 	 */
 	placer?: NumberLineTarget[];
+	/**
+	 * Zooms (`zoom: 12.4 ; 12.5 ; step 0.01`, outil n° 54) : droites agrandies, chacune
+	 * sous la précédente et dans ses bornes, reliées par deux pointillés ; 4 au plus.
+	 * Les points se dessinent sur toutes les droites où ils tombent.
+	 */
+	zooms?: NumberLineConfig[];
 	/** Droite à représenter (`representer:`) : l'intervalle de l'élève. Jamais dessiné. */
 	representer?: NumberLineRepresenter;
 	/**

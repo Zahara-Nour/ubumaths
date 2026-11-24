@@ -9,7 +9,7 @@ couvre:
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
   - src/lib/utils/cache-sync.ts
   - src/lib/utils/app-version.ts
-  - 'src/routes/(protected)/dashboard/teacher/{wheel,recherche,documents}/**'
+  - 'src/routes/(protected)/dashboard/teacher/{recherche,documents}/**'
 ---
 
 # Coquille de l'application et caches des tableaux de bord
@@ -58,7 +58,7 @@ Déjà documenté ailleurs, et seulement cité ici :
   copyright, version.
 
 **Partout** : une barre fine en haut de l'écran pendant une navigation, les toasts en haut à
-droite (cinq visibles au plus), et les modales de la pile (cartes VIP, historiques, Démineur).
+droite (cinq visibles au plus ; une seule, la plus récente, au téléphone : `AppToaster`), et les modales de la pile (cartes VIP, historiques, Démineur).
 
 **Dans le tableau de bord** : l'en-tête et la barre latérale du tableau de bord remplacent ceux du
 layout racine. En plus, selon le rôle :
@@ -245,9 +245,6 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
   `?tags=`), formulaire `GET`, aucune lecture côté client. Moins de 2 caractères et aucun tag :
   pas de recherche. 50 résultats au plus, 10 tags au plus, 100 caractères au plus. Les liens
   viennent du registre `#lib/resources/index.ts`. Moteur : `searchResources` ([serveur.md](serveur.md)).
-- **`/dashboard/teacher/wheel`** : roue de la fortune plein écran. Classes actives avec leurs
-  élèves (`getTeacherClassesWithStudents`), choix de la classe, gidouilles offertes au gagnant
-  (10 par défaut) par `/api/teacher/rewards/update-student`, puis `refreshAll()`.
 - **`/dashboard/teacher/documents`** : documents du tuteur IA (`DocumentManager`, RAG).
 
 `Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `/dev/roue`. Les
@@ -298,7 +295,7 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 - **L'hydratation des layouts est dans `onMount`** : elle ne se rejoue pas quand les `load`
   repassent (`refreshAll()`). Les données neuves du layout n'atteignent pas le cache.
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
-  `/dashboard/teacher` (`wheel/+page.server.ts:14`, `documents/+page.server.ts:25`) ne rend pas la
+  `/dashboard/teacher` (`documents/+page.server.ts:25`) ne rend pas la
   page accessible à l'admin : le 403 du layout passe avant.
 - **Deux listes de liens publics** : `Header.svelte` (tiroir mobile) et `Sidebar.svelte` (barre)
   ont chacun leur copie. Une entrée ajoutée à l'une manque à l'autre.
@@ -336,11 +333,10 @@ du 2026-11-11 : `reading 'id'` sur `/dev/modeles`, onglet d'avant 0.81.0).
 - **Code sans importeur** : `auth.svelte.ts` (store `auth`),
   `input-capability.svelte.ts`, `LoadingDashboard`, `LoadingTable`, `FontSelector`,
   `modals/ExampleModal`, `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem`.
-- **Pages sans entrée** : aucun lien dans `src/` vers `/dashboard/teacher/wheel` ni
-  `/dashboard/teacher/documents` ; on n'y arrive que par l'adresse.
-- **`teacher/wheel`** : `<select>` natif pour la classe (règle MySelect), sélection propre à la
-  page (pas le store `selectedClass`), et le gain de gidouilles ne touche pas `teacherCache`
-  (récompenses affichées périmées jusqu'à 10 min ailleurs).
+- **Page sans entrée** : aucun lien dans `src/` vers `/dashboard/teacher/documents` ; on n'y
+  arrive que par l'adresse (laissée cachée tant que le tuteur est suspendu, D25). La roue de la
+  fortune du prof s'ouvre par le bouton du tableau de bord (`TeacherDashboard.svelte`) ; son
+  ancienne page `/dashboard/teacher/wheel`, sans lien, est retirée.
 - **`teacher/documents/+page.server.ts`** relit le rôle dans `profiles` au lieu de
   `locals.profile`, déjà garanti par le layout.
 - **`teacher/recherche`** : une recherche par tag seul sans résultat affiche « Aucun résultat pour

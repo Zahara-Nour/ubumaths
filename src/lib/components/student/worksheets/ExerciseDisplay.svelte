@@ -11,6 +11,7 @@
 
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
@@ -55,7 +56,7 @@
 			<!-- Exercise Number and Title -->
 			<Card.Title class="text-lg">
 				{lore.learning.exercise}
-				{index}{#if exercise.title}&nbsp;: {exercise.title}{/if}
+				{index}{#if exercise.title}&nbsp;: <InlineMarkdown content={exercise.title} />{/if}
 			</Card.Title>
 
 			<!-- Points Badge -->

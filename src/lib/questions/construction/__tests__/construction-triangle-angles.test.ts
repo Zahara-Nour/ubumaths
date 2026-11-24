@@ -349,6 +349,40 @@ describe('triangle par un côté et deux angles : verdict', () => {
 		});
 	});
 
+	it('faux : mauvaise graduation en B, côtés arrêtés aux repères sans se rejoindre (écart E50)', () => {
+		// 115° au lieu de 65° : les deux côtés d'angle se croisent hors de la figure ; l'élève
+		// arrête [AC] et [BC] à ses repères. La graduation se lit sur la direction du côté.
+		const markB = repere(B, A, 115, -1);
+		const lineB = droite(B, repereAt(markB));
+		const objects = [
+			MARK_A,
+			LINE_A,
+			markB,
+			lineB,
+			segment(A, repereAt(MARK_A)),
+			segment(B, repereAt(markB))
+		];
+		expect(judge(ANGLES, objects)).toEqual({
+			status: 'incorrect',
+			feedback: wrongScaleAngleFeedback('ABC', 115, 65)
+		});
+	});
+
+	it('faux : bonne graduation, côtés arrêtés aux repères sans se rejoindre : message inchangé', () => {
+		const objects = [
+			MARK_A,
+			LINE_A,
+			MARK_B,
+			LINE_B,
+			segment(A, repereAt(MARK_A)),
+			segment(B, repereAt(MARK_B))
+		];
+		expect(judge(ANGLES, objects)).toEqual({
+			status: 'incorrect',
+			feedback: notJoinedFeedback('A', 'B', 'C')
+		});
+	});
+
 	it('faux : autre mesure en A', () => {
 		expect(judge(ANGLES, built(repere(A, B, 45, 1), MARK_B))).toEqual({
 			status: 'incorrect',

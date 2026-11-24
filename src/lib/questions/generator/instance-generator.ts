@@ -68,6 +68,11 @@ import {
 	parseRobotContent
 } from '#lib/ubumark/parser/robot-parser.ts';
 import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+import { avecGraines, hasLabyrintheAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import {
+	ecrireChemin,
+	readExpectedLabyrintheAnswer
+} from '#lib/ubumark/utils/labyrinthe-answer.ts';
 import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import {
 	readSignTableCases,
@@ -364,6 +369,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'tortue') return 'le programme du bloc tortue (attendu:)';
 	if (kind === 'calcul') return 'le programme du bloc calcul (attendu:)';
 	if (kind === 'robot') return 'le code du robot (calculé d’après la scène)';
+	if (kind === 'labyrinthe') return 'le chemin du labyrinthe (tiré avec la grille)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
 
@@ -821,14 +827,21 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			statementTemplate = templateMarkdown(markedStatement);
 		}
 
-		// 6. Resolve statement markdown (with expression markers if present)
-		const resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
-			statementTemplate,
-			resolvedVariables,
-			random,
-			genericFunctions,
-			cleanCoefficients,
-			capitalPairs
+		// 6. Resolve statement markdown (with expression markers if present). Labyrinthe à
+		// parcourir : sa graine posée dans le bloc, tirée de la source de l'instance (chaque
+		// instance a son labyrinthe ; écran, corrigé et juge lisent le même)
+		const resolvedStatement: ResolvedMarkdown = resolvedMarkdown(
+			avecGraines(
+				resolveMarkdownContent(
+					statementTemplate,
+					resolvedVariables,
+					random,
+					genericFunctions,
+					cleanCoefficients,
+					capitalPairs
+				),
+				random
+			)
 		);
 
 		// 7. Resolve type-specific fields from resolved variation (inferred from structure)
@@ -853,6 +866,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasTortueToProgram(String(resolvedStatement)) ||
 				hasCalculToProgram(String(resolvedStatement)) ||
 				hasRobotToProduce(String(resolvedStatement)) ||
+				hasLabyrintheAParcourir(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasAssocierToPlace(String(resolvedStatement)) ||
 				hasTrousToPlace(String(resolvedStatement)) ||
@@ -1076,7 +1090,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'tortue' || kind === 'calcul' || kind === 'robot' || kind === 'labyrinthe' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
@@ -1191,6 +1205,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						}
 						if (child.type === 'robot') {
 							return child.spec?.produire && child.caseIndex !== undefined ? [child.caseIndex] : [];
+						}
+						if (child.type === 'labyrinthe') {
+							return child.spec?.parcourir && child.caseIndex !== undefined
+								? [child.caseIndex]
+								: [];
 						}
 						if (child.type === 'trig-circle') {
 							const first = child.caseIndex;
@@ -1605,13 +1624,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					// Programme tortue ou de calcul : le corrigé montre le programme, sans la
 					// comparaison ni les essais ; robot : le code, sans la scène
 					resolved.expectedAnswerLatex =
-						buildAnswer.kind === 'tortue'
-							? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
-							: buildAnswer.kind === 'calcul'
-								? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
-								: buildAnswer.kind === 'robot'
-									? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
-									: buildAnswer.answer;
+						buildAnswer.kind === 'labyrinthe'
+							? ecrireChemin(readExpectedLabyrintheAnswer(buildAnswer.answer)?.chemin ?? [])
+							: buildAnswer.kind === 'tortue'
+								? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+								: buildAnswer.kind === 'calcul'
+									? (readExpectedCalculAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
+									: buildAnswer.kind === 'robot'
+										? (readExpectedRobotAnswer(buildAnswer.answer)?.solution ?? buildAnswer.answer)
+										: buildAnswer.answer;
 				}
 				// Erreurs prévues : réponses résolues comme l'attendu ; messages plus bas,
 				// une fois toutes les cases connues (`{{solution}}` permis)

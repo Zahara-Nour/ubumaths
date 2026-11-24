@@ -7,6 +7,7 @@ couvre:
   - 'src/lib/components/rich-text/markdown-{import,export}.ts'
   - src/lib/components/exercises/LaTeXImportDialog.svelte
   - src/lib/utils/markdown-cache.ts
+  - src/lib/utils/latex-break-points.ts
   - scripts/check-ubumark.ts
 ---
 
@@ -15,7 +16,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; bloc trous (texte à trous à étiquettes) le 2026-11-14 ; bloc schema-barres (affichage) le 2026-11-12, colonne étroite le 2026-11-13 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08, triangle rectangle le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26, en fin de page seulement le 2026-11-09 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; courbe de données (`données:`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; droite graduée fermée dans un item de liste et droite PDF réduite à la colonne le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03 ; bloc associer le 2026-11-14, courbe dans un élément (lot 2) le 2026-11-14 ; bloc tortue (écran, PDF) le 2026-11-14, `départ:` le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e, parseur) le 2026-11-16, `départ:` à compléter le 2026-11-17 ; bloc calcul (parseur, PR 5a) le 2026-11-14, écran et PDF (PR 5b) le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16, son écran (blocs du niveau dans la carte) le 2026-11-16 ; bloc robot (parseur, moteur, juge) le 2026-11-15, écran, corrigé et PDF (PR 1b) le 2026-11-15 ; limite cachée d'une ligne `variation:` (parseur, écran, PDF, `withSingleCellShown`) le 2026-11-23.
+> Vérifié contre le code le 2026-10-11 ; bloc trous (texte à trous à étiquettes) le 2026-11-14 ; bloc schema-barres (affichage) le 2026-11-12, colonne étroite le 2026-11-13 ; calcul aligné des blocs `$$` le 2026-11-05, centré (`array{rcl}`) le 2026-11-06 ; durée d'une variable `{{eval}}` le 2026-11-03 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; lecteur des références (`internalLinks`, `internal-link-context.ts`) le 2026-11-06 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25, centaines et milliers le 2026-11-06 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03, triangle par des angles le 2026-11-03, report dans la palette de la droite et du cercle le 2026-11-06, bissectrice le 2026-11-06, cercle de centre donné le 2026-11-08, triangle rectangle le 2026-11-08) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26, en fin de page seulement le 2026-11-09 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28, `signe: aucun` (étapes) le 2026-11-03 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, vecteurs donnés (`vecteurs:`) et somme à tracer (`tracer: vecteur u + v`) le 2026-11-08 ; courbe de données (`données:`) le 2026-11-08 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; segments à crochets et demi-droites (`segments: [2, +inf[`) le 2026-11-03 ; droite à représenter (`representer:`) le 2026-11-03, réponse incomplète = case vide le 2026-11-03 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03 ; cellules cachées à l'écran (`hiddenCells`, `cell`) le 2026-11-03 ; tableau trop large (ombres, téléphone) le 2026-11-04 ; tableau révélé pour le corrigé imprimé (`revealVariationBody`) le 2026-11-03 ; valeur et flèche cachées d'une ligne `variation:` (`variationRowForDisplay`, PDF sans flèche) le 2026-11-08 ; droite graduée fermée dans un item de liste et droite PDF réduite à la colonne le 2026-11-08 ; points déclarés et vecteurs donnés du bloc solide (`points:`, `vecteurs:`) le 2026-11-03, vecteur à tracer (`tracer: vecteur`) le 2026-11-03, fractions et vecteurs nommés dans `tracer:` (D-SV2) le 2026-11-03 ; bloc associer le 2026-11-14, courbe dans un élément (lot 2) le 2026-11-14 ; bloc tortue (écran, PDF) le 2026-11-14, `départ:` le 2026-11-14, `blocs:` le 2026-11-15, `niveau:` (4e / 3e, parseur) le 2026-11-16, `départ:` à compléter le 2026-11-17 ; bloc calcul (parseur, PR 5a) le 2026-11-14, écran et PDF (PR 5b) le 2026-11-14, `niveau:` (4e / 3e) le 2026-11-16, son écran (blocs du niveau dans la carte) le 2026-11-16 ; bloc robot (parseur, moteur, juge) le 2026-11-15, écran, corrigé et PDF (PR 1b) le 2026-11-15 ; limite cachée d'une ligne `variation:` (parseur, écran, PDF, `withSingleCellShown`) le 2026-11-23 ; formule d'une étape à ranger coupée après `=` / `+`, noms des sommets d'un solide hors des traits, teintes de la petite aiguille et du trait actif de la boîte le 2026-11-24 ; labyrinthe (`labyrinthe) le 2026-11-24 ; droite graduée dessinée à l'écran dans un item de liste (`ListNode`, écart E56) le 2026-11-24.
 
 ## À quoi ça sert
 
@@ -60,7 +61,7 @@ Le type `multiple_choice` (choix hors de l'énoncé) n'existe plus ([ADR 0033](.
 | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MarkdownRenderer.svelte`                               | Orchestrateur : cache d'AST (`src/lib/utils/markdown-cache.ts`), mode restreint, mots cliquables, aiguillage par type.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `nodes/*.svelte`                                        | Un composant par nœud : `VariationTable`, `ProbabilityTree`, `TrigCircle`, `NumberLine`, `Courbe`, `FigureBlock`, `StatChart`, `QrBlock`, `MathInline`, `MathPrompt`, `BlankInput`…                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** (vidéo comprise, 2026-11-09) : chaque nouveau bloc doit y être aussi.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** (vidéo comprise, 2026-11-09) : chaque nouveau bloc doit y être aussi. `ListNode` ne rend ni citation ni bloc à geste (`associer`, `trous`, `tortue`, `calcul`, `robot`, `labyrinthe`) : dans un item, ils ne sont pas affichés.                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `nodes/Blockquote.svelte`                               | Contenu d'une citation ou d'un encadré : blocs de base seulement (paragraphe, titre, formule, liste, tableau, image, vidéo, code, trait), aucun bloc spécial.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `nodes/TrigCircle.svelte`                               | Cercle trigonométrique. En mode `interactive`, la souris est lue en unités du dessin (viewBox 320 × 320, `svgPoint`) : le point saisi reste juste quand le cercle est affiché réduit ou agrandi (diapositive réduite, deck mis à l'échelle ; testé par `TrigCircle-echelle.svelte.test.ts`).                                                                                                                                                                                                                                                                                                                                                                                       |
 | `nodes/CodeBlock.svelte`, `utils/code-highlight.ts`     | Bloc de code ordinaire. Coloré par `highlight.js` chargé à la demande (cœur + un morceau par langage) **après** le montage (le rendu serveur reste en texte brut) : python (`py`), javascript (`js`), typescript (`ts`), bash (`sh`, `shell`), json, xml (`html`, `svg`), css, sql, latex (`tex`). Langage absent ou autre : texte brut, sans détection automatique. Chat élève : langages retirés (`stripFenceLanguages`), donc jamais coloré.                                                                                                                                                                                                                                    |
@@ -305,6 +306,7 @@ une droite illisible y garde sa source en bloc de code, Q64).
 | `tortue`                                                                                                                                        | `tortue`                    | `tortue-parser.ts`                                            | `TortueProgramme.svelte` (éditeur `blockly/TortueEditeur.svelte`, chargé à la demande ; corrigé `TortueCorrige.svelte`)                  | `tortue-typst.ts`                              |
 | `calcul`                                                                                                                                        | `calcul`                    | `calcul-parser.ts`                                            | `CalculProgramme.svelte` (éditeur `blockly/CalculEditeur.svelte`, chargé à la demande ; corrigé `CalculCorrige.svelte`)                  | `calcul-typst.ts`                              |
 | `robot`                                                                                                                                         | `robot`                     | `robot-parser.ts`                                             | `RobotCode.svelte` (dessin `RobotQuadrillage.svelte` ; corrigé `RobotCorrige.svelte`)                                                    | `robot-typst.ts`                               |
+| `labyrinthe`                                                                                                                                    | `labyrinthe`                | `labyrinthe-parser.ts`                                        | `Labyrinthe.svelte` (grille `LabyrintheGrille.svelte` ; corrigé `LabyrintheCorrige.svelte`)                                              | `labyrinthe-typst.ts`                          |
 | `operation`                                                                                                                                     | `operation`                 | `operation-parser.ts`                                         | `Operation.svelte`                                                                                                                       | `operation-typst.ts`                           |
 | `collection`                                                                                                                                    | `collection`                | `collection-parser.ts`                                        | `Collection.svelte`                                                                                                                      | `collection-typst.ts`                          |
 | `monnaie`                                                                                                                                       | `monnaie`                   | `monnaie-parser.ts`                                           | `Monnaie.svelte`                                                                                                                         | `monnaie-typst.ts`                             |
@@ -339,7 +341,14 @@ Tab, Entrée, flèches, Échap ; noms « Étiquette 2 sur 3 », « Place 1 sur 3
 juste. Corrigé : places fausses marquées, rangement juste dessous (`expected`). PDF : étiquettes
 encadrées puis places en pointillés (grilles centrées en hauteur, signe en mode math). Éditeur riche :
 bloc de code `ranger`. **`signe: aucun`** : étiquettes et places en colonne sur toute la largeur,
-places numérotées « 1. », « 2. »…, aucun signe (une étape longue passe à la ligne) ; flèches ↑ ↓ dans
+places numérotées « 1. », « 2. »…, aucun signe (une étape longue passe à la ligne ; une formule
+aussi, après un `=` ou un `+` de premier niveau : `RangerPlacer` pose `provideBreakableMath`
+(`content-breakable-math.ts`), `MathInline` y pose la formule en morceaux (`splitLatexAtBreaks`,
+`utils/latex-break-points.ts`), jamais dans une accolade, un `\left … \right`, un environnement,
+`\{ … \}` ni l'argument optionnel d'une commande, ni après un signe ; l'opérateur finit le morceau,
+suivi de `\;` / `\:`, l'espace que MathLive retire en fin de morceau ; le conteneur porte la lecture
+de la formule entière (calculée après le montage, MathLive ne sait pas la lire au rendu serveur :
+`math-inline-serveur.test.ts`), les morceaux sont `aria-hidden` — E52) ; flèches ↑ ↓ dans
 la colonne, ← → d'une colonne à l'autre ; consigne lue « Étapes à remettre dans l'ordre » ; PDF :
 étiquettes l'une sous l'autre, puis places numérotées pleine largeur. Juge inchangé (l'étiquette posée,
 place par place) : n'écrire que des étapes qui ne peuvent pas permuter.
@@ -606,6 +615,25 @@ Droite à placer : le prof (aperçu, éditeur) est averti quand, sur un téléph
 (`phoneGapWarning`, plus petit écart, échelle log comprise) : une droite de 0 à 20 au pas de 1 en
 donne 12. Une droite d'affichage (sans `placer:`) n'est pas avertie : ses graduations fines se
 lisent, on ne les vise pas. L'élève ne voit jamais l'avertissement ; la correction ne le répète pas.
+
+**Zooms** (outil n° 54, chantier [droite-zoom](../wip/droite-zoom-progress.md), 6N1H-3, 6N1H-4) —
+`src/lib/ubumark/__tests__/number-line/number-line-zoom.test.ts`, `NumberLine-zoom.svelte.test.ts` :
+`zoom: 12.4 ; 12.5 ; step 0.01` (puis `major 10`, `labels 12.4, 12.5` au besoin), une ligne par zoom,
+**4 au plus** (`MAX_ZOOMS`). Nœud : `zooms`, liste de `NumberLineConfig` (`arrows: false`, `scale: linear`,
+`autoLabels: false` : **aucune étiquette** sans `labels`, l'élève retrouve les valeurs ; la droite
+principale garde ses étiquettes aux grandes graduations). Chaque zoom est vérifié contre la droite
+**du dessus** (la principale ou le zoom précédent) : bouts sur ses graduations (« n'est pas sur une
+graduation de la droite du dessus », « hors de la droite du dessus »), début < fin, pas positif et
+pas plus grand que le zoom (tolérance d'arrondi) et qui tombe juste sur la fin, `labels` dans le zoom,
+500 graduations au plus, morceau inconnu refusé. Refusé avec un zoom :
+`placer:`, `representer:`, `segments:`, `scale: log` (« pas encore possible avec … »). Dessin, écran et
+PDF : chaque zoom sous le précédent (`ZOOM_ROW_GAP` = 110 px, `ZOOM_GAP` = 2 cm), même largeur, relié
+par deux pointillés (`nl-zoom-link`) des bouts agrandis sur la droite du dessus aux bouts du zoom ; un
+pointillé part sous le nombre écrit de sa graduation s'il y en a un (`isLabeledAt`) ; un
+point se dessine sur **toutes** les droites où il tombe (`pointsInside`, bouts compris), même couleur.
+Écran : `aria-label` « Droite graduée, avec N zooms ». Vérifié au rendu : page
+`/aide-ecriture/blocs/droite-graduee` (exemple « Lire au millième par zooms successifs ») et PDF compilé
+par typst.ts 0.6.1-rc5.
 
 **Graduations décimales** (`NumberLine-etiquettes-decimales.svelte.test.ts`, `number-line-typst.test.ts`)
 — une graduation écrite (`labels: 1.4, 1.5`) passe par `toLocaleDecimal` : `1{,}4` à l'écran (langue
@@ -970,7 +998,8 @@ en 5` (départ quelconque, décimaux permis ; sans `de p en p` : de 1 en 1 ; sin
   à construire marquée `toPlace`, description « Boîte Notes : à construire. ». Écran
   `BoxPlotPlacer.svelte` (`StatChart` le prend quand `spec.boxPlot.toPlace`) : nom et ligne en
   pointillés à la hauteur de la boîte ; boutons Min, Q1, Médiane, Q3, Max ; toucher la bande d'une
-  boîte à construire (toute la hauteur s'il n'y en a qu'une) pose le trait choisi, glisser l'ajuste,
+  boîte à construire (toute la hauteur s'il n'y en a qu'une) pose le trait choisi (lui et son nom en
+  `light-dark(var(--color-fig-orange), var(--color-primary))`, lisibles sur le fond clair, E45), glisser l'ajuste,
   aimant à la graduation (`boxValueAt`) ; un trait posé pour la première fois passe au suivant pas
   posé ; flèches (une graduation), Début, Fin ; `role="slider"`, nom accessible sans l'attendu. La
   boîte se dessine dès Q1 et Q3 posés, chaque moustache dès ses deux bouts ; ordre libre, des traits
@@ -1044,7 +1073,9 @@ Des secondes avec `minutes: cachées` : refus. Facultatives : `légendes:` (une 
 `chiffres: tous | quarts | aucun`, `graduations: minutes | heures | aucune`,
 `minutes: visibles | cachées` (cachées : heure entière exigée), `cadran: 12 | 24` (couronne
 intérieure 13 à 24), `taille:` (2 à 8 cm ; 4 cm par défaut). La petite aiguille avance avec les
-minutes ; 13 h se dessine comme 1 h. Scène partagée `utils/horloge-scene.ts` ; au PDF, Typst
+minutes ; 13 h se dessine comme 1 h. Petite aiguille (lire et placer) : seule couleur d'accent,
+`light-dark(var(--color-fig-orange), var(--color-primary))` (l'accent seul n'avait que 2,2 de
+contraste sur le cadran clair, E44). Scène partagée `utils/horloge-scene.ts` ; au PDF, Typst
 natif (ni paquet ni image). Nom accessible « Horloge à aiguilles », **jamais l'heure** (la réponse).
 Dans un choix d'une case choix : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et `ChoiceList` ;
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
@@ -1214,6 +1245,73 @@ en noir et blanc ; réduit pour tenir dans 8 × 7 cm) ; à produire, « Écris l
 vides en pointillés (8 par rangée en flèches, 3 cases larges en avance-pivote) ; jamais le code
 juste. Bloc en erreur : cadre « Robot indisponible ». Fiche du catalogue : `block-catalog/robot.ts`.
 
+**Labyrinthe de nombres** (outil n° 53, chantier [labyrinthe](../wip/labyrinthe-progress.md), PR 1 :
+bloc, juge, écran, PDF) — `src/lib/ubumark/__tests__/labyrinthe/` (`labyrinthe-moteur`,
+`labyrinthe-parser`, `labyrinthe-typst`), `questions/generator/__tests__/generation-labyrinthe.test.ts`,
+`components/markdown/nodes/__tests__/Labyrinthe.svelte.test.ts` :
+
+````text
+```labyrinthe
+grille: 6 x 4
+règle: premier
+parcourir: oui
+```
+````
+
+Une grille de nombres, une entrée sur le bord gauche, des sorties numérotées de 1 à L de haut en bas
+sur le bord droit ; case = (ligne, colonne), (1, 1) en haut à gauche. `grille:` (obligatoire, 3 à 7
+colonnes, 2 à 7 lignes), `règle:` (obligatoire, `lireRegle`, accents et pluriels tolérés) :
+`premier`, `multiple de n` (2 à 99), `chiffre des <rang> = c` (dix-millièmes à dizaines de mille,
+c de 0 à 9). `parcourir: oui` : une question (`findLabyrinthesAParcourir`, `caseIndex` posé par le
+générateur). `solution: oui` : le bon chemin teinté, sans question (refusé avec `parcourir: oui`).
+`graine: N` : posée par le générateur dans chaque bloc à parcourir qui n'en a pas (`avecGraines`,
+juste après la résolution de l'énoncé, tirée de la source de l'instance) : chaque instance a son
+labyrinthe, et l'écran, le corrigé et le juge relisent le même. Sans `graine:`, elle est tirée du
+texte du bloc (hors `case:`) : même texte, même labyrinthe. Refus : clé inconnue ou en double, `case:`
+sans `parcourir: oui`, graine non entière, bloc non fermé.
+
+Moteur (`utils/labyrinthe-moteur.ts`, sans dépendance à l'écran) : `tirerLabyrinthe(colonnes, lignes,
+règle, graine)` tire la ligne d'entrée, puis un chemin de l'entrée à la dernière colonne (parcours au
+hasard, borné, qui vise `colonnes + lignes − 1 + colonnes/2` cases puis plus court ; à défaut, tout
+droit). Le chemin ne touche la dernière colonne qu'à sa fin et ne se touche jamais lui-même (deux
+cases non consécutives ne sont pas voisines) : ses cases sont les seules qui suivent la règle, il est
+le seul chemin juste. Nombres (sans répétition tant que la réserve suffit) : premier — les premiers,
+et des intrus impairs qui ne finissent pas par 5, jusqu'à 100 (200 si la réserve manque) ; multiple de
+d — des multiples, et des intrus à 1 ou 2 d'un multiple, jusqu'à max(100, 20 d) ; chiffre d'un rang —
+des entiers d'au moins 3 chiffres (rang + 2) pour un rang de la partie entière, des décimaux à 2
+chiffres entiers et au moins 3 décimales pour un rang après la virgule (une de plus si c = 0 tombe à
+la dernière), premier chiffre et dernière décimale jamais nuls ; les intrus ont un autre chiffre au
+rang et le chiffre cherché à un autre rang. Écriture : virgule, espaces fines dès 5 chiffres entiers
+(`ecrireNombre`) ; `suitLaRegle` relit le nombre écrit.
+
+Réponse (`utils/labyrinthe-answer.ts`) : le chemin de l'élève en texte, `ligne,colonne` séparées
+d'une espace (`2,1 2,2 3,2`) ; attendu = `<C>x<L> <entrée> | <bon chemin>` ; juge
+(`labyrintheAnswerVerdict`) : juste si le chemin part de l'entrée, va de case voisine en case voisine,
+ne passe que par des cases du bon chemin (les seules qui suivent la règle) et finit sur la dernière
+colonne ; faux, il dit pourquoi (entrée, case sautée, intrus, sortie manquée). Corrigé dit :
+`cheminDit` → « Sortie 3 : 73 → 89 → 97 ». Évaluation notée : l'énoncé envoyé garde la grille et sa
+graine (la solution se lit déjà dans les nombres : c'est l'exercice). Dans un item de liste ou un
+choix : nœud lu, sans case, signalé. Éditeur riche : bloc de code `labyrinthe`, texte gardé.
+
+Écran (`Labyrinthe.svelte`, dessin `LabyrintheGrille.svelte`, grille HTML) : sans `parcourir:`, la
+grille seule (`solution: oui` : le chemin teinté en vert). À parcourir : l'élève touche l'entrée, puis
+une case voisine de la dernière, jamais une case déjà prise ; les cases qu'il peut toucher sont
+cerclées, les autres `aria-disabled` ; toucher la dernière l'efface ; arrivé sur la dernière colonne,
+il ne peut plus qu'effacer ; « Tout effacer » ; état lu (`aria-live`) : « Touche l'entrée pour
+commencer. », « N cases dans ton chemin. », « Sortie N atteinte. ». Le chemin est lu de la valeur de
+la case (`lireChemin`), sans état propre. Clavier : un seul arrêt de tabulation, flèches d'une case à
+l'autre, Entrée ou Espace pour toucher. Colonnes à la largeur des nombres (2,5 rem au moins, police
+réduite dès 4 caractères, puis dès 6) ; au-delà de l'écran, la grille défile de côté. Après la
+validation : verrouillé, le chemin vert ou rouge, la case fautive (`premiereFaute`) en rouge vif, le
+bon chemin cerclé en pointillés. Corrigé (`LabyrintheCorrige.svelte`, par `BuildAnswer` kind
+`labyrinthe`) : le chemin de l'élève et pourquoi c'est faux, ou le bon chemin teinté ; dessous
+« Le bon chemin : Sortie N : … ».
+
+PDF (`labyrinthe-typst.ts`) : la grille (`#grid` de `box`), « → » devant l'entrée, les numéros des
+sorties ; cases à la largeur du plus long nombre, réduites (texte compris) pour tenir dans 8,5 cm ;
+`solution: oui` : les cases du chemin teintées, leurs nombres en gras. Bloc en erreur : cadre
+« Labyrinthe indisponible ». Fiche du catalogue : `block-catalog/labyrinthe.ts`.
+
 **Figure partagée en parts égales** (chantier [fractions-a-colorier](../archive/wip/fractions-a-colorier-progress.md),
 PR 1 : affichage ; PR 2 : `colorier:` ; PR 3 : `unites:`) — `src/lib/ubumark/__tests__/partage/` :
 
@@ -1381,7 +1479,9 @@ non` ; `cachees: non` → tout en plein. Scène `utils/espace-solides.ts` (calcu
 arête cachée (tirets) quand toutes ses faces tournent le dos à l'œil (`TOWARD_EYE`, normales sortantes) ;
 cylindre / cône / boule → ellipses **à plat** (`ELLIPSE_RATIO` 0,3, comme le CP), moitié arrière en tirets,
 génératrices du cône **tangentes** (`asin(ry / h)`) ; nom d'un sommet posé dans le plus grand angle libre
-entre ses arêtes (`freeDirection`), un centre à gauche ; cotes à la française, hauteurs (pyramide, cône,
+entre ses arêtes (`freeDirection`), un centre à gauche, à la première place de `NAME_PLACES`
+(plus loin, puis en tournant autour du sommet) qui ne touche ni une arête ni le contour d'une
+section (`firstFree`, E48 / E49 ; les noms des points d'une section restent contre leur arête) ; cotes à la française, hauteurs (pyramide, cône,
 prisme isocèle) et rayons intérieurs en tirets ; cote de la hauteur d'une **pyramide** renvoyée hors du
 solide (`side: 'renvoi'`, `leaderCote`) : trait fin (`thin`, `SOLIDE_LEADER_STROKE`, épaisseur commune
 `solideLineStroke`) du milieu de la hauteur vers la droite, texte au bout, première hauteur libre de
@@ -1782,7 +1882,9 @@ Une **grandeur** s'écrit dans une unité tapée, et une durée tapée en h et m
 Un entier EXACT (calculé en rationnels : `10^22`, `2^80`, `factorial(18)` → `6402373705728000`)
 s'écrit toujours en entier, quelle que soit sa taille, avec ou sans `;d`. Un résultat approché
 ≥ 10¹⁵ passe en notation scientifique (mantisse à 15 chiffres significatifs) : au-delà, les
-chiffres d'un flottant seraient inventés. Un petit nombre est toujours développé (`0.0000003`).
+chiffres d'un flottant seraient inventés. **Limite connue** : un résultat approché garde
+15 chiffres significatifs, donc un décimal à 16 chiffres juste sous 10¹⁵ perd sa fin
+(`{{eval:100000000000000.5}}` rend `100000000000001`). Un petit nombre est toujours développé (`0.0000003`).
 Une fraction exacte reste une fraction ; `1 000 000` reste `1000000` (pas de détection de
 puissance simple) ; mantisse 1 : `10^{-7}`. Aucune dépendance au niveau du modèle. `;sci` sur une grandeur écrit le nombre en syntaxe
 maison (`0.0000003[m];sci` → `3*10^{-7}[m]`, `10^{-7}[m]`) ; avec `;hms` ou un calcul littéral,

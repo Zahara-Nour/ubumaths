@@ -70,9 +70,20 @@ export async function calc(page: Page, input: string): Promise<Answer> {
  * interruption-là seulement est attendue ; l'arrivée se vérifie ensuite.
  */
 export async function gotoRedirected(page: Page, address: string): Promise<void> {
+	// L'arrivée : le `load` du document où mène la redirection, puis le réseau
+	// calme (au démarrage, SvelteKit relit les données de la page :
+	// `__data.json?…&x-sveltekit-invalidated=…`). Sans elle, la page suivante
+	// partait pendant que la redirection était encore en vol (WebKit : «
+	// interrupted by another navigation »), l'adresse d'avant (déjà `/atelier`)
+	// passant pour l'arrivée
+	const arrived = page.waitForEvent('load');
 	await page.goto(address).catch((error: unknown) => {
-		if (!String(error).includes('is interrupted by another navigation')) throw error;
+		if (String(error).includes('is interrupted by another navigation')) return;
+		arrived.catch(() => undefined);
+		throw error;
 	});
+	await arrived;
+	await page.waitForLoadState('networkidle');
 }
 
 /**
@@ -242,6 +253,29 @@ export async function cardAction(page: Page, name: string, action: string): Prom
 	await page.getByRole('menuitem', { name: action, exact: true }).click();
 }
 
+/**
+ * Écran tactile : MathLive ouvre son clavier au focus d'un champ, et le champ
+ * perd puis reprend le focus à cet instant (mesuré sous WebKit iPhone). Une
+ * frappe à ce moment-là se perd (« résoudre » devenait « dre »), et la sortie
+ * du champ range une carte (lot 3 : un champ déjà vidé était rangé vide, la
+ * courbe disparaissait). L'élève voit le clavier s'ouvrir avant de taper : on
+ * l'attend aussi. Sans écran tactile, rien à attendre.
+ */
+export async function waitVirtualKeyboard(page: Page, field: Locator): Promise<void> {
+	const touch = await page.evaluate(() => matchMedia('(pointer: coarse)').matches);
+	if (!touch) return;
+	await expect
+		.poll(() =>
+			page.evaluate(
+				() =>
+					(window as unknown as { mathVirtualKeyboard?: { visible: boolean } }).mathVirtualKeyboard
+						?.visible === true
+			)
+		)
+		.toBe(true);
+	await expect(field).toBeFocused();
+}
+
 /** Met le focus dans le champ d'une carte (MathLive) */
 export async function focusCardField(page: Page, name: string): Promise<void> {
 	await showCards(page);
@@ -251,6 +285,7 @@ export async function focusCardField(page: Page, name: string): Promise<void> {
 		await field.click();
 		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
 	}).toPass();
+	await waitVirtualKeyboard(page, field);
 }
 
 /**

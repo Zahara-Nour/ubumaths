@@ -16,7 +16,9 @@
  * - disque sous SEUIL_DISQUE_GO Go libres → signalé ;
  * - worktrees au travail jamais commité ou non poussé, intouchés depuis
  *   SEUIL_WORKTREE_JOURS jours → comptés dans le « RAS » (noms : --worktrees) ;
- * - redémarrage du Mac (et plantage du système) → signalé.
+ * - redémarrage du Mac (et plantage du système) → signalé ;
+ * - processus emballé quel qu'il soit, programme qui ne ramasse plus ses processus
+ *   morts, trop de vieilles sessions Claude, disque qui fond en 24 h → signalés.
  *
  * `ps`, `lsof`, `sysctl`, `df`, `curl` sont des faux posés en tête du PATH ; l'arrêt
  * passe par SURVEILLANCE_TUER, qui note le pid au lieu de tuer.
@@ -55,8 +57,12 @@ type Machine = {
 	swap: string;
 	/** lignes « pcpu commande » */
 	chrome: string[];
-	/** lignes « pid pcpu time commande » (processus d'extension) */
+	/** lignes « pid pcpu time etime commande » (tous les processus, pour les emballés) */
 	extensions?: string[];
+	/** lignes « pid ppid stat etime commande » (processus morts et leurs parents) */
+	zombies?: string[];
+	/** lignes « pid etime rss commande » (sessions Claude) */
+	sessions?: string[];
 	/** lignes « pcpu rss(Ko) exécutable » (tous les programmes) */
 	programmes?: string[];
 	/** sortie de `sysctl -n vm.loadavg` */
@@ -117,6 +123,8 @@ function machine(m: Machine): void {
 		m.chrome.map((l, i) => `${1000 + i} ${l}`).join('\n') + '\n'
 	);
 	writeFileSync(join(racine, 'ps-extensions.txt'), (m.extensions ?? []).join('\n') + '\n');
+	writeFileSync(join(racine, 'ps-zombies.txt'), (m.zombies ?? []).join('\n') + '\n');
+	writeFileSync(join(racine, 'ps-sessions.txt'), (m.sessions ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'swap.txt'), m.swap + '\n');
 	writeFileSync(join(racine, 'ps-programmes.txt'), (m.programmes ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'charge.txt'), (m.charge ?? '{ 2.00 2.00 2.00 }') + '\n');
@@ -140,7 +148,7 @@ function machine(m: Machine): void {
 	// ps -Ao pid=,pcpu=,time=,command= → extensions ; ps -Ao pid=,ppid=,… → orphelins
 	ecrireFaux(
 		'ps',
-		`case "$*" in *ppid=*) cat "${racine}/ps-orphelins.txt" ;; *pid=,pcpu=,time=*) cat "${racine}/ps-extensions.txt" ;; *pid=,pcpu=*) cat "${racine}/ps-chrome-pid.txt" ;; *pcpu=,rss=*) cat "${racine}/ps-programmes.txt" ;; *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
+		`case "$*" in *stat=*) cat "${racine}/ps-zombies.txt" ;; *"-Ao pid=,etime=,rss="*) cat "${racine}/ps-sessions.txt" ;; *ppid=*) cat "${racine}/ps-orphelins.txt" ;; *pid=,pcpu=,time=*) cat "${racine}/ps-extensions.txt" ;; *pid=,pcpu=*) cat "${racine}/ps-chrome-pid.txt" ;; *pcpu=,rss=*) cat "${racine}/ps-programmes.txt" ;; *pcpu*) cat "${racine}/ps-chrome.txt" ;; *) cat "${racine}/ps-vite.txt" ;; esac`
 	);
 	ecrireFaux(
 		'lsof',
@@ -213,6 +221,7 @@ const ONGLET = '/Applications/Google Chrome.app/Helper (Renderer) --type=rendere
 const EXTENSION = `${ONGLET} --extension-process`;
 const ONGLET_BRAVE = '/Applications/Brave Browser.app/Helper (Renderer) --type=renderer';
 const EXTENSION_BRAVE = `${ONGLET_BRAVE} --extension-process`;
+const GPU_CHROME = '/Applications/Google Chrome.app/Helper (GPU) --type=gpu-process';
 const ONGLET_PLAYWRIGHT =
 	'/Users/x/Library/Caches/ms-playwright/chromium-1254/chrome-mac-arm64/Google Chrome for Testing.app/Helper (Renderer) --type=renderer';
 
@@ -339,24 +348,87 @@ describe('surveillance-machine', () => {
 		expect(envois()).toBe('');
 	});
 
-	it('extension bloquée (Chrome ou Brave) : signalée, jamais arrêtée', () => {
+	it('processus emballé, quel qu’il soit : signalé, jamais arrêté', () => {
 		machine({
 			processus: [],
 			dossiers: {},
 			swap: SWAP_CALME,
 			chrome: [],
 			extensions: [
-				`958 100.0 14402:13.45 ${EXTENSION}`, // 240 h de CPU → signalée
-				`821 99.0 125:00.00 ${EXTENSION_BRAVE}`, // 2 h de CPU → signalée
-				`960 100.0 2:34.88 ${EXTENSION}`, // pic bref → rien
-				`961 0.5 600:00.00 ${EXTENSION}` // calme aujourd'hui → rien
+				`958 100.0 14402:13.45 10-00:00:00 ${EXTENSION}`, // 240 h de CPU → signalée
+				`821 99.0 125:00.00 3-00:00:00 ${EXTENSION_BRAVE}`, // 2 h de CPU → signalée
+				`883 99.3 4268:55.71 12-00:00:00 ${GPU_CHROME}`, // processus graphique → signalé
+				`700 95.0 300:00.00 1-00:00:00 /Users/x/MonProjet/target/debug/monprojet --serve`, // nom tu
+				`960 100.0 2:34.88 00:05:00 ${EXTENSION}`, // pic bref → rien
+				`961 0.5 600:00.00 10-00:00:00 ${EXTENSION}` // calme aujourd'hui → rien
 			]
 		});
 		lancer();
-		expect(envois()).toContain('Extension Chrome bloquée : 100 % CPU, 240 h de CPU cumulées.');
-		expect(envois()).toContain('Extension Brave bloquée : 99 % CPU, 2 h de CPU cumulées.');
-		expect(envois().match(/Extension/g)).toHaveLength(2);
+		expect(envois()).toBe(''); // vu une fois : peut-être un pic
+		lancer();
+		expect(envois()).toContain('Chrome (extension) emballé : 100 % CPU, 240 h de CPU cumulées.');
+		expect(envois()).toContain('Brave (extension) emballé : 99 % CPU, 2 h de CPU cumulées.');
+		expect(envois()).toContain(
+			'Chrome (processus graphique) emballé : 99 % CPU, 71 h de CPU cumulées.'
+		);
+		expect(envois()).toContain('un processus emballé : 95 % CPU, 5 h de CPU cumulées.');
+		expect(envois()).not.toMatch(/monprojet|MonProjet/);
+		expect(envois().match(/emballé/g)).toHaveLength(4);
 		expect(tues()).toBe('');
+	});
+
+	it('programme qui ne ramasse plus ses processus morts : signalé à partir de 3 morts anciens', () => {
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			zombies: [
+				`671 1 S 14-00:00:00 /Applications/Brave Browser.app/Contents/MacOS/Brave Browser`,
+				'801 671 Z 14-00:00:00 (Brave Browser He)',
+				'802 671 Z 5-00:00:00 (Brave Browser He)',
+				'803 671 Z 00:20:00 (Brave Browser He)',
+				// Chrome : 3 morts, dont un tout récent (ramassé dans la seconde) → rien
+				`677 1 S 2-00:00:00 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome`,
+				'901 677 Z 01:00:00 (Google Chrome He)',
+				'902 677 Z 01:00:00 (Google Chrome He)',
+				'903 677 Z 00:02 (Google Chrome He)'
+			]
+		});
+		lancer();
+		expect(envois()).toBe(''); // vu une fois : peut-être ramassé dans la seconde
+		lancer();
+		expect(envois()).toContain(
+			'Brave ne répond plus (3 processus morts non ramassés) : le relancer.'
+		);
+		expect(envois()).not.toContain('Chrome');
+		expect(tues()).toBe('');
+	});
+
+	it('vieilles sessions Claude : signalées à partir du seuil, une fois par jour', () => {
+		const session = (pid: number, etime: string) => `${pid} ${etime} 524288 claude`;
+		machine({
+			processus: [],
+			dossiers: {},
+			swap: SWAP_CALME,
+			chrome: [],
+			sessions: [
+				session(1, '8-00:00:00'),
+				session(2, '12-00:00:00'),
+				session(3, '2-00:00:00'),
+				`4 9-00:00:00 524288 /Users/x/.local/share/claude/versions/2.1.330`,
+				'5 30-00:00:00 524288 /usr/bin/claudette' // pas une session
+			]
+		});
+		lancer({ SEUIL_SESSIONS_VIEILLES: '4' });
+		expect(envois()).toBe('');
+		lancer({ SEUIL_SESSIONS_VIEILLES: '3' });
+		expect(envois()).toContain(
+			'Sessions Claude : 3 ouvertes depuis plus de 7 jours (4 en tout, 2 Go). Fermer celles des chantiers finis.'
+		);
+		// Rappel d'une heure dépassé mais pas d'un jour : rien de plus.
+		lancer({ SEUIL_SESSIONS_VIEILLES: '3', SURVEILLANCE_RAPPEL_MIN: '0' });
+		expect(envois().match(/Sessions Claude/g)).toHaveLength(1);
 	});
 
 	it('ne renvoie pas la même alerte avant le délai de rappel', () => {
@@ -855,7 +927,9 @@ describe('surveillance-machine : disque', () => {
 	it('sous 15 Go libres : signalé', () => {
 		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], disqueLibreGo: 12 });
 		lancer();
-		expect(envois()).toContain('Disque : 12 Go libres sur 228 Go.');
+		expect(envois()).toContain(
+			'Disque : 12 Go libres sur 228 Go. Pour en libérer : pnpm disque:liberer --essai'
+		);
 		expect(historique()[1]).toMatch(/;12$/);
 	});
 
@@ -878,6 +952,46 @@ describe('surveillance-machine : disque', () => {
 		expect(envois()).toContain('Mémoire critique');
 		expect(envois()).not.toContain('Disque');
 		expect(historique()[1]).toMatch(/;\?$/);
+	});
+
+	it('disque qui fond : plus de 5 Go perdus en 24 h → signalé, une fois par jour', () => {
+		const p = (n: number) => String(n).padStart(2, '0');
+		const ilYa = (h: number) => {
+			const d = new Date(Date.now() - h * 3600_000);
+			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+		};
+		mkdirSync(join(racine, 'etat'), { recursive: true });
+		writeFileSync(
+			join(racine, 'etat', 'historique.csv'),
+			'date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude;disque_libre_go\n' +
+				`${ilYa(30)};1;1;1;0;0;0;1;80\n` + // plus de 24 h : ignorée
+				`${ilYa(23)};1;1;1;0;0;0;1;27\n` +
+				`${ilYa(2)};1;1;1;0;0;0;1;22\n`
+		);
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], disqueLibreGo: 21 });
+		lancer({ SEUIL_DISQUE_BAISSE_GO: '6' }); // 6 Go perdus : pas « plus de 6 »
+		expect(envois()).toBe('');
+		lancer();
+		expect(envois()).toContain('Disque : 6 Go perdus en 24 h (27 → 21 Go libres).');
+		lancer({ SURVEILLANCE_RAPPEL_MIN: '0' });
+		expect(envois().match(/Go perdus/g)).toHaveLength(1);
+	});
+
+	it('disque stable ou historique trop court : rien', () => {
+		const p = (n: number) => String(n).padStart(2, '0');
+		const ilYa = (h: number) => {
+			const d = new Date(Date.now() - h * 3600_000);
+			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+		};
+		mkdirSync(join(racine, 'etat'), { recursive: true });
+		writeFileSync(
+			join(racine, 'etat', 'historique.csv'),
+			'date;charge;pression;swap_pct;chrome_cpu;brave_cpu;serveurs_dev;processus_claude;disque_libre_go\n' +
+				`${ilYa(3)};1;1;1;0;0;0;1;90\n` // 3 h seulement : pas une journée
+		);
+		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], disqueLibreGo: 21 });
+		lancer();
+		expect(envois()).toBe('');
 	});
 
 	it('ancien historique sans la colonne disque : mis de côté, nouvel en-tête', () => {

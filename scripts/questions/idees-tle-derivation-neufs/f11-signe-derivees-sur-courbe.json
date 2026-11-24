@@ -1,0 +1,228 @@
+{
+	"id": "91841156-6c8a-47db-9bd1-d0d317f3a5fd",
+	"rangement": {
+		"noeud": "Fonctions > Convexité > caractérisations",
+		"point": "TSPE-419"
+	},
+	"title": "Signe de f′(a) ou de f″(a) lu sur la courbe de f",
+	"description": "Lire sur la courbe de f et sa tangente le signe de f′(b) (pente de la tangente) ou de f″(c) (courbe au-dessus ou en dessous de la tangente, ou la traversant) (pièges : sommet, point d'inflexion, signe de f′ confondu avec celui de f″)",
+	"grades": ["T_SPE"],
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$, et sa tangente au point $A$ d'abscisse $b={{eval:h+t}}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\npoints: A({{eval:h+t}} ; f({{eval:h+t}}))\ntangente: f ; {{eval:h+t}}\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux, et sa tangente au point A.\n```\n\nQuel est le signe de $f'(b)$ ?\n\n```choix\n- strictement positif\n- strictement négatif\n- nul\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "-1..1"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				},
+				{
+					"name": "t",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t*t==1|2|{{if:s*(t*t-1)>0|0|1}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(b)$ est le coefficient directeur de la tangente en $A$.",
+					"{{if:t*t==1|La tangente en $A$ est horizontale ($A$ est un sommet de la courbe) : $f'(b)$ est $\\textcolor{{{color:primary.0}}}{\\text{nul}}$.|La tangente en $A$ {{if:s*(t*t-1)>0|monte|descend}} (la courbe {{if:s*(t*t-1)>0|monte|descend}} autour de $A$) : $f'(b)$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:s*(t*t-1)>0|positif|négatif}} }}$.}}"
+				]
+			},
+			"hint": "Que représente $f'(b)$ pour la tangente en $A$ ? Regarde si elle monte, descend ou est horizontale."
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$, et sa tangente au point $A$ d'abscisse $c={{eval:h+t}}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\npoints: A({{eval:h+t}} ; f({{eval:h+t}}))\ntangente: f ; {{eval:h+t}}\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux, et sa tangente au point A.\n```\n\nQuel est le signe de $f''(c)$ ?\n\n```choix\n- strictement positif\n- strictement négatif\n- nul\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "-1..1"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				},
+				{
+					"name": "t",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|2|{{if:s*t>0|0|1}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f''(c)\\geqslant 0$ quand $f$ est convexe au voisinage de $c$ (courbe au-dessus de ses tangentes), $f''(c)\\leqslant 0$ quand elle est concave (courbe en dessous).",
+					"{{if:t==0|En $A$, la courbe traverse sa tangente : c'est un point d'inflexion, où $f''$ s'annule en changeant de signe. $f''(c)$ est $\\textcolor{{{color:primary.0}}}{\\text{nul}}$.|Au voisinage de $A$, la courbe est {{if:s*t>0|au-dessus|en dessous}} de sa tangente : $f$ y est {{if:s*t>0|convexe|concave}}, et $f''(c)$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:s*t>0|positif|négatif}} }}$.}}"
+				]
+			},
+			"hint": "Au voisinage de $A$, la courbe est-elle au-dessus de sa tangente, en dessous, ou la traverse-t-elle ? Relie cela à la convexité."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : montée (t = 2)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : descente (t = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "a : sommet (t = −1)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "a : sommet pris pour positif",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : s = −1, t = 2 → négatif",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"h": "0",
+				"k": "0",
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "b : convexe (t = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : concave (t = −2)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "b : inflexion (t = 0)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "b : signe de f′ au lieu de f″ (t = 0)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "b : s = −1, t = 2 → négatif",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"h": "0",
+				"k": "0",
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		}
+	]
+}

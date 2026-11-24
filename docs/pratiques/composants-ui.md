@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/navigation/return-links.ts'
   - 'src/lib/components/rich-text/{RichTextEditor,RichTextDisplay}.svelte'
   - 'src/lib/stores/{toaster,theme,fontSize}.svelte.ts'
+  - src/lib/components/AppToaster.svelte
 ---
 
 # UI Components
@@ -208,6 +209,8 @@ import * as Avatar from '#lib/components/ui/avatar/index.ts'; import * as Accord
 
 Les croix de `Dialog.Content` et de `Sheet.Content` sont nommées **« Fermer »** pour les lecteurs
 d'écran (« Close » jusqu'au 2026-10-14, relevé par la revue a11y des réglages de l'atelier).
+La croix de `Sheet.Content` (menu du site au téléphone) se touche sur 44 × 44 px, l'icône de
+16 px au même endroit (écart E22, 2026-11-24 : 16 px, sous le minimum de 24 px de WCAG 2.5.8).
 
 ### ConfirmDialog (composant custom)
 
@@ -281,7 +284,7 @@ lors de la sauvegarde'); toaster.warning('Aucun élève sélectionné'); toaster
 cours…'); toaster.message('Message neutre'); // sans icône de statut
 ```
 
-Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine.
+Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine (`AppToaster.svelte`) : cinq annonces visibles au plus sur ordinateur, une seule (la plus récente) au téléphone.
 
 ---
 

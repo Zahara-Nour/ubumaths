@@ -1,0 +1,257 @@
+{
+	"id": "74d73d4e-5e5e-431f-ad2d-786f805f4f49",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "TSPE-416"
+	},
+	"title": "Variations d'une fonction auxiliaire ou homographique",
+	"description": "Signe de la dérivée et variations de g(x) = eˣ − ax − b (minimum en ln a, tableau à compléter) et de (px + q)/(rx + t) (signe de pt − qr, choix du tableau) (pièges : e^a au lieu de ln a, signe de b, mêmes variations des deux côtés de la valeur interdite)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $g$ la fonction définie sur $\\mathbb{R}$ par $g(x)=e^{x}-{{a}}x{{eval:-b;+}}$.\n\nÉtudie le signe de $g'(x)$, puis complète le tableau de variations de $g$.\n\n```variation\nvariable: x\ndomain: -inf, ?\\ln{ {{a}} }, +inf\n\nsign: g'(x)\n  -inf,\\ln{ {{a}} }: ?-\n  \\ln{ {{a}} }: z\n  \\ln{ {{a}} },+inf: ?+\n\nvariation: g(x)\n  \\ln{ {{a}} }: ?{{eval:a-b}}-{{a}}\\ln{ {{a}} }, bottom\n  -inf,\\ln{ {{a}} }: ?flèche\n  \\ln{ {{a}} },+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "e^{ {{a}} }",
+							"message": "$e^{x}={{a}}$ équivaut à $x=\\ln {{a}}$ : la fonction réciproque de l'exponentielle est le logarithme.",
+							"label": "e^a au lieu de ln a"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "$g'(x)=e^{x}-{{a}}$ s'annule quand $e^{x}={{a}}$, c'est-à-dire pour $x=\\ln {{a}}$.",
+							"label": "a au lieu de ln a"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+b}}-{{a}}\\ln{ {{a}} }",
+							"message": "Attention au signe du terme constant : $g(\\ln {{a}})={{a}}-{{a}}\\ln {{a}}{{eval:-b;+}}$.",
+							"label": "Signe de b"
+						},
+						{
+							"answer": "{{eval:-b}}",
+							"message": "Tu as pris $e^{\\ln {{a}}}=1$ et oublié $-{{a}}\\ln {{a}}$ ; or $e^{\\ln {{a}}}={{a}}$.",
+							"label": "Valeur en 0"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g'(x)=e^{x}-{{a}}$. Or $e^{x}-{{a}}\\geqslant 0\\iff e^{x}\\geqslant {{a}}\\iff x\\geqslant\\ln {{a}}$ (la fonction exponentielle est strictement croissante).",
+					"$g'$ est négative avant $\\ln {{a}}$, positive après : $g$ est décroissante puis croissante, de minimum en $x=\\textcolor{{{color:primary.0}}}{\\ln {{a}} }$.",
+					"$g(\\ln {{a}})=e^{\\ln {{a}}}-{{a}}\\ln {{a}}{{eval:-b;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:a-b}}-{{a}}\\ln {{a}} }$."
+				]
+			},
+			"hint": "Résous $g'(x)\\geqslant 0$ : quelle fonction « défait » l'exponentielle ?"
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ par $f(x)=\\dfrac{ {{eval:p*x+q}} }{ {{eval:r*x+t}} }$.\n\nÉtudie le signe de $f'(x)$. Quel est le tableau de variations de $f$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: -inf, {{al}}, +inf\n  \n  variation: f(x)\n    -inf: {{eval:p/r}}, top\n    {{al}}: ||, -inf, +inf\n    +inf: {{eval:p/r}}, bottom\n  ```\n- ```variation\n  variable: x\n  domain: -inf, {{al}}, +inf\n  \n  variation: f(x)\n    -inf: {{eval:p/r}}, bottom\n    {{al}}: ||, +inf, -inf\n    +inf: {{eval:p/r}}, top\n  ```\n- ```variation\n  variable: x\n  domain: -inf, {{al}}, +inf\n  \n  variation: f(x)\n    -inf: {{eval:p/r}}, top\n    {{al}}: ||, -inf, -inf\n    +inf: {{eval:p/r}}, top\n  ```\n- ```variation\n  variable: x\n  domain: -inf, {{al}}, +inf\n  \n  variation: f(x)\n    -inf: {{eval:p/r}}, bottom\n    {{al}}: ||, +inf, +inf\n    +inf: {{eval:p/r}}, bottom\n  ```\n````",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "t",
+					"expression": "eval:-r*al"
+				},
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:p*t-q*r"
+				}
+			],
+			"conditions": ["d != 0", "al != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:d<0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\dfrac{u}{v}$ avec $u(x)={{eval:p*x+q}}$ et $v(x)={{eval:r*x+t}}$ : $f'(x)=\\dfrac{ {{p}}({{eval:r*x+t}})-{{r;()}}({{eval:p*x+q}})}{({{eval:r*x+t}})^{2}}=\\dfrac{ {{d}} }{({{eval:r*x+t}})^{2}}$.",
+					"Le dénominateur est un carré, strictement positif sur $\\mathbb{R}\\setminus\\left\\{ {{al}} \\right\\}$ : $f'(x)$ a le signe de ${{d}}$, {{if:d<0|négatif|positif}}.",
+					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{ {{if:d<0|décroissante|croissante}} }}$ sur $\\left]-\\infty\\,;{{al}}\\right[$ et sur $\\left]{{al}}\\,;+\\infty\\right[$ : c'est le tableau où $f$ est {{if:d<0|décroissante|croissante}} des deux côtés de la double barre."
+				]
+			},
+			"hint": "Dérive $f$ comme un quotient : le numérateur de $f'(x)$ est un nombre. Quel est son signe ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : eˣ − 3x − 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln(3)", "-", "+", "↘", "2-3\\ln(3)", "↗"]
+		},
+		{
+			"description": "a : ln 3 sans parenthèses",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\ln3", "-", "+", "↘", "2-3\\ln3", "↗"]
+		},
+		{
+			"description": "a : e^a au lieu de ln a",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["e^{3}", "-", "+", "↘", "2-3\\ln(3)", "↗"]
+		},
+		{
+			"description": "a : signe de b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\ln(3)", "-", "+", "↘", "4-3\\ln(3)", "↗"]
+		},
+		{
+			"description": "a : flèches inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\ln(3)", "-", "+", "↗", "2-3\\ln(3)", "↘"]
+		},
+		{
+			"description": "b : (2x + 1)/(x − 3), décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"al": "3",
+				"t": "-3",
+				"p": "2",
+				"q": "1",
+				"d": "-7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : croissante à tort",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"al": "3",
+				"t": "-3",
+				"p": "2",
+				"q": "1",
+				"d": "-7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "b : (3x − 1)/(x + 2), croissante",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"al": "-2",
+				"t": "2",
+				"p": "3",
+				"q": "-1",
+				"d": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "b : creux à tort",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"al": "-2",
+				"t": "2",
+				"p": "3",
+				"q": "-1",
+				"d": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		}
+	]
+}

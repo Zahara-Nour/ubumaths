@@ -47,6 +47,10 @@
 		annulusToSVG,
 		imageToSVG
 	} from '#lib/geometry-core/rendering/svg-primitives.ts';
+	import {
+		placeLabels,
+		type LabelPlacement
+	} from '#lib/geometry-core/rendering/label-avoidance.ts';
 	import { computeGridStep } from '#lib/geometry-core/viewport/grid.ts';
 	import {
 		findPointNear,
@@ -163,6 +167,13 @@
 		inDocument?: boolean;
 		/** Nom de la figure pour les lecteurs d'écran (description de l'auteur) */
 		ariaLabel?: string;
+		/**
+		 * Noms des points, segments, demi-droites et droites placés sans se
+		 * chevaucher ni toucher un codage (`placeLabels`) : figures des
+		 * constructions animées. Défaut false : les autres toiles gardent les
+		 * places habituelles.
+		 */
+		avoidLabelOverlap?: boolean;
 	}
 
 	let {
@@ -188,7 +199,8 @@
 		underlay,
 		overlay,
 		inDocument = false,
-		ariaLabel = 'Figure de geometrie interactive'
+		ariaLabel = 'Figure de geometrie interactive',
+		avoidLabelOverlap = false
 	}: Props = $props();
 
 	// Langue du contenu (séparateur décimal des étiquettes), posée par MarkdownRenderer
@@ -342,6 +354,20 @@
 		return all.filter((el) => el.visible && !(hiddenElementIds && hiddenElementIds.has(el.id)));
 	});
 	let dims = $derived({ width, height });
+
+	// Places des noms sans chevauchement (`avoidLabelOverlap`). Calculées sur
+	// tous les objets visibles, y compris ceux qu'une animation masque : un nom
+	// ne saute pas quand son objet finit d'apparaître.
+	let autoLabels = $derived.by(() => {
+		void version;
+		void externalVersion;
+		return avoidLabelOverlap ? placeLabels(figure, transformer, dims) : null;
+	});
+
+	/** Place choisie pour le nom de `el`, sauf s'il a été placé à la main */
+	function autoLabel(el: GeoElement): LabelPlacement | undefined {
+		return el.labelOffset ? undefined : autoLabels?.get(el.id);
+	}
 
 	// ─── Rough.js rendering ─────────────────────────────────────────
 	let rc = $derived(svgRef ? rough.svg(svgRef) : null);
@@ -1137,8 +1163,11 @@
 		if (!el) return;
 
 		const sty = resolveScreenStyle(el, figure.defaults);
-		const currentDx = el.labelOffset?.dx ?? sty.pointSize + 4;
-		const currentDy = el.labelOffset?.dy ?? -(sty.pointSize + 2);
+		// Nom placé sans chevauchement : le glisser part de là où il est écrit
+		const auto = autoLabel(el);
+		const pt = auto ? pointToSVG(el.id, figure, transformer) : null;
+		const currentDx = el.labelOffset?.dx ?? (auto && pt ? auto.x - pt.cx : sty.pointSize + 4);
+		const currentDy = el.labelOffset?.dy ?? (auto && pt ? auto.y - pt.cy : -(sty.pointSize + 2));
 
 		draggingLabelId = elementId;
 		labelDragStart = { mx: e.clientX, my: e.clientY, dx: currentDx, dy: currentDy };
@@ -1338,8 +1367,9 @@
 							/>
 						{/if}
 						{#if el.label}
-							{@const lx = (svg.x1 + svg.x2) / 2 + (el.labelOffset?.dx ?? 6)}
-							{@const ly = (svg.y1 + svg.y2) / 2 + (el.labelOffset?.dy ?? -8)}
+							{@const auto = autoLabel(el)}
+							{@const lx = auto?.x ?? (svg.x1 + svg.x2) / 2 + (el.labelOffset?.dx ?? 6)}
+							{@const ly = auto?.y ?? (svg.y1 + svg.y2) / 2 + (el.labelOffset?.dy ?? -8)}
 							<text
 								x={lx}
 								y={ly}
@@ -1394,9 +1424,10 @@
 							{@const ny = dx / len}
 							{@const sign = ny > 0 ? -1 : 1}
 							{@const offset = 10 + 5 * Math.abs(nx)}
+							{@const auto = autoLabel(el)}
 							<text
-								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
-								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
+								x={auto?.x ?? mx + (el.labelOffset?.dx ?? sign * nx * offset)}
+								y={auto?.y ?? my + (el.labelOffset?.dy ?? sign * ny * offset)}
 								class="label"
 								style:fill={labelFill(sty.color)}
 								stroke-width="3"
@@ -1437,8 +1468,9 @@
 							/>
 						{/if}
 						{#if el.label}
-							{@const lx = (svg.x1 + svg.x2) / 2 + (el.labelOffset?.dx ?? 6)}
-							{@const ly = (svg.y1 + svg.y2) / 2 + (el.labelOffset?.dy ?? -8)}
+							{@const auto = autoLabel(el)}
+							{@const lx = auto?.x ?? (svg.x1 + svg.x2) / 2 + (el.labelOffset?.dx ?? 6)}
+							{@const ly = auto?.y ?? (svg.y1 + svg.y2) / 2 + (el.labelOffset?.dy ?? -8)}
 							<text
 								x={lx}
 								y={ly}
@@ -2275,8 +2307,9 @@
 						{/if}
 						<!-- Nom masqué (`labelHidden`, DSL `etiquette="aucune"`, carte de l'atelier) : le point reste -->
 						{#if el.label && !el.labelHidden}
-							{@const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
-							{@const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
+							{@const auto = autoLabel(el)}
+							{@const lx = auto?.x ?? svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
+							{@const ly = auto?.y ?? svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<text
 								x={lx}

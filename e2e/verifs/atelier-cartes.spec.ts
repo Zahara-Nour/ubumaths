@@ -130,7 +130,7 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	await calc(page, 's(x) = sin(x) sur [0;\\pi]');
 	expectLatex(await calc(page, '.résoudre s(x)=0'), 'S = \\left\\{ 0 \\,;\\, \\pi \\right\\}');
 
-	// En dernier : « Comment ? » casse la page (each_key_duplicate, comme #1674)
+	// « Comment ? » s'ouvre depuis E10 (#3054)
 	await calc(page, 'f(x) = x^2 sur [0;+\\infty[');
 	const solved = await calc(page, '.résoudre f(x)=4');
 	expectLatex(solved, 'S = \\{ 2 \\}');
@@ -435,10 +435,13 @@ test('cartes de fonction (lot 3) — une ligne, Entrée range, point de couleur,
 		'elle suit f'
 	);
 
-	// Tout au clavier : Tab jusqu'au ⋮, Entrée, flèches
+	// Tout au clavier : Tab jusqu'au ⋮, Entrée, flèches. Safari (ordinateur et
+	// iPhone) ne met pas le focus sur un bouton au Tab, il faut ⌥ Tab (réglage de
+	// Safari, écart E16 laissé) : l'utilisateur de Safari fait ce geste-là
+	const tab = test.info().project.use.defaultBrowserType === 'webkit' ? 'Alt+Tab' : 'Tab';
 	const options = f.getByRole('button', { name: 'Options de f', exact: true });
 	await f.getByRole('button', { name: 'Tracer f' }).focus();
-	await page.keyboard.press('Tab');
+	await page.keyboard.press(tab);
 	await expect(options).toBeFocused();
 	await page.keyboard.press('Enter');
 	await expect(page.getByRole('menu')).toBeVisible();

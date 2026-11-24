@@ -1,0 +1,478 @@
+{
+	"id": "227f2c9c-3494-412d-bf88-e9b2c48c01a6",
+	"title": "Dériver une exponentielle de fonction affine",
+	"description": "Dériver x ↦ e^(ax+b) en l'écrivant e^(ax) × e^b : (e^(ax))′ = a·e^(ax)",
+	"grades": ["1_SPE"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}e^{ {{eval:a*x+b}} }"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{eval:a*x+b}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..7;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $f(x)=e^{ {{eval:a*x}} }\\times {{if:b==1|e|e^{ {{b}} }}}$, car $e^{u+v}=e^u\\times e^v$ ; ${{if:b==1|e|e^{ {{b}} }}}$ est une constante.",
+					"La dérivée de $x\\mapsto e^{ax}$ est $x\\mapsto a\\,e^{ax}$ : le coefficient de $x$ **passe devant** l'exponentielle.",
+					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{ {{a}} }e^{ {{eval:a*x}} }\\times {{if:b==1|e|e^{ {{b}} }}}=\\textcolor{{{color:primary.0}}}{ {{a}} }e^{ {{eval:a*x+b}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-e^{ {{eval:-x+b}} }"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{eval:-x+b}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "b",
+					"expression": "1..7;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $f(x)=e^{-x}\\times {{if:b==1|e|e^{ {{b}} }}}$, car $e^{u+v}=e^u\\times e^v$ ; ${{if:b==1|e|e^{ {{b}} }}}$ est une constante.",
+					"La dérivée de $x\\mapsto e^{ax}$ est $x\\mapsto a\\,e^{ax}$ : le coefficient de $x$ **passe devant** l'exponentielle.",
+					"Ici $a=\\textcolor{{{color:primary.0}}}{-1}$, donc $f'(x)=-e^{-x}\\times {{if:b==1|e|e^{ {{b}} }}}=-e^{ {{eval:-x+b}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}e^{ {{eval:a*x}} }"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{eval:a*x}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto e^{ax}$ est $x\\mapsto a\\,e^{ax}$ : le coefficient de $x$ **passe devant** l'exponentielle.",
+					"Ici $a=\\textcolor{{{color:primary.0}}}{ {{a}} }$, donc $f'(x)=\\textcolor{{{color:primary.0}}}{ {{a}} }e^{ {{eval:a*x}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}e^{ {{eval:k*x}} }{{eval:b*x+c;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a != k", "b+c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k}}e^{ {{eval:k*x}} }{{b;+}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}e^{ {{eval:k*x}} }{{b;+}}",
+							"message": "La dérivée de $e^{kx}$ est $ke^{kx}$ : n'oublie pas le facteur $k$.",
+							"label": "Facteur k oublié"
+						},
+						{
+							"answer": "{{k}}e^{ {{eval:k*x}} }{{b;+}}",
+							"message": "Le coefficient devant l'exponentielle reste : la dérivée de $a\\,e^{kx}$ est $ak\\,e^{kx}$.",
+							"label": "Coefficient a oublié"
+						},
+						{
+							"answer": "{{eval:a*k}}e^{ {{eval:k*x}} }{{eval:b+c;+}}",
+							"message": "La dérivée d'une constante est nulle.",
+							"label": "Constante gardée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto e^{ {{eval:k*x}} }$ est $x\\mapsto {{k}}e^{ {{eval:k*x}} }$ : celle de ${{a}}e^{ {{eval:k*x}} }$ est ${{a}}\\times{{k;()}}e^{ {{eval:k*x}} }={{eval:a*k}}e^{ {{eval:k*x}} }$.",
+					"La dérivée de ${{eval:b*x+c}}$ est ${{b}}$.",
+					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{ {{eval:a*k}}e^{ {{eval:k*x}} }{{b;+}} }$."
+				]
+			},
+			"hint": "Dérive terme à terme : $(e^{kx})'=ke^{kx}$, et un coefficient devant une fonction reste."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3e^{3x-2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "3e^{3x-2} juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3e^{-2+3x}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "exposant écrit −2+3x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{3x-2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "oubli du facteur a : e^{3x−2}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "u′ mis dans l'exposant : e^{3}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(3x-2)e^{3x-2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "u multiplié : (3x−2)e^{3x−2}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(3x-2)e^{3x-3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "règle de x^n : (3x−2)e^{3x−3}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{3x-2}\\times3"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "facteur écrit derrière avec × (½, products)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3e^{3x}e^{-2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "exponentielle scindée 3e^{3x}e^{−2} (forme)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4e^{-4x+5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "5"
+			},
+			"description": "a < 0 : −4e^{−4x+5}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4e^{5-4x}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "5"
+			},
+			"description": "a < 0, exposant 5−4x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4e^{-4x+5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "5"
+			},
+			"description": "a < 0, signe oublié : 4e^{−4x+5}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-e^{-x+3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "e^{−x+3} : −e^{−x+3}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-e^{3-x}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "exposant écrit 3−x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{-x+3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "signe oublié : e^{−x+3}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-1e^{-x+3}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			},
+			"variables": {
+				"b": "3"
+			},
+			"description": "−1 laissé en facteur (½, factorOne)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5e^{5x}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "e^{5x} : 5e^{5x}",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["e^{5x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "oubli du facteur : e^{5x}",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5xe^{5x-1}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "dérivée prise comme 5xe^{5x−1}",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-2e^{-2x}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "e^{−2x} : −2e^{−2x}",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2e^{-2x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2"
+			},
+			"description": "e^{−2x} : signe oublié",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\exp(3x-2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "notation 3\\exp acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\exponentialE^{3x-2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "notation 3\\exponentialE acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"description": "3e^{−2x} + 4x − 1 : −6e^{−2x} + 4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"k": "-2",
+				"b": "4",
+				"c": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-6e^{-2x}+4"]
+		},
+		{
+			"description": "Ordre inverse",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"k": "-2",
+				"b": "4",
+				"c": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4-6e^{-2x}"]
+		},
+		{
+			"description": "Facteur k oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"k": "-2",
+				"b": "4",
+				"c": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La dérivée de $\\exponentialE^{k x}$ est $k \\exponentialE^{k x}$ : n'oublie pas le facteur $k$."
+			},
+			"answers": ["3e^{-2x}+4"]
+		},
+		{
+			"description": "Coefficient a oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"k": "-2",
+				"b": "4",
+				"c": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient devant l'exponentielle reste : la dérivée de $a\\,e^{kx}$ est $ak\\,e^{kx}$."
+			},
+			"answers": ["-2e^{-2x}+4"]
+		},
+		{
+			"description": "Constante gardée",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"k": "-2",
+				"b": "4",
+				"c": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La dérivée d'une constante est nulle."
+			},
+			"answers": ["-6e^{-2x}+3"]
+		}
+	]
+}

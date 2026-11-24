@@ -74,6 +74,13 @@ function createMockSupabase() {
 
 type MockSupabaseClient = ReturnType<typeof createMockSupabase>;
 
+/** L'insertion des sections par défaut rend `n` lignes. */
+function mockSectionsInsert(supabase: MockSupabaseClient, n: number): void {
+	supabase._mockChain.then.mockImplementationOnce((resolve: (v: unknown) => void) =>
+		resolve({ data: Array.from({ length: n }, (_, i) => ({ id: `section-${i}` })), error: null })
+	);
+}
+
 // ============================================================================
 // TEST DATA FIXTURES
 // ============================================================================
@@ -408,6 +415,7 @@ describe('Template CRUD Functions', () => {
 				data: mockDbTemplate,
 				error: null
 			});
+			mockSectionsInsert(supabase, 6);
 
 			const result = await templates.createChapterTemplate(templateData, mockUserId, supabase);
 
@@ -415,6 +423,23 @@ describe('Template CRUD Functions', () => {
 			expect(result.data).toBeDefined();
 			expect(result.data?.title).toBe('Algebre - Chapitre 1');
 			expect(result.data?.status).toBe('draft');
+			// Les six sections par défaut, posées chez le modèle.
+			expect(supabase.from).toHaveBeenCalledWith('chapter_sections');
+			const lignes = supabase._mockChain.insert.mock.calls[1][0] as {
+				template_id: string;
+				title: string;
+				display_order: number;
+			}[];
+			expect(lignes.map((l) => l.title)).toEqual([
+				'Préparation',
+				'Le cours',
+				'Les exercices',
+				'Méthodes',
+				'Résumé',
+				'Bilan'
+			]);
+			expect(lignes.map((l) => l.display_order)).toEqual([1, 2, 3, 4, 5, 6]);
+			expect(lignes.every((l) => l.template_id === mockDbTemplate.id)).toBe(true);
 		});
 
 		it('should create template with minimal data', async () => {
@@ -436,11 +461,15 @@ describe('Template CRUD Functions', () => {
 				data: minimalTemplate,
 				error: null
 			});
+			// Sections refusées : le modèle est gardé quand même.
+			mockSectionsInsert(supabase, 0);
 
 			const result = await templates.createChapterTemplate(templateData, mockUserId, supabase);
 
 			expect(result.error).toBeNull();
 			expect(result.data?.title).toBe('Minimal Template');
+			// Le refus des sections ne supprime pas le modèle.
+			expect(supabase._mockChain.delete).not.toHaveBeenCalled();
 		});
 
 		it('should handle database error', async () => {

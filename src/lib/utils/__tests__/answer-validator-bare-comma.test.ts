@@ -96,3 +96,64 @@ describe('virgule nue — équivalence simple', () => {
 		expect(check('3,14', { expectedAnswer: '(3,14)', type: 'math' }).isCorrect).toBe(false);
 	});
 });
+
+// #1574 (E31) : saisies relevées au clavier MathLive (`36, mm` → `36,\,mm`, `,036 m` → `,036\,m`)
+describe('virgule nue — nombre mal écrit devant une unité : le message de forme', () => {
+	const PERIMETER: InstanceBlank = {
+		expectedAnswer: '36[mm]',
+		type: 'math',
+		unit: { expected: true }
+	};
+	const FORM = "Ta réponse n'est pas écrite sous la forme demandée.";
+
+	it('36,\\,mm (virgule sans décimale) → refusé, message de forme, pas « Unité inconnue »', () => {
+		const result = check('36,\\,mm', PERIMETER);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe(FORM);
+	});
+
+	it(',036\\,m (sans zéro devant la virgule) → refusé, message de forme', () => {
+		const result = check(',036\\,m', PERIMETER);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe(FORM);
+	});
+
+	it('même verdict avec la virgule de MathLive : 36{,}\\,mm', () => {
+		const result = check('36{,}\\,mm', PERIMETER);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe(FORM);
+	});
+
+	it('limite : 0,036\\,m et 36\\,mm restent justes', () => {
+		expect(check('0,036\\,m', PERIMETER).status).toBe('correct');
+		expect(check('36\\,mm', PERIMETER).status).toBe('correct');
+	});
+
+	it('valeur fausse mal écrite : 37,\\,mm et 37{,}\\mathrm{mm} → faux (pas la forme)', () => {
+		for (const typed of ['37,\\,mm', '37{,}\\mathrm{mm}']) {
+			const result = check(typed, PERIMETER);
+			expect(result.isCorrect, typed).toBe(false);
+			expect(result.status, typed).not.toBe('bad_form');
+			expect(result.feedback, typed).not.toBe(FORM);
+		}
+	});
+
+	it('unité illisible derrière un nombre mal écrit : 36,\\,xyz → « Unité inconnue : xyz. »', () => {
+		const result = check('36,\\,xyz', PERIMETER);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Unité inconnue : xyz.');
+	});
+
+	it('comportement d’avant gardé : 36{,}\\mathrm{mm} → mauvaise forme, message de forme', () => {
+		const result = check('36{,}\\mathrm{mm}', PERIMETER);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe(FORM);
+	});
+
+	it('une vraie unité inconnue garde son message : 36\\,xyz', () => {
+		expect(check('36\\,xyz', PERIMETER).feedback).toBe('Unité inconnue : xyz.');
+	});
+});

@@ -6,15 +6,14 @@ Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Tableau 
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3048 (rubrique publiée)._
+_Mis à jour le 2026-11-23, outil n° 54 livré (#3052)._
 
-- **État** : rubrique 6N1 PUBLIÉE (6 neufs, 23 variations sur 13 publiés, relecture validée) ; branche
-  `docs/idees-6e-entiers-decimaux` supprimée · **Prochaine action** (validée par David le 2026-11-23) : outil
-  n° 54 de `outils-manquants.md` (droite graduée avec zoom, 6N1H-3 / 6N1H-4), chantier d'outil : phase 0 d'abord
-  (comportements en français, attendre la validation), worktree neuf ; puis outil n° 53 (labyrinthe) de même ;
-  puis verser ce journal en archive · **En attente de David** : renommer N5 (c178356b) dans l'éditeur en
-  « Écrire un nombre en décimal, en fraction et en pourcentage » (écriture en prod, la sienne) ·
-  **Pièges en cours** : aucun · **Worktree / branche** : aucun.
+- **État** : rubrique 6N1 PUBLIÉE (6 neufs, 23 variations sur 13 publiés, relecture validée) · **Prochaine
+  action** : l'outil n° 54 (droite graduée avec zoom) vit dans son chantier
+  [droite-zoom](droite-zoom-progress.md) (outil #3052 ; modèle 6N1H-3 / 6N1H-4 publié, 6dba93c8, #3071) ; puis outil n° 53 (labyrinthe), phase 0 d'abord ; puis verser ce journal en archive ·
+  **En attente de David** : renommer N5 (c178356b) dans l'éditeur en « Écrire un nombre en décimal, en
+  fraction et en pourcentage » (écriture en prod, la sienne) · **Pièges en cours** : aucun ·
+  **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 

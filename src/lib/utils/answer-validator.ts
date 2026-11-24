@@ -87,6 +87,10 @@ import { isTortueAnswerCorrect, tortueAnswerVerdict } from '#lib/ubumark/utils/t
 import { calculAnswerVerdict, isCalculAnswerCorrect } from '#lib/ubumark/utils/calcul-answer.ts';
 import { isRobotAnswerCorrect, robotAnswerVerdict } from '#lib/ubumark/utils/robot-answer.ts';
 import {
+	isLabyrintheAnswerCorrect,
+	labyrintheAnswerVerdict
+} from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
 } from '#lib/ubumark/utils/number-line-representer.ts';
@@ -850,6 +854,9 @@ function validateBlankValue(
 	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
 	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Labyrinthe : le chemin de l'élève, de l'entrée à une sortie par des cases qui suivent la règle
+	if (blank.construire === 'labyrinthe')
+		return isLabyrintheAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -1413,6 +1420,13 @@ function validateSingleBlank(
 		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}
 
+	// Labyrinthe : faux, le chemin dit pourquoi (entrée, case sautée, intrus, sortie manquée)
+	if (blank.construire === 'labyrinthe') {
+		const verdict = labyrintheAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
 	// Programme de calcul : ses affichages sur chaque essai contre ceux de l'attendu ; un
 	// programme illisible, muet ou en erreur sur un essai dit pourquoi
 	if (blank.construire === 'calcul') {
@@ -1559,6 +1573,17 @@ function validateSingleBlank(
 		// Trop de chiffres mais bon arrondi : mauvaise forme (cf. questions/rounding)
 		if (!result.isCorrect && result.onlyRoundingMissing && result.feedback) {
 			return roundingBadForm(result.feedback);
+		}
+		// Nombre mal écrit devant l'unité (`36, mm`, `36{,}\mathrm{mm}`, `,036 m`), valeur
+		// relue juste : mauvaise forme (une valeur fausse arrive ici `incorrect`, sans ce drapeau)
+		if (!result.isCorrect && result.numberWritingAtFault) {
+			const feedback = CONSTRAINT_FEEDBACK['form'].single;
+			return {
+				isCorrect: false,
+				status: 'bad_form',
+				feedback,
+				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
+			};
 		}
 		if (
 			!result.isCorrect &&

@@ -38,7 +38,7 @@ exports[`pedagogical-simplify-demo — snapshots > distribution > (2x+3)(x-1) 1`
   · Chaque terme d’une parenthèse multiplie chaque terme de l’autre ; le signe de chaque produit suit la règle des signes.
   \\begin{aligned} \\textcolor{blue}{\\left( 2 x + 3 \\right) \\left( x - 1 \\right)} & \\\\ = 2 x \\times x - 2 x \\times 1 + 3 \\times x - 3 \\times 1 \\end{aligned}
 - [expand-compute] On calcule chaque produit
-  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes : 2x × 3 = 6x, x × x = x².
+  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes, par exemple 2x × 3 = 6x et x × x = x².
   \\begin{aligned} \\textcolor{blue}{2 x \\times x - 2 x \\times 1 + 3 \\times x - 3 \\times 1} & \\\\ = 2 x^2 - 2 x + 3 x - 3 \\end{aligned}
 - [expand-reduce] On réduit
   · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
@@ -54,7 +54,7 @@ exports[`pedagogical-simplify-demo — snapshots > distribution > (x+1)(x-1) 1`]
   · Une identité remarquable donne le développement d’un coup : on remplace a et b dans le membre de droite.
   \\begin{aligned} \\textcolor{blue}{\\left( x + 1 \\right) \\left( x - 1 \\right)} & \\\\ = x^2 - 1^2 \\end{aligned}
 - [expand-compute] On calcule chaque terme
-  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes : 2x × 3 = 6x, x × x = x².
+  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes, par exemple 2x × 3 = 6x et x × x = x².
   \\begin{aligned} \\textcolor{blue}{x^2 - 1^2} & \\\\ = x^2 - 1 \\end{aligned}
 => x^2 - 1"
 `;
@@ -67,7 +67,7 @@ exports[`pedagogical-simplify-demo — snapshots > distribution > (x+1)² 1`] = 
   · Une identité remarquable donne le développement d’un coup : on remplace a et b dans le membre de droite.
   \\begin{aligned} \\textcolor{blue}{\\left( x + 1 \\right)^2} & \\\\ = x^2 + 2 \\times x \\times 1 + 1^2 \\end{aligned}
 - [expand-compute] On calcule chaque terme
-  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes : 2x × 3 = 6x, x × x = x².
+  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes, par exemple 2x × 3 = 6x et x × x = x².
   \\begin{aligned} \\textcolor{blue}{x^2 + 2 \\times x \\times 1 + 1^2} & \\\\ = x^2 + 2 x + 1 \\end{aligned}
 => x^2 + 2 x + 1"
 `;
@@ -80,7 +80,7 @@ exports[`pedagogical-simplify-demo — snapshots > distribution > (x-1)² 1`] = 
   · Une identité remarquable donne le développement d’un coup : on remplace a et b dans le membre de droite.
   \\begin{aligned} \\textcolor{blue}{\\left( x - 1 \\right)^2} & \\\\ = x^2 - 2 \\times x \\times 1 + 1^2 \\end{aligned}
 - [expand-compute] On calcule chaque terme
-  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes : 2x × 3 = 6x, x × x = x².
+  · On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes, par exemple 2x × 3 = 6x et x × x = x².
   \\begin{aligned} \\textcolor{blue}{x^2 - 2 \\times x \\times 1 + 1^2} & \\\\ = x^2 - 2 x + 1 \\end{aligned}
 => x^2 - 2 x + 1"
 `;

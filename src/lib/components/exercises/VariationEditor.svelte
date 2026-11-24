@@ -226,7 +226,7 @@
 					<Card.Header class="cursor-pointer py-3" {...props}>
 						<div class="flex items-center justify-between">
 							<Card.Title class="text-base">
-								Enonce <span class="text-destructive">*</span>
+								Énoncé <span class="text-destructive">*</span>
 								{#if hasTranslation}
 									<span
 										class="ml-2 rounded border border-border px-1.5 py-0.5 align-middle text-xs font-normal text-muted-foreground"

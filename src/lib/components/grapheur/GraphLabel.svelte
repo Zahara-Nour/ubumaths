@@ -17,6 +17,7 @@
 	import { curveColorValue } from '#lib/grapheur/colors.ts';
 	import {
 		labelBoxCenterY,
+		labelBoxCenterYBelow,
 		labelBoxHeight,
 		labelBoxSpan,
 		labelBoxWidth
@@ -37,7 +38,8 @@
 		canvasWidth,
 		canvasHeight,
 		pinned = false,
-		accent = null
+		accent = null,
+		below = false
 	}: {
 		/** Point being labelled, in SVG coordinates. */
 		x: number;
@@ -63,6 +65,8 @@
 		 * le fond, et la couleur dit seulement de qui vient l'étiquette.
 		 */
 		accent?: string | null;
+		/** Sous le point plutôt qu'au-dessus (E28 : valeur de x lue sous l'axe). */
+		below?: boolean;
 	} = $props();
 
 	// Box sizes (a fraction is two storeys tall), the flip near the right edge
@@ -91,7 +95,9 @@
 		const boxX = anchor === 'start' ? span.left : span.right;
 
 		// Above the point, unless that would leave the canvas.
-		const boxY = labelBoxCenterY(y, height, canvasHeight);
+		const boxY = below
+			? labelBoxCenterYBelow(y, height, canvasHeight)
+			: labelBoxCenterY(y, height, canvasHeight);
 
 		return { x: boxX, y: boxY, anchor };
 	});

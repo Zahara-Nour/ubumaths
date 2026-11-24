@@ -1,0 +1,716 @@
+{
+	"id": "8c291e87-ce64-48e6-aae6-2405b1e17de2",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > développement",
+		"point": "3-013"
+	},
+	"title": "Développer et réduire une expression",
+	"description": "Double distributivité dans un calcul, résultat sous forme réduite : 5 − (2x + 3)(x − 4), −2(x + 3)(2x − 5), 3(2x − 1) − (x + 4)(x − 2), (2x + 1)(x − 3) − (x − 4)(x + 2) (pièges : moins appliqué au seul premier terme, produits croisés oubliés, facteur appliqué aux deux parenthèses)",
+	"grades": ["3"],
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Développe et réduis. Écris le résultat sous forme réduite : une expression qu'on peut encore réduire est refusée.\n\n$${{m}}{{if:s==1|+|-}}({{eval:a*x+b}})({{eval:c*x+d}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a*d+b*c!=0", "m+s*b*d!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*a*c*x^2+s*(a*d+b*c)*x+m+s*b*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m+s*a*c*x^2+(a*d+b*c)*x+b*d}}",
+							"message": "Le signe « − » devant le produit change le signe de tous les termes du produit développé, pas seulement du premier.",
+							"label": "Moins appliqué au seul premier terme"
+						},
+						{
+							"answer": "{{eval:s*a*c*x^2+m+s*b*d}}",
+							"message": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits.",
+							"label": "Produits croisés oubliés"
+						},
+						{
+							"answer": "{{eval:s*a*c*x^2+(m*c+s*(b*c+a*d))*x+(m+s*b)*d}}",
+							"message": "La multiplication passe avant l'addition et la soustraction : développe d'abord le produit des deux parenthèses.",
+							"label": "Calcul de gauche à droite"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe d'abord le produit (double distributivité) :",
+					"$$({{eval:a*x+b}})({{eval:c*x+d}}) = {{eval:a*c*x^2}}{{eval:a*d*x;+}}{{eval:b*c*x;+}}{{eval:b*d;+}} = {{eval:a*c*x^2+(a*d+b*c)*x+b*d}}$$",
+					"{{if:s==1|On ajoute ce produit à ${{m}}$.|Le signe « − » devant le produit change le signe de chacun de ses termes.}}",
+					"$${{m}}{{if:s==1|+|-}}\\left({{eval:a*c*x^2+(a*d+b*c)*x+b*d}}\\right) = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Développe d'abord le produit entre parenthèses, puis ajoute ou soustrais ce produit."
+		},
+		{
+			"statement": "Développe et réduis. Écris le résultat sous forme réduite : une expression qu'on peut encore réduire est refusée.\n\n$${{k}}({{eval:a*x+b}})({{eval:c*x+d}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a*d+b*c!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*a*c*x^2+k*(a*d+b*c)*x+k*b*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k^2*(a*c*x^2+(a*d+b*c)*x+b*d)}}",
+							"message": "Tu as multiplié les deux parenthèses par ${{k}}$ : le facteur ${{k}}$ ne compte qu'une fois dans le produit.",
+							"label": "Facteur appliqué aux deux parenthèses"
+						},
+						{
+							"answer": "{{eval:k*a*c*x^2+k*b*d}}",
+							"message": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits.",
+							"label": "Produits croisés oubliés"
+						},
+						{
+							"answer": "{{eval:k*a*c*x^2+(k*a*d+b*c)*x+b*d}}",
+							"message": "Tu n'as multiplié par ${{k}}$ que le premier terme : ${{k}}$ multiplie tout le produit des deux parenthèses.",
+							"label": "Facteur sur un seul terme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe d'abord le produit des deux parenthèses :",
+					"$$({{eval:a*x+b}})({{eval:c*x+d}}) = {{eval:a*c*x^2}}{{eval:a*d*x;+}}{{eval:b*c*x;+}}{{eval:b*d;+}} = {{eval:a*c*x^2+(a*d+b*c)*x+b*d}}$$",
+					"Puis on multiplie chaque terme par ${{k}}$ :",
+					"$${{k}}\\left({{eval:a*c*x^2+(a*d+b*c)*x+b*d}}\\right) = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Développe d'abord le produit des deux parenthèses, puis multiplie chaque terme par ${{k}}$."
+		},
+		{
+			"statement": "Développe et réduis. Écris le résultat sous forme réduite : une expression qu'on peut encore réduire est refusée.\n\n$${{k}}({{eval:a*x+b}})-({{eval:c*x+d}})({{eval:f*x+g}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "f",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "g",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["k*a-c*g-d*f!=0", "k*b-d*g!=0", "c*g+d*f!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-c*f*x^2+(k*a-c*g-d*f)*x+k*b-d*g}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-c*f*x^2+(k*a+c*g+d*f)*x+k*b+d*g}}",
+							"message": "Le signe « − » devant le produit change le signe de tous les termes du produit développé, pas seulement du premier.",
+							"label": "Moins appliqué au seul premier terme"
+						},
+						{
+							"answer": "{{eval:c*f*x^2+(k*a+c*g+d*f)*x+k*b+d*g}}",
+							"message": "Tu as ajouté le produit au lieu de le soustraire : regarde le signe devant lui.",
+							"label": "Moins oublié"
+						},
+						{
+							"answer": "{{eval:-c*f*x^2+k*a*x+k*b-d*g}}",
+							"message": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits.",
+							"label": "Produits croisés oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe chaque morceau. Distributivité simple :",
+					"$${{k}}({{eval:a*x+b}}) = {{eval:k*a*x+k*b}}$$",
+					"Double distributivité :",
+					"$$({{eval:c*x+d}})({{eval:f*x+g}}) = {{eval:c*f*x^2}}{{eval:c*g*x;+}}{{eval:d*f*x;+}}{{eval:d*g;+}} = {{eval:c*f*x^2+(c*g+d*f)*x+d*g}}$$",
+					"Le signe « − » devant le produit change le signe de chacun de ses termes :",
+					"$${{eval:k*a*x+k*b}}-\\left({{eval:c*f*x^2+(c*g+d*f)*x+d*g}}\\right) = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Développe chaque morceau à part ; le signe « − » devant le produit change le signe de chacun de ses termes."
+		},
+		{
+			"statement": "Développe et réduis. Écris le résultat sous forme réduite : une expression qu'on peut encore réduire est refusée.\n\n$$({{eval:a*x+b}})({{eval:c*x+d}})-({{eval:f*x+g}})({{eval:h*x+j}})$$\n\n$?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "f",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "g",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "h",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "j",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a*c!=f*h", "a*d+b*c-f*j-g*h!=0", "b*d!=g*j", "f*j+g*h!=0", "a*d+b*c!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*c-f*h)*x^2+(a*d+b*c-f*j-g*h)*x+b*d-g*j}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*c-f*h)*x^2+(a*d+b*c+f*j+g*h)*x+b*d+g*j}}",
+							"message": "Le signe « − » devant le produit change le signe de tous les termes du produit développé, pas seulement du premier.",
+							"label": "Moins appliqué au seul premier terme"
+						},
+						{
+							"answer": "{{eval:(a*c+f*h)*x^2+(a*d+b*c+f*j+g*h)*x+b*d+g*j}}",
+							"message": "Tu as ajouté le produit au lieu de le soustraire : regarde le signe devant lui.",
+							"label": "Moins oublié"
+						},
+						{
+							"answer": "{{eval:(a*c-f*h)*x^2+b*d-g*j}}",
+							"message": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits.",
+							"label": "Produits croisés oubliés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe chaque produit (double distributivité) :",
+					"$$({{eval:a*x+b}})({{eval:c*x+d}}) = {{eval:a*c*x^2+(a*d+b*c)*x+b*d}}$$",
+					"$$({{eval:f*x+g}})({{eval:h*x+j}}) = {{eval:f*h*x^2+(f*j+g*h)*x+g*j}}$$",
+					"Le signe « − » devant le second produit change le signe de chacun de ses termes :",
+					"$${{eval:a*c*x^2+(a*d+b*c)*x+b*d}}-\\left({{eval:f*h*x^2+(f*j+g*h)*x+g*j}}\\right) = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Développe d'abord chaque produit, puis soustrais le second en faisant attention au signe « − »."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 5 − (2x + 3)(x − 4)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"m": "5",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2x^2+5x+17"]
+		},
+		{
+			"description": "v0 : ordre libre",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"m": "5",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17+5x-2x^2"]
+		},
+		{
+			"description": "v0 : non réduit",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"m": "5",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["5-2x^2+5x+12"]
+		},
+		{
+			"description": "v0 : moins au premier terme",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"m": "5",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe « − » devant le produit change le signe de tous les termes du produit développé, pas seulement du premier."
+			},
+			"answers": ["-2x^2-5x-7"]
+		},
+		{
+			"description": "v0 : produits croisés",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"m": "5",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits."
+			},
+			"answers": ["-2x^2+17"]
+		},
+		{
+			"description": "v0 : gauche à droite",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"m": "5",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "-4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La multiplication passe avant l'addition et la soustraction : développe d'abord le produit des deux parenthèses."
+			},
+			"answers": ["-2x^2+10x-8"]
+		},
+		{
+			"description": "v0 : −3 + (x + 2)(3x − 1)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"m": "-3",
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3x^2+5x-5"]
+		},
+		{
+			"description": "v1 : −2(x + 3)(2x − 5)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4x^2-2x+30"]
+		},
+		{
+			"description": "v1 : ordre libre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30-4x^2-2x"]
+		},
+		{
+			"description": "v1 : non réduit",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["-4x^2+10x-12x+30"]
+		},
+		{
+			"description": "v1 : facteur aux deux parenthèses",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les deux parenthèses par $-2$ : le facteur $-2$ ne compte qu'une fois dans le produit."
+			},
+			"answers": ["8x^2+4x-60"]
+		},
+		{
+			"description": "v1 : produits croisés",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits."
+			},
+			"answers": ["-4x^2+30"]
+		},
+		{
+			"description": "v1 : facteur sur un terme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu n'as multiplié par $-2$ que le premier terme : $-2$ multiplie tout le produit des deux parenthèses."
+			},
+			"answers": ["-4x^2+16x-15"]
+		},
+		{
+			"description": "v2 : 3(2x − 1) − (x + 4)(x − 2)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"d": "4",
+				"f": "1",
+				"g": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-x^2+4x+5"]
+		},
+		{
+			"description": "v2 : ordre libre",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"d": "4",
+				"f": "1",
+				"g": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4x+5-x^2"]
+		},
+		{
+			"description": "v2 : non réduit",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"d": "4",
+				"f": "1",
+				"g": "-2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["6x-3-x^2-2x+8"]
+		},
+		{
+			"description": "v2 : moins au premier terme",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"d": "4",
+				"f": "1",
+				"g": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe « − » devant le produit change le signe de tous les termes du produit développé, pas seulement du premier."
+			},
+			"answers": ["-x^2+8x-11"]
+		},
+		{
+			"description": "v2 : moins oublié",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"d": "4",
+				"f": "1",
+				"g": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté le produit au lieu de le soustraire : regarde le signe devant lui."
+			},
+			"answers": ["x^2+8x-11"]
+		},
+		{
+			"description": "v2 : produits croisés",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"d": "4",
+				"f": "1",
+				"g": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits."
+			},
+			"answers": ["-x^2+6x+5"]
+		},
+		{
+			"description": "v3 : (2x + 1)(x − 3) − (x − 4)(x + 2)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "1",
+				"g": "-4",
+				"h": "1",
+				"j": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["x^2-3x+5"]
+		},
+		{
+			"description": "v3 : ordre libre",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "1",
+				"g": "-4",
+				"h": "1",
+				"j": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5-3x+x^2"]
+		},
+		{
+			"description": "v3 : non réduit",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "1",
+				"g": "-4",
+				"h": "1",
+				"j": "2"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["2x^2-5x-3-x^2+2x+8"]
+		},
+		{
+			"description": "v3 : moins au premier terme",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "1",
+				"g": "-4",
+				"h": "1",
+				"j": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe « − » devant le produit change le signe de tous les termes du produit développé, pas seulement du premier."
+			},
+			"answers": ["x^2-7x-11"]
+		},
+		{
+			"description": "v3 : moins oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "1",
+				"g": "-4",
+				"h": "1",
+				"j": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as ajouté le produit au lieu de le soustraire : regarde le signe devant lui."
+			},
+			"answers": ["3x^2-7x-11"]
+		},
+		{
+			"description": "v3 : produits croisés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "-3",
+				"f": "1",
+				"g": "-4",
+				"h": "1",
+				"j": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque le terme en $x$ : chaque terme de la première parenthèse multiplie chaque terme de la seconde, cela fait quatre produits."
+			},
+			"answers": ["x^2+5"]
+		}
+	]
+}

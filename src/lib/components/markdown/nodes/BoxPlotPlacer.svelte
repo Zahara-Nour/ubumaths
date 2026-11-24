@@ -544,12 +544,13 @@
 
 	/* Trait choisi : la couleur d'accent de l'interface */
 	.boite-trait-actif {
-		stroke: var(--color-primary);
+		/* Orange foncé en clair : l'accent n'a que 2,2 de contraste sur le fond clair */
+		stroke: light-dark(var(--color-fig-orange), var(--color-primary));
 		stroke-width: 3.5;
 	}
 
 	.stat-svg .boite-trait-nom {
-		fill: var(--color-primary);
+		fill: light-dark(var(--color-fig-orange), var(--color-primary));
 		font-size: 10px;
 		font-weight: 600;
 	}

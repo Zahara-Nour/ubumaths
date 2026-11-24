@@ -54,7 +54,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `error-kind.ts`                         | `guessErrorKind(réponse, attendu)` : type d'une réponse **fausse** (opposé, ×10ᵏ avec \|k\| ≤ 3, inverse, double, moitié, carré oublié / en trop), lu sur les valeurs ; `null` si la réponse n'est pas une écriture finale de nombre, si l'attendu vaut 0 ou ±1, est littéral ou en pourcentage, ou si deux types collent (chantier `type-erreur`, calculé à la lecture, ne change pas la note) |
 | `superflu/`                             | Registre des règles de superflu (`rules.ts` : identifiant, libellé, message, transformation) et leurs transformations (`transforms.ts`), lus par `checkForm`, l'éditeur de modèles, les messages et le schéma Zod                                                                                                                                                                               |
 | `decimal-comma.ts`                      | la virgule décimale nue (`3,14`) : nombre ou séparateur                                                                                                                                                                                                                                                                                                                                         |
-| `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`) ; `\times` d'un produit implicite qui ne se relirait pas (`3 \times 3x^2`, `x \times 3^x`, `juxtaposesDigits`)                                                                                                                                                                                                          |
+| `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`) ; `\times` d'un produit implicite qui ne se relirait pas (`3 \times 3x^2`, `x \times 3^x`, `juxtaposesDigits`) ; un `\dfrac` tait la parenthèse de groupement qui enveloppe tout son numérateur ou dénominateur (`(x^2-1)/(x+1)` → `\dfrac{x^2 - 1}{x + 1}`, `fractionPart`, E9 : l'arbre la garde)                     |
 | `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                                                                                                                                                                                                                                                  |
 | `pretty-print.ts`                       | `prettyPrint` (débogage)                                                                                                                                                                                                                                                                                                                                                                        |
 | `index.ts`                              | point d'entrée `#lib/mathAST/index.ts`                                                                                                                                                                                                                                                                                                                                                          |
@@ -1289,7 +1289,8 @@ division par un nombre, identités).
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit au propre.
   Primitives : `tidyTerms` (`tidy/terms.ts`, l'ordre de la règle gardé : `tidy({ order: 'kept' })`).
-  Dérivées : `withTidyStep` (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant
+  Dérivées : `withTidyStep` (`pedagogical-differentiation/tidy-step.ts`, l'étape ajoutée prend un
+  `id` qu'aucune étape ni sous-étape ne porte, `nextStepId`, E10), ajouté par l'appelant
   (corrections, `.dériver`, bouton), écrit la **forme finale** `finalDerivative` (`final-form.ts`,
   simplify-carte lot 5a). La carte f′ (`derivativeAstOf`) la calcule UNE fois sur f déjà
   substituée (`finalDerivativeOf` : étapes pédagogiques, repli sur `differentiate`), même rendu
@@ -1905,9 +1906,6 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   `{ type: 'opposite', … }` à la main, hors `factory.ts` (invariant 2) ; l'inversion exacte de
   `ln u ⊳ c` / `e^u ⊳ c` ne couvre ni u non affine (`\ln(x^2)-1`) ni `log`, `log10`, `log2`
   avec c ≠ 0 (contrainte `unresolved`).
-- Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`,
-  `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`)
-  ne servent plus que pour `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.
 - Limites, évaluation flottante (relevé le 2026-10-25, simplify-carte lot 6a) : `evaluateNumeric`
   (`common/numeric.ts`), seul évaluateur flottant de `limits/` et de `evaluateAtPoint` des limites
   pédagogiques (réglage `'undefined'`), **n'évalue ni π ni e** (`null`). Le moteur compte sur ce

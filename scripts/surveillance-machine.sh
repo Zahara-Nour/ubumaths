@@ -9,9 +9,12 @@
 # - serveur de dev dans le dépôt principal → l'ARRÊTE (cas sûr : on le relance
 #   en une commande, et la règle l'interdit) et prévient ;
 # - serveur de dev trop gros ou trop vieux, Chrome trop gourmand, swap trop plein,
-#   extension de Chrome ou de Brave bloquée (CPU au plafond, des heures de CPU
-#   cumulées : 2 extensions à 100 % pendant 10 jours le 2026-11-19) → prévient
-#   seulement ;
+#   processus emballé quel qu'il soit (CPU au plafond, des heures de CPU cumulées :
+#   2 extensions à 100 % pendant 10 jours le 2026-11-19, le processus graphique de
+#   Chrome 12 jours le 2026-11-22), programme qui ne ramasse plus ses processus
+#   morts (Chrome puis Brave bloqués, 2026-11-22 et 24) → prévient seulement ;
+# - trop de sessions Claude ouvertes depuis plus de SEUIL_SESSION_JOURS jours
+#   (elles remplissent le swap) → prévient, au plus une fois par jour ;
 # - charge au-delà de SEUIL_CHARGE deux passages de suite, pression mémoire de
 #   macOS « tendue » ou « critique » → prévient, en nommant les 3 programmes qui
 #   prennent le plus (CPU pour la charge, mémoire pour la pression et le swap) ;
@@ -25,6 +28,8 @@
 #   parent est mort depuis plus de SEUIL_ORPHELIN_MIN min) → les FERME (cas sûr :
 #   personne ne lira plus leur résultat) et prévient ;
 # - moins de SEUIL_DISQUE_GO Go libres sur le volume des données → prévient ;
+# - disque qui a perdu plus de SEUIL_DISQUE_BAISSE_GO Go en 24 h (lu dans
+#   l'historique) → prévient, au plus une fois par jour ;
 # - une fois par jour, au premier passage après SURVEILLANCE_HEURE_RAS h, un
 #   « RAS » qui prouve que la surveillance tourne (envoyé même s'il y a eu des
 #   alertes : une surveillance morte ne se distingue pas d'une machine saine) ;
@@ -53,8 +58,12 @@ SEUIL_SERVEUR_MO="${SEUIL_SERVEUR_MO:-1500}"         # mémoire d'un serveur de 
 SEUIL_SERVEUR_HEURES="${SEUIL_SERVEUR_HEURES:-6}"    # âge d'un serveur de dev
 SEUIL_CHROME_CPU="${SEUIL_CHROME_CPU:-600}"          # CPU cumulé de Chrome, en %
 SEUIL_CHROME_ONGLETS="${SEUIL_CHROME_ONGLETS:-60}"   # processus d'onglets Chrome
-SEUIL_EXTENSION_CPU="${SEUIL_EXTENSION_CPU:-90}"      # CPU d'un processus d'extension, en %
-SEUIL_EXTENSION_HEURES="${SEUIL_EXTENSION_HEURES:-1}" # temps CPU cumulé de ce processus
+# Processus emballés et parents bloqués : SEUIL_EMBALLE_CPU, SEUIL_EMBALLE_HEURES,
+# SEUIL_ZOMBIES, SEUIL_ZOMBIE_MIN, dans machine-commun.sh (partagés avec le bilan).
+SEUIL_SESSION_JOURS="${SEUIL_SESSION_JOURS:-7}"      # âge d'une vieille session Claude
+SEUIL_SESSIONS_VIEILLES="${SEUIL_SESSIONS_VIEILLES:-10}" # vieilles sessions avant l'alerte
+SEUIL_DISQUE_BAISSE_GO="${SEUIL_DISQUE_BAISSE_GO:-5}" # Go perdus en 24 h
+RAPPEL_JOUR_MIN=1440                                  # alertes de fond : une fois par jour
 SEUIL_SWAP_POURCENT="${SEUIL_SWAP_POURCENT:-85}"     # swap utilisé / swap total
 NB_COEURS="$(sysctl -n hw.ncpu 2>/dev/null)"
 NB_COEURS="${NB_COEURS:-12}"
@@ -127,14 +136,23 @@ envoyer() {
 	fi
 }
 
-# Vrai si l'alerte <cle> n'a pas été envoyée depuis SURVEILLANCE_RAPPEL_MIN minutes.
+# Vrai si l'alerte <cle> n'a pas été envoyée depuis [<minutes>] (SURVEILLANCE_RAPPEL_MIN
+# par défaut).
 a_renvoyer() {
-	local marque="$ETAT/alerte-$1"
+	local marque="$ETAT/alerte-$1" delai="${2:-$SURVEILLANCE_RAPPEL_MIN}"
 	[ -f "$marque" ] || return 0
 	local maintenant derniere
 	maintenant="$(date +%s)"
 	derniere="$(cat "$marque" 2>/dev/null || echo 0)"
-	[ $((maintenant - derniere)) -ge $((SURVEILLANCE_RAPPEL_MIN * 60)) ]
+	[ $((maintenant - derniere)) -ge $((delai * 60)) ]
+}
+
+# Clés notées au passage précédent dans <fichier>, si ce passage date de moins de
+# 11 min (Mac en veille : pas « de suite »). Une alerte qui l'exige ne part qu'au
+# 2e passage de suite où elle est vue : un pic ou un instant fugace n'en est pas une.
+vus_au_passage_precedent() {
+	[ -n "$(find "$1" -mmin -11 2>/dev/null)" ] && cat "$1"
+	return 0
 }
 
 # Ajoute une ligne à l'historique (sauf en --essai) et n'en garde que les
@@ -310,25 +328,54 @@ if [ "$chrome_cpu" -gt "$SEUIL_CHROME_CPU" ] || [ "$chrome_onglets" -gt "$SEUIL_
 	fi
 fi
 
-# 2 bis. Extensions bloquées : CPU au plafond ET des heures de CPU cumulées (un pic
-#    bref n'en est pas une). Jamais arrêtées : on ne sait pas laquelle c'est.
-#    time= de ps (macOS) : « minutes:secondes.centièmes ».
-while read -r pid cpu temps commande; do
+# 2 bis. Processus emballés, quels qu'ils soient : CPU au plafond ET des heures de
+#    CPU cumulées, deux passages de suite (WindowServer ou un `vite dev` qui
+#    recompile montent un instant). Jamais arrêtés : on ne sait pas ce qu'ils font.
+#    Le pid est au journal (`kill <pid>` : un navigateur relance son processus).
+fichier_emballes="$ETAT/emballes-vus"
+emballes_avant="$(vus_au_passage_precedent "$fichier_emballes")"
+emballes_vus=""
+while read -r pid cpu cpu_s _etime commande; do
 	[ -n "$pid" ] || continue
-	case "$commande" in
-	*"/Applications/Google Chrome.app/"*) navigateur=Chrome ;;
-	*"/Applications/Brave Browser.app/"*) navigateur=Brave ;;
-	*) continue ;;
-	esac
-	cpu_entier="${cpu%%.*}"
-	heures_cpu=$(($(secondes_depuis_etime "${temps%%.*}") / 3600))
-	[ "$cpu_entier" -ge "$SEUIL_EXTENSION_CPU" ] && [ "$heures_cpu" -ge "$SEUIL_EXTENSION_HEURES" ] || continue
-	if a_renvoyer "extension-$pid"; then
-		alertes+=("Extension $navigateur bloquée : $cpu_entier % CPU, $heures_cpu h de CPU cumulées.")
-		marquer "extension-$pid"
-		journaliser "alerte : extension $navigateur (pid $pid) $cpu_entier % CPU, $heures_cpu h de CPU"
+	emballes_vus+="$pid"$'\n'
+	grep -qx "$pid" <<<"$emballes_avant" || continue
+	if a_renvoyer "emballe-$pid"; then
+		nom="$(nom_pour_notification "$commande")"
+		alertes+=("$nom emballé : $cpu % CPU, $((cpu_s / 3600)) h de CPU cumulées.")
+		marquer "emballe-$pid"
+		journaliser "alerte : $(nom_lisible "$commande") (pid $pid) $cpu % CPU, $((cpu_s / 3600)) h de CPU"
 	fi
-done < <(ps -Ao pid=,pcpu=,time=,command= | awk '/--extension-process/')
+done < <(processus_emballes)
+[ "$essai" = 1 ] || printf '%s' "$emballes_vus" >"$fichier_emballes"
+
+# 2 ter. Programme bloqué : il ne ramasse plus ses processus morts (Chrome, puis
+#    Brave : « Quitter » sans réponse). Deux passages de suite : un parent qui
+#    ramasse ses morts quelques millisecondes après le passage n'est pas bloqué.
+#    Le relancer ; fermé de force s'il le faut.
+fichier_bloques="$ETAT/bloques-vus"
+bloques_avant="$(vus_au_passage_precedent "$fichier_bloques")"
+bloques_vus=""
+while read -r ppid nombre commande; do
+	[ -n "$ppid" ] || continue
+	bloques_vus+="$ppid"$'\n'
+	grep -qx "$ppid" <<<"$bloques_avant" || continue
+	if a_renvoyer "bloque-$ppid"; then
+		nom="$(nom_pour_notification "$commande")"
+		alertes+=("$nom ne répond plus ($nombre processus morts non ramassés) : le relancer.")
+		marquer "bloque-$ppid"
+		journaliser "alerte : $(nom_lisible "$commande") (pid $ppid) bloqué, $nombre processus morts non ramassés"
+	fi
+done < <(parents_bloques)
+[ "$essai" = 1 ] || printf '%s' "$bloques_vus" >"$fichier_bloques"
+
+# 2 quater. Vieilles sessions Claude : chacune garde son contexte en mémoire.
+read -r sessions_total sessions_vieilles sessions_ko < <(sessions_claude |
+	awk -v s=$((SEUIL_SESSION_JOURS * 86400)) '{ n++; m += $2; if ($1 >= s) v++ } END { printf "%d %d %d\n", n, v, m }')
+if [ "${sessions_vieilles:-0}" -ge "$SEUIL_SESSIONS_VIEILLES" ] && a_renvoyer sessions "$RAPPEL_JOUR_MIN"; then
+	alertes+=("Sessions Claude : $sessions_vieilles ouvertes depuis plus de $SEUIL_SESSION_JOURS jours ($sessions_total en tout, $((sessions_ko / 1048576)) Go). Fermer celles des chantiers finis.")
+	marquer sessions
+	journaliser "alerte : $sessions_vieilles sessions Claude de plus de $SEUIL_SESSION_JOURS j ($sessions_total en tout)"
+fi
 
 # 3. Swap.
 swap_pourcent=0
@@ -382,9 +429,26 @@ fi
 read -r disque_total disque_libre < <(df -k "$VOLUME_DISQUE" 2>/dev/null |
 	awk 'NR == 2 { printf "%d %d\n", $2 / 1048576, $4 / 1048576 }')
 if [ -n "${disque_libre:-}" ] && [ "$disque_libre" -lt "$SEUIL_DISQUE_GO" ] && a_renvoyer disque; then
-	alertes+=("Disque : $disque_libre Go libres sur $disque_total Go.")
+	alertes+=("Disque : $disque_libre Go libres sur $disque_total Go. Pour en libérer : pnpm disque:liberer --essai")
 	marquer disque
 	journaliser "alerte : disque $disque_libre Go libres sur $disque_total Go ($VOLUME_DISQUE)"
+fi
+
+# 3 sexies. Disque qui fond : Go libres d'il y a 24 h (première ligne de
+#    l'historique dans les 24 h, au moins 20 h en arrière) face à maintenant.
+#    Aucune ligne dans cette fenêtre (Mac éteint ou endormi) : rien ce jour-là.
+if [ -n "${disque_libre:-}" ] && [ -s "$HISTORIQUE" ]; then
+	il_y_a_24h="$(date_de $(($(date +%s) - 86400)) '+%Y-%m-%d %H:%M')"
+	il_y_a_20h="$(date_de $(($(date +%s) - 72000)) '+%Y-%m-%d %H:%M')"
+	disque_hier="$(awk -F ';' -v depuis="$il_y_a_24h" -v avant="$il_y_a_20h" '
+		NR == 1 { for (i = 1; i <= NF; i++) if ($i == "disque_libre_go") c = i; next }
+		c && $1 >= depuis && $1 <= avant && $c != "?" { print $c; exit }' "$HISTORIQUE")"
+	if [ -n "$disque_hier" ] && [ $((disque_hier - disque_libre)) -gt "$SEUIL_DISQUE_BAISSE_GO" ] &&
+		a_renvoyer disque-baisse "$RAPPEL_JOUR_MIN"; then
+		alertes+=("Disque : $((disque_hier - disque_libre)) Go perdus en 24 h ($disque_hier → $disque_libre Go libres). Ce qui pèse : pnpm machine:bilan")
+		marquer disque-baisse
+		journaliser "alerte : disque $disque_hier → $disque_libre Go libres en 24 h"
+	fi
 fi
 
 # 3 quinquies. Redémarrage : heure de démarrage avancée de plus de 2 min depuis le

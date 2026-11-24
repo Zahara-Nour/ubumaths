@@ -2,6 +2,106 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.106.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.105.0...v0.106.0) (2026-11-23)
+
+### ✨ Features
+
+- **cours:** plan du cours plus lisible pour l'élève, documents en lignes compactes ([f569b4a](https://github.com/Zahara-Nour/ubumaths/commit/f569b4a1fa48dd0e30f4788bde5754df34130cc7))
+
+### 🐛 Bug Fixes
+
+- **atelier:** la grille qui bouge sous le pointeur immobile ne sélectionne plus une zone ([b744216](https://github.com/Zahara-Nour/ubumaths/commit/b744216e5c66d436300864ca17f5442ed5eff084)), closes [#1469](https://github.com/Zahara-Nour/ubumaths/issues/1469) [#1424](https://github.com/Zahara-Nour/ubumaths/issues/1424)
+
+### 📚 Documentation
+
+- **wip:** cours-eleve-design, [#3058](https://github.com/Zahara-Nour/ubumaths/issues/3058) mergée, journal archivé ([766917b](https://github.com/Zahara-Nour/ubumaths/commit/766917b3349c469ebb693a08b51c3a7d72193514))
+- **wip:** deploy-sans-attente, [#3057](https://github.com/Zahara-Nour/ubumaths/issues/3057) mergée ([e8ae89b](https://github.com/Zahara-Nour/ubumaths/commit/e8ae89b9801e8e2ae0f3a38829374deaa20467d8))
+- **wip:** verifs-auto, reprendre ici apres [#3056](https://github.com/Zahara-Nour/ubumaths/issues/3056) ([1648d21](https://github.com/Zahara-Nour/ubumaths/commit/1648d21d9e4fe4bc816e0212026a681a20728c8d))
+
+## [0.105.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.104.0...v0.105.0) (2026-11-23)
+
+### ✨ Features
+
+- **modeles:** un modèle créé de zéro reçoit les six sections par défaut ([e8289f5](https://github.com/Zahara-Nour/ubumaths/commit/e8289f58f5b9e561ad0dbb7e284a53c9c31c2468))
+- **questions:** 90dca27a refuse une fraction encore simplifiable ([fd73c74](https://github.com/Zahara-Nour/ubumaths/commit/fd73c742290b2746baff4012ad44839501ae3e93))
+- **questions:** idees-1re-derivation, 2 modeles neufs et 13 variations de modeles publies ([3671615](https://github.com/Zahara-Nour/ubumaths/commit/3671615fc39664cd1b4d5c1b4a7f7f037069d9eb))
+- **questions:** idees-1re-derivation, ids des brouillons en prod ([b10edd4](https://github.com/Zahara-Nour/ubumaths/commit/b10edd4319a9a00830a369332a7313bd5a06509c))
+- **questions:** idees-1re-derivation, migration de rangement des neufs ([b7636b0](https://github.com/Zahara-Nour/ubumaths/commit/b7636b0c4fc77ba9f4e2acc5ad687b5b64dc00cb))
+- **questions:** idees-1re-derivation, rangement des neufs et migration de contenu des publies ([cc0857d](https://github.com/Zahara-Nour/ubumaths/commit/cc0857d63eaa159389e938958268776243c34276))
+- **questions:** idees-6e-entiers-decimaux, 6 modeles neufs et 23 variations de 13 modeles publies ([0923626](https://github.com/Zahara-Nour/ubumaths/commit/0923626d4cf02f3c39fdb81929cce9174642b958))
+- **questions:** idees-6e-entiers-decimaux, F3 et F6 en une case, fractions irreductibles coupees ([00a0fc6](https://github.com/Zahara-Nour/ubumaths/commit/00a0fc619528297fc8b768628efafec5a2a5e0a0))
+- **questions:** idees-6e-entiers-decimaux, ids de prod, rangement, N5 en egalites ([fc214e7](https://github.com/Zahara-Nour/ubumaths/commit/fc214e7d92ace08ac7f71af897025c05ba01c96d))
+- **questions:** idees-6e-entiers-decimaux, migrations de rangement et de contenu ([10dade1](https://github.com/Zahara-Nour/ubumaths/commit/10dade1e21e408e36d3f04808ff03210387b3db1))
+- **questions:** limites de Terminale, rangement de F3 (TSPE-415, limite en un point) ([f722fba](https://github.com/Zahara-Nour/ubumaths/commit/f722fba50f46312ba544a0b1544a016895e79292))
+- **questions:** migration de contenu, ecrit aussi les options d'un modele publie ([3f25001](https://github.com/Zahara-Nour/ubumaths/commit/3f25001c69310a2da6a933001116bfce921204a7))
+- **questions:** rangement des 6 modèles de 3e arithmétique, 3 variations de 90dca27a ([5b7d36d](https://github.com/Zahara-Nour/ubumaths/commit/5b7d36dbb91b8d4ef9ab2c678d6e05d50016315b))
+- **ubumark:** droite graduée avec zoom (zoom:), écran et PDF ([b4a7820](https://github.com/Zahara-Nour/ubumaths/commit/b4a782059daea9530b24cf3774a81a555c169c49))
+
+### 🐛 Bug Fixes
+
+- **atelier:** barre d'icônes entière au téléphone (E7) ([491dcdb](https://github.com/Zahara-Nour/ubumaths/commit/491dcdb2ed23d47ae736a3324329a53af9607f7a))
+- **atelier:** étapes de « Comment ? » (E9, E10 de verifs-auto) ([47239d9](https://github.com/Zahara-Nour/ubumaths/commit/47239d93b9fd2c60a881a9f0233069ba1578664b))
+- **atelier:** l'aire refusée dit pourquoi, pôle entre les bornes (E2) ([1d537c2](https://github.com/Zahara-Nour/ubumaths/commit/1d537c2d6b0e533b2d50193fb199001fbf19cea3))
+- **atelier:** liste blanche du facteur après le nombre (revue de E1) ([eb3877e](https://github.com/Zahara-Nour/ubumaths/commit/eb3877e3a8d9234b0ddefbf424440cad8ddddda3))
+- **atelier:** note à virgule décimale retirée aussi (revue de E9) ([de21342](https://github.com/Zahara-Nour/ubumaths/commit/de21342f48ca1a98f0080061562d311d76b29131))
+- **atelier:** refuser \cos2\pi du clavier MathLive (E1) ([0af745f](https://github.com/Zahara-Nour/ubumaths/commit/0af745fce8cd11cfdd2d659b9f02de8463532e54))
+- **constructions:** lecteur à la largeur de sa figure, nom libre proposé pour e (E3, E5) ([00f576e](https://github.com/Zahara-Nour/ubumaths/commit/00f576ecca900e77b1f70d306ad421f5b6640fda))
+- **grapheur:** constante MARGIN inutilisée retirée de GraphLabel ([ac2b295](https://github.com/Zahara-Nour/ubumaths/commit/ac2b2952bf756f1404f7e851da4fb607363f28e4))
+- **grapheur:** étiquettes d'asymptotes sans chevauchement près du bord droit (E6) ([c1ac70d](https://github.com/Zahara-Nour/ubumaths/commit/c1ac70d967eab8ecdf19eaa5d9e8ed2e3cab85e5))
+- **grapheur:** hauteur d'étiquette sur un LaTeX absent (null) ([37069b8](https://github.com/Zahara-Nour/ubumaths/commit/37069b8bc9f185678fd0deb1b679859487721dd1))
+- **questions:** idees-1re-derivation, migration de contenu re-horodatee apres celles deja en prod ([3ad7e30](https://github.com/Zahara-Nour/ubumaths/commit/3ad7e3030ad88c6a879052d0002896e4a8f2e3b3))
+- **questions:** idees-6e-entiers-decimaux, euro des specs de F10 ecrit comme le clavier ([32058af](https://github.com/Zahara-Nour/ubumaths/commit/32058af3f14fc20479038a47b4cb141866981336))
+- **ubumark:** légende du tableau de variations nommant la fonction (E15) ([599a57f](https://github.com/Zahara-Nour/ubumaths/commit/599a57f7ae9a428b7c9b42b3b94908dc1f10bd57))
+- **ubumark:** zoom, pointillé sous le nombre écrit, pas et labels vérifiés ([e25e33b](https://github.com/Zahara-Nour/ubumaths/commit/e25e33b01e274d3bcce414a5cbf01ce9d238b009))
+
+### 📚 Documentation
+
+- **systeme:** catalogue des blocs, droite graduée avec zoom ([0cae80b](https://github.com/Zahara-Nour/ubumaths/commit/0cae80b95c839336946d25a2d108e27c7af1f7aa))
+- **systeme:** écarts E1, E2, E3, E6, E7 dans la doc ([067974c](https://github.com/Zahara-Nour/ubumaths/commit/067974c5fc0c90be3b117b2a4e67cf7441632b92))
+- **systeme:** note, \dfrac et id des étapes (E9, E10) ([242e105](https://github.com/Zahara-Nour/ubumaths/commit/242e105c3646c2259f17c9af3a2e0c1cb2362485))
+- **wip:** droite-zoom, [#3052](https://github.com/Zahara-Nour/ubumaths/issues/3052) mergée, outil 54 livré, 58 ajouté ([a23fcc1](https://github.com/Zahara-Nour/ubumaths/commit/a23fcc1377b9ac0b950819764d96c595c3fcfb69))
+- **wip:** ecarts-verifs, [#3050](https://github.com/Zahara-Nour/ubumaths/issues/3050) mergée (lot A) ([2c0c410](https://github.com/Zahara-Nour/ubumaths/commit/2c0c4105d34aba7bab999b4aeaff92a862d9103e))
+- **wip:** ecarts-verifs, [#3054](https://github.com/Zahara-Nour/ubumaths/issues/3054) mergée (lot B), E20 à présenter ([cbaa689](https://github.com/Zahara-Nour/ubumaths/commit/cbaa689047c24aaed4fe7de0092498829a983ecb))
+- **wip:** ecarts-verifs, E1 tranché à corriger ([e249ef4](https://github.com/Zahara-Nour/ubumaths/commit/e249ef4c9071dd39e5540f70828cb5ea966cb09f))
+- **wip:** ecarts-verifs, E18 et E19 à présenter (rouges WebKit) ([5d694db](https://github.com/Zahara-Nour/ubumaths/commit/5d694db324e87e8f95aa1d5cd53dab23bd1516f9))
+- **wip:** ecarts-verifs, E2 tranché à corriger ([5899618](https://github.com/Zahara-Nour/ubumaths/commit/5899618c00232029ac8dad6dde07970a42186c1c))
+- **wip:** ecarts-verifs, E3 tranché à corriger ([a1641d8](https://github.com/Zahara-Nour/ubumaths/commit/a1641d86c001fee4a99e90d2325421504be09249))
+- **wip:** ecarts-verifs, E4 tranché à corriger ([869316d](https://github.com/Zahara-Nour/ubumaths/commit/869316d510a07a4d1a73b2c1f053b03cf2198f87))
+- **wip:** ecarts-verifs, E5 tranché à corriger ([b037c99](https://github.com/Zahara-Nour/ubumaths/commit/b037c99e93ef90d66624b79b020301235e206b26))
+- **wip:** ecarts-verifs, E6 à E15 tranchés, découpage en 4 PR ([19cb247](https://github.com/Zahara-Nour/ubumaths/commit/19cb2479183e1a1f0151ff22fa28b1fbe67bedcf))
+- **wip:** ecarts-verifs, journal des ecarts sorti de verifs-auto ([1f34204](https://github.com/Zahara-Nour/ubumaths/commit/1f34204ed5f0d7c4754e99f10f13c74ec22af550))
+- **wip:** idees-1re-derivation, [#3049](https://github.com/Zahara-Nour/ubumaths/issues/3049) en prod, reservations levees ([92bd81d](https://github.com/Zahara-Nour/ubumaths/commit/92bd81d2cfa0bc77be0ba3b8fbc3720a791ce686))
+- **wip:** idees-1re-derivation, lot ecrit, attente des brouillons en prod ([82aef0d](https://github.com/Zahara-Nour/ubumaths/commit/82aef0de249b17b05c4cdd82da52055034414eb2))
+- **wip:** idees-1re-derivation, phase 0 validee, 7 modeles reserves ([6675bfc](https://github.com/Zahara-Nour/ubumaths/commit/6675bfc023fe092ff216f3be10c888d3d6b8bf80))
+- **wip:** idees-1re-derivation, relecture validee, publication a lancer ([b59af41](https://github.com/Zahara-Nour/ubumaths/commit/b59af4173f5880b4a78139b3ab72387621f4862a))
+- **wip:** idees-1re-derivation, releve et phase 0 ([81c2edf](https://github.com/Zahara-Nour/ubumaths/commit/81c2edfae02dabad45975df7c88ae73cec5ffd83))
+- **wip:** idees-1re-derivation, reprendre ici apres [#3051](https://github.com/Zahara-Nour/ubumaths/issues/3051) ([72d9e8f](https://github.com/Zahara-Nour/ubumaths/commit/72d9e8f625263663757c83604b81004e5faf5c42))
+- **wip:** idees-3e-arithmetique publiée, journal archivé ([31aa66e](https://github.com/Zahara-Nour/ubumaths/commit/31aa66e0358f986934eb6c7224e21757a1c04345))
+- **wip:** idees-3e-arithmetique, [#3041](https://github.com/Zahara-Nour/ubumaths/issues/3041) mergée et migrée ([d0f4078](https://github.com/Zahara-Nour/ubumaths/commit/d0f4078419372ebf874715a7d909ac5380d9d6a1))
+- **wip:** idees-3e-arithmetique, 90dca27a migré ([#3046](https://github.com/Zahara-Nour/ubumaths/issues/3046)) ([7ca89ce](https://github.com/Zahara-Nour/ubumaths/commit/7ca89ceb9aa1a4ee12980745aae86836a5c96c50))
+- **wip:** idees-3e-arithmetique, migrations générées, Q3 en attente ([b585c08](https://github.com/Zahara-Nour/ubumaths/commit/b585c08c9679514dec66d667b0e3fd664c98c2ed))
+- **wip:** idees-3e-arithmetique, Q3 tranchée ([11d8a21](https://github.com/Zahara-Nour/ubumaths/commit/11d8a219fd0997e7368fc9ca59cfc1342971fa58))
+- **wip:** idees-3e-arithmetique, réservation de 77ab770d levée (F1 en modèle neuf) ([8f17c75](https://github.com/Zahara-Nour/ubumaths/commit/8f17c75557b886a9bf522111527af5932cdcc550))
+- **wip:** idees-3e-calcul-litteral, 12 modeles reserves, outils 55-56, motifs en attente ([4f3cd36](https://github.com/Zahara-Nour/ubumaths/commit/4f3cd36ecd2c85896bea86ba6d7e822ebc9c69a8))
+- **wip:** idees-3e-calcul-litteral, rubrique 3L1 prise ([55af8a2](https://github.com/Zahara-Nour/ubumaths/commit/55af8a2c0caea5e38fe48aea9b854b37fb555c54))
+- **wip:** idees-6e-entiers-decimaux, lot ecrit et essaye en local ([57591a4](https://github.com/Zahara-Nour/ubumaths/commit/57591a48c1ebf1aad14646942da21754b7f6df44))
+- **wip:** idees-6e-entiers-decimaux, outil 54 livre ([0a382e0](https://github.com/Zahara-Nour/ubumaths/commit/0a382e082830c4851071382cf1176f1c0cdbfd94))
+- **wip:** idees-6e-entiers-decimaux, reprendre ici apres [#3044](https://github.com/Zahara-Nour/ubumaths/issues/3044) ([9e36e0e](https://github.com/Zahara-Nour/ubumaths/commit/9e36e0e26af184fe0440d69ddf75943e4b68e67f))
+- **wip:** idees-6e-entiers-decimaux, reprendre ici apres [#3047](https://github.com/Zahara-Nour/ubumaths/issues/3047) ([1ea2f33](https://github.com/Zahara-Nour/ubumaths/commit/1ea2f332ce807e181b62d1ce768235bc19fb4732))
+- **wip:** idees-6e-entiers-decimaux, reprendre ici apres [#3048](https://github.com/Zahara-Nour/ubumaths/issues/3048) ([c6b4450](https://github.com/Zahara-Nour/ubumaths/commit/c6b445074cc68bf3aadffb9ef80df4b0d6663672))
+- **wip:** idees-6e-entiers-decimaux, rubrique 6N1 publiee ([aa4f9a7](https://github.com/Zahara-Nour/ubumaths/commit/aa4f9a785ac1bd361f46d32f44907e12799d006b))
+- **wip:** idees-tle-derivation prend la rubrique derivation de Terminale ([901317a](https://github.com/Zahara-Nour/ubumaths/commit/901317a04c8d4058da3f9ab8251b20df123c12ac))
+- **wip:** idees-tle-derivation reserve 11 modeles publies ([13d3ed9](https://github.com/Zahara-Nour/ubumaths/commit/13d3ed9724745bf4c91f18cf4c477227b3d693ee))
+- **wip:** idees-tle-limites publiee (F3 compris), journal archive ([7cdeffc](https://github.com/Zahara-Nour/ubumaths/commit/7cdeffc4bfc0b951db65378763f42ae268df45cb))
+- **wip:** idees-tle-limites, reprendre ici apres [#3043](https://github.com/Zahara-Nour/ubumaths/issues/3043) ([b6643ca](https://github.com/Zahara-Nour/ubumaths/commit/b6643ca88f5ffdfab2f2f2f7e7bc66c6c4b6b8a4))
+- **wip:** modele-sections-defaut, [#3055](https://github.com/Zahara-Nour/ubumaths/issues/3055) mergée, journal archivé ([e51425c](https://github.com/Zahara-Nour/ubumaths/commit/e51425c14ef244bf2002b228a3d03b19b96ba503))
+- **wip:** outils-manquants n° 57, fleche cachee autour d'une double barre ([18d1094](https://github.com/Zahara-Nour/ubumaths/commit/18d10940d7a3b6b47cf1c7eb0f655a75b626f026))
+- **wip:** rubrique derivation de 1re prise (idees-1re-derivation) ([cc3b397](https://github.com/Zahara-Nour/ubumaths/commit/cc3b3979a621a441fdb616d43497602163f22bf5))
+- **wip:** verifs-auto, [#1536](https://github.com/Zahara-Nour/ubumaths/issues/1536) tranchee ([#3040](https://github.com/Zahara-Nour/ubumaths/issues/3040)) ([2e03f07](https://github.com/Zahara-Nour/ubumaths/commit/2e03f073ae13e332a2544d1d6836ba3d823db077))
+- **wip:** verifs-auto, [#3037](https://github.com/Zahara-Nour/ubumaths/issues/3037) en prod (v0.104.0), enquete [#1536](https://github.com/Zahara-Nour/ubumaths/issues/1536) commencee ([5852ff7](https://github.com/Zahara-Nour/ubumaths/commit/5852ff73531cb3750849d0c85959bb73a6bdbc08))
+- **wip:** verifs-auto, reprendre ici apres [#3045](https://github.com/Zahara-Nour/ubumaths/issues/3045) ([a95832a](https://github.com/Zahara-Nour/ubumaths/commit/a95832a942922b39254c7661e7eb87a4c5e84c44))
+- **wip:** verifs-auto, reprendre ici apres [#3053](https://github.com/Zahara-Nour/ubumaths/issues/3053) ([6fd0f4b](https://github.com/Zahara-Nour/ubumaths/commit/6fd0f4be16254e65a5bd9be8eb8eea42b608cdb7))
+
 ## [0.104.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.103.0...v0.104.0) (2026-11-23)
 
 ### ✨ Features

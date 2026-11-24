@@ -59,6 +59,8 @@ interface TestXpPlan {
 	totalBaseXp: number;
 	/** Thème dont la réponse porte le bonus → XP cumulée à la fin de cette réponse. */
 	themeDueAt: Map<string, number>;
+	/** Une réponse au moins a été tronquée par le plafond du jour (calcul local). */
+	capped: boolean;
 }
 
 // Constantes
@@ -198,7 +200,10 @@ export async function addBuddyXpFromExercise(
 	return {
 		xpResult: {
 			...finalResult,
-			xp_gained: xpResult.xp_gained + reward.streakBonusXp
+			xp_gained: xpResult.xp_gained + reward.streakBonusXp,
+			// Le calcul local a tronqué avant la base, qui ne voit alors aucun
+			// dépassement ; un palier hors plafond ne l'efface pas non plus
+			daily_cap_reached: capped || xpResult.daily_cap_reached || finalResult.daily_cap_reached
 		},
 		...constanceFields(reward),
 		isNewTheme
@@ -220,6 +225,7 @@ function planTestXp(
 	const bonusThemes = new Set<string>();
 	const themeDueAt = new Map<string, number>();
 	let totalBaseXp = 0;
+	let anyCapped = false;
 
 	for (let i = 0; i < answers.length; i++) {
 		const answer = answers[i];
@@ -234,10 +240,11 @@ function planTestXp(
 			xpEarnedToday: xpEarnedToday + totalBaseXp
 		});
 		totalBaseXp += xp;
+		if (capped) anyCapped = true;
 		if (isNewTheme && answer.theme && !capped) themeDueAt.set(answer.theme, totalBaseXp);
 	}
 
-	return { totalBaseXp, themeDueAt };
+	return { totalBaseXp, themeDueAt, capped: anyCapped };
 }
 
 /**
@@ -305,6 +312,9 @@ export async function addBuddyXpFromTest(
 	// réponses dans l'ordre ; un thème est payé si l'XP cumulée jusqu'à SA
 	// réponse l'est. Les thèmes réservés non payés sont retirés.
 	const creditedBaseXp = lastXpResult.xp_gained;
+	// Plafond du jour : tronqué par le calcul local (la base ne voit alors aucun
+	// dépassement, et n'est pas appelée du tout si rien ne reste) ou par la base
+	const baseCapReached = plan.capped || lastXpResult.daily_cap_reached;
 	const newThemes = new Set(
 		[...reserved].filter((theme) => (plan.themeDueAt.get(theme) ?? Infinity) <= creditedBaseXp)
 	);
@@ -321,7 +331,9 @@ export async function addBuddyXpFromTest(
 	return {
 		xpResult: {
 			...lastXpResult,
-			xp_gained: totalXpGained
+			xp_gained: totalXpGained,
+			// Un palier de Constance hors plafond n'efface pas le plafond atteint
+			daily_cap_reached: baseCapReached || lastXpResult.daily_cap_reached
 		},
 		...constanceFields(reward),
 		isNewTheme: newThemes.size > 0

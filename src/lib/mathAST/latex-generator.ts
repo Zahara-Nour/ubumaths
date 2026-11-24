@@ -402,6 +402,20 @@ function containsExposedLimit(node: MathNode): boolean {
 }
 
 /**
+ * Le numérateur ou le dénominateur d'un `\\dfrac`, sans la parenthèse de
+ * groupement qui l'enveloppe tout entier : la barre groupe déjà. `(x^2-1)/(x+1)`
+ * tapé en ligne a besoin de ses parenthèses pour le `/`, pas sa fraction
+ * (E9 du chantier ecarts-verifs). L'arbre les garde — la réécriture en ligne
+ * et les unités (`1/(2[s])`) en ont besoin ; seul le LaTeX les tait. Un
+ * crochet de calcul (`shape: 'square'`) reste : c'est un choix d'écriture.
+ */
+function fractionPart(node: MathNode): MathNode {
+	if (node.type !== 'delimiter' || node.delimiters !== 'parentheses') return node;
+	if (node.semantic !== 'grouping' || node.shape !== undefined) return node;
+	return node.content;
+}
+
+/**
  * Parenthèses des deux opérandes d'un opérateur binaire écrit EN LIGNE (somme,
  * différence, produit, quotient `/` ou `:`), limites comprises. Null pour tout
  * autre nœud (`\dfrac` groupe déjà).
@@ -851,9 +865,9 @@ export class LatexGenerator {
 		switch (node.displayStyle) {
 			case 'fraction':
 				this.emit('\\dfrac{', opMeta);
-				this.visitWithSpans(node.numerator);
+				this.visitWithSpans(fractionPart(node.numerator));
 				this.emit('}{', opMeta);
-				this.visitWithSpans(node.denominator);
+				this.visitWithSpans(fractionPart(node.denominator));
 				this.emit('}', opMeta);
 				break;
 			case 'inline':
@@ -1532,9 +1546,11 @@ export class LatexGenerator {
 	private generateDivision(node: DivisionNode): string {
 		// `\dfrac` groupe déjà ; les écritures EN LIGNE, non.
 		const grouped = node.displayStyle !== 'fraction';
-		const renderedNum = this.generateNode(node.numerator);
+		const renderedNum = this.generateNode(grouped ? node.numerator : fractionPart(node.numerator));
 		const num = binaryOperandWraps(node)?.left ? `\\left( ${renderedNum} \\right)` : renderedNum;
-		const denom = grouped ? this.groupIfSum(node.denominator) : this.generateNode(node.denominator);
+		const denom = grouped
+			? this.groupIfSum(node.denominator)
+			: this.generateNode(fractionPart(node.denominator));
 
 		switch (node.displayStyle) {
 			case 'fraction':

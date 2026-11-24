@@ -21,7 +21,8 @@ import {
 	allowClipboard,
 	readClipboard,
 	showCards,
-	gotoRedirected
+	gotoRedirected,
+	waitVirtualKeyboard
 } from './helpers/atelier';
 
 /**
@@ -813,10 +814,14 @@ test('#1703 — dérivées réduites, racine cubique', async ({ page }) => {
 	expectLatex(await calc(page, '.variations 1 - x e^x'), "f'(x) = -(x + 1)e^x");
 	expectLatex(await calc(page, '.simplifier cbrt(x) - cbrt(x)'), '0');
 
-	// En dernier : « Comment ? » de ce quotient tombe sur le bug de #1674
 	const quotient = await calc(page, '.dériver x/(x+1)');
 	expectLatex(quotient, '\\dfrac{1}{(x + 1)^2}');
-	expectStepsNotContaining(await steps(quotient), 'x + 1 - x');
+	// x + 1 − x peut s'écrire dans une étape, s'il est réduit à une étape suivante
+	// (lecture tranchée par David le 2026-11-23, E20 du chantier ecarts-verifs)
+	expectStepsContaining(
+		await steps(quotient),
+		'On simplifie \\dfrac{\\left( x + 1 \\right) - x}{\\left( x + 1 \\right)^2} = \\dfrac{1}{\\left( x + 1 \\right)^2}'
+	);
 });
 
 test('#1663 — valeur exacte affichée (console)', async ({ page }) => {
@@ -1204,6 +1209,7 @@ async function typeInMathConsole(page: Page, keys: string): Promise<void> {
 	await expect(async () => {
 		await field.click();
 		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
+		await waitVirtualKeyboard(page, field);
 		await page.keyboard.type(keys);
 		expect(await mathValue(field)).not.toBe('');
 	}).toPass();

@@ -180,6 +180,3 @@ commandes : [commandes.md](../pratiques/commandes.md).
 - Autres décisions d'architecture : [docs/adr/](../adr/).
 
 ## Écarts connus
-
-- L'en-tête de `src/routes/(protected)/+layout.server.ts` documente `/login` et conseille
-  `await parent()` ; la redirection réelle va vers `/auth/login`, et `locals` suffit.

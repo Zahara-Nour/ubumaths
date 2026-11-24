@@ -21,6 +21,11 @@
 	- Explanations are displayed only when `verbosity === 'detailed'` AND the
 	  step actually carries one.
 	- SubSteps render recursively, indented one level deeper.
+	- Les `{#each}` sont clés par la POSITION, jamais par `step.id` : chaque
+	  producteur d'étapes numérote à sa façon (0, −1, `steps.length`…) et deux
+	  étapes sœurs de même `id` faisaient planter le rendu (`each_key_duplicate`,
+	  E10 du chantier ecarts-verifs). La liste est remplacée d'un bloc, la
+	  position suffit.
 
 	Props :
 	- `steps`        — the pre-rendered steps to display
@@ -72,7 +77,7 @@
 
 		{#if step.subSteps && step.subSteps.length > 0}
 			<ol class="generated-substeps">
-				{#each step.subSteps as sub, j (sub.id)}
+				{#each step.subSteps as sub, j (j)}
 					{@render stepBlock(sub, j, depth + 1)}
 				{/each}
 			</ol>
@@ -82,7 +87,7 @@
 
 {#if steps.length > 0}
 	<ol class="generated-steps">
-		{#each steps as step, i (step.id)}
+		{#each steps as step, i (i)}
 			{@render stepBlock(step, i, 0)}
 		{/each}
 	</ol>

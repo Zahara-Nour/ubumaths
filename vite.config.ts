@@ -282,7 +282,23 @@ export default defineConfig(async ({ mode, isSsrBuild }): Promise<ViteUserConfig
 						// globs above; it runs via vitest.integration.config.ts (Supabase local).
 						setupFiles: ['./vitest-setup-server.ts']
 					}
-				}
+				},
+				// Tests de preuve du registre des écarts (docs/ecarts/registre.md) : rouges
+				// tant que l'écart est vrai, donc hors de la CI et de `test:changed`. Le
+				// projet n'existe que pour `pnpm ecarts rejouer`, qui pose ECARTS_PREUVES.
+				...(process.env.ECARTS_PREUVES === '1'
+					? [
+							{
+								extends: './vite.config.ts',
+								test: {
+									name: 'ecarts',
+									environment: 'node',
+									include: ['tests/ecarts/**/*.test.ts'],
+									setupFiles: ['./vitest-setup-server.ts']
+								}
+							}
+						]
+					: [])
 			]
 		}
 	};

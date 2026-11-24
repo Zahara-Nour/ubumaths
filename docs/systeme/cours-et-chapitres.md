@@ -109,8 +109,16 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   `ChapterSeriesCard`, `ChapterRevisionButton` → `/dashboard/revisions/chapitres/[chapterId]`) et
   `cours/teacher/` (`ChapterSectionsEditor` + `section-dnd.ts`, `ChapterAddDialogs`,
   `DocumentUpload`, `PublicationToggle`, `StudentProgressTable`, `CourseShareLinkCard`).
-  `DocumentCard` accepte des adresses imposées (`hrefs`) et `ChapterSeriesCard` ne demande que
-  titre, forme, nombre de questions et lien : la page publique les réutilise. Modèles :
+  `ChapterSeriesCard` ne demande que titre, forme, nombre de questions et lien : la page publique
+  la réutilise.
+- **Rendu du plan côté élève** (lien de consultation et `dashboard/student/cours/[chapterId]`,
+  même rendu depuis le 2026-11-23) : chapitre en bandeau (surtitre « Chapitre », titre, trait),
+  section en petite étiquette en majuscules, documents (et fiches publiques, exercices) en
+  lignes compactes `ResourceRow` (pastille du type, titre tel que saisi, bouton de
+  téléchargement), regroupées dans un même cadre par `groupPlanItems` (`plan-groups.ts`) ;
+  objectifs, séries et fiches de l'élève connecté restent des blocs. ⚠️ Le titre d'un document
+  n'est pas un titre HTML : la règle globale `main h3` de `app.css` (`!important`) lui donnerait
+  la taille d'une section. `DocumentCard` ne sert plus qu'au prof. Modèles :
   `ChapterTemplateIndicator` dans `src/lib/components/templates/`.
 - **Éditeur partagé chapitre / modèle** (ADR 0029, étape 3c) : `ChapterSectionsEditor`,
   `DocumentUpload` et `ChapterAddDialogs` (les boîtes d'ajout : objectif, exercice, fiche, série,
@@ -309,6 +317,13 @@ de `content_snapshot` / `current_version` sur le modèle, ni de numéros de vers
 lié ; la règle de stockage élève de prod (`chapters/…`) est retirée — le serveur sert les fichiers
 après la garde de publication.
 
+- **Sections par défaut** : un chapitre créé à la main reçoit six sections (Préparation, Le cours,
+  Les exercices, Méthodes, Résumé, Bilan) par le déclencheur `seed_default_chapter_sections`. Un
+  modèle créé **de zéro** (`createChapterTemplate`, page « Nouveau modèle ») reçoit les mêmes,
+  posées par le code (`DEFAULT_SECTION_TITLES` dans `chapter-sections.ts`, miroir du déclencheur ;
+  test `tests/integration/modele-sections-par-defaut.test.ts`). Un modèle fait **depuis un
+  chapitre** (`createTemplateFromChapter`) copie les sections du chapitre, sans les six en plus.
+  Un chapitre créé depuis un modèle reçoit les sections du modèle et peut en ajouter de propres.
 - **Contenu du modèle** : les fonctions du chapitre prennent un propriétaire `ContentOwner`
   (sections : `chapter-sections.ts` ; insertions : `insertDocument`, `insertChecklistItem`,
   `insertExercise`, `insertWorksheet` ; séries : `linkSeries`, `setSeriesForm`). Les fichiers d'un

@@ -324,7 +324,7 @@ test('#1627 — petit point de couleur, cartes sans nature, console en bas, noms
 	const history = page.locator('ol.historique');
 	const atBottom = () =>
 		history.evaluate((list) => {
-			let box: HTMLElement | null = list;
+			let box: Element | null = list;
 			while (box !== null && box.scrollHeight <= box.clientHeight) box = box.parentElement;
 			// Une console qui ne défile pas ne prouverait rien : il faut un conteneur qui déborde
 			return box !== null && box.scrollHeight - box.scrollTop - box.clientHeight < 4;

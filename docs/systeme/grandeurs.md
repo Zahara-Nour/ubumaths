@@ -194,7 +194,9 @@ Case à **unité imposée** (`unit.required`) : au tirage, l'attendu est réécr
 Un attendu en h-min-s (`{2[h]}{58[min]}`, écrit par `{{eval}}`) se lit comme UNE durée dans sa plus
 petite unité (`178[min]`, `singleExpectedDuration`, `composite-duration.ts`), pour la correction
 comme pour les touches d'unité du clavier (`keyboard-units.ts`) ; l'élève peut répondre « 2 h 58 min »,
-« 178 min » ou toute autre écriture juste (oracle : 0 verdict changé, 2026-11-03).
+« 178 min » ou toute autre écriture juste (oracle : 0 verdict changé, 2026-11-03). Les touches d'unité lisent aussi l'attendu en syntaxe maison (`66[min]`, `28[mm]` : `houseQuantityToLatex`).
+
+Nombre mal écrit devant l'unité (`36, mm`, `,036 m` : virgule sans décimale ou sans chiffre avant) : `malformedNumberQuantity` le relit sans rien deviner côté élève. Valeur relue juste → refus avec le message de forme (`numberWritingAtFault`, `bad_form`) ; valeur fausse → faux, comme la saisie bien écrite ; unité illisible → « Unité inconnue ».
 
 Garde-fou : l'oracle `oracle-cases-unite.test.ts` fige le verdict de ~1 700 réponses typiques
 sur les 25 modèles publiés à case à unité (copiés de la production dans

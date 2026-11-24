@@ -48,6 +48,8 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'scripts/surveillance-machine-installer.sh',
 		'scripts/menage-machine.sh',
 		'scripts/machine-commun.sh',
+		'scripts/bilan-machine.sh',
+		'scripts/liberer-disque.sh',
 		'scripts/durees/**'
 	],
 	excluded: [

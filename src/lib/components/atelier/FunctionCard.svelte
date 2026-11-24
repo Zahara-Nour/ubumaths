@@ -22,7 +22,12 @@
 	import { toLatex } from '#lib/mathAST/latex-generator.ts';
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
 	import { forMathlive } from '#lib/atelier/mathfield.ts';
-	import { derivativeOf, displayName, reciprocalOf } from '#lib/atelier/names.ts';
+	import {
+		derivativeOf,
+		displayName,
+		reciprocalOf,
+		splitDisplayExponent
+	} from '#lib/atelier/names.ts';
 	import { derivativeAstOf } from '#lib/atelier/engine.ts';
 	import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from '#lib/atelier/letter.ts';
 	import { intervalLabelOf } from '#lib/atelier/interval.ts';
@@ -55,6 +60,7 @@
 	const uid = $props.id();
 
 	const name = $derived(displayName(object.name));
+	const nameParts = $derived(splitDisplayExponent(name));
 	const letter = $derived(typedLetterOf(atelier, object));
 
 	/** La fonction dont cette carte est la dérivée (`f′` → `f`), ou `null`. */
@@ -201,7 +207,10 @@
 		<!-- Nom et définition, qui passent à la ligne ; les boutons restent à droite -->
 		<div class="corps">
 			<CurveStylePopover {object} />
-			<span class="nom" title={follows ?? undefined}>{name}</span>
+			<span class="nom" title={follows ?? undefined}
+				>{nameParts.base}{#if nameParts.exponent}<span class="exposant">{nameParts.exponent}</span
+					>{/if}</span
+			>
 			{#if follows}
 				<button
 					type="button"
@@ -224,6 +233,10 @@
 						showPrefix={false}
 						autofocus={selected && object.definition === ''}
 					/>
+					<!-- L'ensemble hérité des fonctions citées n'est pas dans le champ : on l'écrit à côté -->
+					{#if object.inheritedInterval !== undefined && intervalLabel}
+						<span class="intervalle">sur {intervalLabel}</span>
+					{/if}
 				{:else}
 					<span class="formule">
 						{#if rendered}
@@ -456,6 +469,14 @@
 		font-weight: 600;
 		font-size: 1.0625rem;
 	}
+	/* ⁻¹ d'une seule police : WebKit prend ⁻ dans un repli et décolle ¹ (E13) */
+	.exposant {
+		font-family: var(--font-sans, system-ui, sans-serif);
+		font-style: normal;
+		font-weight: 500;
+		font-size: 1.15em;
+		margin-left: 0.05em;
+	}
 	.variable {
 		font-family: var(--font-serif, serif);
 		font-style: italic;
@@ -487,6 +508,8 @@
 		overflow-wrap: anywhere;
 	}
 	.intervalle {
+		flex: 0 0 auto;
+		align-self: center;
 		margin-left: 0.25em;
 		color: var(--color-muted-foreground);
 	}

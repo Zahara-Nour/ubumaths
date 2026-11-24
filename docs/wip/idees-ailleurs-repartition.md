@@ -32,18 +32,18 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 
 ### Spécialité
 
-| Rubrique                          | Codes | Exercices | État                 | Sujet / session          |
-| --------------------------------- | ----- | --------- | -------------------- | ------------------------ |
-| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`       |
-| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre` |
-| Dérivation                        | 1AN1  | 12        | prise (2026-11-23)   | `idees-1re-derivation`   |
-| Variations                        | 1AN2  | 5         | libre                |                          |
-| Fonction exponentielle            | 1AN3  | 11        | libre                |                          |
-| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                          |
-| Produit scalaire                  | 1G1   | 10        | libre                |                          |
-| Géométrie repérée                 | 1G2   | 5         | libre                |                          |
-| Probabilités conditionnelles      | 1P1   | 8         | libre                |                          |
-| Variables aléatoires réelles      | 1P2   | 1         | libre                |                          |
+| Rubrique                          | Codes | Exercices | État                 | Sujet / session           |
+| --------------------------------- | ----- | --------- | -------------------- | ------------------------- |
+| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`        |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre`  |
+| Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
+| Variations                        | 1AN2  | 5         | libre                |                           |
+| Fonction exponentielle            | 1AN3  | 11        | prise (2026-11-24)   | `idees-1re-exponentielle` |
+| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                           |
+| Produit scalaire                  | 1G1   | 10        | libre                |                           |
+| Géométrie repérée                 | 1G2   | 5         | libre                |                           |
+| Probabilités conditionnelles      | 1P1   | 8         | libre                |                           |
+| Variables aléatoires réelles      | 1P2   | 1         | libre                |                           |
 
 ### Automatismes de l'épreuve anticipée
 
@@ -71,9 +71,9 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ---------------------- |
 | Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`     |
 | Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`    |
-| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | prise (2026-11-23)   | `idees-tle-derivation` |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation` |
 | Continuité des fonctions                                                       | TSA4        | 6         | libre                |                        |
-| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                        |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | publiée (2026-11-24) | `idees-tle-ln`         |
 | Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                        |
 | Intégration                                                                    | TSA8        | 5         | libre                |                        |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
@@ -136,8 +136,8 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | -------------------------- |
 | Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`    |
 | Puissances                               | 3C1       | 5         | libre                                                      |                            |
-| Calcul littéral, équations               | 3L1       | 55        | prise (2026-11-23)                                         | `idees-3e-calcul-litteral` |
-| Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                            |
+| Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral` |
+| Généralités sur les fonctions            | 3F1       | 19        | prise (2026-11-24)                                         | `idees-3e-fonctions`       |
 | Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                            |
 | Proportionnalité                         | 3P1       | 3         | libre                                                      |                            |
 | Statistiques                             | 3S1       | 3         | libre                                                      |                            |
@@ -160,47 +160,27 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 04b1cc7f Puissance d'un produit                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ?        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 50feeefd Dérivée de eᵘ, ln u et u²                                  | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| f52b93c4 Dérivée d'une composée : √u, uⁿ, cos u, sin u              | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| e3e19d28 Convexité : lecture sur la courbe de f′                    | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| 225c8682 Convexité : lecture sur la courbe de f″                    | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| cfd13223 Convexité et croissance de la dérivée                      | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| 37ce7759 Convexité : lecture sur la courbe de f                     | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| 98f9d4b2 Point d'inflexion : lecture graphique                      | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| eeb72d3a Convexité : position par rapport aux tangentes             | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| 08f9ad7b Abscisse d'un point d'inflexion                            | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| c4775a3a Intervalle de convexité ou de concavité par le signe de f″ | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| e814175b Inégalité déduite de la convexité (tangente)               | `idees-tle-derivation`                                      | 2026-11-23 |                                      |
-| 54107079 Développer                                                 | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 93a5f7a9 Réduire un produit                                         | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 77b82211 Réduire une somme                                          | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| dcaabf69 Factoriser avec un facteur commun                          | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 18e2afca Développer (a + b)² et (a − b)²                            | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| ff9bb2fb Factoriser a² − b²                                         | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| c81c5852 Équation linéaire du premier degré (ax + b = c)            | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 779ee55a Équation linéaire du premier degré (ax + b = cx + d)       | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 44a3062b Calculer une quatrième proportionnelle                     | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 2ab49a6f Résoudre une équation produit nul                          | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 3806ee3d Résoudre x² = a                                            | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| c32ebff9 Enlever les parenthèses                                    | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 
@@ -209,13 +189,10 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
 - `idees-tle-suites` (reportées le 2026-11-22, au programme, pour la session de chaque rubrique) :
-  suite définie par une fonction homographique avec l'étude de f (TSA1-44) → rubrique
-  « compléments sur la dérivation » ; suites avec ln, uₙ₊₁ = ln(1 + uₙ) (TSA1-48) → rubrique
-  « logarithme » ; suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration ».
-- `idees-tle-limites` (2026-11-22, au programme, pour la session de chaque rubrique) : limite de
-  ln(axⁿ + k) par composition (TSA2-35) → rubrique « logarithme » ; variations d'une fonction
-  homographique et fonction auxiliaire g(x) = eˣ − (ax + b) (TSA2-34, TSA2-52) → rubrique
-  « compléments sur la dérivation ».
+  suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration » (la suite avec ln a été reprise par
+  `idees-tle-ln`).
+- `idees-tle-ln` (2026-11-24, pour la session de la rubrique continuité, TSA4) : « f(x) = 0 a deux
+  solutions » sur ax + b + k ln x (TSA5-41), par le théorème des valeurs intermédiaires.
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
 - `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le

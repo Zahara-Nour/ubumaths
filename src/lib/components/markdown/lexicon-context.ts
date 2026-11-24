@@ -15,10 +15,10 @@
 
 import { getContext, hasContext, setContext } from 'svelte';
 import type { GradeCode } from '#lib/types/grades.ts';
-import { questionReadingGrades } from '#lib/lexicon/grade.ts';
-import type { LinkOptions } from '#lib/lexicon/linker.ts';
-import { readReaderGrade } from '#lib/lexicon/reader-grade.ts';
-import { createCardTerms, type LexiconCardTerms } from '#lib/lexicon/card-terms.svelte.ts';
+import { questionReadingGrades } from '#lib/dictionary/grade.ts';
+import type { LinkOptions } from '#lib/dictionary/linker.ts';
+import { readReaderGrade } from '#lib/dictionary/reader-grade.ts';
+import { createCardTerms, type LexiconCardTerms } from '#lib/dictionary/card-terms.svelte.ts';
 
 const LEXICON_KEY = Symbol('markdown-lexicon');
 

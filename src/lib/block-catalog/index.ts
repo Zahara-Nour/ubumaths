@@ -28,6 +28,7 @@ import { trousEntry } from './trous';
 import { tortueEntry } from './tortue';
 import { calculEntry } from './calcul';
 import { robotEntry } from './robot';
+import { labyrintheEntry } from './labyrinthe';
 import { boxPlotEntry, statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -62,7 +63,8 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	scratchEntry,
 	tortueEntry,
 	calculEntry,
-	robotEntry
+	robotEntry,
+	labyrintheEntry
 ];
 
 /** Fiche d'un bloc par son segment d'adresse */

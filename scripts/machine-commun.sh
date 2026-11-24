@@ -15,7 +15,7 @@ date_de() {
 
 # Âge en secondes d'un champ etime de ps : [[jj-]hh:]mm:ss.
 secondes_depuis_etime() {
-	local e="$1" jours=0 h=0 m=0 s=0
+	local e="$1" jours=0 h=0 m=0 s=0 parts
 	if [[ "$e" == *-* ]]; then
 		jours="${e%%-*}"
 		e="${e#*-}"
@@ -178,3 +178,101 @@ en_tete_memoire() {
 valeur_programme() {
 	awk -F '\t' -v nom="$1" -v col="$2" '$1 == nom { v = $col } END { print v + 0 }'
 }
+
+# Temps CPU cumulé de ps en secondes : « 3203:22.05 » (macOS, minutes:secondes)
+# ou « [jj-]hh:mm:ss » (Linux).
+secondes_cpu() {
+	case "$1" in
+	*.*)
+		local min="${1%%:*}" sec="${1#*:}"
+		sec="${sec%%.*}"
+		echo $((10#$min * 60 + 10#$sec))
+		;;
+	*) secondes_depuis_etime "$1" ;;
+	esac
+}
+
+# Nom lisible d'un processus : l'appli (.app) et le rôle du processus d'un navigateur
+# (« Chrome (processus graphique) »), sinon le nom de l'exécutable. Pour l'écran
+# seulement ; une notification passe par nom_pour_notification.
+nom_lisible() {
+	local commande="$1" appli role=""
+	if [[ "$commande" =~ /([^/]+)\.app/ ]]; then
+		appli="${BASH_REMATCH[1]}"
+		case "$appli" in
+		"Google Chrome") appli=Chrome ;;
+		"Brave Browser") appli=Brave ;;
+		"Google Chrome for Testing") appli=Chrome-Playwright ;;
+		esac
+		case "$commande" in
+		*--type=gpu-process*) role=" (processus graphique)" ;;
+		*--extension-process*) role=" (extension)" ;;
+		*--type=renderer*) role=" (onglet)" ;;
+		*--type=utility*) role=" (utilitaire)" ;;
+		esac
+		echo "$appli$role"
+	else
+		local exe="${commande%% *}"
+		echo "${exe##*/}"
+	fi
+}
+
+# Nom sûr pour une notification : celui de nom_lisible si le programme est dans
+# PROGRAMMES_CONNUS, « un processus » sinon (jamais le nom d'un projet).
+nom_pour_notification() {
+	local nom programme
+	nom="$(nom_lisible "$1")"
+	programme="${nom%% (*}"
+	case " $PROGRAMMES_CONNUS " in
+	*" $programme "*) echo "$nom" ;;
+	*) echo "un processus" ;;
+	esac
+}
+
+# Processus emballés : « pid cpu secondes_cpu etime commande » de tout processus à
+# plus de SEUIL_EMBALLE_CPU % de CPU avec plus de SEUIL_EMBALLE_HEURES h de CPU
+# cumulées (un pic bref n'en est pas un). 2026-11-22 : le processus graphique de
+# Chrome à 100 % pendant 12 jours, que la surveillance des seules extensions ne
+# voyait pas. LC_ALL=C : un « 99,3 » régional ne passerait pas le test numérique.
+SEUIL_EMBALLE_CPU="${SEUIL_EMBALLE_CPU:-90}"
+SEUIL_EMBALLE_HEURES="${SEUIL_EMBALLE_HEURES:-1}"
+processus_emballes() {
+	local pid pcpu temps etime commande cpu_s
+	LC_ALL=C ps -Ao pid=,pcpu=,time=,etime=,command= 2>/dev/null | while read -r pid pcpu temps etime commande; do
+		[ -n "$pid" ] || continue
+		[ "${pcpu%%.*}" -ge "$SEUIL_EMBALLE_CPU" ] 2>/dev/null || continue
+		cpu_s="$(secondes_cpu "$temps")"
+		[ "$cpu_s" -ge $((SEUIL_EMBALLE_HEURES * 3600)) ] || continue
+		echo "$pid ${pcpu%%.*} $cpu_s $etime $commande"
+	done
+}
+
+# Parents bloqués : « pid_parent nombre commande_parent » d'un processus qui ne ramasse
+# plus ses processus morts (au moins SEUIL_ZOMBIES, lancés depuis plus de
+# SEUIL_ZOMBIE_MIN min : etime compte depuis le lancement, pas depuis la mort ;
+# la surveillance exige en plus deux passages de suite).
+# Chrome et Brave, 2026-11-22 et 24 : bloqués, « Quitter » sans réponse.
+SEUIL_ZOMBIES="${SEUIL_ZOMBIES:-3}"
+SEUIL_ZOMBIE_MIN="${SEUIL_ZOMBIE_MIN:-10}"
+parents_bloques() {
+	local tous ppid nombre
+	tous="$(LC_ALL=C ps -Ao pid=,ppid=,stat=,etime=,command= 2>/dev/null)"
+	awk '$3 ~ /^Z/ { print $2, $4 }' <<<"$tous" | while read -r ppid etime; do
+		[ "$(secondes_depuis_etime "$etime")" -ge $((SEUIL_ZOMBIE_MIN * 60)) ] && echo "$ppid"
+	done | sort | uniq -c | while read -r nombre ppid; do
+		[ "$nombre" -ge "$SEUIL_ZOMBIES" ] || continue
+		echo "$ppid $nombre $(awk -v p="$ppid" '$1 == p { $1 = $2 = $3 = $4 = ""; sub(/^ +/, ""); print; exit }' <<<"$tous")"
+	done
+}
+
+# Sessions Claude : « âge_s rss_ko » par session (binaire `claude` ou
+# …/claude/versions/x.y.z).
+sessions_claude() {
+	local pid etime rss commande exe
+	ps -Ao pid=,etime=,rss=,command= 2>/dev/null | while read -r pid etime rss commande; do
+		exe="${commande%% *}"
+		[ "${exe##*/}" = claude ] || [[ "$exe" == */claude/versions/* ]] || continue
+		echo "$(secondes_depuis_etime "$etime") $rss"
+	done
+}
+

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { lore } from '#lib/config/lore.ts';
+	import InlineMarkdown from '#lib/components/markdown/InlineMarkdown.svelte';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
 	import { CheckCircle, AlertCircle, BookOpen, Star } from '@lucide/svelte';
 	import type { StudentExerciseView } from '#lib/types/worksheets.ts';
@@ -50,7 +51,7 @@
 			<div class="flex items-center gap-2">
 				<span class="font-medium"
 					>{lore.learning.exercise}
-					{index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
+					{index}{#if exercise.title}&nbsp;: <InlineMarkdown content={exercise.title} />{/if}</span
 				>
 				{#if hasCorrection}
 					<BookOpen
