@@ -2,20 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR de rangement et contenu en cours._
+_Mis à jour le 2026-11-24, après #3117 et le `db:migrate`._
 
-- **État** : fichiers mergés (#3116) ; 4 brouillons créés en prod par David (ids commités).
-  PR courante : migrations générées de rangement + tags des 4 neufs et de contenu des 3 publiés
-  (+8 variations), `security-auditor` passé.
-- **Prochaine action** : merge, `pnpm check:migrations --pr <n>`, puis `db:migrate` depuis le
-  dépôt principal (4 conditions de `CLAUDE.md`, `migration list --linked` d'abord) ; vérifier en
-  prod (nœud, un tag, brouillon ; variations des publiés) ; puis relecture dans `/dev/modeles`.
-- **En attente de David** : rien avant le `db:migrate` ; ensuite la relecture des 4 brouillons.
+- **État** : en prod, 4 brouillons rangés et tagués (9414e0a3 N1 3-044, 8725107f N2 2-322,
+  51a8db37 N3 3-067, b213f446 N4 3-039) ; 15ddcc75 (4 var.), 45247528 (7), 7c7b7593 (7)
+  publiés avec leurs nouvelles variations. Vérifié en prod en lecture seule.
+- **Prochaine action** : lire les verdicts de David (`question_template_reviews`, `reviewed_at`
+  postérieur au 2026-11-24), les compter, corriger ; puis `publier-lot.ts --dir …-neufs` en
+  simulation, David lance `--publier`. Fin : tableau de répartition, versement du journal.
+- **En attente de David** : la relecture dans `/dev/modeles` (`?point=3-044`, `3-067`, `3-039`,
+  `2-322` pour les brouillons ; nouvelles variations des publiés : 15ddcc75 v2-v4, 45247528
+  v5-v7, 7c7b7593 v6-v7, par `?point=3-066`, `3-043`, `3-040`).
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
-  Les JSON des neufs portaient déjà `rangement` depuis #3116 (N4 : « Généralités sur les
-  fonctions », 3-039) : ne pas le réécrire. Page à cocher : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions-affines-rangement`,
-  `feat/idees-3e-fonctions-affines-rangement`.
+  À regarder : message de N4 faux (« équation », b + ax), étiquette 𝒟 de N3 v3.
+- **Worktree / branche** : aucun (tout est mergé) ; une correction = worktree neuf.
 
 ## Phase 0 (2026-11-24)
 
@@ -171,3 +171,11 @@ de réponse.
   corrigé ni retiré. `migration-rangement.ts` : les 4 neufs rangés (N1 et N3 sous « coefficient
   directeur et ordonnée à l'origine », 3-044 et 3-067 ; N2 en géométrie, 2-322 ; N4 sous
   « Généralités sur les fonctions », 3-039).
+
+### 2026-11-24 — #3117 mergée, `db:migrate`
+
+- Tests `migrations-rangement-tags` et `migrations-contenu-publie` : verts avec les migrations,
+  9 rouges sans (worktree jetable, fichiers remplacés par `select 1;`). `security-auditor` :
+  aucun finding bloquant. `migration list --linked` : seules nos deux en attente.
+- `db:migrate` : les deux appliquées ; vérifié en prod (nœuds, un tag chacun, brouillons ;
+  publiés à 4, 7 et 7 variations).
