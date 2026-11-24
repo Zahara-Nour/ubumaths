@@ -1,0 +1,284 @@
+{
+	"id": "95f73515-63c1-45e2-9b99-242335d8ad03",
+	"title": "Inégalité de concentration : majorant",
+	"description": "Majorant V/(nδ²) de P(|M − μ| ⩾ δ) pour n donné (pièges : V/(nδ), oubli de n)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*d^2/n}}"
+				}
+			],
+			"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100|200|400|500|1000"
+				},
+				{
+					"name": "v",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|5|10"
+				}
+			],
+			"conditions": ["v*d^2 < n"],
+			"correction": {
+				"steps": [
+					"Inégalité de concentration : $P\\left(\\left|M_n-\\mu\\right|\\geqslant\\delta\\right)\\leqslant\\dfrac{V}{n\\delta^{2}}$.",
+					"$\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }=\\dfrac{ {{v}} }{ {{eval:n/d^2;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:v*d^2/n;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nÀ l'aide de l'inégalité de concentration, donne un minorant de $P\\left(\\left|M-\\mu\\right|<{{eval:1/d;d}}\\right)$ (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|<{{eval:1/d;d}}\\right)\\geqslant ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100|200|400|500|1000"
+				},
+				{
+					"name": "v",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|5|10"
+				}
+			],
+			"conditions": ["v*d^2 < n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-v*d^2/n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:v*d^2/n}}",
+							"message": "Ce nombre **majore** la probabilité que $M$ s'écarte de $\\mu$. L'événement demandé est le contraire : on passe par $1-\\ldots$",
+							"label": "Majorant au lieu du minorant"
+						},
+						{
+							"answer": "{{eval:1-v*d/n}}",
+							"message": "L'inégalité divise par $n\\delta^{2}$ : l'écart est au **carré**.",
+							"label": "δ au lieu de δ²"
+						},
+						{
+							"answer": "{{eval:1-v*d^2}}",
+							"message": "Pour la moyenne d'un échantillon, la variance est divisée par $n$ : $\\dfrac{V}{n\\delta^{2}}$.",
+							"label": "n oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\left|M-\\mu\\right|<{{eval:1/d;d}}$ est l'événement contraire de $\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}$.",
+					"Inégalité de concentration : $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }={{eval:v*d^2/n;d}}$.",
+					"Donc $P\\left(\\left|M-\\mu\\right|<{{eval:1/d;d}}\\right)\\geqslant 1-{{eval:v*d^2/n;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:1-v*d^2/n;d}} }$."
+				]
+			},
+			"hint": "L'inégalité de concentration majore la probabilité d'un **écart**. Quel est le contraire de l'événement demandé ?"
+		},
+		{
+			"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu={{m}}$ et de variance $V={{v}}$.\n\nÀ l'aide de l'inégalité de concentration, donne un majorant de $P\\left(M\\in\\left]-\\infty\\,;{{eval:m-1/d;d}}\\right]\\cup\\left[{{eval:m+1/d;d}}\\,;+\\infty\\right[\\right)$ (nombre décimal).\n\n$P\\left(M\\in\\left]-\\infty\\,;{{eval:m-1/d;d}}\\right]\\cup\\left[{{eval:m+1/d;d}}\\,;+\\infty\\right[\\right)\\leqslant ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100|200|400|500|1000"
+				},
+				{
+					"name": "m",
+					"expression": "1..20"
+				},
+				{
+					"name": "v",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|5|10"
+				}
+			],
+			"conditions": ["v*d^2 < n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*d^2/n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1-v*d^2/n}}",
+							"message": "Ici, $M$ est **loin** de ${{m}}$ : c'est l'événement $\\left|M-{{m}}\\right|\\geqslant {{eval:1/d;d}}$, majoré directement, sans $1-\\ldots$",
+							"label": "1 − majorant"
+						},
+						{
+							"answer": "{{eval:v*d/n}}",
+							"message": "L'inégalité divise par $n\\delta^{2}$ : l'écart est au **carré**.",
+							"label": "δ au lieu de δ²"
+						},
+						{
+							"answer": "{{eval:v*d^2}}",
+							"message": "Pour la moyenne d'un échantillon, la variance est divisée par $n$ : $\\dfrac{V}{n\\delta^{2}}$.",
+							"label": "n oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$M\\leqslant {{eval:m-1/d;d}}$ ou $M\\geqslant {{eval:m+1/d;d}}$ : $M$ est à une distance au moins ${{eval:1/d;d}}$ de ${{m}}$, c'est l'événement $\\left|M-{{m}}\\right|\\geqslant {{eval:1/d;d}}$.",
+					"Inégalité de concentration : $P\\left(\\left|M-{{m}}\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }=\\textcolor{{{color:primary.0}}}{ {{eval:v*d^2/n;d}} }$."
+				]
+			},
+			"hint": "Les deux intervalles sont à égale distance de ${{m}}$ : écris l'événement avec une valeur absolue."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "10",
+				"n": "1000",
+				"v": "5"
+			},
+			"description": "v0 : V = 5, n = 1000, δ = 0,1 → 0,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,05"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "10",
+				"n": "1000",
+				"v": "5"
+			},
+			"description": "v0 : V/(nδ) = 0,05",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "10",
+				"n": "1000",
+				"v": "5"
+			},
+			"description": "v0 : n oublié : 500",
+			"variationIndex": 0
+		},
+		{
+			"description": "F7 a : n = 1000, V = 5, δ = 0,1 → 1 − 0,5 = 0,5",
+			"variationIndex": 1,
+			"variables": {
+				"n": "1000",
+				"v": "5",
+				"d": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,5"]
+		},
+		{
+			"description": "F7 a : n = 500, V = 2, δ = 0,2 → 1 − 0,1 = 0,9",
+			"variationIndex": 1,
+			"variables": {
+				"n": "500",
+				"v": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,9"]
+		},
+		{
+			"description": "F7 a : majorant donné",
+			"variationIndex": 1,
+			"variables": {
+				"n": "500",
+				"v": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,1"]
+		},
+		{
+			"description": "F7 a : δ au lieu de δ²",
+			"variationIndex": 1,
+			"variables": {
+				"n": "500",
+				"v": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,98"]
+		},
+		{
+			"description": "F7 b : n = 400, V = 4, δ = 0,25 → 0,16",
+			"variationIndex": 2,
+			"variables": {
+				"n": "400",
+				"m": "7",
+				"v": "4",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,16"]
+		},
+		{
+			"description": "F7 b : 1 − majorant",
+			"variationIndex": 2,
+			"variables": {
+				"n": "400",
+				"m": "7",
+				"v": "4",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,84"]
+		},
+		{
+			"description": "F7 b : δ au lieu de δ²",
+			"variationIndex": 2,
+			"variables": {
+				"n": "400",
+				"m": "7",
+				"v": "4",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,04"]
+		}
+	]
+}

@@ -8,6 +8,7 @@ couvre:
   - src/lib/components/exercises/LaTeXImportDialog.svelte
   - src/lib/utils/markdown-cache.ts
   - src/lib/utils/latex-break-points.ts
+  - 'src/lib/utils/formula-speech/**'
   - scripts/check-ubumark.ts
 ---
 
@@ -83,6 +84,24 @@ Le type `multiple_choice` (choix hors de l'énoncé) n'existe plus ([ADR 0033](.
   `markdown-export.ts` (aller-retour : un bloc spécial devient un `codeBlock` de son langage et
   revient intact), vues d'édition dans `src/lib/extensions/`.
 - **Contrôle d'auteur** : `scripts/check-ubumark.ts` (`pnpm check:ubumark`).
+- **Lecture des formules par un lecteur d'écran** (E32) : `src/lib/utils/formula-speech/`.
+  MathLive ne sait lire une formule qu'en anglais, et laisse ses balises de synthèse vocale dans
+  l'`aria-label` (« the fraction `<break time="150ms"/>` pie over… »). `install.ts`
+  (`installFormulaSpeech`, appelé une fois par `src/hooks.client.ts`) écoute l'événement `render`
+  de chaque `<math-span>` / `<math-div>` et remplace cette lecture : en français
+  (`speakLatexInFrench` de `french.ts`, fonction pure sur l'arbre de `latex-tree.ts`), ou en
+  anglais sans balises quand un ancêtre porte `lang="en"`. Ce `lang` est posé par
+  `MarkdownRenderer` (prop `locale`), `MathInline` et `MathBlock` (langue du contenu). Tournures :
+  une forme simple se dit d'un trait (« pi sur 12 », « x au carré », « f de x ») ; une forme
+  composée annonce son début et sa fin (« fraction, x plus 1, sur, x moins 2, fin de fraction ») ;
+  une commande inconnue est dite par son nom. Une formule découpée (`MathInline` en lieu étroit)
+  porte la lecture entière sur son conteneur, ses morceaux sont cachés. Un nouveau symbole :
+  une ligne dans `WORDS` de `french.ts` et un cas dans `__tests__/french.test.ts`. **Ce code
+  tourne sur toutes les pages, sur du contenu écrit par des élèves (chat)** : au-delà de 4 000
+  caractères ou de 40 niveaux d'imbrication, la formule est dite en texte brut, et
+  `speakLatexInFrench` ne lève jamais ; ne jamais lire deux fois un même sous-arbre (une tour
+  d'exposants coûterait 2^n). `speech-markup.ts` (`stripSpeechMarkup`) retire les balises de la
+  lecture anglaise de MathLive.
 - **Instanciation** des modèles : `src/lib/questions/generator/instance-generator.ts`
   (`generateInstance`) et `src/lib/questions/generator/content-resolver.ts` appellent le paramétrage.
 

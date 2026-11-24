@@ -66,6 +66,30 @@ test('#1663 — tableau de variations : ordonnées exactes, jamais cos(π/6)', a
 	expect(sineLatex.map(normalizeLatex)).toContain(normalizeLatex('-1{,}5'));
 });
 
+test('E32 — lecteur d’écran : les formules du tableau de variations sont lues en français, sans balises', async ({
+	page
+}) => {
+	await calc(page, 'f(x) = cos(x)+x/2 sur [0;\\pi]');
+	const table = await calc(page, '.variations f');
+	const formulas = table.line.locator('.tableau .vt-value-container math-span');
+	await expect(formulas.first()).toBeVisible();
+	// MathLive ne rend une formule qu'à son entrée à l'écran : les amener toutes dans la console
+	const readings = () =>
+		formulas.evaluateAll((all) => all.map((f) => f.getAttribute('aria-label') ?? ''));
+	for (const formula of await formulas.all()) await formula.scrollIntoViewIfNeeded();
+	// MathLive pose d'abord sa lecture anglaise (« the fraction <break time="150ms"/> pie over… ») ;
+	// elle est remplacée au rendu de chaque formule
+	await expect
+		.poll(readings)
+		.toContain('pi sur 12 plus fraction, racine carrée de 3, sur, 2, fin de fraction');
+	const spoken = await readings();
+	for (const reading of spoken) {
+		expect(reading, 'une lecture par formule').not.toBe('');
+		expect(reading, 'ni balise ni commande').not.toMatch(/[<>\\]/);
+		expect(reading, 'pas d’anglais').not.toMatch(/\b(the|over|pie|square root)\b/);
+	}
+});
+
 test('#1656 — carte « Dériver » : même chose que .dériver ; quotient réduit, signe devant', async ({
 	page
 }) => {

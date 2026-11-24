@@ -36,7 +36,8 @@
 	import type { RemovedWithDependents } from '#lib/atelier/atelier.svelte.ts';
 	import type { CellValue } from '#lib/atelier/formula.ts';
 	import { isSafeLatex } from '#lib/atelier/safe-latex.ts';
-	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { speakLatexInFrench } from '#lib/utils/formula-speech/french.ts';
 	import { summarizeList } from '#lib/statistics/describe.ts';
 	import { listChart } from '#lib/atelier/chart.ts';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
@@ -229,7 +230,7 @@
 			if (markups.size > MAX_MARKUPS) markups.clear();
 			done = {
 				markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }),
-				spoken: convertLatexToSpeakableText(latex)
+				spoken: speakLatexInFrench(latex)
 			};
 			markups.set(latex, done);
 		}

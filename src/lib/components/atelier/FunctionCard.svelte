@@ -20,7 +20,8 @@
 	import { useGrapheurStore } from '#lib/stores/grapheur-context.ts';
 	import { astOf } from '#lib/atelier/parse.ts';
 	import { toLatex } from '#lib/mathAST/latex-generator.ts';
-	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { speakLatexInFrench } from '#lib/utils/formula-speech/french.ts';
 	import { forMathlive } from '#lib/atelier/mathfield.ts';
 	import {
 		derivativeOf,
@@ -100,7 +101,7 @@
 		return {
 			latex,
 			markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }),
-			spoken: convertLatexToSpeakableText(latex)
+			spoken: speakLatexInFrench(latex)
 		};
 	});
 
