@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3089 (migrations en prod)._
+_Mis à jour le 2026-11-24, après #3089 (migrations en prod, série publiée)._
 
 - **État** : `20261124134647` et `20261124134708` **en prod** (poussées par la session `idees-tle-ln`) ;
   vérifié : 6 brouillons sur leur nœud avec leur point, 4 publiés à 4/4/5/6 variations ; série
-  `scripts/series/1_SPE-relecture-exponentielle-publies.json` (4 modèles, 1 × 60 s, 4 min), simulation
-  verte en prod · **Prochaine action** : David publie la série (commande `!` ci-dessous), puis commit de
-  l'id + PR `chore/idees-1re-exponentielle-relecture`, puis relecture dans `/dev/modeles` (brouillons
-  par `?noeud=`, publiés par la série) · **En attente de David** : `! cd ../ubumaths-wt-idees-1re-exponentielle-relecture && pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/1_SPE-relecture-exponentielle-publies.json --publier`
-  · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-idees-1re-exponentielle-relecture`
-  / `chore/idees-1re-exponentielle-relecture`.
+  `1_SPE-relecture-exponentielle-publies.json` publiée par David (id `4cec796d`, 4 modèles, 4 min) ·
+  **Prochaine action** : relecture par David dans `/dev/modeles` (brouillons par `?noeud=`, publiés par
+  la série), puis lire les verdicts (`question_template_reviews`), corriger, clôturer · **En attente de
+  David** : la relecture · **Pièges en cours** : aucun · **Worktree / branche** : aucun après le merge de
+  la PR de la série.
 
 ## Journal
 
