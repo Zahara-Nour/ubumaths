@@ -132,23 +132,23 @@ Leurs rubriques telles quelles, une ligne chacune. Comptes relevés le 2026-11-2
 anciennes versions. Leur rubrique « nombres et calcul » (`3N1`) n'a aucun exercice : elle ne figure
 pas. Le fichier `beta3I12` n'est pas repris.
 
-| Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session            |
-| ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | -------------------------- |
-| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`    |
-| Puissances                               | 3C1       | 5         | libre                                                      |                            |
-| Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral` |
-| Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`       |
-| Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                            |
-| Proportionnalité                         | 3P1       | 3         | libre                                                      |                            |
-| Statistiques                             | 3S1       | 3         | libre                                                      |                            |
-| Probabilités                             | 3S2       | 5         | libre                                                      |                            |
-| Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                            |
-| Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                            |
-| Trigonométrie                            | 3G3       | 13        | libre                                                      |                            |
-| Espace                                   | 3G4       | 6         | libre                                                      |                            |
-| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                            |
-| Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                            |
-| Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                            |
+| Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session              |
+| ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ---------------------------- |
+| Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`      |
+| Puissances                               | 3C1       | 5         | libre                                                      |                              |
+| Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral`   |
+| Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
+| Fonctions affines et linéaires           | 3F2       | 14        | prise (2026-11-24)                                         | `idees-3e-fonctions-affines` |
+| Proportionnalité                         | 3P1       | 3         | libre                                                      |                              |
+| Statistiques                             | 3S1       | 3         | libre                                                      |                              |
+| Probabilités                             | 3S2       | 5         | libre                                                      |                              |
+| Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
+| Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
+| Trigonométrie                            | 3G3       | 13        | libre                                                      |                              |
+| Espace                                   | 3G4       | 6         | libre                                                      |                              |
+| Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
+| Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
+| Sujets de brevet (mélange des rubriques) | 3Z1       | 15        | libre ; **à faire en dernier**, après les autres rubriques |                              |
 
 ## Autres niveaux
 
