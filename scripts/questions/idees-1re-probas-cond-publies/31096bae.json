@@ -1,0 +1,411 @@
+{
+	"id": "31096bae-515c-40e9-8305-000c28258afb",
+	"title": "Traduire un énoncé en notations de probabilités",
+	"description": "Phrase ↔ notation : P(A ∩ B), P_A(B), événement contraire",
+	"grades": ["2"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Dans un lycée, on choisit un élève au hasard. On note $L$ l'événement « l'élève étudie le latin » et $G$ l'événement « l'élève étudie le grec ».\n\n« La probabilité que l'élève étudie le latin **et** le grec est $0{,}{{v}}$. » Quelle écriture traduit cette phrase ?\n\n```choix\n- $P(L\\cap G)=0{,}{{v}}$\n- $P_L(G)=0{,}{{v}}$\n- $P(L)=0{,}{{v}}$\n- $P_G(L)=0{,}{{v}}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $L$ et $G$ » est l'intersection $L\\cap G$ ; aucune condition « parmi… » ni « sachant… ».",
+					"$\\textcolor{{{color:primary.0}}}{P(L\\cap G)=0{,}{{v}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Dans un lycée, on choisit un élève au hasard. On note $L$ l'événement « l'élève étudie le latin » et $G$ l'événement « l'élève étudie le grec ».\n\n« **Parmi les latinistes**, ${{v}}0\\,\\%$ étudient le grec. » Quelle écriture traduit cette phrase ?\n\n```choix\n- $P_L(G)=0{,}{{v}}$\n- $P_G(L)=0{,}{{v}}$\n- $P(L\\cap G)=0{,}{{v}}$\n- $P(G)=0{,}{{v}}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Parmi les latinistes » : on sait que $L$ est réalisé ; c'est une probabilité **sachant $L$**, le $L$ va en indice.",
+					"$\\textcolor{{{color:primary.0}}}{P_L(G)=0{,}{{v}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Dans un lycée, on choisit un élève au hasard. On note $L$ l'événement « l'élève étudie le latin » et $G$ l'événement « l'élève étudie le grec ».\n\n« Un élève qui étudie le grec a une probabilité $0{,}{{v}}$ de **ne pas** étudier le latin. » Quelle écriture traduit cette phrase ?\n\n```choix\n- $P_G(\\overline{L})=0{,}{{v}}$\n- $P_{\\overline{L}}(G)=0{,}{{v}}$\n- $P(G\\cap\\overline{L})=0{,}{{v}}$\n- $P_G(L)=0{,}{{v}}$\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Un élève qui étudie le grec » : on sait que $G$ est réalisé, $G$ en indice. « Ne pas étudier le latin » : l'événement contraire $\\overline{L}$.",
+					"$\\textcolor{{{color:primary.0}}}{P_G(\\overline{L})=0{,}{{v}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Dans un lycée, on choisit un élève au hasard. On note $L$ l'événement « l'élève étudie le latin » et $G$ l'événement « l'élève étudie le grec ».\n\nQue signifie $P(\\overline{L})=0{,}{{v}}$ ?\n\n```choix\n- La probabilité que l'élève n'étudie pas le latin est $0{,}{{v}}$.\n- La probabilité que l'élève étudie le latin est $0{,}{{v}}$.\n- La probabilité que l'élève étudie le grec mais pas le latin est $0{,}{{v}}$.\n- Parmi les élèves qui n'étudient pas le grec, la proportion de latinistes est $0{,}{{v}}$.\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overline{L}$ est l'événement contraire de $L$ : « l'élève n'étudie **pas** le latin ». Sans indice, pas de condition.",
+					"$\\textcolor{{{color:primary.0}}}{\\text{L'élève n'étudie pas le latin avec la probabilité } 0{,}{{v}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une usine fabrique des valises à deux roues ou à quatre roues, et chaque valise passe des tests de solidité. On choisit une valise au hasard dans la production. On note $A$ l'événement « la valise a quatre roues » et $B$ l'événement « la valise a réussi les tests ». On sait que :\n\n- ${{a}}\\,\\%$ des valises ont quatre roues ;\n- ${{eval:round((a*b+(100-a)*c)/10)/10;d}}\\,\\%$ des valises ont réussi les tests ;\n- parmi les valises à quatre roues, ${{b}}\\,\\%$ ont réussi les tests ;\n- parmi les valises qui ont réussi les tests, ${{eval:round(1000*(100-a)*c/(a*b+(100-a)*c))/10;d}}\\,\\%$ ont deux roues ;\n- ${{eval:round(a*b/10)/10;d}}\\,\\%$ des valises ont quatre roues et ont réussi les tests ;\n- parmi les valises à deux roues, ${{c}}\\,\\%$ ont réussi les tests.\n\nLis dans l'énoncé chacune des probabilités suivantes et donne-la en écriture décimale.\n\n$P_{\\overline{A}}(B)=?$\n\n$P(A\\cap B)=?$\n\n$P_B(\\overline{A})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "45..55"
+				},
+				{
+					"name": "b",
+					"expression": "83..93"
+				},
+				{
+					"name": "c",
+					"expression": "85..98"
+				}
+			],
+			"conditions": [
+				"a != 50",
+				"b != c",
+				"round((a*b+(100-a)*c)/10) != 10*c",
+				"round(1000*(100-a)*c/(a*b+(100-a)*c)) != 10*c",
+				"round(1000*(100-a)*c/(a*b+(100-a)*c)) != 10*a",
+				"round(1000*(100-a)*c/(a*b+(100-a)*c)) != round(a*b/10)",
+				"round(a*b/10) != 10*a"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/100;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round((a*b+(100-a)*c)/10)/1000;d}}",
+							"message": "Tu as donné la proportion de valises qui ont réussi les tests, sans condition : $P_{\\overline{A}}(B)$ se lit dans la phrase « parmi les valises à deux roues ».",
+							"label": "P(B) au lieu de P_Ā(B)"
+						},
+						{
+							"answer": "{{eval:b/100;d}}",
+							"message": "Tu as lu la phrase des valises à **quatre** roues : $\\overline{A}$ désigne les valises à deux roues.",
+							"label": "P_A(B) au lieu de P_Ā(B)"
+						},
+						{
+							"answer": "{{eval:round(1000*(100-a)*c/(a*b+(100-a)*c))/1000;d}}",
+							"message": "Tu as inversé condition et évènement : dans $P_{\\overline{A}}(B)$, la condition est $\\overline{A}$ (« parmi les valises à deux roues »).",
+							"label": "P_B(Ā) au lieu de P_Ā(B)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(a*b/10)/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b/100;d}}",
+							"message": "Tu as lu une phrase « parmi… » : $P(A\\cap B)$ est la proportion de **toutes** les valises qui ont quatre roues **et** ont réussi les tests.",
+							"label": "P_A(B) au lieu de P(A ∩ B)"
+						},
+						{
+							"answer": "{{eval:a/100;d}}",
+							"message": "$P(A)$ ne compte que les valises à quatre roues : $A\\cap B$ demande aussi que la valise ait réussi les tests.",
+							"label": "P(A) au lieu de P(A ∩ B)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:round(1000*(100-a)*c/(a*b+(100-a)*c))/1000;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:c/100;d}}",
+							"message": "Tu as inversé condition et évènement : dans $P_B(\\overline{A})$, la condition est $B$ (« parmi les valises qui ont réussi les tests »).",
+							"label": "P_Ā(B) au lieu de P_B(Ā)"
+						},
+						{
+							"answer": "{{eval:round((a*b+(100-a)*c)/10)/1000;d}}",
+							"message": "Tu as donné la proportion de valises qui ont réussi : on demande, parmi elles, la proportion de valises à deux roues.",
+							"label": "P(B) au lieu de P_B(Ā)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Parmi les… » désigne la condition, écrite en indice ; une phrase sans « parmi » donne une probabilité sans condition.",
+					"« Parmi les valises à deux roues, ${{c}}\\,\\%$ ont réussi les tests » : $P_{\\overline{A}}(B)=\\textcolor{{{color:primary.0}}}{ {{eval:c/100;d}} }$.",
+					"« ${{eval:round(a*b/10)/10;d}}\\,\\%$ des valises ont quatre roues et ont réussi les tests » : $P(A\\cap B)=\\textcolor{{{color:primary.0}}}{ {{eval:round(a*b/10)/1000;d}} }$.",
+					"« Parmi les valises qui ont réussi les tests, ${{eval:round(1000*(100-a)*c/(a*b+(100-a)*c))/10;d}}\\,\\%$ ont deux roues » : $P_B(\\overline{A})=\\textcolor{{{color:primary.0}}}{ {{eval:round(1000*(100-a)*c/(a*b+(100-a)*c))/1000;d}} }$."
+				]
+			},
+			"hint": "« Parmi les … » désigne la condition : c'est l'évènement écrit en indice."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "Intersection (rang 0)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "Erreur : P_L(G)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "Conditionnelle P_L(G) (rang 0)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "Erreur : P_G(L)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "P_G(L̄) (rang 0)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "Erreur : P_L̄(G)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "Contraire (rang 0)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"v": "3"
+			},
+			"description": "Erreur : L au lieu de L̄",
+			"variationIndex": 3
+		},
+		{
+			"description": "V5 : 0,91 ; 0,458 ; 0,488",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}91", "0{,}458", "0{,}488"]
+		},
+		{
+			"description": "V5 : point décimal",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0.91", "0.458", "0.488"]
+		},
+		{
+			"description": "V5 : pourcentage refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["91\\%", "0{,}458", "0{,}488"]
+		},
+		{
+			"description": "V5 : P(B) au lieu de P_Ā(B)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la proportion de valises qui ont réussi les tests, sans condition : $P_{\\overline{A}}(B)$ se lit dans la phrase « parmi les valises à deux roues »."
+			},
+			"answers": ["0{,}894", "0{,}458", "0{,}488"]
+		},
+		{
+			"description": "V5 : P_A(B) au lieu de P_Ā(B)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu la phrase des valises à **quatre** roues : $\\overline{A}$ désigne les valises à deux roues."
+			},
+			"answers": ["0{,}88", "0{,}458", "0{,}488"]
+		},
+		{
+			"description": "V5 : P_B(Ā) au lieu de P_Ā(B)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé condition et évènement : dans $P_{\\overline{A}}(B)$, la condition est $\\overline{A}$ (« parmi les valises à deux roues »)."
+			},
+			"answers": ["0{,}488", "0{,}458", "0{,}488"]
+		},
+		{
+			"description": "V5 : P_A(B) au lieu de P(A ∩ B)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as lu une phrase « parmi… » : $P(A\\cap B)$ est la proportion de **toutes** les valises qui ont quatre roues **et** ont réussi les tests."
+			},
+			"answers": ["0{,}91", "0{,}88", "0{,}488"]
+		},
+		{
+			"description": "V5 : P(A) au lieu de P(A ∩ B)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$P \\left( A \\right)$ ne compte que les valises à quatre roues : $A\\cap B$ demande aussi que la valise ait réussi les tests."
+			},
+			"answers": ["0{,}91", "0{,}52", "0{,}488"]
+		},
+		{
+			"description": "V5 : P_Ā(B) au lieu de P_B(Ā)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as inversé condition et évènement : dans $P_B(\\overline{A})$, la condition est $B$ (« parmi les valises qui ont réussi les tests »)."
+			},
+			"answers": ["0{,}91", "0{,}458", "0{,}91"]
+		},
+		{
+			"description": "V5 : P(B) au lieu de P_B(Ā)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "52",
+				"b": "88",
+				"c": "91"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la proportion de valises qui ont réussi : on demande, parmi elles, la proportion de valises à deux roues."
+			},
+			"answers": ["0{,}91", "0{,}458", "0{,}894"]
+		}
+	]
+}
