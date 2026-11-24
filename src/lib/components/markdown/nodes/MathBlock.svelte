@@ -86,7 +86,10 @@
 		<code class="restricted-math">$${expression}$$</code>
 	{:else}
 		{#key latex}
-			<math-div class="math-block-static">{latex}</math-div>
+			<!-- `lang` : la lecture à voix haute suit la langue du contenu (formula-speech/install.ts) -->
+			<math-div class="math-block-static" lang={contentLocale() === 'en' ? 'en' : undefined}
+				>{latex}</math-div
+			>
 		{/key}
 	{/if}
 </div>

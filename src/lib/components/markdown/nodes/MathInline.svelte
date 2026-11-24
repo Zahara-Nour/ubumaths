@@ -35,6 +35,8 @@
 	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
 	import { readBreakableMath } from '../content-breakable-math';
 	import { splitLatexAtBreaks } from '#lib/utils/latex-break-points.ts';
+	import { speakLatexInFrench } from '#lib/utils/formula-speech/french.ts';
+	import { stripSpeechMarkup } from '#lib/utils/formula-speech/speech-markup.ts';
 
 	interface Props {
 		expression: string;
@@ -87,13 +89,17 @@
 	// encadrerait un à un (aucun appelant n'en passe aujourd'hui).
 	// Découpée, la formule se lit d'un tenant : le conteneur porte la lecture de la
 	// formule entière, les morceaux (chacun `role="img"` chez MathLive) sont cachés
-	// Calculée dans le navigateur seulement : `convertLatexToSpeakableText` lit
-	// `window.MathfieldElement`, au rendu serveur elle lève et la page part en 500.
-	// Après le montage, pas par `browser` : l'hydratation ne réécrit pas un attribut.
+	// Lecture dans la langue du contenu (E32). L'anglaise vient de MathLive, dans le
+	// navigateur seulement : `convertLatexToSpeakableText` lit `window.MathfieldElement`,
+	// au rendu serveur elle lève et la page part en 500. Après le montage, pas par
+	// `browser` : l'hydratation ne réécrit pas un attribut.
 	let mounted = $state(false);
-	let spoken = $derived(
-		mounted && pieces.length > 1 ? convertLatexToSpeakableText(latex) : undefined
-	);
+	let english = $derived(contentLocale() === 'en');
+	let spoken = $derived.by(() => {
+		if (pieces.length <= 1) return undefined;
+		if (!english) return speakLatexInFrench(latex);
+		return mounted ? stripSpeechMarkup(convertLatexToSpeakableText(latex)) : undefined;
+	});
 
 	onMount(() => {
 		mounted = true;
@@ -105,14 +111,20 @@
 {:else}
 	{#key latex}
 		{#if pieces.length > 1}
-			<span class="inline-math-pieces" role="img" aria-label={spoken}
+			<span
+				class="inline-math-pieces"
+				role="img"
+				aria-label={spoken}
+				lang={english ? 'en' : undefined}
 				>{#each pieces as piece, i (i)}{#if i > 0}<wbr />{/if}<math-span
 						class="inline-math-static {className}"
 						aria-hidden="true">{piece}</math-span
 					>{/each}</span
 			>
 		{:else}
-			<math-span class="inline-math-static {className}">{latex}</math-span>
+			<math-span class="inline-math-static {className}" lang={english ? 'en' : undefined}
+				>{latex}</math-span
+			>
 		{/if}
 	{/key}
 {/if}
