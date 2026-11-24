@@ -15,7 +15,7 @@ date_de() {
 
 # Âge en secondes d'un champ etime de ps : [[jj-]hh:]mm:ss.
 secondes_depuis_etime() {
-	local e="$1" jours=0 h=0 m=0 s=0
+	local e="$1" jours=0 h=0 m=0 s=0 parts
 	if [[ "$e" == *-* ]]; then
 		jours="${e%%-*}"
 		e="${e#*-}"
@@ -248,8 +248,9 @@ processus_emballes() {
 }
 
 # Parents bloqués : « pid_parent nombre commande_parent » d'un processus qui ne ramasse
-# plus ses processus morts (au moins SEUIL_ZOMBIES, morts depuis plus de
-# SEUIL_ZOMBIE_MIN min : un mort ramassé dans la seconde n'est pas un blocage).
+# plus ses processus morts (au moins SEUIL_ZOMBIES, lancés depuis plus de
+# SEUIL_ZOMBIE_MIN min : etime compte depuis le lancement, pas depuis la mort ;
+# la surveillance exige en plus deux passages de suite).
 # Chrome et Brave, 2026-11-22 et 24 : bloqués, « Quitter » sans réponse.
 SEUIL_ZOMBIES="${SEUIL_ZOMBIES:-3}"
 SEUIL_ZOMBIE_MIN="${SEUIL_ZOMBIE_MIN:-10}"

@@ -147,6 +147,14 @@ a_renvoyer() {
 	[ $((maintenant - derniere)) -ge $((delai * 60)) ]
 }
 
+# Clés notées au passage précédent dans <fichier>, si ce passage date de moins de
+# 11 min (Mac en veille : pas « de suite »). Une alerte qui l'exige ne part qu'au
+# 2e passage de suite où elle est vue : un pic ou un instant fugace n'en est pas une.
+vus_au_passage_precedent() {
+	[ -n "$(find "$1" -mmin -11 2>/dev/null)" ] && cat "$1"
+	return 0
+}
+
 # Ajoute une ligne à l'historique (sauf en --essai) et n'en garde que les
 # SURVEILLANCE_HISTORIQUE_LIGNES dernières. Un échec d'écriture n'empêche jamais
 # les alertes.
@@ -321,10 +329,16 @@ if [ "$chrome_cpu" -gt "$SEUIL_CHROME_CPU" ] || [ "$chrome_onglets" -gt "$SEUIL_
 fi
 
 # 2 bis. Processus emballés, quels qu'ils soient : CPU au plafond ET des heures de
-#    CPU cumulées. Jamais arrêtés : on ne sait pas ce qu'ils font. Le pid est au
-#    journal (`kill <pid>` : un navigateur relance son processus).
+#    CPU cumulées, deux passages de suite (WindowServer ou un `vite dev` qui
+#    recompile montent un instant). Jamais arrêtés : on ne sait pas ce qu'ils font.
+#    Le pid est au journal (`kill <pid>` : un navigateur relance son processus).
+fichier_emballes="$ETAT/emballes-vus"
+emballes_avant="$(vus_au_passage_precedent "$fichier_emballes")"
+emballes_vus=""
 while read -r pid cpu cpu_s _etime commande; do
 	[ -n "$pid" ] || continue
+	emballes_vus+="$pid"$'\n'
+	grep -qx "$pid" <<<"$emballes_avant" || continue
 	if a_renvoyer "emballe-$pid"; then
 		nom="$(nom_pour_notification "$commande")"
 		alertes+=("$nom emballé : $cpu % CPU, $((cpu_s / 3600)) h de CPU cumulées.")
@@ -332,11 +346,19 @@ while read -r pid cpu cpu_s _etime commande; do
 		journaliser "alerte : $(nom_lisible "$commande") (pid $pid) $cpu % CPU, $((cpu_s / 3600)) h de CPU"
 	fi
 done < <(processus_emballes)
+[ "$essai" = 1 ] || printf '%s' "$emballes_vus" >"$fichier_emballes"
 
 # 2 ter. Programme bloqué : il ne ramasse plus ses processus morts (Chrome, puis
-#    Brave : « Quitter » sans réponse). Le relancer ; fermé de force s'il le faut.
+#    Brave : « Quitter » sans réponse). Deux passages de suite : un parent qui
+#    ramasse ses morts quelques millisecondes après le passage n'est pas bloqué.
+#    Le relancer ; fermé de force s'il le faut.
+fichier_bloques="$ETAT/bloques-vus"
+bloques_avant="$(vus_au_passage_precedent "$fichier_bloques")"
+bloques_vus=""
 while read -r ppid nombre commande; do
 	[ -n "$ppid" ] || continue
+	bloques_vus+="$ppid"$'\n'
+	grep -qx "$ppid" <<<"$bloques_avant" || continue
 	if a_renvoyer "bloque-$ppid"; then
 		nom="$(nom_pour_notification "$commande")"
 		alertes+=("$nom ne répond plus ($nombre processus morts non ramassés) : le relancer.")
@@ -344,6 +366,7 @@ while read -r ppid nombre commande; do
 		journaliser "alerte : $(nom_lisible "$commande") (pid $ppid) bloqué, $nombre processus morts non ramassés"
 	fi
 done < <(parents_bloques)
+[ "$essai" = 1 ] || printf '%s' "$bloques_vus" >"$fichier_bloques"
 
 # 2 quater. Vieilles sessions Claude : chacune garde son contexte en mémoire.
 read -r sessions_total sessions_vieilles sessions_ko < <(sessions_claude |
@@ -413,13 +436,14 @@ fi
 
 # 3 sexies. Disque qui fond : Go libres d'il y a 24 h (première ligne de
 #    l'historique dans les 24 h, au moins 20 h en arrière) face à maintenant.
+#    Aucune ligne dans cette fenêtre (Mac éteint ou endormi) : rien ce jour-là.
 if [ -n "${disque_libre:-}" ] && [ -s "$HISTORIQUE" ]; then
 	il_y_a_24h="$(date_de $(($(date +%s) - 86400)) '+%Y-%m-%d %H:%M')"
 	il_y_a_20h="$(date_de $(($(date +%s) - 72000)) '+%Y-%m-%d %H:%M')"
 	disque_hier="$(awk -F ';' -v depuis="$il_y_a_24h" -v avant="$il_y_a_20h" '
 		NR == 1 { for (i = 1; i <= NF; i++) if ($i == "disque_libre_go") c = i; next }
 		c && $1 >= depuis && $1 <= avant && $c != "?" { print $c; exit }' "$HISTORIQUE")"
-	if [ -n "$disque_hier" ] && [ $((disque_hier - disque_libre)) -ge "$SEUIL_DISQUE_BAISSE_GO" ] &&
+	if [ -n "$disque_hier" ] && [ $((disque_hier - disque_libre)) -gt "$SEUIL_DISQUE_BAISSE_GO" ] &&
 		a_renvoyer disque-baisse "$RAPPEL_JOUR_MIN"; then
 		alertes+=("Disque : $((disque_hier - disque_libre)) Go perdus en 24 h ($disque_hier → $disque_libre Go libres).")
 		marquer disque-baisse

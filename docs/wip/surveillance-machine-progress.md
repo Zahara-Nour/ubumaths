@@ -71,3 +71,4 @@ Restent, côté David :
 - L'alerte « Extension X bloquée » devient « X (extension) emballé » et couvre tout processus. `a_renvoyer <clé> [minutes]` : sessions et disque qui fond, une fois par jour.
 - Essai à blanc sur le Mac : « Sessions Claude : 10 ouvertes depuis plus de 7 jours (35 en tout, 6 Go) ». Disque : 20 → 19 Go en 24 h, rien.
 - Tests vérifiés rouges sur le script de `main` (4 nouveaux).
+- Revue Sonnet : emballé et bloqué exigent 2 passages de suite (`emballes-vus`, `bloques-vus`, < 11 min) — WindowServer ou un zombie ramassé juste après le passage ; disque : « plus de 5 » strict ; Mac éteint dans la fenêtre 20-24 h → rien, documenté. Laissés : sessions `claude` enfants comptées (léger surplus), marques par pid jamais nettoyées.

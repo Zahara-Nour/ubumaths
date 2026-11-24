@@ -364,6 +364,8 @@ describe('surveillance-machine', () => {
 			]
 		});
 		lancer();
+		expect(envois()).toBe(''); // vu une fois : peut-être un pic
+		lancer();
 		expect(envois()).toContain('Chrome (extension) emballé : 100 % CPU, 240 h de CPU cumulées.');
 		expect(envois()).toContain('Brave (extension) emballé : 99 % CPU, 2 h de CPU cumulées.');
 		expect(envois()).toContain(
@@ -393,6 +395,8 @@ describe('surveillance-machine', () => {
 				'903 677 Z 00:02 (Google Chrome He)'
 			]
 		});
+		lancer();
+		expect(envois()).toBe(''); // vu une fois : peut-être ramassé dans la seconde
 		lancer();
 		expect(envois()).toContain(
 			'Brave ne répond plus (3 processus morts non ramassés) : le relancer.'
@@ -963,6 +967,8 @@ describe('surveillance-machine : disque', () => {
 				`${ilYa(2)};1;1;1;0;0;0;1;22\n`
 		);
 		machine({ processus: [], dossiers: {}, swap: SWAP_CALME, chrome: [], disqueLibreGo: 21 });
+		lancer({ SEUIL_DISQUE_BAISSE_GO: '6' }); // 6 Go perdus : pas « plus de 6 »
+		expect(envois()).toBe('');
 		lancer();
 		expect(envois()).toContain('Disque : 6 Go perdus en 24 h (27 → 21 Go libres).');
 		lancer({ SURVEILLANCE_RAPPEL_MIN: '0' });
