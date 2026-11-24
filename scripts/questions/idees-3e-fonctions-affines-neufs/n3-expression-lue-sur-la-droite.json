@@ -4,10 +4,6 @@
 		"noeud": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
 		"point": "3-067"
 	},
-	"rangement": {
-		"noeud": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
-		"point": "3-067"
-	},
 	"title": "Lire l'expression d'une fonction affine sur sa droite",
 	"description": "Expression f(x) = ax + b lue sur la droite : coefficient directeur entier, fonction linéaire, coefficient directeur en demis (pièges : a et b inversés, signe, coefficient directeur renversé)",
 	"grades": ["3"],
