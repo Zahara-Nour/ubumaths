@@ -32,18 +32,18 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 
 ### Spécialité
 
-| Rubrique                          | Codes | Exercices | État                 | Sujet / session          |
-| --------------------------------- | ----- | --------- | -------------------- | ------------------------ |
-| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`       |
-| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre` |
-| Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`   |
-| Variations                        | 1AN2  | 5         | libre                |                          |
-| Fonction exponentielle            | 1AN3  | 11        | libre                |                          |
-| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                          |
-| Produit scalaire                  | 1G1   | 10        | libre                |                          |
-| Géométrie repérée                 | 1G2   | 5         | libre                |                          |
-| Probabilités conditionnelles      | 1P1   | 8         | libre                |                          |
-| Variables aléatoires réelles      | 1P2   | 1         | libre                |                          |
+| Rubrique                          | Codes | Exercices | État                 | Sujet / session           |
+| --------------------------------- | ----- | --------- | -------------------- | ------------------------- |
+| Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`        |
+| Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre`  |
+| Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
+| Variations                        | 1AN2  | 5         | libre                |                           |
+| Fonction exponentielle            | 1AN3  | 11        | prise (2026-11-24)   | `idees-1re-exponentielle` |
+| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                           |
+| Produit scalaire                  | 1G1   | 10        | libre                |                           |
+| Géométrie repérée                 | 1G2   | 5         | libre                |                           |
+| Probabilités conditionnelles      | 1P1   | 8         | libre                |                           |
+| Variables aléatoires réelles      | 1P2   | 1         | libre                |                           |
 
 ### Automatismes de l'épreuve anticipée
 
@@ -73,7 +73,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`    |
 | Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation` |
 | Continuité des fonctions                                                       | TSA4        | 6         | libre                |                        |
-| Fonction logarithme népérien                                                   | TSA5        | 12        | libre                |                        |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | prise (2026-11-24)   | `idees-tle-ln`         |
 | Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                        |
 | Intégration                                                                    | TSA8        | 5         | libre                |                        |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
@@ -137,7 +137,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`    |
 | Puissances                               | 3C1       | 5         | libre                                                      |                            |
 | Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral` |
-| Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                            |
+| Généralités sur les fonctions            | 3F1       | 19        | prise (2026-11-24)                                         | `idees-3e-fonctions`       |
 | Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                            |
 | Proportionnalité                         | 3P1       | 3         | libre                                                      |                            |
 | Statistiques                             | 3S1       | 3         | libre                                                      |                            |
@@ -162,6 +162,18 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| ffd5c051 Propriétés algébriques du logarithme                | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| d3301f2d Résoudre une équation avec ln                       | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 14036c68 Résoudre une inéquation avec ln                     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| f1963ef2 Seuil : plus petit entier n tel que qⁿ dépasse      | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 50feeefd Dérivée de eᵘ, ln u et u²                           | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 2cef3442 Croissances comparées : logarithme et puissances    | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 7c8b341b Propriétés algébriques du logarithme (QCM)          | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 7f13ca89 Intervalle de croissance d'une fonction avec ln     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| e814175b Inégalité déduite de la convexité                   | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

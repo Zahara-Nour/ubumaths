@@ -764,11 +764,7 @@ test.describe('#1731 — présentation d’un carnet Python (/python-notebook/[i
 		page,
 		browser
 	}) => {
-		// ÉCART instable constaté (2026-11-24, base locale) : l'appui sur → ne montre pas toujours la
-		// ligne « -> » d'une diapositive de carnet (réussi 2 fois sur 6, jamais sur la diapositive 3
-		// de /demo/diaporama : le deck compte 0 fragment à l'appui). Sauté (fixme) plutôt que d'être
-		// rouge une fois sur deux ; à rejouer quand l'écart est corrigé.
-		test.fixme(true, 'écart #1737 : → ne montre pas toujours la ligne « -> » (fragments du deck)');
+		// Écart E37 corrigé : → sautait les fragments (la ligne « -> » ne se montrait qu'au hasard)
 		await openPresentation(page, browser);
 		for (let i = 0; i < 3; i++) await nextSlide(page);
 		const fragment = page.locator('.slide.active .fragment');
