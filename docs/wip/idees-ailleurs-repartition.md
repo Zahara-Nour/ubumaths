@@ -162,6 +162,15 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| ffd5c051 Propriétés algébriques du logarithme                | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| d3301f2d Résoudre une équation avec ln                       | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 14036c68 Résoudre une inéquation avec ln                     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| f1963ef2 Seuil : plus petit entier n tel que qⁿ dépasse      | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 50feeefd Dérivée de eᵘ, ln u et u²                           | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 2cef3442 Croissances comparées : logarithme et puissances    | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 7c8b341b Propriétés algébriques du logarithme (QCM)          | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| 7f13ca89 Intervalle de croissance d'une fonction avec ln     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| e814175b Inégalité déduite de la convexité                   | `idees-tle-ln`                                              | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
