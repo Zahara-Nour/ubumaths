@@ -112,7 +112,7 @@ test('#1827 — graphe agrandi : toute la fenêtre, Échap réduit sans recadrer
 	await expect(objects).toBeVisible();
 });
 
-test('#1813 — Données : la grille ne bouge pas d’une case à l’autre', async ({
+test('#1813 — Données : la grille ne bouge pas d’une case à l’autre, ni quand on écrit dans la barre', async ({
 	page
 }, testInfo) => {
 	await openView(page, 'Données');
@@ -120,21 +120,30 @@ test('#1813 — Données : la grille ne bouge pas d’une case à l’autre', as
 	await typeCell(page, 'A3', '=1/0');
 	const grid = page.locator('table[role="grid"], [role="grid"]').first();
 	const top = async () => (await grid.boundingBox())?.y ?? -1;
-	const start = await top();
-	expect(start).toBeGreaterThan(0);
-	for (const address of ['A1', 'A2', 'A3']) {
-		await cellLocator(page, address).click();
-		expect(await top(), address).toBe(start);
+	// Au téléphone (une colonne, ≤ 720 px), la barre de formule reste en haut et le reste de la
+	// vue défile dessous : une case à moitié cachée peut défiler quand on la touche (12 px sur
+	// iPhone 15). La ligne y demande une grille immobile quand on écrit dans la barre (choix A
+	// de David, 2026-11-24, E41) ; ailleurs, immobile aussi d'une case à l'autre
+	const phone = (page.viewportSize()?.width ?? 1000) <= 720;
+	if (!phone) {
+		const start = await top();
+		expect(start).toBeGreaterThan(0);
+		for (const address of ['A1', 'A2', 'A3']) {
+			await cellLocator(page, address).click();
+			expect(await top(), address).toBe(start);
+		}
 	}
-	// Pendant la frappe d'une formule
+	// Pendant la frappe d'une formule dans la barre
 	await cellLocator(page, 'B1').click();
-	await page.locator('#atelier-barre-cellule').pressSequentially('=SI(');
-	// Écart E41 : sur un écran court (iPhone 15, 659 px de haut), l'aide de SI et la barre de
-	// mise en forme repoussent la grille ; sur Pixel 7 (839 px), elle ne bouge pas
-	if ((page.viewportSize()?.height ?? 1000) < 700) {
-		test.fail(true, 'écart E41 (#1813) : la grille descend pendant la frappe au téléphone');
-	}
-	expect(await top()).toBe(start);
+	const beforeTyping = await top();
+	const bar = page.locator('#atelier-barre-cellule');
+	await bar.click();
+	expect(await top(), 'toucher la barre').toBe(beforeTyping);
+	await bar.pressSequentially('=SI(');
+	expect(await top(), 'pendant la frappe').toBe(beforeTyping);
+	// La barre et l'aide de la fonction se voient pendant la frappe
+	await expect(bar).toBeInViewport({ ratio: 1 });
+	await expect(page.locator('#atelier-aide-formule')).toBeInViewport({ ratio: 1 });
 	await shoot(page, '1813-donnees', testInfo.project.name);
 });
 

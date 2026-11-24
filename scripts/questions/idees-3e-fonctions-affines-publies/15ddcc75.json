@@ -1,0 +1,486 @@
+{
+	"id": "15ddcc75-6c66-4ad1-a9e9-cd843241d006",
+	"title": "Déterminer une image par une fonction affine",
+	"grades": ["3"],
+	"level": 6,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d}}"
+				}
+			],
+			"statement": "Quelle est l'image de ${{c}}$ par la fonction affine :\n\n$$f(x)={{a}}x{{eval:b;+}}$$\n\n$f({{c}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "a*(c)+(b)"
+				}
+			],
+			"correction": {
+				"steps": ["$f({{c}})={{a}} \\times {{eval:c;()}}{{eval:b;+}}={{solution}}$."]
+			}
+		},
+		{
+			"statement": "Quelle est l'image de ${{c}}$ par la fonction affine :\n\n$$f(x)={{b}}{{a;+}}x$$\n\n$f({{c}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": [
+				"c != 0",
+				"a*c+b != a*c",
+				"a*c+b != a+c+b",
+				"a*c+b != a*c-b",
+				"a*c != a+c+b",
+				"a*c != a*c-b",
+				"a+c+b != a*c-b"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*c}}",
+							"message": "Tu as oublié le terme constant ${{b}}$ : après le produit, il faut encore l'ajouter.",
+							"label": "Terme constant oublié"
+						},
+						{
+							"answer": "{{eval:a+c+b}}",
+							"message": "${{a}} x$, c'est ${{a}}\\times x$ : on **multiplie** ${{a}}$ par ${{c}}$, on ne les additionne pas.",
+							"label": "a + x au lieu de a × x"
+						},
+						{
+							"answer": "{{eval:a*c-b}}",
+							"message": "Garde le signe du terme constant : on ajoute ${{b}}$ tel qu'il est écrit.",
+							"label": "Signe du terme constant perdu"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{c}}$, puis on calcule le produit avant la somme :",
+					"$f({{c}})={{b}}{{a;+}} \\times {{eval:c;()}}={{b}}{{eval:a*c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a*c+b}}}$."
+				]
+			},
+			"hint": "Remplace $x$ par ${{c}}$, entre parenthèses s'il est négatif ; fais d'abord la multiplication, puis l'addition."
+		},
+		{
+			"statement": "On considère la fonction affine $f : x \\mapsto {{a}}x{{eval:b;+}}$.\n\nQuelle est l'image de ${{c}}$ par $f$ ?\n\n$f({{c}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": [
+				"c != 0",
+				"a*c+b != a*c",
+				"a*c+b != a+c+b",
+				"a*c+b != a*c-b",
+				"a*c != a+c+b",
+				"a*c != a*c-b",
+				"a+c+b != a*c-b"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*c}}",
+							"message": "Tu as oublié le terme constant ${{b}}$ : après le produit, il faut encore l'ajouter.",
+							"label": "Terme constant oublié"
+						},
+						{
+							"answer": "{{eval:a+c+b}}",
+							"message": "${{a}} x$, c'est ${{a}}\\times x$ : on **multiplie** ${{a}}$ par ${{c}}$, on ne les additionne pas.",
+							"label": "a + x au lieu de a × x"
+						},
+						{
+							"answer": "{{eval:a*c-b}}",
+							"message": "Garde le signe du terme constant : on ajoute ${{b}}$ tel qu'il est écrit.",
+							"label": "Signe du terme constant perdu"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f : x \\mapsto {{a}}x{{eval:b;+}}$ veut dire $f(x)={{a}}x{{eval:b;+}}$ : l'image de ${{c}}$ est $f({{c}})$.",
+					"$f({{c}})={{a}} \\times {{eval:c;()}}{{eval:b;+}}={{eval:a*c}}{{eval:b;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a*c+b}}}$."
+				]
+			},
+			"hint": "Remplace $x$ par ${{c}}$, entre parenthèses s'il est négatif ; fais d'abord la multiplication, puis l'addition."
+		},
+		{
+			"statement": "Quelle est l'image de ${{c}}$ par la fonction affine :\n\n$$f(x)={{if:sg<0|-|}}\\dfrac{ {{kk}} }{2}x{{eval:b;+}}$$\n\n$f({{c}})=?$",
+			"variables": [
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				},
+				{
+					"name": "kk",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "k",
+					"expression": "eval:sg*kk"
+				},
+				{
+					"name": "m",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*m"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [
+				"k*m+b != k*m",
+				"k*m+b != k*m-b",
+				"k*m+b != k*c+b",
+				"k*m != k*m-b",
+				"k*m != k*c+b",
+				"k*m-b != k*c+b"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*m+b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:k*m}}",
+							"message": "Tu as oublié le terme constant ${{b}}$ : après le produit, il faut encore l'ajouter.",
+							"label": "Terme constant oublié"
+						},
+						{
+							"answer": "{{eval:k/2+c+b}}",
+							"message": "Le coefficient **multiplie** $x$ : on calcule ${{if:sg<0|-|}}\\dfrac{ {{kk}} }{2} \\times {{eval:c;()}}$, on n'additionne pas.",
+							"label": "a + x au lieu de a × x"
+						},
+						{
+							"answer": "{{eval:k*m-b}}",
+							"message": "Garde le signe du terme constant : on ajoute ${{b}}$ tel qu'il est écrit.",
+							"label": "Signe du terme constant perdu"
+						},
+						{
+							"answer": "{{eval:k*c+b}}",
+							"message": "Tu as multiplié par ${{kk}}$ sans diviser par $2$ : le coefficient est une **fraction**.",
+							"label": "Dénominateur 2 oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par ${{if:sg<0|-|}}\\dfrac{ {{kk}} }{2}$, c'est multiplier par ${{k}}$, puis diviser par $2$ :",
+					"${{if:sg<0|-|}}\\dfrac{ {{kk}} }{2} \\times {{eval:c;()}}=\\dfrac{ {{eval:k*c}} }{2}={{eval:k*m}}$",
+					"$f({{c}})={{eval:k*m}}{{eval:b;+}}=\\textcolor{{{color:primary.0}}}{{{eval:k*m+b}}}$."
+				]
+			},
+			"hint": "Pour multiplier ${{c}}$ par une fraction de dénominateur $2$, multiplie par son numérateur et divise par $2$ ; ajoute ensuite le terme constant."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-61"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "f(-6)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["61"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "signe",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-47"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "9×(-6)+7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "9",
+				"c": "0"
+			},
+			"description": "c = 0",
+			"variationIndex": 0
+		},
+		{
+			"description": "F1a : 4 − 3x, f(−5) = 19",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "4",
+				"c": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["19"]
+		},
+		{
+			"description": "F1a : terme constant oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "4",
+				"c": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le terme constant $4$ : après le produit, il faut encore l'ajouter."
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "F1a : a + x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "4",
+				"c": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-3 x$, c'est $-3\\times x$ : on **multiplie** $-3$ par $-5$, on ne les additionne pas."
+			},
+			"answers": ["-4"]
+		},
+		{
+			"description": "F1a : signe du terme constant",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "4",
+				"c": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Garde le signe du terme constant : on ajoute $4$ tel qu'il est écrit."
+			},
+			"answers": ["11"]
+		},
+		{
+			"description": "F1a : 7 − 2x, f(3) = 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "7",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F1b : x ↦ 6x − 8, f(3) = 10",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "-8",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "F1b : terme constant oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "-8",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le terme constant $-8$ : après le produit, il faut encore l'ajouter."
+			},
+			"answers": ["18"]
+		},
+		{
+			"description": "F1b : a + x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "-8",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$6 x$, c'est $6\\times x$ : on **multiplie** $6$ par $3$, on ne les additionne pas."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F1b : signe du terme constant",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "-8",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Garde le signe du terme constant : on ajoute $-8$ tel qu'il est écrit."
+			},
+			"answers": ["26"]
+		},
+		{
+			"description": "F1c : −3/2 x + 5, f(4) = −1",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "-1",
+				"kk": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1"]
+		},
+		{
+			"description": "F1c : terme constant oublié",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "-1",
+				"kk": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le terme constant $5$ : après le produit, il faut encore l'ajouter."
+			},
+			"answers": ["-6"]
+		},
+		{
+			"description": "F1c : signe du terme constant",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "-1",
+				"kk": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Garde le signe du terme constant : on ajoute $5$ tel qu'il est écrit."
+			},
+			"answers": ["-11"]
+		},
+		{
+			"description": "F1c : dénominateur oublié",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "-1",
+				"kk": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $3$ sans diviser par $2$ : le coefficient est une **fraction**."
+			},
+			"answers": ["-7"]
+		},
+		{
+			"description": "F1c : a + x",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "-1",
+				"kk": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le coefficient **multiplie** $x$ : on calcule $-\\dfrac{ 3 }{2} \\times 4$, on n'additionne pas."
+			},
+			"answers": ["\\frac{15}{2}"]
+		},
+		{
+			"description": "F1c : 5/2 x − 3, f(−6) = −18",
+			"variationIndex": 3,
+			"variables": {
+				"sg": "1",
+				"kk": "5",
+				"m": "-3",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-18"]
+		}
+	]
+}

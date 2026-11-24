@@ -18,6 +18,8 @@ export interface VoirOptions {
 	target: string;
 	/** Grand écran au lieu du format iPhone */
 	desktop: boolean;
+	/** Petit téléphone (iPhone SE, 375 px de large) au lieu de l'iPhone courant */
+	small: boolean;
 	/** Chromium au lieu de WebKit (le moteur de Safari) */
 	chromium: boolean;
 	account: AccountName | null;
@@ -45,7 +47,7 @@ export const SLICE_HEIGHT = 1600;
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 const USAGE =
-	'Usage : pnpm voir <page> [--ordi] [--chrome] [--compte prof|eleve|admin] [--port <n>]';
+	'Usage : pnpm voir <page> [--ordi | --petit] [--chrome] [--compte prof|eleve|admin] [--port <n>]';
 
 // Functions
 
@@ -60,6 +62,7 @@ export function parseArgs(argv: string[]): VoirOptions {
 	const options: VoirOptions = {
 		target: '',
 		desktop: false,
+		small: false,
 		chromium: false,
 		account: null,
 		port: null
@@ -68,6 +71,7 @@ export function parseArgs(argv: string[]): VoirOptions {
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i] as string;
 		if (arg === '--ordi') options.desktop = true;
+		else if (arg === '--petit') options.small = true;
 		else if (arg === '--chrome') options.chromium = true;
 		else if (arg === '--compte') {
 			const value = argv[++i] ?? '';
@@ -83,6 +87,8 @@ export function parseArgs(argv: string[]): VoirOptions {
 		else targets.push(arg);
 	}
 	if (targets.length !== 1) throw new VoirError(USAGE);
+	if (options.desktop && options.small)
+		throw new VoirError('Choisir --petit ou --ordi, pas les deux.');
 	options.target = targets[0] as string;
 	return options;
 }
@@ -216,10 +222,16 @@ export function isLoginRedirect(requested: string, final: string): boolean {
 	return isLogin(final) && !isLogin(requested);
 }
 
+/** Nom du format d'écran : `ordi`, `iphone` ou `iphone-se` (`--petit`) */
+export function formatName(options: Pick<VoirOptions, 'desktop' | 'small'>): string {
+	if (options.desktop) return 'ordi';
+	return options.small ? 'iphone-se' : 'iphone';
+}
+
 export function captureName(
 	date: Date,
 	target: string,
-	options: Pick<VoirOptions, 'desktop' | 'chromium' | 'account'>
+	options: Pick<VoirOptions, 'desktop' | 'small' | 'chromium' | 'account'>
 ): string {
 	const two = (n: number) => String(n).padStart(2, '0');
 	const stamp =
@@ -231,12 +243,7 @@ export function captureName(
 			.replace(/[^a-zA-Z0-9]+/g, '-')
 			.replace(/^-+|-+$/g, '')
 			.slice(0, 60) || 'accueil';
-	const parts = [
-		stamp,
-		slug,
-		options.desktop ? 'ordi' : 'iphone',
-		options.chromium ? 'chrome' : 'safari'
-	];
+	const parts = [stamp, slug, formatName(options), options.chromium ? 'chrome' : 'safari'];
 	if (options.account) parts.push(options.account);
 	return parts.join('-');
 }

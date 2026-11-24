@@ -1,22 +1,19 @@
 # Chantier `labyrinthe` : grille de nombres à parcourir (outil n° 53)
 
-Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
+Né de [droite-zoom](../../../wip/droite-zoom-progress.md) (prochaine action) et des relevés
 `idees-3e-arithmetique` (3A10-7) et `idees-6e-entiers-decimaux` (6N1A-4, 6-101). Ligne n° 53 de
-[outils-manquants.md](outils-manquants.md).
+[outils-manquants.md](../../../wip/outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3102._
+_Mis à jour le 2026-11-24 : chantier clos et archivé._
 
-- **État** : bloc en prod (0.107.0) ; brouillons en prod 00f35c55 (M1, primalité, sans point) et
-  9e3a862a (M2, décomposition, 6-101), rangés et tagués par #3102 (`db:migrate` fait, vérifié en
-  lecture seule) · **Prochaine action** : relecture par David dans
-  `/dev/modeles?titre=labyrinthe` ; compter ses verdicts en base (`question_template_reviews`,
-  `reviewed_at` postérieur) ; puis `publier-lot.ts --dir scripts/questions/labyrinthe-modeles` en
-  simulation, David lance `--publier` · **En attente de David** : la relecture (les 2 JSON
-  modifiés par `--publier` dans le worktree `idees-tle-probas` y ont été restaurés) · **Pièges en cours** :
-  chemins des specs par `labyrinthe-chemins.ts` ; tirage figé (test « golden ») ; grilles larges
-  (outils-manquants n° 61) · **Worktree / branche** : aucun.
+- **État** : clos. Bloc (#3084), modèles publiés (#3094, #3102), grille sur téléphone (#3112) ; le
+  durable est dans `docs/systeme/ubumark.md` (§ Labyrinthe de nombres) et le catalogue
+  `block-catalog/labyrinthe.ts` · **Prochaine action** : aucune ; #3112 part en prod avec le
+  prochain `deploy:prod` · **En attente de David** : rien (34 px confirmés le 2026-11-24) ·
+  **Pièges** : tirage figé (test « golden ») ; chemins des specs par `labyrinthe-chemins.ts` ·
+  **Worktree / branche** : aucun.
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -91,10 +88,25 @@ Phase 0 validée par David le 2026-11-24 (« go » après ses « tes recos ? »)
   (vu avec `pnpm voir` sur des modèles d'essai locaux, supprimés ensuite) → 6 × 5 et 4 × 5 ; le
   défaut du bloc est noté au n° 61 de `outils-manquants.md`.
 
-Écrit : `docs/wip/questions/labyrinthe-modeles.py` → `scripts/questions/labyrinthe-modeles/` ;
+Écrit : `docs/archive/wip/labyrinthe/labyrinthe-modeles.py` → `scripts/questions/labyrinthe-modeles/` ;
 `scripts/questions/labyrinthe-chemins.ts` remplace les marques `A_CALCULER` des specs par le chemin
 de la graine 0 (bon chemin, sans sa fin, sans son début). Pas d'erreurs prévues : le juge dit
 lui-même pourquoi un chemin est faux.
+
+## PR 3 : la grille sur téléphone (outils-manquants n° 61)
+
+Phase 0 validée par David le 2026-11-24 : largeur visée 375 px (iPhone SE) ; refuser à l'auteur
+une grille trop large plutôt que la réduire en silence.
+
+- Mesuré à 375 px (Playwright, carte de l'aperçu admin : 273 px pour la grille) sur 25 grilles
+  (5 longueurs de nombres × 3 à 7 colonnes). Cases à 36 px : 7 colonnes de `137` débordaient de
+  9 px ; à 34 px elles tiennent. **Écart à la phase 0** (36 px annoncés) : à confirmer par David.
+- Seuils (`colonnesSurTelephone`, d'après `nombreLePlusLong`) : 7 colonnes jusqu'à 3 caractères,
+  5 de 4 à 6, 4 au-delà ; les 15 grilles acceptées tiennent (mesuré), vu à l'écran (7 × 5 premiers).
+- Refus aussi pour un bloc d'affichage ; tests PDF ramenés aux grilles les plus larges acceptées.
+- `pnpm voir --petit` (iPhone SE, 375 px) ajouté pour mesurer.
+- Revue `code-reviewer` : aucun bloquant ; double message (lignes hors bornes) corrigé.
+- Seuls les deux modèles publiés utilisent le bloc en prod ; ils restent acceptés (1 500 tirages).
 
 ## Historique
 
@@ -103,3 +115,7 @@ lui-même pourquoi un chemin est faux.
 - 2026-11-24 : PR 2, phase 0 validée ; lot écrit, grilles réduites (débord iPhone).
 - 2026-11-24 : #3094 mergée (PR 2, fichiers des modèles).
 - 2026-11-24 : brouillons créés en prod par David ; #3102 mergée (rangement), `db:migrate` fait.
+- 2026-11-24 : les deux modèles publiés par David (vérifié en base).
+- 2026-11-24 : PR 3 (largeur sur téléphone) écrite, revue faite.
+- 2026-11-24 : #3112 mergée (PR 3, grille sur téléphone).
+- 2026-11-24 : 34 px confirmés par David ; chantier clos, journal archivé.

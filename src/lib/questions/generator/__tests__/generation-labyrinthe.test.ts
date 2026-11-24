@@ -1,6 +1,6 @@
 /**
  * Question « labyrinthe à parcourir » (bloc ```labyrinthe + `parcourir: oui`, chantier
- * `labyrinthe` ; journal `docs/wip/labyrinthe-progress.md`)
+ * `labyrinthe` ; journal `docs/archive/wip/labyrinthe/labyrinthe-progress.md`)
  *
  * Une case par bloc ; le générateur pose une graine dans le bloc (chaque instance a son
  * labyrinthe) ; réponse attendue = la grille, l'entrée et le bon chemin (`6x4 2 | 2,1 …`),

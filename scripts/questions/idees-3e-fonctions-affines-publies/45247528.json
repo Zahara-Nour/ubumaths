@@ -1,0 +1,581 @@
+{
+	"id": "45247528-23f3-44cc-860e-afe643abaf2b",
+	"title": "Fonction linéaire et proportionnalité",
+	"description": "Relier fonction linéaire et proportionnalité : coefficient a lu dans un tableau ou tiré de f(n) donné, expression f(x) = ax d'une situation (prix au kilogramme, vitesse constante)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"statement": "La fonction $f$ est linéaire, $f(x)=ax$. Voici un tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|} x & {{n}} & {{q}} \\\\ f(x) & {{eval:(a)*(n)}} & {{eval:(a)*(q)}} \\end{array}$\n\nQuel est le coefficient $a$ ?\n\n$a=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "6..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+					"$$a = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = \\textcolor{{{color:primary.0}}}{{{eval:a}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"statement": "$f$ est une fonction linéaire telle que $f({{n}})={{eval:(a)*(n)}}$.\n\nQuel est son coefficient $a$ ?\n\n$a=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["abs(a) != n"],
+			"correction": {
+				"steps": [
+					"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+					"$$a = \\dfrac{f({{n}})}{ {{n}} } = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = \\textcolor{{{color:primary.0}}}{{{eval:a}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/10;d}}x"
+				}
+			],
+			"statement": "Au marché, les pommes coûtent ${{eval:k/10;d}}~\\unit{€}$ le kilogramme. Le prix payé, en euros, est une fonction linéaire $f$ de la masse $x$ achetée, en kilogrammes.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "15..35"
+				}
+			],
+			"conditions": ["k - 5*floor(k/5) == 0"],
+			"correction": {
+				"steps": [
+					"Le prix est **proportionnel** à la masse : on multiplie la masse par le prix d'un kilogramme.",
+					"$$f(x) = \\textcolor{{{color:primary.0}}}{{{eval:k/10;d}}x}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}x"
+				}
+			],
+			"statement": "Une voiture roule à la vitesse constante de ${{v}}~\\unit{km/h}$. La distance parcourue, en kilomètres, est une fonction linéaire $f$ de la durée $x$ du trajet, en heures.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "50|60|70|80|90|110|130"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À vitesse constante, la distance est **proportionnelle** à la durée : en $x$ heures, la voiture parcourt $x$ fois ${{v}}~\\unit{km}$.",
+					"$$f(x) = \\textcolor{{{color:primary.0}}}{{{v}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "$f$ est une fonction linéaire telle que $f({{n}})={{eval:(a)*(n)}}$.\n\nDonne l'expression de $f(x)$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["abs(a) != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}x",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{x}{ {{a}} }",
+							"message": "Tu as renversé le rapport : le coefficient est $a=\\dfrac{f(x)}{x}$, l'image divisée par le nombre.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{n}}x",
+							"message": "${{n}}$ est le nombre dont on connaît l'image, pas le coefficient : calcule $a=\\dfrac{f({{n}})}{ {{n}} }$.",
+							"label": "Coefficient pris égal à n"
+						},
+						{
+							"answer": "{{eval:(a)*(n)}}x",
+							"message": "${{eval:(a)*(n)}}$ est l'image de ${{n}}$, pas le coefficient : divise-la par ${{n}}$.",
+							"label": "Coefficient pris égal à f(n)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+					"$$a = \\dfrac{f({{n}})}{ {{n}} } = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = {{a}}$$",
+					"$$f(x) = \\textcolor{{{color:primary.0}}}{{{a}}x}$$"
+				]
+			},
+			"hint": "Commence par trouver le coefficient $a$ de $f$ à partir de $f({{n}})$. Une fonction linéaire s'écrit $f(x)=ax$."
+		},
+		{
+			"statement": "$f$ est une fonction linéaire telle que $f({{n}})={{eval:(a)*(n)}}$.\n\nCalcule $f({{m}})$.\n\n$f({{m}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["abs(a) != n", "m != n", "a*(m-n) != m", "a*(a*n+m) != m", "a*n+m != n*m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*n+m}}",
+							"message": "$f$ est linéaire : les images sont **proportionnelles** aux nombres, on multiplie par le coefficient, on n'ajoute pas.",
+							"label": "f(m) = f(n) + m"
+						},
+						{
+							"answer": "{{eval:m/a}}",
+							"message": "Tu as divisé par le coefficient : l'image s'obtient en **multipliant** par $a=\\dfrac{f({{n}})}{ {{n}} }$.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{eval:n*m}}",
+							"message": "${{n}}$ est le nombre dont on connaît l'image, pas le coefficient : calcule $a=\\dfrac{f({{n}})}{ {{n}} }$.",
+							"label": "Coefficient pris égal à n"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+					"$$a = \\dfrac{f({{n}})}{ {{n}} } = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = {{a}}$$",
+					"$$f({{m}}) = {{a}} \\times {{eval:m;()}} = \\textcolor{{{color:primary.0}}}{{{eval:a*m}}}$$"
+				]
+			},
+			"hint": "Commence par trouver le coefficient $a$ de $f$ à partir de $f({{n}})$."
+		},
+		{
+			"statement": "$f$ est une fonction linéaire telle que $f({{n}})={{eval:(a)*(n)}}$.\n\nQuel nombre a pour image ${{k}}$ par $f$ ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "s",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*s"
+				}
+			],
+			"conditions": ["abs(a) != n", "s != n", "a*a*s != n+a*s-a*n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*k}}",
+							"message": "Tu as calculé l'image de ${{k}}$ : on cherche le nombre $x$ tel que $f\\left( x \\right) = {{k}}$.",
+							"label": "Image au lieu de l'antécédent"
+						},
+						{
+							"answer": "{{eval:1/s}}",
+							"message": "Tu as divisé dans le mauvais sens : de $A x = B$, on tire $x = \\dfrac{B}{A}$.",
+							"label": "Quotient inversé"
+						},
+						{
+							"answer": "{{eval:n+k-a*n}}",
+							"message": "$f$ est linéaire : les images sont **proportionnelles** aux nombres. On ne raisonne pas par différence, on divise par le coefficient.",
+							"label": "Raisonnement additif"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est linéaire : $f(x)=ax$, donc $f(x)$ est **proportionnel** à $x$ et $a$ est le coefficient de proportionnalité, $a=\\dfrac{f(x)}{x}$.",
+					"$$a = \\dfrac{f({{n}})}{ {{n}} } = \\dfrac{{{eval:(a)*(n)}}}{ {{n}} } = {{a}}$$",
+					"On cherche le nombre $x$ tel que $f(x)={{k}}$ :",
+					"$$\\begin{align}{{a}}x&={{k}}\\\\x&=\\frac{ {{k}} }{ {{a}} }\\\\x&=\\textcolor{{{color:primary.0}}}{{{s}}}\\end{align}$$"
+				]
+			},
+			"hint": "Commence par trouver le coefficient $a$ de $f$ à partir de $f({{n}})$. Cherche ensuite le nombre $x$ tel que $f(x)={{k}}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"n": "2",
+				"q": "7"
+			},
+			"description": "Tableau : a = 4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"n": "2",
+				"q": "7"
+			},
+			"description": "Erreur : rapport renversé 1/4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"description": "f(2) = 6 : a = 3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"description": "Erreur : 6 − 2 = 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"description": "Erreur : 2/6",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2{,}5x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "25"
+			},
+			"description": "Pommes à 2,5 € : f(x) = 2,5x",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{x}{2{,}5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "25"
+			},
+			"description": "Erreur : x/2,5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2{,}5+x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "25"
+			},
+			"description": "Erreur : 2,5 + x",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["90x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"v": "90"
+			},
+			"description": "Vitesse 90 : f(x) = 90x",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{x}{90}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"v": "90"
+			},
+			"description": "Erreur : x/90",
+			"variationIndex": 3
+		},
+		{
+			"description": "F3a : f(4) = −12 → f(x) = −3x",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3x"]
+		},
+		{
+			"description": "F3a : −3 × x, forme à améliorer",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			},
+			"answers": ["-3\\times x"]
+		},
+		{
+			"description": "F3a : rapport renversé x/(−3)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : le coefficient est $a=\\dfrac{f(x)}{x}$, l'image divisée par le nombre."
+			},
+			"answers": ["-\\frac{x}{3}"]
+		},
+		{
+			"description": "F3a : coefficient n",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$4$ est le nombre dont on connaît l'image, pas le coefficient : calcule $a=\\dfrac{f(4)}{ 4 }$."
+			},
+			"answers": ["4x"]
+		},
+		{
+			"description": "F3a : coefficient f(n)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-12$ est l'image de $4$, pas le coefficient : divise-la par $4$."
+			},
+			"answers": ["-12x"]
+		},
+		{
+			"description": "F3a : f(5) = 35 → 7x",
+			"variationIndex": 4,
+			"variables": {
+				"a": "7",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7x"]
+		},
+		{
+			"description": "F3b : f(4) = −12, f(6) = −18",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"m": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-18"]
+		},
+		{
+			"description": "F3b : f(n) + m",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"m": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$f$ est linéaire : les images sont **proportionnelles** aux nombres, on multiplie par le coefficient, on n'ajoute pas."
+			},
+			"answers": ["-6"]
+		},
+		{
+			"description": "F3b : rapport renversé",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"m": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par le coefficient : l'image s'obtient en **multipliant** par $a=\\dfrac{f(4)}{ 4 }$."
+			},
+			"answers": ["-2"]
+		},
+		{
+			"description": "F3b : coefficient n",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"m": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$4$ est le nombre dont on connaît l'image, pas le coefficient : calcule $a=\\dfrac{f(4)}{ 4 }$."
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "F3b : f(2) = 10, f(−7) = −35",
+			"variationIndex": 5,
+			"variables": {
+				"a": "5",
+				"n": "2",
+				"m": "-7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-35"]
+		},
+		{
+			"description": "F3c : f(4) = −12, antécédent de 15 = −5",
+			"variationIndex": 6,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"s": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5"]
+		},
+		{
+			"description": "F3c : image",
+			"variationIndex": 6,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"s": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé l'image de $15$ : on cherche le nombre $x$ tel que $f\\left( x \\right) = 15$."
+			},
+			"answers": ["-45"]
+		},
+		{
+			"description": "F3c : quotient inversé",
+			"variationIndex": 6,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"s": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé dans le mauvais sens : de $A x = B$, on tire $x = \\dfrac{B}{A}$."
+			},
+			"answers": ["-\\frac{1}{5}"]
+		},
+		{
+			"description": "F3c : raisonnement additif",
+			"variationIndex": 6,
+			"variables": {
+				"a": "-3",
+				"n": "4",
+				"s": "-5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$f$ est linéaire : les images sont **proportionnelles** aux nombres. On ne raisonne pas par différence, on divise par le coefficient."
+			},
+			"answers": ["31"]
+		},
+		{
+			"description": "F3c : f(3) = 6, antécédent de 18 = 9",
+			"variationIndex": 6,
+			"variables": {
+				"a": "2",
+				"n": "3",
+				"s": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9"]
+		}
+	]
+}

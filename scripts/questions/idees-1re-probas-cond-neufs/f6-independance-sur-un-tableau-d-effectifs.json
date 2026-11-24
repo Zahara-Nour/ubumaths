@@ -1,0 +1,487 @@
+{
+	"rangement": {
+		"noeud": "Probabilités > Probabilités conditionnelles > indépendance",
+		"point": "1SPE-424"
+	},
+	"title": "Indépendance lue sur un tableau d'effectifs",
+	"description": "Tableau croisé d'effectifs en situation : décider si A et B sont indépendants (QCM justifié, par P(A ∩ B) = P(A)P(B) ou par P_A(B) = P(B)), ou trouver l'effectif qui les rend indépendants.",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 150,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un festival propose deux soirées, le samedi et le dimanche. Chaque billet est vendu au tarif plein ou au tarif réduit. Le tableau donne la répartition des billets vendus.\n\n|  | Samedi | Dimanche | Total |\n|---|---|---|---|\n| Tarif réduit | ${{x}}$ | ${{y}}$ | ${{nr}}$ |\n| Tarif plein | ${{z}}$ | ${{w}}$ | ${{eval:nt-nr}}$ |\n| Total | ${{ca}}$ | ${{cb}}$ | ${{nt}}$ |\n\nOn choisit un billet au hasard. On note $A$ l'évènement « le billet est pour la soirée du samedi » et $B$ l'évènement « le billet est au tarif réduit ».\n\nLes évènements $A$ et $B$ sont-ils indépendants ?\n\n```choix\n- Oui, car $P(A\\cap B)=P(A)\\times P(B)={{eval:ca*p/(10*nt)}}$.\n- Non, car $P(A\\cap B)={{eval:ind*p/10+(1-ind)*x/nt}}\\neq P(A)\\times P(B)={{eval:ca*p/(10*nt)}}$.\n- Oui, car $P(A\\cap B)\\neq 0$.\n- Non, car $P(A)\\neq P(B)$.\n```",
+			"variables": [
+				{
+					"name": "ca",
+					"expression": "20|30|40|50|60|70|80|90"
+				},
+				{
+					"name": "cb",
+					"expression": "20|30|40|50|60|70|80|90"
+				},
+				{
+					"name": "p",
+					"expression": "3..7"
+				},
+				{
+					"name": "ind",
+					"expression": "0|1"
+				},
+				{
+					"name": "dd",
+					"expression": "3..8;±"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:ca+cb"
+				},
+				{
+					"name": "nr",
+					"expression": "eval:p*(ca+cb)/10"
+				},
+				{
+					"name": "x",
+					"expression": "eval:ca*p/10+(1-ind)*dd"
+				},
+				{
+					"name": "y",
+					"expression": "eval:p*(ca+cb)/10-ca*p/10-(1-ind)*dd"
+				},
+				{
+					"name": "z",
+					"expression": "eval:ca-ca*p/10-(1-ind)*dd"
+				},
+				{
+					"name": "w",
+					"expression": "eval:cb-p*(ca+cb)/10+ca*p/10+(1-ind)*dd"
+				}
+			],
+			"conditions": ["x >= 2", "y >= 2", "z >= 2", "w >= 2", "10*ca != p*(ca+cb)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-ind}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(A)=\\dfrac{ {{ca}} }{ {{nt}} }={{eval:ca/nt}}$, $P(B)=\\dfrac{ {{nr}} }{ {{nt}} }={{eval:p/10}}$ et $P(A\\cap B)=\\dfrac{ {{x}} }{ {{nt}} }={{eval:x/nt}}$.",
+					"$P(A)\\times P(B)={{eval:ca/nt}}\\times{{eval:p/10}}={{eval:ca*p/(10*nt)}}$.",
+					"{{if:ind=1|C'est bien $P(A\\cap B)$ : $A$ et $B$ **sont indépendants**.}}{{if:ind=0|Or $P(A\\cap B)={{eval:x/nt}}\\neq{{eval:ca*p/(10*nt)}}$ : $A$ et $B$ **ne sont pas indépendants**.}}",
+					"Ni $P(A\\cap B)\\neq 0$ ni $P(A)\\neq P(B)$ ne disent rien de l'indépendance : seule l'égalité $P(A\\cap B)=P(A)\\times P(B)$ compte."
+				]
+			},
+			"hint": "Indépendants : $P(A\\cap B)=P(A)\\times P(B)$. Écris chaque probabilité comme un effectif sur l'effectif total."
+		},
+		{
+			"statement": "Dans un lycée, on s'intéresse aux élèves inscrits à l'atelier théâtre et aux demi-pensionnaires. Le tableau donne les effectifs.\n\n|  | Théâtre | Pas de théâtre | Total |\n|---|---|---|---|\n| Demi-pensionnaire | ${{x}}$ | ${{y}}$ | ${{nr}}$ |\n| Externe | ${{z}}$ | ${{w}}$ | ${{eval:nt-nr}}$ |\n| Total | ${{ca}}$ | ${{cb}}$ | ${{nt}}$ |\n\nOn choisit un élève au hasard. On note $A$ l'évènement « l'élève est inscrit à l'atelier théâtre » et $B$ l'évènement « l'élève est demi-pensionnaire ».\n\nLes évènements $A$ et $B$ sont-ils indépendants ?\n\n```choix\n- Oui, car $P_A(B)=P(B)={{eval:p/10}}$.\n- Non, car $P_A(B)={{eval:ind*ca*p/(10*nt)+(1-ind)*x/ca}}\\neq P(B)={{eval:p/10}}$.\n- Oui, car $P(A\\cap B)\\neq 0$.\n- Non, car $P(A)\\neq P(B)$.\n```",
+			"variables": [
+				{
+					"name": "ca",
+					"expression": "20|30|40|50|60|70|80|90"
+				},
+				{
+					"name": "cb",
+					"expression": "20|30|40|50|60|70|80|90"
+				},
+				{
+					"name": "p",
+					"expression": "3..7"
+				},
+				{
+					"name": "ind",
+					"expression": "0|1"
+				},
+				{
+					"name": "dd",
+					"expression": "3..8;±"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:ca+cb"
+				},
+				{
+					"name": "nr",
+					"expression": "eval:p*(ca+cb)/10"
+				},
+				{
+					"name": "x",
+					"expression": "eval:ca*p/10+(1-ind)*dd"
+				},
+				{
+					"name": "y",
+					"expression": "eval:p*(ca+cb)/10-ca*p/10-(1-ind)*dd"
+				},
+				{
+					"name": "z",
+					"expression": "eval:ca-ca*p/10-(1-ind)*dd"
+				},
+				{
+					"name": "w",
+					"expression": "eval:cb-p*(ca+cb)/10+ca*p/10+(1-ind)*dd"
+				}
+			],
+			"conditions": ["x >= 2", "y >= 2", "z >= 2", "w >= 2", "10*ca != p*(ca+cb)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-ind}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $P(A)\\neq 0$, $A$ et $B$ sont indépendants si et seulement si $P_A(B)=P(B)$.",
+					"$P(B)=\\dfrac{ {{nr}} }{ {{nt}} }={{eval:p/10}}$ et, parmi les ${{ca}}$ élèves inscrits au théâtre, $P_A(B)=\\dfrac{ {{x}} }{ {{ca}} }={{eval:x/ca}}$.",
+					"{{if:ind=1|$P_A(B)=P(B)$ : $A$ et $B$ **sont indépendants**.}}{{if:ind=0|$P_A(B)\\neq P(B)$ : $A$ et $B$ **ne sont pas indépendants**.}}",
+					"Ni $P(A\\cap B)\\neq 0$ ni $P(A)\\neq P(B)$ ne disent rien de l'indépendance."
+				]
+			},
+			"hint": "Indépendants : $P_A(B)=P(B)$. $P_A(B)$ se lit dans la colonne de $A$ seulement."
+		},
+		{
+			"statement": "Une salle de sport propose deux formules, « libre » et « coaching ». Chaque abonné paie en une fois ou en mensualités. On ne connaît que les totaux du tableau des effectifs.\n\n|  | Libre | Coaching | Total |\n|---|---|---|---|\n| Mensualités | $?$ |  | ${{nr}}$ |\n| En une fois |  |  | ${{eval:nt-nr}}$ |\n| Total | ${{ca}}$ | ${{cb}}$ | ${{nt}}$ |\n\nOn choisit un abonné au hasard. On note $A$ l'évènement « l'abonné a la formule libre » et $B$ l'évènement « l'abonné paie en mensualités ».\n\nQuel effectif faut-il écrire dans la case « libre et mensualités » pour que $A$ et $B$ soient indépendants ?",
+			"variables": [
+				{
+					"name": "ca",
+					"expression": "20|30|40|50|60|70|80|90"
+				},
+				{
+					"name": "cb",
+					"expression": "20|30|40|50|60|70|80|90"
+				},
+				{
+					"name": "p",
+					"expression": "3..7"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:ca+cb"
+				},
+				{
+					"name": "nr",
+					"expression": "eval:p*(ca+cb)/10"
+				}
+			],
+			"conditions": ["10*ca != p*(ca+cb)", "ca+nr-nt != ca*p/10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ca*p/10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:ca*nr}}",
+							"message": "Tu as oublié de diviser par l'effectif total : $n(A\\cap B)=\\dfrac{n(A)\\times n(B)}{N}$.",
+							"label": "Pas de division par N"
+						},
+						{
+							"answer": "{{eval:ca+nr-nt}}",
+							"message": "$n(A)+n(B)-N$ est le plus petit effectif possible de $A\\cap B$, pas celui qui rend $A$ et $B$ indépendants.",
+							"label": "n(A) + n(B) − N"
+						},
+						{
+							"answer": "{{eval:ca/nt}}",
+							"message": "Tu as donné $P(A)$ : on demande un effectif.",
+							"label": "P(A) au lieu d'un effectif"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $B$ sont indépendants lorsque $P(A\\cap B)=P(A)\\times P(B)$, soit $\\dfrac{n(A\\cap B)}{ {{nt}} }=\\dfrac{ {{ca}} }{ {{nt}} }\\times\\dfrac{ {{nr}} }{ {{nt}} }$.",
+					"Donc $n(A\\cap B)=\\dfrac{ {{ca}}\\times{{nr}} }{ {{nt}} }=\\textcolor{{{color:primary.0}}}{ {{eval:ca*p/10}} }$."
+				]
+			},
+			"hint": "Indépendants : $P(A\\cap B)=P(A)\\times P(B)$. Écris chaque probabilité comme un effectif sur l'effectif total."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Indépendants : 12/100 = 0,4 × 0,3",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "1",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "« Non » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "1",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "« Oui, car ≠ 0 » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "1",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "« Non, car P(A) ≠ P(B) » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "1",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Non indépendants : 17/100 ≠ 0,12",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "0",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "« Oui, car produit » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "0",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "« Oui, car ≠ 0 » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "0",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "« Non, car P(A) ≠ P(B) » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "3",
+				"ind": "0",
+				"dd": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Indépendants : 30/50 = 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"ca": "50",
+				"cb": "30",
+				"p": "6",
+				"ind": "1",
+				"dd": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "« Non » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"ca": "50",
+				"cb": "30",
+				"p": "6",
+				"ind": "1",
+				"dd": "-4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "« Oui, car ≠ 0 » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"ca": "50",
+				"cb": "30",
+				"p": "6",
+				"ind": "1",
+				"dd": "-4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Non indépendants : 26/50 ≠ 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"ca": "50",
+				"cb": "30",
+				"p": "6",
+				"ind": "0",
+				"dd": "-4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "« Oui » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"ca": "50",
+				"cb": "30",
+				"p": "6",
+				"ind": "0",
+				"dd": "-4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "« Non, car P(A) ≠ P(B) » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"ca": "50",
+				"cb": "30",
+				"p": "6",
+				"ind": "0",
+				"dd": "-4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "40 × 70 / 100 = 28",
+			"variationIndex": 2,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "27 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["27"]
+		},
+		{
+			"description": "Pas de division par N",
+			"variationIndex": 2,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de diviser par l'effectif total : $n(A\\cap B)=\\dfrac{n(A)\\times n(B)}{N}$."
+			},
+			"answers": ["2\\,800"]
+		},
+		{
+			"description": "n(A) + n(B) − N",
+			"variationIndex": 2,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$n \\left( A \\right) + n \\left( B \\right) - N$ est le plus petit effectif possible de $A\\cap B$, pas celui qui rend $A$ et $B$ indépendants."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "P(A)",
+			"variationIndex": 2,
+			"variables": {
+				"ca": "40",
+				"cb": "60",
+				"p": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $P \\left( A \\right)$ : on demande un effectif."
+			},
+			"answers": ["0{,}4"]
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

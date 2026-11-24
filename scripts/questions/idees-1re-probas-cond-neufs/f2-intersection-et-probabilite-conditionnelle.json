@@ -1,0 +1,653 @@
+{
+	"rangement": {
+		"noeud": "Probabilités > Probabilités conditionnelles",
+		"point": "2-390"
+	},
+	"title": "Probabilité conditionnelle et intersection : P(A ∩ B) = P(A) × P_A(B)",
+	"description": "Sans arbre : calculer P(A ∩ B) à partir de P(A) et P_A(B), ou P_A(B) à partir de P(A) et P(A ∩ B), en décimaux, en fractions ou en situation.",
+	"grades": ["2"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère deux évènements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$ et $P_A(B)={{eval:b/10;d}}$.\n\nCalcule $P(A\\cap B)$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b/100}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+b)/10}}",
+							"message": "Tu as additionné : la probabilité d'un « et » s'obtient ici par un produit.",
+							"label": "Somme au lieu du produit"
+						},
+						{
+							"answer": "{{eval:b/10}}",
+							"message": "$P_A(B)$ est la probabilité de $B$ quand $A$ est réalisé, pas la probabilité de $A\\cap B$.",
+							"label": "P_A(B) recopiée"
+						},
+						{
+							"answer": "{{eval:b/a}}",
+							"message": "Tu as divisé : de $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$, on tire $P(A\\cap B)$ en multipliant par $P(A)$.",
+							"label": "Division au lieu du produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$, donc $P(A\\cap B)=P(A)\\times P_A(B)$.",
+					"$P(A\\cap B)={{eval:a/10;d}}\\times{{eval:b/10;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*b/100;d}} }$, soit ${{eval:a*b/100}}$."
+				]
+			},
+			"hint": "La définition : $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$."
+		},
+		{
+			"statement": "On considère deux évènements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$ et $P(A\\cap B)={{eval:a*b/100;d}}$.\n\nCalcule $P_A(B)$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_A(B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b/10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*a*b/1000}}",
+							"message": "Tu as multiplié par $P(A)$ : pour retrouver $P_A(B)$, on divise $P(A\\cap B)$ par $P(A)$.",
+							"label": "Multiplié par P(A)"
+						},
+						{
+							"answer": "{{eval:10/b}}",
+							"message": "Ton quotient est à l'envers : $P(A\\cap B)$ va au numérateur.",
+							"label": "Quotient à l'envers"
+						},
+						{
+							"answer": "{{eval:a*b/100}}",
+							"message": "$P(A\\cap B)$ n'est pas $P_A(B)$ : il reste à diviser par $P(A)$.",
+							"label": "P(A ∩ B) recopiée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$.",
+					"$P_A(B)=\\dfrac{ {{eval:a*b/100;d}} }{ {{eval:a/10;d}} }=\\textcolor{{{color:primary.0}}}{ {{eval:b/10;d}} }$, soit ${{eval:b/10}}$."
+				]
+			},
+			"hint": "La définition : $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$."
+		},
+		{
+			"statement": "On considère deux évènements $A$ et $B$ tels que $P(A)=\\dfrac{ {{n}} }{ {{d}} }$ et $P_A(B)=\\dfrac{ {{r}} }{ {{s}} }$.\n\nCalcule $P(A\\cap B)$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..8"
+				},
+				{
+					"name": "s",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				}
+			],
+			"conditions": [
+				"n < d",
+				"gcd(n, d) = 1",
+				"r < s",
+				"gcd(r, s) = 1",
+				"d*s != d+s",
+				"gcd(n*r, d*s) > 1"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*r/(d*s)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n/d+r/s}}",
+							"message": "Tu as additionné : la probabilité d'un « et » s'obtient ici par un produit.",
+							"label": "Somme au lieu du produit"
+						},
+						{
+							"answer": "{{eval:n*r/(d+s)}}",
+							"message": "Pour multiplier deux fractions, on multiplie les numérateurs entre eux **et** les dénominateurs entre eux.",
+							"label": "Dénominateurs additionnés"
+						},
+						{
+							"answer": "{{eval:r*d/(s*n)}}",
+							"message": "Tu as divisé : de $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$, on tire $P(A\\cap B)$ en multipliant par $P(A)$.",
+							"label": "Division au lieu du produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$, donc $P(A\\cap B)=P(A)\\times P_A(B)$.",
+					"$P(A\\cap B)=\\dfrac{ {{n}} }{ {{d}} }\\times\\dfrac{ {{r}} }{ {{s}} }=\\dfrac{ {{eval:n*r;d}} }{ {{eval:d*s;d}} }=\\textcolor{{{color:primary.0}}}{ {{eval:n*r/(d*s)}} }$."
+				]
+			},
+			"hint": "La définition : $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$."
+		},
+		{
+			"statement": "On considère deux évènements $A$ et $B$ tels que $P(A)=\\dfrac{ {{n}} }{ {{d}} }$ et $P(A\\cap B)={{eval:n*r/(d*s)}}$.\n\nCalcule $P_A(B)$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_A(B)=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..8"
+				},
+				{
+					"name": "s",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				}
+			],
+			"conditions": ["n < d", "gcd(n, d) = 1", "r < s", "gcd(r, s) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r/s}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n*n*r/(d*d*s)}}",
+							"message": "Tu as multiplié par $P(A)$ : pour retrouver $P_A(B)$, on divise $P(A\\cap B)$ par $P(A)$.",
+							"label": "Multiplié par P(A)"
+						},
+						{
+							"answer": "{{eval:s/r}}",
+							"message": "Ton quotient est à l'envers : $P(A\\cap B)$ va au numérateur.",
+							"label": "Quotient à l'envers"
+						},
+						{
+							"answer": "{{eval:n*r/(d*s)}}",
+							"message": "$P(A\\cap B)$ n'est pas $P_A(B)$ : il reste à diviser par $P(A)$.",
+							"label": "P(A ∩ B) recopiée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$.",
+					"Diviser par une fraction, c'est multiplier par son inverse : $P_A(B)={{eval:n*r/(d*s)}}\\times\\dfrac{ {{d}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:r/s}} }$."
+				]
+			},
+			"hint": "La définition : $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$."
+		},
+		{
+			"statement": "Une messagerie trie les messages reçus : ${{x}}\\,\\%$ des messages sont des spams, et son logiciel supprime ${{y}}\\,\\%$ des spams.\n\nOn choisit un message au hasard. On note $S$ l'évènement « le message est un spam » et $D$ l'évènement « le message est supprimé par le logiciel ».\n\nQuelle est la probabilité que le message soit un spam supprimé par le logiciel ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(S\\cap D)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "10..40"
+				},
+				{
+					"name": "y",
+					"expression": "80..98"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x*y/10000}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:y/100}}",
+							"message": "$P_S(D)$ est la proportion de messages supprimés **parmi les spams**, pas parmi tous les messages.",
+							"label": "P_S(D) recopiée"
+						},
+						{
+							"answer": "{{eval:x*(100-y)/10000}}",
+							"message": "Tu as calculé la probabilité qu'un message soit un spam **non** supprimé.",
+							"label": "Spam non supprimé"
+						},
+						{
+							"answer": "{{eval:(x+y)/100}}",
+							"message": "Tu as additionné : la probabilité d'un « et » s'obtient ici par un produit.",
+							"label": "Somme au lieu du produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'énoncé donne $P(S)={{eval:x/100;d}}$ et, parmi les spams, $P_S(D)={{eval:y/100;d}}$.",
+					"Par définition, $P_S(D)=\\dfrac{P(S\\cap D)}{P(S)}$, donc $P(S\\cap D)=P(S)\\times P_S(D)$.",
+					"$P(S\\cap D)={{eval:x/100;d}}\\times{{eval:y/100;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:x*y/10000;d}} }$."
+				]
+			},
+			"hint": "La définition : $P_S(D)=\\dfrac{P(S\\cap D)}{P(S)}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,3 × 0,4 = 0,12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}12"]
+		},
+		{
+			"description": "Fraction irréductible 3/25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{25}"]
+		},
+		{
+			"description": "Point décimal 0.12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0.12"]
+		},
+		{
+			"description": "Fraction non réduite 12/100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{12}{100}"]
+		},
+		{
+			"description": "Somme",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné : la probabilité d'un « et » s'obtient ici par un produit."
+			},
+			"answers": ["0{,}7"]
+		},
+		{
+			"description": "P_A(B) recopiée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$P_A \\left( B \\right)$ est la probabilité de $B$ quand $A$ est réalisé, pas la probabilité de $A\\cap B$."
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "Division",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé : de $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$, on tire $P(A\\cap B)$ en multipliant par $P \\left( A \\right)$."
+			},
+			"answers": ["\\frac{4}{3}"]
+		},
+		{
+			"description": "0,24 / 0,4 = 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}6"]
+		},
+		{
+			"description": "Fraction 3/5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{5}"]
+		},
+		{
+			"description": "Multiplié par P(A)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $P \\left( A \\right)$ : pour retrouver $P_A \\left( B \\right)$, on divise $P(A\\cap B)$ par $P \\left( A \\right)$."
+			},
+			"answers": ["0{,}096"]
+		},
+		{
+			"description": "Quotient à l'envers",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est à l'envers : $P(A\\cap B)$ va au numérateur."
+			},
+			"answers": ["\\frac{5}{3}"]
+		},
+		{
+			"description": "P(A ∩ B) recopiée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$P(A\\cap B)$ n'est pas $P_A \\left( B \\right)$ : il reste à diviser par $P \\left( A \\right)$."
+			},
+			"answers": ["0{,}24"]
+		},
+		{
+			"description": "2/3 × 3/4 = 1/2",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{2}"]
+		},
+		{
+			"description": "Décimal exact 0,5",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}5"]
+		},
+		{
+			"description": "Non réduite 6/12",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"answers": ["\\frac{6}{12}"]
+		},
+		{
+			"description": "Somme",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné : la probabilité d'un « et » s'obtient ici par un produit."
+			},
+			"answers": ["\\frac{17}{12}"]
+		},
+		{
+			"description": "Dénominateurs additionnés",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour multiplier deux fractions, on multiplie les numérateurs entre eux **et** les dénominateurs entre eux."
+			},
+			"answers": ["\\frac{6}{7}"]
+		},
+		{
+			"description": "Division",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "4",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé : de $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$, on tire $P(A\\cap B)$ en multipliant par $P \\left( A \\right)$."
+			},
+			"answers": ["\\frac{9}{8}"]
+		},
+		{
+			"description": "2/5 ÷ 2/3 = 3/5",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "5",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{5}"]
+		},
+		{
+			"description": "Décimal exact 0,6",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "5",
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}6"]
+		},
+		{
+			"description": "Multiplié par P(A)",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "5",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $P \\left( A \\right)$ : pour retrouver $P_A \\left( B \\right)$, on divise $P(A\\cap B)$ par $P \\left( A \\right)$."
+			},
+			"answers": ["\\frac{4}{15}"]
+		},
+		{
+			"description": "Quotient à l'envers",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "5",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ton quotient est à l'envers : $P(A\\cap B)$ va au numérateur."
+			},
+			"answers": ["\\frac{5}{3}"]
+		},
+		{
+			"description": "P(A ∩ B) recopiée",
+			"variationIndex": 3,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"s": "5",
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$P(A\\cap B)$ n'est pas $P_A \\left( B \\right)$ : il reste à diviser par $P \\left( A \\right)$."
+			},
+			"answers": ["\\frac{2}{5}"]
+		},
+		{
+			"description": "0,2 × 0,95 = 0,19",
+			"variationIndex": 4,
+			"variables": {
+				"x": "20",
+				"y": "95"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}19"]
+		},
+		{
+			"description": "Fraction 19/100",
+			"variationIndex": 4,
+			"variables": {
+				"x": "20",
+				"y": "95"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{19}{100}"]
+		},
+		{
+			"description": "Pourcentage refusé",
+			"variationIndex": 4,
+			"variables": {
+				"x": "20",
+				"y": "95"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["19\\%"]
+		},
+		{
+			"description": "P_S(D) recopiée",
+			"variationIndex": 4,
+			"variables": {
+				"x": "20",
+				"y": "95"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$P_S \\left( D \\right)$ est la proportion de messages supprimés **parmi les spams**, pas parmi tous les messages."
+			},
+			"answers": ["0{,}95"]
+		},
+		{
+			"description": "Spam non supprimé",
+			"variationIndex": 4,
+			"variables": {
+				"x": "20",
+				"y": "95"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la probabilité qu'un message soit un spam **non** supprimé."
+			},
+			"answers": ["0{,}01"]
+		},
+		{
+			"description": "Somme",
+			"variationIndex": 4,
+			"variables": {
+				"x": "20",
+				"y": "95"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as additionné : la probabilité d'un « et » s'obtient ici par un produit."
+			},
+			"answers": ["1{,}15"]
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

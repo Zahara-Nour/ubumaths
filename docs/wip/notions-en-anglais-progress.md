@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3104._
+_Mis à jour le 2026-11-24, après #3113._
 
-- **État** : PR 1 (#3099, migration en prod) et PR 2 (#3104, noms anglais au PDF, règle « un nom manque → catégorie seule », signalement dans l'éditeur) mergées ; rien en prod pour la PR 2 tant que David n'a pas lancé `deploy:prod` · **Prochaine action** : PR 3 — traductions : proposer les ~640 noms anglais, page à cocher pour la relecture par David, puis migration de données (remplit `translations`, n'efface rien) · **En attente de David** : rien avant la page à cocher · **Pièges en cours** : écart 9 réduit, pas disparu (fiche anglaise sans catégorie + un nom sans anglais → `title`) jusqu'à la PR 3 · **Worktree / branche** : aucun (celui de la PR 2 retiré) ; PR 3 → nouveau worktree `../ubumaths-wt-notions-en-anglais-traductions`
+- **État** : les trois PR mergées (#3099, #3104, #3113) ; migration `20261124204132` jouée en prod (`db:migrate`), vérifiée en lecture : 637 nœuds actifs sur 637 ont leur nom anglais, aucun archivé · **Prochaine action** : clore le chantier (versement : journal archivé dans `docs/archive/`, rien d'autre à verser, la doc système est à jour) · **En attente de David** : `deploy:prod` — le code de la PR 2 (#3104) n'est pas en prod ; tant qu'il ne l'est pas, les noms anglais sont en base mais le PDF ne les imprime pas · **Pièges en cours** : un nœud créé après la migration naît sans nom anglais (l'éditeur le signale) · **Worktree / branche** : aucun (retiré par `pr:merger`)
 
 ## L'idée
 
@@ -121,3 +121,15 @@ Fiche d'exercices en anglais, sans titre libre :
   `types:cliquet`, `lint:fast`.
 - Écran (`pnpm voir`, base locale, fiche brouillon passée en anglais puis remise) : signalement
   « Sans nom anglais : Ensembles de nombres… » affiché, disparu une fois la notion traduite.
+
+### 2026-11-24 — PR 3
+
+- 637 nœuds actifs (19 branches, 134 notions, 484 sous-notions) ; 74 archivés laissés sans anglais (aucune fiche ne s'en sert, vérifié en prod).
+- Choix de traduction : anglais britannique (factorising, optimisation, Pythagoras' theorem), même casse que le français ; « Fonctions affines » → « Linear functions », « fonction linéaire » → « direct proportion function » ; « Théorème de Thalès » → « Intercept theorem » ; « Inégalités » → « Working with inequalities » (les inéquations sont « Inequalities: … »).
+- Page à cocher (capacité `db`, collection `reponses`, un document par branche : `{reponses: {idNœud: {etat, version, commentaire}}}`), file d'écriture unique, nouvel essai automatique, bandeau d'erreur.
+- Vérification demandée par David : noms cherchés dans les programmes officiels anglais (National Curriculum KS1–2 et KS3 ; GCSE, A-level Maths, A-level Further Maths d'Edexcel et d'AQA), puis dans Wikipédia en anglais (titres et redirections) pour ce qu'ils ne couvrent pas. Résultat : 407 vus dans une source, 58 corrigés (ex. _scalar product_, _Euclid's lemma_ pour le théorème de Gauss, _modulus function_, _tree diagrams_, _indices_, « variations » → _increasing and decreasing_), 10 à trancher (sign tables, intervalle de fluctuation, croissances comparées, fonction intégrale, boucles…), 143 formulations sans terme technique, 19 en symboles. La page montre la source, ou l'ancienne proposition barrée avec sa raison, et s'ouvre sur les 68 corrigés et à trancher.
+- David valide les noms (« je valide », 2026-11-24 ; aucune case cochée sur la page : validation de l'ensemble tel que proposé).
+- Migration `20261124204132` : les identifiants des nœuds DIFFÈRENT d'une base à l'autre (arbre créé par migration, ids générés ; la base locale avait ceux de la prod) → nœuds retrouvés par chemin « Branche > Notion > Sous-notion » parmi les actifs (637 chemins uniques, identiques en local et sur la pile de test). N'écrase aucun nom anglais existant ; échoue si un chemin manque ou est en double.
+- Test `noms-anglais-noeuds-traductions.test.ts` (`@migration-de-donnees`) : rouge sans l'écriture (3 échecs), vert avec (7) ; 142 tests voisins verts. `security-auditor` : aucun bloquant (rollback qui retire tous les noms anglais : dit en commentaire).
+- Rendu : PDF anglais de « Suites · Applications » → « Sequences », trois notions anglaises, « applications », bas de page « Sequences · Applications ».
+- #3113 mergée le 2026-11-24 (CI : garde des migrations de données → tables temporaires préfixées `_` ; shard 2 relancé après une panne Docker du runner). `migration list --linked` : seule `20261124204132` en attente ; `db:migrate` joué ; prod vérifiée par le MCP (lecture) : 19 + 134 + 484 nœuds actifs traduits.

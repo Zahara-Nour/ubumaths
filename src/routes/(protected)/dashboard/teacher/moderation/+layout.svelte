@@ -17,7 +17,10 @@
 			href: '/dashboard/teacher/moderation/gestion',
 			label: 'Gestion',
 			icon: ShieldAlert as unknown as Component,
-			badge: data.pendingReportsCount > 0 ? data.pendingReportsCount : undefined
+			badge:
+				data.pendingReportsCount !== null && data.pendingReportsCount > 0
+					? data.pendingReportsCount
+					: undefined
 		}
 	]);
 </script>

@@ -170,7 +170,10 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   Noms anglais des nœuds ([ADR 0043](../adr/0043-noms-anglais-des-noeuds-de-l-arbre.md)) :
   `classification_nodes.translations` (`{"en": {"name": "…"}}`, `{}` par défaut, nom non vide de 200 caractères au plus, forme vérifiée par
   `classification_nodes_translations_shape`), écrits par l'admin, lus par tous ; les deux fonctions
-  des liens de partage rendent `classifications[].translations`.
+  des liens de partage rendent `classifications[].translations`. Les 637 nœuds actifs ont leur nom
+  anglais depuis `20261124204132` (migration de données, nœuds retrouvés par leur chemin
+  « Branche > Notion > Sous-notion », les identifiants différant d'une base à l'autre) ; les
+  nœuds archivés n'en ont pas. Un nœud créé ensuite naît sans nom anglais.
 - **Régime d'acquisition** (`regime_acquisition`) : `fluence` = ≥ 5 réussites et ≥ 3 sur les 5
   dernières ; `diversite` = ≥ 2 modèles distincts réussis et aucun échec sur les 3 dernières. Les cartes
   de cours ne comptent pas (`20260928160000`).

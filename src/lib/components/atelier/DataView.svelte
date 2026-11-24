@@ -1014,373 +1014,378 @@
 			>
 		{/if}
 	</div>
-	<!-- La mise en forme de la zone sélectionnée (Q-MF-2) ; sur téléphone, elle passe à la ligne -->
-	<div class="mise-en-forme" role="group" aria-label="Mise en forme">
-		<button
-			type="button"
-			class="forme"
-			aria-pressed={activeStyle.bold === true}
-			aria-label="Gras"
-			aria-keyshortcuts="Control+B Meta+B"
-			title="Gras (Ctrl/⌘+B)"
-			onclick={toggleBold}><Bold size={16} aria-hidden="true" /></button
-		>
-		<button
-			type="button"
-			class="forme"
-			aria-pressed={activeStyle.italic === true}
-			aria-label="Italique"
-			aria-keyshortcuts="Control+I Meta+I"
-			title="Italique (Ctrl/⌘+I)"
-			onclick={toggleItalic}><Italic size={16} aria-hidden="true" /></button
-		>
-		{#each ALIGNMENTS as alignment (alignment.value)}
+	<!-- Le reste de la vue. Au téléphone, lui seul défile : la barre reste en haut (écart
+	     E41 : remonter jusqu'à elle repoussait la grille d'environ 300 px) ; ailleurs,
+	     `display: contents`, rien ne change -->
+	<div class="corps">
+		<!-- La mise en forme de la zone sélectionnée (Q-MF-2) ; sur téléphone, elle passe à la ligne -->
+		<div class="mise-en-forme" role="group" aria-label="Mise en forme">
 			<button
 				type="button"
 				class="forme"
-				aria-pressed={activeStyle.align === alignment.value}
-				aria-label={alignment.label}
-				title={alignment.label}
-				onclick={() => toggleAlign(alignment.value)}
-				><alignment.icon size={16} aria-hidden="true" /></button
+				aria-pressed={activeStyle.bold === true}
+				aria-label="Gras"
+				aria-keyshortcuts="Control+B Meta+B"
+				title="Gras (Ctrl/⌘+B)"
+				onclick={toggleBold}><Bold size={16} aria-hidden="true" /></button
 			>
-		{/each}
-		<!-- Le nom visible de chaque choix ; le lecteur d'écran entend « Couleur du texte : … » -->
-		<span class="choix">
-			<span class="etiquette" aria-hidden="true">Texte</span>
-			<MySelect
-				type="single"
-				fitContent
-				triggerClass={COMPACT_TRIGGER}
-				items={COLOR_ITEMS}
-				bind:value={
-					() => activeStyle.color ?? NO_COLOR, (value) => restyle({ color: colorOf(value) })
-				}
-				triggerAriaLabel="Couleur du texte : {colorLabel(activeStyle.color)}"
-			/>
-		</span>
-		<span class="choix">
-			<span class="etiquette" aria-hidden="true">Fond</span>
-			<MySelect
-				type="single"
-				fitContent
-				triggerClass={COMPACT_TRIGGER}
-				items={COLOR_ITEMS}
-				bind:value={
-					() => activeStyle.fill ?? NO_COLOR, (value) => restyle({ fill: colorOf(value) })
-				}
-				triggerAriaLabel="Couleur du fond : {colorLabel(activeStyle.fill)}"
-			/>
-		</span>
-		<span class="choix">
-			<span class="etiquette" aria-hidden="true">Format</span>
-			<MySelect
-				type="single"
-				fitContent
-				triggerClass={COMPACT_TRIGGER}
-				items={NUMBER_KIND_ITEMS}
-				bind:value={() => activeNumberKind, chooseNumberKind}
-				triggerAriaLabel="Format de nombre : {NUMBER_KIND_LABELS[activeNumberKind].toLowerCase()}"
-			/>
-			{#if activeStyle.number}
+			<button
+				type="button"
+				class="forme"
+				aria-pressed={activeStyle.italic === true}
+				aria-label="Italique"
+				aria-keyshortcuts="Control+I Meta+I"
+				title="Italique (Ctrl/⌘+I)"
+				onclick={toggleItalic}><Italic size={16} aria-hidden="true" /></button
+			>
+			{#each ALIGNMENTS as alignment (alignment.value)}
+				<button
+					type="button"
+					class="forme"
+					aria-pressed={activeStyle.align === alignment.value}
+					aria-label={alignment.label}
+					title={alignment.label}
+					onclick={() => toggleAlign(alignment.value)}
+					><alignment.icon size={16} aria-hidden="true" /></button
+				>
+			{/each}
+			<!-- Le nom visible de chaque choix ; le lecteur d'écran entend « Couleur du texte : … » -->
+			<span class="choix">
+				<span class="etiquette" aria-hidden="true">Texte</span>
 				<MySelect
 					type="single"
 					fitContent
 					triggerClass={COMPACT_TRIGGER}
-					items={DECIMALS_ITEMS}
-					bind:value={() => String(activeStyle.number?.decimals ?? 0), chooseDecimals}
-					triggerAriaLabel="Décimales : {activeStyle.number.decimals}"
+					items={COLOR_ITEMS}
+					bind:value={
+						() => activeStyle.color ?? NO_COLOR, (value) => restyle({ color: colorOf(value) })
+					}
+					triggerAriaLabel="Couleur du texte : {colorLabel(activeStyle.color)}"
 				/>
-			{/if}
-		</span>
-		<button
-			type="button"
-			class="forme effacer"
-			title="Effacer la mise en forme de la zone"
-			onclick={clearFormatting}
-			><Eraser size={16} aria-hidden="true" /> Effacer la mise en forme</button
-		>
-	</div>
-	<p class="annonce-tirage sr-only" role="status">{drawAnnouncement}</p>
-	<p class="refus" role="status">{refusal}</p>
-	<!-- Une ligne réservée : aide, message ou valeur exacte (une seule à la fois). Sans
+			</span>
+			<span class="choix">
+				<span class="etiquette" aria-hidden="true">Fond</span>
+				<MySelect
+					type="single"
+					fitContent
+					triggerClass={COMPACT_TRIGGER}
+					items={COLOR_ITEMS}
+					bind:value={
+						() => activeStyle.fill ?? NO_COLOR, (value) => restyle({ fill: colorOf(value) })
+					}
+					triggerAriaLabel="Couleur du fond : {colorLabel(activeStyle.fill)}"
+				/>
+			</span>
+			<span class="choix">
+				<span class="etiquette" aria-hidden="true">Format</span>
+				<MySelect
+					type="single"
+					fitContent
+					triggerClass={COMPACT_TRIGGER}
+					items={NUMBER_KIND_ITEMS}
+					bind:value={() => activeNumberKind, chooseNumberKind}
+					triggerAriaLabel="Format de nombre : {NUMBER_KIND_LABELS[activeNumberKind].toLowerCase()}"
+				/>
+				{#if activeStyle.number}
+					<MySelect
+						type="single"
+						fitContent
+						triggerClass={COMPACT_TRIGGER}
+						items={DECIMALS_ITEMS}
+						bind:value={() => String(activeStyle.number?.decimals ?? 0), chooseDecimals}
+						triggerAriaLabel="Décimales : {activeStyle.number.decimals}"
+					/>
+				{/if}
+			</span>
+			<button
+				type="button"
+				class="forme effacer"
+				title="Effacer la mise en forme de la zone"
+				onclick={clearFormatting}
+				><Eraser size={16} aria-hidden="true" /> Effacer la mise en forme</button
+			>
+		</div>
+		<p class="annonce-tirage sr-only" role="status">{drawAnnouncement}</p>
+		<p class="refus" role="status">{refusal}</p>
+		<!-- Une ligne réservée : aide, message ou valeur exacte (une seule à la fois). Sans
 	     elle, la grille sautait d'une rangée selon la case choisie — et pendant un clic,
 	     la case sous le pointeur enfoncé changeait : la zone s'étendait (verifs-auto) -->
-	<div class="sous-barre">
-		{#if formulaHint !== null}
-			<!-- L'aide des fonctions du tableur (lot 4, §5) : lue à la demande (aria-describedby),
+		<div class="sous-barre" class:avec-aide={formulaHint !== null}>
+			{#if formulaHint !== null}
+				<!-- L'aide des fonctions du tableur (lot 4, §5) : lue à la demande (aria-describedby),
 		     pas annoncée à chaque frappe -->
-			<p class="note aide-formule" id="atelier-aide-formule">{formulaHint}</p>
-		{/if}
-		{#if editing === null && selectedNote !== ''}
-			<p class="note">{selectedNote}</p>
-		{/if}
-		{#if editing === null && selectedExact}
-			<!-- Q2 : la valeur exacte se voit à la sélection, même quand la case montre ≈ -->
-			<p class="note valeur-exacte">
-				Valeur exacte :
-				<!-- `data-latex` : ce que lisent les vérifications automatisées (`e2e/verifs/`) -->
-				<span aria-hidden="true" data-latex={selectedExact.latex}>
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
-					{@html selectedExact.markup}
-				</span>
-				<span class="sr-only">{selectedExact.spoken}</span>
+				<p class="note aide-formule" id="atelier-aide-formule">{formulaHint}</p>
+			{/if}
+			{#if editing === null && selectedNote !== ''}
+				<p class="note">{selectedNote}</p>
+			{/if}
+			{#if editing === null && selectedExact}
+				<!-- Q2 : la valeur exacte se voit à la sélection, même quand la case montre ≈ -->
+				<p class="note valeur-exacte">
+					Valeur exacte :
+					<!-- `data-latex` : ce que lisent les vérifications automatisées (`e2e/verifs/`) -->
+					<span aria-hidden="true" data-latex={selectedExact.latex}>
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
+						{@html selectedExact.markup}
+					</span>
+					<span class="sr-only">{selectedExact.spoken}</span>
+				</p>
+			{/if}
+		</div>
+		<textarea
+			bind:this={relay}
+			class="relais"
+			tabindex="-1"
+			aria-label="Presse-papiers de la grille"
+			onkeyup={backToCell}
+			onblur={() => relay !== undefined && (relay.value = '')}></textarea>
+
+		{#if empty}
+			<p class="consigne">
+				Tape tes valeurs dans la grille, une par case. Nomme une colonne (L, M…) pour en faire une
+				liste : statistiques, nuage et diagrammes s’en servent.
 			</p>
 		{/if}
-	</div>
-	<textarea
-		bind:this={relay}
-		class="relais"
-		tabindex="-1"
-		aria-label="Presse-papiers de la grille"
-		onkeyup={backToCell}
-		onblur={() => relay !== undefined && (relay.value = '')}></textarea>
 
-	{#if empty}
-		<p class="consigne">
-			Tape tes valeurs dans la grille, une par case. Nomme une colonne (L, M…) pour en faire une
-			liste : statistiques, nuage et diagrammes s’en servent.
-		</p>
-	{/if}
-
-	<div class="defilement">
-		<table bind:this={grid} role="grid" aria-label="Grille des données">
-			<thead>
-				<tr>
-					<th class="coin" scope="col"><span class="sr-only">Lignes</span></th>
-					{#each columns as column (column)}
-						{@const letter = columnLetter(column)}
-						{@const list = atelier.listAt(column)}
-						<th
-							scope="col"
-							data-column={letter}
-							aria-describedby={list
-								? `${summaryId(list.name)} ${chartMessageId(list.name)}`
-								: undefined}
-						>
-							<span class="lettre">{letter}</span>
-							{#if list}
-								<span class="nom-liste">{list.name}</span>
-								<button
-									type="button"
-									class="retirer"
-									aria-label="Retirer le nom {list.name} de la colonne {letter}"
-									title="Retirer le nom"
-									onclick={() => unname(column, list.name)}>×</button
-								>
-							{:else if naming === column}
-								<input
-									class="saisie-nom"
-									type="text"
-									maxlength="4"
-									autocomplete="off"
-									spellcheck="false"
-									aria-label="Nom de la liste de la colonne {letter}"
-									bind:value={nameDraft}
-									onkeydown={nameKeys}
-									onblur={() => (naming = null)}
-									{@attach focusAtEnd}
-								/>
-							{:else}
-								<button
-									type="button"
-									class="nommer"
-									aria-label="Nommer la colonne {letter}"
-									onclick={() => startNaming(column)}>nommer</button
-								>
-							{/if}
-							<input
-								class="titre"
-								type="text"
-								maxlength={MAX_TITLE_LENGTH}
-								autocomplete="off"
-								placeholder="titre"
-								aria-label="Titre de la colonne {letter}"
-								value={atelier.titleOf(column)}
-								onchange={(event) => titleChange(column, event)}
-								onkeydown={titleKeys}
-							/>
-						</th>
-					{/each}
-				</tr>
-				{#if lists.length > 0}
-					<tr class="apercus">
-						<th scope="row"><span class="sr-only">Aperçu</span></th>
-						{#each columns as column (column)}
-							{@const list = atelier.listAt(column)}
-							<td>
-								{#if list}
-									<!-- Un <span> : la règle globale `main p` impose sa taille -->
-									<span
-										id={summaryId(list.name)}
-										data-apercu={list.name}
-										class={list.message ? 'probleme' : 'apercu'}
-									>
-										{list.message ?? summaryOf(list)}
-									</span>
-								{/if}
-							</td>
-						{/each}
-					</tr>
-				{/if}
-			</thead>
-			<tbody>
-				{#each rows as row (row)}
+		<div class="defilement">
+			<table bind:this={grid} role="grid" aria-label="Grille des données">
+				<thead>
 					<tr>
-						<th scope="row" class="numero">{row}</th>
+						<th class="coin" scope="col"><span class="sr-only">Lignes</span></th>
 						{#each columns as column (column)}
-							{@const address = cellName(column, row)}
-							{@const isSelected = selected.column === column && selected.row === row}
-							{@const selectedZone = inZone(column, row)}
-							{@const value = atelier.cellValue(column, row)}
-							{@const style = atelier.styleAt(column, row)}
-							<!-- Q-MF-1 : un format de nombre arrondit l'affichage, jamais la valeur -->
-							{@const formatted = formatShown(value, style)}
-							{@const text =
-								isSelected && editing === 'bar' ? draft : (formatted ?? shownOf(value))}
-							{@const math =
-								(isSelected && editing !== null) || formatted !== null
-									? null
-									: value.kind === 'number'
-										? composed(value.latex)
-										: null}
-							<td
-								role="gridcell"
-								data-cell={address}
-								tabindex={isSelected ? 0 : -1}
-								aria-selected={selectedZone}
-								aria-label="{address} : {text || 'vide'}"
-								data-latex={math === null || value.kind !== 'number' ? undefined : value.latex}
-								class:nombre={value.kind === 'number'}
-								class:en-erreur={value.kind === 'error'}
-								class:gras={style.bold === true}
-								class:italique={style.italic === true}
-								style={cellCss(style)}
-								class:zone={selectedZone && !isSelected}
-								class:active={isSelected}
-								class:a-recopier={filling !== null &&
-									column >= zone.left &&
-									column <= zone.right &&
-									row > zone.bottom &&
-									row <= filling}
-								onpointerdown={(event) => pressCell(event, column, row)}
-								onpointerenter={(event) => enterCell(event, column, row)}
-								ondblclick={() => doubleClickCell(column, row)}
-								onkeydown={cellKeys}
+							{@const letter = columnLetter(column)}
+							{@const list = atelier.listAt(column)}
+							<th
+								scope="col"
+								data-column={letter}
+								aria-describedby={list
+									? `${summaryId(list.name)} ${chartMessageId(list.name)}`
+									: undefined}
 							>
-								{#if isSelected && editing === 'cell'}
+								<span class="lettre">{letter}</span>
+								{#if list}
+									<span class="nom-liste">{list.name}</span>
+									<button
+										type="button"
+										class="retirer"
+										aria-label="Retirer le nom {list.name} de la colonne {letter}"
+										title="Retirer le nom"
+										onclick={() => unname(column, list.name)}>×</button
+									>
+								{:else if naming === column}
 									<input
-										class="edition"
+										class="saisie-nom"
 										type="text"
+										maxlength="4"
 										autocomplete="off"
 										spellcheck="false"
-										autocorrect="off"
-										autocapitalize="off"
-										aria-label="Contenu de {address}"
-										bind:value={draft}
-										onblur={cellInputBlur}
+										aria-label="Nom de la liste de la colonne {letter}"
+										bind:value={nameDraft}
+										onkeydown={nameKeys}
+										onblur={() => (naming = null)}
 										{@attach focusAtEnd}
 									/>
 								{:else}
-									{#if math}
-										<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
-										{@html math.markup}
-									{:else}
-										{text}
-									{/if}
-									{#if column === zone.right && row === zone.bottom && editing === null}
-										<!-- La poignée : à tirer vers le bas pour recopier (§5) -->
-										<span
-											class="poignee"
-											role="presentation"
-											onpointerdown={startFill}
-											title="Tirer vers le bas pour recopier"
-										></span>
-									{/if}
+									<button
+										type="button"
+										class="nommer"
+										aria-label="Nommer la colonne {letter}"
+										onclick={() => startNaming(column)}>nommer</button
+									>
 								{/if}
-							</td>
+								<input
+									class="titre"
+									type="text"
+									maxlength={MAX_TITLE_LENGTH}
+									autocomplete="off"
+									placeholder="titre"
+									aria-label="Titre de la colonne {letter}"
+									value={atelier.titleOf(column)}
+									onchange={(event) => titleChange(column, event)}
+									onkeydown={titleKeys}
+								/>
+							</th>
 						{/each}
 					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+					{#if lists.length > 0}
+						<tr class="apercus">
+							<th scope="row"><span class="sr-only">Aperçu</span></th>
+							{#each columns as column (column)}
+								{@const list = atelier.listAt(column)}
+								<td>
+									{#if list}
+										<!-- Un <span> : la règle globale `main p` impose sa taille -->
+										<span
+											id={summaryId(list.name)}
+											data-apercu={list.name}
+											class={list.message ? 'probleme' : 'apercu'}
+										>
+											{list.message ?? summaryOf(list)}
+										</span>
+									{/if}
+								</td>
+							{/each}
+						</tr>
+					{/if}
+				</thead>
+				<tbody>
+					{#each rows as row (row)}
+						<tr>
+							<th scope="row" class="numero">{row}</th>
+							{#each columns as column (column)}
+								{@const address = cellName(column, row)}
+								{@const isSelected = selected.column === column && selected.row === row}
+								{@const selectedZone = inZone(column, row)}
+								{@const value = atelier.cellValue(column, row)}
+								{@const style = atelier.styleAt(column, row)}
+								<!-- Q-MF-1 : un format de nombre arrondit l'affichage, jamais la valeur -->
+								{@const formatted = formatShown(value, style)}
+								{@const text =
+									isSelected && editing === 'bar' ? draft : (formatted ?? shownOf(value))}
+								{@const math =
+									(isSelected && editing !== null) || formatted !== null
+										? null
+										: value.kind === 'number'
+											? composed(value.latex)
+											: null}
+								<td
+									role="gridcell"
+									data-cell={address}
+									tabindex={isSelected ? 0 : -1}
+									aria-selected={selectedZone}
+									aria-label="{address} : {text || 'vide'}"
+									data-latex={math === null || value.kind !== 'number' ? undefined : value.latex}
+									class:nombre={value.kind === 'number'}
+									class:en-erreur={value.kind === 'error'}
+									class:gras={style.bold === true}
+									class:italique={style.italic === true}
+									style={cellCss(style)}
+									class:zone={selectedZone && !isSelected}
+									class:active={isSelected}
+									class:a-recopier={filling !== null &&
+										column >= zone.left &&
+										column <= zone.right &&
+										row > zone.bottom &&
+										row <= filling}
+									onpointerdown={(event) => pressCell(event, column, row)}
+									onpointerenter={(event) => enterCell(event, column, row)}
+									ondblclick={() => doubleClickCell(column, row)}
+									onkeydown={cellKeys}
+								>
+									{#if isSelected && editing === 'cell'}
+										<input
+											class="edition"
+											type="text"
+											autocomplete="off"
+											spellcheck="false"
+											autocorrect="off"
+											autocapitalize="off"
+											aria-label="Contenu de {address}"
+											bind:value={draft}
+											onblur={cellInputBlur}
+											{@attach focusAtEnd}
+										/>
+									{:else}
+										{#if math}
+											<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
+											{@html math.markup}
+										{:else}
+											{text}
+										{/if}
+										{#if column === zone.right && row === zone.bottom && editing === null}
+											<!-- La poignée : à tirer vers le bas pour recopier (§5) -->
+											<span
+												class="poignee"
+												role="presentation"
+												onpointerdown={startFill}
+												title="Tirer vers le bas pour recopier"
+											></span>
+										{/if}
+									{/if}
+								</td>
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 
-	<div class="outils">
-		{#if fillAsk}
-			<label class="recopie-champ">
-				Recopier jusqu’à la ligne
-				<input
-					class="recopie"
-					type="text"
-					inputmode="numeric"
-					autocomplete="off"
-					bind:value={fillTo}
-					onkeydown={fillKeys}
-					{@attach focusAtEnd}
-				/>
-			</label>
-		{:else}
-			<!-- Q-L2-2 : indispensable sur tablette, où une zone ne se sélectionne pas au doigt -->
+		<div class="outils">
+			{#if fillAsk}
+				<label class="recopie-champ">
+					Recopier jusqu’à la ligne
+					<input
+						class="recopie"
+						type="text"
+						inputmode="numeric"
+						autocomplete="off"
+						bind:value={fillTo}
+						onkeydown={fillKeys}
+						{@attach focusAtEnd}
+					/>
+				</label>
+			{:else}
+				<!-- Q-L2-2 : indispensable sur tablette, où une zone ne se sélectionne pas au doigt -->
+				<button
+					type="button"
+					class="telecharger"
+					title="Recopier la ligne {zone.top} vers le bas (Ctrl/⌘+D)"
+					onclick={() => {
+						fillTo = String(Math.min(GRID_ROWS, zone.bottom + 5));
+						fillAsk = true;
+					}}>Recopier vers le bas…</button
+				>
+			{/if}
 			<button
 				type="button"
 				class="telecharger"
-				title="Recopier la ligne {zone.top} vers le bas (Ctrl/⌘+D)"
-				onclick={() => {
-					fillTo = String(Math.min(GRID_ROWS, zone.bottom + 5));
-					fillAsk = true;
-				}}>Recopier vers le bas…</button
+				disabled={empty}
+				title={empty ? EMPTY_GRID : ''}
+				onclick={downloadCsv}>Télécharger en CSV</button
 			>
-		{/if}
-		<button
-			type="button"
-			class="telecharger"
-			disabled={empty}
-			title={empty ? EMPTY_GRID : ''}
-			onclick={downloadCsv}>Télécharger en CSV</button
-		>
-		<button
-			type="button"
-			class="telecharger"
-			title="Poser un fichier CSV à partir de la case {cellName(zone.left, zone.top)}"
-			onclick={() => csvInput?.click()}>Ouvrir un CSV…</button
-		>
-		<input
-			bind:this={csvInput}
-			type="file"
-			accept=".csv,.txt,text/csv,text/plain"
-			class="fichier-csv"
-			tabindex="-1"
-			aria-hidden="true"
-			onchange={openCsv}
-		/>
-	</div>
+			<button
+				type="button"
+				class="telecharger"
+				title="Poser un fichier CSV à partir de la case {cellName(zone.left, zone.top)}"
+				onclick={() => csvInput?.click()}>Ouvrir un CSV…</button
+			>
+			<input
+				bind:this={csvInput}
+				type="file"
+				accept=".csv,.txt,text/csv,text/plain"
+				class="fichier-csv"
+				tabindex="-1"
+				aria-hidden="true"
+				onchange={openCsv}
+			/>
+		</div>
 
-	<p class="aide">
-		La virgule est décimale : <code>3,14</code> est un seul nombre. Une fraction comme
-		<code>1/6</code> se lit aussi. Colle un tableau copié d’un tableur : il se pose à partir de la case
-		choisie.
-	</p>
+		<p class="aide">
+			La virgule est décimale : <code>3,14</code> est un seul nombre. Une fraction comme
+			<code>1/6</code> se lit aussi. Colle un tableau copié d’un tableur : il se pose à partir de la case
+			choisie.
+		</p>
 
-	<!-- Diagrammes vivants (outils statistiques, Q36) : recalculés à chaque
+		<!-- Diagrammes vivants (outils statistiques, Q36) : recalculés à chaque
 	     validation, parce qu'ils relisent la liste au lieu d'en garder une copie -->
-	{#each lists as list (list.name)}
-		{@const shown = atelier.chartOf(list.name)}
-		{#if shown}
-			{@const chart = listChart(atelier, list.name, shown.partner, shown.kind)}
-			<section class="diagramme" data-diagramme={list.name}>
-				{#if chart.ok}
-					<StatChart node={chart.node} />
-					{#if chart.note}
-						<!-- P1 : les lignes sans effectif, écartées — jamais en silence -->
-						<p class="note">{chart.note}</p>
+		{#each lists as list (list.name)}
+			{@const shown = atelier.chartOf(list.name)}
+			{#if shown}
+				{@const chart = listChart(atelier, list.name, shown.partner, shown.kind)}
+				<section class="diagramme" data-diagramme={list.name}>
+					{#if chart.ok}
+						<StatChart node={chart.node} />
+						{#if chart.note}
+							<!-- P1 : les lignes sans effectif, écartées — jamais en silence -->
+							<p class="note">{chart.note}</p>
+						{/if}
+					{:else}
+						<p class="probleme" id={chartMessageId(list.name)}>{chart.message}</p>
 					{/if}
-				{:else}
-					<p class="probleme" id={chartMessageId(list.name)}>{chart.message}</p>
-				{/if}
-			</section>
-		{/if}
-	{/each}
+				</section>
+			{/if}
+		{/each}
+	</div>
 </div>
 
 <ConfirmDialog
@@ -1498,13 +1503,40 @@
 		background: var(--color-card);
 	}
 
+	.corps {
+		display: contents;
+	}
+
 	/* Téléphone (une colonne, ≤ 720 px, comme « Mes objets ») : la barre, la mise en
 	   forme, la consigne et les boutons prennent toute la hauteur, et la grille, qui
 	   n'a que le reste, tombait à 2 px (2026-11-23). Elle garde de quoi montrer
-	   quelques lignes, et c'est la vue qui défile. */
+	   quelques lignes, et c'est le corps de la vue qui défile, sous la barre. */
 	@media (max-width: 720px) {
-		.donnees {
+		.corps {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+			gap: 0.5rem;
+			min-height: 0;
 			overflow-y: auto;
+		}
+
+		/* Une case amenée à l'écran pendant qu'on l'écrit s'arrête sous l'aide collée en haut */
+		.corps:has(.avec-aide) {
+			scroll-padding-top: 3rem;
+		}
+
+		/* L'aide d'une fonction, le temps de l'écrire dans la barre, reste en haut de ce
+		   qui défile (par-dessus la grille) : elle se voit pendant la frappe */
+		.sous-barre.avec-aide {
+			position: sticky;
+			top: 0;
+			z-index: 4;
+			background: var(--color-background);
+			/* Un liseré sous l'aide : sa seconde ligne ne touche pas la grille qui passe dessous */
+			box-shadow:
+				0 0.25rem 0 var(--color-background),
+				0 calc(0.25rem + 1px) 0 var(--color-border);
 		}
 
 		.defilement {
