@@ -1,0 +1,433 @@
+{
+	"rangement": {
+		"noeud": "Probabilités > Probabilités conditionnelles > probabilités totales",
+		"point": "1SPE-340"
+	},
+	"title": "Retrouver P(A) par la formule des probabilités totales",
+	"description": "P(B), P_A(B) et P_Ā(B) (ou P_Ā(B̄)) connues : poser x = P(A) et résoudre l'équation donnée par la formule des probabilités totales ; sans arbre, avec l'arbre, en situation.",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 150,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère deux évènements $A$ et $B$ tels que $P(B)={{eval:(a*b+(10-a)*k)/100;d}}$, $P_A(B)={{eval:b/10;d}}$ et $P_{\\overline{A}}(\\overline{B})={{eval:(10-k)/10;d}}$.\n\nCalcule $P(A)$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 5", "b != k", "(a*b+(10-a)*k)*b != 100*a", "a*(b-k) != 10*(10-a)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*b+(10-a)*k)/(10*b)}}",
+							"message": "Tu as divisé $P(B)$ par $P_A(B)$ : c'est oublier le chemin qui passe par $\\overline{A}$.",
+							"label": "P(B) divisée par P_A(B)"
+						},
+						{
+							"answer": "{{eval:a*(b-k)/100}}",
+							"message": "Tu as soustrait $P_{\\overline{A}}(B)$ sans finir : l'équation donne $x\\left(P_A(B)-P_{\\overline{A}}(B)\\right)=P(B)-P_{\\overline{A}}(B)$, il reste à diviser.",
+							"label": "Division oubliée"
+						},
+						{
+							"answer": "{{eval:(10-a)/10}}",
+							"message": "C'est la probabilité de $\\overline{A}$ : on demande celle de $A$.",
+							"label": "P(Ā) au lieu de P(A)"
+						},
+						{
+							"answer": "{{eval:(a*b+(10-a)*k)*b/1000}}",
+							"message": "Tu as multiplié $P(B)$ par $P_A(B)$ : écris plutôt l'équation donnée par la formule des probabilités totales.",
+							"label": "P(B) × P_A(B)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P_{\\overline{A}}(B)=1-P_{\\overline{A}}(\\overline{B})=1-{{eval:(10-k)/10;d}}={{eval:k/10;d}}$.",
+					"On note $x=P(A)$ ; alors $P(\\overline{A})=1-x$. D'après la formule des probabilités totales, $P(B)=P(A)\\times P_{A}(B)+P(\\overline{A})\\times P_{\\overline{A}}(B)$.",
+					"${{eval:(a*b+(10-a)*k)/100;d}}={{eval:b/10;d}}\\,x+{{eval:k/10;d}}\\,(1-x)$, soit ${{eval:(a*b+(10-a)*k)/100;d}}-{{eval:k/10;d}}={{eval:(b-k)/10;d}}\\,x$.",
+					"Donc $x=\\dfrac{ {{eval:a*(b-k)/100;d}} }{ {{eval:(b-k)/10;d}} }$ et $P(A)=\\textcolor{{{color:primary.0}}}{ {{eval:a/10;d}} }$."
+				]
+			},
+			"hint": "Note $x=P(A)$ et écris $P(B)$ avec la formule des probabilités totales : tu obtiens une équation d'inconnue $x$."
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous, dont on ne connaît pas les deux premières pondérations.\n\n```probtree\nA:?\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:?\n  B:0.{{k}}\n  \\overline{B}:0.{{eval:10-k}}\n```\n\nOn sait de plus que $P(B)={{eval:(a*b+(10-a)*k)/100;d}}$.\n\nCalcule $P(A)$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 5", "b != k", "(a*b+(10-a)*k)*b != 100*a", "a*(b-k) != 10*(10-a)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*b+(10-a)*k)/(10*b)}}",
+							"message": "Tu as divisé $P(B)$ par $P_A(B)$ : c'est oublier le chemin qui passe par $\\overline{A}$.",
+							"label": "P(B) divisée par P_A(B)"
+						},
+						{
+							"answer": "{{eval:a*(b-k)/100}}",
+							"message": "Tu as soustrait $P_{\\overline{A}}(B)$ sans finir : l'équation donne $x\\left(P_A(B)-P_{\\overline{A}}(B)\\right)=P(B)-P_{\\overline{A}}(B)$, il reste à diviser.",
+							"label": "Division oubliée"
+						},
+						{
+							"answer": "{{eval:(10-a)/10}}",
+							"message": "C'est la probabilité de $\\overline{A}$ : on demande celle de $A$.",
+							"label": "P(Ā) au lieu de P(A)"
+						},
+						{
+							"answer": "{{eval:(a*b+(10-a)*k)*b/1000}}",
+							"message": "Tu as multiplié $P(B)$ par $P_A(B)$ : écris plutôt l'équation donnée par la formule des probabilités totales.",
+							"label": "P(B) × P_A(B)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $x=P(A)$ ; alors $P(\\overline{A})=1-x$. D'après la formule des probabilités totales, $P(B)=P(A)\\times P_{A}(B)+P(\\overline{A})\\times P_{\\overline{A}}(B)$.",
+					"${{eval:(a*b+(10-a)*k)/100;d}}={{eval:b/10;d}}\\,x+{{eval:k/10;d}}\\,(1-x)$, soit ${{eval:(a*b+(10-a)*k)/100;d}}-{{eval:k/10;d}}={{eval:(b-k)/10;d}}\\,x$.",
+					"Donc $x=\\dfrac{ {{eval:a*(b-k)/100;d}} }{ {{eval:(b-k)/10;d}} }$ et $P(A)=\\textcolor{{{color:primary.0}}}{ {{eval:a/10;d}} }$."
+				]
+			},
+			"hint": "Note $x=P(A)$ et écris $P(B)$ avec la formule des probabilités totales : tu obtiens une équation d'inconnue $x$."
+		},
+		{
+			"statement": "Dans un lycée, ${{eval:a*b+(10-a)*k}}\\,\\%$ des élèves viennent en bus. Parmi les demi-pensionnaires, ${{b}}0\\,\\%$ viennent en bus ; parmi les externes, ${{k}}0\\,\\%$ viennent en bus. Chaque élève est demi-pensionnaire ou externe.\n\nOn choisit un élève au hasard. On note $D$ l'évènement « l'élève est demi-pensionnaire » et $B$ l'évènement « l'élève vient en bus ».\n\nQuelle est la probabilité que l'élève soit demi-pensionnaire ? Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(D)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 5", "b != k", "(a*b+(10-a)*k)*b != 100*a", "a*(b-k) != 10*(10-a)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*b+(10-a)*k)/(10*b)}}",
+							"message": "Tu as divisé $P(B)$ par $P_D(B)$ : c'est oublier les externes qui viennent en bus.",
+							"label": "P(B) divisée par P_D(B)"
+						},
+						{
+							"answer": "{{eval:a*(b-k)/100}}",
+							"message": "Tu as soustrait $P_{\\overline{D}}(B)$ sans finir : l'équation donne $x\\left(P_D(B)-P_{\\overline{D}}(B)\\right)=P(B)-P_{\\overline{D}}(B)$, il reste à diviser.",
+							"label": "Division oubliée"
+						},
+						{
+							"answer": "{{eval:(10-a)/10}}",
+							"message": "C'est la proportion d'externes : on demande celle des demi-pensionnaires.",
+							"label": "Proportion d'externes"
+						},
+						{
+							"answer": "{{eval:(a*b+(10-a)*k)*b/1000}}",
+							"message": "Tu as multiplié $P(B)$ par $P_D(B)$ : écris plutôt l'équation donnée par la formule des probabilités totales.",
+							"label": "P(B) × P_D(B)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'énoncé donne $P(B)={{eval:(a*b+(10-a)*k)/100;d}}$, $P_D(B)={{eval:b/10;d}}$ et $P_{\\overline{D}}(B)={{eval:k/10;d}}$.",
+					"On note $x=P(D)$ ; alors $P(\\overline{D})=1-x$. D'après la formule des probabilités totales, $P(B)=P(D)\\times P_{D}(B)+P(\\overline{D})\\times P_{\\overline{D}}(B)$.",
+					"${{eval:(a*b+(10-a)*k)/100;d}}={{eval:b/10;d}}\\,x+{{eval:k/10;d}}\\,(1-x)$, soit ${{eval:(a*b+(10-a)*k)/100;d}}-{{eval:k/10;d}}={{eval:(b-k)/10;d}}\\,x$.",
+					"Donc $x=\\dfrac{ {{eval:a*(b-k)/100;d}} }{ {{eval:(b-k)/10;d}} }$ et $P(D)=\\textcolor{{{color:primary.0}}}{ {{eval:a/10;d}} }$."
+				]
+			},
+			"hint": "Note $x=P(D)$ et écris $P(B)$ avec la formule des probabilités totales : tu obtiens une équation d'inconnue $x$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "P(B) = 0,32, P_A(B) = 0,6, P_Ā(B̄) = 0,8 : P(A) = 0,3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}3"]
+		},
+		{
+			"description": "Fraction 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{10}"]
+		},
+		{
+			"description": "P(B) / P_A(B)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé $P \\left( B \\right)$ par $P_A \\left( B \\right)$ : c'est oublier le chemin qui passe par $\\overline{A}$."
+			},
+			"answers": ["\\frac{8}{15}"]
+		},
+		{
+			"description": "Division oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait $P_{\\overline{A}}(B)$ sans finir : l'équation donne $x\\left(P_A(B)-P_{\\overline{A}}(B)\\right)=P(B)-P_{\\overline{A}}(B)$, il reste à diviser."
+			},
+			"answers": ["0{,}12"]
+		},
+		{
+			"description": "P(Ā)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la probabilité de $\\overline{A}$ : on demande celle de $A$."
+			},
+			"answers": ["0{,}7"]
+		},
+		{
+			"description": "P(B) × P_A(B)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $P \\left( B \\right)$ par $P_A \\left( B \\right)$ : écris plutôt l'équation donnée par la formule des probabilités totales."
+			},
+			"answers": ["0{,}192"]
+		},
+		{
+			"description": "P(B) = 0,5 : P(A) = 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}6"]
+		},
+		{
+			"description": "Fraction 3/5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{5}"]
+		},
+		{
+			"description": "P(B) / P_A(B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé $P \\left( B \\right)$ par $P_A \\left( B \\right)$ : c'est oublier le chemin qui passe par $\\overline{A}$."
+			},
+			"answers": ["\\frac{5}{7}"]
+		},
+		{
+			"description": "Division oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait $P_{\\overline{A}}(B)$ sans finir : l'équation donne $x\\left(P_A(B)-P_{\\overline{A}}(B)\\right)=P(B)-P_{\\overline{A}}(B)$, il reste à diviser."
+			},
+			"answers": ["0{,}3"]
+		},
+		{
+			"description": "P(Ā)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la probabilité de $\\overline{A}$ : on demande celle de $A$."
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "P(B) × P_A(B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "7",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $P \\left( B \\right)$ par $P_A \\left( B \\right)$ : écris plutôt l'équation donnée par la formule des probabilités totales."
+			},
+			"answers": ["0{,}35"]
+		},
+		{
+			"description": "44 % en bus : P(D) = 0,4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "8",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "Fraction 2/5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "8",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{2}{5}"]
+		},
+		{
+			"description": "P(B) / P_D(B)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "8",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé $P \\left( B \\right)$ par $P_D \\left( B \\right)$ : c'est oublier les externes qui viennent en bus."
+			},
+			"answers": ["\\frac{11}{20}"]
+		},
+		{
+			"description": "Division oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "8",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as soustrait $P_{\\overline{D}}(B)$ sans finir : l'équation donne $x\\left(P_D(B)-P_{\\overline{D}}(B)\\right)=P(B)-P_{\\overline{D}}(B)$, il reste à diviser."
+			},
+			"answers": ["0{,}24"]
+		},
+		{
+			"description": "Externes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "8",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la proportion d'externes : on demande celle des demi-pensionnaires."
+			},
+			"answers": ["0{,}6"]
+		},
+		{
+			"description": "P(B) × P_D(B)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "8",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié $P \\left( B \\right)$ par $P_D \\left( B \\right)$ : écris plutôt l'équation donnée par la formule des probabilités totales."
+			},
+			"answers": ["0{,}352"]
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
