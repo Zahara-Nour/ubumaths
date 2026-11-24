@@ -27,6 +27,7 @@
 	import type { RangerNode } from '#lib/ubumark/types/ranger.ts';
 	import { displayedLabels, placedOfAnswer } from '#lib/ubumark/utils/ranger.ts';
 	import InlineMarkdown from '../InlineMarkdown.svelte';
+	import { provideBreakableMath } from '../content-breakable-math';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -51,6 +52,8 @@
 	let count = $derived(labels.length);
 	/** Étapes d'une démonstration : colonne numérotée, sans signe */
 	let steps = $derived(node.sign === 'aucun');
+	// Étapes : une formule longue passe à la ligne après un `=` ou un `+` (E52)
+	provideBreakableMath(() => steps);
 	let signText = $derived(node.sign === '>' ? '>' : '<');
 	let signSpoken = $derived(node.sign === '>' ? 'plus grand que' : 'plus petit que');
 

@@ -487,7 +487,8 @@
 
 	/* La seule couleur d'accent : la petite aiguille */
 	.horloge-aiguille-heures {
-		stroke: var(--color-primary);
+		/* Orange foncé en clair : le jaune-orange de l'accent n'a que 2,2 de contraste sur le cadran */
+		stroke: light-dark(var(--color-fig-orange), var(--color-primary));
 	}
 
 	/* Trotteuse : fine, avec contrepoids ; reconnue à sa forme, pas à une couleur de plus */

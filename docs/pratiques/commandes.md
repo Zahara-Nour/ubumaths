@@ -65,15 +65,16 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 
 ## Tests
 
-| Commande                     | Effet                                             | Notes                             |
-| ---------------------------- | ------------------------------------------------- | --------------------------------- |
-| `pnpm test:server <chemin>`  | Tests serveur (env node)                          | Toujours ciblés en local          |
-| `pnpm test:client <chemin>`  | Tests navigateur (`*.svelte.test.ts`)             | Chromium / Playwright             |
-| `pnpm test:integration`      | Intégration, sur la pile de test (démarrée seule) | ~180 s ; `test:integration:watch` |
-| `pnpm test:definer-guard`    | Garde des fonctions `SECURITY DEFINER`            | Verrou Supabase                   |
-| `pnpm test` / `test:changed` | Vitest sur les fichiers modifiés                  |                                   |
-| `pnpm test:e2e`              | Playwright end-to-end                             |                                   |
-| `pnpm test:lint-rules`       | Règles ESLint maison                              |                                   |
+| Commande                     | Effet                                             | Notes                                            |
+| ---------------------------- | ------------------------------------------------- | ------------------------------------------------ |
+| `pnpm test:server <chemin>`  | Tests serveur (env node)                          | Toujours ciblés en local                         |
+| `pnpm test:client <chemin>`  | Tests navigateur (`*.svelte.test.ts`)             | Chromium / Playwright                            |
+| `pnpm test:integration`      | Intégration, sur la pile de test (démarrée seule) | ~180 s ; `test:integration:watch`                |
+| `pnpm ecarts`                | Registre des écarts : liste, `rejouer`, `ajouter` | [registre-des-ecarts.md](registre-des-ecarts.md) |
+| `pnpm test:definer-guard`    | Garde des fonctions `SECURITY DEFINER`            | Verrou Supabase                                  |
+| `pnpm test` / `test:changed` | Vitest sur les fichiers modifiés                  |                                                  |
+| `pnpm test:e2e`              | Playwright end-to-end                             |                                                  |
+| `pnpm test:lint-rules`       | Règles ESLint maison                              |                                                  |
 
 Architecture des tests : [tests.md](tests.md).
 

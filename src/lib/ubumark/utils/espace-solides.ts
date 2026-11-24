@@ -182,6 +182,24 @@ const DOT_CLEARANCE = 0.06;
 
 /** Distance d'une étiquette de sommet à son point, en cm */
 const LABEL_GAP = 0.28;
+/**
+ * Places essayées pour le nom d'un sommet, dans l'ordre : distance (× LABEL_GAP)
+ * et écart d'angle (huitièmes de demi-tour) à la direction libre ; la première
+ * qui ne touche aucun trait. Près de la direction libre d'abord, puis tout le
+ * tour du sommet (E49 : un trait de section passe près du sommet)
+ */
+const NAME_PLACES: { gap: number; turn: number }[] = [
+	[0, 1, -1],
+	[2, -2],
+	[3, -3],
+	[4, -4],
+	[5, -5],
+	[6, -6],
+	[7, -7],
+	[8]
+].flatMap((turns) =>
+	[1, 1.35].flatMap((gap) => turns.map((k) => ({ gap, turn: (k * Math.PI) / 8 })))
+);
 
 /** Distance d'une cote à son trait, en cm */
 const COTE_GAP = 0.14;
@@ -971,6 +989,17 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 	const points = draft.points.map(toScreen);
 	const named = [...vertices, ...points];
 
+	// Traits du dessin (arêtes, contour de la section) : les noms des sommets les évitent
+	const edgeSegments: [EspacePoint, EspacePoint][] = [
+		...lines.flatMap((l) =>
+			l.points.slice(1).map((p, i): [EspacePoint, EspacePoint] => [l.points[i], p])
+		),
+		...(section ?? []).map((p, i, all): [EspacePoint, EspacePoint] => [
+			p,
+			all[(i + 1) % all.length]
+		])
+	];
+
 	// Noms des sommets : à l'extérieur, en s'éloignant du centre du dessin
 	const labels: SolideLabel[] = [];
 	const dots: EspacePoint[] = [];
@@ -993,11 +1022,18 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 			dx = -1;
 			dy = 0.35;
 		}
-		const length = Math.hypot(dx, dy);
-		labels.push({
-			at: { x: p.x + (dx / length) * LABEL_GAP, y: p.y + (dy / length) * LABEL_GAP },
+		// La place habituelle d'abord ; si elle touche un trait (angle libre étroit,
+		// trait de section), un peu plus loin ou en tournant un peu
+		const base = Math.atan2(dy, dx);
+		const candidates = NAME_PLACES.map(({ gap, turn }) => ({
+			at: {
+				x: p.x + Math.cos(base + turn) * LABEL_GAP * gap,
+				y: p.y + Math.sin(base + turn) * LABEL_GAP * gap
+			},
 			text: name
-		});
+		}));
+		const others = vertices.filter((_, k) => k !== i);
+		labels.push(firstFree(candidates, labels, edgeSegments, others));
 		if (draft.centers.includes(i)) dots.push(p);
 	});
 	for (const mark of spec.marks) {

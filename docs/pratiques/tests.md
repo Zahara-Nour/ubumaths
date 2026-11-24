@@ -49,16 +49,17 @@ En cas de doute : « est-ce que ça peut vivre à côté de son code ? » Si oui
 
 ## 2. Quel runner pour quoi — le suffixe route
 
-| Suffixe / fichier                             | Runner                                          | Config                           | Lancement                                        |
-| --------------------------------------------- | ----------------------------------------------- | -------------------------------- | ------------------------------------------------ |
-| `src/**`, `scripts/**` `*.test.ts`            | vitest projet **`server`** (node)               | `vite.config.ts`                 | `pnpm test:server <chemin>`                      |
-| `src/**/*.svelte.test.ts`                     | vitest projet **`client`** (Chromium)           | `vite.config.ts`                 | `pnpm test:client <chemin>`                      |
-| `src/**/*-real.svelte.test.ts`                | projet `client`, **exclu en CI** (Pyodide réel) | `vite.config.ts`                 | nightly, ou `pnpm test:client` en local          |
-| `tests/integration/**/*.test.ts`              | vitest **`integration`** (node, séquentiel)     | `vitest.integration.config.ts`   | `pnpm test:integration`                          |
-| `garde-fonctions-security-definer.test.ts`    | vitest **`definer-guard`** (seul)               | `vitest.definer-guard.config.ts` | `pnpm test:definer-guard`                        |
-| `e2e/**/*.spec.ts`                            | Playwright (chromium, firefox, webkit)          | `playwright.config.ts`           | `pnpm test:e2e`                                  |
-| `e2e/verifs/*.spec.ts`                        | Playwright (6 navigateurs), serveur de dev      | `playwright.verifs.config.ts`    | `pnpm test:verifs` (`VERIFS_PORT`, `VERIFS_URL`) |
-| `eslint-rules/require-zod-validation.test.js` | node                                            | —                                | `pnpm test:lint-rules`                           |
+| Suffixe / fichier                             | Runner                                                    | Config                           | Lancement                                                  |
+| --------------------------------------------- | --------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------- |
+| `src/**`, `scripts/**` `*.test.ts`            | vitest projet **`server`** (node)                         | `vite.config.ts`                 | `pnpm test:server <chemin>`                                |
+| `src/**/*.svelte.test.ts`                     | vitest projet **`client`** (Chromium)                     | `vite.config.ts`                 | `pnpm test:client <chemin>`                                |
+| `src/**/*-real.svelte.test.ts`                | projet `client`, **exclu en CI** (Pyodide réel)           | `vite.config.ts`                 | nightly, ou `pnpm test:client` en local                    |
+| `tests/integration/**/*.test.ts`              | vitest **`integration`** (node, séquentiel)               | `vitest.integration.config.ts`   | `pnpm test:integration`                                    |
+| `tests/ecarts/**/*.test.ts`                   | vitest projet **`ecarts`**, **hors CI** (rouges attendus) | `vite.config.ts`                 | `pnpm ecarts rejouer` ([registre](registre-des-ecarts.md)) |
+| `garde-fonctions-security-definer.test.ts`    | vitest **`definer-guard`** (seul)                         | `vitest.definer-guard.config.ts` | `pnpm test:definer-guard`                                  |
+| `e2e/**/*.spec.ts`                            | Playwright (chromium, firefox, webkit)                    | `playwright.config.ts`           | `pnpm test:e2e`                                            |
+| `e2e/verifs/*.spec.ts`                        | Playwright (6 navigateurs), serveur de dev                | `playwright.verifs.config.ts`    | `pnpm test:verifs` (`VERIFS_PORT`, `VERIFS_URL`)           |
+| `eslint-rules/require-zod-validation.test.js` | node                                                      | —                                | `pnpm test:lint-rules`                                     |
 
 Détails qui comptent :
 

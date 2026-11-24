@@ -573,10 +573,6 @@ test('#2179 — la petite aiguille (couleur d’accent) tient le contraste d’u
 }) => {
 	await openBloc(page, HORLOGE_PATH);
 	const dial = rendered(page, 'Avec la trotteuse').locator('svg.horloge-cadran');
-	test.fail(
-		true,
-		'écart E44 : la petite aiguille est en --color-primary (jaune), contraste ≈ 2,2 sur le fond clair du cadran, sous les 3 d’un objet graphique (WCAG 1.4.11)'
-	);
 	await expectContrastBothThemes(
 		page,
 		dial,
@@ -1003,10 +999,6 @@ test('#2162 — le nom du trait posé, écrit au-dessus de lui dans le dessin, s
 		hasTouch
 	);
 	await expect(svg.locator('.boite-trait-nom')).toHaveText('Min');
-	test.fail(
-		true,
-		'écart E45 : le nom du trait actif (« Médiane »…) est écrit en --color-primary (jaune) à 10 px, contraste ≈ 2,2 sur le fond clair (WCAG 1.4.3 : 4,5)'
-	);
 	await expectContrastBothThemes(page, svg.locator('.boite-trait-nom'), 'nom du trait');
 });
 
@@ -1683,10 +1675,6 @@ test('#2027 — pyramide à base carrée : le nom du sommet D n’est sur aucun 
 }) => {
 	await openBloc(page, SOLIDE_PATH);
 	const svg = rendered(page, 'Une pyramide à base carrée').locator('svg').first();
-	test.fail(
-		true,
-		'écart E48 : sur « Une pyramide à base carrée », la lettre D est traversée par l’arête [AS] (et touche les pointillés de [DC]) ; vérifié aussi à l’œil'
-	);
 	expect(await textsOnStrokes(svg)).toEqual([]);
 });
 
@@ -1758,10 +1746,6 @@ test('#2046 — pavé coupé : les noms des sommets (F, K…) et la cote ne touc
 }) => {
 	await openBloc(page, SOLIDE_PATH);
 	const svg = rendered(page, SECTION_TITLES[0]).locator('svg').first();
-	test.fail(
-		true,
-		'écart E49 : sur « Un pavé coupé parallèlement à une face », la lettre F touche le trait de la section (près de K) ; vérifié aussi à l’œil'
-	);
 	expect(await textsOnStrokes(svg)).toEqual([]);
 });
 

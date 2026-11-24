@@ -8,13 +8,14 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3077._
+_Mis à jour le 2026-11-24, après #3078._
 
-- **État** : chantier repris le 2026-11-24. Écarts ouverts revérifiés contre `main` ([ecarts-a-trier.md](ecarts-a-trier.md) § « État au 2026-11-24 ») ; **C14 fait (#3077)**, L12 et L20 clos, 6 lignes de doc périmées corrigées. Recollecte : [ecarts-a-trier-recollecte.md](ecarts-a-trier-recollecte.md) (225 points jamais triés, non vérifiés ; sa liste B n'est pas fiable ligne à ligne). **Harmonisation tranchée** : registre unique, phase 0 validée.
-- **Prochaine action** : coder le registre unique, phase 0 validée (section « Registre unique : phase 0 validée » ci-dessous), dans l'ordre écrit : registre + commande avec tests, versement, tri des 225 points, tâche de nuit, retrait des sections d'écarts des docs. Écarts à corriger ensuite : V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
-- **En attente de David** : M4 `DROP worksheet_instances` (destructif, explication avant `db:migrate`) ; T14 ; DPA ; relire `conformite/violation-de-donnees.md`.
-- **Pièges en cours** : les 225 points de la recollecte sont rapprochés par mots-clés, à vérifier dans le code avant d'en faire des écarts ; sondes mathAST : test vitest temporaire dans le worktree, par le chemin de l'Atelier, jamais `pnpm math` ; `db:migrate` lancé par David ; `docs:check-a-jour --depuis` ne voit que les commits.
-- **Worktree / branche** : aucun (celui de #3077 retiré au merge). Reste `../ubumaths-wt-ecarts-a-trier` (`chore/ecarts-lexicon-vers-dictionary`, PR #2451 fermée sans merge, remplacée par #3077) : à retirer, la suppression de sa branche non mergée demande l'accord de David.
+- **État** : **étape 1 du registre unique faite (#3078 mergée)** : [registre.md](../ecarts/registre.md) (encore vide), `pnpm ecarts` (liste, `rejouer [--barrer]`, `ajouter`), projet vitest `ecarts` (tests de preuve sous `tests/ecarts/`, hors CI), mode d'emploi [registre-des-ecarts.md](../pratiques/registre-des-ecarts.md).
+- **Prochaine action** : **étape 2, le versement** : écarts ouverts d'[ecarts-a-trier.md](ecarts-a-trier.md) § « État au 2026-11-24 » et E ouverts d'`ecarts-verifs-progress.md` dans le registre, chacun avec sa preuve (prévenir la session `ecarts-verifs` du format). Ensuite : (3) tri des 225 points, (4) tâche de nuit commune avec `verifs-auto`, (5) retrait des sections d'écarts des docs. Écarts à corriger après : V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
+- **En attente de David** : T14 (il donne identité de l'éditeur, statut, directeur de publication → PR des mentions légales) ; DPA (il range les 6 PDF dans son Drive privé et le dit → date à noter dans la doc de conformité) ; relire `conformite/violation-de-donnees.md`.
+- **Tranché le 2026-11-24 (« je te suis »)** : M4 `DROP worksheet_instances` **à faire dans une PR à part, après le versement** (grep des usages + nombre de lignes en base + ce qui sera perdu expliqués à David avant d'écrire la migration ; `db:migrate` lancé par lui) ; préparer une **page à cocher** pour sa relecture de `violation-de-donnees.md` (qui prévenir, sous quel délai).
+- **Pièges en cours** : une ligne du registre = commit de doc direct sur `main`, mais un **test de preuve est du code** (branche + PR) ; `pnpm ecarts ajouter` depuis le dépôt principal après `git pull --rebase` (numéro unique) ; la ligne « Derniers numéros » du registre (V71 · L36 · M22 · C20 · D21 · T18 · E54) est à revérifier au versement, `ecarts-verifs` ajoute encore des E ; les écarts versés gardent leur numéro, donc s'écrivent à la main dans le registre (`ajouter` ne sert qu'aux nouveaux) ; une preuve par commande négative (`! grep`) doit d'abord affirmer que le fichier existe ; les 225 points de la recollecte sont à vérifier dans le code ; sondes mathAST par le chemin de l'Atelier, jamais `pnpm math` ; `db:migrate` lancé par David.
+- **Worktree / branche** : aucun. L'ancien `../ubumaths-wt-ecarts-a-trier` et sa branche locale sont retirés (accord de David, 2026-11-24) ; la branche reste sur GitHub (`e92aabbc66`).
 
 ---
 
@@ -39,6 +40,7 @@ Sessions `ecarts-verifs` et `verifs-auto` prévenues le 2026-11-24 (elles contin
 
 ## Fait le 2026-11-24
 
+- **Registre unique, étape 1** (**#3078**) : registre, commande `pnpm ecarts`, tests (62), doc. Fixé en codant, hors phase 0 : un test de preuve vit sous `tests/ecarts/` et arrive par une PR ; `rejouer` sort en 0 même avec des preuves rouges ou cassées (le bilan le dit) ; le registre est relu juste avant d'être barré (remarque de la revue).
 - **C14** : #2451 fermée (27 conflits avec `main`), refaite en **#3077**, mergée (une fixture de corpus, modifiée à tort par le remplacement de chemins, restaurée avant le vert).
 - **Docs système** (commit direct `fcbec7c17`) : la liste B de la recollecte annonçait 17 lignes périmées ; vérifiées dans le code, **7 l'étaient** et sont corrigées (Renommer et unités dans `atelier.md`, L22 dans `mathast/README.md`, C1 dans `architecture-generale.md`, M20 dans `questions.md`, D18 dans `carte-des-fonctionnalites.md`, `worksheet_instances` dans `base-de-donnees.md`). Les autres disent encore vrai (M7, M10, M16, L11, T5 : écarts fermés par décision, le fait décrit demeure) ou demandent une sonde (ligne « valeur fausse » de `mathast/README.md` § limites, rapprochée à tort de V71 ; `conformite/README.md` rétention). La liste B n'est donc pas fiable ligne à ligne.
 - **L20** : limite des 15 chiffres écrite dans `ubumark.md` → clos. **L12** : clos (« Renommer » actif, provenance disparue, `recomputeAll` mesuré le 2026-10-19 d'après `atelier.md`).
