@@ -25,6 +25,7 @@ import { hasTrigCircleToPlace } from '#lib/ubumark/parser/trig-circle-parser.ts'
 import { hasTortueToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
 import { hasCalculToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import { hasRobotToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { hasLabyrintheAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import { hasRangerToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
 import { hasAssocierToPlace } from '#lib/ubumark/parser/associer-parser.ts';
 import { hasTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
@@ -203,6 +204,7 @@ function validateVariation(
 				!hasTortueToProgram(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCalculToProgram(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasRobotToProduce(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasLabyrintheAParcourir(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasAssocierToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasTrousToPlace(String(variation.statement ?? shared?.statement ?? '')) &&

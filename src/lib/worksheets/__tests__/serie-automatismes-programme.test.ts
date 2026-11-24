@@ -143,3 +143,36 @@ describe('buildSerie — robot à produire', () => {
 		expect(serie.solution).toContain('Un code juste : **avance de 4**');
 	});
 });
+
+describe('buildSerie — labyrinthe à parcourir (chantier `labyrinthe`)', () => {
+	const labyrinthe = new Map([
+		[
+			'labyrinthe',
+			modele(
+				'labyrinthe',
+				[
+					'Trouve la sortie.',
+					'',
+					'```labyrinthe',
+					'grille: 5 x 4',
+					'règle: premier',
+					'parcourir: oui',
+					'```'
+				].join('\n')
+			)
+		]
+	]);
+
+	it('énoncé : la grille sans case: ; corrigé : le bon chemin teinté et sa sortie, même grille', () => {
+		const serie = buildSerie(labyrinthe, [{ templateId: 'labyrinthe', seed: 1 }]);
+		expect(serie.statement).toContain('```labyrinthe');
+		expect(serie.statement).not.toMatch(/case\s*:/);
+		const graine = /graine: (\d+)/.exec(serie.statement)?.[1];
+		expect(graine).toBeDefined();
+		expect(serie.solution).toContain(`graine: ${graine}`);
+		expect(serie.solution).toContain('solution: oui');
+		expect(serie.solution).not.toContain('parcourir');
+		expect(serie.solution).toMatch(/\*\*Sortie \d : \d+( → \d+)+\*\*/);
+		expect(serie.solution.indexOf('Sortie')).toBeGreaterThan(serie.solution.lastIndexOf('```'));
+	});
+});

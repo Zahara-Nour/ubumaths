@@ -40,6 +40,7 @@ import { findTrigCirclesToPlace } from '#lib/ubumark/parser/trig-circle-parser.t
 import { findTortuesToProgram } from '#lib/ubumark/parser/tortue-parser.ts';
 import { findCalculsToProgram } from '#lib/ubumark/parser/calcul-parser.ts';
 import { findRobotsToProduce } from '#lib/ubumark/parser/robot-parser.ts';
+import { findLabyrinthesAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import { findRangersToPlace } from '#lib/ubumark/parser/ranger-parser.ts';
 import { findAssociersToPlace } from '#lib/ubumark/parser/associer-parser.ts';
 import { findTrousToPlace } from '#lib/ubumark/parser/trous-parser.ts';
@@ -237,11 +238,14 @@ export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
 export const EMPTY_PROGRAM_TEXT = "Tu n'as écrit aucun programme.";
 /** Robot à produire laissé vide (aucune instruction) */
 export const EMPTY_CODE_TEXT = "Tu n'as écrit aucun code.";
+/** Labyrinthe à parcourir laissé vide (aucune case touchée) */
+export const EMPTY_PATH_TEXT = "Tu n'as tracé aucun chemin.";
 /** Texte d'une case de ce genre laissée vide : rien posé, placé, colorié ou rempli */
 function emptyBuildText(kind: BuildKind, source: string): string {
 	if (kind === 'partage') return NOTHING_COLORED;
 	if (kind === 'tortue' || kind === 'calcul') return EMPTY_PROGRAM_TEXT;
 	if (kind === 'robot') return EMPTY_CODE_TEXT;
+	if (kind === 'labyrinthe') return EMPTY_PATH_TEXT;
 	if (kind === 'cubes') {
 		return parseEspaceContent(source).spec?.task?.kind === 'retrouver'
 			? MISSING_HEIGHTS
@@ -380,7 +384,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const })),
 		...findTortuesToProgram(statement).map((b) => ({ ...b, kind: 'tortue' as const })),
 		...findCalculsToProgram(statement).map((b) => ({ ...b, kind: 'calcul' as const })),
-		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const }))
+		...findRobotsToProduce(statement).map((b) => ({ ...b, kind: 'robot' as const })),
+		...findLabyrinthesAParcourir(statement).map((b) => ({ ...b, kind: 'labyrinthe' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
@@ -774,8 +779,12 @@ function buildLines(
 		answer: answered ? build.answer : null,
 		status: answered ? status : 'solution',
 		// Programme tortue ou de calcul : la réponse attendue porte le programme de référence (le
-		// bloc d'un énoncé masqué ne le dit plus, `attendu: ?`) ; robot : la scène et un code juste
-		...((build.kind === 'tortue' || build.kind === 'calcul' || build.kind === 'robot') && {
+		// bloc d'un énoncé masqué ne le dit plus, `attendu: ?`) ; robot : la scène et un code juste ;
+		// labyrinthe : la grille et le bon chemin
+		...((build.kind === 'tortue' ||
+			build.kind === 'calcul' ||
+			build.kind === 'robot' ||
+			build.kind === 'labyrinthe') && {
 			expected: [view.expected]
 		})
 	};

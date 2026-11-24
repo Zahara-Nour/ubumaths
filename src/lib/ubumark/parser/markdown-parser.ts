@@ -116,6 +116,12 @@ import {
 } from './calcul-parser';
 import { findRobotBlocks, parseRobot, parseRobotContent, isRobotBlockStart } from './robot-parser';
 import {
+	findLabyrintheBlocks,
+	parseLabyrinthe,
+	parseLabyrintheContent,
+	isLabyrintheBlockStart
+} from './labyrinthe-parser';
+import {
 	findPartageBlocks,
 	parsePartage,
 	parsePartageContent,
@@ -537,6 +543,7 @@ function parseBlocks(
 	const tortueBlocks = findTortueBlocks(lines);
 	const calculBlocks = findCalculBlocks(lines);
 	const robotBlocks = findRobotBlocks(lines);
+	const labyrintheBlocks = findLabyrintheBlocks(lines);
 	const partageBlocks = findPartageBlocks(lines);
 	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
@@ -571,6 +578,7 @@ function parseBlocks(
 		{ ranges: tortueBlocks, parse: parseTortue, language: 'tortue' },
 		{ ranges: calculBlocks, parse: parseCalcul, language: 'calcul' },
 		{ ranges: robotBlocks, parse: parseRobot, language: 'robot' },
+		{ ranges: labyrintheBlocks, parse: parseLabyrinthe, language: 'labyrinthe' },
 		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
 		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
@@ -648,6 +656,7 @@ function parseBlocks(
 			...tortueBlocks,
 			...calculBlocks,
 			...robotBlocks,
+			...labyrintheBlocks,
 			...partageBlocks,
 			...espaceBlocks,
 			...operationBlocks,
@@ -675,6 +684,7 @@ function parseBlocks(
 			...findTortueBlocks(originalLines),
 			...findCalculBlocks(originalLines),
 			...findRobotBlocks(originalLines),
+			...findLabyrintheBlocks(originalLines),
 			...findPartageBlocks(originalLines),
 			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
@@ -1865,6 +1875,12 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'robot'
 	},
 	{
+		is: isLabyrintheBlockStart,
+		find: findLabyrintheBlocks,
+		parse: parseLabyrinthe,
+		language: 'labyrinthe'
+	},
+	{
 		is: isPartageBlockStart,
 		find: findPartageBlocks,
 		parse: parsePartage,
@@ -2138,6 +2154,10 @@ function parseContentWithCodeBlocks(
 			// Robot dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans case
 			// (bloc en retrait), l'élève n'y répond pas
 			blocks.push(parseRobotContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'labyrinthe') {
+			// Labyrinthe dans un item de liste : toujours un nœud, même en erreur (Q48) ; sans
+			// case (bloc en retrait), l'élève n'y répond pas
+			blocks.push(parseLabyrintheContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'partage') {
 			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));

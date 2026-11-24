@@ -223,6 +223,9 @@ export type { CalculNode, CalculIssue, CalculSpec } from './calcul';
 // ROBOT (bloc ```robot)
 export type { RobotNode, RobotIssue, RobotSpec, RobotScene, Instruction } from './robot';
 
+// LABYRINTHE (bloc ```labyrinthe)
+export type { LabyrintheNode, LabyrintheIssue, LabyrintheSpec, Regle } from './labyrinthe';
+
 // ============================================================================
 // PARTAGE (bloc ```partage)
 // ============================================================================

@@ -87,6 +87,10 @@ import { isTortueAnswerCorrect, tortueAnswerVerdict } from '#lib/ubumark/utils/t
 import { calculAnswerVerdict, isCalculAnswerCorrect } from '#lib/ubumark/utils/calcul-answer.ts';
 import { isRobotAnswerCorrect, robotAnswerVerdict } from '#lib/ubumark/utils/robot-answer.ts';
 import {
+	isLabyrintheAnswerCorrect,
+	labyrintheAnswerVerdict
+} from '#lib/ubumark/utils/labyrinthe-answer.ts';
+import {
 	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
 } from '#lib/ubumark/utils/number-line-representer.ts';
@@ -850,6 +854,9 @@ function validateBlankValue(
 	if (blank.construire === 'calcul') return isCalculAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Robot à produire : le code de l'élève rejoué sur la scène, juste s'il finit sur l'arrivée
 	if (blank.construire === 'robot') return isRobotAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Labyrinthe : le chemin de l'élève, de l'entrée à une sortie par des cases qui suivent la règle
+	if (blank.construire === 'labyrinthe')
+		return isLabyrintheAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -1409,6 +1416,13 @@ function validateSingleBlank(
 	// grise, arrivée manquée, instruction inconnue)
 	if (blank.construire === 'robot') {
 		const verdict = robotAnswerVerdict(userAnswer, blank.expectedAnswer);
+		if (verdict.juste) return { isCorrect: true, status: 'correct' };
+		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
+	}
+
+	// Labyrinthe : faux, le chemin dit pourquoi (entrée, case sautée, intrus, sortie manquée)
+	if (blank.construire === 'labyrinthe') {
+		const verdict = labyrintheAnswerVerdict(userAnswer, blank.expectedAnswer);
 		if (verdict.juste) return { isCorrect: true, status: 'correct' };
 		return verdict.message ? { isCorrect: false, feedback: verdict.message } : { isCorrect: false };
 	}
