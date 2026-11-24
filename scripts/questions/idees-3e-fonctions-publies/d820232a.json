@@ -1,7 +1,7 @@
 {
 	"id": "d820232a-62a0-422f-9c08-33b279258af1",
 	"title": "Image et antécédent",
-	"description": "Image et antécédent : lus dans un tableau de valeurs, lus sur une courbe (deux antécédents), image calculée par une expression simple (x² − 3)",
+	"description": "Image et antécédent : lus dans un tableau de valeurs (un, deux ou aucun antécédent ; même image pour deux fonctions), lus sur une courbe (droite, parabole, cubique ; résoudre graphiquement f(x) = k), image calculée par une expression simple (x² − 3)",
 	"grades": ["3"],
 	"level": 1,
 	"delay": 60,
