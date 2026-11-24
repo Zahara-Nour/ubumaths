@@ -51,6 +51,7 @@ contourner en silence.
 | 0040 | [Le carnet de liaison : un lien par parent, des courriels sur exception](0040-carnet-de-liaison-lien-par-parent.md)                      | 2026-11-16 |
 | 0041 | [Catégorie et notions d'une fiche](0041-categorie-et-notions-d-une-fiche.md)                                                             | 2026-11-19 |
 | 0042 | [Texte coloré dans la prose : `[texte]{.nom}`, les 12 noms de la palette](0042-texte-colore-dans-la-prose.md)                            | 2026-11-20 |
+| 0043 | [Noms anglais des nœuds de l'arbre](0043-noms-anglais-des-noeuds-de-l-arbre.md)                                                          | 2026-11-23 |
 
 ## Écrire un ADR
 

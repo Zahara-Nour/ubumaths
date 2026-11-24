@@ -78,7 +78,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Intégration                                                                    | TSA8        | 5         | libre                |                        |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
 | Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                        |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | prise (2026-11-24)   | `idees-tle-probas`     |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | phase 0 (2026-11-24) | `idees-tle-probas`     |
 
 ### Maths expertes
 
@@ -162,6 +162,11 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| ecf4d46b Probabilités totales                                | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 4ee9a359 Seuil par la loi binomiale                          | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 7974722d Espérance de aX + bY : linéarité                    | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 0943e867 Inégalité de Bienaymé-Tchebychev                    | `idees-tle-probas`                                          | 2026-11-24 |                                      |
+| 95f73515 Inégalité de concentration : majorant               | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
