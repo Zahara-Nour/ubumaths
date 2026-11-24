@@ -112,17 +112,17 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
 
 ### Carte du code
 
-| Fichier                                          | Rôle                                                                                                                                          |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…                                                             |
-| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions ; `holdOnExpire` : à la fin du compte d'une diapositive, pause au lieu d'avancer |
-| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                                                                        |
-| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                                                                               |
-| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                                                                           |
-| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                                                                        |
-| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                                                                |
-| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`)                                                 |
-| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                                                                            |
+| Fichier                                          | Rôle                                                                                                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…                                                                 |
+| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions ; `holdOnExpire` : à la fin du compte d'une diapositive, pause au lieu d'avancer     |
+| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation ; `right()` / `left()` (→, ←, boutons, balayage) : un fragment d'abord, puis l'horizontale |
+| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                                                                                   |
+| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                                                                               |
+| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                                                                            |
+| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                                                                    |
+| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`)                                                     |
+| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                                                                                |
 
 ### Consommateurs (seuls points d'entrée)
 
