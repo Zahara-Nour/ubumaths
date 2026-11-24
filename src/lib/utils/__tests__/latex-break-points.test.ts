@@ -33,6 +33,22 @@ describe('splitLatexAtBreaks — où une formule peut passer à la ligne (E52)',
 		expect(splitLatexAtBreaks('x')).toEqual(['x']);
 	});
 
+	it('ni dans l’argument optionnel d’une commande, ni dans une accolade échappée (revue de G)', () => {
+		expect(splitLatexAtBreaks('\\sqrt[n+1]{x}=2')).toEqual(['\\sqrt[n+1]{x}=\\;', '2']);
+		expect(splitLatexAtBreaks('x\\in\\{a=b\\}')).toEqual(['x\\in\\{a=b\\}']);
+		expect(splitLatexAtBreaks('x\\in\\lbrace a+b\\rbrace')).toEqual(['x\\in\\lbrace a+b\\rbrace']);
+	});
+
+	it('un crochet d’intervalle ne bloque pas la suite : ]0 ; +∞[ puis =', () => {
+		expect(splitLatexAtBreaks('I=]0;+\\infty[')).toEqual(['I=\\;', ']0;+\\infty[']);
+	});
+
+	it('un signe après (, une relation ou un opérateur n’est pas un endroit où couper', () => {
+		expect(splitLatexAtBreaks('(+3)=3')).toEqual(['(+3)=\\;', '3']);
+		expect(splitLatexAtBreaks('a\\cdot+b')).toEqual(['a\\cdot+b']);
+		expect(splitLatexAtBreaks('a=+b')).toEqual(['a=\\;', '+b']);
+	});
+
 	it('les morceaux recollés redonnent la formule (aux espaces près)', () => {
 		const latex = '1+2+\\cdots+n=\\frac{n(n+1)}{2}';
 		expect(splitLatexAtBreaks(latex).join('').replaceAll('\\;', '').replaceAll('\\:', '')).toBe(

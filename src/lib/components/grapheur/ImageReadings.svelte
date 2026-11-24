@@ -59,21 +59,25 @@
 				const valueText = written(entry.point.y);
 				const canvas = { width, height };
 				// E28 : f(x) proche de 0, l'étiquette de f(x) (sur l'axe des ordonnées)
-				// recouvre celle de x (au-dessus de l'axe des abscisses) : x passe dessous
-				const atBelow = labelRectsOverlap(
+				// recouvre celle de x (au-dessus de l'axe des abscisses) : x passe dessous,
+				// sauf si dessous la recouvre aussi (f(x) juste sous l'axe : rien de mieux)
+				const valueRect = labelBoxRect(
+					geometry.horizontal.x2,
+					geometry.horizontal.y2,
+					{ text: valueText, latex: null },
+					canvas
+				);
+				const atRect = (below: boolean) =>
 					labelBoxRect(
 						geometry.vertical.x1,
 						geometry.vertical.y1,
 						{ text: atText, latex: null },
-						canvas
-					),
-					labelBoxRect(
-						geometry.horizontal.x2,
-						geometry.horizontal.y2,
-						{ text: valueText, latex: null },
-						canvas
-					)
-				);
+						canvas,
+						below
+					);
+				const atBelow =
+					labelRectsOverlap(atRect(false), valueRect) &&
+					!labelRectsOverlap(atRect(true), valueRect);
 				return {
 					...entry,
 					key: `${func.id}-${entry.source}-${entry.point.at}`,

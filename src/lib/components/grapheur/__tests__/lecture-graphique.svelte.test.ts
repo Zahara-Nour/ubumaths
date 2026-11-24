@@ -80,6 +80,26 @@ describe('lecture graphique — les calculs de la console', () => {
 		expect(a.top).toBeGreaterThan(axisY);
 	});
 
+	it('E28 — f(1,4) sur x² − 2 (f(x) juste sous l’axe) : les deux étiquettes ne se touchent pas', async () => {
+		plotted('x^2-2', [1.4]);
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
+		await settle();
+
+		const reading = container.querySelector('g.image-readings [data-source="console"]')!;
+		const [atBox, valueBox] = [...reading.querySelectorAll('rect.tooltip-bg')].map((r) => ({
+			left: attr(r, 'x'),
+			right: attr(r, 'x') + attr(r, 'width'),
+			top: attr(r, 'y'),
+			bottom: attr(r, 'y') + attr(r, 'height')
+		}));
+		const touch =
+			atBox.left < valueBox.right &&
+			valueBox.left < atBox.right &&
+			atBox.top < valueBox.bottom &&
+			valueBox.top < atBox.bottom;
+		expect(touch, 'étiquettes de x et de f(x) séparées').toBe(false);
+	});
+
 	it('E28 — f(2) sur x² : l’étiquette de x reste au-dessus de l’axe', async () => {
 		plotted('x^2', [2]);
 		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });

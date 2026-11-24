@@ -18,7 +18,8 @@ couvre:
 
 > Synthèse des journaux archivés `docs/archive/wip/grapheur-*`, `suites-grapheur-progress.md`,
 > `dissoudre-doublons-grapheur-progress.md` et des chantiers couleurs. Vérifié contre le code le
-> 2026-10-15 (ordonnée exacte d'un extremum, 2026-10-24 ; étiquettes d'asymptotes, 2026-10-26).
+> 2026-10-15 (ordonnée exacte d'un extremum, 2026-10-24 ; étiquettes d'asymptotes, 2026-10-26 ;
+> étiquette de x sous l'axe dans la lecture graphique, 2026-11-24).
 
 ## À quoi ça sert
 
@@ -143,7 +144,10 @@ pointillés de la couleur de la courbe le trait de `(a ; 0)` au point puis du po
 — un axe hors de la fenêtre se lit sur le bord —, le point, et `a` / `f(a)` dans deux
 `GraphLabel` (exact s'il tient en deux décimales, sinon `≈` arrondi au centième ; à partir de
 10¹⁵, toujours `≈` en écriture scientifique, `1 × 10²¹`, les centièmes n'y étant plus sûrs). Rien hors de
-l'ensemble de définition ni hors de la restriction (`readingAt`).
+l'ensemble de définition ni hors de la restriction (`readingAt`). Quand f(a) est proche de 0, la
+boîte de `f(a)` recouvre celle de `a` : `a` passe **sous** l'axe (`GraphLabel` `below`,
+`labelBoxCenterYBelow`), si dessous ne la recouvre pas aussi ; les deux boîtes se comparent par
+`labelBoxRect` / `labelRectsOverlap` (`label-box.ts`, E28).
 
 Le point glissant (`ReadingSliders`) est un `role="slider"` en **HTML, à côté du SVG** : le SVG est
 `aria-hidden` et enveloppé dans `role="img"`, dont les enfants ne sont pas atteignables. `GraphSVG`

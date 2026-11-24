@@ -20,7 +20,7 @@
 -->
 <script lang="ts">
 	import '#lib/utils/mathlive-styles.ts';
-	import 'mathlive';
+	import { convertLatexToSpeakableText } from 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';
@@ -82,6 +82,11 @@
 	// après un `=` ou un `+` ; ailleurs, d'un seul tenant
 	const isBreakable = readBreakableMath();
 	let pieces = $derived(isBreakable() ? splitLatexAtBreaks(latex) : [latex]);
+	// `className` se répète sur chaque morceau : une classe à marge ou bordure les
+	// encadrerait un à un (aucun appelant n'en passe aujourd'hui).
+	// Découpée, la formule se lit d'un tenant : le conteneur porte la lecture de la
+	// formule entière, les morceaux (chacun `role="img"` chez MathLive) sont cachés
+	let spoken = $derived(pieces.length > 1 ? convertLatexToSpeakableText(latex) : '');
 </script>
 
 {#if unsafe}
@@ -89,9 +94,10 @@
 {:else}
 	{#key latex}
 		{#if pieces.length > 1}
-			<span class="inline-math-pieces"
+			<span class="inline-math-pieces" role="img" aria-label={spoken}
 				>{#each pieces as piece, i (i)}{#if i > 0}<wbr />{/if}<math-span
-						class="inline-math-static {className}">{piece}</math-span
+						class="inline-math-static {className}"
+						aria-hidden="true">{piece}</math-span
 					>{/each}</span
 			>
 		{:else}
