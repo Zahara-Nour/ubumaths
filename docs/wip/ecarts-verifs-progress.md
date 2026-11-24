@@ -4,13 +4,32 @@
 
 _Mis à jour le 2026-11-24, après #3097._
 
-- **État** : A (#3050), B (#3054), #3059, C (#3063), D (#3067), E (#3073), F (#3075), G (#3079), H (#3082 : E36, E37, → / ← / boutons / balayage montrent un fragment avant de changer de diapositive) mergées ; E36, E37 barrés au registre ; E56 corrigé (#3087 : droite graduée dessinée dans un item de liste), barré ; **I (#3097 : E29, « panse pleine » annoncée quand le calcul local du service a tronqué le gain), E29 barré** ; #3063 à #3097 pas encore en prod.
-- **Prochaine action** : PR J (E32 : un lecteur d'écran lit les formules en anglais, balises comprises), nouveau worktree `ubumaths-wt-ecarts-verifs-j`. Puis K, L (E46, tranché B : dessin recalculé à la largeur), puis l'ordre de David du 2026-11-24 : E66+E67 (Marché, boutique d'avatars) → E55+E61+E53 → E54 (moteur, Opus) et E57 → E62 → E58 à E60 (retirer la page) → E68, E69 → PR « téléphone » (E63, E70) ; E65, E71, E72 : retirer le `test.fail` seulement ; E39 : à creuser puis présenter.
+- **État** : A (#3050), B (#3054), #3059, C (#3063), D (#3067), E (#3073), F (#3075), G (#3079), H (#3082 : E36, E37, → / ← / boutons / balayage montrent un fragment avant de changer de diapositive) mergées ; E36, E37 barrés au registre ; E56 corrigé (#3087 : droite graduée dessinée dans un item de liste), barré ; I (#3097 : E29), E29 barré ; **J (PR ouverte, branche `fix/ecarts-verifs-j` : E32, formules lues en français par un lecteur d'écran, sans balises ; anglais sans balises dans un contenu anglais)**, E32 à barrer au registre après le merge ; #3063 à #3097 pas encore en prod.
+- **Prochaine action** : merger la PR J si elle ne l'est pas (`gh pr list --head fix/ecarts-verifs-j --state all`), barrer E32 (`docs/ecarts/registre.md`, à la main), puis PR K (E41). Puis L (E46, tranché B : dessin recalculé à la largeur), puis l'ordre de David du 2026-11-24 : E66+E67 (Marché, boutique d'avatars) → E55+E61+E53 → E54 (moteur, Opus) et E57 → E62 → E58 à E60 (retirer la page) → E68, E69 → PR « téléphone » (E63, E70) ; E65, E71, E72 : retirer le `test.fail` seulement ; E39 : à creuser puis présenter.
 - **En attente de David** : rien. **Tranché le 2026-11-24** : E34 publié en prod par David (modèle mis à jour, vu en base ; à vérifier à l’écran après la mise en prod de #3075, puis barrer) ; E53 à corriger (message de forme si la valeur relue est juste, comme E31) dans la PR de E55 et E61 ; primitive factorisée 0,3x(x + 4) confirmée (test de #3075 gardé tel quel) (E58 à E60 : confirmé par David le 2026-11-24, il ne se sert pas de la page des modèles de message, à retirer ; E63 : à corriger avec la PR téléphone, une graduation étiquetée sur deux)
 - **Tranché par David le 2026-11-24 (recos du paquet 6 du tri validées)** : E56 en premier (FAIT, #3087) ; puis E55, E61 et E53 (petits, une PR) ; puis E54 (moteur, revue Opus) et E57 ; E62 : un seul message ; E58 à E60 : retirer la page.
 - **E64 tranché par David le 2026-11-24** : pas de correctif (dans un item de liste, citation et blocs associer / trous / tortue / calcul / robot / labyrinthe non affichés à l’écran ; 0 contenu touché en prod, 34 modèles les utilisent hors liste) ; à reprendre si un auteur en a besoin.
 - **Pièges en cours** : Nouveaux écarts : `pnpm ecarts ajouter` depuis main (suivant : E65 ; E54 à E63 écrits au registre après #3085). Ne jamais changer l'attendu d'un test de `e2e/verifs/` (seule exception : #1813, décidée par David pour E41). `pnpm test:verifs <fichier> --project=ordi-chrome` (projets : ordi-chrome, ordi-safari, ordi-firefox, iphone, android, firefox-390) ; agents en parallèle : `--output=<scratchpad>` et `--workers=1` ou 2 (sinon ENOENT et délais dépassés). Lancer SOI-MÊME `pnpm dev --port 5176` avant `test:verifs` (5176 pris par une autre session : un autre port + `VERIFS_PORT=<port>`) ; l’énoncé d’un exercice est présent en double dans la page (copie cachée) : compter avec `:visible` : le serveur lancé par Playwright meurt avec un lot arrêté. #1636 lit le modèle en BASE : la base locale a la variation 1 corrigée à la main (`jsonb_set`), un `db:neuf` la remet à l'ancienne. Chrome n'atteint pas `localhost` : `pnpm lien`. Un `focusout` qui écrit un `$state` doit attendre (`queueMicrotask`). `pnpm voir` en WebKit montre la carte retournée en miroir (vu aussi sur une variation QCM : antérieur à G).
 - **Worktree / branche** : aucun (celui de la PR I retiré au merge). Registre des écarts : `docs/ecarts/registre.md` (E corrigé avec `test.fail`/`fixme` → retirer le marqueur puis `pnpm ecarts rejouer --barrer` depuis main ; sinon barrer à la main).
+
+## PR J : E32, lecture des formules (2026-11-24)
+
+- **Tranché par David** : A, notre propre lecture française (ni bibliothèque toute faite, ni
+  lecture laissée au lecteur d'écran). La lecture suit la langue du contenu : une fiche anglaise
+  garde la lecture anglaise de MathLive, sans ses balises.
+- **Fait** : `src/lib/utils/formula-speech/` (arbre LaTeX tolérant, mise en mots, écouteur `render`
+  posé par `hooks.client.ts`) ; `lang` sur `MarkdownRenderer`, `MathInline`, `MathBlock` ; cas
+  frères : le texte lu des cartes de fonction, des messages et de la valeur exacte de Données de
+  l'Atelier, lui aussi en anglais avec balises. Doc : `docs/systeme/ubumark.md` § Ailleurs.
+- **Revue** (`code-reviewer`) : une formule mal fermée de plus de 40 accolades bouclait sans fin,
+  et une tour d'exposants coûtait 2^n lectures ; corrigés, tests d'entrées démesurées ajoutés.
+- **Tournures à faire relire par David** (aucune n'est figée, une ligne à changer chacune) :
+  « f de x », « ouvrir / fermer la parenthèse », « intervalle fermé en 2, ouvert en 5 »,
+  « segment A B », « demi-droite A B », « u indice n », « 0 plus » (limite à droite), « R étoile »,
+  « 2 sur 3, x », `(AB)` dit avec ses parenthèses (pas « droite A B »).
+- **Hors de cette PR** : les champs de réponse (`math-field`) gardent la lecture de MathLive ; à
+  regarder, et ouvrir un écart si le défaut y est aussi. Les formules dessinées par
+  `convertLatexToMarkup` sans texte lu (`GeometryCanvas`…) n'ont aucune lecture : pas dans E32.
 
 ## E41 : ce qu'on a trouvé (2026-11-24, à présenter à David)
 

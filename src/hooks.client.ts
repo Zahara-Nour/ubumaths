@@ -11,6 +11,7 @@
 import { browser } from '$app/env';
 import { initErrorMonitoring, initWebVitals } from '#lib/utils/errorMonitoring.ts';
 import { initFreezeDetection } from '#lib/utils/freezeDetection.ts';
+import { installFormulaSpeech } from '#lib/utils/formula-speech/install.ts';
 import type { HandleClientError } from '@sveltejs/kit/hooks';
 
 // Initialize all client-side monitoring when browser is ready
@@ -21,6 +22,9 @@ if (browser) {
 
 	// Freeze detection (Long Task Observer + Heartbeat)
 	initFreezeDetection();
+
+	// Lecteurs d'écran : formules lues en français, sans balises (E32)
+	installFormulaSpeech();
 
 	console.log('[Hooks Client] Error monitoring, Web Vitals, and freeze detection initialized');
 }
