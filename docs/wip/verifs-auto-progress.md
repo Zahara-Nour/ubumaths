@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3118 (paquet 9, dernier du tri)._
+_Mis à jour le 2026-11-25, après #3118 (paquet 9, dernier du tri) et la décision sur E82._
 
 - **État** : tri des vérifications manuelles TERMINÉ : paquets 1 à 8 mergés (#3061, #3064, #3065, #3066, #3074, #3085, #3093, #3105), paquet 9 mergé (#3118) : **391 → 76 lignes**. Ce qui reste dans la liste ne se joue pas par un test (vrai doigt, vidéoprojecteur, prod, contenu, décisions de David). #3096 mergée, pas encore en prod. Stash « verifs-tri-7 » inutile, encore dans `git stash list`.
 - **Prochaine action** : R12 (notifications), puis la tâche de nuit unique (à accorder avec `ecarts-a-trier`), R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé) : ordre validé par David. Les corrections d'écarts avancent dans le chantier `ecarts-verifs`. ⛔ ne jamais jouer la déconnexion du prof local (elle révoque toutes ses sessions).
@@ -19,7 +19,7 @@ _Mis à jour le 2026-11-25, après #3118 (paquet 9, dernier du tri)._
 Mineurs : compteurs de `base-locale-paquet9` épinglés seulement quand la ligne les donne ; « sans chevauchement » asserté ou retiré du titre (`modeles-paquet9`) ; lien court enregistré avant l'`expect` et balayé (`series-paquet9`). Tout est fait (agent `test-automator`, suppressions SQL relues par la session : toutes bornées par le préfixe « Verifs9 » ou l'identifiant du test).`dans la section du paquet 9, réécrire ce bloc ; (5) un seul push, PR,`pnpm pr:merger`. ⛔ ne jamais jouer la déconnexion du prof local. **Ensuite** (ordre validé) : R12 (notifications), tâche de nuit unique (à accorder avec `ecarts-a-trier`), R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé). Les corrections d'écarts avancent dans le chantier `ecarts-verifs`.
 
 - **Tranché par David le 2026-11-24 (« je suis tes recos », paquet 9)** : E76 à E81 tous à corriger (E78 : question d'accès avant toute migration ; E80 : essai sur un build d'abord). États au [registre](../ecarts/registre.md) et dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
-- **En attente de David (paquet 9)** : E82 (iPhone, « Inégalités et intervalles » v4 : les nombres négatifs sous la droite se touchent ; reco : corriger avec E63, même correctif).
+- **Tranché par David le 2026-11-25 (« je suis tes recos »)** : E82 à corriger avec E63 (même correctif, PR « téléphone » du chantier `ecarts-verifs`). Plus rien du tri n'attend David.
 - **#2825, question (a) résolue par le code (David, 2026-11-24 : « il faut analyser le code »)** : le « créneau » est celui de l'emploi du temps d'une classe (page Classes du prof, `ScheduleEntryModal`, envoyé par `submitAction`), pas du cahier de texte. Non jouable en local : le prof local n'a pas d'école à emploi du temps (noté dans `outils-manquants.md`) ; test prêt mais sauté en le disant, `e2e/verifs/creneau-paquet9.spec.ts` ; ligne #2825 réécrite, la clause reste à David en prod.
 - **Tranché par David le 2026-11-24 (« je suis tes recos », paquet 8)** : E73 à corriger ; E74 et E75 : laisser, formulation (retirer les `test.fail`). États au [registre](../ecarts/registre.md) et dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
 - **Tranché par David le 2026-11-24 (« je valide », recos du paquet 7)** : à corriger : E66 en premier avec E67 (consentement : Marché en 500, « Acheter » non grisé), E68 (onglet « Lot »), E69 (PDF, courbe et numéro séparés), E70 (courbes à 130 px au moins, dans la PR « téléphone » avec E63) ; pas de correctif : E65 et E71 (formulation des lignes, retirer les `test.fail` et asserter le comportement gardé), E72 (vrai iPhone, ligne #2634 gardée). (a) #2599 : carte de gain sans réplique en révision = voulu, ligne sortie ; (b) #2621 : « Partiel » = forme non optimale seulement, déjà tranché le 2026-11-14, rien à changer ; (c) #2627 périmée : d'accord. États au [registre](../ecarts/registre.md) et dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
@@ -62,7 +62,7 @@ Mineurs : compteurs de `base-locale-paquet9` épinglés seulement quand la ligne
 - **E79** (#2980) : Analytics, onglet Surveillance en 500 (`first_name` / `last_name` au lieu de `firstname` / `lastname`). Reco : corriger.
 - **E80** (#3012) : premier chargement de `/games/2048` sur la page d'erreur (`appendChild`), Chromium et WebKit, serveur de dev ; revu par la session avec `pnpm voir`. Reco : vérifier sur un build, corriger.
 - **E81** (#2898) : menu du téléphone, bloc « Préférences » sous le bas de l'écran, la liste ne défile pas (`MobileNavDrawer.svelte`). Reco : corriger.
-- **E82** (#2946, en attente de David) : iPhone, « Inégalités et intervalles » v4, les nombres négatifs sous la droite se touchent (« −6 » déborde de 1,2 px sur « −5 ») ; Android passe. Même défaut que E63. Reco : corriger avec E63.
+- **E82** (#2946, tranché le 2026-11-25 : à corriger avec E63) : iPhone, « Inégalités et intervalles » v4, les nombres négatifs sous la droite se touchent (« −6 » déborde de 1,2 px sur « −5 ») ; Android passe. Même défaut que E63. Reco : corriger avec E63.
 
 **Sort de chaque ligne** (appliqué à `verifications-manuelles.md` : 27 sorties dont 1 regroupée, 7 réduites, 1 telle quelle ; 103 → 76 lignes) :
 
