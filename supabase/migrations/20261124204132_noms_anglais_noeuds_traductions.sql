@@ -24,7 +24,8 @@
 -- Migration de DONNÉES, additive.
 --
 -- ROLLBACK (avant cette migration, aucun nœud n'avait de nom anglais : relevé
--- en prod le 2026-11-24) :
+-- en prod le 2026-11-24). Il retire TOUS les noms anglais : un nom posé à la main
+-- après cette migration partirait aussi. À relire avant de le jouer :
 -- ROLLBACK:BEGIN
 -- update public.classification_nodes
 -- set translations = translations - 'en'
