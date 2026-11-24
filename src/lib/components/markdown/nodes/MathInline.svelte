@@ -19,6 +19,7 @@
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import '#lib/utils/mathlive-styles.ts';
 	import { convertLatexToSpeakableText } from 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
@@ -86,7 +87,17 @@
 	// encadrerait un à un (aucun appelant n'en passe aujourd'hui).
 	// Découpée, la formule se lit d'un tenant : le conteneur porte la lecture de la
 	// formule entière, les morceaux (chacun `role="img"` chez MathLive) sont cachés
-	let spoken = $derived(pieces.length > 1 ? convertLatexToSpeakableText(latex) : '');
+	// Calculée dans le navigateur seulement : `convertLatexToSpeakableText` lit
+	// `window.MathfieldElement`, au rendu serveur elle lève et la page part en 500.
+	// Après le montage, pas par `browser` : l'hydratation ne réécrit pas un attribut.
+	let mounted = $state(false);
+	let spoken = $derived(
+		mounted && pieces.length > 1 ? convertLatexToSpeakableText(latex) : undefined
+	);
+
+	onMount(() => {
+		mounted = true;
+	});
 </script>
 
 {#if unsafe}
