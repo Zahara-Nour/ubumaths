@@ -233,6 +233,10 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   `bug-report-screenshots` ; l'ancienne capture est retirée. Si la mise à jour du rapport ne
   touche aucune ligne (rapport plus `pending`, refus de la RLS), le fichier envoyé est retiré
   et la route rend 403.
+- **Suppression d'un rapport** (`DELETE` seul ou en lot, admin) : `deleteBugReportWithScreenshot`
+  retire d'abord la capture du bucket, puis la ligne. Capture impossible à effacer → la ligne
+  est gardée (500 « Suppression impossible : la capture n'a pas pu être effacée », ou une
+  ligne `failed` dans le lot).
 - **`src/lib/server/bug-report-screenshots.ts`** : le bucket est privé ; `bug_reports.screenshot_url`
   est recalculé à chaque lecture depuis `screenshot_path` en URL signée
   (`DISPLAY_SIGNED_URL_TTL` = 1 h ; `EXPORT_SIGNED_URL_TTL` = 7 jours). Échec de signature
@@ -391,7 +395,8 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/routes/api/bug-reports/__tests__/write-verdict.test.ts` : zéro ligne touchée n'est pas
   un succès — `DELETE` d'un rapport → 404 ; dans un lot, chaque rapport intact passe dans
   `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
-  du bucket.
+  du bucket ; rapport supprimé → sa capture retirée du bucket avant la ligne, et ligne gardée
+  si le bucket refuse.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
   contexte et l'URL, jeton du carnet masqué dans l'URL et le message, message de l'alerte
   critique échappé.
@@ -430,8 +435,6 @@ Constatés le 2026-10-13, non corrigés.
 
 - **Notification critique** : `system_event_type: 'assessment_graded'` faute de valeur
   adaptée (commentaire dans le code).
-- **Supprimer un rapport ne supprime pas sa capture** : ni `DELETE` ni le lot ne touchent
-  au storage.
 - **Zod manquant** : la page `/dashboard/admin/errors` passe les filtres de l'adresse sans
   validation ; l'action `resolve` de `/dashboard/admin/errors/[id]` lit `notes` sans borne ;
   `/dashboard/admin/bug-reports` passe `status`, `category`, `severity` tels quels.

@@ -19,6 +19,7 @@ import {
 import { z } from 'zod';
 import type { TablesUpdate } from '#lib/types/database.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { deleteBugReportWithScreenshot } from '#lib/server/bug-report-screenshots.ts';
 
 const logger = createServerLogger('api/bug-reports/[reportId]/+server');
 
@@ -220,21 +221,16 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	try {
-		// ⚠️ Une suppression refusée par la RLS, ou d'un rapport inconnu, touche
-		// zéro ligne sans erreur : on vérifie les lignes rendues avant d'annoncer
-		// la suppression (cf. docs/pratiques/rls-echecs-silencieux.md).
-		const { data: deletedReports, error: deleteError } = await locals.supabase
-			.from('bug_reports')
-			.delete()
-			.eq('id', params.reportId)
-			.select('id');
+		// La capture d'écran part avec le rapport, et avant lui (écart T25).
+		const outcome = await deleteBugReportWithScreenshot(locals.supabase, idValidation.data);
 
-		if (deleteError) {
-			logger.error('[API] Error deleting bug report:', deleteError);
+		if (outcome === 'screenshot_failed') {
+			throw error(500, 'Suppression impossible : la capture n’a pas pu être effacée');
+		}
+		if (outcome === 'delete_failed') {
 			throw error(500, 'Erreur lors de la suppression du rapport');
 		}
-
-		if (!deletedReports || deletedReports.length === 0) {
+		if (outcome === 'not_found') {
 			throw error(404, 'Rapport non trouvé : rien n’a été supprimé');
 		}
 

@@ -85,14 +85,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(500, 'Failed to load logs');
 	}
 
+	// ⚠️ Écart T20 : un échec de lecture des signalements ne doit pas ressembler à
+	// « aucun signalement ». Le reste de la page (restrictions, historique) reste
+	// utilisable : on ne lève pas, on le dit à la page, qui affiche une alerte.
 	if (reportsResult.error) {
 		logger.error('Failed to fetch reports:', reportsResult.error);
-		// Don't throw, just log - reports feature might not be set up
 	}
 
+	// Compteur illisible : `null` (inconnu), jamais 0.
 	if (pendingCountResult.error) {
 		logger.error('Failed to fetch pending count:', pendingCountResult.error);
-		// Don't throw, just log
 	}
 
 	// Flatten and deduplicate students from all classes
@@ -159,7 +161,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				(['spam', 'harassment', 'inappropriate', 'other'] as const).find((m) => m === r.reason) ??
 				'other'
 		})),
-		pendingReportsCount: pendingCountResult.data ?? 0,
+		reportsLoadFailed: reportsResult.error !== null,
+		pendingReportsCount: pendingCountResult.error ? null : (pendingCountResult.data ?? 0),
 		students
 	};
 };

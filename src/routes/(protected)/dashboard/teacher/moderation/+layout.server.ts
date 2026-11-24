@@ -14,7 +14,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		logger.error('Failed to fetch pending reports count:', error);
 	}
 
+	// Compteur illisible : `null` (inconnu), jamais 0 (écart T20).
 	return {
-		pendingReportsCount: pendingCount ?? 0
+		pendingReportsCount: error ? null : (pendingCount ?? 0)
 	};
 };

@@ -123,6 +123,10 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `avertissements/` ; `gestion/` charge restrictions actives, journal (`moderation_logs`),
   signalements (`get_reports_for_moderation`) et le compteur `get_pending_reports_count`
   (aussi lu par `+layout.server.ts` pour le badge). Lien de menu : `src/lib/config/dashboard-nav.ts`.
+  Une lecture des signalements en échec ne ressemble pas à « aucun signalement » : `load` rend
+  `reportsLoadFailed` et la page affiche une alerte à la place de la liste ; un compteur
+  illisible vaut `null` (pas de badge, une alerte), jamais 0. Restrictions et journal en échec
+  lèvent un 500.
 - Composants : `src/lib/components/moderation/` — `MessageReportsTable` → `ReviewReportDialog`
   (→ `RestrictUserDialog`) ; `ActiveRestrictionsTable`, `ModerationLogsTable` ;
   `DeleteMessageDialog` et `RestrictedUserBanner` servent dans le chat (`ChatMessageList`,
@@ -413,10 +417,6 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 
 ### ⚠️ Safeguarding (élèves mineurs)
 
-- **Un échec de lecture des signalements est muet.** `gestion/+page.server.ts` logue l'erreur
-  de `get_reports_for_moderation` et continue (« reports feature might not be set up ») : le
-  prof voit une liste vide, sans alerte, alors que des signalements de harcèlement entre
-  élèves peuvent attendre.
 - **Le marquage automatique n'arrive pas chez le prof.** `is_flagged` n'est lu que par
   `ChatMessageList` ; aucun écran de modération ne liste les messages marqués. Le filtre ne
   connaît que quatre mots. Le commentaire du trigger annonce un contrôle serveur « plus
