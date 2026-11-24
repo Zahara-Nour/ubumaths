@@ -989,8 +989,8 @@ describe('rewards, messages, notifications validation schemas', () => {
 			};
 
 			const result = sentMessagesQuerySchema.safeParse(data);
-			// Should still parse successfully (no max constraint on offset)
-			expect(result.success).toBe(true);
+			// Borné à 100 000 : au-delà d'un entier Postgres, la RPC échouerait en 500
+			expect(result.success).toBe(false);
 		});
 	});
 

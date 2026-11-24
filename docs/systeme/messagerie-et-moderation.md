@@ -67,7 +67,12 @@ Cette zone couvre cinq choses :
 - API : `src/routes/api/messages/` —
   - `send/` → RPC `send_private_message` (après `requireConsent(profile, 'send_message')`) ;
   - `recipients/` → RPC `get_allowed_recipients` (+ `get_teacher_classes_for_messaging` pour le prof) ;
-  - `inbox/` → `get_user_inbox` ; `sent/`, `unread-count/`, `search/` → `search_private_messages` ;
+  - `inbox/` → `get_user_inbox` (boîte de réception et archives, selon `status`) ; `sent/` →
+    `get_user_sent_messages` ; `unread-count/` ; `search/` → `search_private_messages`. Un
+    paramètre absent prend le défaut du schéma (50 messages, depuis le premier, tous dossiers).
+    La réponse suit la forme de la RPC, `id` en plus (copie de `message_id`) : `inboxMessagesResponseSchema`
+    et `sentMessagesResponseSchema`, sans adresse de courriel. Ni l'une ni l'autre ne rend
+    `parent_message_id` / `thread_root_id` : la marque « fil » des listes ne s'affiche donc pas ;
   - `thread/` → `get_message_details` + `get_message_thread` ;
   - `[id]/` : GET (`get_message_details`, `mark_message_as_read`), PATCH (actions
     `updateStatus`, `moveToFolder`, `toggleRead`, `toggleStar`), DELETE (corbeille côté
@@ -372,6 +377,9 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 - Serveur : `src/lib/server/__tests__/delete-notification.test.ts`,
   `notifications-pagination.test.ts`, `notifications-pagination-logic.test.ts`,
   `system-notifications.test.ts`, `student-inbox.test.ts` (même dossier).
+- Routes : `src/routes/api/messages/inbox/__tests__/inbox.test.ts`,
+  `sent/__tests__/sent.test.ts`, `thread/__tests__/thread.test.ts` (le `GET` appelé avec l'adresse
+  de la page et des lignes à la forme réelle des RPC).
 - Validation : `src/lib/server/validation/__tests__/warnings.test.ts`,
   `message-templates.test.ts`, `rewards-messages-notifications.test.ts`.
 - Client : `src/lib/stores/__tests__/notifications.test.ts`,
@@ -402,17 +410,6 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   base (`20261014110000`, décision de David du 2026-10-10).
 
 ## Écarts connus (constatés le 2026-10-13, non corrigés)
-
-### Messagerie privée en panne (constaté le 2026-11-22, chantier `seed-complet`)
-
-Quelles que soient les données, sur `main` comme en prod (3 messages privés en prod, le dernier en
-octobre 2025) ; réparation décidée par David dans une PR à part, pas encore ouverte.
-
-- **Boîte de réception** : l'appli appelle `/api/messages/inbox?status=inbox` sans dossier ; le schéma
-  refuse `folderId` nul → 400 (`src/routes/api/messages/inbox/+server.ts`).
-- **Envoyés** : l'appli appelle `/api/messages/sent` sans `limit` → 400 (« doit être > 0 ») ; avec
-  `limit`, la réponse de `get_user_sent_messages` n'a ni `id`, ni `sender_name`, ni `created_at`
-  attendus par `messageResponseSchema` → 500 (`src/lib/server/validation/messages.ts`).
 
 ### ⚠️ Safeguarding (élèves mineurs)
 
