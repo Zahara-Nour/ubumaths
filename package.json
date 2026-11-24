@@ -77,6 +77,7 @@
 		"surveillance:worktrees": "bash scripts/surveillance-machine.sh --worktrees",
 		"menage": "bash scripts/menage-machine.sh",
 		"machine:bilan": "bash scripts/bilan-machine.sh",
+		"disque:liberer": "bash scripts/liberer-disque.sh",
 		"db:types": "bash scripts/pile-de-test.sh lancer tsx scripts/db-types/index.ts",
 		"db:types:verifier": "bash scripts/pile-de-test.sh lancer tsx scripts/db-types/index.ts --verifier",
 		"db:types:prod": "tsx scripts/db-types/prod.ts",
