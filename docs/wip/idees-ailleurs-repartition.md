@@ -78,7 +78,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Intégration                                                                    | TSA8        | 5         | libre                |                        |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
 | Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                        |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | libre                |                        |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | prise (2026-11-24)   | `idees-tle-probas`     |
 
 ### Maths expertes
 
