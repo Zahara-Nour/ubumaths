@@ -207,7 +207,11 @@ et décisions G1-G11 : [structure-glisser-deposer-progress.md](../../wip/structu
 - **Rendu** : MathLive dans la page (`convertLatexToMarkup`), redessiné à chaque image pendant un
   déplacement (`expressionLatex` avec espaces `\hspace` animés) ; mesures hors écran.
 - **Tactile** (`any-pointer: coarse`, ou `touch`) : cadres des parties toujours visibles,
-  bordures larges, formule écartée autour des parties (seulement si `move`).
+  bordures larges, formule écartée autour des parties (seulement si `move`). Dessinés au rendu,
+  ils se recalent quand la formule change de taille (`ResizeObserver` sur la formule : police
+  KaTeX des grandes parenthèses chargée après coup, écart E26) ; pas pendant un déplacement.
+- **Téléphone** (< 640 px) : formule en 1,75rem au lieu de 2,75rem (une fraction dépassait de
+  l'écran, E26).
 - **6e ou avant** : message C1 → formule affichée et modifiable, sans cadres ni déplacement ;
   sinon somme avec soustraction figée, × toujours écrit.
 

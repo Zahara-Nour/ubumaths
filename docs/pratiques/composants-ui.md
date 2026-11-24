@@ -209,6 +209,8 @@ import * as Avatar from '#lib/components/ui/avatar/index.ts'; import * as Accord
 
 Les croix de `Dialog.Content` et de `Sheet.Content` sont nommées **« Fermer »** pour les lecteurs
 d'écran (« Close » jusqu'au 2026-10-14, relevé par la revue a11y des réglages de l'atelier).
+La croix de `Sheet.Content` (menu du site au téléphone) se touche sur 44 × 44 px, l'icône de
+16 px au même endroit (écart E22, 2026-11-24 : 16 px, sous le minimum de 24 px de WCAG 2.5.8).
 
 ### ConfirmDialog (composant custom)
 
