@@ -6,16 +6,16 @@ Idées reprises d'ailleurs, rubrique « Calcul littéral, équations » de Trois
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, migrations prêtes, PR à ouvrir._
+_Mis à jour le 2026-11-24, après #3062._
 
-- **État** : 6 brouillons en prod (David, 2026-11-24), ids commités ; migrations
-  `20261124000051_…_neufs_rangement_tags.sql` et `20261124000150_…_publies_contenu.sql` (+24
-  variations, 1 corrigée : dcaabf69 v1), tests d'intégration verts, rouges sans elles ·
-  **Prochaine action** : `security-auditor`, PR, `pnpm pr:merger`, puis `db:migrate` depuis `main`
-  (vérifier `migration list --linked` avant) ; ensuite relecture dans `/dev/modeles` et publication
-  (N3 reste en brouillon, outil n° 57) · **En attente de David** : rien · **Pièges en cours** : N3,
-  tableau trop large sur iPhone (n° 57) · **Worktree / branche** :
-  `../ubumaths-wt-idees-3e-calcul-litteral`, `feat/idees-3e-calcul-litteral`.
+- **État** : #3062 mergée, `db:migrate` fait, vérifié en prod : 6 neufs rangés et tagués, en
+  brouillon ; 12 publiés complétés (24 variations, dcaabf69 v1 corrigée) · **Prochaine action** :
+  relecture (skill `idees-rubrique` § 5) : brouillons dans `/dev/modeles?point=` (3-013, 3-016,
+  3-058, 4-071) ; série de relecture des 12 publiés (`scripts/series/creer-serie.ts`, David la
+  publie) ; puis verdicts « À revoir », corrections, `publier-lot.ts` en simulation, David publie ·
+  **En attente de David** : rien avant la relecture · **Pièges en cours** : N3 (62528060) reste en
+  brouillon jusqu'à l'outil n° 57 (tableau à cases sur téléphone) · **Worktree / branche** : aucun
+  (retiré par `pr:merger`) ; la suite se fait dans un nouveau worktree sur `origin/main`.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -139,6 +139,13 @@ dans le tableau de répartition ; exports de prod dans `scripts/questions/idees-
    recommande de les mettre dans « Idées en attente » du tableau de répartition.
 
 ## Historique
+
+### 2026-11-24 — #3062 mergée, migrations en prod
+
+- `security-auditor` : aucun finding bloquant (deux faibles : `lock_timeout` hors bloc, sans effet ;
+  la migration de contenu saute en silence un modèle absent, à durcir dans le générateur).
+- #3062 mergée par `pr:merger` ; `migration list --linked` : seules nos 2 migrations en attente ;
+  `db:migrate` fait ; vérifié en prod (nœuds, points, nombres de variations).
 
 ### 2026-11-24 — brouillons en prod, migrations générées
 
