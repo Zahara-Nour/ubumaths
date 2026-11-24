@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V125 · L123 · M58 · C43 · D44 · T29 · E80
+Derniers numéros : V125 · L123 · M58 · C43 · D44 · T29 · E81
 
 ## Écarts
 
@@ -309,3 +309,4 @@ Derniers numéros : V125 · L123 · M58 · C43 · D44 · T29 · E80
 - T29 · RGPD · rapports de bug · tant que son rapport de bug est en attente, son auteur peut en réécrire toutes les colonnes par l'API de la base, chemin de la capture compris · preuve : à la main · à faire (relevé par security-auditor sur #3115 ; l'effacement de la capture d'un autre est déjà bloqué par isOwnScreenshotPath)
 - L122 · bug latent · rapports de bug · au remplacement d'une capture de rapport de bug, l'effacement de l'ancienne ne regarde pas ce que le stockage rend : un refus silencieux laisse l'ancienne capture orpheline · preuve : à la main · à faire (relevé par code-reviewer sur #3115 ; test de preuve à écrire)
 - L123 · bug latent · modération · quand le compteur de signalements est illisible, le badge du menu de modération disparaît sans rien dire hors de l'onglet Signalements · preuve : à la main · à faire (relevé par code-reviewer sur #3115 ; test de preuve à écrire)
+- E81 · vérification à l'écran · navigation au téléphone · dans le menu du téléphone, le bloc « Préférences » (Lecture facilitée, taille du texte, mode sombre) est sous le bas de l'écran et ne s'atteint pas : la liste du menu ne défile pas (MobileNavDrawer.svelte, nav sans défilement) ; élève et prof, iPhone et Android à 390 px ; ligne #2898 (deux test.fail dans e2e/verifs/lecture-facilitee-paquet9.spec.ts ; vu en local seulement) · preuve : à la main · en attente de David (reco : corriger, liste défilable et Préférences fixé en bas)
