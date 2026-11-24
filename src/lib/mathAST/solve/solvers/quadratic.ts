@@ -26,8 +26,20 @@ import {
 	equals,
 	variable as varNode,
 	sqrt as sqrtNode,
+	power,
 	greaterThanOrEqual
 } from '../../factory';
+import { isMultiplication, isNumber, isOpposite, isSuperscript, isVariable } from '../../guards';
+import { substitute } from '../../eval/substitute';
+import { findNodes } from '../../transforms';
+import { extractExactRational } from '../../common/numeric';
+import type { Rational } from '../../normal/types';
+import {
+	ONE as RATIONAL_ONE,
+	mulRational,
+	negRational,
+	isPositive as isRationalPositive
+} from '../../normal/rational';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import { describeCoefficients, describeDiscriminant, describeSolution } from '../descriptions-fr';
@@ -81,6 +93,154 @@ function isNegativeNode(node: MathNode): boolean {
 
 	const rat = algebraicTerm.rational;
 	return rat.n < 0n;
+}
+
+// =============================================================================
+// Racine d'un discriminant paramétré (V92)
+// =============================================================================
+
+/**
+ * Un monôme en lettres : coefficient rationnel × constantes sans lettre (π, e)
+ * × produit de lettres à des puissances entières > 0.
+ */
+interface LetterMonomial {
+	readonly coefficient: Rational;
+	readonly constants: readonly MathNode[];
+	readonly letters: ReadonlyMap<string, number>;
+}
+
+/** Nom de la lettre qui tient la place de √R le temps de la mise en forme canonique. */
+const ROOT_PLACEHOLDER = '__racine_du_discriminant__';
+
+/** `c·π·aᵐ·bⁿ…` lu sur la forme canonique d'un discriminant ; `null` pour toute autre forme. */
+function letterMonomial(node: MathNode): LetterMonomial | null {
+	if (isOpposite(node)) {
+		const inner = letterMonomial(node.operand);
+		return inner && { ...inner, coefficient: negRational(inner.coefficient) };
+	}
+	if (isMultiplication(node)) {
+		const left = letterMonomial(node.left);
+		const right = letterMonomial(node.right);
+		if (left === null || right === null) return null;
+		const letters = new Map(left.letters);
+		for (const [name, exponent] of right.letters) {
+			letters.set(name, (letters.get(name) ?? 0) + exponent);
+		}
+		return {
+			coefficient: mulRational(left.coefficient, right.coefficient),
+			constants: [...left.constants, ...right.constants],
+			letters
+		};
+	}
+	if (isVariable(node)) {
+		return { coefficient: RATIONAL_ONE, constants: [], letters: new Map([[node.name, 1]]) };
+	}
+	if (isSuperscript(node) && isVariable(node.base) && isNumber(node.superscript)) {
+		const exponent = Number(node.superscript.value);
+		if (!Number.isInteger(exponent) || exponent < 1) return null;
+		return {
+			coefficient: RATIONAL_ONE,
+			constants: [],
+			letters: new Map([[node.base.name, exponent]])
+		};
+	}
+	if (isNumber(node)) {
+		const value = extractExactRational(node);
+		return value && { coefficient: value, constants: [], letters: new Map() };
+	}
+	// Une constante sans lettre (π, e, π²) : un facteur du coefficient
+	if (getVariables(node).size === 0 && computeNumericValue(node) !== null) {
+		return { coefficient: RATIONAL_ONE, constants: [node], letters: new Map() };
+	}
+	return null;
+}
+
+/**
+ * √Δ quand Δ = c·(produit de lettres) a une lettre de puissance impaire qui
+ * ne peut pas sortir seule : deux au moins (√(ab) n'est pas √a·√b, faux pour
+ * a, b < 0), ou une avec des carrés (√(a²b) = |a|√b). Les carrés et le
+ * coefficient positif sortent (√(4πa²) = 2√π|a|, juste) ; les lettres de
+ * puissance impaire restent ENSEMBLE sous la racine, le « radicand ». La
+ * condition est radicand ⩾ 0 : celle sous laquelle la racine ÉCRITE existe
+ * (avec Δ ⩾ 0, a = 0, b = 1, c = −1 vérifiait 4a²bc ⩾ 0 sans que √(bc)
+ * existe). `null` hors de ce cas : une lettre seule (√a), une somme
+ * (√(b² − 4c)) — le filet de `splitsLetterRoots` garde la suite.
+ */
+function unsplitDiscriminantRoot(
+	discriminant: MathNode
+): { outside: MathNode; radicand: MathNode } | null {
+	const monomial = letterMonomial(discriminant);
+	if (monomial === null) return null;
+	const constantsValue = monomial.constants.reduce(
+		(product, constant) => product * (computeNumericValue(constant) ?? Number.NaN),
+		1
+	);
+	if (!isRationalPositive(monomial.coefficient) || !(constantsValue > 0)) return null;
+	const oddLetters = [...monomial.letters]
+		.filter(([, exponent]) => exponent % 2 === 1)
+		.map(([name]) => name)
+		.sort();
+	const hasSquares = [...monomial.letters].some(([, exponent]) => exponent >= 2);
+	if (oddLetters.length === 0 || (oddLetters.length === 1 && !hasSquares)) return null;
+	// Hors de la racine : √(c · constantes · Π v^{2⌊e/2⌋}), positifs et carrés seulement
+	let outsideSquare: MathNode = rationalToNode(monomial.coefficient);
+	for (const constant of monomial.constants) {
+		outsideSquare = implicitMultiply(outsideSquare, constant);
+	}
+	for (const [name, exponent] of monomial.letters) {
+		const even = exponent - (exponent % 2);
+		if (even > 0) {
+			outsideSquare = implicitMultiply(outsideSquare, power(varNode(name), number(String(even))));
+		}
+	}
+	const radicand = oddLetters
+		.map((name): MathNode => varNode(name))
+		.reduce((product, letter) => implicitMultiply(product, letter));
+	return { outside: canonicalForm(sqrtNode(outsideSquare)), radicand };
+}
+
+/**
+ * Filet : la forme canonique a-t-elle découpé la racine sur des lettres
+ * (deux racines au moins dont l'argument contient une lettre, √a·√b) ?
+ */
+function splitsLetterRoots(node: MathNode): boolean {
+	const letterRoots = findNodes(
+		node,
+		(candidate) =>
+			candidate.type === 'function' &&
+			candidate.name === 'sqrt' &&
+			candidate.args.length === 1 &&
+			getVariables(candidate.args[0]).size > 0
+	);
+	return letterRoots.length >= 2;
+}
+
+/** Un rationnel en arbre, sans nombre négatif littéral : `−3/4` → opposite(3/4). */
+function rationalToNode(value: Rational): MathNode {
+	const magnitude = value.n < 0n ? -value.n : value.n;
+	const body =
+		value.d === 1n
+			? number(magnitude.toString())
+			: fraction(number(magnitude.toString()), number(value.d.toString()));
+	return value.n < 0n ? opposite(body) : body;
+}
+
+/**
+ * (−b ± k·√R)/(2a) en forme canonique, √R gardé entier : une lettre tient sa
+ * place pendant `canonicalForm` (qui écrirait √a·√b), puis la racine revient.
+ */
+function rootWithUnsplitRadical(
+	negB: MathNode,
+	twoA: MathNode,
+	outside: MathNode,
+	radicand: MathNode,
+	sign: 1 | -1
+): MathNode {
+	const placeholder = varNode(ROOT_PLACEHOLDER);
+	const radicalTerm = implicitMultiply(outside, placeholder);
+	const numerator = sign === 1 ? add(negB, radicalTerm) : subtract(negB, radicalTerm);
+	const shaped = canonicalForm(fraction(numerator, twoA));
+	return substitute(shaped, { [ROOT_PLACEHOLDER]: sqrtNode(radicand) });
 }
 
 // =============================================================================
@@ -201,9 +361,15 @@ export const quadraticSolver: EquationSolver = {
 		// que si Δ ≥ 0, condition portée par chaque solution (vide : aucune)
 		const parameters = getVariables(discriminantSimplified);
 		parameters.delete(variable);
+		// √(ab) gardé entier (V92) : la condition se lit alors sur ab ⩾ 0
+		const unsplit =
+			discriminantValue === null && parameters.size > 0
+				? unsplitDiscriminantRoot(discriminantSimplified)
+				: null;
+		const conditionSubject = unsplit === null ? discriminantSimplified : unsplit.radicand;
 		const condition =
 			discriminantValue === null && !isDiscriminantZero && parameters.size > 0
-				? parameterCondition([greaterThanOrEqual(discriminantSimplified, number('0'))])
+				? parameterCondition([greaterThanOrEqual(conditionSubject, number('0'))])
 				: null;
 		if (condition?.kind === 'never') {
 			return {
@@ -266,12 +432,25 @@ export const quadraticSolver: EquationSolver = {
 		// x1 = (-b + sqrt(Delta)) / (2a)
 		const x1Numerator = add(negB, sqrtDiscriminant);
 		const x1 = fraction(x1Numerator, twoA);
-		const x1Simplified = canonicalForm(x1);
+		// Filet (revue) : un discriminant que `unsplitDiscriminantRoot` ne lit pas
+		// garde sa racine entière plutôt que d'être découpé sur ses lettres
+		const rootForm =
+			unsplit ??
+			(parameters.size > 0 && splitsLetterRoots(canonicalForm(x1))
+				? { outside: number('1'), radicand: discriminantSimplified }
+				: null);
+		const x1Simplified =
+			rootForm === null
+				? canonicalForm(x1)
+				: rootWithUnsplitRadical(negB, twoA, rootForm.outside, rootForm.radicand, 1);
 
 		// x2 = (-b - sqrt(Delta)) / (2a)
 		const x2Numerator = subtract(negB, sqrtDiscriminant);
 		const x2 = fraction(x2Numerator, twoA);
-		const x2Simplified = canonicalForm(x2);
+		const x2Simplified =
+			rootForm === null
+				? canonicalForm(x2)
+				: rootWithUnsplitRadical(negB, twoA, rootForm.outside, rootForm.radicand, -1);
 
 		recorder.recordStep(
 			'quadratic-formula',
