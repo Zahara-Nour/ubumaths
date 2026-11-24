@@ -6,17 +6,17 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3086._
+_Mis à jour le 2026-11-24, après `db:migrate` de la migration de contenu._
 
-- **État** : #3086 mergée (3 neufs N1-N3 en fichiers, brouillons locaux 6f2a8a4b, 502ab371,
-  03cce164 ; +11 variations sur d820232a, 6ad254b4, cb545bd7 ; rendu vérifié à l'écran).
-  Migration de contenu `20261124123959_…` **pas encore jouée en prod** (seule en attente au
-  `migration list --linked` du 2026-11-24).
-- **Prochaine action** : `db:migrate` quand les 4 conditions sont réunies ; manquent (2) preuve
-  rouge du test d'intégration sans la migration, (3) `security-auditor` (prévu par la skill § 4,
-  non lancé avant la PR). Puis relecture des brouillons dans `/dev/modeles` (skill § 5).
-- **En attente de David** : go pour (2) + (3) puis `db:migrate` ; `create-questions --publier` des
-  3 brouillons en prod ; description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
+- **État** : #3086 mergée ; migration de contenu `20261124123959_…` **jouée en prod** (vérifié au
+  MCP : 6ad254b4 → 7 variations, cb545bd7 → 7, d820232a → 11, toujours publiés). Les 3 neufs
+  N1-N3 (`scripts/questions/idees-3e-fonctions-neufs/`) ne sont pas encore en prod.
+- **Prochaine action** : après le `create-questions --publier` de David, commiter les ids prod,
+  migration de rangement (nœud + tag, `migration-rangement.ts`) dans une PR, puis relecture dans
+  `/dev/modeles` (série de relecture pour les 3 publiés complétés) — skill § 4-5.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/idees-3e-fonctions-neufs --publier` (prod) ; description de d820232a à
+  compléter (tableau mélangé, ∅, cubique) ?
 - **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
   (`TableNode`, `overflow-x-auto`, comportement commun).
 - **Worktree / branche** : aucun (retirés par `pr:merger`) ; un neuf pour la suite.
@@ -102,6 +102,13 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
    cb545bd7 plutôt qu'un modèle de 3e (pas de point de 3e pour « produire une formule »).
 
 ## Historique
+
+### 2026-11-24 — migration de contenu jouée en prod
+
+Test `migrations-contenu-publie` rouge sans la migration (4 échecs, tous sur elle), vert avec
+(117). `security-auditor` (Opus) : aucun finding bloquant (seuls variations / test_specs /
+description des 3 ids ; md5 du contenu attendu = prod ; variations ajoutées en fin, indices des
+réponses intacts). `migration list --linked` : seule en attente. `db:migrate` le 2026-11-24.
 
 ### 2026-11-24 — rendu vérifié à l'écran
 
