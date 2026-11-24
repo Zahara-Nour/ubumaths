@@ -14,7 +14,7 @@ _Mis à jour le 2026-11-24, correctif écrit, PR à ouvrir._
 
 ### 2026-11-24 : défaut trouvé et corrigé
 
-- Trouvé par le chantier `idees-tle-probas` (journal `docs/wip/idees-tle-probas-progress.md`) : dans un
+- Trouvé par le chantier `idees-tle-probas` (journal `docs/archive/wip/idees-tle-probas/idees-tle-probas-progress.md`) : dans un
   modèle qui a l'option `shared.cleanCoefficients`, `$P_A(G)=0{,}7$` s'affichait « P_A G = 0,7 ».
 - Cause : `withoutAtomicParentheses` (`src/lib/questions/clean-coefficients.ts`) garde la parenthèse
   de la notation fonctionnelle quand le facteur qui la précède est une `variable` ou une `function`,
