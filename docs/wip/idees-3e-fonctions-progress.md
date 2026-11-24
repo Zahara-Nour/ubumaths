@@ -121,6 +121,8 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
   d'accès. `migration-contenu.ts` : 3 modèles migrés, description seule (+0 variation). Test
   `migrations-contenu-publie` vert avec (137), rouge avec la migration vidée (5 échecs, tous sur
   elle).
+- `security-auditor` (Opus) : aucun finding bloquant ; seule la description change (variations et
+  specs égales en jsonb), garde = md5 de la prod, rollback rend l'ancien contenu, aucun accès.
 
 ### 2026-11-24 — rangement des 3 neufs joué en prod (#3095)
 
