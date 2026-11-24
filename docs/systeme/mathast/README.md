@@ -1880,10 +1880,14 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   - `toCustom` écrit `(1/2)^xe^x`, illisible en syntaxe maison.
 - Solveur du second degré à paramètre (relevé le 2026-10-26, revue de #1797, visible aussi au
   degré 3 par `x(ax² + bx + c) = 0`) : `x² − ab = 0` rendait `±√a·√b` si `4ab ≥ 0` (faux pour
-  a, b < 0) — corrigé (V92, 2026-11-24) : un discriminant monôme à au moins deux lettres de
-  puissance impaire garde sa racine entière (`±√(ab)` si `ab ⩾ 0`, `x² − 4ab` → `±2√(ab)`,
-  `x² − abc` → `±√(abc)`, `x⁴ − ab` déjà `±⁴√(ab)`), les carrés seuls sortent
-  (`x² − a²b` → `±|a|√b`) ; `ax² − 1 = 0` → condition `a ≥ 0` au lieu de `a > 0` ; conditions non
+  a, b < 0) — corrigé (V92, 2026-11-24) : un discriminant monôme (coefficient positif, constantes
+  π, e comprises) à au moins deux lettres de puissance impaire, ou à une avec des carrés, garde
+  ses lettres impaires sous une seule racine (`±√(ab)` si `ab ⩾ 0`, `x² − 4ab` → `±2√(ab)`,
+  `x² − πab` → `±√π√(ab)`, `x² − abc` → `±√(abc)`, `x⁴ − ab` déjà `±⁴√(ab)`) ; les carrés et le
+  coefficient sortent, et la condition est celle de la racine écrite (`x² − a²b` → `±|a|√b` si
+  `b ⩾ 0`, `x² − a²bc` → si `bc ⩾ 0` : la solution 0 pour a = 0, bc < 0 n'est pas dite).
+  Filet : un discriminant non lu dont la forme canonique écrirait deux racines de lettres garde
+  `√Δ` entière ; `ax² − 1 = 0` → condition `a ≥ 0` au lieu de `a > 0` ; conditions non
   réduites (`4α ≥ 0`, `4a + 4b ≥ 0`), racines peu lisibles (`½√(−4a)`) ; une condition réduite à
   un point écrite `0 ≤ a ≤ 0`, ses racines gardées : `x³ + a²x = 0` → 0, puis deux racines nulles
   si a = 0 (redondant, pas faux) ; étapes détaillées en double, coefficient « a » homonyme du
@@ -1939,7 +1943,10 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
     k ≠ π/2 + nπ, n ∈ ℤ ») ; sans condition quand la valeur existe pour tout k ou quand
     l'expression tapée n'existe pas aux valeurs exclues (`x/k` en 1) ; refus quand la condition
     ne s'écrit pas (plusieurs lettres : `\frac{1}{x+a+b}` en 0) ou quand le moteur, k remplacé
-    par des valeurs d'essai, trouve une autre limite. Les refus qui valent la même chose pour
+    par des valeurs d'essai (k = 0 compris), trouve une autre valeur, un autre infini ou « pas de
+    limite » — infinis compris. En un point fini, chaque terme pris au point compte aussi
+    (`\frac{x}{x^2+k}` en 0 → « 0, pour k ≠ 0 », `\frac{1}{x}-\frac{1}{x^2+k}` en 0⁺ → « +∞, pour
+    k ≠ 0 »). Les refus qui valent la même chose pour
     tout k sont rattrapés terme à terme, au-dessus du moteur (`x^2+kx`, `x+kx^2`, `x\ln x+kx`
     en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞) ; `\frac{x}{kx+x^2}` en 0⁺ reste refusé (1/k, pour
     k ≠ 0, demanderait le moteur). Le « zéro de côté inconnu » dans `normalizeExtended` n'est

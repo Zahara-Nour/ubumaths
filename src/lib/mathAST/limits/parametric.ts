@@ -23,7 +23,7 @@ import type { Domain, PeriodicExclusion } from '../domain/types';
 import { LimitError } from './types';
 import { evaluateLimit } from './evaluate';
 import { computeDomain } from '../domain/compute';
-import { containsValue, isEmpty } from '../domain/algebra';
+import { containsValue, intersect, isEmpty } from '../domain/algebra';
 import { parameterCondition } from '../solve/literal-parameter';
 import { getVariables, substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -214,10 +214,13 @@ export function limitForEveryParameter(
  * `null` : on ne sait pas l'écrire (plusieurs lettres, condition introuvable),
  * ou la vérification aux valeurs d'essai la contredit — l'appelant refuse.
  *
- * - une limite infinie : aucune condition (le moteur refuse déjà ce qui
- *   dépend du signe d'une lettre) ;
- * - sinon, la valeur doit exister : `1/k` → k ≠ 0, `ln k` → k > 0,
+ * - la valeur, si elle est finie, doit exister : `1/k` → k ≠ 0, `ln k` → k > 0,
  *   `tan k` → k ≠ π/2 + nπ ;
+ * - en un point fini, chaque terme pris au point doit exister quand il existe
+ *   pour certaines valeurs de k : `x/(x² + k)` en 0 → 0/k, d'où k ≠ 0 ;
+ *   `1/x − 1/(x² + k)` en 0⁺ → 1/k (1/0 n'existe pour aucun k : ignoré) ;
+ * - toute réponse, infinie comprise, est vérifiée aux valeurs d'essai admises
+ *   (k = 0 compris quand rien ne l'exclut) ;
  * - une valeur exclue où l'expression tapée n'existe déjà pas ne se redit pas
  *   (`x/k` en 1 → 1/k, sans « k ≠ 0 »).
  */
@@ -228,46 +231,91 @@ export function limitParameterCondition(
 	direction: LimitDirection,
 	value: MathNode
 ): LimitParameterCondition | null {
-	if (isInfinity(value)) return { kind: 'always' };
-	const letters = limitParameters(value, variable);
-	const written = valueCondition(value, letters);
+	const definedFor = [
+		...(isInfinity(value) ? [] : [value]),
+		...termsAtPoint(expr, variable, approach)
+	];
+	const letters = [...new Set(definedFor.flatMap((node) => [...getVariables(node)]))].sort();
+	const written = definedCondition(definedFor, letters);
 	if (written === null) return null;
+	const { domain } = written;
 	const accepts = (assignment: Record<string, number>): boolean =>
-		written.domain === null || containsValue(written.domain, assignment[letters[0]]);
-	if (!agreesOnSamples(expr, variable, approach, direction, value, accepts)) return null;
+		domain === null || containsValue(domain, assignment[letters[0]]);
+	if (!limitAgreesOnSamples(expr, variable, approach, direction, value, accepts)) return null;
 	if (written.condition.kind === 'always') return written.condition;
-	if (
-		written.domain !== null &&
-		excludedOnlyWhereUndefined(expr, variable, letters[0], written.domain)
-	) {
+	if (domain !== null && excludedOnlyWhereUndefined(expr, variable, letters[0], domain)) {
 		return { kind: 'always' };
 	}
 	return written.condition;
 }
 
 /**
- * La condition d'existence de la valeur, écrite, et l'ensemble des valeurs
- * admises pour sa lettre (`null` : aucune lettre restreinte).
+ * Les termes de `expr` pris au point (fini) qui contiennent une lettre et
+ * existent pour au moins une de ses valeurs : `1/(x + k) + 1/(x − k)` en 0 →
+ * 1/k, 1/(−k) ; `1/x` en 0 (1/0) n'en est pas. Aucun en un point infini.
  */
-function valueCondition(
-	value: MathNode,
+function termsAtPoint(expr: MathNode, variable: string, approach: MathNode): MathNode[] {
+	if (isInfinity(approach)) return [];
+	const body = isDelimiter(expr) ? expr.content : expr;
+	return flattenSumShallow(body)
+		.map(({ term }) => substitute(term, { [variable]: approach }))
+		.filter((term) => {
+			const letters = [...getVariables(term)];
+			return (
+				letters.length > 0 &&
+				letters.every((letter) => !isEmpty(computeDomain(term, letter).domain))
+			);
+		});
+}
+
+/**
+ * La condition sous laquelle chaque expression de `definedFor` existe, écrite,
+ * et l'ensemble des valeurs admises pour la lettre (`null` : aucune
+ * restriction). `null` quand on ne sait pas l'écrire.
+ */
+function definedCondition(
+	definedFor: readonly MathNode[],
 	letters: readonly string[]
 ): { readonly condition: LimitParameterCondition; readonly domain: Domain | null } | null {
 	if (letters.length === 0) return { condition: { kind: 'always' }, domain: null };
-	const condition = parameterCondition([], [value]);
+	const condition = parameterCondition([], definedFor);
 	if (condition?.kind === 'always') return { condition, domain: null };
 	if (letters.length !== 1) return null;
 	const [letter] = letters;
-	const definition = computeDomain(value, letter);
-	if (definition.unresolved !== undefined && definition.unresolved.length > 0) return null;
-	const { domain } = definition;
+	const domain = admittedValues(definedFor, letter);
+	if (domain === null) return null;
 	if (condition?.kind === 'when') {
 		return { condition: writtenCondition(condition.node), domain };
 	}
 	if (condition === null && domain.kind === 'periodic_exclusion') {
-		return { condition: periodicCondition(letter, domain, value), domain };
+		const used = new Set(definedFor.flatMap((node) => [...getVariables(node)]));
+		return { condition: periodicCondition(letter, domain, used), domain };
 	}
 	return null;
+}
+
+/**
+ * Les valeurs de la lettre pour lesquelles chaque expression existe ; `null`
+ * pour une contrainte non résolue, ou une famille périodique avec une autre
+ * restriction (que `intersect` ne sait pas réunir).
+ */
+function admittedValues(definedFor: readonly MathNode[], letter: string): Domain | null {
+	const domains: Domain[] = [];
+	for (const node of definedFor) {
+		const definition = computeDomain(node, letter);
+		if (definition.unresolved !== undefined && definition.unresolved.length > 0) return null;
+		const { domain } = definition;
+		// La même famille une seule fois (tan k : la valeur et le terme au point)
+		if (domain.kind === 'universal' || domains.some((known) => samePeriodicFamily(known, domain))) {
+			continue;
+		}
+		domains.push(domain);
+	}
+	if (domains.length === 0) return { kind: 'universal' };
+	if (domains.length > 1 && domains.some((domain) => domain.kind === 'periodic_exclusion')) {
+		return null;
+	}
+	return domains.reduce((all, domain) => intersect(all, domain));
 }
 
 /** Une condition écrite. */
@@ -316,9 +364,8 @@ function plainText(node: MathNode): string {
 function periodicCondition(
 	letter: string,
 	domain: PeriodicExclusion,
-	value: MathNode
+	used: ReadonlySet<string>
 ): WrittenCondition {
-	const used = getVariables(value);
 	const integer = INTEGER_LETTERS.find((name) => name !== letter && !used.has(name)) ?? 'n';
 	const member = add(domain.basePoint, implicitMultiply(variableNode(integer), domain.period));
 	const written = writtenCondition(relation('!=', variableNode(letter), member));
@@ -329,12 +376,23 @@ function periodicCondition(
 	};
 }
 
+/** Deux exclusions périodiques de même base et même période (valeurs décimales). */
+function samePeriodicFamily(a: Domain, b: Domain): boolean {
+	if (a.kind !== 'periodic_exclusion' || b.kind !== 'periodic_exclusion') return false;
+	const values = [a.basePoint, b.basePoint, a.period, b.period].map(numericValue);
+	if (values.some((v) => v === null)) return false;
+	const [baseA, baseB, periodA, periodB] = values as number[];
+	return Math.abs(baseA - baseB) < 1e-12 && Math.abs(periodA - periodB) < 1e-12;
+}
+
 /**
  * La limite trouvée est-elle celle que le moteur calcule, les lettres
- * remplacées par des valeurs d'essai admises ? Un essai que le moteur ne
- * conclut pas ne compte pas ; une valeur différente fait refuser.
+ * remplacées par des valeurs d'essai admises (`accepts`) ? Un essai que le
+ * moteur refuse (erreur, « je ne sais pas ») ne compte pas ; « pas de
+ * limite », une autre valeur, un autre infini ou une valeur finie pour une
+ * réponse infinie font refuser.
  */
-function agreesOnSamples(
+export function limitAgreesOnSamples(
 	expr: MathNode,
 	variable: string,
 	approach: MathNode,
@@ -350,14 +408,20 @@ function agreesOnSamples(
 			assignment[letter] = SAMPLE_VALUES[(i + 3 * j) % SAMPLE_VALUES.length];
 		});
 		if (!accepts(assignment)) continue;
+		const result = limitOf(substitute(expr, assignment), variable, approach, direction);
+		if (result === null) continue;
+		if (result.status === 'does-not-exist') return false;
+		const computed = concludedValue(result);
+		if (computed === null) continue;
+		if (isInfinity(value) || isInfinity(computed)) {
+			if (!isInfinity(value) || !isInfinity(computed) || value.sign !== computed.sign) {
+				return false;
+			}
+			continue;
+		}
 		const expected = numericValue(substitute(value, assignment));
-		const computed = concludedValue(
-			limitOf(substitute(expr, assignment), variable, approach, direction)
-		);
-		if (computed === null || expected === null) continue;
-		if (isInfinity(computed)) return false;
 		const actual = numericValue(computed);
-		if (actual === null) continue;
+		if (expected === null || actual === null) continue;
 		if (Math.abs(actual - expected) > 1e-9 * Math.max(1, Math.abs(expected))) return false;
 	}
 	return true;

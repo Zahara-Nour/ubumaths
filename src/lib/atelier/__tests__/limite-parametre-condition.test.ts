@@ -122,3 +122,30 @@ describe('V103 — toujours refusées', () => {
 		expect(textOf(result)).toMatch(/^Je ne sais pas calculer cette limite/);
 	});
 });
+
+describe('V103 — revue : k = 0 change la limite', () => {
+	// Rendaient 0 et +∞ sans condition : faux pour k = 0 (pas de limite, −∞)
+	it.each([
+		['\\frac{x}{x^2+k} en 0', `\\lim\\limits_{x\\to 0} \\dfrac{x}{x^2 + k} = 0${FOR}k \\neq 0`],
+		[
+			'\\frac{1}{x+k}+\\frac{1}{x-k} en 0',
+			`\\lim\\limits_{x\\to 0} \\left(\\dfrac{1}{x + k} + \\dfrac{1}{x - k}\\right) = 0${FOR}k \\neq 0`
+		],
+		[
+			'\\frac{1}{x}-\\frac{1}{x^2+k} en 0+',
+			`\\lim\\limits_{x\\to 0^+} \\left(\\dfrac{1}{x} - \\dfrac{1}{x^2 + k}\\right) = +\\infty${FOR}k \\neq 0`
+		],
+		[
+			'\\frac{1}{x}-\\frac{1}{x^2+k^2} en 0+',
+			`\\lim\\limits_{x\\to 0^+} \\left(\\dfrac{1}{x} - \\dfrac{1}{x^2 + k^2}\\right) = +\\infty${FOR}k \\neq 0`
+		]
+	])('.limite %s', (typed, expected) => {
+		expect(latexOf(run(`.limite ${typed}`))).toBe(expected);
+	});
+
+	it('(k² + 1)/x en 0+ reste +∞ sans condition', () => {
+		expect(latexOf(run('.limite \\frac{k^2+1}{x} en 0+'))).toBe(
+			'\\lim\\limits_{x\\to 0^+} \\dfrac{k^2 + 1}{x} = +\\infty'
+		);
+	});
+});

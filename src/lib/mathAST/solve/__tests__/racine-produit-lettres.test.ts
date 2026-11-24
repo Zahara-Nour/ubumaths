@@ -55,6 +55,45 @@ describe('V92 — la racine d’un produit de lettres n’est pas découpée', (
 	});
 });
 
+describe('V92 — revue : constante dans le coefficient, lettres au carré', () => {
+	// Une constante (π, e) faisait retomber sur √π √a √b « si 4πab ⩾ 0 »
+	it.each([
+		['x^2-\\pi ab=0', '\\sqrt{\\pi} \\sqrt{a b}'],
+		['x^2-eab=0', '\\sqrt{\\exponentialE} \\sqrt{a b}'],
+		['x^2-2\\pi ab=0', '\\sqrt{2} \\sqrt{\\pi} \\sqrt{a b}']
+	])('%s : ±%s si ab ⩾ 0', (equation, root) => {
+		expect(latexOf(run(`.résoudre ${equation}`))).toBe(
+			`S = \\left\\{ ${root} \\,;\\, -${root} \\right\\} \\quad \\text{si } a b \\geqslant 0`
+		);
+	});
+
+	// La condition est celle sous laquelle la racine ÉCRITE existe : avec
+	// « 4a²bc ⩾ 0 », a = 0, b = 1, c = −1 la vérifiait et √(bc) n'existe pas
+	it('x² − a²bc = 0 : ±|a|√(bc) si bc ⩾ 0', () => {
+		const latex = latexOf(run('.résoudre x^2-a^2bc=0'));
+
+		expect(latex).toContain('\\sqrt{b c}');
+		expect(latex).toContain('\\left| a \\right|');
+		expect(latex.endsWith('\\quad \\text{si } b c \\geqslant 0')).toBe(true);
+	});
+
+	it('x² − ab²c = 0 : ±|b|√(ac) si ac ⩾ 0', () => {
+		const latex = latexOf(run('.résoudre x^2-ab^2c=0'));
+
+		expect(latex).toContain('\\sqrt{a c}');
+		expect(latex).toContain('\\left| b \\right|');
+		expect(latex.endsWith('\\quad \\text{si } a c \\geqslant 0')).toBe(true);
+	});
+
+	it('x² − a²b = 0 : ±|a|√b si b ⩾ 0', () => {
+		const latex = latexOf(run('.résoudre x^2-a^2b=0'));
+
+		expect(latex).toContain('\\sqrt{b}');
+		expect(latex).toContain('\\left| a \\right|');
+		expect(latex.endsWith('\\quad \\text{si } b \\geqslant 0')).toBe(true);
+	});
+});
+
 describe('V92 — inchangés', () => {
 	it('x² − a = 0 : ±√a si a ⩾ 0', () => {
 		expect(latexOf(run('.résoudre x^2-a=0'))).toBe(
