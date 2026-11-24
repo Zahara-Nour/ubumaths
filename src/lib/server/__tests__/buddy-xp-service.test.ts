@@ -505,4 +505,36 @@ describe('plafond du jour — `daily_cap_reached` rendu même quand le calcul lo
 		expect(result?.xpResult.xp_gained).toBe(5);
 		expect(result?.xpResult.daily_cap_reached).toBe(true);
 	});
+
+	it('séance tronquée par la base seule (envoi simultané) : plafond annoncé', async () => {
+		addBuddyXp.mockImplementation(async () => ({ ...gain(5), daily_cap_reached: true }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.xp_gained).toBe(5);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
+
+	it('séance entière, +30 de la semaine tenue tronqués par la base : plafond annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ last_activity_date: '2000-01-01' }));
+		recordWorkedDay.mockResolvedValue(counted(true, 3, 3));
+		addBuddyXp
+			.mockImplementationOnce(async (_id, xp) => gain(xp))
+			.mockImplementationOnce(async () => ({ ...gain(10), daily_cap_reached: true }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct + XP_SOURCES.first_of_day + 10);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
+
+	it('séance au plafond, une seule réponse fausse (3 pansées tronquées) : plafond annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 100 }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: false }]);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
+
+	it('énigme, plafond déjà atteint : 0 demandé à la base, plafond annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 100 }));
+		const result = await addBuddyXpFromExercise(supabase, STUDENT, { isCorrect: false });
+		expect(addBuddyXp.mock.calls[0][1]).toBe(0);
+		expect(result?.xpResult.xp_gained).toBe(0);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
 });
