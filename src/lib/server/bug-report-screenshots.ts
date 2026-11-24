@@ -80,3 +80,63 @@ export async function signBugReportScreenshot<T extends SignableReport>(
 	await signBugReportScreenshots(supabase, [report], expiresIn);
 	return report;
 }
+
+/** Ce qu'est devenue la suppression d'un rapport de bug. */
+export type BugReportDeletion = 'deleted' | 'not_found' | 'screenshot_failed' | 'delete_failed';
+
+/**
+ * Supprime un rapport de bug ET sa capture d'écran.
+ *
+ * La capture part du stockage AVANT la ligne : dans l'autre ordre, un échec du
+ * stockage laisserait une capture d'élève sans plus aucune ligne qui la nomme.
+ * Si la capture ne peut pas être effacée, la ligne est gardée et l'appelant le
+ * dit (`screenshot_failed`).
+ *
+ * ⚠️ Une suppression refusée par la RLS touche zéro ligne sans erreur : la
+ * ligne supprimée est relue (`.select('id')`) avant d'annoncer `deleted`
+ * (cf. docs/pratiques/rls-echecs-silencieux.md).
+ */
+export async function deleteBugReportWithScreenshot(
+	supabase: SupabaseClient<Database>,
+	reportId: string
+): Promise<BugReportDeletion> {
+	const { data: report, error: readError } = await supabase
+		.from('bug_reports')
+		.select('id, screenshot_path')
+		.eq('id', reportId)
+		.maybeSingle();
+
+	if (readError) {
+		logger.error('[bug-report-screenshots] Lecture du rapport avant suppression :', readError);
+		return 'delete_failed';
+	}
+	if (!report) return 'not_found';
+
+	if (report.screenshot_path) {
+		const { error: removeError } = await supabase.storage
+			.from(BUCKET_NAME)
+			.remove([report.screenshot_path]);
+
+		if (removeError) {
+			logger.error(
+				`[bug-report-screenshots] Capture du rapport ${reportId} non effacée :`,
+				removeError.message
+			);
+			return 'screenshot_failed';
+		}
+	}
+
+	const { data: deletedRows, error: deleteError } = await supabase
+		.from('bug_reports')
+		.delete()
+		.eq('id', reportId)
+		.select('id');
+
+	if (deleteError) {
+		logger.error('[bug-report-screenshots] Suppression du rapport :', deleteError);
+		return 'delete_failed';
+	}
+	if (!deletedRows || deletedRows.length === 0) return 'not_found';
+
+	return 'deleted';
+}

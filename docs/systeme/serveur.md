@@ -54,7 +54,7 @@ Règle et exemple : [qualite.md § Input Validation with Zod](../pratiques/quali
 
 - `src/lib/server/validation/common.ts` — `uuidSchema`, `paginationSchema`, `roleSchema`, `validateRequest`, `validateFormData`, `formDataTransforms` (actions).
 - `src/lib/server/validation/params.ts` — paramètres d'URL : `validateUuidParam`, `validateUuidParams`, `validateSlugParam`, `validateIntParam`, `validateEnumParam` (34 endpoints).
-- `src/lib/server/validation/response-utils.ts` — valider aussi ce qu'on **renvoie** : `validateResponse`, `createPaginatedResponseSchema`. ⚠️ un schéma de réponse nomme les colonnes : il casse si une colonne est supprimée (cf. CLAUDE.md § Migrations).
+- `src/lib/server/validation/response-utils.ts` — valider aussi ce qu'on **renvoie** : `validateResponse`, `createPaginatedResponseSchema`. ⚠️ un schéma de réponse nomme les colonnes : il casse si une colonne est supprimée (cf. CLAUDE.md § Migrations). Une réponse refusée ne journalise que les champs fautifs (chemin, code, message), jamais son contenu.
 
 `safeParse` apparaît dans 295 endpoints sur 380. Le marché garde ses propres schémas dans `src/lib/server/marketplace/validation.ts`.
 

@@ -22,7 +22,8 @@
 	import ModerationLogsTable from '#lib/components/moderation/ModerationLogsTable.svelte';
 	import MessageReportsTable from '#lib/components/moderation/MessageReportsTable.svelte';
 	import RestrictUserDialog from '#lib/components/moderation/RestrictUserDialog.svelte';
-	import { ShieldAlert, Flag, UserX } from '@lucide/svelte';
+	import * as Alert from '#lib/components/ui/alert/index.ts';
+	import { ShieldAlert, Flag, UserX, TriangleAlert } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	// Page Props
@@ -83,7 +84,7 @@
 			<Tabs.Trigger value="reports" class="relative">
 				<Flag class="mr-2 h-4 w-4" />
 				Signalements
-				{#if data.pendingReportsCount > 0}
+				{#if data.pendingReportsCount !== null && data.pendingReportsCount > 0}
 					<Badge variant="destructive" class="ml-2 h-5 min-w-5 px-1.5 text-xs">
 						{data.pendingReportsCount}
 					</Badge>
@@ -101,7 +102,25 @@
 					Messages signalés par les utilisateurs comme inappropriés.
 				</p>
 			</div>
-			<MessageReportsTable reports={data.reports} onReview={handleReportReview} />
+			{#if data.reportsLoadFailed}
+				<Alert.Root variant="destructive" role="alert">
+					<TriangleAlert />
+					<Alert.Title>Les signalements n'ont pas pu être chargés</Alert.Title>
+					<Alert.Description>
+						Des signalements peuvent attendre. Rechargez la page ; si le problème continue, prévenez
+						l'administrateur.
+					</Alert.Description>
+				</Alert.Root>
+			{:else}
+				{#if data.pendingReportsCount === null}
+					<Alert.Root variant="destructive" role="alert">
+						<TriangleAlert />
+						<Alert.Title>Le nombre de signalements en attente n'a pas pu être calculé</Alert.Title>
+						<Alert.Description>La liste ci-dessous reste à jour.</Alert.Description>
+					</Alert.Root>
+				{/if}
+				<MessageReportsTable reports={data.reports} onReview={handleReportReview} />
+			{/if}
 		</Tabs.Content>
 
 		<!-- Restrictions Tab -->
