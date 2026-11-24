@@ -6,13 +6,13 @@ status: phase 0 validée ; correction en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, à l'ouverture du chantier._
+_Mis à jour le 2026-11-24, à l'ouverture de la PR._
 
-- **État** : phase 0 validée par David (« je suis tes recos », 2026-11-24). Worktree créé, rien de corrigé.
-- **Prochaine action** : cas frères ajoutés aux tests de preuve (rouges), correction par `mathast-expert`, revue `code-reviewer` en Opus, une seule PR.
+- **État** : V85, V92 et V103 corrigés, cas frères compris ; revue `code-reviewer` (Opus) faite, ses réponses fausses corrigées (π et e sous la racine, condition de la racine écrite, limites essayées pour chaque valeur de k) ; rendu vu à l'écran (`e2e/verifs/atelier-valeurs-fausses.spec.ts`, capture de « 1/k, pour k ≠ 0 »). PR ouverte.
+- **Prochaine action** : après le merge, sur `main` : clore V85, V92, V103 au registre ; y ajouter l'écart « deux familles » (ci-dessous) et les restes de la revue ; mettre à jour « Reprendre ici » de `ecarts-a-trier` ; archiver ce journal.
 - **En attente de David** : rien.
-- **Pièges en cours** : sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math` ; les tests de `tests/ecarts/` ne tournent qu'avec `ECARTS_PREUVES=1 pnpm exec vitest run --project=ecarts` ; à la correction, le test de preuve quitte `tests/ecarts/` pour un test ordinaire à côté du code ; le registre (`docs/ecarts/registre.md`) se met à jour sur `main` après le merge.
-- **Worktree / branche** : `ubumaths-wt-ecarts-valeurs-fausses` · `fix/ecarts-valeurs-fausses`.
+- **Pièges en cours** : `pnpm test:verifs` lancé sans serveur reste accroché après les tests : lancer `pnpm dev --port 5176 --strictPort` d'abord ; sondes par le chemin de l'Atelier (`runInput`), jamais `pnpm math`.
+- **Worktree / branche** : `ubumaths-wt-ecarts-valeurs-fausses` · `fix/ecarts-valeurs-fausses` (retirés au merge).
 
 ---
 
@@ -64,3 +64,20 @@ Une seule PR, cas frères compris. Code : `mathast-expert`. Revue : `code-review
 - `.domaine 1/(sin x cos x)` → ℝ ∖ {kπ} ; `1/(sin x cos 2x)` → ℝ ∖ {kπ} ; `1/sin(2x)` → ℝ ∖ {kπ/2} ; `1/sin x + 1/cos x`, `1/(sin x tan x)`, `tan x / sin x` → refus.
 - `.résoudre x²−ab=0` → ±√a√b si 4ab ⩾ 0 ; `x²−4ab=0` → ±2√a√b si 16ab ⩾ 0 ; `x²−abc=0` → ±√a√b√c si 4abc ⩾ 0 ; `x²−a²b=0` → ±√b|a| si 4a²b ⩾ 0 ; `x²−a/b=0` → ±√(4a/b)/2 si 4a/b ⩾ 0.
 - `.limite` : `1/(x²+k)` en 0 → 1/k ; `1/(x+k)` en 0 → 1/k ; `ln(x+k)` en 0⁺ → ln k ; `ln(x²+k)` en 0 → ln k ; `√(x+k)` en 0⁺ → √k ; `tan(x+k)` en 0 → tan k ; `x²+kx`, `x ln x+kx`, `(k²+1)/x` en 0⁺ et `e^{kx}` en +∞ → refus « peut dépendre du signe de k ».
+
+## Décision du 2026-11-24 : deux familles de valeurs interdites
+
+David (« je te suis ») : la PR livre le **refus** pour `1/(sin x cos 2x)` (deux familles) et `1/((x − 1) cos x)` (une famille plus un point), au lieu de l'écriture demandée en phase 0. Le moteur ne note qu'une famille (`PeriodicExclusion`), lue par une trentaine de modules : l'étendre est un chantier à part, avec sa phase 0. À entrer au registre comme lacune (plus une valeur fausse).
+
+## Revue (code-reviewer, Opus) et suites
+
+Corrigés dans la PR : `x² − πab = 0` (π, e dans le coefficient) ; `x² − a²bc = 0` (condition bc ⩾ 0) ; `x/(x² + k)` en 0 et `1/x − 1/(x² + k)` en 0⁺ (« pour k ≠ 0 ») ; un essai « pas de limite » ou d'un autre infini fait refuser.
+
+Restes, justes mais à entrer au registre :
+
+- `x² − a²bc = 0` avec a = 0 et bc < 0 : la solution 0 n'est pas annoncée (réponse incomplète).
+- Valeur non simplifiée : `(x + k)/(x² + k)` en 0 → « k/k, pour k ≠ 0 ».
+- `1/((x − π) sin x)` refusé alors que π est déjà un kπ.
+- `x ln x + kx` en 0 (sans côté tapé) s'écrit x → 0 au lieu de 0⁺.
+- Même lacune « première famille gardée » dans `intersect` / `union` de `domain/algebra.ts` (autres appelants) ; `normalize` découpe encore √(ab) hors du solveur du second degré.
+- Refus à lever : `1/sin x + 1/cos x`, `tan x / sin x`, `x/(kx + x²)` en 0⁺.

@@ -56,7 +56,8 @@ describe('V85 — chaque facteur trigonométrique du dénominateur compte', () =
 
 	it('1/(sin x cos(2x)) : jamais ℝ privé des seuls kπ', () => {
 		// Deux familles (kπ et π/4 + kπ/2) qui ne se rangent pas en une seule :
-		// en attendant leur écriture (question à David), le refus honnête.
+		// le moteur ne sait noter qu'une famille, donc refus honnête (décision du
+		// 2026-11-24 : l'écriture de deux familles est un écart à part).
 		const result = run('.domaine \\frac{1}{\\sin x\\cos(2x)}');
 
 		expect(messageOf(result)).toBe(REFUSAL);
