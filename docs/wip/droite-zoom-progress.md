@@ -6,17 +6,16 @@ d'outil. Ligne n° 54 de [outils-manquants.md](outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, brouillon en prod, PR 2 ouverte._
+_Mis à jour le 2026-11-24, après #3071 et son `db:migrate`._
 
-- **État** : PR 1 (outil) MERGÉE (#3052) ; PR 2 ouverte : brouillon 6dba93c8 en prod (David), migration
-  de rangement `20261124070206_…_rangement_tags.sql` (nœud « droite graduée », point 6-108), test
-  d'intégration vert avec, rouge sans · **Prochaine action** : CI verte → merge (`pnpm pr:merger`),
-  `db:migrate` (vérifier `migration list --linked` : aucune autre en attente), relecture par David dans
-  `/dev/modeles?point=6-108`, verdicts, `publier-lot.ts` ; puis outil n° 53 (labyrinthe), phase 0 ·
-  **En attente de David** : relecture après `db:migrate` ; renommer N5 (c178356b) · **Pièges en
-  cours** : relancer `droite-zoom-modeles.py` efface l'id écrit en tête du JSON (le remettre :
-  6dba93c8-b8e6-4888-843b-ac9f821c4a7e) · **Worktree / branche** : `ubumaths-wt-droite-zoom-modeles`,
-  `feat/droite-zoom-modeles`.
+- **État** : PR 1 (outil, #3052) et PR 2 (modèle, #3071) MERGÉES ; modèle 6dba93c8 « Lire une abscisse
+  grâce à des zooms » en brouillon en prod, rangé (nœud « droite graduée », point 6-108, `db:migrate`
+  fait) · **Prochaine action** : lire les verdicts de David (`question_template_reviews`, après le
+  2026-11-24), corriger, `publier-lot.ts --dir scripts/questions/droite-zoom-modeles` en simulation,
+  David publie ; puis outil n° 53 (labyrinthe), phase 0 d'abord · **En attente de David** : relecture
+  dans `/dev/modeles?point=6-108` ; renommer N5 (c178356b) · **Pièges en cours** : relancer
+  `droite-zoom-modeles.py` efface l'id du JSON (6dba93c8-b8e6-4888-843b-ac9f821c4a7e) · **Worktree /
+  branche** : aucun (un neuf pour les corrections).
 
 ## Phase 0 (2026-11-23, validée par David : « je suis tes recos »)
 
@@ -109,3 +108,5 @@ Questions :
 - Zoom en prod depuis la 0.106.0 : pas de déploiement à attendre.
 - 2026-11-24 : brouillon créé en prod par David (6dba93c8) ; migration de rangement générée, test
   d'intégration vert avec la migration et rouge sans (3 échecs, fichier vidé) ; `security-auditor` lancé.
+- 2026-11-24 : #3071 mergée (CI verte, `pnpm pr:merger`) ; `db:migrate` (seule migration en attente),
+  modèle vérifié en prod : brouillon, nœud « droite graduée », tag 6-108.
