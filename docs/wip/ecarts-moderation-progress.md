@@ -1,16 +1,16 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (T20, T25, T27) ouverte ; PR 2 (T21, T22) à faire
+status: PR 1 (T20, T25, T27) prête, push en échec ; PR 2 (T21, T22) à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, à l'ouverture de la PR 1._
+_Mis à jour le 2026-11-24, PR 1 prête mais non poussée._
 
-- **État** : PR 1 ouverte (T20, T25, T27), revues `code-reviewer` + `security-auditor` faites et corrigées, rendu vu à l'écran ; numéro : `gh pr list --head fix/ecarts-moderation`. Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
-- **Prochaine action** : CI verte → `pnpm pr:merger <n>` (aucune migration, rien à jouer en base) ; puis, sur `main` : barrer T20, T25, T27 au registre (la preuve de T25 grepe « storage » dans les deux routes : la remplacer par le grep de `deleteBugReportWithScreenshot` avant `pnpm ecarts rejouer --barrer`), entrer les quatre écarts listés au § « Revues de la PR 1 », mettre à jour le bloc d'`ecarts-a-trier`. Ensuite **PR 2** : T21 (onglet « Messages marqués », option a : seulement les conversations que le prof peut déjà ouvrir) et T22 (liste de mots proposée sur une page à cocher, relue par David, puis migration).
-- **En attente de David** : rien pour la PR 1 ; PR 2 : relecture de la liste de mots (page à cocher à lui envoyer).
+- **État** : PR 1 (T20, T25, T27) commitée sur la branche, revues `code-reviewer` + `security-auditor` faites et corrigées, rendu vu à l'écran, `origin/main` mergé dedans. **Le push a échoué** (`git@github.com: Permission denied (publickey)`, alors que le `fetch` venait de passer) : rien n'est sur GitHub, aucune PR ouverte. Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **Prochaine action** : quand David a rétabli l'accès SSH : `git push -u origin fix/ecarts-moderation`, ouvrir la PR, CI verte → `pnpm pr:merger <n>` (aucune migration) ; puis, sur `main` : barrer T20, T25, T27 au registre (la preuve de T25 grepe « storage » dans les deux routes : la remplacer par le grep de `deleteBugReportWithScreenshot` avant `pnpm ecarts rejouer --barrer`), entrer les quatre écarts listés au § « Revues de la PR 1 », mettre à jour le bloc d'`ecarts-a-trier`. Ensuite **PR 2** : T21 (onglet « Messages marqués », option a : seulement les conversations que le prof peut déjà ouvrir) et T22 (liste de mots proposée sur une page à cocher, relue par David, puis migration).
+- **En attente de David** : l'accès SSH à GitHub (push refusé) ; PR 2 : relecture de la liste de mots (page à cocher à lui envoyer).
 - **Pièges en cours** : T24 hors lot (suspendu avec le tuteur, D21) ; le faux client `createWriteVerdictSupabase` rend `EMPTY` à `maybeSingle` si la table ne donne que `awaited` ; un `catch` large du lot avale un import manquant (« Erreur inattendue ») ; pour voir l'alerte de T20 à l'écran, forcer `reportsLoadFailed: true` le temps de la capture puis restaurer.
 - **Worktree / branche** : `ubumaths-wt-ecarts-moderation` · `fix/ecarts-moderation`.
 
