@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V125 · L121 · M58 · C43 · D44 · T27 · E77
+Derniers numéros : V125 · L121 · M58 · C43 · D44 · T27 · E80
 
 ## Écarts
 
@@ -302,3 +302,6 @@ Derniers numéros : V125 · L121 · M58 · C43 · D44 · T27 · E77
 - L119 · bug latent · mathAST · aucun effet visible connu, `intersect` et `union` de domain/algebra.ts gardent la première de deux familles périodiques pour leurs autres appelants (indice, relation, composition) · preuve : à la main · à faire (test de preuve à écrire, décrit dans docs/wip/ecarts-valeurs-fausses-progress.md)
 - L120 · bug latent · mathAST · aucun effet visible connu, `normalize` découpe √(ab) en √a √b pour des lettres de signe inconnu hors du solveur du second degré · preuve : à la main · à faire (test de preuve à écrire, décrit dans docs/wip/ecarts-valeurs-fausses-progress.md)
 - L121 · bug latent · mathAST · refus à lever : `.domaine 1/sin x + 1/cos x` et `tan x / sin x` (une seule famille kπ/2), `.limite x/(kx + x²) en 0+` (1/k, pour k > 0) · preuve : à la main · à faire (test de preuve à écrire, décrit dans docs/wip/ecarts-valeurs-fausses-progress.md)
+- E78 · vérification à l'écran · exercices · un élève ne peut pas ouvrir un exercice qui lui est assigné directement : /dashboard/student/exercises/<id> répond 404 « Exercice non trouvé » (« Le stand de la fête foraine », Élève 02 de la base locale, trois navigateurs) ; la règle d'accès des élèves (student_has_exercise_access) ne regarde que les exercices posés dans une fiche, jamais exercise_assignments ; ligne #3012 (test.fail dans e2e/verifs/base-locale-paquet9.spec.ts ; vu en local seulement) · preuve : à la main · en attente de David (reco : corriger ; question d'accès à trancher avant toute migration)
+- E79 · vérification à l'écran · suivi du prof · Analytics d'une classe, onglet Surveillance : la liste des signalements répond 500 (GET /api/teacher/classes/<id>/anti-fraud/flags) ; la route demande profiles(first_name, last_name), les colonnes s'appellent firstname et lastname ; ligne #2980 (test.fail dans e2e/verifs/base-locale-paquet9.spec.ts ; vu en local seulement) · preuve : à la main · en attente de David (reco : corriger)
+- E80 · vérification à l'écran · jeux · le premier chargement de /games/2048 rend la page d'erreur « Le serveur a trébuché » (erreur du navigateur : appendChild, « The operation would yield an incorrect node tree ») ; la page s'affiche après « Réessayer » ; vu sur le serveur de dev, Chromium et WebKit, deux élèves ; ligne #3012 (test.fail dans e2e/verifs/base-locale-paquet9.spec.ts ; pas vu en prod, faute de compte) · preuve : à la main · en attente de David (reco : corriger, après avoir vérifié sur un build que ce n'est pas propre au serveur de dev)
