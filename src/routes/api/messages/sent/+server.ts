@@ -19,9 +19,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
+		// Paramètre absent : `get` rend null, que le schéma refuse ; undefined
+		// laisse jouer ses défauts (50 messages, depuis le premier).
 		const validation = sentMessagesQuerySchema.safeParse({
-			limit: url.searchParams.get('limit'),
-			offset: url.searchParams.get('offset')
+			limit: url.searchParams.get('limit') ?? undefined,
+			offset: url.searchParams.get('offset') ?? undefined
 		});
 
 		if (!validation.success) {
