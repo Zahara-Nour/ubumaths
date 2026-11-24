@@ -1,0 +1,450 @@
+{
+	"rangement": {
+		"noeud": "Probabilités > Loi binomiale > expression de la loi",
+		"point": "TSPE-619"
+	},
+	"title": "Loi binomiale : du vocabulaire à P(X ⩽ k)",
+	"description": "Traduire « moins de », « au plus », « au moins », « plus de », « entre … et … (inclus) » en P(X ⩽ …) et calculer avec une table de probabilités cumulées donnée (pièges : décalage d'un rang, « 1 − » oublié ou pris à tort, borne exclue)",
+	"grades": ["T_SPE"],
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un footballeur réussit un tir au but avec la probabilité $0{,}7$. Lors d'un entraînement, il tire $20$ tirs au but, indépendants les uns des autres. On note $X$ le nombre de tirs réussis ; on admet que $X$ suit la loi binomiale $\\mathcal{B}(20\\,;0.7)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $9$ | $0.0171$ |\n| $10$ | $0.048$ |\n| $11$ | $0.1133$ |\n| $12$ | $0.2277$ |\n| $13$ | $0.392$ |\n| $14$ | $0.5836$ |\n| $15$ | $0.7625$ |\n| $16$ | $0.8929$ |\n| $17$ | $0.9645$ |\n\nEn utilisant uniquement cette table, calcule la probabilité que le footballeur réussisse **moins de** ${{k}}$ tirs au but. Donne la valeur obtenue avec la table.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "12..16"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==12|0.1133|{{if:k==13|0.2277|{{if:k==14|0.392|{{if:k==15|0.5836|0.7625}}}}}}}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==12|0.2277|{{if:k==13|0.392|{{if:k==14|0.5836|{{if:k==15|0.7625|0.8929}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:k==12|0.8867|{{if:k==13|0.7723|{{if:k==14|0.608|{{if:k==15|0.4164|0.2375}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{f}}",
+							"message": "« Moins de ${{k}}$ » exclut ${{k}}$ : c'est $X\\leqslant {{eval:k-1}}$, pas $X\\leqslant {{k}}$.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Tu as calculé la probabilité d'en réussir **au moins** ${{k}}$. « Moins de ${{k}}$ », c'est $X\\leqslant {{eval:k-1}}$ : la table le donne directement.",
+							"label": "Contraire pris à tort"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Moins de ${{k}}$ tirs » : $X<{{k}}$, c'est-à-dire $X\\leqslant {{eval:k-1}}$ ($X$ est un entier).",
+					"$P(X<{{k}})=P(X\\leqslant {{eval:k-1}})=\\textcolor{{{color:primary.0}}}{ {{r}} }$ (lu dans la table)."
+				]
+			},
+			"hint": "« Moins de $k$ » : la valeur $k$ est-elle comprise ? Écris l'événement avec $X\\leqslant$."
+		},
+		{
+			"statement": "Chaque graine d'un sachet germe avec la probabilité $0{,}8$, indépendamment des autres. Un jardinier sème $25$ graines. On note $X$ le nombre de graines qui germent ; on admet que $X$ suit la loi binomiale $\\mathcal{B}(25\\,;0.8)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $15$ | $0.0173$ |\n| $16$ | $0.0468$ |\n| $17$ | $0.1091$ |\n| $18$ | $0.22$ |\n| $19$ | $0.3833$ |\n| $20$ | $0.5793$ |\n| $21$ | $0.766$ |\n| $22$ | $0.9018$ |\n| $23$ | $0.9726$ |\n\nEn utilisant uniquement cette table, calcule la probabilité que **au plus** ${{k}}$ graines germent. Donne la valeur obtenue avec la table.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "17..22"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==17|0.1091|{{if:k==18|0.22|{{if:k==19|0.3833|{{if:k==20|0.5793|{{if:k==21|0.766|0.9018}}}}}}}}}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==17|0.0468|{{if:k==18|0.1091|{{if:k==19|0.22|{{if:k==20|0.3833|{{if:k==21|0.5793|0.766}}}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:k==17|0.8909|{{if:k==18|0.78|{{if:k==19|0.6167|{{if:k==20|0.4207|{{if:k==21|0.234|0.0982}}}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{f}}",
+							"message": "« Au plus ${{k}}$ » compte aussi ${{k}}$ : c'est $X\\leqslant {{k}}$, pas $X\\leqslant {{eval:k-1}}$.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "« Au plus ${{k}}$ » veut dire « ${{k}}$ ou moins » : $X\\leqslant {{k}}$, lu directement dans la table, sans passer par le contraire.",
+							"label": "Contraire pris à tort"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Au plus ${{k}}$ graines » : ${{k}}$ ou moins, c'est-à-dire $X\\leqslant {{k}}$.",
+					"$P(X\\leqslant {{k}})=\\textcolor{{{color:primary.0}}}{ {{r}} }$ (lu dans la table)."
+				]
+			},
+			"hint": "« Au plus $k$ » : la valeur $k$ est-elle comprise ? Écris l'événement avec $X\\leqslant$."
+		},
+		{
+			"statement": "Un QCM comporte $30$ questions ; pour chacune, $4$ réponses sont proposées, dont une seule est exacte. Un élève répond au hasard à chaque question. On note $X$ le nombre de bonnes réponses ; on admet que $X$ suit la loi binomiale $\\mathcal{B}(30\\,;0.25)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $4$ | $0.0979$ |\n| $5$ | $0.2026$ |\n| $6$ | $0.3481$ |\n| $7$ | $0.5143$ |\n| $8$ | $0.6736$ |\n| $9$ | $0.8034$ |\n| $10$ | $0.8943$ |\n| $11$ | $0.9493$ |\n| $12$ | $0.9784$ |\n\nEn utilisant uniquement cette table, calcule la probabilité que l'élève donne **au moins** ${{k}}$ bonnes réponses. Donne la valeur obtenue avec la table.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "6..10"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==6|0.2026|{{if:k==7|0.3481|{{if:k==8|0.5143|{{if:k==9|0.6736|0.8034}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==6|0.7974|{{if:k==7|0.6519|{{if:k==8|0.4857|{{if:k==9|0.3264|0.1966}}}}}}}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==6|0.6519|{{if:k==7|0.4857|{{if:k==8|0.3264|{{if:k==9|0.1966|0.1057}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:k==6|0.2026|{{if:k==7|0.3481|{{if:k==8|0.5143|{{if:k==9|0.6736|0.8034}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{f}}",
+							"message": "« Au moins ${{k}}$ » compte ${{k}}$ : son contraire est $X\\leqslant {{eval:k-1}}$, pas $X\\leqslant {{k}}$.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Ce nombre est $P(X\\leqslant {{eval:k-1}})$, la probabilité du **contraire** : $P(X\\geqslant {{k}})=1-P(X\\leqslant {{eval:k-1}})$.",
+							"label": "« 1 − » oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Au moins ${{k}}$ » : $X\\geqslant {{k}}$. La table donne $P(X\\leqslant \\ldots)$ : on passe par le contraire, $X\\leqslant {{eval:k-1}}$.",
+					"$P(X\\geqslant {{k}})=1-P(X\\leqslant {{eval:k-1}})=1-{{c}}=\\textcolor{{{color:primary.0}}}{ {{r}} }$."
+				]
+			},
+			"hint": "La table donne $P(X\\leqslant \\ldots)$. Quel est l'événement contraire de « au moins $k$ » ?"
+		},
+		{
+			"statement": "Dans un magasin, $30\\,\\%$ des clients repartent avec un achat. On choisit au hasard $40$ clients ; leur nombre est assez grand pour assimiler ce choix à des tirages avec remise. On note $X$ le nombre de clients qui repartent avec un achat ; on admet que $X$ suit la loi binomiale $\\mathcal{B}(40\\,;0.3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $8$ | $0.111$ |\n| $9$ | $0.1959$ |\n| $10$ | $0.3087$ |\n| $11$ | $0.4406$ |\n| $12$ | $0.5772$ |\n| $13$ | $0.7032$ |\n| $14$ | $0.8074$ |\n| $15$ | $0.8849$ |\n| $16$ | $0.9367$ |\n\nEn utilisant uniquement cette table, calcule la probabilité que **plus de** ${{k}}$ clients repartent avec un achat. Donne la valeur obtenue avec la table.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "10..15"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==10|0.3087|{{if:k==11|0.4406|{{if:k==12|0.5772|{{if:k==13|0.7032|{{if:k==14|0.8074|0.8849}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==10|0.6913|{{if:k==11|0.5594|{{if:k==12|0.4228|{{if:k==13|0.2968|{{if:k==14|0.1926|0.1151}}}}}}}}}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==10|0.8041|{{if:k==11|0.6913|{{if:k==12|0.5594|{{if:k==13|0.4228|{{if:k==14|0.2968|0.1926}}}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:k==10|0.3087|{{if:k==11|0.4406|{{if:k==12|0.5772|{{if:k==13|0.7032|{{if:k==14|0.8074|0.8849}}}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{f}}",
+							"message": "« Plus de ${{k}}$ » exclut ${{k}}$ : c'est $X>{{k}}$, dont le contraire est $X\\leqslant {{k}}$.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "Ce nombre est $P(X\\leqslant {{k}})$, la probabilité du **contraire** : $P(X>{{k}})=1-P(X\\leqslant {{k}})$.",
+							"label": "« 1 − » oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Plus de ${{k}}$ » : $X>{{k}}$, contraire de $X\\leqslant {{k}}$.",
+					"$P(X>{{k}})=1-P(X\\leqslant {{k}})=1-{{c}}=\\textcolor{{{color:primary.0}}}{ {{r}} }$."
+				]
+			},
+			"hint": "« Plus de $k$ » : la valeur $k$ est-elle comprise ? Quel est l'événement contraire ?"
+		},
+		{
+			"statement": "Une usine fabrique des ampoules, dont $10\\,\\%$ ont un défaut. On prélève au hasard $50$ ampoules ; la production est assez grande pour assimiler ce prélèvement à des tirages avec remise. On note $X$ le nombre d'ampoules qui ont un défaut ; on admet que $X$ suit la loi binomiale $\\mathcal{B}(50\\,;0.1)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $1$ | $0.0338$ |\n| $2$ | $0.1117$ |\n| $3$ | $0.2503$ |\n| $4$ | $0.4312$ |\n| $5$ | $0.6161$ |\n| $6$ | $0.7702$ |\n| $7$ | $0.8779$ |\n| $8$ | $0.9421$ |\n| $9$ | $0.9755$ |\n\nEn utilisant uniquement cette table, calcule la probabilité que le nombre d'ampoules avec un défaut soit **compris entre** ${{a}}$ et ${{b}}$ (inclus). Donne la valeur obtenue avec la table.\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..8"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:c==0|3|{{if:c==1|3|{{if:c==2|3|{{if:c==3|4|{{if:c==4|4|{{if:c==5|4|{{if:c==6|5|{{if:c==7|5|5}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:c==0|7|{{if:c==1|8|{{if:c==2|9|{{if:c==3|7|{{if:c==4|8|{{if:c==5|9|{{if:c==6|7|{{if:c==7|8|9}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "u",
+					"expression": "{{if:c==0|0.8779|{{if:c==1|0.9421|{{if:c==2|0.9755|{{if:c==3|0.8779|{{if:c==4|0.9421|{{if:c==5|0.9755|{{if:c==6|0.8779|{{if:c==7|0.9421|0.9755}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "w",
+					"expression": "{{if:c==0|0.1117|{{if:c==1|0.1117|{{if:c==2|0.1117|{{if:c==3|0.2503|{{if:c==4|0.2503|{{if:c==5|0.2503|{{if:c==6|0.4312|{{if:c==7|0.4312|0.4312}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:c==0|0.7662|{{if:c==1|0.8304|{{if:c==2|0.8638|{{if:c==3|0.6276|{{if:c==4|0.6918|{{if:c==5|0.7252|{{if:c==6|0.4467|{{if:c==7|0.5109|0.5443}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:c==0|0.6276|{{if:c==1|0.6918|{{if:c==2|0.7252|{{if:c==3|0.4467|{{if:c==4|0.5109|{{if:c==5|0.5443|{{if:c==6|0.2618|{{if:c==7|0.326|0.3594}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:c==0|0.6585|{{if:c==1|0.7662|{{if:c==2|0.8304|{{if:c==3|0.5199|{{if:c==4|0.6276|{{if:c==5|0.6918|{{if:c==6|0.339|{{if:c==7|0.4467|0.5109}}}}}}}}}}}}}}}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{f}}",
+							"message": "${{a}}$ est inclus : on retire $P(X\\leqslant {{eval:a-1}})$, pas $P(X\\leqslant {{a}})$, sinon $X={{a}}$ disparaît.",
+							"label": "Borne basse exclue"
+						},
+						{
+							"answer": "{{g}}",
+							"message": "${{b}}$ est inclus : on part de $P(X\\leqslant {{b}})$, pas de $P(X\\leqslant {{eval:b-1}})$.",
+							"label": "Borne haute exclue"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\{ {{a}}\\leqslant X\\leqslant {{b}}\\}$ : on prend $X\\leqslant {{b}}$ et on retire $X\\leqslant {{eval:a-1}}$, pour garder $X={{a}}$.",
+					"$P({{a}}\\leqslant X\\leqslant {{b}})=P(X\\leqslant {{b}})-P(X\\leqslant {{eval:a-1}})={{u}}-{{w}}=\\textcolor{{{color:primary.0}}}{ {{r}} }$."
+				]
+			},
+			"hint": "Écris l'événement comme « $X\\leqslant \\ldots$ » privé de « $X\\leqslant \\ldots$ » : quelles valeurs garder ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "moins de 14 → P(X ⩽ 13)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,392"]
+		},
+		{
+			"description": "moins de 14 : P(X ⩽ 14) lu",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« Moins de $14$ » exclut $14$ : c'est $X\\leqslant 13$, pas $X\\leqslant 14$."
+			},
+			"answers": ["0,5836"]
+		},
+		{
+			"description": "moins de 14 : 1 − P(X ⩽ 13)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,608"]
+		},
+		{
+			"description": "au plus 20 → P(X ⩽ 20)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,5793"]
+		},
+		{
+			"description": "au plus 20 : P(X ⩽ 19)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "20"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« Au plus $20$ » compte aussi $20$ : c'est $X\\leqslant 20$, pas $X\\leqslant 19$."
+			},
+			"answers": ["0,3833"]
+		},
+		{
+			"description": "au plus 20 : 1 − P(X ⩽ 20)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "20"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,4207"]
+		},
+		{
+			"description": "au moins 8 → 1 − P(X ⩽ 7)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,4857"]
+		},
+		{
+			"description": "au moins 8 : 1 − P(X ⩽ 8)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« Au moins $8$ » compte $8$ : son contraire est $X\\leqslant 7$, pas $X\\leqslant 8$."
+			},
+			"answers": ["0,3264"]
+		},
+		{
+			"description": "au moins 8 : P(X ⩽ 7) lu",
+			"variationIndex": 2,
+			"variables": {
+				"k": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,5143"]
+		},
+		{
+			"description": "plus de 12 → 1 − P(X ⩽ 12)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,4228"]
+		},
+		{
+			"description": "plus de 12 : 1 − P(X ⩽ 11)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "« Plus de $12$ » exclut $12$ : c'est $X > 12$, dont le contraire est $X\\leqslant 12$."
+			},
+			"answers": ["0,5594"]
+		},
+		{
+			"description": "plus de 12 : P(X ⩽ 12) lu",
+			"variationIndex": 3,
+			"variables": {
+				"k": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,5772"]
+		},
+		{
+			"description": "entre 4 et 8 → P(X ⩽ 8) − P(X ⩽ 3)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,6918"]
+		},
+		{
+			"description": "entre 4 et 8 : P(X ⩽ 8) − P(X ⩽ 4)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$4$ est inclus : on retire $P(X\\leqslant 3)$, pas $P(X\\leqslant 4)$, sinon $X = 4$ disparaît."
+			},
+			"answers": ["0,5109"]
+		},
+		{
+			"description": "entre 4 et 8 : P(X ⩽ 7) − P(X ⩽ 3)",
+			"variationIndex": 4,
+			"variables": {
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,6276"]
+		}
+	]
+}

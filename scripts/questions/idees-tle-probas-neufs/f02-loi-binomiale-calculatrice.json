@@ -1,0 +1,407 @@
+{
+	"rangement": {
+		"noeud": "Probabilités > Loi binomiale > expression de la loi",
+		"point": "TSPE-510"
+	},
+	"title": "Loi binomiale : P(X = k), P(X ⩾ 1) à la calculatrice",
+	"description": "Calcul numérique à la calculatrice, arrondi au millième : P(X = k) pour n jusqu'à 30, P(X ⩾ 1) = 1 − (1 − p)ⁿ en situation, P(X < n) = 1 − pⁿ, urne avec remise (pièges : coefficient binomial oublié, exposants inversés, mauvais événement contraire)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{eval:t/20;d}}\\right)$.\n\nCalcule $P(X={{k}})$ à la calculatrice. Donne le résultat arrondi au millième.\n\n$P(X={{k}})\\approx ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10..30"
+				},
+				{
+					"name": "t",
+					"expression": "2..18"
+				},
+				{
+					"name": "d",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "{{eval:round(n*t/20)+d}}"
+				}
+			],
+			"conditions": ["k >= 1", "k <= n-1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)*(t/20)^k*(1-t/20)^(n-k)}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(1000*(t/20)^k*(1-t/20)^(n-k))/1000}}",
+							"message": "Tu as oublié le coefficient binomial $\\dbinom{ {{n}} }{ {{k}} }$ : il compte les chemins qui mènent à ${{k}}$ succès.",
+							"label": "Coefficient binomial oublié"
+						},
+						{
+							"answer": "{{eval:round(1000*binom(n,k)*(t/20)^(n-k)*(1-t/20)^k)/1000}}",
+							"message": "L'exposant de $p$ est le nombre de succès, ${{k}}$ ; celui de $1-p$ est le nombre d'échecs, ${{eval:n-k}}$.",
+							"label": "Exposants inversés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $X$ de loi $\\mathcal{B}(n\\,;p)$ : $P(X=k)=\\dbinom{n}{k}p^{k}(1-p)^{n-k}$.",
+					"$P(X={{k}})=\\dbinom{ {{n}} }{ {{k}} }\\times{{eval:t/20;d}}^{ {{k}} }\\times{{eval:1-t/20;d}}^{ {{eval:n-k}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(1000*binom(n,k)*(t/20)^k*(1-t/20)^(n-k))/1000;d}} }$ (calculatrice : loi binomiale, ou `binomFdp`)."
+				]
+			},
+			"hint": "Combien de succès, combien d'échecs ? Écris la formule de $P(X=k)$ avant de calculer."
+		},
+		{
+			"statement": "{{if:c==0|Un tireur atteint sa cible avec la probabilité ${{eval:t/20;d}}$ à chaque tir, les tirs étant indépendants. Il tire ${{n}}$ fois.}}{{if:c==1|Chaque graine d'un sachet germe avec la probabilité ${{eval:t/20;d}}$, indépendamment des autres. On sème ${{n}}$ graines.}}{{if:c==2|Une ampoule produite par une usine présente un défaut avec la probabilité ${{eval:t/20;d}}$. On prélève ${{n}}$ ampoules ; la production est assez grande pour assimiler ce prélèvement à des tirages avec remise.}}\n\nCalcule la probabilité de l'événement {{if:c==0|« le tireur atteint la cible au moins une fois »}}{{if:c==1|« au moins une graine germe »}}{{if:c==2|« au moins une des ampoules prélevées présente un défaut »}}. Donne le résultat arrondi au millième.\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "5..30"
+				},
+				{
+					"name": "t",
+					"expression": "1..8"
+				}
+			],
+			"conditions": ["(1-t/20)^n >= 0.002"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(1-t/20)^n}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(1000*(1-t/20)^n)/1000}}",
+							"message": "Ce nombre est la probabilité de n'avoir **aucun** succès, $P(X=0)$. L'événement demandé est son contraire.",
+							"label": "P(X = 0) au lieu de P(X ⩾ 1)"
+						},
+						{
+							"answer": "{{eval:round(1000*(1-(t/20)^n))/1000}}",
+							"message": "Le contraire de « au moins un succès » est « aucun succès » : $P(X=0)=(1-p)^{n}$, pas $p^{n}$.",
+							"label": "Mauvais contraire"
+						},
+						{
+							"answer": "{{eval:round(1000*binom(n,1)*(t/20)*(1-t/20)^(n-1))/1000}}",
+							"message": "Tu as calculé $P(X=1)$, exactement un succès. « Au moins un » compte aussi $2$, $3$… succès.",
+							"label": "Exactement un"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $X$ le nombre de succès : les ${{n}}$ épreuves sont identiques et indépendantes, donc $X$ suit la loi $\\mathcal{B}\\left({{n}}\\,;{{eval:t/20;d}}\\right)$.",
+					"L'événement contraire de $X\\geqslant 1$ est $X=0$ : $P(X\\geqslant 1)=1-P(X=0)=1-{{eval:1-t/20;d}}^{ {{n}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(1000*(1-(1-t/20)^n))/1000;d}} }$."
+				]
+			},
+			"hint": "« Au moins un » : quel est l'événement contraire, et quelle est sa probabilité ?"
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{eval:t/20;d}}\\right)$.\n\nCalcule $P(X<{{n}})$. Donne le résultat arrondi au millième.\n\n$P(X<{{n}})\\approx ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..15"
+				},
+				{
+					"name": "t",
+					"expression": "12..18"
+				}
+			],
+			"conditions": ["(t/20)^n >= 0.002"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(t/20)^n}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(1000*(t/20)^n)/1000}}",
+							"message": "Ce nombre est $P(X={{n}})$ : tous les essais réussis. On demande son contraire.",
+							"label": "P(X = n) au lieu de P(X < n)"
+						},
+						{
+							"answer": "{{eval:round(1000*(1-binom(n,n-1)*(t/20)^(n-1)*(1-t/20)))/1000}}",
+							"message": "$X<{{n}}$ veut dire $X\\leqslant {{eval:n-1}}$ : son contraire est $X={{n}}$, pas $X={{eval:n-1}}$.",
+							"label": "Décalage d'un rang"
+						},
+						{
+							"answer": "{{eval:round(1000*(1-(1-t/20)^n))/1000}}",
+							"message": "Tu as calculé $P(X\\geqslant 1)$. Ici, le contraire de $X<{{n}}$ est $X={{n}}$ : $P(X={{n}})=p^{ {{n}} }$.",
+							"label": "P(X ⩾ 1)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement contraire de $X<{{n}}$ est $X={{n}}$ (tous les essais réussis).",
+					"$P(X={{n}})=\\dbinom{ {{n}} }{ {{n}} }{{eval:t/20;d}}^{ {{n}} }(1-{{eval:t/20;d}})^{0}={{eval:t/20;d}}^{ {{n}} }$.",
+					"$P(X<{{n}})=1-{{eval:t/20;d}}^{ {{n}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(1000*(1-(t/20)^n))/1000;d}} }$."
+				]
+			},
+			"hint": "Quelles valeurs prend $X$ ? Laquelle est exclue par « $X<{{n}}$ » ?"
+		},
+		{
+			"statement": "Une urne contient ${{r}}$ boules rouges et ${{b}}$ boules bleues, indiscernables au toucher. On effectue ${{n}}$ tirages successifs **avec remise**, et on note $X$ le nombre de boules rouges obtenues.\n\nCalcule $P(X={{k}})$. Donne le résultat arrondi au millième.\n\n$P(X={{k}})\\approx ?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "6..12"
+				},
+				{
+					"name": "d",
+					"expression": "-1..1"
+				},
+				{
+					"name": "k",
+					"expression": "{{eval:round(n*r/(r+b))+d}}"
+				}
+			],
+			"conditions": ["r != b", "k >= 1", "k <= n-1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)*(r/(r+b))^k*(b/(r+b))^(n-k)}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:round(1000*(r/(r+b))^k*(b/(r+b))^(n-k))/1000}}",
+							"message": "Tu as oublié le coefficient binomial $\\dbinom{ {{n}} }{ {{k}} }$ : il compte les ordres possibles des ${{k}}$ boules rouges.",
+							"label": "Coefficient binomial oublié"
+						},
+						{
+							"answer": "{{eval:round(1000*binom(n,k)*(r/b)^k*(1-r/b)^(n-k))/1000}}",
+							"message": "La probabilité de tirer une boule rouge est $\\dfrac{ {{r}} }{ {{eval:r+b}} }$ : on divise par le nombre **total** de boules.",
+							"label": "p = r/b"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les tirages avec remise sont identiques et indépendants ; la probabilité de tirer une boule rouge est $p=\\dfrac{ {{r}} }{ {{eval:r+b}} }$. Donc $X$ suit la loi $\\mathcal{B}\\left({{n}}\\,;\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)$.",
+					"$P(X={{k}})=\\dbinom{ {{n}} }{ {{k}} }\\left(\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)^{ {{k}} }\\left(\\dfrac{ {{b}} }{ {{eval:r+b}} }\\right)^{ {{eval:n-k}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:round(1000*binom(n,k)*(r/(r+b))^k*(b/(r+b))^(n-k))/1000;d}} }$."
+				]
+			},
+			"hint": "Quelle loi suit $X$, avec quels paramètres $n$ et $p$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : B(20 ; 0,3), P(X = 6) ≈ 0,192",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"t": "6",
+				"d": "0",
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,192"]
+		},
+		{
+			"description": "v0 : coefficient oublié",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"t": "6",
+				"d": "0",
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le coefficient binomial $\\dbinom{ 20 }{ 6 }$ : il compte les chemins qui mènent à $6$ succès."
+			},
+			"answers": ["0,000"]
+		},
+		{
+			"description": "v0 : exposants inversés",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"t": "6",
+				"d": "0",
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,000"]
+		},
+		{
+			"description": "v1 : 1 − 0,85¹⁰ ≈ 0,803",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"n": "10",
+				"t": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,803"]
+		},
+		{
+			"description": "v1 : P(X = 0)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"n": "10",
+				"t": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est la probabilité de n'avoir **aucun** succès, $P \\left( X = 0 \\right)$. L'événement demandé est son contraire."
+			},
+			"answers": ["0,197"]
+		},
+		{
+			"description": "v1 : 1 − pⁿ",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"n": "10",
+				"t": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,000"]
+		},
+		{
+			"description": "v1 : P(X = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"n": "10",
+				"t": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,347"]
+		},
+		{
+			"description": "v2 : 1 − 0,7⁸ ≈ 0,942",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"t": "14"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,942"]
+		},
+		{
+			"description": "v2 : P(X = n)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"t": "14"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce nombre est $P \\left( X = 8 \\right)$ : tous les essais réussis. On demande son contraire."
+			},
+			"answers": ["0,058"]
+		},
+		{
+			"description": "v2 : P(X ⩾ 1)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"t": "14"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,000"]
+		},
+		{
+			"description": "v3 : B(8 ; 3/8), P(X = 3)",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"b": "5",
+				"n": "8",
+				"d": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0,282"]
+		},
+		{
+			"description": "v3 : coefficient oublié",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"b": "5",
+				"n": "8",
+				"d": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,005"]
+		},
+		{
+			"description": "v3 : p = r/b",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"b": "5",
+				"n": "8",
+				"d": "0",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,124"]
+		}
+	]
+}
