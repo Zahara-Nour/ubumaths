@@ -17,6 +17,9 @@ _Mis à jour le 2026-11-24, paquet 4 en cours (aucune PR ouverte)._
 - **Atelier** (`atelier-paquet4.spec.ts`, ordi, iPhone, Android) : #2118 (conditions de √ et ln), #1862 (valeurs remarquables, degré collé), #1827 (graphe agrandi, Échap sur le menu Exporter), #1813 (grille immobile ; écart E41 sur écran court), #1828 (« ou » en texte droit ; le bouton « Simplifier pour x ≠ −√2 et x ≠ √2 » est celui du mode par défaut), #1835 (composée ; écart E40) ; #1807, #1811 déjà couverts.
 - **Shtam et Royaume** (`shtam-royaume.spec.ts`, pages publiques, jouable contre la prod) : #1991 (bandeau, une, liens vers les pages, ≤ 2 articles par page avec leur vrai du faux, une seule colonne au téléphone, sombre lisible), #2138 (noms de la carte sans chevauchement à 3 px près, lieu d'une ville entouré au toucher).
 - **Écarts** : E40 (ensemble hérité absent de la carte g), E41 (grille repoussée pendant la frappe sur un écran court).
+- **Agents, rejoués par la session** : blocs à geste de géométrie 84 verts (3 navigateurs, aperçus admin de brouillons « Verifs4 … ») ; questions et modèles 42 ; autres blocs 105 (un test #2189 instable corrigé : étiquettes lues d'un seul coup, le changement de thème les redessine). Le miroir de E33 se voit aussi sous Safari d'ordinateur.
+- **Sorties (39)**, **réduites (4)** regroupant les restes : PDF des blocs à geste (#2226), gestes au VRAI doigt (#1846…), bloc dans un item (#2065), QCM migrés (#1855). 252 → 213 lignes.
+- **Écarts** : E42 (modèle x² = a sans `answerKind: 'intervalles'`), E43 (clause probablement mal recopiée de #1820), E44 à E49 (contrastes de l'horloge et de la boîte à moustaches, texte de 7-8 px dans les pages d'aide, palette de Scratch, lettres D et F traversées).
 
 ## Tri — paquet 3 : lignes du 23 au 25 octobre (2026-11-24)
 
