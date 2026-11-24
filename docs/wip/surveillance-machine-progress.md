@@ -73,3 +73,8 @@ Restent, côté David :
 - Essai à blanc sur le Mac : « Sessions Claude : 10 ouvertes depuis plus de 7 jours (35 en tout, 6 Go) ». Disque : 20 → 19 Go en 24 h, rien.
 - Tests vérifiés rouges sur le script de `main` (4 nouveaux).
 - Revue Sonnet : emballé et bloqué exigent 2 passages de suite (`emballes-vus`, `bloques-vus`, < 11 min) — WindowServer ou un zombie ramassé juste après le passage ; disque : « plus de 5 » strict ; Mac éteint dans la fenêtre 20-24 h → rien, documenté. Laissés : sessions `claude` enfants comptées (léger surplus), marques par pid jamais nettoyées.
+
+## 2026-11-24 — place sur le disque
+
+- 13 → 26 Go libres, sans redémarrer (David ne veut PAS relancer le Mac) : `docker image prune -a` (anciennes images Supabase, `node:22`), `brew cleanup --prune=all` (1,1 Go), cache VS Code ShipIt (0,9 Go), versions de Claude Code inutilisées 2.1.318 et 2.1.329 (les autres servent à des sessions ouvertes : les supprimer ne libère rien avant leur fermeture), worktrees `idees-format` (#2990) et `idees-format-indice-eleve` (#2992).
+- Laissés : webkit-2359 de Playwright (worktrees en 1.59.1), cache de Brave (3,7 Go, à vider depuis Brave), mise à jour de macOS (Preboot 20 Go, demande un redémarrage).
