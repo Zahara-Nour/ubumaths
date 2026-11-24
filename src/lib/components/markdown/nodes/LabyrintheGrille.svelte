@@ -109,7 +109,7 @@
 		class="labyrinthe-grille mx-auto"
 		class:labyrinthe-juste={verdict === true}
 		class:labyrinthe-faux={verdict === false}
-		style:grid-template-columns="1.1rem repeat({spec.colonnes}, minmax(2.5rem, max-content)) 1.25rem"
+		style:grid-template-columns="0.9rem repeat({spec.colonnes}, minmax(2.125rem, max-content)) 1rem"
 		style:--labyrinthe-taille={taille}
 		role={interactive ? 'group' : 'img'}
 		aria-label={label ?? description}
@@ -177,7 +177,7 @@
 		align-items: center;
 		justify-content: center;
 		min-height: 2.75rem;
-		padding: 0 0.2rem;
+		padding: 0 0.15rem;
 		margin: -0.5px;
 		border: 1px solid var(--color-muted-foreground);
 		background: var(--color-background);

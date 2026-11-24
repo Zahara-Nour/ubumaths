@@ -14,6 +14,7 @@ couvre:
 pnpm voir /atelier                      # format iPhone, moteur de Safari (WebKit)
 pnpm voir /dashboard --compte prof      # connecté : prof, eleve ou admin (comptes fictifs)
 pnpm voir /shtam --ordi                 # grand écran (1440 × 900)
+pnpm voir /atelier --petit              # petit téléphone : iPhone SE, 375 px de large
 pnpm voir /atelier --chrome             # Chromium au lieu de WebKit
 pnpm voir /atelier --port 5177          # si deux serveurs tournent dans le worktree
 ```

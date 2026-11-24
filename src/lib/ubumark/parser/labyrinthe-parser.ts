@@ -8,7 +8,8 @@
  * parcourir: oui
  * ```
  *
- * - `grille: C x L` (obligatoire) : 3 à 7 colonnes, 2 à 7 lignes.
+ * - `grille: C x L` (obligatoire) : 3 à 7 colonnes, 2 à 7 lignes ; au plus 5 colonnes de nombres
+ *   de 4 à 6 caractères, 4 de 7 caractères (`colonnesSurTelephone`).
  * - `règle:` (obligatoire) : `premier`, `multiple de n` (2 à 99), `chiffre des <rang> = c`
  *   (rangs des dix-millièmes aux dizaines de mille).
  * - `parcourir: oui | non` (défaut `non`) : une question, l'élève trace le chemin.
@@ -23,7 +24,12 @@
 
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
-import { lireRegle, tirerLabyrinthe } from '../utils/labyrinthe-moteur';
+import {
+	colonnesSurTelephone,
+	lireRegle,
+	nombreLePlusLong,
+	tirerLabyrinthe
+} from '../utils/labyrinthe-moteur';
 import { randomInt, type RandomSource } from '#lib/utils/random.ts';
 import {
 	LABYRINTHE_MAX_COLONNES,
@@ -286,6 +292,20 @@ export function parseLabyrintheContent(source: string): LabyrintheNode {
 	}
 	if (!parcourir && caseIndex !== undefined) {
 		fail(seen.get('case') ?? 1, 'case: seulement avec parcourir: oui');
+	}
+
+	// Une grille qui ne tient pas sur un téléphone défilerait : sorties cachées à l'élève
+	if (
+		regle !== null &&
+		colonnes <= LABYRINTHE_MAX_COLONNES &&
+		lignes >= LABYRINTHE_MIN_LIGNES &&
+		lignes <= LABYRINTHE_MAX_LIGNES &&
+		colonnes > colonnesSurTelephone(regle)
+	) {
+		fail(
+			seen.get('grille') ?? 1,
+			`grille trop large pour un téléphone : au plus ${colonnesSurTelephone(regle)} colonnes avec des nombres comme ${nombreLePlusLong(regle).replace(/\u202f/g, ' ')}`
+		);
 	}
 
 	const withCase = caseIndex === undefined ? {} : { caseIndex };

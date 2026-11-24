@@ -50,13 +50,20 @@ describe('labyrinthe → Typst', () => {
 		for (const n of nombres) expect(question).toContain(`[${n}]`);
 	});
 
-	it('7 colonnes de grands nombres : tient dans 8,5 cm, texte réduit', () => {
-		const source = generateTypst(
-			parseMarkdown(bloc('grille: 7 x 3', 'règle: chiffre des dizaines de mille = 4'))
-		);
-		const largeur = Number(/box\(width: ([\d.]+)cm/.exec(source)?.[1]);
-		expect(7 * largeur + 1.2).toBeLessThanOrEqual(8.5 + 1e-9);
-		expect(Number(/#set text\(size: ([\d.]+)pt\)/.exec(source)?.[1])).toBeLessThan(9);
+	it('les grilles les plus larges acceptées tiennent dans 8,5 cm', () => {
+		// 7 colonnes de nombres courts, 4 colonnes des plus longs (`colonnesSurTelephone`)
+		for (const [colonnes, regle] of [
+			[7, 'premier'],
+			[4, 'chiffre des dizaines de mille = 4'],
+			[4, 'chiffre des dix-millièmes = 0']
+		] as const) {
+			const source = generateTypst(
+				parseMarkdown(bloc(`grille: ${colonnes} x 3`, `règle: ${regle}`))
+			);
+			expect(source).not.toContain(LABYRINTHE_UNAVAILABLE);
+			const largeur = Number(/box\(width: ([\d.]+)cm/.exec(source)?.[1]);
+			expect(colonnes * largeur + 1.2).toBeLessThanOrEqual(8.5 + 1e-9);
+		}
 	});
 
 	it('bloc mal écrit : le cadre neutre, jamais une erreur de compilation', () => {
@@ -87,7 +94,7 @@ describe('labyrinthe → Typst', () => {
 					'',
 					SOLUTION,
 					'',
-					bloc('grille: 7 x 7', 'règle: chiffre des dix-millièmes = 0', 'solution: oui'),
+					bloc('grille: 4 x 7', 'règle: chiffre des dix-millièmes = 0', 'solution: oui'),
 					'',
 					bloc('grille: 5 x 5', 'règle: chiffre des unités de mille = 3'),
 					'',
