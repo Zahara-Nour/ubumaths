@@ -846,7 +846,7 @@ const verdictOf = (card: Locator): Locator => card.getByText(/^(Juste|Faux|½ po
 
 /** Texte sur une ligne : espaces et sauts réunis, espaces insécables compris */
 function flat(text: string): string {
-	return text.replace(/[\s  ]+/g, ' ').trim();
+	return text.replace(/[\s\u00a0\u202f]+/g, ' ').trim();
 }
 
 /** « C'est parti ! » : recliqué tant que la série n'a pas démarré (bouton pas encore hydraté) */
