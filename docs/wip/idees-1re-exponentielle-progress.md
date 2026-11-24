@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3089 (migrations en prod, série publiée)._
+_Mis à jour le 2026-11-24, après #3091 (série de relecture publiée)._
 
 - **État** : `20261124134647` et `20261124134708` **en prod** (poussées par la session `idees-tle-ln`) ;
   vérifié : 6 brouillons sur leur nœud avec leur point, 4 publiés à 4/4/5/6 variations ; série
   `1_SPE-relecture-exponentielle-publies.json` publiée par David (id `4cec796d`, 4 modèles, 4 min) ·
   **Prochaine action** : relecture par David dans `/dev/modeles` (brouillons par `?noeud=`, publiés par
   la série), puis lire les verdicts (`question_template_reviews`), corriger, clôturer · **En attente de
-  David** : la relecture · **Pièges en cours** : aucun · **Worktree / branche** : aucun après le merge de
-  la PR de la série.
+  David** : la relecture · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Journal
 
