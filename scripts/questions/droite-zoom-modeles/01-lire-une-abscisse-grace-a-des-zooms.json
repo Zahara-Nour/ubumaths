@@ -1,4 +1,5 @@
 {
+	"id": "6dba93c8-b8e6-4888-843b-ac9f821c4a7e",
 	"title": "Lire une abscisse grâce à des zooms",
 	"description": "Lire l'abscisse d'un point sur une droite graduée suivie de droites agrandies : au dixième, au centième, au millième (aussi en fractions décimales), et des grands nombres (dizaines de milliers, millions)",
 	"grades": ["6"],
