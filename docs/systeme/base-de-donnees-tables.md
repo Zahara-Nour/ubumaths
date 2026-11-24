@@ -160,7 +160,7 @@ Liens : `sent_by` → `profiles` · `student_id` → `profiles`
 
 ### `classification_nodes`
 
-`archived_at?` · `created_at` · `id` · `kind` · `name` · `parent_id?` · `position` · `updated_at`
+`archived_at?` · `created_at` · `id` · `kind` · `name` · `parent_id?` · `position` · `translations` · `updated_at`
 
 Liens : `parent_id` → `classification_nodes`
 
