@@ -6,17 +6,17 @@ Idées reprises d'ailleurs, rubrique « Compléments sur la dérivation » de Te
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, migrations écrites (PR à ouvrir)._
+_Mis à jour le 2026-11-24, après #3068._
 
-- **État** : 5 brouillons créés en prod par David (ids commités) ; F7 b remis (choix de quatre
-  tableaux, choix (a) de David, outil n° 57 à comparer plus tard) ; migrations de rangement
-  (5 modèles) et de contenu (16 variations sur 11 publiés) écrites, tests d'intégration verts ·
-  **Prochaine action** : `security-auditor`, PR, `db:migrate`, relecture dans `/dev/modeles` ·
-  **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b dans le brouillon
-  74d73d4e) · **Pièges en cours** : sous-notion « Convexité > lecture graphique » archivée → F11 en
-  « caractérisations », F12 en « dérivée seconde » · **Worktree / branche** :
-  `../ubumaths-wt-idees-tle-derivation`, `feat/idees-tle-derivation`.
+- **État** : #3068 mergée (5 modèles neufs avec F7 b, 16 variations de 11 publiés, migrations de
+  rangement et de contenu) ; worktree retiré · **Prochaine action** : après les deux commandes de
+  David, vérifier en prod (MCP lecture seule) le rangement des 5 brouillons et les 16 variations,
+  puis relecture dans `/dev/modeles` (`?point=TSPE-413`, 416, 419, 590 ; série de relecture pour
+  les publiés) · **En attente de David**, depuis le dépôt principal : `pnpm db:migrate` (seules nos
+  deux migrations attendent, 4 conditions réunies) et `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b dans 74d73d4e) ·
+  **Pièges en cours** : « Convexité > lecture graphique » archivée (F11 en « caractérisations »,
+  F12 en « dérivée seconde ») · **Worktree / branche** : aucun (prochaine PR : nouveau worktree).
 
 ## Historique
 
@@ -83,3 +83,5 @@ scripts/questions/idees-tle-derivation-neufs --mettre-a-jour --publier` (F7 b da
 - Migrations `20261124062316_…_rangement_tags` et `20261124062325_…_publies_contenu` (+1 ou +2
   variations par modèle, 16 en tout) ; tests d'intégration verts (125).
 - Doc système inchangée : les migrations rangent et complètent du contenu, sans toucher au schéma.
+- #3068 mergée ; `security-auditor` sans finding bloquant. `db:migrate` refusé à la session par le
+  classifieur (écriture en prod) : laissé à David.
