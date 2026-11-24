@@ -73,7 +73,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`    |
 | Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation` |
 | Continuité des fonctions                                                       | TSA4        | 6         | libre                |                        |
-| Fonction logarithme népérien                                                   | TSA5        | 12        | prise (2026-11-24)   | `idees-tle-ln`         |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | publiée (2026-11-24) | `idees-tle-ln`         |
 | Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                        |
 | Intégration                                                                    | TSA8        | 5         | libre                |                        |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
@@ -166,15 +166,6 @@ de contenu appliquée en prod.
 | 68166a11 Signe de l'exponentielle                            | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
 | 227f2c9c Dériver une exponentielle de fonction affine        | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
 | 15d3aaa0 Tangente à la courbe de exp en un point             | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
-| ffd5c051 Propriétés algébriques du logarithme                | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| d3301f2d Résoudre une équation avec ln                       | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| 14036c68 Résoudre une inéquation avec ln                     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| f1963ef2 Seuil : plus petit entier n tel que qⁿ dépasse      | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| 50feeefd Dérivée de eᵘ, ln u et u²                           | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| 2cef3442 Croissances comparées : logarithme et puissances    | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| 7c8b341b Propriétés algébriques du logarithme (QCM)          | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| 7f13ca89 Intervalle de croissance d'une fonction avec ln     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
-| e814175b Inégalité déduite de la convexité                   | `idees-tle-ln`                                              | 2026-11-24 |                                      |
 | d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
@@ -202,10 +193,10 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
 - `idees-tle-suites` (reportées le 2026-11-22, au programme, pour la session de chaque rubrique) :
-  suites avec ln, uₙ₊₁ = ln(1 + uₙ) (TSA1-48) → rubrique
-  « logarithme » ; suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration ».
-- `idees-tle-limites` (2026-11-22, au programme, pour la session de chaque rubrique) : limite de
-  ln(axⁿ + k) par composition (TSA2-35) → rubrique « logarithme ».
+  suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration » (la suite avec ln a été reprise par
+  `idees-tle-ln`).
+- `idees-tle-ln` (2026-11-24, pour la session de la rubrique continuité, TSA4) : « f(x) = 0 a deux
+  solutions » sur ax + b + k ln x (TSA5-41), par le théorème des valeurs intermédiaires.
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
 - `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le

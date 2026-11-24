@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-ln-publies/ (chantier idees-tle-ln).
 
 Phase 0 validée par David le 2026-11-24 (« je suis tes recos », fiches
-docs/wip/idees-tle-ln-fiches.md) : F1 et F2 (ffd5c051), F3 a, F3 b et F5 (d3301f2d), F4 a et F4 b
+docs/archive/wip/idees-tle-ln/idees-tle-ln-fiches.md) : F1 et F2 (ffd5c051), F3 a, F3 b et F5 (d3301f2d), F4 a et F4 b
 (14036c68), F7 (f1963ef2), F8 a et F8 b (50feeefd), F10 a et F10 b (2cef3442), F11 a et F11 b
 (7c8b341b), F12 (7f13ca89), F13 (e814175b, Q3 : oui). Les variations s'ajoutent À LA FIN (les
 réponses des élèves gardent l'indice de leur variation) ; la migration de contenu est générée par

@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-tle-ln dans scripts/questions/idees-tle-ln-neufs/.
 
 Phase 0 validée par David le 2026-11-24 (« je suis tes recos », journal
-docs/wip/idees-tle-ln-progress.md, fiches docs/wip/idees-tle-ln-fiches.md) : F6 (ensemble de
+docs/archive/wip/idees-tle-ln/idees-tle-ln-progress.md, fiches docs/archive/wip/idees-tle-ln/idees-tle-ln-fiches.md) : F6 (ensemble de
 définition d'une fonction avec ln, Q1 : TSPE-438) et F9 (limite d'une fonction avec ln, sans forme
 indéterminée, Q2 : nouveau modèle).
 

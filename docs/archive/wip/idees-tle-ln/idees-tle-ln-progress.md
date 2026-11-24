@@ -8,16 +8,12 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3088._
+_Mis à jour le 2026-11-24, chantier clos._
 
-- **État** : #3088 mergée (F12 admet $\lim \ln x/x=0$ ; migration `20261124134110_…_publies_contenu`,
-  seule en attente en prod ; série `scripts/series/T_SPE-relecture-logarithme-publies.json`, simulation
-  verte) · **Prochaine action** : vérifier en prod F12 corrigée après `db:migrate`, commiter l'id de la
-  série une fois publiée, puis lire les verdicts de relecture des 9 (`question_template_reviews`) et
-  corriger ; puis clôture (tableau, idée TSA5-41) · **En attente de David** : `! pnpm db:migrate` et
-  `! pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/T_SPE-relecture-logarithme-publies.json --publier`,
-  puis relecture dans `/dev/modeles` · **Pièges en cours** : F12 hors bornes TCOMP jusqu'au
-  `db:migrate` · **Worktree / branche** : aucun.
+- **État** : clos. Rubrique TSA5 publiée : 2 neufs (a6e58402 TSPE-438, 99326dee TSPE-441) et +16
+  variations sur 9 publiés, F12 corrigée (#3088, migrée), série de relecture publiée
+  (bd26095d, #3090), modèles validés par David · **Prochaine action** : aucune · **En attente de
+  David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -106,3 +102,13 @@ _Mis à jour le 2026-11-24, après #3088._
 - Série `T_SPE-relecture-logarithme-publies.json` (9 modèles, 1 × 60 s, 9 min) : simulation verte en prod.
 - #3088 mergée ; `migration list --linked` : seule `20261124134110` en attente ; `db:migrate` et
   publication de la série laissés à David (écriture en prod).
+
+### 2026-11-24 — clôture
+
+- `db:migrate` et série publiés par David ; vérifié en prod : F12 porte « On admet que », variations
+  inchangées en nombre (ffd5c051 7, d3301f2d 6, 14036c68 5, f1963ef2 4, 50feeefd 9, 2cef3442 4,
+  7c8b341b 5, 7f13ca89 5, e814175b 7), aucune migration en attente. David : « je valide les modèles »
+  (aucun verdict en base : validation orale).
+- Tableau : rubrique publiée, 9 réservations levées ; idées TSA1-48 (ln) et TSA2-35 retirées des
+  « Idées en attente » (reprises en F13 et F9), TSA5-41 ajoutée pour la rubrique continuité.
+  Journal, relevé et fiches versés dans `docs/archive/wip/idees-tle-ln/`.
