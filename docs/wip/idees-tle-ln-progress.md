@@ -8,13 +8,14 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, lot écrit._
+_Mis à jour le 2026-11-24, migrations commitées, PR pas encore ouverte._
 
-- **État** : phase 0 validée, lot écrit et vérifié (specs, formules, base locale) · **Prochaine
-  action** : David crée les 2 brouillons en prod, puis je commite leurs ids et génère les migrations
-  (rangement + contenu des 9 publiés) · **En attente de David** : `pnpm tsx scripts/create-questions.ts
---dir scripts/questions/idees-tle-ln-neufs --publier` (depuis le worktree) · **Pièges en cours** :
-  aucun · **Worktree / branche** : `../ubumaths-wt-idees-tle-ln` / `feat/idees-tle-ln`.
+- **État** : brouillons créés en prod par David (a6e58402 F6, 99326dee F9), migrations de rangement et
+  de contenu commitées sur la branche · **Prochaine action** : revue `security-auditor` des deux
+  migrations (relancer si son rapport est perdu), ouvrir la PR, CI verte → `pnpm pr:merger`, puis `db:migrate` (4 conditions,
+  `migration list --linked` d'abord), puis série de relecture des 9 publiés et relecture des neufs
+  dans `/dev/modeles` · **En attente de David** : rien avant le merge · **Pièges en cours** : aucun ·
+  **Worktree / branche** : `../ubumaths-wt-idees-tle-ln` / `feat/idees-tle-ln`.
 
 ## Historique
 
@@ -56,3 +57,12 @@ _Mis à jour le 2026-11-24, lot écrit._
   accolades (0 problème) ; copies créées en base locale, F12 (tableau avec limites) et F4 b
   (0,2ˣ affiché avec la virgule) vus dans l'aperçu (`pnpm voir`, iPhone) ; brouillons d'essai
   supprimés de la base locale.
+
+### 2026-11-24 — brouillons en prod, migrations
+
+- David a créé les 2 brouillons en prod ; ids commités (a6e58402, 99326dee), niveaux 2 et 3 vérifiés
+  contre les voisins de leur nœud.
+- Migrations `20261124123345_…_rangement_tags` (F6 → TSPE-438, F9 → TSPE-441) et
+  `20261124123352_…_publies_contenu` (+16 variations sur 9 modèles, aucune corrigée) ; tests
+  d'intégration des deux fixtures verts (15 tests du lot) ; garde des niveaux verte.
+- Doc système inchangée : les migrations rangent et complètent du contenu, sans toucher au schéma.
