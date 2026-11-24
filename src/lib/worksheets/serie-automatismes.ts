@@ -196,6 +196,7 @@ const CASE_LINE = /^\s*case\s*:/;
 const PRODUIRE_LINE = /^\s*produire\s*:/i;
 /** `parcourir: oui` d'un labyrinthe : `solution: oui` au corrigé (le bon chemin teinté) */
 const PARCOURIR_LINE = /^\s*parcourir\s*:/i;
+const SOLUTION_LINE = /^\s*solution\s*:/i;
 
 /**
  * Tableaux de signes à compléter (```variation à `?`) : leur corps réécrit par
@@ -597,7 +598,8 @@ function labyrinthesAFiger(
 		}
 		cases += 1;
 		const corps = bloc.body
-			.filter((ligne) => !CASE_LINE.test(ligne))
+			// Au corrigé, une `solution:` écrite par l'auteur (`non`) ferait une clé en double
+			.filter((ligne) => !CASE_LINE.test(ligne) && !(corrige && SOLUTION_LINE.test(ligne)))
 			.map((ligne) => (corrige && PARCOURIR_LINE.test(ligne) ? 'solution: oui' : ligne));
 		const suite = corrige ? ['', `**${cheminDit(node.spec)}**`] : [];
 		const fin = bloc.startIndex + bloc.body.length + 1;

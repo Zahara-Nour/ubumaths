@@ -65,6 +65,12 @@ le quadrillage du robot.
 - Vu à l'écran (`pnpm voir /aide-ecriture/blocs/labyrinthe --compte prof`, iPhone) : 1er essai,
   grille de 6 colonnes coupée et décimaux qui débordaient → colonnes à la largeur des nombres,
   police réduite dès 4 et 6 caractères ; revu, tout tient (5 colonnes de décimaux comprises).
+- Revue `code-reviewer` (Opus) : aucun bloquant ; force brute sur 45 900 grilles (toutes tailles,
+  règles, rangs) : chemin unique, juge juste. Corrigés : test « golden » qui fige le tirage de 3
+  graines (seule la graine est gardée dans l'énoncé, le juge lit le chemin de la réponse attendue) ;
+  `solution: non` de l'auteur doublée au corrigé de série ; `expectedAnswerLatex` = le chemin (une
+  réponse juste, contrat de `check-template`) au lieu de « Sortie N : … » ; cases verrouillées
+  restées boutons (le focus ne retombe plus sur la page).
 
 ## Historique
 

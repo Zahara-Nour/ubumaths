@@ -68,7 +68,9 @@
 
 	/** Les cases que l'élève peut toucher : l'entrée, puis la dernière et ses voisines libres */
 	let touchables = $derived.by((): Case[] | null => {
-		if (spec === null || verrouille) return null;
+		if (spec === null) return null;
+		// Verrouillé : les cases restent des boutons (le focus ne se perd pas), aucune ne répond
+		if (verrouille) return [];
 		if (derniere === null) return [{ ligne: spec.entree, col: 1 }];
 		if (arrive) return [derniere];
 		const pris = new Set(chemin.map((c) => `${c.ligne},${c.col}`));

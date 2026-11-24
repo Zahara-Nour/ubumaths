@@ -335,7 +335,14 @@ function tirerChemin(colonnes: number, lignes: number, random: RandomSource) {
 // LABYRINTHE
 // ============================================================================
 
-/** Le labyrinthe d'une graine : même graine, même labyrinthe */
+/**
+ * Le labyrinthe d'une graine : même graine, même labyrinthe.
+ *
+ * ⚠️ Seule la graine est gardée dans l'énoncé d'une instance, alors que le juge lit le chemin écrit
+ * dans la réponse attendue : toute modification du tirage (ici, `piocher`, `utils/random.ts`)
+ * redessinerait une autre grille sur les copies existantes. Test « golden » :
+ * `labyrinthe-moteur.test.ts`.
+ */
 export function tirerLabyrinthe(
 	colonnes: number,
 	lignes: number,

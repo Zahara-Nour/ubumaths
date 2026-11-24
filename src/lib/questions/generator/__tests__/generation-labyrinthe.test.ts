@@ -106,8 +106,8 @@ describe('labyrinthe à parcourir : la case et sa réponse', () => {
 		const lu = readExpectedLabyrintheAnswer(blank.expectedAnswer);
 		// La grille du juge est celle que l'élève voit
 		expect(lu?.chemin).toEqual(node.spec?.chemin);
-		// Le corrigé dit la sortie et les nombres du chemin
-		expect(blank.expectedAnswerLatex).toMatch(/^Sortie \d : \d+( → \d+)+$/);
+		// `expectedAnswerLatex` est une réponse juste (contrat commun, rejoué par check-template)
+		expect(blank.expectedAnswerLatex).toBe(ecrireChemin(node.spec!.chemin));
 	});
 
 	it('deux graines, deux labyrinthes ; même graine, le même', () => {

@@ -190,6 +190,8 @@ describe('labyrinthe à parcourir : après la validation', () => {
 			spec.chemin.length
 		);
 		expect(screen.container.querySelectorAll('.labyrinthe-touchable')).toHaveLength(0);
+		// Les cases restent des boutons (le focus ne retombe pas sur la page), aucune ne répond
+		expect(screen.container.querySelectorAll('button[aria-disabled="false"]')).toHaveLength(0);
 		expect(page.getByRole('button', { name: 'Tout effacer' }).elements()).toHaveLength(0);
 	});
 

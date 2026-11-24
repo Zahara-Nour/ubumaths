@@ -68,12 +68,11 @@ import {
 	parseRobotContent
 } from '#lib/ubumark/parser/robot-parser.ts';
 import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+import { avecGraines, hasLabyrintheAParcourir } from '#lib/ubumark/parser/labyrinthe-parser.ts';
 import {
-	avecGraines,
-	hasLabyrintheAParcourir,
-	parseLabyrintheContent
-} from '#lib/ubumark/parser/labyrinthe-parser.ts';
-import { cheminDit } from '#lib/ubumark/utils/labyrinthe-answer.ts';
+	ecrireChemin,
+	readExpectedLabyrintheAnswer
+} from '#lib/ubumark/utils/labyrinthe-answer.ts';
 import { hasVariationToFill } from '#lib/ubumark/parser/variation-table-parser.ts';
 import {
 	readSignTableCases,
@@ -1068,8 +1067,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 
 			// Cases des blocs ```collection et ```monnaie à construire, des droites et
 			// horloges à placer, des barres à construire : réponse = la valeur du bloc
-			// `shown` : la réponse dite au corrigé, quand ce n'est pas `answer` (labyrinthe)
-			const buildAnswers = new Map<number, { kind: BuildKind; answer: string; shown?: string }>();
+			const buildAnswers = new Map<number, { kind: BuildKind; answer: string }>();
 			// Étiquettes à ranger : ordre AFFICHÉ de chaque bloc, par case de sa première place
 			const rangerOrders = new Map<
 				number,
@@ -1146,16 +1144,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					buildAnswers.set(index, {
 						kind,
 						answer: String(shown.order.indexOf(Number(read.answer)))
-					});
-					continue;
-				}
-				if (kind === 'labyrinthe') {
-					// Corrigé : la sortie et les nombres du bon chemin
-					const spec = parseLabyrintheContent(source).spec;
-					buildAnswers.set(index, {
-						kind,
-						answer: read.answer,
-						...(spec !== null && { shown: cheminDit(spec) })
 					});
 					continue;
 				}
@@ -1636,8 +1624,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					// Programme tortue ou de calcul : le corrigé montre le programme, sans la
 					// comparaison ni les essais ; robot : le code, sans la scène
 					resolved.expectedAnswerLatex =
-						buildAnswer.shown !== undefined
-							? buildAnswer.shown
+						buildAnswer.kind === 'labyrinthe'
+							? ecrireChemin(readExpectedLabyrintheAnswer(buildAnswer.answer)?.chemin ?? [])
 							: buildAnswer.kind === 'tortue'
 								? (readExpectedTortueAnswer(buildAnswer.answer)?.attendu ?? buildAnswer.answer)
 								: buildAnswer.kind === 'calcul'

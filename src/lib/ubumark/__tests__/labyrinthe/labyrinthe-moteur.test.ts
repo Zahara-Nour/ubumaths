@@ -146,3 +146,44 @@ describe('tirerLabyrinthe', () => {
 		expect(intrus.every((n) => Number(n) % 2 === 1 && !n.endsWith('5'))).toBe(true);
 	});
 });
+
+describe('tirerLabyrinthe : tirage figé (« golden »)', () => {
+	// Seule la graine est gardée dans l'énoncé d'une instance ; le juge lit le chemin écrit dans la
+	// réponse attendue. Si ce test rougit, le tirage a changé : les copies existantes montreraient
+	// une autre grille que celle du juge. Ne pas « mettre à jour les valeurs » sans le décider.
+	const chemin = (lab: { chemin: Case[] }) =>
+		lab.chemin.map((c) => `${c.ligne},${c.col}`).join(' ');
+
+	it('premier, 5 × 3, graine 101', () => {
+		const lab = tirerLabyrinthe(5, 3, PREMIER, 101);
+		expect(lab.entree).toBe(1);
+		expect(lab.nombres).toEqual([
+			['97', '63', '77', '31', '71'],
+			['29', '37', '81', '67', '87'],
+			['69', '19', '79', '11', '39']
+		]);
+		expect(chemin(lab)).toBe('1,1 2,1 2,2 3,2 3,3 3,4 2,4 1,4 1,5');
+	});
+
+	it('multiple de 7, 4 × 3, graine 202', () => {
+		const lab = tirerLabyrinthe(4, 3, { kind: 'multiple', diviseur: 7 }, 202);
+		expect(lab.entree).toBe(1);
+		expect(lab.nombres).toEqual([
+			['105', '72', '84', '133'],
+			['49', '20', '28', '128'],
+			['91', '63', '98', '97']
+		]);
+		expect(chemin(lab)).toBe('1,1 2,1 3,1 3,2 3,3 2,3 1,3 1,4');
+	});
+
+	it('chiffre des centièmes = 7, 4 × 3, graine 303', () => {
+		const lab = tirerLabyrinthe(4, 3, CENTIEMES_7, 303);
+		expect(lab.entree).toBe(3);
+		expect(lab.nombres).toEqual([
+			['32,771', '15,779', '64,279', '79,559'],
+			['53,779', '85,257', '91,078', '87,961'],
+			['39,076', '67,714', '84,979', '15,377']
+		]);
+		expect(chemin(lab)).toBe('3,1 2,1 1,1 1,2 1,3 2,3 3,3 3,4');
+	});
+});

@@ -176,3 +176,27 @@ describe('buildSerie — labyrinthe à parcourir (chantier `labyrinthe`)', () =>
 		expect(serie.solution.indexOf('Sortie')).toBeGreaterThan(serie.solution.lastIndexOf('```'));
 	});
 });
+
+describe('buildSerie — labyrinthe avec `solution: non` écrite par l’auteur', () => {
+	it('le corrigé n’a qu’une ligne solution: (sinon « Labyrinthe indisponible »)', () => {
+		const modeles = new Map([
+			[
+				'lab',
+				modele(
+					'lab',
+					[
+						'```labyrinthe',
+						'grille: 4 x 3',
+						'règle: premier',
+						'parcourir: oui',
+						'solution: non',
+						'```'
+					].join('\n')
+				)
+			]
+		]);
+		const serie = buildSerie(modeles, [{ templateId: 'lab', seed: 1 }]);
+		expect(serie.solution.match(/solution\s*:/g)).toEqual(['solution:']);
+		expect(serie.solution).toContain('solution: oui');
+	});
+});
