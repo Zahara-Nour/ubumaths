@@ -16,7 +16,8 @@
  * associer (deux colonnes à relier / la liste « élément → bonne étiquette », « 1 → étiquette »
  * quand un élément contient une courbe), texte à trous (la réserve et les trous numérotés /
  * « 1 → étiquette ; 2 → étiquette »), robot à produire (le quadrillage et 15 cases vides /
- * le quadrillage et « Un code juste : … »).
+ * le quadrillage et « Un code juste : … »), labyrinthe à parcourir (la grille / le bon chemin
+ * teinté et « Sortie 3 : 73 → 89 → … »).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -65,6 +66,11 @@ import { findTrousToPlace, parseTrousContent } from '#lib/ubumark/parser/trous-p
 import { trousPlacedOf } from '#lib/ubumark/utils/trous.ts';
 import { findRobotsToProduce, parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
 import { readExpectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+import {
+	findLabyrinthesAParcourir,
+	parseLabyrintheContent
+} from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { cheminDit } from '#lib/ubumark/utils/labyrinthe-answer.ts';
 import {
 	findVariationsToFill,
 	revealVariationBody
@@ -188,6 +194,9 @@ function reponse(
 const CASE_LINE = /^\s*case\s*:/;
 /** `produire: oui` d'un robot : retirée au corrigé (le quadrillage seul) */
 const PRODUIRE_LINE = /^\s*produire\s*:/i;
+/** `parcourir: oui` d'un labyrinthe : `solution: oui` au corrigé (le bon chemin teinté) */
+const PARCOURIR_LINE = /^\s*parcourir\s*:/i;
+const SOLUTION_LINE = /^\s*solution\s*:/i;
 
 /**
  * Tableaux de signes à compléter (```variation à `?`) : leur corps réécrit par
@@ -561,6 +570,44 @@ function robotsAFiger(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/**
+ * Labyrinthes à parcourir (```labyrinthe, `parcourir: oui`) : à l'énoncé, le bloc sans
+ * `case:` (la grille, le chemin se trace au crayon) ; au corrigé (`corrige`), `parcourir:`
+ * devient `solution: oui` (le bon chemin teinté) et « Sortie 3 : 73 → 89 → … » dessous. La
+ * graine reste : énoncé et corrigé montrent la même grille. Une case par labyrinthe. Bloc en
+ * retrait ou cité, sans fin ou illisible → refus.
+ */
+function labyrinthesAFiger(
+	modele: string,
+	texte: string,
+	corrige: boolean
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findLabyrinthesAParcourir(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('labyrinthe à parcourir en retrait ou cité');
+		if (!bloc.closed) throw refus('labyrinthe à parcourir sans fin de bloc');
+		const node = parseLabyrintheContent(bloc.body.join('\n'));
+		if (node.errors.length > 0 || node.spec === null || node.caseIndex === undefined) {
+			throw refus(
+				`labyrinthe à parcourir illisible (${node.errors.map((e) => e.message).join(' ; ')})`
+			);
+		}
+		cases += 1;
+		const corps = bloc.body
+			// Au corrigé, une `solution:` écrite par l'auteur (`non`) ferait une clé en double
+			.filter((ligne) => !CASE_LINE.test(ligne) && !(corrige && SOLUTION_LINE.test(ligne)))
+			.map((ligne) => (corrige && PARCOURIR_LINE.test(ligne) ? 'solution: oui' : ligne));
+		const suite = corrige ? ['', `**${cheminDit(node.spec)}**`] : [];
+		const fin = bloc.startIndex + bloc.body.length + 1;
+		lignes.splice(bloc.startIndex + 1, bloc.body.length + 1, ...corps, lignes[fin], ...suite);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -678,6 +725,10 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 	const robotsEnonce = robotsAFiger(template.id, trousEnonce.texte, false, instance);
 	const robotsCorrige = robotsAFiger(template.id, trousCorrige.texte, true, instance);
 
+	// Labyrinthe à parcourir : la grille à l'énoncé, le bon chemin teinté au corrigé
+	const labyrinthesEnonce = labyrinthesAFiger(template.id, robotsEnonce.texte, false);
+	const labyrinthesCorrige = labyrinthesAFiger(template.id, robotsCorrige.texte, true);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
@@ -689,17 +740,18 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Question
 		graduationsEnonce.cases +
 		associerEnonce.cases +
 		trousEnonce.cases +
-		robotsEnonce.cases;
+		robotsEnonce.cases +
+		labyrinthesEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = robotsEnonce.texte
+	const enonce = labyrinthesEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = robotsCorrige.texte
+	const corrige = labyrinthesCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 
