@@ -23,8 +23,8 @@
 	import '#lib/utils/mathlive-styles.ts';
 	import { onMount, untrack } from 'svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
-	import { needsParenthesesAdvice } from '#lib/lexicon/parentheses-advice-grade.ts';
-	import { readReaderGrade } from '#lib/lexicon/reader-grade.ts';
+	import { needsParenthesesAdvice } from '#lib/dictionary/parentheses-advice-grade.ts';
+	import { readReaderGrade } from '#lib/dictionary/reader-grade.ts';
 	import type { CapitalPairs } from '#lib/mathAST/parser/index.ts';
 	import {
 		parenthesesAdvice,

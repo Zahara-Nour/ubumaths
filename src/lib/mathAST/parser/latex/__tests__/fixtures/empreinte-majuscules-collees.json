@@ -32,7 +32,7 @@
 	["$1$2", "7988d65cacb1"],
 	["$2  bracket.l  ( x + 2 )^2 - 4  bracket.r + 3$", "7612c17f6756"],
 	["$lib/components/markdown/utils/math-utils", "094f1014d5b4"],
-	["$lib/lexicon/linker", "bde376ba9c7d"],
+	["$lib/dictionary/linker", "bde376ba9c7d"],
 	["$lib/math", "7eb839812c58"],
 	["$lib/mathAST", "407fb4c25217"],
 	["$lib/questions/types", "931679512d9b"],

@@ -3,7 +3,7 @@
 	racine, puis le dictionnaire comme la page, et rend l'explorateur.
 -->
 <script lang="ts">
-	import { provideReaderGrade } from '#lib/lexicon/reader-grade.ts';
+	import { provideReaderGrade } from '#lib/dictionary/reader-grade.ts';
 	import type { CapitalPairs } from '#lib/mathAST/parser/index.ts';
 	import StructureField from '#lib/components/structure/StructureField.svelte';
 	import { provideStructureLexicon } from '#lib/components/structure/structure-lexicon.svelte.ts';

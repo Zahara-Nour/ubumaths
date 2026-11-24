@@ -2,7 +2,7 @@
  * Moins de mots soulignés sur les cartes (chantier `mots-cliquables`,
  * comportements validés par David le 2026-11-16) : R1 mots récents, R2 rien
  * dans la correction, R3 niveau d'un professeur ou d'un visiteur, R4 question
- * de cours. Le repérage lui-même : src/lib/lexicon/__tests__/mots-recents.test.ts.
+ * de cours. Le repérage lui-même : src/lib/dictionary/__tests__/mots-recents.test.ts.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
