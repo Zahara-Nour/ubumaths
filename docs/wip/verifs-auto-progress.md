@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3105 (paquet 8 du tri)._
+_Mis à jour le 2026-11-24 (nuit). ⚠️ Paquet 9 en cours : le bloc À JOUR est dans `../ubumaths-wt-verifs-tri-9/docs/wip/verifs-auto-progress.md` (branche `test/verifs-tri-9`), lire celui-là._
 
 - **État** : tri des vérifications manuelles : paquets 1 à 8 faits (#3061, #3064, #3065, #3066, #3074, #3085, #3093, #3105), **391 → 103 lignes**. #3096 mergée (erreur 500 de `/aide-ecriture/blocs/ranger`), pas encore en prod. Stash « verifs-tri-7 : nettoyage du brouillon listes » inutile, encore dans `git stash list`.
 - **Prochaine action** : paquet 9, le dernier du tri (32 lignes du 19 au 22 novembre, vérifier s'il y en a de plus récentes), worktree neuf (`ubumaths-wt-verifs-tri-9`), mêmes verrous d'élèves, plus `compte-prof-mode-test` pour tout fichier qui passe le prof en mode test ; ⛔ ne jamais jouer la déconnexion du prof local (elle révoque toutes ses sessions). **Ensuite** (ordre validé) : R12 (notifications), tâche de nuit unique (à accorder avec `ecarts-a-trier`), R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé). Les corrections d'écarts avancent dans le chantier `ecarts-verifs`.
@@ -16,7 +16,7 @@ _Mis à jour le 2026-11-24, après #3105 (paquet 8 du tri)._
 - **Registre des écarts** : `docs/ecarts/registre.md` (mode d'emploi : `docs/pratiques/registre-des-ecarts.md`). Écarts suivants : `pnpm ecarts ajouter E …` depuis le dépôt principal, après `git pull --rebase`, commit aussitôt (suivant : E64).
 - **Tâche de nuit** : la session du chantier `ecarts-a-trier` annonce (message du 2026-11-24, à relire dans `docs/wip/ecarts-a-trier-progress.md`) que David veut UNE seule tâche de nuit (`test:verifs`, preuves des écarts, gardes de doc, sans merge) : ne pas créer celle de R12 ici sans s'être accordé avec elle sur son contenu.
 - **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; `locator('visible=true')` et navigation par `href` quand un lien est redessiné ; lire des éléments d'un seul coup (`evaluateAll`) après un changement de thème ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur ; décor partagé en `serial`, élèves partagés sous verrou ; **brouillons d'un fichier parallèle : préfixe de titre avec le projet et `parallelIndex`, sinon l'`afterAll` d'un worker efface ceux des autres** ; `test.fail()` juste avant l'assertion de l'écart ; un agent qui a livré mais garde des lancements en fond : l'arrêter (TaskStop) ; ne JAMAIS changer l'attendu seul ; un modèle `published` sans nœud de l'arbre s'affiche dans `/automaths` sous « Non classés » : ceux que créent `questions-paquet5` et `blocs-geometrie-5` y passent le temps de leur test ; le worktree d'un paquet ne s'appelle pas `…-verifs-auto` : avant un `/reprendre`, chercher aussi `ubumaths-wt-verifs-tri-*`. Paquet 6 : `--output` efface les captures du dossier (un dossier par lancement ET par projet) ; trois agents sur le même serveur le font recharger des pages en plein test (rouges de charge, verts rejoués seuls) ; `goto` juste après une connexion → attendre `networkidle`.
-- **Worktree / branche** : aucun (celui de #3105 retiré).
+- **Worktree / branche** : `../ubumaths-wt-verifs-tri-9`, branche `test/verifs-tri-9` (paquet 9, PR pas encore ouverte).
 
 ## Tri — paquet 8 : lignes du 15 au 18 novembre (2026-11-24)
 
