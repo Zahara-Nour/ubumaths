@@ -30,9 +30,6 @@ HISTORIQUE="$ETAT/historique.csv"
 VOLUME_DISQUE="${SURVEILLANCE_DISQUE:-/System/Volumes/Data}"
 [ -d "$VOLUME_DISQUE" ] || VOLUME_DISQUE=/
 VOLUME_PREBOOT="${BILAN_PREBOOT:-/System/Volumes/Preboot}"
-SEUIL_EMBALLE_CPU="${SEUIL_EMBALLE_CPU:-90}"       # CPU d'un processus, en %
-SEUIL_EMBALLE_HEURES="${SEUIL_EMBALLE_HEURES:-1}"  # temps CPU cumulé de ce processus
-SEUIL_ZOMBIES="${SEUIL_ZOMBIES:-3}"                # processus morts non ramassés par un même parent
 SEUIL_PREBOOT_GO="${SEUIL_PREBOOT_GO:-10}"         # au-delà : mise à jour de macOS préparée
 SEUIL_NAVIGATEUR_JOURS="${SEUIL_NAVIGATEUR_JOURS:-7}"
 
@@ -46,43 +43,6 @@ fi
 # Nombre décimal à la française : « 4,1 ».
 virgule() { sed 's/\./,/'; }
 go_de_ko() { LC_ALL=C awk -v k="$1" 'BEGIN { printf "%.1f", k / 1048576 }' | virgule; }
-
-# Temps CPU cumulé de ps en secondes : « 3203:22.05 » (macOS, minutes:secondes)
-# ou « [jj-]hh:mm:ss » (Linux).
-secondes_cpu() {
-	case "$1" in
-	*.*)
-		local min="${1%%:*}" sec="${1#*:}"
-		sec="${sec%%.*}"
-		echo $((10#$min * 60 + 10#$sec))
-		;;
-	*) secondes_depuis_etime "$1" ;;
-	esac
-}
-
-# Nom lisible d'un processus : l'appli (.app) et le rôle du processus d'un navigateur,
-# sinon le nom de l'exécutable.
-nom_lisible() {
-	local commande="$1" appli role=""
-	if [[ "$commande" =~ /([^/]+)\.app/ ]]; then
-		appli="${BASH_REMATCH[1]}"
-		case "$appli" in
-		"Google Chrome") appli=Chrome ;;
-		"Brave Browser") appli=Brave ;;
-		"Google Chrome for Testing") appli=Chrome-Playwright ;;
-		esac
-		case "$commande" in
-		*--type=gpu-process*) role=" (processus graphique)" ;;
-		*--extension-process*) role=" (extension)" ;;
-		*--type=renderer*) role=" (onglet)" ;;
-		*--type=utility*) role=" (utilitaire)" ;;
-		esac
-		echo "$appli$role"
-	else
-		local exe="${commande%% *}"
-		echo "${exe##*/}"
-	fi
-}
 
 titre() { printf '\n\033[1m%s\033[0m\n' "$1"; }
 
@@ -134,23 +94,17 @@ sort -t "$(printf '\t')" -k2,2nr <<<"$PROGRAMMES" | awk -F '\t' '$1 != "autres" 
 # ── Processus emballés ────────────────────────────────────────────────────────
 titre "Processus emballés"
 emballes=0
-while read -r pid _ppid pcpu temps etime _stat _rss commande; do
+while read -r pid cpu cpu_s etime commande; do
 	[ -n "$pid" ] || continue
-	[ "${pcpu%%.*}" -ge "$SEUIL_EMBALLE_CPU" ] 2>/dev/null || continue
-	cpu_s="$(secondes_cpu "$temps")"
-	[ "$cpu_s" -ge $((SEUIL_EMBALLE_HEURES * 3600)) ] || continue
-	echo "  ⚠️  $(nom_lisible "$commande") — pid $pid, ${pcpu%%.*} % de CPU, $(duree_lisible "$cpu_s") de CPU cumulées, lancé il y a $(duree_lisible "$(secondes_depuis_etime "$etime")")"
+	echo "  ⚠️  $(nom_lisible "$commande") — pid $pid, $cpu % de CPU, $(duree_lisible "$cpu_s") de CPU cumulées, lancé il y a $(duree_lisible "$(secondes_depuis_etime "$etime")")"
 	emballes=$((emballes + 1))
-done <<<"$TOUS"
-# Processus morts (stat Z) que leur parent ne ramasse plus : parent sans doute bloqué.
-zombies="$(awk '$6 ~ /^Z/ { n[$2]++ } END { for (p in n) print p, n[p] }' <<<"$TOUS")"
-while read -r parent nombre; do
+done < <(processus_emballes)
+# Processus morts que leur parent ne ramasse plus : parent sans doute bloqué.
+while read -r parent nombre commande; do
 	[ -n "$parent" ] || continue
-	[ "$nombre" -ge "$SEUIL_ZOMBIES" ] || continue
-	commande_parent="$(awk -v p="$parent" '$1 == p { $1 = $2 = $3 = $4 = $5 = $6 = $7 = ""; sub(/^ +/, ""); print; exit }' <<<"$TOUS")"
-	echo "  ⚠️  $(nom_lisible "${commande_parent:-?}") (pid $parent) : $nombre processus morts non ramassés — il ne répond sans doute plus"
+	echo "  ⚠️  $(nom_lisible "${commande:-?}") (pid $parent) : $nombre processus morts non ramassés — il ne répond sans doute plus"
 	emballes=$((emballes + 1))
-done <<<"$zombies"
+done < <(parents_bloques)
 [ "$emballes" = 0 ] && echo "  aucun"
 
 # Navigateurs ouverts depuis longtemps : un redémarrage les remet d'aplomb.
@@ -170,13 +124,9 @@ done <<<"$TOUS"
 
 # ── Sessions Claude ───────────────────────────────────────────────────────────
 titre "Sessions Claude"
-awk '{
-	cmd = $8; sub(/.*\//, "", cmd)
-	if (cmd == "claude" || $8 ~ /\/claude\/versions\//) print $5, $7
-}' <<<"$TOUS" | {
+sessions_claude | {
 	n=0 rss=0 j0=0 j1=0 j3=0 j7=0
-	while read -r etime ko; do
-		age="$(secondes_depuis_etime "$etime")"
+	while read -r age ko; do
 		n=$((n + 1))
 		rss=$((rss + ko))
 		if [ "$age" -lt 86400 ]; then
