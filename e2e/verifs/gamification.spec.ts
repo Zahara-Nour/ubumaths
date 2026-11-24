@@ -4,6 +4,7 @@ import { dirname } from 'node:path';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { MATHOU_RACES } from '../../src/lib/components/mathoux/mathou-races';
 import { ADMIN, assertLocalServerEnv, login, PHONE, sql, TEACHER } from './helpers/carnet';
+import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 
 /**
  * Gamification de l'élève — les vérifications manuelles, sur la base locale
@@ -67,8 +68,14 @@ let startedAt = '';
 const snapshot = new Map<string, unknown[]>();
 let startGidouilles: { id: string; gidouilles: string }[] = [];
 
+let lockHeld = false;
+
 test.beforeAll(async () => {
+	test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
 	assertLocalServerEnv();
+	// Mêmes élèves que mathoux-decorations : un seul des deux fichiers à la fois
+	await acquireLock('eleves-10-15');
+	lockHeld = true;
 	startedAt = (await sql<{ now: string }>('select now()::text as now'))[0].now;
 	for (const table of SNAPSHOT_TABLES) {
 		const rows = await sql<{ r: unknown }>(
@@ -87,6 +94,14 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
+	try {
+		await restoreDecor();
+	} finally {
+		if (lockHeld) releaseLock('eleves-10-15');
+	}
+});
+
+async function restoreDecor(): Promise<void> {
 	if (!startedAt) return;
 	for (const table of APPENDED_TABLES) {
 		await sql(`delete from ${table} where student_id = any($1) and created_at >= $2`, [
@@ -113,7 +128,7 @@ test.afterAll(async () => {
 		]);
 	}
 	await sql(`delete from rate_limits where key like 'account_export:%'`);
-});
+}
 
 // Functions
 

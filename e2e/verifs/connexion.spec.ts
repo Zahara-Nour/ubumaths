@@ -7,6 +7,7 @@ import {
 	sql,
 	waitForEmail
 } from './helpers/carnet';
+import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 
 /**
  * Connexion et inscription par le parent — les vérifications manuelles, sur la base locale
@@ -32,8 +33,17 @@ const CLASS_CODE = 'DEVLOCAL';
 const CHILD_FIRSTNAME = 'Verifsenfant';
 const CHILD_PASSWORD = 'Verifs-Parent-2468-xq';
 
-test.beforeAll(() => {
+let lockHeld = false;
+
+test.beforeAll(async () => {
+	test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
 	assertLocalServerEnv();
+	await acquireLock('eleves-21-25');
+	lockHeld = true;
+});
+
+test.afterAll(() => {
+	if (lockHeld) releaseLock('eleves-21-25');
 });
 
 async function fillLogin(page: Page, identifier: string, password: string): Promise<void> {

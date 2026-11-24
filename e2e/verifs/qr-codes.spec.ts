@@ -3,6 +3,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import type { Locator } from '@playwright/test';
 import { expect, test, type Page } from '@playwright/test';
 import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 import { encodeQr, QR_BORDER, QR_COLORS } from '../../src/lib/qr/qr-code';
 import {
 	decodeQrFromDataUrl,
@@ -38,12 +39,21 @@ const SHORT = /^https:\/\/www\.chiph\.re\/l\/[a-km-np-zA-HJ-NP-Z2-9]{8}$/;
 /** Codes de liens courts créés par ces tests : retirés en fin de passage */
 const createdCodes = new Set<string>();
 
-test.beforeAll(() => {
+let lockHeld = false;
+
+test.beforeAll(async () => {
+	test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
 	assertLocalServerEnv();
+	await acquireLock('eleves-21-25');
+	lockHeld = true;
 });
 
 test.afterAll(async () => {
-	for (const code of createdCodes) await sql('delete from short_links where code = $1', [code]);
+	try {
+		for (const code of createdCodes) await sql('delete from short_links where code = $1', [code]);
+	} finally {
+		if (lockHeld) releaseLock('eleves-21-25');
+	}
 });
 
 async function seriesLink(): Promise<string> {
