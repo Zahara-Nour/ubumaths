@@ -8,18 +8,16 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, 2 neufs publiés._
+_Mis à jour le 2026-11-24, PR de correction F12 ouverte._
 
-- **État** : en prod, 2 neufs validés par David et **publiés** (a6e58402 TSPE-438, 99326dee TSPE-441) et
-  +16 variations sur les 9 publiés (vérifié) · **Prochaine action** : PR de correction F12
-  (7f13ca89 v5, tagué aussi TCOMP-231) : ajouter à l'énoncé « On admet que
-  $\lim_{x\to+\infty}\frac{\ln x}{x}=0$ » (bornes tcomp, décision ltc-1 : croissances comparées
-  données seulement) dans `docs/wip/questions/idees-tle-ln-publies.py` (ré-exporter 7f13ca89 de
-  prod d'abord), migration de contenu « corrigée » ; dans la même PR, la série de relecture des
-  9 publiés (`scripts/series/creer-serie.ts`) · **En attente de David** : rien (relecture des
-  9 publiés par la série, après la PR) · **Pièges en
-  cours** : F12 hors bornes TCOMP tant que la correction n'est pas migrée · **Worktree /
-  branche** : aucun (nouveau worktree sur `origin/main`, même sujet).
+- **État** : 2 neufs et +16 variations en prod ; PR `fix/idees-tle-ln-f12` : F12 (7f13ca89 v5)
+  admet $\lim \ln x/x=0$ dans l'énoncé (bornes TCOMP, ltc-1), migration
+  `20261124134110_…_publies_contenu` (1 corrigée), série `scripts/series/T_SPE-relecture-logarithme-publies.json`
+  (9 modèles, simulation verte) · **Prochaine action** : après merge, `db:migrate` et
+  `creer-serie.ts --publier` (David, prod), puis relecture des 9 dans `/dev/modeles` et lecture des
+  verdicts · **En attente de David** : `db:migrate` + publication de la série · **Pièges en cours** :
+  F12 hors bornes TCOMP jusqu'au `db:migrate` · **Worktree / branche** :
+  `ubumaths-wt-idees-tle-ln-f12` / `fix/idees-tle-ln-f12`.
 
 ## Historique
 
@@ -96,3 +94,13 @@ _Mis à jour le 2026-11-24, 2 neufs publiés._
 - Reste : PR de correction F12 + série de relecture des 9 publiés, puis clôture (tableau : rubrique
   publiée, 9 réservations levées, idée TSA5-41 « f(x) = 0 a deux solutions » → « Idées en attente »
   pour la rubrique continuité).
+
+### 2026-11-24 — correction F12, série de relecture
+
+- 7f13ca89 ré-exporté de prod : contenu identique au fichier (mise en forme seule). F12 : « On admet
+  que $\displaystyle\lim_{x\to+\infty}\dfrac{\ln x}{x}=0$. » ajouté à l'énoncé ; dans la correction,
+  « (croissances comparées) » → « (admis dans l'énoncé) ». Diff du fichier : ces deux chaînes seules.
+- `question:specs` vert (250 tirages) ; `migration-contenu.ts` : 8 inchangés, 7f13ca89 1 corrigée (n° 5) ;
+  test d'intégration `migrations-contenu-publie` vert. Rendu : mêmes commandes LaTeX que les corrections
+  de la variation, vues à l'écran avant #3083.
+- Série `T_SPE-relecture-logarithme-publies.json` (9 modèles, 1 × 60 s, 9 min) : simulation verte en prod.

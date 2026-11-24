@@ -581,7 +581,8 @@ SPECS_7C = [
 VAL12 = '{{eval:a*x0+b}}{{eval:k;+}}\\ln{ {{x0}} }'
 F12 = variation(
     'Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=' + coef('a')
-    + 'x{{b;+}}{{k;+}}\\ln x$.\n\nÉtudie le signe de $f\'(x)$, puis complète le tableau de '
+    + 'x{{b;+}}{{k;+}}\\ln x$. On admet que '
+    '$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{x}=0$.\n\nÉtudie le signe de $f\'(x)$, puis complète le tableau de '
     'variations de $f$, limites comprises.\n\n'
     + bloc('variation', 'variable: x', 'domain: 0, ?{{x0}}, +inf', '',
            "sign: f'(x)",
@@ -619,7 +620,7 @@ F12 = variation(
         '{{if:a>0|négatif|positif}}, donc $\\displaystyle\\lim_{x\\to0}f(x)=' + PRIMAIRE
         + '{ {{if:a>0|+\\infty|-\\infty}} }$.',
         'En $+\\infty$ : forme indéterminée. $f(x)=x\\left({{a}}{{b;+}}\\times\\dfrac{1}{x}{{k;+}}'
-        '\\times\\dfrac{\\ln x}{x}\\right)$ et $\\dfrac{\\ln x}{x}\\to 0$ (croissances comparées) : '
+        '\\times\\dfrac{\\ln x}{x}\\right)$ et $\\dfrac{\\ln x}{x}\\to 0$ (admis dans l\'énoncé) : '
         'la parenthèse tend vers ${{a}}$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=' + PRIMAIRE
         + '{ {{if:a>0|+\\infty|-\\infty}} }$.',
     ],

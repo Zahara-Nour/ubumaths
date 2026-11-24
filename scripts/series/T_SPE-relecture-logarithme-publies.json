@@ -1,0 +1,61 @@
+{
+	"title": "Relecture — logarithme de Terminale, 9 modèles publiés complétés",
+	"grade": "T_SPE",
+	"description": "Relecture dans /dev/modeles des 9 modèles publiés de Tle spé auxquels le chantier idees-tle-ln a ajouté 16 variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Croissances comparées : logarithme et puissances",
+			"templateId": "2cef3442-e79c-4be5-b139-dce2d32a9fb0",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Dérivée de eᵘ, ln u et u²",
+			"templateId": "50feeefd-27d8-4b73-9e97-e3226091fb0a",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Intervalle de croissance ou de décroissance d'une fonction avec ln",
+			"templateId": "7f13ca89-ad64-4665-9f6b-e11fad8f8b08",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Inégalité déduite de la convexité (tangente)",
+			"templateId": "e814175b-95f0-4a2d-8689-e76c01ea91e6",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Propriétés algébriques du logarithme",
+			"templateId": "ffd5c051-3db1-416b-9279-ee740ffb8d34",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Propriétés algébriques du logarithme",
+			"templateId": "7c8b341b-34e4-4328-9e21-d4b508796021",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Résoudre une inéquation avec ln",
+			"templateId": "14036c68-6854-422b-b06d-3890b3745573",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Résoudre une équation avec ln",
+			"templateId": "d3301f2d-6293-4766-a789-d432cb11b489",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Seuil : plus petit entier n tel que qⁿ dépasse une valeur (logarithme)",
+			"templateId": "f1963ef2-4618-4ae7-9491-9955dacd0258",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
