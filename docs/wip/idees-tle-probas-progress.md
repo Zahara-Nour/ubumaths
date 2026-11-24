@@ -5,11 +5,10 @@
 _Mis à jour le 2026-11-24, brouillons créés en prod, migrations générées._
 
 - **État** : 2 brouillons en prod (a3aa8f4a F2, 1220760b F3) ; migrations de rangement et de contenu générées
-  et vertes en intégration ; revue `security-auditor` puis PR.
+  et vertes en intégration ; `security-auditor` sans bloquant ; PR ouverte.
 - **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite relecture dans `/dev/modeles`.
 - **En attente de David** : rien pour l'instant (relecture après le `db:migrate`).
-- **Pièges en cours** : ids de `scripts/questions/labyrinthe-modeles/01…` et `02…` apparus dans ce worktree
-  (création qui n'est pas de ce chantier) : ni commités, ni restaurés, signalés à David.
+- **Pièges en cours** : niveau de F3 (6) égal à celui de 4ee9a359 sur le même nœud, sans effet bloquant.
 - **Worktree / branche** : `../ubumaths-wt-idees-tle-probas` · `feat/idees-tle-probas`.
 
 Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Relevé :
@@ -69,3 +68,7 @@ https://claude.ai/artifact/6kVwijQ36onX4iXNpsL1Ga
   comprises).
 - Défaut de rendu `P_A(G)` → « P_A G » : corrigé à part, PR #3103 (`fix/rendu-indice-parentheses`, cause :
   `cleanCoefficients`).
+- `security-auditor` sur les deux migrations : aucun bloquant (seules `question_templates` et
+  `question_template_points` écrites, gardes exactes, rollback en commentaire, quoting sûr). Non bloquant :
+  le prénom « Noé » d'ecf4d46b v2, déjà en prod, personnage d'énoncé.
+- Correctif #3103 mergé, worktree retiré, journal versé dans `docs/archive/wip/rendu-indice-parentheses/`.
