@@ -10,9 +10,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { Atelier } from '#lib/atelier/atelier.svelte';
+import { Atelier } from '#lib/atelier/atelier.svelte.ts';
 import { WebReplEngine } from '#lib/mathAST/cli/web/web-repl-engine.ts';
-import { runInput, type CalcResult } from '#lib/atelier/calcul';
+import { runInput, type CalcResult } from '#lib/atelier/calcul.ts';
 import { toLatex } from '#lib/mathAST/index.ts';
 import { parseLatex } from '#lib/mathAST/parser/index.ts';
 import { tidy } from '#lib/mathAST/tidy/index.ts';
