@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (T20, T25, T27) prête, push en échec ; PR 2 (T21, T22) à faire
+status: PR 1 (T20, T25, T27) mergée (#3115) ; PR 2 (T21, T22) à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR 1 prête mais non poussée._
+_Mis à jour le 2026-11-24, après #3115._
 
-- **État** : PR 1 (T20, T25, T27) commitée sur la branche, revues `code-reviewer` + `security-auditor` faites et corrigées, rendu vu à l'écran, `origin/main` mergé dedans. **Le push a échoué** (`git@github.com: Permission denied (publickey)`, alors que le `fetch` venait de passer) : rien n'est sur GitHub, aucune PR ouverte. Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
-- **Prochaine action** : quand David a rétabli l'accès SSH : `git push -u origin fix/ecarts-moderation`, ouvrir la PR, CI verte → `pnpm pr:merger <n>` (aucune migration) ; puis, sur `main` : barrer T20, T25, T27 au registre (la preuve de T25 grepe « storage » dans les deux routes : la remplacer par le grep de `deleteBugReportWithScreenshot` avant `pnpm ecarts rejouer --barrer`), entrer les quatre écarts listés au § « Revues de la PR 1 », mettre à jour le bloc d'`ecarts-a-trier`. Ensuite **PR 2** : T21 (onglet « Messages marqués », option a : seulement les conversations que le prof peut déjà ouvrir) et T22 (liste de mots proposée sur une page à cocher, relue par David, puis migration).
-- **En attente de David** : l'accès SSH à GitHub (push refusé) ; PR 2 : relecture de la liste de mots (page à cocher à lui envoyer).
-- **Pièges en cours** : T24 hors lot (suspendu avec le tuteur, D21) ; le faux client `createWriteVerdictSupabase` rend `EMPTY` à `maybeSingle` si la table ne donne que `awaited` ; un `catch` large du lot avale un import manquant (« Erreur inattendue ») ; pour voir l'alerte de T20 à l'écran, forcer `reportsLoadFailed: true` le temps de la capture puis restaurer.
-- **Worktree / branche** : `ubumaths-wt-ecarts-moderation` · `fix/ecarts-moderation`.
+- **État** : **PR 1 mergée (#3115)** : T20, T25, T27 corrigés et barrés au registre (preuves vertes) ; quatre écarts relevés par les revues entrés : T28 (règles d'accès du stockage des captures absentes des migrations), T29 (l'auteur réécrit toutes les colonnes de son rapport en attente), L122 (effacement de l'ancienne capture sans regarder la liste rendue), L123 (badge de modération qui disparaît en silence). Aucune migration. Pas encore en prod (pas de `deploy:prod` demandé). Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **Prochaine action** : **PR 2** : T21 (onglet « Messages marqués », option a : seulement les conversations que le prof peut déjà ouvrir, aucun accès nouveau) et T22 (liste de mots proposée sur une page à cocher, relue par David, puis migration). Nouveau worktree `ubumaths-wt-ecarts-moderation` depuis `origin/main`. Données d'élèves : revue `code-reviewer` + `security-auditor`, tests d'intégration si RLS.
+- **En attente de David** : PR 2 : relecture de la liste de mots (page à cocher à lui envoyer).
+- **Pièges en cours** : T24 hors lot (suspendu avec le tuteur, D21) ; le faux client `createWriteVerdictSupabase` rend `EMPTY` à `maybeSingle` si la table ne donne que `awaited` ; un `catch` large du lot avale un import manquant (« Erreur inattendue ») ; les règles d'accès du stockage des captures n'existent qu'en prod (T28) : la pile locale ne les a pas.
+- **Worktree / branche** : aucun (retiré au merge de #3115).
 
 ---
 
