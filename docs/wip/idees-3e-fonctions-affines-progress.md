@@ -4,17 +4,33 @@
 
 _Mis à jour le 2026-11-24, avant toute PR._
 
-- **État** : rubrique 3F2 réservée (main c1d4925539) ; relevé écrit
-  ([idees-3e-fonctions-affines-releve.md](idees-3e-fonctions-affines-releve.md)) ; fiches de phase 0
-  ci-dessous, page à cocher publiée : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f (verdicts
-  en base de la page, collection `verdicts`).
-- **Prochaine action** : lire les verdicts de David sur la page à cocher, puis écrire le gros lot.
-- **En attente de David** : verdicts des 7 fiches, questions Q1 à Q3.
+- **État** : phase 0 validée (« je suis tes recos », § Phase 0). 3 modèles publiés exportés dans
+  `scripts/questions/idees-3e-fonctions-affines-publies/` et réservés. Lot en cours d'écriture par
+  deux agents, NON commité : `docs/wip/questions/idees-3e-fonctions-affines-{publies,neufs}.py`
+  → `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`.
+- **Prochaine action** : relire ces fichiers DANS LE CODE (agent interrompu = fichiers peut-être
+  incomplets) ; relancer les contrôles (script, `question:specs --file`, `create-questions` en
+  simulation, `sonde-courbes`, diff des publiés = ajouts en fin seulement) ; essai en base
+  locale ; PR des fichiers.
+- **En attente de David** : rien avant la PR ; avant le rangement, la conséquence de Q1 (N2 rangé
+  en géométrie, § Phase 0).
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
+  Page à cocher (non remplie) : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions-affines`,
   `feat/idees-3e-fonctions-affines`.
 
 ## Phase 0 (2026-11-24)
+
+**Décision de David (2026-11-24)** : « je suis tes recos » — les 7 fiches (F1-F3, N1-N4) et les
+réponses recommandées à Q1 (point 2-322), Q2 (antécédent fractionnaire : oui), Q3 (seulement
+x/c + b). Page à cocher non remplie. Modèles publiés 15ddcc75, 7c7b7593, 45247528 réservés dans
+le tableau de répartition (main b6c08a4aea).
+
+⚠️ Conséquence de Q1 relevée après coup (à dire à David avant la migration de rangement) : le
+point 2-322 est rangé sous « Géométrie > Géométrie repérée > équations de droites » ; la règle
+« point sur le nœud ou sur sa notion » range donc N2 dans ce nœud de géométrie, pas sous
+« Fonctions affines ». Autre choix : N2 sans point, sous « Fonctions > Fonctions affines >
+expression et droite ».
 
 Question d'accès de la migration : **personne** ne gagne de lecture (on range et on tague des
 modèles de questions).
