@@ -1,0 +1,644 @@
+{
+	"id": "f61ddbbb-d952-4b9b-9f1e-28335a508b32",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "1SPE-283"
+	},
+	"title": "Tableau de variations d'une fonction avec exponentielle",
+	"description": "Signe de f′ et tableau de variations à compléter pour (ax + b)eˣ, (px + q)e^{kx}, ax + c − aeˣ, et f′ = (eˣ − 1)(eˣ + b) donnée ; sans limites.",
+	"grades": ["1_SPE"],
+	"level": 5,
+	"delay": 300,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{eval:a*x+b}})e^{x}$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: -inf, ?{{x0}}, +inf\n\nsign: f'(x)\n  -inf,{{x0}}: ?{{if:a>0|-|+}}\n  {{x0}}: z\n  {{x0}},+inf: ?{{if:a>0|+|-}}\n\nvariation: f(x)\n  {{x0}}: ?{{eval:-a}}{{if:x0==1|e|e^{ {{x0}} }}}, {{if:a>0|bottom|top}}\n  -inf,{{x0}}: ?flèche\n  {{x0}},+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "x0",
+					"expression": "-3|-2|-1|1|2|3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*x0-a"
+				}
+			],
+			"conditions": ["b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-b/a}}",
+							"message": "C'est $f'(x)$ qu'il faut annuler, pas le facteur de $f(x)$ : calcule d'abord $f'(x)$.",
+							"label": "Racine de ax + b"
+						},
+						{
+							"answer": "{{eval:-x0}}",
+							"message": "Attention au signe : résous $f'(x)=0$.",
+							"label": "Signe de x₀"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a}}",
+							"message": "N'oublie pas le facteur exponentiel dans $f(x_0)$.",
+							"label": "Facteur exponentiel oublié"
+						},
+						{
+							"answer": "{{a}}{{if:x0==1|e|e^{ {{x0}} }}}",
+							"message": "Attention au signe : calcule $f(x_0)$ en remplaçant $x$ par $x_0$.",
+							"label": "Signe de la valeur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=uv$ avec $u(x)={{eval:a*x+b}}$ et $v(x)=e^{x}$ : $f'(x)={{a}}e^{x}+({{eval:a*x+b}})e^{x}=({{eval:a*x+a+b}})e^{x}$.",
+					"$e^{x}>0$ : $f'(x)$ a le signe de ${{eval:a*x+a+b}}$, qui s'annule en $x_0=\\textcolor{{{color:primary.0}}}{ {{x0}} }$ ; {{if:a>0|négatif avant, positif après|positif avant, négatif après}}.",
+					"$f$ est {{if:a>0|décroissante puis croissante|croissante puis décroissante}}, avec un {{if:a>0|minimum|maximum}} : $f({{x0}})=({{eval:a*x0+b}}){{if:x0==1|e|e^{ {{x0}} }}}=\\textcolor{{{color:primary.0}}}{ {{eval:-a}}{{if:x0==1|e|e^{ {{x0}} }}}}$."
+				]
+			},
+			"hint": "Calcule $f'(x)$ et factorise-la. Une exponentielle est strictement positive : le signe de $f'(x)$ est celui de l'autre facteur."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{eval:p*x+q}})e^{ {{eval:k*x}} }$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: -inf, ?{{x0}}, +inf\n\nsign: f'(x)\n  -inf,{{x0}}: ?{{if:r>0|-|+}}\n  {{x0}}: z\n  {{x0}},+inf: ?{{if:r>0|+|-}}\n\nvariation: f(x)\n  {{x0}}: ?{{if:r==1|-|{{if:r==-1||{{eval:-r}}}}}}e^{ {{eval:k*x0}} }, {{if:r>0|bottom|top}}\n  -inf,{{x0}}: ?flèche\n  {{x0}},+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|-2|-3"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "x0",
+					"expression": "-2|-1|1|2"
+				},
+				{
+					"name": "p",
+					"expression": "eval:k*r"
+				},
+				{
+					"name": "q",
+					"expression": "eval:-r*(k*x0+1)"
+				}
+			],
+			"conditions": ["q != 0", "-(p+q)*1 != x0*p"],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-x0}}",
+							"message": "Attention au signe : résous $f'(x)=0$.",
+							"label": "Signe de x₀"
+						},
+						{
+							"answer": "{{eval:-(p+q)/p}}",
+							"message": "La dérivée de $e^{kx}$ est $ke^{kx}$ : vérifie ta dérivée avant de l'annuler.",
+							"label": "Facteur k oublié dans la dérivée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-r}}",
+							"message": "N'oublie pas le facteur exponentiel dans $f(x_0)$.",
+							"label": "Facteur exponentiel oublié"
+						},
+						{
+							"answer": "{{if:r==1|-|{{if:r==-1||{{eval:-r}}}}}}e^{ {{x0}} }",
+							"message": "En $x_0$, l'exposant vaut $kx_0$ : remplace $x$ par $x_0$ dans tout l'exposant.",
+							"label": "Exposant x₀ au lieu de kx₀"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=uv$ avec $u(x)={{eval:p*x+q}}$ et $v(x)=e^{ {{eval:k*x}} }$ : $f'(x)={{p}}e^{ {{eval:k*x}} }+({{eval:p*x+q}})\\times{{k;()}}e^{ {{eval:k*x}} }=({{eval:k*p*x+p+k*q}})e^{ {{eval:k*x}} }$.",
+					"$e^{ {{eval:k*x}} }>0$ : $f'(x)$ a le signe de ${{eval:k*p*x+p+k*q}}$, qui s'annule en $x_0=\\textcolor{{{color:primary.0}}}{ {{x0}} }$ ; {{if:r>0|négatif avant, positif après|positif avant, négatif après}}.",
+					"$f$ est {{if:r>0|décroissante puis croissante|croissante puis décroissante}}, avec un {{if:r>0|minimum|maximum}} : $f({{x0}})=({{eval:p*x0+q}})e^{ {{eval:k*x0}} }=\\textcolor{{{color:primary.0}}}{{{if:r==1|-|{{if:r==-1||{{eval:-r}}}}}}e^{ {{eval:k*x0}} }}$."
+				]
+			},
+			"hint": "Calcule $f'(x)$ et factorise-la. Une exponentielle est strictement positive : le signe de $f'(x)$ est celui de l'autre facteur."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:a*x+c}}{{eval:-a;+}}e^{x}$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: -inf, ?0, +inf\n\nsign: f'(x)\n  -inf,0: ?{{if:a>0|+|-}}\n  0: z\n  0,+inf: ?{{if:a>0|-|+}}\n\nvariation: f(x)\n  0: ?{{eval:c-a}}, {{if:a>0|top|bottom}}\n  -inf,0: ?flèche\n  0,+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "1",
+							"message": "$e^{x}=1$ équivaut à $x=0$, car $1=e^0$.",
+							"label": "eˣ = 1 lu x = 1"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Résous $f'(x)=0$ : $e^{x}=1$, et non $x$ égal au coefficient.",
+							"label": "Coefficient au lieu de x₀"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}",
+							"message": "$e^0=1$ : ce terme ne s'annule pas en $0$.",
+							"label": "e⁰ lu 0"
+						},
+						{
+							"answer": "{{eval:c+a}}",
+							"message": "Attention au signe : calcule $f(x_0)$ en remplaçant $x$ par $x_0$.",
+							"label": "Signe de la valeur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{a}}{{eval:-a;+}}e^{x}={{a}}\\left(1-e^{x}\\right)$.",
+					"$1-e^{x}\\geqslant 0\\iff e^{x}\\leqslant e^0\\iff x\\leqslant 0$ (l'exponentielle est strictement croissante) : $1-e^{x}$ est positif avant $0$, négatif après, et $f'(x)$ a en plus le signe de ${{a}}$.",
+					"$f$ est {{if:a>0|croissante puis décroissante|décroissante puis croissante}}, avec un {{if:a>0|maximum|minimum}} : $f(0)={{c}}{{eval:-a;+}}e^0=\\textcolor{{{color:primary.0}}}{ {{eval:c-a}} }$."
+				]
+			},
+			"hint": "Calcule $f'(x)$ et factorise-la. Pour son signe, compare $e^{x}$ à $1=e^0$."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{e^{2x}}{2}+{{eval:b-1}}e^{x}-{{b}}x$. On admet que pour tout réel $x$, $f'(x)=\\left(e^{x}-1\\right)\\left(e^{x}+{{b}}\\right)$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: -inf, ?0, +inf\n\nsign: f'(x)\n  -inf,0: ?-\n  0: z\n  0,+inf: ?+\n\nvariation: f(x)\n  0: ?{{eval:b-1/2}}, bottom\n  -inf,0: ?flèche\n  0,+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "1",
+							"message": "$e^{x}=1$ équivaut à $x=0$, car $1=e^0$.",
+							"label": "eˣ = 1 lu x = 1"
+						},
+						{
+							"answer": "{{eval:-b}}",
+							"message": "Une exponentielle est strictement positive : $e^{u}=-m$ avec $m>0$ n'a pas de solution.",
+							"label": "eˣ = −b résolu"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:b-1}}",
+							"message": "En $0$, $\\dfrac{e^{2x}}{2}$ vaut $\\dfrac{1}{2}$ : n'oublie pas ce terme.",
+							"label": "Terme e^{2x}/2 oublié"
+						},
+						{
+							"answer": "{{eval:b+1/2}}",
+							"message": "$e^0=1$ : le terme en $e^{x}$ vaut le coefficient, pas $0$.",
+							"label": "Terme en eˣ oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $e^{x}>0$, donc $e^{x}+{{b}}>0$ : $f'(x)$ a le signe de $e^{x}-1$.",
+					"$e^{x}-1\\geqslant 0\\iff e^{x}\\geqslant e^0\\iff x\\geqslant 0$ : $f'(x)$ est négatif avant $\\textcolor{{{color:primary.0}}}{0}$, positif après.",
+					"$f$ est décroissante puis croissante, avec un minimum : $f(0)=\\dfrac{1}{2}+{{eval:b-1}}=\\textcolor{{{color:primary.0}}}{ {{eval:b-1/2}} }$."
+				]
+			},
+			"hint": "Le facteur $e^{x}+{{b}}$ est toujours positif : étudie le signe de $e^{x}-1$ en le comparant à $0$, avec $1=e^0$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x + 2)eˣ : −2, −, +, ↘, −2e^{−2}, ↗",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x0": "-2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "-", "+", "↘", "-2e^{-2}", "↗"]
+		},
+		{
+			"description": "Valeur écrite −2/e²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x0": "-2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "-", "+", "↘", "-\\frac{2}{e^2}", "↗"]
+		},
+		{
+			"description": "Racine de ax + b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x0": "-2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est $f'\\left( x \\right)$ qu'il faut annuler, pas le facteur de $f\\left( x \\right)$ : calcule d'abord $f'\\left( x \\right)$."
+			},
+			"answers": ["-1", "-", "+", "↘", "-2e^{-2}", "↗"]
+		},
+		{
+			"description": "Signe de x₀",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x0": "-2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : résous $f'\\left( x \\right) = 0$."
+			},
+			"answers": ["2", "-", "+", "↘", "-2e^{-2}", "↗"]
+		},
+		{
+			"description": "Flèches inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x0": "-2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "-", "+", "↗", "-2e^{-2}", "↘"]
+		},
+		{
+			"description": "Facteur exponentiel oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x0": "-2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le facteur exponentiel dans $f\\left( x_0 \\right)$."
+			},
+			"answers": ["-2", "-", "+", "↘", "-2", "↗"]
+		},
+		{
+			"description": "Signe de la valeur",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"x0": "-2",
+				"b": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : calcule $f\\left( x_0 \\right)$ en remplaçant $x$ par $x_0$."
+			},
+			"answers": ["-2", "-", "+", "↘", "2e^{-2}", "↗"]
+		},
+		{
+			"description": "(−3x + 6)eˣ : 1, +, −, ↗, 3e, ↘",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"x0": "1",
+				"b": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "+", "-", "↗", "3e", "↘"]
+		},
+		{
+			"description": "(2x − 3)e^{2x} : 1, −, +, ↘, −e², ↗",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1",
+				"x0": "1",
+				"p": "2",
+				"q": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "-", "+", "↘", "-e^{2}", "↗"]
+		},
+		{
+			"description": "Signe de x₀",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1",
+				"x0": "1",
+				"p": "2",
+				"q": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : résous $f'\\left( x \\right) = 0$."
+			},
+			"answers": ["-1", "-", "+", "↘", "-e^{2}", "↗"]
+		},
+		{
+			"description": "Facteur k oublié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1",
+				"x0": "1",
+				"p": "2",
+				"q": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La dérivée de $\\exponentialE^{k x}$ est $k \\exponentialE^{k x}$ : vérifie ta dérivée avant de l'annuler."
+			},
+			"answers": ["\\frac{1}{2}", "-", "+", "↘", "-e^{2}", "↗"]
+		},
+		{
+			"description": "Facteur exponentiel oublié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1",
+				"x0": "1",
+				"p": "2",
+				"q": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le facteur exponentiel dans $f\\left( x_0 \\right)$."
+			},
+			"answers": ["1", "-", "+", "↘", "-1", "↗"]
+		},
+		{
+			"description": "Exposant x₀",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1",
+				"x0": "1",
+				"p": "2",
+				"q": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En $x_0$, l'exposant vaut $k x_0$ : remplace $x$ par $x_0$ dans tout l'exposant."
+			},
+			"answers": ["1", "-", "+", "↘", "-e", "↗"]
+		},
+		{
+			"description": "3x + 1 − 3eˣ : 0, +, −, ↗, −2, ↘",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "+", "-", "↗", "-2", "↘"]
+		},
+		{
+			"description": "eˣ = 1 lu x = 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\exponentialE^x = 1$ équivaut à $x = 0$, car $1 = \\exponentialE^0$."
+			},
+			"answers": ["1", "+", "-", "↗", "-2", "↘"]
+		},
+		{
+			"description": "Coefficient au lieu de x₀",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Résous $f'\\left( x \\right) = 0$ : $\\exponentialE^x = 1$, et non $x$ égal au coefficient."
+			},
+			"answers": ["3", "+", "-", "↗", "-2", "↘"]
+		},
+		{
+			"description": "e⁰ lu 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\exponentialE^0 = 1$ : ce terme ne s'annule pas en $0$."
+			},
+			"answers": ["0", "+", "-", "↗", "1", "↘"]
+		},
+		{
+			"description": "Signe de la valeur",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : calcule $f\\left( x_0 \\right)$ en remplaçant $x$ par $x_0$."
+			},
+			"answers": ["0", "+", "-", "↗", "4", "↘"]
+		},
+		{
+			"description": "Signes de f′ échangés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "-", "+", "↗", "-2", "↘"]
+		},
+		{
+			"description": "b = 3 : 0, −, +, ↘, 5/2, ↗",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "-", "+", "↘", "\\frac{5}{2}", "↗"]
+		},
+		{
+			"description": "Décimal 2,5",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "-", "+", "↘", "2{,}5", "↗"]
+		},
+		{
+			"description": "eˣ = 1 lu x = 1",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\exponentialE^x = 1$ équivaut à $x = 0$, car $1 = \\exponentialE^0$."
+			},
+			"answers": ["1", "-", "+", "↘", "\\frac{5}{2}", "↗"]
+		},
+		{
+			"description": "eˣ = −b résolu",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une exponentielle est strictement positive : $\\exponentialE^u = -m$ avec $m > 0$ n'a pas de solution."
+			},
+			"answers": ["-3", "-", "+", "↘", "\\frac{5}{2}", "↗"]
+		},
+		{
+			"description": "Terme e^{2x}/2 oublié",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En $0$, $\\dfrac{e^{2x}}{2}$ vaut $\\dfrac{1}{2}$ : n'oublie pas ce terme."
+			},
+			"answers": ["0", "-", "+", "↘", "2", "↗"]
+		},
+		{
+			"description": "Terme en eˣ oublié",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\exponentialE^0 = 1$ : le terme en $\\exponentialE^x$ vaut le coefficient, pas $0$."
+			},
+			"answers": ["0", "-", "+", "↘", "\\frac{7}{2}", "↗"]
+		}
+	]
+}
