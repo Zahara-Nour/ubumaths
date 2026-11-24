@@ -9,9 +9,12 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 _Mis à jour le 2026-11-24, rubrique prise._
 
 - **État** : phase 0 validée (F1-F5, N1-N3), modèles d820232a, 6ad254b4, cb545bd7 réservés et
-  exportés, lot en écriture (deux agents) · **Prochaine action** : relire le lot (simulation,
-  specs, tirages), journal « lot écrit » · **En attente de David** : Q1 (quotients dans N2) et Q2
-  (outil « tracer une courbe point par point ») ·
+  exportés, lot en écriture par deux agents (fichiers NON commités dans le worktree :
+  `docs/wip/questions/idees-3e-fonctions-{neufs,publies}.py`, `scripts/questions/idees-3e-fonctions-neufs/`,
+  json réécrits de `…-publies/`, migration de contenu) · **Prochaine action** : `git status` du
+  worktree, relire le lot dans le code (simulation `create-questions`, `question:specs`, tirages
+  `--apercu`, diff des variations d'origine vide, test de la migration), puis journal « lot écrit »
+  et commit · **En attente de David** : rien (Q1 à Q3 tranchées) ·
   **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions`,
   `docs/idees-3e-fonctions`
 
@@ -83,9 +86,9 @@ on range des modèles de questions.
 ### Questions à David
 
 Réponse de David (2026-11-24) : « je valide les modèles » — fiches F1 à F5 et N1 à N3 validées
-telles qu'écrites (page à cocher non remplie). Q3 tranchée par là (F5 sur cb545bd7). **Q1 et Q2
-sans réponse** : reposées. D'ici là, N2 s'écrit sans quotient (le choix qui n'ajoute rien), et
-rien n'est noté dans `outils-manquants.md`.
+telles qu'écrites (page à cocher non remplie). Q3 tranchée par là (F5 sur cb545bd7). Q1 et Q2
+reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil n° 60 noté dans
+`outils-manquants.md` (commit sur `main`).
 
 1. **Quotients** (3F10-2, 3F10-6, 3F12-2 : image par (ax + b)/(cx + d), réponse en fraction) :
    « expression littérale simple » des bornes de 3-040 ? Je recommande **non** (pas de variation).
