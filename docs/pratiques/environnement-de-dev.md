@@ -172,7 +172,8 @@ dans le dépôt principal** (cf. [claude-md-pourquoi.md](claude-md-pourquoi.md#c
 démarrer dans le dépôt principal (pas en CI). Un `pnpm dev` qui sort en ⛔ = se mettre dans un worktree.
 
 **Surveillance du Mac mini** (après le gel du 2026-11-19) : `scripts/surveillance-machine.sh`, lancé
-toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` pour la retirer).
+toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` pour la retirer). Que faire à chaque
+alerte, et toutes les commandes : [alertes-machine.md](alertes-machine.md).
 
 - serveur de dev dans le dépôt principal de Chiphre → **arrêté**, et signalé (jamais celui d'un worktree ni d'un autre projet) ;
 - processus de test **orphelins** (vitest, svelte-check, tsgo, navigateur de Playwright dont le
