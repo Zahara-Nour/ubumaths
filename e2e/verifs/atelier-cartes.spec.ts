@@ -130,7 +130,7 @@ test('#1307 — variations, résolution et dérivée sur un intervalle', async (
 	await calc(page, 's(x) = sin(x) sur [0;\\pi]');
 	expectLatex(await calc(page, '.résoudre s(x)=0'), 'S = \\left\\{ 0 \\,;\\, \\pi \\right\\}');
 
-	// En dernier : « Comment ? » casse la page (each_key_duplicate, comme #1674)
+	// « Comment ? » s'ouvre depuis E10 (#3054)
 	await calc(page, 'f(x) = x^2 sur [0;+\\infty[');
 	const solved = await calc(page, '.résoudre f(x)=4');
 	expectLatex(solved, 'S = \\{ 2 \\}');
