@@ -1,4 +1,4 @@
-import { mkdirSync, rmSync, statSync } from 'node:fs';
+import { mkdirSync, rmSync, statSync, utimesSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
@@ -8,7 +8,8 @@ import { join } from 'node:path';
  * Deux fichiers qui photographient puis remettent les lignes des mêmes élèves ne
  * doivent pas tourner en même temps. Un verrou = un dossier créé par `mkdir`
  * non récursif (atomique : un seul appelant le crée). Un verrou de plus de 30 min est
- * considéré abandonné (passage interrompu) et repris.
+ * considéré abandonné (passage interrompu) et repris : un fichier qui dure plus longtemps
+ * rafraîchit le sien à chaque test (`refreshLock`).
  */
 
 const LOCKS_DIR = '.captures/verifs/verrous';
@@ -52,6 +53,16 @@ export async function acquireLock(name: string): Promise<void> {
 			);
 		}
 		await new Promise((resolve) => setTimeout(resolve, RETRY_MS));
+	}
+}
+
+/** Redonne 30 min au verrou tenu : à appeler en `beforeEach` d'un fichier long. */
+export function refreshLock(name: string): void {
+	const now = new Date();
+	try {
+		utimesSync(lockPath(name), now, now);
+	} catch {
+		// Verrou absent : rien à rafraîchir
 	}
 }
 
