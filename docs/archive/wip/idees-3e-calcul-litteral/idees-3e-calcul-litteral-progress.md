@@ -141,8 +141,8 @@ dans le tableau de répartition ; exports de prod dans `scripts/questions/idees-
 
 - David valide tout (« je valide tout ») : les 6 neufs et les 24 variations des 12 publiés ; aucun
   verdict « À revoir » en base.
-- Les séries de relecture préparées (3e : 8 modèles ; 4e : 4 modèles, une série n'accepte que son
-  niveau) n'ont pas servi, branche `chore/idees-3e-calcul-litteral-relecture` non poussée.
+- Séries de relecture enregistrées en prod par David (3e : 8 modèles, 9b3b0f74 ; 4e : 4 modèles,
+  8bd8112d ; une série n'accepte que son niveau), fichiers et ids mergés dans #3080.
 - `publier-lot.ts` sur une copie du dossier des neufs sans N3 (le script publie tout le dossier) :
   simulation verte, David publie ; vérifié en prod : 8c291e87, ea76da91, eef988e6, bf8a9d2d,
   bfbd40fc publiés, 62528060 en brouillon.
