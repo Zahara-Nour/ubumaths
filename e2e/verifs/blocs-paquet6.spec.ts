@@ -13,6 +13,7 @@ import {
 	TEACHER_ID
 } from './helpers/fiches';
 import { brouillons, fence, isTouch, projectName } from './helpers/modele-brouillon';
+import { expectNoHorizontalOverflow } from './helpers/pages';
 import {
 	components,
 	inkBox,

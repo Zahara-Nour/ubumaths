@@ -1651,7 +1651,11 @@ test('#2565 — clavier MathLive au téléphone, forme Saisie : toucher la case 
 	const field = card.locator('math-field').first();
 	await field.scrollIntoViewIfNeeded();
 	const keyboardVisible = (): Promise<boolean> =>
-		page.evaluate(() => window.mathVirtualKeyboard?.visible === true);
+		page.evaluate(
+			() =>
+				(window as unknown as { mathVirtualKeyboard?: { visible: boolean } }).mathVirtualKeyboard
+					?.visible === true
+		);
 	expect(await keyboardVisible(), 'clavier fermé au départ').toBe(false);
 	await field.tap();
 	await expect.poll(keyboardVisible).toBe(true);
