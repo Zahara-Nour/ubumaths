@@ -2,11 +2,11 @@
 scripts/questions/idees-3e-fonctions-neufs/.
 
 Phase 0 validée par David le 2026-11-24 (« je valide les modèles » ; journal
-docs/wip/idees-3e-fonctions-progress.md, § Phase 0 › Modèles neufs (3e)) : N1 à N3.
+docs/archive/wip/idees-3e-fonctions/idees-3e-fonctions-progress.md, § Phase 0 › Modèles neufs (3e)) : N1 à N3.
 Q1 (quotients) sans réponse : N2 s'écrit sans quotient, le choix qui n'ajoute rien.
 Q2 (tracer une ligne brisée) sans réponse : N3 se contente de placer les points.
 
-Idées reprises d'ailleurs (relevé : docs/wip/idees-3e-fonctions-releve.md).
+Idées reprises d'ailleurs (relevé : docs/archive/wip/idees-3e-fonctions/idees-3e-fonctions-releve.md).
 
 Rangement (relevé en prod le 2026-11-24, lu par migration-rangement.ts) :
 - N1, N2 : « Fonctions > Généralités sur les fonctions > images et antécédents », point 3-040

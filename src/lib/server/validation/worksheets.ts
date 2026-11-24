@@ -833,6 +833,10 @@ export const worksheetClassificationViewSchema = z.object({
 	name: z.string(),
 	kind: z.string().optional(),
 	branch: z.string().nullable().optional(),
+	// Noms anglais (ADR 0043) : le PDF anglais les imprime ; sans ces clés, le schéma les retire
+	// 400 : la base borne à 200 caractères, Zod compte en unités UTF-16 (emoji = 2)
+	name_en: z.string().max(400).nullable().optional(),
+	branch_en: z.string().max(400).nullable().optional(),
 	position: z.number().int()
 });
 

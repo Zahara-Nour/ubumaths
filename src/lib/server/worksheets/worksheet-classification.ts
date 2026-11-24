@@ -25,8 +25,9 @@ import {
 	type WorksheetType
 } from '#lib/types/worksheets.ts';
 import {
-	branchOf,
+	branchNodeOf,
 	composedTitle,
+	englishName,
 	isWorksheetCategory,
 	type TitleNotion,
 	type TitleTreeNode,
@@ -38,6 +39,12 @@ import {
 // ============================================================================
 
 type SB = SupabaseClient<Database>;
+
+/** La branche d'une notion : son nom, et son nom anglais (ADR 0043) */
+export interface BranchName {
+	name: string;
+	name_en: string | null;
+}
 
 /** Ce que la requête demande ; un champ absent n'est pas touché */
 export interface ClassificationRequest {
@@ -102,17 +109,17 @@ function asWorksheetType(value: string): WorksheetType {
 }
 
 /**
- * La branche de chaque nœud demandé, lue dans l'arbre en remontant les parents
- * (une requête par niveau, trois au plus). Une seule notion n'a pas besoin de
- * sa branche (le titre garde son nom) : rien n'est lu.
+ * La branche de chaque nœud demandé, avec son nom anglais, lue dans l'arbre en
+ * remontant les parents (une requête par niveau, trois au plus). Une seule
+ * notion n'a pas besoin de sa branche (le titre garde son nom) : rien n'est lu.
  *
  * @throws si la lecture échoue
  */
 export async function loadBranches(
 	supabase: SB,
 	nodeIds: readonly string[]
-): Promise<Map<string, string | null>> {
-	const branches = new Map<string, string | null>();
+): Promise<Map<string, BranchName | null>> {
+	const branches = new Map<string, BranchName | null>();
 	if (nodeIds.length < 2) return branches;
 
 	const tree = new Map<string, TitleTreeNode>();
@@ -120,7 +127,7 @@ export async function loadBranches(
 	for (let level = 0; level < TREE_LEVELS && toRead.length > 0; level++) {
 		const { data, error } = await supabase
 			.from('classification_nodes')
-			.select('id, name, kind, parent_id')
+			.select('id, name, kind, parent_id, translations')
 			.in('id', toRead);
 		if (error) throw new Error(`arbre des notions illisible : ${error.message}`);
 		for (const node of data ?? []) tree.set(node.id, node);
@@ -128,27 +135,51 @@ export async function loadBranches(
 			.filter((node) => node.kind !== 'branch' && node.parent_id && !tree.has(node.parent_id))
 			.map((node) => node.parent_id as string);
 	}
-	for (const id of nodeIds) branches.set(id, branchOf(id, tree));
+	for (const id of nodeIds) {
+		const branch = branchNodeOf(id, tree);
+		branches.set(
+			id,
+			branch ? { name: branch.name, name_en: englishName(branch.translations) } : null
+		);
+	}
 	return branches;
 }
 
 /**
- * Ajoute à chaque notion le nom de sa branche (`loadBranches`). Pour un chemin
- * qui imprime sans écrire (lien de partage) : une lecture en échec laisse les
- * notions sans branche, le titre imprimé reprend alors les notions.
+ * Ajoute à chaque notion le nom de sa branche (`loadBranches`), et les noms
+ * anglais de la notion (tiré de ses traductions) et de sa branche (ADR 0043).
+ * Pour un chemin qui imprime sans écrire (lien de partage) : une lecture en
+ * échec laisse les notions sans branche, le titre imprimé reprend alors les
+ * notions.
  */
-export async function withBranches<T extends { node_id: string }>(
+export async function withBranches<T extends { node_id: string; translations?: unknown }>(
 	supabase: SB,
 	notions: T[]
-): Promise<Array<T & { branch?: string | null }>> {
+): Promise<
+	Array<
+		Omit<T, 'translations'> & {
+			branch?: string | null;
+			name_en: string | null;
+			branch_en?: string | null;
+		}
+	>
+> {
+	// Le nom anglais seul : le jsonb brut du nœud ne part pas vers la page (lien public)
+	const named = notions.map(({ translations, ...notion }) => ({
+		...notion,
+		name_en: englishName(translations)
+	}));
 	try {
 		const branches = await loadBranches(
 			supabase,
 			notions.map((notion) => notion.node_id)
 		);
-		return notions.map((notion) => ({ ...notion, branch: branches.get(notion.node_id) ?? null }));
+		return named.map((notion) => {
+			const branch = branches.get(notion.node_id) ?? null;
+			return { ...notion, branch: branch?.name ?? null, branch_en: branch?.name_en ?? null };
+		});
 	} catch {
-		return notions;
+		return named;
 	}
 }
 
@@ -165,7 +196,7 @@ export async function loadWorksheetClassifications(
 ): Promise<WorksheetClassificationView[]> {
 	const { data, error } = await supabase
 		.from('worksheet_classifications')
-		.select('node_id, position, node:classification_nodes (name, kind)')
+		.select('node_id, position, node:classification_nodes (name, kind, translations)')
 		.eq('worksheet_id', worksheetId)
 		.order('position', { ascending: true });
 	if (error) throw new Error(`notions de la fiche illisibles : ${error.message}`);
@@ -175,15 +206,20 @@ export async function loadWorksheetClassifications(
 	const branches = await loadBranches(
 		supabase,
 		rows.map((row) => row.node_id)
-	).catch(() => new Map<string, string | null>());
+	).catch(() => new Map<string, BranchName | null>());
 	return rows
-		.map((row) => ({
-			node_id: row.node_id,
-			name: row.node?.name ?? '',
-			kind: row.node?.kind ?? '',
-			branch: branches.get(row.node_id) ?? null,
-			position: row.position
-		}))
+		.map((row) => {
+			const branch = branches.get(row.node_id) ?? null;
+			return {
+				node_id: row.node_id,
+				name: row.node?.name ?? '',
+				kind: row.node?.kind ?? '',
+				branch: branch?.name ?? null,
+				name_en: englishName(row.node?.translations),
+				branch_en: branch?.name_en ?? null,
+				position: row.position
+			};
+		})
 		.sort((a, b) => a.position - b.position || a.name.localeCompare(b.name, 'fr'));
 }
 
@@ -201,7 +237,7 @@ async function titleNotions(supabase: SB, ids: string[]): Promise<Map<string, Ti
 	if (!ids.every((id) => names.has(id))) return null;
 	const branches = await loadBranches(supabase, ids);
 	return new Map(
-		ids.map((id) => [id, { name: names.get(id) ?? '', branch: branches.get(id) ?? null }])
+		ids.map((id) => [id, { name: names.get(id) ?? '', branch: branches.get(id)?.name ?? null }])
 	);
 }
 

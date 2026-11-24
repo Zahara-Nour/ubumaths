@@ -181,6 +181,60 @@ describe('titre de la fiche au pied de page', () => {
 		expect((await pages(composed))[0]).toContain('PIEGE');
 	}, 60_000);
 
+	describe('fiche en anglais, notions traduites (ADR 0043)', () => {
+		const SEQUENCES = [
+			{
+				node_id: 'n1',
+				name: 'Suites arithmétiques',
+				name_en: 'Arithmetic sequences',
+				branch: 'Suites',
+				branch_en: 'Sequences',
+				kind: 'notion',
+				position: 0
+			},
+			{
+				node_id: 'n2',
+				name: 'Suites géométriques',
+				name_en: 'Geometric sequences',
+				branch: 'Suites',
+				branch_en: 'Sequences',
+				kind: 'notion',
+				position: 1
+			}
+		];
+		const english = (classifications: unknown[]) =>
+			sheet(null, [], 'en', {
+				title: 'Suites · Entraînement technique',
+				custom_title: false,
+				category: 'technical_practice',
+				classifications
+			});
+
+		it('la branche anglaise en grand, les notions dessous, la catégorie au bas de page', async () => {
+			const all = await pages(english(SEQUENCES));
+			expect(all[0]).toContain('Arithmetic sequences · Geometric sequences');
+			expect(all[0]).toContain('technical practice');
+			for (const [index, page] of all.entries()) {
+				expect(page, `page ${index + 1}`).toContain('Sequences · Technical practice');
+				expect(page, `page ${index + 1}`).not.toContain('Suites');
+			}
+		}, 60_000);
+
+		it('une notion sans anglais : la catégorie seule, rien en français', () => {
+			const typst = english([SEQUENCES[0], { ...SEQUENCES[1], name_en: null }]);
+			expect(typst).toContain('Technical practice');
+			expect(typst).not.toContain('Suites');
+			expect(typst).not.toContain('sequences');
+		});
+
+		it('un crochet dans un nom anglais reste du texte', async () => {
+			const evil = ']], text(red)[PIEGE], [[';
+			const typst = english([{ ...SEQUENCES[0], name_en: evil }]);
+			expect(typst).not.toContain(']], text(red)');
+			expect((await pages(typst))[0]).toContain('PIEGE');
+		}, 60_000);
+	});
+
 	it('style d’un prof sans {{title_sub}} : la catégorie reste dans le titre', () => {
 		const worksheet = {
 			id: 'w',

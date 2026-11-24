@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03 ; labyrinthe (`labyrinthe) le 2026-11-24.
+> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03 ; labyrinthe (`labyrinthe) le 2026-11-24 ; noms anglais des notions au PDF anglais (ADR 0043) le 2026-11-24.
 
 ## À quoi ça sert
 
@@ -130,7 +130,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 `ExerciseList.svelte` (le plan de la fiche en édition, voir ci-dessous), `MetadataCards.svelte` (config, dont la langue),
 `WorksheetTypeOptions.svelte` (options du type choisi, à la création et sur la fiche, ADR 0030),
 `WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `StyleSelector.svelte` (style à la création),
-`WorksheetNotionsEditor.svelte` (notions de la fiche : la liste, une notion choisie au sélecteur en cascade puis « Ajouter la notion », un bouton pour retirer chacune), `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
+`WorksheetNotionsEditor.svelte` (notions de la fiche : la liste, une notion choisie au sélecteur en cascade puis « Ajouter la notion », un bouton pour retirer chacune) ; sous les notions d'une fiche anglaise au titre composé, `MetadataCards` signale les noms sans anglais (« Sans nom anglais : Loi géométrique — la version anglaise n'imprimera pas les notions »), `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
 (bouton PDF ; en tête, « Quitter » vers la liste des fiches, ou « Retour aux fiches » quand la fiche
 est en consultation seule, `read_only` — [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)).
 
@@ -396,7 +396,13 @@ par `loadBranches` / `withBranches` de `worksheet-classification.ts`, liens de p
 page et titre en base « Suites · Entraînement technique » (amendement du 2026-11-20) ; sans
 notion → la catégorie seule ; ni l'une ni l'autre → `title`. Titre libre, ou
 autres types → le titre seul, ni notions ni catégorie dessous. Chaque notion commence
-par une majuscule (`notionLabel`). En anglais : catégorie traduite (Technical practice, Applications, Fluency, Review ; « Fluency » pour Automatismes, David, 2026-11-19), aucune notion (pas de noms anglais). Le **niveau**
+par une majuscule (`notionLabel`). En anglais : catégorie traduite (Technical practice, Applications, Fluency, Review ; « Fluency » pour Automatismes, David, 2026-11-19), notions et branche sous leur
+nom anglais (`translations.en.name` du nœud, ADR 0043 ; `englishName`, lu par `loadBranches`,
+`loadWorksheetClassifications` et `withBranches` dans `name_en` / `branch_en`) : « Sequences » en
+grand, « Arithmetic sequences · Geometric sequences » dessous. Il suffit qu'**un** nom à imprimer
+(une notion, ou la branche commune quand elle sert de titre) n'ait pas d'anglais pour qu'aucune
+notion ne s'imprime : la catégorie seule, jamais de mélange (`missingEnglishNames`, David,
+2026-11-23) ; la branche commune se décide sur les noms français. Le **niveau**
 (`worksheets.grades`) : un badge par niveau, forme courte (« 1ère Spé »), plein orange texte blanc
 (`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; aucun, ou fiche en anglais →
 rien (`{{level_badges}}`, `levels()` du générateur ; `{{level}}` / `{{level_short}}` restent
@@ -958,9 +964,10 @@ Vérifié contre le code le 2026-10-15 (lot 1 de l'ADR 0030 : le type décide de
 (un refus, style d'un autre auteur, arrive avant tout retrait), puis retire les notions en
 trop, met à jour type / catégorie / titre, écrit les notions. Une panne entre les deux dernières
 étapes (nœud supprimé entre-temps, coupure) laisserait la fiche sans ses nouvelles notions ;
-réenregistrer répare. Une fonction SQL `security invoker` réunirait les trois écritures. 9. **Fiche anglaise au titre composé sans catégorie** : sans noms anglais des notions, le PDF
-imprime `title` (le titre composé, en français). Disparaît avec les noms anglais des notions
-(chantier séparé). 10. **`escapeTypst` n'échappe pas `[` `]`** (`src/lib/ubumark/generators/typst-generator.ts`) : un
+réenregistrer répare. Une fonction SQL `security invoker` réunirait les trois écritures. 9. **Fiche anglaise au titre composé sans catégorie, un nom sans anglais** : ni notion ni
+catégorie à imprimer, le PDF imprime `title` (le titre anglais s'il est écrit, sinon le titre
+composé, en français). Les noms anglais de tout l'arbre (chantier `notions-en-anglais`, PR 3) le
+font disparaître ; l'éditeur signale le nom manquant. 10. **`escapeTypst` n'échappe pas `[` `]`** (`src/lib/ubumark/generators/typst-generator.ts`) : un
 texte venu de la base, posé dans une cellule `[…]` d'un gabarit, peut fermer la cellule et
 être lu comme du code Typst (audit de sécurité de la PR #2912). Corrigé pour le titre, la ligne
 sous le titre et le bas de page (`escapeTypstBrackets`) ; reste les autres textes de la fiche

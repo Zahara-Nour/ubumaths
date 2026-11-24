@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3099._
+_Mis à jour le 2026-11-24, après #3104._
 
-- **État** : PR 1 mergée (#3099) ; migration `20261124180821` jouée en prod le 2026-11-24 (711 nœuds, champ vide, contrainte et deux fonctions de partage vérifiées) · **Prochaine action** : PR 2 — PDF anglais avec les noms anglais (notions, branche, tous les chemins), règle « un nom manque → catégorie seule », signalement dans l'éditeur ; et PR 3 — traductions (~640 noms, page à cocher) · **En attente de David** : rien · **Pièges en cours** : échapper le nom anglais au PDF comme le nom français ; schémas Zod de réponse des liens de partage à élargir (ils retirent `translations`) ; `db:types` lit les migrations de la branche (plus la prod) : migration et code peuvent tenir dans une PR · **Worktree / branche** : à recréer pour la PR 2 (`git worktree add -b feat/notions-en-anglais-pdf ../ubumaths-wt-notions-en-anglais origin/main`)
+- **État** : PR 1 (#3099, migration en prod) et PR 2 (#3104, noms anglais au PDF, règle « un nom manque → catégorie seule », signalement dans l'éditeur) mergées ; rien en prod pour la PR 2 tant que David n'a pas lancé `deploy:prod` · **Prochaine action** : PR 3 — traductions : proposer les ~640 noms anglais, page à cocher pour la relecture par David, puis migration de données (remplit `translations`, n'efface rien) · **En attente de David** : rien avant la page à cocher · **Pièges en cours** : écart 9 réduit, pas disparu (fiche anglaise sans catégorie + un nom sans anglais → `title`) jusqu'à la PR 3 · **Worktree / branche** : aucun (celui de la PR 2 retiré) ; PR 3 → nouveau worktree `../ubumaths-wt-notions-en-anglais-traductions`
 
 ## L'idée
 
@@ -87,6 +87,10 @@ Fiche d'exercices en anglais, sans titre libre :
    migration de données (remplit les traductions, n'efface rien) après tes réponses. Elle peut
    se faire en parallèle de la PR 2.
 
+### 2026-11-24 — PR 2 (#3104)
+
+- Mergée ; doc `fiches-et-pdf.md` et `cours-et-chapitres.md` (`withBranches` joint `name_en` / `branch_en`).
+
 ### 2026-11-24 — PR 1
 
 - Comportements et découpage validés par David (« go »).
@@ -102,3 +106,18 @@ Fiche d'exercices en anglais, sans titre libre :
   (`pnpm db:types` dans la PR même) ; trois fixtures de nœuds de test sans `translations`.
 - Mergée le 2026-11-24 ; `migration list --linked` : seule `20261124180821` en attente ;
   `db:migrate` joué, vérifié en prod par le MCP (lecture).
+
+### 2026-11-24 — PR 2
+
+- `worksheet-title.ts` : `englishName`, `branchNodeOf`, `missingEnglishNames` ; `printedTitle` imprime
+  les noms anglais (branche commune décidée sur les noms français : deux branches traduites pareil
+  restent deux branches). Lectures : `loadBranches` rend `{ name, name_en }`,
+  `loadWorksheetClassifications` et `withBranches` ajoutent `name_en` / `branch_en` ; schémas Zod de
+  réponse élargis (fiche, PDF élève, lien du cours : `translations` gardé pour `withBranches`).
+- Éditeur : `TreeNode.translations` (lu par `loadActiveNodes`), une notion ajoutée porte son
+  `name_en` ; `MetadataCards` signale les noms manquants (fiche anglaise au titre composé).
+- Preuves rouges : 11 tests de titre sans le code, 2 tests de PDF compilé sans le générateur.
+  Verts : unitaires, intégration (58, dont lecture des noms anglais), `check:incremental`,
+  `types:cliquet`, `lint:fast`.
+- Écran (`pnpm voir`, base locale, fiche brouillon passée en anglais puis remise) : signalement
+  « Sans nom anglais : Ensembles de nombres… » affiché, disparu une fois la notion traduite.

@@ -498,7 +498,9 @@ Ce que lit un visiteur sans compte, par trois portes seulement :
   sinon le PDF du lien ne serait pas celui de la classe ; voir [fiches-et-pdf.md](fiches-et-pdf.md)).
   La branche de chaque notion est ajoutée après la RPC (`withBranches`, lecture publique de
   l'arbre ; en échec, les notions sans branche) : deux notions d'une même branche impriment la
-  branche en titre, comme le PDF de la classe. Même ajout pour la fiche du cahier de textes
+  branche en titre, comme le PDF de la classe. `withBranches` y joint aussi les noms anglais de la
+  notion et de sa branche (`name_en`, `branch_en`, ADR 0043) : le PDF anglais du lien a le même
+  titre que celui de la classe. Même ajout pour la fiche du cahier de textes
   (`resolveWorksheetByShareToken`).
 - `/cours/[token]/document/[id]` — RPC `get_course_document_by_share_token`, **réservée au service
   role** (le chemin de stockage ne sort jamais vers le navigateur) ; fichier → URL signée de

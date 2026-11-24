@@ -199,6 +199,44 @@ describe('resolveCourseWorksheetByShareToken', () => {
 		expect(resultat).toEqual(fiche);
 	});
 
+	it('nom anglais d’une notion : tiré de ses traductions, pour le PDF anglais (ADR 0043)', async () => {
+		const notion = {
+			node_id: '66666666-6666-4666-8666-666666666666',
+			name: 'Suites arithmétiques',
+			kind: 'notion',
+			translations: { en: { name: 'Arithmetic sequences' } },
+			position: 0
+		};
+		const fiche = {
+			id: FICHE,
+			title: 'Suites arithmétiques · Entraînement technique',
+			description: null,
+			type: 'worksheet',
+			config: { language: 'en' },
+			status: 'published',
+			grades: null,
+			category: 'technical_practice',
+			custom_title: false,
+			classifications: [notion, { ...notion, node_id: FICHE, translations: {}, position: 1 }],
+			translations: null,
+			total_points: null,
+			estimated_duration_minutes: null,
+			sections: [],
+			exercises: []
+		};
+		// Deux notions : l'arbre est lu pour leur branche ; illisible ici → sans branche
+		const rpc = vi.fn(async () => ({ data: fiche, error: null }));
+		const from = vi.fn(() => {
+			throw new Error('arbre illisible');
+		});
+		const sb = { rpc, from } as unknown as SupabaseClient<Database>;
+		const resultat = await resolveCourseWorksheetByShareToken(sb, JETON, FICHE);
+		expect(resultat?.classifications?.map((n) => n.name_en)).toEqual([
+			'Arithmetic sequences',
+			null
+		]);
+	});
+
 	it('garde le style de la fiche et la mise en page de son auteur (lot 4b)', async () => {
 		const style = '55555555-5555-4555-8555-555555555555';
 		const fiche = {
