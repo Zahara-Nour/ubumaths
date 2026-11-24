@@ -159,7 +159,9 @@ describe('placeLabels : une figure sans conflit garde ses places habituelles', (
 		const s = figure.getAllElements().find((el) => el.label === 's');
 		const a = transformer.mathToSvg(-3, -2);
 		const b = transformer.mathToSvg(3, 2);
-		expect(A && placements.get(A.id)).toBeTruthy();
+		const placeA = A ? placements.get(A.id) : undefined;
+		// En haut à droite du point
+		expect(placeA && placeA.x > a.x && placeA.y < a.y).toBe(true);
 		expect(s && placements.get(s.id)).toEqual({ x: (a.x + b.x) / 2 + 6, y: (a.y + b.y) / 2 - 8 });
 	});
 });

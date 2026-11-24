@@ -77,8 +77,8 @@
 	// (`avoidLabelOverlap` de GeometryCanvas) : le nom d'un point ou d'une
 	// droite qui apparaît en fondu s'écrit déjà là où il restera.
 	let labelPlacements = $derived.by(() => {
+		// figureVersion suffit : il change à chaque pas, pas à chaque image
 		void figureVersion;
-		void animation;
 		return placeLabels(figure, transformer, { width, height });
 	});
 
