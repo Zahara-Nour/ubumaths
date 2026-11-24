@@ -136,7 +136,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | -------------------------- |
 | Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`    |
 | Puissances                               | 3C1       | 5         | libre                                                      |                            |
-| Calcul littéral, équations               | 3L1       | 55        | prise (2026-11-23)                                         | `idees-3e-calcul-litteral` |
+| Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral` |
 | Généralités sur les fonctions            | 3F1       | 19        | libre                                                      |                            |
 | Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                            |
 | Proportionnalité                         | 3P1       | 3         | libre                                                      |                            |
@@ -160,36 +160,24 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                      | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 04b1cc7f Puissance d'un produit                               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ?  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 54107079 Développer                                           | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 93a5f7a9 Réduire un produit                                   | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 77b82211 Réduire une somme                                    | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| dcaabf69 Factoriser avec un facteur commun                    | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 18e2afca Développer (a + b)² et (a − b)²                      | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| ff9bb2fb Factoriser a² − b²                                   | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| c81c5852 Équation linéaire du premier degré (ax + b = c)      | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 779ee55a Équation linéaire du premier degré (ax + b = cx + d) | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 44a3062b Calculer une quatrième proportionnelle               | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 2ab49a6f Résoudre une équation produit nul                    | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| 3806ee3d Résoudre x² = a                                      | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
-| c32ebff9 Enlever les parenthèses                              | `idees-3e-calcul-litteral`                                  | 2026-11-23 |                                      |
+| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 
