@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V123 · L116 · M58 · C43 · D32 · T26 · E63
+Derniers numéros : V123 · L116 · M58 · C43 · D32 · T26 · E64
 
 ## Écarts
 
@@ -50,7 +50,7 @@ Derniers numéros : V123 · L116 · M58 · C43 · D32 · T26 · E63
 - E53 · vérification à l'écran · réponses · dans une case sans unité, « 58, » est refusé sans message de forme · preuve : à la main · à présenter à David
 - E54 · vérification à l'écran · Atelier · `.résoudre cos(x) = cos(20°)` répond avec arccos(cos(20°)) non réduit et une période en radians, au lieu de 20° + k·360° et −20° + k·360° · preuve : à la main · à corriger (moteur, revue Opus, les attendus de #2501 changent ; tranché le 2026-11-24)
 - E55 · vérification à l'écran · blocs · dans la correction d'une bissectrice tracée à l'œil, les trois arcs de construction ont l'épaisseur de la bissectrice au lieu d'être en traits fins (test.fail de #2439 dans e2e/verifs/blocs-geometrie-6.spec.ts) · preuve : à la main · à corriger (règle de style, tranché le 2026-11-24)
-- E56 · vérification à l'écran · fiches · à l'écran, une droite graduée placée dans une liste numérotée n'est pas dessinée, l'élève ne peut pas répondre (le PDF est bon ; test.fail de #2462 dans e2e/verifs/blocs-paquet6.spec.ts) · preuve : à la main · à corriger EN PREMIER (tranché le 2026-11-24)
+- ~~E56 · vérification à l'écran · fiches · à l'écran, une droite graduée placée dans une liste numérotée n'est pas dessinée, l'élève ne peut pas répondre (le PDF est bon ; test.fail de #2462 dans e2e/verifs/blocs-paquet6.spec.ts) · preuve : à la main · à corriger EN PREMIER (tranché le 2026-11-24)~~ · clos le 2026-11-24 (#3087, vérification #2462 verte sur 5 navigateurs)
 - E57 · vérification à l'écran · fiches · en version anglaise, l'en-tête du PDF d'une fiche garde le titre français alors que le titre traduit existe (test.fail de #2509 dans e2e/verifs/modeles-paquet6.spec.ts) · preuve : à la main · à corriger, sans urgence (tranché le 2026-11-24)
 - E58 · vérification à l'écran · modèles de message · l'onglet « Prévisualisation » d'un modèle de message fait planter la page du prof (Erreur 500 ; test.fail de #2482 dans e2e/verifs/pages-paquet6.spec.ts) · preuve : à la main · retirer la page (tranché et confirmé par David le 2026-11-24 ; la table et ses règles d'accès restent, question à part)
 - E59 · vérification à l'écran · modèles de message · le corps d'un modèle de message n'a plus de champ de saisie, on ne peut qu'y insérer des variables (test.fail de #2482 dans e2e/verifs/pages-paquet6.spec.ts) · preuve : à la main · retirer la page, avec E58
@@ -268,3 +268,4 @@ Derniers numéros : V123 · L116 · M58 · C43 · D32 · T26 · E63
 - M57 · code mort · utilitaires · aucun effet visible, 3 à 4 enveloppes CodeMirror presque identiques · preuve : à la main · à faire (preuve à la main, voir docs/wip/ecarts-tri/utilitaires.md)
 - M58 · code mort · exercices · aucun effet visible, sélecteur de police d'exercice jamais affiché et règle CSS inerte · preuve : commande `test -d src/lib/components && ! test -f src/lib/components/FontSelector.svelte && ! test -f src/lib/stores/exerciseFont.svelte.ts` · à faire
 - C43 · commentaire périmé · éditeur riche · aucun effet visible, commentaire de `config.ts` qui cite un composant disparu · preuve : commande `test -f src/lib/components/rich-text/config.ts && ! grep -q FormRichTextEditor src/lib/components/rich-text/config.ts` · à faire
+- E64 · vérification à l'écran · fiches · à l'écran, dans un item de liste, une citation et les blocs associer, trous, tortue, calcul, robot et labyrinthe ne sont pas affichés (trouvé en corrigeant E56, #3087) · preuve : à la main · à présenter à David
