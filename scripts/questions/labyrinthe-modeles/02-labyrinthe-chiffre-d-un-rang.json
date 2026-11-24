@@ -1,4 +1,5 @@
 {
+	"id": "9e3a862a-56a6-44fa-bac4-2aa83388bb7f",
 	"title": "Le labyrinthe du chiffre d’un rang",
 	"description": "Tracer le chemin qui ne passe que par les nombres dont le chiffre d’un rang donné est fixé : entiers (unités à unités de mille), décimaux (dixièmes à millièmes), puis tous les rangs",
 	"grades": ["6"],
@@ -218,5 +219,9 @@
 			},
 			"answers": ["1,1 1,2 1,3 2,3 3,3 3,2 4,2 5,2 5,3 5,4"]
 		}
-	]
+	],
+	"rangement": {
+		"noeud": "Nombres et calculs > Entiers : numération > décomposition",
+		"point": "6-101"
+	}
 }
