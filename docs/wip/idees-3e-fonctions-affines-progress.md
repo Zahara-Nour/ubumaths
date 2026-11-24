@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, avant toute PR._
+_Mis à jour le 2026-11-24, lot joué en base locale, PR des fichiers en cours._
 
-- **État** : phase 0 validée (« je suis tes recos », § Phase 0). Lot écrit et commité (§ Historique,
-  « lot écrit ») : scripts `docs/wip/questions/idees-3e-fonctions-affines-{publies,neufs}.py` →
-  `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`. Contrôles verts.
-- **Prochaine action** : essai en base locale (`set -a; . ./.env.local; set +a` puis
-  `create-questions --dir …-neufs --publier`, aperçu admin sur un serveur 5176+, puis
-  `git restore` des ids locaux) ; migration de contenu des publiés (`migration-contenu.ts`) ;
-  rendu vu à l'écran ; PR (revue : aucune, contenu).
-- **En attente de David** : rien avant la PR (rangement de N2 tranché : 2-322, en géométrie).
+- **État** : phase 0 validée ; lot écrit (scripts `docs/wip/questions/…-{publies,neufs}.py` →
+  `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`) et joué en base locale
+  (§ Historique) : 30 variations sur 30 justes / fausses comme prévu. PR des fichiers seuls.
+- **Prochaine action** : après le merge, étape 6 de `couvrir-un-niveau.md` : David lance
+  `create-questions --dir scripts/questions/idees-3e-fonctions-affines-neufs --publier` en prod
+  (brouillons), je commite les ids, puis rangement (`migration-rangement.ts`) et contenu des 3
+  publiés (`migration-contenu.ts`, lit la prod) dans une même PR, `security-auditor`.
+- **En attente de David** : le `create-questions --publier` en prod, après le merge.
 - **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
   Page à cocher (non remplie) : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions-affines`,
@@ -146,3 +146,19 @@ de réponse.
   seule erreur prévue. À regarder à la relecture : N1 v4 c(ax + b) avec a, b, c de ±2 à ±9
   (produits jusqu'à 81) ; N4, message du moteur « Ta droite n'est pas celle d'équation … » (mot
   « équation » en 3e) ; N2 corrigé « −1 × 1 + b » pour a = ±1.
+
+### 2026-11-24 — lot joué en base locale
+
+- 4 neufs créés en brouillon en local (`create-questions --publier` avec `.env.local`), ids
+  retirés ensuite (`git restore`, diff = 4 lignes `id`). Les 3 publiés copiés en local par un
+  upsert ponctuel (variations, `test_specs` ; 7c7b7593 absent en local, inséré).
+- Jeu automatique (Playwright, aperçu admin sur `http://[::1]:5177`), une graine par variation,
+  les 30 tirées : 27 à saisie, réponse attendue → « Juste », `0` partout → « Faux ». N4 (3 var.)
+  joué au clavier du geste `tracer` (Début, flèches) : deux nœuds de la droite → « Juste », la
+  droite y = x → « Faux », correction verte juste. Cartes de N3 relues (droite par ses nœuds).
+- Console : seulement des 429 (limite de débit du serveur de dev, rythme du script).
+- À la relecture : N4 faux dit « Ta droite n'est pas celle d'équation y = 3 − 3x » (mot
+  « équation » et ordre b + ax, message du moteur) ; N3 v3, l'étiquette 𝒟 en bout de droite est
+  petite et croise le trait.
+- `migration-contenu.ts` des publiés reportée à l'étape 6 (précédent `idees-1re-probas-cond`) :
+  cette PR ne porte que les fichiers.
