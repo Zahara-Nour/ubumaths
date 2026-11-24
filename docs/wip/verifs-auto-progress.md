@@ -7,17 +7,6 @@ _Mis à jour le 2026-11-25, après #3118 (paquet 9, dernier du tri) et la décis
 - **État** : tri des vérifications manuelles TERMINÉ : paquets 1 à 8 mergés (#3061, #3064, #3065, #3066, #3074, #3085, #3093, #3105), paquet 9 mergé (#3118) : **391 → 76 lignes**. Ce qui reste dans la liste ne se joue pas par un test (vrai doigt, vidéoprojecteur, prod, contenu, décisions de David). #3096 mergée, pas encore en prod. Stash « verifs-tri-7 » inutile, encore dans `git stash list`.
 - **Prochaine action** : R12 (notifications), puis la tâche de nuit unique (à accorder avec `ecarts-a-trier`), R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé) : ordre validé par David. Les corrections d'écarts avancent dans le chantier `ecarts-verifs`. ⛔ ne jamais jouer la déconnexion du prof local (elle révoque toutes ses sessions).
 
-2. `fiches-paquet9`, `afterAll` : `resetStudents()` seulement si le verrou est tenu.
-3. `fiches-paquet9` : le compte de 50 fiches exclut toute fiche « Verifs… ».
-4. `fiches-paquet9` : chapitre et jeton du dernier test balayés au démarrage.
-5. `pages-paquet9`, chat : balayage au démarrage (messages « Verifs9 », participant, `last_message_*`).
-6. `pages-paquet9`, verdict de `/dev/modeles` : fichier de reprise écrit avant le clic.
-7. `lecture-facilitee-paquet9` : la formule orange du PDF doit être trouvée (plus de saut silencieux).
-8. `pages-paquet9`, #2978 : le niveau de l'exemple comparé à la base (liste fermée contre la prod).
-9. `blocs-geometrie-9` : le toucher à 1 cm renommé en observation hors verdict, la pose à 3 cm assertée.
-
-Mineurs : compteurs de `base-locale-paquet9` épinglés seulement quand la ligne les donne ; « sans chevauchement » asserté ou retiré du titre (`modeles-paquet9`) ; lien court enregistré avant l'`expect` et balayé (`series-paquet9`). Tout est fait (agent `test-automator`, suppressions SQL relues par la session : toutes bornées par le préfixe « Verifs9 » ou l'identifiant du test).`dans la section du paquet 9, réécrire ce bloc ; (5) un seul push, PR,`pnpm pr:merger`. ⛔ ne jamais jouer la déconnexion du prof local. **Ensuite** (ordre validé) : R12 (notifications), tâche de nuit unique (à accorder avec `ecarts-a-trier`), R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé). Les corrections d'écarts avancent dans le chantier `ecarts-verifs`.
-
 - **Tranché par David le 2026-11-24 (« je suis tes recos », paquet 9)** : E76 à E81 tous à corriger (E78 : question d'accès avant toute migration ; E80 : essai sur un build d'abord). États au [registre](../ecarts/registre.md) et dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
 - **Tranché par David le 2026-11-25 (« je suis tes recos »)** : E82 à corriger avec E63 (même correctif, PR « téléphone » du chantier `ecarts-verifs`). Plus rien du tri n'attend David.
 - **#2825, question (a) résolue par le code (David, 2026-11-24 : « il faut analyser le code »)** : le « créneau » est celui de l'emploi du temps d'une classe (page Classes du prof, `ScheduleEntryModal`, envoyé par `submitAction`), pas du cahier de texte. Non jouable en local : le prof local n'a pas d'école à emploi du temps (noté dans `outils-manquants.md`) ; test prêt mais sauté en le disant, `e2e/verifs/creneau-paquet9.spec.ts` ; ligne #2825 réécrite, la clause reste à David en prod.
