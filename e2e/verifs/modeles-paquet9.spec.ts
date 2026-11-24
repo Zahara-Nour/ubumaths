@@ -163,7 +163,9 @@ function fieldSources(zone: Locator): Promise<string[]> {
 function fieldRendered(zone: Locator): Promise<string[]> {
 	return zone
 		.locator('math-field')
-		.evaluateAll((els) => els.map((el) => (el.shadowRoot?.textContent ?? '').replace(/​/g, '')));
+		.evaluateAll((els) =>
+			els.map((el) => (el.shadowRoot?.textContent ?? '').replace(/\u200b/g, ''))
+		);
 }
 
 /**
@@ -402,7 +404,7 @@ async function decimalGaps(field: Locator): Promise<{ text: string; gaps: number
 		for (let node = walker.nextNode(); node; node = walker.nextNode()) {
 			const text = node.textContent ?? '';
 			for (let i = 0; i < text.length; i++) {
-				if (text[i] === '​') continue;
+				if (text[i] === '\u200b') continue;
 				const range = document.createRange();
 				range.setStart(node, i);
 				range.setEnd(node, i + 1);

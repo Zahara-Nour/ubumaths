@@ -618,8 +618,8 @@ function fontNames(pdf: string): string[] {
 }
 
 test.describe('lecture facilitée des PDF et fiches des élèves', () => {
-	test.beforeAll(async ({}, testInfo) => {
-		testInfo.setTimeout(LOCK_WAIT_MAX_MS + 120_000);
+	test.beforeAll(async () => {
+		test.setTimeout(LOCK_WAIT_MAX_MS + 120_000);
 		await acquireLock(LOCK);
 		lockHeld = true;
 		await resetStudents();

@@ -120,8 +120,8 @@ async function measure(page: Page): Promise<Measure> {
 	});
 }
 
-test.beforeAll(async ({}, testInfo) => {
-	testInfo.setTimeout(LOCK_WAIT_MAX_MS + 120_000);
+test.beforeAll(async () => {
+	test.setTimeout(LOCK_WAIT_MAX_MS + 120_000);
 	assertLocalServerEnv();
 	await acquireLock(LOCK);
 	lockHeld = true;

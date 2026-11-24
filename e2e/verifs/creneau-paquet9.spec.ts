@@ -47,8 +47,8 @@ async function removeAdded(before: string[]): Promise<void> {
 
 // Tests
 
-test.beforeAll(async ({}, testInfo) => {
-	testInfo.setTimeout(testInfo.timeout + LOCK_WAIT_MAX_MS);
+test.beforeAll(async () => {
+	test.setTimeout(test.info().timeout + LOCK_WAIT_MAX_MS);
 	assertLocalServerEnv();
 	await acquireLock(LOCK);
 	// Passage précédent interrompu : ses créneaux sont retirés
