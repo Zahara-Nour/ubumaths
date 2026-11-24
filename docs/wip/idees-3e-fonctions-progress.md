@@ -6,21 +6,19 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, aucune PR ouverte (branche poussée, 6 commits)._
+_Mis à jour le 2026-11-24, PR ouverte (rendu vérifié à l'écran)._
 
 - **État** : phase 0 validée (F1-F5, N1-N3 ; Q1 pas de quotient, Q2 outil n° 60 noté, Q3 F5 sur
-  cb545bd7). Lot écrit et commité : 3 neufs (brouillons locaux 6f2a8a4b N1, 502ab371 N2,
-  03cce164 N3, ids retirés des fichiers), +11 variations sur d820232a, 6ad254b4, cb545bd7,
-  migration de contenu `20261124123959_…` + fixture ; test d'intégration vert. Les 3 modèles
-  publiés sont réservés dans le tableau de répartition.
-- **Prochaine action** : rendu à l'écran (serveur de dev du worktree sur 5176+, `pnpm voir` ou
-  aperçu admin local ; `db:a-jour` pour voir les variations ajoutées), surtout N3 (repère sous
-  un tableau à cases) et N1 (mélange des phrases) ; puis `security-auditor` non requis (contenu),
-  ouvrir la PR (`code-reviewer` non requis : contenu), `pnpm pr:merger <n>`.
+  cb545bd7). Lot écrit, commité, rendu vérifié : 3 neufs (brouillons locaux 6f2a8a4b N1,
+  502ab371 N2, 03cce164 N3), +11 variations sur d820232a, 6ad254b4, cb545bd7, migration de
+  contenu `20261124123959_…` + fixture ; test d'intégration vert. Les 3 modèles publiés sont
+  réservés dans le tableau de répartition.
+- **Prochaine action** : CI de la PR → `pnpm pr:merger <n>` ; puis `db:migrate` (contenu) selon
+  les 4 conditions, et relecture des brouillons dans `/dev/modeles` (§ 5 de la skill).
 - **En attente de David** : après le merge, `create-questions --publier` des 3 brouillons en prod ;
-  `db:migrate` de la migration de contenu selon les 4 conditions de CLAUDE.md.
-- **Pièges en cours** : le port 51839 en écoute n'est pas à moi ; aucun serveur lancé par cette
-  session.
+  description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
+- **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
+  (`TableNode`, `overflow-x-auto`, comportement commun) ; le port 51839 n'est pas à moi.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions`, `docs/idees-3e-fonctions`
 
 ## Phase 0 (2026-11-24, en attente de David)
@@ -104,6 +102,17 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
    cb545bd7 plutôt qu'un modèle de 3e (pas de point de 3e pour « produire une formule »).
 
 ## Historique
+
+### 2026-11-24 — rendu vérifié à l'écran
+
+- Serveur du worktree sur 5176, `db:a-jour` (migration de contenu jouée en local), captures de
+  `/dev/modeles` dépliées (WebKit, admin fictif), 0 erreur de page. Toutes les variations neuves
+  lues, réponses attendues recalculées à la main : justes.
+- N1 : les bonnes cases changent de place d'une variation à l'autre (mélange effectif). N3 : repère
+  sous le tableau, échelle qui couvre les 4 images, boutons A-D. 6ad254b4 v7 : f(−3) = 1, f(0) = −2,
+  f(1) = 1 lus sur la courbe agrandie. d820232a v7 et v11 : ∅ attendu, juste.
+- Téléphone (390 px) : le tableau de N3 (5 colonnes) défile en largeur, comme tout tableau
+  Markdown de `TableNode`. Pas corrigé ici (composant commun).
 
 ### 2026-11-24 — lot écrit
 
