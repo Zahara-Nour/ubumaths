@@ -20,7 +20,7 @@ describe('AppToaster', () => {
 	it('au téléphone, une seule annonce visible à la fois (la plus récente)', async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(390);
 		window.dispatchEvent(new Event('resize'));
-		render(AppToaster);
+		await render(AppToaster);
 		toast.success('Atelier enregistré.');
 		toast.success('Atelier vidé.');
 		toast.success('Atelier chargé.');
@@ -33,7 +33,7 @@ describe('AppToaster', () => {
 	it("sur ordinateur, jusqu'à cinq annonces visibles", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1280);
 		window.dispatchEvent(new Event('resize'));
-		render(AppToaster);
+		await render(AppToaster);
 		// Six annonces : le défaut de sonner (3) ne suffirait pas
 		for (const n of ['Un.', 'Deux.', 'Trois.', 'Quatre.', 'Cinq.', 'Six.']) toast.success(n);
 		flushSync();
