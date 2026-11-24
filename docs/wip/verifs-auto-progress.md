@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, à l'ouverture de la PR du paquet 9 (dernier paquet du tri)._
+_Mis à jour le 2026-11-25, après #3118 (paquet 9, dernier du tri)._
 
-- **État** : tri des vérifications manuelles TERMINÉ : paquets 1 à 8 mergés (#3061, #3064, #3065, #3066, #3074, #3085, #3093, #3105), paquet 9 en PR (branche `test/verifs-tri-9`) : **391 → 76 lignes**. Ce qui reste dans la liste ne se joue pas par un test (vrai doigt, vidéoprojecteur, prod, contenu, décisions de David). #3096 mergée, pas encore en prod. Stash « verifs-tri-7 » inutile, encore dans `git stash list`.
-- **Prochaine action** : si la PR du paquet 9 n'est pas mergée, la merger (`pnpm pr:merger <n>`, CI verte). **Ensuite** (ordre validé) : R12 (notifications), tâche de nuit unique (à accorder avec `ecarts-a-trier`), R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé). Les corrections d'écarts avancent dans le chantier `ecarts-verifs`. ⛔ ne jamais jouer la déconnexion du prof local (elle révoque toutes ses sessions).
+- **État** : tri des vérifications manuelles TERMINÉ : paquets 1 à 8 mergés (#3061, #3064, #3065, #3066, #3074, #3085, #3093, #3105), paquet 9 mergé (#3118) : **391 → 76 lignes**. Ce qui reste dans la liste ne se joue pas par un test (vrai doigt, vidéoprojecteur, prod, contenu, décisions de David). #3096 mergée, pas encore en prod. Stash « verifs-tri-7 » inutile, encore dans `git stash list`.
+- **Prochaine action** : R12 (notifications), puis la tâche de nuit unique (à accorder avec `ecarts-a-trier`), R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé) : ordre validé par David. Les corrections d'écarts avancent dans le chantier `ecarts-verifs`. ⛔ ne jamais jouer la déconnexion du prof local (elle révoque toutes ses sessions).
 
 2. `fiches-paquet9`, `afterAll` : `resetStudents()` seulement si le verrou est tenu.
 3. `fiches-paquet9` : le compte de 50 fiches exclut toute fiche « Verifs… ».
@@ -30,7 +30,7 @@ Mineurs : compteurs de `base-locale-paquet9` épinglés seulement quand la ligne
 - **Registre des écarts** : `docs/ecarts/registre.md` (mode d'emploi : `docs/pratiques/registre-des-ecarts.md`). Écarts suivants : `pnpm ecarts ajouter E …` depuis le dépôt principal, après `git pull --rebase`, commit aussitôt (suivant : E83).
 - **Tâche de nuit** : la session du chantier `ecarts-a-trier` annonce (message du 2026-11-24, à relire dans `docs/wip/ecarts-a-trier-progress.md`) que David veut UNE seule tâche de nuit (`test:verifs`, preuves des écarts, gardes de doc, sans merge) : ne pas créer celle de R12 ici sans s'être accordé avec elle sur son contenu.
 - **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; `locator('visible=true')` et navigation par `href` quand un lien est redessiné ; lire des éléments d'un seul coup (`evaluateAll`) après un changement de thème ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur ; décor partagé en `serial`, élèves partagés sous verrou ; **brouillons d'un fichier parallèle : préfixe de titre avec le projet et `parallelIndex`, sinon l'`afterAll` d'un worker efface ceux des autres** ; `test.fail()` juste avant l'assertion de l'écart ; un agent qui a livré mais garde des lancements en fond : l'arrêter (TaskStop) ; ne JAMAIS changer l'attendu seul ; un modèle `published` sans nœud de l'arbre s'affiche dans `/automaths` sous « Non classés » : ceux que créent `questions-paquet5` et `blocs-geometrie-5` y passent le temps de leur test ; le worktree d'un paquet ne s'appelle pas `…-verifs-auto` : avant un `/reprendre`, chercher aussi `ubumaths-wt-verifs-tri-*`. Paquet 6 : `--output` efface les captures du dossier (un dossier par lancement ET par projet) ; trois agents sur le même serveur le font recharger des pages en plein test (rouges de charge, verts rejoués seuls) ; `goto` juste après une connexion → attendre `networkidle`.
-- **Worktree / branche** : `../ubumaths-wt-verifs-tri-9`, branche `test/verifs-tri-9`, tant que la PR du paquet 9 n'est pas mergée ; aucun ensuite.
+- **Worktree / branche** : aucun (celui de #3118 retiré).
 
 ## Tri — paquet 9 : lignes du 19 au 22 novembre (2026-11-24)
 
