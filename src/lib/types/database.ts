@@ -1918,6 +1918,7 @@ export type Database = {
 					name: string;
 					parent_id: string | null;
 					position: number;
+					translations: NonNullable<Json>;
 					updated_at: string;
 				};
 				ComputedFields: never;
@@ -1929,6 +1930,7 @@ export type Database = {
 					name: string;
 					parent_id?: string | null;
 					position?: number;
+					translations?: NonNullable<Json>;
 					updated_at?: string;
 				};
 				Update: {
@@ -1939,6 +1941,7 @@ export type Database = {
 					name?: string;
 					parent_id?: string | null;
 					position?: number;
+					translations?: NonNullable<Json>;
 					updated_at?: string;
 				};
 				Relationships: [

@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261124192459_questions_labyrinthe_modeles_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "00f35c55-d3a1-47e1-aada-08908b4e9615",
+			"title": "Le labyrinthe des nombres premiers",
+			"fichier": "01-labyrinthe-nombres-premiers.json",
+			"branche": "Arithmétique",
+			"notion": "Nombres premiers",
+			"sousNotion": "primalité",
+			"point": null
+		},
+		{
+			"id": "9e3a862a-56a6-44fa-bac4-2aa83388bb7f",
+			"title": "Le labyrinthe du chiffre d’un rang",
+			"fichier": "02-labyrinthe-chiffre-d-un-rang.json",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : numération",
+			"sousNotion": "décomposition",
+			"point": "6-101"
+		}
+	],
+	"niveaux": []
+}

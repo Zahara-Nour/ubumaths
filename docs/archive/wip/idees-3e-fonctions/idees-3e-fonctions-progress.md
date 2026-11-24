@@ -1,23 +1,18 @@
 # Chantier `idees-3e-fonctions` — journal
 
-Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Rubrique « généralités sur
+Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md). Rubrique « généralités sur
 les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices). Relevé :
 [idees-3e-fonctions-releve.md](idees-3e-fonctions-releve.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3095 et `db:migrate` du rangement._
+_Mis à jour le 2026-11-24, chantier clos après #3101._
 
-- **État** : #3086 et #3095 mergées. En prod : contenu des 3 publiés complétés (6ad254b4, cb545bd7,
-  d820232a) ; les 3 neufs N1-N3 (6897aa8b, 7c7b7593, 4aaa75c0) **en brouillon, rangés et tagués**
-  (3-040, 3-040, 3-039 ; vérifié au MCP).
-- **Prochaine action** : relecture dans `/dev/modeles` — brouillons par `?point=3-039` / `3-040`,
-  série de relecture (`scripts/series/creer-serie.ts`) pour les 3 publiés complétés, que David
-  publie ; puis verdicts « À revoir » en base, corrections, `publier-lot.ts` — skill § 5.
-- **En attente de David** : description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
-- **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
-  (`TableNode`, `overflow-x-auto`, comportement commun).
-- **Worktree / branche** : aucun (retirés par `pr:merger`) ; un neuf si une PR suit.
+- **État** : rubrique publiée : 3 modèles neufs publiés par David (N1-N3), 3 publiés complétés de
+  11 variations et de leur description (#3101, `db:migrate` le 2026-11-24, vérifié au MCP), le
+  tout validé par David ; journal archivé · **Prochaine action** : aucune · **En attente de
+  David** : rien · **Pièges en cours** : tableau de N3 qui défile en largeur sur téléphone
+  (`TableNode`, commun), laissé · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-24, en attente de David)
 
@@ -99,7 +94,29 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
 3. **F5 sur un modèle de 4e** : la mise en formule relève de 4-062 ; je recommande de compléter
    cb545bd7 plutôt qu'un modèle de 3e (pas de point de 3e pour « produire une formule »).
 
+### Descriptions retenues (2026-11-24)
+
+- d820232a : « Image et antécédent : lus dans un tableau de valeurs (un, deux ou aucun antécédent ;
+  même image pour deux fonctions), lus sur une courbe (droite, parabole, cubique ; résoudre
+  graphiquement f(x) = k), image calculée par une expression simple (x² − 3) »
+- 6ad254b4 : « Passer d'une représentation d'une fonction à une autre : formule → tableau (affine,
+  x² + c, ax² + bx + c, (x + a)(x + b), en un nombre négatif), courbe → tableau, tableau → formule »
+- cb545bd7 : « Produire une formule littérale qui exprime une grandeur en fonction d'une autre :
+  prix d'une course, aire et périmètre d'un rectangle, volume d'un réservoir, grandeur qui diminue,
+  tarif à coefficients décimaux »
+
 ## Historique
+
+### 2026-11-24 — validation, publication des neufs, migration des descriptions
+
+- David valide les 6 modèles relus dans `/dev/modeles` ; `publier-lot` simulé vert, publication
+  des 3 neufs lancée par David, vérifiée au MCP.
+- Question d'accès de la migration des descriptions tranchée par David : personne ne gagne
+  d'accès. `migration-contenu.ts` : 3 modèles migrés, description seule (+0 variation). Test
+  `migrations-contenu-publie` vert avec (137), rouge avec la migration vidée (5 échecs, tous sur
+  elle).
+- `security-auditor` (Opus) : aucun finding bloquant ; seule la description change (variations et
+  specs égales en jsonb), garde = md5 de la prod, rollback rend l'ancien contenu, aucun accès.
 
 ### 2026-11-24 — rangement des 3 neufs joué en prod (#3095)
 

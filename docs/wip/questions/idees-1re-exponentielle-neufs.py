@@ -2,7 +2,7 @@
 scripts/questions/idees-1re-exponentielle-neufs/.
 
 Phase 0 : David, le 2026-11-24, « je valide les modèles » (page à cocher
-https://claude.ai/artifact/5VS9mynhKPTfaj5KeiCtTk, journal docs/wip/idees-1re-exponentielle-progress.md) :
+https://claude.ai/artifact/5VS9mynhKPTfaj5KeiCtTk, journal docs/archive/wip/idees-1re-exponentielle/idees-1re-exponentielle-progress.md) :
 F1 à F6, six modèles neufs. Les variations de modèles publiés (F7 à F10) attendent sa réponse.
 
 Rangement (migration, après la création en brouillon), nœuds et points vérifiés en base :

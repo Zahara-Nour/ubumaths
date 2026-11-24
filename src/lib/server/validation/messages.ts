@@ -67,19 +67,90 @@ export const messageResponseSchema = z.object({
 });
 
 /**
- * Message inbox response schema (GET /api/messages/inbox)
+ * Colonnes à défaut mais sans NOT NULL (`is_starred`, `is_group_message`,
+ * `recipient_count`) : un NULL prend le défaut de la colonne au lieu de faire
+ * tomber toute la liste en 500.
+ */
+const nullableFlag = z
+	.boolean()
+	.nullable()
+	.transform((flag) => flag ?? false);
+const nullableRecipientCount = z
+	.number()
+	.int()
+	.nonnegative()
+	.nullable()
+	.transform((count) => count ?? 1);
+
+/**
+ * Message inbox response schema (GET /api/messages/inbox) : une ligne de
+ * get_user_inbox. Pas `messageResponseSchema` : la RPC ne rend ni adresse de
+ * l'expéditeur ni created_at, et l'adresse n'a pas à circuler.
  */
 export const inboxMessagesResponseSchema = z.object({
-	messages: z.array(messageResponseSchema),
-	total: z.number().int().nonnegative().optional()
+	messages: z.array(
+		z
+			.object({
+				message_id: z.string().uuid(),
+				sender_id: z.string().uuid(),
+				// profiles.full_name peut être nul : un libellé plutôt qu'une ligne refusée
+				sender_name: z
+					.string()
+					.nullable()
+					.transform((name) => name ?? 'Expéditeur inconnu'),
+				sender_avatar_url: z.string().nullable(),
+				subject: z.string(),
+				// jsonb de l'éditeur, rendu tel quel
+				content: z.unknown(),
+				plain_text: z.string().nullable(),
+				// Horodatage Postgres : décalage « +00:00 », que .datetime() refuse par défaut
+				sent_at: z.string().datetime({ offset: true }),
+				read_at: z.string().datetime({ offset: true }).nullable(),
+				is_starred: nullableFlag,
+				status: z.enum(['inbox', 'archived', 'trash']),
+				is_group_message: nullableFlag,
+				recipient_count: nullableRecipientCount,
+				has_attachments: z.boolean(),
+				attachment_count: z.number().int().nonnegative()
+			})
+			// Les pages lisent `id` (clé de liste) et `message_id` (actions)
+			.transform((row) => ({ ...row, id: row.message_id }))
+	)
 });
 
 /**
- * Sent messages response schema (GET /api/messages/sent)
+ * Sent messages response schema (GET /api/messages/sent) : une ligne de
+ * get_user_sent_messages, qui rend les destinataires et non l'expéditeur.
  */
 export const sentMessagesResponseSchema = z.object({
-	messages: z.array(messageResponseSchema),
-	total: z.number().int().nonnegative().optional()
+	messages: z.array(
+		z
+			.object({
+				message_id: z.string().uuid(),
+				subject: z.string(),
+				content: z.unknown(),
+				plain_text: z.string().nullable(),
+				sent_at: z.string().datetime({ offset: true }),
+				is_group_message: nullableFlag,
+				recipient_count: nullableRecipientCount,
+				has_attachments: z.boolean(),
+				// jsonb_agg rend null quand il ne reste aucune ligne de destinataire
+				recipients: z
+					.array(
+						z.object({
+							id: z.string().uuid(),
+							name: z
+								.string()
+								.nullable()
+								.transform((name) => name ?? 'Destinataire inconnu'),
+							avatar_url: z.string().nullable()
+						})
+					)
+					.nullable()
+					.transform((recipients) => recipients ?? [])
+			})
+			.transform((row) => ({ ...row, id: row.message_id }))
+	)
 });
 
 /**
@@ -212,7 +283,8 @@ export const inboxMessagesQuerySchema = z.object({
 	status: z.enum(['inbox', 'archived', 'trash']).default('inbox'),
 	folderId: z.string().uuid().optional(),
 	limit: z.coerce.number().int().positive().max(100, 'Maximum 100 messages').default(50),
-	offset: z.coerce.number().int().nonnegative().default(0)
+	// Borné : au-delà d'un entier Postgres, la RPC échouerait en 500
+	offset: z.coerce.number().int().nonnegative().max(100000, 'Décalage trop grand').default(0)
 });
 
 /**
@@ -220,7 +292,8 @@ export const inboxMessagesQuerySchema = z.object({
  */
 export const sentMessagesQuerySchema = z.object({
 	limit: z.coerce.number().int().positive().max(100, 'Maximum 100 messages').default(50),
-	offset: z.coerce.number().int().nonnegative().default(0)
+	// Borné : au-delà d'un entier Postgres, la RPC échouerait en 500
+	offset: z.coerce.number().int().nonnegative().max(100000, 'Décalage trop grand').default(0)
 });
 
 /**
