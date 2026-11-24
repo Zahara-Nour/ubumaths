@@ -36,8 +36,8 @@ do $$
 declare
 	v_absents int;
 begin
-	create temporary table noms_anglais (chemin text primary key, name text not null);
-	insert into noms_anglais (chemin, name) values
+	create temporary table _noms_anglais (chemin text primary key, name text not null);
+	insert into _noms_anglais (chemin, name) values
 		('Nombres et calculs', 'Numbers and calculations'),
 		('Nombres et calculs > Entiers : numération', 'Whole numbers: place value'),
 		('Nombres et calculs > Entiers : numération > ordre', 'ordering'),
@@ -676,7 +676,7 @@ begin
 		('Algorithmique > Listes > parcourir une liste', 'iterating over a list'),
 		('Algorithmique > Listes > liste en compréhension', 'list comprehensions');
 
-	create temporary table chemins_actifs as
+	create temporary table _chemins_actifs as
 	with recursive p as (
 		select id, name::text as chemin
 		from public.classification_nodes
@@ -690,25 +690,25 @@ begin
 	select id, chemin from p;
 
 	-- Un chemin doit désigner un seul nœud actif
-	if exists (select 1 from chemins_actifs group by chemin having count(*) > 1) then
+	if exists (select 1 from _chemins_actifs group by chemin having count(*) > 1) then
 		raise exception 'chemins en double dans la base';
 	end if;
 
 	select count(*) into v_absents
-	from noms_anglais n
-	where not exists (select 1 from chemins_actifs a where a.chemin = n.chemin);
+	from _noms_anglais n
+	where not exists (select 1 from _chemins_actifs a where a.chemin = n.chemin);
 	if v_absents > 0 then
 		raise exception 'noeuds absents de la base : %', v_absents;
 	end if;
 
 	update public.classification_nodes c
 	set translations = c.translations || jsonb_build_object('en', jsonb_build_object('name', n.name))
-	from noms_anglais n
-	join chemins_actifs a on a.chemin = n.chemin
+	from _noms_anglais n
+	join _chemins_actifs a on a.chemin = n.chemin
 	where c.id = a.id
 		and not (c.translations ? 'en');
 
-	drop table noms_anglais;
-	drop table chemins_actifs;
+	drop table _noms_anglais;
+	drop table _chemins_actifs;
 end;
 $$;
