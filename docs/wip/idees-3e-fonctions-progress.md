@@ -6,20 +6,18 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR de rangement ouverte._
+_Mis à jour le 2026-11-24, après #3095 et `db:migrate` du rangement._
 
-- **État** : #3086 mergée, contenu en prod. Les 3 neufs N1-N3 sont en prod **en brouillon**
-  (6897aa8b, 7c7b7593, 4aaa75c0 ; ids commités). La migration de rangement
-  `20261124170918_questions_idees_3e_fonctions_rangement_tags.sql` est générée et passe son test
-  d'intégration ; la PR est à merger, puis `db:migrate`.
-- **Prochaine action** : merge, puis `db:migrate` (4 conditions, `migration list --linked` d'abord),
-  puis relecture dans `/dev/modeles` (`?point=3-039` / `3-040` pour les brouillons ; série de
-  relecture pour les 3 publiés complétés) — skill § 5.
+- **État** : #3086 et #3095 mergées. En prod : contenu des 3 publiés complétés (6ad254b4, cb545bd7,
+  d820232a) ; les 3 neufs N1-N3 (6897aa8b, 7c7b7593, 4aaa75c0) **en brouillon, rangés et tagués**
+  (3-040, 3-040, 3-039 ; vérifié au MCP).
+- **Prochaine action** : relecture dans `/dev/modeles` — brouillons par `?point=3-039` / `3-040`,
+  série de relecture (`scripts/series/creer-serie.ts`) pour les 3 publiés complétés, que David
+  publie ; puis verdicts « À revoir » en base, corrections, `publier-lot.ts` — skill § 5.
 - **En attente de David** : description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
 - **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
   (`TableNode`, `overflow-x-auto`, comportement commun).
-- **Worktree / branche** : `ubumaths-wt-idees-3e-fonctions-rangement` ·
-  `feat/idees-3e-fonctions-rangement`.
+- **Worktree / branche** : aucun (retirés par `pr:merger`) ; un neuf si une PR suit.
 
 ## Phase 0 (2026-11-24, en attente de David)
 
@@ -102,6 +100,13 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
    cb545bd7 plutôt qu'un modèle de 3e (pas de point de 3e pour « produire une formule »).
 
 ## Historique
+
+### 2026-11-24 — rangement des 3 neufs joué en prod (#3095)
+
+Ids écrits par `create-questions --publier` (David). Migration générée par `migration-rangement.ts`,
+test `migrations-rangement-tags` vert (65), rouge avec la migration vidée (4 échecs, tous sur
+elle). `security-auditor` : aucun finding bloquant. `migration list --linked` : seule en attente.
+`db:migrate` le 2026-11-24 ; nœuds et points vérifiés au MCP.
 
 ### 2026-11-24 — migration de contenu jouée en prod
 
