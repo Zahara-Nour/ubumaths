@@ -2,13 +2,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3061 (paquet 1 du tri)._
+_Mis à jour le 2026-11-24, paquet 2 en cours (aucune PR ouverte)._
 
-- **État** : grille → #1536 → #1337 → rouges WebKit (#3053) → #1469 (#3056) ✅ ; tri : **paquet 1 mergé (#3061)**, 391 → 344 lignes ; écarts E21-E27 ajoutés. **Paquet 2 (17-22 octobre, 44 lignes) en cours** dans `../ubumaths-wt-verifs-tri-2` (`test/verifs-tri-2`, serveur 5179) : deux agents (gamification ; connexion, QR, constructions), la session fait les lignes Atelier ; agent programme/fiches à lancer.
-- **Prochaine action** : finir le paquet 2 (verdict par ligne, retrait des lignes sorties), revue, PR ; puis paquets suivants, R12, R13.
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E27 dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md) ; barre de mise en forme qui saute de 37 px (§ #1469).
-- **Pièges en cours** : `--output=<dossier>` par lancement ; `--workers 4` ; `networkidle` avant un clic après `goto` ; changement de compte = rechargement (WebKit coupe la navigation suivante, et signale « due to access control checks ») ; `fiches.spec.ts` remet son décor à zéro : jamais deux lancements en même temps ; agents sur des élèves distincts (eleve10-15, eleve21-25) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-tri-2`, `test/verifs-tri-2`. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+- **État** : paquet 1 mergé (#3061, 391 → 344 lignes). **Paquet 2 (17-22 octobre, 44 lignes)** : lignes Atelier faites et commitées (§ Tri — paquet 2) ; écart E28 ajouté. Trois agents travaillaient (fichiers peut-être NON commités dans le worktree : `gamification.spec.ts` ; `qr-codes.spec.ts`, `connexion.spec.ts`, `constructions-droits.spec.ts`, `helpers/qr.ts` ; `programme.spec.ts`, `fiches-2.spec.ts`, `reponses-unites.spec.ts`).
+- **Prochaine action** : récupérer les rapports des agents (ou rejouer leurs fichiers et juger), verdict par ligne, retirer les lignes sorties de `verifications-manuelles.md` (rien de retiré pour le paquet 2), revue `code-reviewer`, PR, merge ; puis paquet 3 (23-25 octobre).
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E28 ; barre de mise en forme qui saute de 37 px (§ #1469).
+- **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; gestes à deux doigts = `Fingers` (CDP, Android seulement) ; « Desktop Chrome » de Playwright se dit Windows ; `fiches.spec.ts` remet son décor à zéro (jamais en même temps qu'un autre lancement) ; agents sur des élèves distincts (eleve10-15, 16-20, 21-25) ; rouges sous charge → rejouer seuls ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-tri-2`, `test/verifs-tri-2`, serveur 5179. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+
+## Tri — paquet 2 : lignes du 17 au 22 octobre (2026-11-24)
+
+44 lignes. Worktree `ubumaths-wt-verifs-tri-2`, branche `test/verifs-tri-2`, serveur 5179. Trois agents (gamification ; connexion, QR, constructions ; programme, fiches, unités) sur des élèves distincts ; la session fait les lignes Atelier.
+
+- **Suite Atelier sur 4 navigateurs** (ordi Chrome, ordi Safari, iPhone, Android) : 556 verts, 4 rouges sous la charge des agents (#1368, #1369, #1374, #1404), verts rejoués seuls.
+- **Gestes à plusieurs doigts** : `Fingers` (`atelier-tactile.spec.ts`) envoie de vrais événements tactiles par le protocole de Chromium (Android seulement ; WebKit n'en a pas) : pincement (AB passe de 45 à 141 px), glisser à deux doigts, Déplacer à un doigt.
+- **Sorties Atelier** : #1540 (toile, barre dessous qui défile, deux doigts avec un outil sans rien écrire, Déplacer, Segment et Milieu par appuis, téléphone couché), #1546, #1536, #1538 (outils au doigt : Segment, Milieu ; le reste vert en émulation téléphone), #1472 (≥ et “ ” dans ET), barre d'icônes (Safari, iPhone : téléchargement et choix de fichier, au doigt), console (touche sous Échap : `IntlBackslash` si le navigateur se dit Mac, `Backquote` ailleurs ; poignée glissée ; « --> » orange ; boutons au survol ; téléphone : plein écran, « Tracer » du menu la referme — l'œil de la carte trace sans changer de vue, voulu C3), cartes lot 3 (phrase de f′ au toucher), lecture graphique (losange au doigt ; sombre lisible, sauf E28), Annuler / Rétablir lot 5 PR 1, 2, 3 (`atelier-annuler.spec.ts`, 4 navigateurs ; PR 3 aussi par `atelier-barre` et les tests de composant `remplacer`, `rejeu`).
+- **Réduite** : #1473 → vrais fichiers sortis d'Excel (Windows) et de LibreOffice (aucun des deux sur le Mac mini ; le test reproduit leurs octets) ; le choix de fichier au doigt est testé.
+- **Écart** : E28 (étiquettes de la lecture graphique superposées quand f(x) ≈ 0).
 
 ## Tri — paquet 1 : lignes du 13 au 16 octobre (2026-11-23)
 
