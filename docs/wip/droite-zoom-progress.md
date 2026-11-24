@@ -6,16 +6,14 @@ d'outil. Ligne n° 54 de [outils-manquants.md](outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3071 et son `db:migrate`._
+_Mis à jour le 2026-11-24, modèle publié._
 
-- **État** : PR 1 (outil, #3052) et PR 2 (modèle, #3071) MERGÉES ; modèle 6dba93c8 « Lire une abscisse
-  grâce à des zooms » en brouillon en prod, rangé (nœud « droite graduée », point 6-108, `db:migrate`
-  fait) · **Prochaine action** : lire les verdicts de David (`question_template_reviews`, après le
-  2026-11-24), corriger, `publier-lot.ts --dir scripts/questions/droite-zoom-modeles` en simulation,
-  David publie ; puis outil n° 53 (labyrinthe), phase 0 d'abord · **En attente de David** : relecture
-  dans `/dev/modeles?point=6-108` ; renommer N5 (c178356b) · **Pièges en cours** : relancer
-  `droite-zoom-modeles.py` efface l'id du JSON (6dba93c8-b8e6-4888-843b-ac9f821c4a7e) · **Worktree /
-  branche** : aucun (un neuf pour les corrections).
+- **État** : outil (#3052) et modèle (#3071) livrés ; 6dba93c8 « Lire une abscisse grâce à des zooms »
+  PUBLIÉ en prod (6-108), validé par David · **Prochaine action** : outil n° 53 (labyrinthe), phase 0
+  d'abord (chantier à nommer avec David) ; puis verser ce journal et celui
+  d'`idees-6e-entiers-decimaux` en archive · **En attente de David** : renommer N5 (c178356b) dans
+  l'éditeur · **Pièges en cours** : relancer `droite-zoom-modeles.py` efface l'id du JSON
+  (6dba93c8-b8e6-4888-843b-ac9f821c4a7e) · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-23, validée par David : « je suis tes recos »)
 
@@ -110,3 +108,5 @@ Questions :
   d'intégration vert avec la migration et rouge sans (3 échecs, fichier vidé) ; `security-auditor` lancé.
 - 2026-11-24 : #3071 mergée (CI verte, `pnpm pr:merger`) ; `db:migrate` (seule migration en attente),
   modèle vérifié en prod : brouillon, nœud « droite graduée », tag 6-108.
+- 2026-11-24 : David valide le modèle (dans la conversation, aucun verdict en base) ; `publier-lot.ts`
+  lancé par David, statut `published` vérifié en prod.
