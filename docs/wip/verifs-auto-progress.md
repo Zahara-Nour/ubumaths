@@ -2,13 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3065 (paquet 3 du tri)._
+_Mis à jour le 2026-11-24, paquet 4 en cours (aucune PR ouverte)._
 
-- **État** : tri des vérifications manuelles : paquets 1 (#3061), 2 (#3064) et 3 (#3065) mergés, 391 → 252 lignes ; écarts E21 à E39 ajoutés à [ecarts-verifs-progress.md](ecarts-verifs-progress.md). Puis paquets suivants, R12, R13 (ordre validé).
-- **Prochaine action** : paquet 4 (lignes du 26 octobre au 1er novembre environ), worktree neuf, agents sur des élèves distincts, verrou `helpers/verrou.ts` pour les élèves partagés.
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E39 (E33 : miroir de la carte sous WebKit, à voir sur son iPhone) ; barre qui saute de 37 px (§ #1469) ; un `tsconfig` pour `e2e/` dans la CI ; `locale: 'fr-FR'` pour les projets de `test:verifs` ; #1738 (grille « 1,0 » au retour : geste ou non ?).
-- **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur (gamification : redémarrer le serveur pour la rejouer) ; `fullyParallel` : fichiers à décor partagé en `serial` ; `test.fail()` juste avant l'assertion de l'écart ; types de `e2e/verifs` : `tsgo -p` d'un tsconfig limité ; un agent ne relance jamais deux fois ses tests en même temps ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (celui de #3065 retiré). Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+- **État** : paquets 1 à 3 mergés (#3061, #3064, #3065), 391 → 252 lignes. **Paquet 4 (26 octobre – 2 novembre, 43 lignes)** en cours dans `../ubumaths-wt-verifs-tri-4` : part Atelier, Shtam, Royaume faite et commitée ; trois agents en cours (fichiers NON commités : `blocs-geometrie.spec.ts`, `blocs-divers.spec.ts`, `questions-paquet4.spec.ts`). Écarts E40, E41 ajoutés.
+- **Prochaine action** : rejouer chaque fichier d'agent, verdict par ligne (§ Tri — paquet 4), retirer les lignes sorties de `verifications-manuelles.md`, revue `code-reviewer`, PR, merge.
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E41 ; barre qui saute de 37 px (§ #1469) ; un `tsconfig` pour `e2e/` dans la CI ; `locale: 'fr-FR'` pour `test:verifs` ; #1738 (grille « 1,0 » au retour).
+- **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; `locator('visible=true')` quand une page a des doubles cachés ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur ; fichiers à décor partagé en `serial`, élèves partagés sous verrou (`helpers/verrou.ts`) ; `test.fail()` juste avant l'assertion de l'écart ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-tri-4`, `test/verifs-tri-4`, serveur 5179. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+
+## Tri — paquet 4 : lignes du 26 octobre au 2 novembre (2026-11-24)
+
+43 lignes. Worktree `ubumaths-wt-verifs-tri-4`, branche `test/verifs-tri-4`, serveur 5179. Trois agents : blocs à geste de géométrie ; autres blocs (stats, horloge, cercle trigo, Scratch, cubes, solides, patrons) ; questions, modèles, évaluations (élèves 16-20, verrou `eleves-16-20`). La session : Atelier, Shtam, Royaume.
+
+- **Atelier** (`atelier-paquet4.spec.ts`, ordi, iPhone, Android) : #2118 (conditions de √ et ln), #1862 (valeurs remarquables, degré collé), #1827 (graphe agrandi, Échap sur le menu Exporter), #1813 (grille immobile ; écart E41 sur écran court), #1828 (« ou » en texte droit ; le bouton « Simplifier pour x ≠ −√2 et x ≠ √2 » est celui du mode par défaut), #1835 (composée ; écart E40) ; #1807, #1811 déjà couverts.
+- **Shtam et Royaume** (`shtam-royaume.spec.ts`, pages publiques, jouable contre la prod) : #1991 (bandeau, une, liens vers les pages, ≤ 2 articles par page avec leur vrai du faux, une seule colonne au téléphone, sombre lisible), #2138 (noms de la carte sans chevauchement à 3 px près, lieu d'une ville entouré au toucher).
+- **Écarts** : E40 (ensemble hérité absent de la carte g), E41 (grille repoussée pendant la frappe sur un écran court).
 
 ## Tri — paquet 3 : lignes du 23 au 25 octobre (2026-11-24)
 
