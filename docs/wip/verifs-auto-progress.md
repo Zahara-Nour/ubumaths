@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, paquet 2 en cours (aucune PR ouverte)._
+_Mis à jour le 2026-11-24, après #3064 (paquet 2 du tri)._
 
-- **État** : paquet 1 mergé (#3061, 391 → 344 lignes). **Paquet 2 (17-22 octobre, 44 lignes)** : lignes Atelier faites et commitées (§ Tri — paquet 2) ; écart E28 ajouté. Trois agents travaillaient (fichiers peut-être NON commités dans le worktree : `gamification.spec.ts` ; `qr-codes.spec.ts`, `connexion.spec.ts`, `constructions-droits.spec.ts`, `helpers/qr.ts` ; `programme.spec.ts`, `fiches-2.spec.ts`, `reponses-unites.spec.ts`).
-- **Prochaine action** : récupérer les rapports des agents (ou rejouer leurs fichiers et juger), verdict par ligne, retirer les lignes sorties de `verifications-manuelles.md` (rien de retiré pour le paquet 2), revue `code-reviewer`, PR, merge ; puis paquet 3 (23-25 octobre).
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E28 ; barre de mise en forme qui saute de 37 px (§ #1469).
-- **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; gestes à deux doigts = `Fingers` (CDP, Android seulement) ; « Desktop Chrome » de Playwright se dit Windows ; `fiches.spec.ts` remet son décor à zéro (jamais en même temps qu'un autre lancement) ; agents sur des élèves distincts (eleve10-15, 16-20, 21-25) ; rouges sous charge → rejouer seuls ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-tri-2`, `test/verifs-tri-2`, serveur 5179. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+- **État** : tri des vérifications manuelles : paquet 1 (#3061) et paquet 2 (#3064) mergés, 391 → 313 lignes ; écarts E21 à E31 ajoutés à [ecarts-verifs-progress.md](ecarts-verifs-progress.md). Puis paquets suivants, R12, R13 (ordre validé).
+- **Prochaine action** : paquet 3 (lignes du 23 au 25 octobre, ≈ 77 lignes ; en deux PR si besoin), worktree neuf, agents sur des élèves distincts.
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E31 ; barre de mise en forme qui saute de 37 px (§ #1469) ; un `tsconfig` pour `e2e/` dans la CI (les types des tests e2e ne sont vérifiés nulle part).
+- **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; gestes à deux doigts = `Fingers` (CDP, Android seulement) ; « Desktop Chrome » de Playwright se dit Windows ; présence notée une fois par jour et par processus du serveur (repère `.captures/verifs/presence/`) ; `fiches.spec.ts` remet son décor à zéro ; agents sur des élèves distincts ; rouges sous charge → rejouer seuls ; types de `e2e/verifs` : `tsgo -p` d'un tsconfig limité à `e2e/verifs` (`types: ["node"]`, `typeRoots`) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (celui de #3064 retiré). Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
 
 ## Tri — paquet 2 : lignes du 17 au 22 octobre (2026-11-24)
 
