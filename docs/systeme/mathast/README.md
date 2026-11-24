@@ -1832,8 +1832,12 @@ Doublons qui restent, chacun pour un autre besoin :
 - Laissés à la clôture de tidy-conditions (2026-10-26, journal archivé
   `docs/archive/wip/tidy-conditions-progress.md`), aucune valeur fausse :
   - conditions : `cot`, `sec`, `csc`, `arccosh` n'ont pas de condition écrivable (la
-    simplification n'a pas lieu) ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2
-    (`domain/compute`, d'où `avoidsPeriodicPoints` limité à `cos u` / `sin u` seuls) ;
+    simplification n'a pas lieu) ; `avoidsPeriodicPoints` limité à `cos u` / `sin u` seuls
+    (`computeDomain(1/(sin x cos x))` rendait kπ au lieu de kπ/2 : corrigé, V85, 2026-11-24 —
+    `nonZeroSet` d'un produit réunit deux familles périodiques en une quand c'est possible,
+    `1/(sin x cos x)` → kπ/2, et refuse sinon : `1/(sin x cos(2x))` (kπ et π/4 + kπ/2, deux
+    familles sans écriture) et `1/((x − 1) cos x)` (un point hors de la famille) ne sont plus
+    ℝ privé de la seule première famille) ;
     libellés bruts (« pour x^2y > 0 », « 2xy > 0 ») et conditions redondantes (« xy > 0 et
     x > 0 et y > 0 », « x/y > 0 et y ≠ 0 ») ; condition écrite sur le facteur
     (`ln(ln(x) y)` → « pour ln(x) > 0 et y > 0 », sans `avec` proposé) ; `ln(xy) − ln y` sans
@@ -1875,8 +1879,11 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
     `ln(x+√(x²+1))` (sans appelant en production) ;
   - `toCustom` écrit `(1/2)^xe^x`, illisible en syntaxe maison.
 - Solveur du second degré à paramètre (relevé le 2026-10-26, revue de #1797, visible aussi au
-  degré 3 par `x(ax² + bx + c) = 0`) : `x² − ab = 0` → `±√a·√b` si `4ab ≥ 0` (faux pour a, b < 0,
-  il faut `√(ab)`) ; `ax² − 1 = 0` → condition `a ≥ 0` au lieu de `a > 0` ; conditions non
+  degré 3 par `x(ax² + bx + c) = 0`) : `x² − ab = 0` rendait `±√a·√b` si `4ab ≥ 0` (faux pour
+  a, b < 0) — corrigé (V92, 2026-11-24) : un discriminant monôme à au moins deux lettres de
+  puissance impaire garde sa racine entière (`±√(ab)` si `ab ⩾ 0`, `x² − 4ab` → `±2√(ab)`,
+  `x² − abc` → `±√(abc)`, `x⁴ − ab` déjà `±⁴√(ab)`), les carrés seuls sortent
+  (`x² − a²b` → `±|a|√b`) ; `ax² − 1 = 0` → condition `a ≥ 0` au lieu de `a > 0` ; conditions non
   réduites (`4α ≥ 0`, `4a + 4b ≥ 0`), racines peu lisibles (`½√(−4a)`) ; une condition réduite à
   un point écrite `0 ≤ a ≤ 0`, ses racines gardées : `x³ + a²x = 0` → 0, puis deux racines nulles
   si a = 0 (redondant, pas faux) ; étapes détaillées en double, coefficient « a » homonyme du
@@ -1925,12 +1932,18 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   - paramètre de signe inconnu (`e^{kx}` en +∞ rendait +∞) : refusé depuis le chantier
     `limites-parametres` (choix A, #1869) ; la discussion selon le signe de k (choix C) est pour
     plus tard (futur chantier, David, 2026-10-27 ; journal archivé
-    `docs/archive/wip/limites-parametres-progress.md`). Cas de départ de C : la substitution
-    directe suppose encore k ≠ 0 / k > 0 (`\frac{1}{x^2+k}` en 0 → 1/k, `\ln(x+k)` en 0⁺ → ln k,
-    `\frac{x}{kx+x^2}` en 0⁺ → 1/k) ; refus à rattraper, qui valent la même chose pour tout k
-    (`x^2+kx`, `x+kx^2`, `x\ln x+kx` en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞). Piste : un « zéro
-    de côté inconnu » absorbant dans l'addition (pas le 0 exact, neutre : cause des valeurs
-    fausses de la revue 1) ;
+    `docs/archive/wip/limites-parametres-progress.md`). Depuis V103 (2026-11-24,
+    `limits/parametric.ts`, appelé par `.limite` de l'Atelier seulement) : une limite finie à
+    paramètre dit sa condition, celle de l'existence de la valeur (`\frac{1}{x^2+k}` en 0 →
+    « 1/k, pour k ≠ 0 », `\ln(x+k)` en 0⁺ → « ln k, pour k > 0 », `\tan(x+k)` en 0 → « pour
+    k ≠ π/2 + nπ, n ∈ ℤ ») ; sans condition quand la valeur existe pour tout k ou quand
+    l'expression tapée n'existe pas aux valeurs exclues (`x/k` en 1) ; refus quand la condition
+    ne s'écrit pas (plusieurs lettres : `\frac{1}{x+a+b}` en 0) ou quand le moteur, k remplacé
+    par des valeurs d'essai, trouve une autre limite. Les refus qui valent la même chose pour
+    tout k sont rattrapés terme à terme, au-dessus du moteur (`x^2+kx`, `x+kx^2`, `x\ln x+kx`
+    en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞) ; `\frac{x}{kx+x^2}` en 0⁺ reste refusé (1/k, pour
+    k ≠ 0, demanderait le moteur). Le « zéro de côté inconnu » dans `normalizeExtended` n'est
+    pas fait (piste toujours ouverte) ;
 - Conditions de √ et ln à paramètre (Atelier), laissés par le chantier ecarts-conditions
   (2026-11-01, #2118, journal archivé `docs/archive/wip/ecarts-conditions-progress.md`), aucune
   condition fausse :

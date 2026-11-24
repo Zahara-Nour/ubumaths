@@ -265,16 +265,6 @@ describe('L64 — simplifier cot x · sin x propose cos x', () => {
 	});
 });
 
-describe('V85 — l’ensemble de définition de 1/(sin x cos x) exclut les kπ/2', () => {
-	it('exclut les multiples de π/2, pas seulement ceux de π', () => {
-		const latex = latexOf(run('.domaine \\frac{1}{\\sin x\\cos x}'));
-
-		// Aujourd'hui `ℝ \ {kπ, k ∈ ℤ}` : π/2 est gardé alors que cos(π/2) = 0.
-		expect(latex).toContain('\\setminus');
-		expect(latex).toMatch(/\\dfrac\{k\s*\\pi\}\{2\}|k\s*\\dfrac\{\\pi\}\{2\}/);
-	});
-});
-
 describe('L65 — simplifier ln(xy) − ln y propose ln x', () => {
 	it('a un bouton qui rend ln x', () => {
 		const latex = buttonLatexOf(run('.simplifier \\ln(xy)-\\ln y'));
@@ -365,16 +355,6 @@ describe('V91 — résoudre cos(π/5)x = 1 : « on divise par cos(π/5) »', () 
 
 		expect(step?.title).toMatch(/\\dfrac\{\\pi\}\{5\}|\\pi \/ 5/);
 		expect(step?.title).not.toContain('\\dfrac{1}{5}');
-	});
-});
-
-describe('V92 — x² − ab = 0 : ±√(ab), pas ±√a√b', () => {
-	it('écrit la racine du produit', () => {
-		const latex = latexOf(run('.résoudre x^2-ab=0'));
-
-		// Aujourd'hui `√a √b ; −√a √b si 4ab ⩾ 0` : faux pour a et b négatifs.
-		expect(latex).toContain('\\sqrt{a b}');
-		expect(latex).not.toContain('\\sqrt{a} \\sqrt{b}');
 	});
 });
 
@@ -525,21 +505,4 @@ describe('L77 — limites de Terminale encore refusées', () => {
 			expect(latexOf(run(input)).endsWith(expected)).toBe(true);
 		});
 	}
-});
-
-describe('V103 — limite à paramètre : la condition sur k est dite', () => {
-	// Décision du 2026-11-24 : ajouter la condition (« 1/k, pour k ≠ 0 »).
-	it('1/(x² + k) en 0 : 1/k, pour k ≠ 0', () => {
-		const latex = latexOf(run('.limite \\frac{1}{x^2+k} en 0'));
-
-		expect(latex).toContain('\\dfrac{1}{k}');
-		expect(latex).toContain('k \\neq 0');
-	});
-
-	it('ln(x + k) en 0+ : ln k, pour k > 0', () => {
-		const latex = latexOf(run('.limite \\ln(x+k) en 0+'));
-
-		expect(latex).toContain('\\ln\\left( k \\right)');
-		expect(latex).toContain('k > 0');
-	});
 });

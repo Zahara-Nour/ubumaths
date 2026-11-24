@@ -10,7 +10,7 @@
  */
 
 import type { MathNode } from '../types';
-import type { Domain, DomainResult, DomainStep, IntervalSet } from './types';
+import type { Domain, DomainResult, DomainStep, IntervalSet, PeriodicExclusion } from './types';
 import type { DomainRule } from './enhanced-step-types';
 import { getConstraintRuleForFunction } from './enhanced-step-types';
 import type { DomainStepRecorder } from './domain-step-recorder';
@@ -44,7 +44,7 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { compile } from '../eval/compile';
 import { isOddRootIndex, oddDenominatorExponent } from '../eval/real-root';
 import { numericNode } from '../common/numeric';
-import { intersect, excludePoints, union, isEmpty } from './algebra';
+import { intersect, excludePoints, union, isEmpty, containsValue } from './algebra';
 import {
 	exactZeros,
 	solveRationalInequality,
@@ -1439,9 +1439,10 @@ function nonZeroSet(expr: MathNode, variable: string): Domain | null {
 		case 'positive':
 			return nonZeroSet(expr.operand, variable);
 		case 'multiplication': {
+			// u·v ≠ 0 ⟺ u ≠ 0 ET v ≠ 0 : chaque facteur compte (V85)
 			const l = nonZeroSet(expr.left, variable);
 			const r = nonZeroSet(expr.right, variable);
-			return l && r ? intersect(l, r) : null;
+			return l && r ? bothNonZero(l, r) : null;
 		}
 		case 'division':
 			return nonZeroSet(expr.numerator, variable);
@@ -1488,6 +1489,173 @@ function nonZeroSet(expr: MathNode, variable: string): Domain | null {
 				universalDomain(),
 				zeros.map((z) => numericNode(z))
 			);
+}
+
+/**
+ * Les x où deux facteurs sont non nuls à la fois, `null` quand on ne sait pas
+ * l'écrire. `intersect` garde la PREMIÈRE de deux exclusions périodiques et
+ * ignore des points ajoutés à une exclusion périodique : `1/(sin x cos x)`
+ * rendait ℝ privé des kπ, `1/((x−1) cos x)` oubliait 1 (V85).
+ *
+ * - deux familles périodiques : réunies quand leurs points forment encore une
+ *   seule famille (kπ et π/2 + kπ → kπ/2), sinon `null` ;
+ * - une famille et des points : la famille, si chaque point en est déjà un
+ *   (x·sin x : 0 est un kπ), sinon `null`.
+ */
+function bothNonZero(a: Domain, b: Domain): Domain | null {
+	if (a.kind === 'universal') return b;
+	if (b.kind === 'universal') return a;
+	if (a.kind === 'empty' || b.kind === 'empty') return emptyDomain();
+	if (a.kind === 'periodic_exclusion' && b.kind === 'periodic_exclusion') {
+		return mergePeriodicExclusions(a, b);
+	}
+	if (a.kind === 'periodic_exclusion') return periodicAbsorbingPoints(a, b);
+	if (b.kind === 'periodic_exclusion') return periodicAbsorbingPoints(b, a);
+	return intersect(a, b);
+}
+
+/** La famille `periodic`, si les seuls points exclus par `points` en font déjà partie. */
+function periodicAbsorbingPoints(periodic: PeriodicExclusion, points: Domain): Domain | null {
+	if (points.kind !== 'interval_set') return null;
+	const [only] = points.intervals;
+	const wholeLine =
+		points.intervals.length === 1 &&
+		only.lower.value.type === 'infinity' &&
+		only.upper.value.type === 'infinity';
+	if (!wholeLine) return null;
+	for (const point of points.excludedPoints) {
+		const value = tryConstantValue(point.value);
+		if (value === null || containsValue(periodic, value)) return null;
+	}
+	return periodic;
+}
+
+/** Un point ou une période exacts : c + q·π, c et q rationnels. */
+interface PiAffine {
+	readonly c: Rational;
+	readonly q: Rational;
+}
+
+/** `c + q·π` lu sur un nœud écrit par ce module (`π/4`, `1 + π/2`, `−3π/2`) ; `null` sinon. */
+function piAffineParts(node: MathNode): PiAffine | null {
+	switch (node.type) {
+		case 'constant':
+			return node.constant === 'pi' ? { c: RATIONAL_ZERO, q: RATIONAL_ONE } : null;
+		case 'number': {
+			const value = constantRational(node);
+			return value && { c: value, q: RATIONAL_ZERO };
+		}
+		case 'delimiter':
+			return piAffineParts(node.content);
+		case 'opposite': {
+			const inner = piAffineParts(node.operand);
+			return inner && { c: negRational(inner.c), q: negRational(inner.q) };
+		}
+		case 'addition':
+		case 'subtraction': {
+			const left = piAffineParts(node.left);
+			const right = piAffineParts(node.right);
+			if (left === null || right === null) return null;
+			const combine = node.type === 'addition' ? addRational : subRational;
+			return { c: combine(left.c, right.c), q: combine(left.q, right.q) };
+		}
+		case 'multiplication': {
+			const left = piAffineParts(node.left);
+			const right = piAffineParts(node.right);
+			if (left === null || right === null) return null;
+			// Un des deux facteurs est un rationnel pur (pas de π² ici)
+			const [scale, other] = isRationalZero(left.q) ? [left.c, right] : [right.c, left];
+			if (!isRationalZero(left.q) && !isRationalZero(right.q)) return null;
+			return { c: mulRational(scale, other.c), q: mulRational(scale, other.q) };
+		}
+		case 'division': {
+			const top = piAffineParts(node.numerator);
+			const bottom = piAffineParts(node.denominator);
+			if (top === null || bottom === null) return null;
+			if (!isRationalZero(bottom.q) || isRationalZero(bottom.c)) return null;
+			return { c: divRational(top.c, bottom.c), q: divRational(top.q, bottom.c) };
+		}
+		default:
+			return null;
+	}
+}
+
+function gcdBig(a: bigint, b: bigint): bigint {
+	let [x, y] = [a < 0n ? -a : a, b < 0n ? -b : b];
+	while (y !== 0n) [x, y] = [y, x % y];
+	return x;
+}
+
+function lcmBig(a: bigint, b: bigint): bigint {
+	return (a / gcdBig(a, b)) * b;
+}
+
+/** Au-delà, deux familles de périodes trop éloignées : refus plutôt qu'un long calcul. */
+const MAX_MERGED_POINTS = 512n;
+
+/**
+ * Deux familles c + q·π + k·p·π, réunies en une seule quand c'est possible :
+ * kπ et π/2 + kπ → kπ/2 ; π/4 + kπ/2 et kπ ne se rangent pas en une famille
+ * (`null`, « deux familles » sans écriture aujourd'hui). Calcul exact : les
+ * points d'une période commune L, ramenés dans [0 ; L[, doivent être
+ * régulièrement espacés.
+ */
+function mergePeriodicExclusions(a: PeriodicExclusion, b: PeriodicExclusion): Domain | null {
+	const baseA = piAffineParts(a.basePoint);
+	const baseB = piAffineParts(b.basePoint);
+	const periodA = piAffineParts(a.period);
+	const periodB = piAffineParts(b.period);
+	if (baseA === null || baseB === null || periodA === null || periodB === null) return null;
+	// Périodes : des multiples rationnels POSITIFS de π (jamais un décimal)
+	const periods = [periodA, periodB];
+	if (periods.some((p) => !isRationalZero(p.c) || isRationalZero(p.q) || isRationalNegative(p.q))) {
+		return null;
+	}
+	// c + qπ = c' + q'π + kpπ impose c = c' (π irrationnel) : sinon deux familles
+	if (subRational(baseA.c, baseB.c).n !== 0n) return null;
+
+	// Tout en entiers, en unités de π/D
+	const D = [baseA.q, baseB.q, periodA.q, periodB.q].reduce((acc, r) => lcmBig(acc, r.d), 1n);
+	const toInt = (r: Rational): bigint => (r.n * D) / r.d;
+	const [qA, qB, pA, pB] = [toInt(baseA.q), toInt(baseB.q), toInt(periodA.q), toInt(periodB.q)];
+	const L = lcmBig(pA, pB);
+	if (L / pA + L / pB > MAX_MERGED_POINTS) return null;
+	const modL = (n: bigint): bigint => ((n % L) + L) % L;
+	const residues = new Set<bigint>();
+	for (let i = 0n; i < L / pA; i++) residues.add(modL(qA + i * pA));
+	for (let i = 0n; i < L / pB; i++) residues.add(modL(qB + i * pB));
+	const sorted = [...residues].sort((x, y) => (x < y ? -1 : x > y ? 1 : 0));
+	const count = BigInt(sorted.length);
+	if (L % count !== 0n) return null;
+	const step = L / count;
+	if (sorted.some((r, i) => r !== sorted[0] + BigInt(i) * step)) return null;
+
+	const merged = periodicExclusion(
+		piAffineNode(baseA.c, { n: sorted[0], d: D }),
+		piMultipleNode(reduceRational({ n: step, d: D }))
+	);
+	// Le même ensemble qu'une des deux : son écriture d'origine, inchangée
+	if (samePeriodic(merged, a) && sameNodeNumber(merged.period, a.period)) return a;
+	if (samePeriodic(merged, b) && sameNodeNumber(merged.period, b.period)) return b;
+	return merged;
+}
+
+function reduceRational(r: Rational): Rational {
+	const g = gcdBig(r.n, r.d);
+	return g === 0n ? r : { n: r.n / g, d: r.d / g };
+}
+
+function sameNodeNumber(x: MathNode, y: MathNode): boolean {
+	const [vx, vy] = [nodeNumber(x), nodeNumber(y)];
+	return vx !== null && vy !== null && Math.abs(vx - vy) < 1e-12;
+}
+
+/** c + q·π écrit comme `createLinearPeriodicExclusion` : `π/4`, `1 + π/2`, `0`. */
+function piAffineNode(c: Rational, q: Rational): MathNode {
+	const reduced = reduceRational(q);
+	const piPart = isRationalZero(reduced) ? null : piMultipleNode(reduced);
+	if (piPart === null) return rationalNode(c);
+	return isRationalZero(c) ? piPart : add(rationalNode(c), piPart);
 }
 
 /**
