@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-tle-derivation dans scripts/questions/idees-tle-derivation-neufs/.
 
-Phase 0 validée par David le 2026-11-23 (journal docs/wip/idees-tle-derivation-progress.md, fiches
-docs/wip/idees-tle-derivation-fiches.md) : F5 (tangente à une composée), F6 (variations de uⁿ, eᵘ,
+Phase 0 validée par David le 2026-11-23 (journal docs/archive/wip/idees-tle-derivation/idees-tle-derivation-progress.md, fiches
+docs/archive/wip/idees-tle-derivation/idees-tle-derivation-fiches.md) : F5 (tangente à une composée), F6 (variations de uⁿ, eᵘ,
 √u), F7 (fonction auxiliaire, homographique), F11 (signes de f′ et f″ lus sur la courbe), F12
 (reconnaître une courbe à partir de celle de f″ ; Q1 : le sens « f donnée → f″ » va à 37ce7759).
 
@@ -357,7 +357,7 @@ F6 = modele(
 # F7 — TSPE-416. a : fonction auxiliaire g(x) = eˣ − ax − b, minimum en ln a (domaine écrit
 # `\ln{a}` : le parseur du tableau refuse `\ln(a)` dans une clé). b : homographique.
 # ⚠️ b ne suit pas la fiche : une flèche cachée autour d'une double barre est refusée par le
-# parseur (« ni centrée, ni asymptote »). Outil n° 57 de docs/wip/outils-manquants.md. David a
+# parseur (« ni centrée, ni asymptote »). Outil n° 59 de docs/wip/outils-manquants.md. David a
 # choisi le 2026-11-24 le choix de quatre tableaux, en attendant l'outil (on comparera ensuite).
 # =============================================================================================
 
