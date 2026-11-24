@@ -8,15 +8,18 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3083._
+_Mis à jour le 2026-11-24, après le `db:migrate` de #3083._
 
-- **État** : #3083 mergée (2 neufs rangés + 16 variations, migrations `20261124123345` et
-  `20261124123352`), seules en attente en prod · **Prochaine action** : après le `db:migrate`,
-  vérifier en prod (2 neufs rangés, 16 variations), créer la série de relecture des 9 publiés
-  (`scripts/series/creer-serie.ts`), relecture des neufs dans `/dev/modeles?point=TSPE-438` et
-  `TSPE-441` · **En attente de David** : `pnpm db:migrate` depuis le dépôt principal · **Pièges en
-  cours** : aucun · **Worktree / branche** : aucun (nouveau worktree sur `origin/main` pour la PR
-  suivante).
+- **État** : en prod, 2 neufs rangés en brouillon (a6e58402 TSPE-438, 99326dee TSPE-441) et
+  +16 variations sur les 9 publiés (vérifié) · **Prochaine action** : PR de correction F12
+  (7f13ca89 v5, tagué aussi TCOMP-231) : ajouter à l'énoncé « On admet que
+  $\lim_{x\to+\infty}\frac{\ln x}{x}=0$ » (bornes tcomp, décision ltc-1 : croissances comparées
+  données seulement) dans `docs/wip/questions/idees-tle-ln-publies.py` (ré-exporter 7f13ca89 de
+  prod d'abord), migration de contenu « corrigée » ; dans la même PR, la série de relecture des
+  9 publiés (`scripts/series/creer-serie.ts`) · **En attente de David** : relecture des 2 neufs
+  dans `/dev/modeles?point=TSPE-438` et `?point=TSPE-441` (possible dès maintenant) · **Pièges en
+  cours** : F12 hors bornes TCOMP tant que la correction n'est pas migrée · **Worktree /
+  branche** : aucun (nouveau worktree sur `origin/main`, même sujet).
 
 ## Historique
 
@@ -74,3 +77,13 @@ _Mis à jour le 2026-11-24, après #3083._
   chaque modèle absent un par un, comportement du générateur). #3083 mergée ; `migration list
 --linked` : seules les 2 migrations du lot en attente ; `db:migrate` laissé à David (écriture en
   prod).
+
+### 2026-11-24 — `db:migrate` fait par David
+
+- Vérifié en prod : a6e58402 et 99326dee rangés (brouillons, 5 et 6 variations) ; variations des
+  9 publiés : ffd5c051 7, d3301f2d 6, 14036c68 5, f1963ef2 4, 50feeefd 9, 2cef3442 4, 7c8b341b 5,
+  7f13ca89 5, e814175b 7.
+- Écart trouvé : 7f13ca89 porte aussi TCOMP-231 ; F12 demande la limite en +∞ par croissance
+  comparée, que les bornes de complémentaire n'admettent que donnée (ltc-1). Les autres variations
+  tagées TCOMP (ffd5c051, d3301f2d, 14036c68, f1963ef2) restent dans le BO de complémentaire
+  (équation fonctionnelle, seuil par ln qⁿ). Correction à faire (voir « Reprendre ici »).
