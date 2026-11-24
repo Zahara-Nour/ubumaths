@@ -11,7 +11,8 @@
 	 * blanche `isSafeLatex` (même découpage, `messageParts`). Une formule que
 	 * MathLive ne sait pas composer reste en texte, échappée.
 	 */
-	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { speakLatexInFrench } from '#lib/utils/formula-speech/french.ts';
 	import { messageParts } from '#lib/atelier/reciprocal.ts';
 
 	interface Props {
@@ -27,7 +28,7 @@
 				return {
 					...part,
 					markup: convertLatexToMarkup(part.text, { defaultMode: 'inline-math' }),
-					spoken: convertLatexToSpeakableText(part.text)
+					spoken: speakLatexInFrench(part.text)
 				};
 			} catch {
 				return { ...part, markup: null, spoken: '' };

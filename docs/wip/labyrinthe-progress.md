@@ -6,17 +6,15 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3102._
+_Mis à jour le 2026-11-24, après la publication des deux modèles._
 
-- **État** : bloc en prod (0.107.0) ; brouillons en prod 00f35c55 (M1, primalité, sans point) et
-  9e3a862a (M2, décomposition, 6-101), rangés et tagués par #3102 (`db:migrate` fait, vérifié en
-  lecture seule) · **Prochaine action** : relecture par David dans
-  `/dev/modeles?titre=labyrinthe` ; compter ses verdicts en base (`question_template_reviews`,
-  `reviewed_at` postérieur) ; puis `publier-lot.ts --dir scripts/questions/labyrinthe-modeles` en
-  simulation, David lance `--publier` · **En attente de David** : la relecture (les 2 JSON
-  modifiés par `--publier` dans le worktree `idees-tle-probas` y ont été restaurés) · **Pièges en cours** :
-  chemins des specs par `labyrinthe-chemins.ts` ; tirage figé (test « golden ») ; grilles larges
-  (outils-manquants n° 61) · **Worktree / branche** : aucun.
+- **État** : découpage de la phase 0 fait en entier : PR 1 (bloc, #3084), PR 2 (modèles, #3094,
+  rangement #3102) ; bloc en prod (0.107.0) ; 00f35c55 (M1, 3e) et 9e3a862a (M2, 6-101)
+  **publiés** le 2026-11-24 (validés par David dans la conversation, aucun verdict en base) ·
+  **Prochaine action** : au choix de David, correctif du bloc n° 61 d'`outils-manquants.md`
+  (grilles larges sur iPhone), ou versement du chantier (durable vers `docs/systeme/`, journal en
+  archive) · **En attente de David** : ce choix · **Pièges en cours** : chemins des specs par
+  `labyrinthe-chemins.ts` ; tirage figé (test « golden ») · **Worktree / branche** : aucun.
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -103,3 +101,4 @@ lui-même pourquoi un chemin est faux.
 - 2026-11-24 : PR 2, phase 0 validée ; lot écrit, grilles réduites (débord iPhone).
 - 2026-11-24 : #3094 mergée (PR 2, fichiers des modèles).
 - 2026-11-24 : brouillons créés en prod par David ; #3102 mergée (rangement), `db:migrate` fait.
+- 2026-11-24 : les deux modèles publiés par David (vérifié en base).

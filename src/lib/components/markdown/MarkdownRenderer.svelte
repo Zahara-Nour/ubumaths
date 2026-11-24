@@ -310,7 +310,8 @@
 </script>
 
 {#if mode === 'rendered' || mode === 'both'}
-	<div class="markdown-content {className}" class:has-margin-notes={hasMarginNotes}>
+	<!-- `lang` : un lecteur d'écran lit le contenu, formules comprises, dans sa langue -->
+	<div class="markdown-content {className}" class:has-margin-notes={hasMarginNotes} lang={locale}>
 		{#if ast}
 			<!-- Key includes genericFunctions to force re-render when it changes -->
 			{#each ast.children as node, i (`${i}-${genericFunctions?.names?.length ?? 0}`)}
