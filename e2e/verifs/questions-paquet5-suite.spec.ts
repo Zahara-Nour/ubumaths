@@ -949,9 +949,6 @@ test('#2341 — démonstrations 1re spé, variation 4 : étapes en colonne, plac
 	console.log(
 		`#2341 (${test.info().project.name}) étiquettes coupées à 360 px :\n  ${clipped.join('\n  ')}`
 	);
-	// ÉCART : à 360 px, des formules longues (`\overrightarrow{MA}\cdot…`) sont coupées au bord de l'étiquette,
-	// sans retour à la ligne ni défilement ; la ligne attend des formules lisibles, rien qui déborde.
-	test.fail();
 	expect(clipped, 'étiquettes dont une formule dépasse la boîte').toEqual([]);
 });
 
