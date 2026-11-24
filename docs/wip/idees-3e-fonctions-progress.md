@@ -6,20 +6,20 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR ouverte (rendu vérifié à l'écran)._
+_Mis à jour le 2026-11-24, après #3086._
 
-- **État** : phase 0 validée (F1-F5, N1-N3 ; Q1 pas de quotient, Q2 outil n° 60 noté, Q3 F5 sur
-  cb545bd7). Lot écrit, commité, rendu vérifié : 3 neufs (brouillons locaux 6f2a8a4b N1,
-  502ab371 N2, 03cce164 N3), +11 variations sur d820232a, 6ad254b4, cb545bd7, migration de
-  contenu `20261124123959_…` + fixture ; test d'intégration vert. Les 3 modèles publiés sont
-  réservés dans le tableau de répartition.
-- **Prochaine action** : CI de la PR → `pnpm pr:merger <n>` ; puis `db:migrate` (contenu) selon
-  les 4 conditions, et relecture des brouillons dans `/dev/modeles` (§ 5 de la skill).
-- **En attente de David** : après le merge, `create-questions --publier` des 3 brouillons en prod ;
-  description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
+- **État** : #3086 mergée (3 neufs N1-N3 en fichiers, brouillons locaux 6f2a8a4b, 502ab371,
+  03cce164 ; +11 variations sur d820232a, 6ad254b4, cb545bd7 ; rendu vérifié à l'écran).
+  Migration de contenu `20261124123959_…` **pas encore jouée en prod** (seule en attente au
+  `migration list --linked` du 2026-11-24).
+- **Prochaine action** : `db:migrate` quand les 4 conditions sont réunies ; manquent (2) preuve
+  rouge du test d'intégration sans la migration, (3) `security-auditor` (prévu par la skill § 4,
+  non lancé avant la PR). Puis relecture des brouillons dans `/dev/modeles` (skill § 5).
+- **En attente de David** : go pour (2) + (3) puis `db:migrate` ; `create-questions --publier` des
+  3 brouillons en prod ; description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
 - **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
-  (`TableNode`, `overflow-x-auto`, comportement commun) ; le port 51839 n'est pas à moi.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions`, `docs/idees-3e-fonctions`
+  (`TableNode`, `overflow-x-auto`, comportement commun).
+- **Worktree / branche** : aucun (retirés par `pr:merger`) ; un neuf pour la suite.
 
 ## Phase 0 (2026-11-24, en attente de David)
 
