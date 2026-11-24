@@ -1,0 +1,33 @@
+{
+	"migration": "supabase/migrations/20261124170918_questions_idees_3e_fonctions_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "6897aa8b-6685-4a6a-95ff-25c155e1578d",
+			"title": "Traduire f(a) = b avec image et antécédent",
+			"fichier": "n1-traduire-image-antecedent.json",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sousNotion": "images et antécédents",
+			"point": "3-040"
+		},
+		{
+			"id": "7c7b7593-a9c3-409f-bb1d-eaa9d6dacd84",
+			"title": "Calculer une image ou un antécédent avec une formule",
+			"fichier": "n2-calculer-image-ou-antecedent.json",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sousNotion": "images et antécédents",
+			"point": "3-040"
+		},
+		{
+			"id": "4aaa75c0-835b-43c4-bd19-19b03fba0fcd",
+			"title": "Calculer des images puis placer les points de la courbe",
+			"fichier": "n3-images-puis-points-de-la-courbe.json",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sousNotion": null,
+			"point": "3-039"
+		}
+	],
+	"niveaux": []
+}
