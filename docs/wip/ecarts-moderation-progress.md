@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (T20, T25, T27) mergée (#3115) ; PR 2 (T21, T22) à faire
+status: PR 1 (T20, T25, T27) mergée (#3115) ; PR 2 (T21, T22) en cours, T21 codé, T22 en attente de la relecture de David
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3115._
+_Mis à jour le 2026-11-24, après #3115 (PR 2 en cours, non ouverte)._
 
-- **État** : **PR 1 mergée (#3115)** : T20, T25, T27 corrigés et barrés au registre (preuves vertes) ; quatre écarts relevés par les revues entrés : T28 (règles d'accès du stockage des captures absentes des migrations), T29 (l'auteur réécrit toutes les colonnes de son rapport en attente), L122 (effacement de l'ancienne capture sans regarder la liste rendue), L123 (badge de modération qui disparaît en silence). Aucune migration. Pas encore en prod (pas de `deploy:prod` demandé). Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
-- **Prochaine action** : **PR 2** : T21 (onglet « Messages marqués », option a : seulement les conversations que le prof peut déjà ouvrir, aucun accès nouveau) et T22 (liste de mots proposée sur une page à cocher, relue par David, puis migration). Nouveau worktree `ubumaths-wt-ecarts-moderation` depuis `origin/main`. Données d'élèves : revue `code-reviewer` + `security-auditor`, tests d'intégration si RLS.
-- **En attente de David** : PR 2 : relecture de la liste de mots (page à cocher à lui envoyer).
-- **Pièges en cours** : T24 hors lot (suspendu avec le tuteur, D21) ; le faux client `createWriteVerdictSupabase` rend `EMPTY` à `maybeSingle` si la table ne donne que `awaited` ; un `catch` large du lot avale un import manquant (« Erreur inattendue ») ; les règles d'accès du stockage des captures n'existent qu'en prod (T28) : la pile locale ne les a pas.
-- **Worktree / branche** : aucun (retiré au merge de #3115).
+- **État** : PR 1 mergée (#3115). **PR 2 en cours sur `fix/ecarts-moderation`** : T21 codé et commité (onglet « Messages marqués » de `/dashboard/teacher/moderation/gestion`, lecture par la RLS de `messages`, aucune migration), tests verts, typecheck à 0, vu à l'écran (`pnpm voir`, iPhone, compte prof). T22 : page à cocher envoyée à David (https://claude.ai/artifact/T1AgYjEHmeV8jGhcmzFiPo, réponses dans `relecture/reponses`, à lire avec `ArtifactData`). Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **Prochaine action** : quand David a relu la liste ET répondu à la question d'accès, écrire T22 (migration additive : `check_profanity_simple` redéfinie, mot entier, sans majuscules ni accents ni pluriel ; tests d'intégration rouges d'abord dans `tests/integration/database/chat-triggers.test.ts`), puis revue `code-reviewer` + `security-auditor`, une seule PR pour T21 + T22, barrer T21 et T22 au registre.
+- **En attente de David** : (1) relecture de la liste de mots sur la page à cocher ; (2) question d'accès de la migration T22 : personne ne lit rien de nouveau, mais davantage de messages porteront la mention « signalé automatiquement » (vue de tous dans la conversation) et arriveront dans l'onglet du prof : d'accord ?
+- **Pièges en cours** : T24 hors lot ; la PR n'est PAS ouverte (une seule revue, un seul push) ; `pnpm voir` ne clique pas : pour voir l'onglet, mettre `value="flagged"` le temps de la capture ; pas de lien direct vers une conversation du chat (l'onglet renvoie à `/dashboard/chat`) ; pas d'état « traité » pour un message marqué (liste des 100 plus récents).
+- **Worktree / branche** : `ubumaths-wt-ecarts-moderation` / `fix/ecarts-moderation`.
 
 ---
 
@@ -43,3 +43,8 @@ _Mis à jour le 2026-11-24, après #3115._
 - `code-reviewer` : `remove` qui rend une liste vide sans erreur (stockage qui refuse en silence). Choix : avertissement au journal, la ligne part quand même (pour l'admin, liste vide = fichier déjà absent). Lecture du rapport en erreur : test ajouté.
 - **Écarts à entrer au registre après le merge** : (1) les policies du bucket `bug-report-screenshots` ne sont dans aucune migration (pile locale, pile de test et projet recréé sans policy admin : la capture resterait orpheline en silence) ; (2) l'auteur peut écrire `screenshot_path` et les autres colonnes de son rapport en attente par l'API de la base ; (3) le `remove` de `[reportId]/screenshot/+server.ts` ne regarde pas la liste rendue ; (4) compteur de signalements illisible : le badge du menu de modération disparaît sans rien dire hors de l'onglet Signalements.
 - Vu à l'écran (`pnpm voir`, iPhone, compte prof, base locale) : page nominale (1 signalement, badge) et alerte de lecture en échec (échec forcé le temps de la capture). Déjà là avant la PR, non touché : le titre du bandeau « Moderation » sans accents, les onglets qui se chevauchent sur iPhone.
+
+## PR 2 (2026-11-24)
+
+- T21 : `gestion/+page.server.ts` lit `messages` (`is_flagged = true`, 100 plus récents) avec le client du prof, rend `flaggedMessages`, `flaggedMessagesLoadFailed` ; `FlaggedMessagesList.svelte` (lecture seule) ; onglets en 2 × 2 sur iPhone. Tests : `gestion/__tests__/messages-marques.test.ts` (rouges avant le code).
+- T22 : liste proposée en six catégories (gros mots, sexiste et sexuel, raciste, homophobe, physique et handicap, menaces), environ 150 entrées dont une vingtaine proposées écartées pour fausses alertes.

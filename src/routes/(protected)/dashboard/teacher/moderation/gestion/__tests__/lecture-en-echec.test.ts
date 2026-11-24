@@ -31,7 +31,8 @@ type RpcResult = { data: unknown; error: unknown };
 async function runLoad(rpc: { reports: RpcResult; count: RpcResult }) {
 	const { client } = createWriteVerdictSupabase({
 		user_restrictions: { awaited: { data: [], error: null } },
-		moderation_logs: { awaited: { data: [], error: null } }
+		moderation_logs: { awaited: { data: [], error: null } },
+		messages: { awaited: { data: [], error: null } }
 	});
 	client.rpc.mockImplementation(async (name: string) => {
 		if (name === 'get_reports_for_moderation') return rpc.reports;
