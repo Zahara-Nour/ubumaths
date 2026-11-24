@@ -1,0 +1,287 @@
+{
+	"id": "37ce7759-c2fa-4353-a726-f0c942284053",
+	"title": "Convexité : lecture sur la courbe de f",
+	"description": "Lire l'intervalle où f est convexe sur sa courbe (courbe au-dessus de ses tangentes)",
+	"grades": ["T_SPE", "T_COMP"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est convexe là où sa courbe est « tournée vers le haut » (au-dessus de ses tangentes), concave là où elle est « tournée vers le bas ».",
+					"La courbure change au point d'abscisse ${{h}}$ (point d'inflexion) : $f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$.",
+					"Attention : l'intervalle $\\left[{{eval:h-1}}\\,;{{eval:h+1}}\\right]$ est celui où $f$ est {{if:s>0|décroissante|croissante}}, ce n'est pas une question de convexité."
+				]
+			}
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: -4 ; 4\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec deux sommets, d'abscisses {{eval:h-1}} et {{eval:h+1}}.\n```\n\nLaquelle de ces courbes peut représenter la fonction **dérivée seconde** $f''$ ?\n\n````choix\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{s}}*(x-{{h}})   violet\n  taille: petite\n  description: Droite qui coupe l'axe des abscisses en x = {{h}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{eval:-s}}*(x-{{h}})   violet\n  taille: petite\n  description: Droite qui coupe l'axe des abscisses en x = {{h}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{s}}*(x-{{eval:h+1}})   violet\n  taille: petite\n  description: Droite qui coupe l'axe des abscisses en x = {{eval:h+1}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  g(x) = {{s}}*1.5*((x-{{h}})^2-1)   violet\n  taille: petite\n  description: Parabole qui coupe l'axe des abscisses en x = {{eval:h-1}} et x = {{eval:h+1}}.\n  ```\n````",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f''(x)\\geqslant 0$ là où $f$ est convexe (courbe tournée vers le haut), $f''(x)\\leqslant 0$ là où elle est concave.",
+					"$\\mathcal{C}_f$ est {{if:s>0|concave puis convexe|convexe puis concave}}, avec un point d'inflexion d'abscisse ${{h}}$ : $f''$ est {{if:s>0|négative puis positive|positive puis négative}} et s'annule en ${{h}}$.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{la droite } {{if:s>0|croissante|décroissante}} \\text{ qui coupe l'axe en } {{h}} }$. La parabole qui s'annule aux sommets de $\\mathcal{C}_f$ est celle de $f'$."
+				]
+			},
+			"hint": "Où $\\mathcal{C}_f$ est-elle convexe, où est-elle concave ? Déduis-en le signe de $f''$, et où elle s'annule."
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\left[{{eval:c-2}}\\,;{{eval:c+5}}\\right]$, et ses tangentes en deux points.\n\n```courbe\nx: {{eval:c-2.5}} ; {{eval:c+5.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{A}}*sin(\\pi*(x-{{c}})/3)+{{k}} sur [{{eval:c-2}} ; {{eval:c+5}}]   bleu   nom=C_f\ntangente: f ; {{c}}\ntangente: f ; {{eval:c+3}}\ntaille: moyenne\ndescription: Courbe ondulée qui change deux fois de courbure, avec ses tangentes aux points d'abscisses {{c}} et {{eval:c+3}}.\n```\n\nDétermine le plus grand intervalle sur lequel $f$ est **{{if:A>0|concave|convexe}}**.\n\n$I=?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "2|3|-2|-3"
+				},
+				{
+					"name": "c",
+					"expression": "-2..0"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{c}};{{eval:c+3}}]",
+					"answerKind": "intervalles",
+					"openableBounds": true,
+					"expectedErrors": [
+						{
+							"answer": "[{{eval:c-1.5}};{{eval:c+1.5}}]",
+							"message": "Sur cet intervalle, $f$ est {{if:A>0|croissante|décroissante}} : la convexité se lit à la courbure, pas au sens de variation.",
+							"label": "Intervalle de monotonie"
+						},
+						{
+							"answer": "[{{eval:c-2}};{{c}}]",
+							"message": "Sur cet intervalle, la courbe est au-{{if:A>0|dessus|dessous}} de ses tangentes : $f$ y est {{if:A>0|convexe|concave}}.",
+							"label": "Courbure inversée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aux points d'abscisses ${{c}}$ et ${{eval:c+3}}$, la courbe traverse sa tangente : ce sont deux points d'inflexion, où la courbure change.",
+					"Entre eux, la courbe est {{if:A>0|en dessous|au-dessus}} de ses tangentes : $f$ est {{if:A>0|concave|convexe}} sur $\\textcolor{{{color:primary.0}}}{\\left[{{c}}\\,;{{eval:c+3}}\\right]}$ (et {{if:A>0|convexe|concave}} sur $\\left[{{eval:c-2}}\\,;{{c}}\\right]$ et sur $\\left[{{eval:c+3}}\\,;{{eval:c+5}}\\right]$)."
+				]
+			},
+			"hint": "Repère les points où la courbe traverse sa tangente ; entre eux, est-elle tournée vers le haut ou vers le bas ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "1",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v0 : s=1, bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "1",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v0 : intervalle de concavité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "1",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v0 : intervalle de décroissance",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "-1",
+				"k": "1",
+				"s": "-1"
+			},
+			"description": "v0 : s=−1",
+			"variationIndex": 0
+		},
+		{
+			"description": "F12c : s = 1, h = 0",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F12c : opposée",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F12c : décalée",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"h": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F12c : parabole (f′)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"h": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F13 : A = 2, c = −1",
+			"variationIndex": 2,
+			"variables": {
+				"A": "2",
+				"c": "-1",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[-1;2]"]
+		},
+		{
+			"description": "F13 : bornes ouvertes",
+			"variationIndex": 2,
+			"variables": {
+				"A": "2",
+				"c": "-1",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-1;2["]
+		},
+		{
+			"description": "F13 : intervalle de monotonie",
+			"variationIndex": 2,
+			"variables": {
+				"A": "2",
+				"c": "-1",
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Sur cet intervalle, $f$ est croissante : la convexité se lit à la courbure, pas au sens de variation."
+			},
+			"answers": ["[-2.5;0.5]"]
+		},
+		{
+			"description": "F13 : courbure inversée",
+			"variationIndex": 2,
+			"variables": {
+				"A": "2",
+				"c": "-1",
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["[-3;-1]"]
+		},
+		{
+			"description": "F13 : A = −3, c = 0",
+			"variationIndex": 2,
+			"variables": {
+				"A": "-3",
+				"c": "0",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[0;3]"]
+		}
+	]
+}

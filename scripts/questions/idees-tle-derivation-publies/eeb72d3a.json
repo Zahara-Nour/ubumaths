@@ -1,0 +1,362 @@
+{
+	"id": "eeb72d3a-8a31-494a-afcf-6a6a580dfe69",
+	"title": "Convexité : position par rapport aux tangentes",
+	"description": "À savoir : f deux fois dérivable, convexe ⟺ courbe au-dessus de ses tangentes ; inégalité f(x) ≥ f′(a)(x − a) + f(a) ; concave : en dessous",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 30,
+	"status": "published",
+	"shared": {},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si, sur $I$, sa courbe représentative est :\n\n```choix\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses sécantes\n- au-dessus de l'axe des abscisses\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître (admis) : pour $f$ deux fois dérivable sur $I$, $f$ est convexe sur $I$ si et seulement si sa courbe est $\\textcolor{{{color:primary.0}}}{\\text{au-dessus de chacune de ses tangentes}}$.",
+					"Et en dessous de ses sécantes : les deux positions vont ensemble."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction deux fois dérivable et convexe sur $\\mathbb{R}$, et $a$ un réel.\n\nPour tout réel $x$ :\n\n```choix\n- $f(x)\\geqslant f'(a)(x-a)+f(a)$\n- $f(x)\\leqslant f'(a)(x-a)+f(a)$\n- $f(x)=f'(a)(x-a)+f(a)$\n- $f(x)\\geqslant f(a)$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître : la tangente en $a$ a pour équation $y=f'(a)(x-a)+f(a)$, et la courbe d'une fonction convexe est au-dessus de ses tangentes.",
+					"Donc, pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{f(x)\\geqslant f'(a)(x-a)+f(a)}$.",
+					"$f(x)\\geqslant f(a)$ serait vrai seulement si la tangente en $a$ était horizontale."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ une fonction deux fois dérivable et **concave** sur un intervalle $I$.\n\nSur $I$, sa courbe représentative est :\n\n```choix\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses sécantes\n- en dessous de l'axe des abscisses\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"À connaître : $f$ concave équivaut à $-f$ convexe ; la courbe de $-f$ est au-dessus de ses tangentes.",
+					"Celle de $f$ est donc $\\textcolor{{{color:primary.0}}}{\\text{en dessous de chacune de ses tangentes}}$ (et au-dessus de ses sécantes)."
+				]
+			}
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$, et sa tangente $T$ au point $A$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\npoints: A({{eval:h+t}} ; f({{eval:h+t}}))\ntangente: f ; {{eval:h+t}}\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec deux sommets, et sa tangente au point A.\n```\n\nAu voisinage du point $A$, la courbe $\\mathcal{C}_f$ est :\n\n```choix\n- au-dessus de la tangente $T$\n- en dessous de la tangente $T$\n- de part et d'autre de la tangente $T$ (elle la traverse en $A$)\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "-1..1"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				},
+				{
+					"name": "t",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|2|{{if:s*t>0|0|1}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Là où $f$ est convexe, sa courbe est au-dessus de ses tangentes ; là où elle est concave, en dessous ; en un point d'inflexion, elle traverse sa tangente.",
+					"{{if:t==0|$A$ est le point d'inflexion de $\\mathcal{C}_f$ : la courbe est $\\textcolor{{{color:primary.0}}}{\\text{de part et d'autre de } T}$.|Au voisinage de $A$, la courbe est tournée vers le {{if:s*t>0|haut ($f$ convexe)|bas ($f$ concave)}} : elle est $\\textcolor{{{color:primary.0}}}{\\text{ {{if:s*t>0|au-dessus|en dessous}} de } T}$.}}"
+				]
+			},
+			"hint": "Au voisinage de $A$, la courbe est-elle tournée vers le haut, vers le bas, ou change-t-elle de courbure en $A$ ?"
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$, et sa tangente au point $A$ d'abscisse $a={{eval:c+1.5*t}}$.\n\n```courbe\nx: {{eval:c-3}} ; {{eval:c+4.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{A}}*sin(\\pi*(x-{{c}})/3)+{{k}}   bleu   nom=C_f\npoints: A({{eval:c+1.5*t}} ; f({{eval:c+1.5*t}}))\ntangente: f ; {{eval:c+1.5*t}}\ntaille: moyenne\ndescription: Courbe ondulée et sa tangente au point A.\n```\n\nQue peut-on dire de $f$ au voisinage de $a$ ?\n\n```choix\n- $f$ est convexe au voisinage de $a$\n- $f$ est concave au voisinage de $a$\n- $\\mathcal{C}_f$ a un point d'inflexion en $A$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "2|3|-2|-3"
+				},
+				{
+					"name": "c",
+					"expression": "-1..0"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				},
+				{
+					"name": "t",
+					"expression": "-1..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t*(t-2)==0|2|{{if:A*t<0|0|1}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe d'une fonction convexe est au-dessus de ses tangentes, celle d'une fonction concave en dessous ; en un point d'inflexion, elle traverse sa tangente.",
+					"{{if:t*(t-2)==0|En $A$, la courbe traverse sa tangente : $\\textcolor{{{color:primary.0}}}{\\mathcal{C}_f\\text{ a un point d'inflexion en }A}$.|Au voisinage de $A$, la courbe est {{if:A*t<0|au-dessus|en dessous}} de sa tangente : $\\textcolor{{{color:primary.0}}}{f\\text{ est {{if:A*t<0|convexe|concave}} au voisinage de }a}$.}}"
+				]
+			},
+			"hint": "Au voisinage de $A$, la courbe est-elle au-dessus de sa tangente, en dessous, ou la traverse-t-elle ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "au-dessus des tangentes",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : en dessous",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : au-dessus des sécantes",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : positive",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "≥ tangente",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : ≤",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : =",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : ≥ f(a)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "sous les tangentes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : au-dessus",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : sous les sécantes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "Erreur : négative",
+			"variationIndex": 2
+		},
+		{
+			"description": "F15a : convexe (t = 1)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F15a : concave (t = −2)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F15a : inflexion (t = 0)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F15a : inflexion prise pour concave",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"k": "0",
+				"t": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F15a : s = −1, t = 2 → en dessous",
+			"variationIndex": 3,
+			"variables": {
+				"s": "-1",
+				"h": "0",
+				"k": "0",
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F15b : A = 2, t = −1 → convexe",
+			"variationIndex": 4,
+			"variables": {
+				"A": "2",
+				"c": "0",
+				"k": "0",
+				"t": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F15b : A = 2, t = 1 → concave",
+			"variationIndex": 4,
+			"variables": {
+				"A": "2",
+				"c": "0",
+				"k": "0",
+				"t": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F15b : t = 2 → inflexion",
+			"variationIndex": 4,
+			"variables": {
+				"A": "-3",
+				"c": "-1",
+				"k": "1",
+				"t": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F15b : convexe pris pour concave",
+			"variationIndex": 4,
+			"variables": {
+				"A": "2",
+				"c": "0",
+				"k": "0",
+				"t": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		}
+	]
+}

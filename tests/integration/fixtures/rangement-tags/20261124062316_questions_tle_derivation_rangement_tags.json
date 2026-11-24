@@ -1,0 +1,51 @@
+{
+	"migration": "supabase/migrations/20261124062316_questions_tle_derivation_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "da157de6-0283-42bb-9886-a5c7c3fe3ec5",
+			"title": "Équation de la tangente à la courbe d'une fonction composée",
+			"fichier": "idees-tle-derivation-neufs/f05-tangente-composee.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "fonctions composées",
+			"point": "TSPE-413"
+		},
+		{
+			"id": "1a82084b-e8c8-4482-8826-8f4a4ed1619a",
+			"title": "Variations d'une fonction uⁿ, eᵘ ou √u",
+			"fichier": "idees-tle-derivation-neufs/f06-variations-composee.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "variations et extremums",
+			"point": "TSPE-416"
+		},
+		{
+			"id": "74d73d4e-5e5e-431f-ad2d-786f805f4f49",
+			"title": "Variations d'une fonction auxiliaire ou homographique",
+			"fichier": "idees-tle-derivation-neufs/f07-variations-auxiliaire-homographique.json",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sousNotion": "variations et extremums",
+			"point": "TSPE-416"
+		},
+		{
+			"id": "91841156-6c8a-47db-9bd1-d0d317f3a5fd",
+			"title": "Signe de f′(a) ou de f″(a) lu sur la courbe de f",
+			"fichier": "idees-tle-derivation-neufs/f11-signe-derivees-sur-courbe.json",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sousNotion": "caractérisations",
+			"point": "TSPE-419"
+		},
+		{
+			"id": "02253f0a-6357-4c06-be35-4982684860e2",
+			"title": "Reconnaître une courbe à partir de celle de f″",
+			"fichier": "idees-tle-derivation-neufs/f12-reconnaitre-courbe-depuis-f-seconde.json",
+			"branche": "Fonctions",
+			"notion": "Convexité",
+			"sousNotion": "dérivée seconde",
+			"point": "TSPE-590"
+		}
+	],
+	"niveaux": []
+}
