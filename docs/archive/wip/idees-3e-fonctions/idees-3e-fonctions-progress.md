@@ -1,24 +1,18 @@
 # Chantier `idees-3e-fonctions` — journal
 
-Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Rubrique « généralités sur
+Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md). Rubrique « généralités sur
 les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices). Relevé :
 [idees-3e-fonctions-releve.md](idees-3e-fonctions-releve.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR des descriptions en cours._
+_Mis à jour le 2026-11-24, chantier clos après #3101._
 
-- **État** : 6 modèles validés par David le 2026-11-24 (oral, aucun verdict en base). N1-N3
-  (6897aa8b, 7c7b7593, 4aaa75c0) **publiés** par David (`publier-lot --publier`, vérifié au MCP).
-  PR `feat/idees-3e-fonctions-descriptions` : migration de contenu `20261124191726_…` qui ne
-  change que la description des 3 publiés (textes en « Descriptions retenues »).
-- **Prochaine action** : merger la PR, puis `db:migrate` depuis `main` (`migration list --linked`
-  avant), vérifier les 3 descriptions au MCP ; puis fin de chantier (skill `idees-rubrique` § 6).
-- **En attente de David** : rien.
-- **Pièges en cours** : tableau à 4 cases de N3 qui défile en largeur sur téléphone (`TableNode`,
-  commun) : laissé, à noter dans `outils-manquants.md` si David le demande.
-- **Worktree / branche** : `ubumaths-wt-idees-3e-fonctions-descriptions` ·
-  `feat/idees-3e-fonctions-descriptions`.
+- **État** : rubrique publiée : 3 modèles neufs publiés par David (N1-N3), 3 publiés complétés de
+  11 variations et de leur description (#3101, `db:migrate` le 2026-11-24, vérifié au MCP), le
+  tout validé par David ; journal archivé · **Prochaine action** : aucune · **En attente de
+  David** : rien · **Pièges en cours** : tableau de N3 qui défile en largeur sur téléphone
+  (`TableNode`, commun), laissé · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-24, en attente de David)
 
