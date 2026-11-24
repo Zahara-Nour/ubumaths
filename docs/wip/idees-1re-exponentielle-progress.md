@@ -2,15 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR du lot en préparation._
+_Mis à jour le 2026-11-24, après #3089._
 
-- **État** : 6 brouillons en prod (ids commités), 6 variations ajoutées à 4 publiés ; migrations
-  `20261124134647` (contenu) et `20261124134708` (rangement) générées, fixtures vertes ·
-  **Prochaine action** : `security-auditor`, PR, CI, merge, `db:migrate` (seulement si `migration
-list --linked` ne montre que ces deux migrations), puis relecture dans `/dev/modeles` · **En attente
-  de David** : rien · **Pièges en cours** : messages des erreurs prévues réécrits (`REECRIT` des deux
-  scripts) · **Worktree / branche** : `../ubumaths-wt-idees-1re-exponentielle`,
-  `docs/idees-1re-exponentielle`.
+- **État** : #3089 mergée (6 neufs rangés et tagués, 6 variations de 4 publiés) ; migrations
+  `20261124134647` (contenu) et `20261124134708` (rangement) **pas encore en prod** ·
+  **Prochaine action** : `pnpm db:migrate` depuis le dépôt principal, dès que `migration list --linked`
+  ne montre plus que ces deux-là ; puis vérifier en prod (nœud, tag, variations), relecture dans
+  `/dev/modeles` (brouillons par `?noeud=`, publiés par une série de relecture) · **En attente de
+  David** : feu vert pour `db:migrate` ; `20261124134110` (`idees-tle-ln`) attend aussi et serait poussée
+  avec · **Pièges en cours** : messages des erreurs prévues réécrits (`REECRIT` des deux scripts) ·
+  **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Journal
 
@@ -65,3 +66,10 @@ list --linked` ne montre que ces deux migrations), puis relecture dans `/dev/mod
   problème.
 - Niveaux relevés en prod dans les 4 sous-notions : ceux du lot s'y insèrent (pas de renumérotation).
 - Migrations générées ; tests d'intégration des deux fixtures verts (165 tests).
+
+### 2026-11-24 — #3089 mergée
+
+- `security-auditor` : aucun finding bloquant (notes : garde de présence modèle par modèle dans la
+  migration de contenu, en-tête « niveaux » du gabarit de rangement). CI verte, merge par `pr:merger`.
+- `db:migrate` **pas lancé** : `migration list --linked` montre aussi `20261124134110`
+  (`idees-tle-ln`, contenu de publiés), qui serait poussée avec les nôtres.
