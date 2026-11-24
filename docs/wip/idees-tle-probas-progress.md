@@ -5,7 +5,7 @@
 _Mis à jour le 2026-11-24, brouillons créés en prod, migrations générées._
 
 - **État** : 2 brouillons en prod (a3aa8f4a F2, 1220760b F3) ; migrations de rangement et de contenu générées
-  et vertes en intégration ; `security-auditor` sans bloquant ; PR ouverte.
+  et vertes en intégration ; `security-auditor` sans bloquant ; PR à ouvrir, puis CI et merge.
 - **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite relecture dans `/dev/modeles`.
 - **En attente de David** : rien pour l'instant (relecture après le `db:migrate`).
 - **Pièges en cours** : niveau de F3 (6) égal à celui de 4ee9a359 sur le même nœud, sans effet bloquant.
