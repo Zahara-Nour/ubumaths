@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { texteVersEtat } from '../../../src/lib/shared/blockly/tortue/notation';
+import { texteVersEtatTortue } from '../../../src/lib/shared/blockly/tortue/niveaux';
+import type { NiveauTortue } from '../../../src/lib/shared/blockly/tortue/interpreteur';
 import { texteVersEtatCalcul } from '../../../src/lib/shared/blockly/calcul/notation';
 import { Fingers } from './modele-brouillon';
 
@@ -29,9 +30,12 @@ export const estTactile = (): boolean => test.info().project.use.hasTouch === tr
 /** Android : Chromium tactile, seul à savoir envoyer de vrais doigts (protocole CDP) */
 export const estAndroid = (): boolean => test.info().project.name === 'android';
 
-/** L'état Blockly sérialisé d'un programme tortue écrit en notation texte (`répéter 4 [ … ]`) */
-export function etatTortue(texte: string): unknown {
-	const lu = texteVersEtat(texte);
+/**
+ * L'état Blockly sérialisé d'un programme tortue écrit en notation texte (`répéter 4 [ … ]`) ;
+ * au niveau 4e / 3e : variables (`mettre n à 6`), calculs et conditions
+ */
+export function etatTortue(texte: string, niveau: NiveauTortue = 'base'): unknown {
+	const lu = texteVersEtatTortue(texte, niveau);
 	if (!lu.ok) throw new Error(`programme tortue illisible : ${lu.message}`);
 	return lu.etat;
 }
@@ -115,6 +119,49 @@ export async function typesDeBlocs(page: Page): Promise<string[]> {
 		},
 		{ url: adresse, code: ESPACE_VISIBLE }
 	);
+}
+
+/** Les noms des variables de l'espace de travail visible (créées par « Créer une variable… ») */
+export async function nomsDeVariables(page: Page): Promise<string[]> {
+	const adresse = adresseBlockly(page);
+	return page.evaluate(
+		async ({ url, code }) => {
+			const importer = new Function('url', 'return import(url)') as (
+				url: string
+			) => Promise<unknown>;
+			const Blockly = await importer(url);
+			const choisir = new Function('Blockly', code) as (b: unknown) => {
+				getVariableMap: () => { getAllVariables: () => { getName: () => string }[] };
+			};
+			return choisir(Blockly)
+				.getVariableMap()
+				.getAllVariables()
+				.map((variable) => variable.getName());
+		},
+		{ url: adresse, code: ESPACE_VISIBLE }
+	);
+}
+
+/**
+ * Crée une variable par le vrai geste : catégorie « Variables », bouton « Créer une variable… »,
+ * nom écrit dans la boîte (au centre de l'écran), OK
+ */
+export async function creerVariable(page: Page, nom: string): Promise<void> {
+	const bouton = page.getByText('Créer une variable…');
+	// Le volet des variables reste ouvert après une création : un second clic sur la catégorie le fermerait
+	if (!(await bouton.isVisible())) {
+		await page
+			.locator('.blocklyToolboxCategory')
+			.filter({ hasText: /^\s*Variables\s*$/ })
+			.first()
+			.click();
+	}
+	await bouton.click();
+	const boite = page.locator('dialog.blocklyDialog');
+	await expect(boite).toBeVisible();
+	await boite.locator('input').fill(nom);
+	await boite.getByRole('button', { name: 'OK' }).click();
+	await expect(boite).toBeHidden();
 }
 
 /** Le centre d'un lieu (boîte à l'écran) */
