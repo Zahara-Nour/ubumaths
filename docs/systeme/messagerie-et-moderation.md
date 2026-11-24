@@ -280,9 +280,15 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 ### Grossièretés
 
 - Le seul filtre actif est en base, sur le **chat** : le trigger `process_message_content` de
-  `messages` appelle `check_profanity_simple` (quatre mots, recherche de sous-chaîne) et pose
-  `is_flagged` + `flag_reason`. Il **marque**, il ne bloque pas. `ChatMessageList` affiche
-  « Ce message a été signalé automatiquement ».
+  `messages` appelle `check_profanity_simple` et pose `is_flagged` + `flag_reason`. Il **marque**,
+  il ne bloque pas. `ChatMessageList` affiche « Ce message a été signalé automatiquement ».
+- La liste (migration `20261124230639`, relue par David le 2026-11-25) compte environ 125 mots et
+  expressions : gros mots, propos sexistes ou sexuels, racistes, homophobes, moqueries sur le
+  physique ou le handicap, menaces et incitations à se faire du mal. Le mot est cherché **en
+  entier**, sans tenir compte des majuscules, des accents, de la ponctuation ni d'un « s » final :
+  « con » marque « t'es trop CON », pas « content ». Changer la liste = une migration qui
+  redéfinit la fonction. Limites : une faute voulue (« c0nnard », « meeerde ») passe ; les
+  messages envoyés avant la migration ne sont pas relus.
 - Aucun filtre sur `private_messages`, ni sur les notifications.
 - L'ancien filtre côté serveur (`profanity-filter.ts`, jamais branché) a été retiré le 2026-10-13.
 
@@ -290,6 +296,12 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 - Signalements : tous, via `get_reports_for_moderation` (`is_teacher_or_admin()`), triés
   `pending` d'abord.
+- Messages marqués automatiquement : onglet « Messages marqués » de `gestion/`
+  (`FlaggedMessagesList.svelte`). `load` lit `messages` (`is_flagged = true`, 100 plus récents)
+  avec le client du prof, sans fonction privilégiée : la RLS de `messages` borne la liste aux
+  conversations qu'il peut déjà ouvrir et masque les messages supprimés. Lecture seule ; une
+  lecture en échec rend `flaggedMessagesLoadFailed` et une alerte, jamais « aucun message ».
+  Pas de lien direct vers la conversation, pas d'état « traité ».
 - Restrictions : la page `gestion/` ne liste que celles qu'**il** a posées (`restricted_by`).
   Un prof ne restreint qu'un élève (contrôle de rôle dans `restrict-user/`).
 - **Une restriction bloque l'écriture dans le chat** : la policy « Users can send messages to
@@ -417,10 +429,6 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 
 ### ⚠️ Safeguarding (élèves mineurs)
 
-- **Le marquage automatique n'arrive pas chez le prof.** `is_flagged` n'est lu que par
-  `ChatMessageList` ; aucun écran de modération ne liste les messages marqués. Le filtre ne
-  connaît que quatre mots. Le commentaire du trigger annonce un contrôle serveur « plus
-  sophistiqué » qui n'existe pas.
 - **Mentions factices dans l'éditeur riche.** `src/lib/stores/mentions.svelte.ts` propose une
   liste en dur (« Alice Dupont », « Bob Durand »…) ; l'extension `Mention` est active dans
   `editor-config.ts`. Aucune vraie personne, mais des noms inventés offerts à l'autocomplétion.
