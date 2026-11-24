@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3089._
+_Mis à jour le 2026-11-24, après #3089 (migrations en prod)._
 
-- **État** : #3089 mergée (6 neufs rangés et tagués, 6 variations de 4 publiés) ; migrations
-  `20261124134647` (contenu) et `20261124134708` (rangement) **pas encore en prod** ·
-  **Prochaine action** : `pnpm db:migrate` depuis le dépôt principal, dès que `migration list --linked`
-  ne montre plus que ces deux-là ; puis vérifier en prod (nœud, tag, variations), relecture dans
-  `/dev/modeles` (brouillons par `?noeud=`, publiés par une série de relecture) · **En attente de
-  David** : feu vert pour `db:migrate` ; `20261124134110` (`idees-tle-ln`) attend aussi et serait poussée
-  avec · **Pièges en cours** : messages des erreurs prévues réécrits (`REECRIT` des deux scripts) ·
-  **Worktree / branche** : aucun (retiré par `pr:merger`).
+- **État** : `20261124134647` et `20261124134708` **en prod** (poussées par la session `idees-tle-ln`) ;
+  vérifié : 6 brouillons sur leur nœud avec leur point, 4 publiés à 4/4/5/6 variations ; série
+  `scripts/series/1_SPE-relecture-exponentielle-publies.json` (4 modèles, 1 × 60 s, 4 min), simulation
+  verte en prod · **Prochaine action** : David publie la série (commande `!` ci-dessous), puis commit de
+  l'id + PR `chore/idees-1re-exponentielle-relecture`, puis relecture dans `/dev/modeles` (brouillons
+  par `?noeud=`, publiés par la série) · **En attente de David** : `! cd ../ubumaths-wt-idees-1re-exponentielle-relecture && pnpm tsx scripts/series/creer-serie.ts --fichier scripts/series/1_SPE-relecture-exponentielle-publies.json --publier`
+  · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-idees-1re-exponentielle-relecture`
+  / `chore/idees-1re-exponentielle-relecture`.
 
 ## Journal
 

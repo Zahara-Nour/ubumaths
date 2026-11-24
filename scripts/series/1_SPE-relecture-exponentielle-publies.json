@@ -1,0 +1,31 @@
+{
+	"title": "Relecture — exponentielle de 1re, 4 modèles publiés complétés",
+	"grade": "1_SPE",
+	"description": "Relecture dans /dev/modeles des 4 modèles publiés de 1re spé auxquels le chantier idees-1re-exponentielle a ajouté 6 variations (à la fin de chaque modèle).",
+	"items": [
+		{
+			"modele": "Dériver une exponentielle de fonction affine",
+			"templateId": "227f2c9c-3494-412d-bf88-e9b2c48c01a6",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Résoudre une inéquation du type eᵘ < eᶜ",
+			"templateId": "6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Signe de l'exponentielle",
+			"templateId": "68166a11-b481-44cc-b881-07252a6fb98f",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Tangente à la courbe de exp en un point",
+			"templateId": "15d3aaa0-5eef-4c08-a38c-5b5c8d5ed6e1",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
