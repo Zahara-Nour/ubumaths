@@ -966,8 +966,8 @@ trop, met à jour type / catégorie / titre, écrit les notions. Une panne entre
 étapes (nœud supprimé entre-temps, coupure) laisserait la fiche sans ses nouvelles notions ;
 réenregistrer répare. Une fonction SQL `security invoker` réunirait les trois écritures. 9. **Fiche anglaise au titre composé sans catégorie, un nom sans anglais** : ni notion ni
 catégorie à imprimer, le PDF imprime `title` (le titre anglais s'il est écrit, sinon le titre
-composé, en français). Les noms anglais de tout l'arbre (chantier `notions-en-anglais`, PR 3) le
-font disparaître ; l'éditeur signale le nom manquant. 10. **`escapeTypst` n'échappe pas `[` `]`** (`src/lib/ubumark/generators/typst-generator.ts`) : un
+composé, en français). Depuis la migration `20261124204132`, tous les nœuds actifs ont un nom
+anglais : le cas ne revient qu'avec un nœud créé ensuite sans nom anglais, que l'éditeur signale. 10. **`escapeTypst` n'échappe pas `[` `]`** (`src/lib/ubumark/generators/typst-generator.ts`) : un
 texte venu de la base, posé dans une cellule `[…]` d'un gabarit, peut fermer la cellule et
 être lu comme du code Typst (audit de sécurité de la PR #2912). Corrigé pour le titre, la ligne
 sous le titre et le bas de page (`escapeTypstBrackets`) ; reste les autres textes de la fiche
