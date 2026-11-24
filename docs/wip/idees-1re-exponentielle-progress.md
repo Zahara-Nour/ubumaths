@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3091 (série de relecture publiée)._
+_Mis à jour le 2026-11-24, relecture validée, publication à lancer._
 
-- **État** : `20261124134647` et `20261124134708` **en prod** (poussées par la session `idees-tle-ln`) ;
-  vérifié : 6 brouillons sur leur nœud avec leur point, 4 publiés à 4/4/5/6 variations ; série
-  `1_SPE-relecture-exponentielle-publies.json` publiée par David (id `4cec796d`, 4 modèles, 4 min) ·
-  **Prochaine action** : relecture par David dans `/dev/modeles` (brouillons par `?noeud=`, publiés par
-  la série), puis lire les verdicts (`question_template_reviews`), corriger, clôturer · **En attente de
-  David** : la relecture · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré par `pr:merger`).
+- **État** : relecture faite par David (« je valide les modèles ») ; `publier-lot.ts` en simulation
+  vert (6 brouillons) ; garde des niveaux verte ; réservations des 4 publiés levées ·
+  **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/idees-1re-exponentielle-neufs
+--publier`, puis je vérifie en base, passe la rubrique 1AN3 à « publiée » et archive le journal ·
+  **En attente de David** : la publication · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Journal
 
@@ -71,3 +70,11 @@ _Mis à jour le 2026-11-24, après #3091 (série de relecture publiée)._
   migration de contenu, en-tête « niveaux » du gabarit de rangement). CI verte, merge par `pr:merger`.
 - `db:migrate` **pas lancé** : `migration list --linked` montre aussi `20261124134110`
   (`idees-tle-ln`, contenu de publiés), qui serait poussée avec les nôtres.
+
+### 2026-11-24 — relecture validée
+
+- David : « je valide les modèles ». Aucun verdict en base (`question_template_reviews`) sur les
+  6 brouillons ; ceux des 4 publiés datent d'octobre. Lu comme un oui aux 6 brouillons ; les
+  variations des publiés sont déjà en prod par la migration de contenu.
+- `publier-lot.ts` en simulation : 6 brouillons passent le contrôle. `garde-niveaux-tags.ts` :
+  aucun niveau manquant. Réservations des 4 publiés levées dans le tableau de répartition.

@@ -162,10 +162,6 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 6a5e58da Résoudre une inéquation du type eᵘ < eᶜ             | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
-| 68166a11 Signe de l'exponentielle                            | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
-| 227f2c9c Dériver une exponentielle de fonction affine        | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
-| 15d3aaa0 Tangente à la courbe de exp en un point             | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
 | d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
