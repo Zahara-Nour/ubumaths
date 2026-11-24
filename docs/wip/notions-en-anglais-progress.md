@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR 1 en cours._
+_Mis à jour le 2026-11-24, après #3099._
 
-- **État** : comportements et découpage validés (« go », 2026-11-23) ; PR 1 écrite : ADR 0043, migration `20261124180821_noms_anglais_noeuds.sql`, tests d'intégration rouges sans la migration (17) puis verts ; revues code + sécurité sans bloquant · **Prochaine action** : PR 1 → CI verte → merge → `db:migrate` (vérifier `migration list --linked` avant) ; puis PR 2 (`db:types` d'abord) · **En attente de David** : rien · **Pièges en cours** : PR 2 — échapper le nom anglais au PDF comme le nom français ; le schéma Zod de réponse des liens de partage retirera `translations` s'il n'est pas élargi · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais` · `feat/notions-en-anglais`
+- **État** : PR 1 mergée (#3099) ; migration `20261124180821` jouée en prod le 2026-11-24 (711 nœuds, champ vide, contrainte et deux fonctions de partage vérifiées) · **Prochaine action** : PR 2 — PDF anglais avec les noms anglais (notions, branche, tous les chemins), règle « un nom manque → catégorie seule », signalement dans l'éditeur ; et PR 3 — traductions (~640 noms, page à cocher) · **En attente de David** : rien · **Pièges en cours** : échapper le nom anglais au PDF comme le nom français ; schémas Zod de réponse des liens de partage à élargir (ils retirent `translations`) ; `db:types` lit les migrations de la branche (plus la prod) : migration et code peuvent tenir dans une PR · **Worktree / branche** : à recréer pour la PR 2 (`git worktree add -b feat/notions-en-anglais-pdf ../ubumaths-wt-notions-en-anglais origin/main`)
 
 ## L'idée
 
@@ -98,3 +98,7 @@ Fiche d'exercices en anglais, sans titre libre :
 - Revues : `code-reviewer` (Sonnet) et `security-auditor` (Opus), aucun bloquant ; retenus :
   200 caractères au plus, blancs (tabulations, retours à la ligne) refusés, seule `en` vérifiée
   (commentaire). Pour la PR 2 : échapper le nom anglais au PDF.
+- CI de #3099 : deux rouges corrigés — `database.ts` doit suivre les migrations de la branche
+  (`pnpm db:types` dans la PR même) ; trois fixtures de nœuds de test sans `translations`.
+- Mergée le 2026-11-24 ; `migration list --linked` : seule `20261124180821` en attente ;
+  `db:migrate` joué, vérifié en prod par le MCP (lecture).
