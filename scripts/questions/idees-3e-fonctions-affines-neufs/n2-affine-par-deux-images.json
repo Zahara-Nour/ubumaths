@@ -4,6 +4,10 @@
 		"noeud": "Géométrie > Géométrie repérée > équations de droites",
 		"point": "2-322"
 	},
+	"rangement": {
+		"noeud": "Géométrie > Géométrie repérée > équations de droites",
+		"point": "2-322"
+	},
 	"title": "Déterminer une fonction affine par deux images",
 	"description": "Expression de f(x) à partir de deux images : f(0) et une autre, deux nombres consécutifs, deux nombres quelconques, deux images égales (pièges : quotient renversé, b oublié, image prise pour l'ordonnée à l'origine)",
 	"grades": ["3", "2"],

@@ -4,6 +4,10 @@
 		"noeud": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
 		"point": "3-044"
 	},
+	"rangement": {
+		"noeud": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+		"point": "3-044"
+	},
 	"title": "Lire les coefficients d'une fonction affine sur son expression",
 	"description": "Coefficient directeur et ordonnée à l'origine lus sur b + ax, ax, b, x/c + b, c(ax + b) à développer, ax + b + cx à réduire (pièges : a et b inversés, signe oublié, lecture sans développer, c pour 1/c)",
 	"grades": ["3"],
