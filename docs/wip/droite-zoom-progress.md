@@ -6,15 +6,17 @@ d'outil. Ligne n° 54 de [outils-manquants.md](outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, phase 0 de la PR 2 écrite._
+_Mis à jour le 2026-11-24, lot écrit, en attente des brouillons en prod._
 
-- **État** : PR 1 (outil) MERGÉE (#3052) ; PR 2 (modèles 6N1H-3, 6N1H-4) : phase 0 écrite (§ PR 2
-  ci-dessous), rien codé · **Prochaine action** : après validation, gros lot (script
-  `docs/wip/questions/droite-zoom-modeles.py`), brouillons, relecture dans `/dev/modeles` ; puis outil
-  n° 53 (labyrinthe), phase 0 d'abord · **En attente de David** : Q1 à Q3 de la phase 0 de la PR 2 ;
-  renommer N5 (c178356b) dans l'éditeur (cf. journal `idees-6e-entiers-decimaux`) · **Pièges en
-  cours** : aucun · **Worktree / branche** : `ubumaths-wt-droite-zoom-modeles`,
-  `feat/droite-zoom-modeles`.
+- **État** : PR 1 (outil) MERGÉE (#3052) ; PR 2 : phase 0 validée (« je te suis »), modèle neuf écrit
+  (`scripts/questions/droite-zoom-modeles/`, 6 variations, 41 specs vertes, sonde 0 problème, rendu vu
+  en local) · **Prochaine action** : après les brouillons, commiter l'id, générer la migration de
+  rangement (`migration-rangement.ts`, nœud « droite graduée », point 6-108), ouvrir la PR,
+  `security-auditor`, `db:migrate`, relecture dans `/dev/modeles?point=6-108` ; puis outil n° 53 ·
+  **En attente de David** : `create-questions --publier` en prod (commande dans le dernier message) ;
+  renommer N5 (c178356b) · **Pièges en cours** : v4 et v5 ont w fixé (dizaines de milliers ; millions),
+  les nombres du texte étant groupés à la main · **Worktree / branche** :
+  `ubumaths-wt-droite-zoom-modeles`, `feat/droite-zoom-modeles`.
 
 ## Phase 0 (2026-11-23, validée par David : « je suis tes recos »)
 
@@ -50,7 +52,7 @@ le précédent, deux pointillés vers le morceau agrandi.
 
 - 2026-11-23 : #3052 mergée (CI verte, `pnpm pr:merger`).
 
-## PR 2 : les modèles (phase 0, 2026-11-24, en attente de David)
+## PR 2 : les modèles (phase 0, 2026-11-24, validée par David : « je te suis »)
 
 Relevé : lignes 6N1H-3 et 6N1H-4 de [idees-6e-entiers-decimaux-releve.md](idees-6e-entiers-decimaux-releve.md).
 Chez eux : une droite, puis une ou plusieurs droites agrandies dessous, reliées par des pointillés ;
@@ -93,3 +95,15 @@ Questions :
 - **Q2. Un modèle neuf** (reco) **ou des variations de 8adac6d1** ?
 - **Q3. Question d'accès de la migration de rangement** : personne ne gagne d'accès (on range un
   modèle de questions). D'accord ?
+
+### Lot écrit (2026-11-24)
+
+- Script `docs/wip/questions/droite-zoom-modeles.py` → `scripts/questions/droite-zoom-modeles/` : 1 modèle,
+  6 variations, 41 specs vertes (`question:specs`), 300 tirages, sonde des droites 0 problème.
+- Écart à la phase 0 : v4 et v5 ont un rang fixé (v4 : 10 000 à 100 000 ; v5 : millions), au lieu de
+  w de 3 à 5. Raison : la formule `${{X}}$` n'espace pas les chiffres ; les nombres des messages et du
+  corrigé sont écrits chiffre par chiffre et groupés à la main, ce qui demande un rang connu.
+- Vu en local (`pnpm voir`, aperçu admin) : v1 (1 zoom), v2 (2 zooms), v5 (3 zooms, millions) et la
+  droite du corrigé de v5 (bouts écrits, nombres groupés). Défaut mineur : sur un zoom, un pointillé
+  peut passer près de l'étiquette « B » (règle du dessin, pas du modèle).
+- Zoom en prod depuis la 0.106.0 : pas de déploiement à attendre.
