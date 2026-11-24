@@ -1,0 +1,496 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Fonction exponentielle > variations",
+		"point": "1SPE-405"
+	},
+	"title": "Équation produit nul avec une exponentielle",
+	"description": "Résoudre (ax + b)(e^u − 1) = 0, (ax + b)(e^u + m) = 0, (e^u − e)(e^v − 1/e) = 0, (e^u + n)(e^v + m) = 0 ; réponse en ensemble.",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $({{eval:a*x+b}})\\left(e^{ {{eval:c*x+d}} }-1\\right)=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["b*c != a*d", "1-d != 0", "(1-d)*a != -b*c"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-b/a}} ; {{eval:-d/c}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:-b/a}} ; {{eval:(1-d)/c}} \\}",
+							"message": "$e^{u}=1$ équivaut à $u=0$, car $1=e^0$.",
+							"label": "e^u = 1 lu u = 1"
+						},
+						{
+							"answer": "\\{ {{eval:-b/a}} \\}",
+							"message": "Le facteur exponentiel peut aussi s'annuler : résous aussi cette équation.",
+							"label": "Facteur exponentiel oublié"
+						},
+						{
+							"answer": "\\{ {{eval:-d/c}} \\}",
+							"message": "Le premier facteur s'annule aussi : n'oublie pas sa solution.",
+							"label": "Facteur affine oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul.",
+					"${{eval:a*x+b}}=0\\iff x={{eval:-b/a}}$.",
+					"$e^{ {{eval:c*x+d}} }-1=0\\iff e^{ {{eval:c*x+d}} }=e^0\\iff {{eval:c*x+d}}=0\\iff x={{eval:-d/c}}$.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\left\\{ {{eval:-b/a}}\\,;{{eval:-d/c}}\\right\\} }$."
+				]
+			},
+			"hint": "Un produit est nul si et seulement si l'un de ses facteurs est nul. Pour un facteur exponentiel, écris le second membre sous la forme $e^{\\cdots}$, ou souviens-toi que $e^{u}>0$."
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $({{eval:a*x+b}})\\left(e^{ {{eval:c*x+d}} }+{{m}}\\right)=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["(-m-d)*a != -b*c"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-b/a}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:-b/a}} ; {{eval:(-m-d)/c}} \\}",
+							"message": "Une exponentielle est strictement positive : $e^{u}=-m$ avec $m>0$ n'a pas de solution.",
+							"label": "e^u = −m résolu"
+						},
+						{
+							"answer": "\\{ {{eval:b/a}} \\}",
+							"message": "Attention au signe : $ax+b=0$ équivaut à $x=-\\dfrac{b}{a}$.",
+							"label": "Signe de la solution"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul.",
+					"${{eval:a*x+b}}=0\\iff x={{eval:-b/a}}$.",
+					"$e^{ {{eval:c*x+d}} }+{{m}}=0\\iff e^{ {{eval:c*x+d}} }=-{{m}}$ : impossible, car une exponentielle est strictement positive.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\left\\{ {{eval:-b/a}}\\right\\} }$."
+				]
+			},
+			"hint": "Un produit est nul si et seulement si l'un de ses facteurs est nul. Pour un facteur exponentiel, écris le second membre sous la forme $e^{\\cdots}$, ou souviens-toi que $e^{u}>0$."
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\left(e^{ {{eval:a*x+b}} }-e\\right)\\left(e^{ {{eval:c*x+d}} }-\\dfrac{1}{e}\\right)=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": [
+				"(1-b)*c != (-1-d)*a",
+				"b != 0",
+				"d != 0",
+				"-b*c != (-1-d)*a",
+				"(1-b)*c != (1-d)*a"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(1-b)/a}} ; {{eval:(-1-d)/c}} \\}",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:-b/a}} ; {{eval:(-1-d)/c}} \\}",
+							"message": "$e=e^1$ : l'équation $e^{u}=e$ équivaut à $u=1$.",
+							"label": "e lu e⁰"
+						},
+						{
+							"answer": "\\{ {{eval:(1-b)/a}} ; {{eval:(1-d)/c}} \\}",
+							"message": "$\\dfrac{1}{e}=e^{-1}$ : l'équation $e^{u}=\\dfrac{1}{e}$ équivaut à $u=-1$.",
+							"label": "1/e lu e¹"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul.",
+					"$e^{ {{eval:a*x+b}} }=e=e^1\\iff {{eval:a*x+b}}=1\\iff x={{eval:(1-b)/a}}$.",
+					"$e^{ {{eval:c*x+d}} }=\\dfrac{1}{e}=e^{-1}\\iff {{eval:c*x+d}}=-1\\iff x={{eval:(-1-d)/c}}$.",
+					"Donc $S=\\textcolor{{{color:primary.0}}}{\\left\\{ {{eval:(1-b)/a}}\\,;{{eval:(-1-d)/c}}\\right\\} }$."
+				]
+			},
+			"hint": "Écris $e=e^1$ et $\\dfrac{1}{e}=e^{-1}$, puis utilise $e^{u}=e^{v}\\iff u=v$ pour chaque facteur."
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\left(e^{ {{eval:a*x+b}} }+{{n}}\\right)\\left(e^{ {{eval:c*x+d}} }+{{m}}\\right)=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "-5..5"
+				},
+				{
+					"name": "n",
+					"expression": "1..5"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["(-n-b)*c != (-m-d)*a", "b*c != d*a"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing",
+					"expectedErrors": [
+						{
+							"answer": "\\{ {{eval:(-n-b)/a}} ; {{eval:(-m-d)/c}} \\}",
+							"message": "Une exponentielle est strictement positive : $e^{u}=-m$ avec $m>0$ n'a pas de solution.",
+							"label": "e^u = −n résolu"
+						},
+						{
+							"answer": "\\{ {{eval:-b/a}} ; {{eval:-d/c}} \\}",
+							"message": "Ce ne sont pas les exposants qui doivent être nuls, mais les facteurs : $e^{u}+n$ avec $n>0$ ne s'annule jamais.",
+							"label": "Exposants annulés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit est nul si et seulement si l'un de ses facteurs est nul.",
+					"$e^{ {{eval:a*x+b}} }+{{n}}=0\\iff e^{ {{eval:a*x+b}} }=-{{n}}$ : impossible, car une exponentielle est strictement positive. De même, $e^{ {{eval:c*x+d}} }=-{{m}}$ est impossible.",
+					"Aucun facteur ne s'annule : $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$."
+				]
+			},
+			"hint": "Un produit est nul si et seulement si l'un de ses facteurs est nul. Pour un facteur exponentiel, écris le second membre sous la forme $e^{\\cdots}$, ou souviens-toi que $e^{u}>0$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x − 6)(e^{x+4} − 1) = 0 : {3 ; −4}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6",
+				"c": "1",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{3;-4\\}"]
+		},
+		{
+			"description": "Ordre inverse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6",
+				"c": "1",
+				"d": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-4;3\\}"]
+		},
+		{
+			"description": "e^u = 1 lu u = 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6",
+				"c": "1",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\exponentialE^u = 1$ équivaut à $u = 0$, car $1 = \\exponentialE^0$."
+			},
+			"answers": ["\\{3;-3\\}"]
+		},
+		{
+			"description": "Facteur exponentiel oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6",
+				"c": "1",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le facteur exponentiel peut aussi s'annuler : résous aussi cette équation."
+			},
+			"answers": ["\\{3\\}"]
+		},
+		{
+			"description": "Facteur affine oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6",
+				"c": "1",
+				"d": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier facteur s'annule aussi : n'oublie pas sa solution."
+			},
+			"answers": ["\\{-4\\}"]
+		},
+		{
+			"description": "(3x + 1)(e^{−2x+3} − 1) = 0 : {−1/3 ; 3/2}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "-2",
+				"d": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-\\frac{1}{3};\\frac{3}{2}\\}"]
+		},
+		{
+			"description": "(x + 5)(e^{2x+1} + 3) = 0 : {−5}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "5",
+				"c": "2",
+				"d": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-5\\}"]
+		},
+		{
+			"description": "e^u = −3 résolu",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "5",
+				"c": "2",
+				"d": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une exponentielle est strictement positive : $\\exponentialE^u = -m$ avec $m > 0$ n'a pas de solution."
+			},
+			"answers": ["\\{-5;-2\\}"]
+		},
+		{
+			"description": "Signe de la solution",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "5",
+				"c": "2",
+				"d": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : $a x + b = 0$ équivaut à $x=-\\dfrac{b}{a}$."
+			},
+			"answers": ["\\{5\\}"]
+		},
+		{
+			"description": "(e^{2x+3} − e)(e^{x+3} − 1/e) = 0 : {−1 ; −4}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\{-1;-4\\}"]
+		},
+		{
+			"description": "e lu e⁰",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\exponentialE = \\exponentialE^1$ : l'équation $\\exponentialE^u = \\exponentialE$ équivaut à $u = 1$."
+			},
+			"answers": ["\\{-\\frac{3}{2};-4\\}"]
+		},
+		{
+			"description": "1/e lu e¹",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"d": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\dfrac{1}{e}=e^{-1}$ : l'équation $e^{u}=\\dfrac{1}{e}$ équivaut à $u = -1$."
+			},
+			"answers": ["\\{-1;-2\\}"]
+		},
+		{
+			"description": "(e^{x+2} + 4)(e^{−x+3} + 1) = 0 : ∅",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"n": "4",
+				"m": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\varnothing"]
+		},
+		{
+			"description": "∅ écrit \\emptyset",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"n": "4",
+				"m": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\emptyset"]
+		},
+		{
+			"description": "e^u = −4 résolu",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"n": "4",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une exponentielle est strictement positive : $\\exponentialE^u = -m$ avec $m > 0$ n'a pas de solution."
+			},
+			"answers": ["\\{-6;4\\}"]
+		},
+		{
+			"description": "Exposants annulés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"n": "4",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce ne sont pas les exposants qui doivent être nuls, mais les facteurs : $\\exponentialE^u + n$ avec $n > 0$ ne s'annule jamais."
+			},
+			"answers": ["\\{-2;3\\}"]
+		}
+	]
+}

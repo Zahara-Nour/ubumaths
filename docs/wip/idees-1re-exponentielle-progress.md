@@ -2,14 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, phase 0 envoyée._
+_Mis à jour le 2026-11-24, lot des 6 modèles neufs écrit._
 
-- **État** : relevé fait ([idees-1re-exponentielle-releve.md](idees-1re-exponentielle-releve.md)), phase 0 sur la
-  page à cocher https://claude.ai/artifact/5VS9mynhKPTfaj5KeiCtTk (11 fiches, collection `verdicts`) ·
-  **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), réserver les 4 modèles publiés
-  retenus, écrire le gros lot · **En attente de David** : verdicts F1 à F11 · **Pièges en cours** : 1SPE-405
-  est sur la sous-notion « variations » : un modèle qui le porte doit y être rangé (F2, F3) · **Worktree /
-  branche** : `../ubumaths-wt-idees-1re-exponentielle`, `docs/idees-1re-exponentielle`.
+- **État** : F1 à F6 écrits (`scripts/questions/idees-1re-exponentielle-neufs/`, script
+  `docs/wip/questions/idees-1re-exponentielle-neufs.py`), simulation verte, essayés en base locale ·
+  **Prochaine action** : David lance `create-questions --publier` en prod ; je commite les ids, puis
+  la migration de rangement, la PR et `security-auditor` · **En attente de David** : la création en prod,
+  et sa réponse sur F7 à F10 (variations de 4 modèles publiés), pas tranchées · **Pièges en cours** :
+  les messages des erreurs prévues sont réécrits (`e` → `\exponentialE`) : table `REECRIT` du script ;
+  ids locaux retirés des fichiers · **Worktree / branche** : `../ubumaths-wt-idees-1re-exponentielle`,
+  `docs/idees-1re-exponentielle`.
 
 ## Journal
 
@@ -36,3 +38,17 @@ _Mis à jour le 2026-11-24, phase 0 envoyée._
   « Fonction exponentielle > variations », 1SPE-292 sur la notion, 1SPE-394/396 sur « Dérivation >
   opérations sur les dérivées », 1SPE-283 sur « Dérivation > variations et extremums ».
 - Question d'accès : personne ne gagne d'accès (rangement et variations de modèles).
+
+### 2026-11-24 — modèles neufs validés, lot écrit
+
+- David : « je valide les modèles ». La page à cocher n'a aucun verdict : je le lis comme un oui à
+  F1–F6 (modèles neufs). F7–F10 (variations de publiés) ne sont pas tranchés : la question lui est
+  reposée.
+- 6 modèles, 22 variations, 108 specs : chaque case a deux ou trois erreurs prévues, et chaque
+  variation un coup de pouce. Les tableaux (F6) n'ont ni limite ni ln.
+- F5 : forme en avertissement (`form: warn`) : (1 − 2x)e^{−x} est une « forme à améliorer » de
+  (−2x + 1)/eˣ, pas une erreur.
+- Vérifs : `question:specs` 108/108, 1 100 tirages réussis ; `create-questions` en simulation vert ;
+  2 522 formules d'aperçu passées à `validateLatex` + accolades, 0 problème.
+- Base locale : 6 brouillons créés (ids locaux retirés des fichiers). Rendu vu par `pnpm voir` :
+  tableau à compléter de F6 (ordinateur) et ensemble S de F2 (iPhone).

@@ -1,0 +1,368 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Fonction exponentielle > propriétés algébriques",
+		"point": "1SPE-294"
+	},
+	"title": "Développer avec des exponentielles",
+	"description": "Développer e^{ax}(e^{bx} + e^{cx}), réduire (e^{mx})^p − e^{nx}e^{ox}, développer (eˣ + a)².",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Développe et réduis $A=e^{ {{eval:a*x}} }\\left(e^{ {{eval:b*x}} }+e^{ {{eval:c*x}} }\\right)$. Écris chaque terme sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["a+b != 0", "a+c != 0", "b < c", "a*b != a+b", "a*c != a+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:(a+b)*x}} }+e^{ {{eval:(a+c)*x}} }",
+					"expectedErrors": [
+						{
+							"answer": "e^{ {{eval:a*b*x}} }+e^{ {{eval:a*c*x}} }",
+							"message": "Pour un produit, on additionne les exposants : $e^{u}\\times e^{v}=e^{u+v}$.",
+							"label": "Exposants multipliés"
+						},
+						{
+							"answer": "e^{ {{eval:(a+b)*x}} }+e^{ {{eval:c*x}} }",
+							"message": "Le facteur devant la parenthèse multiplie les deux termes de la parenthèse.",
+							"label": "Un seul terme multiplié"
+						},
+						{
+							"answer": "e^{ {{eval:(a+b+c)*x}} }",
+							"message": "Une somme $e^{u}+e^{v}$ ne se regroupe pas en une seule exponentielle : développe terme à terme.",
+							"label": "Somme regroupée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe : $A=e^{ {{eval:a*x}} }\\times e^{ {{eval:b*x}} }+e^{ {{eval:a*x}} }\\times e^{ {{eval:c*x}} }$.",
+					"Pour chaque produit, on additionne les exposants : $A=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(a+b)*x}} }+e^{ {{eval:(a+c)*x}} } }$."
+				]
+			},
+			"hint": "Développe d'abord, puis utilise $e^{u}\\times e^{v}=e^{u+v}$ pour chaque produit."
+		},
+		{
+			"statement": "Réduis $A=\\left(e^{ {{eval:m*x}} }\\right)^{ {{p}} }-e^{ {{eval:n*x}} }\\times e^{ {{eval:o*x}} }$. Écris chaque terme sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "p",
+					"expression": "2..3"
+				},
+				{
+					"name": "n",
+					"expression": "1..5"
+				},
+				{
+					"name": "o",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["m*p != n+o", "m+p != m*p", "n*o != n+o", "n <= o"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:m*p*x}} }-e^{ {{eval:(n+o)*x}} }",
+					"expectedErrors": [
+						{
+							"answer": "e^{ {{eval:(m+p)*x}} }-e^{ {{eval:(n+o)*x}} }",
+							"message": "Pour une puissance, on multiplie l'exposant : $\\left(e^{u}\\right)^n=e^{nu}$.",
+							"label": "Puissance : exposant et n additionnés"
+						},
+						{
+							"answer": "e^{ {{eval:m*p*x}} }-e^{ {{eval:n*o*x}} }",
+							"message": "Pour un produit, on additionne les exposants : $e^{u}\\times e^{v}=e^{u+v}$.",
+							"label": "Exposants multipliés"
+						},
+						{
+							"answer": "e^{ {{eval:m^p*x}} }-e^{ {{eval:(n+o)*x}} }",
+							"message": "$\\left(e^{u}\\right)^n=e^{nu}$ : l'exposant est multiplié par $n$, il n'est pas élevé à la puissance $n$.",
+							"label": "Exposant élevé à la puissance"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Puissance : $\\left(e^{ {{eval:m*x}} }\\right)^{ {{p}} }=e^{ {{p}}\\times {{eval:m*x}} }=e^{ {{eval:m*p*x}} }$.",
+					"Produit : $e^{ {{eval:n*x}} }\\times e^{ {{eval:o*x}} }=e^{ {{eval:(n+o)*x}} }$.",
+					"Donc $A=\\textcolor{{{color:primary.0}}}{e^{ {{eval:m*p*x}} }-e^{ {{eval:(n+o)*x}} } }$."
+				]
+			},
+			"hint": "Rappel : $e^{u}\\times e^{v}=e^{u+v}$ et $\\left(e^{u}\\right)^n=e^{nu}$."
+		},
+		{
+			"statement": "Développe et réduis $A=\\left(e^{x}{{a;+}}\\right)^2$.\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{2x}{{eval:2*a;+}}e^{x}+{{eval:a^2}}",
+					"expectedErrors": [
+						{
+							"answer": "e^{2x}+{{eval:a^2}}",
+							"message": "N'oublie pas le double produit : $(A+B)^2=A^2+2AB+B^2$.",
+							"label": "Double produit oublié"
+						},
+						{
+							"answer": "e^{x^2}{{eval:2*a;+}}e^{x}+{{eval:a^2}}",
+							"message": "$\\left(e^{x}\\right)^2=e^{2x}$ : l'exposant est multiplié par $2$, il n'est pas mis au carré.",
+							"label": "e^{x²} au lieu de e^{2x}"
+						},
+						{
+							"answer": "e^{2x}{{a;+}}e^{x}+{{eval:a^2}}",
+							"message": "Le double produit est $2AB$ : n'oublie pas le facteur $2$.",
+							"label": "Facteur 2 oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Identité remarquable : $\\left(e^{x}{{a;+}}\\right)^2=\\left(e^{x}\\right)^2+2\\times e^{x}\\times{{a;()}}+{{a;()}}^2$.",
+					"Or $\\left(e^{x}\\right)^2=e^{2x}$, donc $A=\\textcolor{{{color:primary.0}}}{e^{2x}{{eval:2*a;+}}e^{x}+{{eval:a^2}} }$."
+				]
+			},
+			"hint": "Utilise l'identité remarquable $(A+B)^2$ ou $(A-B)^2$, avec $A=e^{x}$, puis $\\left(e^{x}\\right)^2=e^{2x}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e^{2x}(e^{−x} + e^{3x}) = eˣ + e^{5x}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["e^{x}+e^{5x}"]
+		},
+		{
+			"description": "Ordre inverse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["e^{5x}+e^{x}"]
+		},
+		{
+			"description": "Exposants multipliés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un produit, on additionne les exposants : $e^{u}\\times e^{v}=e^{u+v}$."
+			},
+			"answers": ["e^{-2x}+e^{6x}"]
+		},
+		{
+			"description": "Un seul terme multiplié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le facteur devant la parenthèse multiplie les deux termes de la parenthèse."
+			},
+			"answers": ["e^{x}+e^{3x}"]
+		},
+		{
+			"description": "Somme regroupée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une somme $\\exponentialE^u + \\exponentialE^v$ ne se regroupe pas en une seule exponentielle : développe terme à terme."
+			},
+			"answers": ["e^{4x}"]
+		},
+		{
+			"description": "(e^{4x})² − eˣ·e^{4x} = e^{8x} − e^{5x}",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"p": "2",
+				"n": "1",
+				"o": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["e^{8x}-e^{5x}"]
+		},
+		{
+			"description": "Écrit −e^{5x} + e^{8x}",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"p": "2",
+				"n": "1",
+				"o": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-e^{5x}+e^{8x}"]
+		},
+		{
+			"description": "Puissance additionnée",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"p": "2",
+				"n": "1",
+				"o": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour une puissance, on multiplie l'exposant : $\\left(e^{u}\\right)^n=e^{nu}$."
+			},
+			"answers": ["e^{6x}-e^{5x}"]
+		},
+		{
+			"description": "Exposants multipliés",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"p": "2",
+				"n": "1",
+				"o": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour un produit, on additionne les exposants : $e^{u}\\times e^{v}=e^{u+v}$."
+			},
+			"answers": ["e^{8x}-e^{4x}"]
+		},
+		{
+			"description": "Exposant élevé à la puissance",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4",
+				"p": "2",
+				"n": "1",
+				"o": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left(e^{u}\\right)^n=e^{nu}$ : l'exposant est multiplié par $n$, il n'est pas élevé à la puissance $n$."
+			},
+			"answers": ["e^{16x}-e^{5x}"]
+		},
+		{
+			"description": "(eˣ − 3)² = e^{2x} − 6eˣ + 9",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["e^{2x}-6e^{x}+9"]
+		},
+		{
+			"description": "Ordre différent",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9-6e^{x}+e^{2x}"]
+		},
+		{
+			"description": "Double produit oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le double produit : $\\left( A + B \\right)^2 = A^2 + 2 AB + B^2$."
+			},
+			"answers": ["e^{2x}+9"]
+		},
+		{
+			"description": "e^{x²}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left(e^{x}\\right)^2=e^{2x}$ : l'exposant est multiplié par $2$, il n'est pas mis au carré."
+			},
+			"answers": ["e^{x^2}-6e^{x}+9"]
+		},
+		{
+			"description": "Facteur 2 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le double produit est $2 AB$ : n'oublie pas le facteur $2$."
+			},
+			"answers": ["e^{2x}-3e^{x}+9"]
+		}
+	]
+}
