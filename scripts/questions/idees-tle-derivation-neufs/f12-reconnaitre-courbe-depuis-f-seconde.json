@@ -1,0 +1,158 @@
+{
+	"id": "02253f0a-6357-4c06-be35-4982684860e2",
+	"rangement": {
+		"noeud": "Fonctions > Convexité > dérivée seconde",
+		"point": "TSPE-590"
+	},
+	"title": "Reconnaître une courbe à partir de celle de f″",
+	"description": "La courbe de f″ (droite) est donnée : reconnaître parmi quatre celle de f (convexité, point d'inflexion) ou celle de f′ (variations) (pièges : courbe opposée, décalée, mauvaise dérivée)",
+	"grades": ["T_SPE"],
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-{{h}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une droite {{if:s>0|croissante|décroissante}} qui coupe l'axe des abscisses en x = {{h}}.\n```\n\nLaquelle de ces courbes peut représenter la fonction $f$ ?\n\n````choix\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:s}}*0.5*((x-{{eval:h+0}})^3-3*(x-{{eval:h+0}}))   bleu\n  taille: petite\n  description: Courbe d'un polynôme de degré 3 avec deux sommets, qui change de courbure en x = {{eval:h+0}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:-s}}*0.5*((x-{{eval:h+0}})^3-3*(x-{{eval:h+0}}))   bleu\n  taille: petite\n  description: Courbe d'un polynôme de degré 3 avec deux sommets, qui change de courbure en x = {{eval:h+0}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:s}}*0.5*((x-{{eval:h+1}})^3-3*(x-{{eval:h+1}}))   bleu\n  taille: petite\n  description: Courbe d'un polynôme de degré 3 avec deux sommets, qui change de courbure en x = {{eval:h+1}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:s}}*(0.5*(x-{{eval:h+0}})^2-2)   bleu\n  taille: petite\n  description: Parabole de sommet d'abscisse {{eval:h+0}}.\n  ```\n````",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est convexe là où $f''(x)\\geqslant 0$ (courbe de $f''$ au-dessus de l'axe des abscisses), concave là où $f''(x)\\leqslant 0$.",
+					"Ici $f''$ est {{if:s>0|négative avant ${{h}}$ et positive après|positive avant ${{h}}$ et négative après}} : $f$ est {{if:s>0|concave puis convexe|convexe puis concave}}, avec un point d'inflexion d'abscisse ${{h}}$.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{la courbe qui change de courbure en } x={{h}} }$ en passant de « tournée vers le {{if:s>0|bas|haut}} » à « tournée vers le {{if:s>0|haut|bas}} ». La parabole serait plutôt celle de $f'$."
+				]
+			},
+			"hint": "Lis sur la courbe de $f''$ où elle est positive, où elle est négative : où $f$ est-elle convexe, où est-elle concave ?"
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-{{h}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une droite {{if:s>0|croissante|décroissante}} qui coupe l'axe des abscisses en x = {{h}}.\n```\n\nLaquelle de ces courbes peut représenter la fonction **dérivée** $f'$ ?\n\n````choix\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:s}}*(0.5*(x-{{eval:h+0}})^2-2)   bleu\n  taille: petite\n  description: Parabole de sommet d'abscisse {{eval:h+0}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:-s}}*(0.5*(x-{{eval:h+0}})^2-2)   bleu\n  taille: petite\n  description: Parabole de sommet d'abscisse {{eval:h+0}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:s}}*(0.5*(x-{{eval:h+1}})^2-2)   bleu\n  taille: petite\n  description: Parabole de sommet d'abscisse {{eval:h+1}}.\n  ```\n- ```courbe\n  x: {{eval:h-3.5}} ; {{eval:h+3.5}}\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = {{eval:s}}*0.5*((x-{{eval:h+0}})^3-3*(x-{{eval:h+0}}))   bleu\n  taille: petite\n  description: Courbe d'un polynôme de degré 3 avec deux sommets, qui change de courbure en x = {{eval:h+0}}.\n  ```\n````",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f''$ est la dérivée de $f'$ : $f'$ est croissante là où $f''(x)\\geqslant 0$, décroissante là où $f''(x)\\leqslant 0$.",
+					"Ici $f''$ est {{if:s>0|négative avant ${{h}}$ et positive après|positive avant ${{h}}$ et négative après}} : $f'$ est {{if:s>0|décroissante puis croissante|croissante puis décroissante}}, avec un {{if:s>0|minimum|maximum}} en $x={{h}}$.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{la parabole de sommet d'abscisse } {{h}} }$, tournée vers le {{if:s>0|haut|bas}}."
+				]
+			},
+			"hint": "La courbe de $f''$ donne le signe de la dérivée de $f'$ : où $f'$ croît-elle, où décroît-elle ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : s = 1, h = 0",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : opposée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "a : décalée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"h": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "a : parabole (f′)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"h": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "b : s = −1, h = 2",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"h": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : opposée",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"h": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "b : cubique (f)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

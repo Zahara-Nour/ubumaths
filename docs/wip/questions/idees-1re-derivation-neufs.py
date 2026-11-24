@@ -2,7 +2,7 @@
 scripts/questions/idees-1re-derivation-neufs/.
 
 Phase 0 validée par David le 2026-11-23 (« je valide tout » ; journal
-docs/wip/idees-1re-derivation-progress.md, page à cocher
+docs/archive/wip/idees-1re-derivation/idees-1re-derivation-progress.md, page à cocher
 https://claude.ai/artifact/EU7fV67f4F39ze4yHnySLC) : F1 et F2, deux modèles neufs.
 
 Points prévus (rangement par migration, après la création en brouillon) :
