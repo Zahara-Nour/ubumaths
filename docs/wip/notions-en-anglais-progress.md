@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR 3 ouverte (migration de données des 637 noms)._
+_Mis à jour le 2026-11-24, après #3113._
 
-- **État** : PR 1 (#3099) et PR 2 (#3104) mergées ; PR 3 = migration `20261124204132` (637 noms anglais, nœuds retrouvés par chemin), validée par David (« je valide », aucune réponse cochée : noms tels que proposés, les 10 « à trancher » compris) ; appliquée à la base locale ; rendu PDF anglais vérifié (« Sequences », « Linear functions ») · **Prochaine action** : merge de la PR 3, puis `migration list --linked` et `db:migrate` depuis main (4 conditions réunies : accès tranché, rouge sans l'écriture → vert, `security-auditor` sans bloquant, additive + rollback) · **En attente de David** : `deploy:prod` (PR 2 et PR 3 côté code) · **Pièges en cours** : un nœud créé après la migration naît sans nom anglais (l'éditeur le signale) · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais-traductions`, `feat/notions-en-anglais-traductions`
+- **État** : les trois PR mergées (#3099, #3104, #3113) ; migration `20261124204132` jouée en prod (`db:migrate`), vérifiée en lecture : 637 nœuds actifs sur 637 ont leur nom anglais, aucun archivé · **Prochaine action** : clore le chantier (versement : journal archivé dans `docs/archive/`, rien d'autre à verser, la doc système est à jour) · **En attente de David** : `deploy:prod` — le code de la PR 2 (#3104) n'est pas en prod ; tant qu'il ne l'est pas, les noms anglais sont en base mais le PDF ne les imprime pas · **Pièges en cours** : un nœud créé après la migration naît sans nom anglais (l'éditeur le signale) · **Worktree / branche** : aucun (retiré par `pr:merger`)
 
 ## L'idée
 
@@ -132,3 +132,4 @@ Fiche d'exercices en anglais, sans titre libre :
 - Migration `20261124204132` : les identifiants des nœuds DIFFÈRENT d'une base à l'autre (arbre créé par migration, ids générés ; la base locale avait ceux de la prod) → nœuds retrouvés par chemin « Branche > Notion > Sous-notion » parmi les actifs (637 chemins uniques, identiques en local et sur la pile de test). N'écrase aucun nom anglais existant ; échoue si un chemin manque ou est en double.
 - Test `noms-anglais-noeuds-traductions.test.ts` (`@migration-de-donnees`) : rouge sans l'écriture (3 échecs), vert avec (7) ; 142 tests voisins verts. `security-auditor` : aucun bloquant (rollback qui retire tous les noms anglais : dit en commentaire).
 - Rendu : PDF anglais de « Suites · Applications » → « Sequences », trois notions anglaises, « applications », bas de page « Sequences · Applications ».
+- #3113 mergée le 2026-11-24 (CI : garde des migrations de données → tables temporaires préfixées `_` ; shard 2 relancé après une panne Docker du runner). `migration list --linked` : seule `20261124204132` en attente ; `db:migrate` joué ; prod vérifiée par le MCP (lecture) : 19 + 134 + 484 nœuds actifs traduits.
