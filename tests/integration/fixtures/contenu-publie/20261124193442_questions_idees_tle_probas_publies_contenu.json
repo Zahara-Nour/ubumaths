@@ -1,0 +1,2389 @@
+{
+	"migration": "supabase/migrations/20261124193442_questions_idees_tle_probas_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "0943e867-e639-45f5-939d-df7492d0ecaf",
+			"title": "Inégalité de Bienaymé-Tchebychev",
+			"fichier": "0943e867.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:v/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour variance $V(X)={{v}}$.\n\nDonne le majorant de $P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "5..50"
+							},
+							{
+								"name": "v",
+								"expression": "1..20"
+							},
+							{
+								"name": "d",
+								"expression": "2..10"
+							}
+						],
+						"conditions": ["v < d^2"],
+						"correction": {
+							"steps": [
+								"Bienaymé-Tchebychev : $P(|X-\\mu|\\geqslant\\delta)\\leqslant\\dfrac{V(X)}{\\delta^{2}}$.",
+								"$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant\\dfrac{ {{v}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{{{eval:v/d^2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-v/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour variance $V(X)={{v}}$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)$.\n\n$P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)\\geqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "5..50"
+							},
+							{
+								"name": "v",
+								"expression": "1..20"
+							},
+							{
+								"name": "d",
+								"expression": "2..10"
+							}
+						],
+						"conditions": ["v < d^2"],
+						"correction": {
+							"steps": [
+								"$\\left|X-{{m}}\\right|<{{d}}$ est l'événement contraire de $\\left|X-{{m}}\\right|\\geqslant {{d}}$, de probabilité au plus $\\dfrac{ {{v}} }{ {{d}}^{2} }$.",
+								"$P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)\\geqslant 1-\\dfrac{ {{v}} }{ {{eval:d^2}} }=\\textcolor{{{color:primary.0}}}{{{eval:1-v/d^2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-v/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance ${{m}}$ et pour variance ${{v}}$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)$.\n\n$P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)\\geqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "20..60"
+							},
+							{
+								"name": "v",
+								"expression": "1..20"
+							},
+							{
+								"name": "d",
+								"expression": "3..10"
+							}
+						],
+						"conditions": ["v < d^2"],
+						"correction": {
+							"steps": [
+								"L'intervalle $\\left]{{eval:m-d}}\\,;{{eval:m+d}}\\right[$ est centré en $\\mu={{m}}$ : ${{eval:m-d}}<X<{{eval:m+d}}\\iff\\left|X-{{m}}\\right|<{{d}}$.",
+								"Donc $P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)\\geqslant 1-\\dfrac{ {{v}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{{{eval:1-v/d^2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:s^2/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour **écart type** $\\sigma={{s}}$.\n\nDonne le majorant de $P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "5..50"
+							},
+							{
+								"name": "s",
+								"expression": "1..5"
+							},
+							{
+								"name": "d",
+								"expression": "2..12"
+							}
+						],
+						"conditions": ["s < d"],
+						"correction": {
+							"steps": [
+								"La variance est le carré de l'écart type : $V(X)={{s}}^{2}={{eval:s^2}}$.",
+								"$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant\\dfrac{ {{eval:s^2}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{{{eval:s^2/d^2}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{4}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v0 : V = 4, δ = 5 → 4/25",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{4}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v0 : V/δ = 4/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,16"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v0 : 0,16 accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{21}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v1 : V = 4, δ = 5 → 21/25",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{4}{25}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v1 : 1 − … oublié",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{3}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "6",
+							"m": "40",
+							"v": "9"
+						},
+						"description": "v2 : V = 9, δ = 6 → 3/4",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "6",
+							"m": "40",
+							"v": "9"
+						},
+						"description": "v2 : 9/36 non contraire",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{4}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"s": "2"
+						},
+						"description": "v3 : σ = 2, δ = 5 → 4/25",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{2}{25}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"s": "2"
+						},
+						"description": "v3 : σ/δ² = 2/25",
+						"variationIndex": 3
+					}
+				],
+				"description": "P(|X − μ| ⩾ δ) ⩽ V(X)/δ² : majorer un écart, minorer la probabilité d'un intervalle centré, avec la variance ou l'écart type (pièges : V/δ, σ/δ², oubli du 1 − …)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:v/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour variance $V(X)={{v}}$.\n\nDonne le majorant de $P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "5..50"
+							},
+							{
+								"name": "v",
+								"expression": "1..20"
+							},
+							{
+								"name": "d",
+								"expression": "2..10"
+							}
+						],
+						"conditions": ["v < d^2"],
+						"correction": {
+							"steps": [
+								"Bienaymé-Tchebychev : $P(|X-\\mu|\\geqslant\\delta)\\leqslant\\dfrac{V(X)}{\\delta^{2}}$.",
+								"$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant\\dfrac{ {{v}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{{{eval:v/d^2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-v/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour variance $V(X)={{v}}$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)$.\n\n$P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)\\geqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "5..50"
+							},
+							{
+								"name": "v",
+								"expression": "1..20"
+							},
+							{
+								"name": "d",
+								"expression": "2..10"
+							}
+						],
+						"conditions": ["v < d^2"],
+						"correction": {
+							"steps": [
+								"$\\left|X-{{m}}\\right|<{{d}}$ est l'événement contraire de $\\left|X-{{m}}\\right|\\geqslant {{d}}$, de probabilité au plus $\\dfrac{ {{v}} }{ {{d}}^{2} }$.",
+								"$P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)\\geqslant 1-\\dfrac{ {{v}} }{ {{eval:d^2}} }=\\textcolor{{{color:primary.0}}}{{{eval:1-v/d^2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-v/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance ${{m}}$ et pour variance ${{v}}$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)$.\n\n$P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)\\geqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "20..60"
+							},
+							{
+								"name": "v",
+								"expression": "1..20"
+							},
+							{
+								"name": "d",
+								"expression": "3..10"
+							}
+						],
+						"conditions": ["v < d^2"],
+						"correction": {
+							"steps": [
+								"L'intervalle $\\left]{{eval:m-d}}\\,;{{eval:m+d}}\\right[$ est centré en $\\mu={{m}}$ : ${{eval:m-d}}<X<{{eval:m+d}}\\iff\\left|X-{{m}}\\right|<{{d}}$.",
+								"Donc $P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)\\geqslant 1-\\dfrac{ {{v}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{{{eval:1-v/d^2}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:s^2/d^2}}"
+							}
+						],
+						"statement": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour **écart type** $\\sigma={{s}}$.\n\nDonne le majorant de $P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "5..50"
+							},
+							{
+								"name": "s",
+								"expression": "1..5"
+							},
+							{
+								"name": "d",
+								"expression": "2..12"
+							}
+						],
+						"conditions": ["s < d"],
+						"correction": {
+							"steps": [
+								"La variance est le carré de l'écart type : $V(X)={{s}}^{2}={{eval:s^2}}$.",
+								"$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant\\dfrac{ {{eval:s^2}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{{{eval:s^2/d^2}}}$."
+							]
+						}
+					},
+					{
+						"statement": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour variance $V(X)={{v}}$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un majorant de $P\\left(X\\in\\left]-\\infty\\,;{{eval:m-d}}\\right]\\cup\\left[{{eval:m+d}}\\,;+\\infty\\right[\\right)$.\n\n$P\\left(X\\in\\left]-\\infty\\,;{{eval:m-d}}\\right]\\cup\\left[{{eval:m+d}}\\,;+\\infty\\right[\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "m",
+								"expression": "5..50"
+							},
+							{
+								"name": "v",
+								"expression": "1..20"
+							},
+							{
+								"name": "d",
+								"expression": "2..10"
+							}
+						],
+						"conditions": ["v < d^2"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:v/d^2}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:v/d}}",
+										"message": "L'inégalité divise la variance par le **carré** de l'écart : $\\dfrac{V(X)}{\\delta^{2}}$.",
+										"label": "V/δ"
+									},
+									{
+										"answer": "{{eval:1-v/d^2}}",
+										"message": "Ce nombre minore la probabilité de l'intervalle **centré**. Ici, $X$ est loin de ${{m}}$ : c'est l'événement $|X-{{m}}|\\geqslant {{d}}$, majoré directement.",
+										"label": "1 − V/δ²"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$X\\leqslant {{eval:m-d}}$ ou $X\\geqslant {{eval:m+d}}$ veut dire que $X$ est à une distance au moins ${{d}}$ de ${{m}}$ : l'événement est $\\left|X-{{m}}\\right|\\geqslant {{d}}$.",
+								"Bienaymé-Tchebychev : $P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant\\dfrac{ {{v}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{ {{eval:v/d^2}} }$."
+							]
+						},
+						"hint": "Les deux intervalles sont à égale distance de ${{m}}$ : écris l'événement avec une valeur absolue."
+					},
+					{
+						"statement": "Les variables aléatoires $X_1$, …, $X_{ {{n}} }$ sont **indépendantes** et suivent toutes la même loi, d'espérance $\\mu={{m}}$ et de variance $V={{v}}$. On pose $S=X_1+\\cdots+X_{ {{n}} }$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un majorant de $P\\left(\\left|S-{{eval:n*m}}\\right|\\geqslant {{d}}\\right)$.\n\n$P\\left(\\left|S-{{eval:n*m}}\\right|\\geqslant {{d}}\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "10|20|25|50"
+							},
+							{
+								"name": "m",
+								"expression": "1..9"
+							},
+							{
+								"name": "v",
+								"expression": "1..5"
+							},
+							{
+								"name": "d",
+								"expression": "10..40"
+							}
+						],
+						"conditions": ["n*v < d^2"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:n*v/d^2}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:v/d^2}}",
+										"message": "C'est la variance de **$S$** qui compte : les $X_k$ étant indépendantes, $V(S)={{n}}\\times{{v}}$.",
+										"label": "n oublié"
+									},
+									{
+										"answer": "{{eval:n^2*v/d^2}}",
+										"message": "Pour une somme de variables indépendantes, les variances s'ajoutent : $V(S)={{n}}V$, pas ${{n}}^{2}V$.",
+										"label": "n² V"
+									},
+									{
+										"answer": "{{eval:n*v/d}}",
+										"message": "L'inégalité divise la variance par le **carré** de l'écart.",
+										"label": "V(S)/δ"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$E(S)={{n}}\\times{{m}}={{eval:n*m}}$ et, les $X_k$ étant indépendantes, $V(S)={{n}}\\times{{v}}={{eval:n*v}}$.",
+								"Bienaymé-Tchebychev appliquée à $S$ : $P\\left(\\left|S-{{eval:n*m}}\\right|\\geqslant {{d}}\\right)\\leqslant\\dfrac{ {{eval:n*v}} }{ {{d}}^{2} }=\\textcolor{{{color:primary.0}}}{ {{eval:n*v/d^2}} }$."
+							]
+						},
+						"hint": "Calcule d'abord l'espérance et la variance de $S$."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{4}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v0 : V = 4, δ = 5 → 4/25",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{4}{5}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v0 : V/δ = 4/5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,16"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v0 : 0,16 accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{21}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v1 : V = 4, δ = 5 → 21/25",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{4}{25}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"v": "4"
+						},
+						"description": "v1 : 1 − … oublié",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{3}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "6",
+							"m": "40",
+							"v": "9"
+						},
+						"description": "v2 : V = 9, δ = 6 → 3/4",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{1}{4}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "6",
+							"m": "40",
+							"v": "9"
+						},
+						"description": "v2 : 9/36 non contraire",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{4}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"s": "2"
+						},
+						"description": "v3 : σ = 2, δ = 5 → 4/25",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["\\frac{2}{25}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "5",
+							"m": "10",
+							"s": "2"
+						},
+						"description": "v3 : σ/δ² = 2/25",
+						"variationIndex": 3
+					},
+					{
+						"description": "F6 a : V = 4, δ = 5 → 4/25",
+						"variationIndex": 4,
+						"variables": {
+							"m": "10",
+							"v": "4",
+							"d": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{4}{25}"]
+					},
+					{
+						"description": "F6 a : 0,16 accepté",
+						"variationIndex": 4,
+						"variables": {
+							"m": "10",
+							"v": "4",
+							"d": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,16"]
+					},
+					{
+						"description": "F6 a : V/δ",
+						"variationIndex": 4,
+						"variables": {
+							"m": "10",
+							"v": "4",
+							"d": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["\\frac{4}{5}"]
+					},
+					{
+						"description": "F6 a : 1 − V/δ²",
+						"variationIndex": 4,
+						"variables": {
+							"m": "10",
+							"v": "4",
+							"d": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["\\frac{21}{25}"]
+					},
+					{
+						"description": "F6 b : n = 20, V = 2, δ = 10 → 40/100",
+						"variationIndex": 5,
+						"variables": {
+							"n": "20",
+							"m": "3",
+							"v": "2",
+							"d": "10"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,4"]
+					},
+					{
+						"description": "F6 b : n oublié",
+						"variationIndex": 5,
+						"variables": {
+							"n": "20",
+							"m": "3",
+							"v": "2",
+							"d": "10"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,02"]
+					},
+					{
+						"description": "F6 b : n² V",
+						"variationIndex": 5,
+						"variables": {
+							"n": "20",
+							"m": "3",
+							"v": "2",
+							"d": "10"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["8"]
+					},
+					{
+						"description": "F6 b : V(S)/δ",
+						"variationIndex": 5,
+						"variables": {
+							"n": "20",
+							"m": "3",
+							"v": "2",
+							"d": "10"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["4"]
+					}
+				],
+				"description": "P(|X − μ| ⩾ δ) ⩽ V(X)/δ² : majorer un écart, minorer la probabilité d'un intervalle centré, avec la variance ou l'écart type (pièges : V/δ, σ/δ², oubli du 1 − …)"
+			},
+			"changements": {
+				"ajoutees": [5, 6],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "4ee9a359-c6b1-43af-9082-24cc6cdc8c53",
+			"title": "Seuil par la loi binomiale",
+			"fichier": "4ee9a359.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}"
+							}
+						],
+						"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli de probabilité de succès $p={{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}}$. On note $X$ le nombre de succès : $X$ suit la loi binomiale $\\mathcal{B}(n\\,;{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}})$.\n\nPlus petit entier $n$ tel que $P(X\\geqslant1)\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$ : $n=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "0..7"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$P(X=0)=(1-p)^n={{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$, donc $P(X\\geqslant1)=1-P(X=0)=1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$.",
+								"$1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}\\iff{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\leqslant{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}}\\iff n\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})\\leqslant\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})\\iff n\\geqslant\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}$ : on divise par $\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})<0$, l'inégalité change de sens.",
+								"$\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}\\approx{{if:k==0|58{,}4}}{{if:k==1|21{,}85}}{{if:k==2|28{,}43}}{{if:k==3|14{,}17}}{{if:k==4|13{,}43}}{{if:k==5|20{,}64}}{{if:k==6|6{,}46}}{{if:k==7|8{,}4}}$ : le plus petit entier $n$ est $\\textcolor{{{color:primary.0}}}{{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}}$ (pour $n={{if:k==0|58}}{{if:k==1|21}}{{if:k==2|28}}{{if:k==3|14}}{{if:k==4|13}}{{if:k==5|20}}{{if:k==6|6}}{{if:k==7|8}}$, la probabilité reste inférieure à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}"
+							}
+						],
+						"statement": "Une machine produit des pièces dont une proportion ${{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}}$ est défectueuse. On prélève $n$ pièces ; le prélèvement est assimilé à un tirage avec remise. On note $X$ le nombre de pièces défectueuses du prélèvement.\n\nCombien de pièces faut-il prélever, au minimum, pour que la probabilité d'obtenir au moins une pièce défectueuse soit supérieure ou égale à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$ ?\n\n$n=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "0..7"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$X$ suit la loi binomiale $\\mathcal{B}(n\\,;{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}})$ : $P(X=0)={{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$, donc $P(X\\geqslant1)=1-P(X=0)=1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$.",
+								"$1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}\\iff{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\leqslant{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}}\\iff n\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})\\leqslant\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})\\iff n\\geqslant\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}$ : on divise par $\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})<0$, l'inégalité change de sens.",
+								"$\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}\\approx{{if:k==0|58{,}4}}{{if:k==1|21{,}85}}{{if:k==2|28{,}43}}{{if:k==3|14{,}17}}{{if:k==4|13{,}43}}{{if:k==5|20{,}64}}{{if:k==6|6{,}46}}{{if:k==7|8{,}4}}$ : le plus petit entier $n$ est $\\textcolor{{{color:primary.0}}}{{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}}$ (pour $n={{if:k==0|58}}{{if:k==1|21}}{{if:k==2|28}}{{if:k==3|14}}{{if:k==4|13}}{{if:k==5|20}}{{if:k==6|6}}{{if:k==7|8}}$, la probabilité reste inférieure à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{s}}"
+							}
+						],
+						"statement": "Deux jeux sont proposés. Au jeu A, on a ${{eval:s*n2+(1-s)*n1}}$ essais indépendants, chacun gagnant avec la probabilité ${{eval:(s*b+(1-s)*a)/10;d}}$. Au jeu B, on a ${{eval:s*n1+(1-s)*n2}}$ essais indépendants, chacun gagnant avec la probabilité ${{eval:(s*a+(1-s)*b)/10;d}}$.\n\nQuel jeu donne la plus grande probabilité de gagner au moins une fois ?\n\n```choix\n- Le jeu A.\n- Le jeu B.\n- Les deux jeux donnent la même probabilité.\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0..1"
+							},
+							{
+								"name": "n1",
+								"expression": "2..8"
+							},
+							{
+								"name": "a",
+								"expression": "1..4"
+							},
+							{
+								"name": "n2",
+								"expression": "2..8"
+							},
+							{
+								"name": "b",
+								"expression": "1..4"
+							}
+						],
+						"conditions": [
+							"n1 != n2",
+							"a != b",
+							"(n1-n2)*(a-b) < 0",
+							"(1-b/10)^n2 - (1-a/10)^n1 >= 0.03"
+						],
+						"correction": {
+							"steps": [
+								"Le nombre de gains suit une loi binomiale ; gagner au moins une fois est le contraire de perdre tous les essais : $P(X\\geqslant1)=1-(1-p)^n$.",
+								"Jeu A : $1-{{eval:1-(s*b+(1-s)*a)/10;d}}^{{{eval:s*n2+(1-s)*n1}}}\\approx{{eval:round(1000*(1-(1-(s*b+(1-s)*a)/10)^(s*n2+(1-s)*n1)))/1000;d}}$ ; jeu B : $1-{{eval:1-(s*a+(1-s)*b)/10;d}}^{{{eval:s*n1+(1-s)*n2}}}\\approx{{eval:round(1000*(1-(1-(s*a+(1-s)*b)/10)^(s*n1+(1-s)*n2)))/1000;d}}$.",
+								"Le meilleur est $\\textcolor{{{color:primary.0}}}{\\text{le jeu {{if:s==0|A}}{{if:s==1|B}}}}$, même s'il a {{if:n1<n2|moins d'essais}}{{if:n1>n2|une probabilité plus faible à chaque essai}}."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["22"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1"
+						},
+						"description": "p = 0,1, s = 0,9 : 22",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["58"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "0"
+						},
+						"description": "Erreur : arrondi au plus proche (58,4 → 58)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["59"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "0"
+						},
+						"description": "p = 0,05, s = 0,95 : 59",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1"
+						},
+						"description": "Erreur : sens de l'inégalité (n = 21)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5"
+						},
+						"description": "Pièces p = 0,2, s = 0,99 : 21",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["20"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5"
+						},
+						"description": "Erreur : 20",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "0",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Jeu A meilleur (s = 0)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "0",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Erreur : B",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "1",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Montré en B (s = 1)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "1",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Erreur : égalité",
+						"variationIndex": 2
+					}
+				],
+				"description": "Loi binomiale : plus petit n tel que P(X ⩾ 1) ⩾ s par 1 − (1 − p)ⁿ ⩾ s et le logarithme (abstrait, contrôle de pièces) ; comparer deux jeux par P(X ⩾ 1)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}"
+							}
+						],
+						"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli de probabilité de succès $p={{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}}$. On note $X$ le nombre de succès : $X$ suit la loi binomiale $\\mathcal{B}(n\\,;{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}})$.\n\nPlus petit entier $n$ tel que $P(X\\geqslant1)\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$ : $n=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "0..7"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$P(X=0)=(1-p)^n={{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$, donc $P(X\\geqslant1)=1-P(X=0)=1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$.",
+								"$1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}\\iff{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\leqslant{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}}\\iff n\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})\\leqslant\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})\\iff n\\geqslant\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}$ : on divise par $\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})<0$, l'inégalité change de sens.",
+								"$\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}\\approx{{if:k==0|58{,}4}}{{if:k==1|21{,}85}}{{if:k==2|28{,}43}}{{if:k==3|14{,}17}}{{if:k==4|13{,}43}}{{if:k==5|20{,}64}}{{if:k==6|6{,}46}}{{if:k==7|8{,}4}}$ : le plus petit entier $n$ est $\\textcolor{{{color:primary.0}}}{{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}}$ (pour $n={{if:k==0|58}}{{if:k==1|21}}{{if:k==2|28}}{{if:k==3|14}}{{if:k==4|13}}{{if:k==5|20}}{{if:k==6|6}}{{if:k==7|8}}$, la probabilité reste inférieure à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}"
+							}
+						],
+						"statement": "Une machine produit des pièces dont une proportion ${{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}}$ est défectueuse. On prélève $n$ pièces ; le prélèvement est assimilé à un tirage avec remise. On note $X$ le nombre de pièces défectueuses du prélèvement.\n\nCombien de pièces faut-il prélever, au minimum, pour que la probabilité d'obtenir au moins une pièce défectueuse soit supérieure ou égale à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$ ?\n\n$n=?$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "0..7"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$X$ suit la loi binomiale $\\mathcal{B}(n\\,;{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}})$ : $P(X=0)={{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$, donc $P(X\\geqslant1)=1-P(X=0)=1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$.",
+								"$1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}\\iff{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\leqslant{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}}\\iff n\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})\\leqslant\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})\\iff n\\geqslant\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}$ : on divise par $\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})<0$, l'inégalité change de sens.",
+								"$\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}\\approx{{if:k==0|58{,}4}}{{if:k==1|21{,}85}}{{if:k==2|28{,}43}}{{if:k==3|14{,}17}}{{if:k==4|13{,}43}}{{if:k==5|20{,}64}}{{if:k==6|6{,}46}}{{if:k==7|8{,}4}}$ : le plus petit entier $n$ est $\\textcolor{{{color:primary.0}}}{{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}}$ (pour $n={{if:k==0|58}}{{if:k==1|21}}{{if:k==2|28}}{{if:k==3|14}}{{if:k==4|13}}{{if:k==5|20}}{{if:k==6|6}}{{if:k==7|8}}$, la probabilité reste inférieure à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$)."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{s}}"
+							}
+						],
+						"statement": "Deux jeux sont proposés. Au jeu A, on a ${{eval:s*n2+(1-s)*n1}}$ essais indépendants, chacun gagnant avec la probabilité ${{eval:(s*b+(1-s)*a)/10;d}}$. Au jeu B, on a ${{eval:s*n1+(1-s)*n2}}$ essais indépendants, chacun gagnant avec la probabilité ${{eval:(s*a+(1-s)*b)/10;d}}$.\n\nQuel jeu donne la plus grande probabilité de gagner au moins une fois ?\n\n```choix\n- Le jeu A.\n- Le jeu B.\n- Les deux jeux donnent la même probabilité.\n```",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0..1"
+							},
+							{
+								"name": "n1",
+								"expression": "2..8"
+							},
+							{
+								"name": "a",
+								"expression": "1..4"
+							},
+							{
+								"name": "n2",
+								"expression": "2..8"
+							},
+							{
+								"name": "b",
+								"expression": "1..4"
+							}
+						],
+						"conditions": [
+							"n1 != n2",
+							"a != b",
+							"(n1-n2)*(a-b) < 0",
+							"(1-b/10)^n2 - (1-a/10)^n1 >= 0.03"
+						],
+						"correction": {
+							"steps": [
+								"Le nombre de gains suit une loi binomiale ; gagner au moins une fois est le contraire de perdre tous les essais : $P(X\\geqslant1)=1-(1-p)^n$.",
+								"Jeu A : $1-{{eval:1-(s*b+(1-s)*a)/10;d}}^{{{eval:s*n2+(1-s)*n1}}}\\approx{{eval:round(1000*(1-(1-(s*b+(1-s)*a)/10)^(s*n2+(1-s)*n1)))/1000;d}}$ ; jeu B : $1-{{eval:1-(s*a+(1-s)*b)/10;d}}^{{{eval:s*n1+(1-s)*n2}}}\\approx{{eval:round(1000*(1-(1-(s*a+(1-s)*b)/10)^(s*n1+(1-s)*n2)))/1000;d}}$.",
+								"Le meilleur est $\\textcolor{{{color:primary.0}}}{\\text{le jeu {{if:s==0|A}}{{if:s==1|B}}}}$, même s'il a {{if:n1<n2|moins d'essais}}{{if:n1>n2|une probabilité plus faible à chaque essai}}."
+							]
+						}
+					},
+					{
+						"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli dont la probabilité de succès est $p={{eval:t/20;d}}$. Pour tout entier $n\\geqslant 1$, on note $p_n$ la probabilité d'obtenir **au moins un** succès.\n\nExprime $p_n$ en fonction de $n$.\n\n$p_n=?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "n|n"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "1-{{eval:1-t/20;d}}^n",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:1-t/20;d}}^n",
+										"message": "Ce nombre est la probabilité de n'obtenir **aucun** succès. « Au moins un » est l'événement contraire.",
+										"label": "Aucun succès"
+									},
+									{
+										"answer": "1-{{eval:t/20;d}}^n",
+										"message": "Le contraire de « au moins un succès » est « que des échecs », de probabilité $(1-p)^{n}$, pas $p^{n}$.",
+										"label": "Mauvais contraire"
+									},
+									{
+										"answer": "{{eval:t/20;d}}^n",
+										"message": "Ce nombre est la probabilité d'obtenir $n$ succès sur $n$ épreuves.",
+										"label": "Que des succès"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"L'événement contraire de « au moins un succès » est « aucun succès » : les $n$ épreuves, indépendantes, sont toutes des échecs, de probabilité $1-{{eval:t/20;d}}={{eval:1-t/20;d}}$.",
+								"$P(\\text{aucun succès})={{eval:1-t/20;d}}^{n}$, donc $p_n=\\textcolor{{{color:primary.0}}}{1-{{eval:1-t/20;d}}^{n}}$."
+							]
+						},
+						"hint": "Quel est l'événement contraire de « au moins un succès », et quelle est sa probabilité ?"
+					},
+					{
+						"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli dont la probabilité de succès est $p={{eval:t/20;d}}$. La probabilité d'obtenir au moins un succès est $p_n=1-{{eval:1-t/20;d}}^{n}$.\n\nLa fonction Python ci-dessous doit renvoyer le plus petit entier $n$ tel que $p_n\\geqslant$ `seuil`, pour un `seuil` compris entre $0$ et $1$.\n\n```python\ndef rang_minimal(seuil):\n    n = 1\n    while ...:\n        n = n + 1\n    return n\n```\n\nQue faut-il écrire à la place des points de suspension ?\n\n```choix\n- `1 - 0.{{eval:100-5*t}}**n < seuil`\n- `1 - 0.{{eval:100-5*t}}**n >= seuil`\n- `0.{{eval:100-5*t}}**n < seuil`\n- `n < seuil`\n```",
+						"variables": [
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "0"
+							}
+						],
+						"correction": {
+							"steps": [
+								"La boucle `while` répète son contenu **tant que** sa condition est vraie : elle doit continuer tant que $p_n<$ `seuil`, c'est-à-dire tant que `1 - 0.{{eval:100-5*t}}**n < seuil`.",
+								"Avec `>=`, la boucle s'arrêterait tout de suite ; `0.{{eval:100-5*t}}**n < seuil` teste la probabilité de n'avoir aucun succès ; `n < seuil` compare le rang au seuil.",
+								"La condition est donc `1 - 0.{{eval:100-5*t}}**n < seuil`."
+							]
+						},
+						"hint": "La boucle tourne **tant que** sa condition est vraie : quand doit-elle s'arrêter ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["22"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "1"
+						},
+						"description": "p = 0,1, s = 0,9 : 22",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["58"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "0"
+						},
+						"description": "Erreur : arrondi au plus proche (58,4 → 58)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["59"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "0"
+						},
+						"description": "p = 0,05, s = 0,95 : 59",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "1"
+						},
+						"description": "Erreur : sens de l'inégalité (n = 21)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5"
+						},
+						"description": "Pièces p = 0,2, s = 0,99 : 21",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["20"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5"
+						},
+						"description": "Erreur : 20",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "0",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Jeu A meilleur (s = 0)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "0",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Erreur : B",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "1",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Montré en B (s = 1)",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4",
+							"b": "1",
+							"s": "1",
+							"n1": "3",
+							"n2": "6"
+						},
+						"description": "Erreur : égalité",
+						"variationIndex": 2
+					},
+					{
+						"description": "F4 a : p = 0,1 → 1 − 0,9ⁿ",
+						"variationIndex": 3,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1-0{,}9^n"]
+					},
+					{
+						"description": "F4 a : 1 − (9/10)ⁿ : mauvaise forme (p est donné en décimal)",
+						"variationIndex": 3,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["1-\\left(\\frac{9}{10}\\right)^n"]
+					},
+					{
+						"description": "F4 a : 1 − 0.9ⁿ (point) accepté",
+						"variationIndex": 3,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1-0.9^n"]
+					},
+					{
+						"description": "F4 a : 0,9ⁿ (aucun succès)",
+						"variationIndex": 3,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce nombre est la probabilité de n'obtenir **aucun** succès. « Au moins un » est l'événement contraire."
+						},
+						"answers": ["0{,}9^n"]
+					},
+					{
+						"description": "F4 a : 1 − 0,1ⁿ",
+						"variationIndex": 3,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1-0{,}1^n"]
+					},
+					{
+						"description": "F4 a : 0,1ⁿ",
+						"variationIndex": 3,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0{,}1^n"]
+					},
+					{
+						"description": "F4 b : bonne condition",
+						"variationIndex": 4,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F4 b : >= (arrêt immédiat)",
+						"variationIndex": 4,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F4 b : qⁿ < seuil",
+						"variationIndex": 4,
+						"variables": {
+							"t": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["2"]
+					}
+				],
+				"description": "Loi binomiale : plus petit n tel que P(X ⩾ 1) ⩾ s par 1 − (1 − p)ⁿ ⩾ s et le logarithme (abstrait, contrôle de pièces) ; comparer deux jeux par P(X ⩾ 1)"
+			},
+			"changements": {
+				"ajoutees": [4, 5],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "7974722d-6328-4388-a4fd-418cc0e25600",
+			"title": "Espérance de aX + bY : linéarité",
+			"fichier": "7974722d.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*u+b*w}}"
+							}
+						],
+						"statement": "Deux variables aléatoires $X$ et $Y$ vérifient $E(X)={{u}}$ et $E(Y)={{w}}$.\n\nCalcule $E({{a}}X+{{b}}Y)$.\n\n$E({{a}}X+{{b}}Y)=?$",
+						"variables": [
+							{
+								"name": "u",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "w",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "a",
+								"expression": "2..5"
+							},
+							{
+								"name": "b",
+								"expression": "2..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Linéarité de l'espérance (vraie même si $X$ et $Y$ ne sont pas indépendantes) : $E(aX+bY)=aE(X)+bE(Y)$.",
+								"$E({{a}}X+{{b}}Y)={{a}}\\times{{u;()}}+{{b}}\\times{{w;()}}=\\textcolor{{{color:primary.0}}}{{{eval:a*u+b*w}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"u": "4",
+							"w": "-1"
+						},
+						"description": "v0 : E(2X + 3Y), 4 et −1 → 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"u": "4",
+							"w": "-1"
+						},
+						"description": "v0 : a + b oubliés : 3",
+						"variationIndex": 0
+					}
+				],
+				"description": "E(aX + bY) = aE(X) + bE(Y)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*u+b*w}}"
+							}
+						],
+						"statement": "Deux variables aléatoires $X$ et $Y$ vérifient $E(X)={{u}}$ et $E(Y)={{w}}$.\n\nCalcule $E({{a}}X+{{b}}Y)$.\n\n$E({{a}}X+{{b}}Y)=?$",
+						"variables": [
+							{
+								"name": "u",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "w",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "a",
+								"expression": "2..5"
+							},
+							{
+								"name": "b",
+								"expression": "2..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Linéarité de l'espérance (vraie même si $X$ et $Y$ ne sont pas indépendantes) : $E(aX+bY)=aE(X)+bE(Y)$.",
+								"$E({{a}}X+{{b}}Y)={{a}}\\times{{u;()}}+{{b}}\\times{{w;()}}=\\textcolor{{{color:primary.0}}}{{{eval:a*u+b*w}}}$."
+							]
+						}
+					},
+					{
+						"statement": "Un exercice comporte deux questions $Q_1$ et $Q_2$, chacune notée $0$ ou $1$ point. On choisit un candidat au hasard ; on note $A$ l'événement « il réussit $Q_1$ » et $B$ l'événement « il réussit $Q_2$ ». L'arbre ci-dessous décrit la situation.\n\n```probtree\nA:{{eval:a/10;d}}\n  B:{{eval:b/10;d}}\n  \\overline{B}:{{eval:1-b/10;d}}\n\\overline{A}:{{eval:1-a/10;d}}\n  B:{{eval:c/10;d}}\n  \\overline{B}:{{eval:1-c/10;d}}\n```\n\nOn note $X_1$ et $X_2$ les notes du candidat aux deux questions, et $X=X_1+X_2$ sa note à l'exercice. Les variables $X_1$ et $X_2$ ne sont **pas** indépendantes.\n\nCalcule $E(X)$. Réponds par un nombre décimal exact.\n\n$E(X)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..8"
+							},
+							{
+								"name": "b",
+								"expression": "2..8"
+							},
+							{
+								"name": "c",
+								"expression": "2..8"
+							}
+						],
+						"conditions": ["b != c"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a/10+(a*b+(10-a)*c)/100}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:a/10+b/10}}",
+										"message": "$P_A(B)$ est la probabilité de réussir $Q_2$ **sachant** que $Q_1$ est réussie. $E(X_2)=P(B)$ se calcule avec les probabilités totales.",
+										"label": "P_A(B) au lieu de P(B)"
+									},
+									{
+										"answer": "{{eval:2*a*b/100}}",
+										"message": "Ce nombre compte seulement les candidats qui réussissent les deux questions. $E(X)=E(X_1)+E(X_2)$, même sans indépendance.",
+										"label": "Seulement les deux réussies"
+									},
+									{
+										"answer": "{{eval:a/10*(a*b+(10-a)*c)/100}}",
+										"message": "L'espérance d'une **somme** est la somme des espérances : $E(X)=E(X_1)+E(X_2)$, pas un produit.",
+										"label": "Produit au lieu de somme"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$X_1$ suit la loi de Bernoulli de paramètre $P(A)$ : $E(X_1)=P(A)={{eval:a/10;d}}$. De même, $E(X_2)=P(B)$.",
+								"Probabilités totales : $P(B)=P(A)P_A(B)+P(\\overline{A})P_{\\overline{A}}(B)={{eval:a/10;d}}\\times{{eval:b/10;d}}+{{eval:1-a/10;d}}\\times{{eval:c/10;d}}={{eval:(a*b+(10-a)*c)/100;d}}$.",
+								"La linéarité de l'espérance vaut **même sans indépendance** : $E(X)=E(X_1)+E(X_2)={{eval:a/10;d}}+{{eval:(a*b+(10-a)*c)/100;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:a/10+(a*b+(10-a)*c)/100;d}} }$."
+							]
+						},
+						"hint": "Que vaut l'espérance d'une note qui vaut $1$ ou $0$ ? La linéarité a-t-elle besoin de l'indépendance ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"u": "4",
+							"w": "-1"
+						},
+						"description": "v0 : E(2X + 3Y), 4 et −1 → 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"u": "4",
+							"w": "-1"
+						},
+						"description": "v0 : a + b oubliés : 3",
+						"variationIndex": 0
+					},
+					{
+						"description": "F5 : P(A) = 0,6, P_A(B) = 0,7, P_Ā(B) = 0,2 → 0,6 + 0,5 = 1,1",
+						"variationIndex": 1,
+						"variables": {
+							"a": "6",
+							"b": "7",
+							"c": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1,1"]
+					},
+					{
+						"description": "F5 : P_A(B) au lieu de P(B) → 1,3",
+						"variationIndex": 1,
+						"variables": {
+							"a": "6",
+							"b": "7",
+							"c": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "$P_A \\left( B \\right)$ est la probabilité de réussir $Q_2$ **sachant** que $Q_1$ est réussie. $E \\left( X_2 \\right) = P \\left( B \\right)$ se calcule avec les probabilités totales."
+						},
+						"answers": ["1,3"]
+					},
+					{
+						"description": "F5 : 2 P(A ∩ B) = 0,84",
+						"variationIndex": 1,
+						"variables": {
+							"a": "6",
+							"b": "7",
+							"c": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,84"]
+					},
+					{
+						"description": "F5 : produit 0,3",
+						"variationIndex": 1,
+						"variables": {
+							"a": "6",
+							"b": "7",
+							"c": "2"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,3"]
+					}
+				],
+				"description": "E(aX + bY) = aE(X) + bE(Y)"
+			},
+			"changements": {
+				"ajoutees": [2],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "95f73515-63c1-45e2-9b99-242335d8ad03",
+			"title": "Inégalité de concentration : majorant",
+			"fichier": "95f73515.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:v*d^2/n}}"
+							}
+						],
+						"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "100|200|400|500|1000"
+							},
+							{
+								"name": "v",
+								"expression": "1..10"
+							},
+							{
+								"name": "d",
+								"expression": "2|4|5|10"
+							}
+						],
+						"conditions": ["v*d^2 < n"],
+						"correction": {
+							"steps": [
+								"Inégalité de concentration : $P\\left(\\left|M_n-\\mu\\right|\\geqslant\\delta\\right)\\leqslant\\dfrac{V}{n\\delta^{2}}$.",
+								"$\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }=\\dfrac{ {{v}} }{ {{eval:n/d^2;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:v*d^2/n;d}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "10",
+							"n": "1000",
+							"v": "5"
+						},
+						"description": "v0 : V = 5, n = 1000, δ = 0,1 → 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,05"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "10",
+							"n": "1000",
+							"v": "5"
+						},
+						"description": "v0 : V/(nδ) = 0,05",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["500"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "10",
+							"n": "1000",
+							"v": "5"
+						},
+						"description": "v0 : n oublié : 500",
+						"variationIndex": 0
+					}
+				],
+				"description": "Majorant V/(nδ²) de P(|M − μ| ⩾ δ) pour n donné (pièges : V/(nδ), oubli de n)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:v*d^2/n}}"
+							}
+						],
+						"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "100|200|400|500|1000"
+							},
+							{
+								"name": "v",
+								"expression": "1..10"
+							},
+							{
+								"name": "d",
+								"expression": "2|4|5|10"
+							}
+						],
+						"conditions": ["v*d^2 < n"],
+						"correction": {
+							"steps": [
+								"Inégalité de concentration : $P\\left(\\left|M_n-\\mu\\right|\\geqslant\\delta\\right)\\leqslant\\dfrac{V}{n\\delta^{2}}$.",
+								"$\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }=\\dfrac{ {{v}} }{ {{eval:n/d^2;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:v*d^2/n;d}}}$."
+							]
+						}
+					},
+					{
+						"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nÀ l'aide de l'inégalité de concentration, donne un minorant de $P\\left(\\left|M-\\mu\\right|<{{eval:1/d;d}}\\right)$ (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|<{{eval:1/d;d}}\\right)\\geqslant ?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "100|200|400|500|1000"
+							},
+							{
+								"name": "v",
+								"expression": "1..10"
+							},
+							{
+								"name": "d",
+								"expression": "2|4|5|10"
+							}
+						],
+						"conditions": ["v*d^2 < n"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:1-v*d^2/n}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:v*d^2/n}}",
+										"message": "Ce nombre **majore** la probabilité que $M$ s'écarte de $\\mu$. L'événement demandé est le contraire : on passe par $1-\\ldots$",
+										"label": "Majorant au lieu du minorant"
+									},
+									{
+										"answer": "{{eval:1-v*d/n}}",
+										"message": "L'inégalité divise par $n\\delta^{2}$ : l'écart est au **carré**.",
+										"label": "δ au lieu de δ²"
+									},
+									{
+										"answer": "{{eval:1-v*d^2}}",
+										"message": "Pour la moyenne d'un échantillon, la variance est divisée par $n$ : $\\dfrac{V}{n\\delta^{2}}$.",
+										"label": "n oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$\\left|M-\\mu\\right|<{{eval:1/d;d}}$ est l'événement contraire de $\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}$.",
+								"Inégalité de concentration : $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }={{eval:v*d^2/n;d}}$.",
+								"Donc $P\\left(\\left|M-\\mu\\right|<{{eval:1/d;d}}\\right)\\geqslant 1-{{eval:v*d^2/n;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:1-v*d^2/n;d}} }$."
+							]
+						},
+						"hint": "L'inégalité de concentration majore la probabilité d'un **écart**. Quel est le contraire de l'événement demandé ?"
+					},
+					{
+						"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu={{m}}$ et de variance $V={{v}}$.\n\nÀ l'aide de l'inégalité de concentration, donne un majorant de $P\\left(M\\in\\left]-\\infty\\,;{{eval:m-1/d;d}}\\right]\\cup\\left[{{eval:m+1/d;d}}\\,;+\\infty\\right[\\right)$ (nombre décimal).\n\n$P\\left(M\\in\\left]-\\infty\\,;{{eval:m-1/d;d}}\\right]\\cup\\left[{{eval:m+1/d;d}}\\,;+\\infty\\right[\\right)\\leqslant ?$",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "100|200|400|500|1000"
+							},
+							{
+								"name": "m",
+								"expression": "1..20"
+							},
+							{
+								"name": "v",
+								"expression": "1..10"
+							},
+							{
+								"name": "d",
+								"expression": "2|4|5|10"
+							}
+						],
+						"conditions": ["v*d^2 < n"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:v*d^2/n}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:1-v*d^2/n}}",
+										"message": "Ici, $M$ est **loin** de ${{m}}$ : c'est l'événement $\\left|M-{{m}}\\right|\\geqslant {{eval:1/d;d}}$, majoré directement, sans $1-\\ldots$",
+										"label": "1 − majorant"
+									},
+									{
+										"answer": "{{eval:v*d/n}}",
+										"message": "L'inégalité divise par $n\\delta^{2}$ : l'écart est au **carré**.",
+										"label": "δ au lieu de δ²"
+									},
+									{
+										"answer": "{{eval:v*d^2}}",
+										"message": "Pour la moyenne d'un échantillon, la variance est divisée par $n$ : $\\dfrac{V}{n\\delta^{2}}$.",
+										"label": "n oublié"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$M\\leqslant {{eval:m-1/d;d}}$ ou $M\\geqslant {{eval:m+1/d;d}}$ : $M$ est à une distance au moins ${{eval:1/d;d}}$ de ${{m}}$, c'est l'événement $\\left|M-{{m}}\\right|\\geqslant {{eval:1/d;d}}$.",
+								"Inégalité de concentration : $P\\left(\\left|M-{{m}}\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }=\\textcolor{{{color:primary.0}}}{ {{eval:v*d^2/n;d}} }$."
+							]
+						},
+						"hint": "Les deux intervalles sont à égale distance de ${{m}}$ : écris l'événement avec une valeur absolue."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0,5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "10",
+							"n": "1000",
+							"v": "5"
+						},
+						"description": "v0 : V = 5, n = 1000, δ = 0,1 → 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0,05"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "10",
+							"n": "1000",
+							"v": "5"
+						},
+						"description": "v0 : V/(nδ) = 0,05",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["500"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "10",
+							"n": "1000",
+							"v": "5"
+						},
+						"description": "v0 : n oublié : 500",
+						"variationIndex": 0
+					},
+					{
+						"description": "F7 a : n = 1000, V = 5, δ = 0,1 → 1 − 0,5 = 0,5",
+						"variationIndex": 1,
+						"variables": {
+							"n": "1000",
+							"v": "5",
+							"d": "10"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,5"]
+					},
+					{
+						"description": "F7 a : n = 500, V = 2, δ = 0,2 → 1 − 0,1 = 0,9",
+						"variationIndex": 1,
+						"variables": {
+							"n": "500",
+							"v": "2",
+							"d": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,9"]
+					},
+					{
+						"description": "F7 a : majorant donné",
+						"variationIndex": 1,
+						"variables": {
+							"n": "500",
+							"v": "2",
+							"d": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,1"]
+					},
+					{
+						"description": "F7 a : δ au lieu de δ²",
+						"variationIndex": 1,
+						"variables": {
+							"n": "500",
+							"v": "2",
+							"d": "5"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,98"]
+					},
+					{
+						"description": "F7 b : n = 400, V = 4, δ = 0,25 → 0,16",
+						"variationIndex": 2,
+						"variables": {
+							"n": "400",
+							"m": "7",
+							"v": "4",
+							"d": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,16"]
+					},
+					{
+						"description": "F7 b : 1 − majorant",
+						"variationIndex": 2,
+						"variables": {
+							"n": "400",
+							"m": "7",
+							"v": "4",
+							"d": "4"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,84"]
+					},
+					{
+						"description": "F7 b : δ au lieu de δ²",
+						"variationIndex": 2,
+						"variables": {
+							"n": "400",
+							"m": "7",
+							"v": "4",
+							"d": "4"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["0,04"]
+					}
+				],
+				"description": "Majorant V/(nδ²) de P(|M − μ| ⩾ δ) pour n donné (pièges : V/(nδ), oubli de n)"
+			},
+			"changements": {
+				"ajoutees": [2, 3],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "ecf4d46b-02d5-4fd1-86db-eac7b017a257",
+			"title": "Probabilités totales",
+			"fichier": "ecf4d46b.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(v*d+w*t+(10-v-w)*u)/1000}}"
+							}
+						],
+						"statement": "Une usine fabrique des pièces sur trois machines : $A_1$ en produit ${{eval:10*v}}~\\%$, $A_2$ en produit ${{eval:10*w}}~\\%$ et $A_3$ le reste. Une pièce est défectueuse ($D$) avec la probabilité ${{eval:d/100;d}}$ si elle sort de $A_1$, ${{eval:t/100;d}}$ si elle sort de $A_2$ et ${{eval:u/100;d}}$ si elle sort de $A_3$. On prend une pièce au hasard.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(D)=?$",
+						"variables": [
+							{
+								"name": "v",
+								"expression": "2..5"
+							},
+							{
+								"name": "w",
+								"expression": "2..4"
+							},
+							{
+								"name": "d",
+								"expression": "1..6"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							},
+							{
+								"name": "u",
+								"expression": "1..6"
+							}
+						],
+						"conditions": ["v + w <= 8", "d != t", "t != u", "d != u"],
+						"correction": {
+							"steps": [
+								"$A_1$, $A_2$, $A_3$ forment une **partition** de l'univers (chaque pièce sort d'une seule machine) :\n\n```probtree\n\\mathrm{A}_1:{{eval:v/10;d}}\n  D:{{eval:d/100;d}}\n  \\overline{D}:{{eval:1-d/100;d}}\n\\mathrm{A}_2:{{eval:w/10;d}}\n  D:{{eval:t/100;d}}\n  \\overline{D}:{{eval:1-t/100;d}}\n\\mathrm{A}_3:{{eval:1-(v+w)/10;d}}\n  D:{{eval:u/100;d}}\n  \\overline{D}:{{eval:1-u/100;d}}\n```",
+								"Formule des probabilités totales : $P(D)=P(A_1)P_{A_1}(D)+P(A_2)P_{A_2}(D)+P(A_3)P_{A_3}(D)$.",
+								"$P(D)={{eval:v/10;d}}\\times{{eval:d/100;d}}+{{eval:w/10;d}}\\times{{eval:t/100;d}}+{{eval:1-(v+w)/10;d}}\\times{{eval:u/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(v*d+w*t+(10-v-w)*u)/1000;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(a*g*g+a*(10-g)*h+(10-a)*h*g+(10-a)*(10-h)*h)/1000}}"
+							}
+						],
+						"statement": "Noé joue trois parties. Il gagne la première avec la probabilité ${{eval:a/10;d}}$. Ensuite, s'il a gagné une partie, il gagne la suivante avec la probabilité ${{eval:g/10;d}}$ ; s'il l'a perdue, il gagne la suivante avec la probabilité ${{eval:h/10;d}}$. On note $G_1$, $G_2$ et $G_3$ les événements « Noé gagne la première, la deuxième, la troisième partie ».\n\nL'arbre pondéré ci-dessous représente cette expérience.\n\n```probtree\n\\mathrm{G}_1:{{eval:a/10;d}}\n  \\mathrm{G}_2:{{eval:g/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-g/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n\\overline{G_1}:{{eval:1-a/10;d}}\n  \\mathrm{G}_2:{{eval:h/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-h/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que Noé gagne la troisième partie : $P(G_3)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..8"
+							},
+							{
+								"name": "g",
+								"expression": "5..9"
+							},
+							{
+								"name": "h",
+								"expression": "1..5"
+							}
+						],
+						"conditions": ["g > h", "a != 5"],
+						"correction": {
+							"steps": [
+								"$G_3$ est réalisé par quatre chemins incompatibles : $G_1G_2G_3$, $G_1\\overline{G_2}G_3$, $\\overline{G_1}G_2G_3$ et $\\overline{G_1}\\overline{G_2}G_3$ (formule des probabilités totales, avec la partition formée par les deux premières parties).",
+								"Chacun a pour probabilité le produit de ses branches : ${{eval:a/10;d}}\\times{{eval:g/10;d}}\\times{{eval:g/10;d}}={{eval:a*g*g/1000;d}}$ ; ${{eval:a/10;d}}\\times{{eval:1-g/10;d}}\\times{{eval:h/10;d}}={{eval:a*(10-g)*h/1000;d}}$ ; ${{eval:1-a/10;d}}\\times{{eval:h/10;d}}\\times{{eval:g/10;d}}={{eval:(10-a)*h*g/1000;d}}$ ; ${{eval:1-a/10;d}}\\times{{eval:1-h/10;d}}\\times{{eval:h/10;d}}={{eval:(10-a)*(10-h)*h/1000;d}}$.",
+								"On additionne : $P(G_3)=\\textcolor{{{color:primary.0}}}{{{eval:(a*g*g+a*(10-g)*h+(10-a)*h*g+(10-a)*(10-h)*h)/1000;d}}}$."
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0{,}029"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "0,5 × 0,02 + 0,3 × 0,03 + 0,2 × 0,05",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{29}{1000}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "En fraction",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{30}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "Erreur : moyenne des taux",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}01"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "Erreur : une machine",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}574"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "6",
+							"g": "7",
+							"h": "4"
+						},
+						"description": "a = 0,6, g = 0,7, h = 0,4 : 0,574",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}294"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"g": "7",
+							"h": "4"
+						},
+						"description": "Erreur : un seul chemin",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}58"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"g": "7",
+							"h": "4"
+						},
+						"description": "Erreur : P(G₂)",
+						"variationIndex": 1
+					}
+				],
+				"description": "Formule des probabilités totales : partition en trois (trois machines) ; probabilité de gagner la troisième partie sur un arbre de trois épreuves dépendantes (quatre chemins)"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(v*d+w*t+(10-v-w)*u)/1000}}"
+							}
+						],
+						"statement": "Une usine fabrique des pièces sur trois machines : $A_1$ en produit ${{eval:10*v}}~\\%$, $A_2$ en produit ${{eval:10*w}}~\\%$ et $A_3$ le reste. Une pièce est défectueuse ($D$) avec la probabilité ${{eval:d/100;d}}$ si elle sort de $A_1$, ${{eval:t/100;d}}$ si elle sort de $A_2$ et ${{eval:u/100;d}}$ si elle sort de $A_3$. On prend une pièce au hasard.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(D)=?$",
+						"variables": [
+							{
+								"name": "v",
+								"expression": "2..5"
+							},
+							{
+								"name": "w",
+								"expression": "2..4"
+							},
+							{
+								"name": "d",
+								"expression": "1..6"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							},
+							{
+								"name": "u",
+								"expression": "1..6"
+							}
+						],
+						"conditions": ["v + w <= 8", "d != t", "t != u", "d != u"],
+						"correction": {
+							"steps": [
+								"$A_1$, $A_2$, $A_3$ forment une **partition** de l'univers (chaque pièce sort d'une seule machine) :\n\n```probtree\n\\mathrm{A}_1:{{eval:v/10;d}}\n  D:{{eval:d/100;d}}\n  \\overline{D}:{{eval:1-d/100;d}}\n\\mathrm{A}_2:{{eval:w/10;d}}\n  D:{{eval:t/100;d}}\n  \\overline{D}:{{eval:1-t/100;d}}\n\\mathrm{A}_3:{{eval:1-(v+w)/10;d}}\n  D:{{eval:u/100;d}}\n  \\overline{D}:{{eval:1-u/100;d}}\n```",
+								"Formule des probabilités totales : $P(D)=P(A_1)P_{A_1}(D)+P(A_2)P_{A_2}(D)+P(A_3)P_{A_3}(D)$.",
+								"$P(D)={{eval:v/10;d}}\\times{{eval:d/100;d}}+{{eval:w/10;d}}\\times{{eval:t/100;d}}+{{eval:1-(v+w)/10;d}}\\times{{eval:u/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(v*d+w*t+(10-v-w)*u)/1000;d}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:(a*g*g+a*(10-g)*h+(10-a)*h*g+(10-a)*(10-h)*h)/1000}}"
+							}
+						],
+						"statement": "Noé joue trois parties. Il gagne la première avec la probabilité ${{eval:a/10;d}}$. Ensuite, s'il a gagné une partie, il gagne la suivante avec la probabilité ${{eval:g/10;d}}$ ; s'il l'a perdue, il gagne la suivante avec la probabilité ${{eval:h/10;d}}$. On note $G_1$, $G_2$ et $G_3$ les événements « Noé gagne la première, la deuxième, la troisième partie ».\n\nL'arbre pondéré ci-dessous représente cette expérience.\n\n```probtree\n\\mathrm{G}_1:{{eval:a/10;d}}\n  \\mathrm{G}_2:{{eval:g/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-g/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n\\overline{G_1}:{{eval:1-a/10;d}}\n  \\mathrm{G}_2:{{eval:h/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-h/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que Noé gagne la troisième partie : $P(G_3)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..8"
+							},
+							{
+								"name": "g",
+								"expression": "5..9"
+							},
+							{
+								"name": "h",
+								"expression": "1..5"
+							}
+						],
+						"conditions": ["g > h", "a != 5"],
+						"correction": {
+							"steps": [
+								"$G_3$ est réalisé par quatre chemins incompatibles : $G_1G_2G_3$, $G_1\\overline{G_2}G_3$, $\\overline{G_1}G_2G_3$ et $\\overline{G_1}\\overline{G_2}G_3$ (formule des probabilités totales, avec la partition formée par les deux premières parties).",
+								"Chacun a pour probabilité le produit de ses branches : ${{eval:a/10;d}}\\times{{eval:g/10;d}}\\times{{eval:g/10;d}}={{eval:a*g*g/1000;d}}$ ; ${{eval:a/10;d}}\\times{{eval:1-g/10;d}}\\times{{eval:h/10;d}}={{eval:a*(10-g)*h/1000;d}}$ ; ${{eval:1-a/10;d}}\\times{{eval:h/10;d}}\\times{{eval:g/10;d}}={{eval:(10-a)*h*g/1000;d}}$ ; ${{eval:1-a/10;d}}\\times{{eval:1-h/10;d}}\\times{{eval:h/10;d}}={{eval:(10-a)*(10-h)*h/1000;d}}$.",
+								"On additionne : $P(G_3)=\\textcolor{{{color:primary.0}}}{{{eval:(a*g*g+a*(10-g)*h+(10-a)*h*g+(10-a)*(10-h)*h)/1000;d}}}$."
+							]
+						}
+					},
+					{
+						"statement": "Avant une partie d'un jeu vidéo, un joueur choisit le monde $A$ ou le monde $B$. On choisit un joueur au hasard et on note $G$ l'événement « le joueur gagne la partie ». On sait que :\n\n- $P(A)={{eval:a/10;d}}$ ;\n- $P_{A}\\left(G\\right)={{eval:g/10;d}}$ ;\n- $P(G)={{eval:(a*g+(10-a)*h)/100;d}}$.\n\nCalcule la probabilité que le joueur gagne sachant qu'il a choisi le monde $B$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_{B}\\left(G\\right)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..6"
+							},
+							{
+								"name": "g",
+								"expression": "3..9"
+							},
+							{
+								"name": "h",
+								"expression": "1..7"
+							}
+						],
+						"conditions": ["g != h"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:h/10}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:(10-a)*h/100}}",
+										"message": "Ce nombre est $P(B\\cap G)$. Pour obtenir $P_{B}\\left(G\\right)$, il faut encore diviser par $P(B)={{eval:1-a/10;d}}$.",
+										"label": "Oubli de diviser par P(B)"
+									},
+									{
+										"answer": "{{eval:(a*g+(10-a)*h)/100-g/10}}",
+										"message": "On ne soustrait pas une probabilité conditionnelle : c'est $P(A\\cap G)=P(A)\\times P_A(G)$ qu'il faut retirer de $P(G)$.",
+										"label": "P(G) − P_A(G)"
+									},
+									{
+										"answer": "{{eval:(10-a)*h/(a*g+(10-a)*h)}}",
+										"message": "Ce nombre est $P_G(B)$. $P_B(G)=\\dfrac{P(B\\cap G)}{P(B)}$ : on divise par $P(B)$, pas par $P(G)$.",
+										"label": "Divisé par P(G)"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"$A$ et $B$ forment une partition : $P(G)=P(A\\cap G)+P(B\\cap G)$ (probabilités totales).",
+								"$P(A\\cap G)=P(A)\\times P_A(G)={{eval:a/10;d}}\\times{{eval:g/10;d}}={{eval:a*g/100;d}}$, donc $P(B\\cap G)={{eval:(a*g+(10-a)*h)/100;d}}-{{eval:a*g/100;d}}={{eval:(10-a)*h/100;d}}$.",
+								"$P(B)=1-{{eval:a/10;d}}={{eval:1-a/10;d}}$ et $P_B(G)=\\dfrac{P(B\\cap G)}{P(B)}=\\dfrac{{{eval:(10-a)*h/100;d}}}{ {{eval:1-a/10;d}} }=\\textcolor{{{color:primary.0}}}{ {{eval:h/10;d}} }$."
+							]
+						},
+						"hint": "Écris la formule des probabilités totales pour $P(G)$ : quel terme est inconnu ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["0{,}029"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "0,5 × 0,02 + 0,3 × 0,03 + 0,2 × 0,05",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{29}{1000}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "En fraction",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{30}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "Erreur : moyenne des taux",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}01"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"d": "2",
+							"t": "3",
+							"u": "5",
+							"v": "5",
+							"w": "3"
+						},
+						"description": "Erreur : une machine",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0{,}574"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "6",
+							"g": "7",
+							"h": "4"
+						},
+						"description": "a = 0,6, g = 0,7, h = 0,4 : 0,574",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}294"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"g": "7",
+							"h": "4"
+						},
+						"description": "Erreur : un seul chemin",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["0{,}58"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"g": "7",
+							"h": "4"
+						},
+						"description": "Erreur : P(G₂)",
+						"variationIndex": 1
+					},
+					{
+						"description": "F1 : P(A) = 0,4, P_A(G) = 0,7, P(G) = 0,46 → P_B(G) = 0,3",
+						"variationIndex": 2,
+						"variables": {
+							"a": "4",
+							"g": "7",
+							"h": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["0,3"]
+					},
+					{
+						"description": "F1 : en fraction",
+						"variationIndex": 2,
+						"variables": {
+							"a": "4",
+							"g": "7",
+							"h": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{3}{10}"]
+					},
+					{
+						"description": "F1 : P(B ∩ G) = 0,18",
+						"variationIndex": 2,
+						"variables": {
+							"a": "4",
+							"g": "7",
+							"h": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Ce nombre est $P(B\\cap G)$. Pour obtenir $P_{B}\\left(G\\right)$, il faut encore diviser par $P \\left( B \\right) = 0.6$."
+						},
+						"answers": ["0,18"]
+					},
+					{
+						"description": "F1 : P(G) − P_A(G) = −0,22",
+						"variationIndex": 2,
+						"variables": {
+							"a": "4",
+							"g": "7",
+							"h": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["-0,22"]
+					},
+					{
+						"description": "F1 : P_G(B) = 0,18/0,46",
+						"variationIndex": 2,
+						"variables": {
+							"a": "4",
+							"g": "7",
+							"h": "3"
+						},
+						"expected": {
+							"status": "incorrect"
+						},
+						"answers": ["\\frac{9}{23}"]
+					}
+				],
+				"description": "Formule des probabilités totales : partition en trois (trois machines) ; probabilité de gagner la troisième partie sur un arbre de trois épreuves dépendantes (quatre chemins)"
+			},
+			"changements": {
+				"ajoutees": [3],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

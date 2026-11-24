@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, gros lot écrit (pas encore en prod)._
+_Mis à jour le 2026-11-24, brouillons créés en prod, migrations générées._
 
-- **État** : lot écrit et vérifié sur la branche (2 modèles neufs, 8 variations sur 5 publiés), rien en prod.
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/idees-tle-probas-neufs`
-  (brouillons en prod) ; puis commiter les ids, migrations de rangement et de contenu (générées), PR.
-- **En attente de David** : la création des 2 brouillons en prod (commande dans le message de fin de session).
-- **Pièges en cours** : niveaux à relever en prod juste avant la migration de rangement ; `P_A(G)` rendu « P_A G »
-  par le moteur (écrire `P_{A}\left(G\right)`), écart à signaler.
+- **État** : 2 brouillons en prod (a3aa8f4a F2, 1220760b F3) ; migrations de rangement et de contenu générées
+  et vertes en intégration ; revue `security-auditor` puis PR.
+- **Prochaine action** : PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite relecture dans `/dev/modeles`.
+- **En attente de David** : rien pour l'instant (relecture après le `db:migrate`).
+- **Pièges en cours** : ids de `scripts/questions/labyrinthe-modeles/01…` et `02…` apparus dans ce worktree
+  (création qui n'est pas de ce chantier) : ni commités, ni restaurés, signalés à David.
 - **Worktree / branche** : `../ubumaths-wt-idees-tle-probas` · `feat/idees-tle-probas`.
 
 Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Relevé :
@@ -55,3 +55,17 @@ https://claude.ai/artifact/6kVwijQ36onX4iXNpsL1Ga
 - Vérifié : `question:specs` vert sur les 7 fichiers (28 specs neuves + 33 ajoutées, 1 400 tirages) ;
   `create-questions` en simulation vert (2 à créer) ; copies créées en base locale, F2, F3 et F5 (arbre)
   vues dans l'aperçu (`pnpm voir`, iPhone) ; brouillons d'essai supprimés de la base locale.
+
+### 2026-11-24 : brouillons en prod, migrations
+
+- David a lancé `create-questions --publier` : a3aa8f4a (F2, niveau 2), 1220760b (F3, niveau 6), brouillons, ids
+  commités.
+- `migration-rangement.ts` : `20261124193431_questions_idees_tle_probas_rangement_tags.sql` (nœud
+  « Probabilités > Loi binomiale > expression de la loi », TSPE-510 et TSPE-619, déjà portés par a95a9c0d et
+  f0c8c1fc sur ce nœud).
+- `migration-contenu.ts` : `20261124193442_questions_idees_tle_probas_publies_contenu.sql` (+8 variations sur 5
+  modèles, aucune corrigée).
+- `test:integration` des deux tests de migration : 207 verts (toutes les fixtures du dossier, les deux neuves
+  comprises).
+- Défaut de rendu `P_A(G)` → « P_A G » : corrigé à part, PR #3103 (`fix/rendu-indice-parentheses`, cause :
+  `cleanCoefficients`).
