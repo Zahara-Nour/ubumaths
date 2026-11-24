@@ -6,20 +6,20 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après `db:migrate` de la migration de contenu._
+_Mis à jour le 2026-11-24, PR de rangement ouverte._
 
-- **État** : #3086 mergée ; migration de contenu `20261124123959_…` **jouée en prod** (vérifié au
-  MCP : 6ad254b4 → 7 variations, cb545bd7 → 7, d820232a → 11, toujours publiés). Les 3 neufs
-  N1-N3 (`scripts/questions/idees-3e-fonctions-neufs/`) ne sont pas encore en prod.
-- **Prochaine action** : après le `create-questions --publier` de David, commiter les ids prod,
-  migration de rangement (nœud + tag, `migration-rangement.ts`) dans une PR, puis relecture dans
-  `/dev/modeles` (série de relecture pour les 3 publiés complétés) — skill § 4-5.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/idees-3e-fonctions-neufs --publier` (prod) ; description de d820232a à
-  compléter (tableau mélangé, ∅, cubique) ?
+- **État** : #3086 mergée, contenu en prod. Les 3 neufs N1-N3 sont en prod **en brouillon**
+  (6897aa8b, 7c7b7593, 4aaa75c0 ; ids commités). La migration de rangement
+  `20261124170918_questions_idees_3e_fonctions_rangement_tags.sql` est générée et passe son test
+  d'intégration ; la PR est à merger, puis `db:migrate`.
+- **Prochaine action** : merge, puis `db:migrate` (4 conditions, `migration list --linked` d'abord),
+  puis relecture dans `/dev/modeles` (`?point=3-039` / `3-040` pour les brouillons ; série de
+  relecture pour les 3 publiés complétés) — skill § 5.
+- **En attente de David** : description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
 - **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
   (`TableNode`, `overflow-x-auto`, comportement commun).
-- **Worktree / branche** : aucun (retirés par `pr:merger`) ; un neuf pour la suite.
+- **Worktree / branche** : `ubumaths-wt-idees-3e-fonctions-rangement` ·
+  `feat/idees-3e-fonctions-rangement`.
 
 ## Phase 0 (2026-11-24, en attente de David)
 
