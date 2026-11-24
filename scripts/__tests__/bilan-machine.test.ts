@@ -30,7 +30,7 @@ import {
 	writeFileSync
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 const SCRIPT = resolve(__dirname, '../bilan-machine.sh');
 
@@ -46,6 +46,8 @@ type Machine = {
 	timeMachine?: string;
 	/** contenu de historique.csv */
 	historique?: string;
+	/** lignes « pid rss etime commande » (serveurs de dev) */
+	vite?: string[];
 };
 
 function ecrireFaux(nom: string, corps: string): void {
@@ -57,6 +59,7 @@ function ecrireFaux(nom: string, corps: string): void {
 function machine(m: Machine): void {
 	writeFileSync(join(racine, 'tous.txt'), (m.tous ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'programmes.txt'), (m.programmes ?? []).join('\n') + '\n');
+	writeFileSync(join(racine, 'vite.txt'), (m.vite ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'tm.txt'), (m.timeMachine ?? 'Name : Disque\n') + '\n');
 	if (m.historique !== undefined) {
 		mkdirSync(join(racine, 'etat'), { recursive: true });
@@ -64,7 +67,7 @@ function machine(m: Machine): void {
 	}
 	ecrireFaux(
 		'ps',
-		`case "$*" in *pid=,ppid=,pcpu=*) cat "${racine}/tous.txt" ;; *pcpu=,rss=*) cat "${racine}/programmes.txt" ;; *) : ;; esac`
+		`case "$*" in *pid=,ppid=,pcpu=*) cat "${racine}/tous.txt" ;; *pcpu=,rss=*) cat "${racine}/programmes.txt" ;; *pid=,rss=,etime=*) cat "${racine}/vite.txt" ;; *) : ;; esac`
 	);
 	ecrireFaux(
 		'sysctl',
@@ -82,15 +85,16 @@ function machine(m: Machine): void {
 	ecrireFaux('kill', `printf '%s\\n' "$@" >>"${racine}/kill.log"`);
 }
 
-function lancer() {
+function lancer(depot = racine) {
 	return spawnSync('bash', [SCRIPT], {
-		cwd: racine,
+		cwd: depot,
 		env: {
 			...process.env,
 			PATH: `${faux}:${process.env.PATH ?? ''}`,
 			HOME: racine,
+			GIT_CEILING_DIRECTORIES: dirname(racine),
 			SURVEILLANCE_ETAT: join(racine, 'etat'),
-			SURVEILLANCE_DEPOT: racine,
+			SURVEILLANCE_DEPOT: depot,
 			SURVEILLANCE_DISQUE: racine,
 			BILAN_PREBOOT: racine
 		},
@@ -130,7 +134,7 @@ describe('bilan-machine', () => {
 		);
 		expect(r.stdout).toContain('Chrome (extension) — pid 960');
 		expect(r.stdout).not.toContain('pid 970');
-		expect(r.stdout).toContain('Chrome ouvert depuis 12 j');
+		expect(r.stdout).toMatch(/Navigateurs\S*\n {2}ℹ️ {2}Chrome ouvert depuis 12 j/);
 		expect(existsSync(join(racine, 'kill.log'))).toBe(false);
 	});
 
@@ -171,6 +175,31 @@ describe('bilan-machine', () => {
 		expect(r.stdout).toContain(
 			"moins d'1 jour : 1 · 1 à 3 jours : 1 · 3 à 7 jours : 1 · plus de 7 jours : 1"
 		);
+	});
+
+	it('serveur de dev dont le dossier est inconnu (lsof muet) : « ? », jamais « dépôt principal »', () => {
+		const principal = join(racine, 'principal');
+		mkdirSync(principal);
+		const git = spawnSync('git', ['init', '-q', '-b', 'main'], {
+			cwd: principal,
+			encoding: 'utf8'
+		});
+		expect(git.status).toBe(0);
+		machine({
+			vite: [
+				'500 307200 01:00:00 node /x/node_modules/vite/bin/vite.js dev --port 5176 --strictPort'
+			]
+		});
+		const r = lancer(principal);
+		expect(r.stdout).toContain(':5176  ?  1 h, 300 Mo');
+		expect(r.stdout).not.toContain('⛔ dépôt principal');
+	});
+
+	it('historique d’un ancien format : rien d’absurde affiché', () => {
+		machine({ historique: 'date;swap\n2099-01-01 00:00;50\n' });
+		const r = lancer();
+		expect(r.stdout).toContain('ancien format');
+		expect(r.stdout).not.toMatch(/Swap : \d+ % →/);
 	});
 
 	it('Time Machine non configuré : signalé', () => {

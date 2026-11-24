@@ -87,7 +87,7 @@ nom_lisible() {
 titre() { printf '\n\033[1m%s\033[0m\n' "$1"; }
 
 # Instantané de tous les processus : « pid ppid pcpu time etime stat rss commande ».
-TOUS="$(ps -Ao pid=,ppid=,pcpu=,time=,etime=,stat=,rss=,command= 2>/dev/null)"
+TOUS="$(LC_ALL=C ps -Ao pid=,ppid=,pcpu=,time=,etime=,stat=,rss=,command= 2>/dev/null)"
 
 # ── En-tête ───────────────────────────────────────────────────────────────────
 echo "Bilan du Mac — $(date '+%d/%m/%Y %H:%M')"
@@ -154,6 +154,8 @@ done <<<"$zombies"
 [ "$emballes" = 0 ] && echo "  aucun"
 
 # Navigateurs ouverts depuis longtemps : un redémarrage les remet d'aplomb.
+titre "Navigateurs"
+navigateurs=0
 while read -r pid ppid _pcpu _temps etime _stat _rss commande; do
 	case "$commande" in
 	"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"* | "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"*) ;;
@@ -162,7 +164,9 @@ while read -r pid ppid _pcpu _temps etime _stat _rss commande; do
 	age="$(secondes_depuis_etime "$etime")"
 	[ "$age" -ge $((SEUIL_NAVIGATEUR_JOURS * 86400)) ] || continue
 	echo "  ℹ️  $(nom_lisible "$commande") ouvert depuis $(duree_lisible "$age") (le relancer de temps en temps)"
+	navigateurs=$((navigateurs + 1))
 done <<<"$TOUS"
+[ "$navigateurs" = 0 ] && echo "  rien à signaler"
 
 # ── Sessions Claude ───────────────────────────────────────────────────────────
 titre "Sessions Claude"
@@ -202,8 +206,14 @@ if [ -z "$serveurs" ]; then
 else
 	while read -r pid rss etime commande; do
 		dossier="$(dossier_du_processus "$pid")"
-		lieu="${dossier##*/}"
-		dans_depot_principal "$dossier" && lieu="⛔ dépôt principal"
+		# Dossier inconnu (lsof muet) : jamais `git -C ""`, qui lirait le dossier courant.
+		if [ -z "$dossier" ]; then
+			lieu="?"
+		elif dans_depot_principal "$dossier"; then
+			lieu="⛔ dépôt principal"
+		else
+			lieu="${dossier##*/}"
+		fi
 		echo "  :$(port_de_commande "$commande")  ${lieu:-?}  $(duree_lisible "$(secondes_depuis_etime "$etime")"), $((rss / 1024)) Mo"
 	done <<<"$serveurs"
 fi
@@ -236,7 +246,9 @@ fi
 
 # ── Sauvegarde ────────────────────────────────────────────────────────────────
 titre "Sauvegarde"
-if tmutil destinationinfo 2>&1 | grep -q 'No destinations configured'; then
+# Sortie lue d'un bloc : un `| grep -q` ferait mourir tmutil de SIGPIPE (pipefail).
+destinations="$(tmutil destinationinfo 2>&1)"
+if [[ "$destinations" == *"No destinations configured"* ]]; then
 	echo "  ⚠️  Time Machine n'est pas configuré : aucune sauvegarde de la machine"
 else
 	derniere="$(tmutil latestbackup 2>/dev/null | sed -n 's/.*\([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\)-\([0-9]\{2\}\)\([0-9]\{2\}\).*/\1 \2:\3/p' | tail -1)"
@@ -250,16 +262,23 @@ if [ ! -s "$HISTORIQUE" ]; then
 else
 	depuis="$(date_de $(($(date +%s) - 86400)) '+%Y-%m-%d %H:%M')"
 	LC_ALL=C awk -F ';' -v depuis="$depuis" '
-		NR == 1 { for (i = 1; i <= NF; i++) col[$i] = i; next }
-		$1 >= depuis {
+		NR == 1 {
+			for (i = 1; i <= NF; i++) col[$i] = i
+			# Ancien en-tête sans ces colonnes : $col[x] vaudrait $0, des nombres absurdes.
+			if (!col["charge"] || !col["swap_pct"]) { print "  historique d’un ancien format : rien à lire"; fin = 1; exit }
+			cd = col["disque_libre_go"]
+			next
+		}
+		$1 >= depuis && $col["charge"] != "?" && $col["swap_pct"] != "?" {
 			n++
-			c = $col["charge"] + 0; s = $col["swap_pct"] + 0; d = $col["disque_libre_go"]
+			c = $col["charge"] + 0; s = $col["swap_pct"] + 0; d = cd ? $cd : "?"
 			if (n == 1 || c > cmax) cmax = c
 			if (n == 1 || s > smax) smax = s
 			if (n == 1) { s0 = s; d0 = d }
 			s1 = s; d1 = d
 		}
 		END {
+			if (fin) exit
 			if (!n) { print "  aucune ligne depuis " depuis; exit }
 			printf "  Charge max : %d\n", cmax
 			printf "  Swap : %d %% → %d %% (max %d %%)\n", s0, s1, smax
