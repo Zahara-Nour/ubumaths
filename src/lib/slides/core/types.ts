@@ -277,6 +277,10 @@ export interface DeckStoreActions {
 	nextH(): void;
 	/** Go to previous horizontal slide */
 	prevH(): void;
+	/** Flèche → : fragment suivant, sinon diapositive horizontale suivante */
+	right(): void;
+	/** Flèche ← : cache un fragment, sinon diapositive horizontale précédente */
+	left(): void;
 	/** Go to next vertical slide */
 	nextV(): void;
 	/** Go to previous vertical slide */

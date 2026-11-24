@@ -26,10 +26,19 @@ function activeSlide(container: HTMLElement): HTMLElement | null {
 	return container.querySelector<HTMLElement>('.slide.active');
 }
 
-async function goRight(times: number) {
-	for (let i = 0; i < times; i++) {
+/**
+ * Avance avec le bouton → jusqu'à la diapositive `target` (0 = la première) : un
+ * appui montre d'abord la ligne suivante d'une diapositive à fragments
+ */
+async function goRight(container: HTMLElement, target: number) {
+	const reached = () =>
+		container
+			.querySelector('.slides-container')
+			?.children[target]?.matches('.slide.active, :has(> .slide.active)') ?? false;
+	for (let press = 0; press < 40 && !reached(); press++) {
 		await page.getByRole('button', { name: NEXT }).click();
 	}
+	expect(reached(), `diapositive ${target + 1} atteinte`).toBe(true);
 }
 
 describe('/demo/diaporama', () => {
@@ -61,7 +70,7 @@ describe('/demo/diaporama', () => {
 		await expect.poll(() => lines().length).toBe(3);
 
 		vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
-		await goRight(EXPANSION_SLIDE);
+		await goRight(screen.container, EXPANSION_SLIDE);
 		flushSync();
 		expect(activeSlide(screen.container)).toBe(slide());
 		const visible = () => lines().filter((l) => l.classList.contains('visible')).length;
@@ -99,7 +108,7 @@ describe('/demo/diaporama', () => {
 		const screen = await render(Page);
 		await expect.element(page.getByRole('heading', { level: 1 })).toBeInTheDocument();
 
-		await goRight(TIMER_SLIDE);
+		await goRight(screen.container, TIMER_SLIDE);
 		expect(activeSlide(screen.container)?.textContent).toMatch(/10 secondes/);
 
 		vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
@@ -130,7 +139,7 @@ describe('/demo/diaporama', () => {
 		const screen = await render(Page);
 		await expect.element(page.getByRole('heading', { level: 1 })).toBeInTheDocument();
 
-		await goRight(12);
+		await goRight(screen.container, 12);
 		const last = activeSlide(screen.container);
 		expect(last?.querySelector('a[href="/demo"]')).not.toBeNull();
 		expect(last?.querySelector('a[href="/atelier"]')).not.toBeNull();

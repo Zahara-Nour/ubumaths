@@ -329,11 +329,11 @@
 	// ==========================================================================
 
 	function handleLeft() {
-		store.prevH(); // Horizontal only (skip verticals)
+		store.left(); // Fragment d'abord, puis horizontale (verticales sautées)
 	}
 
 	function handleRight() {
-		store.nextH(); // Horizontal only (skip verticals)
+		store.right(); // Fragment d'abord, puis horizontale (verticales sautées)
 	}
 
 	function handleUp() {
