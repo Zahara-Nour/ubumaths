@@ -272,7 +272,9 @@
 	/**
 	 * Distance du bas de l'écran à laquelle la saisie est épinglée, au-dessus du
 	 * clavier virtuel de MathLive et de son bouton « Fermer le clavier » ; 0 :
-	 * la saisie reste à sa place. Épinglée seulement quand le clavier couvrirait
+	 * la saisie reste à sa place. Au téléphone seulement : sur grand écran, la
+	 * console flotte dans un panneau qu'on déplace, une barre en pleine largeur
+	 * n'y a pas sa place. Épinglée seulement quand le clavier couvrirait
 	 * le bas de la console et que son champ a le focus (écart E24 : au
 	 * téléphone, l'élève tapait sans voir le champ ; à 659 px de haut, la
 	 * console n'a pas la place de remonter au-dessus du clavier).
@@ -293,7 +295,7 @@
 		let keyboard: typeof window.mathVirtualKeyboard | undefined;
 		const update = () => {
 			const focusedHere = root !== null && root.contains(document.activeElement);
-			if (!keyboard?.visible || !focusedHere || root === null) {
+			if (!phone.current || !keyboard?.visible || !focusedHere || root === null) {
 				keyboardLift = 0;
 				return;
 			}
@@ -309,13 +311,20 @@
 			}
 			update();
 		};
+		// D'un champ de la console à l'autre, le focus passe un instant sur `body` :
+		// la saisie ne doit pas se désépingler entre les deux
+		const leave = (event: FocusEvent) => {
+			const next = event.relatedTarget;
+			if (next instanceof Node && root !== null && root.contains(next)) return;
+			attach();
+		};
 		attach();
 		document.addEventListener('focusin', attach);
-		document.addEventListener('focusout', attach);
+		document.addEventListener('focusout', leave);
 		window.addEventListener('resize', update);
 		return () => {
 			document.removeEventListener('focusin', attach);
-			document.removeEventListener('focusout', attach);
+			document.removeEventListener('focusout', leave);
 			window.removeEventListener('resize', update);
 			keyboard?.removeEventListener('virtual-keyboard-toggle', update);
 			keyboard?.removeEventListener('geometrychange', update);
