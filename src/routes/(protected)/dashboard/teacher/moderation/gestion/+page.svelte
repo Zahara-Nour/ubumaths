@@ -105,7 +105,9 @@
 			{#if data.reportsLoadFailed}
 				<Alert.Root variant="destructive" role="alert">
 					<TriangleAlert />
-					<Alert.Title>Les signalements n'ont pas pu être chargés</Alert.Title>
+					<Alert.Title class="line-clamp-none"
+						>Les signalements n'ont pas pu être chargés</Alert.Title
+					>
 					<Alert.Description>
 						Des signalements peuvent attendre. Rechargez la page ; si le problème continue, prévenez
 						l'administrateur.
@@ -115,7 +117,9 @@
 				{#if data.pendingReportsCount === null}
 					<Alert.Root variant="destructive" role="alert">
 						<TriangleAlert />
-						<Alert.Title>Le nombre de signalements en attente n'a pas pu être calculé</Alert.Title>
+						<Alert.Title class="line-clamp-none"
+							>Le nombre de signalements en attente n'a pas pu être calculé</Alert.Title
+						>
 						<Alert.Description>La liste ci-dessous reste à jour.</Alert.Description>
 					</Alert.Root>
 				{/if}

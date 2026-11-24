@@ -21,6 +21,7 @@ import {
 const USER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const REPORT_A = '550e8400-e29b-41d4-a716-446655440040';
 const REPORT_B = '550e8400-e29b-41d4-a716-446655440041';
+const OTHER_USER_ID = '550e8400-e29b-41d4-a716-446655440002';
 
 /** Signature PNG (octets magiques) suivie de quelques octets. */
 const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
@@ -53,7 +54,10 @@ const CAPTURE_A = `${USER_ID}/${REPORT_A}/1700000000000.png`;
 /** Le rapport existe (lecture de contrôle), la suppression rend `deletedRows`. */
 function existingReport(screenshotPath: string | null, deletedRows: unknown[]) {
 	return {
-		maybeSingle: { data: { id: REPORT_A, screenshot_path: screenshotPath }, error: null },
+		maybeSingle: {
+			data: { id: REPORT_A, user_id: USER_ID, screenshot_path: screenshotPath },
+			error: null
+		},
 		awaited: { data: deletedRows, error: null }
 	};
 }
@@ -126,6 +130,45 @@ describe('DELETE /api/bug-reports/[reportId]', () => {
 		expect(bucket.remove.mock.invocationCallOrder[0]).toBeLessThan(
 			deleteSpy.mock.invocationCallOrder[0]
 		);
+	});
+
+	it.each([
+		['dossier d’un autre élève', `${OTHER_USER_ID}/${REPORT_B}/1700000000000.png`],
+		['autre rapport du même élève', `${USER_ID}/${REPORT_B}/1700000000000.png`],
+		['remontée de dossier', `${USER_ID}/${REPORT_A}/../../${OTHER_USER_ID}/x.png`],
+		['fichier à la racine', 'capture.png']
+	])('chemin forgé (%s) → rien n’est effacé du stockage, la ligne part', async (_, forged) => {
+		const { client, removedPaths } = createWriteVerdictSupabase({
+			profiles: profile('admin'),
+			bug_reports: existingReport(forged, [{ id: REPORT_A }])
+		});
+		const { DELETE } = await import('../[reportId]/+server');
+
+		const response = await DELETE({
+			params: { reportId: REPORT_A },
+			locals: createLocals(client)
+		} as never);
+
+		expect(await response.json()).toEqual({ success: true });
+		expect(removedPaths).toEqual([]);
+	});
+
+	it('lecture du rapport en erreur → 500, ni stockage ni ligne touchés', async () => {
+		const { client, chains, removedPaths } = createWriteVerdictSupabase({
+			profiles: profile('admin'),
+			bug_reports: {
+				maybeSingle: { data: null, error: { message: 'lecture refusée' } },
+				awaited: { data: [{ id: REPORT_A }], error: null }
+			}
+		});
+		const { DELETE } = await import('../[reportId]/+server');
+
+		await expectHttpStatus(
+			() => DELETE({ params: { reportId: REPORT_A }, locals: createLocals(client) } as never),
+			500
+		);
+		expect(removedPaths).toEqual([]);
+		expect(chains.bug_reports.delete).not.toHaveBeenCalled();
 	});
 
 	it('capture impossible à effacer → 500, la ligne n’est pas supprimée', async () => {

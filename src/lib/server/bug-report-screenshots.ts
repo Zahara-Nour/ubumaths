@@ -85,12 +85,47 @@ export async function signBugReportScreenshot<T extends SignableReport>(
 export type BugReportDeletion = 'deleted' | 'not_found' | 'screenshot_failed' | 'delete_failed';
 
 /**
+ * La capture nommée par un rapport est-elle bien la sienne ?
+ *
+ * ⚠️ `screenshot_path` est une colonne que l'auteur peut écrire lui-même tant
+ * que son rapport est en attente (policy « Users can update own pending bug
+ * reports »). Sans ce contrôle, un élève y écrirait le chemin de la capture
+ * d'un autre, et l'admin l'effacerait en supprimant le rapport. Même règle que
+ * la suppression de compte (`20261016101200_suppression_chemins_conformes.sql`) :
+ * `<id de l'auteur>/<id du rapport>/<fichier>`, sans segment `..`.
+ */
+export function isOwnScreenshotPath(
+	path: string,
+	report: { id: string; user_id: string | null }
+): boolean {
+	if (!report.user_id) return false;
+	const segments = path.split('/');
+	if (segments.length !== 3) return false;
+	if (segments.some((segment) => segment === '' || segment === '.' || segment === '..')) {
+		return false;
+	}
+	return (
+		segments[0].toLowerCase() === report.user_id.toLowerCase() &&
+		segments[1].toLowerCase() === report.id.toLowerCase()
+	);
+}
+
+/**
  * Supprime un rapport de bug ET sa capture d'écran.
  *
  * La capture part du stockage AVANT la ligne : dans l'autre ordre, un échec du
  * stockage laisserait une capture d'élève sans plus aucune ligne qui la nomme.
  * Si la capture ne peut pas être effacée, la ligne est gardée et l'appelant le
- * dit (`screenshot_failed`).
+ * dit (`screenshot_failed`). Prix de cet ordre, assumé : si la ligne résiste
+ * ensuite (refus, course), elle reste avec un chemin qui ne mène plus à rien.
+ *
+ * Un chemin qui n'est pas celui du rapport (cf. `isOwnScreenshotPath`) n'est
+ * jamais effacé : la ligne part seule, et le journal le dit.
+ *
+ * ⚠️ Le stockage refuse en silence, comme la RLS : `remove` rend alors
+ * `{ data: [], error: null }`. Pour l'admin (policy « Admins can manage bug
+ * report screenshots »), une liste vide veut dire « fichier déjà absent » : la
+ * ligne part quand même, et un avertissement est journalisé.
  *
  * ⚠️ Une suppression refusée par la RLS touche zéro ligne sans erreur : la
  * ligne supprimée est relue (`.select('id')`) avant d'annoncer `deleted`
@@ -102,7 +137,7 @@ export async function deleteBugReportWithScreenshot(
 ): Promise<BugReportDeletion> {
 	const { data: report, error: readError } = await supabase
 		.from('bug_reports')
-		.select('id, screenshot_path')
+		.select('id, user_id, screenshot_path')
 		.eq('id', reportId)
 		.maybeSingle();
 
@@ -112,8 +147,12 @@ export async function deleteBugReportWithScreenshot(
 	}
 	if (!report) return 'not_found';
 
-	if (report.screenshot_path) {
-		const { error: removeError } = await supabase.storage
+	if (report.screenshot_path && !isOwnScreenshotPath(report.screenshot_path, report)) {
+		logger.warn(
+			`[bug-report-screenshots] Rapport ${reportId} : chemin de capture non conforme, rien n'est effacé du stockage`
+		);
+	} else if (report.screenshot_path) {
+		const { data: removed, error: removeError } = await supabase.storage
 			.from(BUCKET_NAME)
 			.remove([report.screenshot_path]);
 
@@ -123,6 +162,11 @@ export async function deleteBugReportWithScreenshot(
 				removeError.message
 			);
 			return 'screenshot_failed';
+		}
+		if (!removed || removed.length === 0) {
+			logger.warn(
+				`[bug-report-screenshots] Rapport ${reportId} : aucune capture effacée (fichier absent, ou stockage qui refuse en silence)`
+			);
 		}
 	}
 

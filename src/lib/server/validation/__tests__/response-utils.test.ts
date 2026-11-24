@@ -79,7 +79,7 @@ describe('response validation utilities', () => {
 			});
 
 			const invalidData = {
-				messages: [{ sender_id: 123, body: 'CONTENU-PRIVE-A-NE-PAS-JOURNALISER' }]
+				messages: [{ sender_id: 987654321, body: 'CONTENU-PRIVE-A-NE-PAS-JOURNALISER' }]
 			};
 
 			expect(() => validateResponse(schema, invalidData, 'GET /api/test')).toThrow();
@@ -92,7 +92,7 @@ describe('response validation utilities', () => {
 			expect(logged).toContain('invalid_type');
 			// … et ne porte ni le contenu, ni la valeur fautive.
 			expect(logged).not.toContain('CONTENU-PRIVE-A-NE-PAS-JOURNALISER');
-			expect(logged).not.toContain('123');
+			expect(logged).not.toContain('987654321');
 		});
 
 		it('should handle missing required fields', () => {

@@ -1,17 +1,17 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (T20, T25, T27) en cours ; PR 2 (T21, T22) à faire
+status: PR 1 (T20, T25, T27) ouverte ; PR 2 (T21, T22) à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, avant la PR 1._
+_Mis à jour le 2026-11-24, à l'ouverture de la PR 1._
 
-- **État** : PR 1 écrite (T20, T25, T27), tests verts ; chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
-- **Prochaine action** : merger la PR 1, barrer T20, T25, T27 au registre (la preuve de T25 grepe « storage » dans les deux routes : la remplacer par le grep de `deleteBugReportWithScreenshot` avant de barrer) ; puis **PR 2** : T21 (onglet « Messages marqués », option a) et T22 (liste de mots proposée sur une page à cocher, relue par David, puis migration).
+- **État** : PR 1 ouverte (T20, T25, T27), revues `code-reviewer` + `security-auditor` faites et corrigées, rendu vu à l'écran ; numéro : `gh pr list --head fix/ecarts-moderation`. Chantier parent : [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **Prochaine action** : CI verte → `pnpm pr:merger <n>` (aucune migration, rien à jouer en base) ; puis, sur `main` : barrer T20, T25, T27 au registre (la preuve de T25 grepe « storage » dans les deux routes : la remplacer par le grep de `deleteBugReportWithScreenshot` avant `pnpm ecarts rejouer --barrer`), entrer les quatre écarts listés au § « Revues de la PR 1 », mettre à jour le bloc d'`ecarts-a-trier`. Ensuite **PR 2** : T21 (onglet « Messages marqués », option a : seulement les conversations que le prof peut déjà ouvrir) et T22 (liste de mots proposée sur une page à cocher, relue par David, puis migration).
 - **En attente de David** : rien pour la PR 1 ; PR 2 : relecture de la liste de mots (page à cocher à lui envoyer).
-- **Pièges en cours** : T24 hors lot (suspendu avec le tuteur, D21) ; le faux client `createWriteVerdictSupabase` rend `EMPTY` à `maybeSingle` si la table ne donne que `awaited`.
+- **Pièges en cours** : T24 hors lot (suspendu avec le tuteur, D21) ; le faux client `createWriteVerdictSupabase` rend `EMPTY` à `maybeSingle` si la table ne donne que `awaited` ; un `catch` large du lot avale un import manquant (« Erreur inattendue ») ; pour voir l'alerte de T20 à l'écran, forcer `reportsLoadFailed: true` le temps de la capture puis restaurer.
 - **Worktree / branche** : `ubumaths-wt-ecarts-moderation` · `fix/ecarts-moderation`.
 
 ---
@@ -36,3 +36,10 @@ _Mis à jour le 2026-11-24, avant la PR 1._
 - T25 : `deleteBugReportWithScreenshot` (`src/lib/server/bug-report-screenshots.ts`), appelée par `DELETE /api/bug-reports/[reportId]` et le lot.
 - T27 : `validateResponse` ne journalise plus `data`.
 - Reste connu : les policies storage du bucket ne sont dans aucune migration (la pile locale ne les a donc pas).
+
+## Revues de la PR 1 (2026-11-24)
+
+- `security-auditor` : `screenshot_path` est écrit par l'auteur tant que son rapport est en attente ; sans contrôle, un élève y mettait le chemin de la capture d'un autre et l'admin l'effaçait en supprimant le rapport. Corrigé : `isOwnScreenshotPath` (`<auteur>/<rapport>/<fichier>`, sans `..`), chemin non conforme = rien n'est effacé du stockage, la ligne part, le journal le dit. Tests : quatre chemins forgés.
+- `code-reviewer` : `remove` qui rend une liste vide sans erreur (stockage qui refuse en silence). Choix : avertissement au journal, la ligne part quand même (pour l'admin, liste vide = fichier déjà absent). Lecture du rapport en erreur : test ajouté.
+- **Écarts à entrer au registre après le merge** : (1) les policies du bucket `bug-report-screenshots` ne sont dans aucune migration (pile locale, pile de test et projet recréé sans policy admin : la capture resterait orpheline en silence) ; (2) l'auteur peut écrire `screenshot_path` et les autres colonnes de son rapport en attente par l'API de la base ; (3) le `remove` de `[reportId]/screenshot/+server.ts` ne regarde pas la liste rendue ; (4) compteur de signalements illisible : le badge du menu de modération disparaît sans rien dire hors de l'onglet Signalements.
+- Vu à l'écran (`pnpm voir`, iPhone, compte prof, base locale) : page nominale (1 signalement, badge) et alerte de lecture en échec (échec forcé le temps de la capture). Déjà là avant la PR, non touché : le titre du bandeau « Moderation » sans accents, les onglets qui se chevauchent sur iPhone.
