@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR E ouverte (revue appliquée)._
+_Mis à jour le 2026-11-24, après #3073._
 
-- **État** : A (#3050), B (#3054), #3059, C (#3063), D (#3067) mergées ; #3063 et #3067 pas encore en prod. PR E (E22, E23, E24, E26, E38) ouverte, revue `code-reviewer` appliquée : reprise du focus surveillée pendant toute l'animation, `closest` borné à la fiche, `relatedTarget` au `focusout`, saisie épinglée au téléphone seulement (sur ordinateur 1440 × 900, 1280 × 640 et 820 × 1180, elle ne s'épinglait pas ; une barre fixe en pleine largeur n'a pas sa place dans la console flottante). Verifs vertes : atelier-tactile iphone/android, pages-demo #1700 ×3 iphone/android et ordi, #1693, atelier-console iphone et ordi-chrome ; tests client verts ; check:incremental 0 ; cliquet tenu. **E41 sorti de la PR**, à re-présenter.
-- **Prochaine action** : merger la PR E (`pnpm pr:merger`), puis PR F (E25, E27, E30, E31, E34, E35, E40), revue `code-reviewer` Opus.
+- **État** : A (#3050), B (#3054), #3059, C (#3063), D (#3067), E (#3073 : E22, E23, E24, E26, E38) mergées ; #3063, #3067 et #3073 pas encore en prod. Saisie de la console épinglée au-dessus du clavier : au téléphone seulement. **E41 sorti de E**, à re-présenter.
+- **Prochaine action** : PR F (E25, E27, E30, E31, E34, E35, E40), nouveau worktree `ubumaths-wt-ecarts-verifs-f`, revue `code-reviewer` Opus (correction des réponses).
 - **En attente de David** : E41, choisir A, B ou C (section « E41 : ce qu'on a trouvé »). Tranché le 2026-11-24 : découpage E à J ; `e^(x/2)` laissé (signalement à MathLive à proposer à David avant de l'envoyer) ; « Annuler » masqué au téléphone : gardé ; E5 (3) laissé ; noms des constructions mobiles ; E19 laissé.
-- **Pièges en cours** : `verifs-auto` AJOUTE ici ses écarts (suivant : E50). Ne jamais changer l'attendu d'un test de `e2e/verifs/`. `pnpm test:verifs <fichier> --project=iphone` : le fichier AVANT `--project=`. Chrome n'atteint pas `localhost` : `pnpm lien`. Serveur de dev de la branche : port 5176 (à relancer).
-- **Worktree / branche** : `ubumaths-wt-ecarts-verifs-e` · `fix/ecarts-verifs-e`.
+- **Pièges en cours** : `verifs-auto` AJOUTE ici ses écarts (suivant : E50). Ne jamais changer l'attendu d'un test de `e2e/verifs/`. `pnpm test:verifs <fichier> --project=iphone` : le fichier AVANT `--project=`. Chrome n'atteint pas `localhost` : `pnpm lien`. Serveur de dev d'un worktree : port 5176. Un `focusout` qui écrit un `$state` doit attendre (`queueMicrotask`) : il part aussi pendant un retrait du DOM par Svelte (`state_unsafe_mutation`, CI rouge de #3073).
+- **Worktree / branche** : aucun (celui de E retiré au merge).
 
 ## E41 : ce qu'on a trouvé (2026-11-24, à présenter à David)
 
