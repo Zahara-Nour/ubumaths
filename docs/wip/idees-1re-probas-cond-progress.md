@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, lot joué en local, PR des fichiers ouverte._
+_Mis à jour le 2026-11-24, après #3110._
 
-- **État** : lot écrit (F2, F5, F6, F7 neufs ; F1, F3 en fin de 31096bae et 69a05f98) et joué dans l'aperçu admin local : 19 variations, réponse juste → « Juste », fausse → « Faux », chaque `choix` de F6 a une seule proposition juste sur 4. PR des fichiers ouverte (`gh pr list --search head:feat/idees-1re-probas-cond`). Page à cocher : https://claude.ai/artifact/GsJy6qx8vPfv2rJVbjNhhM.
-- **Prochaine action** : CI verte → `pnpm pr:merger <n>`. Puis étape 6 de `couvrir-un-niveau.md` : David lance `create-questions --dir scripts/questions/idees-1re-probas-cond-neufs --publier` en prod (brouillons), je commite les ids, puis rangement, relecture dans `/dev/modeles`, `migration-contenu.ts` pour F1 et F3.
-- **En attente de David** : le `create-questions --publier` en prod, après le merge.
+- **État** : lot écrit (F2, F5, F6, F7 neufs ; F1, F3 en fin de 31096bae et 69a05f98) et joué dans l'aperçu admin local : 19 variations, réponse juste → « Juste », fausse → « Faux », chaque `choix` de F6 a une seule proposition juste sur 4. Fichiers mergés sur `main` (#3110). Page à cocher : https://claude.ai/artifact/GsJy6qx8vPfv2rJVbjNhhM.
+- **Prochaine action** : étape 6 de `couvrir-un-niveau.md` : David lance `create-questions --dir scripts/questions/idees-1re-probas-cond-neufs --publier` en prod (brouillons), je commite les ids, puis rangement, relecture dans `/dev/modeles`, `migration-contenu.ts` pour F1 et F3.
+- **En attente de David** : le `create-questions --publier` en prod (commande `!` donnée).
 - **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). `migration-contenu.ts` (pour les publiés) n'a pas de simulation : il écrit la migration et sa fixture, il se lance à l'étape 4, après les brouillons en prod. `create-questions` ne touche jamais un modèle publié, même en local : F1 et F3 ont été copiés en base locale par un PATCH ponctuel. Dans l'aperçu, la variation affichée est numérotée à partir de 1.
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-probas-cond` · `feat/idees-1re-probas-cond`.
+- **Worktree / branche** : aucun (retiré après #3110) ; nouveau worktree pour commiter les ids.
 
 ## Historique
 
