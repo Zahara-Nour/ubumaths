@@ -45,7 +45,17 @@ function node(
 	position = 0,
 	archived_at: string | null = null
 ): ClassificationNode {
-	return { id, kind, name, parent_id, position, archived_at, created_at: STAMP, updated_at: STAMP };
+	return {
+		id,
+		kind,
+		name,
+		parent_id,
+		position,
+		archived_at,
+		created_at: STAMP,
+		updated_at: STAMP,
+		translations: {}
+	};
 }
 
 function point(
