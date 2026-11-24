@@ -11,7 +11,7 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 _Mis à jour le 2026-11-24, après la revérification (aucune PR)._
 
 - **État** : chantier repris le 2026-11-24. Les 22 écarts ouverts et les 11 T revérifiés contre `origin/main` : résultat dans [ecarts-a-trier.md](ecarts-a-trier.md) § « État au 2026-11-24 ». Recollecte des sections d'écarts des docs système : [ecarts-a-trier-recollecte.md](ecarts-a-trier-recollecte.md) (225 points jamais triés, non vérifiés ; 17 écarts fermés encore écrits ouverts dans leur doc).
-- **Prochaine action** : phase 0 du registre unique (format d'une ligne, preuve rejouable, où il vit) à faire valider par David, puis versement des écarts ouverts et des E ; tri des 225 points par domaine (agents, vérification dans le code). Écarts à corriger ensuite : V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
+- **Prochaine action** : coder le registre unique, phase 0 validée (section « Registre unique : phase 0 validée » ci-dessous), dans l'ordre écrit : registre + commande avec tests, versement, tri des 225 points, tâche de nuit, retrait des sections d'écarts des docs. Écarts à corriger ensuite : V35, V39 (mesurer les modèles d'abord), L9, L36 (deux routes).
 - **En attente de David** : M4 `DROP worksheet_instances` (destructif, explication avant `db:migrate`) ; T14 ; DPA ; relire `conformite/violation-de-donnees.md`.
 - **Pièges en cours** : les 225 points de la recollecte sont rapprochés par mots-clés, à vérifier dans le code avant d'en faire des écarts ; sondes mathAST : test vitest temporaire dans le worktree, par le chemin de l'Atelier, jamais `pnpm math` ; `db:migrate` lancé par David ; `docs:check-a-jour --depuis` ne voit que les commits.
 - **Worktree / branche** : `../ubumaths-wt-ecarts-doc` (`chore/ecarts-doc-reverif`, sur `origin/main`, sans commit : sert aux sondes) ; `../ubumaths-wt-ecarts-a-trier` (`chore/ecarts-lexicon-vers-dictionary`, PR #2451).
@@ -26,6 +26,16 @@ _Mis à jour le 2026-11-24, après la revérification (aucune PR)._
 4. **Les 225 points jamais triés** : vérifiés dans le code par des agents, par domaine, avant d'entrer au registre ; seules les décisions de produit vont à David, sur une page à cocher.
 
 Sessions `ecarts-verifs` et `verifs-auto` prévenues le 2026-11-24 (elles continuent ; `verifs-auto` ne crée pas la tâche de nuit de son côté).
+
+## Registre unique : phase 0 validée par David (2026-11-24, « je valide tes recos »)
+
+- **Où** : un seul fichier, `docs/ecarts/registre.md` (commit de doc direct sur `main`, sans CI). Les scripts le lisent ; aucun test ne lit `docs/` (fixtures sous `tests/fixtures/`).
+- **Une ligne** : identifiant (les numéros actuels sont gardés : V35 reste V35, E41 reste E41) · type · domaine · ce que voit l'élève ou le prof · preuve · état. Exemple : `V35 · bug visible · mathAST · le i passe devant √3 · preuve : test « rouge attendu » de tidy-sum-lead.test.ts · à faire (décision du 2026-11-03)`.
+- **Nominal** : chaque nuit, la tâche rejoue la preuve de chaque écart ouvert. Preuve toujours rouge : rien ne bouge. Preuve verte : **la tâche barre elle-même la ligne** (commit de doc sur `main`, validé par David) et l'écrit dans le bilan du matin.
+- **Limites** : un écart sans preuve possible (décision de produit, papier RGPD) porte « preuve : à la main », n'est jamais rejoué et sort dans une liste à part. Un nouvel écart entre par une commande qui donne son numéro (pas deux E53).
+- **Erreur** : une preuve qui ne peut plus tourner (fichier disparu, test renommé) est marquée « preuve cassée » dans le bilan ; une ligne n'est jamais fermée sur une preuve cassée.
+- **Ce que reçoit David** : un bilan par nuit (clos, nouveaux, preuves cassées) ; une page à cocher seulement quand des décisions de produit attendent.
+- **Ordre** : (1) registre + commande (lire, rejouer, numéroter), avec tests ; (2) versement des écarts ouverts d'`ecarts-a-trier.md` et des E d'`ecarts-verifs-progress.md` (prévenir la session `ecarts-verifs` du format) ; (3) tri des 225 points par domaine, vérifiés dans le code par des agents ; (4) tâche de nuit commune avec `verifs-auto` (s'accorder avec cette session sur ce qu'elle lance) ; (5) retrait des sections « Écarts connus » des docs système, remplacées par un renvoi.
 
 ## Fait le 2026-11-24
 
