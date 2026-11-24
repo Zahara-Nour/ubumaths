@@ -32,6 +32,8 @@
 		readRestrictedRendering
 	} from '../restricted-rendering';
 	import type { GenericFunctionConfig } from '#lib/mathAST/parser/types.ts';
+	import { readBreakableMath } from '../content-breakable-math';
+	import { splitLatexAtBreaks } from '#lib/utils/latex-break-points.ts';
 
 	interface Props {
 		expression: string;
@@ -76,13 +78,25 @@
 			(isRefusedRestrictedFormula(expression) || isRefusedRestrictedFormula(latex))) ||
 			(isProjectMediaOnly() && (hasUnsafeMathCommand(expression) || hasUnsafeMathCommand(latex)))
 	);
+	// Lieu étroit (étapes à ranger, E52) : la formule en morceaux, la ligne se coupe
+	// après un `=` ou un `+` ; ailleurs, d'un seul tenant
+	const isBreakable = readBreakableMath();
+	let pieces = $derived(isBreakable() ? splitLatexAtBreaks(latex) : [latex]);
 </script>
 
 {#if unsafe}
 	<code class="restricted-math {className}">${expression}$</code>
 {:else}
 	{#key latex}
-		<math-span class="inline-math-static {className}">{latex}</math-span>
+		{#if pieces.length > 1}
+			<span class="inline-math-pieces"
+				>{#each pieces as piece, i (i)}{#if i > 0}<wbr />{/if}<math-span
+						class="inline-math-static {className}">{piece}</math-span
+					>{/each}</span
+			>
+		{:else}
+			<math-span class="inline-math-static {className}">{latex}</math-span>
+		{/if}
 	{/key}
 {/if}
 
