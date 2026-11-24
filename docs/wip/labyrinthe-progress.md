@@ -6,16 +6,15 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR 3 (largeur sur téléphone) ouverte._
+_Mis à jour le 2026-11-24, après #3112._
 
-- **État** : PR 1 (#3084) et PR 2 (#3094, #3102) mergées, deux modèles publiés ; PR 3 sur
-  `fix/labyrinthe-largeur` : grille resserrée (cases de 34 px) et refus des grilles trop larges
-  (`colonnesSurTelephone`), `pnpm voir --petit` · **Prochaine action** : merge de la PR 3, puis
-  `deploy:prod` (David), puis versement du chantier (journal en archive) · **En attente de David** :
-  34 px au lieu des 36 annoncés (pour garder 7 colonnes de premiers) à confirmer ;
-  `deploy:prod` · **Pièges en cours** : tirage figé (test « golden ») ; chemins des specs par
-  `labyrinthe-chemins.ts` · **Worktree / branche** : `../ubumaths-wt-labyrinthe-largeur`,
-  `fix/labyrinthe-largeur`.
+- **État** : tout le chantier est mergé : bloc (#3084), modèles (#3094, rangement #3102, publiés),
+  grille sur téléphone (#3112 : cases de 34 px, refus des grilles trop larges, `pnpm voir --petit`)
+  · **Prochaine action** : après le `deploy:prod` qui livre #3112, versement du chantier (durable
+  déjà dans `docs/systeme/ubumark.md` ; journal en archive, n° 53 et 61 d'`outils-manquants.md` en
+  « Livré ») · **En attente de David** : confirmer 34 px (au lieu des 36 annoncés, pour garder 7
+  colonnes de premiers) ; `deploy:prod` · **Pièges en cours** : tirage figé (test « golden ») ;
+  chemins des specs par `labyrinthe-chemins.ts` · **Worktree / branche** : aucun.
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -119,3 +118,4 @@ une grille trop large plutôt que la réduire en silence.
 - 2026-11-24 : brouillons créés en prod par David ; #3102 mergée (rangement), `db:migrate` fait.
 - 2026-11-24 : les deux modèles publiés par David (vérifié en base).
 - 2026-11-24 : PR 3 (largeur sur téléphone) écrite, revue faite.
+- 2026-11-24 : #3112 mergée (PR 3, grille sur téléphone).
