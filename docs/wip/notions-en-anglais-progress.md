@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR 2 en cours (avant ouverture)._
+_Mis à jour le 2026-11-24, après #3104._
 
-- **État** : PR 1 mergée (#3099), migration en prod ; PR 2 codée sur `feat/notions-en-anglais-pdf` (noms anglais au PDF, règle « un nom manque → catégorie seule », signalement dans l'éditeur, doc `fiches-et-pdf.md`), tests verts, tout commité (pas encore poussé) ; revues `code-reviewer` et `security-auditor` faites, aucun bloquant, retenus : borne Zod 400 (UTF-16), `withBranches` ne renvoie plus le jsonb brut ; écartés : écart 9 (documenté), `translations` lu par tous les appelants de `loadActiveNodes`, `/*` non échappé par `escapeTypst` (déjà avant, noms écrits par l'admin seul) · **Prochaine action** : `git merge origin/main`, `check:incremental`, tests ciblés, pousser, ouvrir la PR 2, `pnpm pr:merger` ; puis PR 3 — traductions (~640 noms, page à cocher, migration de données) · **En attente de David** : rien · **Pièges en cours** : écart 9 réduit, pas disparu (fiche anglaise sans catégorie + un nom sans anglais → `title`) jusqu'à la PR 3 · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais`, `feat/notions-en-anglais-pdf`
+- **État** : PR 1 (#3099, migration en prod) et PR 2 (#3104, noms anglais au PDF, règle « un nom manque → catégorie seule », signalement dans l'éditeur) mergées ; rien en prod pour la PR 2 tant que David n'a pas lancé `deploy:prod` · **Prochaine action** : PR 3 — traductions : proposer les ~640 noms anglais, page à cocher pour la relecture par David, puis migration de données (remplit `translations`, n'efface rien) · **En attente de David** : rien avant la page à cocher · **Pièges en cours** : écart 9 réduit, pas disparu (fiche anglaise sans catégorie + un nom sans anglais → `title`) jusqu'à la PR 3 · **Worktree / branche** : aucun (celui de la PR 2 retiré) ; PR 3 → nouveau worktree `../ubumaths-wt-notions-en-anglais-traductions`
 
 ## L'idée
 
@@ -86,6 +86,10 @@ Fiche d'exercices en anglais, sans titre libre :
 3. **PR 3 — traductions** : je propose les ~640 noms, page à cocher pour la relecture, puis
    migration de données (remplit les traductions, n'efface rien) après tes réponses. Elle peut
    se faire en parallèle de la PR 2.
+
+### 2026-11-24 — PR 2 (#3104)
+
+- Mergée ; doc `fiches-et-pdf.md` et `cours-et-chapitres.md` (`withBranches` joint `name_en` / `branch_en`).
 
 ### 2026-11-24 — PR 1
 
