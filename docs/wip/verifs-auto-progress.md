@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, paquet 4 en cours (aucune PR ouverte)._
+_Mis à jour le 2026-11-24, après #3066 (paquet 4 du tri)._
 
-- **État** : paquets 1 à 3 mergés (#3061, #3064, #3065), 391 → 252 lignes. **Paquet 4 (26 octobre – 2 novembre, 43 lignes)** en cours dans `../ubumaths-wt-verifs-tri-4` : part Atelier, Shtam, Royaume faite et commitée ; agents rendus ; blocs de géométrie et questions commités et rejoués (84 et 42 verts) ; `blocs-divers.spec.ts` NON commité, rejeu de la session en cours. Écarts E40 à E49 ajoutés.
-- **Prochaine action** : rejouer chaque fichier d'agent, verdict par ligne (§ Tri — paquet 4), retirer les lignes sorties de `verifications-manuelles.md`, revue `code-reviewer`, PR, merge.
-- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E49 ; barre qui saute de 37 px (§ #1469) ; un `tsconfig` pour `e2e/` dans la CI ; `locale: 'fr-FR'` pour `test:verifs` ; #1738 (grille « 1,0 » au retour).
-- **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; `locator('visible=true')` quand une page a des doubles cachés ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur ; fichiers à décor partagé en `serial`, élèves partagés sous verrou (`helpers/verrou.ts`) ; `test.fail()` juste avant l'assertion de l'écart ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-tri-4`, `test/verifs-tri-4`, serveur 5179. Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
+- **État** : tri des vérifications manuelles : paquets 1 à 4 mergés (#3061, #3064, #3065, #3066), **391 → 213 lignes** ; écarts E21 à E49 ajoutés à [ecarts-verifs-progress.md](ecarts-verifs-progress.md). Puis paquets suivants, R12, R13 (ordre validé).
+- **Prochaine action** : paquet 5 (lignes du 3 au 5 novembre, ≈ 39 lignes), worktree neuf, agents sur des élèves distincts (verrous `eleves-10-15`, `eleves-16-20`, `eleves-21-25`).
+- **En attente de David** : tâche de nuit (après R12) ; écarts E18, E19, E21-E49 (E33 : miroir de la carte sous WebKit, iPhone ET Mac) ; barre qui saute de 37 px (§ #1469) ; un `tsconfig` pour `e2e/` dans la CI ; `locale: 'fr-FR'` pour `test:verifs` ; #1738 (grille « 1,0 » au retour).
+- **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; `locator('visible=true')` et navigation par `href` quand un lien est redessiné ; lire des éléments d'un seul coup (`evaluateAll`) après un changement de thème ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur ; décor partagé en `serial`, élèves partagés sous verrou ; `test.fail()` juste avant l'assertion de l'écart ; un agent qui a livré mais garde des lancements en fond : l'arrêter (TaskStop) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (celui de #3066 retiré). Reste `../ubumaths-wt-verifs-webkit` (seul `.svelte-kit`), à effacer avec l'accord de David.
 
 ## Tri — paquet 4 : lignes du 26 octobre au 2 novembre (2026-11-24)
 
