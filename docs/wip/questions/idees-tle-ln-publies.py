@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-ln-publies/ (chantier idees-tle-ln).
 
 Phase 0 validée par David le 2026-11-24 (« je suis tes recos », fiches
-docs/wip/idees-tle-ln-fiches.md) : F1 et F2 (ffd5c051), F3 a, F3 b et F5 (d3301f2d), F4 a et F4 b
+docs/archive/wip/idees-tle-ln/idees-tle-ln-fiches.md) : F1 et F2 (ffd5c051), F3 a, F3 b et F5 (d3301f2d), F4 a et F4 b
 (14036c68), F7 (f1963ef2), F8 a et F8 b (50feeefd), F10 a et F10 b (2cef3442), F11 a et F11 b
 (7c8b341b), F12 (7f13ca89), F13 (e814175b, Q3 : oui). Les variations s'ajoutent À LA FIN (les
 réponses des élèves gardent l'indice de leur variation) ; la migration de contenu est générée par
@@ -581,7 +581,8 @@ SPECS_7C = [
 VAL12 = '{{eval:a*x0+b}}{{eval:k;+}}\\ln{ {{x0}} }'
 F12 = variation(
     'Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=' + coef('a')
-    + 'x{{b;+}}{{k;+}}\\ln x$.\n\nÉtudie le signe de $f\'(x)$, puis complète le tableau de '
+    + 'x{{b;+}}{{k;+}}\\ln x$. On admet que '
+    '$\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{x}=0$.\n\nÉtudie le signe de $f\'(x)$, puis complète le tableau de '
     'variations de $f$, limites comprises.\n\n'
     + bloc('variation', 'variable: x', 'domain: 0, ?{{x0}}, +inf', '',
            "sign: f'(x)",
@@ -619,7 +620,7 @@ F12 = variation(
         '{{if:a>0|négatif|positif}}, donc $\\displaystyle\\lim_{x\\to0}f(x)=' + PRIMAIRE
         + '{ {{if:a>0|+\\infty|-\\infty}} }$.',
         'En $+\\infty$ : forme indéterminée. $f(x)=x\\left({{a}}{{b;+}}\\times\\dfrac{1}{x}{{k;+}}'
-        '\\times\\dfrac{\\ln x}{x}\\right)$ et $\\dfrac{\\ln x}{x}\\to 0$ (croissances comparées) : '
+        '\\times\\dfrac{\\ln x}{x}\\right)$ et $\\dfrac{\\ln x}{x}\\to 0$ (admis dans l\'énoncé) : '
         'la parenthèse tend vers ${{a}}$, donc $\\displaystyle\\lim_{x\\to+\\infty}f(x)=' + PRIMAIRE
         + '{ {{if:a>0|+\\infty|-\\infty}} }$.',
     ],

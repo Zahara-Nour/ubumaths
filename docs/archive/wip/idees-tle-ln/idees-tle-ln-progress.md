@@ -8,18 +8,12 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, 2 neufs publiés._
+_Mis à jour le 2026-11-24, chantier clos._
 
-- **État** : en prod, 2 neufs validés par David et **publiés** (a6e58402 TSPE-438, 99326dee TSPE-441) et
-  +16 variations sur les 9 publiés (vérifié) · **Prochaine action** : PR de correction F12
-  (7f13ca89 v5, tagué aussi TCOMP-231) : ajouter à l'énoncé « On admet que
-  $\lim_{x\to+\infty}\frac{\ln x}{x}=0$ » (bornes tcomp, décision ltc-1 : croissances comparées
-  données seulement) dans `docs/wip/questions/idees-tle-ln-publies.py` (ré-exporter 7f13ca89 de
-  prod d'abord), migration de contenu « corrigée » ; dans la même PR, la série de relecture des
-  9 publiés (`scripts/series/creer-serie.ts`) · **En attente de David** : rien (relecture des
-  9 publiés par la série, après la PR) · **Pièges en
-  cours** : F12 hors bornes TCOMP tant que la correction n'est pas migrée · **Worktree /
-  branche** : aucun (nouveau worktree sur `origin/main`, même sujet).
+- **État** : clos. Rubrique TSA5 publiée : 2 neufs (a6e58402 TSPE-438, 99326dee TSPE-441) et +16
+  variations sur 9 publiés, F12 corrigée (#3088, migrée), série de relecture publiée
+  (bd26095d, #3090), modèles validés par David · **Prochaine action** : aucune · **En attente de
+  David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -96,3 +90,25 @@ _Mis à jour le 2026-11-24, 2 neufs publiés._
 - Reste : PR de correction F12 + série de relecture des 9 publiés, puis clôture (tableau : rubrique
   publiée, 9 réservations levées, idée TSA5-41 « f(x) = 0 a deux solutions » → « Idées en attente »
   pour la rubrique continuité).
+
+### 2026-11-24 — correction F12, série de relecture
+
+- 7f13ca89 ré-exporté de prod : contenu identique au fichier (mise en forme seule). F12 : « On admet
+  que $\displaystyle\lim_{x\to+\infty}\dfrac{\ln x}{x}=0$. » ajouté à l'énoncé ; dans la correction,
+  « (croissances comparées) » → « (admis dans l'énoncé) ». Diff du fichier : ces deux chaînes seules.
+- `question:specs` vert (250 tirages) ; `migration-contenu.ts` : 8 inchangés, 7f13ca89 1 corrigée (n° 5) ;
+  test d'intégration `migrations-contenu-publie` vert. Rendu : mêmes commandes LaTeX que les corrections
+  de la variation, vues à l'écran avant #3083.
+- Série `T_SPE-relecture-logarithme-publies.json` (9 modèles, 1 × 60 s, 9 min) : simulation verte en prod.
+- #3088 mergée ; `migration list --linked` : seule `20261124134110` en attente ; `db:migrate` et
+  publication de la série laissés à David (écriture en prod).
+
+### 2026-11-24 — clôture
+
+- `db:migrate` et série publiés par David ; vérifié en prod : F12 porte « On admet que », variations
+  inchangées en nombre (ffd5c051 7, d3301f2d 6, 14036c68 5, f1963ef2 4, 50feeefd 9, 2cef3442 4,
+  7c8b341b 5, 7f13ca89 5, e814175b 7), aucune migration en attente. David : « je valide les modèles »
+  (aucun verdict en base : validation orale).
+- Tableau : rubrique publiée, 9 réservations levées ; idées TSA1-48 (ln) et TSA2-35 retirées des
+  « Idées en attente » (reprises en F13 et F9), TSA5-41 ajoutée pour la rubrique continuité.
+  Journal, relevé et fiches versés dans `docs/archive/wip/idees-tle-ln/`.

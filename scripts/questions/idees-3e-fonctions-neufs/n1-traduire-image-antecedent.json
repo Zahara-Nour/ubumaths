@@ -1,0 +1,324 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Généralités sur les fonctions > images et antécédents",
+		"point": "3-040"
+	},
+	"title": "Traduire f(a) = b avec image et antécédent",
+	"description": "Phrases vraies à cocher : f(3) = −5 traduit avec image et antécédent, « 4 a pour image 7 » traduit en égalité, deux antécédents d'un même nombre, vrai ou faux sur f(x) = ax² + b (pièges : image et antécédent échangés, « deux images », carré d'un négatif)",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On sait que ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{a}})={{b}}$.\n\nCoche les phrases vraies.\n\n```choix\nplusieurs: oui\n- ${{b}}$ est l'image de ${{a}}$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$\n- ${{a}}$ est un antécédent de ${{b}}$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$\n- ${{a}}$ est l'image de ${{b}}$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$\n- ${{b}}$ est un antécédent de ${{a}}$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}(a)=b$, on dit que $b$ est **l'image** de $a$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$, et que $a$ est **un antécédent** de $b$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$.",
+					"Ici, le nombre de départ est ${{a}}$ et le résultat est ${{b}}$ : $\\textcolor{{{color:primary.0}}}{{{b}}\\text{ est l'image de }{{a}}}$, et $\\textcolor{{{color:primary.0}}}{{{a}}\\text{ est un antécédent de }{{b}}}$. Les deux autres phrases échangent l'image et l'antécédent."
+				]
+			},
+			"hint": "L'image s'écrit à droite du signe $=$ : ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}(\\text{antécédent})=\\text{image}$. L'antécédent est le nombre de départ."
+		},
+		{
+			"statement": "Par la fonction ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$, le nombre ${{a}}$ a pour image ${{b}}$.\n\nCoche les phrases vraies.\n\n```choix\nplusieurs: oui\n- ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{a}})={{b}}$\n- ${{a}}$ est un antécédent de ${{b}}$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$\n- ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{b}})={{a}}$\n- ${{b}}$ est un antécédent de ${{a}}$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}(a)=b$, on dit que $b$ est **l'image** de $a$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$, et que $a$ est **un antécédent** de $b$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$.",
+					"Le nombre de départ est ${{a}}$, son image est ${{b}}$ : on écrit $\\textcolor{{{color:primary.0}}}{{{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{a}})={{b}}}$, et $\\textcolor{{{color:primary.0}}}{{{a}}\\text{ est un antécédent de }{{b}}}$. Les deux autres phrases échangent le nombre de départ et son image."
+				]
+			},
+			"hint": "L'image s'écrit à droite du signe $=$ : ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}(\\text{antécédent})=\\text{image}$. L'antécédent est le nombre de départ."
+		},
+		{
+			"statement": "On sait que ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{a}})={{k}}$ et que ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{c}})={{k}}$.\n\nCoche les phrases vraies.\n\n```choix\nplusieurs: oui\n- ${{k}}$ a au moins deux antécédents par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$ : ${{a}}$ et ${{c}}$\n- L'image de ${{c}}$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$ est ${{k}}$\n- ${{k}}$ a deux images par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$ : ${{a}}$ et ${{c}}$\n- ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{k}})={{c}}$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a!=c", "a!=k", "c!=k", "a!=-c"],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}(a)=b$, on dit que $b$ est **l'image** de $a$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$, et que $a$ est **un antécédent** de $b$ par ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}$.",
+					"${{k}}$ est l'image de ${{a}}$ et aussi l'image de ${{c}}$ : $\\textcolor{{{color:primary.0}}}{{{k}}\\text{ a au moins deux antécédents, }{{a}}\\text{ et }{{c}}}$, et $\\textcolor{{{color:primary.0}}}{\\text{l'image de }{{c}}\\text{ est }{{k}}}$.",
+					"Un nombre n'a jamais qu'**une seule** image ; c'est un nombre de l'arrivée qui peut avoir plusieurs antécédents. Et ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}({{k}})$ n'est pas donné : ${{k}}$ est ici une image, pas un nombre de départ."
+				]
+			},
+			"hint": "L'image s'écrit à droite du signe $=$ : ${{if:t==0|f|}}{{if:t==1|g|}}{{if:t==2|h|}}(\\text{antécédent})=\\text{image}$. L'antécédent est le nombre de départ."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:a*x^2+b}}$.\n\nCoche les phrases vraies.\n\n```choix\nplusieurs: oui\n- $f(0)={{b}}$\n- L'image de ${{eval:-b}}$ par $f$ est ${{eval:a*b^2+b}}$\n- $f({{b}})=0$\n- L'image de ${{eval:-b}}$ par $f$ est ${{eval:-a*b^2+b}}$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour calculer une image, on remplace $x$ par le nombre de départ.",
+					"$f(0)={{a}}\\times0^2{{b;+}}=\\textcolor{{{color:primary.0}}}{{{b}}}$ : la première phrase est vraie.",
+					"$f({{eval:-b}})={{a}}\\times({{eval:-b}})^2{{b;+}}={{a}}\\times{{eval:b^2}}{{b;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a*b^2+b}}}$ : le carré passe avant la multiplication, et un carré n'est jamais négatif.",
+					"$f({{b}})={{a}}\\times({{b}})^2{{b;+}}={{eval:a*b^2+b}}$, qui n'est pas égal à $0$ : $f({{b}})=0$ est fausse (elle échange ${{b}}$ et $0$)."
+				]
+			},
+			"hint": "Pour calculer une image, remplace $x$ par le nombre dans la formule, avec des parenthèses ; le carré passe avant la multiplication."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : f(3) = −5, les deux phrases vraies",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "v0 : une seule phrase vraie cochée (½)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "unoptimal_form"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "v0 : image et antécédent échangés",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2;3"]
+		},
+		{
+			"description": "v0 : une vraie et une fausse",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "-5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2"]
+		},
+		{
+			"description": "v1 : 4 a pour image 7 par g",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "v1 : g(7) = 4 coché",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1;2"]
+		},
+		{
+			"description": "v1 : x et y inversés",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "4",
+				"b": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2;3"]
+		},
+		{
+			"description": "v2 : h(2) = h(−6) = 1",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2",
+				"a": "2",
+				"c": "-6",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "v2 : « deux images » coché",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2",
+				"a": "2",
+				"c": "-6",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1;2"]
+		},
+		{
+			"description": "v2 : h(1) = −6 coché",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2",
+				"a": "2",
+				"c": "-6",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;3"]
+		},
+		{
+			"description": "v3 : f(x) = 2x² + 3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1"]
+		},
+		{
+			"description": "v3 : f(3) = 0 coché",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;2"]
+		},
+		{
+			"description": "v3 : (−3)² négatif",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0;3"]
+		},
+		{
+			"description": "v3 : f(x) = −3x² − 2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-3",
+				"b": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0;1"]
+		}
+	]
+}

@@ -1,0 +1,545 @@
+{
+	"id": "cb545bd7-befe-4bec-94f2-1fe37328b73b",
+	"title": "Produire une formule",
+	"description": "Produire une formule littérale qui exprime une grandeur en fonction d'une autre : prix d'une course, aire et périmètre d'un rectangle, volume d'un réservoir",
+	"grades": ["4"],
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"form": "off",
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}+{{a}}d"
+				}
+			],
+			"statement": "Un taxi fait payer ${{b}}~\\unit{€}$ de prise en charge, puis ${{a}}~\\unit{€}$ par kilomètre. On note $P(d)$ le prix, en euros, d'une course de $d$ kilomètres.\n\nExprime $P(d)$ en fonction de $d$.\n\n$P(d) = ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "3..8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Formule.** On écrit le calcul qu'on ferait avec un nombre, en remplaçant ce nombre par la lettre.",
+					"Pour $10~\\unit{km}$, on paierait ${{b}} + {{a}} \\times 10$. Pour $d$ kilomètres :",
+					"$$P(d) = \\textcolor{{{color:primary.0}}}{{{b}} + {{a}}d}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "x(x+{{a}})"
+				}
+			],
+			"statement": "Un rectangle a pour largeur $x$ centimètres ; sa longueur mesure ${{a}}$ centimètres de plus que sa largeur.\n\nOn note $A(x)$ son aire, en $\\unit{cm^2}$. Exprime $A(x)$ en fonction de $x$.\n\n$A(x) = ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Formule.** On écrit le calcul qu'on ferait avec un nombre, en remplaçant ce nombre par la lettre.",
+					"La longueur mesure $x + {{a}}$. Aire = largeur × longueur :",
+					"$$A(x) = \\textcolor{{{color:primary.0}}}{x(x + {{a}})}$$",
+					"Écriture développée, juste aussi : $x^2 + {{a}}x$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "4x+{{eval:2*a}}"
+				}
+			],
+			"statement": "Un rectangle a pour largeur $x$ centimètres ; sa longueur mesure ${{a}}$ centimètres de plus que sa largeur.\n\nOn note $p(x)$ son périmètre, en centimètres. Exprime $p(x)$ en fonction de $x$.\n\n$p(x) = ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Formule.** On écrit le calcul qu'on ferait avec un nombre, en remplaçant ce nombre par la lettre.",
+					"Le périmètre est la somme des quatre côtés : deux largeurs $x$ et deux longueurs $x + {{a}}$.",
+					"$$p(x) = 2x + 2(x + {{a}}) = \\textcolor{{{color:primary.0}}}{4x + {{eval:2*a}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}-{{a}}t"
+				}
+			],
+			"statement": "Un réservoir contient ${{v}}$ litres d'eau. Il se vide de ${{a}}$ litres par minute. On note $V(t)$ le volume d'eau, en litres, qui reste au bout de $t$ minutes.\n\nExprime $V(t)$ en fonction de $t$.\n\n$V(t) = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..20"
+				},
+				{
+					"name": "v",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Formule.** On écrit le calcul qu'on ferait avec un nombre, en remplaçant ce nombre par la lettre.",
+					"En $t$ minutes, il part ${{a}} \\times t$ litres, qu'on retire des ${{v}}$ litres du départ :",
+					"$$V(t) = \\textcolor{{{color:primary.0}}}{{{v}} - {{a}}t}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Au cinéma, une place coûte ${{a}}~\\unit{€}$, et on paie ${{b}}~\\unit{€}$ de frais de réservation, une seule fois.\n\nQuelle formule donne le prix $P(n)$, en euros, de $n$ places ?\n\n```choix\n- $P(n) = {{a}}n + {{b}}$\n- $P(n) = {{eval:a+b}}n$\n- $P(n) = {{a}} + {{b}}n$\n- $P(n) = {{eval:a*b}}n$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..12"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Formule.** On écrit le calcul qu'on ferait avec un nombre, en remplaçant ce nombre par la lettre.",
+					"$n$ places coûtent ${{a}}n$ euros ; on ajoute **une fois** les frais :",
+					"$$P(n) = \\textcolor{{{color:primary.0}}}{{{a}}n + {{b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une chaîne de vidéos compte ${{n0}}$ abonnés. Chaque mois, elle en perd ${{a}}$. On note $N(t)$ le nombre d'abonnés au bout de $t$ mois.\n\nExprime $N(t)$ en fonction de $t$.\n\n$N(t) = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..9"
+				},
+				{
+					"name": "n0",
+					"expression": "eval:1000*k"
+				},
+				{
+					"name": "j",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*j"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n0}}-{{a}}t",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}-{{n0}}t",
+							"message": "Le nombre d'abonnés du départ ne se multiplie pas par $t$ : c'est la perte de chaque mois qui se répète.",
+							"label": "Coefficients inversés"
+						},
+						{
+							"answer": "{{n0}}+{{a}}t",
+							"message": "Les abonnés **diminuent** : on retire ${{a}} t$, on ne l'ajoute pas.",
+							"label": "Signe de la diminution"
+						},
+						{
+							"answer": "({{n0}}-{{a}})t",
+							"message": "Seule la perte se répète chaque mois : le nombre d'abonnés du départ ne compte qu'une fois.",
+							"label": "Nombre de départ multiplié par t"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Formule.** On écrit le calcul qu'on ferait avec un nombre, en remplaçant ce nombre par la lettre.",
+					"Au bout de $10$ mois, il resterait ${{n0}} - {{a}} \\times 10$ abonnés. Au bout de $t$ mois :",
+					"$$N(t) = \\textcolor{{{color:primary.0}}}{{{n0}} - {{a}}t}$$"
+				]
+			},
+			"hint": "Écris le calcul pour un nombre de mois précis, par exemple $10$, puis remplace ce nombre par $t$."
+		},
+		{
+			"statement": "Une facture d'eau comprend un abonnement de ${{eval:bc/100;d}}~\\unit{€}$, puis ${{eval:pc/100;d}}~\\unit{€}$ par mètre cube d'eau consommé. On note $F(v)$ le montant de la facture, en euros, pour $v$ mètres cubes.\n\nExprime $F(v)$ en fonction de $v$.\n\n$F(v) = ?$",
+			"variables": [
+				{
+					"name": "bk",
+					"expression": "300..699"
+				},
+				{
+					"name": "bc",
+					"expression": "eval:10*bk+5"
+				},
+				{
+					"name": "pk",
+					"expression": "20..44"
+				},
+				{
+					"name": "pc",
+					"expression": "eval:10*pk+5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc/100;d}}+{{eval:pc/100;d}}v",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:pc/100;d}}+{{eval:bc/100;d}}v",
+							"message": "L'abonnement se paie une seule fois : c'est le prix du mètre cube qui se multiplie par $v$.",
+							"label": "Coefficients inversés"
+						},
+						{
+							"answer": "({{eval:bc/100;d}}+{{eval:pc/100;d}})v",
+							"message": "Seul le prix du mètre cube dépend de $v$ : l'abonnement s'ajoute une seule fois.",
+							"label": "Abonnement multiplié par v"
+						},
+						{
+							"answer": "{{eval:pc/100;d}}v",
+							"message": "N'oublie pas l'abonnement : on le paie même sans consommer d'eau.",
+							"label": "Abonnement oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Formule.** On écrit le calcul qu'on ferait avec un nombre, en remplaçant ce nombre par la lettre.",
+					"Pour $20~\\unit{m^3}$, on paierait ${{eval:bc/100;d}} + {{eval:pc/100;d}} \\times 20$. Pour $v$ mètres cubes :",
+					"$$F(v) = \\textcolor{{{color:primary.0}}}{{{eval:bc/100;d}} + {{eval:pc/100;d}}v}$$"
+				]
+			},
+			"hint": "Écris le calcul pour une consommation précise, par exemple $20~\\unit{m^3}$, puis remplace ce nombre par $v$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["4+2d"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4"
+			},
+			"description": "4 + 2d",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2d+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4"
+			},
+			"description": "Autre ordre : 2d + 4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6d"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4"
+			},
+			"description": "Erreur : (4 + 2)d",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x(x+3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "x(x + 3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x^2+3x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "Développée : x² + 3x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["x+3x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "Erreur : x + 3x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4x+6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "4x + 6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2(2x+3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "Autre écriture : 2(2x + 3)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2x+3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "Erreur : 2x + 3",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["120-4t"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"k": "12",
+				"v": "120"
+			},
+			"description": "120 − 4t",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["120+4t"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"k": "12",
+				"v": "120"
+			},
+			"description": "Erreur : 120 + 4t",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "2"
+			},
+			"description": "an + b",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "2"
+			},
+			"description": "Erreur : (a + b)n",
+			"variationIndex": 4
+		},
+		{
+			"description": "F5a : 8 000 − 50t",
+			"variationIndex": 5,
+			"variables": {
+				"k": "8",
+				"j": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8\\,000-50t"]
+		},
+		{
+			"description": "F5a : autre ordre",
+			"variationIndex": 5,
+			"variables": {
+				"k": "8",
+				"j": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-50t+8\\,000"]
+		},
+		{
+			"description": "F5a : avec le signe ×",
+			"variationIndex": 5,
+			"variables": {
+				"k": "8",
+				"j": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8\\,000-50\\times t"]
+		},
+		{
+			"description": "F5a : sans espace dans 8000",
+			"variationIndex": 5,
+			"variables": {
+				"k": "8",
+				"j": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8000-50t"]
+		},
+		{
+			"description": "F5a : coefficients inversés",
+			"variationIndex": 5,
+			"variables": {
+				"k": "8",
+				"j": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le nombre d'abonnés du départ ne se multiplie pas par $t$ : c'est la perte de chaque mois qui se répète."
+			},
+			"answers": ["50-8\\,000t"]
+		},
+		{
+			"description": "F5a : signe de la diminution",
+			"variationIndex": 5,
+			"variables": {
+				"k": "8",
+				"j": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les abonnés **diminuent** : on retire $50 t$, on ne l'ajoute pas."
+			},
+			"answers": ["8\\,000+50t"]
+		},
+		{
+			"description": "F5a : tout multiplié par t",
+			"variationIndex": 5,
+			"variables": {
+				"k": "8",
+				"j": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Seule la perte se répète chaque mois : le nombre d'abonnés du départ ne compte qu'une fois."
+			},
+			"answers": ["(8\\,000-50)t"]
+		},
+		{
+			"description": "F5b : 52,45 + 3,15v",
+			"variationIndex": 6,
+			"variables": {
+				"bk": "524",
+				"pk": "31"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["52{,}45+3{,}15v"]
+		},
+		{
+			"description": "F5b : autre ordre",
+			"variationIndex": 6,
+			"variables": {
+				"bk": "524",
+				"pk": "31"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}15v+52{,}45"]
+		},
+		{
+			"description": "F5b : coefficients inversés",
+			"variationIndex": 6,
+			"variables": {
+				"bk": "524",
+				"pk": "31"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'abonnement se paie une seule fois : c'est le prix du mètre cube qui se multiplie par $v$."
+			},
+			"answers": ["3{,}15+52{,}45v"]
+		},
+		{
+			"description": "F5b : abonnement multiplié",
+			"variationIndex": 6,
+			"variables": {
+				"bk": "524",
+				"pk": "31"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Seul le prix du mètre cube dépend de $v$ : l'abonnement s'ajoute une seule fois."
+			},
+			"answers": ["(52{,}45+3{,}15)v"]
+		},
+		{
+			"description": "F5b : abonnement oublié",
+			"variationIndex": 6,
+			"variables": {
+				"bk": "524",
+				"pk": "31"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas l'abonnement : on le paie même sans consommer d'eau."
+			},
+			"answers": ["3{,}15v"]
+		}
+	]
+}

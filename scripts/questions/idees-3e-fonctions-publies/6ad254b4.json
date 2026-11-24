@@ -1,0 +1,864 @@
+{
+	"id": "6ad254b4-69c3-49db-9541-fa921964cefc",
+	"title": "Formule, tableau de valeurs, courbe",
+	"description": "Passer d'une représentation d'une fonction à une autre : formule → tableau (affine, x² + c en un nombre négatif), courbe → tableau, tableau → formule",
+	"grades": ["3", "1_TECHNO"],
+	"level": 1,
+	"delay": 75,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(n)+(b)}}"
+				}
+			],
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x{{if:b<0|{{b}}|+{{b}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & ? \\end{array}$\n\n",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "-5..-2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{n}}$ dans la formule.",
+					"$$f({{n}}) = {{a}} \\times ({{n}}) {{if:b<0|{{b}}|+{{b}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)+(b)}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)^2+(c)}}"
+				}
+			],
+			"statement": "On considère la fonction $f$ définie par $f(x)=x^2{{if:c<0|{{c}}|+{{c}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:c}} & {{eval:1+(c)}} & ? \\end{array}$\n\n",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "-5..-2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{n}}$ dans la formule, **parenthèses comprises** : le carré d'un nombre négatif est positif.",
+					"$$f({{n}}) = ({{n}})^2 {{if:c<0|{{c}}|+{{c}}}} = {{eval:(n)^2}} {{if:c<0|{{c}}|+{{c}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(n)^2+(c)}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(q)+(c)*(d)^2}}"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|} x & {{n}} \\\\ f(x) & ? \\end{array}$\n\n",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "-1..1"
+				},
+				{
+					"name": "q",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(p)+(d)"
+				}
+			],
+			"conditions": ["d != 0"],
+			"correction": {
+				"steps": [
+					"On cherche le point de $\\mathcal{C}_f$ d'**abscisse** ${{n}}$ ; $f({{n}})$ est son **ordonnée**.",
+					"```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\npoints: A({{n}} ; {{eval:(q)+(c)*(d)^2}})\ntaille: moyenne\ndescription: Courbe de f et son point A d'abscisse {{n}}.\n```",
+					"$A({{n}}\\,;{{eval:(q)+(c)*(d)^2}})$ : $f({{n}})=\\textcolor{{{color:primary.0}}}{{{eval:(q)+(c)*(d)^2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|} x & 0 & 1 & 2 & 3 \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} & {{eval:3*(a)+(b)}} \\end{array}$\n\nQuelle formule peut définir $f$ ?\n\n```choix\n- $f(x)={{a}}x+{{b}}$\n- $f(x)={{b}}x+{{a}}$\n- $f(x)={{eval:(a)+(b)}}x$\n- $f(x)=x+{{b}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != b"],
+			"correction": {
+				"steps": [
+					"On vérifie chaque formule sur **toutes** les colonnes du tableau.",
+					"Avec $\\textcolor{{{color:primary.0}}}{f(x)={{a}}x+{{b}}}$ : $f(0)={{b}}$, $f(1)={{eval:(a)+(b)}}$, $f(2)={{eval:2*(a)+(b)}}$, $f(3)={{eval:3*(a)+(b)}}$ : tout correspond.",
+					"$f(x)={{eval:(a)+(b)}}x$ donne $f(0)=0$, et non ${{b}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{eval:a*x^2+(b)*x+(c)}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & {{eval:-m}} & 0 & {{m}} \\\\ f(x) & ? & ? & ? \\end{array}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "2|3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(m)^2-(b)*(m)+(c)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(a)*(m)^2-(b)*(m)+(c)}}",
+							"message": "Le carré d'un nombre négatif est positif : $\\left( {{eval:-m}} \\right)^2 = {{eval:m^2}}$.",
+							"label": "(−m)² calculé −m²"
+						},
+						{
+							"answer": "{{eval:(a)*(m)^2+(b)*(m)+(c)}}",
+							"message": "Garde le signe de $x$ : remplace $x$ par $\\left( {{eval:-m}} \\right)$ dans **chaque** terme, aussi dans le terme en $x$.",
+							"label": "Signe de x oublié dans bx"
+						},
+						{
+							"answer": "{{eval:(a)^2*(m)^2-(b)*(m)+(c)}}",
+							"message": "Dans $a x^2$, seul $x$ est élevé au carré : on calcule $a\\times x^2$, et non $(a\\times x)^2$.",
+							"label": "ax² calculé (ax)²"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(a)*(m)^2+(b)*(m)+(c)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a)^2*(m)^2+(b)*(m)+(c)}}",
+							"message": "Dans $a x^2$, seul $x$ est élevé au carré : on calcule $a\\times x^2$, et non $(a\\times x)^2$.",
+							"label": "ax² calculé (ax)²"
+						},
+						{
+							"answer": "{{eval:2*(a)*(m)+(b)*(m)+(c)}}",
+							"message": "$x^2$ veut dire $x\\times x$, et non $2\\times x$.",
+							"label": "x² calculé 2x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par chaque valeur, **entre parenthèses** quand elle est négative.",
+					"$$f({{eval:-m}}) = {{a}} \\times ({{eval:-m}})^2 {{eval:b;+}} \\times ({{eval:-m}}) {{eval:c;+}} = {{eval:(a)*(m)^2}} {{eval:-(b)*(m);+}} {{eval:c;+}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(m)^2-(b)*(m)+(c)}}}$$",
+					"$$f(0) = {{a}} \\times 0^2 {{eval:b;+}} \\times 0 {{eval:c;+}} = \\textcolor{{{color:primary.0}}}{{{c}}}$$",
+					"$$f({{m}}) = {{a}} \\times {{m}}^2 {{eval:b;+}} \\times {{m}} {{eval:c;+}} = {{eval:(a)*(m)^2}} {{eval:(b)*(m);+}} {{eval:c;+}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(m)^2+(b)*(m)+(c)}}}$$"
+				]
+			},
+			"hint": "Remplace $x$ par chaque valeur du tableau, entre parenthèses quand elle est négative, puis calcule d'abord le carré."
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=(x{{if:a<0|{{a}}|+{{a}}}})(x{{if:b<0|{{b}}|+{{b}}}})$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & {{eval:-m}} & 0 & {{m}} \\\\ f(x) & ? & ? & ? \\end{array}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "m",
+					"expression": "2|3"
+				},
+				{
+					"name": "am",
+					"expression": "eval:a-m"
+				},
+				{
+					"name": "bm",
+					"expression": "eval:b-m"
+				},
+				{
+					"name": "ap",
+					"expression": "eval:a+m"
+				},
+				{
+					"name": "bp",
+					"expression": "eval:b+m"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a-m)*(b-m)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+m)*(b+m)}}",
+							"message": "Remplace $x$ par $\\left( {{eval:-m}} \\right)$, et non par ${{m}}$ : garde le signe.",
+							"label": "x remplacé par m au lieu de −m"
+						},
+						{
+							"answer": "{{eval:-(a-m)*(b-m)}}",
+							"message": "Revois la règle des signes : le produit de deux nombres de même signe est positif, de signes contraires négatif.",
+							"label": "Règle des signes"
+						},
+						{
+							"answer": "{{eval:(a-m)+(b-m)}}",
+							"message": "Les deux parenthèses côte à côte se **multiplient** : on ne les additionne pas.",
+							"label": "Facteurs additionnés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a*b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+b}}",
+							"message": "Les deux parenthèses côte à côte se **multiplient** : on ne les additionne pas.",
+							"label": "Facteurs additionnés"
+						},
+						{
+							"answer": "{{eval:-(a*b)}}",
+							"message": "Revois la règle des signes : le produit de deux nombres de même signe est positif, de signes contraires négatif.",
+							"label": "Règle des signes"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(a+m)*(b+m)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a+m)+(b+m)}}",
+							"message": "Les deux parenthèses côte à côte se **multiplient** : on ne les additionne pas.",
+							"label": "Facteurs additionnés"
+						},
+						{
+							"answer": "{{eval:-(a+m)*(b+m)}}",
+							"message": "Revois la règle des signes : le produit de deux nombres de même signe est positif, de signes contraires négatif.",
+							"label": "Règle des signes"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par chaque valeur, **entre parenthèses** quand elle est négative. Les deux facteurs se calculent d'abord, puis on les **multiplie**.",
+					"$$f({{eval:-m}}) = ({{eval:-m}}{{eval:a;+}})({{eval:-m}}{{eval:b;+}}) = {{if:am<0|({{am}})|{{am}}}} \\times {{if:bm<0|({{bm}})|{{bm}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a-m)*(b-m)}}}$$",
+					"$$f(0) = (0{{eval:a;+}})(0{{eval:b;+}}) = {{if:a<0|({{a}})|{{a}}}} \\times {{if:b<0|({{b}})|{{b}}}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$",
+					"$$f({{m}}) = ({{m}}{{eval:a;+}})({{m}}{{eval:b;+}}) = {{if:ap<0|({{ap}})|{{ap}}}} \\times {{if:bp<0|({{bp}})|{{bp}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a+m)*(b+m)}}}$$"
+				]
+			},
+			"hint": "Remplace $x$ par chaque valeur du tableau, calcule chaque parenthèse, puis multiplie les deux résultats."
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,m-3)}} ; {{eval:max(1,m+3)}}\ny: {{eval:min(-1,c+lo)}} ; {{eval:max(1,c+hi)}}\ngrille: 1 ; 1\nf(x) = {{c}}+({{s}})*({{j0}}*{{g}}*(x-({{m}}))+{{j1}}*(x-({{m}}))^2+{{j2}}*(x-({{m}})+1)*(x-({{m}}))*(x-({{m}})-2)/2) sur [{{eval:m-2.3;d}} ; {{eval:m+2.3;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, sur un quadrillage d'unité 1.\n```\n\nComplète le tableau de valeurs de $f$ en lisant le graphique :\n\n$\\begin{array}{|l|c|c|c|} x & {{u1}} & {{u2}} & {{u3}} \\\\ f(x) & ? & ? & ? \\end{array}$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "g",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "-1..1"
+				},
+				{
+					"name": "c",
+					"expression": "-3..3"
+				},
+				{
+					"name": "j0",
+					"expression": "eval:(1-min(abs((t)-(0)),1))"
+				},
+				{
+					"name": "j1",
+					"expression": "eval:(1-min(abs((t)-(1)),1))"
+				},
+				{
+					"name": "j2",
+					"expression": "eval:(1-min(abs((t)-(2)),1))"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:-6*(1-min(abs((t)-(0)),1))+((1+s)/2*(-1)+(1-s)/2*(-6))*(1-min(abs((t)-(1)),1))+((1+s)/2*(-7)+(1-s)/2*(-2))*(1-min(abs((t)-(2)),1))"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:6*(1-min(abs((t)-(0)),1))+((1+s)/2*6+(1-s)/2*1)*(1-min(abs((t)-(1)),1))+((1+s)/2*2+(1-s)/2*7)*(1-min(abs((t)-(2)),1))"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:m-2"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:m+1"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:m+2"
+				},
+				{
+					"name": "v1",
+					"expression": "eval:c+(s)*(-2*(g)*(j0)+4*(j1)-4*(j2))"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:c+(s)*((g)*(j0)+(j1)-(j2))"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:c+(s)*(2*(g)*(j0)+4*(j1))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u1}}",
+							"message": "Tu as recopié l'abscisse : on lit l'**ordonnée** du point de la courbe, sur l'axe vertical.",
+							"label": "Abscisse au lieu de l'ordonnée"
+						},
+						{
+							"answer": "{{eval:v1+1}}",
+							"message": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau.",
+							"label": "Lecture décalée d'un carreau (+1)"
+						},
+						{
+							"answer": "{{eval:v1-1}}",
+							"message": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau.",
+							"label": "Lecture décalée d'un carreau (−1)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{v2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u2}}",
+							"message": "Tu as recopié l'abscisse : on lit l'**ordonnée** du point de la courbe, sur l'axe vertical.",
+							"label": "Abscisse au lieu de l'ordonnée"
+						},
+						{
+							"answer": "{{eval:v2+1}}",
+							"message": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau.",
+							"label": "Lecture décalée d'un carreau (+1)"
+						},
+						{
+							"answer": "{{eval:v2-1}}",
+							"message": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau.",
+							"label": "Lecture décalée d'un carreau (−1)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{v3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{u3}}",
+							"message": "Tu as recopié l'abscisse : on lit l'**ordonnée** du point de la courbe, sur l'axe vertical.",
+							"label": "Abscisse au lieu de l'ordonnée"
+						},
+						{
+							"answer": "{{eval:v3+1}}",
+							"message": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau.",
+							"label": "Lecture décalée d'un carreau (+1)"
+						},
+						{
+							"answer": "{{eval:v3-1}}",
+							"message": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau.",
+							"label": "Lecture décalée d'un carreau (−1)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour lire $f(a)$ : on part de $a$ sur l'axe des abscisses, on va verticalement jusqu'à $\\mathcal{C}_f$, puis horizontalement jusqu'à l'axe des ordonnées.",
+					"```courbe\nx: {{eval:min(-1,m-3)}} ; {{eval:max(1,m+3)}}\ny: {{eval:min(-1,c+lo)}} ; {{eval:max(1,c+hi)}}\ngrille: 1 ; 1\nf(x) = {{c}}+({{s}})*({{j0}}*{{g}}*(x-({{m}}))+{{j1}}*(x-({{m}}))^2+{{j2}}*(x-({{m}})+1)*(x-({{m}}))*(x-({{m}})-2)/2) sur [{{eval:m-2.3;d}} ; {{eval:m+2.3;d}}]   bleu   nom=C_f\npoints: A({{u1}} ; {{v1}}), B({{u2}} ; {{v2}}), C({{u3}} ; {{v3}})\ntaille: moyenne\ndescription: Courbe de f et ses points A, B et C d'abscisses {{u1}}, {{u2}} et {{u3}}.\n```",
+					"$A({{u1}}\\,;{{v1}})$, $B({{u2}}\\,;{{v2}})$ et $C({{u3}}\\,;{{v3}})$ :",
+					"$\\begin{array}{|l|c|c|c|} x & {{u1}} & {{u2}} & {{u3}} \\\\ f(x) & \\textcolor{{{color:primary.0}}}{{{v1}}} & \\textcolor{{{color:primary.0}}}{{{v2}}} & \\textcolor{{{color:primary.0}}}{{{v3}}} \\end{array}$"
+				]
+			},
+			"hint": "Pour chaque $x$ du tableau, va verticalement jusqu'à la courbe, puis lis l'ordonnée du point sur l'axe vertical."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"n": "-4"
+			},
+			"description": "f(x) = 3x + 2, f(−4) = −10",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"n": "-4"
+			},
+			"description": "Erreur : signe oublié, 3 × 4 + 2 = 14",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"n": "-3"
+			},
+			"description": "f(x) = x² + 1, f(−3) = 10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"n": "-3"
+			},
+			"description": "Erreur : −3² = −9, −8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"n": "-3"
+			},
+			"description": "Erreur : 2 × (−3) + 1 = −5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"d": "2",
+				"n": "2",
+				"p": "0",
+				"q": "-1"
+			},
+			"description": "Courbe : f(2) = 3 (sommet (0 ; −1), haut)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"d": "2",
+				"n": "2",
+				"p": "0",
+				"q": "-1"
+			},
+			"description": "Erreur : l'abscisse 2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "Tableau : 3x + 5",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "Erreur : 8x (seulement f(1))",
+			"variationIndex": 3
+		},
+		{
+			"description": "F2a : 2x² − 3x + 1 → 28, 1, 10",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["28", "1", "10"]
+		},
+		{
+			"description": "F2a : (−3)² = −9",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le carré d'un nombre négatif est positif : $\\left( -3 \\right)^2 = 9$."
+			},
+			"answers": ["-8", "1", "10"]
+		},
+		{
+			"description": "F2a : signe de x oublié dans bx",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Garde le signe de $x$ : remplace $x$ par $\\left( -3 \\right)$ dans **chaque** terme, aussi dans le terme en $x$."
+			},
+			"answers": ["10", "1", "10"]
+		},
+		{
+			"description": "F2a : (ax)² en −3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans $a x^2$, seul $x$ est élevé au carré : on calcule $a\\times x^2$, et non $(a\\times x)^2$."
+			},
+			"answers": ["46", "1", "10"]
+		},
+		{
+			"description": "F2a : (ax)² en 3",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans $a x^2$, seul $x$ est élevé au carré : on calcule $a\\times x^2$, et non $(a\\times x)^2$."
+			},
+			"answers": ["28", "1", "28"]
+		},
+		{
+			"description": "F2a : x² pris pour 2x",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^2$ veut dire $x\\times x$, et non $2\\times x$."
+			},
+			"answers": ["28", "1", "4"]
+		},
+		{
+			"description": "F2a : −x² + 4x − 5 → −17, −5, −1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-1",
+				"b": "4",
+				"c": "-5",
+				"m": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-17", "-5", "-1"]
+		},
+		{
+			"description": "F2a : −x² pris pour (−x)² en 2",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-1",
+				"b": "4",
+				"c": "-5",
+				"m": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans $a x^2$, seul $x$ est élevé au carré : on calcule $a\\times x^2$, et non $(a\\times x)^2$."
+			},
+			"answers": ["-17", "-5", "7"]
+		},
+		{
+			"description": "F2b : (x + 2)(x − 5) → 8, −10, −10",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8", "-10", "-10"]
+		},
+		{
+			"description": "F2b : x remplacé par 3 au lieu de −3",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Remplace $x$ par $\\left( -3 \\right)$, et non par $3$ : garde le signe."
+			},
+			"answers": ["-10", "-10", "-10"]
+		},
+		{
+			"description": "F2b : règle des signes en −3",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Revois la règle des signes : le produit de deux nombres de même signe est positif, de signes contraires négatif."
+			},
+			"answers": ["-8", "-10", "-10"]
+		},
+		{
+			"description": "F2b : facteurs additionnés en −3",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux parenthèses côte à côte se **multiplient** : on ne les additionne pas."
+			},
+			"answers": ["-9", "-10", "-10"]
+		},
+		{
+			"description": "F2b : facteurs additionnés en 0",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux parenthèses côte à côte se **multiplient** : on ne les additionne pas."
+			},
+			"answers": ["8", "-3", "-10"]
+		},
+		{
+			"description": "F2b : facteurs additionnés en 3",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "-5",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les deux parenthèses côte à côte se **multiplient** : on ne les additionne pas."
+			},
+			"answers": ["8", "-10", "3"]
+		},
+		{
+			"description": "F3 : droite 1 + 2x → −3, 3, 5",
+			"variationIndex": 6,
+			"variables": {
+				"t": "0",
+				"s": "1",
+				"g": "2",
+				"m": "0",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3", "3", "5"]
+		},
+		{
+			"description": "F3 : abscisse recopiée",
+			"variationIndex": 6,
+			"variables": {
+				"t": "0",
+				"s": "1",
+				"g": "2",
+				"m": "0",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié l'abscisse : on lit l'**ordonnée** du point de la courbe, sur l'axe vertical."
+			},
+			"answers": ["-2", "3", "5"]
+		},
+		{
+			"description": "F3 : décalé d'un carreau vers le haut",
+			"variationIndex": 6,
+			"variables": {
+				"t": "0",
+				"s": "1",
+				"g": "2",
+				"m": "0",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau."
+			},
+			"answers": ["-3", "4", "5"]
+		},
+		{
+			"description": "F3 : décalé d'un carreau vers le bas",
+			"variationIndex": 6,
+			"variables": {
+				"t": "0",
+				"s": "1",
+				"g": "2",
+				"m": "0",
+				"c": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compte à nouveau les carreaux : ta lecture est décalée d'un carreau."
+			},
+			"answers": ["-3", "3", "4"]
+		},
+		{
+			"description": "F3 : cubique → −2, 1, 2",
+			"variationIndex": 6,
+			"variables": {
+				"t": "2",
+				"s": "1",
+				"g": "1",
+				"m": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "1", "2"]
+		},
+		{
+			"description": "F3 : cubique, abscisse recopiée",
+			"variationIndex": 6,
+			"variables": {
+				"t": "2",
+				"s": "1",
+				"g": "1",
+				"m": "1",
+				"c": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié l'abscisse : on lit l'**ordonnée** du point de la courbe, sur l'axe vertical."
+			},
+			"answers": ["-1", "1", "2"]
+		},
+		{
+			"description": "F3 : parabole → −1, 2, −1",
+			"variationIndex": 6,
+			"variables": {
+				"t": "1",
+				"s": "-1",
+				"g": "1",
+				"m": "-1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "2", "-1"]
+		}
+	]
+}
