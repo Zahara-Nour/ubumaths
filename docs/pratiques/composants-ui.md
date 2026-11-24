@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/navigation/return-links.ts'
   - 'src/lib/components/rich-text/{RichTextEditor,RichTextDisplay}.svelte'
   - 'src/lib/stores/{toaster,theme,fontSize}.svelte.ts'
+  - src/lib/components/AppToaster.svelte
 ---
 
 # UI Components
@@ -281,7 +282,7 @@ lors de la sauvegarde'); toaster.warning('Aucun élève sélectionné'); toaster
 cours…'); toaster.message('Message neutre'); // sans icône de statut
 ```
 
-Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine.
+Wrapper sur `svelte-sonner`. Le Toaster est monté dans le layout racine (`AppToaster.svelte`) : cinq annonces visibles au plus sur ordinateur, une seule (la plus récente) au téléphone.
 
 ---
 

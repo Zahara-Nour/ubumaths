@@ -36,6 +36,7 @@ couvre:
   - scripts/surveillance-machine-installer.sh
   - scripts/menage-machine.sh
   - scripts/machine-commun.sh
+  - scripts/bilan-machine.sh
   - 'scripts/durees/**'
 ---
 
@@ -204,6 +205,17 @@ toutes les 5 min par launchd (`pnpm surveillance:installer`, `--desinstaller` po
   (charge, pression, swap, CPU de Chrome et Brave, serveurs de dev, processus Claude, Go libres du
   disque), 14 jours gardés ; colonnes changées → l'ancien fichier devient `historique-ancien.csv`. Après un gel : `pnpm surveillance:historique` (2 dernières heures) ;
 - `pnpm surveillance:essai` : ce qu'elle ferait maintenant, sans rien arrêter, envoyer ni écrire.
+
+**Bilan du Mac mini** : `pnpm machine:bilan` (`scripts/bilan-machine.sh`) affiche l'état de la
+machine en une page, à la demande, sans rien arrêter, envoyer ni écrire : charge, mémoire
+(pression, compressée, swap), programmes qui prennent le plus de mémoire et de CPU, **processus
+emballés** (n'importe quel processus à plus de 90 % de CPU avec plus d'une heure de CPU cumulée,
+nommé par son rôle : « Chrome (processus graphique) »), **parent qui ne ramasse plus ses processus
+morts** (3 ou plus : le programme ne répond sans doute plus — Chrome le 2026-11-22), navigateur
+ouvert depuis plus de 7 jours, sessions Claude par âge, serveurs de dev (port, worktree, âge,
+mémoire), processus de test orphelins, disque libre, volume Preboot au-delà de 10 Go (mise à jour de
+macOS préparée), nombre de worktrees, Time Machine, et la tendance des 24 dernières heures tirée de
+l'historique de la surveillance. Affichage local : les noms de worktree y figurent.
 
 **Durées de la CI, des PR, de la mise en prod et du Mac mini** : `pnpm durees` (`scripts/durees/`),
 pour voir une phase devenue nettement plus lente que la normale.

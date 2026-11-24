@@ -58,7 +58,7 @@ Déjà documenté ailleurs, et seulement cité ici :
   copyright, version.
 
 **Partout** : une barre fine en haut de l'écran pendant une navigation, les toasts en haut à
-droite (cinq visibles au plus), et les modales de la pile (cartes VIP, historiques, Démineur).
+droite (cinq visibles au plus ; une seule, la plus récente, au téléphone : `AppToaster`), et les modales de la pile (cartes VIP, historiques, Démineur).
 
 **Dans le tableau de bord** : l'en-tête et la barre latérale du tableau de bord remplacent ceux du
 layout racine. En plus, selon le rôle :
