@@ -4,7 +4,7 @@
 	ou une saisie.
 -->
 <script lang="ts">
-	import { provideReaderGrade } from '#lib/lexicon/reader-grade.ts';
+	import { provideReaderGrade } from '#lib/dictionary/reader-grade.ts';
 	import StructureField from '../StructureField.svelte';
 
 	interface Props {
