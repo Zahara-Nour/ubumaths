@@ -2,24 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, après #3051._
+_Mis à jour le 2026-11-24, chantier clos._
 
-- **État** : #3049 en prod (rangement + contenu) ; #3051 (série de relecture `1cea2ab1`) mergée.
-  David a validé les 9 modèles dans le chat (« je valide les modèles », 2026-11-23 ; aucun verdict
-  en base). `publier-lot.ts` en simulation : les 2 brouillons passent le contrôle.
-- **Prochaine action** : après la publication par David, vérifier en prod ; tableau de répartition :
-  rubrique « publiée » ; clôture (versement du journal).
-- **En attente de David** :
-  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-1re-derivation-neufs --publier`
-  (depuis le dépôt principal à jour).
-- **Pièges en cours** : base LOCALE : migration de contenu jouée sous l'ancien nom `20261123165942`.
-- **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : rubrique **publiée** : les 2 modèles neufs sont publiés et validés par David ; les 13
+  variations des 7 publiés aussi (série de relecture `1cea2ab1`) ; journal archivé ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## Journal
 
 ### 2026-11-23 — réservation, relevé, phase 0
 
-- Rubrique 1AN1 (12 exercices) réservée dans [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md) (`cc3b3979a`).
+- Rubrique 1AN1 (12 exercices) réservée dans [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md) (`cc3b3979a`).
 - Relevé : 3 ✅, 9 🟡, 0 ❌. Nos 21 modèles de 1re spé couvrent chaque exercice au moins en partie ;
   il manque des cas (inverse dans le taux, autres courbes, tangente à une rationnelle, coefficients
   fractionnaires ou décimaux, produits et quotients plus variés).
@@ -64,3 +57,9 @@ _Mis à jour le 2026-11-23, après #3051._
 
 - Série de relecture `1cea2ab1` enregistrée par David ; PR #3051 pour l'id. David : « je valide les
   modèles ». `publier-lot.ts` en simulation : 2 brouillons passent le contrôle.
+
+### 2026-11-24 — #3051 mergée, rubrique publiée
+
+- #3051 mergée (id de la série de relecture). David a lancé `publier-lot.ts --publier` : les 2 neufs
+  (`904fb546`, `d1cf9d7c`) sont `published` (vérifié, MCP lecture seule).
+- Rubrique « publiée » au tableau de répartition ; journal archivé.
