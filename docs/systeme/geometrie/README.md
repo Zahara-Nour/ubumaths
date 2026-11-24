@@ -275,6 +275,13 @@ possible.
   masqué (`etiquette="aucune"`, `labelHidden`, `Figure.setLabelHidden`) est respecté pour les
   POINTS sur les quatre surfaces (écran, SVG, TikZ, Typst — croix comprise, depuis le
   2026-10-19) ; droites, segments et cercles l'ignorent encore à l'écran.
+- **Noms sans chevauchement (écran, constructions seulement)** : `rendering/label-avoidance.ts`
+  `placeLabels(figure, transformer, dims)` choisit pour chaque nom de point, segment, demi-droite et
+  droite la première place libre parmi quelques candidates (la place habituelle d'abord) : pas sur
+  un autre nom, un point, un codage d'angle ou de longueur, un arc, ni hors du cadre. Points
+  d'abord, puis segments et demi-droites, puis droites ; un `labelOffset` ne bouge pas. Activé par
+  la prop `avoidLabelOverlap` de `GeometryCanvas` (défaut false), que seule `ConstructionCanvas`
+  passe ; les exports SVG/TikZ/Typst gardent les places habituelles (E4, 2026-11-24).
 
 ### Thème clair / sombre
 
