@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3104._
+_Mis à jour le 2026-11-24, PR 3 en cours (page de relecture publiée)._
 
-- **État** : PR 1 (#3099, migration en prod) et PR 2 (#3104, noms anglais au PDF, règle « un nom manque → catégorie seule », signalement dans l'éditeur) mergées ; rien en prod pour la PR 2 tant que David n'a pas lancé `deploy:prod` · **Prochaine action** : PR 3 — traductions : proposer les ~640 noms anglais, page à cocher pour la relecture par David, puis migration de données (remplit `translations`, n'efface rien) · **En attente de David** : rien avant la page à cocher · **Pièges en cours** : écart 9 réduit, pas disparu (fiche anglaise sans catégorie + un nom sans anglais → `title`) jusqu'à la PR 3 · **Worktree / branche** : aucun (celui de la PR 2 retiré) ; PR 3 → nouveau worktree `../ubumaths-wt-notions-en-anglais-traductions`
+- **État** : PR 1 (#3099) et PR 2 (#3104) mergées ; PR 3 : 637 noms anglais proposés (nœuds actifs ; aucun nœud archivé n'est sur une fiche), page à cocher publiée : https://claude.ai/artifact/AL8cyDfzFivdKqiaDV1THA · **Prochaine action** : lire les réponses (`ArtifactData list reponses`, un document par branche), compter 637, appliquer les corrections, écrire la migration de données (`translations.en.name` par id, n'efface rien) · **En attente de David** : relecture sur la page · **Pièges en cours** : base locale = prod (empreinte md5 des 711 nœuds identique le 2026-11-24) ; propositions dans le scratchpad de session (`en.tsv`, `page/noms.json`) — la page publiée (`noms.json`) fait foi · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais-traductions`, `feat/notions-en-anglais-traductions`
 
 ## L'idée
 
@@ -121,3 +121,9 @@ Fiche d'exercices en anglais, sans titre libre :
   `types:cliquet`, `lint:fast`.
 - Écran (`pnpm voir`, base locale, fiche brouillon passée en anglais puis remise) : signalement
   « Sans nom anglais : Ensembles de nombres… » affiché, disparu une fois la notion traduite.
+
+### 2026-11-24 — PR 3
+
+- 637 nœuds actifs (19 branches, 134 notions, 484 sous-notions) ; 74 archivés laissés sans anglais (aucune fiche ne s'en sert, vérifié en prod).
+- Choix de traduction : anglais britannique (factorising, optimisation, Pythagoras' theorem), même casse que le français ; « Fonctions affines » → « Linear functions », « fonction linéaire » → « direct proportion function » ; « Théorème de Thalès » → « Intercept theorem » ; « Inégalités » → « Working with inequalities » (les inéquations sont « Inequalities: … »).
+- Page à cocher (capacité `db`, collection `reponses`, un document par branche : `{reponses: {idNœud: {etat, version, commentaire}}}`), file d'écriture unique, nouvel essai automatique, bandeau d'erreur.
