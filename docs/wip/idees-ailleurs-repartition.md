@@ -162,6 +162,10 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 6a5e58da Résoudre une inéquation du type eᵘ < eᶜ             | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
+| 68166a11 Signe de l'exponentielle                            | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
+| 227f2c9c Dériver une exponentielle de fonction affine        | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
+| 15d3aaa0 Tangente à la courbe de exp en un point             | `idees-1re-exponentielle`                                   | 2026-11-24 |                                      |
 | ffd5c051 Propriétés algébriques du logarithme                | `idees-tle-ln`                                              | 2026-11-24 |                                      |
 | d3301f2d Résoudre une équation avec ln                       | `idees-tle-ln`                                              | 2026-11-24 |                                      |
 | 14036c68 Résoudre une inéquation avec ln                     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
