@@ -41,7 +41,7 @@ test.beforeEach(() => test.setTimeout(180_000));
 
 const SHOTS = '.captures/verifs/blocs-paquet5';
 const SOLIDE_PATH = '/aide-ecriture/blocs/solide';
-const LINE_PATH = '/aide-ecriture/blocs/line';
+const LINE_PATH = '/aide-ecriture/blocs/droite-graduee';
 /** Marges fixes de la droite graduée (`NL_LAYOUT` de `number-line-render.ts`) */
 const NL_MARGIN = 40;
 /** Cadre d'un repère `courbe` de taille moyenne, marge comprise (`courbe-scene.ts`) */
@@ -82,11 +82,15 @@ test.afterEach(async () => {
 	createdIds = [];
 });
 test.afterAll(async () => {
-	await sql(`delete from question_templates where title like 'Verifs5 %'`);
+	// Seulement les brouillons de CE worker : un autre worker en a en cours (même projet ou non)
+	await sql(`delete from question_templates where title like $1`, [`${draftPrefix()} %`]);
 });
 
 // Fonctions
 
+/** Préfixe des titres de brouillons de ce worker : projet + numéro de worker (jamais effacés par un autre) */
+const draftPrefix = (): string =>
+	`Verifs5 ${test.info().project.name} w${test.info().parallelIndex}`;
 const isTouch = (): boolean => test.info().project.use.hasTouch === true;
 const projectName = (): string => test.info().project.name;
 const fence = (name: string, ...lines: string[]): string =>
@@ -144,12 +148,14 @@ async function openPreview(
 	statement: string,
 	options: { plain?: boolean } = {}
 ): Promise<string> {
+	// Déjà connecté (un test ouvre d'abord une page en prof) : la page de connexion renverrait ailleurs
+	await page.context().clearCookies();
 	await login(page, ADMIN.email, ADMIN.password);
 	const plain = options.plain === true;
 	const response = await page.request.post('/api/questions/templates', {
 		data: {
 			type: 'fill_in_blanks',
-			title: `Verifs5 ${projectName()} ${title}`,
+			title: `${draftPrefix()} ${title}`,
 			grades: ['T_SPE'],
 			level: 2,
 			status: 'draft',
@@ -238,6 +244,7 @@ async function previewText(page: Page): Promise<string> {
 
 /** Ouvre la page d'aide d'un bloc, en prof, une fois la page hydratée */
 async function openBloc(page: Page, path: string): Promise<void> {
+	await page.context().clearCookies();
 	await login(page, TEACHER.email, TEACHER.password);
 	await gotoSettled(page, path);
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -417,7 +424,8 @@ test('#2356 — « w1 = AB, u = AE » : w₁ (1 plus petit, abaissé) sous sa pe
 	expect(parts.w?.sub?.dy, '1 abaissé').toBeGreaterThan(0);
 	expect(parts.u?.content, 'u sans indice').toBe('u');
 	expect(parts.u?.sub, 'u sans indice').toBeNull();
-	await expect(drawing.locator('polygon.solide-pointe')).toHaveCount(2);
+	// Un vecteur nommé = sa flèche + la petite flèche posée sur son nom : 2 vecteurs, 4 pointes
+	await expect(drawing.locator('polygon.solide-pointe')).toHaveCount(4);
 	await shootThemes(page, drawing, '2356-indice');
 });
 
@@ -429,7 +437,8 @@ test('#2347 — combinaison en fractions : u, v, w dessinés et nommés sur le t
 		.locator('svg.solide-figure')
 		.first();
 	await scrollTo(drawing);
-	await expect(drawing.locator('polygon.solide-pointe')).toHaveCount(3);
+	// 3 vecteurs nommés = 3 flèches + 3 petites flèches sur les noms
+	await expect(drawing.locator('polygon.solide-pointe')).toHaveCount(6);
 	const centers = await labelCenters(drawing);
 	for (const name of ['u', 'v', 'w', 'S', 'A', 'B', 'C', 'G']) {
 		expect(centers[name], `étiquette ${name}`).toBeDefined();
@@ -461,6 +470,14 @@ test('#2347 — combinaison en fractions : u, v, w dessinés et nommés sur le t
 	const sentence = page.locator('.solide-geste p.text-sm').first();
 	await expect(sentence).toContainText('Ta flèche représente');
 	await expect(sentence).toContainText('pas');
+	// La combinaison est une formule à part : fractions et flèches sur u, v, w (pas du texte brut)
+	const formulas = sentence.locator('math-span');
+	await expect(formulas).toHaveCount(2);
+	await expect(formulas.nth(1)).toContainText(
+		'\\frac{1}{3}\\vec{u}+\\frac{1}{3}\\vec{v}+\\frac{1}{3}\\vec{w}'
+	);
+	const box = await formulas.nth(1).boundingBox();
+	expect(box?.width ?? 0, 'formule dessinée').toBeGreaterThan(20);
 	const html = await sentence.innerHTML();
 	console.log(
 		`#2347 ${projectName()} : phrase = « ${(await sentence.innerText()).replace(/\s+/g, ' ')} »`
@@ -613,7 +630,8 @@ test('#2331 — « Des vecteurs sur un cube » : flèches à pointe pleine, I po
 	await openBloc(page, SOLIDE_PATH);
 	const drawing = rendered(page, 'Des vecteurs sur un cube').locator('svg.solide-figure').first();
 	await scrollTo(drawing);
-	await expect(drawing.locator('polygon.solide-pointe')).toHaveCount(3);
+	// 3 vecteurs nommés = 3 flèches + 3 petites flèches sur les noms
+	await expect(drawing.locator('polygon.solide-pointe')).toHaveCount(6);
 	const fills = await drawing
 		.locator('polygon.solide-pointe')
 		.evaluateAll((els) => els.map((el) => getComputedStyle(el).fill));
@@ -696,9 +714,17 @@ test('#2400 — tétraèdre S A B C : B devant, seule AC en tirets, G, I et somm
 				const pts = [...g.points].map((p) => toScreen(g, p.x, p.y));
 				return [pts[0], pts[pts.length - 1]];
 			});
+		// Points posés (G, I) : la cote de la hauteur en tirets s'arrête sur G, ce n'est pas une arête
+		const dots = [...svg.querySelectorAll('circle.solide-point')].map((el) => {
+			const box = el.getBoundingClientRect();
+			return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+		});
 		return {
 			labels,
-			dashed: ends('polyline.solide-cache'),
+			dots,
+			dashed: ends('polyline.solide-cache').filter(
+				(seg) => !seg.some((p) => dots.some((d) => Math.hypot(d.x - p.x, d.y - p.y) < 3))
+			),
 			solid: ends('polyline.solide-trait:not(.solide-cache)')
 		};
 	});
@@ -1138,7 +1164,7 @@ test('#2274 — vecteur libre : glisser un bout la déplace (souris, ou doigt so
 		const box = (await svg.boundingBox()) as { x: number; y: number };
 		if (info.project.name === 'android') {
 			const session = await page.context().newCDPSession(page);
-			const send = (type: string, spot?: Spot) =>
+			const send = (type: 'touchStart' | 'touchMove' | 'touchEnd', spot?: Spot) =>
 				session.send('Input.dispatchTouchEvent', {
 					type,
 					touchPoints: spot === undefined ? [] : [{ x: spot.x, y: spot.y, id: 0 }]
@@ -1169,7 +1195,7 @@ test('#2274 — vecteur libre : glisser un bout la déplace (souris, ou doigt so
 	}
 });
 
-test('#2274 — « depuis A » : A ne bouge pas et seule « Extrémité » est proposée ; flèche juste ailleurs → vert', async ({
+test('#2274 — « depuis A » : A ne bouge pas, aucun bouton (périmé : « seule Extrémité », ea5fd701b0) ; flèche juste ailleurs → vert', async ({
 	page
 }) => {
 	await openPreview(
@@ -1179,7 +1205,8 @@ test('#2274 — « depuis A » : A ne bouge pas et seule « Extrémité » est p
 	);
 	const { zone, svg } = await courbeZone(page);
 	await expect(page.getByRole('button', { name: 'Origine', exact: true })).toHaveCount(0);
-	await expect(page.getByRole('button', { name: 'Extrémité', exact: true })).toBeVisible();
+	// Périmé : la ligne dit « seule Extrémité est proposée », ea5fd701b0 (2026-11-05) n'en laisse aucune
+	await expect(page.getByRole('button', { name: 'Extrémité', exact: true })).toHaveCount(0);
 	await expect(zone.locator('circle.courbe-point')).toHaveCount(1);
 	await tapCourbe(svg, VECTOR_WIN, 2, 0);
 	await expect(arrowOf(zone)).toHaveCount(1);
@@ -1220,17 +1247,22 @@ test('#2274 — vecteur nommé, flèche fausse : « …, pas u⃗ (3 ; −2). »
 	await expect(sentence).toBeVisible();
 	const read = await sentence.evaluate((p) => ({
 		text: (p.textContent ?? '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' '),
-		nodes: [...p.childNodes].map((node) => ({
-			kind: node.nodeType === Node.TEXT_NODE ? 'text' : 'node',
-			text: node.textContent ?? ''
-		}))
+		nodes: [...p.childNodes]
+			.filter((node) => node.nodeType !== Node.COMMENT_NODE)
+			.map((node) => ({
+				kind: node.nodeType === Node.TEXT_NODE ? 'text' : 'node',
+				text: node.textContent ?? ''
+			}))
 	}));
 	console.log(`#2274 ${projectName()} : phrase = « ${read.text} »`);
-	// Le texte « …, pas » finit par une espace (ordinaire ou insécable), puis vient la formule
-	const index = read.nodes.findIndex((n) => n.kind === 'text' && /pas[\s\u00a0]*$/.test(n.text));
+	// « …, pas » puis une espace (insécable, dans son propre nœud de texte) puis la formule à part
+	const index = read.nodes.findIndex((n) => n.kind === 'text' && n.text.endsWith('pas'));
 	expect(index, 'le texte « …, pas » précède la formule').toBeGreaterThanOrEqual(0);
-	expect(read.nodes[index].text, 'une espace après « pas »').toMatch(/pas[\s\u00a0]+$/);
-	expect(read.nodes[index + 1]?.kind, 'la formule suit, à part').toBe('node');
+	let next = index + 1;
+	let between = '';
+	while (read.nodes[next]?.kind === 'text') between += read.nodes[next++].text;
+	expect(between, 'une espace entre « pas » et la formule').toMatch(/^[\s\u00a0]+$/);
+	expect(read.nodes[next]?.kind, 'la formule suit, à part').toBe('node');
 	await shootThemes(page, sentence, '2274-nomme');
 });
 
@@ -1251,10 +1283,12 @@ test('#2274 — droite fausse : « Ta droite n’est pas celle d’équation y =
 	const sentence = page.locator('p.text-sm', { hasText: 'Ta droite' }).first();
 	await expect(sentence).toBeVisible();
 	const nodes = await sentence.evaluate((p) =>
-		[...p.childNodes].map((node) => ({
-			kind: node.nodeType === Node.TEXT_NODE ? 'text' : 'node',
-			text: node.textContent ?? ''
-		}))
+		[...p.childNodes]
+			.filter((node) => node.nodeType !== Node.COMMENT_NODE)
+			.map((node) => ({
+				kind: node.nodeType === Node.TEXT_NODE ? 'text' : 'node',
+				text: node.textContent ?? ''
+			}))
 	);
 	const formula = nodes.findIndex((n) => n.kind === 'node');
 	expect(formula, 'la formule est un élément à part').toBeGreaterThan(0);
@@ -1273,11 +1307,12 @@ test('#2304 — 2-299 « Lire les coordonnées d’un vecteur » : la flèche (A
 	] as const) {
 		const { seed } = await findSeed(page, MODELS.lireVecteur, pick);
 		await openSeeded(page, MODELS.lireVecteur, seed);
-		const figure = page.locator('figure.figure-toile:visible').first();
+		const figure = page.locator('figure.figure-bloc:visible').first();
 		await expect(figure).toBeVisible({ timeout: 30_000 });
 		await figure.scrollIntoViewIfNeeded();
+		// La pointe de la flèche du vecteur (les pointes des axes portent la classe `figure-fleche`)
 		const head = await figure
-			.locator('svg polygon')
+			.locator('svg polygon[data-element]')
 			.first()
 			.evaluate((el) => {
 				const box = el.getBoundingClientRect();
@@ -1290,19 +1325,19 @@ test('#2304 — 2-299 « Lire les coordonnées d’un vecteur » : la flèche (A
 			await expect(figure).toContainText('A');
 			await expect(figure).toContainText('B');
 		}
-		// Deux cases en colonne : l'une sous l'autre, alignées
-		const fields = page.locator('math-field:visible');
-		await expect(fields.first()).toBeVisible();
-		const boxes = (
-			await fields.evaluateAll((els) =>
-				els.map((el) => {
-					const box = el.getBoundingClientRect();
-					return { x: box.x, y: box.y, width: box.width, height: box.height };
-				})
-			)
-		).filter((b) => b.width > 0 && b.height > 0);
-		expect(boxes.length, 'cases de réponse').toBeGreaterThanOrEqual(2);
-		const [first, second] = boxes.slice(-2);
+		// Deux cases en colonne : UN champ MathLive avec une matrice à deux inconnues (`?`), l'une sous l'autre
+		const field = page.locator('math-field:visible').first();
+		await expect(field).toBeVisible();
+		const boxes = await field.evaluate((el) => {
+			const prompts = [...(el.shadowRoot?.querySelectorAll('.ML__prompt, .ML__placeholder') ?? [])];
+			return prompts.map((node) => {
+				const box = node.getBoundingClientRect();
+				return { x: box.x, y: box.y, width: box.width, height: box.height };
+			});
+		});
+		console.log(`#2304 ${projectName()} : cases ${JSON.stringify(boxes)}`);
+		expect(boxes.length, 'cases de réponse').toBe(2);
+		const [first, second] = boxes;
 		expect(second.y, 'deuxième case sous la première').toBeGreaterThan(first.y + first.height / 2);
 		expect(Math.abs(second.x - first.x), 'cases alignées en colonne (px)').toBeLessThan(20);
 		await shootThemes(page, figure, `2304-lire-${label}`);
@@ -1358,7 +1393,7 @@ test('#2306 — 2-298 « Représenter un vecteur » : origine libre (Origine pui
 	);
 });
 
-test('#2306 — 2-298 « depuis A » : seule « Extrémité » est proposée, A ne bouge pas, extrémité juste → vert', async ({
+test('#2306 — 2-298 « depuis A » : aucun bouton (périmé : « seule Extrémité », ea5fd701b0), A ne bouge pas, extrémité juste → vert', async ({
 	page
 }) => {
 	await login(page, ADMIN.email, ADMIN.password);
@@ -1369,7 +1404,8 @@ test('#2306 — 2-298 « depuis A » : seule « Extrémité » est proposée, A 
 	await openSeeded(page, MODELS.tracerVecteur, seed);
 	const { zone, svg } = await courbeZone(page);
 	await expect(page.getByRole('button', { name: 'Origine', exact: true })).toHaveCount(0);
-	await expect(page.getByRole('button', { name: 'Extrémité', exact: true })).toBeVisible();
+	// Périmé : la ligne dit « seule Extrémité est proposée », ea5fd701b0 (2026-11-05) n'en laisse aucune
+	await expect(page.getByRole('button', { name: 'Extrémité', exact: true })).toHaveCount(0);
 	await tapCourbe(svg, { xMin: -6, xMax: 6, yMin: -6, yMax: 6 }, xa + a, ya + b);
 	await validate(page);
 	await expect(zone).toHaveClass(/placer-juste/);
@@ -1391,7 +1427,9 @@ test('#2296 — 2-316 droite d’équation réduite : deux points justes → ver
 	await openSeeded(page, MODELS.droiteReduite, seed);
 	let { zone, svg } = await courbeZone(page);
 	const statement = await previewText(page);
-	expect(statement).toMatch(/Trace la droite d : place deux de ses points\./);
+	// Le « d » est une formule (absente du texte lu) : « Trace la droite [d] : place deux de ses points. »
+	expect(statement).toMatch(/Trace la droite\s*: place deux de ses points\./);
+	await expect(page.locator('math-span', { hasText: /^d$/ }).first()).toBeAttached();
 	await expect(posed(zone)).toHaveCount(0);
 	await tapCourbe(svg, DRAW_WIN, 0, p);
 	await tapCourbe(svg, DRAW_WIN, 1, p + m);
@@ -1480,25 +1518,55 @@ test('#2296 — 2-445 équation cartésienne : pente fausse → l’équation de
 test('#2398 — arbre G_1 / G_2 : G₁ et G₂ en indices à l’écran ; le modèle « Probabilités totales » (arbre en \\mathrm{A}_1) s’affiche comme avant', async ({
 	page
 }) => {
+	// Une branche = « événement:probabilité » ; le texte après la virgule (P(…)=…) s'écrit au bout
 	await openPreview(
 		page,
 		'2398 arbre',
-		`Voici l'arbre.\n\n${fence('probtree', 'G_1:0.4', '  P(G_1\\cap D)=0.3', 'G_2:0.6')}`,
+		`Voici l'arbre.\n\n${fence(
+			'probtree',
+			'root: Tirage',
+			'outcomes: true',
+			'G_1:0.4',
+			'  D:0.5, P(G_1\\cap D)=0.2',
+			'G_2:0.6',
+			'  D:0.5, P(G_2\\cap D)=0.3'
+		)}`,
 		{ plain: true }
 	);
-	const tree = page.locator('svg:has(text):visible', { hasText: 'G' }).first();
+	const tree = page.locator('.probability-tree:visible').first();
 	await expect(tree).toBeVisible({ timeout: 30_000 });
 	await tree.scrollIntoViewIfNeeded();
-	const dump = await page
-		.locator('#contenu-principal svg:visible')
-		.evaluateAll((svgs) => svgs.map((svg) => svg.innerHTML.slice(0, 2500)));
-	console.log(`#2398 ${projectName()} : ${dump.join('\n----\n').slice(0, 3500)}`);
+	const formulas = await tree.locator('math-span').allTextContents();
+	console.log(`#2398 ${projectName()} : formules de l'arbre = ${JSON.stringify(formulas)}`);
+	// G_1 et G_2 sont écrits en indice (G_{1}, G_{2}), ni « G_1 » brut ni « G1 » sans indice
+	expect(formulas.filter((f) => /^G_\{?1\}?$/.test(f.trim())).length, 'G₁ en indice').toBe(1);
+	expect(formulas.filter((f) => /^G_\{?2\}?$/.test(f.trim())).length, 'G₂ en indice').toBe(1);
+	expect(
+		formulas.filter((f) => /P\(G_\{?1\}?\\cap D\)/.test(f)).length,
+		'P(G₁∩D) avec G₁ en indice'
+	).toBe(1);
 	await shootThemes(page, tree, '2398-arbre');
 
-	await openModel(page, MODELS.probabilitesTotales);
-	const published = page.locator('svg:has(text):visible').first();
+	// Le modèle publié (variation « usine ») montre son arbre en \mathrm{A}_1 dans la correction,
+	// qu'une réponse fausse fait apparaître
+	const { seed } = await findSeed(page, MODELS.probabilitesTotales, (i) =>
+		i.statement.includes('usine')
+	);
+	await openSeeded(page, MODELS.probabilitesTotales, seed);
+	const field = page.locator('math-field:visible').first();
+	await press(field);
+	await expect(field).toBeFocused();
+	await page.keyboard.type('1', { delay: 80 });
+	await validate(page);
+	const published = page.locator('.probability-tree:visible').first();
 	await expect(published).toBeVisible({ timeout: 30_000 });
 	await published.scrollIntoViewIfNeeded();
+	const publishedFormulas = await published.locator('math-span').allTextContents();
+	console.log(`#2398 ${projectName()} : arbre publié = ${JSON.stringify(publishedFormulas)}`);
+	expect(
+		publishedFormulas.some((f) => /A\}?_\{?1\}?/.test(f)),
+		'les événements A_1 du modèle publié sont présents'
+	).toBe(true);
 	await shootThemes(page, published, '2398-publie');
 });
 
@@ -1558,7 +1626,10 @@ test.describe('PDF de fiche', () => {
 		await sql(`delete from exercises where created_by = $1 and source = 'verifs5'`, [TEACHER_ID]);
 	}
 
+	// Le PDF ne se joue que sur l'ordinateur : les autres projets ne touchent pas à la fiche (leur
+	// `wipe` effacerait celle d'un worker en cours)
 	test.beforeAll(async () => {
+		if (projectName() !== 'ordi-chrome') return;
 		await wipe();
 		const ids: Array<{ id: string; title: string }> = [];
 		for (const [title, block] of [
@@ -1576,7 +1647,9 @@ test.describe('PDF de fiche', () => {
 			exercises: ids.map(({ id, title }) => ({ exercise: { id, title } }))
 		});
 	});
-	test.afterAll(wipe);
+	test.afterAll(async () => {
+		if (projectName() === 'ordi-chrome') await wipe();
+	});
 
 	test('#2356, #2331, #2339, #2294, #2274, #2398 — PDF de la fiche et du corrigé : indice w₁, flèches des vecteurs, « Pile » en texte droit', async ({
 		page

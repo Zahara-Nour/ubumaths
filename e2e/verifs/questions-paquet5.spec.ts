@@ -78,10 +78,16 @@ test.afterEach(async () => {
 	createdIds = [];
 });
 test.afterAll(async () => {
-	await sql(`delete from question_templates where title like $1`, [`${PREFIXE} %`]);
+	// Seulement les brouillons de CE worker : un autre a les siens en cours
+	await sql(`delete from question_templates where title like $1`, [`${ownPrefix()} %`]);
 });
 
 // Functions
+
+/** Préfixe des titres de ce worker (navigateur + rang parmi les workers en cours) */
+function ownPrefix(): string {
+	return `${PREFIXE} ${test.info().project.name} p${test.info().parallelIndex}`;
+}
 
 /**
  * Un modèle « Verifs5 q5 … » posé par SQL. Publié : le lien de série public ne joue que ceux-là, et
@@ -94,7 +100,7 @@ async function makeDraft(title: string, variations: object[]): Promise<string> {
 		 values ('fill_in_blanks', array['2'], 1, $1::jsonb, 'published', $2,
 		   (select id from profiles where email = $3))
 		 returning id::text`,
-		[JSON.stringify(variations), `${PREFIXE} ${test.info().project.name} ${title}`, TEACHER.email]
+		[JSON.stringify(variations), `${ownPrefix()} ${title}`, TEACHER.email]
 	);
 	createdIds.push(rows[0].id);
 	return rows[0].id;
@@ -676,9 +682,11 @@ test('#2338 — corrigé de 2-330 : « −x − 3 = 0 ⟺ x = −3 », « x − 
 		const { vars, steps } = await generate(page, PRODUIT, seed);
 		const corrigé = steps.join('\n');
 		expect(corrigé, `seed ${seed}`).not.toMatch(unit);
-		if (vars.a === '-1' || vars.c === '-1') {
+		// L'étape des racines (« … = 0 ⟺ x = … ») n'existe pas dans toutes les variations
+		const roots = steps.find((step) => step.includes('\\iff'));
+		if (roots !== undefined && (vars.a === '-1' || vars.c === '-1')) {
 			withMinusOne++;
-			expect(steps[1], `seed ${seed}`).toMatch(/\$-x [-+] \d+ = 0\\iff x=/);
+			expect(roots, `seed ${seed}`).toMatch(/\$-x [-+] \d+ = 0\\iff x=/);
 		}
 		if (vars.a === '1' || vars.c === '1') withOne++;
 	}
