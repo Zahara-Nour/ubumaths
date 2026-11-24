@@ -171,6 +171,9 @@ de contenu appliquée en prod.
 | 7c8b341b Propriétés algébriques du logarithme (QCM)          | `idees-tle-ln`                                              | 2026-11-24 |                                      |
 | 7f13ca89 Intervalle de croissance d'une fonction avec ln     | `idees-tle-ln`                                              | 2026-11-24 |                                      |
 | e814175b Inégalité déduite de la convexité                   | `idees-tle-ln`                                              | 2026-11-24 |                                      |
+| d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
+| cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
