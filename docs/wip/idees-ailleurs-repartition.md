@@ -137,7 +137,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`    |
 | Puissances                               | 3C1       | 5         | libre                                                      |                            |
 | Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral` |
-| Généralités sur les fonctions            | 3F1       | 19        | prise (2026-11-24)                                         | `idees-3e-fonctions`       |
+| Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`       |
 | Fonctions affines et linéaires           | 3F2       | 14        | libre                                                      |                            |
 | Proportionnalité                         | 3P1       | 3         | libre                                                      |                            |
 | Statistiques                             | 3S1       | 3         | libre                                                      |                            |
@@ -169,9 +169,6 @@ de contenu appliquée en prod.
 | 7974722d Espérance de aX + bY : linéarité                    | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | 0943e867 Inégalité de Bienaymé-Tchebychev                    | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | 95f73515 Inégalité de concentration : majorant               | `idees-tle-probas`                                          | 2026-11-24 |                                      |
-| d820232a Image et antécédent                                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
-| 6ad254b4 Formule, tableau de valeurs, courbe                 | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
-| cb545bd7 Produire une formule                                | `idees-3e-fonctions`                                        | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
