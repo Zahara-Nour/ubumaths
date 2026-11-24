@@ -9,12 +9,10 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 _Mis à jour le 2026-11-24, rubrique prise._
 
 - **État** : phase 0 validée (F1-F5, N1-N3), modèles d820232a, 6ad254b4, cb545bd7 réservés et
-  exportés, lot en écriture par deux agents (fichiers NON commités dans le worktree :
-  `docs/wip/questions/idees-3e-fonctions-{neufs,publies}.py`, `scripts/questions/idees-3e-fonctions-neufs/`,
-  json réécrits de `…-publies/`, migration de contenu) · **Prochaine action** : `git status` du
-  worktree, relire le lot dans le code (simulation `create-questions`, `question:specs`, tirages
-  `--apercu`, diff des variations d'origine vide, test de la migration), puis journal « lot écrit »
-  et commit · **En attente de David** : rien (Q1 à Q3 tranchées) ·
+  exportés, **lot écrit et commité** (§ Historique, « lot écrit ») · **Prochaine action** :
+  résultat de `pnpm test:integration tests/integration/migrations-contenu-publie.test.ts`, rendu à
+  l'écran (`pnpm voir`, aperçu admin local), puis David lance `create-questions --publier` en prod
+  (brouillons N1-N3) · **En attente de David** : rien (Q1 à Q3 tranchées) ·
   **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions`,
   `docs/idees-3e-fonctions`
 
@@ -99,6 +97,27 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
    cb545bd7 plutôt qu'un modèle de 3e (pas de point de 3e pour « produire une formule »).
 
 ## Historique
+
+### 2026-11-24 — lot écrit
+
+- Écrit par deux agents (`pedagogy-expert`), relu par moi : simulation `create-questions` verte
+  (3 neufs à créer), variations et specs d'origine des 3 publiés identiques à l'export (script de
+  comparaison). Scripts : `docs/wip/questions/idees-3e-fonctions-{neufs,publies}.py`.
+- **Neufs** : N1 4 var. / 14 specs (choix `plusieurs: oui`, une seule bonne case = ½) ; N2 5 / 25
+  (sans quotient) ; N3 3 / 14 (tableau de 4 cases puis ` ```courbe ` `placer:` de 4 points : premier
+  modèle qui mêle les deux, numérotation vérifiée dans `assign-blank-indices.ts`). Essai en base
+  locale : 3 brouillons créés, ids locaux retirés.
+- **Publiés** : d820232a +6 var. (39 specs), 6ad254b4 +3 (30), cb545bd7 +2 (25) ; `question:specs`
+  300 tirages verts, `sonde-courbes` 0 problème. Migration de contenu
+  `20261124123959_questions_idees_3e_fonctions_publies_contenu.sql` + fixture.
+- Écarts aux fiches : N1 nom de fonction tiré par `t = 0..2` (une variable « f|g|h » est lue comme
+  inconnue) ; N2 plages resserrées (v1 a, c de ±2 à ±3, x de ±1 à ±3 ; v2 x ≠ −2) ; N2 v1, v2 et
+  plusieurs cases de F2 n'ont que deux erreurs prévues (pas de troisième vraie) ; N3 abscisses
+  fixées (−2, −1, 1, 2) ; F4 v9 : {x₀ ; x₀} est jugé juste (même ensemble), spec retirée ; F5 v7
+  abonnement en …5 centimes (jamais « 52,4 € »). N2 v3-v4 (antécédent par le calcul) dépassent la
+  borne « accompagnement » de 3-040 : validés par la fiche.
+- Reste à voir à l'écran : N3 (repère sous un tableau à cases), N1 (mélange des phrases), courbes
+  et tableaux de F2-F4. Description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
 
 ### 2026-11-24 — rubrique prise
 
