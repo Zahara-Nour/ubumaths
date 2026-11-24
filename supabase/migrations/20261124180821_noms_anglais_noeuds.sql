@@ -16,7 +16,8 @@
 -- 1. `classification_nodes.translations` : `{}` par défaut (aucun nœud traduit ;
 --    les traductions arrivent par une migration de données relue par David).
 --    Forme vérifiée : un objet ; `en`, s'il est là, est un objet dont `name`
---    est un texte non vide (comme `name`, `btrim(name) <> ''`).
+--    est un texte non vide (ni espaces, tabulations ou retours à la ligne
+--    seuls) d'au plus 200 caractères.
 -- 2. Les deux fonctions de partage : corps de
 --    20261119182829_titre_libre_fiche.sql (identique à la prod, md5 vérifié le
 --    2026-11-24), une clé ajoutée (`translations`) à chaque notion de
@@ -41,6 +42,7 @@ alter table public.classification_nodes
 
 alter table public.classification_nodes
 	add constraint classification_nodes_translations_shape check (
+		-- Seule la clé `en` est vérifiée : une autre langue ajoutera sa règle.
 		-- coalesce : une clé absente rend NULL, qu'un CHECK laisserait passer
 		coalesce(
 			jsonb_typeof(translations) = 'object'
@@ -49,7 +51,9 @@ alter table public.classification_nodes
 				or (
 					jsonb_typeof(translations -> 'en') = 'object'
 					and jsonb_typeof(translations -> 'en' -> 'name') = 'string'
-					and btrim(translations -> 'en' ->> 'name') <> ''
+					-- Ni vide, ni fait d'espaces, tabulations ou retours à la ligne
+					and btrim(translations -> 'en' ->> 'name', E' \t\r\n') <> ''
+					and char_length(translations -> 'en' ->> 'name') <= 200
 				)
 			),
 			false

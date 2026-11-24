@@ -227,6 +227,8 @@ describe('le champ de traductions d’un nœud', () => {
 	it.each([
 		['un nom anglais vide', { en: { name: '' } }],
 		['un nom anglais fait d’espaces', { en: { name: '   ' } }],
+		['un nom anglais fait de tabulations et de retours à la ligne', { en: { name: '\t\n ' } }],
+		['un nom anglais de plus de 200 caractères', { en: { name: 'a'.repeat(201) } }],
 		['un nom anglais qui n’est pas un texte', { en: { name: 3 } }],
 		['une traduction anglaise sans nom', { en: {} }],
 		['une traduction anglaise qui n’est pas un objet', { en: 'Sequences' }],

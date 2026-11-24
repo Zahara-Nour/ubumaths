@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, phase 0._
+_Mis à jour le 2026-11-24, PR 1 en cours._
 
-- **État** : questions 1 à 5 tranchées (« je suis tes recos », 2026-11-23) ; comportements et découpage écrits, rien de codé · **Prochaine action** : PR 1 (ADR 0043 + migration) · **En attente de David** : validation des comportements et du découpage · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais` · `feat/notions-en-anglais`
+- **État** : comportements et découpage validés (« go », 2026-11-23) ; PR 1 écrite : ADR 0043, migration `20261124180821_noms_anglais_noeuds.sql`, tests d'intégration rouges sans la migration (17) puis verts ; revues code + sécurité sans bloquant · **Prochaine action** : PR 1 → CI verte → merge → `db:migrate` (vérifier `migration list --linked` avant) ; puis PR 2 (`db:types` d'abord) · **En attente de David** : rien · **Pièges en cours** : PR 2 — échapper le nom anglais au PDF comme le nom français ; le schéma Zod de réponse des liens de partage retirera `translations` s'il n'est pas élargi · **Worktree / branche** : `../ubumaths-wt-notions-en-anglais` · `feat/notions-en-anglais`
 
 ## L'idée
 
@@ -86,3 +86,15 @@ Fiche d'exercices en anglais, sans titre libre :
 3. **PR 3 — traductions** : je propose les ~640 noms, page à cocher pour la relecture, puis
    migration de données (remplit les traductions, n'efface rien) après tes réponses. Elle peut
    se faire en parallèle de la PR 2.
+
+### 2026-11-24 — PR 1
+
+- Comportements et découpage validés par David (« go »).
+- Fonctions de partage en prod = dépôt (md5 identique prod / local, 2026-11-24) : corps repris de
+  `20261119182829_titre_libre_fiche.sql`, une clé ajoutée (`classifications[].translations`).
+- Preuve rouge : 17 tests rouges sans le fichier de migration ; verts avec (59, et 218 sur les
+  10 fichiers de partage, d'arbre et de notions).
+- Piège attrapé : `{"en": {}}` passait le CHECK (clé absente → NULL) → `coalesce(…, false)`.
+- Revues : `code-reviewer` (Sonnet) et `security-auditor` (Opus), aucun bloquant ; retenus :
+  200 caractères au plus, blancs (tabulations, retours à la ligne) refusés, seule `en` vérifiée
+  (commentaire). Pour la PR 2 : échapper le nom anglais au PDF.
