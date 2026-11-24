@@ -559,7 +559,7 @@ test('#2276 — Atelier : 12 km + 500 m → 12,5 km ; 5 km + 3 m → 5003 m ; 3 
 		expect(answer.refused, input).toBe(false);
 		expectLatex(answer, latex);
 		// La réponse affichée, telle que la lit l'élève (espaces insécables comprises)
-		expect(answer.text.replace(/[  ]/g, ' '), input).toContain(text);
+		expect(answer.text.replace(/[\u00a0\u202f]/g, ' '), input).toContain(text);
 	}
 });
 
