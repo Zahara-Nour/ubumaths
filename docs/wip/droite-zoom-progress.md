@@ -6,17 +6,17 @@ d'outil. Ligne n° 54 de [outils-manquants.md](outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, lot écrit, en attente des brouillons en prod._
+_Mis à jour le 2026-11-24, brouillon en prod, PR 2 ouverte._
 
-- **État** : PR 1 (outil) MERGÉE (#3052) ; PR 2 : phase 0 validée (« je te suis »), modèle neuf écrit
-  (`scripts/questions/droite-zoom-modeles/`, 6 variations, 41 specs vertes, sonde 0 problème, rendu vu
-  en local) · **Prochaine action** : après les brouillons, commiter l'id, générer la migration de
-  rangement (`migration-rangement.ts`, nœud « droite graduée », point 6-108), ouvrir la PR,
-  `security-auditor`, `db:migrate`, relecture dans `/dev/modeles?point=6-108` ; puis outil n° 53 ·
-  **En attente de David** : `create-questions --publier` en prod (commande dans le dernier message) ;
-  renommer N5 (c178356b) · **Pièges en cours** : v4 et v5 ont w fixé (dizaines de milliers ; millions),
-  les nombres du texte étant groupés à la main · **Worktree / branche** :
-  `ubumaths-wt-droite-zoom-modeles`, `feat/droite-zoom-modeles`.
+- **État** : PR 1 (outil) MERGÉE (#3052) ; PR 2 ouverte : brouillon 6dba93c8 en prod (David), migration
+  de rangement `20261124070206_…_rangement_tags.sql` (nœud « droite graduée », point 6-108), test
+  d'intégration vert avec, rouge sans · **Prochaine action** : CI verte → merge (`pnpm pr:merger`),
+  `db:migrate` (vérifier `migration list --linked` : aucune autre en attente), relecture par David dans
+  `/dev/modeles?point=6-108`, verdicts, `publier-lot.ts` ; puis outil n° 53 (labyrinthe), phase 0 ·
+  **En attente de David** : relecture après `db:migrate` ; renommer N5 (c178356b) · **Pièges en
+  cours** : relancer `droite-zoom-modeles.py` efface l'id écrit en tête du JSON (le remettre :
+  6dba93c8-b8e6-4888-843b-ac9f821c4a7e) · **Worktree / branche** : `ubumaths-wt-droite-zoom-modeles`,
+  `feat/droite-zoom-modeles`.
 
 ## Phase 0 (2026-11-23, validée par David : « je suis tes recos »)
 
@@ -107,3 +107,5 @@ Questions :
   droite du corrigé de v5 (bouts écrits, nombres groupés). Défaut mineur : sur un zoom, un pointillé
   peut passer près de l'étiquette « B » (règle du dessin, pas du modèle).
 - Zoom en prod depuis la 0.106.0 : pas de déploiement à attendre.
+- 2026-11-24 : brouillon créé en prod par David (6dba93c8) ; migration de rangement générée, test
+  d'intégration vert avec la migration et rouge sans (3 échecs, fichier vidé) ; `security-auditor` lancé.
