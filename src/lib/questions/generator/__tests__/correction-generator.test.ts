@@ -655,6 +655,24 @@ describe("generateCorrection — kind: 'integrate'", () => {
 		expect(result.correction?._renderedSteps).toBeUndefined();
 	});
 
+	// E35 (#1708) : un auteur écrit la virgule décimale française ; elle se lit comme le point
+	it('reads a bare decimal comma like a decimal point (0,6x^2-0,6, factorisée)', () => {
+		const withComma = (expression: string) =>
+			generateCorrection(
+				makeInstance({
+					grades: ['T_SPE'],
+					correction: {
+						generatedSteps: { kind: 'integrate', expression, finalForm: 'factorisee' }
+					}
+				})
+			).correction?._renderedSteps ?? [];
+		const comma = withComma('0,6x^2-0,6');
+		const point = withComma('0.6x^2-0.6');
+		expect(point.length).toBeGreaterThan(0);
+		expect(comma.map((s) => s.expressionLatex)).toEqual(point.map((s) => s.expressionLatex));
+		expect(comma.at(-1)?.expressionLatex).toContain('\\sqrt{3}');
+	});
+
 	it('falls back silently when the integrand is out of V1+V2 scope', () => {
 		// Repeated-root partial fractions `1/(x-1)²` — V2 simple supports only
 		// distinct roots, so this throws NotImplemented and the correction

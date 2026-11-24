@@ -885,7 +885,7 @@
 				{#if hasCorrection}
 					<Tabs.Root value="statement" class="w-full">
 						<Tabs.List class="grid w-full grid-cols-2">
-							<Tabs.Trigger value="statement">Enonce</Tabs.Trigger>
+							<Tabs.Trigger value="statement">Énoncé</Tabs.Trigger>
 							<Tabs.Trigger value="correction">Correction</Tabs.Trigger>
 						</Tabs.List>
 						<Tabs.Content value="statement" class="mt-4">

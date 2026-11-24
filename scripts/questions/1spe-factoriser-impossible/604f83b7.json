@@ -91,7 +91,7 @@
 				"steps": [
 					"On calcule le discriminant avec $a={{a}}$, $b={{b}}$ et $c={{c}}$ : $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$, et $\\sqrt{\\Delta}={{eval:sqrt(b^2-4*a*c)}}$.",
 					"$$x_1=\\dfrac{ {{eval:-b}}-{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} }={{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}} \\qquad x_2=\\dfrac{ {{eval:-b}}+{{eval:sqrt(b^2-4*a*c)}} }{ {{eval:2*a}} }={{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}$$",
-					"Un polynôme du second degré de racines $x_1$ et $x_2$ s'écrit $a(x-x_1)(x-x_2)$, donc $P(x)={{eval:a*(x-r)*(x-s)}}$."
+					"Un polynôme du second degré de racines $x_1$ et $x_2$ s'écrit $a(x-x_1)(x-x_2)$, donc $P(x)={{if:a>0|{{eval:a*(x-r)*(x-s)}}|{{eval:a*(x-s)*(x-r)}}}}$."
 				]
 			}
 		},

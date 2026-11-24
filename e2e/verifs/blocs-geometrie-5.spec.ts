@@ -308,7 +308,7 @@ test.describe('#2348 — triangle par un côté et deux angles', () => {
 		expect(await previewText(page)).toContain('de part et d’autre');
 	});
 
-	test('#2348 — 115° au lieu de 65° : « mauvaise graduation » (ÉCART : les deux droites ne se croisent pas dans la figure) ; la correction : côtés en pointillés, angles codés 40° et 65°', async ({
+	test('#2348 — 115° au lieu de 65° : « mauvaise graduation », même quand les deux côtés ne se croisent pas dans la figure ; la correction : côtés en pointillés, angles codés 40° et 65°', async ({
 		page
 	}) => {
 		await openPreview(page, '2348 graduation', TRI_STATEMENT);
@@ -337,9 +337,8 @@ test.describe('#2348 — triangle par un côté et deux angles', () => {
 		expect(angles).toContain('40°');
 		expect(angles).toContain('65°');
 		await shootThemes(page, triangle, '2348-correction');
-		// Attendu de la ligne : « mauvaise graduation ». Vu : « Tes côtés [AC] et [BC] doivent se
-		// rejoindre en C. » (le juge ne parle de graduation qu'une fois C placé, et C est hors figure)
-		test.fail();
+		// Attendu de la ligne : « mauvaise graduation », lue sur la direction du côté [BC] tracé,
+		// sans C (C est hors figure) : écart E50 corrigé
 		expect(await previewText(page)).toContain('mauvaise graduation');
 	});
 });
