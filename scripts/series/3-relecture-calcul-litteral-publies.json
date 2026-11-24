@@ -1,0 +1,56 @@
+{
+	"id": "9b3b0f74-bd1c-4381-ab0a-9974583b3954",
+	"title": "Relecture — calcul littéral 3e, 8 modèles complétés (3e)",
+	"grade": "3",
+	"description": "Relecture dans /dev/modeles des 8 modèles publiés de 3e complétés par le gros lot « calcul littéral, équations » de 3e (16 nouvelles variations : les dernières de chaque modèle).",
+	"items": [
+		{
+			"modele": "Enlever les parenthèses",
+			"templateId": "c32ebff9-7e10-400e-bc06-c376f6991ea8",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Réduire un produit",
+			"templateId": "93a5f7a9-61f2-4553-a529-6f89c37b569c",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Réduire une somme",
+			"templateId": "77b82211-31f1-43c2-a2f4-04a55efb066e",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Factoriser avec un facteur commun",
+			"templateId": "dcaabf69-d84c-4498-a0d3-4584d5972cd4",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Développer (a + b)² et (a − b)²",
+			"templateId": "18e2afca-3e36-4dfc-b92b-38c9a6f4bb1a",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Factoriser a² − b²",
+			"templateId": "ff9bb2fb-9104-43af-98a8-344df090f716",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Résoudre une équation produit nul",
+			"templateId": "2ab49a6f-2fc4-4583-9cbb-46ace580c019",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Résoudre x² = a",
+			"templateId": "3806ee3d-efc7-4f7d-ba23-966101aff103",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}

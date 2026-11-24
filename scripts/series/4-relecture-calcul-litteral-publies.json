@@ -1,0 +1,32 @@
+{
+	"id": "8bd8112d-5074-4d45-89b1-2c21ec96979d",
+	"title": "Relecture — calcul littéral 3e, 4 modèles complétés (4e)",
+	"grade": "4",
+	"description": "Relecture dans /dev/modeles des 4 modèles publiés de 4e complétés par le gros lot « calcul littéral, équations » de 3e (7 nouvelles variations : les dernières de chaque modèle).",
+	"items": [
+		{
+			"modele": "Développer",
+			"templateId": "54107079-218f-48dd-8df4-3cb4d1f5a801",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Équation linéaire du premier degré (4-024)",
+			"templateId": "c81c5852-9be1-4bd0-bc87-855faabb54f5",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Équation linéaire du premier degré (4-025)",
+			"templateId": "779ee55a-2fc4-4778-b7b0-4ea4b99e5646",
+			"quantity": 1,
+			"delay": 60
+		},
+		{
+			"modele": "Calculer une quatrième proportionnelle",
+			"templateId": "44a3062b-4e55-44e8-b40d-ac7218b58cb7",
+			"quantity": 1,
+			"delay": 60
+		}
+	]
+}
