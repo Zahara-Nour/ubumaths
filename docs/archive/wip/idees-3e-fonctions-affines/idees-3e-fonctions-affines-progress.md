@@ -2,19 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après la validation des modèles par David._
+_Mis à jour le 2026-11-24, chantier clos après #3117._
 
-- **État** : en prod, 4 brouillons rangés et tagués (9414e0a3, 8725107f, 51a8db37, b213f446) ;
-  15ddcc75, 45247528, 7c7b7593 publiés avec leurs nouvelles variations. David a validé les
-  modèles (« je valide les modeles », aucun verdict « À revoir » en base). `publier-lot` en
-  simulation : 4 brouillons passent le contrôle.
-- **Prochaine action** : après le `--publier` de David, vérifier en prod (4 `published`), puis
-  finir : tableau de répartition (rubrique « publiée », réservations levées), versement du journal
-  selon `couvrir-un-niveau.md`.
-- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/idees-3e-fonctions-affines-neufs --publier` (`!`, dépôt principal).
-- **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
-- **Worktree / branche** : aucun.
+- **État** : rubrique publiée : 4 modèles neufs publiés par David (9414e0a3, 8725107f, 51a8db37,
+  b213f446, vérifiés `published` au MCP), 3 publiés complétés de leurs variations (15ddcc75,
+  45247528, 7c7b7593, #3117), le tout validé par David ; réservations levées, journal archivé ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : 27ac630c
+  (brouillon d'un autre chantier, `associer`) n'est pas à nous · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-24)
 
