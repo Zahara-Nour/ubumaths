@@ -6,17 +6,18 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR 2 en cours (avant ouverture)._
+_Mis à jour le 2026-11-24, après #3094._
 
-- **État** : PR 2 (les deux modèles, fichiers seuls) sur `feat/labyrinthe-modeles` ; simulation
-  `create-questions` verte (18 specs), 1 500 tirages sans erreur, vus en local sur iPhone ·
-  **Prochaine action** : merge de la PR des fichiers, puis `deploy:prod` (David : le bloc n'est pas
-  en prod), puis David lance `create-questions --publier`, puis migration de rangement générée
-  (`rangement` à ajouter dans les deux JSON) · **En attente de David** : rien avant le merge ·
-  **Pièges en cours** : chemins des specs calculés à la graine 0 par
-  `scripts/questions/labyrinthe-chemins.ts` (ne jamais les écrire à la main) ; tirage figé (test
-  « golden ») ; grilles larges débordent sur iPhone (outils-manquants n° 61) ·
-  **Worktree / branche** : `../ubumaths-wt-labyrinthe-modeles`, `feat/labyrinthe-modeles`.
+- **État** : PR 1 (bloc, #3084) et PR 2 (fichiers des deux modèles, #3094) mergées ; ni le bloc
+  ni les modèles ne sont en prod · **Prochaine action** : après le `deploy:prod` (David), David
+  lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/labyrinthe-modeles --publier`
+  (brouillons) ; puis commiter les id écrits dans les JSON, ajouter `rangement` (M1 : Arithmétique
+  > Nombres premiers > primalité, point null ; M2 : Nombres et calculs > Entiers : numération >
+  > décomposition, 6-101), générer la migration (`migration-rangement.ts`), relecture dans
+  > `/dev/modeles`, publication · **En attente de David** : `deploy:prod`, puis `--publier` ·
+  > **Pièges en cours** : chemins des specs par `labyrinthe-chemins.ts` (graine 0), jamais à la main ;
+  > tirage figé (test « golden ») ; grilles larges débordent sur iPhone (outils-manquants n° 61) ·
+  > **Worktree / branche** : aucun (à créer pour la PR de migration).
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -101,3 +102,4 @@ lui-même pourquoi un chemin est faux.
 - 2026-11-24 : phase 0 validée ; worktree créé.
 - 2026-11-24 : #3084 mergée (PR 1, l'outil).
 - 2026-11-24 : PR 2, phase 0 validée ; lot écrit, grilles réduites (débord iPhone).
+- 2026-11-24 : #3094 mergée (PR 2, fichiers des modèles).
