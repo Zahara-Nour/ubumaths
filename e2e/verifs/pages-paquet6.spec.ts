@@ -190,10 +190,12 @@ test.describe(
 		test.describe.configure({ mode: 'serial' });
 		let decor: Decor;
 
-		test.beforeAll(async ({}, testInfo) => {
+		test.beforeAll(async () => {
+			const testInfo = test.info();
 			decor = await createDecor(testInfo, 'consent');
 		});
-		test.afterAll(async ({}, testInfo) => {
+		test.afterAll(async () => {
+			const testInfo = test.info();
 			await cleanup(tagOf(testInfo, 'consent'));
 		});
 
@@ -290,7 +292,8 @@ test.describe('#2560 / #2562 — années et bataillons côté admin', { tag: '@b
 	let schoolWithoutYear = '';
 	const YEAR_NAME = '2031-2032';
 
-	test.beforeAll(async ({}, testInfo) => {
+	test.beforeAll(async () => {
+		const testInfo = test.info();
 		tag = tagOf(testInfo, 'admin');
 		await cleanup(tag);
 		// École A : une année ACTIVE qui couvre aujourd'hui et se termine dans l'avenir
@@ -316,7 +319,8 @@ test.describe('#2560 / #2562 — années et bataillons côté admin', { tag: '@b
 			[schoolWithoutYear]
 		);
 	});
-	test.afterAll(async ({}, testInfo) => {
+	test.afterAll(async () => {
+		const testInfo = test.info();
 		await cleanup(tagOf(testInfo, 'admin'));
 	});
 
@@ -422,7 +426,8 @@ test.describe('#2488 — carnet Python : sorties HTML', { tag: '@bureau' }, () =
 	test.describe.configure({ mode: 'serial' });
 	let notebookId = '';
 
-	test.beforeAll(async ({}, testInfo) => {
+	test.beforeAll(async () => {
+		const testInfo = test.info();
 		const tag = tagOf(testInfo, 'carnet');
 		await cleanup(tag);
 		const display = (html: string) => ({
@@ -469,7 +474,8 @@ test.describe('#2488 — carnet Python : sorties HTML', { tag: '@bureau' }, () =
 		);
 		notebookId = rows[0].id;
 	});
-	test.afterAll(async ({}, testInfo) => {
+	test.afterAll(async () => {
+		const testInfo = test.info();
 		await cleanup(tagOf(testInfo, 'carnet'));
 	});
 
@@ -520,7 +526,8 @@ test.describe('#2505 — cahier de texte : images externes', { tag: '@bureau' },
 		return url;
 	}
 
-	test.beforeAll(async ({}, testInfo) => {
+	test.beforeAll(async () => {
+		const testInfo = test.info();
 		decor = await createDecor(testInfo, 'cahier');
 		const lesson = [
 			'Séance avec deux figures.',
@@ -540,7 +547,8 @@ test.describe('#2505 — cahier de texte : images externes', { tag: '@bureau' },
 			[decor.classId, token, TEACHER_ID]
 		);
 	});
-	test.afterAll(async ({}, testInfo) => {
+	test.afterAll(async () => {
+		const testInfo = test.info();
 		await cleanup(tagOf(testInfo, 'cahier'));
 	});
 
@@ -676,7 +684,8 @@ test.describe('#2482 — modèles de message : accolades conservées', { tag: '@
 	let titleUnknown = '';
 	let titleKnown = '';
 
-	test.beforeAll(async ({}, testInfo) => {
+	test.beforeAll(async () => {
+		const testInfo = test.info();
 		decor = await createDecor(testInfo, 'modeles');
 		titleUnknown = `${decor.tag.name} modèle studentName`;
 		titleKnown = `${decor.tag.name} modèle student_name`;
@@ -692,7 +701,8 @@ test.describe('#2482 — modèles de message : accolades conservées', { tag: '@
 			);
 		}
 	});
-	test.afterAll(async ({}, testInfo) => {
+	test.afterAll(async () => {
+		const testInfo = test.info();
 		await cleanup(tagOf(testInfo, 'modeles'));
 	});
 
@@ -792,10 +802,12 @@ test.describe('#2564 — INP : interaction lente relevée dans error_logs', { ta
 	test.describe.configure({ mode: 'serial' });
 	let decor: Decor;
 
-	test.beforeAll(async ({}, testInfo) => {
+	test.beforeAll(async () => {
+		const testInfo = test.info();
 		decor = await createDecor(testInfo, 'inp');
 	});
-	test.afterAll(async ({}, testInfo) => {
+	test.afterAll(async () => {
+		const testInfo = test.info();
 		await cleanup(tagOf(testInfo, 'inp'));
 	});
 
