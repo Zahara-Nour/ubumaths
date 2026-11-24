@@ -123,5 +123,27 @@ test('#1684 — « Garder » ln(x) − ln(x) : tracée pour x > 0 seulement', as
 	await expect(page.locator('p.retour')).toContainText('Gardé sous le nom « f »');
 	await openView(page, 'Graphe');
 	await setConsole(page, false);
+	// Le tracé : la courbe gardée n'a aucun point à gauche de l'axe x = 0 (ln n'existe que pour x > 0)
+	const curve = page.locator('path.function-curve');
+	await expect(curve).toHaveCount(1);
+	const axisX = await page
+		.locator('.axes line.axis-line')
+		.evaluateAll((lines) =>
+			lines
+				.filter((line) => line.getAttribute('x1') === line.getAttribute('x2'))
+				.map((line) => Number(line.getAttribute('x1')))
+		);
+	expect(axisX, 'un seul axe vertical (x = 0)').toHaveLength(1);
+	// L'axe est bien dans la vue : sans cela, « rien à gauche de l'axe » ne prouverait rien
+	expect(axisX[0], 'l’axe x = 0 est visible, avec de la place à sa gauche').toBeGreaterThan(20);
+	const abscissas = ((await curve.getAttribute('d')) ?? '')
+		.split(/[A-Za-z]/)
+		.map((part) => part.trim().split(/[\s,]+/))
+		.filter((numbers) => numbers.length >= 2 && numbers[0] !== '')
+		.map((numbers) => Number(numbers[0]));
+	expect(abscissas.length, 'des points tracés').toBeGreaterThan(10);
+	expect(Math.min(...abscissas), 'aucun point à gauche de l’axe x = 0').toBeGreaterThanOrEqual(
+		axisX[0] - 0.5
+	);
 	await shoot(page, '1684-garder-ln', testInfo.project.name);
 });

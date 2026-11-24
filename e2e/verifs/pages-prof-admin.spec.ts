@@ -165,17 +165,17 @@ test('#1677 — admin : menu « Debug » → /dev, chaque page listée s’ouvre
 	for (const href of links) {
 		const response = await gotoSettled(page, href);
 		expect(response?.status(), href).toBeLessThan(400);
-		// Le titre vu : le premier titre de la page (ou, à défaut, l'onglet du navigateur)
+		// Le titre vu : le <h1> propre à la page, non vide (l'onglet du navigateur ne suffit pas)
 		const heading = (
 			(await page
-				.getByRole('heading')
+				.locator('main h1')
 				.first()
 				.textContent({ timeout: 15_000 })
 				.catch(() => '')) ?? ''
 		).trim();
-		if (heading.length === 0 && (await page.title()).length === 0) untitled.push(href);
+		if (heading.length === 0) untitled.push(href);
 	}
-	expect(untitled, 'pages de /dev sans titre (ni titre de page, ni onglet)').toEqual([]);
+	expect(untitled, 'pages de /dev sans <h1> propre (non vide)').toEqual([]);
 	await page.goto('/dashboard/admin');
 	await page.waitForLoadState('networkidle');
 	const integrity = page.locator('a[href="/dashboard/admin/integrite-donnees"]').first();
@@ -584,7 +584,7 @@ test.describe('#1731 — présentation d’un carnet Python (/python-notebook/[i
 			cells: CELLS,
 			version: '1.0',
 			metadata: {
-				title: 'Verifs présentation',
+				title: 'Verifs3 présentation',
 				created_at: '2026-11-24T00:00:00.000Z',
 				updated_at: '2026-11-24T00:00:00.000Z',
 				kernel_info: { name: 'python3', version: '3.x', language: 'python' }
@@ -592,13 +592,15 @@ test.describe('#1731 — présentation d’un carnet Python (/python-notebook/[i
 		};
 		const rows = await sql<{ id: string }>(
 			`insert into public.python_notebooks (title, content, author_id) values ($1, $2::jsonb, $3) returning id`,
-			['Verifs présentation (temporaire)', JSON.stringify(content), TEACHER_ID]
+			['Verifs3 présentation (temporaire)', JSON.stringify(content), TEACHER_ID]
 		);
 		notebookId = rows[0].id;
 	});
 
 	test.afterAll(async () => {
 		if (notebookId) await sql(`delete from public.python_notebooks where id = $1`, [notebookId]);
+		// Par préfixe aussi : un carnet né d'un beforeAll interrompu n'échappe pas au nettoyage
+		await sql(`delete from public.python_notebooks where title like 'Verifs3 présentation%'`);
 	});
 
 	async function openPresentation(page: Page, browser: Browser): Promise<void> {
@@ -932,7 +934,7 @@ test.describe(
 	{ tag: '@bureau' },
 	() => {
 		test.describe.configure({ mode: 'serial' });
-		let knownIds: string[] = [];
+		let knownIds: string[] | null = null;
 
 		test.beforeAll(async () => {
 			knownIds = (
@@ -944,6 +946,8 @@ test.describe(
 
 		// Rend l'état : les compteurs de connexion nés pendant ce test sont retirés (ceux d'avant restent)
 		test.afterAll(async () => {
+			// beforeAll interrompu : aucune photo des compteurs, on n'efface rien
+			if (knownIds === null) return;
 			await sql(
 				`delete from public.rate_limits where key like 'ratelimit:login:%' and not (id = any($1::uuid[]))`,
 				[knownIds]

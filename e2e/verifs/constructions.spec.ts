@@ -21,6 +21,10 @@ import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
 
 test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
 
+// La config est `fullyParallel` et chaque `afterAll` efface tout le décor « Verifs3 % » : en série,
+// sinon un worker effacerait le décor d'un autre en plein test.
+test.describe.configure({ mode: 'serial' });
+
 const STUDENT = { email: 'eleve01@local.test', password: 'local-eleve' };
 const ADMIN_ACCOUNT = { email: 'admin@local.test', password: 'local-admin' };
 const RUN = Date.now().toString(36);
@@ -147,10 +151,14 @@ async function playAll(
 	await page.getByTitle('Recommencer').click();
 	const steps: State[] = [];
 	await expect(stepButton(page)).toBeEnabled();
+	const counter = page.getByText(/Etape \d+ \/ \d+/);
+	const currentStep = async (): Promise<number> =>
+		Number(/Etape (\d+) \//.exec(await counter.innerText())?.[1]);
 	while (await stepButton(page).isEnabled()) {
+		const before = await currentStep();
 		await stepButton(page).click();
-		// le lecteur peint l'étape en un tick : pas d'événement à attendre
-		await page.waitForTimeout(300);
+		// le compteur « Etape n / m » avance quand le lecteur a peint l'étape
+		await expect.poll(currentStep).toBe(before + 1);
 		steps.push(await readState(page));
 		const name = shots[steps.length];
 		if (name)

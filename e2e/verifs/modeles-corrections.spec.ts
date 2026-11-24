@@ -20,6 +20,10 @@ import { buildSeriesLink } from '../../src/lib/validation/series';
 // Base locale seulement : contre la prod, les données (statuts, brouillons) ne sont pas les mêmes
 test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
 
+// La config est `fullyParallel` et chaque `afterAll` efface tout le décor « Verifs3 % » : en série,
+// sinon un worker effacerait le décor d'un autre en plein test.
+test.describe.configure({ mode: 'serial' });
+
 test.beforeAll(() => {
 	assertLocalServerEnv();
 });
@@ -781,7 +785,11 @@ test('#1636 — « Factoriser un trinôme à l’aide de ses racines » : la for
  * Le rendu à l'élève (variation « calculer les racines ») : x₁ et x₂ affichés, puis
  * a(x − x₁)(x − x₂) écrit avec les facteurs dans CET ordre.
  */
-async function expectFactorsFollowRoots(page: Page, seed: number): Promise<void> {
+async function expectFactorsFollowRoots(
+	page: Page,
+	seed: number,
+	knownGap?: string
+): Promise<void> {
 	const card = await openQuestion(page, FACTORISER_TRINOME, seed, 1);
 	await validateEmpty(card);
 	const shown = await formulas(card);
@@ -794,6 +802,9 @@ async function expectFactorsFollowRoots(page: Page, seed: number): Promise<void>
 		m[1] === '+' ? -Number(m[2]) : Number(m[2])
 	);
 	await shoot(page, `1636-trinome-graine-${seed}`);
+	// Écart connu : « attendu en échec » seulement ICI, après la mise en place (connexion, rendu,
+	// lecture des racines), pour qu'une erreur de mise en place reste un vrai échec
+	if (knownGap !== undefined) test.fail(true, knownGap);
 	expect(
 		factors,
 		`graine ${seed} : x₁ = ${roots?.[1]}, x₂ = ${roots?.[2]} mais la correction écrit « ${last} »`
@@ -814,9 +825,12 @@ test('#1636 — rendu : a > 0 (2x² − 6x − 20), les facteurs suivent x₁ = 
 test('#1636 — ÉCART : a < 0 (−2x² + 2x + 24, x₁ = 4, x₂ = −3), la correction écrit (x + 3)(x − 4) au lieu de suivre x₁, x₂', async ({
 	page
 }) => {
-	test.fail();
 	test.setTimeout(120_000);
-	await expectFactorsFollowRoots(page, 2);
+	await expectFactorsFollowRoots(
+		page,
+		2,
+		'écart #1636 : facteurs dans l’ordre croissant des racines'
+	);
 });
 
 // ============================================================================
@@ -831,6 +845,10 @@ test.describe('modèles d’essai', () => {
 		await sql(`delete from question_templates where title like $1 and status = 'draft'`, [
 			`${PREFIXE} %`
 		]);
+		// Par identifiant aussi : un modèle passé en publié ne doit pas échapper au nettoyage
+		if (createdIds.length > 0) {
+			await sql(`delete from question_templates where id = any($1::uuid[])`, [createdIds]);
+		}
 		createdIds = [];
 	});
 
@@ -864,7 +882,11 @@ test.describe('modèles d’essai', () => {
 		return id;
 	}
 
-	async function correctionOf(page: Page, id: string): Promise<string> {
+	async function correctionOf(
+		page: Page,
+		id: string,
+		options: { allowEmpty?: boolean } = {}
+	): Promise<string> {
 		const response = await page.request.post(`/api/questions/generate/${id}`, {
 			data: { seed: 1 }
 		});
@@ -877,9 +899,13 @@ test.describe('modèles d’essai', () => {
 		const rendered = (body.instance.correction?._renderedSteps ?? [])
 			.map((s) => `${s.title ?? ''} :: ${s.expressionLatex ?? ''}`)
 			.join('\n');
-		expect(rendered, `correction rendue : ${JSON.stringify(body.instance.correction)}`).not.toBe(
-			''
-		);
+		// `allowEmpty` : le test d'écart #1708 attend justement une correction vide, et l'asserte
+		// lui-même après `test.fail`
+		if (options.allowEmpty !== true) {
+			expect(rendered, `correction rendue : ${JSON.stringify(body.instance.correction)}`).not.toBe(
+				''
+			);
+		}
 		return rendered;
 	}
 
@@ -948,7 +974,6 @@ test.describe('modèles d’essai', () => {
 	test('#1708 — ÉCART : « 0,6x^2-0,6 » (virgule, comme écrit dans la ligne) ne rend aucune étape', async ({
 		page
 	}) => {
-		test.fail();
 		test.setTimeout(120_000);
 		await login(page, ADMIN.email, ADMIN.password);
 		const rendered = await correctionOf(
@@ -957,8 +982,11 @@ test.describe('modèles d’essai', () => {
 				kind: 'integrate',
 				expression: '0,6x^2-0,6',
 				finalForm: 'factorisee'
-			})
+			}),
+			{ allowEmpty: true }
 		);
+		// Écart connu : seulement après la mise en place (connexion, brouillon, rendu)
+		test.fail(true, 'écart #1708 : la virgule décimale ne rend aucune étape');
 		expect(rendered).toContain('\\sqrt{3}');
 	});
 

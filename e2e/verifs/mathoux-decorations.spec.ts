@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { MATHOU_RACES } from '../../src/lib/components/mathoux/mathou-races';
 import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 
 /**
  * Mathoux : décorations et gidouilles — les vérifications manuelles, sur la base locale
@@ -92,8 +93,14 @@ let startProfiles: {
 	age_declared_at: string | null;
 }[] = [];
 
+let lockHeld = false;
+
 test.beforeAll(async () => {
+	test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
 	assertLocalServerEnv();
+	// Mêmes élèves que gamification : un seul des deux fichiers à la fois
+	await acquireLock('eleves-10-15');
+	lockHeld = true;
 	startedAt = (await sql<{ now: string }>('select now()::text as now'))[0].now;
 	for (const table of SNAPSHOT_TABLES) {
 		const rows = await sql<{ r: unknown }>(
@@ -122,6 +129,14 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
+	try {
+		await restoreDecor();
+	} finally {
+		if (lockHeld) releaseLock('eleves-10-15');
+	}
+});
+
+async function restoreDecor(): Promise<void> {
 	if (!startedAt) return;
 	for (const table of APPENDED_TABLES) {
 		await sql(`delete from ${table} where student_id = any($1) and created_at >= $2`, [
@@ -159,7 +174,7 @@ test.afterAll(async () => {
 			]
 		);
 	}
-});
+}
 
 // Functions
 
@@ -1269,7 +1284,7 @@ test.describe('#1685 #1689 gidouilles du travail', () => {
 		await sql(
 			`delete from gidouilles_activity where student_id = $1 and reason like 'Chatterie : %' and created_at >= now() - interval '24 hours'`,
 			[E10.id]
-		).catch(() => undefined);
+		);
 		await sql(`delete from student_mathoux where student_id = $1`, [E10.id]);
 		const before = await balance(E10);
 		await chatterie(page);

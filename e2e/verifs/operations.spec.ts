@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 import { buildSeriesLink } from '../../src/lib/validation/series';
 
 /**
@@ -24,17 +25,30 @@ const SHOTS = '.captures/verifs/operations';
 const STUDENT = { email: 'eleve21@local.test', password: 'local-eleve' };
 const created: string[] = [];
 
-test.beforeAll(() => {
+let lockHeld = false;
+
+test.beforeAll(async () => {
+	test.setTimeout(LOCK_WAIT_MAX_MS + 60_000);
 	assertLocalServerEnv();
+	await acquireLock('eleves-21-25');
+	lockHeld = true;
 });
 
 test.afterAll(async () => {
+	try {
+		await cleanup();
+	} finally {
+		if (lockHeld) releaseLock('eleves-21-25');
+	}
+});
+
+async function cleanup(): Promise<void> {
 	if (created.length > 0) {
 		// Les tentatives de l'élève sur ces modèles (clé étrangère SET NULL refusée par chk_attempt_regime)
 		await sql(`delete from skill_attempts where template_id = any($1::uuid[])`, [created]);
 		await sql(`delete from question_templates where id = any($1::uuid[])`, [created]);
 	}
-});
+}
 
 // Functions
 

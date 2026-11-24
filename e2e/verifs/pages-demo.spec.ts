@@ -116,9 +116,6 @@ test('#1742 — liens d’entrée vers /demo : /professeurs, /parents, /eleves, 
 	await page.goto('/professeurs');
 	const prof = page.getByRole('link', { name: 'Voir les démonstrations' });
 	await expect(prof).toHaveAttribute('href', '/demo');
-	// 3e bouton de la page
-	const buttons = page.locator('main a').filter({ has: page.locator(':scope') });
-	void buttons;
 	for (const path of ['/parents', '/eleves']) {
 		await page.goto(path);
 		await page.waitForLoadState('networkidle');
@@ -139,7 +136,9 @@ test('#1742 — liens d’entrée vers /demo : /professeurs, /parents, /eleves, 
 test('#1742 — robots.txt n’interdit pas /demo, sitemap.xml liste /demo et ses vitrines', async ({
 	request
 }) => {
-	const robots = await (await request.get('/robots.txt')).text();
+	const robotsRes = await request.get('/robots.txt');
+	expect(robotsRes.ok()).toBe(true);
+	const robots = await robotsRes.text();
 	expect(robots).not.toMatch(/Disallow:\s*\/demo/);
 	const sitemap = await (await request.get('/sitemap.xml')).text();
 	// La ligne annonçait 10 adresses ; l'accueil + les vitrines de DEMO_PAGES en font 12 aujourd'hui
@@ -383,12 +382,9 @@ test.describe('#1700 — /demo/lexique : la fiche d’un mot et la case de répo
 	}) => {
 		// ÉCART constaté (2026-11-24, base locale) : au doigt, le premier toucher sur la case ferme
 		// la fiche mais le champ ne prend pas le focus, le clavier ne s'ouvre pas (il faut un second
-		// toucher). La ligne dit « la ferme et ouvre le clavier ». Attendu gardé ; `test.fail` le
-		// signale sans rougir la suite, et il rougira quand l'écart sera corrigé (à retirer alors).
-		test.fail(
-			hasTouch,
-			'écart #1700 : le toucher sur la case ferme la fiche sans ouvrir le clavier'
-		);
+		// toucher). La ligne dit « la ferme et ouvre le clavier ». Attendu gardé ; `test.fail` (posé juste
+		// avant l'assertion du clavier, après la mise en place) le signale sans rougir la suite, et il
+		// rougira quand l'écart sera corrigé (à retirer alors).
 		await openVitrine(page, '/demo/lexique');
 		const question = page
 			.locator('[data-slot="card"]')
@@ -412,6 +408,7 @@ test.describe('#1700 — /demo/lexique : la fiche d’un mot et la case de répo
 		await expect(fiche).toBeHidden();
 		// Le clavier virtuel ne s'ouvre de lui-même qu'au doigt (sur ordinateur, le clavier physique suffit)
 		if (hasTouch) {
+			test.fail(true, 'écart #1700 : le toucher sur la case ferme la fiche sans ouvrir le clavier');
 			await expect
 				.poll(
 					() =>
@@ -793,12 +790,13 @@ test('#1737 — /demo/diaporama : diapositive 3, chaque appui sur → montre la 
 	// `class="fragment"`), → saute à la diapositive 4 sans montrer aucune ligne ; seule la
 	// diapositive 5 (UbuMarkSlide, défilement automatique) fait apparaître ses fragments. La page
 	// annonce pourtant « Chaque appui sur → montre la ligne suivante ». Attendu gardé ; `test.fail`
-	// signale l'écart sans rougir la suite et rougira quand il sera corrigé (à retirer alors).
-	test.fail(true, 'écart #1737 : les fragments de la diapositive 3 ne se montrent pas au clavier');
+	// (posé juste avant les assertions, après la mise en place) signale l'écart sans rougir la
+	// suite et rougira quand il sera corrigé (à retirer alors).
 	await openDiaporama(page);
 	await gotoSlide(page, 3);
 	await page.keyboard.press('ArrowRight');
 	await nextFrame(page);
+	test.fail(true, 'écart #1737 : les fragments de la diapositive 3 ne se montrent pas au clavier');
 	expect(await currentSlide(page), 'toujours sur la diapositive 3').toBe(3);
 	await expect(page.locator('.slide.active .fragment.visible')).toHaveCount(1);
 });
