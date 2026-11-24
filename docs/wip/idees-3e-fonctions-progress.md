@@ -11,10 +11,13 @@ _Mis à jour le 2026-11-24, après #3095 et `db:migrate` du rangement._
 - **État** : #3086 et #3095 mergées. En prod : contenu des 3 publiés complétés (6ad254b4, cb545bd7,
   d820232a) ; les 3 neufs N1-N3 (6897aa8b, 7c7b7593, 4aaa75c0) **en brouillon, rangés et tagués**
   (3-040, 3-040, 3-039 ; vérifié au MCP).
-- **Prochaine action** : relecture dans `/dev/modeles` — brouillons par `?point=3-039` / `3-040`,
-  série de relecture (`scripts/series/creer-serie.ts`) pour les 3 publiés complétés, que David
-  publie ; puis verdicts « À revoir » en base, corrections, `publier-lot.ts` — skill § 5.
-- **En attente de David** : description de d820232a à compléter (tableau mélangé, ∅, cubique) ?
+- **Prochaine action** : David relit dans `/dev/modeles?point=3-039` (6ad254b4 + N3),
+  `?point=3-040` (d820232a + N1, N2), `?point=4-062` (cb545bd7) : ces 3 points portent exactement
+  les 6 modèles, aucun verdict au 2026-11-24 (MCP). Pas de série (refuse les brouillons, 3e/4e
+  mêlés). Puis verdicts « À revoir », corrections, `publier-lot.ts` (skill § 5).
+- **Tranché par David (2026-11-24)** : descriptions des 3 publiés complétées, textes en
+  « Descriptions retenues » ci-dessous ; elles partent dans la migration de contenu des
+  corrections (une seule écriture en prod).
 - **Pièges en cours** : sur téléphone, le tableau à 4 cases de N3 défile en largeur
   (`TableNode`, `overflow-x-auto`, comportement commun).
 - **Worktree / branche** : aucun (retirés par `pr:merger`) ; un neuf si une PR suit.
@@ -98,6 +101,17 @@ reposées, puis « je suis tes recos » : Q1 pas de quotient dans N2 ; Q2 outil 
    placer les points).
 3. **F5 sur un modèle de 4e** : la mise en formule relève de 4-062 ; je recommande de compléter
    cb545bd7 plutôt qu'un modèle de 3e (pas de point de 3e pour « produire une formule »).
+
+### Descriptions retenues (2026-11-24)
+
+- d820232a : « Image et antécédent : lus dans un tableau de valeurs (un, deux ou aucun antécédent ;
+  même image pour deux fonctions), lus sur une courbe (droite, parabole, cubique ; résoudre
+  graphiquement f(x) = k), image calculée par une expression simple (x² − 3) »
+- 6ad254b4 : « Passer d'une représentation d'une fonction à une autre : formule → tableau (affine,
+  x² + c, ax² + bx + c, (x + a)(x + b), en un nombre négatif), courbe → tableau, tableau → formule »
+- cb545bd7 : « Produire une formule littérale qui exprime une grandeur en fonction d'une autre :
+  prix d'une course, aire et périmètre d'un rectangle, volume d'un réservoir, grandeur qui diminue,
+  tarif à coefficients décimaux »
 
 ## Historique
 
