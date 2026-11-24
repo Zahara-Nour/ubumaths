@@ -312,11 +312,13 @@
 			update();
 		};
 		// D'un champ de la console à l'autre, le focus passe un instant sur `body` :
-		// la saisie ne doit pas se désépingler entre les deux
+		// la saisie ne doit pas se désépingler entre les deux. `focusout` part aussi
+		// quand Svelte retire du DOM le champ qui a le focus : l'état ne peut pas
+		// changer pendant ce retrait (`state_unsafe_mutation`), on attend sa fin
 		const leave = (event: FocusEvent) => {
 			const next = event.relatedTarget;
 			if (next instanceof Node && root !== null && root.contains(next)) return;
-			attach();
+			queueMicrotask(attach);
 		};
 		attach();
 		document.addEventListener('focusin', attach);
