@@ -3,7 +3,7 @@
  * ==========================
  *
  * Grille de nombres à parcourir (chantier `labyrinthe`, journal
- * `docs/wip/labyrinthe-progress.md`, outil n° 53). L'élève va de l'entrée (à gauche) à une
+ * `docs/archive/wip/labyrinthe/labyrinthe-progress.md`, outil n° 53). L'élève va de l'entrée (à gauche) à une
  * sortie (à droite) en ne passant que par les cases dont le nombre suit la règle.
  *
  * ```labyrinthe

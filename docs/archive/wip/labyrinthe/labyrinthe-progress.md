@@ -1,20 +1,19 @@
 # Chantier `labyrinthe` : grille de nombres à parcourir (outil n° 53)
 
-Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
+Né de [droite-zoom](../../../wip/droite-zoom-progress.md) (prochaine action) et des relevés
 `idees-3e-arithmetique` (3A10-7) et `idees-6e-entiers-decimaux` (6N1A-4, 6-101). Ligne n° 53 de
-[outils-manquants.md](outils-manquants.md).
+[outils-manquants.md](../../../wip/outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3112._
+_Mis à jour le 2026-11-24 : chantier clos et archivé._
 
-- **État** : tout le chantier est mergé : bloc (#3084), modèles (#3094, rangement #3102, publiés),
-  grille sur téléphone (#3112 : cases de 34 px, refus des grilles trop larges, `pnpm voir --petit`)
-  · **Prochaine action** : après le `deploy:prod` qui livre #3112, versement du chantier (durable
-  déjà dans `docs/systeme/ubumark.md` ; journal en archive, n° 53 et 61 d'`outils-manquants.md` en
-  « Livré ») · **En attente de David** : confirmer 34 px (au lieu des 36 annoncés, pour garder 7
-  colonnes de premiers) ; `deploy:prod` · **Pièges en cours** : tirage figé (test « golden ») ;
-  chemins des specs par `labyrinthe-chemins.ts` · **Worktree / branche** : aucun.
+- **État** : clos. Bloc (#3084), modèles publiés (#3094, #3102), grille sur téléphone (#3112) ; le
+  durable est dans `docs/systeme/ubumark.md` (§ Labyrinthe de nombres) et le catalogue
+  `block-catalog/labyrinthe.ts` · **Prochaine action** : aucune ; #3112 part en prod avec le
+  prochain `deploy:prod` · **En attente de David** : rien (34 px confirmés le 2026-11-24) ·
+  **Pièges** : tirage figé (test « golden ») ; chemins des specs par `labyrinthe-chemins.ts` ·
+  **Worktree / branche** : aucun.
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -89,7 +88,7 @@ Phase 0 validée par David le 2026-11-24 (« go » après ses « tes recos ? »)
   (vu avec `pnpm voir` sur des modèles d'essai locaux, supprimés ensuite) → 6 × 5 et 4 × 5 ; le
   défaut du bloc est noté au n° 61 de `outils-manquants.md`.
 
-Écrit : `docs/wip/questions/labyrinthe-modeles.py` → `scripts/questions/labyrinthe-modeles/` ;
+Écrit : `docs/archive/wip/labyrinthe/labyrinthe-modeles.py` → `scripts/questions/labyrinthe-modeles/` ;
 `scripts/questions/labyrinthe-chemins.ts` remplace les marques `A_CALCULER` des specs par le chemin
 de la graine 0 (bon chemin, sans sa fin, sans son début). Pas d'erreurs prévues : le juge dit
 lui-même pourquoi un chemin est faux.
@@ -119,3 +118,4 @@ une grille trop large plutôt que la réduire en silence.
 - 2026-11-24 : les deux modèles publiés par David (vérifié en base).
 - 2026-11-24 : PR 3 (largeur sur téléphone) écrite, revue faite.
 - 2026-11-24 : #3112 mergée (PR 3, grille sur téléphone).
+- 2026-11-24 : 34 px confirmés par David ; chantier clos, journal archivé.

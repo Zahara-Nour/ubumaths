@@ -1,5 +1,5 @@
 /**
- * Labyrinthe à parcourir à l'écran (chantier `docs/wip/labyrinthe-progress.md`, PR 1)
+ * Labyrinthe à parcourir à l'écran (chantier `docs/archive/wip/labyrinthe/labyrinthe-progress.md`, PR 1)
  *
  * Phase 0 : l'élève touche l'entrée, puis une case voisine de la dernière ; toucher la
  * dernière l'efface ; réponse = le chemin en texte ; après la validation, le chemin vert ou

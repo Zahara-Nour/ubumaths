@@ -1264,7 +1264,7 @@ en noir et blanc ; réduit pour tenir dans 8 × 7 cm) ; à produire, « Écris l
 vides en pointillés (8 par rangée en flèches, 3 cases larges en avance-pivote) ; jamais le code
 juste. Bloc en erreur : cadre « Robot indisponible ». Fiche du catalogue : `block-catalog/robot.ts`.
 
-**Labyrinthe de nombres** (outil n° 53, chantier [labyrinthe](../wip/labyrinthe-progress.md), PR 1 :
+**Labyrinthe de nombres** (outil n° 53, chantier [labyrinthe](../archive/wip/labyrinthe/labyrinthe-progress.md), PR 1 :
 bloc, juge, écran, PDF) — `src/lib/ubumark/__tests__/labyrinthe/` (`labyrinthe-moteur`,
 `labyrinthe-parser`, `labyrinthe-typst`), `questions/generator/__tests__/generation-labyrinthe.test.ts`,
 `components/markdown/nodes/__tests__/Labyrinthe.svelte.test.ts` :
