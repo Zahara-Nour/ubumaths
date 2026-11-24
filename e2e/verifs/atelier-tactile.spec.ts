@@ -250,7 +250,7 @@ test('#1540 — Géométrie au téléphone : toile, barre dessous qui défile, t
 	// Plus large que l'écran : elle défile de côté
 	expect(
 		await bar.evaluate((element) => {
-			for (let node: HTMLElement | null = element; node !== null; node = node.parentElement) {
+			for (let node: Element | null = element; node !== null; node = node.parentElement) {
 				const overflow = getComputedStyle(node).overflowX;
 				if ((overflow === 'auto' || overflow === 'scroll') && node.scrollWidth > node.clientWidth) {
 					return true;

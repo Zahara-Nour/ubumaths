@@ -509,7 +509,7 @@ test('E7 — téléphone : la barre d’icônes tient en entier dans l’écran'
 		await expect(buttons.last()).toBeVisible();
 		for (const button of await buttons.all()) {
 			const box = await button.boundingBox();
-			expect(box, await button.getAttribute('aria-label')).not.toBeNull();
+			expect(box, (await button.getAttribute('aria-label')) ?? undefined).not.toBeNull();
 			expect(box!.x + box!.width, `${width} px`).toBeLessThanOrEqual(width);
 		}
 	}
