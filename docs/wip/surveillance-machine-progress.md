@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR `machine:bilan` en cours._
+_Mis à jour le 2026-11-24, après #3069 (`pnpm machine:bilan`)._
 
-- **État** : #2906, #2910, #2916, #2921, #2930, #2931 mergés ; dépôt principal à jour, launchd lance les scripts. #2931 : worktrees en danger comptés dans le « RAS » (`pnpm surveillance:worktrees` pour les noms), redémarrage signalé (« plantage du système » si rapport `*panic*`).
-- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees portent du travail qui n'existe nulle part ailleurs (2 articles du Shtam jamais commités !) ; ✅ 6 worktrees finis + 4 dossiers vides supprimés le 2026-11-22 (go de David) ; Time Machine non configuré ; mise à jour de macOS en attente (~15 Go).
-- **À vérifier** : premier « RAS » demain matin (avec « · 4 worktrees en danger ») ; Playwright orphelin (pid 699) fermé.
-- **En cours** : `pnpm machine:bilan` (`scripts/bilan-machine.sh`), branche `feat/machine-bilan`, worktree `ubumaths-wt-machine-bilan` (§ « 2026-11-24 »). Propositions de nouvelles alertes posées à David, sans réponse.
-- **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré par David ; sinon clore le chantier (archivage du journal ; doc déjà dans `docs/pratiques/environnement-de-dev.md`).
-- **Pièges** : CI sous Linux → `date_modif` / `date_de` (machine-commun.sh), jamais `stat -f` ni `date -r` nus ; `kern.boottime` bouge de quelques secondes (tolérance 2 min) ; `git status` quote les accents sans `core.quotePath=false` ; disque = `/System/Volumes/Data` ; `chrome_crashpad_handler` toujours en ppid 1.
-- **Worktree / branche** : `ubumaths-wt-machine-bilan` / `feat/machine-bilan`.
+- **État** : #2906 … #2931, #3069 mergés. `pnpm machine:bilan` sur `main`. PR « 4 alertes » en cours (§ « 2026-11-24 — 4 alertes ») : processus emballé quelconque, programme bloqué, vieilles sessions Claude (≥ 10 de plus de 7 j, 1×/jour), disque qui fond (> 5 Go en 24 h, 1×/jour). Go de David le 2026-11-24 (« ajoute les 4 »), seuils choisis par moi.
+- **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees à travail unique (2 articles du Shtam jamais commités) ; Time Machine non configuré ; mise à jour de macOS (Preboot 20 Go).
+- **Prochaine action** : merger la PR des 4 alertes ; puis idée 2 (alerte sauvegarde) une fois Time Machine configuré ; sinon clore le chantier.
+- **Pièges** : CI sous Linux → `date_modif` / `date_de`, jamais `stat -f` ni `date -r` nus ; faux `ps` des tests aiguillés par les champs demandés (`ppid=` contient `pid=`…) ; `git -C ""` = dossier courant ; `kern.boottime` bouge de quelques secondes ; disque = `/System/Volumes/Data`.
+- **Worktree / branche** : `ubumaths-wt-surveillance-alertes` / `feat/surveillance-alertes`.
 
 ## Contexte
 
@@ -65,3 +63,11 @@ Restent, côté David :
 - `pnpm machine:bilan` (`scripts/bilan-machine.sh`, lecture seule) : l'état en une page, dont deux choses que la surveillance ne regarde pas — processus emballé quel qu'il soit, parent qui ne ramasse plus ses processus morts (≥ 3) — plus sessions Claude par âge, Preboot, Time Machine, tendance 24 h. Tests : `scripts/__tests__/bilan-machine.test.ts` (vérifiés rouges en cassant le seuil et le nom du processus graphique).
 - Premier passage réel (2026-11-24) : **Brave bloqué** (15 processus morts non ramassés, AppleEvent sans réponse en 10 s), 35 sessions Claude (6,9 Go, 11 de plus de 7 jours), swap 85-96 % sur 24 h, disque 21 → 16 Go libres en 24 h, Preboot 20 Go.
 - Proposé à David, en attente : faire entrer dans la SURVEILLANCE (alertes) le processus emballé quelconque et le navigateur bloqué ; sessions Claude anciennes ; disque qui fond vite.
+- #3069 mergée (revue Sonnet : 5 points corrigés — `lsof` muet, `tmutil` sans pipe, ancien historique, navigateurs à part, `LC_ALL=C ps`). Brave relancé de force le 2026-11-24 (TERM ignoré).
+
+## 2026-11-24 — 4 alertes
+
+- David : « ajoute les 4 ». Fonctions partagées bilan / surveillance dans `machine-commun.sh` : `processus_emballes`, `parents_bloques`, `sessions_claude`, `nom_lisible`, `nom_pour_notification` (hors `PROGRAMMES_CONNUS` → « un processus »).
+- L'alerte « Extension X bloquée » devient « X (extension) emballé » et couvre tout processus. `a_renvoyer <clé> [minutes]` : sessions et disque qui fond, une fois par jour.
+- Essai à blanc sur le Mac : « Sessions Claude : 10 ouvertes depuis plus de 7 jours (35 en tout, 6 Go) ». Disque : 20 → 19 Go en 24 h, rien.
+- Tests vérifiés rouges sur le script de `main` (4 nouveaux).

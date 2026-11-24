@@ -46,8 +46,6 @@ type Machine = {
 	timeMachine?: string;
 	/** contenu de historique.csv */
 	historique?: string;
-	/** lignes « pid rss etime commande » (serveurs de dev) */
-	vite?: string[];
 };
 
 function ecrireFaux(nom: string, corps: string): void {
@@ -59,15 +57,19 @@ function ecrireFaux(nom: string, corps: string): void {
 function machine(m: Machine): void {
 	writeFileSync(join(racine, 'tous.txt'), (m.tous ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'programmes.txt'), (m.programmes ?? []).join('\n') + '\n');
-	writeFileSync(join(racine, 'vite.txt'), (m.vite ?? []).join('\n') + '\n');
 	writeFileSync(join(racine, 'tm.txt'), (m.timeMachine ?? 'Name : Disque\n') + '\n');
 	if (m.historique !== undefined) {
 		mkdirSync(join(racine, 'etat'), { recursive: true });
 		writeFileSync(join(racine, 'etat', 'historique.csv'), m.historique);
 	}
+	// ps -Ao <champs> : colonnes demandées tirées de tous.txt
+	// (« pid ppid pcpu time etime stat rss commande ») ; comm= → programmes.txt.
 	ecrireFaux(
 		'ps',
-		`case "$*" in *pid=,ppid=,pcpu=*) cat "${racine}/tous.txt" ;; *pcpu=,rss=*) cat "${racine}/programmes.txt" ;; *pid=,rss=,etime=*) cat "${racine}/vite.txt" ;; *) : ;; esac`
+		`champs="$2"
+case "$champs" in *comm=*) cat "${racine}/programmes.txt"; exit 0 ;; esac
+awk -v champs="$champs" 'BEGIN { n = split(champs, c, ","); split("pid ppid pcpu time etime stat rss", noms, " "); for (i in noms) idx[noms[i] "="] = i }
+NF { ligne = ""; for (i = 1; i <= n; i++) { if (c[i] == "command=") { v = $0; for (k = 1; k <= 7; k++) sub(/^ *[^ ]+ +/, "", v) } else v = $(idx[c[i]]); ligne = ligne (i > 1 ? " " : "") v } print ligne }' "${racine}/tous.txt"`
 	);
 	ecrireFaux(
 		'sysctl',
@@ -186,8 +188,8 @@ describe('bilan-machine', () => {
 		});
 		expect(git.status).toBe(0);
 		machine({
-			vite: [
-				'500 307200 01:00:00 node /x/node_modules/vite/bin/vite.js dev --port 5176 --strictPort'
+			tous: [
+				'500 1 1.0 1:00.00 01:00:00 S 307200 node /x/node_modules/vite/bin/vite.js dev --port 5176 --strictPort'
 			]
 		});
 		const r = lancer(principal);
