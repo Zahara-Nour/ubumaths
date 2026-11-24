@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-fonctions-affines-publies/ (chantier idees-3e-fonctions-affines).
 
 Phase 0 validée par David le 2026-11-24 (« je suis tes recos ») : fiches F1 à F3 du journal
-(docs/wip/idees-3e-fonctions-affines-progress.md, § Phase 0), et Q2 = oui (antécédent
+(docs/archive/wip/idees-3e-fonctions-affines/idees-3e-fonctions-affines-progress.md, § Phase 0), et Q2 = oui (antécédent
 fractionnaire en 3e). Les variations s'ajoutent À LA FIN (les réponses des élèves gardent
 l'indice de leur variation) ; la migration de contenu est générée par
 scripts/questions/migration-contenu.ts. Seuls `variations` et `testSpecs` changent : les

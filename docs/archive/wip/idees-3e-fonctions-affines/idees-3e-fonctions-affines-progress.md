@@ -2,20 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3116._
+_Mis à jour le 2026-11-24, chantier clos après #3117._
 
-- **État** : phase 0 validée ; lot écrit (scripts `docs/wip/questions/…-{publies,neufs}.py` →
-  `scripts/questions/idees-3e-fonctions-affines-{publies,neufs}/`) et joué en base locale
-  (§ Historique) : 30 variations sur 30 justes / fausses comme prévu. Fichiers mergés (#3116).
-- **Prochaine action** : étape 6 de `couvrir-un-niveau.md` : David lance
-  `create-questions --dir scripts/questions/idees-3e-fonctions-affines-neufs --publier` en prod
-  (brouillons), je commite les ids, puis rangement (`migration-rangement.ts`) et contenu des 3
-  publiés (`migration-contenu.ts`, lit la prod) dans une même PR, `security-auditor`.
-- **En attente de David** : le `create-questions --publier` en prod (commande ci-dessus, `!`).
-- **Pièges en cours** : 27ac630c (brouillon d'un autre chantier, `associer`) n'est pas à nous.
-  Page à cocher (non remplie) : https://claude.ai/artifact/1LaJj9eyGg6Zr3Vh3zyG9f.
-- **Worktree / branche** : aucun (retiré après #3116) ; la suite dans un worktree neuf
-  `../ubumaths-wt-idees-3e-fonctions-affines-rangement`.
+- **État** : rubrique publiée : 4 modèles neufs publiés par David (9414e0a3, 8725107f, 51a8db37,
+  b213f446, vérifiés `published` au MCP), 3 publiés complétés de leurs variations (15ddcc75,
+  45247528, 7c7b7593, #3117), le tout validé par David ; réservations levées, journal archivé ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : 27ac630c
+  (brouillon d'un autre chantier, `associer`) n'est pas à nous · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-24)
 
@@ -162,3 +155,25 @@ de réponse.
   petite et croise le trait.
 - `migration-contenu.ts` des publiés reportée à l'étape 6 (précédent `idees-1re-probas-cond`) :
   cette PR ne porte que les fichiers.
+
+### 2026-11-24 — brouillons en prod, migrations générées
+
+- David a lancé `create-questions --publier` en prod : 9414e0a3 (N1), 8725107f (N2), 51a8db37
+  (N3), b213f446 (N4), en brouillon ; ids commités sur la branche de rangement.
+- `migration-contenu.ts` : 15ddcc75 +3, 45247528 +3, 7c7b7593 +2 variations, specs ; rien
+  corrigé ni retiré. `migration-rangement.ts` : les 4 neufs rangés (N1 et N3 sous « coefficient
+  directeur et ordonnée à l'origine », 3-044 et 3-067 ; N2 en géométrie, 2-322 ; N4 sous
+  « Généralités sur les fonctions », 3-039).
+
+### 2026-11-24 — #3117 mergée, `db:migrate`
+
+- Tests `migrations-rangement-tags` et `migrations-contenu-publie` : verts avec les migrations,
+  9 rouges sans (worktree jetable, fichiers remplacés par `select 1;`). `security-auditor` :
+  aucun finding bloquant. `migration list --linked` : seules nos deux en attente.
+- `db:migrate` : les deux appliquées ; vérifié en prod (nœuds, un tag chacun, brouillons ;
+  publiés à 4, 7 et 7 variations).
+
+### 2026-11-24 — modèles validés
+
+- David : « je valide les modeles ». `question_template_reviews` : aucune ligne depuis le lot.
+  `publier-lot` en simulation : 4 brouillons passent le contrôle.
