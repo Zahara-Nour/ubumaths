@@ -1,0 +1,550 @@
+{
+	"id": "a6e58402-43a7-486e-8a78-086112252e04",
+	"rangement": {
+		"noeud": "Fonctions > Logarithmes > réciproque de l'exponentielle",
+		"point": "TSPE-438"
+	},
+	"title": "Ensemble de définition d'une fonction avec ln",
+	"description": "Ensemble de définition de ln(u) : u affine, trinôme (extérieur ou intérieur des racines), quotient d'affines, carré (ℝ privé d'un point), x² + c (ℝ) (pièges : borne fermée, sens quand a < 0, intérieur et extérieur échangés, valeur interdite seule)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie par $f(x)=\\ln\\left({{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}\\right)$.\n\nDétermine l'ensemble de définition $\\mathcal{D}_f$ de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|]{{eval:-b/a}};+\\infty[|]-\\infty;{{eval:-b/a}}[}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:a>0|[{{eval:-b/a}};+\\infty[|]-\\infty;{{eval:-b/a}}]}}",
+							"message": "$\\ln 0$ n'existe pas : la borne où l'expression s'annule est exclue.",
+							"label": "Borne fermée"
+						},
+						{
+							"answer": "{{if:a>0|]-\\infty;{{eval:-b/a}}[|]{{eval:-b/a}};+\\infty[}}",
+							"message": "Il faut ${{a}}x{{b;+}}>0$. {{if:a<0|En divisant par ${{a}}$, qui est négatif, le sens de l'inégalité change.|Ici, $x$ doit être plus grand que ${{eval:-b/a}}$.}}",
+							"label": "Mauvais côté"
+						},
+						{
+							"answer": "{{if:a>0|]{{eval:b/a}};+\\infty[|]-\\infty;{{eval:b/a}}[}}",
+							"message": "${{a}}x{{b;+}}>0\\iff {{a}}x>{{eval:-b}}$ : la borne est ${{eval:-b/a}}$.",
+							"label": "Signe de la borne"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ln X$ n'existe que pour $X>0$ : il faut ${{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}>0$.",
+					"${{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}>0\\iff {{if:a==1||{{if:a==-1|-|{{a}}}}}}x>{{eval:-b}}\\iff x{{if:a>0|>|<}}{{eval:-b/a}}${{if:a<0| (on divise par ${{a}}<0$ : le sens change)}}.",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{ {{if:a>0|\\left]{{eval:-b/a}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:-b/a}}\\right[}} }$."
+				]
+			},
+			"hint": "$\\ln X$ n'existe que pour $X>0$ : quelle inéquation faut-il résoudre ?"
+		},
+		{
+			"statement": "Soit $f$ la fonction définie par $f(x)=\\ln\\left({{eval:s*x^2-s*(p+q)*x+s*p*q}}\\right)$.\n\nDétermine l'ensemble de définition $\\mathcal{D}_f$ de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "-6..5"
+				},
+				{
+					"name": "q",
+					"expression": "-5..6"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": ["p < q", "p+q != 0", "p*q != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s>0|]-\\infty;{{p}}[\\cup]{{q}};+\\infty[|]{{p}};{{q}}[}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s>0|]{{p}};{{q}}[|]-\\infty;{{p}}[\\cup]{{q}};+\\infty[}}",
+							"message": "Un trinôme est du signe de son coefficient de $x^2$ à l'extérieur des racines, du signe contraire entre elles : ici ce coefficient est {{if:s>0|positif|négatif}}.",
+							"label": "Intérieur et extérieur échangés"
+						},
+						{
+							"answer": "{{if:s>0|]-\\infty;{{p}}]\\cup[{{q}};+\\infty[|[{{p}};{{q}}]}}",
+							"message": "$\\ln 0$ n'existe pas : la borne où l'expression s'annule est exclue.",
+							"label": "Bornes fermées"
+						},
+						{
+							"answer": "{{if:s>0|]-\\infty;{{eval:-q}}[\\cup]{{eval:-p}};+\\infty[|]{{eval:-q}};{{eval:-p}}[}}",
+							"message": "Les racines sont les valeurs qui annulent le trinôme : vérifie leur signe.",
+							"label": "Signe des racines"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut ${{eval:s*x^2-s*(p+q)*x+s*p*q}}>0$. Ce trinôme a pour racines ${{p}}$ et ${{q}}$ : ${{eval:s*x^2-s*(p+q)*x+s*p*q}}={{if:s<0|-}}(x{{eval:-p;+}})(x{{eval:-q;+}})$.",
+					"Il est du signe de son coefficient de $x^2$, {{if:s>0|positif|négatif}}, à l'extérieur des racines : il est strictement positif {{if:s>0|pour $x<{{p}}$ ou $x>{{q}}$|entre ${{p}}$ et ${{q}}$}}.",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{ {{if:s>0|\\left]-\\infty\\,;{{p}}\\right[\\cup\\left]{{q}}\\,;+\\infty\\right[|\\left]{{p}}\\,;{{q}}\\right[}} }$."
+				]
+			},
+			"hint": "Il faut que le trinôme soit strictement positif : cherche ses racines, puis son signe."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie par $f(x)=\\ln\\left(\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}}{{{if:c==1||{{if:c==-1|-|{{c}}}}}}x{{d;+}}}\\right)$.\n\nDétermine l'ensemble de définition $\\mathcal{D}_f$ de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:-b/a"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:-d/c"
+				}
+			],
+			"conditions": ["r1 < r2", "b != 0", "d != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{r1}}[\\cup]{{r2}};+\\infty[",
+					"expectedErrors": [
+						{
+							"answer": "]{{r1}};{{r2}}[",
+							"message": "Un quotient est positif quand le numérateur et le dénominateur ont le même signe : dresse son tableau de signes.",
+							"label": "Intervalle entre les valeurs"
+						},
+						{
+							"answer": "]-\\infty;{{r1}}]\\cup]{{r2}};+\\infty[",
+							"message": "En $x={{r1}}$, le quotient vaut $0$ et $\\ln 0$ n'existe pas.",
+							"label": "Borne fermée"
+						},
+						{
+							"answer": "\\mathbb{R}\\setminus\\left\\{ {{r2}} \\right\\}",
+							"message": "Exclure la valeur interdite ne suffit pas : le quotient doit être strictement positif.",
+							"label": "Valeur interdite seule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut $\\dfrac{{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{b;+}}}{{{if:c==1||{{if:c==-1|-|{{c}}}}}}x{{d;+}}}>0$. Le numérateur s'annule en ${{r1}}$, le dénominateur en ${{r2}}$ (valeur interdite).",
+					"Comme les coefficients de $x$ sont positifs, les deux facteurs sont négatifs avant ${{r1}}$, de signes contraires entre ${{r1}}$ et ${{r2}}$, positifs après ${{r2}}$ : le quotient est strictement positif pour $x<{{r1}}$ ou $x>{{r2}}$.",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{r1}}\\right[\\cup\\left]{{r2}}\\,;+\\infty\\right[}$."
+				]
+			},
+			"hint": "Le quotient doit être strictement positif : dresse le tableau de signes du numérateur et du dénominateur."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie par $f(x)=\\ln\\left({{eval:x^2-2*r*x+r^2}}\\right)$.\n\nDétermine l'ensemble de définition $\\mathcal{D}_f$ de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\left\\{ {{r}} \\right\\}",
+					"expectedErrors": [
+						{
+							"answer": "\\mathbb{R}",
+							"message": "En $x={{r}}$, l'expression vaut $0$ et $\\ln 0$ n'existe pas.",
+							"label": "Racine oubliée"
+						},
+						{
+							"answer": "]{{r}};+\\infty[",
+							"message": "Un carré est positif des deux côtés de ${{r}}$ : seul $x={{r}}$ est exclu.",
+							"label": "Un seul côté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:x^2-2*r*x+r^2}}=(x{{eval:-r;+}})^{2}$ : c'est un carré, positif, qui ne s'annule qu'en $x={{r}}$.",
+					"Il faut $(x{{eval:-r;+}})^{2}>0$, c'est-à-dire $x\\neq {{r}}$.",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\left\\{ {{r}} \\right\\} }$."
+				]
+			},
+			"hint": "Reconnais une identité remarquable : quand l'expression est-elle nulle ?"
+		},
+		{
+			"statement": "Soit $f$ la fonction définie par $f(x)=\\ln\\left(x^{2}+{{c}}\\right)$.\n\nDétermine l'ensemble de définition $\\mathcal{D}_f$ de $f$.\n\n$\\mathcal{D}_f=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}",
+					"expectedErrors": [
+						{
+							"answer": "]0;+\\infty[",
+							"message": "$\\ln$ est définie sur $\\left]0\\,;+\\infty\\right[$, mais ici c'est $x^{2}+{{c}}$ qui doit être strictement positif, pas $x$.",
+							"label": "x > 0"
+						},
+						{
+							"answer": "\\mathbb{R}\\setminus\\left\\{ 0 \\right\\}",
+							"message": "En $x=0$, $x^{2}+{{c}}={{c}}>0$ : $0$ n'est pas exclu.",
+							"label": "Zéro exclu"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut $x^{2}+{{c}}>0$.",
+					"Pour tout réel $x$, $x^{2}\\geqslant 0$, donc $x^{2}+{{c}}\\geqslant {{c}}>0$.",
+					"$\\mathcal{D}_f=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$."
+				]
+			},
+			"hint": "Quel est le signe de $x^{2}+{{c}}$ ? Peut-il s'annuler ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : ln(2x − 3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]\\frac{3}{2};+\\infty["]
+		},
+		{
+			"description": "a : écrit en décimal",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]1.5;+\\infty["]
+		},
+		{
+			"description": "a : borne fermée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\ln 0$ n'existe pas : la borne où l'expression s'annule est exclue."
+			},
+			"answers": ["[\\frac{3}{2};+\\infty["]
+		},
+		{
+			"description": "a : signe de la borne",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\frac{3}{2};+\\infty["]
+		},
+		{
+			"description": "a : ln(−3x + 6)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;2["]
+		},
+		{
+			"description": "a : a < 0, mauvais côté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]2;+\\infty["]
+		},
+		{
+			"description": "b : x² − x − 6 = (x + 2)(x − 3)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"q": "3",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;-2[\\cup]3;+\\infty["]
+		},
+		{
+			"description": "b : intérieur à tort",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"q": "3",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-2;3["]
+		},
+		{
+			"description": "b : bornes fermées",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"q": "3",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;-2]\\cup[3;+\\infty["]
+		},
+		{
+			"description": "b : signe des racines",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"q": "3",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;-3[\\cup]2;+\\infty["]
+		},
+		{
+			"description": "b : −x² + x + 6 → intérieur",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"q": "3",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-2;3["]
+		},
+		{
+			"description": "b : s = −1, extérieur à tort",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"q": "3",
+				"s": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;-2[\\cup]3;+\\infty["]
+		},
+		{
+			"description": "c : (x + 1)/(2x − 4)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "2",
+				"d": "-4",
+				"r1": "-1",
+				"r2": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;-1[\\cup]2;+\\infty["]
+		},
+		{
+			"description": "c : entre les valeurs",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "2",
+				"d": "-4",
+				"r1": "-1",
+				"r2": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-1;2["]
+		},
+		{
+			"description": "c : borne fermée au numérateur",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "2",
+				"d": "-4",
+				"r1": "-1",
+				"r2": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-\\infty;-1]\\cup]2;+\\infty["]
+		},
+		{
+			"description": "c : valeur interdite seule",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "2",
+				"d": "-4",
+				"r1": "-1",
+				"r2": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\left\\{2\\right\\}"]
+		},
+		{
+			"description": "d : (x − 3)²",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\left\\{3\\right\\}"]
+		},
+		{
+			"description": "d : écrit en réunion",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;3[\\cup]3;+\\infty["]
+		},
+		{
+			"description": "d : racine oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\mathbb{R}"]
+		},
+		{
+			"description": "d : un seul côté",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]3;+\\infty["]
+		},
+		{
+			"description": "e : x² + 4",
+			"variationIndex": 4,
+			"variables": {
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\mathbb{R}"]
+		},
+		{
+			"description": "e : écrit en intervalle",
+			"variationIndex": 4,
+			"variables": {
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["]-\\infty;+\\infty["]
+		},
+		{
+			"description": "e : x > 0",
+			"variationIndex": 4,
+			"variables": {
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]0;+\\infty["]
+		}
+	]
+}

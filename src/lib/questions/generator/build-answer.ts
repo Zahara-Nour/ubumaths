@@ -65,6 +65,8 @@ import { parseCalculContent } from '#lib/ubumark/parser/calcul-parser.ts';
 import { expectedCalculAnswer } from '#lib/ubumark/utils/calcul-answer.ts';
 import { parseRobotContent } from '#lib/ubumark/parser/robot-parser.ts';
 import { expectedRobotAnswer } from '#lib/ubumark/utils/robot-answer.ts';
+import { parseLabyrintheContent } from '#lib/ubumark/parser/labyrinthe-parser.ts';
+import { expectedLabyrintheAnswer } from '#lib/ubumark/utils/labyrinthe-answer.ts';
 
 // Constantes
 
@@ -156,6 +158,15 @@ export function buildAnswerOf(
 		if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 		if (node.spec?.solution == null) return { errors: ['arrivée: absente'] };
 		return { answer: expectedRobotAnswer(node.spec, node.spec.solution) };
+	}
+	if (kind === 'labyrinthe') {
+		// Labyrinthe à parcourir : la grille, l'entrée et le bon chemin (le juge suit la règle)
+		const node = parseLabyrintheContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0 || node.spec === null) {
+			return { errors: node.errors.map((e) => e.message) };
+		}
+		return { answer: expectedLabyrintheAnswer(node.spec) };
 	}
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);

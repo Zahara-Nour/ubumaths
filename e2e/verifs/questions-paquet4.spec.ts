@@ -260,33 +260,42 @@ async function chooseAndValidate(page: Page, card: Locator, index: number): Prom
 // #1877 — Racine à simplifier dans une case intervalles
 // ============================================================================
 
-test('#1877 — « Résoudre une équation x² = a », x² = 12 : {−√12 ; √12} → ½ « La racine peut être simplifiée. », {−2√3 ; 2√3} → juste', async ({
+test('#1877 — « Résoudre une équation x² = a », le VRAI modèle publié (variation « k²·m ») : {−√a ; √a} → ½ « La racine peut être simplifiée. », {−k√m ; k√m} → juste', async ({
 	page
 }) => {
 	test.setTimeout(180_000);
-	// Copie de la variation « k²·m » du modèle publié, k = 2 et m = 3 fixés : x² = 12
-	const [, , , original] = await variationsOf(RESOUDRE_X2_A);
-	// La case porte `answerKind: 'intervalles'` (réglage du prof dans l'éditeur de cases) :
-	// sans lui, le modèle publié juge « {−√12 ; √12} » faux au lieu de ½ (voir le rapport)
-	const fixed: Variation = {
-		...original,
-		blanks: [{ ...(original.blanks?.[0] ?? { expectedAnswer: '' }), answerKind: 'intervalles' }],
-		variables: [
-			{ name: 'k', expression: '2' },
-			{ name: 'm', expression: '3' }
-		]
-	};
-	const id = await makeTemplate('1877 racine', [fixed]);
+	// Le modèle publié lui-même, pas une copie : son réglage `blankDefaults.answerKind: 'intervalles'`
+	// vit dans `shared`, qu'une copie des variations perd (c'est ce qui avait créé le faux écart E42)
+	const variations = await variationsOf(RESOUDRE_X2_A);
+	const kTimesRootM = variations.findIndex((variation) =>
+		(variation.statement ?? '').includes('(k)^2*(m)')
+	);
+	expect(kTimesRootM, 'variation « k²·m » du modèle publié').toBeGreaterThanOrEqual(0);
 
-	const half = await openQuestion(page, id, 1);
-	expect(await frontText(half)).toContain('x^2 = 12');
-	const halfText = await typeAndValidate(page, half, '{-sqrt12>;sqrt12>}');
+	/** a = k²·m lu dans l'énoncé (k de 2 à 5, m sans facteur carré) */
+	const read = async (card: Locator): Promise<{ a: number; k: number; m: number }> => {
+		const match = /x\^2\s*=\s*(\d+)/.exec(await frontText(card));
+		if (!match) throw new Error('équation x² = a introuvable dans l’énoncé');
+		const a = Number(match[1]);
+		const k = [5, 4, 3, 2].find((candidate) => a % (candidate * candidate) === 0);
+		if (k === undefined) throw new Error(`a = ${a} n'est pas de la forme k²·m`);
+		return { a, k, m: a / (k * k) };
+	};
+
+	const half = await openQuestion(page, RESOUDRE_X2_A, 1, kTimesRootM);
+	const first = await read(half);
+	const halfText = await typeAndValidate(page, half, `{-sqrt${first.a}>;sqrt${first.a}>}`);
 	await shoot(page, '1877-moitie');
 	expect(halfText).toContain('La racine peut être simplifiée.');
 	expect(halfText).toContain('½ point');
 
-	const right = await openQuestion(page, id, 1);
-	const rightText = await typeAndValidate(page, right, '{-2sqrt3>;2sqrt3>}');
+	const right = await openQuestion(page, RESOUDRE_X2_A, 2, kTimesRootM);
+	const second = await read(right);
+	const rightText = await typeAndValidate(
+		page,
+		right,
+		`{-${second.k}sqrt${second.m}>;${second.k}sqrt${second.m}>}`
+	);
 	expect(rightText).not.toContain('La racine peut être simplifiée.');
 	expect(rightText).toContain('Juste');
 });

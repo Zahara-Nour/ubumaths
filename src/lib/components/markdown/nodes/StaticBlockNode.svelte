@@ -43,6 +43,7 @@
 	import TrousEtiquettes from './TrousEtiquettes.svelte';
 	import TortueProgramme from './TortueProgramme.svelte';
 	import RobotCode from './RobotCode.svelte';
+	import Labyrinthe from './Labyrinthe.svelte';
 	import CalculProgramme from './CalculProgramme.svelte';
 
 	interface Props {
@@ -128,4 +129,6 @@
 	<CalculProgramme {node} />
 {:else if node.type === 'robot'}
 	<RobotCode {node} />
+{:else if node.type === 'labyrinthe'}
+	<Labyrinthe {node} />
 {/if}

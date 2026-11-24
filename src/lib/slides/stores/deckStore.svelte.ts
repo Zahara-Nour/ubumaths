@@ -338,6 +338,30 @@ export function createDeckStore(): DeckStore {
 	}
 
 	/**
+	 * Flèche → (clavier, bouton, balayage) : le fragment suivant d'abord, puis la
+	 * diapositive horizontale suivante (verticales sautées), comme reveal.js
+	 */
+	function right(): void {
+		if (state.f < getTotalFragments() - 1) {
+			state.f++;
+			return;
+		}
+		nextH();
+	}
+
+	/**
+	 * Flèche ← : cache le dernier fragment montré d'abord, puis la diapositive
+	 * horizontale précédente (verticales sautées), comme reveal.js
+	 */
+	function left(): void {
+		if (state.f >= 0) {
+			state.f--;
+			return;
+		}
+		prevH();
+	}
+
+	/**
 	 * Go to next vertical slide
 	 */
 	function nextV(): void {
@@ -575,6 +599,8 @@ export function createDeckStore(): DeckStore {
 		prev,
 		nextH,
 		prevH,
+		right,
+		left,
 		nextV,
 		prevV,
 		up,

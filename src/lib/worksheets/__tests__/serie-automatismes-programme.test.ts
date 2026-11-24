@@ -143,3 +143,60 @@ describe('buildSerie — robot à produire', () => {
 		expect(serie.solution).toContain('Un code juste : **avance de 4**');
 	});
 });
+
+describe('buildSerie — labyrinthe à parcourir (chantier `labyrinthe`)', () => {
+	const labyrinthe = new Map([
+		[
+			'labyrinthe',
+			modele(
+				'labyrinthe',
+				[
+					'Trouve la sortie.',
+					'',
+					'```labyrinthe',
+					'grille: 5 x 4',
+					'règle: premier',
+					'parcourir: oui',
+					'```'
+				].join('\n')
+			)
+		]
+	]);
+
+	it('énoncé : la grille sans case: ; corrigé : le bon chemin teinté et sa sortie, même grille', () => {
+		const serie = buildSerie(labyrinthe, [{ templateId: 'labyrinthe', seed: 1 }]);
+		expect(serie.statement).toContain('```labyrinthe');
+		expect(serie.statement).not.toMatch(/case\s*:/);
+		const graine = /graine: (\d+)/.exec(serie.statement)?.[1];
+		expect(graine).toBeDefined();
+		expect(serie.solution).toContain(`graine: ${graine}`);
+		expect(serie.solution).toContain('solution: oui');
+		expect(serie.solution).not.toContain('parcourir');
+		expect(serie.solution).toMatch(/\*\*Sortie \d : \d+( → \d+)+\*\*/);
+		expect(serie.solution.indexOf('Sortie')).toBeGreaterThan(serie.solution.lastIndexOf('```'));
+	});
+});
+
+describe('buildSerie — labyrinthe avec `solution: non` écrite par l’auteur', () => {
+	it('le corrigé n’a qu’une ligne solution: (sinon « Labyrinthe indisponible »)', () => {
+		const modeles = new Map([
+			[
+				'lab',
+				modele(
+					'lab',
+					[
+						'```labyrinthe',
+						'grille: 4 x 3',
+						'règle: premier',
+						'parcourir: oui',
+						'solution: non',
+						'```'
+					].join('\n')
+				)
+			]
+		]);
+		const serie = buildSerie(modeles, [{ templateId: 'lab', seed: 1 }]);
+		expect(serie.solution.match(/solution\s*:/g)).toEqual(['solution:']);
+		expect(serie.solution).toContain('solution: oui');
+	});
+});
