@@ -2,19 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3106 et le `db:migrate`._
+_Mis à jour le 2026-11-24, chantier clos._
 
-- **État** : en prod : 2 brouillons rangés et tagués (a3aa8f4a TSPE-510, 1220760b TSPE-619) et 8 variations
-  ajoutées aux 5 publiés. Série de relecture enregistrée par David (1f758fe3,
-  `scripts/series/T_SPE-relecture-probabilites-publies.json`).
-- **Prochaine action** : après la relecture de David, lire les verdicts « À revoir » en base
-  (`question_template_reviews`, `reviewed_at` postérieur au 2026-11-24), corriger, puis `publier-lot.ts` en
-  simulation pour les 2 brouillons ; PR de fin (série et journal).
-- **En attente de David** : relecture dans `/dev/modeles` (série 1f758fe3 ; brouillons : `?titre=Loi binomiale`).
-- **Pièges en cours** : niveau de F3 (6) égal à celui de 4ee9a359 sur le même nœud, sans effet bloquant.
-- **Worktree / branche** : `../ubumaths-wt-idees-tle-probas` · `feat/idees-tle-probas-relecture`.
+- **État** : clos. Rubrique TSP1 à TSP4 publiée : 2 neufs (a3aa8f4a TSPE-510, 1220760b TSPE-619) et +8
+  variations sur 5 publiés, série de relecture 1f758fe3, modèles validés par David · **Prochaine action** :
+  aucune · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : aucun.
 
-Skill [`idees-rubrique`](../../.claude/skills/idees-rubrique/SKILL.md). Relevé :
+Skill [`idees-rubrique`](../../../../.claude/skills/idees-rubrique/SKILL.md). Relevé :
 [idees-tle-probas-releve.md](idees-tle-probas-releve.md) · fiches :
 [idees-tle-probas-fiches.md](idees-tle-probas-fiches.md) · page à cocher :
 https://claude.ai/artifact/6kVwijQ36onX4iXNpsL1Ga
@@ -82,3 +76,10 @@ https://claude.ai/artifact/6kVwijQ36onX4iXNpsL1Ga
   `db:migrate` passé (4 conditions réunies). Relu au MCP : brouillons rangés et tagués, 0943e867 6 var.,
   4ee9a359 5, 7974722d 2, 95f73515 3, ecf4d46b 3.
 - Série de relecture des 5 publiés écrite et simulée (5 questions, 5 min).
+
+### 2026-11-24 : validation et publication
+
+- David a validé les modèles (aucun verdict « À revoir » en base pour les 7). `publier-lot.ts` en simulation
+  vert (2 brouillons), garde des niveaux verte ; David a lancé `--publier` : a3aa8f4a et 1220760b
+  `published` (relu au MCP).
+- Tableau de répartition : rubrique « publiée », 5 réservations levées. Journal archivé ici.

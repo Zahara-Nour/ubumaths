@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-probas-publies/ (chantier idees-tle-probas).
 
 Phase 0 validée par David le 2026-11-24 (« je valide tes recos », fiches
-docs/wip/idees-tle-probas-fiches.md) : F1 (ecf4d46b), F4 a et F4 b (4ee9a359), F5 (7974722d),
+docs/archive/wip/idees-tle-probas/idees-tle-probas-fiches.md) : F1 (ecf4d46b), F4 a et F4 b (4ee9a359), F5 (7974722d),
 F6 a et F6 b (0943e867), F7 a et F7 b (95f73515). Les variations s'ajoutent À LA FIN (les réponses
 des élèves gardent l'indice de leur variation) ; la migration de contenu est générée par
 scripts/questions/migration-contenu.ts.
