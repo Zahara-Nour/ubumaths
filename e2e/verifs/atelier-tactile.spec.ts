@@ -137,6 +137,18 @@ test('#1388 — « Écriture mathématique » au téléphone : consigne, longue 
 	const before = await field.boundingBox();
 	await field.tap();
 	await waitVirtualKeyboard(page, field);
+	// Le champ reste au-dessus du clavier virtuel : l'élève voit ce qu'il tape (E24)
+	await expect
+		.poll(async () => {
+			const keyboardTop = await page.evaluate(() => {
+				const keyboard = (window as unknown as { mathVirtualKeyboard?: { boundingRect: DOMRect } })
+					.mathVirtualKeyboard;
+				return keyboard?.boundingRect.top ?? 0;
+			});
+			const box = await field.boundingBox();
+			return (box?.y ?? 0) + (box?.height ?? 0) <= keyboardTop;
+		})
+		.toBe(true);
 	await page.keyboard.type('1+2+3+4+5+6+7+8+9+10+11+12+13+14+15+16+17+18+19+20');
 	const after = await field.boundingBox();
 	expect(after?.height).toBe(before?.height);
@@ -144,11 +156,11 @@ test('#1388 — « Écriture mathématique » au téléphone : consigne, longue 
 	await shoot(page, '1388-longue-saisie', testInfo.project.name);
 	await page.keyboard.press('Escape');
 
-	// Menu du site (panneau latéral) : la croix a un nom, « Fermer ». Sa taille
-	// (16 px) est l'écart E22 de `ecarts-verifs-progress.md`, pas mesurée ici
+	// Menu du site (panneau latéral) : la croix a un nom, « Fermer », et se touche
+	// du doigt (E22 : elle faisait 16 px)
 	await page.getByRole('button', { name: 'Ouvrir le menu' }).first().tap();
 	const close = page.getByRole('dialog').getByRole('button', { name: 'Fermer' });
-	await expect(close).toBeVisible();
+	await expectTouchTarget(close, 'croix Fermer');
 	await close.tap();
 	await expect(page.getByRole('dialog')).toHaveCount(0);
 });
