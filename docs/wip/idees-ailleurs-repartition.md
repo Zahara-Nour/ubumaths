@@ -162,6 +162,8 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 31096bae Traduire un énoncé en notations de probabilités     | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
+| 69a05f98 Probabilité « inverse » à partir d'un arbre         | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
 | ecf4d46b Probabilités totales                                | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | 4ee9a359 Seuil par la loi binomiale                          | `idees-tle-probas`                                          | 2026-11-24 |                                      |
 | 7974722d Espérance de aX + bY : linéarité                    | `idees-tle-probas`                                          | 2026-11-24 |                                      |
