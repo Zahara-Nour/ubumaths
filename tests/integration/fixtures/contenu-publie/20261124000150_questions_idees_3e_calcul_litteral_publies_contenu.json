@@ -1,5 +1,5 @@
 {
-	"migration": "supabase/migrations/20261123193909_questions_idees_3e_calcul_litteral_publies_contenu.sql",
+	"migration": "supabase/migrations/20261124000150_questions_idees_3e_calcul_litteral_publies_contenu.sql",
 	"modeles": [
 		{
 			"id": "18e2afca-3e36-4dfc-b92b-38c9a6f4bb1a",
@@ -9935,7 +9935,7 @@
 							"steps": [
 								"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Ici, le facteur commun est $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
 								"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})-\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}})\\right]$$",
-								"Le signe $-$ devant la parenthèse change **tous** ses signes : $({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}}) = {{eval:(b)*x+(c)}}{{eval:-(d)*x-(f)}} = {{eval:(b-d)*x+(c-f)}}$.",
+								"Le signe $-$ devant la parenthèse change **tous** ses signes : $({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}}) = {{eval:(b)*x+(c)}}{{eval:-(d)*x;+}}{{eval:-(f);+}} = {{eval:(b-d)*x+(c-f)}}$.",
 								"$$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
 							]
 						}
@@ -10546,7 +10546,7 @@
 			},
 			"changements": {
 				"ajoutees": [6, 7],
-				"corrigees": [],
+				"corrigees": [2],
 				"specs": true,
 				"description": false,
 				"options": false

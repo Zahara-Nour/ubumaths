@@ -1,4 +1,9 @@
 {
+	"id": "8c291e87-ce64-48e6-aae6-2405b1e17de2",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > développement",
+		"point": "3-013"
+	},
 	"title": "Développer et réduire une expression",
 	"description": "Double distributivité dans un calcul, résultat sous forme réduite : 5 − (2x + 3)(x − 4), −2(x + 3)(2x − 5), 3(2x − 1) − (x + 4)(x − 2), (2x + 1)(x − 3) − (x − 4)(x + 2) (pièges : moins appliqué au seul premier terme, produits croisés oubliés, facteur appliqué aux deux parenthèses)",
 	"grades": ["3"],

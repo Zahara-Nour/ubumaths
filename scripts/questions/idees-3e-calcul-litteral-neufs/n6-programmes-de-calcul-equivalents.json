@@ -1,4 +1,9 @@
 {
+	"id": "bfbd40fc-0d37-4af1-9c4f-4fe5c793a74c",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > identités remarquables",
+		"point": "3-016"
+	},
 	"title": "Programmes de calcul équivalents",
 	"description": "Exprimer deux programmes de calcul en fonction du nombre de départ x, sous forme réduite, puis dire s'ils donnent toujours le même résultat : (x + a)² − x² et 2ax + a², (x + a)(x − a) + a² et x², (x + a)² − a² et x(x + 2a) (pièges : double produit oublié, signe de a² dans (x + a)(x − a))",
 	"grades": ["3"],

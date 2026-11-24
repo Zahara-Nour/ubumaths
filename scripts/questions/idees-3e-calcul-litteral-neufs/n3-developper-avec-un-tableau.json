@@ -1,4 +1,9 @@
 {
+	"id": "62528060-640b-4ca5-90fc-7f5ccebe08d9",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > développement",
+		"point": "3-013"
+	},
 	"title": "Développer avec un tableau",
 	"description": "Double distributivité dans un tableau de multiplication à compléter (quatre produits), puis le développement réduit : (x + 3)(x + 5), (2x − 3)(5x + 4) (pièges : x × x = 2x, carré oublié, signe d'un produit, produits croisés oubliés)",
 	"grades": ["3"],

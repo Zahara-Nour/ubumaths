@@ -1,4 +1,9 @@
 {
+	"id": "ea76da91-df3e-400f-939c-172556169e87",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > identités remarquables",
+		"point": "3-016"
+	},
 	"title": "Calculer astucieusement avec une identité remarquable",
 	"description": "Calcul mental avec les trois identités remarquables : 103² = (100 + 3)², 98² = (100 − 2)², 302 × 298 = (300 + 2)(300 − 2) (pièges : double produit oublié, b² soustrait, b² ajouté au lieu d'être soustrait)",
 	"grades": ["3"],

@@ -6,19 +6,16 @@ Idées reprises d'ailleurs, rubrique « Calcul littéral, équations » de Trois
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-23, lot écrit, en attente des brouillons en prod._
+_Mis à jour le 2026-11-24, migrations prêtes, PR à ouvrir._
 
-- **État** : phase 0 validée ; lot écrit et commité (6 neufs `…-neufs/`, 24 variations de 12 publiés
-  `…-publies/`), `create-questions` en simulation vert ; migration de contenu générée
-  (`20261123193909_…_publies_contenu.sql`), test d'intégration vert ; neufs joués en base locale,
-  N3, N4, N6 vus à l'écran · **Prochaine action** : après les brouillons en prod, commiter les ids,
-  choisir les sous-notions, générer la migration de rangement (`migration-rangement.ts`), ouvrir UNE
-  PR (rangement + contenu), `security-auditor`, merge, `db:migrate` · **En attente de David** :
-  `create-questions --dir scripts/questions/idees-3e-calcul-litteral-neufs --publier` depuis le
-  worktree (écriture en prod) ; avis sur l'écart N6 (programmes non équivalents une fois sur deux) ·
-  **Pièges en cours** : N3, le tableau à cases déborde sur iPhone ; prod : corrigé de dcaabf69 v1 à
-  nombres soudés (non corrigé) · **Worktree / branche** : `../ubumaths-wt-idees-3e-calcul-litteral`,
-  `feat/idees-3e-calcul-litteral`.
+- **État** : 6 brouillons en prod (David, 2026-11-24), ids commités ; migrations
+  `20261124000051_…_neufs_rangement_tags.sql` et `20261124000150_…_publies_contenu.sql` (+24
+  variations, 1 corrigée : dcaabf69 v1), tests d'intégration verts, rouges sans elles ·
+  **Prochaine action** : `security-auditor`, PR, `pnpm pr:merger`, puis `db:migrate` depuis `main`
+  (vérifier `migration list --linked` avant) ; ensuite relecture dans `/dev/modeles` et publication
+  (N3 reste en brouillon, outil n° 57) · **En attente de David** : rien · **Pièges en cours** : N3,
+  tableau trop large sur iPhone (n° 57) · **Worktree / branche** :
+  `../ubumaths-wt-idees-3e-calcul-litteral`, `feat/idees-3e-calcul-litteral`.
 
 ## Phase 0 (2026-11-23, validée par David le jour même)
 
@@ -142,6 +139,20 @@ dans le tableau de répartition ; exports de prod dans `scripts/questions/idees-
    recommande de les mettre dans « Idées en attente » du tableau de répartition.
 
 ## Historique
+
+### 2026-11-24 — brouillons en prod, migrations générées
+
+- David valide mes recommandations : N6 garde ses programmes non équivalents une fois sur deux ;
+  N3 reste en brouillon jusqu'au correctif du tableau à cases (outil n° 57, commit sur `main`) ;
+  le corrigé de dcaabf69 v1 est corrigé dans la même migration (termes écrits à part, signe forcé :
+  `{{eval:-(d)*x;+}}{{eval:-(f);+}}` ; 60 tirages relus, plus aucun nombre soudé).
+- David a lancé `create-questions --publier` : 6 brouillons en prod (vérifié en lecture seule).
+- Sous-notions : N1, N3 « Algèbre > Calcul littéral > développement » (3-013) ; N2, N6 (3-016) et
+  N4 (3-058) « … > identités remarquables » ; N5 « Algèbre > Équations : premier degré > ax + b =
+  cx + d » (4-071), comme 5e2db3d1 : le nœud « mettre en équation » existe, mais 4-071 pend à
+  « ax + b = cx + d », et le tag doit être sur le nœud du modèle ou sa notion.
+- Question d'accès : personne ne gagne d'accès (rangement et contenu de modèles de questions).
+- Tests d'intégration rangement + contenu : 137 verts ; sans nos deux migrations, 12 rouges.
 
 ### 2026-11-23 — lot écrit
 

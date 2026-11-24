@@ -1,4 +1,9 @@
 {
+	"id": "eef988e6-95ca-4336-8b9c-2ea1afa18054",
+	"rangement": {
+		"noeud": "Algèbre > Calcul littéral > identités remarquables",
+		"point": "3-058"
+	},
 	"title": "Factoriser a² + 2ab + b² et a² − 2ab + b²",
 	"description": "Reconnaître le carré d'une somme ou d'une différence pour factoriser : x² + 6x + 9, x² − 10x + 25, 4x² + 12x + 9, puis une identité à trous x² + … + 9 = (…)² (pièges : factorisé comme a² − b², coefficient de x au lieu de sa moitié, signe)",
 	"grades": ["3"],

@@ -88,7 +88,7 @@
 				"steps": [
 					"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Ici, le facteur commun est $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
 					"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})-\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}})\\right]$$",
-					"Le signe $-$ devant la parenthèse change **tous** ses signes : $({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}}) = {{eval:(b)*x+(c)}}{{eval:-(d)*x-(f)}} = {{eval:(b-d)*x+(c-f)}}$.",
+					"Le signe $-$ devant la parenthèse change **tous** ses signes : $({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}}) = {{eval:(b)*x+(c)}}{{eval:-(d)*x;+}}{{eval:-(f);+}} = {{eval:(b-d)*x+(c-f)}}$.",
 					"$$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
 				]
 			}

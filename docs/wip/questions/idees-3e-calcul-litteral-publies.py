@@ -89,6 +89,24 @@ def couleur(contenu, c=P0):
     return c + '{' + contenu + '}'
 
 
+# Correctif d'une variation PUBLIÉE (validé par David le 2026-11-24) : dans le corrigé de
+# dcaabf69 v1, `{{eval:-(d)*x-(f)}}` est un binôme que le moteur peut réordonner (« 9-5x ») ;
+# collé derrière `{{eval:(b)*x+(c)}}`, il soudait deux nombres (« 6x+69-5x »). On écrit les deux
+# termes séparément, signe forcé (d ≥ 1, donc −dx est toujours négatif). Idempotent.
+CORRECTIFS = {
+    ('dcaabf69', 1, 2): ('{{eval:(b)*x+(c)}}{{eval:-(d)*x-(f)}}',
+                         '{{eval:(b)*x+(c)}}{{eval:-(d)*x;+}}{{eval:-(f);+}}'),
+}
+
+
+def corriger_publiee(court, m):
+    for (c, vi, etape), (ancien, nouveau) in CORRECTIFS.items():
+        if c != court:
+            continue
+        steps = m['variations'][vi]['correction']['steps']
+        steps[etape] = steps[etape].replace(ancien, nouveau)
+
+
 def ajouter(court, variations, specs):
     chemin = os.path.join(DOSSIER, court + '.json')
     with open(chemin, encoding='utf-8') as f:
@@ -96,6 +114,7 @@ def ajouter(court, variations, specs):
     nv, ns = ORIGINE[court]
     m['variations'] = m['variations'][:nv]
     m['testSpecs'] = m['testSpecs'][:ns]
+    corriger_publiee(court, m)
     for s in specs:
         s['variationIndex'] += nv
     m['variations'] += variations

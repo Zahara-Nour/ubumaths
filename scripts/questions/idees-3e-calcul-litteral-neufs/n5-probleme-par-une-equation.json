@@ -1,4 +1,9 @@
 {
+	"id": "bf8a9d2d-5d7a-442e-8180-9b55dbc2b53f",
+	"rangement": {
+		"noeud": "Algèbre > Équations : premier degré > ax + b = cx + d",
+		"point": "4-071"
+	},
 	"title": "Résoudre un problème par une équation",
 	"description": "Mettre en équation et résoudre jusqu'au nombre : âges (dans combien d'années le double ?), trois entiers consécutifs, paniers à 2 et 3 points, deux-roues et voitures, triangle isocèle, aire d'un rectangle (pièges : réponse à une autre question, écart d'âge, une longueur oubliée dans le périmètre)",
 	"grades": ["4", "3"],
