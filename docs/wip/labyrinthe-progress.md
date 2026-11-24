@@ -6,17 +6,17 @@ Né de [droite-zoom](droite-zoom-progress.md) (prochaine action) et des relevés
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3084._
+_Mis à jour le 2026-11-24, PR 2 en cours (avant ouverture)._
 
-- **État** : PR 1 (bloc ` ```labyrinthe `, juge, écran, PDF, série, catalogue) mergée (#3084) ·
-  **Prochaine action** : PR 2, les modèles : 3e (3A10-7, nombres premiers) et 6e, 6-101 (6N1A-4,
-  chiffre d'un rang) ; phase 0 courte d'abord (énoncés, tailles de grille, nœuds) ·
-  **En attente de David** : dire s'il veut un réglage de la forme des nombres (règle « chiffre ») ·
-  **Pièges en cours** : ne jamais changer le tirage (`tirerLabyrinthe`, `piocher`, `utils/random.ts`)
-  sans le décider : test « golden » ; seule la graine est gardée dans l'énoncé ·
-  **Worktree / branche** : aucun (à créer pour la PR 2).
-
-## Phase 0 (2026-11-24, validée par David : « je suis tes recos »)
+- **État** : PR 2 (les deux modèles, fichiers seuls) sur `feat/labyrinthe-modeles` ; simulation
+  `create-questions` verte (18 specs), 1 500 tirages sans erreur, vus en local sur iPhone ·
+  **Prochaine action** : merge de la PR des fichiers, puis `deploy:prod` (David : le bloc n'est pas
+  en prod), puis David lance `create-questions --publier`, puis migration de rangement générée
+  (`rangement` à ajouter dans les deux JSON) · **En attente de David** : rien avant le merge ·
+  **Pièges en cours** : chemins des specs calculés à la graine 0 par
+  `scripts/questions/labyrinthe-chemins.ts` (ne jamais les écrire à la main) ; tirage figé (test
+  « golden ») ; grilles larges débordent sur iPhone (outils-manquants n° 61) ·
+  **Worktree / branche** : `../ubumaths-wt-labyrinthe-modeles`, `feat/labyrinthe-modeles`.
 
 Besoin : une grille de cases à nombres ; l'élève va de l'entrée à une sortie en ne passant que par
 les cases qui suivent une règle. 3e (3A10-7 : nombres premiers) ; 6e, 6-101 (6N1A-4 : chiffre des
@@ -75,7 +75,29 @@ le quadrillage du robot.
   réponse juste, contrat de `check-template`) au lieu de « Sortie N : … » ; cases verrouillées
   restées boutons (le focus ne retombe plus sur la page).
 
+## PR 2 : les modèles
+
+Phase 0 validée par David le 2026-11-24 (« go » après ses « tes recos ? ») :
+
+- **M1 (3e)** « Le labyrinthe des nombres premiers », sans point, nœud Arithmétique > Nombres
+  premiers > primalité (comme F4) ; 150 s, niveau 5 ; grilles 5 × 4 et 6 × 5.
+- **M2 (6e, 6-101)** « Le labyrinthe du chiffre d'un rang », nœud Nombres et calculs > Entiers :
+  numération > décomposition ; 120 s, niveau 4 ; entiers (unités à unités de mille, 5 × 4),
+  décimaux (dixièmes à millièmes, 5 × 4), mélange (tous les rangs, 4 × 5) ; chiffre de 1 à 9.
+- Deux modèles neufs (pas de variation ajoutée à F4 ni à 4d825d44 : un modèle n'a qu'une durée).
+- Pas de réglage de la forme des nombres (question restée ouverte après la PR 1, tranchée : non).
+- Question d'accès : personne ne gagne d'accès (rangement et tag seulement).
+- **Écart à la phase 0, tranché par David** : 7 × 5 (M1) et 6 × 5 (M2) débordaient sur iPhone
+  (vu avec `pnpm voir` sur des modèles d'essai locaux, supprimés ensuite) → 6 × 5 et 4 × 5 ; le
+  défaut du bloc est noté au n° 61 de `outils-manquants.md`.
+
+Écrit : `docs/wip/questions/labyrinthe-modeles.py` → `scripts/questions/labyrinthe-modeles/` ;
+`scripts/questions/labyrinthe-chemins.ts` remplace les marques `A_CALCULER` des specs par le chemin
+de la graine 0 (bon chemin, sans sa fin, sans son début). Pas d'erreurs prévues : le juge dit
+lui-même pourquoi un chemin est faux.
+
 ## Historique
 
 - 2026-11-24 : phase 0 validée ; worktree créé.
 - 2026-11-24 : #3084 mergée (PR 1, l'outil).
+- 2026-11-24 : PR 2, phase 0 validée ; lot écrit, grilles réduites (débord iPhone).
