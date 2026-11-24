@@ -86,7 +86,7 @@ Liens : `school_id` → `schools`
 
 ### `private_lesson_invitations`
 
-`cancelled_at?` · `class_id?` · `created_at` · `created_by?` · `email_sent_at?` · `expires_at` · `firstname` · `grade` · `id` · `parent_email` · `school_id` · `sent_count` · `student_id?` · `token_hash` · `used_at?`
+`cancelled_at?` · `claimed_at?` · `class_id?` · `created_at` · `created_by?` · `email_sent_at?` · `expires_at` · `firstname` · `grade` · `id` · `parent_email` · `school_id` · `sent_count` · `student_id?` · `token_hash` · `used_at?`
 
 Liens : `class_id` → `classes` · `created_by` → `profiles` · `school_id` → `schools` · `student_id` → `profiles`
 

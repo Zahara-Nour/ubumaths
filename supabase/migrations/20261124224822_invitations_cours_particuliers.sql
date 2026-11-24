@@ -49,8 +49,21 @@ create unique index if not exists idx_schools_one_private_lessons
 
 -- Akadada existe en production, une seule école de ce nom (relevé du 2026-11-24 ; deux
 -- lignes feraient échouer l'index unique, donc la migration) ; ailleurs (bases locale et de
--- test), aucune ligne : rien n'est touché.
-update public.schools set is_private_lessons = true where name = 'Akadada';
+-- test), aucune ligne : rien n'est touché. Une école au nom proche mais pas exact (renommée
+-- entre-temps) arrête la migration plutôt que de la laisser passer sans réglage.
+do $$
+declare
+	v_count integer;
+begin
+	update public.schools set is_private_lessons = true where name = 'Akadada';
+	get diagnostics v_count = row_count;
+	if v_count = 0 and exists (select 1 from public.schools where name ilike '%akadada%') then
+		raise exception 'Ecole Akadada introuvable sous son nom exact : reglage non pose.';
+	end if;
+	if v_count = 0 then
+		raise notice 'Aucune ecole Akadada (base locale ou de test) : reglage non pose.';
+	end if;
+end $$;
 
 -- ---------------------------------------------------------------------------
 -- 2. Invitations
@@ -63,35 +76,56 @@ create table if not exists public.private_lesson_invitations (
 	firstname text not null
 		constraint private_lesson_invitations_firstname check (char_length(firstname) between 1 and 50),
 	-- Contact du parent, jamais un identifiant de connexion ; minuscules (le serveur
-	-- normalise, la base le vérifie).
+	-- normalise, la base le vérifie). Même format que `parental_consents.valid_email_format` :
+	-- l'adresse est recopiée dans le consentement à l'utilisation (PR 3).
 	parent_email text not null
 		constraint private_lesson_invitations_parent_email check (
-			char_length(parent_email) between 3 and 254
+			char_length(parent_email) <= 254
 			and parent_email = lower(parent_email)
-			and parent_email like '%_@_%'
+			and parent_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
 		),
-	-- Niveau donné par l'admin (décision 4), repris par la classe créée.
+	-- Niveau donné par l'admin (décision 4), repris par la classe créée : même liste que
+	-- `classes_grade_check` (20261007210000), sinon la classe ne pourrait pas naître.
 	grade text not null
-		constraint private_lesson_invitations_grade check (char_length(grade) between 1 and 20),
+		constraint private_lesson_invitations_grade check (grade = any (array[
+			'CP', 'CE1', 'CE2', 'CM1', 'CM2',
+			'6', '5', '4', '3',
+			'2', '1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_TECHNO', 'T_TECHNO'
+		])),
 	-- sha256 (hex) du jeton ; le jeton en clair n'est jamais stocké. « Renvoyer »
 	-- remplace l'empreinte : l'ancien lien ne marche plus (phase 0).
 	token_hash text not null unique
 		constraint private_lesson_invitations_token_hash check (token_hash ~ '^[0-9a-f]{64}$'),
 	-- 7 jours après l'envoi (décision 2), posé par le serveur.
 	expires_at timestamptz not null,
-	-- Null tant que le courriel n'est pas parti (Brevo refuse → non compté, phase 0).
+	-- Envoi du lien ACTUEL : null tant que son courriel n'est pas parti (Brevo refuse →
+	-- non compté, phase 0). « Renvoyer » remet la colonne à null avec la nouvelle empreinte,
+	-- puis la pose si le courriel part : la liste ne dit jamais « envoyée » à tort.
 	email_sent_at timestamptz,
+	-- Courriels partis, tous liens confondus ; plafond contre l'abus de renvois (comme
+	-- `parental_consents.max_email_count`).
 	sent_count integer not null default 0
-		constraint private_lesson_invitations_sent_count check (sent_count >= 0),
+		constraint private_lesson_invitations_sent_count check (sent_count between 0 and 5),
 	cancelled_at timestamptz,
+	-- Réservation du lien pendant la création du compte (PR 3) : le serveur la pose par un
+	-- `update … where claimed_at is null or claimed_at < now() - interval '5 minutes'`
+	-- atomique, la retire si la création échoue (le lien reste valable). Deux validations
+	-- simultanées : une seule réserve, donc un seul compte. Un serveur tombé en route ne tue
+	-- pas le lien : la réservation se périme.
+	claimed_at timestamptz,
 	used_at timestamptz,
-	-- Posés à l'utilisation (PR 3) : le compte et la classe créés.
-	student_id uuid references public.profiles(id) on delete set null,
+	-- Posés à l'utilisation (PR 3) : le compte et la classe créés. Compte effacé (droit à
+	-- l'effacement) : l'invitation part avec lui, adresse du parent comprise.
+	student_id uuid references public.profiles(id) on delete cascade,
 	class_id uuid references public.classes(id) on delete set null,
-	created_by uuid references public.profiles(id) on delete set null default auth.uid(),
+	-- Posé par le serveur (id de l'admin vérifié) : en service role, auth.uid() est null.
+	created_by uuid references public.profiles(id) on delete set null,
 	created_at timestamptz not null default now(),
 	constraint private_lesson_invitations_cancelled_or_used check (
 		cancelled_at is null or used_at is null
+	),
+	constraint private_lesson_invitations_created_only_when_used check (
+		(student_id is null and class_id is null) or used_at is not null
 	)
 );
 
@@ -117,7 +151,7 @@ create policy "Teachers and admins read private lesson invitations"
 revoke all on public.private_lesson_invitations from public, anon, authenticated;
 grant select (
 	id, school_id, firstname, parent_email, grade, expires_at, email_sent_at, sent_count,
-	cancelled_at, used_at, student_id, class_id, created_by, created_at
+	cancelled_at, claimed_at, used_at, student_id, class_id, created_by, created_at
 ) on public.private_lesson_invitations to authenticated;
 
 -- ---------------------------------------------------------------------------

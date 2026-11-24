@@ -8661,6 +8661,7 @@ export type Database = {
 			private_lesson_invitations: {
 				Row: {
 					cancelled_at: string | null;
+					claimed_at: string | null;
 					class_id: string | null;
 					created_at: string;
 					created_by: string | null;
@@ -8679,6 +8680,7 @@ export type Database = {
 				ComputedFields: never;
 				Insert: {
 					cancelled_at?: string | null;
+					claimed_at?: string | null;
 					class_id?: string | null;
 					created_at?: string;
 					created_by?: string | null;
@@ -8696,6 +8698,7 @@ export type Database = {
 				};
 				Update: {
 					cancelled_at?: string | null;
+					claimed_at?: string | null;
 					class_id?: string | null;
 					created_at?: string;
 					created_by?: string | null;

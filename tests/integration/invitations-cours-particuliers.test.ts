@@ -47,10 +47,9 @@ const ANON_KEY =
 const TABLE = 'private_lesson_invitations';
 const PARENT_EMAIL = 'parent.jade@example.test';
 const COLONNES_LISIBLES =
-	'id, school_id, firstname, parent_email, grade, expires_at, email_sent_at, sent_count, cancelled_at, used_at, student_id, class_id, created_by, created_at';
+	'id, school_id, firstname, parent_email, grade, expires_at, email_sent_at, sent_count, cancelled_at, claimed_at, used_at, student_id, class_id, created_by, created_at';
 const JOUR = 86_400_000;
-// Client non typé : la table entre dans `database.ts` avec `pnpm db:types`, après la migration.
-const service = createServiceRoleClient() as unknown as SupabaseClient;
+const service = createServiceRoleClient();
 
 // Variables
 let ecoleId: string;
@@ -110,7 +109,7 @@ async function inviter(
 			school_id: ecoleId,
 			firstname: 'Jade',
 			parent_email: PARENT_EMAIL,
-			grade: '5e',
+			grade: '5',
 			token_hash: sha256(jeton),
 			expires_at: new Date(Date.now() + 7 * JOUR).toISOString(),
 			...champs
@@ -122,7 +121,10 @@ async function inviter(
 }
 
 async function lireParLien(jeton: string | null): Promise<InvitationPayload | null> {
-	const { data, error } = await service.rpc('get_private_lesson_invitation', { p_token: jeton });
+	// `null` est essayé exprès (le serveur pourrait le passer) : le type généré dit `string`.
+	const { data, error } = await service.rpc('get_private_lesson_invitation', {
+		p_token: jeton as string
+	});
 	if (error) throw new Error(`get_private_lesson_invitation : ${error.message}`);
 	return data as InvitationPayload | null;
 }
@@ -191,15 +193,36 @@ describe('invitations de cours particulier (base locale)', () => {
 		});
 	});
 
+	describe("le réglage d'école n'est posé que par l'admin", () => {
+		it("ni un élève ni le prof ne l'écrivent", async () => {
+			for (const client of [eleve, prof]) {
+				const { data, error } = await client
+					.from('schools')
+					.update({ is_private_lessons: false })
+					.eq('id', ecoleId)
+					.select('id');
+				expect(error).toBeNull();
+				expect(data).toEqual([]);
+			}
+			const { data } = await service
+				.from('schools')
+				.select('is_private_lessons')
+				.eq('id', ecoleId)
+				.single();
+			expect((data as { is_private_lessons: boolean }).is_private_lessons).toBe(true);
+		});
+	});
+
 	describe('qui lit la table', () => {
-		it('anon ne lit aucune invitation', async () => {
-			const { data, error } = await anonClient().from(TABLE).select('id');
-			expect(error?.code === '42501' || (data ?? []).length === 0).toBe(true);
+		it("anon n'a aucun droit sur la table", async () => {
+			const { error } = await anonClient().from(TABLE).select('id');
+			expect(error?.code).toBe('42501');
 		});
 
-		it('un élève ne lit aucune invitation', async () => {
+		it('un élève ne lit aucune invitation (filtrée par la policy)', async () => {
 			const { data, error } = await eleve.from(TABLE).select('id');
-			expect(error?.code === '42501' || (data ?? []).length === 0).toBe(true);
+			expect(error).toBeNull();
+			expect(data).toEqual([]);
 		});
 
 		it('le prof lit les invitations : prénom et adresse du parent', async () => {
@@ -209,7 +232,7 @@ describe('invitations de cours particulier (base locale)', () => {
 				.eq('id', invitationId)
 				.single();
 			expect(error).toBeNull();
-			expect(data).toMatchObject({ firstname: 'Jade', parent_email: PARENT_EMAIL, grade: '5e' });
+			expect(data).toMatchObject({ firstname: 'Jade', parent_email: PARENT_EMAIL, grade: '5' });
 		});
 
 		it("l'admin lit les invitations", async () => {
@@ -234,7 +257,7 @@ describe('invitations de cours particulier (base locale)', () => {
 					school_id: ecoleId,
 					firstname: 'Intrus',
 					parent_email: 'intrus@example.test',
-					grade: '6e',
+					grade: '6',
 					token_hash: sha256(nouveauJeton()),
 					expires_at: new Date(Date.now() + JOUR).toISOString()
 				});
@@ -244,15 +267,16 @@ describe('invitations de cours particulier (base locale)', () => {
 		});
 
 		it("aucun client ne modifie ni n'efface une invitation", async () => {
-			for (const client of [eleve, prof, admin]) {
+			// Aucun droit d'écriture accordé : 42501 strict (un grant posé par erreur fait rougir).
+			for (const client of [anonClient(), eleve, prof, admin]) {
 				const maj = await client
 					.from(TABLE)
 					.update({ parent_email: 'autre@example.test' })
 					.eq('id', invitationId)
 					.select('id');
-				expect(maj.error?.code === '42501' || (maj.data ?? []).length === 0).toBe(true);
+				expect(maj.error?.code).toBe('42501');
 				const suppr = await client.from(TABLE).delete().eq('id', invitationId).select('id');
-				expect(suppr.error?.code === '42501' || (suppr.data ?? []).length === 0).toBe(true);
+				expect(suppr.error?.code).toBe('42501');
 			}
 			// Relu en service role : la RLS échoue en silence.
 			const { data } = await service
@@ -268,7 +292,7 @@ describe('invitations de cours particulier (base locale)', () => {
 				school_id: ecoleId,
 				firstname: 'Jade',
 				parent_email: PARENT_EMAIL,
-				grade: '5e',
+				grade: '5',
 				token_hash: 'pas-une-empreinte',
 				expires_at: new Date(Date.now() + JOUR).toISOString()
 			});
@@ -277,11 +301,42 @@ describe('invitations de cours particulier (base locale)', () => {
 				school_id: ecoleId,
 				firstname: 'Jade',
 				parent_email: 'Parent.Jade@example.test',
-				grade: '5e',
+				grade: '5',
 				token_hash: sha256(nouveauJeton()),
 				expires_at: new Date(Date.now() + JOUR).toISOString()
 			});
 			expect(majuscules.error?.code).toBe('23514');
+		});
+
+		it('refuse un niveau que la classe ne pourrait pas porter', async () => {
+			const { error } = await service.from(TABLE).insert({
+				school_id: ecoleId,
+				firstname: 'Jade',
+				parent_email: PARENT_EMAIL,
+				grade: '5e',
+				token_hash: sha256(nouveauJeton()),
+				expires_at: new Date(Date.now() + JOUR).toISOString()
+			});
+			expect(error?.code).toBe('23514');
+		});
+
+		it('refuse un compte ou une classe posés sur une invitation non utilisée', async () => {
+			const classe = await TestData.class().withName('Classe invitation test').create();
+			const { error } = await service
+				.from(TABLE)
+				.update({ class_id: classe.id })
+				.eq('id', invitationId)
+				.select('id');
+			expect(error?.code).toBe('23514');
+		});
+
+		it('plafonne les envois à 5', async () => {
+			const { error } = await service
+				.from(TABLE)
+				.update({ sent_count: 6 })
+				.eq('id', invitationId)
+				.select('id');
+			expect(error?.code).toBe('23514');
 		});
 
 		it('refuse une invitation à la fois annulée et utilisée', async () => {
@@ -289,7 +344,7 @@ describe('invitations de cours particulier (base locale)', () => {
 				school_id: ecoleId,
 				firstname: 'Jade',
 				parent_email: PARENT_EMAIL,
-				grade: '5e',
+				grade: '5',
 				token_hash: sha256(nouveauJeton()),
 				expires_at: new Date(Date.now() + JOUR).toISOString(),
 				cancelled_at: new Date().toISOString(),
@@ -321,7 +376,7 @@ describe('invitations de cours particulier (base locale)', () => {
 			]);
 			expect(invitation).toMatchObject({
 				firstname: 'Jade',
-				grade: '5e',
+				grade: '5',
 				school_name: 'École cours particuliers test'
 			});
 			expect(JSON.stringify(invitation)).not.toContain(PARENT_EMAIL);
@@ -339,6 +394,30 @@ describe('invitations de cours particulier (base locale)', () => {
 			]) {
 				expect(await lireParLien(jeton)).toBeNull();
 			}
+		});
+
+		it("« Renvoyer » (nouvelle empreinte) : l'ancien lien ne marche plus, le nouveau oui", async () => {
+			const { id, jeton: ancien } = await inviter({ firstname: 'Basile' });
+			const nouveau = nouveauJeton();
+			const { data, error } = await service
+				.from(TABLE)
+				.update({ token_hash: sha256(nouveau), email_sent_at: null })
+				.eq('id', id)
+				.select('id');
+			expect(error).toBeNull();
+			expect(data).toHaveLength(1);
+			expect(await lireParLien(ancien)).toBeNull();
+			expect(await lireParLien(nouveau)).toMatchObject({ firstname: 'Basile' });
+			await service.from(TABLE).delete().eq('id', id);
+		});
+
+		it('une invitation réservée (création en cours) reste lisible par son lien', async () => {
+			const { id, jeton } = await inviter({
+				firstname: 'Chloé',
+				claimed_at: new Date().toISOString()
+			});
+			expect(await lireParLien(jeton)).toMatchObject({ firstname: 'Chloé' });
+			await service.from(TABLE).delete().eq('id', id);
 		});
 
 		it("l'empreinte seule n'ouvre rien", async () => {

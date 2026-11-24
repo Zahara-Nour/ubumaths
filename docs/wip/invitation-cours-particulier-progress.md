@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, phase 0 validée._
+_Mis à jour le 2026-11-24, PR 1 prête (migration + tests), avant ouverture._
 
-- **État** : phase 0 VALIDÉE par David (comportements + point A : réglage sur l'école), rien codé · **Prochaine action** : PR 1 (migration + tests d'intégration rouges d'abord) · **En attente de David** : rien · **Pièges en cours** : le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes ; la classe d'une invitation naît fermée, donc l'adhésion se fait côté serveur, pas par le trigger · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier` / `feat/invitation-cours-particulier`
+- **État** : PR 1 sur la branche — migration `20261124224822` (table `private_lesson_invitations`, `schools.is_private_lessons` posé sur Akadada, `get_private_lesson_invitation`), 21 tests d'intégration verts (rouges sans la migration), security-auditor sans bloquant, code-reviewer corrigé · **Prochaine action** : PR ouverte → CI → merge → `db:migrate` ; puis PR 2 (admin) · **En attente de David** : durée de conservation des invitations expirées / annulées (purge, cf. « Dette pour les PR 2 et 3 ») · **Pièges en cours** : voir « Dette pour les PR 2 et 3 » ; le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes (classe d'invitation née fermée → adhésion côté serveur) · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier` / `feat/invitation-cours-particulier`
 
 ## But
 
@@ -70,7 +70,24 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 - **PR 3** — page du parent : création du compte, de la classe, adhésion, consentement ; courriel final.
   code-reviewer + security-auditor.
 
+## Dette pour les PR 2 et 3 (revues de la PR 1)
+
+- **PR 2** : écrire en service role après la garde de rôle admin ; poser `created_by` (id de l'admin
+  vérifié : `auth.uid()` est null en service role) ; lister les colonnes à la lecture (droits par
+  colonne : `select('*')` → 42501) ; « Renvoyer » = nouvelle empreinte + `email_sent_at` à null,
+  posé seulement si Brevo accepte, `sent_count` + 1 (plafond 5 en base) ; refuser une école qui
+  n'est pas `is_private_lessons` (rien ne l'interdit en base) ; niveaux au format de la base
+  (`'5'`, pas `'5e'`).
+- **PR 3** : réserver le lien par un `update … set claimed_at = now() where … and (claimed_at is
+null or claimed_at < now() - interval '5 minutes') returning` atomique ; la retirer si la
+  création échoue ; `used_at` + `student_id` + `class_id` ensemble à la fin.
+- **Essais en local** : la base locale n'a pas d'Akadada (le réglage n'y est pas posé) → une graine
+  ou une école de test réglée à la main pour essayer les PR 2 et 3.
+- **Conservation** : rien ne purge les invitations expirées, annulées ou utilisées (prénom +
+  adresse du parent). Question à David : au bout de combien de temps les effacer ?
+
 ## Historique
 
 - 2026-11-24 : chantier ouvert ; décisions 1 à 7 de David ; phase 0 écrite.
 - 2026-11-24 : phase 0 validée par David, point A compris (réglage « école de cours particuliers »).
+- 2026-11-24 : PR 1 écrite (migration + 21 tests) ; revues security-auditor (aucun bloquant) et code-reviewer (niveaux, format d'adresse, réservation `claimed_at`, plafond d'envois, assertions strictes : corrigés).
