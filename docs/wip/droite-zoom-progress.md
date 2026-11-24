@@ -6,11 +6,11 @@ d'outil. Ligne n° 54 de [outils-manquants.md](outils-manquants.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, modèle publié._
+_Mis à jour le 2026-11-24, outil n° 53 parti dans son chantier._
 
 - **État** : outil (#3052) et modèle (#3071) livrés ; 6dba93c8 « Lire une abscisse grâce à des zooms »
-  PUBLIÉ en prod (6-108), validé par David · **Prochaine action** : outil n° 53 (labyrinthe), phase 0
-  d'abord (chantier à nommer avec David) ; puis verser ce journal et celui
+  PUBLIÉ en prod (6-108), validé par David · **Prochaine action** : outil n° 53 → chantier
+  [labyrinthe](labyrinthe-progress.md) (PR 1 mergée, #3084) ; reste à verser ce journal et celui
   d'`idees-6e-entiers-decimaux` en archive · **En attente de David** : renommer N5 (c178356b) dans
   l'éditeur · **Pièges en cours** : relancer `droite-zoom-modeles.py` efface l'id du JSON
   (6dba93c8-b8e6-4888-843b-ac9f821c4a7e) · **Worktree / branche** : aucun.
