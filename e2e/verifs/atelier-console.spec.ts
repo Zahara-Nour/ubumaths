@@ -602,6 +602,14 @@ test(
 		const defined = await calc(page, 'a = 2');
 		await expect(defined.line.locator('.invite')).toHaveText('>');
 		await expect(defined.line.locator('.fleche')).toHaveText('-->');
+		// « --> » orange (`--accent-console`, #a65800 en clair)
+		await expect(defined.line.locator('.fleche')).toHaveCSS('color', 'rgb(166, 88, 0)');
+		// Les boutons de la ligne paraissent au survol seulement
+		const tools = defined.line.locator('.outils-ligne');
+		await page.mouse.move(2, 2);
+		await expect(tools).toHaveCSS('opacity', '0');
+		await defined.line.hover();
+		await expect(tools).toHaveCSS('opacity', '1');
 		expect(defined.text).toContain('a est correctement défini.');
 		await expect(defined.line.locator('.nom-defini')).toHaveText('a');
 
@@ -621,6 +629,27 @@ test(
 		// (le focus est sur le bouton Console, hors d'un champ)
 		await page.keyboard.press('Backquote');
 		await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		// Mac AZERTY (clavier Apple ISO) : la touche sous Échap rend `IntlBackslash`,
+		// touche que Playwright ne sait pas taper : l'événement de cette touche (« @ »).
+		// Seulement si le navigateur se dit Mac (« Desktop Chrome » de Playwright se dit Windows)
+		if (await page.evaluate(() => navigator.userAgent.includes('Macintosh'))) {
+			const underEscape = () =>
+				page.evaluate(() =>
+					document.activeElement?.dispatchEvent(
+						new KeyboardEvent('keydown', {
+							key: '@',
+							code: 'IntlBackslash',
+							bubbles: true,
+							cancelable: true
+						})
+					)
+				);
+			await consoleButton(page).focus();
+			await underEscape();
+			await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
+			await underEscape();
+			await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
+		}
 		await field.focus();
 		await field.fill('');
 		await page.keyboard.press('Backquote');
@@ -634,6 +663,17 @@ test(
 		await handle.focus();
 		await handle.press('ArrowDown');
 		expect(Number(await handle.getAttribute('aria-valuenow'))).not.toBe(height);
+		// Glissée au pointeur, elle change aussi la hauteur
+		const dragged = Number(await handle.getAttribute('aria-valuenow'));
+		const grip = await handle.boundingBox();
+		if (grip === null) throw new Error('poignée sans boîte');
+		await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2 - 80, { steps: 6 });
+		await page.mouse.up();
+		await expect
+			.poll(async () => Number(await handle.getAttribute('aria-valuenow')))
+			.not.toBe(dragged);
 
 		// Action de carte console fermée : un nombre sur le bouton
 		await calc(page, 'f(x) = x^2');
