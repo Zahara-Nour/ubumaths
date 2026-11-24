@@ -6,16 +6,22 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, rubrique prise._
+_Mis à jour le 2026-11-24, aucune PR ouverte (branche poussée, 6 commits)._
 
-- **État** : phase 0 validée (F1-F5, N1-N3), modèles d820232a, 6ad254b4, cb545bd7 réservés et
-  exportés, **lot écrit et commité** (§ Historique, « lot écrit »), test d'intégration de la
-  migration de contenu vert (110 passés, 2 ignorés) · **Prochaine action** : rendu à l'écran
-  (serveur de dev du worktree sur 5176+, `pnpm voir`, aperçu admin des brouillons LOCAUX 6f2a8a4b
-  N1, 502ab371 N2, 03cce164 N3, et des publiés en local après `db:a-jour`), surtout N3 (repère sous
-  un tableau à cases) ; puis David lance `create-questions --publier` en prod (brouillons N1-N3) · **En attente de David** : rien (Q1 à Q3 tranchées) ·
-  **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions`,
-  `docs/idees-3e-fonctions`
+- **État** : phase 0 validée (F1-F5, N1-N3 ; Q1 pas de quotient, Q2 outil n° 60 noté, Q3 F5 sur
+  cb545bd7). Lot écrit et commité : 3 neufs (brouillons locaux 6f2a8a4b N1, 502ab371 N2,
+  03cce164 N3, ids retirés des fichiers), +11 variations sur d820232a, 6ad254b4, cb545bd7,
+  migration de contenu `20261124123959_…` + fixture ; test d'intégration vert. Les 3 modèles
+  publiés sont réservés dans le tableau de répartition.
+- **Prochaine action** : rendu à l'écran (serveur de dev du worktree sur 5176+, `pnpm voir` ou
+  aperçu admin local ; `db:a-jour` pour voir les variations ajoutées), surtout N3 (repère sous
+  un tableau à cases) et N1 (mélange des phrases) ; puis `security-auditor` non requis (contenu),
+  ouvrir la PR (`code-reviewer` non requis : contenu), `pnpm pr:merger <n>`.
+- **En attente de David** : après le merge, `create-questions --publier` des 3 brouillons en prod ;
+  `db:migrate` de la migration de contenu selon les 4 conditions de CLAUDE.md.
+- **Pièges en cours** : le port 51839 en écoute n'est pas à moi ; aucun serveur lancé par cette
+  session.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions`, `docs/idees-3e-fonctions`
 
 ## Phase 0 (2026-11-24, en attente de David)
 
