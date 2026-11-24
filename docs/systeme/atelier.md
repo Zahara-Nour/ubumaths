@@ -3226,8 +3226,9 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
-- dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
-  sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
+- anciennes dettes, closes : « Renommer » est actif (`actions.ts`) ; pas de palette d'unités, les
+  unités se tapent à la main (décision du 2026-10-11, [grandeurs.md](grandeurs.md)).
+  `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).
   `.relever` sur une figure chargée (intersections, perpendiculaire, périmètre, angle, deux
   mesures composées) : 19 à 23 s pour le balayage, ~8 ms puis ~95 ms de recalcul par pas — le

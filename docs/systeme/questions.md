@@ -1801,9 +1801,9 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
   `cp-a2/04` et `ce1-2/04`, à réécrire en ` ```ranger ` (au moins 3 étiquettes) ; 6e 06, 07 et CM2
   sont réécrits (46 modèles publiés à ` ```ranger ` en prod le 2026-11-09). `axe: à choisir` est utilisé par
   `ce2-7c/08` (CE2-082, publié). Liste tenue à jour : [outils-manquants.md](../wip/outils-manquants.md).
-- `question_templates.type` existe en base, mais le code déduit le type de la structure
-  (`getQuestionType`). CONTEXT.md liste encore des types TinyMath (`numerical_exact`…) absents de
-  `QuestionType`.
+- `question_templates.type` existe en base et reste lu (filtre `type` de
+  `api/questions/templates`, entre autres), alors que l'affichage déduit le type de la structure (`getQuestionType`) : deux
+  sources pour une même notion.
 - **Durées du panier ≠ durées d'une série** : `questionCart.updateDelay` et `CartQuestionCard`
   bornent à 5..300 s, la série enregistrée accepte jusqu'à `MAX_QUESTION_DELAY_SECONDS` (600).
   Une série à 600 s chargée par `replaceWith` garde sa durée, mais le premier « − » la ramène à 300.

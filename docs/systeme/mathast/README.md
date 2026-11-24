@@ -1906,9 +1906,6 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   `{ type: 'opposite', … }` à la main, hors `factory.ts` (invariant 2) ; l'inversion exacte de
   `ln u ⊳ c` / `e^u ⊳ c` ne couvre ni u non affine (`\ln(x^2)-1`) ni `log`, `log10`, `log2`
   avec c ≠ 0 (contrainte `unresolved`).
-- Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`,
-  `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`)
-  ne servent plus que pour `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.
 - Limites, évaluation flottante (relevé le 2026-10-25, simplify-carte lot 6a) : `evaluateNumeric`
   (`common/numeric.ts`), seul évaluateur flottant de `limits/` et de `evaluateAtPoint` des limites
   pédagogiques (réglage `'undefined'`), **n'évalue ni π ni e** (`null`). Le moteur compte sur ce

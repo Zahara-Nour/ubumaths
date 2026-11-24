@@ -280,4 +280,4 @@ Royaume, D19 par la chandelle qui se pose au bout d'une minute ; V14, C16, C17, 
 - Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde
   Automaths et le Shtam, les plus vivants).
 - Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
-  teintés (D17), pas de lien d'évitement (D18).
+  teintés (D17). Le lien d'évitement existe (« Aller au contenu », `src/routes/+layout.svelte`).
