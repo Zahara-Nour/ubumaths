@@ -1,0 +1,201 @@
+{
+	"id": "98f9d4b2-ebdd-4ed9-81a4-deb2e5b58c07",
+	"title": "Point d'inflexion : lecture graphique",
+	"description": "Lire sur la courbe de f l'abscisse de son point d'inflexion (changement de convexité)",
+	"grades": ["T_SPE", "T_COMP"],
+	"level": 5,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nQuelle est l'abscisse du point d'inflexion de $\\mathcal{C}_f$ ?\n\n```choix\n- ${{h}}$\n- ${{eval:h+1}}$\n- ${{eval:h-1}}$\n- ${{k}}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": ["k != h", "k != h+1", "k != h-1"],
+			"correction": {
+				"steps": [
+					"Au point d'inflexion, la courbe **traverse sa tangente** : elle passe de « tournée vers le {{if:s>0|bas|haut}} » à « tournée vers le {{if:s>0|haut|bas}} ».",
+					"C'est le point de coordonnées $({{h}}\\,;{{k}})$ : son abscisse est $\\textcolor{{{color:primary.0}}}{{{h}}}$. Les abscisses ${{eval:h-1}}$ et ${{eval:h+1}}$ sont celles des extremums locaux, pas de l'inflexion."
+				]
+			}
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\left[{{if:n==0|{{eval:c+0.5}}|{{if:n==1|{{eval:c-1.5}}|{{eval:c-1}}}}}}\\,;{{if:n==0|{{eval:c+2.5}}|{{if:n==1|{{eval:c+1.5}}|{{eval:c+4}}}}}}\\right]$.\n\n```courbe\nx: {{eval:c-2}} ; {{eval:c+4.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{A}}*sin(\\pi*(x-{{c}})/3)+{{k}} sur [{{if:n==0|{{eval:c+0.5}}|{{if:n==1|{{eval:c-1.5}}|{{eval:c-1}}}}}} ; {{if:n==0|{{eval:c+2.5}}|{{if:n==1|{{eval:c+1.5}}|{{eval:c+4}}}}}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe ondulée tracée sur un intervalle borné.\n```\n\nCombien la courbe $\\mathcal{C}_f$ a-t-elle de points d'inflexion ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "0..2"
+				},
+				{
+					"name": "A",
+					"expression": "2|3|-2|-3"
+				},
+				{
+					"name": "c",
+					"expression": "-1..0"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:n==1|0|1}}",
+							"message": "Tu as compté les sommets de la courbe (tangente horizontale) : un point d'inflexion est un point où la courbe change de courbure et traverse sa tangente.",
+							"label": "Sommets comptés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un point d'inflexion est un point où la courbe change de courbure (de « tournée vers le haut » à « tournée vers le bas », ou l'inverse) : elle y traverse sa tangente.",
+					"{{if:n==0|Ici, la courbe garde la même courbure sur tout l'intervalle : elle n'a $\\textcolor{{{color:primary.0}}}{0}$ point d'inflexion.|{{if:n==1|Ici, la courbure change une seule fois, au point d'abscisse ${{c}}$ : la courbe a $\\textcolor{{{color:primary.0}}}{1}$ point d'inflexion.|Ici, la courbure change deux fois, aux points d'abscisses ${{c}}$ et ${{eval:c+3}}$ : la courbe a $\\textcolor{{{color:primary.0}}}{2}$ points d'inflexion.}}}}"
+				]
+			},
+			"hint": "Suis la courbe de gauche à droite : combien de fois passe-t-elle de « tournée vers le haut » à « tournée vers le bas », ou l'inverse ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "0",
+				"k": "2",
+				"s": "1"
+			},
+			"description": "v0 : inflexion",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "0",
+				"k": "2",
+				"s": "1"
+			},
+			"description": "v0 : extremum",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "0",
+				"k": "2",
+				"s": "1"
+			},
+			"description": "v0 : ordonnée",
+			"variationIndex": 0
+		},
+		{
+			"description": "F14 : n = 0",
+			"variationIndex": 1,
+			"variables": {
+				"n": "0",
+				"A": "2",
+				"c": "0",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F14 : n = 0, sommet compté",
+			"variationIndex": 1,
+			"variables": {
+				"n": "0",
+				"A": "2",
+				"c": "0",
+				"k": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté les sommets de la courbe (tangente horizontale) : un point d'inflexion est un point où la courbe change de courbure et traverse sa tangente."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F14 : n = 1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "1",
+				"A": "-3",
+				"c": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F14 : n = 2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"A": "3",
+				"c": "-1",
+				"k": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F14 : n = 2, sommet compté",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"A": "3",
+				"c": "-1",
+				"k": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		}
+	]
+}

@@ -1,0 +1,342 @@
+{
+	"id": "1a82084b-e8c8-4482-8826-8f4a4ed1619a",
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "TSPE-416"
+	},
+	"title": "Variations d'une fonction uⁿ, eᵘ ou √u",
+	"description": "Dériver uⁿ, eᵘ ou √u (u du second degré sans racine), étudier le signe de f′ et compléter le tableau de variations : x₀, signes, extremum, flèches (pièges : signe de x₀, u(x₀) au lieu de f(x₀))",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{eval:x^2-2*x0*x+x0^2+k}}\\right)^{ {{n}} }$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: -inf, ?{{x0}}, +inf\n\nsign: f'(x)\n  -inf,{{x0}}: ?{{if:1>0|-|+}}\n  {{x0}}: z\n  {{x0}},+inf: ?{{if:1>0|+|-}}\n\nvariation: f(x)\n  {{x0}}: ?{{eval:k^n}}, {{if:1>0|bottom|top}}\n  -inf,{{x0}}: ?flèche\n  {{x0}},+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "x0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-x0}}",
+							"message": "$x_0$ est la valeur qui annule ${{eval:x-x0}}$ : c'est ${{x0}}$, pas son opposé.",
+							"label": "Signe de x₀"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}",
+							"message": "Tu as donné $u({{x0}})$ : la valeur de $f$ est $u({{x0}})^{ {{n}} }$.",
+							"label": "u(x₀) au lieu de f(x₀)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=u^{ {{n}} }$ avec $u(x)={{eval:x^2-2*x0*x+x0^2+k}}$ : $f'(x)={{n}}\\times({{eval:2*x-2*x0}})\\times\\left({{eval:x^2-2*x0*x+x0^2+k}}\\right)^{ {{eval:n-1}} }$.",
+					"$u(x)=({{eval:x-x0}})^{2}+{{k}}>0$ pour tout réel $x$ : $f'(x)$ est du signe de ${{eval:2*x-2*x0}}$, négatif avant ${{x0}}$, positif après.",
+					"$f$ est décroissante puis croissante, de minimum $f({{x0}})={{k}}^{ {{n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:k^n}} }$ en $x=\\textcolor{{{color:primary.0}}}{ {{x0}} }$."
+				]
+			},
+			"hint": "Écris $f'(x)$ avec la formule de la dérivée de $u^{n}$ ; $u(x)$ est-il de signe constant ?"
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{eval:s*(x^2-2*x0*x+x0^2)+k}} }$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: -inf, ?{{x0}}, +inf\n\nsign: f'(x)\n  -inf,{{x0}}: ?{{if:s>0|-|+}}\n  {{x0}}: z\n  {{x0}},+inf: ?{{if:s>0|+|-}}\n\nvariation: f(x)\n  {{x0}}: ?{{if:k==0|1|{{if:k==1|e|e^{ {{k}} }}}}}, {{if:s>0|bottom|top}}\n  -inf,{{x0}}: ?flèche\n  {{x0}},+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "x0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-x0}}",
+							"message": "$x_0$ est la valeur qui annule ${{eval:x-x0}}$ : c'est ${{x0}}$, pas son opposé.",
+							"label": "Signe de x₀"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}",
+							"message": "Tu as donné la valeur de l'exposant en ${{x0}}$ : $f({{x0}})=e^{ {{k}} }$.",
+							"label": "Exposant au lieu de f(x₀)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=e^{u}$ avec $u(x)={{eval:s*(x^2-2*x0*x+x0^2)+k}}$ : $f'(x)=({{eval:2*s*x-2*s*x0}})e^{u(x)}$.",
+					"Une exponentielle est strictement positive : $f'(x)$ est du signe de ${{eval:2*s*x-2*s*x0}}$, {{if:s>0|négatif avant ${{x0}}$, positif après|positif avant ${{x0}}$, négatif après}}.",
+					"$f$ est {{if:s>0|décroissante puis croissante, de minimum|croissante puis décroissante, de maximum}} $f({{x0}})=\\textcolor{{{color:primary.0}}}{ {{if:k==0|1|{{if:k==1|e|e^{ {{k}} }}}}} }$ en $x=\\textcolor{{{color:primary.0}}}{ {{x0}} }$."
+				]
+			},
+			"hint": "Écris $f'(x)$ avec la formule de la dérivée de $e^{u}$ ; quel est le signe d'une exponentielle ?"
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sqrt{{{eval:x^2-2*x0*x+x0^2+k}}}$.\n\nÉtudie le signe de $f'(x)$, puis complète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: -inf, ?{{x0}}, +inf\n\nsign: f'(x)\n  -inf,{{x0}}: ?{{if:1>0|-|+}}\n  {{x0}}: z\n  {{x0}},+inf: ?{{if:1>0|+|-}}\n\nvariation: f(x)\n  {{x0}}: ?{{r}}, {{if:1>0|bottom|top}}\n  -inf,{{x0}}: ?flèche\n  {{x0}},+inf: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "x0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "eval:r^2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-x0}}",
+							"message": "$x_0$ est la valeur qui annule ${{eval:x-x0}}$ : c'est ${{x0}}$, pas son opposé.",
+							"label": "Signe de x₀"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": "",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}",
+							"message": "Tu as donné $u({{x0}})$ : la valeur de $f$ est $\\sqrt{u({{x0}})}$.",
+							"label": "Racine oubliée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\sqrt{u}$ avec $u(x)={{eval:x^2-2*x0*x+x0^2+k}}$ : $f'(x)=\\dfrac{{{eval:2*x-2*x0}}}{2\\sqrt{{{eval:x^2-2*x0*x+x0^2+k}}}}=\\dfrac{{{eval:x-x0}}}{\\sqrt{{{eval:x^2-2*x0*x+x0^2+k}}}}$.",
+					"Le dénominateur est strictement positif : $f'(x)$ est du signe de ${{eval:x-x0}}$, négatif avant ${{x0}}$, positif après.",
+					"$f$ est décroissante puis croissante, de minimum $f({{x0}})=\\sqrt{ {{k}} }=\\textcolor{{{color:primary.0}}}{ {{r}} }$ en $x=\\textcolor{{{color:primary.0}}}{ {{x0}} }$."
+				]
+			},
+			"hint": "Écris $f'(x)$ avec la formule de la dérivée de $\\sqrt{u}$ ; quel est le signe du dénominateur ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : (x² − 2x + 3)², x₀ = 1, min 4",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "1",
+				"k": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "-", "+", "↘", "4", "↗"]
+		},
+		{
+			"description": "a : signe de x₀",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "1",
+				"k": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-1", "-", "+", "↘", "4", "↗"]
+		},
+		{
+			"description": "a : u(x₀) au lieu de f(x₀)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "1",
+				"k": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1", "-", "+", "↘", "2", "↗"]
+		},
+		{
+			"description": "a : flèches inversées",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "1",
+				"k": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1", "-", "+", "↗", "4", "↘"]
+		},
+		{
+			"description": "b : e^(−x² − 4x − 3), max e",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "-2",
+				"s": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "+", "-", "↗", "e", "↘"]
+		},
+		{
+			"description": "b : e^(x² − 2x + 1), min 1",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "1",
+				"s": "1",
+				"k": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1", "-", "+", "↘", "1", "↗"]
+		},
+		{
+			"description": "b : exposant au lieu de f(x₀)",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "-2",
+				"s": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "+", "-", "↗", "1", "↘"]
+		},
+		{
+			"description": "b : signes inversés",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "-2",
+				"s": "-1",
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "-", "+", "↗", "e", "↘"]
+		},
+		{
+			"description": "c : √(x² + 6x + 13), min 2",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "-3",
+				"r": "2",
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3", "-", "+", "↘", "2", "↗"]
+		},
+		{
+			"description": "c : racine oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "-3",
+				"r": "2",
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-3", "-", "+", "↘", "4", "↗"]
+		}
+	]
+}
