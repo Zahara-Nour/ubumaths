@@ -8,9 +8,10 @@ les fonctions » de Troisième d'une autre plateforme (codes 3F1, 19 exercices).
 
 _Mis à jour le 2026-11-24, rubrique prise._
 
-- **État** : relevé fait, phase 0 publiée · **Prochaine action** : lire les verdicts (collection
-  `verdicts` de la page), réserver d820232a, 6ad254b4, cb545bd7, écrire le lot · **En attente de
-  David** : verdicts F1-F5, N1-N3, Q1-Q3 sur https://claude.ai/artifact/JMLSjCdiNpUrVoVPyLrJzK ·
+- **État** : phase 0 validée (F1-F5, N1-N3), modèles d820232a, 6ad254b4, cb545bd7 réservés et
+  exportés, lot en écriture (deux agents) · **Prochaine action** : relire le lot (simulation,
+  specs, tirages), journal « lot écrit » · **En attente de David** : Q1 (quotients dans N2) et Q2
+  (outil « tracer une courbe point par point ») ·
   **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-fonctions`,
   `docs/idees-3e-fonctions`
 
