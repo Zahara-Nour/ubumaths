@@ -8,16 +8,16 @@ https://claude.ai/artifact/7dV8FPpr8qsv2uthq67dGT
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après le `db:migrate` de #3083._
+_Mis à jour le 2026-11-24, 2 neufs publiés._
 
-- **État** : en prod, 2 neufs rangés en brouillon (a6e58402 TSPE-438, 99326dee TSPE-441) et
+- **État** : en prod, 2 neufs validés par David et **publiés** (a6e58402 TSPE-438, 99326dee TSPE-441) et
   +16 variations sur les 9 publiés (vérifié) · **Prochaine action** : PR de correction F12
   (7f13ca89 v5, tagué aussi TCOMP-231) : ajouter à l'énoncé « On admet que
   $\lim_{x\to+\infty}\frac{\ln x}{x}=0$ » (bornes tcomp, décision ltc-1 : croissances comparées
   données seulement) dans `docs/wip/questions/idees-tle-ln-publies.py` (ré-exporter 7f13ca89 de
   prod d'abord), migration de contenu « corrigée » ; dans la même PR, la série de relecture des
-  9 publiés (`scripts/series/creer-serie.ts`) · **En attente de David** : relecture des 2 neufs
-  dans `/dev/modeles?point=TSPE-438` et `?point=TSPE-441` (possible dès maintenant) · **Pièges en
+  9 publiés (`scripts/series/creer-serie.ts`) · **En attente de David** : rien (relecture des
+  9 publiés par la série, après la PR) · **Pièges en
   cours** : F12 hors bornes TCOMP tant que la correction n'est pas migrée · **Worktree /
   branche** : aucun (nouveau worktree sur `origin/main`, même sujet).
 
@@ -87,3 +87,12 @@ _Mis à jour le 2026-11-24, après le `db:migrate` de #3083._
   comparée, que les bornes de complémentaire n'admettent que donnée (ltc-1). Les autres variations
   tagées TCOMP (ffd5c051, d3301f2d, 14036c68, f1963ef2) restent dans le BO de complémentaire
   (équation fonctionnelle, seuil par ln qⁿ). Correction à faire (voir « Reprendre ici »).
+
+### 2026-11-24 — 2 neufs publiés
+
+- David : « je valide les modèles » (aucun verdict en base : validation orale, comme pour la
+  dérivation) ; `publier-lot.ts` en simulation vert, lancé par David avec `--publier` ; statut
+  `published` relu en prod pour a6e58402 et 99326dee.
+- Reste : PR de correction F12 + série de relecture des 9 publiés, puis clôture (tableau : rubrique
+  publiée, 9 réservations levées, idée TSA5-41 « f(x) = 0 a deux solutions » → « Idées en attente »
+  pour la rubrique continuité).
