@@ -436,3 +436,73 @@ describe('Constance Royale — une panne après le crédit ne remonte pas', () =
 		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct + XP_SOURCES.first_of_day);
 	});
 });
+
+describe('plafond du jour — `daily_cap_reached` rendu même quand le calcul local a tronqué (E29)', () => {
+	beforeEach(() => {
+		getStudentBuddy.mockReset().mockResolvedValue(buddy());
+		// La base crédite ce qu'on lui demande : elle ne voit aucun dépassement
+		addBuddyXp.mockReset().mockImplementation(async (_id, xp) => gain(xp));
+		addExploredTheme.mockReset().mockResolvedValue(false);
+		addExploredThemes.mockReset().mockImplementation(async (_id, themes) => new Set(themes));
+		removeExploredThemes.mockReset().mockResolvedValue(undefined);
+		recordWorkedDay.mockReset().mockResolvedValue({ status: 'already' });
+	});
+
+	it('séance, plafond déjà atteint : rien crédité, base non appelée, plafond annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 100 }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [
+			{ isCorrect: true },
+			{ isCorrect: false }
+		]);
+		expect(addBuddyXp).not.toHaveBeenCalled();
+		expect(result?.xpResult.xp_gained).toBe(0);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
+
+	it('séance tronquée en route (95 + 10 + 10) : 5 crédités, plafond annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 95 }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [
+			{ isCorrect: true },
+			{ isCorrect: true }
+		]);
+		expect(addBuddyXp.mock.calls[0][1]).toBe(5);
+		expect(result?.xpResult.xp_gained).toBe(5);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
+
+	it('séance qui remplit le plafond au plus juste (90 + 10) : rien de tronqué, plafond non annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 90 }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct);
+		expect(result?.xpResult.daily_cap_reached).toBe(false);
+	});
+
+	it('séance sous le plafond : plafond non annoncé', async () => {
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.daily_cap_reached).toBe(false);
+	});
+
+	it('plafond d’hier (autre jour) : compteur remis à zéro, plafond non annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 100, last_xp_date: '2000-01-01' }));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.xp_gained).toBe(XP_SOURCES.correct);
+		expect(result?.xpResult.daily_cap_reached).toBe(false);
+	});
+
+	it('séance tronquée puis palier de Constance hors plafond : le plafond reste annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(
+			buddy({ xp_earned_today: 95, last_activity_date: '2000-01-01' })
+		);
+		recordWorkedDay.mockResolvedValue(counted(true, 4, 3));
+		const result = await addBuddyXpFromTest(supabase, STUDENT, [{ isCorrect: true }]);
+		expect(result?.xpResult.xp_gained).toBe(5 + XP_SOURCES.constance_4);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
+
+	it('énigme tronquée par le calcul local (95 + 10) : 5 crédités, plafond annoncé', async () => {
+		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: 95 }));
+		const result = await addBuddyXpFromExercise(supabase, STUDENT, { isCorrect: true });
+		expect(result?.xpResult.xp_gained).toBe(5);
+		expect(result?.xpResult.daily_cap_reached).toBe(true);
+	});
+});
