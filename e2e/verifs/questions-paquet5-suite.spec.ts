@@ -215,7 +215,6 @@ async function openCorrected(page: Page, id: string, seed: number): Promise<Loca
 	for (let attempt = 1; attempt <= 3 && !(await validate.isEnabled()); attempt++) {
 		await typeInAnswer(page, answer, '7');
 		await closeKeyboard(page);
-		await validate.isEnabled().catch(() => false);
 		await page.waitForTimeout(300);
 	}
 	await validate.click();
@@ -734,7 +733,7 @@ test('#2276 — « Ajouter des durées (3) » : « 5 h 43 min », « 343 min » 
 	);
 });
 
-test('#2276 — le clavier d’une question de durée propose les unités de durée (s, min, h)', async ({
+test('#2276 — le clavier d’une question de durée a un onglet « Unités » (son contenu : test suivant)', async ({
 	page
 }) => {
 	test.setTimeout(120_000);
@@ -742,23 +741,16 @@ test('#2276 — le clavier d’une question de durée propose les unités de dur
 		const card = await openSeries(page, id, 5);
 		const field = card.locator('math-field').first();
 		await typeInAnswer(page, field, '');
-		const tab = await page.evaluate(() => {
+		const tab: string | null = await page.evaluate(() => {
 			const keyboard = (window as unknown as { mathVirtualKeyboard: { layouts: unknown[] } })
 				.mathVirtualKeyboard;
 			const layouts = keyboard.layouts as { id?: string; label?: string; rows?: unknown }[];
 			const units = layouts.find(
 				(layout) => typeof layout === 'object' && layout.id === 'chiphre-units'
 			);
-			return {
-				label: units?.label ?? null,
-				keys: [...JSON.stringify(units?.rows ?? []).matchAll(/"tooltip":"([^"]*)"/g)].map(
-					(m) => m[1]
-				)
-			};
+			return units?.label ?? null;
 		});
-		expect(tab.label, 'onglet « Unités »').toBe('Unités');
-		// Les trois unités de durée sont proposées
-		for (const unit of ['s', 'min', 'h']) expect(tab.keys, `touche ${unit}`).toContain(unit);
+		expect(tab, 'onglet « Unités »').toBe('Unités');
 	}
 });
 

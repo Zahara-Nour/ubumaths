@@ -877,9 +877,9 @@ test('#2309 — demi-droite, mauvais côté : la phrase et la droite juste', asy
 	await expect(zone).toHaveClass(/representer-faux/);
 	const correction = page.locator('.representer-correction').first();
 	await expect(correction).toBeVisible();
-	const text = await previewText(page);
-	console.log(
-		`#2309 ${projectName()} : ${text.slice(text.indexOf('Correction') - 160, text.indexOf('Correction'))}`
+	// Libellé de `representerMistakes` (number-line-representer.ts) : bonne borne, côté inverse
+	expect(await previewText(page), 'phrase de la correction').toContain(
+		'Les solutions sont de l’autre côté de 2.'
 	);
 	await expect(correction.locator('line.nl-segment')).toHaveCount(1);
 	await shootThemes(page, correction, '2309-faux');
@@ -1017,16 +1017,23 @@ test('#2328 — 3-014 en tiers : un toucher au centre de chaque graduation pose 
 		);
 	}
 	await shootThemes(page, zone, '2328-tiers');
-	// Corrigé faux : borne posée à gauche (la bonne est à droite, ou l'inverse), puis valider
+	// Corrigé faux à coup sûr : on lit le côté attendu dans l'énoncé (« representer: ]-inf, … » = vers la
+	// gauche) et on choisit l'autre
+	const expectedSide = /representer:\s*\]-inf/.test(instance.statement)
+		? 'gauche'
+		: /representer:\s*[[\]][^\n]*\+inf\[/.test(instance.statement)
+			? 'droite'
+			: null;
+	expect(expectedSide, `côté attendu lu dans l'énoncé de la graine ${seed}`).not.toBeNull();
 	await tapLine(svg, start, start + 4, start + 1);
-	await press(page.getByRole('button', { name: '← vers la gauche' }));
+	await press(
+		page.getByRole('button', {
+			name: expectedSide === 'gauche' ? 'vers la droite →' : '← vers la gauche'
+		})
+	);
 	await validate(page);
+	await expect(zone).toHaveClass(/representer-faux/);
 	const correction = page.locator('.representer-correction').first();
-	if ((await correction.count()) === 0) {
-		// Hasard de la graine : la réponse était juste (côté gauche attendu) ; on inverse
-		console.log(`#2328 ${projectName()} : réponse juste sur cette graine, correction non affichée`);
-		return;
-	}
 	await expect(correction).toBeVisible();
 	const layout = await correction.evaluate((root) => {
 		const segment = root.querySelector('line.nl-segment');
@@ -1149,50 +1156,61 @@ test('#2274 — vecteur libre : origine puis extrémité, flèche bleue à point
 	await expect(zone).toHaveClass(/placer-juste/);
 });
 
-test('#2274 — vecteur libre : glisser un bout la déplace (souris, ou doigt sous Android) ; clavier : une flèche = un cran', async ({
-	page
-}, info) => {
+/** Pose le vecteur libre (-2 ; 1) → (1 ; -1) et rend la zone avec son texte lu avant tout geste */
+async function vecteurLibrePose(
+	page: Page
+): Promise<{ zone: Locator; svg: Locator; before: string | null }> {
 	await openPreview(page, '2274 glisser', `Représente le vecteur.\n\n${VECTOR_FREE}`);
 	const { zone, svg } = await courbeZone(page);
 	await tapCourbe(svg, VECTOR_WIN, -2, 1);
 	await tapCourbe(svg, VECTOR_WIN, 1, -1);
 	await expect(arrowOf(zone)).toHaveCount(1);
-	const before = await zone.getAttribute('aria-valuetext');
-	if (info.project.name !== 'iphone') {
-		const from = await courbeSpot(svg, VECTOR_WIN, 1, -1);
-		const to = await courbeSpot(svg, VECTOR_WIN, 3, -3);
-		const box = (await svg.boundingBox()) as { x: number; y: number };
-		if (info.project.name === 'android') {
-			const session = await page.context().newCDPSession(page);
-			const send = (type: 'touchStart' | 'touchMove' | 'touchEnd', spot?: Spot) =>
-				session.send('Input.dispatchTouchEvent', {
-					type,
-					touchPoints: spot === undefined ? [] : [{ x: spot.x, y: spot.y, id: 0 }]
-				});
-			await send('touchStart', { x: box.x + from.x, y: box.y + from.y });
-			for (let step = 1; step <= 8; step++) {
-				await send('touchMove', {
-					x: box.x + from.x + ((to.x - from.x) * step) / 8,
-					y: box.y + from.y + ((to.y - from.y) * step) / 8
-				});
-			}
-			await send('touchEnd');
-		} else {
-			await page.mouse.move(box.x + from.x, box.y + from.y);
-			await page.mouse.down();
-			await page.mouse.move(box.x + (from.x + to.x) / 2, box.y + (from.y + to.y) / 2, { steps: 5 });
-			await page.mouse.move(box.x + to.x, box.y + to.y, { steps: 5 });
-			await page.mouse.up();
+	return { zone, svg, before: await zone.getAttribute('aria-valuetext') };
+}
+
+test('#2274 — vecteur libre : glisser un bout la déplace (souris sur ordinateur, doigt sous Android)', async ({
+	page
+}, info) => {
+	test.skip(
+		info.project.name === 'iphone',
+		'glisser : pas sur iPhone (WebKit n’a pas de geste tactile CDP)'
+	);
+	const { zone, svg, before } = await vecteurLibrePose(page);
+	const from = await courbeSpot(svg, VECTOR_WIN, 1, -1);
+	const to = await courbeSpot(svg, VECTOR_WIN, 3, -3);
+	const box = (await svg.boundingBox()) as { x: number; y: number };
+	if (info.project.name === 'android') {
+		const session = await page.context().newCDPSession(page);
+		const send = (type: 'touchStart' | 'touchMove' | 'touchEnd', spot?: Spot) =>
+			session.send('Input.dispatchTouchEvent', {
+				type,
+				touchPoints: spot === undefined ? [] : [{ x: spot.x, y: spot.y, id: 0 }]
+			});
+		await send('touchStart', { x: box.x + from.x, y: box.y + from.y });
+		for (let step = 1; step <= 8; step++) {
+			await send('touchMove', {
+				x: box.x + from.x + ((to.x - from.x) * step) / 8,
+				y: box.y + from.y + ((to.y - from.y) * step) / 8
+			});
 		}
-		await expect(zone).not.toHaveAttribute('aria-valuetext', before ?? '');
-		await expect(arrowOf(zone)).toHaveCount(1);
+		await send('touchEnd');
+	} else {
+		await page.mouse.move(box.x + from.x, box.y + from.y);
+		await page.mouse.down();
+		await page.mouse.move(box.x + (from.x + to.x) / 2, box.y + (from.y + to.y) / 2, { steps: 5 });
+		await page.mouse.move(box.x + to.x, box.y + to.y, { steps: 5 });
+		await page.mouse.up();
 	}
-	if (!isTouch()) {
-		const after = await zone.getAttribute('aria-valuetext');
-		await zone.focus();
-		await page.keyboard.press('ArrowRight');
-		await expect(zone).not.toHaveAttribute('aria-valuetext', after ?? '');
-	}
+	await expect(zone).not.toHaveAttribute('aria-valuetext', before ?? '');
+	await expect(arrowOf(zone)).toHaveCount(1);
+});
+
+test('#2274 — vecteur libre : au clavier, une flèche = un cran', async ({ page }) => {
+	test.skip(isTouch(), 'clavier : pas au toucher (iPhone, Android)');
+	const { zone, before } = await vecteurLibrePose(page);
+	await zone.focus();
+	await page.keyboard.press('ArrowRight');
+	await expect(zone).not.toHaveAttribute('aria-valuetext', before ?? '');
 });
 
 test('#2274 — « depuis A » : A ne bouge pas, aucun bouton (périmé : « seule Extrémité », ea5fd701b0) ; flèche juste ailleurs → vert', async ({
@@ -1651,7 +1669,7 @@ test.describe('PDF de fiche', () => {
 		if (projectName() === 'ordi-chrome') await wipe();
 	});
 
-	test('#2356, #2331, #2339, #2294, #2274, #2398 — PDF de la fiche et du corrigé : indice w₁, flèches des vecteurs, « Pile » en texte droit', async ({
+	test('#2356, #2398 — PDF de la fiche : indice de w₁ plus petit et abaissé, étiquettes u, v, I, « Pile » en texte droit ; PDF du corrigé : titres et solution (les flèches et les repères se jugent sur les captures)', async ({
 		page
 	}) => {
 		test.skip(projectName() !== 'ordi-chrome', 'PDF : même fichier quel que soit l’écran');
@@ -1678,13 +1696,26 @@ test.describe('PDF de fiche', () => {
 		);
 		expect(text, 'Pile en texte droit').toMatch(/\bPile\b/);
 		expect(text, 'pas de lettres espacées').not.toMatch(/P\s+i\s+l\s+e/);
-		const w = runs.find((r) => r.text.trim().startsWith('w'));
-		expect(w, 'étiquette w dans le PDF').toBeDefined();
+		const wIndex = runs.findIndex((r) => r.text.trim() === 'w');
+		expect(wIndex, 'étiquette w dans le PDF').toBeGreaterThanOrEqual(0);
+		const w = runs[wIndex];
+		const indice = runs[wIndex + 1];
+		expect(indice?.text.trim(), 'le run qui suit « w » est son indice').toBe('1');
+		expect(indice.size, 'indice « 1 » plus petit que « w »').toBeLessThan(w.size);
+		expect(indice.top, 'indice « 1 » abaissé sous la ligne de « w »').toBeGreaterThan(w.top);
+		expect(indice.left, 'indice « 1 » à droite de « w »').toBeGreaterThan(w.left);
 		for (const name of ['u', 'v', 'I']) {
 			expect(
 				runs.some((r) => r.text.trim() === name),
 				`${name} dans le PDF`
 			).toBe(true);
 		}
+		// Corrigé : titre « CORRECTION », les cinq exercices et leur solution (le corrigé ne redessine pas les figures)
+		const solution = pdfText(corrige).join('\n');
+		expect(solution, 'le corrigé s’annonce').toMatch(/CORRECTION/);
+		for (const title of ['vecteurs', 'tracer', 'droite', 'repere', 'arbre']) {
+			expect(solution, `exercice « ${title} » dans le corrigé`).toContain(`Verifs5 ${title}`);
+		}
+		expect(solution.match(/Voir la figure\./g)?.length, 'une solution par exercice').toBe(5);
 	});
 });

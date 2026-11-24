@@ -221,8 +221,37 @@ test.describe('#2369 #2377 — série des limites et lancer d’un clic', () => 
 
 	test('#2369 — la série se joue en entier : 10 questions, aucune sautée', async ({ page }) => {
 		await gotoSettled(page, buildSeriesLink('', LIMITS, { mode: 'typing', seed: 2369 }));
-		await page.getByTestId('typing-card').locator('.flip-card-front').waitFor();
-		await expect(page.getByText(/\b1\s*\/\s*10\b/).first()).toBeVisible();
+		test.setTimeout(240_000);
+		const card = page.getByTestId('typing-card');
+		const validate = page.getByRole('button', { name: 'Valider' });
+		for (let n = 1; n <= 10; n++) {
+			await card.locator('.flip-card-front').waitFor();
+			// Compteur sans trou : la question n° n suit la n-1
+			await expect(page.getByTestId('typing-position')).toHaveText(
+				new RegExp(`^Question ${n} / 10$`)
+			);
+			// Une réponse quelconque : on joue la série, on ne la réussit pas. MathLive perd parfois la
+			// première frappe : on recommence tant que « Valider » reste grisé
+			const field = card.locator('math-field').first();
+			const radio = card.locator('.flip-card-front').getByRole('radio').first();
+			for (let attempt = 1; attempt <= 3 && !(await validate.isEnabled()); attempt++) {
+				if ((await field.count()) > 0) {
+					await field.scrollIntoViewIfNeeded();
+					const box = await field.boundingBox();
+					await field.click({ position: { x: Math.max(5, (box?.width ?? 20) - 15), y: 10 } });
+					await page.waitForTimeout(500);
+					await page.keyboard.type('7', { delay: 80 });
+				} else await radio.click();
+				const close = page.locator('.math-keyboard-close');
+				if ((await close.count()) > 0) await close.click();
+			}
+			await validate.click();
+			await page.locator('[data-typing-next]').click();
+		}
+		// Dix questions vues, une par une : l'écran de fin, pas une onzième
+		await expect(page.getByTestId('typing-summary')).toBeVisible();
+		await expect(page.getByText('Série terminée')).toBeVisible();
+		await expect(page.getByTestId('typing-position')).toHaveCount(0);
 	});
 
 	for (const form of ['En classe', 'Contrôle blanc', 'Flash-cards', 'Saisie'] as const) {

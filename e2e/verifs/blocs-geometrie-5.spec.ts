@@ -507,6 +507,13 @@ test.describe('#2359 — rapporteur déjà posé', () => {
 			if (isTouch()) await page.touchscreen.tap(px, py);
 			else await page.mouse.click(px, py);
 		}
+		// Un toucher qui ne trace rien n'a pas d'effet à attendre : on laisse deux images au navigateur
+		// pour traiter les touchers (sinon « 0 tracé » serait vrai avant même qu'ils soient pris en compte)
+		await page.evaluate(
+			() =>
+				new Promise<void>((fin) => requestAnimationFrame(() => requestAnimationFrame(() => fin())))
+		);
+		await expect(pose, 'le rapporteur posé reste en place').toHaveCount(1);
 		await expect(fig(page).getByTestId('point-eleve')).toHaveCount(0);
 		await expect(fig(page).getByTestId('segment-eleve')).toHaveCount(0);
 		await expect(fig(page).getByTestId('droite-eleve')).toHaveCount(0);
@@ -645,20 +652,20 @@ test.describe('#2301 — angle au rapporteur', () => {
 			const valeur = async (): Promise<number> =>
 				Number(await slider.getAttribute('aria-valuenow'));
 			await page.keyboard.press('ArrowRight');
-			expect(await valeur()).toBe(1);
+			await expect.poll(valeur).toBe(1);
 			await page.keyboard.press('ArrowUp');
-			expect(await valeur()).toBe(2);
+			await expect.poll(valeur).toBe(2);
 			await page.keyboard.press('Shift+ArrowRight');
-			expect(await valeur()).toBe(12);
+			await expect.poll(valeur).toBe(12);
 			await page.keyboard.press('Shift+ArrowRight');
 			await page.keyboard.press('Shift+ArrowRight');
-			expect(await valeur()).toBe(32);
+			await expect.poll(valeur).toBe(32);
 			await page.keyboard.press('ArrowLeft');
-			expect(await valeur()).toBe(31);
+			await expect.poll(valeur).toBe(31);
 			await page.keyboard.press('Shift+ArrowLeft');
-			expect(await valeur()).toBe(21);
+			await expect.poll(valeur).toBe(21);
 			await page.keyboard.press('Shift+ArrowDown');
-			expect(await valeur()).toBe(11);
+			await expect.poll(valeur).toBe(11);
 		}
 	);
 });
@@ -1113,9 +1120,9 @@ test.describe('#2271 — triangle de trois longueurs', () => {
 		await selectTool(page, 'Report');
 		await toucher(zone, PARA_WIN, PA, PB, PC);
 		await selectTool(page, 'Point');
-		// L'autre intersection est la symétrique de D par (AC) : (4,08 ; -0,62), sous la fenêtre (y ≥ 0)
+		// L'autre intersection est la symétrique de D par (AC) : ici (6,08 ; 1,38), DANS la fenêtre, donc touchée
+		// directement ; si une figure la sortait de la fenêtre, seul le clavier pourrait la poser (branche ci-dessous)
 		const autre = croisement(PA, dist(PB, PC), PC, dist(PA, PB)).find((q) => dist(q, PD) > 0.5)!;
-		// Hors de la figure (y < 0), l'intersection ne se touche pas : le clavier la propose-t-il ?
 		const box = (await zone.boundingBox())!;
 		const voulu = {
 			x: box.x + ((autre.x - PARA_WIN.xMin) / (PARA_WIN.xMax - PARA_WIN.xMin)) * box.width,
@@ -1134,15 +1141,17 @@ test.describe('#2271 — triangle de trois longueurs', () => {
 				meilleur = index;
 			}
 		}
+		expect(total, 'intersections proposées').toBeGreaterThan(0);
 		if (autre.y >= PARA_WIN.yMin) await toucher(zone, PARA_WIN, autre);
-		else if (ecart < 6) {
+		else {
+			// ÉCART : l'autre intersection est hors de la figure et le clavier ne la propose pas
+			test.fail();
+			expect(
+				ecart,
+				`l’autre intersection (${autre.x.toFixed(2)} ; ${autre.y.toFixed(2)}) est hors de la figure : le bouton « Intersection » le plus proche en est à (px)`
+			).toBeLessThan(6);
 			await intersections.nth(meilleur).focus();
 			await page.keyboard.press('Enter');
-		} else {
-			test.fail();
-			throw new Error(
-				`l’autre intersection (${autre.x.toFixed(2)} ; ${autre.y.toFixed(2)}) est hors de la figure, et le clavier ne la propose pas (${total} intersections, la plus proche à ${ecart.toFixed(0)} px)`
-			);
 		}
 		await validate(page);
 		expect(await previewText(page)).toContain('ABCD est croisé');

@@ -1,8 +1,6 @@
 import { mkdir } from 'node:fs/promises';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { buildSeriesLink } from '../../src/lib/validation/series';
-// TRAVAIL EN COURS (agent arrêté le 2026-11-24) : `_DROITE_AX_B`, `_VALEUR_ABSOLUE`, `_openPreview`
-// préparés pour des tests pas encore écrits ; retirer le `_` en les utilisant.
 import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
 import { expectNoHorizontalOverflow } from './helpers/pages';
 
@@ -12,8 +10,9 @@ import { expectNoHorizontalOverflow } from './helpers/pages';
  *
  * Reprend les lignes #2358 / #2308 / #2353 (2-330 et 2-446 au téléphone, bouton « Fermer le
  * clavier »), #2338 (corrigé sans « 1x »), #2297 / #2287 (tableau de signes à compléter,
- * brouillon « Verifs5 … »), #2370 / #2346 (droite graduée au corrigé), #2276 (unité du
- * résultat) et #2341 / #2349 (démonstrations à ranger) de `docs/wip/verifications-manuelles.md`.
+ * brouillon « Verifs5 … ») de `docs/wip/verifications-manuelles.md`. #2370, #2346 (droite graduée
+ * au corrigé), #2276 (unité du résultat), #2341 et #2349 (démonstrations à ranger) vivent dans
+ * `questions-paquet5-suite.spec.ts`.
  *
  * Les modèles de la base locale portent les identifiants de la prod : on les joue par le lien
  * de série public (`/automaths/test?…&mode=typing&graine=…`), ou par l'aperçu admin avec une
@@ -35,8 +34,6 @@ const PREFIXE = 'Verifs5 q5';
 const PRODUIT = 'f0163416-0610-49cc-bf2d-83db744dbf43';
 /** 2-446 « Tableau de signes d'un quotient » : variations 0 et 1 = tableau tout à compléter */
 const QUOTIENT = '9c7ab1c7-d3f3-4c78-96f4-c14e5a657574';
-const _DROITE_AX_B = '320f5ac7-b16a-48a7-b136-704d62854138';
-const _VALEUR_ABSOLUE = '80a87e34-251c-481a-a086-7b7add231cc9';
 
 /** (2x+6)(x−1) : racines −3 et 1 cachées, toutes les cases du tableau cachées */
 const TABLEAU = [
@@ -162,18 +159,6 @@ async function openSeries(
 	return card;
 }
 
-/** L'aperçu admin d'un modèle (carte de l'élève avec « Valider » et son corrigé) */
-async function _openPreview(page: Page, id: string, seed?: number): Promise<void> {
-	await page.goto(`/dashboard/admin/questions/${id}/preview`);
-	await page.waitForLoadState('networkidle');
-	if (seed !== undefined) {
-		await page.locator('#seed').fill(String(seed));
-		await page.getByRole('button', { name: 'Générer', exact: true }).click();
-		await expect(page.locator('dd', { hasText: new RegExp(`^${seed}$`) }).first()).toBeVisible();
-	}
-	await expect(page.getByRole('button', { name: 'Valider' })).toBeVisible();
-}
-
 /** Ferme le clavier virtuel s'il est ouvert (il couvre « Valider » sur téléphone) */
 async function closeKeyboard(page: Page): Promise<void> {
 	const close = page.locator('.math-keyboard-close');
@@ -217,6 +202,36 @@ async function correctedCells(page: Page): Promise<string[]> {
 				.filter((text) => text.startsWith('Case') && /ta réponse|sans réponse/.test(text))
 		);
 		return rows.filter((cells) => cells.length > 0).pop() ?? [];
+	});
+}
+
+/**
+ * La bordure d'une case juste et d'une case fausse du tableau corrigé, et les jetons que la feuille de
+ * style de `SignCellPicker` leur donne (`--color-success`, `--color-destructive`), en un seul passage
+ * dans la page ; les jetons sont lus par une sonde (`color: var(--…)`) pour avoir la même forme calculée
+ */
+async function couleursDesCases(
+	page: Page
+): Promise<{ juste: string; fausse: string; success: string; destructive: string }> {
+	return page.evaluate(() => {
+		const bordure = (etat: string): string => {
+			const element = document.querySelector<HTMLElement>(`[data-signe-case][data-etat="${etat}"]`);
+			return element ? getComputedStyle(element).borderTopColor : `(aucune case ${etat})`;
+		};
+		const jeton = (nom: string): string => {
+			const sonde = document.createElement('span');
+			sonde.style.color = `var(${nom})`;
+			document.body.append(sonde);
+			const couleur = getComputedStyle(sonde).color;
+			sonde.remove();
+			return couleur;
+		};
+		return {
+			juste: bordure('juste'),
+			fausse: bordure('fausse'),
+			success: jeton('--color-success'),
+			destructive: jeton('--color-destructive')
+		};
 	});
 }
 
@@ -345,6 +360,23 @@ test('#2287 — au doigt : le menu s’ouvre sous la case (+ / − ; 0 / ‖ / r
 	expect(cells[2]).toMatch(/ta réponse : moins, juste/);
 	expect(cells[3]).toMatch(/ta réponse : double barre, faux, attendu : zéro/);
 	await expect(page.locator('[data-etat="juste"]').first()).toBeAttached();
+	// Justes en vert, fausses en rouge : bordures calculées, dans chaque thème
+	for (const theme of ['light', 'dark'] as const) {
+		await page.emulateMedia({ colorScheme: theme });
+		await page.waitForFunction(
+			(dark) => document.documentElement.classList.contains('dark') === dark,
+			theme === 'dark'
+		);
+		const couleurs = await couleursDesCases(page);
+		expect(couleurs.juste, `bordure d'une case juste (${theme}) = --color-success`).toBe(
+			couleurs.success
+		);
+		expect(couleurs.fausse, `bordure d'une case fausse (${theme}) = --color-destructive`).toBe(
+			couleurs.destructive
+		);
+		expect(couleurs.juste, `juste ≠ fausse (${theme})`).not.toBe(couleurs.fausse);
+	}
+	await page.emulateMedia({ colorScheme: 'light' });
 	await shotThemes(page, '2287-corrige');
 	await expectNoHorizontalOverflow(page, 'corrigé du tableau');
 });
