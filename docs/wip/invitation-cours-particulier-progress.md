@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3119._
+_Mis à jour le 2026-11-25, PR 2 écrite et commitée (avant revues et ouverture)._
 
-- **État** : PR 1 mergée (#3119) et migrée en prod par David le 2026-11-25 (vérifié au MCP : Akadada seule réglée, table vide, lien et empreinte fermés à `anon` / `authenticated`) · **Prochaine action** : PR 2 (admin : formulaire, liste, renvoyer/annuler, courriel d'invitation, **purge à 30 jours**, décision 8) dans un worktree neuf `../ubumaths-wt-invitation-cours-particulier-admin` · **En attente de David** : rien · **Pièges en cours** : « Dette pour les PR 2 et 3 » ci-dessous ; le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes (classe d'invitation née fermée → adhésion côté serveur) · **Worktree / branche** : aucun (celui de la PR 1 est retiré)
+- **État** : PR 2 (admin) écrite et commitée, NON poussée, sur `feat/invitation-cours-particulier-admin` : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien, sans migration) ; 13 tests d'intégration verts, tests unitaires verts, parcours inviter/renvoyer/annuler vu à l'écran (0 erreur de console) ; dernier `check:incremental` à 0 erreur avant la retouche du sélecteur de niveau · **Prochaine action** : `pnpm check:incremental` + `pnpm types:cliquet` (verrous pris par d'autres sessions), relancer `code-reviewer` (sonnet) + `security-auditor` (opus) — lancés, résultats perdus au `/clear` —, corriger, push, PR, `pnpm pr:merger` ; puis PR 3 (page du parent `/auth/register/invitation/<jeton>`) · **En attente de David** : la page de confidentialité doit-elle citer la conservation des invitations (adresse du parent : 7 j + 30 j) ? · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à une page de la PR 3) ; base locale : réglage `is_private_lessons` posé à la main sur Akadada ; serveur de dev du worktree sur 5178 · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
 
 ## But
 
@@ -85,6 +85,10 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 - **PR 3** : réserver le lien par un `update … set claimed_at = now() where … and (claimed_at is
 null or claimed_at < now() - interval '5 minutes') returning` atomique ; la retirer si la
   création échoue ; `used_at` + `student_id` + `class_id` ensemble à la fin.
+- **PR 3 (ajouts de la PR 2)** : page à l'adresse `/auth/register/invitation/[token]` (déjà écrite dans
+  les courriels) ; « Annuler » n'attend pas la fin d'une réservation : la mise à jour finale
+  (`used_at` + `student_id` + `class_id`) doit exiger `cancelled_at is null` et la création échouer
+  proprement sinon ; « Renvoyer » refuse pendant une réservation de moins de 5 min.
 - **Essais en local** : la base locale n'a pas d'Akadada (le réglage n'y est pas posé) → une graine
   ou une école de test réglée à la main pour essayer les PR 2 et 3.
 - **Conservation** : tranchée (décision 8, 30 jours après la fin) ; purge à coder en PR 2.
@@ -95,3 +99,4 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-24 : phase 0 validée par David, point A compris (réglage « école de cours particuliers »).
 - 2026-11-24 : PR 1 écrite (migration + 21 tests) ; revues security-auditor (aucun bloquant) et code-reviewer (niveaux, format d'adresse, réservation `claimed_at`, plafond d'envois, assertions strictes : corrigés).
 - 2026-11-25 : #3119 mergée (PR 1) ; décision 8 de David (purge à 30 jours) ; `db:migrate` refusé à Claude par le classifieur, lancé par David, vérifié en prod.
+- 2026-11-25 : PR 2 écrite (page admin, courriel, renvoi/annulation, purge à 30 jours par un cron Vercel quotidien `api/cron/invitations-cours-particulier`, sans migration) ; 13 tests d'intégration verts ; parcours inviter/renvoyer/annuler vu à l'écran (Playwright, 0 erreur de console).
