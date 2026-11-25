@@ -808,7 +808,7 @@ test.describe('#2463 — cercle de centre donné', () => {
 		await estJuste(page);
 	});
 
-	test('#2463 — papier uni : compas ouvert à l’œil au rayon de [DE] (à un pixel près) → « Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur DE. » ; le message « ouvert à l’œil » exige un rayon exact à 1e-9 près (inatteignable au toucher)', async ({
+	test('#2463 — papier uni : compas ouvert à l’œil au rayon de [DE] (à un pixel près) → « Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur DE. » (le seul message d’un mauvais rayon, E62)', async ({
 		page
 	}) => {
 		await openPreview(

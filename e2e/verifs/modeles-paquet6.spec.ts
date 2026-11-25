@@ -625,11 +625,11 @@ test.describe('#2509 — évaluation de rattrapage', { tag: '@bureau' }, () => {
 		pdfToPng(en, 'paquet6-rattrapage-en', 70);
 	});
 
-	test('#2509 — ÉCART : version anglaise, l’en-tête du PDF porte le titre anglais de la fiche (« Retake test: quadratic functions »)', async ({
+	test('#2509 — version anglaise, l’en-tête du PDF porte le titre anglais de la fiche (« Retake test: quadratic functions »)', async ({
 		page
 	}) => {
-		// Écart constaté : `GET /api/worksheets/<id>` ne rend pas `translations` (la liste de colonnes lue par
-		// la page n'a pas la clé), donc l'onglet PDF imprime le titre français malgré la traduction en base
+		// E57 (corrigé) : le schéma de réponse de `GET /api/worksheets/<id>` retirait `translations`, donc
+		// l'onglet PDF imprimait le titre français malgré la traduction en base
 		const [row] = await sql<{ translations: { en?: { title?: string } } | null }>(
 			`select translations from worksheets where id = $1`,
 			[RATTRAPAGE_ID]
@@ -640,7 +640,6 @@ test.describe('#2509 — évaluation de rattrapage', { tag: '@bureau' }, () => {
 		const textEn = pdfText(await englishPdf(page)).join('\n');
 		// Le PDF anglais est bien celui lu (sinon un PDF vide passerait pour l'écart)
 		expect(textEn).toContain('Calculators are not allowed.');
-		test.fail();
 		expect(textEn, 'titre anglais imprimé').toContain(english);
 	});
 });
