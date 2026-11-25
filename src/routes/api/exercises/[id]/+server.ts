@@ -6,6 +6,7 @@
  */
 
 import { error } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import {
 	getExercise,
@@ -24,6 +25,9 @@ import {
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/[id]/+server');
+
+/** La version à modifier, seule clé lue ici ; les autres sont validées par l'exercice */
+const versionTargetSchema = z.object({ version_id: z.string().uuid().optional() });
 
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
 type ZodIssue = { path: (string | number)[]; message: string };
@@ -58,8 +62,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	const { id } = params;
 
-	// Parse and validate update data
-	const body = await request.json();
+	// Parse and validate update data. `version_id` (facultatif) : la version modifiée sur place,
+	// la dernière par défaut (ADR 0044) ; le reste est l'exercice.
+	const rawBody: unknown = await request.json();
+	const versionParse = versionTargetSchema.safeParse(rawBody);
+	if (!versionParse.success) throw error(400, 'Version invalide');
+	const { version_id: _versionId, ...body } = rawBody as Record<string, unknown>;
 	const validation = validateUpdateExercise(body);
 
 	if (!validation.success) {
@@ -76,7 +84,13 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const data = validation.data as Omit<ExerciseUpdate, 'id' | 'created_by' | 'created_at'>;
 
 	// Update exercise
-	const result = await updateExercise(locals.supabase, id, data, user.id);
+	const result = await updateExercise(
+		locals.supabase,
+		id,
+		data,
+		user.id,
+		versionParse.data.version_id
+	);
 
 	if (result.error) {
 		if (result.error.message === 'Unauthorized') {
@@ -84,6 +98,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		}
 		if (result.error.message === 'Exercise not found') {
 			throw error(404, 'Exercice introuvable');
+		}
+		// Version absente, ou d'un autre exercice (`save_exercise_with_version`)
+		if ((result.error as { code?: string }).code === 'P0002') {
+			throw error(404, 'Version introuvable');
 		}
 		// « Privé + Google » : refus métier ou contrainte de la base (23514)
 		if (isSearchIndexedViolation(result.error)) {

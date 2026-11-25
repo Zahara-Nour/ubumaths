@@ -8,9 +8,9 @@
  */
 
 import {
+	saveExerciseWithVersion,
 	splitVersionContent,
-	withLatestVersions,
-	writeVersionContent
+	withLatestVersions
 } from '#lib/server/exercise-versions.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
@@ -373,37 +373,25 @@ export async function importExerciseFromJSON(
 			// « Afficher sur Google » de l'exercice existant — jamais de « privé +
 			// Google » (CHECK 23514), jamais de Google coché par un fichier.
 			// Le contenu remplace celui de la DERNIÈRE version (ADR 0044) ; la fiche d'identité
-			// reste sur la ligne d'`exercises`.
+			// reste sur la ligne d'`exercises`. Les deux sont écrites ensemble : tout ou rien.
 			const { identity, content } = splitVersionContent(rowUpdate);
-			const { data, error } = await supabase
-				.from('exercises')
-				.update({
-					...identity,
-					updated_at: new Date().toISOString()
-				})
-				.eq('id', duplicateId)
-				.eq('created_by', userId)
-				.select()
-				.single();
-
-			if (error) {
-				return { success: false, error: error.message };
-			}
-
 			try {
-				await writeVersionContent(supabase, duplicateId, content);
+				await saveExerciseWithVersion(supabase, duplicateId, identity, content);
 			} catch (e) {
-				logger.error('Failed to replace the content of the imported exercise:', e);
+				logger.error('Failed to replace the imported exercise:', e);
 				return {
 					success: false,
-					error: e instanceof Error ? e.message : 'Failed to replace exercise content'
+					error:
+						e instanceof Error
+							? e.message
+							: String((e as { message?: unknown }).message ?? 'Failed to replace exercise')
 				};
 			}
 
 			// Re-sync tags through the junction. On failure, surface the error so the
 			// caller knows the tags weren't applied (the row update itself succeeded).
 			try {
-				await syncResourceTags(supabase, 'exercise', data!.id, replaceTags ?? []);
+				await syncResourceTags(supabase, 'exercise', duplicateId, replaceTags ?? []);
 			} catch (e) {
 				logger.error('Failed to sync tags while replacing imported exercise:', e);
 				return {
@@ -412,7 +400,7 @@ export async function importExerciseFromJSON(
 				};
 			}
 
-			return { success: true, exerciseId: data!.id };
+			return { success: true, exerciseId: duplicateId };
 		} else if (options.onDuplicate === 'create-copy') {
 			// Create a new exercise with modified title
 			const cleanData = sanitizeExerciseForInsert(exerciseData);

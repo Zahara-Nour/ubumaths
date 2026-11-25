@@ -29,10 +29,11 @@ import {
 import { createServerLogger } from '#lib/utils/logger.ts';
 import {
 	createFirstVersion,
+	saveExerciseWithVersion,
 	splitVersionContent,
 	withLatestVersion,
 	withLatestVersions,
-	writeVersionContent
+	withVersionContent
 } from '#lib/server/exercise-versions.ts';
 
 const logger = createServerLogger('server/exercises');
@@ -403,7 +404,9 @@ export async function updateExercise(
 	supabase: SupabaseClient<Database>,
 	id: string,
 	updates: Omit<ExerciseUpdate, 'id' | 'created_by' | 'created_at'>,
-	userId: string
+	userId: string,
+	/** Version à modifier (une version de CET exercice) ; la dernière par défaut */
+	versionId?: string
 ) {
 	// First check if exercise exists and user owns it
 	const { data: existing, error: fetchError } = await getExercise(supabase, id);
@@ -468,42 +471,29 @@ export async function updateExercise(
 		'id' | 'created_by' | 'created_at'
 	> & { tags?: string[] };
 
-	// Le contenu (validé par Zod à l'API) va dans la DERNIÈRE version, modifiée sur place
-	// (ADR 0044 point 3) ; la fiche d'identité reste sur `exercises`. `updated_at` est toujours
-	// écrit : la ligne n'est jamais mise à jour à vide, et la liste du prof la date.
+	// Le contenu (validé par Zod à l'API) va dans la version demandée, la DERNIÈRE par défaut,
+	// modifiée sur place (ADR 0044 point 3) ; la fiche d'identité reste sur `exercises`. Les deux
+	// sont écrites ensemble par la base : tout ou rien.
 	const { identity, content } = splitVersionContent(updatesWithoutTags);
-	const updateData = { ...identity, updated_at: new Date().toISOString() };
 
-	// Update the exercise
-	const { data: updated, error } = await supabase
-		.from('exercises')
-		.update(updateData)
-		.eq('id', id)
-		.eq('created_by', userId) // Double-check ownership via RLS
-		.select()
-		.single();
-
-	if (error) {
-		logger.error('Error updating exercise:', error);
-		return { data: null, error };
-	}
-
-	let data: typeof updated;
+	let data: Awaited<ReturnType<typeof getExercise>>['data'];
 	try {
-		const version =
-			Object.keys(content).length > 0 ? await writeVersionContent(supabase, id, content) : existing;
-		data = {
-			...updated,
-			variations: version.variations,
-			shared: version.shared,
-			generic_functions: version.generic_functions
-		};
+		const version = await saveExerciseWithVersion(supabase, id, identity, content, versionId);
+		const { data: row, error: rowError } = await supabase
+			.from('exercises')
+			.select('*')
+			.eq('id', id)
+			.single();
+		if (rowError) throw rowError;
+		data = { ...withVersionContent(row, version), tags: existing.tags ?? [] };
 	} catch (e) {
-		logger.error('Failed to update exercise version:', e);
-		return {
-			data: null,
-			error: e instanceof Error ? e : new Error('Failed to update exercise version')
-		};
+		logger.error('Error updating exercise:', e);
+		// Erreur PostgREST : un objet, pas une `Error` ; son `code` est gardé (23514, P0002…)
+		const err =
+			e instanceof Error
+				? e
+				: Object.assign(new Error(String((e as { message?: unknown }).message ?? e)), e);
+		return { data: null, error: err as Error & { code?: string } };
 	}
 
 	// Sync tags via the junction if the caller supplied any.
