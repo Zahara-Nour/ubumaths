@@ -202,6 +202,8 @@ le compte et la classe (page du lien : PR 3, pas encore livrée). Table et accè
   `exportBackupSQL`, `restoreFromBackup`). Format et bornes : `src/lib/server/validation/backup.ts`
   (`BACKUP_FORMAT = 'chiphre-backup'`, 50 Mo au plus, plafond par table dans `MAX_RECORDS`).
   Quatre tables : `exercises`, `exercise_templates`, `exercise_favorites`, `exercise_share_tokens`.
+  Le titre anglais (`exercises.translations`) est sauvegardé et restauré ; une sauvegarde antérieure
+  à la colonne ne l'efface pas à la restauration.
   Ce n'est **pas** une sauvegarde de la base : voir
   [procedure-restauration.md](../pratiques/procedure-restauration.md).
 - Page `src/routes/(protected)/dashboard/admin/settings/+page.svelte` : version de l'application et

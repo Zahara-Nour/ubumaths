@@ -43,6 +43,7 @@ function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow & { tags
 		variables: [],
 		resources: null,
 		generic_functions: null,
+		translations: null,
 		shared: null,
 		variations: [{ label: 'default', statement_md: 'Q ?', solution_md: 'R' }],
 		tags: [],

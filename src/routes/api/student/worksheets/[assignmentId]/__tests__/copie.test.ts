@@ -389,3 +389,40 @@ describe('API élève : la copie suit l’affectation', () => {
 		expect(view.exercises[0].printed_frame_lines).toBeUndefined();
 	});
 });
+
+// Titre d'exercice en anglais (2026-11-25) : la colonne `exercises.translations`
+describe('API élève : titre de l’exercice dans la langue de la fiche', () => {
+	const translated = () => ({
+		...twoLevelExercise(),
+		translations: { en: { title: 'Proportionality' } }
+	});
+
+	it('fiche anglaise : le titre anglais, lu avec l’exercice', async () => {
+		const mock = supabase('guided', false, translated(), { language: 'en' });
+		const view = (await fetchCopy(mock, STUDENTS[0])) as unknown as {
+			exercises: Array<{ title: string | null }>;
+		};
+		expect(view.exercises[0].title).toBe('Proportionality');
+		expect(selectedColumns(mock, 'worksheet_exercises')).toMatch(
+			/exercises\s*\([^)]*\btranslations\b/
+		);
+	});
+
+	it('fiche française : le titre français, même si l’anglais existe', async () => {
+		const view = (await fetchCopy(
+			supabase('guided', false, translated()),
+			STUDENTS[0]
+		)) as unknown as {
+			exercises: Array<{ title: string | null }>;
+		};
+		expect(view.exercises[0].title).toBe('Proportionnalité');
+	});
+
+	it('fiche anglaise sans titre anglais : le titre français', async () => {
+		const view = (await fetchCopy(
+			supabase('guided', false, twoLevelExercise(), { language: 'en' }),
+			STUDENTS[0]
+		)) as unknown as { exercises: Array<{ title: string | null }> };
+		expect(view.exercises[0].title).toBe('Proportionnalité');
+	});
+});

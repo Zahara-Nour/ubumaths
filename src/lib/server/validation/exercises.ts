@@ -207,6 +207,23 @@ export const sharedExerciseDefaultsSchema = z
 	.optional();
 
 // Base schema without refinement (needed for .partial() in Zod v4)
+/**
+ * Traductions des colonnes de l'exercice (`exercises.translations`) : le titre
+ * seul. Le contenu (énoncé, corrigé, réponses, indices) se traduit dans les
+ * variations (`exerciseTranslationsSchema`). `strict()` aux deux niveaux : une
+ * langue ou un champ inconnus sont un bug de l'appelant, pas une donnée.
+ */
+export const exerciseRowTranslationsSchema = z
+	.object({
+		en: z
+			.object({
+				title: z.string().trim().max(200, 'Titre anglais trop long').optional()
+			})
+			.strict()
+			.optional()
+	})
+	.strict();
+
 const exerciseBaseSchema = z.object({
 	// Statement and solution are optional when using variations system
 	statement_md: z.string().trim().max(50000, 'Énoncé trop long').optional(),
@@ -251,6 +268,8 @@ const exerciseBaseSchema = z.object({
 	topic: z.string().trim().max(100, 'Notion trop longue').optional().nullable(),
 	source: z.string().trim().max(200, 'Source trop longue').optional().nullable(),
 	title: z.string().trim().max(200, 'Titre trop long').optional().nullable(),
+	// Titre traduit, même borne que le titre français ; null efface la traduction
+	translations: exerciseRowTranslationsSchema.optional().nullable(),
 	// Legacy variables format (kept for backward compatibility)
 	variables: z
 		.union([z.array(z.any()), z.record(z.string(), z.any())])
@@ -655,6 +674,8 @@ export const exerciseResponseSchema = z.object({
 	topic: z.string().nullable().optional(),
 	source: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
+	// Titre traduit : sans la clé, le schéma la retire et l'éditeur perd l'anglais
+	translations: z.record(z.string(), z.unknown()).nullable().optional(),
 	// Variables can be an array (from DB) or a record - accept both
 	variables: z
 		.union([z.array(z.any()), z.record(z.string(), z.any())])

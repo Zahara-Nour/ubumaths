@@ -280,6 +280,62 @@ describe('Backup Validation', () => {
 			expect(result.success).toBe(true);
 		});
 
+		// Titre d'exercice en anglais (2026-11-25) : sans la clé, le schéma la
+		// retirait en silence et la restauration perdait le titre anglais.
+		it('garde le titre anglais de l’exercice (translations)', () => {
+			const backup = {
+				version: '1.0',
+				format: 'chiphre-backup',
+				created_at: new Date().toISOString(),
+				created_by: 'admin@test.com',
+				metadata: {
+					tables_included: ['exercises'],
+					record_counts: {
+						exercises: 1,
+						exercise_templates: 0,
+						exercise_favorites: 0,
+						exercise_share_tokens: 0
+					}
+				},
+				data: {
+					exercises: [
+						{
+							id: '550e8400-e29b-41d4-a716-446655440000',
+							slug: null,
+							title: 'Calculer avec les formules',
+							source: null,
+							category: 'application',
+							tags: [],
+							statement_md: '',
+							solution_md: '',
+							grades: null,
+							topic: null,
+							is_public: false,
+							distribution_mode: 'on_demand',
+							variables: [],
+							variations: null,
+							shared: null,
+							resources: null,
+							generic_functions: null,
+							translations: { en: { title: 'Using formulas' } },
+							created_at: new Date().toISOString(),
+							updated_at: new Date().toISOString(),
+							created_by: '550e8400-e29b-41d4-a716-446655440001'
+						}
+					],
+					exercise_templates: [],
+					exercise_favorites: [],
+					exercise_share_tokens: []
+				}
+			};
+
+			const result = validateBackup(backup);
+			expect(result.success).toBe(true);
+			expect(result.data?.data.exercises[0].translations).toEqual({
+				en: { title: 'Using formulas' }
+			});
+		});
+
 		it('should accept any category string (lenient backup restoration)', () => {
 			const invalidBackup = {
 				version: '1.0' as const,

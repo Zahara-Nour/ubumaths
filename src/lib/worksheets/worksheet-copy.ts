@@ -17,6 +17,7 @@ import type { Exercise, ExerciseVariation, SharedExerciseDefaults } from '#lib/e
 import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
 import { createRandomSource, shuffled } from '#lib/utils/random.ts';
 import {
+	asRowTranslations,
 	asWorksheetConfig,
 	localizedText,
 	type InstanceData,
@@ -73,6 +74,23 @@ export interface ExerciseContentRow {
 	variations?: ExerciseVariation[] | null;
 	/** Thème : décide du sens de `AB` (longueur ou produit, Q-J) */
 	topic?: string | null;
+	/** Titre traduit (`exercises.translations`, `{"en": {"title": …}}`), brut de la base */
+	translations?: unknown;
+}
+
+/**
+ * Le titre d'un exercice dans la langue de la fiche.
+ *
+ * Le titre est une colonne : sa traduction n'est pas dans les variations mais
+ * dans `exercises.translations`. Titre anglais absent, vide ou illisible : le
+ * titre français, comme pour le reste de l'exercice.
+ */
+export function localizedExerciseTitle(
+	exercise: { title?: string | null; translations?: unknown } | null | undefined,
+	locale: ContentLocale
+): string | null {
+	if (!exercise) return null;
+	return localizedText(exercise.title, asRowTranslations(exercise.translations), 'title', locale);
 }
 
 /** Un exercice de la fiche (`worksheet_exercises`) et son contenu */
@@ -294,7 +312,7 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 			: { statement: '', solution: '', answers: '', hints: undefined, variationIndex: 0 };
 		return {
 			exercise_id: we.exercise_id,
-			title: we.exercise?.title ?? null,
+			title: localizedExerciseTitle(we.exercise, locale),
 			position: we.position,
 			points: we.points,
 			section_id: we.section_id ?? null,
