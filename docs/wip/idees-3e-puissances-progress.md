@@ -7,15 +7,13 @@ https://claude.ai/artifact/LGpQYL1RscgPbBHoZRCUFA
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR de rangement ouverte._
+_Mis à jour le 2026-11-25, après #3151._
 
-- **État** : contenu des 4 publiés en prod ; N5 (dfe8ca79) et N6 (dc68386c) en brouillons en prod ;
-  migration de rangement (N5 → 4-015, N6 → 3-052) prouvée rouge sans le .sql, verte avec ; PR
-  ouverte. · **Prochaine action** : merge, `db:migrate` (vérifier qu'elle est seule en attente),
-  puis relecture des 2 brouillons et des variations dans `/dev/modeles` · **En attente de
-  David** : rien avant la relecture · **Pièges en cours** : options de 3fe98dd9 changées, voir §
-  Lot · **Worktree / branche** : `../ubumaths-wt-idees-3e-puissances-rangement`,
-  `feat/idees-3e-puissances-rangement`.
+- **État** : contenu des 4 publiés en prod ; N5 (dfe8ca79) et N6 (dc68386c) en brouillons en prod,
+  rangés (N5 → 4-015, N6 → 3-052) par #3151, `db:migrate` joué. · **Prochaine action** : relecture
+  des 2 brouillons et des variations dans `/dev/modeles` avec David, puis publication · **En
+  attente de David** : la relecture · **Pièges en cours** : options de 3fe98dd9 changées, voir §
+  Lot · **Worktree / branche** : aucun (retiré par `pr:merger`).
 
 ## Phase 0 (2026-11-25)
 
@@ -77,3 +75,4 @@ les 6 modèles.
   `migrations-rangement-tags` vert, `security-auditor` : aucun finding.
 - Preuve rouge : `migrations-rangement-tags` sans le .sql → 5 échecs, tous sur 20261125163550 ;
   avec → 111 verts.
+- #3151 mergée, `db:migrate` joué (seule migration en attente).
