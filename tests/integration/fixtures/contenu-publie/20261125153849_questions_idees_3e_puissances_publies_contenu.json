@@ -1,0 +1,1948 @@
+{
+	"migration": "supabase/migrations/20261125153849_questions_idees_3e_puissances_publies_contenu.sql",
+	"modeles": [
+		{
+			"id": "15368b02-73cc-4f0d-b978-fa0d0848eb03",
+			"title": "Définition d'une puissance à exposant négatif",
+			"fichier": "15368b02.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{1}{{{a}}^{{{b}}}}"
+							}
+						],
+						"statement": "Écris la définition de cette puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "expression1",
+								"expression": "a^{-b}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+								"L’exposant $\\textcolor{{{color:primary.0}}}{-{{b}}}$ est négatif : ${{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}}$ est l’inverse de ${{a}}^{\\textcolor{{{color:primary.1}}}{{{b}}}}$.",
+								"$$\\begin{align} {{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}} &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{1}{6^3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "1/6^3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{b^4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "b|b",
+							"b": "4"
+						},
+						"description": "lettre b avec exposant 4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{216}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "valeur 1/216 : forme refusée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-6^3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "signe : -6^3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{6^{-3}}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "1/6^{-3}",
+						"variationIndex": 0
+					}
+				],
+				"description": null
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{1}{{{a}}^{{{b}}}}"
+							}
+						],
+						"statement": "Écris la définition de cette puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "expression1",
+								"expression": "a^{-b}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+								"L’exposant $\\textcolor{{{color:primary.0}}}{-{{b}}}$ est négatif : ${{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}}$ est l’inverse de ${{a}}^{\\textcolor{{{color:primary.1}}}{{{b}}}}$.",
+								"$$\\begin{align} {{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}} &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"statement": "Calcule. Donne le résultat sous la forme d’une fraction, sans puissance.\n\n$${{a}}^{-{{n}}} = ?$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..10"
+							},
+							{
+								"name": "n",
+								"expression": "2..4"
+							},
+							{
+								"name": "q",
+								"expression": "eval:a^n"
+							}
+						],
+						"conditions": ["q<=1000"],
+						"blanks": [
+							{
+								"expectedAnswer": "\\dfrac{1}{ {{q}} }",
+								"expectedErrors": [
+									{
+										"answer": "-{{q}}",
+										"message": "Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance.",
+										"label": "Puissance rendue négative"
+									},
+									{
+										"answer": "-{{eval:a*n}}",
+										"message": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base. Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance.",
+										"label": "Base × exposant, et signe moins"
+									},
+									{
+										"answer": "\\dfrac{1}{ {{eval:a*n}} }",
+										"message": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base.",
+										"label": "Base × exposant"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$.",
+								"$${{a}}^{\\textcolor{{{color:primary.0}}}{-{{n}}}} = \\dfrac{1}{ {{a}}^{\\textcolor{{{color:primary.1}}}{{{n}}}} } = \\dfrac{1}{ {{if:n==2|{{a}}\\times{{a}}|{{if:n==3|{{a}}\\times{{a}}\\times{{a}}|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}}}}} } = \\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{q}} }}$$"
+							]
+						},
+						"hint": "$a^{-n}$ est l’inverse de $a^n$ : calcule d’abord $a^n$."
+					},
+					{
+						"statement": "Calcule.\n\n$${{if:s==1|(-{{a}})|{{a}}}}^{0} = ?$$",
+						"variables": [
+							{
+								"name": "s",
+								"expression": "0|1"
+							},
+							{
+								"name": "a",
+								"expression": "2..15"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "1",
+								"expectedErrors": [
+									{
+										"answer": "0",
+										"message": "Un exposant nul ne donne pas zéro : tout nombre non nul élevé à la puissance $0$ vaut $1$.",
+										"label": "Zéro"
+									},
+									{
+										"answer": "{{if:s==1|-{{a}}|{{a}}}}",
+										"message": "L’exposant $0$ ne laisse pas la base telle quelle : tout nombre non nul élevé à la puissance $0$ vaut $1$.",
+										"label": "La base recopiée"
+									},
+									{
+										"answer": "-1",
+										"message": "Le résultat ne dépend pas du signe de la base : tout nombre non nul élevé à la puissance $0$ vaut $1$.",
+										"label": "Moins un"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Exposant nul.** Pour $a \\neq 0$ : $a^0 = 1$. On le retrouve avec un quotient : $\\dfrac{a^3}{a^3} = 1$ et $\\dfrac{a^3}{a^3} = a^{3-3} = a^0$.",
+								"$${{if:s==1|(-{{a}})|{{a}}}}^{0} = \\textcolor{{{color:primary.0}}}{1}$$"
+							]
+						},
+						"hint": "Calcule $\\dfrac{a^3}{a^3}$ de deux façons : en simplifiant, puis avec la règle des exposants."
+					},
+					{
+						"statement": "Écris sous la forme d’une seule puissance.\n\n$$\\dfrac{1}{{{if:n==2|{{a}}\\times{{a}}|{{if:n==3|{{a}}\\times{{a}}\\times{{a}}|{{if:n==4|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}\\times{{a}}}}}}}}} = ?$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "n",
+								"expression": "2..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}^{-{{n}}}",
+								"expectedErrors": [
+									{
+										"answer": "{{a}}^{ {{n}} }",
+										"message": "Tu as oublié le signe moins : le produit est au dénominateur, c’est un inverse.",
+										"label": "Signe moins oublié"
+									},
+									{
+										"answer": "-{{a}}^{ {{n}} }",
+										"message": "Le signe moins va sur l’exposant, pas devant la puissance : ce nombre est positif.",
+										"label": "Moins devant la puissance"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le dénominateur compte \\textcolor{{{color:primary.1}}}{{{n}}} facteurs égaux à ${{a}}$ : c’est ${{a}}^{ {{n}} }$.",
+								"**Exposant négatif.** $\\dfrac{1}{a^n} = a^{-n}$.",
+								"$$\\dfrac{1}{{{if:n==2|{{a}}\\times{{a}}|{{if:n==3|{{a}}\\times{{a}}\\times{{a}}|{{if:n==4|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}\\times{{a}}}}}}}}} = \\dfrac{1}{ {{a}}^{\\textcolor{{{color:primary.1}}}{{{n}}}} } = \\textcolor{{{color:primary.0}}}{{{a}}^{-{{n}}}}$$"
+							]
+						},
+						"hint": "Compte les facteurs du dénominateur, puis pense à l’inverse d’une puissance."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["\\frac{1}{6^3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "1/6^3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{b^4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "b|b",
+							"b": "4"
+						},
+						"description": "lettre b avec exposant 4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{216}"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "valeur 1/216 : forme refusée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-6^3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "signe : -6^3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{1}{6^{-3}}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "6",
+							"b": "3"
+						},
+						"description": "1/6^{-3}",
+						"variationIndex": 0
+					},
+					{
+						"description": "F1 : 2^-3 → 1/8",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{1}{8}"]
+					},
+					{
+						"description": "F1 : 1/2^3, puissance gardée",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["\\frac{1}{2^3}"]
+					},
+					{
+						"description": "F1 : -8",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance."
+						},
+						"answers": ["-8"]
+					},
+					{
+						"description": "F1 : -6",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base. Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance."
+						},
+						"answers": ["-6"]
+					},
+					{
+						"description": "F1 : 1/6",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base."
+						},
+						"answers": ["\\frac{1}{6}"]
+					},
+					{
+						"description": "F1 : 10^-3 → 1/1000",
+						"variationIndex": 1,
+						"variables": {
+							"a": "10",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{1}{1000}"]
+					},
+					{
+						"description": "F1 : 9^-2 → 1/81",
+						"variationIndex": 1,
+						"variables": {
+							"a": "9",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["\\frac{1}{81}"]
+					},
+					{
+						"description": "F1b : 7^0 → 1",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"a": "7"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F1b : (-12)^0 → 1",
+						"variationIndex": 2,
+						"variables": {
+							"s": "1",
+							"a": "12"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["1"]
+					},
+					{
+						"description": "F1b : 0",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"a": "7"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Un exposant nul ne donne pas zéro : tout nombre non nul élevé à la puissance $0$ vaut $1$."
+						},
+						"answers": ["0"]
+					},
+					{
+						"description": "F1b : la base recopiée",
+						"variationIndex": 2,
+						"variables": {
+							"s": "0",
+							"a": "7"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L’exposant $0$ ne laisse pas la base telle quelle : tout nombre non nul élevé à la puissance $0$ vaut $1$."
+						},
+						"answers": ["7"]
+					},
+					{
+						"description": "F1b : -1 pour (-12)^0",
+						"variationIndex": 2,
+						"variables": {
+							"s": "1",
+							"a": "12"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le résultat ne dépend pas du signe de la base : tout nombre non nul élevé à la puissance $0$ vaut $1$."
+						},
+						"answers": ["-1"]
+					},
+					{
+						"description": "F2 : 1/(5×5×5) → 5^-3",
+						"variationIndex": 3,
+						"variables": {
+							"a": "5",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["5^{-3}"]
+					},
+					{
+						"description": "F2 : 1/5^3, pas une seule puissance",
+						"variationIndex": 3,
+						"variables": {
+							"a": "5",
+							"n": "3"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["\\frac{1}{5^3}"]
+					},
+					{
+						"description": "F2 : 1/125",
+						"variationIndex": 3,
+						"variables": {
+							"a": "5",
+							"n": "3"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["\\frac{1}{125}"]
+					},
+					{
+						"description": "F2 : 5^3",
+						"variationIndex": 3,
+						"variables": {
+							"a": "5",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as oublié le signe moins : le produit est au dénominateur, c’est un inverse."
+						},
+						"answers": ["5^3"]
+					},
+					{
+						"description": "F2 : -5^3",
+						"variationIndex": 3,
+						"variables": {
+							"a": "5",
+							"n": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Le signe moins va sur l’exposant, pas devant la puissance : ce nombre est positif."
+						},
+						"answers": ["-5^3"]
+					},
+					{
+						"description": "F2 : 1/(3×3) → 3^-2",
+						"variationIndex": 3,
+						"variables": {
+							"a": "3",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["3^{-2}"]
+					}
+				],
+				"description": null
+			},
+			"changements": {
+				"ajoutees": [2, 3, 4],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "18761148-ca6b-4c7f-ae72-506819de30bb",
+			"title": "Diviser $2$ puissances d'un même nombre.",
+			"fichier": "18761148.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b-(c)}}"
+							}
+						],
+						"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+							},
+							{
+								"name": "b",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "expression1",
+								"expression": "{a^{b}}/{a^{c}}"
+							}
+						],
+						"conditions": ["abs(b-(c))>1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\frac{{{a}}^{{{b}}}}{{{a}}^{{{c}}}} &= {{a}}^{{{b}}{{eval:-(c);+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+							]
+						},
+						"answerFormats": {
+							"expression1": "{{a}}^?"
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-4",
+							"c": "2"
+						},
+						"description": "c^-4/c^2 : -6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5",
+							"c": "-3"
+						},
+						"description": "3^5/3^-3 : 8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-4",
+							"c": "2"
+						},
+						"description": "exposants additionnés refusé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5",
+							"c": "-3"
+						},
+						"description": "signe refusé",
+						"variationIndex": 0
+					}
+				],
+				"description": "Exposants relatifs"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b-(c)}}"
+							}
+						],
+						"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+							},
+							{
+								"name": "b",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "expression1",
+								"expression": "{a^{b}}/{a^{c}}"
+							}
+						],
+						"conditions": ["abs(b-(c))>1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\frac{{{a}}^{{{b}}}}{{{a}}^{{{c}}}} &= {{a}}^{{{b}}{{eval:-(c);+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+							]
+						},
+						"answerFormats": {
+							"expression1": "{{a}}^?"
+						}
+					},
+					{
+						"statement": "Calcule en écrivant le résultat sous la forme d’une puissance de $(-{{a}})$.\n\n$$\\dfrac{(-{{a}})^{ {{b}} }}{(-{{a}})^{ {{c}} }} = (-{{a}})^{?}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "2..6;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..6;±"
+							}
+						],
+						"conditions": ["abs(b-(c))>1"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b-(c)}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:b+(c)}}",
+										"message": "Tu as additionné les exposants : pour un quotient, on retranche l’exposant du dénominateur.",
+										"label": "Exposants additionnés"
+									},
+									{
+										"answer": "{{eval:c-(b)}}",
+										"message": "Tu as soustrait dans le mauvais sens : exposant du numérateur moins exposant du dénominateur.",
+										"label": "Soustraction à l’envers"
+									},
+									{
+										"answer": "{{eval:abs(b)-abs(c)}}",
+										"message": "Attention aux exposants négatifs : garde leur signe dans le calcul.",
+										"label": "Signes des exposants oubliés"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Quotient de puissances d’un même nombre.** $\\dfrac{a^m}{a^n} = a^{m-n}$, même quand la base est négative.",
+								"$$\\dfrac{(-{{a}})^{ \\textcolor{{{color:primary.0}}}{{{b}}} }}{(-{{a}})^{ \\textcolor{{{color:primary.1}}}{{{c}}} }} = (-{{a}})^{ {{b}} {{eval:-(c);+}} } = \\textcolor{{{color:primary.0}}}{(-{{a}})^{ {{eval:b-(c)}} }}$$"
+							]
+						},
+						"hint": "La base est la même en haut et en bas, $(-{{a}})$ : les facteurs du dénominateur se simplifient avec ceux du numérateur."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-4",
+							"c": "2"
+						},
+						"description": "c^-4/c^2 : -6",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5",
+							"c": "-3"
+						},
+						"description": "3^5/3^-3 : 8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-4",
+							"c": "2"
+						},
+						"description": "exposants additionnés refusé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5",
+							"c": "-3"
+						},
+						"description": "signe refusé",
+						"variationIndex": 0
+					},
+					{
+						"description": "F3 : (-2)^3 / (-2)^-4 → 7",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"b": "3",
+							"c": "-4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["7"]
+					},
+					{
+						"description": "F3 : (-5)^2 / (-5)^6 → -4",
+						"variationIndex": 1,
+						"variables": {
+							"a": "5",
+							"b": "2",
+							"c": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-4"]
+					},
+					{
+						"description": "F3 : exposants additionnés",
+						"variationIndex": 1,
+						"variables": {
+							"a": "5",
+							"b": "2",
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as additionné les exposants : pour un quotient, on retranche l’exposant du dénominateur."
+						},
+						"answers": ["8"]
+					},
+					{
+						"description": "F3 : à l’envers",
+						"variationIndex": 1,
+						"variables": {
+							"a": "5",
+							"b": "2",
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as soustrait dans le mauvais sens : exposant du numérateur moins exposant du dénominateur."
+						},
+						"answers": ["4"]
+					},
+					{
+						"description": "F3 : (-2)^-3 / (-2)^4 → -7",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-7"]
+					},
+					{
+						"description": "F3 : signes oubliés",
+						"variationIndex": 1,
+						"variables": {
+							"a": "2",
+							"b": "-3",
+							"c": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention aux exposants négatifs : garde leur signe dans le calcul."
+						},
+						"answers": ["-1"]
+					}
+				],
+				"description": "Exposants relatifs"
+			},
+			"changements": {
+				"ajoutees": [2],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		},
+		{
+			"id": "3fe98dd9-7545-4287-8301-7d87e8c1976f",
+			"title": "Traduire une puissance en produit",
+			"fichier": "3fe98dd9.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "a^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{2}$ indique 2 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{2}} &= {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "a^3"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{3}$ indique 3 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{3}} &= {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression3}}$$",
+						"variables": [
+							{
+								"name": "expression3",
+								"expression": "a^4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{4}$ indique 4 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{4}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "expression4",
+								"expression": "a^5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{5}$ indique 5 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{5}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression5}}$$",
+						"variables": [
+							{
+								"name": "expression5",
+								"expression": "a^6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{6}$ indique 6 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{6}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression6}}$$",
+						"variables": [
+							{
+								"name": "expression6",
+								"expression": "a^7"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{7}$ indique 7 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{7}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 2 facteurs 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 3 facteurs 5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 4 facteurs 5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 5 facteurs 5",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 6 facteurs 5",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 7 facteurs 5",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["x\\times x\\times x"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "x|x"
+						},
+						"description": "lettre : x×x×x",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["125"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "valeur 125 : forme refusée",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5^3"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "recopie 5^3",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5\\times25"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "5×25 : pas la définition",
+						"variationIndex": 1
+					}
+				],
+				"description": null,
+				"options": {
+					"constraints": {
+						"products": "off"
+					}
+				}
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "a^2"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{2}$ indique 2 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{2}} &= {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "a^3"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{3}$ indique 3 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{3}} &= {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression3}}$$",
+						"variables": [
+							{
+								"name": "expression3",
+								"expression": "a^4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{4}$ indique 4 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{4}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "expression4",
+								"expression": "a^5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{5}$ indique 5 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{5}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression5}}$$",
+						"variables": [
+							{
+								"name": "expression5",
+								"expression": "a^6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{6}$ indique 6 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{6}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+							}
+						],
+						"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression6}}$$",
+						"variables": [
+							{
+								"name": "expression6",
+								"expression": "a^7"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+								"L’exposant $\\textcolor{{{color:primary.1}}}{7}$ indique 7 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{7}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"statement": "Réécris cette expression à l’aide de la définition d’une puissance, avec des $\\times$.\n\n$$(-{{k}})^{ {{n}} } = ?$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "n",
+								"expression": "2..5"
+							},
+							{
+								"name": "motif",
+								"expression": "{{if:n==2|p:negative * q:negative|{{if:n==3|p:negative * q:negative * r:negative|{{if:n==4|p:negative * q:negative * r:negative * s:negative|p:negative * q:negative * r:negative * s:negative * t:negative}}}}}}"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:n==2|(-{{k}})*(-{{k}})|{{if:n==3|(-{{k}})*(-{{k}})*(-{{k}})|{{if:n==4|(-{{k}})*(-{{k}})*(-{{k}})*(-{{k}})|(-{{k}})*(-{{k}})*(-{{k}})*(-{{k}})*(-{{k}})}}}}}}",
+								"expectedErrors": [
+									{
+										"answer": "-{{if:n==2|{{k}}*{{k}}|{{if:n==3|{{k}}*{{k}}*{{k}}|{{if:n==4|{{k}}*{{k}}*{{k}}*{{k}}|{{k}}*{{k}}*{{k}}*{{k}}*{{k}}}}}}}}",
+										"message": "Les parenthèses disent que toute la base, signe compris, est répétée : chaque facteur est négatif.",
+										"label": "Signe sorti des parenthèses"
+									},
+									{
+										"answer": "(-{{k}})*{{n}}",
+										"message": "L’exposant ne multiplie pas la base : il compte les facteurs égaux à la base.",
+										"label": "Base × exposant"
+									}
+								],
+								"requiredForm": {
+									"pattern": "{{motif}}"
+								}
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d’une puissance.** $a^n = a \\times a \\times \\cdots \\times a$ ($n$ facteurs). Les parenthèses disent ce qui est répété : ici, toute la base $(-{{k}})$.",
+								"$$\\textcolor{{{color:primary.0}}}{(-{{k}})}^{\\textcolor{{{color:primary.1}}}{{{n}}}} = {{if:n==2|(-{{k}})\\times(-{{k}})|{{if:n==3|(-{{k}})\\times(-{{k}})\\times(-{{k}})|{{if:n==4|(-{{k}})\\times(-{{k}})\\times(-{{k}})\\times(-{{k}})|(-{{k}})\\times(-{{k}})\\times(-{{k}})\\times(-{{k}})\\times(-{{k}})}}}}}}$$"
+							]
+						},
+						"hint": "Regarde les parenthèses : elles disent ce qui est élevé à la puissance."
+					},
+					{
+						"statement": "Réécris cette expression à l’aide de la définition d’une puissance, avec des $\\times$.\n\n$$-{{k}}^{ {{n}} } = ?$$",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "2..9"
+							},
+							{
+								"name": "n",
+								"expression": "2..5"
+							}
+						],
+						"conditions": [],
+						"blanks": [
+							{
+								"expectedAnswer": "-{{if:n==2|{{k}}*{{k}}|{{if:n==3|{{k}}*{{k}}*{{k}}|{{if:n==4|{{k}}*{{k}}*{{k}}*{{k}}|{{k}}*{{k}}*{{k}}*{{k}}*{{k}}}}}}}}",
+								"expectedErrors": [
+									{
+										"answer": "{{if:n==2|(-{{k}})*(-{{k}})|{{if:n==3|(-{{k}})*(-{{k}})*(-{{k}})|{{if:n==4|(-{{k}})*(-{{k}})*(-{{k}})*(-{{k}})|(-{{k}})*(-{{k}})*(-{{k}})*(-{{k}})*(-{{k}})}}}}}}",
+										"message": "Sans parenthèses, la puissance ne porte que sur le nombre : le signe moins reste devant, une seule fois.",
+										"label": "Signe répété"
+									},
+									{
+										"answer": "-{{k}}*{{n}}",
+										"message": "L’exposant ne multiplie pas la base : il compte les facteurs égaux à la base.",
+										"label": "Base × exposant"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Définition d’une puissance.** $a^n = a \\times a \\times \\cdots \\times a$ ($n$ facteurs). Sans parenthèses, l’exposant ne porte que sur ${{k}}$ : $-{{k}}^{ {{n}} }$ est l’opposé de ${{k}}^{ {{n}} }$.",
+								"$$-\\textcolor{{{color:primary.0}}}{{{k}}}^{\\textcolor{{{color:primary.1}}}{{{n}}}} = -{{if:n==2|{{k}}\\times{{k}}|{{if:n==3|{{k}}\\times{{k}}\\times{{k}}|{{if:n==4|{{k}}\\times{{k}}\\times{{k}}\\times{{k}}|{{k}}\\times{{k}}\\times{{k}}\\times{{k}}\\times{{k}}}}}}}}$$"
+							]
+						},
+						"hint": "Regarde les parenthèses : sans elles, sur quoi porte l’exposant ?"
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 2 facteurs 5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 3 facteurs 5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 4 facteurs 5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 5 facteurs 5",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 6 facteurs 5",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["5\\times5\\times5\\times5\\times5\\times5\\times5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "produit de 7 facteurs 5",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["x\\times x\\times x"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "x|x"
+						},
+						"description": "lettre : x×x×x",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["125"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "valeur 125 : forme refusée",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5^3"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "recopie 5^3",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5\\times25"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5"
+						},
+						"description": "5×25 : pas la définition",
+						"variationIndex": 1
+					},
+					{
+						"description": "F4 : (-3)^4",
+						"variationIndex": 6,
+						"variables": {
+							"k": "3",
+							"n": "4"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["(-3)\\times(-3)\\times(-3)\\times(-3)"]
+					},
+					{
+						"description": "F4 : (-3)^4, Q1 : 3×3×3×3 refusé (même valeur, base -3)",
+						"variationIndex": 6,
+						"variables": {
+							"k": "3",
+							"n": "4"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["3\\times3\\times3\\times3"]
+					},
+					{
+						"description": "F4 : (-3)^4, signe sorti",
+						"variationIndex": 6,
+						"variables": {
+							"k": "3",
+							"n": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Les parenthèses disent que toute la base, signe compris, est répétée : chaque facteur est négatif."
+						},
+						"answers": ["-3\\times3\\times3\\times3"]
+					},
+					{
+						"description": "F4 : (-3)^4, base × exposant",
+						"variationIndex": 6,
+						"variables": {
+							"k": "3",
+							"n": "4"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L’exposant ne multiplie pas la base : il compte les facteurs égaux à la base."
+						},
+						"answers": ["(-3)\\times4"]
+					},
+					{
+						"description": "F4 : (-2)^3",
+						"variationIndex": 6,
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["(-2)\\times(-2)\\times(-2)"]
+					},
+					{
+						"description": "F4 : (-2)^3, -2×2×2 : même valeur, autre forme",
+						"variationIndex": 6,
+						"variables": {
+							"k": "2",
+							"n": "3"
+						},
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"answers": ["-2\\times2\\times2"]
+					},
+					{
+						"description": "F4 : -5^2",
+						"variationIndex": 7,
+						"variables": {
+							"k": "5",
+							"n": "2"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-5\\times5"]
+					},
+					{
+						"description": "F4 : -5^2, signe répété",
+						"variationIndex": 7,
+						"variables": {
+							"k": "5",
+							"n": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Sans parenthèses, la puissance ne porte que sur le nombre : le signe moins reste devant, une seule fois."
+						},
+						"answers": ["(-5)\\times(-5)"]
+					},
+					{
+						"description": "F4 : -5^2, base × exposant",
+						"variationIndex": 7,
+						"variables": {
+							"k": "5",
+							"n": "2"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "L’exposant ne multiplie pas la base : il compte les facteurs égaux à la base."
+						},
+						"answers": ["-5\\times2"]
+					},
+					{
+						"description": "F4 : -4^5",
+						"variationIndex": 7,
+						"variables": {
+							"k": "4",
+							"n": "5"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-4\\times4\\times4\\times4\\times4"]
+					}
+				],
+				"description": null,
+				"options": {
+					"constraints": {
+						"products": "off",
+						"signs": "off",
+						"allowBracketsInFirstNegativeTerm": true
+					}
+				}
+			},
+			"changements": {
+				"ajoutees": [7, 8],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": true
+			}
+		},
+		{
+			"id": "bb9cff7b-f2c7-40ce-af3c-249970ad0a9e",
+			"title": "Multiplier $2$ puissances d'un même nombre.",
+			"fichier": "bb9cff7b.json",
+			"avant": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b+(c)}}"
+							}
+						],
+						"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+							},
+							{
+								"name": "b",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..5;±!{{eval:-(b)}}"
+							},
+							{
+								"name": "expression1",
+								"expression": "a^{b}*a^{c}"
+							}
+						],
+						"conditions": ["abs(b+(c))>1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} {{a}}^{{{b}}} \\times {{a}}^{{{c}}} &= {{a}}^{{{b}}{{eval:c;+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+							]
+						},
+						"answerFormats": {
+							"expression1": "{{a}}^?"
+						}
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-5",
+							"c": "2"
+						},
+						"description": "c^-5 × c^2 : -3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "10",
+							"b": "5",
+							"c": "3"
+						},
+						"description": "10^5 × 10^3 : 8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-5",
+							"c": "2"
+						},
+						"description": "exposants multipliés refusé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-5",
+							"c": "2"
+						},
+						"description": "erreur de signe refusée",
+						"variationIndex": 0
+					}
+				],
+				"description": "Exposants relatifs"
+			},
+			"apres": {
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b+(c)}}"
+							}
+						],
+						"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+							},
+							{
+								"name": "b",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..5;±!{{eval:-(b)}}"
+							},
+							{
+								"name": "expression1",
+								"expression": "a^{b}*a^{c}"
+							}
+						],
+						"conditions": ["abs(b+(c))>1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} {{a}}^{{{b}}} \\times {{a}}^{{{c}}} &= {{a}}^{{{b}}{{eval:c;+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+							]
+						},
+						"answerFormats": {
+							"expression1": "{{a}}^?"
+						}
+					},
+					{
+						"statement": "Calcule en écrivant le résultat sous la forme d’une puissance de $(-{{a}})$.\n\n$$(-{{a}})^{ {{b}} } \\times (-{{a}})^{ {{c}} } = (-{{a}})^{?}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "2..6;±"
+							},
+							{
+								"name": "c",
+								"expression": "2..6;±"
+							}
+						],
+						"conditions": ["abs(b+(c))>1"],
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b+(c)}}",
+								"expectedErrors": [
+									{
+										"answer": "{{eval:b*(c)}}",
+										"message": "Tu as multiplié les exposants : dans un produit de puissances de même base, on les additionne.",
+										"label": "Exposants multipliés"
+									},
+									{
+										"answer": "{{eval:b-(c)}}",
+										"message": "Tu as soustrait les exposants : c’est la règle du quotient ; pour un produit, on les additionne.",
+										"label": "Exposants soustraits"
+									},
+									{
+										"answer": "{{eval:abs(b)+abs(c)}}",
+										"message": "Attention aux exposants négatifs : garde leur signe dans le calcul.",
+										"label": "Signes des exposants oubliés"
+									}
+								]
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Produit de puissances d’un même nombre.** $a^m \\times a^n = a^{m+n}$, même quand la base est négative.",
+								"$$(-{{a}})^{ \\textcolor{{{color:primary.0}}}{{{b}}} } \\times (-{{a}})^{ \\textcolor{{{color:primary.1}}}{{{c}}} } = (-{{a}})^{ {{b}} {{eval:c;+}} } = \\textcolor{{{color:primary.0}}}{(-{{a}})^{ {{eval:b+(c)}} }}$$"
+							]
+						},
+						"hint": "La base est la même dans les deux puissances, $(-{{a}})$ : compte les facteurs."
+					}
+				],
+				"testSpecs": [
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-5",
+							"c": "2"
+						},
+						"description": "c^-5 × c^2 : -3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "10",
+							"b": "5",
+							"c": "3"
+						},
+						"description": "10^5 × 10^3 : 8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-10"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-5",
+							"c": "2"
+						},
+						"description": "exposants multipliés refusé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "c|c",
+							"b": "-5",
+							"c": "2"
+						},
+						"description": "erreur de signe refusée",
+						"variationIndex": 0
+					},
+					{
+						"description": "F3 : (-3)^4 × (-3)^-6 → -2",
+						"variationIndex": 1,
+						"variables": {
+							"a": "3",
+							"b": "4",
+							"c": "-6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["-2"]
+					},
+					{
+						"description": "F3 : (-7)^5 × (-7)^3 → 8",
+						"variationIndex": 1,
+						"variables": {
+							"a": "7",
+							"b": "5",
+							"c": "3"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["8"]
+					},
+					{
+						"description": "F3 : exposants multipliés",
+						"variationIndex": 1,
+						"variables": {
+							"a": "7",
+							"b": "5",
+							"c": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as multiplié les exposants : dans un produit de puissances de même base, on les additionne."
+						},
+						"answers": ["15"]
+					},
+					{
+						"description": "F3 : exposants soustraits",
+						"variationIndex": 1,
+						"variables": {
+							"a": "7",
+							"b": "5",
+							"c": "3"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Tu as soustrait les exposants : c’est la règle du quotient ; pour un produit, on les additionne."
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F3 : (-3)^-4 × (-3)^6 → 2",
+						"variationIndex": 1,
+						"variables": {
+							"a": "3",
+							"b": "-4",
+							"c": "6"
+						},
+						"expected": {
+							"status": "correct"
+						},
+						"answers": ["2"]
+					},
+					{
+						"description": "F3 : signes oubliés",
+						"variationIndex": 1,
+						"variables": {
+							"a": "3",
+							"b": "-4",
+							"c": "6"
+						},
+						"expected": {
+							"status": "incorrect",
+							"expectedErrorMessage": "Attention aux exposants négatifs : garde leur signe dans le calcul."
+						},
+						"answers": ["10"]
+					}
+				],
+				"description": "Exposants relatifs"
+			},
+			"changements": {
+				"ajoutees": [2],
+				"corrigees": [],
+				"specs": true,
+				"description": false,
+				"options": false
+			}
+		}
+	]
+}

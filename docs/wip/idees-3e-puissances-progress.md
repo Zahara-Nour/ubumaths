@@ -7,16 +7,16 @@ https://claude.ai/artifact/LGpQYL1RscgPbBHoZRCUFA
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, lot écrit (avant /clear)._
+_Mis à jour le 2026-11-25, PR des fichiers et de la migration de contenu ouverte._
 
-- **État** : phase 0 validée (tout) ; lot écrit, `create-questions` en simulation **vert** sur les 6
-  modèles (4 publiés + N5, N6), scripts et JSON commités sur la branche. N5 et N6 créés une fois
-  en base **locale** (bc9702b5, cd4ae32f), ids retirés des fichiers ; aperçu pas encore joué.
-  · **Prochaine action** : serveur sur 5176 (`pnpm dev --port 5176 --strictPort` dans le
-  worktree), jouer N5, N6 dans `/dashboard/admin/questions/<id>/preview` (`pnpm voir … --compte
-admin`), puis `migration-contenu.ts --dir scripts/questions/idees-3e-puissances-publies`, PR des
-  fichiers (revue : aucune, contenu) · **En attente de David** : rien · **Pièges en cours** :
-  options de 3fe98dd9 changées (`signs: off`, `allowBracketsInFirstNegativeTerm`), voir § Lot ;
+- **État** : lot écrit et joué en local (N5, N6 : juste accepté, faux refusé) ; migration de
+  contenu des 4 publiés générée (`20261125153849_…_publies_contenu`), test d'intégration vert,
+  PR ouverte (fichiers + migration de contenu). · **Prochaine action** : après le merge,
+  `db:migrate` de la migration de contenu (4 conditions, `migration list --linked` d'abord) ;
+  David lance `create-questions --publier` sur `scripts/questions/idees-3e-puissances-neufs`
+  (N5, N6 en brouillons), puis migration de rangement (nœud + point) · **En attente de David** :
+  la publication des brouillons en prod, après le merge · **Pièges en cours** : options de
+  3fe98dd9 changées (`signs: off`, `allowBracketsInFirstNegativeTerm`), voir § Lot ;
   `--publier` en local réécrit les ids dans les fichiers → les retirer · **Worktree / branche** :
   `../ubumaths-wt-idees-3e-puissances`, `docs/idees-3e-puissances`.
 
@@ -58,3 +58,13 @@ les 6 modèles.
   triple sont des intrus, et le corrigé dit pourquoi. V2 sans base 2 (2² = 2 × 2 est aussi le
   double de 2). Les réponses des specs sont des positions affichées, lues sur l'instance.
 - Les messages s'écrivent sous leur forme réécrite : `(-5)^2` devient `\left( -5 \right)^2`.
+
+## Aperçu et migration de contenu (2026-11-25)
+
+- N5 (bc9702b5) et N6 (cd4ae32f) joués en base locale dans l'aperçu admin (serveur sur 5177, 5176
+  pris par une autre session), sans erreur de console : N5 seed 877494, « cube » → Juste,
+  « triple » → Faux ; N6 seed 71013, 3 → Juste, 11 (6 + 5) → Faux. Les variations ajoutées aux
+  4 publiés ne sont pas jouées en local (la base locale a l'ancien contenu) : leurs specs passent
+  en simulation et dans le test de la migration.
+- `migration-contenu.ts` : 15368b02 +3 variations, 18761148 +1, 3fe98dd9 +2 et options,
+  bb9cff7b +1 ; `migrations-contenu-publie` vert (193 tests).
