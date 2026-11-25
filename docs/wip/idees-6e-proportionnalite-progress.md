@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 en attente._
+_Mis à jour le 2026-11-25, phase 0 validée._
 
 - **État** : rubrique 6P3 réservée (commit sur `main`), relevé écrit ([idees-6e-proportionnalite-releve.md](idees-6e-proportionnalite-releve.md)), 12 fiches de phase 0 sur la page à cocher https://claude.ai/artifact/8WUcuNwaQY2PvBydaLivW3 (collection `verdicts`).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), puis écrire le gros lot (modèles neufs N1 à N5, variations F1 à F3, ouverture de 06df72fd à la 6e en F4).
-- **En attente de David** : les verdicts des 12 fiches.
+- **Prochaine action** : écrire le gros lot (modèles neufs N1 à N5, variations F1 à F3, ouverture de 06df72fd à la 6e en F4).
+- **En attente de David** : rien.
 - **Pièges en cours** : les variations de modèles publiés (e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d, 06df72fd) se réservent dans le tableau avant l'export. Bornes de 6e : pas de produit en croix (6-191, 6-192), échelles graphiques seulement (6-193).
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite`.
 
@@ -36,3 +36,9 @@ _Mis à jour le 2026-11-25, phase 0 en attente._
 | R1    | Déjà couverts                                              | Rien                                    | —     |
 | R2    | Échelles 1/n                                               | Rien en 6e ; idée pour la session de 5e | —     |
 | R3    | « A-t-il assez ? » (Oui / Non)                             | Rien                                    | —     |
+
+#### Décision de David (2026-11-25)
+
+« Je valide » : toutes les fiches acceptées telles que recommandées (aucune case cochée sur la page,
+donc aucune note). Modèles publiés réservés dans le tableau de répartition : e0ccaf84, 7981dab0,
+52bf3fb9, 5e4e5e9d, 06df72fd. Idée R2 (échelles 1/n) notée dans « Idées en attente » pour la 5e.

@@ -162,6 +162,11 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| e0ccaf84 Résoudre un petit exercice de proportionnalité      | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 7981dab0 Repérer double, moitié, quadruple, quart et tiers   | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 52bf3fb9 Calculer la longueur réelle                         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 5e4e5e9d Calculer la longueur sur une carte                  | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 06df72fd Reconnaître des situations de proportionnalité      | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
 | 15368b02 Définition d'une puissance à exposant négatif       | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
 | bb9cff7b Multiplier 2 puissances d'un même nombre            | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
 | 18761148 Diviser 2 puissances d'un même nombre               | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
@@ -200,3 +205,6 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 - `idees-3e-calcul-litteral` (2026-11-23, recommandation suivie par David) : motifs qui se répètent (3L13-7 :
   nombre de formes du motif n, expression en n, numéro du motif qui utilise N formes ; 3L16 : ratio d'un
   motif), idée de 4e-5e (4-021 ou 5e), pour la session d'une rubrique de calcul littéral de 4e ou de 5e.
+- `idees-6e-proportionnalite` (2026-11-25, pour la session de 5e) : utiliser une échelle 1/n (1/100 à
+  1/5 000 000) pour calculer une distance réelle ou sur le plan (6P3E, clone d'un exercice de 5e) ; la 5e
+  n'a que « trouver l'échelle » (c1a54695, 24a8e2b1).
