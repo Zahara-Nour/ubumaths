@@ -123,7 +123,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Espace                             | 6G8   | 4         | libre                |                             |
 | Organisation et gestion de données | 6P1   | 6         | libre                |                             |
 | Probabilités                       | 6P2   | 3         | libre                |                             |
-| Proportionnalité                   | 6P3   | 16        | libre                |                             |
+| Proportionnalité                   | 6P3   | 16        | prise (2026-11-25)   | `idees-6e-proportionnalite` |
 | Pensée informatique                | 6I1   | 10        | libre                |                             |
 
 ## Troisième
