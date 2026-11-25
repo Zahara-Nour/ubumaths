@@ -142,7 +142,8 @@ worksheets (type, status, config jsonb, translations, style_id, school_id,
  │           category, custom_title)                  ← ADR 0041
  ├── worksheet_classifications (node_id → classification_nodes, position)  ← notions, ADR 0041
  ├── worksheet_sections (title, instructions, position, translations)
- ├── worksheet_exercises (exercise_id → exercises, section_id?, position, points,
+ ├── worksheet_exercises (exercise_id → exercises, exercise_version_id → exercise_versions
+ │                        (ADR 0044 : la version que la fiche utilise), section_id?, position, points,
  │                        custom_instructions, variation_index?, variant_mode/config (plus lus),
  │                        correction_visible, is_essential, translations)
  ├── worksheet_templates (template_content Typst, placeholders, style_id, form)   ← via le style
@@ -235,7 +236,11 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
 (`.../correction`, `CorrectionManager.svelte`), aperçu, lot ZIP et correction générale
 (`PdfPreview.svelte`), cahier de texte public.
 
-- **Version** d'un exercice = son **niveau de guidage**, choisi à l'affectation
+- **Contenu** de chaque exercice : celui de la **version** que la ligne de fiche désigne
+  (`worksheet_exercises.exercise_version_id`, ADR 0044), jamais la dernière ; lu par la jointure
+  `WORKSHEET_LINE_VERSION` + `withLineVersion` (`src/lib/server/exercise-versions.ts`), y compris
+  par les deux liens de partage (cahier de texte, cours).
+- Le **niveau de guidage** d'un exercice, choisi à l'affectation
   (`worksheet_assignments.guidance_level`, guidé par défaut), **jamais tiré** :
   `guidanceVariationIndex` (`src/lib/worksheets/student-copy.ts`) prend le niveau demandé, sinon le
   plus proche du côté le plus guidé. `worksheet_exercises.variation_index`, s'il est posé, prime.
