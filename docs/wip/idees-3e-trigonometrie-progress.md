@@ -2,19 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR de rangement ouverte (branche `feat/idees-3e-trigonometrie-rangement`)._
+_Mis à jour le 2026-11-25, après #3141 (mergée, `db:migrate` joué)._
 
-- **État** : migration de contenu des publiés (#3139) en prod (`db:migrate --include-all` joué
-  par David). N1-N4 créés en brouillon en prod par David ; ids commités. Migration de rangement
-  `20261125113650_…_rangement_tags.sql` générée : test vert, rouge sans elle (4 échecs).
-  · **Prochaine action** : merger la PR de rangement (CI verte), `db:migrate` après
-  `migration list --linked`, puis relecture de N1-N4 dans `/dev/modeles` (`?point=3-061`) et des
-  variations F1-F2 (série de relecture), lire les verdicts, `publier-lot.ts` en simulation.
-  · **En attente de David** : rien. · **Pièges en cours** : `e` interdit comme variable (Euler) ;
-  réponses de specs ≥ 4 chiffres avec `\,` ; `create-questions` vise la PROD sans
+- **État** : tout est en prod. Contenu des publiés (#3139) et rangement de N1-N4 (#3141) migrés ;
+  rangement vérifié en prod (N1 « calcul de longueurs », N3 « calcul d'angles », N2 et N4 sur la
+  notion, tous 3-061, brouillons). · **Prochaine action** : David relit dans `/dev/modeles` :
+  `?point=3-061` (N1-N4 + F1 = 57c73be1, exactement le lot) et `?point=3-023` (F2 = dbd5debf,
+  seul modèle du point) — pas de série, ces deux filtres couvrent le lot ; puis lire les verdicts
+  (`question_template_reviews`), corriger, `publier-lot.ts --dir` en simulation, David `--publier`.
+  · **En attente de David** : la relecture. · **Pièges en cours** : `e` interdit comme variable
+  (Euler) ; réponses de specs ≥ 4 chiffres avec `\,` ; `create-questions` vise la PROD sans
   `set -a; . ./.env.local; set +a` ; une case choix ne porte pas d'erreurs prévues.
-  · **Worktree / branche** : `ubumaths-wt-idees-3e-trigonometrie-rangement` /
-  `feat/idees-3e-trigonometrie-rangement`.
+  · **Worktree / branche** : aucun (retiré après #3141) ; suite depuis `main`.
 
 ## Phase 0 (2026-11-25)
 
@@ -154,6 +153,7 @@ d'angles », N2 et N4 sur la notion). Précisions annoncées dans le résumé et
   (N1 sous « calcul de longueurs », N3 sous « calcul d'angles », N2 et N4 sur la notion, tous
   3-061, Q3) + fixture. `migrations-rangement-tags` vert ; migration vidée : 4 échecs, tous sur
   elle ; fichier restauré depuis une copie. Accès : aucune policy ni grant ne change.
+- #3141 mergée ; `db:migrate` (seule migration en attente) ; rangement et tags lus en prod : conformes.
 
 ### 2026-11-25 — N1-N4 écrits, rendu vérifié, migration de contenu
 
