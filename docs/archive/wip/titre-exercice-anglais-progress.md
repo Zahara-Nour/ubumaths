@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3129._
+_Mis à jour le 2026-11-25 : chantier clos, livré en v0.108.0, journal archivé._
 
-- **État** : mergé (#3129), migration jouée en prod (colonne `exercises.translations` vérifiée), pas encore en prod côté code · **Prochaine action** : après le `deploy:prod`, archiver ce journal (doc système déjà à jour : `fiches-et-pdf.md`, `exercices.md`, `base-de-donnees.md`) · **En attente de David** : `deploy:prod` (livre #3124 et #3129, avec #3104 de `notions-en-anglais`) · **Pièges en cours** : l'export / import d'un exercice ne porte pas le titre anglais (suivi possible) · **Worktree / branche** : aucun
+- **État** : clos. #3129 mergée, migration jouée, livrée en prod (v0.108.0, avec #3124 et #3104) · **Suivi possible** : export / import d'un exercice sans titre anglais ; écrans du prof en français
 
 ## Origine
 
