@@ -135,7 +135,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session              |
 | ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ---------------------------- |
 | Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`      |
-| Puissances                               | 3C1       | 5         | libre                                                      |                              |
+| Puissances                               | 3C1       | 5         | prise (2026-11-25)                                         | `idees-3e-puissances`        |
 | Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral`   |
 | Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
 | Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
