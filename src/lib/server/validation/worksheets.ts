@@ -813,7 +813,9 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 			generic_functions: z.array(z.string()).nullable().optional(),
 			// Thème : décide du sens de `AB` dans le PDF (Q-J). Même piège que
 			// ci-dessus : sans la clé, le schéma la retire en silence.
-			topic: z.string().nullable().optional()
+			topic: z.string().nullable().optional(),
+			// Titre traduit : sans la clé, le PDF anglais imprime le titre français
+			translations: storedTranslationsSchema
 		})
 		.nullable()
 		.optional()

@@ -70,6 +70,7 @@ function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow {
 		variables: [],
 		resources: null,
 		generic_functions: null,
+		translations: null,
 		shared: null,
 		variations: VARIATIONS,
 		...overrides

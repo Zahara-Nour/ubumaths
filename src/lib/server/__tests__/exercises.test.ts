@@ -81,6 +81,7 @@ describe('getExercises', () => {
 				resources: {},
 				slug: null,
 				generic_functions: null,
+				translations: null,
 				shared: null,
 				variations: [
 					{
@@ -186,6 +187,7 @@ describe('getExercise', () => {
 			resources: {},
 			slug: null,
 			generic_functions: null,
+			translations: null,
 			shared: null,
 			variations: [
 				{
@@ -256,6 +258,7 @@ describe('createExercise', () => {
 			resources: {},
 			slug: null,
 			generic_functions: null,
+			translations: null,
 			shared: null,
 			variations: [
 				{
@@ -309,6 +312,7 @@ describe('updateExercise', () => {
 			resources: {},
 			slug: null,
 			generic_functions: null,
+			translations: null,
 			shared: null,
 			variations: [
 				{
@@ -356,6 +360,7 @@ describe('updateExercise', () => {
 			resources: {},
 			slug: null,
 			generic_functions: null,
+			translations: null,
 			shared: null,
 			variations: [
 				{
@@ -397,6 +402,7 @@ describe('deleteExercise', () => {
 			resources: {},
 			slug: null,
 			generic_functions: null,
+			translations: null,
 			shared: null,
 			variations: [
 				{
@@ -460,6 +466,7 @@ describe('deleteExercise', () => {
 			resources: {},
 			slug: null,
 			generic_functions: null,
+			translations: null,
 			shared: null,
 			variations: [
 				{
