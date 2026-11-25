@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.109.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.108.0...v0.109.0) (2026-11-25)
+
+### ✨ Features
+
+- **auth:** page du parent d'une invitation de cours particulier (PR 3) ([6baea01](https://github.com/Zahara-Nour/ubumaths/commit/6baea012e904719435775560dbd20d35043cf76a))
+- **nuit:** tâche de nuit unique (preuves des écarts, test:verifs:tout, gardes de doc) ([cd38eeb](https://github.com/Zahara-Nour/ubumaths/commit/cd38eebd1911d20feeb9c6518763d63c4cd958dc))
+- **questions:** idees-tle-integration, 11 variations de 7 modèles publiés ([04bf7fb](https://github.com/Zahara-Nour/ubumaths/commit/04bf7fb2183aed4a4960c3f555f436b931f0508d))
+- **questions:** idees-tle-integration, migrations de rangement et de contenu ([d8d7349](https://github.com/Zahara-Nour/ubumaths/commit/d8d7349f259776deef4c898b2bf090ac86c6ded4))
+- **questions:** idees-tle-integration, modèles neufs F1 et F7 ([d2077d5](https://github.com/Zahara-Nour/ubumaths/commit/d2077d5dd3fe2038c7632c0afc20b6b6f0d148b2))
+
+### 🐛 Bug Fixes
+
+- **auth:** espace insecable en entite sur la page du parent ([8dfdc09](https://github.com/Zahara-Nour/ubumaths/commit/8dfdc093cc845009010ac55496e23027bbde23be))
+- **auth:** libelles des cases et deux-points insecable sur la page du parent ([98cc195](https://github.com/Zahara-Nour/ubumaths/commit/98cc195feb4a831d926273547f41e4fd6f0e5eb3))
+- **auth:** revues de la PR 3, retour arriere robuste et jeton masque dans le contexte ([5ce906a](https://github.com/Zahara-Nour/ubumaths/commit/5ce906af1f47445c5efe7f66a010112c3dfabdbd))
+- **ecarts:** message de forme sans unité, arcs fins de la bissectrice, légende (E53, E55, E61) ([cf3bdc4](https://github.com/Zahara-Nour/ubumaths/commit/cf3bdc4689aa7c7bf7972049c6d64d1a17fd34bb))
+- **nuit:** serveur de dev lancé et arrêté par la tâche, corrections de la revue ([8a9892d](https://github.com/Zahara-Nour/ubumaths/commit/8a9892d4a832e26ea3ee259a456baa291e7758cc))
+
+### 📚 Documentation
+
+- **archive:** titre-exercice-anglais livre en v0.108.0, journal archive ([94ecf8c](https://github.com/Zahara-Nour/ubumaths/commit/94ecf8c61240c99df4636e3315ecb84fbca2fea5))
+- **ecarts:** plantage de la correction case par case sur une case à arrondi ([5c8b945](https://github.com/Zahara-Nour/ubumaths/commit/5c8b945ba8da7ff962182380a7c9cfdb468d40f4))
+- **ecarts:** trois défauts de .résoudre relevés pendant E54 ([5e0334f](https://github.com/Zahara-Nour/ubumaths/commit/5e0334f1aaa1f34f11f891e37b96ea528ba947fb))
+- **systeme:** page du parent d'une invitation de cours particulier ([9d480e4](https://github.com/Zahara-Nour/ubumaths/commit/9d480e404b9c06ecf8e8d21ccc4e0b6afe9c6c4c))
+- **systeme:** service role de la page du parent d'une invitation ([45fcc15](https://github.com/Zahara-Nour/ubumaths/commit/45fcc158ac4f34c667dc7ebc3d4f33c9a3827b34))
+- **wip:** ecarts-verifs, ordre libre et barème tranchés après [#3130](https://github.com/Zahara-Nour/ubumaths/issues/3130) ([7ffab00](https://github.com/Zahara-Nour/ubumaths/commit/7ffab00f2abeed636adc753b1a8788c4ebe4c7b0))
+- **wip:** ecarts-verifs, reprendre ici après [#3130](https://github.com/Zahara-Nour/ubumaths/issues/3130), E53 E55 E61 barrés ([b36f35f](https://github.com/Zahara-Nour/ubumaths/commit/b36f35fc918b8503bf8c232231467d233429252e))
+- **wip:** idees-1re-trigo, 5 modeles publies reserves ([9178f32](https://github.com/Zahara-Nour/ubumaths/commit/9178f3229166031f29688d82951be29816f8ab9c))
+- **wip:** idees-1re-trigo, lot ecrit, brouillons a creer ([ae6409b](https://github.com/Zahara-Nour/ubumaths/commit/ae6409baa651e6a6d4379139b8be51d1c231ac8b))
+- **wip:** idees-6e-fractions, modèles validés par David, publication à lancer ([3795355](https://github.com/Zahara-Nour/ubumaths/commit/37953556d74d6451e4e06eace116583682823dad))
+- **wip:** idees-tle-integration, brouillons en prod et migrations ([aca2909](https://github.com/Zahara-Nour/ubumaths/commit/aca2909820f9cc3cc108786228e6529b37d8735a))
+- **wip:** idees-tle-integration, compte des specs ([a9fa76f](https://github.com/Zahara-Nour/ubumaths/commit/a9fa76ff413fede80012e0dbca8e86db431a6ef4))
+- **wip:** idees-tle-integration, lien de la page à cocher ([30883f9](https://github.com/Zahara-Nour/ubumaths/commit/30883f9e506abade0d7c080b44a6938695275657))
+- **wip:** idees-tle-integration, relevé et fiches de phase 0 ([005feb1](https://github.com/Zahara-Nour/ubumaths/commit/005feb169ed34462087e8ddcad9cf6821ac55bf3))
+- **wip:** idees-tle-integration, reprendre ici après [#3134](https://github.com/Zahara-Nour/ubumaths/issues/3134) ([d6be3bc](https://github.com/Zahara-Nour/ubumaths/commit/d6be3bcb01dbe3ab9215a445f4b469856524071c))
+- **wip:** idees-tle-integration, réservations levées (contenu migré en prod) ([3c904d6](https://github.com/Zahara-Nour/ubumaths/commit/3c904d6c107f9810ea88f363c024ac41fc0c00c6))
+- **wip:** idees-tle-integration, rubriques en prod ([d18e5d5](https://github.com/Zahara-Nour/ubumaths/commit/d18e5d5194c591ef6b0ae97e8f51992ea973c365))
+- **wip:** invitation-cours-particulier, phase 0 du nettoyage des orphelins ([22349b1](https://github.com/Zahara-Nour/ubumaths/commit/22349b1f18edacd45583cf913081c679f26682dc))
+- **wip:** invitation-cours-particulier, reprendre ici après [#3133](https://github.com/Zahara-Nour/ubumaths/issues/3133) ([20c9b22](https://github.com/Zahara-Nour/ubumaths/commit/20c9b22fc5fd373d7d0d1fb03a98a5ba6aabaac5))
+- **wip:** verifs-auto, défauts de la tâche de nuit à corriger ([0b61fa8](https://github.com/Zahara-Nour/ubumaths/commit/0b61fa85316f5e8765ebb5113c275a1629176932))
+- **wip:** verifs-auto, rappel hebdomadaire d'une panne qui dure tranché ([b707acb](https://github.com/Zahara-Nour/ubumaths/commit/b707acbb24fe93802ffcbab0b94314c1778adc62))
+- **wip:** verifs-auto, reprendre ici après [#3131](https://github.com/Zahara-Nour/ubumaths/issues/3131) ([65db78d](https://github.com/Zahara-Nour/ubumaths/commit/65db78d765d6a7d60eff85a08858013ba15f077e))
+- **wip:** verifs-auto, tâche de nuit ([0c2981b](https://github.com/Zahara-Nour/ubumaths/commit/0c2981b0998ab7aac8ca50ab1433bf21b07301ee))
+
 ## [0.108.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.107.0...v0.108.0) (2026-11-25)
 
 ### ✨ Features
