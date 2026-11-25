@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 1 en cours (branche poussée, aucune PR ouverte)._
+_Mis à jour le 2026-11-25, PR 1 prête (PR ouverte, merge en attente de David)._
 
-- **État** : migration + code + doc poussés sur `feat/versions-exercices` (aucune PR) ; 6349 tests unitaires verts ; 21 tests d'intégration adaptés + `versions-exercices*.test.ts` verts (29). Bug d'avant le chantier corrigé : l'import créait l'exercice avec `statement_md`/`solution_md` → refus PostgREST. Prod mesurée : 0 exercice sans auteur (la base de TEST en a 119, nettoyages en `replica`).
-- **Prochaine action** : suite d'intégration complète (`pnpm test:integration`, ~14 min) ; `pnpm voir` (liste d'exercices, page d'exercice, fiche élève, PDF) ; revue `code-reviewer` (opus) + `security-auditor` ; ouvrir la PR.
-- **En attente de David** : rien. ⚠️ Au merge : **pas de `db:migrate` seul** — le dire à David, `db:migrate` puis `deploy:prod` coup sur coup (§ Entre-deux, B).
-- **Pièges en cours** : `as unknown as` dans les routes cache au typecheck un contenu absent → seuls les tests le voient ; test de reprise : verrou `profiles`/`exercises` (suites en parallèle) ; inventaire de phase 0 incomplet : liens de partage d'une fiche (2 RPC) et tuteur (fiche, pas hors fiche) ajoutés.
+- **État** : PR 1 complète. Intégration complète verte (8010 tests ; seul rouge = test F1 avant son correctif, vert ensuite) ; `pnpm voir` + appels réels vérifiés (liste, page d'exercice, fiche élève 18 énoncés, aperçu prof, source Typst du corrigé) ; revues code (opus) + sécurité : rien de bloquant, corrigés F1/F2/règle 6, reste → § Revues de la PR 1.
+- **Prochaine action** : après le go de David, merger, puis `db:migrate` + `deploy:prod` coup sur coup (sur sa demande).
+- **En attente de David** : QUAND merger. Une fois sur `main`, le `db:migrate` de n'importe quelle session pousse notre migration sans le code (ajout à une fiche refusé, exercice créé sans v1) → merger juste avant que David enchaîne `db:migrate` + `deploy:prod`.
+- **Pièges en cours** : base LOCALE de dev jouée avec l'ancienne policy UPDATE (avant F1 ; `db:a-jour` ne rejoue pas un fichier déjà passé) — sans effet sur les tests ; `as unknown as` dans les routes cache au typecheck un contenu absent → seuls les tests le voient.
 - **Worktree / branche** : `../ubumaths-wt-versions-exercices`, `feat/versions-exercices`.
 
 ## Décisions (2026-11-25)
