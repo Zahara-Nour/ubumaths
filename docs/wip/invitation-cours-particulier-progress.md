@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, corrections des revues commitées (PR 2 pas encore poussée)._
+_Mis à jour le 2026-11-25, après #3127._
 
-- **État** : PR 2 (admin) commitée sur `feat/invitation-cours-particulier-admin`, NON poussée, 4 commits : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien), corrections des deux revues validées par David (décision 9) ; tests serveur verts (1 715), intégration 17/17, `lint:fast` et `docs:check-a-jour` verts, garde des actions testée · **Prochaine action** : `pnpm types:cliquet` (seul contrôle restant : intégration 17/17 verte après les corrections, `check:incremental` 0 erreur) ; puis `git merge origin/main` (branche en retard), push, PR, `pnpm pr:merger` ; puis PR 3 · **En attente de David** : rien · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à la page de la PR 3) ; PR 3 : phrase de confidentialité (décision 9), `Referrer-Policy: no-referrer` sur la page du lien ; base locale : réglage `is_private_lessons` posé à la main sur Akadada · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
+- **État** : PR 1 (migration) et PR 2 (admin, #3127 : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours) mergées ; rien en prod pour ce chantier · **Prochaine action** : PR 3, la page du parent `/auth/register/invitation/[token]` (création du compte, de la classe, adhésion, consentement, courriel final) ; nouveau worktree `../ubumaths-wt-invitation-cours-particulier-parent`, branche `feat/invitation-cours-particulier-parent` ; tout ce qu'elle doit faire est listé dans « Dette pour les PR 2 et 3 » (§ PR 3), N3 de l'audit et décision 9 ; revue : code-reviewer + security-auditor · **En attente de David** : rien · **Pièges en cours** : ⛔ ne pas déployer avant la PR 3 (le lien du courriel mène à sa page) ; `Referrer-Policy: no-referrer` et aucune ressource tierce sur la page du lien ; phrase de conservation des invitations sur la page de confidentialité ; base locale : réglage `is_private_lessons` posé à la main sur Akadada · **Worktree / branche** : aucun pour l'instant
 
 ## But
 
