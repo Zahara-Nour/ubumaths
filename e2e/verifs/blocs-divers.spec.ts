@@ -715,15 +715,21 @@ async function boxSpot(svg: Locator, value: number, band = 0, offsetPx = 0): Pro
 	await scrollTo(svg);
 	const spot = await svg.evaluate(
 		(root, [target, rank, offset]) => {
-			const tick = [...root.querySelectorAll('.stat-graduation')].find(
-				(t) => (t.textContent ?? '').trim() === String(target)
-			);
+			// Cadre étroit : une graduation sur deux seulement porte son étiquette (E46) ;
+			// l'abscisse se lit alors entre deux étiquettes (graduations régulières)
+			const labels = [...root.querySelectorAll('.stat-graduation')]
+				.map((t) => {
+					const box = t.getBoundingClientRect();
+					return { value: Number((t.textContent ?? '').trim()), x: box.left + box.width / 2 };
+				})
+				.filter((t) => Number.isFinite(t.value));
 			const lines = root.querySelectorAll('line.boite-attente');
 			const line = lines[rank];
-			if (!tick || !line) return null;
-			const t = tick.getBoundingClientRect();
+			if (labels.length < 2 || !line) return null;
+			const [a, b] = labels;
+			const x = a.x + ((Number(target) - a.value) / (b.value - a.value)) * (b.x - a.x);
 			const l = line.getBoundingClientRect();
-			return { x: t.left + t.width / 2 + Number(offset), y: l.top + l.height / 2 };
+			return { x: x + Number(offset), y: l.top + l.height / 2 };
 		},
 		[value, band, offsetPx] as const
 	);
@@ -904,14 +910,53 @@ test('#2151 — le plus petit texte du dessin d’une boîte à lire fait 12 px 
 	page
 }) => {
 	await openBloc(page, BOITE_PATH);
-	test.fail(
-		true,
-		'écart E46 : sur la page d’aide, le dessin garde 300 px de large (min-width) : le texte de 10-11 px y tombe à ≈ 7-8 px à l’écran, sur ordinateur comme sur téléphone'
-	);
 	await expectReadableDrawing(
 		rendered(page, 'Valeurs écrites').locator('svg').first(),
 		'boîte à lire'
 	);
+});
+
+// Écart E46 : le dessin est recalculé à la largeur disponible, jamais rétréci
+test('E46 — boîte à construire : le plus petit texte du dessin fait 12 px à l’écran, aucun texte n’en chevauche un autre', async ({
+	page
+}) => {
+	await openBloc(page, BOITE_PATH);
+	const svg = rendered(page, 'Construire la boîte (question)').locator('svg.boite-dessin');
+	await expect(svg).toBeVisible();
+	await expectReadableDrawing(svg, 'boîte à construire');
+	expect(await overlappingTexts(svg), 'textes qui se chevauchent').toEqual([]);
+	await expectNoHorizontalOverflow(page, 'boîte à construire');
+});
+
+test('E46 — barres à construire : le plus petit texte du dessin fait 12 px à l’écran, aucun texte n’en chevauche un autre', async ({
+	page
+}) => {
+	await openBloc(page, STATS_PATH);
+	for (const title of [
+		'Construire des barres (question)',
+		'Choisir l’échelle puis construire (question)'
+	]) {
+		const svg = rendered(page, title).locator('svg.barres-dessin');
+		await expect(svg, title).toBeVisible();
+		await expectReadableDrawing(svg, title);
+		expect(await overlappingTexts(svg), `${title} : textes qui se chevauchent`).toEqual([]);
+	}
+	await expectNoHorizontalOverflow(page, 'barres à construire');
+});
+
+test('E46 — barres à lire (diagramme, loi binomiale) : texte de 12 px à l’écran, jamais rétréci ; trop de colonnes pour la place : le dessin défile dans son cadre', async ({
+	page
+}) => {
+	await openBloc(page, STATS_PATH);
+	for (const title of ['Diagramme en barres', 'Loi binomiale']) {
+		const svg = rendered(page, title).locator('svg.stat-barres').first();
+		await expect(svg, title).toBeVisible();
+		await expectReadableDrawing(svg, title);
+		// À l'échelle 1 : le dessin n'est pas rétréci par le navigateur
+		const scale = await svg.evaluate((el) => (el as SVGSVGElement).getScreenCTM()?.a ?? 0);
+		expect(scale, `${title} : échelle du dessin`).toBeGreaterThanOrEqual(0.999);
+	}
+	await expectNoHorizontalOverflow(page, 'barres à lire');
 });
 
 test('#2151 — sous 300 px la figure défile dans son cadre sans casser la page', async ({

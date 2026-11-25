@@ -423,6 +423,112 @@ describe('Chat System Triggers', () => {
 		});
 	});
 
+	// ⚠️ Écart T22 : le filtre ne connaissait que quatre gros mots, cherchés comme
+	// un morceau de texte. La liste (relue par David le 2026-11-25) couvre insultes,
+	// propos discriminatoires et menaces ; le mot est cherché en entier, sans tenir
+	// compte des majuscules, des accents ni du pluriel.
+	describe('check_profanity_simple : liste de mots (écart T22)', () => {
+		async function isFlagged(text: string): Promise<boolean> {
+			const { data, error } = await serviceClient.rpc('check_profanity_simple', { p_text: text });
+			if (error) throw new Error(`check_profanity_simple a échoué : ${error.message}`);
+			return data === true;
+		}
+
+		const MARQUES = [
+			'Oh merde, je me suis trompé',
+			'espèce de connasse',
+			'quel ABRUTI',
+			'ENCULÉ va',
+			'encule',
+			'bande de connards',
+			't’es trop con',
+			"t'es mort demain",
+			'tes mort',
+			'je vais te tuer',
+			'Je vais   te tuer !',
+			'suicide-toi',
+			'sale arabe',
+			'gros pédé',
+			'envoie un nude',
+			'personne ne t’aime',
+			'nique ta mère',
+			'fdp',
+			'ta gueule',
+			'con',
+			// accent saisi en deux caractères (lettre + accent combinant)
+			'encule\u0301 va',
+			'nique ta me\u0300re',
+			// caractère invisible glissé dans le mot
+			'me\u200Brde',
+			'pu\u00ADtain',
+			// lettres de pleine chasse
+			'\uFF4D\uFF45\uFF52\uFF44\uFF45',
+			// marque de sens d'écriture, sélecteur de variante, accent de symbole
+			'm\u202Eerde',
+			'co\uFE0Fn',
+			'co\u20DDn'
+		];
+
+		const NON_MARQUES = [
+			'Je suis content de ma note',
+			'la conjugaison du verbe',
+			'un calcul difficile',
+			'je suis nul en fractions',
+			'je crève de faim',
+			'tu vas voir, c’est facile',
+			'on se voit à la sortie',
+			'la pédale du vélo',
+			'un sandwich au thon',
+			'le singe du zoo',
+			'une dispute entre amis',
+			'une salopette bleue',
+			'il a compté les points',
+			// « tg » : ancienne notation de la tangente, retirée de la liste
+			'tg x = 3',
+			// les mêmes déguisements dans un mot innocent ne le marquent pas
+			'je suis conte\u0301nt',
+			'co\u200Bntent de toi',
+			'\uFF43\uFF4F\uFF4E\uFF54\uFF45\uFF4E\uFF54',
+			''
+		];
+
+		it.each(MARQUES)('marque « %s »', async (text) => {
+			expect(await isFlagged(text)).toBe(true);
+		});
+
+		it.each(NON_MARQUES)('ne marque pas « %s »', async (text) => {
+			expect(await isFlagged(text)).toBe(false);
+		});
+
+		it('le message envoyé avec une menace porte la marque', async () => {
+			const teacher = await TestData.profile().withRole('teacher').create();
+			const classData = await TestData.class(teacher.id).create();
+			await new Promise((resolve) => setTimeout(resolve, 150));
+			const { data: conversation } = await serviceClient
+				.from('conversations')
+				.select('id')
+				.eq('class_id', classData.id)
+				.single();
+
+			const { data: message } = await serviceClient
+				.from('messages')
+				.insert({
+					conversation_id: conversation!.id,
+					sender_id: teacher.id,
+					content: {
+						type: 'doc',
+						content: [
+							{ type: 'paragraph', content: [{ type: 'text', text: 'Je vais te frapper.' }] }
+						]
+					}
+				})
+				.select()
+				.single();
+
+			expect(message!.is_flagged).toBe(true);
+		});
+	});
+
 	describe('trigger_update_conversation_last_message', () => {
 		it('should update conversation with last message data', async () => {
 			// Arrange

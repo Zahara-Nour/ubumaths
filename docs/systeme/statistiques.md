@@ -216,6 +216,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `src/lib/ubumark/utils/stat-chart-scene.ts` (presque tout : lois, seuils, simulations,
   classes), `src/lib/ubumark/utils/scatter-lines.ts` (lignes du ` ```nuage `),
   `src/lib/ubumark/utils/comparison-scene.ts`, `src/lib/ubumark/types/stat-chart.ts`.
+  À l'écran, barres et boîtes à moustaches sont redessinées à la largeur disponible
+  (`src/lib/ubumark/utils/stat-chart-fit.ts`, option `plotWidth` de la scène).
   Détails : [ubumark.md](ubumark.md).
 - **Questions** : aucun import direct (`git grep` sur `src/lib/questions`, `src/lib/exercises`).
   Une question qui affiche un bloc statistique passe par ubumark ; un diagramme en barres à

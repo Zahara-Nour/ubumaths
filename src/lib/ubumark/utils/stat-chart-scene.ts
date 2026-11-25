@@ -593,6 +593,15 @@ export type StatChartScene =
 export interface StatChartSceneOptions {
 	/** Langue du document : séparateur décimal */
 	locale?: ContentLocale;
+	/**
+	 * Écran étroit (barres, boîtes à moustaches) : largeur du cadre réellement
+	 * dessiné, en px, à la place de celle de `taille:`. Les noms inclinés, les
+	 * graduations automatiques et les rangées de valeurs sont décidés pour elle
+	 * (écart E46 : le dessin n'est plus rétréci, son texte garde sa taille).
+	 */
+	plotWidth?: number;
+	/** Largeur d'un caractère d'un nom de catégorie à l'écran, en px (barres) */
+	labelCharPx?: number;
 }
 
 // ============================================================================
@@ -706,9 +715,15 @@ const INDICATOR_ROWS: Record<StatChartIndicator, IndicatorRowId[]> = {
 	'classe-mediane': []
 };
 
-function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
-	const width = COURBE_PIXEL_WIDTH[spec.size];
-	const height = width * STAT_CHART_ASPECT_RATIO;
+function buildBarScene(
+	spec: StatChartSpec,
+	locale: ContentLocale,
+	options: StatChartSceneOptions = {}
+): BarScene {
+	// La hauteur reste celle de `taille:` : seul le cadre se resserre (`plotWidth`)
+	const height = COURBE_PIXEL_WIDTH[spec.size] * STAT_CHART_ASPECT_RATIO;
+	const width = options.plotWidth ?? COURBE_PIXEL_WIDTH[spec.size];
+	const labelCharPx = options.labelCharPx ?? STAT_CHART_CHAR_PX;
 	const two = spec.twoSeries;
 	const count = spec.data.length;
 
@@ -753,7 +768,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 
 	const bandPx = width / count;
 	const longest = Math.max(...spec.data.map((d) => d.label.length));
-	const rotateLabels = count > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
+	const rotateLabels = count > FLAT_LABELS_MAX || longest * labelCharPx > bandPx;
 
 	// Barre à construire : son effectif n'est jamais dit avant la correction
 	const listed = spec.data.map((d, i) =>
@@ -3501,7 +3516,7 @@ export function buildStatChartScene(
 	options: StatChartSceneOptions = {}
 ): StatChartScene {
 	const locale = options.locale ?? 'fr';
-	const scene = buildKindScene(spec, locale);
+	const scene = buildKindScene(spec, locale, options);
 	// `série: seule` : l'énoncé — la série, ni figure ni indicateurs
 	const seriesOnly = spec.series?.mode === 'seule';
 	return {
@@ -3512,10 +3527,14 @@ export function buildStatChartScene(
 	};
 }
 
-function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartScene {
+function buildKindScene(
+	spec: StatChartSpec,
+	locale: ContentLocale,
+	options: StatChartSceneOptions
+): StatChartScene {
 	switch (spec.kind) {
 		case 'barres':
-			return buildBarScene(spec, locale);
+			return buildBarScene(spec, locale, options);
 		case 'circulaire':
 			return buildPieScene(spec, locale);
 		case 'histogramme':
@@ -3537,6 +3556,6 @@ function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartSc
 		case 'nuage':
 			return buildScatterScene(spec, locale);
 		case 'boite-a-moustaches':
-			return buildBoxPlotScene(spec, locale);
+			return buildBoxPlotScene(spec, locale, options.plotWidth);
 	}
 }

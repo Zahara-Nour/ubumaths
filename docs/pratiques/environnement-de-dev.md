@@ -302,6 +302,9 @@ les noms du tailnet : `pnpm dev` se lance sans variable, un seul port se publie.
 **Voir une page sans écran** : [voir-une-page.md](voir-une-page.md) (`pnpm voir <page>` : image au
 format iPhone, erreurs de console, requêtes en échec, dans `.captures/voir/`).
 
+**Prévenir David qu'une session l'attend** : [prevenir-david.md](prevenir-david.md) (`pnpm prevenir lien | question | geste "…"`,
+notification sur l'iPhone ; seulement quand la session s'arrête pour un geste de lui).
+
 **Retour envoyé depuis la page** : [signaler-depuis-la-page.md](signaler-depuis-la-page.md) (bouton
 « Signaler » du serveur de dev, lu par `pnpm retours` : note, page, écran, compte, erreurs de console).
 

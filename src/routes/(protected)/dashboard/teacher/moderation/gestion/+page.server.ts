@@ -5,6 +5,9 @@ import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/moderation/gestion/+page.server');
 
+/** Nombre de messages marqués affichés, les plus récents d'abord. */
+const FLAGGED_MESSAGES_LIMIT = 100;
+
 /**
  * Load moderation data for teachers
  *
@@ -12,6 +15,7 @@ const logger = createServerLogger('(protected)/dashboard/teacher/moderation/gest
  * - Active restrictions created by this teacher
  * - Moderation logs for this teacher's actions
  * - Message reports for moderation
+ * - Messages flagged automatically, in the conversations this teacher can open
  * - Students from teacher's classes (for new restriction dialog)
  *
  * Only accessible by teachers and admins
@@ -30,50 +34,78 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch all data in parallel
-	const [restrictionsResult, logsResult, reportsResult, pendingCountResult, classesWithStudents] =
-		await Promise.all([
-			// Active restrictions for this teacher's students
-			supabase
-				.from('user_restrictions')
-				.select(
-					`
+	const [
+		restrictionsResult,
+		logsResult,
+		reportsResult,
+		pendingCountResult,
+		flaggedResult,
+		classesWithStudents
+	] = await Promise.all([
+		// Active restrictions for this teacher's students
+		supabase
+			.from('user_restrictions')
+			.select(
+				`
 				*,
 				user:profiles!user_restrictions_user_id_fkey(id, firstname, lastname),
 				restricted_by_profile:profiles!user_restrictions_restricted_by_fkey(firstname, lastname),
 				conversation:conversations(name)
 			`
-				)
-				.eq('restricted_by', user.id)
-				.or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
-				.order('created_at', { ascending: false }),
+			)
+			.eq('restricted_by', user.id)
+			.or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+			.order('created_at', { ascending: false }),
 
-			// Moderation logs for this teacher
-			supabase
-				.from('moderation_logs')
-				.select(
-					`
+		// Moderation logs for this teacher
+		supabase
+			.from('moderation_logs')
+			.select(
+				`
 				*,
 				moderator:profiles!moderation_logs_moderator_id_fkey(firstname, lastname)
 			`
-				)
-				.eq('moderator_id', user.id)
-				.order('created_at', { ascending: false })
-				.limit(100),
+			)
+			.eq('moderator_id', user.id)
+			.order('created_at', { ascending: false })
+			.limit(100),
 
-			// Message reports via RPC
-			supabase.rpc('get_reports_for_moderation', {
-				// Paramètre `DEFAULT NULL` : l'omettre demande bien tous les signalements.
-				p_status: undefined,
-				p_limit: 100,
-				p_offset: 0
-			}),
+		// Message reports via RPC
+		supabase.rpc('get_reports_for_moderation', {
+			// Paramètre `DEFAULT NULL` : l'omettre demande bien tous les signalements.
+			p_status: undefined,
+			p_limit: 100,
+			p_offset: 0
+		}),
 
-			// Pending reports count via RPC
-			supabase.rpc('get_pending_reports_count'),
+		// Pending reports count via RPC
+		supabase.rpc('get_pending_reports_count'),
 
-			// Students from teacher's classes (for new restriction dialog)
-			getTeacherClassesWithStudents(user.id, supabase)
-		]);
+		// ⚠️ Écart T21 : messages marqués automatiquement (`is_flagged`). Lus avec le
+		// client du prof, sans fonction privilégiée : la RLS de `messages` borne la
+		// liste aux conversations qu'il peut déjà ouvrir, et masque les messages
+		// supprimés. Jointures non `!inner` : un auteur ou une conversation masqués
+		// laissent la ligne, sans nom.
+		supabase
+			.from('messages')
+			.select(
+				`
+				id,
+				conversation_id,
+				plain_text,
+				flag_reason,
+				created_at,
+				sender:profiles!messages_sender_id_fkey(firstname, lastname),
+				conversation:conversations!messages_conversation_id_fkey(name, is_group)
+			`
+			)
+			.eq('is_flagged', true)
+			.order('created_at', { ascending: false })
+			.limit(FLAGGED_MESSAGES_LIMIT),
+
+		// Students from teacher's classes (for new restriction dialog)
+		getTeacherClassesWithStudents(user.id, supabase)
+	]);
 
 	if (restrictionsResult.error) {
 		logger.error('Failed to fetch restrictions:', restrictionsResult.error);
@@ -95,6 +127,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Compteur illisible : `null` (inconnu), jamais 0.
 	if (pendingCountResult.error) {
 		logger.error('Failed to fetch pending count:', pendingCountResult.error);
+	}
+
+	// Même règle que les signalements (T20) : un échec de lecture se dit, il ne
+	// ressemble pas à « aucun message marqué ».
+	if (flaggedResult.error) {
+		logger.error('Failed to fetch flagged messages:', flaggedResult.error);
 	}
 
 	// Flatten and deduplicate students from all classes
@@ -163,6 +201,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 		})),
 		reportsLoadFailed: reportsResult.error !== null,
 		pendingReportsCount: pendingCountResult.error ? null : (pendingCountResult.data ?? 0),
+		flaggedMessages: (flaggedResult.data ?? []).map((m) => ({
+			id: m.id,
+			conversationId: m.conversation_id,
+			text: m.plain_text ?? '',
+			reason: m.flag_reason,
+			createdAt: m.created_at,
+			senderName: m.sender
+				? `${m.sender.firstname ?? ''} ${m.sender.lastname ?? ''}`.trim() || null
+				: null,
+			conversationName: m.conversation?.name ?? null,
+			isGroup: m.conversation?.is_group ?? null
+		})),
+		flaggedMessagesLoadFailed: flaggedResult.error !== null,
+		flaggedMessagesLimit: FLAGGED_MESSAGES_LIMIT,
 		students
 	};
 };

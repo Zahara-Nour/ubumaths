@@ -1,0 +1,369 @@
+{
+	"id": "6818662d-446f-4307-8bab-235f0247545c",
+	"title": "Comparer deux fractions à 1 ou à 1/2",
+	"description": "Comparer deux fractions de part et d'autre de 1 (7/8 et 10/9) ou de 1/2 (5/12 et 6/11)",
+	"grades": ["6"],
+	"level": 6,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:d+1}}..{{eval:2*d-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+			"correction": {
+				"steps": [
+					"**Comparer à 1.** $\\frac{{{a}}}{{{b}}} < 1$ car ${{a}} < {{b}}$, et $\\frac{{{c}}}{{{d}}} > 1$ car ${{c}} > {{d}}$ : donc $\\frac{{{a}}}{{{b}}} < \\frac{{{c}}}{{{d}}}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:floor((b-1)/2)}}"
+				},
+				{
+					"name": "d",
+					"expression": "4..12"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:floor(d/2)+1}}..{{eval:d-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+			"correction": {
+				"steps": [
+					"**Comparer à $\\frac{1}{2}$.** La moitié de ${{b}}$ est ${{eval:b/2;d}}$ : ${{a}}$ est plus petit, donc $\\frac{{{a}}}{{{b}}} < \\frac{1}{2}$. La moitié de ${{d}}$ est ${{eval:d/2;d}}$ : ${{c}}$ est plus grand, donc $\\frac{{{c}}}{{{d}}} > \\frac{1}{2}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "cl",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "ch",
+					"expression": "{{eval:d+1}}..{{eval:2*d-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(1-min(t,1))*cl+(1-abs(t-1))*d+max(t-1,0)*ch"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["a!=d", "gcd(c,d)*abs(t-1)<=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer à 1.** $\\frac{{{a}}}{{{a}}} = 1$ : le numérateur est égal au dénominateur. {{if:t==0|$\\frac{{{c}}}{{{d}}} < 1$ car ${{c}} < {{d}}$.|{{if:t==1|$\\frac{{{c}}}{{{d}}} = 1$ aussi.|$\\frac{{{c}}}{{{d}}} > 1$ car ${{c}} > {{d}}$.}}}}",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			},
+			"hint": "Compare chaque fraction à $1$ : regarde si le numérateur est plus petit, égal ou plus grand que le dénominateur."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "8",
+				"c": "10",
+				"d": "9",
+				"r": "0",
+				"s": "0",
+				"dd": "9",
+				"dn": "10",
+				"gd": "8",
+				"gn": "7"
+			},
+			"description": "7/8 < 10/9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "8",
+				"c": "10",
+				"d": "9",
+				"r": "0",
+				"s": "0",
+				"dd": "9",
+				"dn": "10",
+				"gd": "8",
+				"gn": "7"
+			},
+			"description": "Erreur : 7/8 > 10/9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "12",
+				"c": "6",
+				"d": "11",
+				"r": "2",
+				"s": "1",
+				"dd": "12",
+				"dn": "5",
+				"gd": "11",
+				"gn": "6"
+			},
+			"description": "6/11 > 5/12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "12",
+				"c": "6",
+				"d": "11",
+				"r": "2",
+				"s": "1",
+				"dd": "12",
+				"dn": "5",
+				"gd": "11",
+				"gn": "6"
+			},
+			"description": "Erreur : 6/11 < 5/12 (« 12 > 11 »)",
+			"variationIndex": 1
+		},
+		{
+			"description": "F6 : 5/5 = 7/7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"d": "7",
+				"t": "1",
+				"cl": "3",
+				"ch": "9",
+				"c": "7",
+				"b": "5",
+				"s": "0",
+				"gn": "5",
+				"gd": "5",
+				"dn": "7",
+				"dd": "7",
+				"r": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F6 : 5/5 < 7/7 (7 > 5)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"d": "7",
+				"t": "1",
+				"cl": "3",
+				"ch": "9",
+				"c": "7",
+				"b": "5",
+				"s": "0",
+				"gn": "5",
+				"gd": "5",
+				"dn": "7",
+				"dd": "7",
+				"r": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F6 : 5/5 > 3/7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"d": "7",
+				"t": "0",
+				"cl": "3",
+				"ch": "9",
+				"c": "3",
+				"b": "5",
+				"s": "0",
+				"gn": "5",
+				"gd": "5",
+				"dn": "3",
+				"dd": "7",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F6 : signe à l'envers",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"d": "7",
+				"t": "0",
+				"cl": "3",
+				"ch": "9",
+				"c": "3",
+				"b": "5",
+				"s": "0",
+				"gn": "5",
+				"gd": "5",
+				"dn": "3",
+				"dd": "7",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		}
+	]
+}

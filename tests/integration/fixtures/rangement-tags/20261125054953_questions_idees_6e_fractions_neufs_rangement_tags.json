@@ -1,0 +1,60 @@
+{
+	"migration": "supabase/migrations/20261125054953_questions_idees_6e_fractions_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "3e683a73-0cc0-4bb9-b7ca-79204d492acb",
+			"title": "Lire une fraction par la définition du quotient",
+			"fichier": "n1-lire-fraction-definition-quotient.json",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sousNotion": "définition",
+			"point": "6-126"
+		},
+		{
+			"id": "0a21fe2f-add6-4503-82e4-464732d2f662",
+			"title": "Placer une fraction sur une demi-droite graduée en 1/d",
+			"fichier": "n2-placer-fraction-demi-droite.json",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sousNotion": "droite graduée",
+			"point": "6-128"
+		},
+		{
+			"id": "eae76a51-a027-46c8-825e-bd8d5d897025",
+			"title": "Mettre deux fractions au même dénominateur",
+			"fichier": "n3-meme-denominateur.json",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sousNotion": "égalité de fractions",
+			"point": "6-132"
+		},
+		{
+			"id": "727794bb-224d-4b1c-ad69-f6b417b3b3ea",
+			"title": "Situer une fraction par rapport à 1/2 et à 1",
+			"fichier": "n4-situer-fraction-demi-et-un.json",
+			"branche": "Nombres et calculs",
+			"notion": "Fractions : sens et écritures",
+			"sousNotion": "ordre",
+			"point": "6-133"
+		},
+		{
+			"id": "f2ffb9fd-04b4-484e-afce-e05787e9e054",
+			"title": "Appliquer un pourcentage en le décomposant",
+			"fichier": "n5-appliquer-pourcentage-decompose.json",
+			"branche": "Proportionnalité",
+			"notion": "Pourcentages",
+			"sousNotion": "calculs de pourcentages",
+			"point": "6-141"
+		},
+		{
+			"id": "517dce40-4f67-4a90-a9aa-77a81d046935",
+			"title": "Le labyrinthe des multiples",
+			"fichier": "n6-labyrinthe-des-multiples.json",
+			"branche": "Arithmétique",
+			"notion": "Divisibilité",
+			"sousNotion": "multiples et diviseurs",
+			"point": "CM2-130"
+		}
+	],
+	"niveaux": []
+}

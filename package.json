@@ -125,6 +125,7 @@
 		"migrate:sanitize": "tsx scripts/sanitize-existing-notifications.ts",
 		"math": "tsx src/lib/mathAST/cli/cli.ts",
 		"lien": "tsx scripts/lien/index.ts",
+		"prevenir": "tsx scripts/prevenir/index.ts",
 		"retours": "tsx scripts/retours/index.ts",
 		"voir": "tsx scripts/voir/index.ts"
 	},

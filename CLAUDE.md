@@ -33,6 +33,7 @@ pnpm db:a-jour                      # base LOCALE : migrations en attente, sans 
 pnpm db:neuf                        # base locale EFFACÉE puis remplie (eleveNN@local.test / local-eleve) ; rare, demande « oui »
 pnpm voir <page> [--compte prof]    # image iPhone/Safari + erreurs de console de SON serveur de dev → docs/pratiques/voir-une-page.md
 pnpm lien [--stop | --liste]        # lien HTTPS du tailnet + QR code vers SON serveur de dev → docs/pratiques/tester-sur-un-autre-appareil.md
+pnpm prevenir <lien | question | geste "…">   # notification à David quand la session ATTEND un geste de lui (jamais « CI verte » ni « fini ») → docs/pratiques/prevenir-david.md
 pnpm retours [<n> | --liste]        # retour envoyé par le bouton « Signaler » de SON serveur de dev → docs/pratiques/signaler-depuis-la-page.md
 pnpm ecarts [rejouer | ajouter …]   # registre des écarts (docs/ecarts/registre.md) : liste, rejeu des preuves, nouveau numéro → docs/pratiques/registre-des-ecarts.md
 pnpm maintenance:on / :off          # mode maintenance prod
