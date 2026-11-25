@@ -24,6 +24,7 @@ import { uuidSchema } from '#lib/server/validation/common.ts';
 import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
 import type { TablesUpdate } from '#lib/types/database.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { WORKSHEET_LINE_VERSION, withLineVersion } from '#lib/server/exercise-versions.ts';
 
 const logger = createServerLogger('api/worksheets/[id]/+server');
 
@@ -98,7 +99,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Fetch exercises with joined exercise data
-	const { data: exercises, error: exercisesError } = await locals.supabase
+	const { data: exerciseLines, error: exercisesError } = await locals.supabase
 		.from('worksheet_exercises')
 		.select(
 			`
@@ -108,11 +109,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				title,
 				translations,
 				variables,
-				shared,
-				variations,
-				generic_functions,
 				topic
-			)
+			),
+			${WORKSHEET_LINE_VERSION}
 		`
 		)
 		.eq('worksheet_id', worksheet.id)
@@ -122,6 +121,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		logger.error('Failed to fetch exercises:', exercisesError);
 		throw error(500, 'Impossible de charger les exercices de la fiche');
 	}
+	// Contenu : la version choisie par la fiche (ADR 0044), pas la dernière
+	const exercises = (exerciseLines ?? []).map((line) => withLineVersion(line));
 
 	// La fiche d'un style du prof, pour le PDF ; `null` pour un style de
 	// Chiphre (Typst dans le code) ou un style illisible (style par défaut).
@@ -151,7 +152,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				tags,
 				classifications,
 				sections: sections ?? [],
-				exercises: exercises ?? [],
+				exercises,
 				template
 			}
 		},

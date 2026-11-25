@@ -8,7 +8,11 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { tableMock, twoLevelExercise } from '#lib/server/worksheets/__tests__/table-mock.ts';
+import {
+	tableMock,
+	twoLevelExercise,
+	versionedLine
+} from '#lib/server/worksheets/__tests__/table-mock.ts';
 
 // ============================================================================
 // MOCKS
@@ -84,19 +88,28 @@ function supabase(config: Record<string, unknown>, answerFrameLines: unknown = n
 		profiles: { data: { role: 'teacher', firstname: 'Léa', lastname: 'Martin' }, error: null },
 		worksheet_exercises: {
 			data: [
-				{
-					id: '550e8400-e29b-41d4-a716-446655440012',
-					position: 1,
-					points: null,
-					custom_instructions: null,
-					translations: null,
-					correction_visible: false,
-					variation_index: null,
-					section_id: null,
-					is_essential: false,
-					answer_frame_lines: answerFrameLines,
-					exercise: framedExercise()
-				}
+				// Contenu (dont le corrigé secret) sur la version de la ligne ; l'exercice garde un
+				// ancien contenu qui ne doit jamais sortir (ADR 0044)
+				versionedLine(
+					{
+						id: '550e8400-e29b-41d4-a716-446655440012',
+						position: 1,
+						points: null,
+						custom_instructions: null,
+						translations: null,
+						correction_visible: false,
+						variation_index: null,
+						section_id: null,
+						is_essential: false,
+						answer_frame_lines: answerFrameLines
+					},
+					framedExercise(),
+					{
+						variations: [
+							{ label: 'guided', statement_md: '1. PERIME', solution_md: '1. PERIME\n2. PERIME' }
+						]
+					}
+				)
 			],
 			error: null
 		},
@@ -147,6 +160,7 @@ describe('aperçu de l’affectation : cadres de réponse', () => {
 		expect(exercise.answers).toBeNull();
 		expect(exercise.printed_frame_lines).toEqual({ questions: [3, 8] });
 		expect(JSON.stringify(view)).not.toContain(SECRET);
+		expect(JSON.stringify(view)).not.toContain('PERIME');
 	});
 
 	it('vue prof, mode exercice : la hauteur seule', async () => {

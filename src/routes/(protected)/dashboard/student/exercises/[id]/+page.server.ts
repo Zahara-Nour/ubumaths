@@ -1,3 +1,4 @@
+import { withLatestVersion } from '#lib/server/exercise-versions.ts';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '#lib/server/validation/params.ts';
@@ -25,7 +26,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	}
 
 	// Fetch exercise
-	const { data: exercise, error: exerciseError } = await locals.supabase
+	const { data: exerciseRow, error: exerciseError } = await locals.supabase
 		.from('exercises')
 		// Les étiquettes ne sont pas une colonne d'`exercises` : elles vivent dans
 		// `resource_tags`, lue juste après. La jointure PostgREST précédente visait
@@ -35,9 +36,11 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		.eq('id', exerciseId)
 		.single();
 
-	if (exerciseError || !exercise) {
+	if (exerciseError || !exerciseRow) {
 		throw error(404, 'Exercice non trouvé');
 	}
+	// Contenu : la DERNIÈRE version (hors fiche, ADR 0044)
+	const exercise = await withLatestVersion(locals.supabase, exerciseRow);
 
 	const tags = await fetchResourceTagNames(locals.supabase, 'exercise', exerciseId).catch(() => []);
 

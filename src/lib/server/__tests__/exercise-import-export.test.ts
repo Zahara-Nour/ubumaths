@@ -67,11 +67,60 @@ const createMockSupabase = () => {
 		maybeSingle: vi.fn().mockReturnThis()
 	};
 
+	const versions = createVersionsQuery();
+
 	return {
-		from: vi.fn(() => mockQuery),
-		__mockQuery: mockQuery
+		from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : mockQuery)),
+		__mockQuery: mockQuery,
+		__versions: versions
 	};
 };
+
+/** Une ligne d'`exercise_versions` (ADR 0044) : le contenu d'un exercice vit là, pas sur `exercises`. */
+function versionRow(exerciseId: string, variations: unknown, shared: unknown = null) {
+	return {
+		id: `version-${exerciseId}`,
+		number: 1,
+		exercise_id: exerciseId,
+		variations,
+		shared,
+		generic_functions: null
+	};
+}
+
+/**
+ * Table `exercise_versions` : `order` rend les versions lues (`select().in().order()`),
+ * `select()` en fin d'écriture (`insert/update … .select()`) rend une ligne écrite.
+ */
+function createVersionsQuery() {
+	const q = {
+		in: vi.fn(),
+		eq: vi.fn(),
+		insert: vi.fn(),
+		update: vi.fn(),
+		order: vi.fn().mockResolvedValue({ data: [], error: null }),
+		select: vi.fn()
+	};
+	q.in.mockReturnValue(q);
+	q.eq.mockReturnValue(q);
+	q.insert.mockReturnValue(q);
+	q.update.mockReturnValue(q);
+	q.select.mockImplementation(() =>
+		Object.assign(Promise.resolve({ data: [versionRow('written', [])], error: null }), q)
+	);
+	return q;
+}
+
+/** Client dont `exercises` suit l'ordre des requêtes données, `exercise_versions` la table dédiée. */
+function clientWithQueues(exercisesQueries: unknown[], versions = createVersionsQuery()) {
+	const queue = [...exercisesQueries];
+	return {
+		client: {
+			from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : queue.shift()))
+		} as any,
+		versions
+	};
+}
 
 describe('exportExerciseToJSON', () => {
 	it('should export exercise to JSON format', () => {
@@ -261,17 +310,16 @@ describe('importExerciseFromJSON', () => {
 			title: 'Duplicate'
 		};
 
-		// Mock duplicate found (range returns the duplicate with variations for content extraction)
+		// Doublon trouvé : l'identité sur `exercises`, le contenu comparé sur sa dernière version
 		mockSupabase.__mockQuery.range.mockResolvedValue({
+			data: [{ id: 'existing-ex-id', title: 'Duplicate' }],
+			error: null
+		});
+		mockSupabase.__versions.order.mockResolvedValue({
 			data: [
-				{
-					id: 'existing-ex-id',
-					title: 'Duplicate',
-					shared: null,
-					variations: [
-						{ label: 'default', statement_md: 'Duplicate Question', solution_md: 'Answer' }
-					]
-				}
+				versionRow('existing-ex-id', [
+					{ label: 'default', statement_md: 'Duplicate Question', solution_md: 'Answer' }
+				])
 			],
 			error: null
 		});
@@ -296,17 +344,23 @@ describe('importExerciseFromJSON', () => {
 			title: 'Updated Title'
 		};
 
-		// Mock duplicate found (with variations for content extraction)
+		// Doublon trouvé (même titre ; contenu lu sur la dernière version, ancien `variations`
+		// encore posé sur la ligne d'`exercises` pour prouver qu'il n'est pas lu)
 		mockSupabase.__mockQuery.range.mockResolvedValueOnce({
 			data: [
 				{
 					id: 'existing-ex-id',
 					title: 'Updated Title',
-					shared: null,
-					variations: [
-						{ label: 'default', statement_md: 'Updated Question', solution_md: 'Updated Answer' }
-					]
+					variations: [{ label: 'default', statement_md: 'Ancien', solution_md: 'Ancien' }]
 				}
+			],
+			error: null
+		});
+		mockSupabase.__versions.order.mockResolvedValue({
+			data: [
+				versionRow('existing-ex-id', [
+					{ label: 'default', statement_md: 'Updated Question', solution_md: 'Updated Answer' }
+				])
 			],
 			error: null
 		});
@@ -341,6 +395,15 @@ describe('importExerciseFromJSON', () => {
 		expect(result.skipped).toBeUndefined();
 		// Verify update was called
 		expect(mockSupabase.from).toHaveBeenCalledWith('exercises');
+		// Le contenu remplacé part vers la version existante, pas vers la ligne d'`exercises`
+		const identityUpdate = mockSupabase.__mockQuery.update.mock.calls[0][0];
+		expect(identityUpdate).not.toHaveProperty('variations');
+		expect(identityUpdate).not.toHaveProperty('shared');
+		expect(mockSupabase.__versions.update).toHaveBeenCalledTimes(1);
+		const versionUpdate = mockSupabase.__versions.update.mock.calls[0][0];
+		expect(JSON.stringify(versionUpdate.variations)).toContain('Updated Question');
+		expect(mockSupabase.__versions.eq).toHaveBeenCalledWith('id', 'version-existing-ex-id');
+		expect(mockSupabase.__versions.eq).toHaveBeenCalledWith('exercise_id', 'existing-ex-id');
 	});
 
 	it('should reject replace when user does not own the exercise', async () => {
@@ -354,15 +417,16 @@ describe('importExerciseFromJSON', () => {
 			title: 'Title'
 		};
 
-		// Mock duplicate found (with variations for content extraction)
+		// Doublon trouvé : identité sur `exercises`, contenu sur la version
 		mockSupabase.__mockQuery.range.mockResolvedValueOnce({
+			data: [{ id: 'other-user-ex-id', title: 'Title' }],
+			error: null
+		});
+		mockSupabase.__versions.order.mockResolvedValue({
 			data: [
-				{
-					id: 'other-user-ex-id',
-					title: 'Title',
-					shared: null,
-					variations: [{ label: 'default', statement_md: 'Question', solution_md: 'Answer' }]
-				}
+				versionRow('other-user-ex-id', [
+					{ label: 'default', statement_md: 'Question', solution_md: 'Answer' }
+				])
 			],
 			error: null
 		});
@@ -391,16 +455,21 @@ describe('importExerciseFromJSON', () => {
 				data: [
 					{
 						id: 'existing-ex-id',
-						title: 'Original Title',
-						shared: undefined,
-						variations: [
-							{ label: 'default', statement_md: 'Duplicate Question', solution_md: 'Answer' }
-						]
+						title: 'Original Title'
 					}
 				],
 				error: null
 			})
 		};
+		const versions = createVersionsQuery();
+		versions.order.mockResolvedValue({
+			data: [
+				versionRow('existing-ex-id', [
+					{ label: 'default', statement_md: 'Duplicate Question', solution_md: 'Answer' }
+				])
+			],
+			error: null
+		});
 
 		const mockQuery2 = {
 			select: vi.fn().mockReturnThis(),
@@ -427,13 +496,10 @@ describe('importExerciseFromJSON', () => {
 			})
 		};
 
-		const mockSupabase = {
-			from: vi
-				.fn()
-				.mockReturnValueOnce(mockQuery1)
-				.mockReturnValueOnce(mockQuery2)
-				.mockReturnValueOnce(mockQuery3)
-		} as any;
+		const { client: mockSupabase } = clientWithQueues(
+			[mockQuery1, mockQuery2, mockQuery3],
+			versions
+		);
 
 		const jsonData = {
 			version: '1.0',
@@ -463,14 +529,21 @@ describe('importExerciseFromJSON', () => {
 				data: [
 					{
 						id: 'existing-ex-id',
-						title: 'Title',
-						shared: undefined,
-						variations: [{ label: 'default', statement_md: 'Question', solution_md: 'Answer' }]
+						title: 'Title'
 					}
 				],
 				error: null
 			})
 		};
+		const versions = createVersionsQuery();
+		versions.order.mockResolvedValue({
+			data: [
+				versionRow('existing-ex-id', [
+					{ label: 'default', statement_md: 'Question', solution_md: 'Answer' }
+				])
+			],
+			error: null
+		});
 
 		const mockQuery2 = {
 			select: vi.fn().mockReturnThis(),
@@ -497,13 +570,10 @@ describe('importExerciseFromJSON', () => {
 			})
 		};
 
-		const mockSupabase = {
-			from: vi
-				.fn()
-				.mockReturnValueOnce(mockQuery1)
-				.mockReturnValueOnce(mockQuery2)
-				.mockReturnValueOnce(mockQuery3)
-		} as any;
+		const { client: mockSupabase } = clientWithQueues(
+			[mockQuery1, mockQuery2, mockQuery3],
+			versions
+		);
 
 		const jsonData = {
 			version: '1.0',
@@ -712,13 +782,12 @@ describe('importExercisesFromJSON', () => {
 
 		// Second: duplicate found
 		mockSupabase.__mockQuery.range.mockResolvedValueOnce({
+			data: [{ id: 'existing', title: 'Dup' }],
+			error: null
+		});
+		mockSupabase.__versions.order.mockResolvedValue({
 			data: [
-				{
-					id: 'existing',
-					title: 'Dup',
-					shared: undefined,
-					variations: [{ label: 'default', statement_md: 'Duplicate', solution_md: 'A' }]
-				}
+				versionRow('existing', [{ label: 'default', statement_md: 'Duplicate', solution_md: 'A' }])
 			],
 			error: null
 		});
@@ -761,23 +830,32 @@ describe('doublons à l’import : TOUS les exercices de l’auteur', () => {
 		const mockSupabase = createMockSupabase() as any;
 		const otherRows = Array.from({ length: DUPLICATE_SCAN_PAGE_SIZE }, (_, i) => ({
 			id: `other-${i}`,
-			title: `Autre ${i}`,
-			shared: null,
-			variations: [{ label: 'default', statement_md: `Énoncé ${i}`, solution_md: 'R' }]
+			title: `Autre ${i}`
 		}));
 		mockSupabase.__mockQuery.range
 			.mockResolvedValueOnce({ data: otherRows, error: null })
 			.mockResolvedValueOnce({
-				data: [
-					{
-						id: 'dup-page-2',
-						title: 'Tardif',
-						shared: null,
-						variations: [{ label: 'default', statement_md: 'Question tardive', solution_md: 'R' }]
-					}
-				],
+				data: [{ id: 'dup-page-2', title: 'Tardif' }],
 				error: null
 			});
+		// Contenu : les versions lues par paquets d'identifiants (l'adresse de la requête est bornée)
+		let askedIds: string[] = [];
+		mockSupabase.__versions.in.mockImplementation((_column: string, ids: string[]) => {
+			askedIds = ids;
+			return mockSupabase.__versions;
+		});
+		mockSupabase.__versions.order.mockImplementation(async () => ({
+			data: askedIds.map((id) =>
+				versionRow(id, [
+					{
+						label: 'default',
+						statement_md: id === 'dup-page-2' ? 'Question tardive' : `Énoncé ${id}`,
+						solution_md: 'R'
+					}
+				])
+			),
+			error: null
+		}));
 
 		const result = await importExerciseFromJSON(
 			mockSupabase,
@@ -865,9 +943,19 @@ describe('export : fonctions génériques, ressources, mode de distribution', ()
 		expect(result.success).toBe(true);
 		expect(mockSupabase.__mockQuery.insert).toHaveBeenCalledWith(
 			expect.objectContaining({
-				generic_functions: ['f', 'P'],
 				resources: [{ type: 'video', url: 'https://example.org/v', title: 'Vidéo' }],
 				distribution_mode: 'per_student'
+			})
+		);
+		// Les fonctions de l'exercice sont du contenu : elles partent dans la version 1, pas sur la ligne
+		expect(mockSupabase.__mockQuery.insert.mock.calls[0][0]).not.toHaveProperty(
+			'generic_functions'
+		);
+		expect(mockSupabase.__versions.insert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				exercise_id: 'new-ex-id',
+				number: 1,
+				generic_functions: ['f', 'P']
 			})
 		);
 	});

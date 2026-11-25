@@ -15,6 +15,7 @@ import type { Database, Json } from '#lib/types/database.ts';
 import {
 	type ExerciseBackup,
 	type ExerciseBackupRecord,
+	type ExerciseVersionBackupRecord,
 	type TemplateBackupRecord,
 	type FavoriteBackupRecord,
 	type TokenBackupRecord,
@@ -179,6 +180,9 @@ export async function exportBackupJSON(
 		throw new Error(`Impossible de charger les exercices : ${exercisesError.message}`);
 	}
 
+	// Toutes les versions de tous les exercices (ADR 0044), par numéro croissant
+	const versionsByExercise = await fetchAllVersions(supabase);
+
 	// Tags depuis `resource_tags`, en une requête groupée pour tout l'export.
 	const tagsByExercise = await fetchTagNamesForResources(
 		supabase,
@@ -234,9 +238,14 @@ export async function exportBackupJSON(
 	// Transform to backup format
 	const exerciseRecords: ExerciseBackupRecord[] = (exercises ?? []).map((ex) => {
 		const profile = ex.profiles as { email: string } | null;
+		// Contenu de premier niveau = la DERNIÈRE version (lecteurs de l'ancien format) ; toutes
+		// les versions suivent dans `versions` (ADR 0044).
+		const versions = versionsByExercise.get(ex.id) ?? [];
+		const latest = versions.at(-1);
+		if (!latest) throw new Error(`Exercice ${ex.id} sans version`);
 		// Note: statement_md and solution_md are now in variations, but backup format preserves them for compatibility
 		// We extract from the first variation if available, or use empty strings
-		const variations = ex.variations as Array<{
+		const variations = latest.variations as Array<{
 			statement_md?: string;
 			solution_md?: string;
 		}> | null;
@@ -256,15 +265,16 @@ export async function exportBackupJSON(
 			search_indexed: ex.search_indexed,
 			distribution_mode: ex.distribution_mode,
 			variables: ex.variables,
-			variations: ex.variations,
-			shared: ex.shared,
+			variations: latest.variations,
+			shared: latest.shared,
 			resources: ex.resources,
-			generic_functions: ex.generic_functions,
+			generic_functions: latest.generic_functions,
 			translations: ex.translations,
 			created_at: ex.created_at,
 			updated_at: ex.updated_at,
 			created_by: ex.created_by,
-			_created_by_email: profile?.email
+			_created_by_email: profile?.email,
+			versions
 		};
 	});
 
@@ -372,6 +382,9 @@ export async function exportBackupSQL(
 		if (typeof value === 'object') return `'${JSON.stringify(value).replace(/'/g, "''")}'`;
 		return `'${String(value).replace(/'/g, "''")}'`;
 	};
+	// Colonne text[] : un littéral de tableau Postgres, pas du JSON (`'["f"]'` serait refusé)
+	const escapeTextArray = (value: string[] | null | undefined): string =>
+		value ? `ARRAY[${value.map((item) => escapeSQL(item)).join(', ')}]::text[]` : 'NULL';
 
 	// Exercises
 	if (backup.data.exercises.length > 0) {
@@ -403,7 +416,7 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.variations)},
   ${escapeSQL(ex.shared)},
   ${escapeSQL(ex.resources)},
-  ${escapeSQL(ex.generic_functions)},
+  ${escapeTextArray(ex.generic_functions)},
   ${escapeSQL(ex.translations ?? null)},
   ${escapeSQL(ex.created_at)},
   ${escapeSQL(ex.updated_at)},
@@ -426,6 +439,29 @@ export async function exportBackupSQL(
   translations = EXCLUDED.translations,
   updated_at = EXCLUDED.updated_at;`);
 			lines.push('');
+
+			// Versions (ADR 0044) : sauvegarde antérieure → son contenu devient la version 1
+			for (const v of backupVersions(ex)) {
+				lines.push(`INSERT INTO exercise_versions (
+  exercise_id, number, note, variations, shared, generic_functions, created_at, updated_at, created_by
+) VALUES (
+  ${escapeSQL(ex.id)},
+  ${v.number},
+  ${escapeSQL(v.note)},
+  ${escapeSQL(v.variations)},
+  ${escapeSQL(v.shared)},
+  ${escapeTextArray(v.generic_functions)},
+  ${escapeSQL(v.created_at)},
+  ${escapeSQL(v.updated_at)},
+  ${escapeSQL(ex.created_by)}
+) ON CONFLICT (exercise_id, number) DO UPDATE SET
+  note = EXCLUDED.note,
+  variations = EXCLUDED.variations,
+  shared = EXCLUDED.shared,
+  generic_functions = EXCLUDED.generic_functions,
+  updated_at = EXCLUDED.updated_at;`);
+				lines.push('');
+			}
 
 			// Tags via the exercise_tags junction (source of truth since the
 			// tag-normalization migration). For each tag name we: (1) ensure the
@@ -667,6 +703,87 @@ export async function restoreFromBackup(
 /**
  * Restore exercises table
  */
+/** Lecture page par page : PostgREST plafonne une lecture non bornée */
+const VERSIONS_PAGE_SIZE = 1000;
+
+/** Toutes les versions de tous les exercices, rangées par exercice, numéro croissant. */
+async function fetchAllVersions(
+	supabase: SupabaseClientType
+): Promise<Map<string, ExerciseVersionBackupRecord[]>> {
+	const byExercise = new Map<string, ExerciseVersionBackupRecord[]>();
+	for (let from = 0; ; from += VERSIONS_PAGE_SIZE) {
+		const { data, error } = await supabase
+			.from('exercise_versions')
+			.select(
+				'exercise_id, number, note, variations, shared, generic_functions, created_at, updated_at'
+			)
+			.order('exercise_id')
+			.order('number')
+			.range(from, from + VERSIONS_PAGE_SIZE - 1);
+		if (error) throw new Error(`Impossible de charger les versions : ${error.message}`);
+		for (const { exercise_id, ...version } of data ?? []) {
+			const list = byExercise.get(exercise_id) ?? [];
+			list.push(version);
+			byExercise.set(exercise_id, list);
+		}
+		if ((data ?? []).length < VERSIONS_PAGE_SIZE) return byExercise;
+	}
+}
+
+/**
+ * Les versions d'un enregistrement : les siennes, ou, pour une sauvegarde antérieure aux
+ * versions, son contenu comme version 1 (ADR 0044).
+ */
+function backupVersions(record: ExerciseBackupRecord): ExerciseVersionBackupRecord[] {
+	if (record.versions && record.versions.length > 0) return record.versions;
+	return [
+		{
+			number: 1,
+			note: null,
+			variations: record.variations,
+			shared: record.shared,
+			generic_functions: record.generic_functions,
+			created_at: record.created_at,
+			updated_at: record.updated_at
+		}
+	];
+}
+
+/**
+ * Écrit les versions d'un exercice restauré, par numéro (une version déjà en base au même numéro
+ * est remplacée ; une version plus récente que la sauvegarde reste). `.select()` : un refus RLS
+ * rend zéro ligne, sans erreur.
+ */
+async function restoreVersions(
+	supabase: SupabaseClientType,
+	record: ExerciseBackupRecord,
+	createdBy: string,
+	result: RestoreResult
+): Promise<void> {
+	const rows = backupVersions(record).map((v) => ({
+		exercise_id: record.id,
+		number: v.number,
+		note: v.note,
+		variations: (v.variations ?? null) as Json | null,
+		shared: (v.shared ?? null) as Json | null,
+		generic_functions: v.generic_functions,
+		created_at: v.created_at,
+		updated_at: v.updated_at,
+		created_by: createdBy
+	}));
+	const { data, error } = await supabase
+		.from('exercise_versions')
+		.upsert(rows, { onConflict: 'exercise_id,number' })
+		.select('id');
+	if (error || (data ?? []).length !== rows.length) {
+		result.errors.push({
+			table: 'exercise_versions',
+			record_id: record.id,
+			error: error?.message ?? `${(data ?? []).length} version(s) écrite(s) sur ${rows.length}`
+		});
+	}
+}
+
 async function restoreExercises(
 	supabase: SupabaseClientType,
 	records: ExerciseBackupRecord[],
@@ -751,6 +868,7 @@ async function restoreExercises(
 					result.stats.exercises.failed++;
 					result.errors.push({ table: 'exercises', record_id: record.id, error: error.message });
 				} else {
+					await restoreVersions(supabase, record, createdBy, result);
 					await attachBackupTags(supabase, record.id, recordTags, result, record.id);
 					result.stats.exercises.replaced++;
 				}
@@ -785,6 +903,7 @@ async function restoreExercises(
 					result.stats.exercises.failed++;
 					result.errors.push({ table: 'exercises', record_id: record.id, error: error.message });
 				} else {
+					await restoreVersions(supabase, record, createdBy, result);
 					await attachBackupTags(supabase, record.id, recordTags, result, record.id);
 					result.stats.exercises.imported++;
 				}

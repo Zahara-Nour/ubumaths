@@ -7,6 +7,11 @@
  * @module server/exercise-import-export
  */
 
+import {
+	splitVersionContent,
+	withLatestVersions,
+	writeVersionContent
+} from '#lib/server/exercise-versions.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 import type {
@@ -202,7 +207,7 @@ async function findDuplicateExercise(
 	for (let from = 0; ; from += DUPLICATE_SCAN_PAGE_SIZE) {
 		const { data, error } = await supabase
 			.from('exercises')
-			.select('id, title, shared, variations')
+			.select('id, title')
 			.eq('created_by', userId)
 			.order('id', { ascending: true })
 			.range(from, from + DUPLICATE_SCAN_PAGE_SIZE - 1);
@@ -214,7 +219,8 @@ async function findDuplicateExercise(
 			throw new Error(error.message);
 		}
 
-		const rows = data ?? [];
+		// Contenu comparé : la DERNIÈRE version de chaque exercice (ADR 0044)
+		const rows = await withLatestVersions(supabase, data ?? []);
 		for (const existing of rows) {
 			// Get content from variations (single source of truth)
 			const existingContent = getExerciseContentSafe(existing as unknown as Exercise);
@@ -353,10 +359,13 @@ export async function importExerciseFromJSON(
 			// pas (Zod les retire), donc remplacer garde la visibilité et la case
 			// « Afficher sur Google » de l'exercice existant — jamais de « privé +
 			// Google » (CHECK 23514), jamais de Google coché par un fichier.
+			// Le contenu remplace celui de la DERNIÈRE version (ADR 0044) ; la fiche d'identité
+			// reste sur la ligne d'`exercises`.
+			const { identity, content } = splitVersionContent(rowUpdate);
 			const { data, error } = await supabase
 				.from('exercises')
 				.update({
-					...rowUpdate,
+					...identity,
 					updated_at: new Date().toISOString()
 				})
 				.eq('id', duplicateId)
@@ -366,6 +375,16 @@ export async function importExerciseFromJSON(
 
 			if (error) {
 				return { success: false, error: error.message };
+			}
+
+			try {
+				await writeVersionContent(supabase, duplicateId, content);
+			} catch (e) {
+				logger.error('Failed to replace the content of the imported exercise:', e);
+				return {
+					success: false,
+					error: e instanceof Error ? e.message : 'Failed to replace exercise content'
+				};
 			}
 
 			// Re-sync tags through the junction. On failure, surface the error so the

@@ -77,6 +77,43 @@ function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow {
 	};
 }
 
+/** Une ligne d'`exercise_versions` (ADR 0044) : le contenu de l'exercice vit là. */
+function versionRow(overrides: Record<string, unknown> = {}) {
+	return {
+		id: 'version-1',
+		number: 1,
+		exercise_id: EXERCISE_ID,
+		variations: VARIATIONS,
+		shared: null,
+		generic_functions: null,
+		...overrides
+	};
+}
+
+/**
+ * Table `exercise_versions` : `latest` est ce que rend la lecture des versions (`.in().order()`),
+ * `written` ce que rend une écriture (`insert/update … .select()`).
+ */
+function versionsQuery(latest = [versionRow()], written = [versionRow()]) {
+	const q = {
+		in: vi.fn(),
+		eq: vi.fn(),
+		insert: vi.fn(),
+		update: vi.fn(),
+		order: vi.fn().mockResolvedValue({ data: latest, error: null }),
+		select: vi.fn()
+	};
+	q.in.mockReturnValue(q);
+	q.eq.mockReturnValue(q);
+	q.insert.mockReturnValue(q);
+	q.update.mockReturnValue(q);
+	// `select()` est la fin d'une écriture (attendue) ou le début d'une lecture (`.in().order()`)
+	q.select.mockImplementation(() =>
+		Object.assign(Promise.resolve({ data: written, error: null }), q)
+	);
+	return q;
+}
+
 /**
  * Client minimal pour create/update de `server/exercises.ts` : chaque appel
  * renvoie la chaîne ; `single` rend successivement les réponses données.
@@ -91,8 +128,11 @@ function chainClient(singleResponses: unknown[]) {
 		single: vi.fn()
 	};
 	for (const response of singleResponses) query.single.mockResolvedValueOnce(response);
-	const client = { from: vi.fn(() => query) };
-	return { client: client as unknown as SupabaseClient<Database>, query };
+	const versions = versionsQuery();
+	const client = {
+		from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : query))
+	};
+	return { client: client as unknown as SupabaseClient<Database>, query, versions };
 }
 
 beforeEach(() => {
@@ -331,6 +371,7 @@ describe('updateExercise : search_indexed', () => {
 function restoreClient(rowExists: boolean) {
 	const updates: unknown[] = [];
 	const inserts: unknown[] = [];
+	const versionUpserts: unknown[][] = [];
 	const existsResponse = rowExists
 		? { data: { id: EXERCISE_ID }, error: null }
 		: { data: null, error: { code: 'PGRST116', message: 'no rows' } };
@@ -338,6 +379,16 @@ function restoreClient(rowExists: boolean) {
 	const from = vi.fn((table: string) => {
 		if (table === 'profiles') {
 			return { select: () => Promise.resolve({ data: [{ id: TEACHER_ID }], error: null }) };
+		}
+		if (table === 'exercise_versions') {
+			return {
+				upsert: (rows: unknown[]) => {
+					versionUpserts.push(rows);
+					return {
+						select: () => Promise.resolve({ data: rows.map(() => ({ id: 'v' })), error: null })
+					};
+				}
+			};
 		}
 		return {
 			// `select('id')` est attendu tel quel (liste) ou suivi de eq().single()
@@ -355,7 +406,12 @@ function restoreClient(rowExists: boolean) {
 			}
 		};
 	});
-	return { client: { from } as unknown as SupabaseClient<Database>, updates, inserts };
+	return {
+		client: { from } as unknown as SupabaseClient<Database>,
+		updates,
+		inserts,
+		versionUpserts
+	};
 }
 
 function backupWith(record: Record<string, unknown>) {
@@ -408,13 +464,17 @@ function backupWith(record: Record<string, unknown>) {
 
 describe('restauration : search_indexed', () => {
 	it('remplacer par une version privée décoche Google dans la même écriture', async () => {
-		const { client, updates } = restoreClient(true);
+		const { client, updates, versionUpserts } = restoreClient(true);
 		const result = await restoreFromBackup(client, backupWith({ is_public: false }), {
 			conflict_strategy: 'replace'
 		});
 		expect(result.errors).toEqual([]);
 		expect(updates).toHaveLength(1);
 		expect(updates[0]).toMatchObject({ is_public: false, search_indexed: false });
+		// Sauvegarde antérieure aux versions : son contenu devient la version 1
+		expect(versionUpserts[0]).toEqual([
+			expect.objectContaining({ exercise_id: EXERCISE_ID, number: 1, variations: VARIATIONS })
+		]);
 	});
 
 	it('une sauvegarde ancienne (sans la colonne) ne coche jamais Google', async () => {
@@ -469,12 +529,12 @@ describe('import : search_indexed', () => {
 			update: vi.fn().mockReturnThis(),
 			single: vi.fn()
 		};
+		// L'identité seule est lue sur `exercises` ; le contenu comparé vient de la dernière version
 		query.range.mockResolvedValue({
-			data: duplicate
-				? [{ id: EXERCISE_ID, title: 'Google ZZ', shared: null, variations: VARIATIONS }]
-				: [],
+			data: duplicate ? [{ id: EXERCISE_ID, title: 'Google ZZ' }] : [],
 			error: null
 		});
+		const versions = versionsQuery();
 		if (duplicate) {
 			query.single
 				.mockResolvedValueOnce({ data: { created_by: TEACHER_ID }, error: null })
@@ -482,7 +542,10 @@ describe('import : search_indexed', () => {
 		} else {
 			query.single.mockResolvedValueOnce({ data: exerciseRow(), error: null });
 		}
-		return { client: { from: vi.fn(() => query) } as unknown as SupabaseClient<Database>, query };
+		const client = {
+			from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : query))
+		};
+		return { client: client as unknown as SupabaseClient<Database>, query, versions };
 	}
 
 	it('un nouvel exercice importé n’est jamais affiché sur Google', async () => {
@@ -494,14 +557,23 @@ describe('import : search_indexed', () => {
 	});
 
 	it('remplacer un exercice ne touche ni à sa visibilité ni à Google', async () => {
-		const { client, query } = importClient(true);
-		const result = await importExerciseFromJSON(client, forgedFile, TEACHER_ID, {
-			onDuplicate: 'replace'
-		});
+		const { client, query, versions } = importClient(true);
+		const newVariations = [{ label: 'default', statement_md: 'Autre Q ?', solution_md: 'Autre R' }];
+		const result = await importExerciseFromJSON(
+			client,
+			{ ...forgedFile, variations: newVariations },
+			TEACHER_ID,
+			{ onDuplicate: 'replace' }
+		);
 		expect(result.success).toBe(true);
 		expect(query.update).toHaveBeenCalledTimes(1);
 		const payload = query.update.mock.calls[0][0] as Record<string, unknown>;
 		expect(payload).not.toHaveProperty('is_public');
 		expect(payload).not.toHaveProperty('search_indexed');
+		// Le contenu remplacé part vers la version, pas vers la ligne d'`exercises`
+		expect(payload).not.toHaveProperty('variations');
+		expect(versions.update).toHaveBeenCalledWith(
+			expect.objectContaining({ variations: newVariations })
+		);
 	});
 });

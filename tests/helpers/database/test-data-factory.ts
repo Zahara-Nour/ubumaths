@@ -222,15 +222,35 @@ export class ExerciseBuilder {
 		return this;
 	}
 
+	/**
+	 * L'exercice et sa version 1 (ADR 0044), comme `createExercise` : le contenu (variations,
+	 * shared, generic_functions) va dans la version, la ligne d'`exercises` garde l'identité.
+	 * Rend la ligne avec le contenu de la v1.
+	 */
 	async create(): Promise<Tables['exercises']['Row']> {
 		const client = createServiceRoleClient();
+		const { variations, shared, generic_functions, ...identity } = this.data;
 		const { data, error } = await client
 			.from('exercises')
-			.insert(this.data as Tables['exercises']['Insert'])
+			.insert(identity as Tables['exercises']['Insert'])
 			.select()
 			.single();
 		if (error) throw error;
-		return data;
+		const { error: versionError } = await client.from('exercise_versions').insert({
+			exercise_id: data.id,
+			number: 1,
+			created_by: data.created_by,
+			variations: variations ?? null,
+			shared: shared ?? null,
+			generic_functions: generic_functions ?? null
+		});
+		if (versionError) throw versionError;
+		return {
+			...data,
+			variations: variations ?? null,
+			shared: shared ?? null,
+			generic_functions: generic_functions ?? null
+		};
 	}
 }
 
