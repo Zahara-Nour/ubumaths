@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, avant la PR._
+_Mis à jour le 2026-11-25, après #3129._
 
-- **État** : code, tests, revues et rendu faits ; PR ouverte · **Prochaine action** : CI verte → merge → `db:migrate` (migration additive, 4 conditions réunies) → archiver ce journal et celui de `sections-pdf-anglais` · **En attente de David** : rien · **Pièges en cours** : chaque schéma Zod de réponse doit connaître `translations` (sinon retiré en silence, cf. #3124) · **Worktree / branche** : `ubumaths-wt-titre-exercice-anglais` · `feat/titre-exercice-anglais`
+- **État** : mergé (#3129), migration jouée en prod (colonne `exercises.translations` vérifiée), pas encore en prod côté code · **Prochaine action** : après le `deploy:prod`, archiver ce journal (doc système déjà à jour : `fiches-et-pdf.md`, `exercices.md`, `base-de-donnees.md`) · **En attente de David** : `deploy:prod` (livre #3124 et #3129, avec #3104 de `notions-en-anglais`) · **Pièges en cours** : l'export / import d'un exercice ne porte pas le titre anglais (suivi possible) · **Worktree / branche** : aucun
 
 ## Origine
 
@@ -69,3 +69,8 @@ Comportements :
 - Écrans du prof (liste des exercices de la fiche, gestion des corrections) : titre français.
 - Aucun CHECK en base sur la forme de `translations` (comme les autres colonnes `translations`) ;
   la lecture (`asRowTranslations`) neutralise une forme farfelue.
+
+## Après le merge
+
+- #3129 mergée le 2026-11-25 (un dépassement de délai sans rapport, `forfait-palotin.test.ts`,
+  relancé une fois). `db:migrate` : seule migration en attente, jouée ; colonne lue en prod.
