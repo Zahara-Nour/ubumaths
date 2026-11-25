@@ -19,7 +19,8 @@
  *      classe comme hors-classe, avec le nom de l'auteur ;
  *   2. il ne reçoit PAS le message non marqué de la même conversation ;
  *   3. il reçoit les messages marqués supprimés, texte compris, et la fonction dit
- *      si la suppression vient de la modération ;
+ *      si la suppression est tracée par la modération (faux ne prouve pas que
+ *      l'auteur a supprimé : certaines suppressions de modération ne tracent rien) ;
  *   4. il garde les messages marqués du chat de sa classe ;
  *   5. il ne reçoit pas le message marqué d'une conversation à deux où l'un des
  *      deux n'est pas un élève (admin et élève) ;
@@ -258,9 +259,91 @@ describe('Modération — messages marqués lus par le prof (écart T21)', () =>
 			expect(ligne).toMatchObject({ plain_text: INSULTE, is_group: true, deleted_at: null });
 		});
 
-		it('les plus récents d’abord, dans la limite demandée', async () => {
+		it('exclut une conversation non groupe à trois, ou à un seul participant', async () => {
+			const pg = await getPostgresClient();
+			const aTrois = await conversationPrivee(eleve.id, camarade.id);
+			await pg.query(
+				`insert into conversation_participants (conversation_id, user_id) values ($1, $2)`,
+				[aTrois, horsClasseA.id]
+			);
+			const seul = await conversationPrivee(horsClasseA.id, horsClasseB.id);
+			await pg.query(
+				`delete from conversation_participants where conversation_id = $1 and user_id = $2`,
+				[seul, horsClasseB.id]
+			);
+			const dansATrois = await envoyer(aTrois, eleve.id, INSULTE);
+			const dansSeul = await envoyer(seul, horsClasseA.id, INSULTE);
+
+			const ids = (await marquesPour(teacherClient)).map((l) => l.id);
+
+			expect(ids).not.toContain(dansATrois);
+			expect(ids).not.toContain(dansSeul);
+		});
+
+		it('garde le message marqué dont l’auteur n’a plus de compte, sans nom', async () => {
+			const id = await envoyer(priveEnClasse, eleve.id, INSULTE);
+			const pg = await getPostgresClient();
+			await pg.query('begin');
+			try {
+				// Le trigger de marquage rejoue sur tout UPDATE : il ne touche pas l'auteur.
+				await pg.query(`update messages set sender_id = null where id = $1`, [id]);
+				await pg.query('commit');
+			} catch (e) {
+				await pg.query('rollback');
+				throw e;
+			}
+
+			const ligne = (await marquesPour(teacherClient)).find((l) => l.id === id);
+
+			expect(ligne).toMatchObject({
+				plain_text: INSULTE,
+				sender_firstname: null,
+				sender_lastname: null
+			});
+		});
+
+		it('limite bornée : 0 ou négatif rend une ligne, au-delà de 200 ne casse pas', async () => {
+			await envoyer(priveEnClasse, eleve.id, INSULTE);
+
+			for (const p_limit of [0, -5]) {
+				const { data, error } = await teacherClient.rpc('get_flagged_messages_for_teacher', {
+					p_limit
+				});
+				expect(error).toBeNull();
+				expect(data).toHaveLength(1);
+			}
+			const { data, error } = await teacherClient.rpc('get_flagged_messages_for_teacher', {
+				p_limit: 100000
+			});
+			expect(error).toBeNull();
+			expect((data ?? []).length).toBeLessThanOrEqual(200);
+		});
+
+		it('les plus récents d’abord', async () => {
+			const pg = await getPostgresClient();
+			const ids: string[] = [];
+			for (const minutes of [30, 10, 20]) {
+				const id = await envoyer(priveHorsClasse, horsClasseB.id, INSULTE);
+				await pg.query(
+					`update messages set created_at = now() + ($2 || ' minutes')::interval where id = $1`,
+					[id, String(minutes)]
+				);
+				ids.push(id);
+			}
+
+			const rendus = (await marquesPour(teacherClient)).map((l) => l.id).slice(0, 3);
+
+			expect(rendus).toEqual([ids[0], ids[2], ids[1]]);
+		});
+
+		it('dans la limite demandée', async () => {
 			await envoyer(priveEnClasse, eleve.id, INSULTE);
 			const dernier = await envoyer(priveEnClasse, eleve.id, INSULTE);
+			// Daté après les messages du test de tri, datés dans le futur.
+			const pg = await getPostgresClient();
+			await pg.query(`update messages set created_at = now() + interval '2 hours' where id = $1`, [
+				dernier
+			]);
 
 			const { data, error } = await teacherClient.rpc('get_flagged_messages_for_teacher', {
 				p_limit: 1

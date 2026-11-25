@@ -14,8 +14,12 @@ const FLAGGED_MESSAGES_LIMIT = 100;
 // TYPES
 // ============================================================================
 
-/** Qui a supprimé le message marqué, quand il l'est. */
-type FlaggedDeletion = 'moderation' | 'author' | null;
+/**
+ * Suppression d'un message marqué : `moderation` quand elle est tracée dans
+ * `moderation_logs`, `untraced` sinon (auteur, ou suppression de modération sans
+ * trace : `review_report`, `soft_delete_message`), `null` s'il n'est pas supprimé.
+ */
+type FlaggedDeletion = 'moderation' | 'untraced' | null;
 
 interface FlaggedMessageRow {
 	id: string;
@@ -48,6 +52,9 @@ function fullName(firstname: string | null, lastname: string | null): string | n
  *   de `messages` (conversations qu'il peut ouvrir, messages non supprimés).
  *   Jointures non `!inner` : un auteur ou une conversation masqués laissent la
  *   ligne, sans nom.
+ *
+ * Même règle que les signalements (T20) : un échec de lecture se dit (`failed`),
+ * il ne ressemble pas à « aucun message marqué ».
  */
 async function loadFlaggedMessages(
 	supabase: SupabaseClient<Database>,
@@ -87,7 +94,7 @@ async function loadFlaggedMessages(
 				senderName: fullName(m.sender_firstname, m.sender_lastname),
 				conversationName: m.conversation_name,
 				isGroup: m.is_group,
-				deletedBy: m.deleted_at ? (m.deleted_by_moderation ? 'moderation' : 'author') : null
+				deletedBy: m.deleted_at ? (m.deleted_by_moderation ? 'moderation' : 'untraced') : null
 			}))
 		};
 	}
@@ -230,9 +237,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (pendingCountResult.error) {
 		logger.error('Failed to fetch pending count:', pendingCountResult.error);
 	}
-
-	// Même règle que les signalements (T20) : un échec de lecture se dit, il ne
-	// ressemble pas à « aucun message marqué ».
 
 	// Flatten and deduplicate students from all classes
 	const studentsMap = new Map<

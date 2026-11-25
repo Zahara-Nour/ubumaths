@@ -27,8 +27,10 @@
 -- élève, par exemple) n'est pas ouverte au prof.
 --
 -- `deleted_by_moderation` : vrai quand une suppression par le prof ou l'admin est
--- tracée dans `moderation_logs` ; sinon la suppression vient de l'auteur
--- (`soft_delete_message`). L'onglet écrit la mention d'après ce champ.
+-- tracée dans `moderation_logs`. Faux ne prouve PAS que l'auteur a supprimé :
+-- `review_report` et `soft_delete_message` suppriment sans trace, et `messages`
+-- n'a pas de colonne `deleted_by`. L'onglet écrit donc « supprimé par la
+-- modération » ou « supprimé » seul.
 --
 -- Message d'erreur sans accent : PostgREST rend un 500 sans code sur un message
 -- accentué, et le code lit `error.code`.

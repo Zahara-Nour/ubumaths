@@ -6,9 +6,10 @@
 	(`messages.is_flagged`), pour l'onglet « Messages marqués » de la modération
 	(écart T21). Lecture seule : le prof agit depuis la conversation, dans le chat.
 
-	Un message supprimé reste listé, avec son texte et la mention de qui l'a
-	supprimé (décision de David, 2026-11-25) : supprimer une insulte ne la cache
-	pas au prof.
+	Un message supprimé reste listé, avec son texte (décision de David,
+	2026-11-25) : supprimer une insulte ne la cache pas au prof. La mention dit
+	« par la modération » seulement quand la suppression est tracée ; sinon
+	« supprimé » seul, car rien ne prouve qui l'a fait.
 
 	Le texte est celui de `plain_text`, rendu comme du texte (jamais comme du HTML).
 
@@ -29,8 +30,8 @@
 		senderName: string | null;
 		conversationName: string | null;
 		isGroup: boolean | null;
-		/** Qui a supprimé le message ; `null` s'il ne l'est pas. */
-		deletedBy: 'moderation' | 'author' | null;
+		/** Suppression tracée par la modération, non tracée, ou `null` si non supprimé. */
+		deletedBy: 'moderation' | 'untraced' | null;
 	}
 
 	interface Props {
@@ -55,7 +56,7 @@
 
 	function deletionLabel(deletedBy: FlaggedMessage['deletedBy']): string | null {
 		if (deletedBy === 'moderation') return 'supprimé par la modération';
-		if (deletedBy === 'author') return 'supprimé par l’élève';
+		if (deletedBy === 'untraced') return 'supprimé';
 		return null;
 	}
 </script>

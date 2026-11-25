@@ -119,7 +119,7 @@ describe('modération : messages marqués automatiquement', () => {
 			expect(data.flaggedMessages[0]).toMatchObject({ conversationName: null, isGroup: false });
 		});
 
-		it('message supprimé par son auteur : dit « author »', async () => {
+		it('message supprimé sans trace de modération : dit « untraced »', async () => {
 			const { data } = await runLoad('teacher', {
 				data: [{ ...RPC_ROW, deleted_at: '2026-11-21T08:00:00.000Z' }],
 				error: null
@@ -127,7 +127,7 @@ describe('modération : messages marqués automatiquement', () => {
 
 			expect(data.flaggedMessages[0]).toMatchObject({
 				text: 'un message grossier',
-				deletedBy: 'author'
+				deletedBy: 'untraced'
 			});
 		});
 

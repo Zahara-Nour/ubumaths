@@ -315,7 +315,9 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
     date, raison, nom de l'auteur ; jamais les messages non marqués de la conversation ni le nom
     de l'autre élève. Elle rend aussi les messages marqués **supprimés**, texte compris, avec
     `deleted_by_moderation` (une suppression tracée dans `moderation_logs`) : l'onglet écrit
-    « supprimé par la modération » ou « supprimé par l'élève ». Une conversation à deux où l'un
+    « supprimé par la modération » quand elle est tracée, « supprimé » seul sinon. Faux ne veut
+    pas dire « par l'élève » : `review_report` (suppression depuis un signalement) et
+    `soft_delete_message` ne tracent rien, et il n'y a pas de colonne `deleted_by`. Une conversation à deux où l'un
     des deux n'est pas un élève reste fermée. Aucune policy n'est touchée : la lecture directe de
     `messages` par le prof ne rend toujours ni ces conversations ni les messages supprimés (la
     policy SELECT nomme les conversations à deux, mais lit `conversation_participants` sous la
