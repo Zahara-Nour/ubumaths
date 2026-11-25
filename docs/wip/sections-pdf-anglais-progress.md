@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, à l'ouverture de la PR._
+_Mis à jour le 2026-11-25, après #3124._
 
-- **État** : correctif, test, revues (code + sécurité, aucun bloquant) et vérification à l'écran faits ; PR ouverte · **Prochaine action** : merge à la CI verte, puis clore (journal archivé) · **En attente de David** : titre d'exercice en anglais (voir plus bas) ; `deploy:prod` pour livrer · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-sections-pdf-anglais` / `fix/sections-pdf-anglais`
+- **État** : correctif mergé (#3124), pas encore en prod · **Prochaine action** : selon la réponse de David sur le titre d'exercice en anglais (nouveau chantier ou non), puis clore (journal archivé) · **En attente de David** : titre d'exercice en anglais (voir « Question en suspens ») ; `deploy:prod` pour livrer (avec #3104 de `notions-en-anglais`) · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré par `pr:merger`)
 
 ## Le bug (signalé par David le 2026-11-25)
 
