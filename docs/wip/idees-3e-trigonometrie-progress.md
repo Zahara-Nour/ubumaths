@@ -2,20 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, migration auditée, PR ouverte._
+_Mis à jour le 2026-11-25, après #3139 (mergée). `db:migrate` NON joué : 3 autres migrations en
+attente en prod (063042 modération, 064801 et 065639 idees-1re-trigo) → décision de David._
 
 - **État** : F1-F2 (commit 4d32b62136) et N1-N4 (commit suivant) écrits, simulation verte,
   `sonde-figures` 0 problème, rendu vu à l'écran (§ Historique). Migration de contenu des publiés
   `20261125072915_…_publies_contenu.sql` + fixture : test vert (165), rouge sans elle (5 échecs).
   `security-auditor` : aucun finding (ni policy ni grant, variations 0-3 intactes, pas d'injection,
-  rollback symétrique). · **Prochaine action** : CI verte, merge,
-  `db:migrate` (seule migration en attente ? `migration list --linked`) ; ensuite David lance
+  rollback symétrique). PR #3139 mergée. · **Prochaine action** : `db:migrate` quand David a
+  tranché pour les 3 autres migrations en attente (`migration list --linked`) ; ensuite David lance
   `create-questions --publier` (N1-N4 en brouillon en prod), migration de rangement, relecture
   dans `/dev/modeles`. Page à cocher sautée : la relecture se fait dans `/dev/modeles`.
-  · **En attente de David** : rien. · **Pièges en cours** : `e` interdit comme variable (Euler) ;
+  · **En attente de David** : go pour `db:migrate` qui pousserait aussi 063042 (modération),
+  064801 et 065639 (idees-1re-trigo), ou attendre leurs sessions. · **Pièges en cours** : `e` interdit comme variable (Euler) ;
   réponses de specs ≥ 4 chiffres avec `\,` ; `create-questions` vise la PROD sans
   `set -a; . ./.env.local; set +a` ; une case choix ne porte pas d'erreurs prévues.
-  · **Worktree / branche** : `../ubumaths-wt-idees-3e-trigonometrie`, `feat/idees-3e-trigonometrie`.
+  · **Worktree / branche** : aucun (retiré après #3139) ; suite depuis `main`.
 
 ## Phase 0 (2026-11-25)
 
