@@ -1,0 +1,328 @@
+{
+	"id": "c415d81d-64be-453a-a30e-fb5625530a68",
+	"title": "Définition par quotient",
+	"description": "$$?*b=a$$",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "2..19"
+			},
+			{
+				"name": "b",
+				"expression": "2..19!cd(a)"
+			}
+		],
+		"conditions": ["gcd(a,b)=1", "mod(10000,b)!=0"]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+				}
+			],
+			"statement": "Détermine le facteur manquant.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "b*?=a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{b}} \\times \\cdots = {{a}}$, le nombre cherché est le résultat de ${{a}} \\div {{b}}$ qui s'écrit ${{solution:0}}$ car on ne peut pas le mettre sous forme décimale."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+				}
+			],
+			"statement": "Détermine le facteur manquant.\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "?*b=a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans $ \\cdots \\times {{b}} = {{a}}$, le nombre cherché est le résultat de ${{a}} \\div {{b}}$ qui s'écrit ${{solution:0}}$ car on ne peut pas le mettre sous forme décimale."
+				]
+			}
+		},
+		{
+			"statement": "Complète l'égalité.\n\n$${{if:s==0|{{x}} \\times \\frac{?}{{{x}}}|\\frac{?}{{{x}}} \\times {{x}}}} = {{y}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..20"
+				},
+				{
+					"name": "y",
+					"expression": "2..30"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["x!=y", "y!=2*x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:x*y}}",
+							"message": "Multiplier par ${{x}}$ ce qu'on divise par ${{x}}$ redonne le numérateur : il doit valoir ${{y}}$, pas plus.",
+							"label": "Produit"
+						},
+						{
+							"answer": "{{eval:y-x}}",
+							"message": "Ce n'est pas une addition : la fraction est le nombre qui, multiplié par ${{x}}$, donne ${{y}}$.",
+							"label": "Différence"
+						},
+						{
+							"answer": "{{x}}",
+							"message": "Tu as recopié le dénominateur. $\\frac{{{x}}}{{{x}}} = 1$, et ${{x}} \\times 1$ ne fait pas ${{y}}$.",
+							"label": "Dénominateur recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition du quotient.** $\\frac{{{y}}}{{{x}}}$ est le nombre qui, multiplié par ${{x}}$, donne ${{y}}$.",
+					"$${{if:s==0|{{x}} \\times \\frac{\\textcolor{{{color:primary.0}}}{{{y}}}}{{{x}}}|\\frac{\\textcolor{{{color:primary.0}}}{{{y}}}}{{{x}}} \\times {{x}}}} = {{y}}$$"
+				]
+			},
+			"hint": "Rappelle-toi la définition : $\\frac{a}{b}$ est le nombre qui, multiplié par $b$, donne $a$."
+		},
+		{
+			"statement": "Complète l'égalité.\n\n$${{if:s==0|{{x}} \\times \\frac{{{y}}}{?}|\\frac{{{y}}}{?} \\times {{x}}}} = {{y}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..20"
+				},
+				{
+					"name": "y",
+					"expression": "2..30"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["x!=y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"expectedErrors": [
+						{
+							"answer": "{{y}}",
+							"message": "Tu as recopié le numérateur. $\\frac{{{y}}}{{{y}}} = 1$, et ${{x}} \\times 1$ ne fait pas ${{y}}$.",
+							"label": "Numérateur recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition du quotient.** $\\frac{{{y}}}{{{x}}}$ est le nombre qui, multiplié par ${{x}}$, donne ${{y}}$.",
+					"$${{if:s==0|{{x}} \\times \\frac{{{y}}}{\\textcolor{{{color:primary.0}}}{{{x}}}}|\\frac{{{y}} }{\\textcolor{{{color:primary.0}}}{{{x}}}} \\times {{x}}}} = {{y}}$$"
+				]
+			},
+			"hint": "Rappelle-toi la définition : $\\frac{a}{b}$ est le nombre qui, multiplié par $b$, donne $a$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"description": "b × ? = a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"description": "? × b = a",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{2}{19}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "19"
+			},
+			"description": "borne basse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{19}{18}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "19",
+				"b": "18"
+			},
+			"description": "borne haute",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "12",
+				"b": "7"
+			},
+			"description": "fraction inversée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.71"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "12",
+				"b": "7"
+			},
+			"description": "valeur approchée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{24}{14}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "12",
+				"b": "7"
+			},
+			"description": "fraction égale non réduite",
+			"variationIndex": 1
+		},
+		{
+			"description": "F4 num : 5 × ?/5 = 12",
+			"variationIndex": 2,
+			"variables": {
+				"x": "5",
+				"y": "12",
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "F4 num : produit (60)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "5",
+				"y": "12",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Multiplier par $5$ ce qu'on divise par $5$ redonne le numérateur : il doit valoir $12$, pas plus."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "F4 num : différence (7)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "5",
+				"y": "12",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce n'est pas une addition : la fraction est le nombre qui, multiplié par $5$, donne $12$."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "F4 num : dénominateur recopié (5)",
+			"variationIndex": 2,
+			"variables": {
+				"x": "5",
+				"y": "12",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le dénominateur. $\\frac{5}{5} = 1$, et $5 \\times 1$ ne fait pas $12$."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "F4 num : fraction à gauche",
+			"variationIndex": 2,
+			"variables": {
+				"x": "5",
+				"y": "12",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "F4 dén : 5 × 12/? = 12",
+			"variationIndex": 3,
+			"variables": {
+				"x": "5",
+				"y": "12",
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "F4 dén : numérateur recopié (12)",
+			"variationIndex": 3,
+			"variables": {
+				"x": "5",
+				"y": "12",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié le numérateur. $\\frac{12}{12} = 1$, et $5 \\times 1$ ne fait pas $12$."
+			},
+			"answers": ["12"]
+		}
+	]
+}

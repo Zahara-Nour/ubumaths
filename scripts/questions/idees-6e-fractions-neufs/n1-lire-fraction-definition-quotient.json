@@ -1,0 +1,290 @@
+{
+	"rangement": {
+		"noeud": "Nombres et calculs > Fractions : sens et écritures > définition",
+		"point": "6-126"
+	},
+	"title": "Lire une fraction par la définition du quotient",
+	"description": "Seuls 0 et un entier n sont écrits sur la droite, avec d intervalles égaux entre eux : le point de la première graduation repère n/d, car d fois sa valeur donne n (3/4 entre 0 et 3) ; puis 0 et 2n avec 2d intervalles",
+	"grades": ["6"],
+	"level": 16,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ? Écris-le sous la forme d'une fraction.\n\n```line\nstart: 0\nend: {{F}}\nstep: {{n}}/{{d}}\nmajor: {{M}}\nlabels: 0, {{F}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..7"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{eval:2*d-1}}"
+				},
+				{
+					"name": "F",
+					"expression": "eval:n"
+				},
+				{
+					"name": "M",
+					"expression": "eval:d"
+				}
+			],
+			"conditions": ["mod(n,d)!=0", "d!=n*(n-1)"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{d}}}{{{n}}}",
+							"message": "Numérateur et dénominateur sont inversés : ${{d}}$ fois la longueur de $0$ à $A$ donne ${{n}}$.",
+							"label": "Fraction inversée"
+						},
+						{
+							"answer": "\\frac{1}{{{d}}}",
+							"message": "L'unité n'est pas de $0$ à ${{n}}$ : ici, $1$ n'est pas écrit. Compte combien de fois la longueur de $0$ à $A$ tient de $0$ à ${{n}}$.",
+							"label": "Intervalle lu comme 1/d"
+						},
+						{
+							"answer": "{{eval:n-1}}",
+							"message": "Les nombres entre $0$ et ${{n}}$ ne sont pas des entiers : il y a ${{d}}$ intervalles, pas ${{n}}$.",
+							"label": "Graduations lues comme des entiers"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition du quotient.** De $0$ à ${{n}}$, il y a ${{d}}$ intervalles égaux. En reportant ${{d}}$ fois la longueur de $0$ à $A$, on arrive à ${{n}}$ : le nombre qui repère $A$, multiplié par ${{d}}$, donne ${{n}}$.",
+					"Ce nombre, c'est le quotient de ${{n}}$ par ${{d}}$ : $A$ repère $\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$."
+				]
+			},
+			"hint": "Combien de fois faut-il reporter la longueur de $0$ à $A$ pour arriver à ${{n}}$ ?"
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ? Écris-le sous la forme d'une fraction.\n\n```line\nstart: 0\nend: {{F}}\nstep: {{n}}/{{d}}\nmajor: {{M}}\nlabels: 0, {{F}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{eval:2*d-1}}"
+				},
+				{
+					"name": "F",
+					"expression": "eval:2*n"
+				},
+				{
+					"name": "M",
+					"expression": "eval:2*d"
+				}
+			],
+			"conditions": ["mod(n,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{d}}}{{{n}}}",
+							"message": "Numérateur et dénominateur sont inversés : ${{d}}$ fois la longueur de $0$ à $A$ donne ${{n}}$.",
+							"label": "Fraction inversée"
+						},
+						{
+							"answer": "\\frac{1}{{{d}}}",
+							"message": "Il y a ${{eval:2*d}}$ intervalles de $0$ à ${{F}}$ : compte combien de fois la longueur de $0$ à $A$ tient de $0$ à ${{F}}$.",
+							"label": "Intervalle lu comme 1/d"
+						},
+						{
+							"answer": "\\frac{1}{{{eval:2*d}}}",
+							"message": "L'unité n'est pas de $0$ à ${{F}}$ : ici, $1$ n'est pas écrit. Compte combien de fois la longueur de $0$ à $A$ tient de $0$ à ${{F}}$.",
+							"label": "Intervalle lu comme 1 sur le nombre d'intervalles"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition du quotient.** De $0$ à ${{F}}$, il y a ${{eval:2*d}}$ intervalles égaux. En reportant ${{eval:2*d}}$ fois la longueur de $0$ à $A$, on arrive à ${{F}}$ : $A$ repère le quotient de ${{F}}$ par ${{eval:2*d}}$, soit $\\frac{{{F}}}{{{eval:2*d}}}$.",
+					"On peut simplifier par $2$ : $\\frac{{{F}}}{{{eval:2*d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$. Les deux écritures sont justes."
+				]
+			},
+			"hint": "Combien de fois faut-il reporter la longueur de $0$ à $A$ pour arriver à ${{F}}$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A : 0 et 3, 4 intervalles → 3/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"n": "3",
+				"F": "3",
+				"M": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{4}"]
+		},
+		{
+			"description": "A : écriture décimale refusée (0,75)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"n": "3",
+				"F": "3",
+				"M": "4"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["0{,}75"]
+		},
+		{
+			"description": "A : inversée (4/3)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"n": "3",
+				"F": "3",
+				"M": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Numérateur et dénominateur sont inversés : $4$ fois la longueur de $0$ à $A$ donne $3$."
+			},
+			"answers": ["\\frac{4}{3}"]
+		},
+		{
+			"description": "A : 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"n": "3",
+				"F": "3",
+				"M": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'unité n'est pas de $0$ à $3$ : ici, $1$ n'est pas écrit. Compte combien de fois la longueur de $0$ à $A$ tient de $0$ à $3$."
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "A : 2 (graduations comptées)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"n": "3",
+				"F": "3",
+				"M": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les nombres entre $0$ et $3$ ne sont pas des entiers : il y a $4$ intervalles, pas $3$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "A : 0 et 7, 5 intervalles → 7/5",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"n": "7",
+				"F": "7",
+				"M": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{7}{5}"]
+		},
+		{
+			"description": "B : 0 et 4, 6 intervalles → 2/3",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"F": "4",
+				"M": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "B : 4/6 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"F": "4",
+				"M": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{4}{6}"]
+		},
+		{
+			"description": "B : inversée (3/2)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"F": "4",
+				"M": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Numérateur et dénominateur sont inversés : $3$ fois la longueur de $0$ à $A$ donne $2$."
+			},
+			"answers": ["\\frac{3}{2}"]
+		},
+		{
+			"description": "B : 1/3",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"F": "4",
+				"M": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $6$ intervalles de $0$ à $4$ : compte combien de fois la longueur de $0$ à $A$ tient de $0$ à $4$."
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "B : 1/6",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"n": "2",
+				"F": "4",
+				"M": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'unité n'est pas de $0$ à $4$ : ici, $1$ n'est pas écrit. Compte combien de fois la longueur de $0$ à $A$ tient de $0$ à $4$."
+			},
+			"answers": ["\\frac{1}{6}"]
+		}
+	]
+}

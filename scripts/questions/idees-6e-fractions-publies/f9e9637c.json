@@ -1,0 +1,378 @@
+{
+	"id": "f9e9637c-b62f-4758-baf4-0b28de4a5dc6",
+	"title": "Comprendre le sens d'un pourcentage",
+	"description": "Lire un pourcentage comme « tant sur 100 » : 35 % des élèves, c'est 35 élèves sur 100 ; tous = 100 %, la moitié = 50 %, aucun = 0 %",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"statement": "Dans un collège, ${{p}}\\,\\%$ des élèves {{if:c==0|sont demi-pensionnaires|{{if:c==1|pratiquent un sport en club|viennent au collège à pied}}}}.\n\nCela signifie que, sur $100$ élèves du collège, $?$ {{if:c==0|sont demi-pensionnaires|{{if:c==1|pratiquent un sport en club|viennent au collège à pied}}}}.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "p",
+					"expression": "2..99"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** ${{p}}\\,\\%$ signifie « ${{p}}$ sur $100$ » : ${{p}}\\,\\% = \\frac{{{p}}}{100}$.",
+					"Sur $100$ élèves, $\\textcolor{{{color:primary.0}}}{{{p}}}$ {{if:c==0|sont demi-pensionnaires|{{if:c==1|pratiquent un sport en club|viennent au collège à pied}}}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"statement": "Sur $100$ élèves d'un collège, ${{n}}$ font du judo.\n\nQuel pourcentage des élèves font du judo ?\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..99"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** « ${{n}}$ sur $100$ », c'est $\\frac{{{n}}}{100}$, c'est-à-dire ${{n}}\\,\\%$.",
+					"$\\textcolor{{{color:primary.0}}}{{{n}}\\,\\%}$ des élèves font du judo."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100-50*t}}"
+				}
+			],
+			"statement": "{{if:t==0|Tous les élèves de la classe ont rendu leur devoir.|{{if:t==1|La moitié des élèves de la classe ont rendu leur devoir.|Aucun élève de la classe n'a rendu son devoir.}}}}\n\nQuel pourcentage des élèves de la classe ont rendu leur devoir ?\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** Tous, c'est « $100$ sur $100$ » ; la moitié, « $50$ sur $100$ » ; aucun, « $0$ sur $100$ ».",
+					"{{if:t==0|Tous les élèves|{{if:t==1|La moitié des élèves|Aucun élève}}}} : $\\textcolor{{{color:primary.0}}}{{{solution}}\\,\\%}$."
+				]
+			}
+		},
+		{
+			"statement": "Un yaourt aux fruits contient ${{p}}\\,\\%$ de sucre.\n\nCombien de grammes de sucre y a-t-il dans ${{M}}~\\unit{g}$ de ce yaourt ?\n\n$$?~\\text{g}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "4|8|12|16|20|24|28|32|36|40"
+				},
+				{
+					"name": "M",
+					"expression": "25|50|200|300"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*M/100}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "${{p}}\\,\\%$, c'est ${{p}}~\\unit{g}$ de sucre dans $100~\\unit{g}$ de yaourt, pas dans ${{M}}~\\unit{g}$.",
+							"label": "Pourcentage recopié"
+						},
+						{
+							"answer": "{{eval:p*M}}",
+							"message": "${{p}}\\,\\%$, c'est ${{p}}$ sur $100$ : il faut aussi diviser par $100$.",
+							"label": "Division par 100 oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** ${{p}}\\,\\%$ de sucre : ${{p}}~\\unit{g}$ de sucre dans $100~\\unit{g}$ de yaourt.",
+					"{{if:M==25|$25~\\unit{g}$, c'est le quart de $100~\\unit{g}$ : ${{p}} \\div 4|{{if:M==50|$50~\\unit{g}$, c'est la moitié de $100~\\unit{g}$ : ${{p}} \\div 2|${{M}}~\\unit{g}$, c'est ${{eval:M/100}}$ fois $100~\\unit{g}$ : ${{p}} \\times {{eval:M/100}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$, soit ${{solution}}~\\unit{g}$ de sucre."
+				]
+			},
+			"hint": "${{p}}\\,\\%$ de sucre, c'est ${{p}}~\\unit{g}$ dans $100~\\unit{g}$ : combien de fois $100~\\unit{g}$ y a-t-il dans ${{M}}~\\unit{g}$ ?"
+		},
+		{
+			"statement": "Dans un collège, ${{a}}\\,\\%$ des élèves viennent en bus, ${{b}}\\,\\%$ viennent à pied et les autres viennent en voiture.\n\nQuel pourcentage des élèves viennent en voiture ?\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "ka",
+					"expression": "1..12"
+				},
+				{
+					"name": "kb",
+					"expression": "1..12"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*ka"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*kb"
+				}
+			],
+			"conditions": ["a!=b", "a+b<100", "a+b!=50", "2*a+b!=100", "a+2*b!=100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100-a-b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a+b}}",
+							"message": "${{eval:a+b}}\\,\\%$, ce sont les élèves qui viennent en bus ou à pied : tous les élèves, c'est $100\\,\\%$.",
+							"label": "Somme des deux parts"
+						},
+						{
+							"answer": "{{eval:100-a}}",
+							"message": "Il faut aussi enlever les ${{b}}\\,\\%$ qui viennent à pied.",
+							"label": "Une part oubliée"
+						},
+						{
+							"answer": "{{eval:100-b}}",
+							"message": "Il faut aussi enlever les ${{a}}\\,\\%$ qui viennent en bus.",
+							"label": "Une part oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Pourcentage.** Tous les élèves, c'est $100\\,\\%$. Bus et pied : ${{a}}\\,\\% + {{b}}\\,\\% = {{eval:a+b}}\\,\\%$.",
+					"$$100 - {{eval:a+b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"$\\textcolor{{{color:primary.0}}}{{{solution}}\\,\\%}$ des élèves viennent en voiture."
+				]
+			},
+			"hint": "Tous les élèves du collège, c'est $100\\,\\%$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "0",
+				"p": "35"
+			},
+			"description": "35 % : 35 élèves sur 100",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,35"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "0",
+				"p": "35"
+			},
+			"description": "Erreur : 0,35",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "0",
+				"p": "35"
+			},
+			"description": "Erreur : 3,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "23"
+			},
+			"description": "23 sur 100 : 23 %",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,23"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "23"
+			},
+			"description": "Erreur : 0,23",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "0"
+			},
+			"description": "Tous : 100 %",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "1"
+			},
+			"description": "La moitié : 50 %",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "1"
+			},
+			"description": "Erreur : 0,5 pour la moitié",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "2"
+			},
+			"description": "Aucun : 0 %",
+			"variationIndex": 2
+		},
+		{
+			"description": "F11 : 12 % de 200 g = 24 g",
+			"variationIndex": 3,
+			"variables": {
+				"p": "12",
+				"M": "200"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "F11 : 12 % de 25 g = 3 g",
+			"variationIndex": 3,
+			"variables": {
+				"p": "12",
+				"M": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F11 : pourcentage recopié (12)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "12",
+				"M": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$12\\,\\%$, c'est $12~\\unit{g}$ de sucre dans $100~\\unit{g}$ de yaourt, pas dans $200~\\unit{g}$."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "F11 : division oubliée (2400)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "12",
+				"M": "200"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$12\\,\\%$, c'est $12$ sur $100$ : il faut aussi diviser par $100$."
+			},
+			"answers": ["2400"]
+		},
+		{
+			"description": "F11 reste : 35 % et 40 % → 25 %",
+			"variationIndex": 4,
+			"variables": {
+				"ka": "7",
+				"kb": "8",
+				"a": "35",
+				"b": "40"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "F11 reste : somme (75)",
+			"variationIndex": 4,
+			"variables": {
+				"ka": "7",
+				"kb": "8",
+				"a": "35",
+				"b": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$75\\,\\%$, ce sont les élèves qui viennent en bus ou à pied : tous les élèves, c'est $100\\,\\%$."
+			},
+			"answers": ["75"]
+		},
+		{
+			"description": "F11 reste : bus oublié (60)",
+			"variationIndex": 4,
+			"variables": {
+				"ka": "7",
+				"kb": "8",
+				"a": "35",
+				"b": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut aussi enlever les $35\\,\\%$ qui viennent en bus."
+			},
+			"answers": ["60"]
+		},
+		{
+			"description": "F11 reste : pied oublié (65)",
+			"variationIndex": 4,
+			"variables": {
+				"ka": "7",
+				"kb": "8",
+				"a": "35",
+				"b": "40"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il faut aussi enlever les $40\\,\\%$ qui viennent à pied."
+			},
+			"answers": ["65"]
+		}
+	]
+}

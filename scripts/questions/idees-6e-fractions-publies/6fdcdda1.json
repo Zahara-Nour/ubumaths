@@ -1,0 +1,304 @@
+{
+	"id": "6fdcdda1-abba-44d5-9e10-610599ff8b06",
+	"title": "Définition par quotient",
+	"description": "$$a/b*a=?$$",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 10,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "3|6|7|9|11|12|13"
+			},
+			{
+				"name": "b",
+				"expression": "2..10!cd(a)"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}}}}"
+				}
+			],
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{b/a}*a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\textcolor{{{color:primary.0}}}{\\dfrac{{{b}}}{{{a}}}} \\times {{a}}={{solution}} $ désigne le résultat de la division $\\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}}$ et $\\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}} \\times {{a}} = {{b}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression2}}}}"
+				}
+			],
+			"statement": "Calcule.\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "a*{b/a}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}} \\times \\textcolor{{{color:primary.0}}}{\\dfrac{{{b}}}{{{a}}}} ={{solution}} $ désigne le résultat de la division $\\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}}$ et ${{a}} \\times \\textcolor{{{color:primary.0}}}{{{b}} \\div {{a}}} = {{b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris le quotient de ${{p}}$ par ${{q}}$ sous la forme d'une fraction.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..25"
+				},
+				{
+					"name": "q",
+					"expression": "11..25"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "mod(10000,q)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{p}}}{{{q}}}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{q}}}{{{p}}}",
+							"message": "Le premier nombre nommé, le dividende ${{p}}$, va au numérateur.",
+							"label": "Numérateur et dénominateur inversés"
+						},
+						{
+							"answer": "{{eval:p+q}}",
+							"message": "Un quotient est le résultat d'une division, pas d'une addition.",
+							"label": "Somme"
+						},
+						{
+							"answer": "{{eval:p*q}}",
+							"message": "Un quotient est le résultat d'une division, pas d'une multiplication.",
+							"label": "Produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition du quotient.** Le quotient de ${{p}}$ par ${{q}}$ est le nombre qui, multiplié par ${{q}}$, donne ${{p}}$. Il s'écrit avec le dividende au numérateur et le diviseur au dénominateur.",
+					"$${{p}} \\div {{q}} = \\textcolor{{{color:primary.0}}}{\\frac{{{p}}}{{{q}}}}$$"
+				]
+			},
+			"hint": "Le premier nombre nommé, celui qu'on divise, va en haut."
+		},
+		{
+			"statement": "Écris ce quotient sous la forme d'une fraction.\n\n$${{p}} \\div {{q}} = ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10..25"
+				},
+				{
+					"name": "q",
+					"expression": "11..25"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "mod(10000,q)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{p}}}{{{q}}}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{q}}}{{{p}}}",
+							"message": "Le premier nombre nommé, le dividende ${{p}}$, va au numérateur.",
+							"label": "Numérateur et dénominateur inversés"
+						},
+						{
+							"answer": "{{eval:p+q}}",
+							"message": "Un quotient est le résultat d'une division, pas d'une addition.",
+							"label": "Somme"
+						},
+						{
+							"answer": "{{eval:p*q}}",
+							"message": "Un quotient est le résultat d'une division, pas d'une multiplication.",
+							"label": "Produit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition du quotient.** Le quotient de ${{p}}$ par ${{q}}$ est le nombre qui, multiplié par ${{q}}$, donne ${{p}}$. Il s'écrit avec le dividende au numérateur et le diviseur au dénominateur.",
+					"$${{p}} \\div {{q}} = \\textcolor{{{color:primary.0}}}{\\frac{{{p}}}{{{q}}}}$$"
+				]
+			},
+			"hint": "Le nombre qu'on divise va en haut, celui par lequel on divise va en bas."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"description": "b/a × a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "13",
+				"b": "10"
+			},
+			"description": "a × b/a",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"description": "borne basse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"description": "recopie de a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{4}{7}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"description": "recopie de la fraction",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{28}{7}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"description": "fraction non simplifiée",
+			"variationIndex": 0
+		},
+		{
+			"description": "F3 mots : 17/23",
+			"variationIndex": 2,
+			"variables": {
+				"p": "17",
+				"q": "23"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{17}{23}"]
+		},
+		{
+			"description": "F3 mots : inversé (23/17)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "17",
+				"q": "23"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier nombre nommé, le dividende $17$, va au numérateur."
+			},
+			"answers": ["\\frac{23}{17}"]
+		},
+		{
+			"description": "F3 mots : somme (40)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "17",
+				"q": "23"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un quotient est le résultat d'une division, pas d'une addition."
+			},
+			"answers": ["40"]
+		},
+		{
+			"description": "F3 mots : produit (391)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "17",
+				"q": "23"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un quotient est le résultat d'une division, pas d'une multiplication."
+			},
+			"answers": ["391"]
+		},
+		{
+			"description": "F3 signe : inversé (19/14)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "14",
+				"q": "19"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le premier nombre nommé, le dividende $14$, va au numérateur."
+			},
+			"answers": ["\\frac{19}{14}"]
+		},
+		{
+			"description": "F3 signe : 10/21",
+			"variationIndex": 3,
+			"variables": {
+				"p": "10",
+				"q": "21"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{10}{21}"]
+		}
+	]
+}

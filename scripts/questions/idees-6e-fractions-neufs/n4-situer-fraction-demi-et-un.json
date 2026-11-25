@@ -1,0 +1,212 @@
+{
+	"rangement": {
+		"noeud": "Nombres et calculs > Fractions : sens et écritures > ordre",
+		"point": "6-133"
+	},
+	"title": "Situer une fraction par rapport à 1/2 et à 1",
+	"description": "Associer six fractions à leur place : plus petite que 1/2, égale à 1/2, entre 1/2 et 1, égale à 1, plus grande que 1 (comparer le numérateur à la moitié du dénominateur) ; puis seulement par rapport à 1",
+	"grades": ["6"],
+	"level": 18,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Associe chaque fraction à ce qu'on peut dire d'elle.\n\n```associer\ngeste: étiquettes\n- $\\frac{{{a1}}}{{{b1}}}$ -> plus petite que $\\frac{1}{2}$\n- $\\frac{{{h}}}{{{eval:2*h}}}$ -> égale à $\\frac{1}{2}$\n- $\\frac{{{a2}}}{{{b2}}}$ -> entre $\\frac{1}{2}$ et $1$\n- $\\frac{{{a3}}}{{{b3}}}$ -> entre $\\frac{1}{2}$ et $1$\n- $\\frac{{{m}}}{{{m}}}$ -> égale à $1$\n- $\\frac{{{a4}}}{{{b4}}}$ -> plus grande que $1$\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..12"
+				},
+				{
+					"name": "b1",
+					"expression": "3..12"
+				},
+				{
+					"name": "a1",
+					"expression": "1..{{eval:floor((b1-1)/2)}}"
+				},
+				{
+					"name": "b2",
+					"expression": "3..12"
+				},
+				{
+					"name": "a2",
+					"expression": "{{eval:floor(b2/2)+1}}..{{eval:b2-1}}"
+				},
+				{
+					"name": "b3",
+					"expression": "3..12"
+				},
+				{
+					"name": "a3",
+					"expression": "{{eval:floor(b3/2)+1}}..{{eval:b3-1}}"
+				},
+				{
+					"name": "b4",
+					"expression": "2..12"
+				},
+				{
+					"name": "a4",
+					"expression": "{{eval:b4+1}}..{{eval:2*b4-1}}"
+				}
+			],
+			"conditions": ["gcd(a1,b1)==1", "gcd(a2,b2)==1", "gcd(a3,b3)==1", "gcd(a4,b4)==1", "b2!=b3"],
+			"correction": {
+				"steps": [
+					"**Comparer à $\\frac{1}{2}$ et à $1$.** On compare le numérateur à la moitié du dénominateur, puis au dénominateur.",
+					"$\\frac{{{a1}}}{{{b1}}}$ : ${{a1}}$ est plus petit que la moitié de ${{b1}}$, donc $\\frac{{{a1}}}{{{b1}}} < \\frac{1}{2}$. $\\frac{{{h}}}{{{eval:2*h}}}$ : ${{h}}$ est la moitié de ${{eval:2*h}}$, donc $\\frac{{{h}}}{{{eval:2*h}}} = \\frac{1}{2}$.",
+					"$\\frac{{{a2}}}{{{b2}}}$ et $\\frac{{{a3}}}{{{b3}}}$ : le numérateur dépasse la moitié du dénominateur sans l'atteindre, donc elles sont entre $\\frac{1}{2}$ et $1$.",
+					"$\\frac{{{m}}}{{{m}}} = 1$ (numérateur égal au dénominateur) et $\\frac{{{a4}}}{{{b4}}} > 1$ car ${{a4}} > {{b4}}$."
+				]
+			},
+			"hint": "Pour chaque fraction, compare le numérateur à la moitié du dénominateur, puis au dénominateur."
+		},
+		{
+			"statement": "Associe chaque fraction à ce qu'on peut dire d'elle.\n\n```associer\ngeste: étiquettes\n- $\\frac{{{a1}}}{{{b1}}}$ -> plus petite que $1$\n- $\\frac{{{a2}}}{{{b2}}}$ -> plus petite que $1$\n- $\\frac{{{m}}}{{{m}}}$ -> égale à $1$\n- $\\frac{{{eval:2*h}}}{{{eval:2*h}}}$ -> égale à $1$\n- $\\frac{{{a4}}}{{{b4}}}$ -> plus grande que $1$\n- $\\frac{{{a3}}}{{{b3}}}$ -> plus grande que $1$\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..12"
+				},
+				{
+					"name": "b1",
+					"expression": "2..12"
+				},
+				{
+					"name": "a1",
+					"expression": "1..{{eval:b1-1}}"
+				},
+				{
+					"name": "b2",
+					"expression": "2..12"
+				},
+				{
+					"name": "a2",
+					"expression": "1..{{eval:b2-1}}"
+				},
+				{
+					"name": "b3",
+					"expression": "2..12"
+				},
+				{
+					"name": "a3",
+					"expression": "{{eval:b3+1}}..{{eval:2*b3+3}}"
+				},
+				{
+					"name": "b4",
+					"expression": "2..12"
+				},
+				{
+					"name": "a4",
+					"expression": "{{eval:b4+1}}..{{eval:2*b4-1}}"
+				}
+			],
+			"conditions": [
+				"gcd(a1,b1)==1",
+				"gcd(a2,b2)==1",
+				"gcd(a3,b3)==1",
+				"gcd(a4,b4)==1",
+				"m!=2*h",
+				"b1!=b2",
+				"b3!=b4"
+			],
+			"correction": {
+				"steps": [
+					"**Comparer à $1$.** Une fraction est plus petite que $1$ quand son numérateur est plus petit que son dénominateur, égale à $1$ quand ils sont égaux, plus grande que $1$ quand il est plus grand.",
+					"$\\frac{{{a1}}}{{{b1}}} < 1$ et $\\frac{{{a2}}}{{{b2}}} < 1$ ; $\\frac{{{m}}}{{{m}}} = \\frac{{{eval:2*h}}}{{{eval:2*h}}} = 1$ ; $\\frac{{{a4}}}{{{b4}}} > 1$ et $\\frac{{{a3}}}{{{b3}}} > 1$."
+				]
+			},
+			"hint": "Compare le numérateur de chaque fraction à son dénominateur."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cinq étiquettes : le bon classement",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"m": "5",
+				"b1": "7",
+				"a1": "2",
+				"b2": "8",
+				"a2": "5",
+				"b3": "9",
+				"a3": "7",
+				"b4": "4",
+				"a4": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "0", "1", "1", "2", "3"]
+		},
+		{
+			"description": "Cinq étiquettes : 3/6 et 5/8 échangées",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"m": "5",
+				"b1": "7",
+				"a1": "2",
+				"b2": "8",
+				"a2": "5",
+				"b3": "9",
+				"a3": "7",
+				"b4": "4",
+				"a4": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4", "1", "0", "1", "2", "3"]
+		},
+		{
+			"description": "Trois étiquettes : le bon classement",
+			"variationIndex": 1,
+			"variables": {
+				"h": "2",
+				"m": "7",
+				"b1": "9",
+				"a1": "4",
+				"b2": "5",
+				"a2": "3",
+				"b3": "3",
+				"a3": "8",
+				"b4": "6",
+				"a4": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "2", "0", "0", "1", "1"]
+		},
+		{
+			"description": "Trois étiquettes : 8/3 dite plus petite que 1",
+			"variationIndex": 1,
+			"variables": {
+				"h": "2",
+				"m": "7",
+				"b1": "9",
+				"a1": "4",
+				"b2": "5",
+				"a2": "3",
+				"b3": "3",
+				"a3": "8",
+				"b4": "6",
+				"a4": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "2", "0", "0", "1", "2"]
+		}
+	]
+}

@@ -1,0 +1,118 @@
+{
+	"rangement": {
+		"noeud": "Arithmétique > Divisibilité > multiples et diviseurs",
+		"point": "CM2-130"
+	},
+	"title": "Le labyrinthe des multiples",
+	"description": "Tracer le chemin qui ne passe que par les multiples d'un nombre : multiples de 2, 5 ou 10 (le dernier chiffre), puis de 3, 4, 6, 7, 8 ou 9 (les tables) ; les intrus sont à 1 ou 2 d'un multiple",
+	"grades": ["CM2"],
+	"level": 18,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Va de l'entrée à une sortie en ne passant que par les multiples de ${{n}}$. Touche les cases une à une.\n\n```labyrinthe\ngrille: 5 x 4\nrègle: multiple de {{n}}\nparcourir: oui\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|5|10"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Multiple de ${{n}}$.** Un multiple de ${{n}}$ est dans la table de ${{n}}$, ou au-delà : sa division par ${{n}}$ tombe juste, sans reste. {{if:n==2|Un multiple de $2$ se termine par $0$, $2$, $4$, $6$ ou $8$.|{{if:n==5|Un multiple de $5$ se termine par $0$ ou $5$.|Un multiple de $10$ se termine par $0$.}}}}",
+					"**Les pièges.** Les intrus sont juste à côté d'un multiple de ${{n}}$ : $1$ ou $2$ de plus ou de moins.",
+					"**Le chemin.** De l'entrée, on avance de case en case (haut, bas, gauche, droite) : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "{{if:n==2|Regarde le dernier chiffre : un multiple de $2$ est un nombre pair.|Regarde le dernier chiffre de chaque nombre.}}"
+		},
+		{
+			"statement": "Va de l'entrée à une sortie en ne passant que par les multiples de ${{n}}$. Touche les cases une à une.\n\n```labyrinthe\ngrille: 5 x 4\nrègle: multiple de {{n}}\nparcourir: oui\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3|4|6|7|8|9"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"**Multiple de ${{n}}$.** Un multiple de ${{n}}$ est dans la table de ${{n}}$, ou au-delà : sa division par ${{n}}$ tombe juste, sans reste. ",
+					"**Les pièges.** Les intrus sont juste à côté d'un multiple de ${{n}}$ : $1$ ou $2$ de plus ou de moins.",
+					"**Le chemin.** De l'entrée, on avance de case en case (haut, bas, gauche, droite) : un seul chemin mène à une sortie, celui teinté sur la grille."
+				]
+			},
+			"hint": "Pour chaque nombre, cherche s'il est dans la table de ${{n}}$ : sa division par ${{n}}$ doit tomber juste."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Multiples de 5 : le bon chemin",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Multiples de 5 : arrêté avant la sortie",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4"]
+		},
+		{
+			"description": "Multiples de 2 : le bon chemin",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Multiples de 7 : le bon chemin",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Multiples de 7 : ne part pas de l'entrée",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		},
+		{
+			"description": "Multiples de 9 : le bon chemin",
+			"variationIndex": 1,
+			"variables": {
+				"n": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2,1 2,2 3,2 4,2 4,3 4,4 3,4 2,4 1,4 1,5"]
+		}
+	]
+}

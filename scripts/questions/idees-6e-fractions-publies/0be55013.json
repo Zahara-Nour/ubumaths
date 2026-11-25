@@ -1,0 +1,289 @@
+{
+	"id": "0be55013-6c7d-447b-98f4-bdfa574ad506",
+	"title": "Calculer une fraction d'une quantité",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"statement": "Calcule ${{b}}/{{c}}$ de ${{eval:a*c}}$.\n\n$\\dfrac{{{b}}}{{{c}}}$ de ${{eval:a*c}}$ est égal à $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!cd(b)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align} \t\t\t\t\t\t\t\t\\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{\\textcolor{{{color:primary.1}}}{{{c}}}} \\text{ de } {{eval:a*c}} \t\t\t\t\t\t\t\t&= {{eval:a*c}}\\textcolor{{{color:primary.1}}}{\\div {{c}}} \\textcolor{{{color:primary.0}}}{\\times {{b}}} \\\\ \t\t\t\t\t\t\t\t&= {{a}} \\times {{b}} \\\\ \t\t\t\t\t\t\t\t&= {{solution:0}}  \t\t\t\t\t\t\t\t\\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule $\\frac{{{a}}}{{{b}}}$ de ${{n}}$. Donne le résultat en écriture décimale.\n\n$\\frac{{{a}}}{{{b}}}$ de ${{n}}$ est égal à $?$.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|4|5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				},
+				{
+					"name": "n",
+					"expression": "3..30"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a!=b", "mod(n,b)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*n/b;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*n}}",
+							"message": "Tu as multiplié par ${{a}}$ sans diviser par ${{b}}$.",
+							"label": "Division oubliée"
+						},
+						{
+							"answer": "{{eval:n/b;d}}",
+							"message": "Tu as pris $\\frac{1}{{{b}}}$ de ${{n}}$ : il en faut ${{a}}$ fois plus.",
+							"label": "Multiplication oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une quantité.** $\\frac{{{a}}}{{{b}}}$ de ${{n}}$, c'est $\\frac{{{a}}}{{{b}}} \\times {{n}}$ : on multiplie par ${{a}}$ et on divise par ${{b}}$.",
+					"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = \\frac{{{a}} \\times {{n}}}{{{b}}} = \\frac{{{eval:a*n}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Multiplie la fraction par ${{n}}$ : la division par ${{b}}$ peut tomber sur un nombre à virgule."
+		},
+		{
+			"statement": "Combien de minutes y a-t-il dans $\\frac{{{a}}}{{{b}}}$ d'heure ?\n\n$$\\frac{{{a}}}{{{b}}}~\\unit{h} = ?~\\text{min}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|4|6"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*b-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a!=b", "10*a+b!=60*a/b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60*a/b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*a+b}}",
+							"message": "Une fraction d'heure ne se lit pas comme des minutes : calcule $\\frac{{{a}}}{{{b}}}$ de $60~\\unit{min}$.",
+							"label": "Chiffres recopiés"
+						},
+						{
+							"answer": "{{eval:60/b}}",
+							"message": "Tu as pris $\\frac{1}{{{b}}}$ d'heure : il en faut ${{a}}$.",
+							"label": "Multiplication oubliée"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une durée.** $1~\\unit{h} = 60~\\unit{min}$, donc $\\frac{1}{{{b}}}~\\unit{h} = 60 \\div {{b}} = {{eval:60/b}}~\\unit{min}$.",
+					"$$\\frac{{{a}}}{{{b}}}~\\unit{h} = {{a}} \\times {{eval:60/b}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{min}}$$"
+				]
+			},
+			"hint": "Une heure, c'est $60$ minutes : commence par trouver $\\frac{1}{{{b}}}$ d'heure."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "6",
+				"c": "5"
+			},
+			"description": "bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["81"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "9",
+				"c": "8"
+			},
+			"description": "bornes hautes",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "3"
+			},
+			"description": "bornes basses",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["240"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "6",
+				"c": "5"
+			},
+			"description": "oubli de diviser",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8\\times6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "8",
+				"b": "6",
+				"c": "5"
+			},
+			"description": "calcul non terminé",
+			"variationIndex": 0
+		},
+		{
+			"description": "F9 : 3/4 de 18 = 13,5",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"n": "18"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["13{,}5"]
+		},
+		{
+			"description": "F9 : 5/4 de 3 = 3,75",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "5",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3{,}75"]
+		},
+		{
+			"description": "F9 : division oubliée (54)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"n": "18"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $3$ sans diviser par $4$."
+			},
+			"answers": ["54"]
+		},
+		{
+			"description": "F9 : multiplication oubliée (4,5)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"n": "18"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris $\\frac{1}{4}$ de $18$ : il en faut $3$ fois plus."
+			},
+			"answers": ["4{,}5"]
+		},
+		{
+			"description": "F9 heure : 3/4 h = 45 min",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["45"]
+		},
+		{
+			"description": "F9 heure : 5/4 h = 75 min",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["75"]
+		},
+		{
+			"description": "F9 heure : 3/4 h lu 34 min",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une fraction d'heure ne se lit pas comme des minutes : calcule $\\frac{3}{4}$ de $60~\\unit{min}$."
+			},
+			"answers": ["34"]
+		},
+		{
+			"description": "F9 heure : 1/4 d'heure seulement (15)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris $\\frac{1}{4}$ d'heure : il en faut $3$."
+			},
+			"answers": ["15"]
+		}
+	]
+}
