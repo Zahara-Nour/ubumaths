@@ -136,6 +136,18 @@ de là (`where student_id in (select student_id from public.active_student_ids()
 `profiles` entier : il mêle les comptes des années passées (adhésions archivées au passage
 d'année), les élèves hors-classe et les élèves de test. `security invoker`, exécution réservée à `service_role` (scripts serveur) et à `supabase_read_only_user` (l'outil Supabase en lecture seule, qui lit déjà toutes les tables ; migration `20261112154105`) — 42501 pour `anon` et `authenticated`. Test : `tests/integration/eleves-actifs.test.ts`.
 
+**Cours particuliers** (migration `20261124224822`, chantier `invitation-cours-particulier`) :
+`schools.is_private_lessons` marque l'école des cours particuliers (Akadada), une seule au plus
+(index unique partiel). `private_lesson_invitations` : invitation d'un élève par un lien envoyé au
+parent (prénom, adresse du parent, niveau — même liste que `classes_grade_check` —, échéance de
+7 jours, envoi du lien actuel, au plus 5 envois, annulation, réservation `claimed_at` pendant la
+création du compte, utilisation, compte et classe créés, posés seulement une fois utilisée). Compte
+de l'élève effacé : l'invitation part avec lui (`on delete cascade`). Lue par le prof et l'admin (`is_teacher_or_admin`), jamais l'empreinte du
+lien (droits par colonne) ; **aucune écriture par un compte connecté** : le serveur l'écrit en
+`service_role`. Le lien est stocké **haché** (sha256). `get_private_lesson_invitation(p_token)`,
+`service_role` seul, rend prénom, niveau, école et échéance d'une invitation encore valable, `null`
+dans tous les autres cas. Test : `tests/integration/invitations-cours-particuliers.test.ts`.
+
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer
 directement dans `class_members`.
