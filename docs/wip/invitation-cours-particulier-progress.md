@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 2 commitée (f056676d6f), revue de code lue, audit de sécurité à relancer._
+_Mis à jour le 2026-11-25, PR 2 commitée (f056676d6f), revue de code et audit de sécurité lus, findings à corriger._
 
-- **État** : PR 2 (admin) écrite et commitée, NON poussée, sur `feat/invitation-cours-particulier-admin` : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien, sans migration) ; 13 tests d'intégration verts, tests unitaires verts, parcours inviter/renvoyer/annuler vu à l'écran (0 erreur de console) ; dernier `check:incremental` à 0 erreur avant la retouche du sélecteur de niveau · **Prochaine action** : `pnpm check:incremental` + `pnpm types:cliquet` (verrous pris par d'autres sessions), corriger les findings de `code-reviewer` notés ci-dessous (« Revue de la PR 2 »), relancer `security-auditor` (opus, son résultat est perdu au `/clear`), corriger, push, PR, `pnpm pr:merger` ; puis PR 3 (page du parent `/auth/register/invitation/<jeton>`) · **En attente de David** : la page de confidentialité doit-elle citer la conservation des invitations (adresse du parent : 7 j + 30 j) ? · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à une page de la PR 3) ; base locale : réglage `is_private_lessons` posé à la main sur Akadada ; serveur de dev du worktree sur 5178 · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
+- **État** : PR 2 (admin) écrite et commitée, NON poussée, sur `feat/invitation-cours-particulier-admin` : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien, sans migration) ; 13 tests d'intégration verts, tests unitaires verts, parcours inviter/renvoyer/annuler vu à l'écran (0 erreur de console) ; dernier `check:incremental` à 0 erreur avant la retouche du sélecteur de niveau · **Prochaine action** : corriger les findings de `code-reviewer` notés ci-dessous (« Revue de la PR 2 »), et ceux de `security-auditor` (« Audit de sécurité de la PR 2 », aucun bloquant), puis `check:incremental` + `types:cliquet`, push, push, PR, `pnpm pr:merger` ; puis PR 3 (page du parent `/auth/register/invitation/<jeton>`) · **En attente de David** : la page de confidentialité doit-elle citer la conservation des invitations (adresse du parent : 7 j + 30 j) ? · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à une page de la PR 3) ; base locale : réglage `is_private_lessons` posé à la main sur Akadada ; serveur de dev du worktree sur 5178 · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
 
 ## But
 
@@ -87,6 +87,16 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
    l'ancienne empreinte jusqu'à l'envoi.
 5. (mineur) Exception de l'expéditeur après l'insertion → 500 « non créée », alors que la ligne existe.
 6. (mineur) Champ absent → message Zod en anglais.
+
+## Audit de sécurité de la PR 2 (security-auditor, 2026-11-25) — aucun bloquant
+
+- **C1** : aucun test sur la garde des actions `invite` / `resend` / `cancel` → test serveur :
+  prof non élevé et élève → 403, `createServiceRoleClient` et l'expéditeur jamais appelés ; admin élevé passe.
+- **C2** : plafond de 5 contournable (N invitations pour la même adresse ; délai d'attente de Brevo
+  compté « non parti ») ; quota Brevo partagé (300/jour) → limite de débit par admin sur `invite`
+  et `resend` (`rateLimiter.ts`, ex. 20/h) ou refus d'un doublon ouvert (même adresse + prénom).
+- N1 : `invitations.ts` journalise l'erreur PostgREST entière dans `sendAndRecord` → `error.code` seul.
+- N3 (PR 3) : jeton dans le chemin → `Referrer-Policy: no-referrer` et aucune ressource tierce sur la page du lien.
 
 ## Dette pour les PR 2 et 3 (revues de la PR 1)
 
