@@ -25,6 +25,8 @@
  *   5. il ne reçoit pas le message marqué d'une conversation à deux où l'un des
  *      deux n'est pas un élève (admin et élève) ;
  *   6. un élève, l'admin et un visiteur non connecté sont refusés ;
+ *   6 bis. un élève qui quitte la conversation ne cache pas son message marqué
+ *      (décision du 2026-11-25) ; le message marqué d'un adulte ne sort jamais ;
  *   7. la lecture directe de `messages` par le prof n'a pas changé (la RLS n'est
  *      pas ouverte : seule la fonction rend ces messages).
  *
@@ -259,28 +261,82 @@ describe('Modération — messages marqués lus par le prof (écart T21)', () =>
 			expect(ligne).toMatchObject({ plain_text: INSULTE, is_group: true, deleted_at: null });
 		});
 
-		it('exclut une conversation non groupe à trois, ou à un seul participant', async () => {
+		it('exclut une conversation non groupe à trois', async () => {
 			const pg = await getPostgresClient();
 			const aTrois = await conversationPrivee(eleve.id, camarade.id);
 			await pg.query(
 				`insert into conversation_participants (conversation_id, user_id) values ($1, $2)`,
 				[aTrois, horsClasseA.id]
 			);
-			const seul = await conversationPrivee(horsClasseA.id, horsClasseB.id);
-			await pg.query(
-				`delete from conversation_participants where conversation_id = $1 and user_id = $2`,
-				[seul, horsClasseB.id]
-			);
 			const dansATrois = await envoyer(aTrois, eleve.id, INSULTE);
-			const dansSeul = await envoyer(seul, horsClasseA.id, INSULTE);
 
 			const ids = (await marquesPour(teacherClient)).map((l) => l.id);
 
 			expect(ids).not.toContain(dansATrois);
-			expect(ids).not.toContain(dansSeul);
 		});
 
-		it('garde le message marqué dont l’auteur n’a plus de compte, sans nom', async () => {
+		// Constat du security-auditor (2026-11-25), tranché par David : quitter la
+		// conversation ne cache pas l'insulte au prof.
+		it('l’auteur quitte la conversation par l’API : son message marqué reste rendu', async () => {
+			const conversation = await conversationPrivee(eleve.id, camarade.id);
+			const id = await envoyer(conversation, eleve.id, INSULTE);
+			expect((await marquesPour(teacherClient)).map((l) => l.id)).toContain(id);
+
+			const { data, error } = await eleveClient
+				.from('conversation_participants')
+				.delete()
+				.eq('conversation_id', conversation)
+				.eq('user_id', eleve.id)
+				.select('user_id');
+			// Le départ doit avoir eu lieu, sinon le test ne prouve rien.
+			expect(error).toBeNull();
+			expect(data).toHaveLength(1);
+
+			const ligne = (await marquesPour(teacherClient)).find((l) => l.id === id);
+			expect(ligne).toMatchObject({ plain_text: INSULTE, sender_firstname: eleve.firstname });
+		});
+
+		it('les deux élèves sont partis : le message marqué reste rendu', async () => {
+			const conversation = await conversationPrivee(horsClasseA.id, horsClasseB.id);
+			const id = await envoyer(conversation, horsClasseA.id, INSULTE);
+			const pg = await getPostgresClient();
+			await pg.query(`delete from conversation_participants where conversation_id = $1`, [
+				conversation
+			]);
+
+			expect((await marquesPour(teacherClient)).map((l) => l.id)).toContain(id);
+		});
+
+		it('un élève parti ne rend pas le message marqué écrit par un adulte', async () => {
+			const conversation = await conversationPrivee(admin.id, eleve.id);
+			const deLAdmin = await envoyer(conversation, admin.id, INSULTE);
+			const pg = await getPostgresClient();
+			// Il ne reste que l'élève : la conversation ressemble à une conversation d'élèves.
+			await pg.query(
+				`delete from conversation_participants where conversation_id = $1 and user_id = $2`,
+				[conversation, admin.id]
+			);
+
+			expect((await marquesPour(teacherClient)).map((l) => l.id)).not.toContain(deLAdmin);
+		});
+
+		it('élève parti, adulte resté : rien n’est rendu', async () => {
+			const conversation = await conversationPrivee(admin.id, eleve.id);
+			const deLEleve = await envoyer(conversation, eleve.id, INSULTE);
+			const pg = await getPostgresClient();
+			await pg.query(
+				`delete from conversation_participants where conversation_id = $1 and user_id = $2`,
+				[conversation, eleve.id]
+			);
+
+			expect((await marquesPour(teacherClient)).map((l) => l.id)).not.toContain(deLEleve);
+		});
+
+		// Décor partiel : seul l'auteur du message est retiré. Une vraie suppression de
+		// compte retire aussi le participant (CASCADE) : il reste moins de deux
+		// participants et un auteur inconnu, le message sort alors de la liste
+		// (cohérent avec l'effacement du compte).
+		it('garde le message marqué dont l’auteur n’est plus rattaché, sans nom', async () => {
 			const id = await envoyer(priveEnClasse, eleve.id, INSULTE);
 			const pg = await getPostgresClient();
 			await pg.query('begin');

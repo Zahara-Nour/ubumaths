@@ -26,6 +26,16 @@
 -- Une conversation à deux où l'un des participants n'est pas un élève (admin et
 -- élève, par exemple) n'est pas ouverte au prof.
 --
+-- Élève parti (tranché par David le 2026-11-25, constat du security-auditor) :
+-- un élève peut quitter une conversation à deux par l'API (policy « Users can
+-- leave conversations »). Sans précaution, ses messages marqués sortaient de
+-- l'onglet. Le prof lit donc aussi le message marqué d'une conversation non
+-- groupe à qui il reste moins de deux participants, si son auteur est un élève
+-- et qu'aucun participant restant n'est autre chose qu'un élève. Limite connue
+-- et acceptée : si c'est un adulte qui a quitté une conversation avec un élève,
+-- le message marqué de l'élève devient lisible par le prof (jamais ceux de
+-- l'adulte) ; rien ne garde la trace de qui est parti.
+--
 -- `deleted_by_moderation` : vrai quand une suppression par le prof ou l'admin est
 -- tracée dans `moderation_logs`. Faux ne prouve PAS que l'auteur a supprimé :
 -- `review_report` et `soft_delete_message` suppriment sans trace, et `messages`
@@ -101,19 +111,34 @@ BEGIN
 			WHERE cp.conversation_id = m.conversation_id AND cp.user_id = v_uid
 		)
 		OR c.is_group IS TRUE
-		-- Nouveau : conversation à deux dont les deux participants sont des élèves.
+		-- Nouveau : conversation à deux entre élèves. Aucun participant qui ne soit
+		-- pas un élève, et soit les deux élèves sont là, soit l'un d'eux (ou les
+		-- deux) est parti et l'auteur du message est un élève.
 		OR (
 			c.is_group IS FALSE
-			AND (
-				SELECT count(*) FROM conversation_participants cp
-				WHERE cp.conversation_id = m.conversation_id
-			) = 2
 			AND NOT EXISTS (
 				SELECT 1
 				FROM conversation_participants cp
 				LEFT JOIN profiles pp ON pp.id = cp.user_id
 				WHERE cp.conversation_id = m.conversation_id
 				  AND pp.role IS DISTINCT FROM 'student'
+			)
+			AND (
+				(
+					(
+						SELECT count(*) FROM conversation_participants cp
+						WHERE cp.conversation_id = m.conversation_id
+					) = 2
+					-- Jamais le message d'un adulte ; un auteur sans compte reste listé.
+					AND (s.id IS NULL OR s.role = 'student')
+				)
+				OR (
+					(
+						SELECT count(*) FROM conversation_participants cp
+						WHERE cp.conversation_id = m.conversation_id
+					) < 2
+					AND s.role = 'student'
+				)
 			)
 		)
 	  )

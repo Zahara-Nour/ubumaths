@@ -318,7 +318,10 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
     « supprimé par la modération » quand elle est tracée, « supprimé » seul sinon. Faux ne veut
     pas dire « par l'élève » : `review_report` (suppression depuis un signalement) et
     `soft_delete_message` ne tracent rien, et il n'y a pas de colonne `deleted_by`. Une conversation à deux où l'un
-    des deux n'est pas un élève reste fermée. Aucune policy n'est touchée : la lecture directe de
+    des deux n'est pas un élève reste fermée. Un élève qui **quitte** la conversation (possible
+    par l'API) ne cache pas son message : une conversation non groupe à moins de deux
+    participants reste lue si l'auteur du message est un élève et qu'aucun participant restant
+    n'est autre chose qu'un élève. Aucune policy n'est touchée : la lecture directe de
     `messages` par le prof ne rend toujours ni ces conversations ni les messages supprimés (la
     policy SELECT nomme les conversations à deux, mais lit `conversation_participants` sous la
     RLS du prof, qui n'y voit que les siennes). Test :

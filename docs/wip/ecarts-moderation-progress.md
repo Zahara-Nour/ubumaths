@@ -1,17 +1,17 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (#3115) et PR 2 (#3125) mergées, migration en prod ; PR 3 codée et relue, en attente d'une réponse de David avant ouverture
+status: PR 1 (#3115) et PR 2 (#3125) mergées, migration en prod ; PR 3 ouverte (messages marqués des conversations à deux, supprimés et élève parti compris)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (6), après #3125, PR 3 en cours._
+_Mis à jour le 2026-11-25 (7), après #3125, PR 3 ouverte._
 
-- **État** : PR 1 (#3115) et PR 2 (#3125) mergées, migration `20261124230639` en prod, rien n'est déployé. **PR 3 codée, pas ouverte** : commits locaux sur `fix/ecarts-moderation-marques`, rien de poussé. Fonction `get_flagged_messages_for_teacher` (migration `20261125063042`, additive), page, onglet, tests (16 d'intégration, 10 de page), doc. Revues faites, aucun bloquant. Rendu vu à l'écran.
-- **Prochaine action** : dès la réponse de David (ci-dessous), ajuster la fonction et son test si « oui », puis `pnpm docs:check-a-jour --depuis origin/main`, `pnpm check:migrations`, pousser, ouvrir la PR, `pnpm pr:merger`, `migration list --linked` puis `db:migrate` (4 conditions réunies), barrer T21 au registre avec le numéro de la PR.
-- **En attente de David** : un élève qui **quitte** une conversation à deux fait sortir ses messages marqués de l'onglet. Faut-il que le prof lise aussi le message marqué d'une conversation à deux dont un élève est parti ? (détail : section « PR 3 »).
-- **Pièges en cours** : accès tranché le 2026-11-25 = élèves hors-classe compris, texte du message supprimé lisible, rien ne change pour l'admin ni les élèves. La mention est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève » (non prouvable). L'admin a un 403 sur la page de modération du prof. La base locale a déjà la migration (`db:a-jour`). T24 hors lot.
+- **État** : PR 1 (#3115) et PR 2 (#3125) mergées, migration `20261124230639` en prod, rien n'est déployé. **PR 3 poussée** (`fix/ecarts-moderation-marques`) : fonction `get_flagged_messages_for_teacher` (migration `20261125063042`, additive), page, onglet, tests, doc. Revues faites (code, sécurité, ré-audit du delta « élève parti »), aucun bloquant. Rendu vu à l'écran.
+- **Prochaine action** : `pnpm check:migrations --pr <n>`, `pnpm pr:merger <n>`, puis `migration list --linked` et `db:migrate` (4 conditions réunies : accès tranché, tests rouges sans la migration, audit sans bloquant, additive avec rollback). Ensuite, sur `main` : barrer T21 au registre avec le numéro de la PR, inscrire l'écart « un élève déplace son message marqué » (section « PR 3 »), réécrire ce bloc.
+- **En attente de David** : rien pour cette PR. Après : la question d'accès en miroir de l'écart « message déplacé » (interdire à l'élève de changer la conversation de son message ?).
+- **Pièges en cours** : accès tranché le 2026-11-25 = élèves hors-classe compris, texte du message supprimé lisible, élève parti compris, rien ne change pour l'admin ni les élèves. La mention est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève » (non prouvable). L'admin a un 403 sur la page de modération du prof. La base locale a déjà la fonction. T24 hors lot.
 - **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-moderation-marques` · `fix/ecarts-moderation-marques`.
 
 ---
@@ -83,4 +83,6 @@ _Mis à jour le 2026-11-25 (6), après #3125, PR 3 en cours._
   - **Important, à trancher par David avant d'ouvrir la PR** : un élève peut quitter une conversation à deux par l'API (policy « Users can leave conversations »). La conversation n'a plus qu'un participant, et ses messages marqués sortent de l'onglet (rejoué sur la pile de test : 1 ligne avant, 0 après). Ce n'est pas un accès en trop, c'est une insulte qui se cache. Correctif proposé : ne plus exiger « exactement deux participants », mais « conversation non groupe, auteur élève, aucun participant qui ne soit pas un élève ». C'est une question d'accès : le prof lirait aussi le message marqué d'une conversation à deux dont un élève est parti.
   - Mineur, pour mémoire : un élève qui modifie son message garde la marque mais le texte lu par le prof est recalculé (relève de T30).
 - Rendu vérifié à l'écran (iPhone, WebKit, compte prof local, trois messages fictifs retirés ensuite) : le message marqué, le message supprimé (« Message supprimé »), le message supprimé par la modération, et pas le message non marqué de la même conversation. `pnpm voir` : 0 erreur de console.
-- **PR pas encore ouverte** : commits locaux sur `fix/ecarts-moderation-marques`, rien de poussé.
+- **Élève parti, tranché par David le 2026-11-25 (« je te suis » sur le oui)** : le prof lit aussi le message marqué d'une conversation à deux dont un élève est parti. Règle : conversation non groupe, aucun participant restant qui ne soit pas un élève, et soit deux participants (auteur élève ou sans compte), soit moins de deux et auteur élève. Limite acceptée, écrite dans la migration : si un adulte quitte une conversation avec un élève, le message marqué de l'élève devient lisible par le prof, jamais ceux de l'adulte. Tests : 20 verts, dont le départ par l'API avec le client de l'élève.
+- Ré-audit `security-auditor` du delta : **aucun bloquant**. Conversation à 0 participant créée par un élève : il ne peut ni y écrire ni y déplacer un message. Resserrement repris : la branche « deux participants » exige un auteur élève ou sans compte.
+  - **À inscrire au registre après le merge (ancien, hors PR)** : un élève à accès complet peut changer `conversation_id` de son propre message (policy « Users can edit their own messages », `guard_read_only_actor` ne le bloque que pour les comptes en lecture seule) et le déplacer vers une conversation avec un adulte : la marque reste, le prof ne le voit plus. Rejoué sur la pile de test. Correctif proposé : refuser le changement de `conversation_id` hors prof et admin (question d'accès en miroir pour David).
