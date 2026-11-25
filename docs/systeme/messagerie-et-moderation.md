@@ -296,10 +296,23 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - **La marque ne se maquille pas.** Le trigger joue à l'envoi et sur **tout** `UPDATE` de
   `messages`. `plain_text` est toujours recalculé depuis `content`, pour tout le monde. Un élève
   n'écrit ni `is_flagged` ni `flag_reason` : à l'envoi elles viennent de la détection ; ensuite
-  une marque posée reste, et modifier le contenu la recalcule sans jamais la retirer. Prof, admin
+  une marque posée reste (ses valeurs sont écrasées, sans erreur). Prof, admin
   et serveur (pas d'utilisateur connecté) écrivent la marque à la main. La détection ne rejoue
-  que si le contenu change : retirer une marque à la main tient. Test :
-  `tests/integration/messages-marque-non-maquillable.test.ts`.
+  que si le contenu change, donc seulement quand le serveur réécrit un message : retirer une
+  marque à la main tient. Test : `tests/integration/messages-marque-non-maquillable.test.ts`.
+- **Un message envoyé ne se réécrit pas.** Aucun compte connecté (élève, prof, admin) ne change
+  le contenu, le texte (`plain_text`), la date d'envoi, la date de modification ni l'auteur d'un
+  message du chat : le trigger `guard_message_reecriture_trg` refuse (`42501`, « Un message
+  envoye ne se reecrit pas »). Décision de David du 2026-11-25, comme pour les messages privés ;
+  l'application n'a pas de bouton « modifier ». Sans lui, un élève remplaçait l'insulte de son
+  message marqué par un texte propre, que le prof lisait à la place dans l'onglet « Messages
+  marqués », ou antidatait le message pour le sortir de l'onglet ; le prof pouvait réécrire le
+  message d'un élève du chat de sa classe. C'est une **liste blanche** : un compte connecté ne
+  change que `deleted_at` (supprimer), `is_reported` (signaler, et un signalement posé ne se
+  retire pas), `is_flagged` et `flag_reason` (la marque, règle ci-dessus) ; une colonne ajoutée
+  plus tard est refusée tant qu'elle n'est pas dans la liste. Renvoyer une valeur identique
+  n'est pas une réécriture. Le serveur (pas d'utilisateur connecté) garde la main.
+  Test : `tests/integration/messages-chat-non-reecrits.test.ts`.
 - **Un message ne change pas de conversation.** Aucun compte connecté (élève, prof, admin) ne
   modifie `conversation_id` d'un message : le trigger `guard_message_conversation_trg` refuse
   (`42501`). Sans lui, un élève sortait son message marqué de l'onglet du prof en le déplaçant

@@ -10,13 +10,15 @@
  * le chat montre toujours le vrai contenu.
  *
  * Décision de David (2026-11-25) : l'élève ne peut plus écrire `is_flagged`,
- * `flag_reason` ni `plain_text` de ses messages ; il garde la modification du
- * contenu et la suppression.
+ * `flag_reason` ni `plain_text` de ses messages ; il garde la suppression.
+ * Depuis l'écart T33 (même jour), plus aucun compte connecté ne réécrit un
+ * message envoyé : `plain_text` et le contenu sont refusés avec une erreur
+ * (`messages-chat-non-reecrits.test.ts`), la marque reste écrasée en silence.
  *
  * Ce que le fichier prouve :
  *   1. l'élève ne retire pas la marque, ne change pas la raison, ne réécrit pas
  *      `plain_text` ; un élève en lecture seule non plus ;
- *   2. modifier le contenu recalcule le texte et la marque, sans jamais la retirer ;
+ *   2. réécrire le contenu pour retirer la marque est refusé ;
  *   3. à l'envoi, la marque et le texte viennent du contenu, pas de ce que l'élève
  *      envoie dans ces colonnes ;
  *   4. non-régression : un message supprimé garde sa marque ; le prof peut retirer
@@ -99,6 +101,23 @@ async function modifier(client: Client, messageId: string, patch: MessageUpdate)
 		.select('id');
 	expect(error).toBeNull();
 	expect(data).toHaveLength(1);
+}
+
+/** UPDATE refusé par la garde de réécriture (T33) : erreur, ligne intacte. */
+async function reecritureRefusee(
+	client: Client,
+	messageId: string,
+	patch: MessageUpdate
+): Promise<void> {
+	const avant = await enBase(messageId);
+	const { data, error } = await client
+		.from('messages')
+		.update(patch)
+		.eq('id', messageId)
+		.select('id');
+	expect(data).toBeNull();
+	expect(error?.code).toBe('42501');
+	expect(await enBase(messageId)).toEqual(avant);
 }
 
 /** Conversation privée (non groupe) entre deux comptes ; rend son identifiant. */
@@ -192,7 +211,7 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 		it('ne réécrit pas le texte lu par le prof', async () => {
 			const id = await envoyer(classeConversationId, eleve.id, INSULTE);
 
-			await modifier(eleveClient, id, { plain_text: PROPRE });
+			await reecritureRefusee(eleveClient, id, { plain_text: PROPRE });
 
 			expect(await enBase(id)).toMatchObject({ plain_text: INSULTE, is_flagged: true });
 		});
@@ -200,7 +219,11 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 		it('ne maquille pas tout d’un coup (marque, raison et texte)', async () => {
 			const id = await envoyer(classeConversationId, eleve.id, INSULTE);
 
-			await modifier(eleveClient, id, { is_flagged: false, flag_reason: null, plain_text: PROPRE });
+			await reecritureRefusee(eleveClient, id, {
+				is_flagged: false,
+				flag_reason: null,
+				plain_text: PROPRE
+			});
 
 			expect(await enBase(id)).toMatchObject({
 				plain_text: INSULTE,
@@ -226,8 +249,8 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 
 			expect(await enBase(id)).toMatchObject({ is_flagged: true, flag_reason: RAISON });
 
-			// Le texte seul : refusé plus tôt, par la garde de lecture seule
-			// (`guard_read_only_actor_trg`, qui passe avant le trigger de marquage).
+			// Le texte seul : refusé plus tôt, par la garde de réécriture
+			// (`guard_message_reecriture_trg`, qui passe avant le trigger de marquage).
 			const { error } = await client
 				.from('messages')
 				.update({ plain_text: PROPRE })
@@ -238,36 +261,16 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 		});
 	});
 
-	describe('modifier le contenu', () => {
-		it('un message marqué réécrit proprement garde sa marque, avec le nouveau texte', async () => {
+	describe('réécrire le contenu', () => {
+		it('un message marqué ne se réécrit pas proprement : refus, marque et texte intacts', async () => {
 			const id = await envoyer(classeConversationId, eleve.id, INSULTE);
 
-			const { data, error } = await eleveClient
-				.from('messages')
-				.update({ content: doc(PROPRE), is_flagged: false, flag_reason: null })
-				.eq('id', id)
-				.select('id');
-
-			expect(error).toBeNull();
-			expect(data).toHaveLength(1);
-			expect(await enBase(id)).toMatchObject({
-				plain_text: PROPRE,
-				is_flagged: true,
-				flag_reason: RAISON
+			await reecritureRefusee(eleveClient, id, {
+				content: doc(PROPRE),
+				is_flagged: false,
+				flag_reason: null
 			});
-		});
 
-		it('un message propre réécrit avec une insulte est marqué, même avec un faux texte', async () => {
-			const id = await envoyer(classeConversationId, eleve.id, PROPRE);
-
-			const { data, error } = await eleveClient
-				.from('messages')
-				.update({ content: doc(INSULTE), plain_text: PROPRE, is_flagged: false })
-				.eq('id', id)
-				.select('id');
-
-			expect(error).toBeNull();
-			expect(data).toHaveLength(1);
 			expect(await enBase(id)).toMatchObject({
 				plain_text: INSULTE,
 				is_flagged: true,

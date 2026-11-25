@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: cinq PR mergées (#3115, #3125, #3132, #3140, #3143), migrations en prod ; T33 à ouvrir par une phase 0
+status: cinq PR mergées (#3115, #3125, #3132, #3140, #3143), migrations en prod ; PR 6 (T33, T30) sur sa branche, à ouvrir
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (13), après #3143 et sa migration en prod._
+_Mis à jour le 2026-11-25 (14), PR 6 (T33 et T30) écrite sur sa branche, pas encore ouverte._
 
-- **État** : cinq PR mergées : #3115 (T20, T25, T27), #3125 (T22, C32, marque non maquillable), #3132 (T21), #3140 (T31 : un message ne change pas de conversation), **#3143 (T32 : une participation ne change pas de conversation)**. Registre : T31 et T32 barrés, T33 et M59 ouverts. En prod : toutes les migrations jusqu'à `20261125114503` (T32, jouée par David le 2026-11-25, trigger `guard_participation_conversation_trg` vérifié en lecture). Rien n'est déployé (`deploy:prod` sur demande de David).
-- **Prochaine action** : **T33**, dans une session neuve, en commençant par une phase 0 (où garder le texte d'origine, combien de temps, qui le lit, ce que voit le prof). Tranché par David : le texte d'origine d'un message marqué que l'élève réécrit est gardé pour le prof.
-- **En attente de David** : rien.
-- **Pièges en cours** : T30 (déjà au registre) couvre la date d'envoi réécrite ; ma sonde du 2026-11-25 n'a modifié aucune ligne en changeant `created_at`, à reprouver avant d'y toucher. Un élève ne supprime pas son message par un UPDATE direct de `deleted_at` (RLS). La mention de l'onglet est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève ». Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Remarque du `security-auditor` sur #3143, non prouvée : le motif « policy UPDATE sans liste de colonnes » peut exister sur d'autres tables d'élèves.
-- **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
+- **État** : cinq PR mergées (#3115, #3125, #3132, #3140, #3143), migrations en prod jusqu'à `20261125114503`, rien n'est déployé. **PR 6 en cours, non ouverte** : branche `fix/ecarts-moderation-t33` commitée et poussée (migration `20261125145621_message_chat_non_reecrit.sql`, 16 tests neufs verts, deux fichiers de tests adaptés, doc, registre, journal § PR 6). Décision de David (« go A ») : un message de chat envoyé ne se réécrit plus, prof et admin compris ; rien n'est stocké en plus.
+- **Prochaine action**, dans l'ordre : (1) relancer `pnpm test:integration` en entier dans le worktree (la suite lancée avant le `/clear` n'a pas été lue) ; (2) relancer le `security-auditor` (Opus) sur le diff, son rapport n'était pas arrivé, **aucun merge sans lui** ; (3) appliquer les mineurs du `code-reviewer` (rien de bloquant) : ajouter `expect(error?.message).toContain('ne se reecrit pas')` au helper `reecritureRefusee` de `messages-marque-non-maquillable.test.ts` ; commentaire sur les deux tests de `lecture-seule-garde-base.test.ts` (l. 339 et 395) que la nouvelle garde refuse désormais avant celle de lecture seule ; (4) `pnpm db:types:verifier`, `pnpm check:incremental`, `pnpm docs:check-a-jour --depuis origin/main` ; (5) ouvrir la PR, remplacer « (#PR) » par son numéro dans `docs/ecarts/registre.md` (T30 et T33) dans le même push, `pnpm check:migrations --pr <n>`, `pnpm pr:merger <n>` ; (6) la migration en prod est jouée par David (`! pnpm db:migrate`, après `migration list --linked`).
+- **En attente de David** : une question du `code-reviewer`, à lui poser : un prof peut-il « restaurer » un message supprimé en remettant `deleted_at` à vide par l'API ? À prouver par un test avant de demander (l'auteur est bloqué par la RLS ; pour le prof, policy « Teachers can delete messages in their class chats »). Ne pas l'interdire sans sa réponse.
+- **Pièges en cours** : la garde est un trigger, pas un retrait de droits par colonne (qui masquerait le message de T31). La mention de l'onglet est « supprimé par la modération » ou « supprimé » seul. Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Motif « policy UPDATE sans liste de colonnes » possible sur d'autres tables d'élèves (non prouvé).
+- **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-moderation-t33` · `fix/ecarts-moderation-t33`. Lire CET exemplaire du journal, celui de `main` est en retard.
 
 ---
 
@@ -110,3 +110,13 @@ _Mis à jour le 2026-11-25 (13), après #3143 et sa migration en prod._
 - **Doc** : `docs/systeme/messagerie-et-moderation.md`, ligne ajoutée sous celle de T31.
 - **Merge (#3143)** : CI verte au premier passage, mergée par `pnpm pr:merger`. `20261125114503` reste à jouer en prod (David).
 - **Migration en prod** : `20261125114503` jouée par David le 2026-11-25 ; trigger actif, fonction non `SECURITY DEFINER`, `search_path` fixé (lecture seule).
+
+## PR 6 : un message envoyé ne se réécrit pas, écarts T33 et T30 (2026-11-25)
+
+- **Phase 0** : constat en lisant le code, l'application n'a aucun bouton « modifier » dans le chat (`grep -rn "from('messages')" src` : une seule mise à jour, `deleted_at`, par le client service). Deux voies proposées : A, un message envoyé ne se réécrit plus (comme les messages privés, décision du 2026-10-13) ; B, garder une copie du texte d'origine. **Décision de David (« go A », 2026-11-25)** : A, prof et admin refusés aussi. Rien n'est stocké en plus : le prof lit le texte d'origine parce qu'il n'y en a qu'un. Cela remplace la lettre de la décision précédente (« le texte d'origine est gardé pour le prof »).
+- **Choix technique** : un trigger et non un retrait de droits par colonne (`REVOKE UPDATE` + `GRANT UPDATE (colonnes)`, la forme des messages privés) : le retrait de droits passe avant les triggers et aurait remplacé le message de T31 (« ne change pas de conversation ») par un « permission denied » sans explication.
+- **Migration `20261125145621_message_chat_non_reecrit.sql`** : trigger `guard_message_reecriture_trg` BEFORE UPDATE sur `messages`, **liste blanche** pour tout compte connecté : `deleted_at`, `is_reported` (vers vrai seulement), `is_flagged`, `flag_reason`. Refus `42501` (« Un message envoye ne se reecrit pas », « Un signalement ne se retire pas », sans accent). Additive, rollback en commentaire, aucune policy touchée, fonction non `SECURITY DEFINER`.
+- **T30 reprouvé puis fermé** : le test rouge montre qu'un élève antidatait bien son message (une ligne rendue) ; ma sonde du matin se trompait. Le reste de T30 (date de modification, signalement retiré, anciens messages modifiés par un élève restreint) tombe sous la même liste blanche.
+- **Constat en plus** : le prof pouvait réécrire le message d'un élève du chat de sa classe et en changer l'auteur (policy « Teachers can delete messages in their class chats », sans WITH CHECK). Fermé par la même garde, testé.
+- **Tests** : `tests/integration/messages-chat-non-reecrits.test.ts`, 16 tests ; **rouges sans la migration** (10 sur 15 à la première écriture, les 5 verts étant les non-régressions). Deux fichiers adaptés : `messages-marque-non-maquillable.test.ts` (l'élève qui envoie `plain_text` est refusé au lieu d'être ignoré ; les deux tests « modifier le contenu » deviennent un refus) et `messages-conversation-non-modifiable.test.ts` (non-régression sans réécriture).
+- **Doc** : `docs/systeme/messagerie-et-moderation.md` § Grossièretés ; registre : T30 et T33 barrés.
