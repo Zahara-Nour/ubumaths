@@ -4,13 +4,13 @@ Skill `idees-rubrique`. Rubrique réservée le 2026-11-24 (commit `331a401c9` su
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3126 et `db:migrate`._
+_Mis à jour le 2026-11-25, après #3126, `db:migrate` et la relecture de David._
 
-- **État** : #3126 mergée ; `db:migrate` lancé par David (migrations `20261125054953` rangement et `20261125055001` contenu). Écarts F6 confirmés par David (« je te suis »).
-- **Prochaine action** : vérifier en prod (MCP) : 6 neufs rangés et tagués (3e683a73 6-126, 0a21fe2f 6-128, eae76a51 6-132, 727794bb 6-133, f2ffb9fd 6-141, 517dce40 CM2-130) ; 13 publiés aux nombres de variations attendus (93147367 3, 000368e1 3, 6fdcdda1 4, c415d81d 4, 5aa1d44c 6, afebbb91 3, 6818662d 3, 83c835bb 5, 58bbee5d 3, 0be55013 3, 5cd25c2b 6, f9e9637c 5, 5c8a6da6 2). Puis relecture dans `/dev/modeles`.
-- **En attente de David** : la relecture dans `/dev/modeles` (`?point=6-126`, `6-128`, `6-132`, `6-133`, `6-141`, `CM2-130`) et une série de relecture des 13 publiés (à créer par `scripts/series/creer-serie.ts`, David la publie).
-- **Pièges en cours** : corrections après relecture : neufs → fichiers puis migration de contenu ; publiés → `migration-contenu.ts`. N6 en CM2.
-- **Worktree / branche** : aucun (retiré par `pr:merger`) ; un nouveau sur `origin/main` pour la PR suivante.
+- **État** : migrations vérifiées en prod (6 neufs rangés et tagués, 13 publiés aux bons nombres de variations). David a validé les modèles (« je valide les modèles », 2026-11-25) **par message** : aucun verdict en base (`question_template_reviews` vide pour ce lot).
+- **Prochaine action** : `pnpm tsx scripts/questions/garde-niveaux-tags.ts`, puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-6e-fractions-neufs` en simulation (prod, lecture), puis donner à David la commande `!` avec `--publier`. Les 13 publiés n'ont rien à publier (variations déjà en ligne par la migration de contenu).
+- **En attente de David** : le `--publier` des 6 neufs, après la simulation.
+- **Pièges en cours** : N6 (517dce40) en CM2. Ensuite : tableau de répartition (rubrique « publiée », réservations des 13 modèles levées) et versement du journal.
+- **Worktree / branche** : aucun ; doc seule → commit direct sur `main`.
 
 ## Décisions de phase 0 (David, 2026-11-25 : « je suis tes recos »)
 
