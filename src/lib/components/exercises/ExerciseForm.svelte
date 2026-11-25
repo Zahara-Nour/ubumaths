@@ -941,10 +941,10 @@
 		>
 		<Button type="submit" disabled={submitting}>
 			{submitting
-				? 'Enregistrement...'
+				? 'Enregistrement…'
 				: exercise
-					? 'Mettre a jour'
-					: `Creer la ${lore.learning.exercise}`}
+					? 'Mettre à jour'
+					: `Créer la ${lore.learning.exercise}`}
 		</Button>
 	</div>
 </form>

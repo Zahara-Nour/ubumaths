@@ -257,6 +257,14 @@ describe('create_exercise_version', () => {
 		expect((await versionsOf(id)).map((v) => v.number)).toEqual([1, 2, 3]);
 	});
 
+	it('sans compte connecté (client service) : l’auteur de la version recopiée', async () => {
+		const { id } = await newExercise();
+		const { data, error } = await service.rpc('create_exercise_version', { p_exercise_id: id });
+		expect(error).toBeNull();
+		expect(data?.number).toBe(2);
+		expect(data?.created_by).toBe(teacherId);
+	});
+
 	it('un élève qui lit l’exercice ne crée aucune version', async () => {
 		const { error } = await student.rpc('create_exercise_version', { p_exercise_id: exerciseId });
 		expect(error).not.toBeNull();

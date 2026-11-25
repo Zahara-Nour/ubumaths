@@ -73,7 +73,9 @@ begin
 		v.variations,
 		v.shared,
 		v.generic_functions,
-		(select auth.uid())
+		-- Sans compte connecté (client service : scripts, sauvegarde) : l'auteur de la version
+		-- recopiée. Un compte connecté reste tenu par la policy (created_by = lui).
+		coalesce((select auth.uid()), v.created_by)
 	from public.exercise_versions v
 	where v.exercise_id = p_exercise_id
 	order by v.number desc

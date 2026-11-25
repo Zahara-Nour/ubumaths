@@ -198,8 +198,9 @@
 	aria-label="Versions de la {lore.learning.exercise}"
 >
 	<div class="flex flex-wrap items-center gap-2">
-		<History class="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-		<div class="min-w-0 flex-1 sm:max-w-md">
+		<!-- Petit écran : le menu prend sa ligne, les boutons passent dessous -->
+		<div class="flex min-w-0 basis-full items-center gap-2 sm:max-w-md sm:flex-1 sm:basis-0">
+			<History class="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
 			<MySelect
 				type="single"
 				value={edited ? String(edited.number) : undefined}
