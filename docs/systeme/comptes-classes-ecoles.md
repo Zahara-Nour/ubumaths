@@ -4,7 +4,11 @@ couvre:
   - 'src/routes/api/{classes,students}/**'
   - 'src/routes/api/teacher/{classes,send-welcome-email}/**'
   - 'src/routes/api/student/{profile,age-declaration}/**'
-  - 'src/routes/(protected)/dashboard/admin/{classes,schools,users,import-students,settings,backup}/**'
+  - 'src/routes/(protected)/dashboard/admin/{classes,schools,users,import-students,settings,backup,cours-particuliers}/**'
+  - 'src/lib/server/private-lessons/**'
+  - src/lib/server/validation/private-lessons.ts
+  - src/lib/email-templates/private-lesson-invitation.ts
+  - src/routes/api/cron/invitations-cours-particulier/**
   - 'src/routes/(protected)/dashboard/teacher/{classes,students,welcome-email,settings}/**'
   - 'src/routes/(protected)/dashboard/profile/**'
   - 'src/lib/server/{students,staff-directory,school-year-errors}.ts'
@@ -138,6 +142,57 @@ de 2nde de répondre une fois à la question d'âge.
   majuscules ; obligatoire en modification, généré par la base s'il est vide à la création).
   L'action `delete` des écoles valide `id` comme l'action `update`.
 
+### Admin : cours particuliers
+
+Chantier `invitation-cours-particulier` ([journal](../wip/invitation-cours-particulier-progress.md)) :
+l'admin invite un élève de moins de 15 ans sans code de classe ; le parent reçoit un lien qui crée
+le compte et la classe (page du lien : PR 3, pas encore livrée). Table et accès :
+[base-de-donnees.md § Cours particuliers](base-de-donnees.md).
+
+- Page `src/routes/(protected)/dashboard/admin/cours-particuliers/+page.svelte` (+ `+page.server.ts`),
+  entrée « Cours particuliers » du menu admin. `requireAdmin` à chaque chargement et chaque action.
+  L'école est **toujours** celle du réglage `schools.is_private_lessons` (Akadada), relue par le
+  serveur ; le formulaire n'en envoie aucune. Sans année scolaire commencée (`current_school_year`),
+  l'écran le dit et l'envoi est refusé (409).
+- Actions `invite` (prénom, adresse du parent, niveau), `resend`, `cancel`. Schémas :
+  `src/lib/server/validation/private-lessons.ts` — mêmes règles de prénom et d'adresse que
+  l'inscription par le parent (`childFirstnameSchema`, `parentContactEmailSchema` de
+  `validation/auth.ts`), adresse au format de la contrainte de la base, niveau en code
+  (`'5'`, pas `'5e'`).
+- Écritures : `src/lib/server/private-lessons/invitations.ts`, en `service_role` après la garde
+  (la base n'ouvre aucune écriture aux comptes connectés). Jeton de 32 octets (base64url), seul son
+  sha256 est en base. `email_sent_at` et `sent_count` ne bougent que si Brevo accepte le courriel :
+  un refus laisse l'invitation dans la liste, « Courriel non parti », à renvoyer. La liste montre
+  les invitations ni utilisées ni annulées ; une expirée y reste jusqu'à sa purge et peut être
+  renvoyée.
+- **Inviter** : refusé si une invitation ouverte existe déjà pour le même prénom (sans tenir compte
+  de la casse) et la même adresse — on passe par « Renvoyer ».
+- **Renvoyer** : nouvelle empreinte et 7 jours neufs, l'ancien lien ne s'ouvre plus. Refusé après
+  usage ou annulation, pendant une réservation de moins de 5 minutes (parent en train de créer le
+  compte), ou après 5 courriels. L'écriture est gardée par l'empreinte lue : de deux clics
+  simultanés, un seul passe et un seul courriel part ; l'autre lit « L'invitation vient de
+  changer : réessayez ». ⚠️ Assumé (décision 9) : si Brevo refuse le courriel d'un renvoi, l'ancien
+  lien est déjà mort ; la liste affiche « Courriel non parti » et l'admin renvoie.
+- **Annuler** : refusé pendant une réservation de moins de 5 minutes (la création du compte
+  échouerait à sa dernière étape).
+- **Limite de débit** : 20 « Inviter » ou « Renvoyer » par heure et par admin
+  (`checkPrivateLessonInvitationRateLimit`, `src/lib/server/rateLimiter.ts`, fermée en cas de panne) :
+  le quota de Brevo (300 courriels par jour) sert aussi aux consentements et au carnet.
+- Courriel : `src/lib/email-templates/private-lesson-invitation.ts` (« Créez l'espace de <prénom>
+  sur Chiphre »), envoyé par `sendPrivateLessonInvitationEmail` (`src/lib/server/email/brevo.ts`).
+  Lien `https://www.chiph.re/auth/register/invitation/<jeton>`.
+- **Purge à 30 jours** (décision 8 de David, 2026-11-25) : `purgeEndedInvitations` efface les
+  invitations utilisées, annulées ou expirées depuis plus de 30 jours (date d'utilisation,
+  d'annulation, sinon d'expiration). Cron Vercel quotidien `src/routes/api/cron/invitations-cours-particulier/+server.ts`
+  (`vercel.json`, 3 h 30 UTC), lançable depuis `/dashboard/admin/cron` ; journal
+  `background_job_runs` (job `private_lesson_invitations_purge`), nombres seulement.
+- Tests : `tests/integration/invitations-cours-particuliers-envoi.test.ts` (écritures, doublon,
+  renvoi et renvois simultanés, annulation, purge, sur la vraie base),
+  `src/routes/(protected)/dashboard/admin/cours-particuliers/__tests__/garde.test.ts` (prof non
+  élevé et élève refusés avant tout envoi, limite de débit), `src/lib/server/validation/__tests__/private-lessons.test.ts`,
+  `src/lib/email-templates/__tests__/private-lesson-invitation.test.ts`,
+  `src/routes/api/cron/invitations-cours-particulier/__tests__/route.test.ts`.
+
 ### Admin : sauvegarde des exercices, réglages
 
 - Page `src/routes/(protected)/dashboard/admin/backup/+page.svelte`. Routes
@@ -147,6 +202,8 @@ de 2nde de répondre une fois à la question d'âge.
   `exportBackupSQL`, `restoreFromBackup`). Format et bornes : `src/lib/server/validation/backup.ts`
   (`BACKUP_FORMAT = 'chiphre-backup'`, 50 Mo au plus, plafond par table dans `MAX_RECORDS`).
   Quatre tables : `exercises`, `exercise_templates`, `exercise_favorites`, `exercise_share_tokens`.
+  Le titre anglais (`exercises.translations`) est sauvegardé et restauré ; une sauvegarde antérieure
+  à la colonne ne l'efface pas à la restauration.
   Ce n'est **pas** une sauvegarde de la base : voir
   [procedure-restauration.md](../pratiques/procedure-restauration.md).
 - Page `src/routes/(protected)/dashboard/admin/settings/+page.svelte` : version de l'application et

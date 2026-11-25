@@ -80,6 +80,9 @@ export const exerciseBackupRecordSchema = z.object({
 	shared: z.unknown().nullable(),
 	resources: z.unknown().nullable(),
 	generic_functions: z.array(z.string()).nullable(),
+	// Titre traduit (`exercises.translations`) : absent des sauvegardes
+	// antérieures à la colonne ; sans la clé, la restauration le perdrait.
+	translations: z.unknown().nullable().optional(),
 
 	// Audit fields
 	created_at: datetimeSchema,

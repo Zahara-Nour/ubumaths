@@ -341,6 +341,7 @@ Migration `20261014110000_lecture_seule_garde_base` :
    - Consent-aware button wrapper
    - Automatically disables when `consent.isReadOnly` is true
    - Shows tooltip explaining why action is disabled
+   - Porte son propre `Tooltip.Provider` : aucune page n'a à en fournir un (E66, 2026-11-25 : sans lui, le Marché d'un élève sans consentement rendait une erreur 500)
 
 ### Files Modified
 
@@ -348,6 +349,8 @@ Migration `20261014110000_lecture_seule_garde_base` :
 
    - Added ConsentBanner integration
    - Hydrates consent store on mount
+
+   Depuis le 2026-11-25 (E67), le magasin est rempli par `src/routes/(protected)/+layout.svelte`, pour **toutes** les pages protégées et à chaque rechargement des données : « Mon profil » (`/dashboard/profile`, hors de l'espace élève) grise donc aussi « Acheter » un avatar. Le bandeau reste dans le layout de l'espace élève.
 
 2. `src/routes/(protected)/dashboard/student/exercises/[id]/+page.svelte`
 

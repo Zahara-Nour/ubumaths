@@ -52,6 +52,7 @@ import {
 	assignmentCopyScope,
 	copyExerciseOrder,
 	hasPerStudentCopies,
+	localizedExerciseTitle,
 	resolveWorksheetExerciseCopy,
 	type ExerciseContentRow,
 	type WorksheetForCopy
@@ -304,6 +305,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				exercise:exercises (
 					id,
 					title,
+					translations,
 					variables,
 					shared,
 					variations,
@@ -426,7 +428,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			const exerciseView: StudentExerciseView = {
 				id: we.id,
 				exercise_id: exerciseData.id,
-				title: exerciseData.title,
+				title: localizedExerciseTitle(exerciseData, locale),
 				position: we.position,
 				points: we.points,
 				custom_instructions: localizedText(

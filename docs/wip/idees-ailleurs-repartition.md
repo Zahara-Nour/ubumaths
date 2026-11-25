@@ -39,7 +39,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
 | Variations                        | 1AN2  | 5         | libre                |                           |
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle` |
-| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                           |
+| Fonctions trigonométriques        | 1AN4  | 6         | prise (2026-11-25)   | `idees-1re-trigo`         |
 | Produit scalaire                  | 1G1   | 10        | libre                |                           |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                           |
 | Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`   |

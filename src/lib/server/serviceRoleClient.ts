@@ -101,6 +101,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Modération : soft-delete d'un message, droits vérifiés par la route (la RLS du prof
 	// refusait l'écriture ou ne touchait aucune ligne, 2026-10-10)
 	'/api/moderation/messages/[id]/+server',
+	// Invitations de cours particulier : la table n'est écrite que par le serveur, APRÈS
+	// la garde `requireAdmin` de la page (aucune écriture ouverte aux comptes connectés)
+	'/dashboard/admin/cours-particuliers/+page.server',
 	// Élévation admin : e-mail du compte admin, invisible au prof par la RLS (B5)
 	'/api/admin/elevate/+server',
 	// Énigmes : la justesse d'une tentative est calculée par le serveur, jamais par l'élève

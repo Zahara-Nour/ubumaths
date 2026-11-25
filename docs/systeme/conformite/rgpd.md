@@ -496,6 +496,11 @@ CRON_SECRET                   # Secret taches planifiees
 > par le clic ; un adolescent qui saisit sa propre seconde adresse se donne le consentement — même
 > limite que l'inscription de l'élève seul. En 1re/Tle, le clic est une confirmation d'adresse
 > enregistrée dans `parental_consents` comme un accord (`granted`) : décision de David.
+> **2026-11-25, cours particuliers** : l'admin peut inviter un élève de moins de 15 ans ; le parent
+> reçoit un courriel Brevo (`sendPrivateLessonInvitationEmail`) avec un lien de 7 jours qui créera
+> le compte et recueillera le consentement (page du lien : PR 3). Prénom et adresse du parent sont
+> gardés dans `private_lesson_invitations`, effacés 30 jours après la fin de l'invitation (cron
+> quotidien) ; la politique de confidentialité le dira avec la PR 3 (décision 9 de David).
 > Le courriel d'inscription dit aussi comment réinitialiser le mot de passe (PR 3). « Mot de passe
 > oublié » avec l'identifiant envoie un second courriel Brevo (`sendChildPasswordResetEmail`) à
 > l'adresse du parent de la demande la plus récente, **seulement si elle est confirmée**

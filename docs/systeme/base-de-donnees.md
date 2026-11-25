@@ -147,6 +147,9 @@ lien (droits par colonne) ; **aucune écriture par un compte connecté** : le se
 `service_role`. Le lien est stocké **haché** (sha256). `get_private_lesson_invitation(p_token)`,
 `service_role` seul, rend prénom, niveau, école et échéance d'une invitation encore valable, `null`
 dans tous les autres cas. Test : `tests/integration/invitations-cours-particuliers.test.ts`.
+Une invitation finie (utilisée, annulée, expirée) est **effacée 30 jours après sa fin** par le
+cron Vercel quotidien `api/cron/invitations-cours-particulier` (décision 8) ; écrans et écritures du
+serveur : [comptes-classes-ecoles.md § Admin : cours particuliers](comptes-classes-ecoles.md#admin--cours-particuliers).
 
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer
@@ -271,6 +274,10 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
     et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
     pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
     colonne suit les droits de la ligne (aucune policy ni GRANT propre).
+  - `exercises.translations` (titre en anglais, depuis `20261125055853`) : `{"en": {"title": …}}`,
+    NULL = français seulement ; même forme que `worksheets.translations`. Suit les droits de la
+    ligne (personne ne gagne d'accès, David, 2026-11-25) ; aucun CHECK, la lecture
+    (`asRowTranslations`) écarte une forme inattendue.
 - `migration_images` : reste de l'import des questions TinyMath, terminé ; aucun code ne la lit. `migration_tracking`, `migration_edits` et la vue `migration_review_tree` ont été supprimées le 2026-10-29 (migration `20261029203000`) ; leur contenu est exporté dans `data/import-tinymath/`.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le

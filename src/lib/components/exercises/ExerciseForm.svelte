@@ -64,6 +64,9 @@
 
 	// Form state
 	let title = $state(initialExercise?.title || '');
+	// Titre des fiches en anglais ; vide = le titre français y est imprimé
+	const storedEnglishTitle = initialExercise?.translations?.en?.title;
+	let englishTitle = $state(typeof storedEnglishTitle === 'string' ? storedEnglishTitle : '');
 	let slug = $state(initialExercise?.slug || '');
 	let source = $state(initialExercise?.source || '');
 	let category = $state<ExerciseCategory | ''>(initialExercise?.category || '');
@@ -422,6 +425,8 @@
 			tags?: string[] | null;
 		} = {
 			title: title.trim() || null,
+			// null efface la traduction : le titre français reprend sa place
+			translations: englishTitle.trim() ? { en: { title: englishTitle.trim() } } : null,
 			slug: slug.trim() || null,
 			source: source.trim() || null,
 			category: category as ExerciseCategory,
@@ -562,6 +567,18 @@
 								placeholder="Ex: Equations du premier degre"
 								bind:value={title}
 							/>
+						</div>
+						<div class="space-y-2">
+							<Label for="english-title">Titre en anglais</Label>
+							<Input
+								id="english-title"
+								type="text"
+								placeholder="Ex: Linear equations"
+								bind:value={englishTitle}
+							/>
+							<p class="text-xs text-muted-foreground">
+								Imprimé dans les fiches en anglais ; vide, c’est le titre français.
+							</p>
 						</div>
 						<div class="space-y-2">
 							<Label for="source">Source</Label>
