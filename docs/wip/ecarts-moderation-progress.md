@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (#3115), PR 2 (#3125) et PR 3 (#3132) mergées ; migration de la PR 3 à jouer en prod ; T31 à trancher
+status: cinq PR mergées (#3115, #3125, #3132, #3140, #3143) ; migration de T32 à jouer en prod ; T33 à ouvrir par une phase 0
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (11), après #3140 et sa migration en prod._
+_Mis à jour le 2026-11-25 (12), après #3143._
 
-- **État** : quatre PR mergées : #3115 (T20, T25, T27), #3125 (T22, C32, marque non maquillable), #3132 (T21), **#3140 (T31 : un message ne change pas de conversation)**. Registre : T31 barré, T32, T33 et M59 entrés. En prod : les migrations jusqu'à `20261125072915` (jouées par David le 2026-11-25, fonction `get_flagged_messages_for_teacher` vérifiée en lecture). **Migration `20261125093026` (T31) en prod** (jouée par David, trigger vérifié en lecture). Rien n'est déployé (`deploy:prod` sur demande de David).
-- **Prochaine action** : **T32** (PR 5, commencée le 2026-11-25 : worktree créé, relevé fait, rien d'écrit) : personne ne change la conversation d'une participation par l'API (même forme que T31 : trigger sur `conversation_participants`, test d'intégration rouge d'abord, `code-reviewer` + `security-auditor`). Puis **T33**, dans une session neuve, en commençant par une phase 0 (où garder le texte d'origine, combien de temps, qui le lit, ce que voit le prof).
-- **En attente de David** : rien. **Tranché le 2026-11-25 (« je te suis » sur les deux oui)** : T32, on ferme le déplacement de participation ; T33, le texte d'origine d'un message marqué que l'élève réécrit est gardé pour le prof.
-- **Pièges en cours** : T30 (déjà au registre) couvre la date d'envoi réécrite ; ma sonde du 2026-11-25 n'a modifié aucune ligne en changeant `created_at`, à reprouver avant d'y toucher. Un élève ne supprime pas son message par un UPDATE direct de `deleted_at` (RLS). La mention de l'onglet est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève ». Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-moderation-t32` · `fix/ecarts-moderation-t32`, créé le 2026-11-25 depuis `origin/main`, **vide** (rien écrit, rien commité). Relevé déjà fait pour T32 : policy « Users can update their own participation » (baseline, ligne 40424, `user_id = auth.uid()` des deux côtés, sans liste de colonnes) ; aucun trigger sur `conversation_participants` ; dans `src`, seule `api/moderation/messages/[id]/+server.ts` lit la table, personne ne l'écrit ; deux `UPDATE conversation_participants` en SQL à lire avant d'écrire le trigger (baseline ligne 13642, `20261003190000_rpc_lot3_compte_autrui.sql` ligne 194) : vérifier qu'ils ne changent pas `conversation_id` avec un utilisateur connecté.
+- **État** : cinq PR mergées : #3115 (T20, T25, T27), #3125 (T22, C32, marque non maquillable), #3132 (T21), #3140 (T31 : un message ne change pas de conversation), **#3143 (T32 : une participation ne change pas de conversation)**. Registre : T31 et T32 barrés, T33 et M59 ouverts. En prod : les migrations jusqu'à `20261125113650`, T31 comprise. Rien n'est déployé (`deploy:prod` sur demande de David).
+- **Prochaine action** : **T33**, dans une session neuve, en commençant par une phase 0 (où garder le texte d'origine, combien de temps, qui le lit, ce que voit le prof). Tranché par David : le texte d'origine d'un message marqué que l'élève réécrit est gardé pour le prof.
+- **En attente de David** : jouer en prod la migration de T32, `20261125114503_participation_conversation_non_modifiable.sql` (seule en attente d'après `migration list --linked` du 2026-11-25) : `pnpm db:migrate` depuis le dépôt principal. Les 4 conditions sont réunies (accès tranché, tests rouges sans elle, `security-auditor` sans finding bloquant, additive avec rollback). Ensuite, vérifier le trigger en lecture.
+- **Pièges en cours** : T30 (déjà au registre) couvre la date d'envoi réécrite ; ma sonde du 2026-11-25 n'a modifié aucune ligne en changeant `created_at`, à reprouver avant d'y toucher. Un élève ne supprime pas son message par un UPDATE direct de `deleted_at` (RLS). La mention de l'onglet est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève ». Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Remarque du `security-auditor` sur #3143, non prouvée : le motif « policy UPDATE sans liste de colonnes » peut exister sur d'autres tables d'élèves.
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
 
 ---
 
@@ -108,3 +108,4 @@ _Mis à jour le 2026-11-25 (11), après #3140 et sa migration en prod._
 - **Tests** : `tests/integration/participation-conversation-non-modifiable.test.ts`, 8 tests ; **rouges sans la migration** (l'élève, le prof et l'admin déplaçaient leur participation). Non-régression : archive, sourdine, `mark_conversation_read`, même conversation renvoyée, client service.
 - **Revues** : `code-reviewer` rien de bloquant ni d'important, deux points mineurs corrigés (commentaire de la migration, test qui dépendait de l'ordre). `security-auditor` **aucun finding bloquant** : pas de contournement par une autre colonne, par DELETE puis INSERT (un élève ne s'insère pas lui-même : deux policies INSERT, service et prof créateur d'un groupe), par une fonction `SECURITY DEFINER` (`create_1on1_chat`, `mark_conversation_read`, `sync_class_chat_membership`, `create_class_chat_room` lues), ni par `anon`. Remarque hors diff, plausible, non prouvée : le motif « policy UPDATE sans liste de colonnes » peut exister sur d'autres tables d'élèves.
 - **Doc** : `docs/systeme/messagerie-et-moderation.md`, ligne ajoutée sous celle de T31.
+- **Merge (#3143)** : CI verte au premier passage, mergée par `pnpm pr:merger`. `20261125114503` reste à jouer en prod (David).
