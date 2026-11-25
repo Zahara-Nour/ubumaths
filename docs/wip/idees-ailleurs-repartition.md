@@ -165,6 +165,9 @@ de contenu appliquée en prod.
 | 2491dd75 TVI : nombre de solutions de f(x) = k                  | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
 | 10393ff9 Continuité lue sur une courbe : saut ou point anguleux | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
 | 0965c56c k-uplets d'éléments distincts : codes, bureaux…        | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
+| b28ed4fa Deux épreuves                                          | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
+| e73b947f Probabilité d'un évènement                             | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
+| 247fddd1 Évènement contraire                                    | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
 | e0ccaf84 Résoudre un petit exercice de proportionnalité         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
 | 7981dab0 Repérer double, moitié, quadruple, quart et tiers      | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
 | 52bf3fb9 Calculer la longueur réelle                            | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
