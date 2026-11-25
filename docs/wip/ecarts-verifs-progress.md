@@ -207,6 +207,19 @@ Worktree `ubumaths-wt-ecarts-verifs`, branche `fix/ecarts-verifs-e68`.
 - **Non fait** : avertissement d'un lot incomplet affiché dans l'onglet lui-même (aujourd'hui un message qui passe) ; plafond de demandes simultanées (une par affectation).
 - **Après le merge** : E68 et E69 barrés au registre à la main depuis `main`.
 
+## PR S : « téléphone » — E63, E70, E82 (2026-11-25)
+
+Worktree `ubumaths-wt-ecarts-verifs-telephone`, branche `fix/ecarts-verifs-telephone`.
+
+- **E63 et E82** : à l'écran, quand deux nombres écrits sous une droite graduée se toucheraient, un nombre sur deux seulement est écrit (un sur trois ou plus si c'est encore trop serré) ; tous les traits restent. Le zéro reste écrit (sinon le premier nombre) ; un « ? » reste toujours, un nombre qui le toucherait est retiré. Le PDF ne change pas. `thinLabels`, `labelStride`, `estimateLabelWidth` (`number-line-render.ts`), appelées par `NumberLine.svelte` seul.
+- **Largeurs** : mesurées à l'écran sur Safari, Chrome et Firefox (un chiffre 8 px, « −6 » 20,5 px), 4 px d'air ; le reste (virgule, fraction) est estimé.
+- **Limites dites** : sur une droite de 0 à 9 serrée, le 9 n'est plus écrit (0, 2, 4, 6, 8) ; des `labels:` irréguliers ou une échelle log sont éclaircis partout dès qu'un seul écart est trop serré.
+- **E70** : dans un « associer » à courbes, la colonne des courbes est plus large (1,6 pour 1), l'espace du milieu plus étroit, sans marge à gauche du dessin. Mesuré : 132 px (page d'aide) et 142 px (modèles 2de et 3e) sur iPhone 393 px, 143 et 153 px sur Android ; avant, 107 et 116 px.
+- **Revue** : `code-reviewer`, aucun finding bloquant ; corrigé d'après elle : un nombre voisin d'un « ? » hors du rythme le touchait à 0,25 px près.
+- **Vérifs** : `test.fail` de E82 (modeles-paquet9, #2946) et de E70 (blocs-paquet7, #2637 / #2644) retirés, attendus inchangés ; 41 tests verts sur iphone, android, firefox-390.
+- **Vu à l'écran par la session** : captures iPhone de la droite de −6 à 6 (« −6 −4 −2 0 2 4 6 ») et du modèle 2de à courbes. **Pas vu** : le corrigé de « Résoudre |x| > k » lui-même (E63, preuve « à la main ») ; même composant, cas de −8 à 8 couvert par un test unitaire.
+- **Après le merge** : E63, E70 et E82 à barrer au registre depuis `main`.
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |
