@@ -1,22 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (T20, T25, T27) mergée (#3115) ; PR 2 (T21, T22) en cours, T21 codé, T22 en attente de la relecture de David
+status: PR 1 (#3115) et PR 2 (#3125) mergées, migration en prod ; PR 3 à ouvrir (messages marqués des conversations à deux, supprimés compris)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (4), après #3115 (PR 2 = #3125, ouverte, CI en cours)._
+_Mis à jour le 2026-11-25 (5), après #3125._
 
-- **État** : PR 1 mergée (#3115). PR 2 (T21, T22, C32, correctif du maquillage) : code, tests, revues et doc faits, `origin/main` fusionné ; PR #3125 ouverte ; reste CI, merge, `db:migrate`.
-- **Prochaine action** : `pnpm pr:merger 3125` (CI), `db:migrate` depuis la branche mergée (les 4 conditions sont réunies ; `migration list --linked` avant : une autre migration en attente → stop), barrer T22 et C32 au registre (preuves à la main), mettre ce bloc à jour.
-- **En attente de David** : rien.
-- **Tranché par David le 2026-11-25** (« je valide » sur les trois recommandations) :
-  1. « tg » retiré de la liste (ancienne notation de la tangente) ; fait dans la PR 2.
-  2. Le prof lira les messages **marqués** des conversations à deux entre ses élèves, ce message-là et son auteur, pas le reste de la conversation. Accès nouveau : **PR à part (nouveau chantier), avec sa question d'accès posée avant le SQL et son audit**. T21 n'est barré au registre qu'après cette PR.
-  3. L'onglet montrera aussi les messages marqués **supprimés**, avec la mention « supprimé par l'élève » ; même PR que le point 2. On ne retire aucun geste à l'élève.
-- **Pièges en cours** : la pile de test rejoue seule une migration modifiée. Écarts à entrer au registre depuis le dépôt principal : onglet sans lien direct vers la conversation, sans état « traité » ; l'élève réécrit encore `edited_at`, `created_at`, `is_reported` de ses messages et modifie d'anciens messages alors qu'il est restreint ; aucune borne de taille sur `content`. T24 hors lot.
-- **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-moderation` / `fix/ecarts-moderation`.
+- **État** : PR 1 (#3115 : T20, T25, T27) et PR 2 (#3125 : onglet « Messages marqués », liste de mots, marque non maquillable, « tg » retiré) mergées. Migration `20261124230639` **en prod** (vérifiée en lecture : trigger sur tout `UPDATE`, nouvelle liste). Registre : T22 et C32 barrés ; T21 réécrit et laissé ouvert ; T30, L124, D45 entrés. Rien n'est déployé (`deploy:prod` sur demande de David) : l'onglet n'est pas encore visible en prod, le marquage en base l'est.
+- **Prochaine action** : PR 3, dans un worktree neuf (`fix/ecarts-moderation-marques`), tranchée par David le 2026-11-25 : (a) le prof lit les messages **marqués** des conversations à deux entre ses élèves, ce message-là et son auteur, pas le reste de la conversation ; (b) l'onglet montre aussi les messages marqués **supprimés**, avec la mention « supprimé par l'élève ». **Avant tout SQL, poser à David la question d'accès** (« qui pourra lire quoi, qu'il ne pouvait pas lire avant ? ») avec la forme exacte : quels élèves (ses classes seulement, ou hors-classe aussi ?), et le texte d'un message supprimé. Puis tests d'intégration rouges, `code-reviewer` + `security-auditor`, barrer T21.
+- **En attente de David** : rien d'autre que la question d'accès de la PR 3.
+- **Pièges en cours** : le prof ne lit AUCUNE conversation à deux entre élèves par la RLS (la policy SELECT de `messages` lit `conversation_participants` sous ses droits) ; en prod les 284 messages du chat sont tous dans 41 conversations à deux entre élèves. La suppression d'un message par le client d'un compte est refusée par la RLS : la route passe par le client service. La pile de test rejoue seule une migration modifiée. T24 hors lot.
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
 
 ---
 
