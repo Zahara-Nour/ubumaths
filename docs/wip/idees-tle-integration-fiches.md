@@ -1,7 +1,7 @@
 # Fiches de la phase 0 « primitives, équations différentielles, intégration » de Terminale (2026-11-25)
 
 Chantier [`idees-tle-integration`](idees-tle-integration-progress.md), relevé :
-[idees-tle-integration-releve.md](idees-tle-integration-releve.md). En attente de David.
+[idees-tle-integration-releve.md](idees-tle-integration-releve.md). Copie des fiches de la page à cocher https://claude.ai/artifact/Tw3TtUfAWtsn6CPudQcxot. En attente de David.
 
 Toutes les variations auront leurs `testSpecs` (réponses justes sous plusieurs écritures, erreurs
 typiques refusées), trois erreurs prévues par case et un coup de pouce qui ne donne pas la réponse.

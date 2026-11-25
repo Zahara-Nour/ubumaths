@@ -3,7 +3,8 @@
 Idées reprises d'ailleurs, rubriques « Primitives et équations différentielles » (TSA7, 7 exercices)
 et « Intégration » (TSA8, 5 exercices) de Terminale spécialité, selon le skill `idees-rubrique`.
 Relevé : [idees-tle-integration-releve.md](idees-tle-integration-releve.md) · fiches :
-[idees-tle-integration-fiches.md](idees-tle-integration-fiches.md).
+[idees-tle-integration-fiches.md](idees-tle-integration-fiches.md) · page à cocher :
+https://claude.ai/artifact/Tw3TtUfAWtsn6CPudQcxot
 
 ## Reprendre ici
 
