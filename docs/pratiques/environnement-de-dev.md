@@ -267,6 +267,9 @@ pour voir une phase devenue nettement plus lente que la normale.
   depuis un test ; une note impossible à écrire n'arrête jamais la commande. Ces durées dépendent
   de la charge de la machine ;
 - `pnpm durees` : le tableau, référence, médiane des dernières 24 heures et des 7 derniers jours ;
+- **tâche de nuit** : chaque nuit à 2 h, launchd lance `pnpm nuit --lancer` (même installation) :
+  preuves des écarts, `test:verifs:tout`, gardes de doc, dans son propre worktree →
+  [tache-de-nuit.md](tache-de-nuit.md) ;
 - **alerte** : chaque matin à 6 h 40, launchd lance `pnpm durees --releve` depuis le dépôt principal
   (installé par `pnpm surveillance:installer`, journal `~/.local/state/durees/launchd.log`).
   Médiane du jour d'au moins 1,5 fois la référence sur au moins 5 mesures → notification par le

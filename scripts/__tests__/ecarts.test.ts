@@ -31,6 +31,7 @@ import {
 	nextId,
 	parseArgs,
 	parseRegistry,
+	resultsToJson,
 	strikeEntries,
 	vitestOutcome,
 	type VitestReport
@@ -390,6 +391,17 @@ describe('parseArgs', () => {
 		});
 	});
 
+	it('rejouer --json=<fichier> : le bilan écrit pour un script', () => {
+		expect(parseArgs(['rejouer', '--barrer', '--json=/tmp/bilan.json'])).toEqual({
+			command: 'replay',
+			ids: [],
+			strike: true,
+			json: '/tmp/bilan.json'
+		});
+		expect(parseArgs(['rejouer', '--json='])).toBeNull();
+		expect(parseArgs(['rejouer', '--json'])).toBeNull();
+	});
+
 	it('ajouter', () => {
 		expect(
 			parseArgs(['ajouter', 'V', '--domaine', 'mathAST', '--constat', 'c', '--preuve', 'à la main'])
@@ -422,5 +434,21 @@ describe('parseArgs', () => {
 		[['--liste']]
 	])('une faute de frappe affiche l’usage : %j', (args) => {
 		expect(parseArgs(args)).toBeNull();
+	});
+});
+
+describe('resultsToJson', () => {
+	it('une ligne par écart rejoué : identifiant, verdict, détail s’il y en a un', () => {
+		const [first, second] = parseRegistry(REGISTRY).entries;
+		const json: unknown = JSON.parse(
+			resultsToJson([
+				{ entry: first, outcome: 'green' },
+				{ entry: second, outcome: 'broken', detail: 'fichier absent : x' }
+			])
+		);
+		expect(json).toEqual([
+			{ id: first.id, outcome: 'green' },
+			{ id: second.id, outcome: 'broken', detail: 'fichier absent : x' }
+		]);
 	});
 });

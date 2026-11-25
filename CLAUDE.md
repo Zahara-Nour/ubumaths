@@ -36,6 +36,7 @@ pnpm lien [--stop | --liste]        # lien HTTPS du tailnet + QR code vers SON s
 pnpm prevenir <lien | question | geste "…">   # notification à David quand la session ATTEND un geste de lui (jamais « CI verte » ni « fini ») → docs/pratiques/prevenir-david.md
 pnpm retours [<n> | --liste]        # retour envoyé par le bouton « Signaler » de SON serveur de dev → docs/pratiques/signaler-depuis-la-page.md
 pnpm ecarts [rejouer | ajouter …]   # registre des écarts (docs/ecarts/registre.md) : liste, rejeu des preuves, nouveau numéro → docs/pratiques/registre-des-ecarts.md
+pnpm nuit                           # bilan de la tâche de nuit (2 h, launchd : preuves des écarts, test:verifs:tout, gardes de doc) → docs/pratiques/tache-de-nuit.md
 pnpm maintenance:on / :off          # mode maintenance prod
 pnpm pr:merger [<n>] [--essai]      # attend la CI de la PR, merge, lit MERGED, retire worktree et branche → docs/pratiques/git-workflow.md § 3
 pnpm durees                         # durées CI / PR / intégration / mise en prod / Mac mini face à la référence (scripts/durees/reference.json, changée par David seul)

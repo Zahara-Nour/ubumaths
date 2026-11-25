@@ -65,6 +65,7 @@
 		"vercel:env": "vercel env ls production",
 		"deploy:prod": "bash scripts/deploy-prod.sh",
 		"durees": "tsx scripts/durees/index.ts",
+		"nuit": "tsx scripts/nuit/index.ts",
 		"ecarts": "tsx scripts/ecarts/index.ts",
 		"env:pull": "vercel env pull .env.local",
 		"env:pull:prod": "vercel env pull --environment=production .env.local",

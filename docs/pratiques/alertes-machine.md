@@ -55,7 +55,8 @@ Il ne touche à rien. Il dit presque toujours qui est le coupable.
 | `pnpm disque:liberer`          | Supprime ce qui est sûr (Docker, Homebrew, VS Code, versions de Claude inutilisées, magasin pnpm) et liste le reste.                                                     | **Oui**                  |
 | `pnpm menage --essai`          | Ce que le ménage fermerait.                                                                                                                                              | Non                      |
 | `pnpm menage`                  | Ferme les onglets Chrome et Brave au-delà de 20 % de CPU, arrête les serveurs de dev de plus de 6 h ou du dépôt principal (jamais le 5173), ferme les orphelins de test. | **Oui**                  |
-| `pnpm surveillance:installer`  | (Ré)installe la surveillance dans launchd (`--desinstaller` pour la retirer).                                                                                            | Oui                      |
+| `pnpm surveillance:installer`  | (Ré)installe dans launchd la surveillance, le relevé des durées et la [tâche de nuit](tache-de-nuit.md) (`--desinstaller` pour les retirer).                             | Oui                      |
+| `pnpm nuit`                    | Le bilan de la dernière nuit (preuves des écarts, vérifications à l'écran, gardes de doc), après « bilan de la nuit à lire ».                                            | Non                      |
 | `pnpm durees`                  | Durées de la CI, des PR, de la mise en prod et du Mac face à la référence.                                                                                               | Non                      |
 
 `pnpm menage` épargne toujours les extensions, le navigateur de Playwright, le serveur 5173 et les

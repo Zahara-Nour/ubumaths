@@ -111,7 +111,7 @@ export function idsToStrike(results: ReplayResult[], fresh: Registry): string[] 
 
 export type Args =
 	| { command: 'list' }
-	| { command: 'replay'; ids: string[]; strike: boolean }
+	| { command: 'replay'; ids: string[]; strike: boolean; json?: string }
 	| { command: 'add'; input: EntryInput };
 
 // ============================================================================
@@ -134,6 +134,8 @@ export const PROOF_TESTS_DIR = 'tests/ecarts/';
 
 const SEPARATOR = ' · ';
 const FIELD_COUNT = 6;
+/** `--json=<fichier>` : le bilan du rejeu écrit pour un script (la tâche de nuit). */
+const JSON_FLAG = '--json=';
 const ID_PATTERN = /^([A-Z])(\d+)( bis)?$/;
 const CLOSED_LINE = /^- ~~(.+)~~ · (clos .+)$/;
 const LAST_NUMBERS_PREFIX = 'Derniers numéros : ';
@@ -402,6 +404,16 @@ export function formatReport(results: ReplayResult[]): string {
 	return blocks.join('\n\n');
 }
 
+/** Le bilan d'un rejeu pour un script : une ligne par écart rejoué. */
+export function resultsToJson(results: ReplayResult[]): string {
+	const lines = results.map((r) => ({
+		id: r.entry.id,
+		outcome: r.outcome,
+		...(r.detail === undefined ? {} : { detail: r.detail })
+	}));
+	return `${JSON.stringify(lines, null, '\t')}\n`;
+}
+
 function readOptions(args: string[], allowed: string[]): Record<string, string> | null {
 	const options: Record<string, string> = {};
 	for (let i = 0; i < args.length; i += 2) {
@@ -420,10 +432,18 @@ export function parseArgs(args: string[]): Args | null {
 
 	if (command === 'rejouer') {
 		const flags = rest.filter((a) => a.startsWith('--'));
-		if (flags.some((f) => f !== '--barrer')) return null;
+		const jsonFlags = flags.filter((f) => f.startsWith(JSON_FLAG));
+		if (flags.some((f) => f !== '--barrer' && !f.startsWith(JSON_FLAG))) return null;
+		if (jsonFlags.length > 1 || jsonFlags.some((f) => f === JSON_FLAG)) return null;
 		const ids = rest.filter((a) => !a.startsWith('--'));
 		if (ids.some((id) => !ID_PATTERN.test(id))) return null;
-		return { command: 'replay', ids, strike: flags.length > 0 };
+		const json = jsonFlags[0]?.slice(JSON_FLAG.length);
+		return {
+			command: 'replay',
+			ids,
+			strike: flags.includes('--barrer'),
+			...(json === undefined ? {} : { json })
+		};
 	}
 
 	if (command === 'ajouter') {
