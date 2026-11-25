@@ -1235,7 +1235,7 @@ async function plantWithoutConsent(): Promise<void> {
 	);
 }
 
-test('#2574 — ÉCART sans consentement parental, Marché : la page plante (erreur 500, Tooltip.Provider absent) au lieu de bloquer « Acheter »', async ({
+test('#2574 — sans consentement parental, Marché : la page s’affiche, « Acheter » y est bloqué, « Porter » marche (E66 corrigé)', async ({
 	page
 }) => {
 	test.setTimeout(120_000);
@@ -1243,15 +1243,16 @@ test('#2574 — ÉCART sans consentement parental, Marché : la page plante (err
 	await stubAvatarImages(page);
 	await loginAs(page, E19);
 	await visit(page, '/dashboard/student/marketplace');
-	// Symptôme : la page du Marché ne s'affiche pas, le bouton bloqué (avec infobulle) la fait planter
-	await expect(page.getByText('Le serveur a trébuché')).toBeVisible();
-	await expect(page.locator('details')).toContainText('Tooltip.Provider');
-	await shootPage(page, '2574-sans-consentement-marche-500');
 	// Attendu de la ligne : le Marché s'affiche, « Acheter » y est bloqué, « Porter » marche
 	// Sélecteurs prouvés en positif plus haut : l'onglet (`avatarsTab`, test « catalogue vide »,
 	// E16) ; la carte et « Acheter » grisé (test « catalogue rempli », `creature`) ; « Porter »
-	// (même test, `emblem`). Un rouge ici vient donc de la page, pas d'un sélecteur faux.
-	test.fail();
+	// (même test, `emblem`).
+	// La question « As-tu 15 ans ou plus ? » (2nde soumise au consentement, sans déclaration)
+	// couvre la page de l'espace élève : fermée sans répondre, rien n'est écrit au profil
+	const ageQuestion = page.getByRole('dialog', { name: 'As-tu 15 ans ou plus ?' });
+	await expect(ageQuestion).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(ageQuestion).toBeHidden();
 	await expect(avatarsTab(page)).toBeVisible({ timeout: 2000 });
 	await avatarsTab(page).click();
 	await expect(
@@ -1260,9 +1261,10 @@ test('#2574 — ÉCART sans consentement parental, Marché : la page plante (err
 	await expect(
 		page.locator('article', { hasText: 'Verifs7 Galopin' }).getByRole('button', { name: 'Porter' })
 	).toBeEnabled({ timeout: 2000 });
+	await shootPage(page, '2574-sans-consentement-marche');
 });
 
-test('#2574 — sans consentement parental, « Mon profil » : « Porter » marche, l’achat est refusé sans rien débiter ; ÉCART : « Acheter » n’y est pas grisé', async ({
+test('#2574 — sans consentement parental, « Mon profil » : « Porter » marche, « Acheter » est grisé, rien n’est débité (E67 corrigé)', async ({
 	page
 }) => {
 	test.setTimeout(120_000);
@@ -1277,12 +1279,21 @@ test('#2574 — sans consentement parental, « Mon profil » : « Porter » marc
 	await expect(headerImage(page)).toHaveAttribute('src', '/avatars/verifs7_galopin.webp');
 	await expect(owned.getByText('Porté', { exact: true })).toBeVisible();
 
-	// Acheter : le bouton est actif (le magasin de consentement n'est rempli que par l'espace
-	// élève), mais le serveur refuse : rien n'est débité, rien n'entre dans la collection
+	// Acheter : bloqué (grisé) ici aussi, le solde (100) paierait pourtant l'Emblème (15).
+	// Sélecteur prouvé en positif : `toBeDisabled()` du test « catalogue rempli » (`creature`)
 	const toBuy = section.locator('article', { hasText: 'Verifs7 Emblème' });
-	await expect(toBuy.getByRole('button', { name: 'Acheter' })).toBeEnabled();
-	await toBuy.getByRole('button', { name: 'Acheter' }).click();
-	await page.waitForLoadState('networkidle');
+	await expect(toBuy.getByRole('button', { name: 'Acheter' })).toBeDisabled({ timeout: 2000 });
+	// Le bouton grisé n'est qu'un confort : la même demande envoyée sans lui est refusée par
+	// le serveur, rien n'est débité, rien n'entre dans la collection
+	const refused = await page.evaluate(async () => {
+		const response = await fetch('/api/student/avatars/buy', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ avatar: 'verifs7_emblem' })
+		});
+		return response.status;
+	});
+	expect(refused).toBe(403);
 	const balance = await sql<{ g: string }>(
 		'select gidouilles::text as g from profiles where id = $1',
 		[E19.id]
@@ -1294,8 +1305,4 @@ test('#2574 — sans consentement parental, « Mon profil » : « Porter » marc
 	);
 	expect(bought[0].n).toBe('0');
 	await shootPage(page, '2574-sans-consentement-profil');
-	// Attendu de la ligne : « Acheter » bloqué (grisé) ici aussi. Sélecteur prouvé en positif :
-	// `toBeEnabled()` plus haut (même bouton) et `toBeDisabled()` du test « catalogue rempli » (`creature`)
-	test.fail();
-	await expect(toBuy.getByRole('button', { name: 'Acheter' })).toBeDisabled({ timeout: 2000 });
 });
