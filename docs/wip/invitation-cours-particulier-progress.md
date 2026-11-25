@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 3 ouverte._
+_Mis à jour le 2026-11-25, après #3133._
 
-- **État** : PR 1 (#3119), PR 2 (#3127) mergées ; PR 3 (page du parent `/auth/register/invitation/[token]`, `redeem.ts`) ouverte, revues faites et corrigées ; rien en prod pour ce chantier · **Prochaine action** : après le merge de la PR 3, le chantier est complet → versement (journal archivé, le durable est déjà dans `docs/systeme/comptes-classes-ecoles.md` et `auth.md`) · **En attente de David** : le `deploy:prod` (sur sa demande seulement ; plus de blocage côté code) ; dire s'il veut traiter la limite « fonction tuée en route » (compte orphelin, § Revues de la PR 3) · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, une invitation « Jade » utilisée (compte `jade373`, classe `JADE373`) · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-parent`, `feat/invitation-cours-particulier-parent`
+- **État** : les 3 PR du chantier sont mergées (#3119 migration, #3127 admin, #3133 page du parent) ; rien en prod pour ce chantier (la migration, oui, depuis #3119) · **Prochaine action** : clôture → versement (le durable est déjà dans `docs/systeme/comptes-classes-ecoles.md` et `auth.md` ; archiver ce journal) · **En attente de David** : le `deploy:prod` (sur sa demande ; plus de blocage côté code) ; dire s'il veut traiter la limite « fonction tuée en route » (compte orphelin, § Revues de la PR 3) · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, invitation « Jade » utilisée (compte `jade373`, classe `JADE373`) · **Worktree / branche** : aucun (retirés par `pr:merger`)
 
 ## But
 
@@ -148,3 +148,4 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-25 : PR 2 écrite (page admin, courriel, renvoi/annulation, purge à 30 jours par un cron Vercel quotidien `api/cron/invitations-cours-particulier`, sans migration) ; 13 tests d'intégration verts ; parcours inviter/renvoyer/annuler vu à l'écran (Playwright, 0 erreur de console).
 - 2026-11-25 : revues de la PR 2 (code-reviewer, security-auditor : aucun bloquant) ; décision 9 de David ; corrections commitées (annulation et renvoi gardés, refus du doublon, 20 envois/h/admin, test de la garde, journal sans la ligne).
 - 2026-11-25 : PR 3 écrite (page du parent, `redeem.ts` sans migration : réservation atomique, compte sans code puis approuvé, classe fermée, CGU, consentement accordé, `used_at` gardé ; tout défait en cas d'échec ; courriel final) ; 8 tests d'intégration ; parcours vu à l'écran (WebKit iPhone : formulaire, succès `jade373`, lien relu « plus valable », classe dans « Mes Bataillons ») ; revues code-reviewer + security-auditor corrigées.
+- 2026-11-25 : #3133 mergée (PR 3) ; chantier complet côté code, en attente du déploiement.
