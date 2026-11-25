@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-25, plan de la PR 1 validé par David (« oui »), aucun
 
 - **État** : phase 0 close ([ADR 0044](../adr/0044-versions-d-un-exercice.md), points 1 à 12) ; rangement **A** (toutes les versions dans `exercise_versions`) ; question d'accès tranchée (personne ne gagne de lecture) ; plan de la PR 1 validé (§ Plan de la PR 1).
 - **Prochaine action** : PR 1 — écrire les tests d'intégration **rouges** (§ Tests), puis la migration (`pnpm migration:horodatage`), `pnpm db:types`, la bascule des lectures et écritures.
-- **En attente de David** : question « entre le merge et la mise en prod » (§ Question ouverte), posée le 2026-11-25 ; rien codé.
+- **En attente de David** : rien. ⚠️ Au merge : **pas de `db:migrate` seul** — le dire à David, `db:migrate` puis `deploy:prod` coup sur coup (§ Entre-deux, B).
 - **Pièges en cours** : FK de version en `NO ACTION` (pas `RESTRICT`), sinon supprimer un exercice utilisé dans une fiche casse ; jointures PostgREST en chaînes = invisibles au typecheck → tests d'intégration ; « version » a trois autres sens dans le code (ADR 0044).
 - **Worktree / branche** : `../ubumaths-wt-versions-exercices`, `feat/versions-exercices`.
 
@@ -93,14 +93,17 @@ Revue : `code-reviewer` (opus) + `security-auditor` avant d'ouvrir la PR.
 « Qui pourra lire quoi, qu'il ne pouvait pas lire avant ? » → **personne** (David : « je te suis »).
 Une version se lit exactement quand son exercice se lit, s'écrit quand il s'écrit.
 
-## Question ouverte (2026-11-25) : entre le merge et la mise en prod
+## Entre-deux merge → mise en prod (tranché le 2026-11-25 : B)
 
 La migration part au merge, le nouveau code seulement au `deploy:prod`. Entre les deux, le code en
 prod est l'ancien : il ajoute un exercice à une fiche sans dire la version (refusé si la colonne est
 obligatoire), crée un exercice sans version 1, modifie l'ancien contenu que plus rien ne lit ensuite.
 Recommandation : trois déclencheurs de compatibilité, retirés en PR 4 (ligne de fiche sans version →
 la dernière ; exercice créé → sa version 1 ; ancien contenu modifié → recopié dans la dernière).
-Autre voie : `db:migrate` et `deploy:prod` coup sur coup, rien touché entre les deux.
+Autre voie (B) : `db:migrate` et `deploy:prod` coup sur coup, rien touché entre les deux.
+
+**David : B.** Aucun déclencheur de compatibilité. Après le merge de la PR 1, la session ne lance
+pas `db:migrate` seule : elle prévient David, qui demande `db:migrate` + `deploy:prod` ensemble.
 
 ## Écarts relevés en passant
 
