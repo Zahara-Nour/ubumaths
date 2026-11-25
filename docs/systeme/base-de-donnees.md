@@ -2,6 +2,7 @@
 couvre:
   - 'supabase/migrations/**'
   - src/lib/types/database-helpers.ts
+  - src/lib/server/exercise-versions.ts
 ---
 
 # Base de données — ce que la liste des tables ne dit pas
