@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-25, après #3133._
 
-- **État** : les 3 PR du chantier sont mergées (#3119 migration, #3127 admin, #3133 page du parent) ; rien en prod pour ce chantier (la migration, oui, depuis #3119) · **Prochaine action** : clôture → versement (le durable est déjà dans `docs/systeme/comptes-classes-ecoles.md` et `auth.md` ; archiver ce journal) · **En attente de David** : le `deploy:prod` (sur sa demande ; plus de blocage côté code) ; dire s'il veut traiter la limite « fonction tuée en route » (compte orphelin, § Revues de la PR 3) · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, invitation « Jade » utilisée (compte `jade373`, classe `JADE373`) · **Worktree / branche** : aucun (retirés par `pr:merger`)
+- **État** : les 3 PR mergées (#3119, #3127, #3133) ; `deploy:prod` demandé par David (« fais les 2 »), lancé par cette session · **Prochaine action** : PR 4 (nettoyage des comptes orphelins) après validation de sa phase 0 · **En attente de David** : phase 0 de la PR 4 (§ PR 4), question « supprimer automatiquement ou signaler » · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, invitation « Jade » utilisée (`jade373`) · **Worktree / branche** : aucun
 
 ## But
 
@@ -104,6 +104,42 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
   et `resend` (`rateLimiter.ts`, ex. 20/h) ou refus d'un doublon ouvert (même adresse + prénom).
 - N1 : `invitations.ts` journalise l'erreur PostgREST entière dans `sendAndRecord` → `error.code` seul.
 - N3 (PR 3) : jeton dans le chemin → `Referrer-Policy: no-referrer` et aucune ressource tierce sur la page du lien.
+
+## PR 4 — nettoyage des comptes orphelins : phase 0 (à valider par David)
+
+David, 2026-11-25 : « fais les 2 » (déploiement + traiter la limite « fonction tuée en route »).
+
+**Le cas** : le serveur s'arrête net pendant la création (délai de Vercel, panne) après avoir créé
+le compte de Jade et sa classe, avant de marquer l'invitation « utilisée ». Le parent n'a jamais
+vu l'identifiant (l'écran ne l'affiche qu'à la fin). 5 minutes plus tard, le lien remarche ; le
+parent recommence et obtient `jade482`. Reste `jade137`, approuvé, avec sa classe `JADE137`, que
+personne ne connaît.
+
+**Nominal**
+
+- À la création, le compte porte une marque côté serveur : « créé par l'invitation n° … ». La
+  marque est retirée dès que l'invitation passe à « utilisée ».
+- Chaque nuit (la tâche de purge des invitations, déjà en place), pour chaque compte encore marqué
+  depuis plus d'une heure :
+  - l'invitation est « utilisée » par CE compte → c'est un succès dont la marque n'a pas été
+    retirée : on retire la marque, rien d'autre ;
+  - sinon → **orphelin** : on le supprime avec sa classe (sans élève), et le journal de la tâche
+    compte « N comptes orphelins supprimés ».
+
+**Limites**
+
+- Un compte créé il y a moins d'une heure n'est jamais touché (une création peut être en cours).
+- Seuls les comptes portant la marque sont regardés : aucun autre élève d'Akadada (inscrit par
+  code, importé…) ne peut être supprimé par cette tâche.
+- Pas de migration (la marque est dans les métadonnées du compte, réservées au serveur).
+
+**Erreurs**
+
+- Suppression impossible → le journal de la tâche le dit, on réessaie la nuit suivante.
+
+**Question à David** : supprimer l'orphelin automatiquement (recommandé : personne n'a jamais reçu
+son identifiant, il ne contient aucun travail), ou seulement le signaler à l'admin pour qu'il le
+supprime à la main ?
 
 ## Revues de la PR 3 (2026-11-25) — corrigées, sauf limites notées
 
