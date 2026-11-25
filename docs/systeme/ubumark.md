@@ -400,7 +400,8 @@ toucher une place remplie la vide ; clavier ← → dans les étiquettes, ↑ �
 les étiquettes, Entrée, Échap ; noms « Étiquette 2 sur 3 », « Place de l'élément 1 sur 3, vide ».
 Corrigé : place verte ou rouge, « Correction :
 » et la bonne étiquette sous une place fausse (`expected`). PDF : deux colonnes à relier (« • » au bout
-de chaque élément et devant chaque étiquette). Éditeur riche : bloc de code `associer`. Comme ranger,
+de chaque élément et devant chaque étiquette) ; chaque rangée est insécable (`grid.cell(breakable: false)`
+sur l'élément) : en bas de page, une courbe passe à la page suivante avec son numéro et son point. Éditeur riche : bloc de code `associer`. Comme ranger,
 absent de `SPECIAL_BLOCK_KINDS` ; dans un item de liste (énoncé d'une série d'automatismes), lu par
 `parseContentWithCodeBlocks` (deux colonnes, jamais du code). **Courbe dans un élément** (lot 2) : après
 `- `, un bloc ` ```courbe ` en retrait de 2 espaces (sur la ligne du tiret ou sous un texte), puis

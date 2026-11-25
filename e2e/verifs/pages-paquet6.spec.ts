@@ -11,14 +11,15 @@ import { gotoSettled, shoot } from './helpers/pages';
  *
  * Reprend les lignes #2568 (lien vers les consentements), #2560 / #2562 (années et classes
  * côté admin), #2488 (sorties HTML du carnet Python), #2505 (images externes au cahier),
- * #2481 (carte « Le cahier de texte » de la vitrine), #2482 (accolades des modèles de message)
- * et #2564 (INP dans `error_logs`) de `docs/wip/verifications-manuelles.md`.
+ * #2481 (carte « Le cahier de texte » de la vitrine) et #2564 (INP dans `error_logs`) de
+ * `docs/wip/verifications-manuelles.md`. La ligne #2482 (accolades des modèles de message) est
+ * sortie avec la page du prof, retirée (écarts E58 à E60).
  *
  * Vocabulaire : l'interface dit « Bataillon » (`lore.entities.class`), pas « classe » ; les
  * textes attendus viennent de `lore`, comme la page.
  *
- * Données : tout ce que ces tests créent (écoles, années, classes, élèves, carnet, séance,
- * modèles de message) porte le préfixe « Verifs6 pages <projet> <parallelIndex> » (ou, pour les
+ * Données : tout ce que ces tests créent (écoles, années, classes, élèves, carnet, séance)
+ * porte le préfixe « Verifs6 pages <projet> <parallelIndex> » (ou, pour les
  * adresses, son équivalent sans espaces) et est effacé en `afterAll` par CE préfixe seulement.
  * Aucun élève existant n'est touché : les élèves sont créés ici, avec une adresse `@local.test`
  * ou `@eleves.chiph.re` inventée.
@@ -114,7 +115,6 @@ async function createStudent(options: {
 /** Efface tout ce que ce processus a créé : par préfixe de nom et d'adresse seulement */
 async function cleanup(tag: Tag): Promise<void> {
 	await sql(`delete from public.python_notebooks where title like $1`, [`${tag.prefix}%`]);
-	await sql(`delete from public.message_templates where title like $1`, [`${tag.prefix}%`]);
 	await sql(
 		`delete from public.error_logs where user_id in (
 			select id from public.profiles where email like $1 or email like $2)`,
@@ -670,132 +670,6 @@ test.describe('#2481 — vitrine /demo/editeur : carte « Le cahier de texte »'
 		await expect(page.getByTestId('usage-cahier').locator('.markdown-content')).toHaveCount(1);
 		await page.getByTestId('usage-cahier').scrollIntoViewIfNeeded();
 		await shoot(page, '2481-carte-cahier', testInfo.project.name);
-	});
-});
-
-// ============================================================================
-// #2482 — accolades des modèles de message
-// ============================================================================
-
-test.describe('#2482 — modèles de message : accolades conservées', { tag: '@bureau' }, () => {
-	test.skip(process.env.VERIFS_URL !== undefined, LOCAL_ONLY);
-	test.describe.configure({ mode: 'serial' });
-	let decor: Decor;
-	let titleUnknown = '';
-	let titleKnown = '';
-
-	test.beforeAll(async () => {
-		const testInfo = test.info();
-		decor = await createDecor(testInfo, 'modeles');
-		titleUnknown = `${decor.tag.name} modèle studentName`;
-		titleKnown = `${decor.tag.name} modèle student_name`;
-		for (const [title, body] of [
-			[titleUnknown, 'Bonjour {{studentName}}'],
-			[titleKnown, 'Bonjour {{student_name}}']
-		]) {
-			await sql(
-				`insert into public.message_templates
-				   (title, subject_template, body_template, trigger_type, scope, created_by, class_id, is_active)
-				 values ($1, 'Sujet de test', $2, 'general', 'class', $3, $4, true)`,
-				[title, body, TEACHER_ID, decor.classId]
-			);
-		}
-	});
-	test.afterAll(async () => {
-		const testInfo = test.info();
-		await cleanup(tagOf(testInfo, 'modeles'));
-	});
-
-	function cardOf(page: Page, title: string) {
-		return page
-			.locator('div.rounded-lg.border')
-			.filter({ has: page.getByRole('heading', { name: title }) });
-	}
-
-	async function openList(page: Page): Promise<void> {
-		await loginAs(page, TEACHER.email, TEACHER.password);
-		await gotoSettled(page, '/dashboard/teacher/message-templates');
-		await page.waitForLoadState('networkidle');
-	}
-
-	test('#2482 — la liste montre l’extrait « Bonjour {{studentName}} » (avant : extrait vidé)', async ({
-		page
-	}, testInfo) => {
-		await openList(page);
-		const card = cardOf(page, titleUnknown);
-		await expect(card).toHaveCount(1);
-		await card.locator('button:has(svg.lucide-chevron-down)').click();
-		const excerpt = card.getByText('Corps du template:').locator('xpath=following-sibling::div');
-		await expect(excerpt).toContainText('Bonjour {{studentName}}');
-		await shoot(page, '2482-liste', testInfo.project.name);
-	});
-
-	test('#2482 — l’aperçu d’un modèle (« Bonjour {{student_name}} ») montre la valeur d’exemple', async ({
-		page
-	}, testInfo) => {
-		await openList(page);
-		await cardOf(page, titleKnown)
-			.locator('button:has(svg[class*="lucide-"][class*="pen"])')
-			.click();
-		const dialog = page.getByRole('dialog');
-		await dialog.getByRole('tab', { name: 'Prévisualisation' }).click();
-		// ÉCART : l'onglet « Prévisualisation » plante la page (« ERREUR 500 », Svelte
-		// `effect_update_depth_exceeded` dans `updatePreview`, message-templates/+page.svelte) :
-		// l'aperçu de la ligne est inatteignable.
-		// Le symptôme, en positif : un sélecteur cassé ne doit pas passer pour l'écart
-		await expect(page.getByText('Erreur 500', { exact: false }).first()).toBeVisible();
-		test.fail();
-		await expect(page.getByText('Erreur 500', { exact: false })).toHaveCount(0);
-		await expect(
-			dialog.getByText('Corps', { exact: true }).locator('xpath=following-sibling::div')
-		).toHaveText('Bonjour Marie Dubois');
-		await shoot(page, '2482-apercu', testInfo.project.name);
-	});
-
-	test('#2482 — la création par la page : le formulaire offre un champ pour le corps du message', async ({
-		page
-	}) => {
-		await openList(page);
-		await page.getByRole('button', { name: 'Nouveau template' }).click();
-		const dialog = page.getByRole('dialog');
-		await expect(dialog.getByText('Corps du message *')).toBeVisible();
-		// ÉCART : « Corps du message » n'a plus de champ de saisie depuis la migration ContentField
-		// (f72a1940a5) ; on ne peut qu'y insérer des variables. La ligne demande de saisir
-		// `Bonjour {{studentName}}`. Le symptôme, en positif : seul le bouton d'insertion est offert.
-		await expect(dialog.getByRole('button', { name: 'Insérer variable/filtre' })).toBeVisible();
-		test.fail();
-		await expect(dialog.getByRole('textbox', { name: /Corps du message/ })).toBeVisible();
-	});
-
-	test('#2482 — créer un modèle par la page (titre, sujet, variable insérée dans le corps) : « Modèle créé avec succès », puis {{student_name}} dans l’extrait de la liste', async ({
-		page
-	}) => {
-		await openList(page);
-		await page.getByRole('button', { name: 'Nouveau template' }).click();
-		const dialog = page.getByRole('dialog');
-		const title = `${decor.tag.name} modèle créé`;
-		await dialog.locator('#title').fill(title);
-		await dialog.locator('#subject').fill('Sujet créé');
-		await dialog.getByRole('button', { name: 'Insérer variable/filtre' }).click();
-		await page.getByRole('button', { name: /\{\{student_name\}\}/ }).click();
-		await dialog.getByRole('button', { name: 'Créer', exact: true }).click();
-		// ÉCART : l'insertion est refusée par la base (« Erreur lors de la création », code 42501,
-		// « new row violates row-level security policy ») : la page n'envoie pas `created_by`,
-		// que la politique `teacher_manage_class_templates` exige égal à `auth.uid()`.
-		// Le symptôme, en positif : un sélecteur cassé ne doit pas passer pour l'écart
-		await expect(
-			page.locator('[data-sonner-toast]').filter({ hasText: 'Erreur lors de la création' })
-		).toBeVisible();
-		test.fail();
-		await expect(
-			page.locator('[data-sonner-toast]').filter({ hasText: 'Modèle créé avec succès' })
-		).toBeVisible();
-		const card = cardOf(page, title);
-		await expect(card).toHaveCount(1);
-		await card.locator('button:has(svg.lucide-chevron-down)').click();
-		await expect(
-			card.getByText('Corps du template:').locator('xpath=following-sibling::div')
-		).toContainText('{{student_name}}');
 	});
 });
 

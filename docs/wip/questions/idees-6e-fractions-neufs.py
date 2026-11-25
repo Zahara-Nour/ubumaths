@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-6e-fractions dans scripts/questions/idees-6e-fractions-neufs/.
 
 Phase 0 validée par David le 2026-11-25 (« je suis tes recos », journal
-docs/wip/idees-6e-fractions-progress.md) : N1 à N6. On reprend l'idée de l'autre plateforme, pas sa
+docs/archive/wip/idees-6e-fractions/idees-6e-fractions-progress.md) : N1 à N6. On reprend l'idée de l'autre plateforme, pas sa
 forme : le geste « placer » sur la droite, les étiquettes à associer, le labyrinthe ; le dénominateur
 commun imposé pour que chaque case ait une seule réponse.
 

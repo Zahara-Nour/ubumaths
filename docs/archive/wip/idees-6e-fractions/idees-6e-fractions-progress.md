@@ -1,16 +1,12 @@
 # Chantier `idees-6e-fractions` : idées reprises d'ailleurs, rubrique « Fractions » de 6e (6N3)
 
-Skill `idees-rubrique`. Rubrique réservée le 2026-11-24 (commit `331a401c9` sur `main`).
+Skill `idees-rubrique`. Rubrique réservée le 2026-11-24 (commit `331a401c9` sur `main`) dans [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3126, `db:migrate` et la relecture de David._
+_Mis à jour le 2026-11-25, chantier clos._
 
-- **État** : migrations vérifiées en prod (6 neufs rangés et tagués, 13 publiés aux bons nombres de variations). David a validé les modèles (« je valide les modèles », 2026-11-25) **par message** : aucun verdict en base (`question_template_reviews` vide pour ce lot).
-- **Prochaine action** : `pnpm tsx scripts/questions/garde-niveaux-tags.ts`, puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-6e-fractions-neufs` en simulation (prod, lecture), puis donner à David la commande `!` avec `--publier`. Les 13 publiés n'ont rien à publier (variations déjà en ligne par la migration de contenu).
-- **En attente de David** : le `--publier` des 6 neufs, après la simulation.
-- **Pièges en cours** : N6 (517dce40) en CM2. Ensuite : tableau de répartition (rubrique « publiée », réservations des 13 modèles levées) et versement du journal.
-- **Worktree / branche** : aucun ; doc seule → commit direct sur `main`.
+- **État** : rubrique **publiée** : les 6 modèles neufs (3e683a73, 0a21fe2f, eae76a51, 727794bb, f2ffb9fd, 517dce40 en CM2) sont publiés, validés par David ; les 23 variations des 13 publiés sont en prod (migration de contenu) ; réservations levées, journal archivé · **Prochaine action** : aucune · **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## Décisions de phase 0 (David, 2026-11-25 : « je suis tes recos »)
 
@@ -55,3 +51,9 @@ Points des fractions et des pourcentages (6-125 à 6-141, 6-203, 6-205) : modèl
 
 - CI verte, `pr:merger` a mergé (e9981fa3c). Seules ces deux migrations étaient en attente en prod ; `db:migrate` lancé par David.
 - Écarts F6 (6818662d : fraction égale à 1 ; afebbb91 : « = » une fois sur deux) : David « je te suis ».
+
+## Publiée, chantier clos (2026-11-25)
+
+- `garde-niveaux-tags.ts` : aucun niveau manquant (2732 modèles tagués), aucun écart de ce lot.
+- `publier-lot.ts` en simulation : 6 brouillons au contrôle ; David a lancé `--publier` ; simulation relancée : les 6 « publié ».
+- Tableau de répartition : 6N3 « publiée », réservations des 13 modèles levées. Journal et relevé archivés.

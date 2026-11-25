@@ -51,6 +51,8 @@
 	import { worksheetLocale } from '#lib/types/worksheets.ts';
 	import { worksheetHeader } from '#lib/worksheets/worksheet-header.ts';
 	import { assignmentCopiesHref } from '#lib/navigation/return-links.ts';
+	import { fetchBatchStudents } from '#lib/worksheets/batch-students.ts';
+	import type { CopyRecipient } from '#lib/worksheets/student-copies.ts';
 	import UntranslatedExercisesNotice from '#lib/components/worksheets/UntranslatedExercisesNotice.svelte';
 	import WorksheetCitationsNotice from '#lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
@@ -82,6 +84,9 @@
 	let editingAssignment = $state<AssignmentWithExtras | null>(null);
 	let selectedAssignment = $state<AssignmentWithExtras | null>(null);
 	let classes = $state<{ id: string; name: string }[]>([]);
+	// Les élèves de l'onglet « Lot » de l'aperçu PDF : ceux des affectations de la fiche
+	let batchStudents = $state<CopyRecipient[]>([]);
+	let batchStudentsSeq = 0;
 
 	// Type-safe worksheet access with local state for updates.
 	// Snapshot intentional: $effect below resets it on data changes.
@@ -282,18 +287,43 @@
 	/**
 	 * Load assignments for the worksheet
 	 */
-	async function loadAssignments() {
+	async function loadAssignments(): Promise<boolean> {
 		assignmentsLoading = true;
 		try {
 			const response = await fetch(`/api/worksheets/${worksheet.id}/assignments`);
 			const data = await response.json();
 			if (response.ok) {
 				assignments = data.assignments || [];
+				return true;
 			}
 		} catch (err) {
 			console.error('Error loading assignments:', err);
 		} finally {
 			assignmentsLoading = false;
+		}
+		return false;
+	}
+
+	/**
+	 * Les élèves du lot de PDF : ceux de toutes les affectations de la fiche
+	 * (classes visées et élèves visés nommément), relus à chaque ouverture de
+	 * l'onglet PDF
+	 */
+	async function loadBatchStudents() {
+		// Deux ouvertures rapprochées de l'onglet : seule la dernière lecture compte
+		const seq = ++batchStudentsSeq;
+		const assignmentsRead = await loadAssignments();
+		const result = await fetchBatchStudents(
+			fetch,
+			assignments.map((assignment) => assignment.id)
+		);
+		if (seq !== batchStudentsSeq) return;
+		batchStudents = result.students;
+		// Affectations illisibles : sans ce message, le lot dirait « aucun élève » à tort
+		if (!assignmentsRead) {
+			toaster.error('Élèves du lot : les affectations de la fiche n’ont pas pu être lues');
+		} else if (result.failedAssignments > 0) {
+			toaster.error('Élèves du lot incomplets : une affectation n’a pas pu être lue');
 		}
 	}
 
@@ -503,6 +533,9 @@
 				if (value === 'assignments') {
 					loadAssignments();
 					loadClasses();
+				}
+				if (value === 'pdf') {
+					loadBatchStudents();
 				}
 			}}
 		>
@@ -849,7 +882,7 @@
 			<!-- PDF Tab -->
 			<Tabs.Content value="pdf" class="space-y-6">
 				<!-- L'avertissement des exercices non traduits est dans l'aperçu : il suit la langue d'impression -->
-				<PdfPreview {worksheet} />
+				<PdfPreview {worksheet} students={batchStudents} />
 			</Tabs.Content>
 		</Tabs.Root>
 	</div>
