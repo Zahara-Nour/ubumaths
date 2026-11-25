@@ -29,7 +29,8 @@ import {
 	nomDeSession,
 	noterEnvoi,
 	parseArgs,
-	titreDuTranscript
+	titreDuTranscript,
+	type Envois
 } from './logique';
 
 // Constantes
@@ -55,8 +56,21 @@ function titreDeLaSession(): string | null {
 	return null;
 }
 
-function envoisNotes(): ReturnType<typeof lireEnvois> {
-	return existsSync(FICHIER_ENVOIS) ? lireEnvois(readFileSync(FICHIER_ENVOIS, 'utf8')) : {};
+/** État illisible = rien d'envoyé : au pire un doublon, jamais une notification perdue. */
+function envoisNotes(): Envois {
+	try {
+		return existsSync(FICHIER_ENVOIS) ? lireEnvois(readFileSync(FICHIER_ENVOIS, 'utf8')) : {};
+	} catch {
+		return {};
+	}
+}
+
+function lireCanal(): string {
+	try {
+		return existsSync(CANAL) ? readFileSync(CANAL, 'utf8').trim() : '';
+	} catch {
+		return '';
+	}
 }
 
 async function envoyer(canal: string, texte: string): Promise<string | null> {
@@ -95,7 +109,7 @@ async function main(): Promise<void> {
 		console.log(`⏸ déjà envoyé il y a moins de 10 minutes : ${texte}`);
 		return;
 	}
-	const canal = existsSync(CANAL) ? readFileSync(CANAL, 'utf8').trim() : '';
+	const canal = lireCanal();
 	if (canal === '') {
 		console.log('⚠️ notification pas partie : pas de canal ntfy (pnpm surveillance:installer).');
 		return;

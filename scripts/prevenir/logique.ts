@@ -47,8 +47,11 @@ const USAGE = [
 	'  geste     autre chose à faire par David, dit en une courte phrase'
 ].join('\n');
 
-/** Un chemin (`/`, `\`), une adresse (`@`, `://`) ou un nom à point (`journal.md`, `exemple.test`). */
-const CHEMIN_OU_ADRESSE = /[/\\@]|\S\.[a-z]{2,}/i;
+/**
+ * Un chemin (`/`, `\`), une adresse (`@`, `://`), un nom à point (`journal.md`,
+ * `exemple.test`), une adresse IP, `localhost` ou un port (`machine:5176`).
+ */
+const CHEMIN_OU_ADRESSE = /[/\\@]|\S\.[a-z]{2,}|\d+\.\d+\.\d+|localhost|\w:\d{2,5}/i;
 
 // Functions
 
@@ -71,11 +74,19 @@ function verifierPhrase(brute: string): string {
 	return phrase;
 }
 
-function verifierSession(brute: string): string {
+/** Le nom tel qu'il peut partir, ou `null` : chemin, adresse, nom du projet, trop long. */
+function sessionValide(brute: string): string | null {
 	const nom = brute.trim();
-	if (nom === '' || nom.length > SESSION_MAX || /[\r\n]/.test(nom) || /[/\\@]/.test(nom)) {
+	if (nom === '' || nom.length > SESSION_MAX || /[\r\n]/.test(nom)) return null;
+	if (CHEMIN_OU_ADRESSE.test(nom) || nom.toLowerCase() === DEPOT_PRINCIPAL) return null;
+	return nom;
+}
+
+function verifierSession(brute: string): string {
+	const nom = sessionValide(brute);
+	if (nom === null) {
 		throw new PrevenirError(
-			`Nom de session refusé : ${SESSION_MAX} caractères au plus, sans chemin ni adresse.`
+			`Nom de --session refusé : ${SESSION_MAX} caractères au plus, sans chemin ni adresse, pas le nom du projet.`
 		);
 	}
 	return nom;
@@ -90,7 +101,9 @@ export function parseArgs(argv: string[]): PrevenirOptions {
 		if (arg === '--essai') essai = true;
 		else if (arg === '--session') {
 			const valeur = argv[++i];
-			if (valeur === undefined) throw new PrevenirError(`--session demande un nom.\n${USAGE}`);
+			if (valeur === undefined || valeur.startsWith('--')) {
+				throw new PrevenirError(`--session demande un nom.\n${USAGE}`);
+			}
 			session = verifierSession(valeur);
 		} else if (arg.startsWith('--')) throw new PrevenirError(`Option inconnue : ${arg}\n${USAGE}`);
 		else libres.push(arg);
@@ -114,7 +127,8 @@ export function message(mot: Mot, session: string, phrase: string | null): strin
 	const tete = `Session « ${session} » : `;
 	if (mot === 'lien') return `${tete}un lien est prêt à essayer.`;
 	if (mot === 'question') return `${tete}une question attend ta réponse.`;
-	return `${tete}${(phrase ?? '').replace(/\.$/, '')}.`;
+	const texte = phrase ?? '';
+	return /[.?!]$/.test(texte) ? `${tete}${texte}` : `${tete}${texte}.`;
 }
 
 /** Le dernier `/rename` de la session, lu dans son transcript. */
@@ -131,8 +145,10 @@ export function titreDuTranscript(contenu: string): string | null {
 }
 
 /**
- * `--session`, sinon le `/rename`, sinon le sujet du worktree. Jamais le nom du
- * dépôt principal : le message ne porte pas de nom de projet.
+ * `--session`, sinon le `/rename`, sinon le sujet du worktree. Un `/rename` ou un
+ * sujet qui ne peut pas partir (chemin, adresse, nom du projet) est ignoré sans
+ * erreur : seule une option mal écrite arrête la commande. Hors d'un worktree :
+ * « sans nom », jamais le nom d'un dossier.
  */
 export function nomDeSession(source: {
 	explicite: string | null;
@@ -140,10 +156,11 @@ export function nomDeSession(source: {
 	dossier: string;
 }): string {
 	if (source.explicite !== null) return verifierSession(source.explicite);
-	if (source.titre !== null) return verifierSession(source.titre);
+	const titre = source.titre === null ? null : sessionValide(source.titre);
+	if (titre !== null) return titre;
 	const dossier = basename(source.dossier);
-	if (dossier.startsWith(PREFIXE_WORKTREE)) return dossier.slice(PREFIXE_WORKTREE.length);
-	return dossier === DEPOT_PRINCIPAL || dossier === '' ? 'sans nom' : dossier;
+	if (!dossier.startsWith(PREFIXE_WORKTREE)) return 'sans nom';
+	return sessionValide(dossier.slice(PREFIXE_WORKTREE.length)) ?? 'sans nom';
 }
 
 export function lireEnvois(contenu: string): Envois {

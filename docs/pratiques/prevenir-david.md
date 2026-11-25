@@ -39,10 +39,12 @@ poste de David, hors dépôt) : ne pas la doubler.
 - Le canal est ntfy.sh, un **service extérieur** : le message porte le nom de la session et une
   formule fixe. **Ni le lien, ni le texte de la question** : David les lit dans la session.
 - La phrase de `geste` : une ligne, 80 caractères au plus, **sans chemin ni adresse** (`/`, `@`,
-  nom à point comme un fichier ou un domaine : refusés). Pas de prénom, pas de donnée d'élève.
+  nom à point comme un fichier ou un domaine, adresse IP, `localhost`, port : refusés). Pas de
+  prénom, pas de donnée d'élève.
 - Nom de la session : `--session`, sinon son `/rename`, sinon le sujet du worktree
-  (`ubumaths-wt-<sujet>`). Depuis le dépôt principal sans `/rename` : « sans nom », jamais le nom
-  du projet.
+  (`ubumaths-wt-<sujet>`). Un `/rename` qui porte un chemin, une adresse ou le nom du projet est
+  ignoré (le sujet du worktree le remplace). Hors d'un worktree et sans `/rename` : « sans nom »,
+  jamais le nom d'un dossier.
 
 ## Comportements
 

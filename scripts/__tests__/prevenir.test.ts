@@ -54,6 +54,19 @@ describe('parseArgs', () => {
 		expect(parseArgs(['question', '--session', 'tache-de-nuit']).session).toBe('tache-de-nuit');
 	});
 
+	it('--session ne prend pas une option pour un nom', () => {
+		expect(() => parseArgs(['lien', '--session', '--essai'])).toThrow(/--session/);
+		expect(() => parseArgs(['lien', '--session', '--session', 'x'])).toThrow(/--session/);
+		expect(() => parseArgs(['lien', '--session'])).toThrow(/--session/);
+	});
+
+	it.each(['a/b', 'exemple.test', 'ubumaths', 'Ubumaths', 'x'.repeat(61), 'a@b'])(
+		'refuse --session %s',
+		(nom) => {
+			expect(() => parseArgs(['lien', '--session', nom])).toThrow(PrevenirError);
+		}
+	);
+
 	it('refuse un mot inconnu en donnant la liste', () => {
 		expect(() => parseArgs(['bravo'])).toThrow(PrevenirError);
 		expect(() => parseArgs(['bravo'])).toThrow(/lien.*question.*geste/);
@@ -76,7 +89,10 @@ describe('parseArgs', () => {
 		'fichier journal.md prêt',
 		'écris à quelqu.un@exemple.test',
 		'va sur machine.exemple.test',
-		'C:\\dossier'
+		'C:\\dossier',
+		'va sur 100.64.1.2 port 5176',
+		'ouvre localhost',
+		'ouvre la machine:5176'
 	])('refuse un chemin ou une adresse dans la phrase : %s', (phrase) => {
 		expect(() => parseArgs(['geste', phrase])).toThrow(/chemin|adresse/);
 	});
@@ -108,8 +124,10 @@ describe('message', () => {
 		);
 	});
 
-	it('ne double pas le point final de la phrase', () => {
+	it('ne double pas la ponctuation finale de la phrase', () => {
 		expect(message('geste', 's', 'commande à lancer.')).toBe('Session « s » : commande à lancer.');
+		expect(message('geste', 's', 'tu relis ?')).toBe('Session « s » : tu relis ?');
+		expect(message('geste', 's', 'à lancer !')).toBe('Session « s » : à lancer !');
 	});
 });
 
@@ -121,15 +139,24 @@ describe('nomDeSession', () => {
 		expect(nomDeSession({ explicite: null, titre: null, dossier })).toBe('prevenir');
 	});
 
-	it('ne donne jamais le nom du dépôt principal', () => {
-		expect(nomDeSession({ explicite: null, titre: null, dossier: '/x/ubumaths' })).toBe('sans nom');
+	it('ne donne jamais le nom du dépôt principal ni celui d’un autre dossier', () => {
+		const sans = (dossier: string, titre: string | null = null) =>
+			nomDeSession({ explicite: null, titre, dossier });
+		expect(sans('/x/ubumaths')).toBe('sans nom');
+		expect(sans('/Users/quelquun')).toBe('sans nom');
+		expect(sans('/x/autre-projet')).toBe('sans nom');
+		expect(sans('/x/ubumaths-wt-')).toBe('sans nom');
+		expect(sans('/x/ubumaths', 'ubumaths')).toBe('sans nom');
 	});
 
-	it('refuse un nom de session qui porte un chemin', () => {
-		expect(() => nomDeSession({ explicite: 'a/b', titre: null, dossier: '/x' })).toThrow(
-			PrevenirError
-		);
-	});
+	it.each(['feat/prevenir', 'exemple.test', 'x'.repeat(61), 'ubumaths', 'a@b', '  '])(
+		'un /rename refusé (%s) ne bloque rien : le worktree le remplace',
+		(titre) => {
+			expect(nomDeSession({ explicite: null, titre, dossier: '/x/ubumaths-wt-prevenir' })).toBe(
+				'prevenir'
+			);
+		}
+	);
 });
 
 describe('titreDuTranscript', () => {
@@ -254,8 +281,35 @@ describe('la commande', () => {
 		]);
 	});
 
+	it('un /rename qui porte un chemin ne bloque pas : nom du worktree', async () => {
+		const id = '00000000-0000-4000-8000-000000000001';
+		const projets = join(racine, '.claude/projects/un-projet');
+		mkdirSync(projets, { recursive: true });
+		writeFileSync(join(projets, `${id}.jsonl`), '{"customTitle":"feat/prevenir"}\n');
+		const r = await lancer(['question'], { CLAUDE_CODE_SESSION_ID: id });
+		expect(r.status, r.sortie).toBe(0);
+		expect(recus.map((m) => m.corps)).toEqual([
+			'Session « essai » : une question attend ta réponse.'
+		]);
+	});
+
+	it('--session suivi d’une option : refus, rien d’envoyé', async () => {
+		const r = await lancer(['lien', '--session', '--essai']);
+		expect(r.status).toBe(1);
+		expect(recus).toHaveLength(0);
+	});
+
+	it('état illisible : la notification part quand même', async () => {
+		mkdirSync(join(racine, 'etat/envois.json'), { recursive: true });
+		const r = await lancer(['lien']);
+		expect(r.status, r.sortie).toBe(0);
+		expect(recus).toHaveLength(1);
+	});
+
 	it('n’envoie pas deux fois le même message en moins de 10 minutes', async () => {
-		await lancer(['question']);
+		const premier = await lancer(['question']);
+		expect(premier.status, premier.sortie).toBe(0);
+		expect(recus).toHaveLength(1);
 		const r = await lancer(['question']);
 		expect(r.status).toBe(0);
 		expect(r.sortie).toMatch(/déjà envoyé/);
