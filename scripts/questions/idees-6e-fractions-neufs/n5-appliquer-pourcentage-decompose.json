@@ -1,0 +1,301 @@
+{
+	"id": "f2ffb9fd-04b4-484e-afce-e05787e9e054",
+	"rangement": {
+		"noeud": "Proportionnalité > Pourcentages > calculs de pourcentages",
+		"point": "6-141"
+	},
+	"title": "Appliquer un pourcentage en le décomposant",
+	"description": "Calculer 60 % d'un nombre (50 % + 10 %), 90 % (100 % − 10 %), ou le montant d'une réduction de 10, 20, 25 ou 50 % sur un prix de 15 à 60 € ; pièges : 10 % seulement, soustraire le pourcentage, donner le prix final",
+	"grades": ["6"],
+	"level": 9,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$60\\,\\% \\text{ de } {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "7..40"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*k"
+				}
+			],
+			"conditions": ["n!=150", "n!=120"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:6*k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}",
+							"message": "Tu as calculé $10\\,\\%$ de ${{n}}$ : il en faut $60\\,\\%$, six fois plus.",
+							"label": "10 % seulement"
+						},
+						{
+							"answer": "{{eval:n/2}}",
+							"message": "Tu as calculé $50\\,\\%$ de ${{n}}$ : il faut encore ajouter $10\\,\\%$.",
+							"label": "50 % seulement"
+						},
+						{
+							"answer": "{{eval:n-60}}",
+							"message": "On n'enlève pas $60$ : $60\\,\\%$ de ${{n}}$, c'est $60$ sur $100$, soit $\\frac{60}{100} \\times {{n}}$.",
+							"label": "Soustraction de 60"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Décomposer.** $60\\,\\% = 50\\,\\% + 10\\,\\%$. $50\\,\\%$ de ${{n}}$, c'est la moitié : ${{eval:n/2}}$. $10\\,\\%$ de ${{n}}$, c'est le dixième : ${{k}}$.",
+					"$$60\\,\\% \\text{ de } {{n}} = {{eval:n/2}} + {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "$60\\,\\% = 50\\,\\% + 10\\,\\%$ : calcule la moitié, puis le dixième."
+		},
+		{
+			"statement": "Calcule.\n\n$$90\\,\\% \\text{ de } {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "11..50"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*k"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:9*k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}",
+							"message": "Tu as calculé $10\\,\\%$ de ${{n}}$ : $90\\,\\%$, c'est tout, moins ces $10\\,\\%$.",
+							"label": "10 % seulement"
+						},
+						{
+							"answer": "{{eval:n-90}}",
+							"message": "On n'enlève pas $90$ : $90\\,\\%$ de ${{n}}$, c'est ${{n}}$ moins $10\\,\\%$ de ${{n}}$.",
+							"label": "Soustraction de 90"
+						},
+						{
+							"answer": "{{eval:n-10}}",
+							"message": "On n'enlève pas $10$, mais $10\\,\\%$ de ${{n}}$, c'est-à-dire son dixième.",
+							"label": "Soustraction de 10"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Décomposer.** $90\\,\\% = 100\\,\\% - 10\\,\\%$. $100\\,\\%$ de ${{n}}$, c'est ${{n}}$ ; $10\\,\\%$ de ${{n}}$, c'est le dixième : ${{k}}$.",
+					"$$90\\,\\% \\text{ de } {{n}} = {{n}} - {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "$90\\,\\% = 100\\,\\% - 10\\,\\%$ : enlève le dixième."
+		},
+		{
+			"statement": "Un article coûte ${{P}}~\\unit{€}$. Il est soldé avec une réduction de ${{p}}\\,\\%$.\n\nQuel est le montant de la réduction ?\n\n$$?~\\text{€}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10|20|25|50"
+				},
+				{
+					"name": "P",
+					"expression": "15..60"
+				},
+				{
+					"name": "r",
+					"expression": "eval:p*P/100"
+				}
+			],
+			"conditions": ["mod(p*P,100)==0", "P-r!=p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:P-r}}",
+							"message": "C'est le prix après la réduction : la question demande le montant de la réduction.",
+							"label": "Prix final"
+						},
+						{
+							"answer": "{{p}}",
+							"message": "Une réduction de ${{p}}\\,\\%$ n'est pas de ${{p}}~\\unit{€}$ : c'est ${{p}}~\\unit{€}$ pour $100~\\unit{€}$.",
+							"label": "Pourcentage recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Appliquer un pourcentage.** ${{p}}\\,\\%$ de ${{P}}$, c'est $\\frac{{{p}}}{100} \\times {{P}}$. {{if:p==50|$50\\,\\%$, c'est la moitié.|{{if:p==25|$25\\,\\%$, c'est le quart.|{{if:p==10|$10\\,\\%$, c'est le dixième.|$20\\,\\%$, c'est deux fois $10\\,\\%$.}}}}}}",
+					"$$\\frac{{{p}}}{100} \\times {{P}} = \\textcolor{{{color:primary.0}}}{{{r}}}$$",
+					"La réduction est de ${{r}}~\\unit{€}$."
+				]
+			},
+			"hint": "${{p}}\\,\\%$ de ${{P}}~\\unit{€}$, c'est $\\frac{{{p}}}{100} \\times {{P}}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "60 % de 70 = 42",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"n": "70"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["42"]
+		},
+		{
+			"description": "60 % de 140 = 84",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14",
+				"n": "140"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["84"]
+		},
+		{
+			"description": "60 % de 140 : 10 % seulement",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14",
+				"n": "140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $10\\,\\%$ de $140$ : il en faut $60\\,\\%$, six fois plus."
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "60 % de 140 : 50 % seulement",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14",
+				"n": "140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $50\\,\\%$ de $140$ : il faut encore ajouter $10\\,\\%$."
+			},
+			"answers": ["70"]
+		},
+		{
+			"description": "60 % de 140 : 140 − 60",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14",
+				"n": "140"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'enlève pas $60$ : $60\\,\\%$ de $140$, c'est $60$ sur $100$, soit $\\frac{60}{100} \\times 140$."
+			},
+			"answers": ["80"]
+		},
+		{
+			"description": "90 % de 250 = 225",
+			"variationIndex": 1,
+			"variables": {
+				"k": "25",
+				"n": "250"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["225"]
+		},
+		{
+			"description": "90 % de 250 : 10 % seulement",
+			"variationIndex": 1,
+			"variables": {
+				"k": "25",
+				"n": "250"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé $10\\,\\%$ de $250$ : $90\\,\\%$, c'est tout, moins ces $10\\,\\%$."
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "90 % de 250 : 250 − 90",
+			"variationIndex": 1,
+			"variables": {
+				"k": "25",
+				"n": "250"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'enlève pas $90$ : $90\\,\\%$ de $250$, c'est $250$ moins $10\\,\\%$ de $250$."
+			},
+			"answers": ["160"]
+		},
+		{
+			"description": "90 % de 250 : 250 − 10",
+			"variationIndex": 1,
+			"variables": {
+				"k": "25",
+				"n": "250"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'enlève pas $10$, mais $10\\,\\%$ de $250$, c'est-à-dire son dixième."
+			},
+			"answers": ["240"]
+		},
+		{
+			"description": "Réduction de 25 % sur 48 € = 12 €",
+			"variationIndex": 2,
+			"variables": {
+				"p": "25",
+				"P": "48",
+				"r": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "Réduction : prix final (36)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "25",
+				"P": "48",
+				"r": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le prix après la réduction : la question demande le montant de la réduction."
+			},
+			"answers": ["36"]
+		},
+		{
+			"description": "Réduction : pourcentage recopié (25)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "25",
+				"P": "48",
+				"r": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une réduction de $25\\,\\%$ n'est pas de $25~\\unit{€}$ : c'est $25~\\unit{€}$ pour $100~\\unit{€}$."
+			},
+			"answers": ["25"]
+		}
+	]
+}

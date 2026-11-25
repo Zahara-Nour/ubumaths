@@ -2,13 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3121 et `db:migrate`._
+_Mis à jour le 2026-11-25 : chantier clos._
 
-- **État** : migrations passées en prod (lancées par David), vérifiées : 4 brouillons rangés (289a085b 2-390, 0bcf9fae et 201e64fd 1SPE-340, ab35bb06 1SPE-424), 31096bae à 5 variations, 69a05f98 à 4.
-- **Prochaine action** : lire `question_template_reviews` des 6 modèles (verdicts postérieurs au 2026-11-25) ; « À revoir » → corriger ; tout valide → `garde-niveaux-tags.ts` puis `publier-lot.ts --dir scripts/questions/idees-1re-probas-cond-neufs` (simulation), David lance `--publier`.
-- **En attente de David** : la relecture dans `/dev/modeles` (`?point=2-390`, `?point=1SPE-340`, `?point=1SPE-424`, `?point=2-395`).
-- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). F1 et F3 sont déjà visibles des élèves : une correction passe par `migration-contenu.ts`.
-- **Worktree / branche** : aucun.
+- **État** : clos. 4 modèles neufs publiés (F2 289a085b, F5 0bcf9fae, F6 ab35bb06, F7 201e64fd), une variation ajoutée à 31096bae (F1) et à 69a05f98 (F3). Rubrique 1P1 marquée « publiée » dans `idees-ailleurs-repartition.md`, réservations de 31096bae et 69a05f98 levées. Journal archivé.
+- **Prochaine action** : aucune.
 
 ## Historique
 
@@ -57,3 +54,7 @@ _Mis à jour le 2026-11-25, après #3121 et `db:migrate`._
 ### 2026-11-25 : migrations en prod
 
 - `db:migrate --include-all` lancé par David (refusé à la session par le mode auto). Vérifié par MCP : statuts, niveaux, nœuds, points et nombre de variations conformes.
+
+### 2026-11-25 : publication, chantier clos
+
+- David a validé les 6 modèles dans la conversation (aucun verdict en base). `garde-niveaux-tags.ts` vert, `publier-lot.ts` en simulation : 4 brouillons passent ; David a lancé `--publier`. Les 4 relus `published` en base.

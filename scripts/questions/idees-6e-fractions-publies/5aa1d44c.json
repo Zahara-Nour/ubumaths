@@ -1,0 +1,373 @@
+{
+	"id": "5aa1d44c-074a-45d6-a03c-d4532b233b0a",
+	"title": "Compléter une égalité de fractions",
+	"description": "Multiplier numérateur et dénominateur par le même nombre",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 25,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "2..9"
+			},
+			{
+				"name": "b",
+				"expression": "2..9!m(a),d(a)"
+			},
+			{
+				"name": "c",
+				"expression": "2..9"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*c}}"
+				}
+			],
+			"statement": "Complète avec le nombre manquant.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{b}}/{{a}}=?/{{eval:a*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{b}}}{{{a}}} = \\dfrac{{{solution:0}}}{{{eval:a*c}}}$ car ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c}}"
+				}
+			],
+			"statement": "Complète avec le nombre manquant.\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{b}}/{{a}}={{eval:b*c}}/?"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{b}}}{{{a}}} = \\dfrac{{{eval:b*c}}}{{{solution:0}}}$ car ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:b*c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*c}}"
+				}
+			],
+			"statement": "Complète avec le nombre manquant.\n\n$${{expression3}}$$",
+			"variables": [
+				{
+					"name": "expression3",
+					"expression": "?/{{eval:a*c}}={{b}}/{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{solution:0}}}{{{eval:a*c}}} = \\dfrac{{{b}}}{{{a}}}$ car ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c}}"
+				}
+			],
+			"statement": "Complète avec le nombre manquant.\n\n$${{expression4}}$$",
+			"variables": [
+				{
+					"name": "expression4",
+					"expression": "{{eval:b*c}}/?={{b}}/{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{{{eval:b*c}}}{{{solution:0}}}  = \\dfrac{{{b}}}{{{a}}}$ car ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:b*c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}} $"
+				]
+			}
+		},
+		{
+			"statement": "Complète l'égalité.\n\n$${{n}} = \\frac{?}{{{d}}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..11"
+				}
+			],
+			"conditions": ["n*d!=n+d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}",
+							"message": "$\\frac{{{n}}}{{{d}}}$ est plus petit que ${{n}}$ : il faut ${{d}}$ parts de $\\frac{1}{{{d}}}$ pour faire une seule unité.",
+							"label": "Entier recopié"
+						},
+						{
+							"answer": "{{eval:n+d}}",
+							"message": "On ne fait pas la somme : compte les parts de $\\frac{1}{{{d}}}$ dans ${{n}}$ unités.",
+							"label": "Somme"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un entier en fraction.** Une unité, c'est $\\frac{{{d}}}{{{d}}}$ : il y a ${{d}}$ parts de $\\frac{1}{{{d}}}$. Dans ${{n}}$ unités, il y en a ${{n}} \\times {{d}}$.",
+					"$${{n}} = \\frac{\\textcolor{{{color:primary.0}}}{{{eval:n*d}}}}{{{d}}}$$"
+				]
+			},
+			"hint": "Combien de parts égales à $\\frac{1}{{{d}}}$ y a-t-il dans une unité ? Et dans ${{n}}$ unités ?"
+		},
+		{
+			"statement": "Complète l'égalité.\n\n$${{n}} = \\frac{{{eval:n*d}}}{?}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "3..11"
+				}
+			],
+			"conditions": ["d!=n", "n*(d-1)!=d", "n*(d-1)!=n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n*d-n}}",
+							"message": "On ne soustrait pas : cherche le nombre qui, multiplié par ${{n}}$, donne ${{eval:n*d}}$.",
+							"label": "Différence"
+						},
+						{
+							"answer": "{{n}}",
+							"message": "$\\frac{{{eval:n*d}}}{{{n}}}$ vaut ${{d}}$, pas ${{n}}$.",
+							"label": "Entier recopié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un entier en fraction.** ${{n}} = \\frac{{{n}} \\times d}{d}$ : le numérateur est ${{n}}$ fois le dénominateur. Ici ${{eval:n*d}} = {{n}} \\times {{d}}$.",
+					"$${{n}} = \\frac{{{eval:n*d}}}{\\textcolor{{{color:primary.0}}}{{{d}}}}$$"
+				]
+			},
+			"hint": "Le numérateur est ${{n}}$ fois plus grand que le dénominateur : par quel nombre faut-il multiplier ${{n}}$ pour obtenir ${{eval:n*d}}$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"description": "5/4 = ?/12 → 15",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"description": "recopie du numérateur",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{15}{12}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"description": "fraction au lieu du nombre",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"description": "5/4 = 15/? → 12",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "9",
+				"c": "2"
+			},
+			"description": "bornes : 9/2 = 18/? → 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"description": "?/12 = 5/4 → 15",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "3"
+			},
+			"description": "15/? = 5/4 → 12",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["72"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"c": "9"
+			},
+			"description": "bornes : 81/? = 9/8 → 72",
+			"variationIndex": 3
+		},
+		{
+			"description": "F5 num : 3 = 15/5",
+			"variationIndex": 4,
+			"variables": {
+				"n": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "F5 num : entier recopié (3)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\frac{3}{5}$ est plus petit que $3$ : il faut $5$ parts de $\\frac{1}{5}$ pour faire une seule unité."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F5 num : somme (8)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "3",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne fait pas la somme : compte les parts de $\\frac{1}{5}$ dans $3$ unités."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "F5 num : 1 = 7/7",
+			"variationIndex": 4,
+			"variables": {
+				"n": "1",
+				"d": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "F5 dén : 4 = 12/3",
+			"variationIndex": 5,
+			"variables": {
+				"n": "4",
+				"d": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F5 dén : différence (8)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "4",
+				"d": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne soustrait pas : cherche le nombre qui, multiplié par $4$, donne $12$."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "F5 dén : entier recopié (4)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "4",
+				"d": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\frac{12}{4}$ vaut $3$, pas $4$."
+			},
+			"answers": ["4"]
+		}
+	]
+}
