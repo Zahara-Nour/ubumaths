@@ -7,18 +7,15 @@ https://claude.ai/artifact/LGpQYL1RscgPbBHoZRCUFA
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3148._
+_Mis à jour le 2026-11-25, migration de rangement générée (avant /clear)._
 
-- **État** : #3148 mergée (N5, N6 en fichiers ; 7 variations sur 4 publiés + migration de contenu
-  `20261125153849_…_publies_contenu`, PAS encore jouée en prod). · **Prochaine action** :
-  `db:migrate` de cette migration quand `migration list --linked` ne montre qu'elle (le
-  2026-11-25, deux migrations de modération du chat, 20261125145621 et 20261125152013, d'une
-  autre session, attendaient aussi → pas lancé) ; puis migration de rangement (nœud + point) de
-  N5, N6 dans un nouveau worktree · **En attente de David** : `create-questions --publier` sur
-  `scripts/questions/idees-3e-puissances-neufs` (N5, N6 en brouillons en prod) ; dire si les
-  migrations du chat peuvent partir avec la mienne · **Pièges en cours** : options de 3fe98dd9
-  changées (`signs: off`, `allowBracketsInFirstNegativeTerm`), voir § Lot ; `--publier` en
-  local réécrit les ids → les retirer · **Worktree / branche** : aucun (retiré après #3148).
+- **État** : contenu des 4 publiés en prod (`db:migrate` après #3148, avec les 2 migrations du
+  chat, go de David) ; N5 (dfe8ca79) et N6 (dc68386c) créés en brouillons en prod par David ;
+  migration de rangement générée et commitée (N5 → 4-015, N6 → 3-052), PR pas encore ouverte. · **Prochaine action** : preuve « rouge sans la migration » (`migrations-rangement-tags` sans le .sql : pile de test prise par d’autres sessions le 2026-11-25), PR, revue faite (`security-auditor` : rien),
+  merge, `db:migrate` (seule en attente), puis relecture des 2 brouillons et des variations dans
+  `/dev/modeles` · **En attente de David** : rien avant la relecture · **Pièges en cours** :
+  options de 3fe98dd9 changées, voir § Lot · **Worktree / branche** :
+  `../ubumaths-wt-idees-3e-puissances-rangement`, `feat/idees-3e-puissances-rangement`.
 
 ## Phase 0 (2026-11-25)
 
@@ -68,3 +65,13 @@ les 6 modèles.
   en simulation et dans le test de la migration.
 - `migration-contenu.ts` : 15368b02 +3 variations, 18761148 +1, 3fe98dd9 +2 et options,
   bb9cff7b +1 ; `migrations-contenu-publie` vert (193 tests).
+
+## En prod et rangement (2026-11-25)
+
+- `db:migrate` après #3148 : contenu des 4 publiés joué, avec 20261125145621 et 20261125152013
+  (modération du chat, autre session ; go de David). Relevé en prod : 4, 2, 8, 2 variations ;
+  options de 3fe98dd9 comme prévu.
+- David a lancé `create-questions --publier` : N5 = dfe8ca79, N6 = dc68386c (brouillons).
+- `migration-rangement.ts` : N5 sous « Puissances : sens et écritures > définition » (4-015), N6
+  sous « Puissances : calculs > quotient de puissances » (3-052). `garde-niveaux-tags` vert,
+  `migrations-rangement-tags` vert, `security-auditor` : aucun finding.

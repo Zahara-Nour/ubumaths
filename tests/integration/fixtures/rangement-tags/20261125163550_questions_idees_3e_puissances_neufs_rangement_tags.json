@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261125163550_questions_idees_3e_puissances_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "dfe8ca79-452b-4e6f-a235-ce2166441c60",
+			"title": "Lire une puissance",
+			"fichier": "n5-lire-une-puissance.json",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : sens et écritures",
+			"sousNotion": "définition",
+			"point": "4-015"
+		},
+		{
+			"id": "dc68386c-1490-40e4-a1ac-4b2a12928324",
+			"title": "Puissances : bases cachées",
+			"fichier": "n6-puissances-bases-cachees.json",
+			"branche": "Nombres et calculs",
+			"notion": "Puissances : calculs",
+			"sousNotion": "quotient de puissances",
+			"point": "3-052"
+		}
+	],
+	"niveaux": []
+}
