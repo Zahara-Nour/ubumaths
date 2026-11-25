@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 4 ouverte._
+_Mis à jour le 2026-11-25, après #3138._
 
-- **État** : PR 1 à 3 mergées (#3119, #3127, #3133) ; `deploy:prod` lancé par cette session à la demande de David ; PR 4 (nettoyage de nuit des comptes orphelins, suppression automatique validée par David) ouverte, revues faites et corrigées · **Prochaine action** : après le merge de la PR 4, clôture → versement (journal archivé ; le durable est dans `docs/systeme/comptes-classes-ecoles.md` et `auth.md`) ; la PR 4 part en prod au prochain `deploy:prod` · **En attente de David** : le `deploy:prod` de la PR 4 · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, invitation « Jade » utilisée (`jade373`) · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-orphelins`, `feat/invitation-cours-particulier-orphelins`
+- **État** : les 4 PR mergées (#3119, #3127, #3133, #3138) ; v0.109.0 en prod (page du parent vérifiée en prod avec un lien bidon) ; la PR 4 (nettoyage de nuit des comptes orphelins) n'est PAS encore en prod · **Prochaine action** : clôture → versement (journal archivé ; le durable est dans `docs/systeme/comptes-classes-ecoles.md` et `auth.md`) · **En attente de David** : le `deploy:prod` de la PR 4 (sur sa demande) · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, invitation « Jade » utilisée (`jade373`) · **Worktree / branche** : aucun
 
 ## But
 
@@ -187,3 +187,4 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-25 : #3133 mergée (PR 3) ; chantier complet côté code, en attente du déploiement.
 - 2026-11-25 : `deploy:prod` demandé par David (« fais les 2 ») ; attendu que `idees-tle-integration` joue ses 2 migrations, puis lancé. Plafond des crons Vercel vérifié : Hobby = 100 par projet, une fois par jour, ±59 min (page du 2026-07-15) ; on en a 4.
 - 2026-11-25 : PR 4 écrite (marque `app_metadata.private_lesson_invitation_id`, `cleanupOrphanAccounts` dans le cron de nuit, sans migration) ; 9 tests d'intégration ; revues code-reviewer + security-auditor (aucun bloquant) corrigées : classe ancienne de même nom protégée, compte supprimé seulement si sa classe l'est, un compte en échec n'arrête pas les autres, nettoyage et purge indépendants, pagination par `nextPage`, réponse perdue à l'étape 5 relue avant de défaire.
+- 2026-11-25 : v0.109.0 en prod (PR 1 à 3) ; #3138 mergée (PR 4), en attente d'un `deploy:prod`.
