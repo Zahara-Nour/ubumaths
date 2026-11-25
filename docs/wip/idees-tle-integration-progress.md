@@ -8,15 +8,16 @@ https://claude.ai/artifact/Tw3TtUfAWtsn6CPudQcxot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, migrations générées, PR à ouvrir._
+_Mis à jour le 2026-11-25, après #3134._
 
-- **État** : 2 brouillons créés en prod (e6f2aed3 F1, 1093da29 F7), ids commités ; migrations de
-  rangement (20261125065055) et de contenu (20261125065101) générées, tests d'intégration rouges
-  sans elles et verts avec · **Prochaine action** : revue sécurité, PR, CI, merge, `db:migrate` (4
-  conditions), puis relecture dans `/dev/modeles` · **En attente de David** : rien pour l'instant ·
-  **Pièges en cours** : réponses attendues avec e : constante d'abord (« 3e-1 » se lit 3 × 10⁻¹) ;
-  7 publiés réservés (48d8d729f) · **Worktree / branche** : `../ubumaths-wt-idees-tle-integration`,
-  `feat/idees-tle-integration`.
+- **État** : PR #3134 mergée (2 neufs rangés et tagués, +11 variations sur 7 publiés, migrations
+  20261125065055 et 20261125065101) ; worktree retiré · **Prochaine action** : `db:migrate` depuis
+  le dépôt principal (4 conditions réunies ; `migration list --linked` d'abord, une autre migration en
+  attente = stop), puis relecture dans `/dev/modeles` (brouillons F1 e6f2aed3, F7 1093da29 ; série
+  de relecture pour les 7 publiés) · **En attente de David** : relecture · **Pièges en cours** :
+  réponses attendues avec e : constante d'abord (« 3e-1 » se lit 3 × 10⁻¹) ; 7 publiés réservés
+  (48d8d729f) jusqu'à la migration appliquée · **Worktree / branche** : aucun (nouveau worktree sur
+  `origin/main` pour la PR suivante).
 
 ## Historique
 
@@ -67,3 +68,10 @@ _Mis à jour le 2026-11-25, migrations générées, PR à ouvrir._
   corrigée). Tests d'intégration verts (256), rouges sans les migrations (12 en échec, fichier
   introuvable).
 - `garde-niveaux-tags` verte. Question d'accès : personne (on range des modèles).
+
+### 2026-11-25 — PR #3134 mergée
+
+- `security-auditor` : aucun finding bloquant (aucune policy, aucun GRANT ; écritures limitées aux
+  ids, gardes sur le contenu en prod ; additif, rollback en commentaire). Non bloquants : modèle
+  absent ignoré sans erreur (voulu pour la base locale) ; rangement sans garde « encore brouillon ».
+- CI verte, mergée par `pnpm pr:merger 3134` (2026-11-25 07:12 UTC).
