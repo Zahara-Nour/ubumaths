@@ -25,7 +25,12 @@
  *      même contenu n'est pas une réécriture ; un signalement posé ne se retire
  *      pas (reste de l'écart T30) ;
  *   4. le serveur (pas d'utilisateur connecté) réécrit un message, et la marque
- *      est recalculée.
+ *      est recalculée ;
+ *   5. à l'envoi (constat du `security-auditor` sur cette PR, reste de l'écart
+ *      T30) : un compte connecté ne choisit pas la date de son message. Envoyé
+ *      daté d'il y a quatre ans (sous la purge de conservation) ou de 2099 (en
+ *      tête de l'onglet du prof pour toujours), il part quand même, daté de
+ *      maintenant, ni « modifié » ni « supprimé ». Le serveur garde la main.
  *
  * @vitest-environment node
  */
@@ -47,6 +52,7 @@ import type { Database } from '#lib/types/database.ts';
 type Client = SupabaseClient<Database>;
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type MessageUpdate = Database['public']['Tables']['messages']['Update'];
+type MessageInsert = Database['public']['Tables']['messages']['Insert'];
 
 // ============================================================================
 // CONSTANTES
@@ -56,6 +62,9 @@ const RAISON = 'Profanité détectée automatiquement';
 const INSULTE = 'ta gueule';
 const PROPRE = 'bonjour tout le monde';
 const IL_Y_A_QUATRE_ANS = '2022-11-25T10:00:00.000Z';
+const EN_2099 = '2099-01-01T10:00:00.000Z';
+/** Écart toléré entre l'horloge du test et celle de la base. */
+const TOLERANCE_MS = 60_000;
 
 const service = createServiceRoleClient();
 
@@ -104,6 +113,35 @@ async function reecritureRefusee(
 	expect(error?.code).toBe('42501');
 	expect(error?.message).toContain('ne se reecrit pas');
 	expect(await enBase(messageId)).toEqual(avant);
+}
+
+/**
+ * Envoi par un compte connecté, avec les colonnes en trop qu'il choisit. Le
+ * message doit PARTIR (pas de refus) ; rend la ligne telle qu'elle est en base.
+ */
+async function envoyerPar(
+	client: Client,
+	conversationId: string,
+	senderId: string,
+	enTrop: Pick<MessageInsert, 'created_at' | 'edited_at' | 'deleted_at'>
+) {
+	const id = crypto.randomUUID();
+	const { error } = await client.from('messages').insert({
+		id,
+		conversation_id: conversationId,
+		sender_id: senderId,
+		content: doc(PROPRE),
+		plain_text: PROPRE,
+		...enTrop
+	});
+	expect(error).toBeNull();
+	return enBase(id);
+}
+
+/** La date est celle de l'envoi, à la tolérance d'horloge près. */
+function expectDateDeMaintenant(date: string | null): void {
+	const ecart = Math.abs(new Date(date ?? '').getTime() - Date.now());
+	expect(ecart).toBeLessThan(TOLERANCE_MS);
 }
 
 /** Conversation privée (non groupe) entre deux comptes ; rend son identifiant. */
@@ -326,6 +364,67 @@ describe('Chat — un message envoyé ne se réécrit pas', () => {
 			expect(error?.code).toBe('42501');
 			expect(error?.message).toContain('ne se retire pas');
 			expect(await enBase(id)).toMatchObject({ is_reported: true });
+		});
+	});
+
+	describe('à l’envoi, un compte connecté ne choisit pas la date', () => {
+		it('l’élève n’antidate pas son message à l’envoi (écart T30)', async () => {
+			const stored = await envoyerPar(eleveClient, entreEleves, eleve.id, {
+				created_at: IL_Y_A_QUATRE_ANS
+			});
+
+			expectDateDeMaintenant(stored.created_at);
+		});
+
+		it('l’élève ne postdate pas son message à l’envoi', async () => {
+			const stored = await envoyerPar(eleveClient, entreEleves, eleve.id, {
+				created_at: EN_2099
+			});
+
+			expectDateDeMaintenant(stored.created_at);
+		});
+
+		it('l’élève n’envoie pas un message déjà « modifié » ni déjà « supprimé »', async () => {
+			const stored = await envoyerPar(eleveClient, entreEleves, eleve.id, {
+				edited_at: IL_Y_A_QUATRE_ANS,
+				deleted_at: IL_Y_A_QUATRE_ANS
+			});
+
+			expect(stored).toMatchObject({ edited_at: null, deleted_at: null, plain_text: PROPRE });
+		});
+
+		it('le prof non plus, dans le chat de sa classe', async () => {
+			const stored = await envoyerPar(teacherClient, classeConversationId, teacher.id, {
+				created_at: IL_Y_A_QUATRE_ANS,
+				edited_at: IL_Y_A_QUATRE_ANS,
+				deleted_at: IL_Y_A_QUATRE_ANS
+			});
+
+			expectDateDeMaintenant(stored.created_at);
+			expect(stored).toMatchObject({ edited_at: null, deleted_at: null });
+		});
+
+		it('l’envoi de l’application (sans date) passe, daté de maintenant', async () => {
+			const stored = await envoyerPar(eleveClient, entreEleves, eleve.id, {});
+
+			expectDateDeMaintenant(stored.created_at);
+			expect(stored).toMatchObject({ sender_id: eleve.id, edited_at: null, deleted_at: null });
+		});
+
+		it('le serveur garde la date qu’il envoie', async () => {
+			const { data, error } = await service
+				.from('messages')
+				.insert({
+					conversation_id: entreEleves,
+					sender_id: eleve.id,
+					content: doc(PROPRE),
+					created_at: IL_Y_A_QUATRE_ANS
+				})
+				.select('created_at')
+				.single();
+
+			expect(error).toBeNull();
+			expect(new Date(data?.created_at ?? '').toISOString()).toBe(IL_Y_A_QUATRE_ANS);
 		});
 	});
 

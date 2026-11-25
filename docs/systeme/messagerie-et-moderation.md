@@ -313,6 +313,12 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   plus tard est refusée tant qu'elle n'est pas dans la liste. Renvoyer une valeur identique
   n'est pas une réécriture. Le serveur (pas d'utilisateur connecté) garde la main.
   Test : `tests/integration/messages-chat-non-reecrits.test.ts`.
+- **Un compte connecté ne choisit pas la date de son message.** À l'envoi, le trigger
+  `guard_message_envoi_trg` force la date d'envoi à maintenant et vide la date de modification
+  et la date de suppression, sans erreur : le message part. Sans lui, un élève envoyait par
+  l'API un message daté d'il y a quatre ans (hors de l'onglet du prof, effacé par la purge de
+  conservation) ou de 2099 (en tête de l'onglet pour toujours). L'application n'envoie aucune
+  de ces dates. Le serveur garde la main. Même fichier de tests, § « à l'envoi ».
 - **Un message ne change pas de conversation.** Aucun compte connecté (élève, prof, admin) ne
   modifie `conversation_id` d'un message : le trigger `guard_message_conversation_trg` refuse
   (`42501`). Sans lui, un élève sortait son message marqué de l'onglet du prof en le déplaçant

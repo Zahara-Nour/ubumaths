@@ -20,7 +20,8 @@
 -- `deleted_at`, dans api/moderation/messages/[id], par le client service).
 -- Personne ne gagne d'accès : le prof lit le texte d'origine parce qu'il n'y en a
 -- plus qu'un. Le serveur (service_role, tâche système : pas d'utilisateur connecté)
--- garde la main, dont `delete_user_account`, qui vide `sender_id`.
+-- garde la main (`delete_user_account`, elle, SUPPRIME les messages du compte :
+-- la garde ne joue que sur UPDATE).
 --
 -- Règle : LISTE BLANCHE, la même que celle de la garde de lecture seule
 -- (`guard_read_only_actor`). Un compte connecté ne change que :
