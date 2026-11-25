@@ -280,9 +280,24 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 ### Grossièretés
 
 - Le seul filtre actif est en base, sur le **chat** : le trigger `process_message_content` de
-  `messages` appelle `check_profanity_simple` (quatre mots, recherche de sous-chaîne) et pose
-  `is_flagged` + `flag_reason`. Il **marque**, il ne bloque pas. `ChatMessageList` affiche
-  « Ce message a été signalé automatiquement ».
+  `messages` appelle `check_profanity_simple` et pose `is_flagged` + `flag_reason`. Il **marque**,
+  il ne bloque pas. `ChatMessageList` affiche « Ce message a été signalé automatiquement ».
+- La liste (migration `20261124230639`, relue par David le 2026-11-25) compte environ 125 mots et
+  expressions : gros mots, propos sexistes ou sexuels, racistes, homophobes, moqueries sur le
+  physique ou le handicap, menaces et incitations à se faire du mal. Le mot est cherché **en
+  entier**, sans tenir compte des majuscules, des accents, de la ponctuation ni d'un « s » final :
+  « con » marque « t'es trop CON », pas « content ». Changer la liste = une migration qui
+  redéfinit la fonction. Un accent saisi en deux caractères, une lettre de pleine chasse ou un
+  caractère invisible glissé dans le mot ne le cachent pas (forme NFKD, puis retrait des accents
+  et des caractères invisibles). Limites : une faute voulue (« c0nnard », « meeerde ») ou une
+  lettre d'un autre alphabet qui ressemble à la nôtre passe ; les messages envoyés avant la migration ne sont pas relus.
+- **La marque ne se maquille pas.** Le trigger joue à l'envoi et sur **tout** `UPDATE` de
+  `messages`. `plain_text` est toujours recalculé depuis `content`, pour tout le monde. Un élève
+  n'écrit ni `is_flagged` ni `flag_reason` : à l'envoi elles viennent de la détection ; ensuite
+  une marque posée reste, et modifier le contenu la recalcule sans jamais la retirer. Prof, admin
+  et serveur (pas d'utilisateur connecté) écrivent la marque à la main. La détection ne rejoue
+  que si le contenu change : retirer une marque à la main tient. Test :
+  `tests/integration/messages-marque-non-maquillable.test.ts`.
 - Aucun filtre sur `private_messages`, ni sur les notifications.
 - L'ancien filtre côté serveur (`profanity-filter.ts`, jamais branché) a été retiré le 2026-10-13.
 
@@ -290,6 +305,15 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 - Signalements : tous, via `get_reports_for_moderation` (`is_teacher_or_admin()`), triés
   `pending` d'abord.
+- Messages marqués automatiquement : onglet « Messages marqués » de `gestion/`
+  (`FlaggedMessagesList.svelte`). `load` lit `messages` (`is_flagged = true`, 100 plus récents)
+  avec le client du prof, sans fonction privilégiée : la RLS de `messages` borne la liste aux
+  conversations qu'il peut déjà ouvrir et masque les messages supprimés. **Mesuré le
+  2026-11-25 : ce sont les chats de classe et les conversations où il participe, pas les
+  conversations à deux entre élèves** (la policy SELECT les nomme, mais lit
+  `conversation_participants` sous la RLS du prof, qui n'y voit que les siennes). Lecture seule ; une
+  lecture en échec rend `flaggedMessagesLoadFailed` et une alerte, jamais « aucun message ».
+  Pas de lien direct vers la conversation, pas d'état « traité ».
 - Restrictions : la page `gestion/` ne liste que celles qu'**il** a posées (`restricted_by`).
   Un prof ne restreint qu'un élève (contrôle de rôle dans `restrict-user/`).
 - **Une restriction bloque l'écriture dans le chat** : la policy « Users can send messages to
@@ -417,10 +441,6 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 
 ### ⚠️ Safeguarding (élèves mineurs)
 
-- **Le marquage automatique n'arrive pas chez le prof.** `is_flagged` n'est lu que par
-  `ChatMessageList` ; aucun écran de modération ne liste les messages marqués. Le filtre ne
-  connaît que quatre mots. Le commentaire du trigger annonce un contrôle serveur « plus
-  sophistiqué » qui n'existe pas.
 - **Mentions factices dans l'éditeur riche.** `src/lib/stores/mentions.svelte.ts` propose une
   liste en dur (« Alice Dupont », « Bob Durand »…) ; l'extension `Mention` est active dans
   `editor-config.ts`. Aucune vraie personne, mais des noms inventés offerts à l'autocomplétion.

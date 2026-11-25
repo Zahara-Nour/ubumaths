@@ -6,7 +6,8 @@
 	and view moderation history.
 
 	Features:
-		- Tab navigation: Signalements | Restrictions | Logs
+		- Tab navigation: Signalements | Messages marqués | Restrictions | Logs
+		- Messages flagged automatically (read-only list)
 		- Message reports table with review dialog
 		- Active restrictions table with ability to remove
 		- Moderation logs table with pagination
@@ -21,6 +22,7 @@
 	import ActiveRestrictionsTable from '#lib/components/moderation/ActiveRestrictionsTable.svelte';
 	import ModerationLogsTable from '#lib/components/moderation/ModerationLogsTable.svelte';
 	import MessageReportsTable from '#lib/components/moderation/MessageReportsTable.svelte';
+	import FlaggedMessagesList from '#lib/components/moderation/FlaggedMessagesList.svelte';
 	import RestrictUserDialog from '#lib/components/moderation/RestrictUserDialog.svelte';
 	import * as Alert from '#lib/components/ui/alert/index.ts';
 	import { ShieldAlert, Flag, UserX, TriangleAlert } from '@lucide/svelte';
@@ -80,7 +82,7 @@
 
 	<!-- Tabs -->
 	<Tabs.Root value="reports" class="w-full">
-		<Tabs.List class="grid w-full grid-cols-3">
+		<Tabs.List class="grid w-full grid-cols-2 sm:grid-cols-4">
 			<Tabs.Trigger value="reports" class="relative">
 				<Flag class="mr-2 h-4 w-4" />
 				Signalements
@@ -90,6 +92,7 @@
 					</Badge>
 				{/if}
 			</Tabs.Trigger>
+			<Tabs.Trigger value="flagged">Messages marqués</Tabs.Trigger>
 			<Tabs.Trigger value="restrictions">Restrictions actives</Tabs.Trigger>
 			<Tabs.Trigger value="logs">Historique</Tabs.Trigger>
 		</Tabs.List>
@@ -124,6 +127,32 @@
 					</Alert.Root>
 				{/if}
 				<MessageReportsTable reports={data.reports} onReview={handleReportReview} />
+			{/if}
+		</Tabs.Content>
+
+		<!-- Flagged Messages Tab (écart T21) -->
+		<Tabs.Content value="flagged" class="space-y-4 pt-6">
+			<div>
+				<h2 class="mb-2 text-xl font-semibold">Messages marqués automatiquement</h2>
+				<p class="text-sm text-muted-foreground">
+					Messages du chat où le filtre a repéré un mot grossier, une insulte ou une menace, dans
+					les conversations que vous pouvez ouvrir. Pour agir, ouvrez la conversation dans le
+					<a href="/dashboard/chat" class="underline">chat</a>.
+				</p>
+			</div>
+			{#if data.flaggedMessagesLoadFailed}
+				<Alert.Root variant="destructive" role="alert">
+					<TriangleAlert />
+					<Alert.Title class="line-clamp-none"
+						>Les messages marqués n'ont pas pu être chargés</Alert.Title
+					>
+					<Alert.Description>
+						Des messages peuvent attendre. Rechargez la page ; si le problème continue, prévenez
+						l'administrateur.
+					</Alert.Description>
+				</Alert.Root>
+			{:else}
+				<FlaggedMessagesList messages={data.flaggedMessages} limit={data.flaggedMessagesLimit} />
 			{/if}
 		</Tabs.Content>
 
