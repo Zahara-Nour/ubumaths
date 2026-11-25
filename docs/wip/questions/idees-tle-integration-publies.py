@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-integration-publies/ (chantier idees-tle-integration).
 
 Phase 0 validée par David le 2026-11-25 (« je suis tes recos » ; fiches
-docs/wip/idees-tle-integration-fiches.md) : F2 (3dbc5a7b), F3 (2d480f3d), F4 (fe25be0a, +2),
+docs/archive/wip/idees-tle-integration/idees-tle-integration-fiches.md) : F2 (3dbc5a7b), F3 (2d480f3d), F4 (fe25be0a, +2),
 F5 et F6 (b52c53d8), F8 (74da1cd6), F9 (fc2ea212, +3), F10 (6035aa61). Les variations s'ajoutent
 À LA FIN (les réponses des élèves gardent l'indice de leur variation) ; la migration de contenu est
 générée par scripts/questions/migration-contenu.ts.

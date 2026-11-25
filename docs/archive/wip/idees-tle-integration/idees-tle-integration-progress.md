@@ -8,17 +8,12 @@ https://claude.ai/artifact/Tw3TtUfAWtsn6CPudQcxot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, modèles validés par David._
+_Mis à jour le 2026-11-25, chantier clos._
 
-- **État** : migrations de #3134 en prod ; David a validé les 9 modèles (de vive voix, aucun verdict
-  en base) ; `publier-lot.ts` en simulation vert pour F1 e6f2aed3 et F7 1093da29 · **Prochaine
-  action** : relire le statut `published` des 2 brouillons, puis clore (tableau « publiée », journal
-  versé selon `couvrir-un-niveau.md`) · **En attente de David** :
-  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-tle-integration-neufs --publier`
-  (dans `../ubumaths-wt-idees-tle-integration`) ; abandon de la branche
-  `chore/idees-tle-integration-serie` (série de relecture devenue inutile, commit non poussé) ·
-  **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-tle-integration`,
-  `chore/idees-tle-integration-serie` (à retirer).
+- **État** : clos. Rubriques TSA7 et TSA8 publiées : 2 neufs (F1 e6f2aed3 TSPE-462, F7 1093da29
+  TSPE-487) et +11 variations sur 7 publiés (#3134, migrées), modèles validés par David ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Pièges en cours** : aucun ·
+  **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -86,3 +81,13 @@ _Mis à jour le 2026-11-25, modèles validés par David._
   validation de vive voix. La série de relecture des publiés (préparée sur
   `chore/idees-tle-integration-serie`, non poussée) n'est plus utile.
 - `publier-lot.ts` en simulation : les 2 brouillons passent le contrôle.
+
+### 2026-11-25 — clôture
+
+- David a lancé `publier-lot.ts --publier` ; vérifié en prod : e6f2aed3 et 1093da29 `published`.
+- La série de relecture avait été créée en prod par David (888d206e, 7 modèles) avant sa validation
+  de vive voix ; elle reste en base. Branche `chore/idees-tle-integration-serie` (son fichier, jamais
+  poussé) et worktree retirés avec l'accord de David.
+- Tableau : TSA7 et TSA8 publiées ; idée TSA1-48 (suites d'intégrales Iₙ) retirée des « Idées en
+  attente » (reprise en F10). Aucune idée reportée. Journal, relevé et fiches versés dans
+  `docs/archive/wip/idees-tle-integration/`.

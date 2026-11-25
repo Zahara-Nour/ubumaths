@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-tle-integration dans scripts/questions/idees-tle-integration-neufs/.
 
 Phase 0 validée par David le 2026-11-25 (« je suis tes recos » ; journal
-docs/wip/idees-tle-integration-progress.md, fiches docs/wip/idees-tle-integration-fiches.md) :
+docs/archive/wip/idees-tle-integration/idees-tle-integration-progress.md, fiches docs/archive/wip/idees-tle-integration/idees-tle-integration-fiches.md) :
 F1 (lien entre f et ses primitives, lecture de courbe, Q1) et F7 (intégrale de cos et de sin,
 modèle neuf Tle spé seulement, Q2).
 

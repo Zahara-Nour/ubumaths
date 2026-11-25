@@ -74,8 +74,8 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation`  |
 | Continuité des fonctions                                                       | TSA4        | 6         | libre                |                         |
 | Fonction logarithme népérien                                                   | TSA5        | 12        | publiée (2026-11-24) | `idees-tle-ln`          |
-| Primitives et équations différentielles                                        | TSA7        | 7         | en prod (2026-11-25) | `idees-tle-integration` |
-| Intégration                                                                    | TSA8        | 5         | en prod (2026-11-25) | `idees-tle-integration` |
+| Primitives et équations différentielles                                        | TSA7        | 7         | publiée (2026-11-25) | `idees-tle-integration` |
+| Intégration                                                                    | TSA8        | 5         | publiée (2026-11-25) | `idees-tle-integration` |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                         |
 | Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                         |
 | Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`      |
@@ -207,9 +207,6 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
-- `idees-tle-suites` (reportées le 2026-11-22, au programme, pour la session de chaque rubrique) :
-  suites d'intégrales Iₙ (TSA1-48) → rubrique « intégration » (la suite avec ln a été reprise par
-  `idees-tle-ln`).
 - `idees-tle-ln` (2026-11-24, pour la session de la rubrique continuité, TSA4) : « f(x) = 0 a deux
   solutions » sur ax + b + k ln x (TSA5-41), par le théorème des valeurs intermédiaires.
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
