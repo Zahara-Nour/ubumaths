@@ -298,6 +298,11 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   et serveur (pas d'utilisateur connecté) écrivent la marque à la main. La détection ne rejoue
   que si le contenu change : retirer une marque à la main tient. Test :
   `tests/integration/messages-marque-non-maquillable.test.ts`.
+- **Un message ne change pas de conversation.** Aucun compte connecté (élève, prof, admin) ne
+  modifie `conversation_id` d'un message : le trigger `guard_message_conversation_trg` refuse
+  (`42501`). Sans lui, un élève sortait son message marqué de l'onglet du prof en le déplaçant
+  vers une conversation avec un adulte. Le serveur (pas d'utilisateur connecté) garde la main.
+  Test : `tests/integration/messages-conversation-non-modifiable.test.ts`.
 - Aucun filtre sur `private_messages`, ni sur les notifications.
 - L'ancien filtre côté serveur (`profanity-filter.ts`, jamais branché) a été retiré le 2026-10-13.
 
