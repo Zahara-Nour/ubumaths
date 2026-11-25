@@ -2,16 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, lot écrit, brouillons à créer en prod._
+_Mis à jour le 2026-11-25, après #3135._
 
-- **État** : lot écrit et vert sur la branche `docs/idees-1re-trigo` (worktree
-  `../ubumaths-wt-idees-1re-trigo`, poussée, pas de PR) : 2 modèles neufs (N1 [0 ; 2π[, N2 sin x
-  connaissant cos x) et 7 variations de 5 publiés, migration de contenu générée
-  (`20261125064801`, test d'intégration vert) · **Prochaine action** : après les brouillons, ids
-  commités, migration de rangement, `security-auditor`, PR · **En attente de David** :
-  `create-questions --dir scripts/questions/idees-1re-trigo-neufs --publier` depuis le worktree ·
-  **Pièges en cours** : l1s-3 ; titre d'un publié non modifiable (d'où N1) ; `√0,91` refusé par la
-  forme (annoncé dans la consigne).
+- **État** : #3135 mergée (2 brouillons rangés par migration, 7 variations de 5 publiés par
+  migration de contenu) ; **migrations pas encore en prod** · **Prochaine action** : `db:migrate`
+  quand `migration list --linked` ne montre plus que `20261125064801` et `20261125065639` (les 4
+  conditions sont réunies), puis relecture des 2 brouillons dans `/dev/modeles` et `publier-lot.ts`
+  · **En attente de David** : relecture de 6a461989 et 7dba5a1d (`/dev/modeles?noeud=` cercle et
+  radians, cosinus et sinus d'un réel) · **Pièges en cours** : `20261125063042` (écart T21,
+  messages marqués, autre session) est en attente devant les nôtres : ne pas la pousser ; l1s-3 ;
+  `√0,91` refusé par la forme (annoncé dans la consigne) · **Worktree / branche** : aucun (retirés
+  par `pr:merger`).
 
 ## Journal
 
@@ -50,3 +51,16 @@ _Mis à jour le 2026-11-25, lot écrit, brouillons à créer en prod._
 - Migration de contenu des 5 publiés générée, test `migrations-contenu-publie` vert (172 tests).
 - 5 modèles publiés réservés dans le tableau de répartition (`9178f3229`). Ce commit a emporté par
   erreur 2 réservations non commitées d'`idees-3e-trigonometrie` (contenu juste) ; session prévenue.
+
+### 2026-11-25 — brouillons en prod, #3135 mergée
+
+- David a créé les brouillons en prod : 6a461989 (N1), 7dba5a1d (N2) ; ids commités.
+- Migration de rangement générée (`20261125065639`) : 1SPE-304 sur cercle et radians, 1SPE-305 sur
+  cosinus et sinus d'un réel. Tests d'intégration des deux fixtures verts, **rouges sans les
+  migrations** (fichiers écartés le temps d'un passage) ; `garde-niveaux-tags` : aucun manque.
+- `security-auditor` : aucun finding bloquant ; question d'accès confirmée (personne). Remarques :
+  trigger `updated_at` désactivé le temps d'un UPDATE dans la migration de rangement (motif du
+  générateur) ; les variations des publiés seront visibles des élèves dès `db:migrate`.
+- #3135 mergée par `pr:merger` (CI verte). `db:migrate` **pas lancé** : `migration list --linked`
+  montre aussi `20261125063042_messages_marques_lus_par_le_prof` (autre session), qui partirait
+  avec les nôtres.
