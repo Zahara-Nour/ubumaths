@@ -1,0 +1,648 @@
+{
+	"id": "dbd5debf-38d2-48f3-ae13-05701f5b09fc",
+	"title": "Écrire cos, sin ou tan d'un angle",
+	"description": "Écrire le cosinus, le sinus ou la tangente d'un angle aigu d'un triangle rectangle (cos B = AB/BC) : angle en B, puis l'autre angle aigu",
+	"grades": ["3"],
+	"level": 1,
+	"delay": 45,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Que vaut $\\cos\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 5.5, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n```choix\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour l'angle $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ : l'**hypoténuse** est ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ (en face de l'angle droit), le **côté adjacent** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$, le **côté opposé** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.",
+					"$$\\cos = \\dfrac{\\text{côté adjacent}}{\\text{hypoténuse}} \\quad\\text{donc}\\quad \\cos\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\textcolor{{{color:primary.0}}}{\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Que vaut $\\sin\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 5.5, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n```choix\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour l'angle $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ : l'**hypoténuse** est ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ (en face de l'angle droit), le **côté adjacent** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$, le **côté opposé** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.",
+					"$$\\sin = \\dfrac{\\text{côté opposé}}{\\text{hypoténuse}} \\quad\\text{donc}\\quad \\sin\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\textcolor{{{color:primary.0}}}{\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Que vaut $\\tan\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 5.5, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n```choix\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n- $\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour l'angle $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$ : l'**hypoténuse** est ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ (en face de l'angle droit), le **côté adjacent** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$, le **côté opposé** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.",
+					"$$\\tan = \\dfrac{\\text{côté opposé}}{\\text{côté adjacent}} \\quad\\text{donc}\\quad \\tan\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\textcolor{{{color:primary.0}}}{\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Que vaut ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 5.5, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n```\n\n```choix\n- {{if:f==0|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}{{if:f==1|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}{{if:f==2|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}\n- {{if:f==0|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}{{if:f==1|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}{{if:f==2|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$|}}\n- {{if:f==0|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$|}}{{if:f==1|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$|}}{{if:f==2|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}\n- {{if:f==0|$\\dfrac{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}{{if:f==1|$\\dfrac{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$|}}{{if:f==2|$\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$|}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour l'angle $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}$ : l'**hypoténuse** est ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, le **côté adjacent** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, le **côté opposé** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$.",
+					"$${{if:f==0|\\cos = \\dfrac{\\text{côté adjacent}}{\\text{hypoténuse}}|}}{{if:f==1|\\sin = \\dfrac{\\text{côté opposé}}{\\text{hypoténuse}}|}}{{if:f==2|\\tan = \\dfrac{\\text{côté opposé}}{\\text{côté adjacent}}|}} \\quad\\text{donc}\\quad {{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} = \\textcolor{{{color:primary.0}}}{{{if:f==0|\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}|}}{{if:f==1|\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}|}}{{if:f==2|\\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}|}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Écris ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:g==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}}$ comme un quotient de deux longueurs du triangle.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:g==0|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|8|10 - (8)}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, 5.5, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n{{if:g==0|angle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})|angle({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})}}\n```\n\n${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:g==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}} = ?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:1+g+min(f,1)*(1-2*g)"
+				},
+				{
+					"name": "da",
+					"expression": "eval:1-floor(f/2)"
+				},
+				{
+					"name": "db",
+					"expression": "eval:2-floor(f/2)*(1-g)"
+				},
+				{
+					"name": "x",
+					"expression": "eval:3-nb-floor(f/2)*(3-2*nb)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\frac{A{{if:nb==1|B|C}}}{{{if:da==0|A|B}}{{if:db==1|B|C}}}|}}{{if:s==1|\\frac{R{{if:nb==1|S|T}}}{{{if:da==0|R|S}}{{if:db==1|S|T}}}|}}{{if:s==2|\\frac{E{{if:nb==1|F|G}}}{{{if:da==0|E|F}}{{if:db==1|F|G}}}|}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==0|\\frac{{{if:da==0|A|B}}{{if:db==1|B|C}}}{A{{if:nb==1|B|C}}}|}}{{if:s==1|\\frac{{{if:da==0|R|S}}{{if:db==1|S|T}}}{R{{if:nb==1|S|T}}}|}}{{if:s==2|\\frac{{{if:da==0|E|F}}{{if:db==1|F|G}}}{E{{if:nb==1|F|G}}}|}}",
+							"message": "Tu as renversé le rapport : {{if:f==2|le côté adjacent|l'hypoténuse}} va au **dénominateur**.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{if:s==0|\\frac{A{{if:x==1|B|C}}}{BC}|}}{{if:s==1|\\frac{R{{if:x==1|S|T}}}{ST}|}}{{if:s==2|\\frac{E{{if:x==1|F|G}}}{FG}|}}",
+							"message": "{{if:f==2|La tangente ne fait pas intervenir l'hypoténuse : c'est le côté opposé sur le côté adjacent.|Tu as pris l'autre côté de l'angle droit : le côté adjacent touche l'angle, le côté opposé est en face.}}",
+							"label": "Mauvais côté de l'angle droit"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour l'angle $\\widehat{{{if:g==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}}$ : l'**hypoténuse** est ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ (en face de l'angle droit), le **côté adjacent** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:g==0|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}}$, le **côté opposé** est ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:g==0|{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}$.",
+					"$${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}} = \\dfrac{\\text{{{if:f==0|côté adjacent|côté opposé}}}}{\\text{{{if:f==2|côté adjacent|hypoténuse}}}} \\quad\\text{donc}\\quad {{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:g==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}} = \\textcolor{{{color:primary.0}}}{{{if:s==0|\\dfrac{A{{if:nb==1|B|C}}}{{{if:da==0|A|B}}{{if:db==1|B|C}}}|}}{{if:s==1|\\dfrac{R{{if:nb==1|S|T}}}{{{if:da==0|R|S}}{{if:db==1|S|T}}}|}}{{if:s==2|\\dfrac{E{{if:nb==1|F|G}}}{{{if:da==0|E|F}}{{if:db==1|F|G}}}|}}}$$"
+				]
+			},
+			"hint": "Repère l'hypoténuse (en face de l'angle droit), puis le côté adjacent (il touche l'angle) et le côté opposé (en face de l'angle). Le cosinus et le sinus divisent par l'hypoténuse, la tangente par le côté adjacent."
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ et ${{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}$ est le pied de la hauteur issue de ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. Écris ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}$ de l'angle marqué de deux façons : dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, puis dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6.5\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}} pied de la hauteur issue de {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} sur [{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}], angle en {{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}} marqué.\n---\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point(1, 1, etiquette=\"bas-gauche\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point(9, 1, etiquette=\"bas-droite\")\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, longueur=8*cos({{bb}}), angle={{bb}}, etiquette=\"haut\")\n{{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}} = point({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, longueur=8*cos({{bb}})*cos({{bb}}), angle=0, etiquette=\"bas\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\n{{if:g==0|angle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})|angle({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})}}\n```\n\nDans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ : ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:g==0|{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}} = ?$\n\nDans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}$ : ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}} = ?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "0..1"
+				},
+				{
+					"name": "bb",
+					"expression": "35..55"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:1+g+min(f,1)*(1-2*g)"
+				},
+				{
+					"name": "da",
+					"expression": "eval:1-floor(f/2)"
+				},
+				{
+					"name": "db",
+					"expression": "eval:2-floor(f/2)*(1-g)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\frac{A{{if:nb==1|B|C}}}{{{if:da==0|A|B}}{{if:db==1|B|C}}}|}}{{if:s==1|\\frac{R{{if:nb==1|S|T}}}{{{if:da==0|R|S}}{{if:db==1|S|T}}}|}}{{if:s==2|\\frac{E{{if:nb==1|F|G}}}{{{if:da==0|E|F}}{{if:db==1|F|G}}}|}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==0|\\frac{{{if:da==0|A|B}}{{if:db==1|B|C}}}{A{{if:nb==1|B|C}}}|}}{{if:s==1|\\frac{{{if:da==0|R|S}}{{if:db==1|S|T}}}{R{{if:nb==1|S|T}}}|}}{{if:s==2|\\frac{{{if:da==0|E|F}}{{if:db==1|F|G}}}{E{{if:nb==1|F|G}}}|}}",
+							"message": "Tu as renversé le rapport : {{if:f==2|le côté adjacent|l'hypoténuse}} va au **dénominateur**.",
+							"label": "Rapport renversé"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:s==0|\\frac{{{if:f==0|{{if:g==0|B|C}}|A}}H}{{{if:f==2|{{if:g==0|B|C}}H|A{{if:g==0|B|C}}}}}|}}{{if:s==1|\\frac{{{if:f==0|{{if:g==0|S|T}}|R}}K}{{{if:f==2|{{if:g==0|S|T}}K|R{{if:g==0|S|T}}}}}|}}{{if:s==2|\\frac{{{if:f==0|{{if:g==0|F|G}}|E}}P}{{{if:f==2|{{if:g==0|F|G}}P|E{{if:g==0|F|G}}}}}|}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:s==0|\\frac{{{if:f==2|{{if:g==0|B|C}}H|A{{if:g==0|B|C}}}}}{{{if:f==0|{{if:g==0|B|C}}|A}}H}|}}{{if:s==1|\\frac{{{if:f==2|{{if:g==0|S|T}}K|R{{if:g==0|S|T}}}}}{{{if:f==0|{{if:g==0|S|T}}|R}}K}|}}{{if:s==2|\\frac{{{if:f==2|{{if:g==0|F|G}}P|E{{if:g==0|F|G}}}}}{{{if:f==0|{{if:g==0|F|G}}|E}}P}|}}",
+							"message": "Tu as renversé le rapport : {{if:f==2|le côté adjacent|l'hypoténuse}} va au **dénominateur**.",
+							"label": "Rapport renversé"
+						},
+						{
+							"answer": "{{if:s==0|\\frac{{{if:f==0|{{if:g==0|B|C}}|A}}H}{BC}|}}{{if:s==1|\\frac{{{if:f==0|{{if:g==0|S|T}}|R}}K}{ST}|}}{{if:s==2|\\frac{{{if:f==0|{{if:g==0|F|G}}|E}}P}{FG}|}}",
+							"message": "Dans le petit triangle, l'hypoténuse n'est pas celle du grand : c'est le côté en face de **son** angle droit, en ${{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}$.",
+							"label": "Hypoténuse du grand triangle"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les angles $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:g==0|{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}}$ et $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}}$ sont le même angle : ses deux triangles rectangles donnent deux écritures.",
+					"Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ (angle droit en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$, hypoténuse ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$) : $${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:g==0|{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}}} = \\textcolor{{{color:primary.0}}}{{{if:s==0|\\dfrac{A{{if:nb==1|B|C}}}{{{if:da==0|A|B}}{{if:db==1|B|C}}}|}}{{if:s==1|\\dfrac{R{{if:nb==1|S|T}}}{{{if:da==0|R|S}}{{if:db==1|S|T}}}|}}{{if:s==2|\\dfrac{E{{if:nb==1|F|G}}}{{{if:da==0|E|F}}{{if:db==1|F|G}}}|}}}$$",
+					"Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}$ (angle droit en ${{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}$, hypoténuse ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}$) : $${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|{{if:g==0|B|C}}|}}{{if:s==1|{{if:g==0|S|T}}|}}{{if:s==2|{{if:g==0|F|G}}|}}{{if:s==0|H|}}{{if:s==1|K|}}{{if:s==2|P|}}} = \\textcolor{{{color:primary.0}}}{{{if:s==0|\\dfrac{{{if:f==0|{{if:g==0|B|C}}|A}}H}{{{if:f==2|{{if:g==0|B|C}}H|A{{if:g==0|B|C}}}}}|}}{{if:s==1|\\dfrac{{{if:f==0|{{if:g==0|S|T}}|R}}K}{{{if:f==2|{{if:g==0|S|T}}K|R{{if:g==0|S|T}}}}}|}}{{if:s==2|\\dfrac{{{if:f==0|{{if:g==0|F|G}}|E}}P}{{{if:f==2|{{if:g==0|F|G}}P|E{{if:g==0|F|G}}}}}|}}}$$"
+				]
+			},
+			"hint": "Dans chaque triangle rectangle, repère son hypoténuse, en face de **son** angle droit : ce n'est pas la même dans les deux triangles."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"o": "0",
+				"s": "0"
+			},
+			"description": "cos B = AB/BC",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"o": "0",
+				"s": "0"
+			},
+			"description": "Erreur : cos B = AC/BC (côté opposé)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"o": "0",
+				"s": "0"
+			},
+			"description": "sin B = AC/BC",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"o": "0",
+				"s": "0"
+			},
+			"description": "Erreur : sin B = AB/BC",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"o": "0",
+				"s": "0"
+			},
+			"description": "tan B = AC/AB",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"o": "0",
+				"s": "0"
+			},
+			"description": "Erreur : tan B = AB/AC",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"f": "0",
+				"o": "0",
+				"s": "0"
+			},
+			"description": "cos C = AC/BC",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"f": "0",
+				"o": "0",
+				"s": "0"
+			},
+			"description": "Erreur : cos C lu comme cos B",
+			"variationIndex": 3
+		},
+		{
+			"description": "F2 v5 : cos B = AB/BC",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"f": "0",
+				"g": "0",
+				"nb": "1",
+				"da": "1",
+				"db": "2",
+				"x": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{AB}{BC}"]
+		},
+		{
+			"description": "F2 v5 : cos B = BA/CB (sens des lettres libre)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"f": "0",
+				"g": "0",
+				"nb": "1",
+				"da": "1",
+				"db": "2",
+				"x": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{BA}{CB}"]
+		},
+		{
+			"description": "F2 v5 : cos B renversé",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"f": "0",
+				"g": "0",
+				"nb": "1",
+				"da": "1",
+				"db": "2",
+				"x": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : l'hypoténuse va au **dénominateur**."
+			},
+			"answers": ["\\frac{BC}{AB}"]
+		},
+		{
+			"description": "F2 v5 : cos B avec le côté opposé",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"f": "0",
+				"g": "0",
+				"nb": "1",
+				"da": "1",
+				"db": "2",
+				"x": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris l'autre côté de l'angle droit : le côté adjacent touche l'angle, le côté opposé est en face."
+			},
+			"answers": ["\\frac{AC}{BC}"]
+		},
+		{
+			"description": "F2 v5 : une seule longueur",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"f": "0",
+				"g": "0",
+				"nb": "1",
+				"da": "1",
+				"db": "2",
+				"x": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["AB"]
+		},
+		{
+			"description": "F2 v5 : tan T = RS/RT",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"o": "1",
+				"f": "2",
+				"g": "1",
+				"nb": "1",
+				"da": "0",
+				"db": "2",
+				"x": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{RS}{RT}"]
+		},
+		{
+			"description": "F2 v5 : tan T renversé",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"o": "1",
+				"f": "2",
+				"g": "1",
+				"nb": "1",
+				"da": "0",
+				"db": "2",
+				"x": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : le côté adjacent va au **dénominateur**."
+			},
+			"answers": ["\\frac{RT}{RS}"]
+		},
+		{
+			"description": "F2 v5 : tan T avec l'hypoténuse",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"o": "1",
+				"f": "2",
+				"g": "1",
+				"nb": "1",
+				"da": "0",
+				"db": "2",
+				"x": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La tangente ne fait pas intervenir l'hypoténuse : c'est le côté opposé sur le côté adjacent."
+			},
+			"answers": ["\\frac{RS}{ST}"]
+		},
+		{
+			"description": "F2 v5 : sin G = EF/FG",
+			"variationIndex": 4,
+			"variables": {
+				"s": "2",
+				"o": "0",
+				"f": "1",
+				"g": "1",
+				"nb": "1",
+				"da": "1",
+				"db": "2",
+				"x": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{EF}{FG}"]
+		},
+		{
+			"description": "F2 v5 : sin G avec le côté adjacent",
+			"variationIndex": 4,
+			"variables": {
+				"s": "2",
+				"o": "0",
+				"f": "1",
+				"g": "1",
+				"nb": "1",
+				"da": "1",
+				"db": "2",
+				"x": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris l'autre côté de l'angle droit : le côté adjacent touche l'angle, le côté opposé est en face."
+			},
+			"answers": ["\\frac{EG}{FG}"]
+		},
+		{
+			"description": "F2 v6 : cos B = AB/BC = BH/AB",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"g": "0",
+				"bb": "40",
+				"nb": "1",
+				"da": "1",
+				"db": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{AB}{BC}", "\\frac{BH}{AB}"]
+		},
+		{
+			"description": "F2 v6 : cos B = BA/BC = HB/BA",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"g": "0",
+				"bb": "40",
+				"nb": "1",
+				"da": "1",
+				"db": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{BA}{BC}", "\\frac{HB}{BA}"]
+		},
+		{
+			"description": "F2 v6 : petit triangle renversé",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"g": "0",
+				"bb": "40",
+				"nb": "1",
+				"da": "1",
+				"db": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : l'hypoténuse va au **dénominateur**."
+			},
+			"answers": ["\\frac{AB}{BC}", "\\frac{AB}{BH}"]
+		},
+		{
+			"description": "F2 v6 : hypoténuse du grand triangle",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"g": "0",
+				"bb": "40",
+				"nb": "1",
+				"da": "1",
+				"db": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Dans le petit triangle, l'hypoténuse n'est pas celle du grand : c'est le côté en face de **son** angle droit, en $H$."
+			},
+			"answers": ["\\frac{AB}{BC}", "\\frac{BH}{BC}"]
+		},
+		{
+			"description": "F2 v6 : grand triangle renversé",
+			"variationIndex": 5,
+			"variables": {
+				"s": "0",
+				"f": "0",
+				"g": "0",
+				"bb": "40",
+				"nb": "1",
+				"da": "1",
+				"db": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : l'hypoténuse va au **dénominateur**."
+			},
+			"answers": ["\\frac{BC}{AB}", "\\frac{BH}{AB}"]
+		},
+		{
+			"description": "F2 v6 : tan T = RS/RT = RK/TK",
+			"variationIndex": 5,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"g": "1",
+				"bb": "50",
+				"nb": "1",
+				"da": "0",
+				"db": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{RS}{RT}", "\\frac{RK}{TK}"]
+		},
+		{
+			"description": "F2 v6 : tan T, petit triangle renversé",
+			"variationIndex": 5,
+			"variables": {
+				"s": "1",
+				"f": "2",
+				"g": "1",
+				"bb": "50",
+				"nb": "1",
+				"da": "0",
+				"db": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as renversé le rapport : le côté adjacent va au **dénominateur**."
+			},
+			"answers": ["\\frac{RS}{RT}", "\\frac{TK}{RK}"]
+		}
+	]
+}
