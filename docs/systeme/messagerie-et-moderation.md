@@ -303,6 +303,13 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   (`42501`). Sans lui, un élève sortait son message marqué de l'onglet du prof en le déplaçant
   vers une conversation avec un adulte. Le serveur (pas d'utilisateur connecté) garde la main.
   Test : `tests/integration/messages-conversation-non-modifiable.test.ts`.
+- **Une participation ne change pas de conversation.** Aucun compte connecté (élève, prof, admin)
+  ne modifie `conversation_id` d'une ligne de `conversation_participants` : le trigger
+  `guard_participation_conversation_trg` refuse (`42501`). Sans lui, un élève qui connaissait
+  l'identifiant d'une conversation entre deux autres élèves y déplaçait sa participation et en
+  lisait les messages. Archiver, mettre en sourdine et marquer comme lu restent possibles. Le
+  serveur (pas d'utilisateur connecté) garde la main.
+  Test : `tests/integration/participation-conversation-non-modifiable.test.ts`.
 - Aucun filtre sur `private_messages`, ni sur les notifications.
 - L'ancien filtre côté serveur (`profanity-filter.ts`, jamais branché) a été retiré le 2026-10-13.
 
