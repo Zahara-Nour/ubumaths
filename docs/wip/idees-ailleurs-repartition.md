@@ -144,7 +144,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Probabilités                             | 3S2       | 5         | libre                                                      |                              |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
 | Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
-| Trigonométrie                            | 3G3       | 13        | prise (2026-11-25)                                         | `idees-3e-trigonometrie`     |
+| Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
 | Espace                                   | 3G4       | 6         | libre                                                      |                              |
 | Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
@@ -196,8 +196,6 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 57c73be1 Calculer une longueur ou un angle                          | `idees-3e-trigonometrie`                                    | 2026-11-25 |                                      |
-| dbd5debf Écrire cos, sin ou tan d'un angle                          | `idees-3e-trigonometrie`                                    | 2026-11-25 |                                      |
 
 ## Idées en attente
 

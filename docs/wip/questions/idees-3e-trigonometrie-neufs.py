@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-trigonometrie-neufs/ (N1 à N4).
 
 Phase 0 validée par David le 2026-11-25 (« je te suis » : toutes les recommandations ; journal
-docs/wip/idees-3e-trigonometrie-progress.md, § Phase 0) : Q1 non (pas de questions littérales),
+docs/archive/wip/idees-3e-trigonometrie/idees-3e-trigonometrie-progress.md, § Phase 0) : Q1 non (pas de questions littérales),
 Q3 oui (rangement ci-dessous), N4 sans la montagne, angles de N4 v6 loin du seuil de 8,5°.
 
 Rangement (point 3-061 sur la notion, comme 57c73be1) :

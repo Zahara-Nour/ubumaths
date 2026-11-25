@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-trigonometrie-publies/ (chantier idees-3e-trigonometrie).
 
 Phase 0 validée par David le 2026-11-25 (« je te suis » : toutes les recommandations ; journal
-docs/wip/idees-3e-trigonometrie-progress.md, § Phase 0) : fiches F1 et F2, Q2 = oui (unités
+docs/archive/wip/idees-3e-trigonometrie/idees-3e-trigonometrie-progress.md, § Phase 0) : fiches F1 et F2, Q2 = oui (unités
 variées dans F1 v5-v7). Les variations s'ajoutent À LA FIN (les réponses des élèves gardent
 l'indice de leur variation) ; la migration de contenu est générée par
 scripts/questions/migration-contenu.ts. Seuls `variations` et `testSpecs` changent.

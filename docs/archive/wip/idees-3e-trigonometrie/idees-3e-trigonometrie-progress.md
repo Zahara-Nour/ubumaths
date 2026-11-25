@@ -2,18 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3141 (mergée, `db:migrate` joué)._
+_Mis à jour le 2026-11-25, chantier clos._
 
-- **État** : tout est en prod. Contenu des publiés (#3139) et rangement de N1-N4 (#3141) migrés ;
-  rangement vérifié en prod (N1 « calcul de longueurs », N3 « calcul d'angles », N2 et N4 sur la
-  notion, tous 3-061, brouillons). · **Prochaine action** : David relit dans `/dev/modeles` :
-  `?point=3-061` (N1-N4 + F1 = 57c73be1, exactement le lot) et `?point=3-023` (F2 = dbd5debf,
-  seul modèle du point) — pas de série, ces deux filtres couvrent le lot ; puis lire les verdicts
-  (`question_template_reviews`), corriger, `publier-lot.ts --dir` en simulation, David `--publier`.
-  · **En attente de David** : la relecture. · **Pièges en cours** : `e` interdit comme variable
-  (Euler) ; réponses de specs ≥ 4 chiffres avec `\,` ; `create-questions` vise la PROD sans
-  `set -a; . ./.env.local; set +a` ; une case choix ne porte pas d'erreurs prévues.
-  · **Worktree / branche** : aucun (retiré après #3141) ; suite depuis `main`.
+- **État** : rubrique **publiée**. N1-N4 publiés en prod (`publier-lot.ts --publier` lancé par
+  David, relecture validée par David dans la session) ; variations F1 (57c73be1) et F2 (dbd5debf)
+  en prod depuis #3139 ; rangement #3141. Réservations levées, journal archivé.
+  · **Prochaine action** : aucune · **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## Phase 0 (2026-11-25)
 
