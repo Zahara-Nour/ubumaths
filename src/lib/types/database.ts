@@ -16167,6 +16167,22 @@ export type Database = {
 					total_viewed: number;
 				}[];
 			};
+			get_flagged_messages_for_teacher: {
+				Args: { p_limit?: number };
+				Returns: {
+					conversation_id: string;
+					conversation_name: string;
+					created_at: string;
+					deleted_at: string;
+					deleted_by_moderation: boolean;
+					flag_reason: string;
+					id: string;
+					is_group: boolean;
+					plain_text: string;
+					sender_firstname: string;
+					sender_lastname: string;
+				}[];
+			};
 			get_friend_ids: {
 				Args: { p_user_id: string };
 				Returns: {

@@ -1,4 +1,6 @@
 import type { PageServerLoad } from './$types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '#lib/types/database.ts';
 import { error } from '@sveltejs/kit';
 import { getTeacherClassesWithStudents } from '#lib/server/students.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
@@ -8,6 +10,124 @@ const logger = createServerLogger('(protected)/dashboard/teacher/moderation/gest
 /** Nombre de messages marqués affichés, les plus récents d'abord. */
 const FLAGGED_MESSAGES_LIMIT = 100;
 
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Qui a supprimé le message marqué, quand il l'est. */
+type FlaggedDeletion = 'moderation' | 'author' | null;
+
+interface FlaggedMessageRow {
+	id: string;
+	conversationId: string | null;
+	text: string;
+	reason: string | null;
+	createdAt: string | null;
+	senderName: string | null;
+	conversationName: string | null;
+	isGroup: boolean | null;
+	deletedBy: FlaggedDeletion;
+}
+
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
+
+function fullName(firstname: string | null, lastname: string | null): string | null {
+	return `${firstname ?? ''} ${lastname ?? ''}`.trim() || null;
+}
+
+/**
+ * Messages marqués automatiquement, les plus récents d'abord (écart T21).
+ *
+ * - Prof : fonction `get_flagged_messages_for_teacher` (décision de David,
+ *   2026-11-25). Elle rend aussi les messages marqués des conversations à deux
+ *   entre élèves (ce message et son auteur, rien d'autre de la conversation) et
+ *   les messages marqués supprimés, que la RLS de `messages` ne lui rend pas.
+ * - Admin : ses accès ne changent pas. Lecture avec son client, bornée par la RLS
+ *   de `messages` (conversations qu'il peut ouvrir, messages non supprimés).
+ *   Jointures non `!inner` : un auteur ou une conversation masqués laissent la
+ *   ligne, sans nom.
+ */
+async function loadFlaggedMessages(
+	supabase: SupabaseClient<Database>,
+	role: string
+): Promise<{ messages: FlaggedMessageRow[]; failed: boolean }> {
+	if (role === 'teacher') {
+		const { data, error: rpcError } = await supabase.rpc('get_flagged_messages_for_teacher', {
+			p_limit: FLAGGED_MESSAGES_LIMIT
+		});
+		if (rpcError) {
+			logger.error('Failed to fetch flagged messages:', rpcError);
+			return { messages: [], failed: true };
+		}
+		// Les types générés annoncent des colonnes non nulles ; la fonction en rend
+		// de nulles (auteur supprimé, conversation sans nom, message non supprimé).
+		const rows: {
+			id: string;
+			conversation_id: string | null;
+			plain_text: string | null;
+			flag_reason: string | null;
+			created_at: string | null;
+			deleted_at: string | null;
+			deleted_by_moderation: boolean | null;
+			sender_firstname: string | null;
+			sender_lastname: string | null;
+			conversation_name: string | null;
+			is_group: boolean | null;
+		}[] = data ?? [];
+		return {
+			failed: false,
+			messages: rows.map((m) => ({
+				id: m.id,
+				conversationId: m.conversation_id,
+				text: m.plain_text ?? '',
+				reason: m.flag_reason,
+				createdAt: m.created_at,
+				senderName: fullName(m.sender_firstname, m.sender_lastname),
+				conversationName: m.conversation_name,
+				isGroup: m.is_group,
+				deletedBy: m.deleted_at ? (m.deleted_by_moderation ? 'moderation' : 'author') : null
+			}))
+		};
+	}
+
+	const { data, error: readError } = await supabase
+		.from('messages')
+		.select(
+			`
+			id,
+			conversation_id,
+			plain_text,
+			flag_reason,
+			created_at,
+			sender:profiles!messages_sender_id_fkey(firstname, lastname),
+			conversation:conversations!messages_conversation_id_fkey(name, is_group)
+		`
+		)
+		.eq('is_flagged', true)
+		.order('created_at', { ascending: false })
+		.limit(FLAGGED_MESSAGES_LIMIT);
+	if (readError) {
+		logger.error('Failed to fetch flagged messages:', readError);
+		return { messages: [], failed: true };
+	}
+	return {
+		failed: false,
+		messages: (data ?? []).map((m) => ({
+			id: m.id,
+			conversationId: m.conversation_id,
+			text: m.plain_text ?? '',
+			reason: m.flag_reason,
+			createdAt: m.created_at,
+			senderName: m.sender ? fullName(m.sender.firstname, m.sender.lastname) : null,
+			conversationName: m.conversation?.name ?? null,
+			isGroup: m.conversation?.is_group ?? null,
+			deletedBy: null
+		}))
+	};
+}
+
 /**
  * Load moderation data for teachers
  *
@@ -15,7 +135,8 @@ const FLAGGED_MESSAGES_LIMIT = 100;
  * - Active restrictions created by this teacher
  * - Moderation logs for this teacher's actions
  * - Message reports for moderation
- * - Messages flagged automatically, in the conversations this teacher can open
+ * - Messages flagged automatically (teacher: RPC `get_flagged_messages_for_teacher`,
+ *   deleted ones and student 1-on-1 chats included; admin: RLS read, unchanged)
  * - Students from teacher's classes (for new restriction dialog)
  *
  * Only accessible by teachers and admins
@@ -81,27 +202,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Pending reports count via RPC
 		supabase.rpc('get_pending_reports_count'),
 
-		// ⚠️ Écart T21 : messages marqués automatiquement (`is_flagged`). Lus avec le
-		// client du prof, sans fonction privilégiée : la RLS de `messages` borne la
-		// liste aux conversations qu'il peut déjà ouvrir, et masque les messages
-		// supprimés. Jointures non `!inner` : un auteur ou une conversation masqués
-		// laissent la ligne, sans nom.
-		supabase
-			.from('messages')
-			.select(
-				`
-				id,
-				conversation_id,
-				plain_text,
-				flag_reason,
-				created_at,
-				sender:profiles!messages_sender_id_fkey(firstname, lastname),
-				conversation:conversations!messages_conversation_id_fkey(name, is_group)
-			`
-			)
-			.eq('is_flagged', true)
-			.order('created_at', { ascending: false })
-			.limit(FLAGGED_MESSAGES_LIMIT),
+		// ⚠️ Écart T21 : messages marqués automatiquement (`is_flagged`).
+		loadFlaggedMessages(supabase, profile.role),
 
 		// Students from teacher's classes (for new restriction dialog)
 		getTeacherClassesWithStudents(user.id, supabase)
@@ -131,9 +233,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// Même règle que les signalements (T20) : un échec de lecture se dit, il ne
 	// ressemble pas à « aucun message marqué ».
-	if (flaggedResult.error) {
-		logger.error('Failed to fetch flagged messages:', flaggedResult.error);
-	}
 
 	// Flatten and deduplicate students from all classes
 	const studentsMap = new Map<
@@ -201,20 +300,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		})),
 		reportsLoadFailed: reportsResult.error !== null,
 		pendingReportsCount: pendingCountResult.error ? null : (pendingCountResult.data ?? 0),
-		flaggedMessages: (flaggedResult.data ?? []).map((m) => ({
-			id: m.id,
-			conversationId: m.conversation_id,
-			text: m.plain_text ?? '',
-			reason: m.flag_reason,
-			createdAt: m.created_at,
-			senderName: m.sender
-				? `${m.sender.firstname ?? ''} ${m.sender.lastname ?? ''}`.trim() || null
-				: null,
-			conversationName: m.conversation?.name ?? null,
-			isGroup: m.conversation?.is_group ?? null
-		})),
-		flaggedMessagesLoadFailed: flaggedResult.error !== null,
+		flaggedMessages: flaggedResult.messages,
+		flaggedMessagesLoadFailed: flaggedResult.failed,
 		flaggedMessagesLimit: FLAGGED_MESSAGES_LIMIT,
+		// Vrai pour le prof : conversations à deux entre élèves et messages supprimés compris.
+		flaggedMessagesExtended: profile.role === 'teacher',
 		students
 	};
 };

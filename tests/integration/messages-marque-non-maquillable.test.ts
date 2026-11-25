@@ -369,15 +369,15 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 		});
 	});
 
-	// Même lecture que la page de modération du prof
-	// (`dashboard/teacher/moderation/gestion/+page.server.ts`) : aucune fonction
-	// privilégiée, la policy SELECT de `messages` borne seule la liste.
+	// Lecture directe de `messages` par le prof : c'était celle de la page de
+	// modération jusqu'à la fonction `get_flagged_messages_for_teacher` (voir
+	// `messages-marques-prof.test.ts`). La policy SELECT, elle, n'a pas changé :
+	// ce test garde la preuve que seule la fonction ouvre les conversations à deux.
 	describe('borne de l’onglet « Messages marqués » (écart T21)', () => {
 		// Mesuré le 2026-11-25 : la policy SELECT de `messages` nomme les conversations
 		// à deux entre élèves de classe, mais elle lit `conversation_participants` sous
 		// la RLS du prof, qui n'y voit que ses propres conversations. Le prof ne lit
-		// donc AUCUNE conversation à deux entre élèves. Ouvrir cette lecture est une
-		// question d'accès (à David), pas un détail de ce test.
+		// donc AUCUNE conversation à deux entre élèves par la RLS.
 		it('le prof lit les messages marqués du chat de sa classe, pas ceux d’une conversation à deux entre élèves', async () => {
 			const dansLaClasse = await envoyer(classeConversationId, eleve.id, INSULTE);
 			const aDeuxEnClasse = await envoyer(
