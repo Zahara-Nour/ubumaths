@@ -181,7 +181,7 @@ export function versionedLines<L extends { exercise?: object | null }>(
 	return lines.map((line) => {
 		const { exercise, ...rest } = line;
 		if (!exercise) return { ...rest, exercise: null, version: null };
-		return versionedLine(rest, exercise, stale);
+		return versionedLine(rest, exercise as Record<string, unknown>, stale);
 	});
 }
 
