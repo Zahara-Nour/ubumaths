@@ -2,15 +2,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 posée à David._
+_Mis à jour le 2026-11-25, phase 0 validée, F1-F2 écrites._
 
-- **État** : rubrique réservée (main 022f2eb), relevé écrit ([relevé](idees-3e-trigonometrie-releve.md)),
-  6 fiches et 3 questions ci-dessous, page à cocher publiée
-  (https://claude.ai/artifact/D9nTTj35o2FVkhUiEfKT4W, verdicts dans sa collection `verdicts`) · **Prochaine action** : lire les
-  réponses de David (page à cocher ou message), réserver 57c73be1 et dbd5debf si F1 / F2 passent,
-  écrire le gros lot · **En attente de David** : phase 0 (F1-F2, N1-N4, Q1-Q3) · **Pièges en
-  cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-3e-trigonometrie`,
-  `feat/idees-3e-trigonometrie`.
+- **État** : phase 0 validée par David (« je te suis » : toutes les recos, § Décisions de David).
+  57c73be1 et dbd5debf réservés sur main (9178f32291, commité par la session idees-1re-trigo).
+  F1 (57c73be1 v5-v9) et F2 (dbd5debf v5-v6) écrites :
+  `docs/wip/questions/idees-3e-trigonometrie-publies.py` → `scripts/questions/idees-3e-trigonometrie-publies/`,
+  `checkTemplate` vert (39 specs ajoutées). · **Prochaine action** : écrire N1-N4
+  (`idees-3e-trigonometrie-neufs.py`, outils communs dans `idees_3e_trigonometrie_outils.py`,
+  rangement : `Géométrie > Trigonométrie du triangle rectangle[ > calcul de longueurs | > calcul d'angles]`),
+  puis `create-questions` en simulation, `sonde-figures.ts`, essai en base locale, page à cocher, PR.
+  · **En attente de David** : rien. · **Pièges en cours** : une variable ne vaut pas une lettre
+  (lettres tirées = `{{if:s==k|…|}}` dans le texte) ; une erreur prévue ≤ 500 caractères
+  (`par_jeu`) ; le détail des refus de schéma ne s'affiche pas, le lire par `questionTemplateSchema.safeParse`.
+  · **Worktree / branche** : `../ubumaths-wt-idees-3e-trigonometrie`, `feat/idees-3e-trigonometrie`.
 
 ## Phase 0 (2026-11-25)
 
@@ -125,6 +130,19 @@ de réponse, erreurs prévues. Chaque variation aura son coup de pouce (sans la 
 - **Pas de questions littérales** (« exprimer BC en fonction de AB et α ») : Q1.
 - Erreurs prévues : par variation, la valeur sans l'œil (v3), tan β + tan α (v1), le rayon de la
   Terre pris pour HP (v2), l'arrondi intermédiaire (v4, v5).
+
+### Décisions de David (2026-11-25)
+
+« Je te suis » après le résumé des recommandations : **toutes les recommandations sont prises**.
+F1, F2, N1 à N4 comme les fiches ; Q1 non (pas de questions littérales) ; Q2 oui (unités
+variées dans v5-v7 de F1) ; Q3 oui (N1 sous « calcul de longueurs », N3 sous « calcul
+d'angles », N2 et N4 sur la notion). Précisions annoncées dans le résumé et retenues :
+
+- F1 v9 (trois côtés) : le troisième côté est arrondi, donc cos, sin et tan pourraient donner un
+  degré d'écart ; on ne tire que des triangles où les trois calculs donnent le même degré (plus
+  simple pour l'élève que d'accepter trois réponses).
+- N4 v6 (terrain en pente) : angles tirés loin du seuil de 8,5°.
+- N4 : pas la montagne.
 
 ### Questions
 
