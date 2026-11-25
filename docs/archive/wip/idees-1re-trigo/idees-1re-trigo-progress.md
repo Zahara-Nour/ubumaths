@@ -2,25 +2,17 @@
 
 ## Reprendre ici
 
-> **Note de la session `ecarts-moderation`, 2026-11-25** : `20261125064801` et `20261125065639` sont **en prod**. David a joué lui-même `pnpm db:migrate --include-all` (quatre migrations mergées d'un coup) ; `migration list --linked` ne montre plus rien en attente. Le `db:migrate` de la prochaine action est donc fait.
+_Mis à jour le 2026-11-25, chantier clos._
 
-_Mis à jour le 2026-11-25, après #3135._
-
-- **État** : #3135 mergée (2 brouillons rangés par migration, 7 variations de 5 publiés par
-  migration de contenu) ; **migrations pas encore en prod** · **Prochaine action** : `db:migrate`
-  quand `migration list --linked` ne montre plus que `20261125064801` et `20261125065639` (les 4
-  conditions sont réunies), puis relecture des 2 brouillons dans `/dev/modeles` et `publier-lot.ts`
-  · **En attente de David** : relecture de 6a461989 et 7dba5a1d (`/dev/modeles?noeud=` cercle et
-  radians, cosinus et sinus d'un réel) · **Pièges en cours** : `20261125063042` (écart T21,
-  messages marqués, autre session) est en attente devant les nôtres : ne pas la pousser ; l1s-3 ;
-  `√0,91` refusé par la forme (annoncé dans la consigne) · **Worktree / branche** : aucun (retirés
-  par `pr:merger`).
+- **État** : rubrique **publiée** : les 2 modèles neufs (6a461989, 7dba5a1d) sont publiés et validés
+  par David ; les 7 variations des 5 publiés sont en prod (migration de contenu) ; journal archivé ·
+  **Prochaine action** : aucune · **En attente de David** : rien · **Worktree / branche** : aucun.
 
 ## Journal
 
 ### 2026-11-25 — réservation, relevé, phase 0
 
-- Rubrique 1AN4 (6 exercices) réservée dans [idees-ailleurs-repartition.md](idees-ailleurs-repartition.md)
+- Rubrique 1AN4 (6 exercices) réservée dans [idees-ailleurs-repartition.md](../../../wip/idees-ailleurs-repartition.md)
   (`9795fd3f1`).
 - Relevé : 1 ✅ (hors programme, déjà en brouillon), 5 🟡, 0 ❌. La 1re spé est déjà bien couverte
   (9 modèles publiés sur 1SPE-303 à 1SPE-410) ; il manque des plages et des sens.
@@ -66,3 +58,13 @@ _Mis à jour le 2026-11-25, après #3135._
 - #3135 mergée par `pr:merger` (CI verte). `db:migrate` **pas lancé** : `migration list --linked`
   montre aussi `20261125063042_messages_marques_lus_par_le_prof` (autre session), qui partirait
   avec les nôtres.
+
+### 2026-11-25 — migrations en prod, publiée, chantier clos
+
+- Les migrations `20261125064801` et `20261125065639` sont passées en prod avec celle de l'écart T21
+  (`db:migrate` lancé hors de cette session). Vérifié en base : 5 publiés avec leurs variations et
+  specs ajoutées, 2 brouillons rangés et tagués (1SPE-304, 1SPE-305).
+- David : « je valide » ; aucun verdict en base (`question_template_reviews`), lu comme un oui aux
+  2 brouillons. `publier-lot.ts` en simulation : 2 brouillons passent le contrôle.
+- David a lancé `publier-lot.ts --publier` : 6a461989 et 7dba5a1d sont `published` (vérifié). Rubrique
+  1AN4 passée à « publiée », réservations des 5 publiés levées, journal archivé.

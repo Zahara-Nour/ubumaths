@@ -39,7 +39,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
 | Variations                        | 1AN2  | 5         | libre                |                           |
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle` |
-| Fonctions trigonométriques        | 1AN4  | 6         | prise (2026-11-25)   | `idees-1re-trigo`         |
+| Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`         |
 | Produit scalaire                  | 1G1   | 10        | libre                |                           |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                           |
 | Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`   |
@@ -162,11 +162,6 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 4b3c1d88 Convertir des degrés en radians                            | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
-| f7194c9d Ramener un réel dans ]−π ; π]                              | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
-| aad6c700 Lire le réel associé à un point du cercle                  | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
-| 679a2e3e Cosinus et sinus d'angles associés                         | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
-| ee4e2ac6 Calculer cos x connaissant sin x                           | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
 | 93147367 Déterminer la forme décimale d'une fraction                | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 000368e1 Déterminer une forme fractionnaire                         | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 6fdcdda1 Définition par quotient                                    | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
