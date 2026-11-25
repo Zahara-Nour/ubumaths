@@ -1,0 +1,919 @@
+{
+	"id": "679a2e3e-d034-4c9f-8c8f-5e0b6f545d1a",
+	"title": "Cosinus et sinus d'angles associés",
+	"description": "cos et sin de 5π/6, −π/4, 4π/3, 7π/6… par symétrie sur le cercle à partir de π/6, π/4 ou π/3",
+	"grades": ["1_SPE"],
+	"level": 2,
+	"delay": 45,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+				},
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+				}
+			],
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{5\\pi}{6}|\\frac{3\\pi}{4}|\\frac{2\\pi}{3}|-\\frac{7\\pi}{6}|-\\frac{5\\pi}{4}|-\\frac{4\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*r/\\pi"
+				},
+				{
+					"name": "m",
+					"expression": "eval:abs(12-abs(n))"
+				},
+				{
+					"name": "d",
+					"expression": "eval:12/m"
+				},
+				{
+					"name": "c",
+					"expression": "eval:n/gcd(abs(n),12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(abs(n),12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des ordonnées du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même sinus et des cosinus opposés.",
+					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+				},
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+				}
+			],
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-\\frac{\\pi}{6}|-\\frac{\\pi}{4}|-\\frac{\\pi}{3}|\\frac{11\\pi}{6}|\\frac{7\\pi}{4}|\\frac{5\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*r/\\pi"
+				},
+				{
+					"name": "m",
+					"expression": "eval:12-abs(12-abs(n))"
+				},
+				{
+					"name": "d",
+					"expression": "eval:12/m"
+				},
+				{
+					"name": "c",
+					"expression": "eval:n/gcd(abs(n),12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(abs(n),12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des abscisses du point associé à $\\frac{\\pi}{ {{d}} }$ : ils ont le même cosinus et des sinus opposés.",
+					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}"
+				},
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}"
+				}
+			],
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-\\frac{5\\pi}{6}|-\\frac{3\\pi}{4}|-\\frac{2\\pi}{3}|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*r/\\pi"
+				},
+				{
+					"name": "m",
+					"expression": "eval:abs(12-abs(n))"
+				},
+				{
+					"name": "d",
+					"expression": "eval:12/m"
+				},
+				{
+					"name": "c",
+					"expression": "eval:n/gcd(abs(n),12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(abs(n),12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'origine $O$ du point associé à $\\frac{\\pi}{ {{d}} }$ : leurs cosinus sont opposés, et leurs sinus aussi.",
+					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, pi/{{d}}\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:cos(\\pi/d)}}$ et $\\sin\\left(\\frac{\\pi}{ {{d}} }\\right)={{eval:sin(\\pi/d)}}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2|3|4|8|9|10|-2|-3|-4|-8|-9|-10"
+				},
+				{
+					"name": "k",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "n",
+					"expression": "eval:m+24*k"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n*\\pi/12"
+				},
+				{
+					"name": "r0",
+					"expression": "eval:m*\\pi/12"
+				}
+			],
+			"conditions": ["abs(n)>24"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-cos(n*\\pi/12)}}",
+							"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+							"label": "Signe du cosinus"
+						},
+						{
+							"answer": "{{eval:sin(n*\\pi/12)}}",
+							"message": "Tu as donné le sinus : le cosinus est l'abscisse du point.",
+							"label": "Sinus à la place"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-sin(n*\\pi/12)}}",
+							"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+							"label": "Signe du sinus"
+						},
+						{
+							"answer": "{{eval:cos(n*\\pi/12)}}",
+							"message": "Tu as donné le cosinus : le sinus est l'ordonnée du point.",
+							"label": "Cosinus à la place"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On {{if:k>0|retire|ajoute}} des tours complets ($2\\pi$) : ${{r}}={{r0}}{{eval:2*k;+}}\\pi$. Les deux réels ont le même point sur le cercle, donc le même cosinus et le même sinus.",
+					"```trig\npreset: custom\nangles: {{m}}*pi/12\nprojections: true\n```",
+					"Donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+				]
+			},
+			"hint": "Retire d'abord des tours complets ($2\\pi$) pour te ramener entre $-\\pi$ et $\\pi$."
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "12|18|-6|-18|-12|30|36|-30|42|24"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n*\\pi/12"
+				},
+				{
+					"name": "m",
+					"expression": "eval:mod(n,24)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:cos(n*\\pi/12)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-cos(n*\\pi/12)}}",
+							"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+							"label": "Signe du cosinus"
+						},
+						{
+							"answer": "{{eval:sin(n*\\pi/12)}}",
+							"message": "Tu as donné le sinus : le cosinus est l'abscisse du point.",
+							"label": "Sinus à la place"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:sin(n*\\pi/12)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-sin(n*\\pi/12)}}",
+							"message": "Attention au signe : regarde dans quel quart du cercle se trouve le point.",
+							"label": "Signe du sinus"
+						},
+						{
+							"answer": "{{eval:cos(n*\\pi/12)}}",
+							"message": "Tu as donné le cosinus : le sinus est l'ordonnée du point.",
+							"label": "Cosinus à la place"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point associé à ${{r}}$ est sur un axe : on retire des tours complets ($2\\pi$) pour le placer.",
+					"```trig\npreset: custom\nangles: {{m}}*pi/12\nprojections: true\n```",
+					"Ses coordonnées valent $0$, $1$ ou $-1$. Donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:cos(n*\\pi/12)}} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:sin(n*\\pi/12)}} }$."
+				]
+			},
+			"hint": "Place le point sur le cercle : le cosinus est son abscisse, le sinus son ordonnée."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "5π/6 : cos et sin justes",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{7\\pi}{6}"
+			},
+			"description": "-7π/6 : même point, mêmes valeurs",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "5π/6 : erreur de signe sur le cosinus",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "5π/6 : erreur de signe sur le sinus",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "5π/6 : cos et sin intervertis",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"description": "3π/4 : cos et sin justes",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{5\\pi}{4}"
+			},
+			"description": "-5π/4 : même point, mêmes valeurs",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"description": "3π/4 : erreur de signe sur le cosinus",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"description": "3π/4 : erreur de signe sur le sinus",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"description": "2π/3 : cos et sin justes",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{4\\pi}{3}"
+			},
+			"description": "-4π/3 : même point, mêmes valeurs",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"description": "2π/3 : erreur de signe sur le cosinus",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"description": "2π/3 : erreur de signe sur le sinus",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"description": "2π/3 : cos et sin intervertis",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "0{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"description": "5π/6 : sin = 0,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"description": "-π/4 : cos et sin justes",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{7\\pi}{4}"
+			},
+			"description": "7π/4 : même point, mêmes valeurs",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"description": "-π/4 : erreur de signe sur le cosinus",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"description": "-π/4 : erreur de signe sur le sinus",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "-π/3 : cos et sin justes",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{3}"
+			},
+			"description": "5π/3 : même point, mêmes valeurs",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "-π/3 : erreur de signe sur le cosinus",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "-π/3 : erreur de signe sur le sinus",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"description": "-π/3 : cos et sin intervertis",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"description": "-π/6 : cos et sin justes",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{11\\pi}{6}"
+			},
+			"description": "11π/6 : même point, mêmes valeurs",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"description": "-π/6 : erreur de signe sur le cosinus",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"description": "-π/6 : erreur de signe sur le sinus",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"description": "-π/6 : cos et sin intervertis",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"description": "4π/3 : cos et sin justes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{2\\pi}{3}"
+			},
+			"description": "-2π/3 : même point, mêmes valeurs",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"description": "4π/3 : erreur de signe sur le cosinus",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"description": "4π/3 : erreur de signe sur le sinus",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"description": "4π/3 : cos et sin intervertis",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"description": "7π/6 : cos et sin justes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{5\\pi}{6}"
+			},
+			"description": "-5π/6 : même point, mêmes valeurs",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"description": "7π/6 : erreur de signe sur le cosinus",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"description": "7π/6 : erreur de signe sur le sinus",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"description": "7π/6 : cos et sin intervertis",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{4}"
+			},
+			"description": "5π/4 : cos et sin justes",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"description": "-3π/4 : même point, mêmes valeurs",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{4}"
+			},
+			"description": "5π/4 : erreur de signe sur le cosinus",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{5\\pi}{4}"
+			},
+			"description": "5π/4 : erreur de signe sur le sinus",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-0{,}5", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"description": "4π/3 : cos = −0,5",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\frac{1}{2}", "-0{,}87"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"description": "4π/3 : valeur approchée −0,87",
+			"variationIndex": 2
+		},
+		{
+			"description": "25π/6 : √3/2 et 1/2",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"]
+		},
+		{
+			"description": "25π/6 : sin = 0,5",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "0{,}5"]
+		},
+		{
+			"description": "25π/6 : signe du cosinus",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"]
+		},
+		{
+			"description": "25π/6 : cos et sin échangés",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le sinus : le cosinus est l'abscisse du point."
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"]
+		},
+		{
+			"description": "−17π/4 : √2/2 et −√2/2",
+			"variationIndex": 3,
+			"variables": {
+				"m": "-3",
+				"k": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"]
+		},
+		{
+			"description": "−17π/4 : signe du sinus",
+			"variationIndex": 3,
+			"variables": {
+				"m": "-3",
+				"k": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"]
+		},
+		{
+			"description": "23π/3 : 1/2 et −√3/2",
+			"variationIndex": 3,
+			"variables": {
+				"m": "-4",
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"]
+		},
+		{
+			"description": "3π/2 : 0 et −1",
+			"variationIndex": 4,
+			"variables": {
+				"n": "18"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "-1"]
+		},
+		{
+			"description": "3π/2 : sin = 1, signe",
+			"variationIndex": 4,
+			"variables": {
+				"n": "18"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+			},
+			"answers": ["0", "1"]
+		},
+		{
+			"description": "3π/2 : cos et sin échangés",
+			"variationIndex": 4,
+			"variables": {
+				"n": "18"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le sinus : le cosinus est l'abscisse du point."
+			},
+			"answers": ["-1", "0"]
+		},
+		{
+			"description": "3π : −1 et 0",
+			"variationIndex": 4,
+			"variables": {
+				"n": "36"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "0"]
+		},
+		{
+			"description": "3π : cos = 1, signe",
+			"variationIndex": 4,
+			"variables": {
+				"n": "36"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde dans quel quart du cercle se trouve le point."
+			},
+			"answers": ["1", "0"]
+		}
+	]
+}
