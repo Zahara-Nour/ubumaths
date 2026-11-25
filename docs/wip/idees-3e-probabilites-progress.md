@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 envoyée (aucune PR encore)._
+_Mis à jour le 2026-11-26, phase 0 validée (aucune PR encore)._
 
-- **État** : relevé fait ([idees-3e-probabilites-releve.md](idees-3e-probabilites-releve.md)) ; fiches de phase 0 sur la page à cocher https://claude.ai/artifact/7e2RLrn89HwU8qNJuBLThS (copie ci-dessous).
-- **Prochaine action** : lire les verdicts de la page (collection `verdicts`), puis réserver b28ed4fa, e73b947f et 247fddd1 dans le tableau de répartition si V1 à V3 sont acceptées, et écrire le gros lot.
-- **En attente de David** : verdicts des fiches N1, N2, V1, V2, V3, R et de la question Q1.
+- **État** : relevé fait ([idees-3e-probabilites-releve.md](idees-3e-probabilites-releve.md)) ; **phase 0 validée en bloc par David le 2026-11-26** (« je valide », dans la conversation : toutes les fiches telles qu'écrites ci-dessous, Q1 = oui, N1 et N2 sur 3-033). La page à cocher n'a aucun verdict : c'est normal. b28ed4fa, e73b947f et 247fddd1 réservés dans le tableau de répartition (686483c9e).
+- **Prochaine action** : écrire le gros lot (skill `idees-rubrique` § 3) : scripts `docs/wip/questions/idees-3e-probabilites-<x>.py` pour N1 et N2 ; export des trois modèles publiés dans `scripts/questions/idees-3e-probabilites-publies/` et variations V1 à V3 ajoutées à la fin ; `testSpecs`, trois erreurs prévues et un coup de pouce par variation ; essai en base locale. Renommer la branche en `feat/…` avant le premier commit de code.
+- **En attente de David** : rien.
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites`, `docs/idees-3e-probabilites` (à renommer en `feat/…` avant le lot si besoin).
 
