@@ -47,11 +47,12 @@ import type { Database } from '#lib/types/database.ts';
 // TYPES
 // ============================================================================
 
-interface Variation {
+/** Alias (pas une interface) : assignable au type `Json` des arguments des fonctions de la base */
+type Variation = {
 	label: string;
 	statement_md: string;
 	solution_md: string;
-}
+};
 
 interface VersionListed {
 	id: string;
@@ -114,7 +115,9 @@ function request(method: string, body?: unknown): Request {
 }
 
 /** Le statut HTTP d'un handler qui peut lever `error(…)` de SvelteKit */
-async function statusOf(call: () => Promise<Response>): Promise<{ status: number; body: string }> {
+async function statusOf(
+	call: () => Response | Promise<Response>
+): Promise<{ status: number; body: string }> {
 	try {
 		const response = await call();
 		return { status: response.status, body: await response.text() };
@@ -138,7 +141,7 @@ async function versionsOf(id: string) {
 async function titleOf(id: string): Promise<string> {
 	const { data, error } = await service.from('exercises').select('title').eq('id', id).single();
 	if (error) throw new Error(error.message);
-	return data.title;
+	return data.title ?? '';
 }
 
 async function newExercise(): Promise<{ id: string; v1: string }> {
