@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261125065055_questions_idees_tle_integration_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "e6f2aed3-617a-445f-9ce0-9aa2690f236f",
+			"title": "Lien entre une fonction et ses primitives",
+			"fichier": "f01-lien-fonction-primitives.json",
+			"branche": "Équations différentielles",
+			"notion": "y′ = f",
+			"sousNotion": "primitives : notion",
+			"point": "TSPE-462"
+		},
+		{
+			"id": "1093da29-4e73-4403-be21-4b25e9eb4b37",
+			"title": "Intégrale de cos et de sin",
+			"fichier": "f07-integrale-cos-sin.json",
+			"branche": "Intégration",
+			"notion": "Calcul d'intégrales",
+			"sousNotion": "par une primitive",
+			"point": "TSPE-487"
+		}
+	],
+	"niveaux": []
+}
