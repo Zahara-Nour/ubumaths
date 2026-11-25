@@ -84,6 +84,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/student/age-declaration',
 	// GDPR account deletion (requires auth.admin.deleteUser)
 	'/api/account/delete',
+	// Suppression d'un élève par l'admin : même déroulé, APRÈS `requireAdmin`, le rôle
+	// élève de la cible et le nom retapé vérifiés par la route
+	'/api/admin/users/[id]/delete',
 	// Export RGPD : jour du dernier passage (table sans policy), filtré sur l'identité de la session
 	'/api/account/export',
 	// Pièces jointes de la messagerie : bucket privé sans policy de storage ; l'accès est

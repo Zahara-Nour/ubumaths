@@ -32,7 +32,7 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '#lib/server/middleware/auth.ts';
 import { deleteAccountSchema } from '#lib/server/validation/account.ts';
 import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
-import { removeAccountFiles } from '#lib/server/deleted-account-files.ts';
+import { deleteStudentAccount, hashEmail } from '#lib/server/account-deletion.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 import { rateLimit } from '#lib/server/middleware/rateLimit.ts';
 
@@ -41,17 +41,6 @@ const logger = createServerLogger('api/account/delete');
 // Rate limit: 1 attempt per 24 hours per user
 const RATE_LIMIT_MAX = 1;
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
-
-/**
- * Hash email for audit logging (preserves correlation without storing PII)
- */
-async function hashEmail(email: string): Promise<string> {
-	const encoder = new TextEncoder();
-	const data = encoder.encode(email.toLowerCase().trim());
-	const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-	const hashArray = Array.from(new Uint8Array(hashBuffer));
-	return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
 
 export const DELETE: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	// Step 1: Authenticate user
@@ -101,134 +90,17 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 		throw rateLimitError;
 	}
 
-	// Step 4: Get service role client and create audit entry
-	const serviceClient = createServiceRoleClient();
-	const emailHash = await hashEmail(userEmail);
-	const ipAddress = getClientAddress();
-	const userAgent = request.headers.get('user-agent');
+	// Step 4-8: déroulé commun (#lib/server/account-deletion.ts)
+	await deleteStudentAccount(createServiceRoleClient(), {
+		userId,
+		email: userEmail,
+		ipAddress: getClientAddress(),
+		userAgent: request.headers.get('user-agent'),
+		requestedBy: null
+	});
 
-	// Create initial audit entry
-	const { data: auditEntry, error: auditError } = await serviceClient
-		.from('account_deletion_audit')
-		.insert({
-			user_id: userId,
-			email_hash: emailHash,
-			ip_address: ipAddress,
-			user_agent: userAgent,
-			status: 'requested'
-		})
-		.select('id')
-		.single();
-
-	if (auditError) {
-		logger.error('Failed to create audit entry', { userId, error: auditError });
-		// Continue anyway - audit failure shouldn't block deletion
-	}
-
-	const auditId = auditEntry?.id;
-
-	try {
-		// Step 5: Call database cleanup function (see the migration
-		// 20261014100000_suppression_compte_art17 for what it deletes)
-		const { data: cleanupResult, error: cleanupError } = await serviceClient.rpc(
-			'delete_user_account',
-			{ p_user_id: userId }
-		);
-
-		if (cleanupError) {
-			logger.error('Database cleanup failed', { userId, error: cleanupError });
-
-			// Update audit entry with failure
-			if (auditId) {
-				await serviceClient
-					.from('account_deletion_audit')
-					.update({
-						status: 'failed',
-						error_message: cleanupError.message,
-						completed_at: new Date().toISOString()
-					})
-					.eq('id', auditId);
-			}
-
-			throw error(500, 'Erreur lors du nettoyage des donnees');
-		}
-
-		logger.info('Database cleanup completed', { userId, result: cleanupResult });
-
-		// Step 6: Delete the auth user (triggers CASCADE on profiles)
-		const { error: authError } = await serviceClient.auth.admin.deleteUser(userId);
-
-		if (authError) {
-			logger.error('Auth user deletion failed', { userId, error: authError });
-
-			// Update audit entry with failure
-			if (auditId) {
-				await serviceClient
-					.from('account_deletion_audit')
-					.update({
-						status: 'failed',
-						error_message: `Auth deletion failed: ${authError.message}`,
-						cleanup_result: cleanupResult,
-						completed_at: new Date().toISOString()
-					})
-					.eq('id', auditId);
-			}
-
-			throw error(500, 'Erreur lors de la suppression du compte');
-		}
-
-		// Step 7: fichiers retirés seulement une fois le compte supprimé : si deleteUser
-		// échoue, l'élève n'a pas perdu ses pièces jointes (jamais bloquant). Un retrait
-		// incomplet laisse `storage_removed_at` nul : le cron hebdomadaire le reprendra
-		// (`src/routes/api/cron/deleted-account-files`).
-		const removal = await removeAccountFiles(serviceClient, cleanupResult);
-		if (!removal.ok) {
-			logger.error('Fichiers du compte non tous retirés, repris par le cron', { userId });
-		}
-
-		// Step 8: Update audit entry with success. Une ligne restée sans `completed` ne
-		// serait jamais reprise par le cron des fichiers : l'échec se journalise.
-		if (auditId) {
-			const { error: finalAuditError } = await serviceClient
-				.from('account_deletion_audit')
-				.update({
-					user_id: null, // Anonymize - user no longer exists
-					status: 'completed',
-					cleanup_result: cleanupResult,
-					completed_at: new Date().toISOString(),
-					...(removal.ok ? { storage_removed_at: new Date().toISOString() } : {})
-				})
-				.eq('id', auditId);
-			if (finalAuditError) {
-				logger.error('Audit de suppression non finalisé', { auditId, error: finalAuditError });
-			}
-		}
-
-		logger.info('Account deletion completed successfully', { userId });
-
-		return Response.json({
-			success: true,
-			message: 'Votre compte a ete supprime avec succes.'
-		});
-	} catch (err) {
-		// Re-throw SvelteKit errors (preserve original status code)
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		// Update audit entry with unexpected failure
-		if (auditId) {
-			await serviceClient
-				.from('account_deletion_audit')
-				.update({
-					status: 'failed',
-					error_message: err instanceof Error ? err.message : 'Unknown error',
-					completed_at: new Date().toISOString()
-				})
-				.eq('id', auditId);
-		}
-
-		logger.error('Unexpected error during account deletion', { userId, error: err });
-		throw error(500, 'Une erreur inattendue est survenue');
-	}
+	return Response.json({
+		success: true,
+		message: 'Votre compte a ete supprime avec succes.'
+	});
 };

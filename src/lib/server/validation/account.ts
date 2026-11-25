@@ -24,3 +24,13 @@ export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>;
  * Export the confirmation phrase for use in UI
  */
 export const ACCOUNT_DELETION_CONFIRMATION_PHRASE = DELETION_CONFIRMATION_PHRASE;
+
+/**
+ * Suppression d'un élève par l'admin : le nom de l'élève, retapé pour confirmer.
+ * La comparaison avec le profil se fait dans la route (`matchesDeletionConfirmation`).
+ */
+export const adminDeleteStudentSchema = z.object({
+	confirmationName: z.string().min(1, 'Nom de confirmation requis').max(300)
+});
+
+export type AdminDeleteStudentInput = z.infer<typeof adminDeleteStudentSchema>;

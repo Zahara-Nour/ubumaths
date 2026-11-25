@@ -16,7 +16,9 @@ Liens : `school_year_id` → `school_years`
 
 ### `account_deletion_audit`
 
-`cleanup_result?` · `completed_at?` · `email_hash` · `error_message?` · `id` · `ip_address` · `requested_at` · `status` · `storage_removed_at?` · `user_agent?` · `user_id?`
+`cleanup_result?` · `completed_at?` · `email_hash` · `error_message?` · `id` · `ip_address` · `requested_at` · `requested_by?` · `status` · `storage_removed_at?` · `user_agent?` · `user_id?`
+
+Liens : `requested_by` → `profiles`
 
 ### `class_carnet_settings`
 

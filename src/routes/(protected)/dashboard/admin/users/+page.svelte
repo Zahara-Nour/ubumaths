@@ -28,6 +28,7 @@
 	import { Switch } from '#lib/components/ui/switch/index.ts';
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import StudentPasswordReset from '#lib/components/admin/StudentPasswordReset.svelte';
+	import StudentDeletion from '#lib/components/admin/StudentDeletion.svelte';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
 	import * as Tooltip from '#lib/components/ui/tooltip/index.ts';
 
@@ -533,6 +534,18 @@
 		tempRole = user.role;
 		tempSchoolId = user.school_id || ''; // null -> ''
 		tempIsTest = !!user.is_test; // Force boolean conversion
+	}
+
+	/**
+	 * Élève supprimé définitivement : retiré des listes, fiche refermée
+	 */
+	function handleStudentDeleted(studentId: string) {
+		const wasPending = selectedUser?.id === studentId && selectedUser.status === 'pending';
+		searchResults = searchResults.filter((u) => u.id !== studentId);
+		classResults = classResults.filter((u) => u.id !== studentId);
+		pendingResults = pendingResults.filter((u) => u.id !== studentId);
+		if (wasPending) pendingCount = Math.max(0, pendingCount - 1);
+		if (selectedUser?.id === studentId) selectedUser = null;
 	}
 
 	/**
@@ -1294,6 +1307,13 @@
 											studentId={selectedUser.id}
 											studentName={getFullName(selectedUser)}
 										/>
+									{/key}
+								{/if}
+
+								<!-- Suppression définitive : admin seulement, élèves seulement -->
+								{#if data.canDeleteStudents && selectedUser.role === 'student'}
+									{#key selectedUser.id}
+										<StudentDeletion student={selectedUser} ondeleted={handleStudentDeleted} />
 									{/key}
 								{/if}
 

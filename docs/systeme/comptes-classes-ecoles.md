@@ -18,6 +18,7 @@ couvre:
   - 'src/lib/server/admin/**'
   - src/lib/email-templates/welcome.ts
   - src/lib/utils/welcome-email-state.ts
+  - src/lib/utils/student-deletion.ts
   - 'src/lib/utils/{age-declaration,timezones}.ts'
   - src/lib/components/AgeQuestionDialog.svelte
   - src/lib/components/MyPasswordInput.svelte
@@ -126,6 +127,17 @@ de 2nde de répondre une fois à la question d'âge.
   porte « Réinitialiser le mot de passe » (`src/lib/components/admin/StudentPasswordReset.svelte`
   → `src/routes/api/admin/users/[id]/password/+server.ts`) : mot de passe provisoire affiché une
   fois, à changer à la connexion suivante ([auth.md § Mots de passe des élèves](auth.md#mots-de-passe-des-élèves)).
+- **Supprimer définitivement un élève** (David, 2026-11-25) : pour l'admin seulement (vrai
+  compte admin ou élévation, `canDeleteStudents` du `+page.server.ts`), un encadré rouge en bas
+  de la fiche de tout élève (`src/lib/components/admin/StudentDeletion.svelte`). La fenêtre dit ce
+  qui disparaît ; l'admin retape le nom affiché (« Prénom Nom », sinon nom complet, sinon
+  adresse : `src/lib/utils/student-deletion.ts`), bouton grisé sinon. Route
+  `src/routes/api/admin/users/[id]/delete/+server.ts` (DELETE) : admin, UUID, Zod, jamais
+  soi-même, 20 suppressions par heure et par admin, élève seulement (403 sinon, 404 s'il n'existe
+  plus), nom revérifié (400). Puis le déroulé de la page Profil (`deleteStudentAccount`,
+  [rgpd.md § 7.2](conformite/rgpd.md#72-droit-a-loubli)), l'admin noté dans
+  `account_deletion_audit.requested_by`. L'élève sort des listes, la fiche se ferme. Retirer un
+  élève d'une classe, lui, ne fait qu'archiver l'adhésion (ci-dessus).
 - **Import d'élèves** : `src/routes/(protected)/dashboard/admin/import-students/+page.server.ts`,
   action `import`. Les élèves vont dans `pending_students` (avec `class_ids` résolus depuis les
   codes de classe). Chaque élève est validé avant toute écriture (`importedStudentsSchema` :
