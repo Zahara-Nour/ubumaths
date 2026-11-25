@@ -162,11 +162,22 @@ le compte et la classe (page du lien : PR 3, pas encore livrée). Table et accè
 - Écritures : `src/lib/server/private-lessons/invitations.ts`, en `service_role` après la garde
   (la base n'ouvre aucune écriture aux comptes connectés). Jeton de 32 octets (base64url), seul son
   sha256 est en base. `email_sent_at` et `sent_count` ne bougent que si Brevo accepte le courriel :
-  un refus laisse l'invitation dans la liste, « Courriel non parti », à renvoyer. « Renvoyer » pose
-  une nouvelle empreinte et 7 jours neufs (l'ancien lien ne s'ouvre plus) ; refusé après usage ou
-  annulation, pendant une réservation de moins de 5 minutes (parent en train de créer le compte), ou
-  après 5 courriels. La liste montre les invitations ni utilisées ni annulées ; une expirée y reste
-  jusqu'à sa purge et peut être renvoyée.
+  un refus laisse l'invitation dans la liste, « Courriel non parti », à renvoyer. La liste montre
+  les invitations ni utilisées ni annulées ; une expirée y reste jusqu'à sa purge et peut être
+  renvoyée.
+- **Inviter** : refusé si une invitation ouverte existe déjà pour le même prénom (sans tenir compte
+  de la casse) et la même adresse — on passe par « Renvoyer ».
+- **Renvoyer** : nouvelle empreinte et 7 jours neufs, l'ancien lien ne s'ouvre plus. Refusé après
+  usage ou annulation, pendant une réservation de moins de 5 minutes (parent en train de créer le
+  compte), ou après 5 courriels. L'écriture est gardée par l'empreinte lue : de deux clics
+  simultanés, un seul passe et un seul courriel part ; l'autre lit « L'invitation vient de
+  changer : réessayez ». ⚠️ Assumé (décision 9) : si Brevo refuse le courriel d'un renvoi, l'ancien
+  lien est déjà mort ; la liste affiche « Courriel non parti » et l'admin renvoie.
+- **Annuler** : refusé pendant une réservation de moins de 5 minutes (la création du compte
+  échouerait à sa dernière étape).
+- **Limite de débit** : 20 « Inviter » ou « Renvoyer » par heure et par admin
+  (`checkPrivateLessonInvitationRateLimit`, `src/lib/server/rateLimiter.ts`, fermée en cas de panne) :
+  le quota de Brevo (300 courriels par jour) sert aussi aux consentements et au carnet.
 - Courriel : `src/lib/email-templates/private-lesson-invitation.ts` (« Créez l'espace de <prénom>
   sur Chiphre »), envoyé par `sendPrivateLessonInvitationEmail` (`src/lib/server/email/brevo.ts`).
   Lien `https://www.chiph.re/auth/register/invitation/<jeton>`.
@@ -175,8 +186,10 @@ le compte et la classe (page du lien : PR 3, pas encore livrée). Table et accè
   d'annulation, sinon d'expiration). Cron Vercel quotidien `src/routes/api/cron/invitations-cours-particulier/+server.ts`
   (`vercel.json`, 3 h 30 UTC), lançable depuis `/dashboard/admin/cron` ; journal
   `background_job_runs` (job `private_lesson_invitations_purge`), nombres seulement.
-- Tests : `tests/integration/invitations-cours-particuliers-envoi.test.ts` (écritures, renvoi,
-  annulation, purge, sur la vraie base), `src/lib/server/validation/__tests__/private-lessons.test.ts`,
+- Tests : `tests/integration/invitations-cours-particuliers-envoi.test.ts` (écritures, doublon,
+  renvoi et renvois simultanés, annulation, purge, sur la vraie base),
+  `src/routes/(protected)/dashboard/admin/cours-particuliers/__tests__/garde.test.ts` (prof non
+  élevé et élève refusés avant tout envoi, limite de débit), `src/lib/server/validation/__tests__/private-lessons.test.ts`,
   `src/lib/email-templates/__tests__/private-lesson-invitation.test.ts`,
   `src/routes/api/cron/invitations-cours-particulier/__tests__/route.test.ts`.
 

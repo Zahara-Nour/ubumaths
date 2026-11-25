@@ -28,8 +28,9 @@ import {
 	INVITATION_MAX_SENDS,
 	listOpenInvitations,
 	resendInvitation,
-	type SendOutcome
+	type RefusalReason
 } from '#lib/server/private-lessons/invitations.ts';
+import { checkPrivateLessonInvitationRateLimit } from '#lib/server/rateLimiter.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 // Constantes
@@ -40,11 +41,14 @@ const NO_SCHOOL_MESSAGE = 'Aucune école n’est réglée pour les cours particu
 const NO_YEAR_MESSAGE =
 	'L’école des cours particuliers n’a pas d’année scolaire en cours : créez-la avant d’inviter.';
 
-const REFUSALS: Record<Exclude<SendOutcome, { ok: true }>['reason'], string> = {
+const REFUSALS: Record<RefusalReason, string> = {
 	not_found: 'Invitation introuvable.',
 	ended: 'Cette invitation a déjà servi ou a été annulée.',
 	in_use: 'Le parent est en train de créer le compte : réessayez dans quelques minutes.',
-	cap: `Déjà ${INVITATION_MAX_SENDS} courriels pour cette invitation : annulez-la et créez-en une nouvelle.`
+	busy: 'L’invitation vient de changer : réessayez.',
+	cap: `Déjà ${INVITATION_MAX_SENDS} courriels pour cette invitation : annulez-la et créez-en une nouvelle.`,
+	duplicate:
+		'Une invitation est déjà en attente pour cet élève à cette adresse : utilisez « Renvoyer ».'
 };
 
 // Functions
@@ -84,13 +88,18 @@ export const actions: Actions = {
 
 		const formData = await request.formData();
 		const parsed = privateLessonInvitationCreateSchema.safeParse({
-			firstname: formData.get('firstname'),
-			parentEmail: formData.get('parentEmail'),
-			grade: formData.get('grade')
+			// Champ absent → chaîne vide : message en français de Zod, pas « Invalid input ».
+			firstname: formData.get('firstname') ?? '',
+			parentEmail: formData.get('parentEmail') ?? '',
+			grade: formData.get('grade') ?? ''
 		});
 		if (!parsed.success) {
 			return fail(400, { message: parsed.error.issues[0].message });
 		}
+
+		// Chaque essai envoie un courriel : limite avant toute écriture (décision 9).
+		const limit = await checkPrivateLessonInvitationRateLimit(adminUserId);
+		if (!limit.allowed) return fail(429, { message: limit.message });
 
 		const service = createServiceRoleClient();
 		try {
@@ -117,11 +126,14 @@ export const actions: Actions = {
 	},
 
 	resend: async ({ request, locals }) => {
-		await requireAdmin(locals);
+		const { adminUserId } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const parsed = privateLessonInvitationIdSchema.safeParse({ id: formData.get('id') });
 		if (!parsed.success) return fail(400, { message: 'Invitation invalide.' });
+
+		const limit = await checkPrivateLessonInvitationRateLimit(adminUserId);
+		if (!limit.allowed) return fail(429, { message: limit.message });
 
 		const service = createServiceRoleClient();
 		try {

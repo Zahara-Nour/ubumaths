@@ -555,10 +555,11 @@ pour de vrai ; `EMAIL_CAPTURE_DIR` change le dossier. Base distante (worktree sa
   `sveltekit()` depuis SvelteKit 3 : `regions: ['cdg1']`, runtime `nodejs22.x`) ; le `iad1` des réglages du projet n'est qu'un défaut remplacé. Fluid Compute actif.
 - `vercel.json` pose les en-têtes de cache : 30 jours pour `/fonts/` et `/upsilon-simulator/`, 1 jour
   (+ `stale-while-revalidate` 7 jours) pour les images, sons et CSS de `static/`.
-- `vercel.json` déclare **trois crons** : `/api/cron/riddle-of-the-day`, chaque jour à 00:05 UTC
+- `vercel.json` déclare **quatre crons** : `/api/cron/riddle-of-the-day`, chaque jour à 00:05 UTC
   (énigme du jour), `/api/cron/deleted-account-files`, le dimanche à 04:00 UTC (fichiers des
-  comptes supprimés), et `/api/cron/carnet-de-liaison`, chaque jour à 16:00 UTC (courriels du
-  carnet de liaison) — voir [serveur.md](../systeme/serveur.md). Vercel les appelle en GET
+  comptes supprimés), `/api/cron/carnet-de-liaison`, chaque jour à 16:00 UTC (courriels du
+  carnet de liaison), et `/api/cron/invitations-cours-particulier`, chaque jour à 03:30 UTC
+  (invitations de cours particulier finies depuis 30 jours) — voir [serveur.md](../systeme/serveur.md). Vercel les appelle en GET
   avec `Bearer CRON_SECRET` (variable définie en Production) ; ils ne tournent que sur le
   déploiement de production.
 - Speed Insights est branché dans `src/routes/+layout.svelte` ; relevé mensuel et diagnostic :

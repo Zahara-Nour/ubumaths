@@ -58,9 +58,17 @@ export interface PrivateLessonsSchool {
 
 export type SendOutcome =
 	| { ok: true; invitation: PrivateLessonInvitation; emailSent: boolean }
-	| { ok: false; reason: 'not_found' | 'ended' | 'in_use' | 'cap' };
+	| { ok: false; reason: RefusalReason };
 
-export type CancelOutcome = { ok: true } | { ok: false; reason: 'not_found' | 'ended' };
+/**
+ * - `ended` : utilisée ou annulée ; `in_use` : le parent crée le compte (réservation de moins
+ *   de 5 min) ; `busy` : changée entre la lecture et l'écriture (autre clic) ; `cap` :
+ *   5 courriels ; `duplicate` : une invitation ouverte existe pour cet enfant et cette adresse.
+ */
+export type RefusalReason = 'not_found' | 'ended' | 'in_use' | 'busy' | 'cap' | 'duplicate';
+
+export type CancelOutcome =
+	{ ok: true } | { ok: false; reason: Extract<RefusalReason, 'not_found' | 'ended' | 'in_use'> };
 
 export interface PurgeReport {
 	used: number;
@@ -103,6 +111,35 @@ function inDays(days: number, now: Date): string {
 /** Réservation absente ou périmée : le parent n'est pas en train de créer le compte. */
 function claimFreeFilter(now: Date): string {
 	return `claimed_at.is.null,claimed_at.lt.${new Date(now.getTime() - CLAIM_WINDOW_MS).toISOString()}`;
+}
+
+/** Réservation de moins de 5 minutes : le parent est en train de créer le compte. */
+function isClaimed(claimedAt: string | null, now: Date): boolean {
+	return claimedAt !== null && new Date(claimedAt).getTime() > now.getTime() - CLAIM_WINDOW_MS;
+}
+
+/**
+ * Pourquoi une écriture gardée n'a touché aucune ligne : relit l'invitation. `fallback` quand
+ * rien ne l'explique (elle a changé entre-temps, un autre clic l'a renouvelée).
+ */
+async function explainNoRow(
+	service: Client,
+	id: string,
+	schoolId: string,
+	now: Date,
+	fallback: 'busy' | 'ended'
+): Promise<'not_found' | 'ended' | 'in_use' | 'busy'> {
+	const { data, error } = await service
+		.from('private_lesson_invitations')
+		.select('used_at, cancelled_at, claimed_at')
+		.eq('id', id)
+		.eq('school_id', schoolId)
+		.maybeSingle();
+	if (error) throw new Error(`Invitation illisible : ${error.code ?? 'sans code'}`);
+	if (!data) return 'not_found';
+	if (data.used_at || data.cancelled_at) return 'ended';
+	if (isClaimed(data.claimed_at, now)) return 'in_use';
+	return fallback;
 }
 
 /**
@@ -180,7 +217,8 @@ async function sendAndRecord(
 		.select(INVITATION_COLUMNS);
 	if (error || !data || data.length === 0) {
 		// Le courriel est parti : on ne le dit pas raté. Seule la liste reste en retard.
-		logger.error(`[Invitation ${invitation.id}] Envoi non noté :`, error ?? 'aucune ligne');
+		// Le code seul : le détail d'une erreur de contrainte cite la ligne (prénom, adresse).
+		logger.error(`[Invitation ${invitation.id}] Envoi non noté : ${error?.code ?? 'aucune ligne'}`);
 		return { ok: true, invitation, emailSent: true };
 	}
 	return { ok: true, invitation: data[0], emailSent: true };
@@ -199,6 +237,20 @@ export async function createInvitation(
 	},
 	now: Date = new Date()
 ): Promise<SendOutcome> {
+	// Une seule invitation ouverte par enfant et par adresse : la suivante se fait par
+	// « Renvoyer » (plafond de 5 courriels), jamais par une nouvelle ligne.
+	const { data: open, error: openError } = await service
+		.from('private_lesson_invitations')
+		.select('id')
+		.eq('school_id', input.school.id)
+		.eq('parent_email', input.parentEmail)
+		.ilike('firstname', input.firstname)
+		.is('used_at', null)
+		.is('cancelled_at', null)
+		.limit(1);
+	if (openError) throw new Error(`Invitations illisibles : ${openError.code ?? 'sans code'}`);
+	if (open && open.length > 0) return { ok: false, reason: 'duplicate' };
+
 	const token = newToken();
 	const { data, error } = await service
 		.from('private_lesson_invitations')
@@ -229,21 +281,17 @@ export async function resendInvitation(
 	input: { id: string; school: { id: string; name: string } },
 	now: Date = new Date()
 ): Promise<SendOutcome> {
+	// L'empreinte n'est lue qu'ici, en service role, pour garder l'écriture : jamais rendue.
 	const { data: current, error: readError } = await service
 		.from('private_lesson_invitations')
-		.select(INVITATION_COLUMNS)
+		.select(`${INVITATION_COLUMNS}, token_hash`)
 		.eq('id', input.id)
 		.eq('school_id', input.school.id)
 		.maybeSingle();
 	if (readError) throw new Error(`Invitation illisible : ${readError.message}`);
 	if (!current) return { ok: false, reason: 'not_found' };
 	if (current.used_at || current.cancelled_at) return { ok: false, reason: 'ended' };
-	if (
-		current.claimed_at &&
-		new Date(current.claimed_at).getTime() > now.getTime() - CLAIM_WINDOW_MS
-	) {
-		return { ok: false, reason: 'in_use' };
-	}
+	if (isClaimed(current.claimed_at, now)) return { ok: false, reason: 'in_use' };
 	if (current.sent_count >= INVITATION_MAX_SENDS) return { ok: false, reason: 'cap' };
 
 	const token = newToken();
@@ -255,19 +303,29 @@ export async function resendInvitation(
 			email_sent_at: null
 		})
 		.eq('id', current.id)
+		// Deux « Renvoyer » simultanés : un seul trouve encore l'empreinte qu'il a lue.
+		.eq('token_hash', current.token_hash)
 		.eq('sent_count', current.sent_count)
 		.is('used_at', null)
 		.is('cancelled_at', null)
 		.or(claimFreeFilter(now))
 		.select(INVITATION_COLUMNS);
 	if (error) throw new Error(`Invitation non renouvelée : ${error.message}`);
-	// Changée entre la lecture et l'écriture (utilisée, annulée, renvoyée ailleurs).
-	if (!data || data.length === 0) return { ok: false, reason: 'ended' };
+	// Changée entre la lecture et l'écriture : dire pourquoi (utilisée, réservée, autre clic).
+	if (!data || data.length === 0) {
+		return {
+			ok: false,
+			reason: await explainNoRow(service, current.id, input.school.id, now, 'busy')
+		};
+	}
 
 	return sendAndRecord(service, send, data[0], token, input.school.name);
 }
 
-/** « Annuler » : le lien ne marche plus ; l'invitation quitte la liste. */
+/**
+ * « Annuler » : le lien ne marche plus ; l'invitation quitte la liste. Refusé pendant une
+ * réservation de moins de 5 min : la création du compte échouerait à sa dernière étape.
+ */
 export async function cancelInvitation(
 	service: Client,
 	input: { id: string; schoolId: string },
@@ -280,19 +338,14 @@ export async function cancelInvitation(
 		.eq('school_id', input.schoolId)
 		.is('used_at', null)
 		.is('cancelled_at', null)
+		.or(claimFreeFilter(now))
 		.select('id');
 	if (error) throw new Error(`Invitation non annulée : ${error.message}`);
 	if (data && data.length > 0) return { ok: true };
 
-	// Zéro ligne : inconnue, ou déjà finie (utilisée, annulée).
-	const { data: existing, error: readError } = await service
-		.from('private_lesson_invitations')
-		.select('id')
-		.eq('id', input.id)
-		.eq('school_id', input.schoolId)
-		.maybeSingle();
-	if (readError) throw new Error(`Invitation illisible : ${readError.message}`);
-	return { ok: false, reason: existing ? 'ended' : 'not_found' };
+	// Zéro ligne : inconnue, déjà finie, ou réservée par le parent.
+	const reason = await explainNoRow(service, input.id, input.schoolId, now, 'ended');
+	return { ok: false, reason: reason === 'busy' ? 'ended' : reason };
 }
 
 /**

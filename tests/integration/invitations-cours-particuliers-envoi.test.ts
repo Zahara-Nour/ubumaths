@@ -81,7 +81,14 @@ async function lireParLien(jeton: string): Promise<{ firstname: string } | null>
 	return data as { firstname: string } | null;
 }
 
-async function inviter(sender: InvitationEmailSender = expediteurOk, firstname = 'Lina') {
+/** Un prénom neuf par appel : une 2e invitation ouverte pour le même enfant est refusée. */
+let numero = 0;
+function prenomNeuf(): string {
+	numero += 1;
+	return `Enfant${'abcdefghijklmnopqrstuvwxyz'[numero % 26]}`;
+}
+
+async function inviter(sender: InvitationEmailSender = expediteurOk, firstname = prenomNeuf()) {
 	const outcome = await createInvitation(service, sender, {
 		school: ecole,
 		firstname,
@@ -186,7 +193,7 @@ describe('invitations de cours particulier : écritures du serveur (base locale)
 	describe('envoyer', () => {
 		it('courriel accepté : envoi noté, lien du courriel ouvert, auteur posé', async () => {
 			envoyes = [];
-			const outcome = await inviter();
+			const outcome = await inviter(expediteurOk, 'Lina');
 
 			expect(outcome.emailSent).toBe(true);
 			expect(envoyes).toHaveLength(1);
@@ -225,10 +232,38 @@ describe('invitations de cours particulier : écritures du serveur (base locale)
 		});
 	});
 
+	describe('une seule invitation ouverte par enfant et par adresse', () => {
+		it('même prénom (casse comprise) et même adresse : refusée, aucun courriel ; autre prénom : acceptée', async () => {
+			await inviter(expediteurOk, 'Léon');
+			envoyes = [];
+			for (const firstname of ['Léon', 'léon']) {
+				expect(
+					await createInvitation(service, expediteurOk, {
+						school: ecole,
+						firstname,
+						parentEmail: PARENT_EMAIL,
+						grade: '6',
+						createdBy: adminId
+					})
+				).toEqual({ ok: false, reason: 'duplicate' });
+			}
+			expect(envoyes).toHaveLength(0);
+			expect((await inviter(expediteurOk, 'Léonie')).emailSent).toBe(true);
+		});
+
+		it('après annulation, une nouvelle invitation est acceptée', async () => {
+			const { invitation } = await inviter(expediteurOk, 'Hugo');
+			expect(await cancelInvitation(service, { id: invitation.id, schoolId: ecole.id })).toEqual({
+				ok: true
+			});
+			expect((await inviter(expediteurOk, 'Hugo')).emailSent).toBe(true);
+		});
+	});
+
 	describe('renvoyer', () => {
 		it("nouveau lien : l'ancien ne s'ouvre plus, le nouveau oui ; envoi compté", async () => {
 			envoyes = [];
-			const { invitation } = await inviter();
+			const { invitation } = await inviter(expediteurOk, 'Mila');
 			const ancien = dernierJeton();
 
 			const outcome = await resendInvitation(service, expediteurOk, {
@@ -240,7 +275,7 @@ describe('invitations de cours particulier : écritures du serveur (base locale)
 			expect(nouveau).not.toBe(ancien);
 
 			expect(await lireParLien(ancien)).toBeNull();
-			expect(await lireParLien(nouveau)).toMatchObject({ firstname: 'Lina' });
+			expect(await lireParLien(nouveau)).toMatchObject({ firstname: 'Mila' });
 			expect((await ligne(invitation.id))?.sent_count).toBe(2);
 		});
 
@@ -284,6 +319,20 @@ describe('invitations de cours particulier : écritures du serveur (base locale)
 			expect(envoyes).toHaveLength(0);
 		});
 
+		it('deux « Renvoyer » simultanés : un seul passe, un seul courriel ; l’autre est « busy »', async () => {
+			const { invitation } = await inviter();
+			envoyes = [];
+			const r = () => resendInvitation(service, expediteurOk, { id: invitation.id, school: ecole });
+			const resultats = await Promise.all([r(), r()]);
+
+			expect(resultats.filter((x) => x.ok)).toHaveLength(1);
+			expect(resultats.filter((x) => !x.ok)).toEqual([{ ok: false, reason: 'busy' }]);
+			expect(envoyes).toHaveLength(1);
+			// Le courriel parti porte le lien qui s'ouvre.
+			expect(await lireParLien(dernierJeton())).not.toBeNull();
+			expect((await ligne(invitation.id))?.sent_count).toBe(2);
+		});
+
 		it('une réservation périmée (plus de 5 min) ne bloque pas le renvoi', async () => {
 			const id = await inviterALaMain({ claimed_at: ilYA(1 / 24) });
 			expect(await resendInvitation(service, expediteurOk, { id, school: ecole })).toMatchObject({
@@ -309,6 +358,20 @@ describe('invitations de cours particulier : écritures du serveur (base locale)
 			expect(await cancelInvitation(service, { id: invitation.id, schoolId: ecole.id })).toEqual({
 				ok: false,
 				reason: 'ended'
+			});
+		});
+
+		it('réservée il y a moins de 5 min : refusée (in_use) ; réservation périmée : annulée', async () => {
+			const reservee = await inviterALaMain({ claimed_at: ilYA(1 / (24 * 60)) });
+			expect(await cancelInvitation(service, { id: reservee, schoolId: ecole.id })).toEqual({
+				ok: false,
+				reason: 'in_use'
+			});
+			expect((await ligne(reservee))?.cancelled_at).toBeNull();
+
+			const perimee = await inviterALaMain({ claimed_at: ilYA(1 / 24) });
+			expect(await cancelInvitation(service, { id: perimee, schoolId: ecole.id })).toEqual({
+				ok: true
 			});
 		});
 

@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-25, PR 2 commitée (f056676d6f), revue de code et audit de sécurité lus, findings à corriger._
 
-- **État** : PR 2 (admin) écrite et commitée, NON poussée, sur `feat/invitation-cours-particulier-admin` : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien, sans migration) ; 13 tests d'intégration verts, tests unitaires verts, parcours inviter/renvoyer/annuler vu à l'écran (0 erreur de console) ; dernier `check:incremental` à 0 erreur avant la retouche du sélecteur de niveau · **Prochaine action** : corriger les findings de `code-reviewer` notés ci-dessous (« Revue de la PR 2 »), et ceux de `security-auditor` (« Audit de sécurité de la PR 2 », aucun bloquant), puis `check:incremental` + `types:cliquet`, push, push, PR, `pnpm pr:merger` ; puis PR 3 (page du parent `/auth/register/invitation/<jeton>`) · **En attente de David** : la page de confidentialité doit-elle citer la conservation des invitations (adresse du parent : 7 j + 30 j) ? · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à une page de la PR 3) ; base locale : réglage `is_private_lessons` posé à la main sur Akadada ; serveur de dev du worktree sur 5178 · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
+- **État** : PR 2 (admin) écrite et commitée, NON poussée, sur `feat/invitation-cours-particulier-admin` : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien, sans migration) ; 13 tests d'intégration verts, tests unitaires verts, parcours inviter/renvoyer/annuler vu à l'écran (0 erreur de console) ; dernier `check:incremental` à 0 erreur avant la retouche du sélecteur de niveau · **Prochaine action** : corriger les findings de `code-reviewer` notés ci-dessous (« Revue de la PR 2 »), et ceux de `security-auditor` (« Audit de sécurité de la PR 2 », aucun bloquant), puis `check:incremental` + `types:cliquet`, push, push, PR, `pnpm pr:merger` ; puis PR 3 (page du parent `/auth/register/invitation/<jeton>`) · **En attente de David** : rien (décision 9) · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à une page de la PR 3) ; base locale : réglage `is_private_lessons` posé à la main sur Akadada ; serveur de dev du worktree sur 5178 · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
 
 ## But
 
@@ -27,6 +27,13 @@ le compte, la classe et recueille CGU + consentement en une fois.
 8. **Conservation** (2026-11-25) : une invitation expirée, annulée ou utilisée est **effacée 30 jours
    après sa fin** (date d'expiration, d'annulation ou d'utilisation), par une tâche de nuit. Pendant
    ces 30 jours, une expirée reste dans la liste et peut être renvoyée. Codé avec la PR 2.
+
+9. **Revues de la PR 2** (2026-11-25) : David valide les corrections proposées (annuler refusé
+   pendant une réservation, un seul renvoi à la fois, vraie raison du refus, test de la garde,
+   refus d'une 2e invitation ouverte même enfant + même adresse, 20 envois/heure/admin, journal
+   sans la ligne, message Zod en français). Renvoi refusé par Brevo : l'ancien lien est mort,
+   assumé et écrit dans la doc. **Page de confidentialité** : une phrase sur la conservation des
+   invitations, livrée avec la PR 3.
 
 ## Phase 0 — comportements (validés le 2026-11-24)
 
