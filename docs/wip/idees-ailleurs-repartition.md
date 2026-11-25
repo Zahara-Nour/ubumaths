@@ -162,6 +162,11 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                               | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ---------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 4b3c1d88 Convertir des degrés en radians                               | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| f7194c9d Ramener un réel dans ]−π ; π]                                 | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| aad6c700 Lire le réel associé à un point du cercle                     | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| 679a2e3e Cosinus et sinus d'angles associés                            | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| ee4e2ac6 Calculer cos x connaissant sin x                              | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
 | 93147367 Déterminer la forme décimale d'une fraction                   | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 000368e1 Déterminer une forme fractionnaire                            | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 6fdcdda1 Définition par quotient                                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
@@ -198,6 +203,8 @@ de contenu appliquée en prod.
 | 74da1cd6 Positivité et intégration des inégalités                      | `idees-tle-integration`                                     | 2026-11-25 |                                      |
 | fc2ea212 Intégration par parties                                       | `idees-tle-integration`                                     | 2026-11-25 |                                      |
 | 6035aa61 Suite d'intégrales                                            | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| 57c73be1 Calculer une longueur ou un angle                             | `idees-3e-trigonometrie`                                    | 2026-11-25 |                                      |
+| dbd5debf Écrire cos, sin ou tan d'un angle                             | `idees-3e-trigonometrie`                                    | 2026-11-25 |                                      |
 
 ## Idées en attente
 
