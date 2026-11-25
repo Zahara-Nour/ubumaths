@@ -46,7 +46,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
-	cleanupAllTestData
+	cleanupAllTestData,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -315,6 +316,7 @@ describe('lecture seule rétroactive des fiches', () => {
 		await insert('worksheet_exercises', {
 			worksheet_id: ficheId,
 			exercise_id: exerciceId,
+			exercise_version_id: await latestTestVersionId(exerciceId),
 			position: 1
 		});
 		ficheHorsAnnee = await fiche('Fiche distribuée après la fin ZZ');

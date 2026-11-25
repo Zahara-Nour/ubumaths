@@ -40,6 +40,7 @@
  *   (`copyExerciseOrder`) et `shuffled: true`.
  */
 
+import { WORKSHEET_LINE_VERSION, withLineVersion } from '#lib/server/exercise-versions.ts';
 import { exerciseCapitalPairs } from '#lib/questions/capital-pairs.ts';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -195,7 +196,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const studentClass = (await fetchAssignmentClasses(locals.supabase, assignmentId))[0] ?? null;
 
 		// Fetch worksheet exercises with exercise data (R4: include variations, shared, resources)
-		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
+		const { data: worksheetLines, error: exercisesError } = await locals.supabase
 			.from('worksheet_exercises')
 			.select(
 				`
@@ -214,12 +215,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					title,
 					translations,
 					variables,
-					shared,
-					variations,
 					resources,
-					generic_functions,
 					topic
-				)
+				),
+				${WORKSHEET_LINE_VERSION}
 			`
 			)
 			.eq('worksheet_id', worksheet.id)
@@ -229,6 +228,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			logger.error('[API] Error fetching exercises:', exercisesError);
 			throw error(500, 'Erreur lors de la recuperation des exercices');
 		}
+		// Contenu : la version choisie par la fiche (ADR 0044), pas la dernière
+		const worksheetExercises = (worksheetLines ?? []).map((line) => withLineVersion(line));
 
 		// Fetch worksheet sections
 		const { data: sections, error: sectionsError } = await locals.supabase

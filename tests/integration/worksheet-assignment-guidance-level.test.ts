@@ -18,7 +18,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
-	cleanupAllTestData
+	cleanupAllTestData,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -99,6 +100,7 @@ describe('niveau de guidage d’une affectation', () => {
 		await insert('worksheet_exercises', {
 			worksheet_id: worksheetId,
 			exercise_id: exercise.id,
+			exercise_version_id: await latestTestVersionId(exercise.id),
 			position: 1
 		});
 

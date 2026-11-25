@@ -279,7 +279,10 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
   (`BACKUP_FORMAT = 'chiphre-backup'`, 50 Mo au plus, plafond par table dans `MAX_RECORDS`).
   Quatre tables : `exercises`, `exercise_templates`, `exercise_favorites`, `exercise_share_tokens`.
   Le titre anglais (`exercises.translations`) est sauvegardé et restauré ; une sauvegarde antérieure
-  à la colonne ne l'efface pas à la restauration.
+  à la colonne ne l'efface pas à la restauration. Les versions d'un exercice (ADR 0044) suivent
+  dans `versions` (export JSON et SQL) ; le contenu de premier niveau est celui de la dernière. À la
+  restauration, chaque version est écrite par numéro (une version plus récente que la sauvegarde
+  reste) ; une sauvegarde sans `versions` devient la version 1.
   Ce n'est **pas** une sauvegarde de la base : voir
   [procedure-restauration.md](../pratiques/procedure-restauration.md).
 - Page `src/routes/(protected)/dashboard/admin/settings/+page.svelte` : version de l'application et

@@ -24,7 +24,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	cleanupAllTestData,
-	createServiceRoleClient
+	createServiceRoleClient,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -126,6 +127,17 @@ describe('vue resources + recherche globale', () => {
 			]);
 		expect(exError).toBeNull();
 
+		// Le contenu vit dans la version 1 (ADR 0044) : une par exercice.
+		const { error: versionError } = await service.from('exercise_versions').insert(
+			EXERCISE_IDS.map((exercise_id) => ({
+				exercise_id,
+				number: 1,
+				created_by: teacherId,
+				variations: [{ label: 'default', statement_md: 'Combien font 2+2 ?', solution_md: '4' }]
+			}))
+		);
+		expect(versionError).toBeNull();
+
 		const { error: qError } = await service
 			.from('question_templates')
 			.insert([
@@ -151,6 +163,7 @@ describe('vue resources + recherche globale', () => {
 			id: WS_EXERCISE,
 			worksheet_id: WORKSHEET,
 			exercise_id: EX_PUBLIC,
+			exercise_version_id: await latestTestVersionId(EX_PUBLIC),
 			position: 3
 		});
 		expect(wsExError).toBeNull();

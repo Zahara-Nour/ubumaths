@@ -17,7 +17,8 @@ import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
 import {
 	createServiceRoleClient,
-	cleanupAllTestData
+	cleanupAllTestData,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -102,6 +103,7 @@ describe('une fiche distribuée s’ouvre', () => {
 		await insert('worksheet_exercises', {
 			worksheet_id: worksheetId,
 			exercise_id: exerciseId,
+			exercise_version_id: await latestTestVersionId(exerciseId),
 			position: 1
 		});
 		assignmentId = await insert('worksheet_assignments', {

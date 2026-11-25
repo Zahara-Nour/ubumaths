@@ -208,8 +208,8 @@ beforeAll(async () => {
 	);
 	worksheetId = id as string;
 	const rows = await sql(
-		`insert into public.worksheet_exercises (worksheet_id, exercise_id, position)
-		 values ($1, $2, 1), ($1, $2, 2) returning id, position`,
+		`insert into public.worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, position)
+		 values ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), 1), ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), 2) returning id, position`,
 		[worksheetId, exerciseId]
 	);
 	firstRowId = rows.find((row) => row.position === 1)?.id as string;
@@ -325,8 +325,10 @@ describe.each(OPEN)('par le lien du %s', (_, open) => {
 
 	it('le corrigé suit les mêmes règles qu’avant : le contenu de l’exercice tel qu’en base', async () => {
 		const [stored] = await sql(
-			`select id, title, variables, shared, variations, generic_functions
-			 from public.exercises where id = $1`,
+			`select e.id, e.title, e.variables, v.shared, v.variations, v.generic_functions
+			 from public.exercises e
+			 join public.exercise_versions v on v.exercise_id = e.id
+			 where e.id = $1 and v.number = 1`,
 			[exerciseId]
 		);
 		const fiche = await open();

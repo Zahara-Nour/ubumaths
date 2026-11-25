@@ -59,12 +59,29 @@ async function main() {
 	const cle = process.env.SUPABASE_SERVICE_ROLE_KEY;
 	if (!url || !cle) throw new Error('PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY manquants');
 	const supabase = createClient<Database>(url, cle);
-	const { data, error } = await supabase.from('exercises').select('id, variations');
-	if (error) throw new Error(`Lecture impossible : ${error.message}`);
+	// Toutes les versions de tous les exercices (ADR 0044). Clé de la v1 inchangée
+	// (`<exercice>/<niveau>/<champ>`) : une empreinte d'avant les versions se compare encore.
+	const data: { id: string; variations: unknown }[] = [];
+	for (let depuis = 0; ; depuis += 1000) {
+		const { data: page, error } = await supabase
+			.from('exercise_versions')
+			.select('exercise_id, number, variations')
+			.order('exercise_id')
+			.order('number')
+			.range(depuis, depuis + 999);
+		if (error) throw new Error(`Lecture impossible : ${error.message}`);
+		for (const v of page ?? []) {
+			data.push({
+				id: v.number === 1 ? v.exercise_id : `${v.exercise_id}@v${v.number}`,
+				variations: v.variations
+			});
+		}
+		if ((page ?? []).length < 1000) break;
+	}
 
 	const empreinte: Record<string, string> = {};
-	for (const e of data ?? []) {
-		(e.variations as Variation[]).forEach((v, k) => {
+	for (const e of data) {
+		((e.variations ?? []) as Variation[]).forEach((v, k) => {
 			const textes = {
 				s: v.statement_md,
 				c: v.solution_md,

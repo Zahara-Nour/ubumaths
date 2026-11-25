@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis les **migrations du dépôt**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-235 tables · 24 vues · 352 fonctions. Colonne suivie de `?` : peut être nulle.
+236 tables · 24 vues · 352 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (27)
 
@@ -240,7 +240,7 @@ Liens : `point_id` → `curriculum_points` · `student_id` → `profiles`
 
 `created_at` · `created_by?` · `id` · `name` · `slug?`
 
-## Questions et exercices (17)
+## Questions et exercices (18)
 
 ### `exercise_assignments`
 
@@ -283,6 +283,12 @@ Liens : `created_by` → `profiles` · `exercise_id` → `exercises`
 `created_at` · `created_by?` · `description?` · `id` · `is_system` · `template_data` · `title` · `updated_at`
 
 Liens : `created_by` → `profiles`
+
+### `exercise_versions`
+
+`created_at` · `created_by` · `exercise_id` · `generic_functions?` · `id` · `note?` · `number` · `shared?` · `updated_at` · `variations?`
+
+Liens : `created_by` → `profiles` · `exercise_id` → `exercises`
 
 ### `exercises`
 
@@ -492,9 +498,9 @@ Liens : `assignment_id` → `worksheet_assignments` · `reviewed_by` → `profil
 
 ### `worksheet_exercises`
 
-`answer_frame_lines?` · `correction_visible?` · `created_at` · `custom_instructions?` · `exercise_id` · `id` · `is_essential` · `points?` · `position` · `section_id?` · `translations?` · `updated_at` · `variant_config?` · `variant_mode?` · `variation_index?` · `worksheet_id`
+`answer_frame_lines?` · `correction_visible?` · `created_at` · `custom_instructions?` · `exercise_id` · `exercise_version_id` · `id` · `is_essential` · `points?` · `position` · `section_id?` · `translations?` · `updated_at` · `variant_config?` · `variant_mode?` · `variation_index?` · `worksheet_id`
 
-Liens : `exercise_id` → `exercises` · `section_id` → `worksheet_sections` · `worksheet_id` → `worksheets`
+Liens : `exercise_id` → `exercises` · `exercise_id, exercise_version_id` → `exercise_versions` · `section_id` → `worksheet_sections` · `worksheet_id` → `worksheets`
 
 ### `worksheet_instances`
 

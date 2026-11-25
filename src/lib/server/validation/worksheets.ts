@@ -780,6 +780,8 @@ export const worksheetExerciseResponseSchema = z.object({
 	id: z.string().uuid(),
 	worksheet_id: z.string().uuid(),
 	exercise_id: z.string().uuid(),
+	/** Version de l'exercice choisie par la fiche (ADR 0044) ; sans la clé, le schéma la retire */
+	exercise_version_id: z.string().uuid().optional(),
 	section_id: z.string().uuid().nullable(),
 	position: z.number().int(),
 	points: z.number().int().nullable(),

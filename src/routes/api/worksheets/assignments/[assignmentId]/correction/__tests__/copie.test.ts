@@ -18,6 +18,7 @@ import {
 	selectedColumns,
 	tableMock,
 	twoLevelExercise,
+	versionedLines,
 	type TableMock
 } from '#lib/server/worksheets/__tests__/table-mock.ts';
 import {
@@ -70,6 +71,12 @@ function exerciseWithoutVariables() {
 	};
 }
 
+/** Ancien contenu de la ligne d'`exercises` : périmé, il ne doit jamais sortir (ADR 0044) */
+const STALE = {
+	variations: [{ label: 'guided', statement_md: 'PERIME', solution_md: 'PERIME' }],
+	shared: null
+};
+
 function supabase(
 	guidanceLevel: string,
 	individualized: boolean,
@@ -84,6 +91,32 @@ function supabase(
 	/** L'élève choisi est-il nommément désigné par l'affectation ? */
 	studentAssigned = true
 ): TableMock {
+	// Les lignes sont données sous l'ancienne forme (contenu sur `exercise`) puis mises à la
+	// forme réelle : contenu sur `version`, ancien contenu périmé laissé sur `exercise`.
+	const worksheet = {
+		id: WORKSHEET_ID,
+		title: 'Fiche',
+		type: 'worksheet',
+		config: {},
+		worksheet_sections: [],
+		worksheet_exercises: [
+			{
+				id: WE_ID,
+				worksheet_id: WORKSHEET_ID,
+				exercise_id: twoLevelExercise().id,
+				section_id: null,
+				position: 1,
+				points: null,
+				custom_instructions: null,
+				translations: null,
+				variation_index: null,
+				exercise
+			}
+		],
+		...worksheetPatch
+	};
+	worksheet.worksheet_exercises = versionedLines(worksheet.worksheet_exercises, STALE) as never;
+
 	return tableMock(
 		{
 			worksheet_assignments: {
@@ -97,28 +130,7 @@ function supabase(
 					closes_at: null,
 					correction_release_mode: 'immediate',
 					status: 'active',
-					worksheet: {
-						id: WORKSHEET_ID,
-						title: 'Fiche',
-						type: 'worksheet',
-						config: {},
-						worksheet_sections: [],
-						worksheet_exercises: [
-							{
-								id: WE_ID,
-								worksheet_id: WORKSHEET_ID,
-								exercise_id: twoLevelExercise().id,
-								section_id: null,
-								position: 1,
-								points: null,
-								custom_instructions: null,
-								translations: null,
-								variation_index: null,
-								exercise
-							}
-						],
-						...worksheetPatch
-					}
+					worksheet
 				},
 				error: null
 			},
@@ -176,6 +188,8 @@ describe('Corrigé du prof : la copie de la classe', () => {
 		expect(body.exercises?.[0].statement).toBe(expected.statement);
 		expect(body.exercises?.[0].solution).toBe(expected.solution);
 		expect(body.exercises?.[0].solution).not.toContain('{{');
+		// Corrigé tiré de la VERSION de la ligne, jamais de l'ancien contenu de l'exercice
+		expect(JSON.stringify(body)).not.toContain('PERIME');
 		expect(mock.tablesRead).not.toContain('worksheet_instances');
 	});
 
