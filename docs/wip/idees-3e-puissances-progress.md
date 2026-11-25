@@ -7,15 +7,15 @@ https://claude.ai/artifact/LGpQYL1RscgPbBHoZRCUFA
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, migration de rangement générée (avant /clear)._
+_Mis à jour le 2026-11-25, PR de rangement ouverte._
 
-- **État** : contenu des 4 publiés en prod (`db:migrate` après #3148, avec les 2 migrations du
-  chat, go de David) ; N5 (dfe8ca79) et N6 (dc68386c) créés en brouillons en prod par David ;
-  migration de rangement générée et commitée (N5 → 4-015, N6 → 3-052), PR pas encore ouverte. · **Prochaine action** : preuve « rouge sans la migration » (`migrations-rangement-tags` sans le .sql : pile de test prise par d’autres sessions le 2026-11-25), PR, revue faite (`security-auditor` : rien),
-  merge, `db:migrate` (seule en attente), puis relecture des 2 brouillons et des variations dans
-  `/dev/modeles` · **En attente de David** : rien avant la relecture · **Pièges en cours** :
-  options de 3fe98dd9 changées, voir § Lot · **Worktree / branche** :
-  `../ubumaths-wt-idees-3e-puissances-rangement`, `feat/idees-3e-puissances-rangement`.
+- **État** : contenu des 4 publiés en prod ; N5 (dfe8ca79) et N6 (dc68386c) en brouillons en prod ;
+  migration de rangement (N5 → 4-015, N6 → 3-052) prouvée rouge sans le .sql, verte avec ; PR
+  ouverte. · **Prochaine action** : merge, `db:migrate` (vérifier qu'elle est seule en attente),
+  puis relecture des 2 brouillons et des variations dans `/dev/modeles` · **En attente de
+  David** : rien avant la relecture · **Pièges en cours** : options de 3fe98dd9 changées, voir §
+  Lot · **Worktree / branche** : `../ubumaths-wt-idees-3e-puissances-rangement`,
+  `feat/idees-3e-puissances-rangement`.
 
 ## Phase 0 (2026-11-25)
 
@@ -75,3 +75,5 @@ les 6 modèles.
 - `migration-rangement.ts` : N5 sous « Puissances : sens et écritures > définition » (4-015), N6
   sous « Puissances : calculs > quotient de puissances » (3-052). `garde-niveaux-tags` vert,
   `migrations-rangement-tags` vert, `security-auditor` : aucun finding.
+- Preuve rouge : `migrations-rangement-tags` sans le .sql → 5 échecs, tous sur 20261125163550 ;
+  avec → 111 verts.
