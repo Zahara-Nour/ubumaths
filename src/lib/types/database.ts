@@ -66,6 +66,7 @@ export type Database = {
 					id: string;
 					ip_address: unknown;
 					requested_at: string;
+					requested_by: string | null;
 					status: string;
 					storage_removed_at: string | null;
 					user_agent: string | null;
@@ -80,6 +81,7 @@ export type Database = {
 					id?: string;
 					ip_address?: unknown;
 					requested_at?: string;
+					requested_by?: string | null;
 					status: string;
 					storage_removed_at?: string | null;
 					user_agent?: string | null;
@@ -93,12 +95,35 @@ export type Database = {
 					id?: string;
 					ip_address?: unknown;
 					requested_at?: string;
+					requested_by?: string | null;
 					status?: string;
 					storage_removed_at?: string | null;
 					user_agent?: string | null;
 					user_id?: string | null;
 				};
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: 'account_deletion_audit_requested_by_fkey';
+						columns: ['requested_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'account_deletion_audit_requested_by_fkey';
+						columns: ['requested_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'account_deletion_audit_requested_by_fkey';
+						columns: ['requested_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
 			};
 			achievement_events: {
 				Row: {
