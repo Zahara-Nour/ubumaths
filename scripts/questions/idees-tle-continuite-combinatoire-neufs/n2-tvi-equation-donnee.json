@@ -1,0 +1,608 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Continuité > valeurs intermédiaires",
+		"point": "TSPE-430"
+	},
+	"title": "Théorème des valeurs intermédiaires sur une équation donnée",
+	"description": "Montrer qu'une équation écrite a au moins une solution dans un intervalle (h aux bornes, théorème des valeurs intermédiaires), puis exactement une quand h est strictement monotone",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On s'intéresse à l'équation $x^3={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:b==0||{{if:b>0|+{{b}}|{{b}}}}}}$ sur l'intervalle $\\left[{{m}}\\,;{{eval:m+1}}\\right]$. On pose, pour tout réel $x$, $h(x)=x^3-{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}$ ; la fonction $h$ est continue sur $\\mathbb{R}$ (c'est un polynôme).\n\n$h({{m}})=?$\n\n$h({{m1}})=?$\n\nQue permet de conclure le théorème des valeurs intermédiaires ?\n\n```choix\n- L'équation admet au moins une solution dans $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.\n- L'équation admet exactement une solution dans $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.\n- L'équation n'admet aucune solution dans $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.\n- Le théorème ne permet pas de conclure.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "m",
+					"expression": "-3..2"
+				},
+				{
+					"name": "m1",
+					"expression": "{{eval:m+1}}"
+				},
+				{
+					"name": "nb",
+					"expression": "{{eval:-b}}"
+				},
+				{
+					"name": "h0",
+					"expression": "{{eval:m^3-a*m-b}}"
+				},
+				{
+					"name": "h1",
+					"expression": "{{eval:m1^3-a*m1-b}}"
+				}
+			],
+			"conditions": ["h0*h1 < 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(h0)}}",
+							"message": "On a posé $h(x)=x^3-{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}$ : c'est $x^3$ moins le second membre, pas l'inverse.",
+							"label": "h écrit à l'envers"
+						},
+						{
+							"answer": "{{eval:abs(m)^3-a*m-b}}",
+							"message": "$({{m}})^3$ est négatif : le cube d'un nombre négatif est négatif.",
+							"label": "Cube d'un négatif"
+						},
+						{
+							"answer": "{{eval:m^3-a*m}}",
+							"message": "N'oublie pas le terme constant de $h$.",
+							"label": "Terme constant oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{h1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(h1)}}",
+							"message": "On a posé $h(x)=x^3-{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}$ : c'est $x^3$ moins le second membre, pas l'inverse.",
+							"label": "h écrit à l'envers"
+						},
+						{
+							"answer": "{{eval:abs(m1)^3-a*m1-b}}",
+							"message": "$({{m1}})^3$ est négatif : le cube d'un nombre négatif est négatif.",
+							"label": "Cube d'un négatif"
+						},
+						{
+							"answer": "{{eval:m1^3-a*m1}}",
+							"message": "N'oublie pas le terme constant de $h$.",
+							"label": "Terme constant oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h({{m}})=({{m}})^3-{{a}}\\times({{m}}){{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}={{h0}}$ et $h({{m1}})=({{m1}})^3-{{a}}\\times({{m1}}){{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}={{h1}}$.",
+					"$h$ est continue sur $\\left[{{m}}\\,;{{eval:m+1}}\\right]$ et $0$ est compris entre $h({{m}})$ et $h({{m1}})$ : d'après le théorème des valeurs intermédiaires, $h(x)=0$, c'est-à-dire l'équation, admet $\\textcolor{{{color:primary.0}}}{\\text{au moins une solution}}$ dans $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.",
+					"Le théorème ne dit rien du nombre exact de solutions : pour l'unicité, il faut aussi que $h$ soit strictement monotone."
+				]
+			},
+			"hint": "Calcule $h$ aux deux bornes et regarde leurs signes : $0$ est-il entre les deux ?"
+		},
+		{
+			"statement": "On s'intéresse à l'équation $\\mathrm{e}^x=x+{{a}}$ sur l'intervalle $\\left[-{{a}}\\,;0\\right]$. On pose, pour tout réel $x$, $h(x)=\\mathrm{e}^x-x-{{a}}$ ; la fonction $h$ est continue sur $\\mathbb{R}$.\n\nDonne les valeurs exactes.\n\n$h(-{{a}})=?$\n\n$h(0)=?$\n\nQue permet de conclure le théorème des valeurs intermédiaires ?\n\n```choix\n- L'équation admet au moins une solution dans $\\left[-{{a}}\\,;0\\right]$.\n- L'équation admet exactement une solution dans $\\left[-{{a}}\\,;0\\right]$.\n- L'équation n'admet aucune solution dans $\\left[-{{a}}\\,;0\\right]$.\n- Le théorème ne permet pas de conclure.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathrm{e}^{-{{a}}}",
+					"expectedErrors": [
+						{
+							"answer": "-\\mathrm{e}^{ {{a}} }",
+							"message": "$\\mathrm{e}^{-{{a}}}=\\dfrac{1}{\\mathrm{e}^{ {{a}} }}$ : c'est un nombre positif.",
+							"label": "e^(−a) pris pour −e^a"
+						},
+						{
+							"answer": "\\mathrm{e}^{-{{a}}}-{{eval:2*a}}",
+							"message": "$-x$ vaut $+{{a}}$ quand $x=-{{a}}$.",
+							"label": "Signe de −x"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:1-a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-a}}",
+							"message": "$\\mathrm{e}^0=1$, pas $0$.",
+							"label": "e⁰ = 0"
+						},
+						{
+							"answer": "{{eval:a-1}}",
+							"message": "$h(0)=\\mathrm{e}^0-0-{{a}}$ : attention au signe.",
+							"label": "Signe"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h(-{{a}})=\\mathrm{e}^{-{{a}}}-(-{{a}})-{{a}}=\\mathrm{e}^{-{{a}}}$, qui est positif, et $h(0)=\\mathrm{e}^0-0-{{a}}={{eval:1-a}}$, qui est négatif.",
+					"$h$ est continue sur $\\left[-{{a}}\\,;0\\right]$ et $0$ est compris entre $h(0)$ et $h(-{{a}})$ : d'après le théorème des valeurs intermédiaires, l'équation admet $\\textcolor{{{color:primary.0}}}{\\text{au moins une solution}}$ dans $\\left[-{{a}}\\,;0\\right]$."
+				]
+			},
+			"hint": "Remplace $x$ par chaque borne dans $h(x)$, puis compare les signes obtenus."
+		},
+		{
+			"statement": "On s'intéresse à l'équation $x-\\cos x={{k}}$ sur l'intervalle $\\left[0\\,;\\dfrac{\\pi}{2}\\right]$. On pose, pour tout réel $x$, $h(x)=x-\\cos x-{{k}}$ ; la fonction $h$ est continue sur $\\mathbb{R}$.\n\nDonne les valeurs exactes.\n\n$h(0)=?$\n\n$h\\left(\\dfrac{\\pi}{2}\\right)=?$\n\nQue permet de conclure le théorème des valeurs intermédiaires ?\n\n```choix\n- L'équation admet au moins une solution dans $\\left[0\\,;\\dfrac{\\pi}{2}\\right]$.\n- L'équation admet exactement une solution dans $\\left[0\\,;\\dfrac{\\pi}{2}\\right]$.\n- L'équation n'admet aucune solution dans $\\left[0\\,;\\dfrac{\\pi}{2}\\right]$.\n- Le théorème ne permet pas de conclure.\n```",
+			"variables": [
+				{
+					"name": "kn",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "{{eval:kn/4}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-1-kn/4}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-kn/4}}",
+							"message": "$\\cos 0=1$, pas $0$.",
+							"label": "cos 0 = 0"
+						},
+						{
+							"answer": "{{eval:1-kn/4}}",
+							"message": "$h(0)=0-\\cos 0-{{k}}$ : on retire $\\cos 0$.",
+							"label": "Signe de cos 0"
+						},
+						{
+							"answer": "{{eval:-1+kn/4}}",
+							"message": "On retire ${{k}}$ : $h(0)=-1-{{k}}$.",
+							"label": "Signe de k"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "\\frac{\\pi}{2}-{{k}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "\\frac{\\pi}{2}-1-{{k}}",
+							"message": "$\\cos\\dfrac{\\pi}{2}=0$, pas $1$.",
+							"label": "cos(π/2) = 1"
+						},
+						{
+							"answer": "\\frac{\\pi}{2}+{{k}}",
+							"message": "On retire ${{k}}$ : attention au signe.",
+							"label": "Signe de k"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h(0)=0-\\cos 0-{{k}}={{eval:-1-kn/4}}$ et $h\\left(\\dfrac{\\pi}{2}\\right)=\\dfrac{\\pi}{2}-\\cos\\dfrac{\\pi}{2}-{{k}}=\\dfrac{\\pi}{2}-{{k}}$, qui est positif car $\\dfrac{\\pi}{2}\\approx 1{,}57$.",
+					"$h$ est continue sur $\\left[0\\,;\\dfrac{\\pi}{2}\\right]$ et $0$ est compris entre $h(0)$ et $h\\left(\\dfrac{\\pi}{2}\\right)$ : d'après le théorème des valeurs intermédiaires, l'équation admet $\\textcolor{{{color:primary.0}}}{\\text{au moins une solution}}$ dans $\\left[0\\,;\\dfrac{\\pi}{2}\\right]$."
+				]
+			},
+			"hint": "Utilise $\\cos 0$ et $\\cos\\dfrac{\\pi}{2}$, puis compare les signes de $h$ aux bornes."
+		},
+		{
+			"statement": "On s'intéresse à l'équation $x^3={{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:b==0||{{if:b>0|+{{b}}|{{b}}}}}}$ sur l'intervalle $\\left[{{m}}\\,;{{eval:m+1}}\\right]$. On pose, pour tout réel $x$, $h(x)=x^3-{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}$ ; la fonction $h$ est continue sur $\\mathbb{R}$ (c'est un polynôme).\n\n$h({{m}})=?$\n\n$h({{m1}})=?$\n\nQuel est le sens de variation de $h$ sur $\\left[{{m}}\\,;{{eval:m+1}}\\right]$ ?\n\n```choix\n- $h$ est strictement croissante sur $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.\n- $h$ est strictement décroissante sur $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.\n- $h$ n'est pas monotone sur $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.\n```\n\nCombien de solutions l'équation admet-elle dans $\\left[{{m}}\\,;{{eval:m+1}}\\right]$ ?\n\n```choix\n- Exactement une.\n- Au moins deux.\n- Aucune.\n- On ne peut pas savoir avec ces informations.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "m",
+					"expression": "-3..2"
+				},
+				{
+					"name": "m1",
+					"expression": "{{eval:m+1}}"
+				},
+				{
+					"name": "nb",
+					"expression": "{{eval:-b}}"
+				},
+				{
+					"name": "h0",
+					"expression": "{{eval:m^3-a*m-b}}"
+				},
+				{
+					"name": "h1",
+					"expression": "{{eval:m1^3-a*m1-b}}"
+				},
+				{
+					"name": "lo",
+					"expression": "{{eval:min(m^2,m1^2)}}"
+				},
+				{
+					"name": "hi",
+					"expression": "{{eval:max(m^2,m1^2)}}"
+				},
+				{
+					"name": "sd",
+					"expression": "{{eval:(1-sign(3*lo-a))/2}}"
+				}
+			],
+			"conditions": ["h0*h1 < 0", "(3*lo-a)*(3*hi-a) > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(h0)}}",
+							"message": "On a posé $h(x)=x^3-{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}$ : c'est $x^3$ moins le second membre, pas l'inverse.",
+							"label": "h écrit à l'envers"
+						},
+						{
+							"answer": "{{eval:abs(m)^3-a*m-b}}",
+							"message": "$({{m}})^3$ est négatif : le cube d'un nombre négatif est négatif.",
+							"label": "Cube d'un négatif"
+						},
+						{
+							"answer": "{{eval:m^3-a*m}}",
+							"message": "N'oublie pas le terme constant de $h$.",
+							"label": "Terme constant oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{h1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(h1)}}",
+							"message": "On a posé $h(x)=x^3-{{if:a==1||{{if:a==-1|-|{{a}}}}}}x{{if:nb==0||{{if:nb>0|+{{nb}}|{{nb}}}}}}$ : c'est $x^3$ moins le second membre, pas l'inverse.",
+							"label": "h écrit à l'envers"
+						},
+						{
+							"answer": "{{eval:abs(m1)^3-a*m1-b}}",
+							"message": "$({{m1}})^3$ est négatif : le cube d'un nombre négatif est négatif.",
+							"label": "Cube d'un négatif"
+						},
+						{
+							"answer": "{{eval:m1^3-a*m1}}",
+							"message": "N'oublie pas le terme constant de $h$.",
+							"label": "Terme constant oublié"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{sd}}"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h({{m}})={{h0}}$ et $h({{m1}})={{h1}}$ : $0$ est compris entre les deux.",
+					"$h'(x)=3x^2-{{a}}$. Pour $x$ dans $\\left[{{m}}\\,;{{eval:m+1}}\\right]$, $x^2$ est entre ${{lo}}$ et ${{hi}}$, donc $3x^2-{{a}}$ est entre ${{eval:3*lo-a}}$ et ${{eval:3*hi-a}}$ : $h'(x){{if:sd==0|>|<}}0$, $h$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:sd==0|croissante|décroissante}}}}$ sur $\\left[{{m}}\\,;{{eval:m+1}}\\right]$.",
+					"$h$ est continue et strictement monotone sur $\\left[{{m}}\\,;{{eval:m+1}}\\right]$, et $0$ est compris entre $h({{m}})$ et $h({{m1}})$ : l'équation admet $\\textcolor{{{color:primary.0}}}{\\text{exactement une solution}}$ dans $\\left[{{m}}\\,;{{eval:m+1}}\\right]$ (corollaire du théorème des valeurs intermédiaires)."
+				]
+			},
+			"hint": "Calcule $h'(x)$ et étudie son signe sur l'intervalle ; combine avec les signes de $h$ aux bornes."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N2 a : x³ = 2x + 1 sur [1 ; 2]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "3", "0"]
+		},
+		{
+			"description": "N2 a : h écrit à l'envers",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On a posé $h\\left( x \\right) = x^3 - 2 x - 1$ : c'est $x^3$ moins le second membre, pas l'inverse."
+			},
+			"answers": ["2", "3", "0"]
+		},
+		{
+			"description": "N2 a : terme constant oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "N'oublie pas le terme constant de $h$."
+			},
+			"answers": ["-1", "3", "0"]
+		},
+		{
+			"description": "N2 a : exactement une (unicité non justifiée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "3", "1"]
+		},
+		{
+			"description": "N2 a : on ne peut pas conclure",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "3", "3"]
+		},
+		{
+			"description": "N2 a : x³ = 3x − 1 sur [−2 ; −1]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"m": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "3", "0"]
+		},
+		{
+			"description": "N2 a : cube d'un négatif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"m": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\left( -2 \\right)^3$ est négatif : le cube d'un nombre négatif est négatif."
+			},
+			"answers": ["15", "3", "0"]
+		},
+		{
+			"description": "N2 b : a = 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\mathrm{e}^{-3}", "-2", "0"]
+		},
+		{
+			"description": "N2 b : 1/e³",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{e^{3}}", "-2", "0"]
+		},
+		{
+			"description": "N2 b : −e³",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\mathrm{e}^{-3}=\\dfrac{1}{\\mathrm{e}^{ 3 }}$ : c'est un nombre positif."
+			},
+			"answers": ["-e^{3}", "-2", "0"]
+		},
+		{
+			"description": "N2 b : signe de −x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-x$ vaut $+3$ quand $x = -3$."
+			},
+			"answers": ["e^{-3}-6", "-2", "0"]
+		},
+		{
+			"description": "N2 b : e⁰ = 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\mathrm{e}^0=1$, pas $0$."
+			},
+			"answers": ["e^{-3}", "-3", "0"]
+		},
+		{
+			"description": "N2 b : aucune solution",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["e^{-2}", "-1", "2"]
+		},
+		{
+			"description": "N2 c : k = 1/2",
+			"variationIndex": 2,
+			"variables": {
+				"kn": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{3}{2}", "\\frac{\\pi}{2}-\\frac{1}{2}", "0"]
+		},
+		{
+			"description": "N2 c : k = 1/2, h(0) décimal",
+			"variationIndex": 2,
+			"variables": {
+				"kn": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1{,}5", "\\frac{\\pi}{2}-\\frac{1}{2}", "0"]
+		},
+		{
+			"description": "N2 c : cos 0 = 0",
+			"variationIndex": 2,
+			"variables": {
+				"kn": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\cos 0=1$, pas $0$."
+			},
+			"answers": ["-\\frac{1}{2}", "\\frac{\\pi}{2}-\\frac{1}{2}", "0"]
+		},
+		{
+			"description": "N2 c : cos(π/2) = 1",
+			"variationIndex": 2,
+			"variables": {
+				"kn": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\cos\\dfrac{\\pi}{2}=0$, pas $1$."
+			},
+			"answers": ["-\\frac{5}{4}", "\\frac{\\pi}{2}-\\frac{5}{4}", "0"]
+		},
+		{
+			"description": "N2 c : exactement une",
+			"variationIndex": 2,
+			"variables": {
+				"kn": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "\\frac{\\pi}{2}-1", "1"]
+		},
+		{
+			"description": "N2 d : croissante, une solution",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "3", "0", "0"]
+		},
+		{
+			"description": "N2 d : décroissante, une solution",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"m": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "-1", "1", "0"]
+		},
+		{
+			"description": "N2 d : sens de variation faux",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"m": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "-1", "0", "0"]
+		},
+		{
+			"description": "N2 d : au moins deux",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "3", "0", "1"]
+		},
+		{
+			"description": "N2 d : on ne peut pas savoir",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"m": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2", "3", "0", "3"]
+		}
+	]
+}

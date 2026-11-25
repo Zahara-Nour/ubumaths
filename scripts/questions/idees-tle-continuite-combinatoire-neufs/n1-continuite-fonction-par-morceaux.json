@@ -1,0 +1,510 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Continuité > continuité en un point",
+		"point": "TSPE-425"
+	},
+	"title": "Fonction définie par morceaux : continuité en a",
+	"description": "Calculer les limites à gauche et à droite et l'image en a d'une fonction définie par morceaux pour décider de sa continuité en a, ou trouver le paramètre qui la rend continue",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par\n\n$$f(x)=\\begin{cases}{{if:p1==1||{{if:p1==-1|-|{{p1}}}}}}x{{if:q1==0||{{if:q1>0|+{{q1}}|{{q1}}}}}} & \\text{si } x{{if:s==0|\\leqslant|<}}{{a}}\\\\{{if:p2==1||{{if:p2==-1|-|{{p2}}}}}}x{{if:q2==0||{{if:q2>0|+{{q2}}|{{q2}}}}}} & \\text{si } x{{if:s==0|>|\\geqslant}}{{a}}\\end{cases}$$\n\nCalcule les deux limites de $f$ en ${{a}}$, puis $f({{a}})$.\n\n$\\displaystyle\\lim_{x\\to {{a}},\\ x<{{a}}}f(x)=?$\n\n$\\displaystyle\\lim_{x\\to {{a}},\\ x>{{a}}}f(x)=?$\n\n$f({{a}})=?$\n\nQue peut-on en conclure ?\n\n```choix\n- $f$ est continue en ${{a}}$.\n- $f$ n'est pas continue en ${{a}}$.\n- On ne peut pas conclure sans tracer la courbe de $f$.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "p2",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "L1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "0|1"
+				},
+				{
+					"name": "d",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "L2",
+					"expression": "{{eval:L1+c*d}}"
+				},
+				{
+					"name": "q1",
+					"expression": "{{eval:L1-p1*a}}"
+				},
+				{
+					"name": "q2",
+					"expression": "{{eval:L2-p2*a}}"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "fa",
+					"expression": "{{eval:L1+s*(L2-L1)}}"
+				}
+			],
+			"conditions": ["p1 != p2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{L2}}",
+							"message": "Pour $x<{{a}}$, c'est la première expression qu'il faut utiliser.",
+							"label": "Branche de droite utilisée"
+						},
+						{
+							"answer": "{{q1}}",
+							"message": "Remplace $x$ par ${{a}}$ dans ${{if:p1==1||{{if:p1==-1|-|{{p1}}}}}}x{{if:q1==0||{{if:q1>0|+{{q1}}|{{q1}}}}}}$, pas par $0$.",
+							"label": "x remplacé par 0"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{L2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{L1}}",
+							"message": "Pour $x>{{a}}$, c'est la deuxième expression qu'il faut utiliser.",
+							"label": "Branche de gauche utilisée"
+						},
+						{
+							"answer": "{{q2}}",
+							"message": "Remplace $x$ par ${{a}}$ dans ${{if:p2==1||{{if:p2==-1|-|{{p2}}}}}}x{{if:q2==0||{{if:q2>0|+{{q2}}|{{q2}}}}}}$, pas par $0$.",
+							"label": "x remplacé par 0"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{fa}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:L2-s*(L2-L1)}}",
+							"message": "Regarde la ligne où l'inégalité est large : c'est elle qui contient $x={{a}}$.",
+							"label": "Mauvaise branche pour f(a)"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x<{{a}}$, $f(x)={{if:p1==1||{{if:p1==-1|-|{{p1}}}}}}x{{if:q1==0||{{if:q1>0|+{{q1}}|{{q1}}}}}}$ : une fonction affine est continue, donc $\\displaystyle\\lim_{x\\to {{a}},\\ x<{{a}}}f(x)={{p1}}\\times({{a}}){{if:q1==0||{{if:q1>0|+{{q1}}|{{q1}}}}}}={{L1}}$.",
+					"Pour $x>{{a}}$, $f(x)={{if:p2==1||{{if:p2==-1|-|{{p2}}}}}}x{{if:q2==0||{{if:q2>0|+{{q2}}|{{q2}}}}}}$, donc $\\displaystyle\\lim_{x\\to {{a}},\\ x>{{a}}}f(x)={{p2}}\\times({{a}}){{if:q2==0||{{if:q2>0|+{{q2}}|{{q2}}}}}}={{L2}}$.",
+					"$x={{a}}$ relève de la {{if:s==0|première|deuxième}} ligne : $f({{a}})={{fa}}$.",
+					"{{if:c==0|Les deux limites sont égales à $f({{a}})$ : $\\textcolor{{{color:primary.0}}}{f\\text{ est continue en }{{a}}}$.|Les deux limites sont différentes : $\\textcolor{{{color:primary.0}}}{f\\text{ n'est pas continue en }{{a}}}$ (sa courbe fait un saut).}}"
+				]
+			},
+			"hint": "Pour chaque limite, utilise l'expression valable de ce côté de ${{a}}$ ; pour $f({{a}})$, cherche la ligne dont l'inégalité contient l'égalité."
+		},
+		{
+			"statement": "Soit $m$ un réel et $f$ la fonction définie sur $\\mathbb{R}$ par\n\n$$f(x)=\\begin{cases}x^2+m & \\text{si } x\\leqslant {{a}}\\\\{{if:p==1||{{if:p==-1|-|{{p}}}}}}x{{if:q==0||{{if:q>0|+{{q}}|{{q}}}}}} & \\text{si } x>{{a}}\\end{cases}$$\n\nDétermine la valeur de $m$ pour laquelle $f$ est continue en ${{a}}$.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*a+q-a^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*a+q+a^2}}",
+							"message": "On veut ${{eval:a^2}}+m={{eval:p*a+q}}$ : on retire ${{eval:a^2}}$ des deux côtés.",
+							"label": "Signe de a²"
+						},
+						{
+							"answer": "{{eval:p*a+q}}",
+							"message": "En $x={{a}}$, la première expression vaut $({{a}})^2+m$, pas $m$.",
+							"label": "Carré oublié"
+						},
+						{
+							"answer": "{{eval:q-a^2}}",
+							"message": "La limite à droite est ${{p}}\\times({{a}}){{if:q==0||{{if:q>0|+{{q}}|{{q}}}}}}$ : n'oublie pas le terme en $x$.",
+							"label": "Terme en x oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est continue en ${{a}}$ si $\\displaystyle\\lim_{x\\to {{a}},\\ x>{{a}}}f(x)=f({{a}})$ (à gauche, $f(x)=x^2+m$ est continue et vaut $f({{a}})$ en ${{a}}$).",
+					"$f({{a}})=({{a}})^2+m={{eval:a^2}}+m$ et $\\displaystyle\\lim_{x\\to {{a}},\\ x>{{a}}}f(x)={{p}}\\times({{a}}){{if:q==0||{{if:q>0|+{{q}}|{{q}}}}}}={{eval:p*a+q}}$.",
+					"${{eval:a^2}}+m={{eval:p*a+q}}\\iff m=\\textcolor{{{color:primary.0}}}{ {{eval:p*a+q-a^2}} }$."
+				]
+			},
+			"hint": "Écris que la limite à droite en ${{a}}$ est égale à $f({{a}})$, puis résous l'équation en $m$."
+		},
+		{
+			"statement": "Soit $m$ un réel et $f$ la fonction définie sur $\\mathbb{R}$ par\n\n$$f(x)=\\begin{cases}\\mathrm{e}^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+m & \\text{si } x<0\\\\x^2{{if:p>0|+}}{{if:p==1||{{if:p==-1|-|{{p}}}}}}x{{if:c==0||{{if:c>0|+{{c}}|{{c}}}}}} & \\text{si } x\\geqslant 0\\end{cases}$$\n\nDétermine la valeur de $m$ pour laquelle $f$ est continue en $0$.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["c != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c-1}}",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}",
+							"message": "$\\mathrm{e}^0=1$, pas $0$.",
+							"label": "e⁰ = 0"
+						},
+						{
+							"answer": "{{eval:c+1}}",
+							"message": "On veut $1+m={{c}}$ : on retire $1$ des deux côtés.",
+							"label": "Signe"
+						},
+						{
+							"answer": "{{eval:1-c}}",
+							"message": "On veut $1+m={{c}}$, donc $m={{c}}-1$ : l'ordre de la soustraction compte.",
+							"label": "Soustraction à l'envers"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(0)=0^2+{{p;()}}\\times 0{{if:c==0||{{if:c>0|+{{c}}|{{c}}}}}}={{c}}$.",
+					"À gauche, $x\\mapsto \\mathrm{e}^{{{if:k==1||{{if:k==-1|-|{{k}}}}}}x}+m$ est continue, donc $\\displaystyle\\lim_{x\\to 0,\\ x<0}f(x)=\\mathrm{e}^{0}+m=1+m$.",
+					"$f$ est continue en $0$ si $1+m={{c}}$, soit $m=\\textcolor{{{color:primary.0}}}{ {{eval:c-1}} }$."
+				]
+			},
+			"hint": "Calcule $f(0)$ et la limite de $f$ en $0$ par la gauche ; que vaut $\\mathrm{e}^0$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N1 a : saut, x ⩽ 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p1": "2",
+				"p2": "-1",
+				"L1": "3",
+				"c": "1",
+				"d": "-2",
+				"s": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3", "1", "3", "1"]
+		},
+		{
+			"description": "N1 a : branche de droite pour la limite à gauche",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p1": "2",
+				"p2": "-1",
+				"L1": "3",
+				"c": "1",
+				"d": "-2",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour $x < 1$, c'est la première expression qu'il faut utiliser."
+			},
+			"answers": ["1", "1", "3", "1"]
+		},
+		{
+			"description": "N1 a : branche de gauche pour la limite à droite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p1": "2",
+				"p2": "-1",
+				"L1": "3",
+				"c": "1",
+				"d": "-2",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour $x > 1$, c'est la deuxième expression qu'il faut utiliser."
+			},
+			"answers": ["3", "3", "3", "1"]
+		},
+		{
+			"description": "N1 a : x remplacé par 0 à droite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p1": "2",
+				"p2": "-1",
+				"L1": "3",
+				"c": "1",
+				"d": "-2",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Remplace $x$ par $1$ dans $-x + 2$, pas par $0$."
+			},
+			"answers": ["3", "2", "3", "1"]
+		},
+		{
+			"description": "N1 a : f(a) pris du côté exclu",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p1": "2",
+				"p2": "-1",
+				"L1": "3",
+				"c": "1",
+				"d": "-2",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde la ligne où l'inégalité est large : c'est elle qui contient $x = 1$."
+			},
+			"answers": ["3", "1", "1", "1"]
+		},
+		{
+			"description": "N1 a : continue alors qu'il y a un saut",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p1": "2",
+				"p2": "-1",
+				"L1": "3",
+				"c": "1",
+				"d": "-2",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3", "1", "3", "0"]
+		},
+		{
+			"description": "N1 a : on ne peut pas conclure",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"p1": "2",
+				"p2": "-1",
+				"L1": "3",
+				"c": "1",
+				"d": "-2",
+				"s": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3", "1", "3", "2"]
+		},
+		{
+			"description": "N1 a : continue, x ⩾ −1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"p1": "1",
+				"p2": "2",
+				"L1": "2",
+				"c": "0",
+				"d": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "2", "2", "0"]
+		},
+		{
+			"description": "N1 a : pas continue alors que tout est égal",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"p1": "1",
+				"p2": "2",
+				"L1": "2",
+				"c": "0",
+				"d": "1",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "2", "2", "1"]
+		},
+		{
+			"description": "N1 b : a = 2, p = 3, q = −1 → m = 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"q": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "N1 b : signe de a²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"q": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On veut $4 + m = 5$ : on retire $4$ des deux côtés."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "N1 b : carré oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"q": "-1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En $x = 2$, la première expression vaut $2^2 + m$, pas $m$."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "N1 b : terme en x oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"q": "-1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-5"]
+		},
+		{
+			"description": "N1 b : a = −1, p = −2, q = 3 → m = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"p": "-2",
+				"q": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "N1 c : c = 4 → m = 3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"p": "-3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "N1 c : e⁰ = 0",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"p": "-3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\mathrm{e}^0=1$, pas $0$."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "N1 c : signe",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"p": "-3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On veut $1 + m = 4$ : on retire $1$ des deux côtés."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "N1 c : soustraction à l'envers",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"p": "-3",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-3"]
+		},
+		{
+			"description": "N1 c : c = −2 → m = −3",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-1",
+				"p": "1",
+				"c": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3"]
+		}
+	]
+}

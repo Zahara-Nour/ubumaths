@@ -1,0 +1,403 @@
+{
+	"rangement": {
+		"noeud": "Dénombrement > Problèmes de dénombrement",
+		"point": "TSPE-319"
+	},
+	"title": "Probabilité par dénombrement",
+	"description": "Calculer une probabilité en situation d'équiprobabilité en dénombrant les cas favorables et les cas possibles (tirages simultanés, mains de cartes, codes)",
+	"grades": ["T_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Un sac contient ${{n}}$ jetons portant chacun une lettre différente : ${{v}}$ voyelles et ${{eval:n-v}}$ consonnes. On tire au hasard et simultanément $2$ jetons du sac.\n\nQuelle est la probabilité d'obtenir une voyelle et une consonne ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "7..10"
+				},
+				{
+					"name": "v",
+					"expression": "3..{{eval:n-3}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*(n-v)/binom(n,2)}}",
+					"acceptCombinatorialNotation": true,
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*v*(n-v)/binom(n,2)}}",
+							"message": "Le tirage est simultané : les cas possibles sont des paires, sans ordre ; ne compte pas l'ordre dans les cas favorables seulement.",
+							"label": "Ordre compté au numérateur"
+						},
+						{
+							"answer": "{{eval:v*(n-v)/n^2}}",
+							"message": "On tire $2$ jetons différents, sans remise : il y a $\\dbinom{ {{n}} }{2}$ tirages possibles, pas ${{n}}^2$.",
+							"label": "Tirage avec remise"
+						},
+						{
+							"answer": "{{eval:v*(n-v)/(n*(n-1))}}",
+							"message": "Au dénominateur, tu comptes les tirages ordonnés ; compte-les sans ordre, comme au numérateur.",
+							"label": "Ordre compté au dénominateur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les tirages possibles sont les paires de jetons : $\\dbinom{ {{n}} }{2}={{eval:binom(n,2)}}$, tous équiprobables.",
+					"Une voyelle et une consonne : ${{v}}\\times{{eval:n-v}}={{eval:v*(n-v)}}$ paires.",
+					"$P=\\dfrac{ {{eval:v*(n-v)}} }{ {{eval:binom(n,2)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:v*(n-v)/binom(n,2)}} }$."
+				]
+			},
+			"hint": "Compte les paires de jetons possibles, puis celles qui contiennent une voyelle et une consonne."
+		},
+		{
+			"statement": "Une urne contient ${{r}}$ boules rouges et ${{w}}$ boules blanches. On tire au hasard et simultanément $3$ boules de l'urne.\n\nQuelle est la probabilité d'obtenir exactement $2$ boules rouges ?\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "w",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(r,2)*w/binom(r+w,3)}}",
+					"acceptCombinatorialNotation": true,
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:binom(r,2)/binom(r+w,3)}}",
+							"message": "Avec les $2$ rouges, il faut aussi choisir la boule blanche : ${{w}}$ façons.",
+							"label": "Boule blanche oubliée"
+						},
+						{
+							"answer": "{{eval:(binom(r,2)*w+binom(r,3))/binom(r+w,3)}}",
+							"message": "Exactement $2$ rouges : le tirage de $3$ rouges ne compte pas.",
+							"label": "Au moins 2"
+						},
+						{
+							"answer": "{{eval:3*binom(r,2)*w/binom(r+w,3)}}",
+							"message": "Le tirage est simultané : la place de la boule blanche ne compte pas.",
+							"label": "Ordre compté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les tirages possibles : $\\dbinom{ {{eval:r+w}} }{3}={{eval:binom(r+w,3)}}$, tous équiprobables.",
+					"Exactement $2$ rouges : $\\dbinom{ {{r}} }{2}\\times{{w}}={{eval:binom(r,2)*w}}$ tirages.",
+					"$P=\\dfrac{ {{eval:binom(r,2)*w}} }{ {{eval:binom(r+w,3)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:binom(r,2)*w/binom(r+w,3)}} }$."
+				]
+			},
+			"hint": "Compte les tirages de $3$ boules possibles, puis ceux qui ont $2$ rouges et $1$ blanche."
+		},
+		{
+			"statement": "On tire au hasard une main de ${{k}}$ cartes dans un jeu de $32$ cartes, qui contient $4$ as.\n\nQuelle est la probabilité que la main contienne au moins un as ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-binom(28,k)/binom(32,k)}}",
+					"acceptCombinatorialNotation": true,
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:binom(28,k)/binom(32,k)}}",
+							"message": "C'est la probabilité de n'avoir aucun as : il faut encore passer à l'événement contraire.",
+							"label": "Complémentaire non retiré"
+						},
+						{
+							"answer": "{{eval:4*binom(28,k-1)/binom(32,k)}}",
+							"message": "C'est la probabilité d'avoir exactement un as ; « au moins un » compte aussi les mains avec plusieurs as.",
+							"label": "Exactement un"
+						},
+						{
+							"answer": "{{eval:k/8}}",
+							"message": "Les probabilités de chaque carte ne s'ajoutent pas : passe par l'événement contraire « aucun as ».",
+							"label": "Probabilités ajoutées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les mains possibles : $\\dbinom{32}{ {{k}} }={{eval:binom(32,k)}}$, toutes équiprobables.",
+					"L'événement contraire « aucun as » : $\\dbinom{28}{ {{k}} }={{eval:binom(28,k)}}$ mains.",
+					"$P=1-\\dfrac{ {{eval:binom(28,k)}} }{ {{eval:binom(32,k)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:1-binom(28,k)/binom(32,k)}} }$."
+				]
+			},
+			"hint": "« Au moins un » : pense à l'événement contraire."
+		},
+		{
+			"statement": "Un code de ${{k}}$ chiffres (de $0$ à $9$, chacun pouvant se répéter) est choisi au hasard.\n\nQuelle est la probabilité que ses chiffres soient tous différents ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:factorial(10)/factorial(10-k)/10^k}}",
+					"acceptCombinatorialNotation": true,
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:binom(10,k)/10^k}}",
+							"message": "L'ordre des chiffres compte dans un code : compte les ${{k}}$-uplets de chiffres distincts, pas les combinaisons.",
+							"label": "Combinaisons"
+						},
+						{
+							"answer": "{{eval:1-factorial(10)/factorial(10-k)/10^k}}",
+							"message": "C'est la probabilité qu'au moins deux chiffres soient égaux.",
+							"label": "Événement contraire"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les codes possibles : $10^{ {{k}} }={{eval:10^k}}$, tous équiprobables.",
+					"Chiffres tous différents : $\\dfrac{10!}{ {{eval:10-k}}! }={{eval:factorial(10)/factorial(10-k)}}$ codes.",
+					"$P=\\dfrac{ {{eval:factorial(10)/factorial(10-k)}} }{ {{eval:10^k}} }=\\textcolor{{{color:primary.0}}}{ {{eval:factorial(10)/factorial(10-k)/10^k}} }$."
+				]
+			},
+			"hint": "Compte tous les codes possibles, puis ceux dont les chiffres sont distincts."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N5 a : n = 8, v = 3 → 15/28",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{15}{28}"]
+		},
+		{
+			"description": "N5 a : notation combinatoire",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{15}{\\binom{8}{2}}"]
+		},
+		{
+			"description": "N5 a : ordre au numérateur",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{15}{14}"]
+		},
+		{
+			"description": "N5 a : avec remise",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On tire $2$ jetons différents, sans remise : il y a $\\dbinom{ 8 }{2}$ tirages possibles, pas $8^2$."
+			},
+			"answers": ["\\frac{15}{64}"]
+		},
+		{
+			"description": "N5 a : ordre au dénominateur",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Au dénominateur, tu comptes les tirages ordonnés ; compte-les sans ordre, comme au numérateur."
+			},
+			"answers": ["\\frac{15}{56}"]
+		},
+		{
+			"description": "N5 b : r = 4, w = 3 → 18/35",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"w": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{18}{35}"]
+		},
+		{
+			"description": "N5 b : blanche oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"w": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Avec les $2$ rouges, il faut aussi choisir la boule blanche : $3$ façons."
+			},
+			"answers": ["\\frac{6}{35}"]
+		},
+		{
+			"description": "N5 b : au moins 2",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"w": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Exactement $2$ rouges : le tirage de $3$ rouges ne compte pas."
+			},
+			"answers": ["\\frac{22}{35}"]
+		},
+		{
+			"description": "N5 b : ordre compté",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"w": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{54}{35}"]
+		},
+		{
+			"description": "N5 c : k = 2 → 1 − 378/496 = 59/248",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{59}{248}"]
+		},
+		{
+			"description": "N5 c : écriture 1 − C/C",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1-\\frac{\\binom{28}{2}}{\\binom{32}{2}}"]
+		},
+		{
+			"description": "N5 c : complémentaire non retiré",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la probabilité de n'avoir aucun as : il faut encore passer à l'événement contraire."
+			},
+			"answers": ["\\frac{189}{248}"]
+		},
+		{
+			"description": "N5 c : exactement un",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{7}{31}"]
+		},
+		{
+			"description": "N5 c : k/8",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{1}{4}"]
+		},
+		{
+			"description": "N5 d : k = 3 → 0,72",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}72"]
+		},
+		{
+			"description": "N5 d : k = 3 → 18/25",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{18}{25}"]
+		},
+		{
+			"description": "N5 d : combinaisons",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0{,}12"]
+		},
+		{
+			"description": "N5 d : événement contraire",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la probabilité qu'au moins deux chiffres soient égaux."
+			},
+			"answers": ["0{,}28"]
+		}
+	]
+}

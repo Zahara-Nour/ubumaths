@@ -1,0 +1,416 @@
+{
+	"id": "10393ff9-b797-4557-a841-6e0b4e18c52b",
+	"title": "Continuité lue sur une courbe : saut ou point anguleux",
+	"description": "Reconnaître sur un graphique une discontinuité (saut) et distinguer continuité et dérivabilité (point anguleux : continue, non dérivable)",
+	"grades": ["T_SPE", "T_COMP"],
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-3}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = 0.5*(x-{{c}})+{{k}} sur [{{eval:c-3}} ; {{c}}]   bleu\ng(x) = 0.5*(x-{{c}})+{{eval:k+2}} sur ]{{c}} ; {{eval:c+3}}]   bleu\ntaille: moyenne\ndescription: Courbe en deux morceaux de droites parallèles ; en x = {{c}}, la courbe saute de {{k}} à {{eval:k+2}}.\n```\n\nQue peut-on dire de la continuité de $f$ ?\n\n```choix\n- $f$ n'est pas continue en ${{c}}$.\n- $f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n- $f$ n'est pas continue en ${{eval:c-3}}$ ni en ${{eval:c+3}}$, extrémités de l'intervalle.\n- $f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$, car elle est définie en ${{c}}$.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction est continue sur un intervalle quand sa courbe se trace **sans lever le crayon**.",
+					"Ici, la courbe saute en $x={{c}}$ : $\\textcolor{{{color:primary.0}}}{f\\text{ n'est pas continue en }{{c}}}$ (elle l'est sur $\\left[{{eval:c-3}}\\,;{{c}}\\right]$ et sur $\\left]{{c}}\\,;{{eval:c+3}}\\right]$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-3}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{k}}-{{s}}*0.8*(x-{{c}}) sur [{{eval:c-3}} ; {{c}}]   bleu\ng(x) = {{k}}+{{s}}*0.8*(x-{{c}}) sur [{{c}} ; {{eval:c+3}}]   bleu\ntaille: moyenne\ndescription: Courbe en forme de V {{if:s>0|pointé vers le bas|pointé vers le haut}}, d'un seul tenant, avec un point anguleux en x = {{c}}.\n```\n\nQue peut-on dire de la continuité de $f$ ?\n\n```choix\n- $f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n- $f$ n'est pas continue en ${{c}}$, car sa courbe y forme un angle.\n- $f$ n'est pas continue en ${{c}}$, car elle n'y est pas dérivable.\n- $f$ n'est continue que sur $\\left[{{eval:c-3}}\\,;{{c}}\\right[$.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe se trace **sans lever le crayon** : $\\textcolor{{{color:primary.0}}}{f\\text{ est continue sur }\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]}$.",
+					"Le point anguleux en $x={{c}}$ montre que $f$ n'y est pas **dérivable** (deux demi-tangentes différentes) : ce n'est pas un défaut de continuité. Une fonction dérivable est continue, mais une fonction continue n'est pas toujours dérivable."
+				]
+			}
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-4\\,;4\\right]$. Un point plein appartient à la courbe, un point creux n'y appartient pas.\n\n```courbe\nx: -4.5 ; 4.5\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = 0.5*(x-({{a}}))+{{y1}} sur [-4 ; {{a}}[   bleu\ng(x) = -0.5*(x-({{a}}))+{{eval:y1+j1}} sur [{{a}} ; {{b}}[   bleu\nh(x) = 0.5*(x-({{b}}))+{{eval:y1+j1-1.5+j2}} sur [{{b}} ; 4]   bleu\ntaille: moyenne\ndescription: Courbe en trois morceaux de droites ; elle saute en x = {{a}} (point plein sur le morceau du milieu) et en x = {{b}} (point plein sur le morceau de droite).\n```\n\nEn quelles abscisses $f$ n'est-elle pas continue ? Donne-les dans l'ordre croissant.\n\n$x_1=?$ et $x_2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2|-1"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+3}}"
+				},
+				{
+					"name": "y1",
+					"expression": "0..1"
+				},
+				{
+					"name": "j1",
+					"expression": "-2|2"
+				},
+				{
+					"name": "j2",
+					"expression": "-2|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:y1+j1}}",
+							"message": "On demande l'abscisse du saut, lue sur l'axe horizontal, pas son ordonnée.",
+							"label": "Ordonnée au lieu de l'abscisse"
+						},
+						{
+							"answer": "{{b}}",
+							"message": "Donne d'abord la plus petite des deux abscisses.",
+							"label": "Ordre"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{b}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:y1+j1-1.5+j2}}",
+							"message": "On demande l'abscisse du saut, lue sur l'axe horizontal, pas son ordonnée.",
+							"label": "Ordonnée au lieu de l'abscisse"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Donne d'abord la plus petite des deux abscisses.",
+							"label": "Ordre"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction est continue sur un intervalle quand sa courbe s'y trace **sans lever le crayon**.",
+					"La courbe saute en $x={{a}}$ et en $x={{b}}$ : $f$ n'est pas continue en $\\textcolor{{{color:primary.0}}}{ {{a}} }$ ni en $\\textcolor{{{color:primary.0}}}{ {{b}} }$."
+				]
+			},
+			"hint": "Cherche les endroits où il faut lever le crayon pour tracer la courbe."
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-4\\,;4\\right]$. Un point plein appartient à la courbe, un point creux n'y appartient pas.\n\n```courbe\nx: -4.5 ; 4.5\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = 0.5*(x-({{a}}))+{{y1}} sur [-4 ; {{a}}[   bleu\ng(x) = -0.5*(x-({{a}}))+{{eval:y1+j1}} sur [{{a}} ; {{b}}[   bleu\nh(x) = 0.5*(x-({{b}}))+{{eval:y1+j1-1.5+j2}} sur [{{b}} ; 4]   bleu\ntaille: moyenne\ndescription: Courbe en trois morceaux de droites ; elle saute en x = {{a}} (point plein sur le morceau du milieu) et en x = {{b}} (point plein sur le morceau de droite).\n```\n\nQuel est le plus grand intervalle contenant $0$ sur lequel $f$ est continue ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2|-1"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+3}}"
+				},
+				{
+					"name": "y1",
+					"expression": "0..1"
+				},
+				{
+					"name": "j1",
+					"expression": "-2|2"
+				},
+				{
+					"name": "j2",
+					"expression": "-2|2"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{a}};{{b}}[",
+					"answerKind": "intervalles",
+					"expectedErrors": [
+						{
+							"answer": "]{{a}};{{b}}[",
+							"message": "En $x={{a}}$, le point plein est sur le morceau du milieu : le morceau commence par $f({{a}})$, sans saut.",
+							"label": "Borne gauche ouverte"
+						},
+						{
+							"answer": "[{{a}};{{b}}]",
+							"message": "En $x={{b}}$, la valeur $f({{b}})$ est sur le morceau de droite : le morceau du milieu saute en ${{b}}$.",
+							"label": "Borne droite fermée"
+						},
+						{
+							"answer": "]{{a}};{{b}}]",
+							"message": "Regarde où sont les points pleins : en ${{a}}$ sur le morceau du milieu, en ${{b}}$ sur celui de droite.",
+							"label": "Bornes inversées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le morceau du milieu se trace sans lever le crayon, et le point plein en $x={{a}}$ lui appartient : $f$ est continue sur $\\left[{{a}}\\,;{{b}}\\right[$.",
+					"En $x={{b}}$, $f({{b}})$ est sur le morceau de droite : la courbe saute, $f$ n'est continue sur aucun intervalle qui contient ${{b}}$ et des réels juste avant. De même en ${{a}}$ vers la gauche.",
+					"Le plus grand intervalle contenant $0$ est $\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;{{b}}\\right[}$."
+				]
+			},
+			"hint": "Repère les deux sauts, puis regarde de quel côté se trouve le point plein à chaque saut."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "0",
+				"k": "0"
+			},
+			"description": "v0 : saut → pas continue en c",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "0",
+				"k": "0"
+			},
+			"description": "v0 : continue (saut non vu)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"k": "1"
+			},
+			"description": "v0 : extrémités",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "-1",
+				"k": "-1"
+			},
+			"description": "v0 : définie donc continue",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "0",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v1 : point anguleux → continue",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "0",
+				"k": "0",
+				"s": "1"
+			},
+			"description": "v1 : angle pris pour discontinuité",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"k": "1",
+				"s": "-1"
+			},
+			"description": "v1 : non dérivable ⇒ non continue",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "-2",
+				"k": "-1",
+				"s": "-1"
+			},
+			"description": "v1 : continue seulement d'un côté",
+			"variationIndex": 1
+		},
+		{
+			"description": "V2 a : −2 et 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"y1": "0",
+				"j1": "2",
+				"j2": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "1"]
+		},
+		{
+			"description": "V2 a : ordonnée au lieu de l'abscisse",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"y1": "0",
+				"j1": "2",
+				"j2": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On demande l'abscisse du saut, lue sur l'axe horizontal, pas son ordonnée."
+			},
+			"answers": ["2", "1"]
+		},
+		{
+			"description": "V2 a : ordre inversé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"y1": "0",
+				"j1": "2",
+				"j2": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Donne d'abord la plus petite des deux abscisses."
+			},
+			"answers": ["1", "-2"]
+		},
+		{
+			"description": "V2 a : a = −1 → −1 et 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"y1": "1",
+				"j1": "-2",
+				"j2": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "2"]
+		},
+		{
+			"description": "V2 b : [−2 ; 1[",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"y1": "0",
+				"j1": "2",
+				"j2": "-2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[-2;1["]
+		},
+		{
+			"description": "V2 b : ]−2 ; 1[",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"y1": "0",
+				"j1": "2",
+				"j2": "-2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "En $x = -2$, le point plein est sur le morceau du milieu : le morceau commence par $f\\left( -2 \\right)$, sans saut."
+			},
+			"answers": ["]-2;1["]
+		},
+		{
+			"description": "V2 b : [−2 ; 1]",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"y1": "0",
+				"j1": "2",
+				"j2": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["[-2;1]"]
+		},
+		{
+			"description": "V2 b : ]−2 ; 1]",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"y1": "0",
+				"j1": "2",
+				"j2": "-2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["]-2;1]"]
+		},
+		{
+			"description": "V2 b : a = −1 → [−1 ; 2[",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-1",
+				"y1": "1",
+				"j1": "-2",
+				"j2": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["[-1;2["]
+		}
+	]
+}
