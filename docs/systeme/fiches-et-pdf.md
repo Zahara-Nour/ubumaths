@@ -404,7 +404,8 @@ grand, « Arithmetic sequences · Geometric sequences » dessous. Il suffit qu'*
 notion ne s'imprime : la catégorie seule, jamais de mélange (`missingEnglishNames`, David,
 2026-11-23) ; la branche commune se décide sur les noms français. Le **niveau**
 (`worksheets.grades`) : un badge par niveau, forme courte (« 1ère Spé »), plein orange texte blanc
-(`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; aucun, ou fiche en anglais →
+(`levelBadge`, `worksheet-palette.ts`), du plus petit au plus grand ; fiche en anglais → le même badge, nom
+français du niveau (David, 2026-11-25) ; aucun niveau →
 rien (`{{level_badges}}`, `levels()` du générateur ; `{{level}}` / `{{level_short}}` restent
 remplis pour les gabarits des profs ; un gabarit sans `{{title_sub}}`, style d'un prof écrit avant, reçoit dans `{{title}}` le titre complet « notions · catégorie » ; un gabarit avec
 `{{title_sub}}` mais sans `{{title_notions}}`, écrit avant le 2026-11-20, garde les notions en

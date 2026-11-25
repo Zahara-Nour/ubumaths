@@ -121,11 +121,18 @@ describe('titre de la fiche au pied de page', () => {
 		expect(typst).not.toContain('2nde · 1ère');
 	});
 
-	it('aucun niveau, ou fiche en anglais : aucun badge', () => {
-		for (const typst of [sheet(null, []), sheet(null, ['1_SPE'], 'en')]) {
-			expect(typst).not.toContain('Spé');
-		}
+	it('aucun niveau : aucun badge', () => {
+		expect(sheet(null, [])).not.toContain('Spé');
 	});
+
+	// David, 2026-11-25 : en anglais, le badge garde le nom français du niveau
+	// (celui que connaissent les élèves), plutôt qu'un « Year 12 » inventé.
+	it('fiche en anglais : le même badge, nom français du niveau', async () => {
+		const all = await pages(sheet(null, ['1_SPE'], 'en'));
+		for (const [index, page] of all.entries()) {
+			expect(page, `page ${index + 1}`).toMatch(new RegExp(`1ère Spé\\s*${TITLE}`));
+		}
+	}, 60_000);
 
 	it('titre composé : la notion en grand, la catégorie dessous, les deux au bas de page', async () => {
 		const all = await pages(
