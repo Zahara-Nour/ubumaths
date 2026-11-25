@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-25, après #3150 (PR 1 en prod, v0.111.0)._
 
 - **État** : PR 1 mergée (#3150), migration jouée en prod puis `deploy:prod` v0.111.0 coup sur coup (décision B). Prod mesurée après : 428 exercices = 428 versions, 0 ligne de fiche sans version, aucune écriture d'exercice pendant l'entre-deux.
 - **Prochaine action** : PR 2 (éditeur de versions) — commencer par les points reportés de § Revues de la PR 1 (pagination de `fetchLatestVersions`, `updated_at` après signalement, sauvegarde).
-- **En attente de David** : rien.
+- **En attente de David** : validation de la phase 0 de la PR 2 (§ Phase 0 de la PR 2, Q1-Q4).
 - **Pièges en cours** : `deploy:prod` est refusé à Claude par le classifieur → David le lance (`! pnpm deploy:prod`) ; base LOCALE de dev jouée avec l'ancienne policy UPDATE (avant F1), sans effet sur les tests ; `as unknown as` dans les routes cache au typecheck un contenu absent.
 - **Worktree / branche** : aucun (retiré au merge) ; PR 2 → nouveau worktree `../ubumaths-wt-versions-exercices-editeur`.
 
@@ -110,6 +110,50 @@ pas `db:migrate` seule : elle prévient David, qui demande `db:migrate` + `deplo
 
 - Formulaire d'exercice : carte « Variations » et toasts « Variation ajoutee », « Maximum 10
   variations autorisees » (mot contraire à CONTEXT.md, accents manquants) → PR 2.
+
+## Phase 0 de la PR 2 — éditeur de versions (proposée le 2026-11-25, en attente de David)
+
+Worktree `../ubumaths-wt-versions-exercices-editeur`, branche `feat/versions-exercices-editeur`.
+
+**Page d'édition d'un exercice (prof auteur)**
+
+- Nominal : en haut, « Version 3 (la plus récente) » et un menu des versions (numéro, note, date,
+  « utilisée par 2 fiches »). La page ouvre la plus récente ; `?version=2` en ouvre une autre.
+  « Enregistrer » modifie **sur place** la version affichée (ADR point 3), aucune autre.
+- « Nouvelle version » : une fenêtre demande une note facultative (« question b) reformulée après
+  le test en 2de 3 »), recopie la **plus récente** (ADR point 2), l'ouvre. Aucune fiche ne bouge.
+- La note d'une version se modifie (bornée, vide permise).
+- Bandeau si la version affichée sert à des fiches : « Utilisée par : Fiche A, Fiche B (distribuée) —
+  vos modifications s'y verront. »
+- Ouverte depuis une fiche (`?fiche=…`) : la page ouvre **la version de cette fiche**, pas la plus
+  récente (sinon on corrigerait une version que la fiche n'affiche pas).
+- Supprimer une version (Q1) : refusé si une fiche l'utilise (le refus nomme les fiches) ou si
+  c'est la seule ; sinon supprimée (supprimer la plus récente rend la précédente « la plus récente »
+  hors fiche).
+- Limites / erreurs : deux « Nouvelle version » simultanées → une seule v4, l'autre v5 (numéro
+  unique tenu par la base, pas de doublon) ; version d'un autre exercice dans l'adresse → 404 ;
+  prof non auteur → 403 comme aujourd'hui.
+- Mots : carte « Variations » → « Niveaux de guidage », toasts accentués (écart relevé en PR 1).
+
+**Points reportés de la PR 1, faits d'abord**
+
+1. « Dernière version de chaque exercice » calculée par la base (une fonction SQL appelée avec les
+   droits de l'appelant), plus de limite des 1 000 lignes.
+2. Toute écriture d'une version remet à jour `updated_at` de l'exercice (plan du site, tri
+   « modifié le ») — signalement compris.
+3. Modifier un exercice : fiche d'identité et version écrites ensemble (tout ou rien).
+4. Sauvegarde : un exercice sans version ne l'interrompt plus ; restauration d'une ancienne
+   sauvegarde → elle crée une **nouvelle** version au lieu d'écraser la v1 pointée par les fiches ;
+   numéros de version uniques vérifiés à la lecture du fichier.
+5. Test d'intégration de la jointure de `/correction`.
+
+**Migration** (pour 1-3) : une fonction « dernière version » et un déclencheur `updated_at`, tous
+deux avec les droits de l'appelant. Question d'accès (Q4) : qui pourra lire quoi qu'il ne pouvait
+pas lire avant ? → recommandation : **personne**.
+
+**Questions à David** : Q1 suppression d'une version dans cette PR (reco : oui, avec les deux
+refus) · Q2 « Nouvelle version » part toujours de la plus récente, même si on regarde la v1 (reco :
+oui, l'ADR) · Q3 depuis une fiche, ouvrir la version de la fiche (reco : oui) · Q4 accès : personne.
 
 ## Revues de la PR 1 (2026-11-25)
 
