@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, avant l'ouverture de la PR._
+_Mis à jour le 2026-11-25, à l'ouverture de la PR._
 
-- **État** : correctif écrit sur la branche, test rouge puis vert · **Prochaine action** : vérifier à l'écran, revue, PR · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-sections-pdf-anglais` / `fix/sections-pdf-anglais`
+- **État** : correctif, test, revues (code + sécurité, aucun bloquant) et vérification à l'écran faits ; PR ouverte · **Prochaine action** : merge à la CI verte, puis clore (journal archivé) · **En attente de David** : titre d'exercice en anglais (voir plus bas) ; `deploy:prod` pour livrer · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-sections-pdf-anglais` / `fix/sections-pdf-anglais`
 
 ## Le bug (signalé par David le 2026-11-25)
 
@@ -26,3 +26,23 @@ Une fiche anglaise imprimait ses titres de section en français.
 `storedTranslationsSchema` (souple, comme les autres `translations` de réponse) sur les trois
 schémas de réponse. Test : `src/lib/worksheets/__tests__/sections-pdf-anglais.test.ts` (réponse
 validée → copie → Typst), rouge avant (4 sur 5), vert après.
+
+## Vérifications
+
+- Test rouge avant (4 sur 5), vert après ; tests voisins verts (3 fichiers en dépassement de 5 s
+  sous charge, verts seuls) ; `check:incremental` 0 erreur.
+- À l'écran (Playwright, compte prof local, fiche fictive) : la réponse de l'API porte les trois
+  `translations`, l'éditeur affiche le titre anglais de la fiche, et l'aperçu du PDF anglais imprime
+  « Investigation », « Justify each answer. », « No calculator. ».
+- Revue de code : aucun bloquant. Bonus relevé : le PUT d'une section renvoyait aussi la section
+  sans `translations`, donc l'anglais disparaissait de l'écran après chaque enregistrement ; corrigé
+  du même coup.
+- Audit de sécurité : aucun bloquant, personne ne lit ce qu'il ne lisait pas avant (routes prof /
+  admin, sur ses propres fiches ; le lien de partage rendait déjà ces traductions). Non bloquant,
+  non fait : un schéma de réponse moins souple.
+
+## Question en suspens pour David
+
+Le titre d'un **exercice** reste en français dans le PDF anglais (« Calculer avec les formules »).
+Ce n'est pas le même trou : le modèle n'a pas de titre anglais pour un exercice (ses traductions ne
+portent que énoncé, corrigé, réponses et indices).
