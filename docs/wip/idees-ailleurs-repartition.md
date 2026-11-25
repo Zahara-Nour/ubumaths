@@ -141,7 +141,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
 | Proportionnalité                         | 3P1       | 3         | libre                                                      |                              |
 | Statistiques                             | 3S1       | 3         | libre                                                      |                              |
-| Probabilités                             | 3S2       | 5         | libre                                                      |                              |
+| Probabilités                             | 3S2       | 5         | prise (2026-11-25)                                         | `idees-3e-probabilites`      |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
 | Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
