@@ -1,0 +1,289 @@
+{
+	"id": "93147367-804e-4f71-aa6c-f80ca249fb0a",
+	"title": "Déterminer la forme décimale d'une fraction",
+	"description": "La forme décimale n'est pas entière",
+	"grades": ["6"],
+	"level": 11,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:{{expression1}};d}}"
+				}
+			],
+			"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|5|10"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:a+1}}!a"
+				},
+				{
+					"name": "expression1",
+					"expression": "b/a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align} \\dfrac{{{b}}}{{{a}}} &= {{b}} \\div {{a}} \\\\ &= {{solution}}  \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris la forme décimale de la fraction.\n\n$$\\frac{{{n}}}{8} = ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3|5|7|9|11|13|15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/8;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n+0.8;d}}",
+							"message": "La barre de fraction n'est pas une virgule : $\\frac{{{n}}}{8}$, c'est ${{n}} \\div 8$.",
+							"label": "Barre de fraction lue comme une virgule"
+						},
+						{
+							"answer": "{{eval:floor(100*n/8)/100;d}}",
+							"message": "La division n'est pas finie : continue après les centièmes, jusqu'à un reste nul.",
+							"label": "Division arrêtée trop tôt"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction et division.** $\\frac{{{n}}}{8}$ est le résultat de la division de ${{n}}$ par $8$. On pose la division et on continue après la virgule jusqu'à un reste nul.",
+					"$$\\frac{{{n}}}{8} = {{n}} \\div 8 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Pose la division ${{n}} \\div 8$ et continue après la virgule jusqu'à ce que le reste soit nul."
+		},
+		{
+			"statement": "Écris la forme décimale de la fraction.\n\n$$\\frac{{{n}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "k",
+					"expression": "eval:100/d"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:2*d-1}}"
+				}
+			],
+			"conditions": ["mod(n,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/d;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n/100;d}}",
+							"message": "$\\frac{{{n}}}{{{d}}}$ n'est pas ${{n}}$ centièmes : écris d'abord une fraction égale de dénominateur $100$.",
+							"label": "Numérateur gardé sur 100"
+						},
+						{
+							"answer": "{{eval:n+d/100;d}}",
+							"message": "La barre de fraction n'est pas une virgule : $\\frac{{{n}}}{{{d}}}$, c'est ${{n}} \\div {{d}}$.",
+							"label": "Barre de fraction lue comme une virgule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction décimale.** ${{d}} \\times {{k}} = 100$ : on écrit une fraction égale de dénominateur $100$, en multipliant aussi le numérateur par ${{k}}$.",
+					"$$\\frac{{{n}}}{{{d}}} = \\frac{{{n}} \\times \\textcolor{{{color:primary.1}}}{{{k}}} }{{{d}} \\times \\textcolor{{{color:primary.1}}}{{{k}}} } = \\frac{{{eval:n*k}}}{100} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			},
+			"hint": "Cherche une fraction égale de dénominateur $100$ : par combien faut-il multiplier ${{d}}$ ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0.75"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"description": "trois quarts",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"description": "borne basse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"b": "11"
+			},
+			"description": "borne haute",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0.7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"description": "troncature",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.33"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"description": "quotient inversé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"description": "recopie de la fraction",
+			"variationIndex": 0
+		},
+		{
+			"description": "F1 : 3/8 = 0,375",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}375"]
+		},
+		{
+			"description": "F1 : 13/8 = 1,625",
+			"variationIndex": 1,
+			"variables": {
+				"n": "13"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}625"]
+		},
+		{
+			"description": "F1 : barre lue comme une virgule (3,8)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La barre de fraction n'est pas une virgule : $\\frac{3}{8}$, c'est $3 \\div 8$."
+			},
+			"answers": ["3{,}8"]
+		},
+		{
+			"description": "F1 : division arrêtée (0,37)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La division n'est pas finie : continue après les centièmes, jusqu'à un reste nul."
+			},
+			"answers": ["0{,}37"]
+		},
+		{
+			"description": "F1 : 7/20 = 0,35",
+			"variationIndex": 2,
+			"variables": {
+				"d": "20",
+				"k": "5",
+				"n": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}35"]
+		},
+		{
+			"description": "F1 : 37/25 = 1,48",
+			"variationIndex": 2,
+			"variables": {
+				"d": "25",
+				"k": "4",
+				"n": "37"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}48"]
+		},
+		{
+			"description": "F1 : 7/20 lu 7 centièmes",
+			"variationIndex": 2,
+			"variables": {
+				"d": "20",
+				"k": "5",
+				"n": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\frac{7}{20}$ n'est pas $7$ centièmes : écris d'abord une fraction égale de dénominateur $100$."
+			},
+			"answers": ["0{,}07"]
+		},
+		{
+			"description": "F1 : 7/20 lu 7,2",
+			"variationIndex": 2,
+			"variables": {
+				"d": "20",
+				"k": "5",
+				"n": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La barre de fraction n'est pas une virgule : $\\frac{7}{20}$, c'est $7 \\div 20$."
+			},
+			"answers": ["7{,}2"]
+		}
+	]
+}

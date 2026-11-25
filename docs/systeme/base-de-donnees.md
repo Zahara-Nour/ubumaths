@@ -147,6 +147,9 @@ lien (droits par colonne) ; **aucune écriture par un compte connecté** : le se
 `service_role`. Le lien est stocké **haché** (sha256). `get_private_lesson_invitation(p_token)`,
 `service_role` seul, rend prénom, niveau, école et échéance d'une invitation encore valable, `null`
 dans tous les autres cas. Test : `tests/integration/invitations-cours-particuliers.test.ts`.
+Une invitation finie (utilisée, annulée, expirée) est **effacée 30 jours après sa fin** par le
+cron Vercel quotidien `api/cron/invitations-cours-particulier` (décision 8) ; écrans et écritures du
+serveur : [comptes-classes-ecoles.md § Admin : cours particuliers](comptes-classes-ecoles.md#admin--cours-particuliers).
 
 **Import d'élèves** : deux ordres possibles, à toujours considérer. Import puis connexion : la ligne
 `pending_students` est activée à la première connexion. Connexion avant import : il faut insérer

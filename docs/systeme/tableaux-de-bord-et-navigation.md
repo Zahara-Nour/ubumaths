@@ -71,7 +71,7 @@ Couleur de fond selon le rôle du profil (élève, prof, admin).
   Python, Figures (figures géométriques stockées), Gamification (badge : demandes de cartes VIP en attente), Modération, amis, Chat,
   Administration. Ce dernier lien renvoie un prof non élevé vers l'écran d'élévation
   (`dashboard/admin/+layout.server.ts`).
-- **Admin** : accueil, Administration et ses pages (écoles, utilisateurs, classes, questions,
+- **Admin** : accueil, Administration et ses pages (écoles, cours particuliers, utilisateurs, classes, questions,
   dictionnaire, cartes VIP, signalements, suivi du site, tâches CRON, documentation, intégrité des données, débogage,
   réglages). « Debug » mène à `/dev`, espace hors du tableau de bord ; « Intégrité des données »
   (`/dashboard/admin/integrite-donnees`) a son propre lien.

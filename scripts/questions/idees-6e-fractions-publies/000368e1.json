@@ -1,0 +1,364 @@
+{
+	"id": "000368e1-cc26-4b75-a3f3-cc619c02f940",
+	"title": "Déterminer une forme fractionnaire",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b/a}}"
+				}
+			],
+			"statement": "Réécris ce nombre décimal sous forme fractionnaire.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|5|10"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:a-1}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "eval:b/a;d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction décimale.** Le rang du dernier chiffre après la virgule donne le dénominateur : dixièmes → $10$, centièmes → $100$. On simplifie ensuite la fraction quand c’est possible.",
+					"{{if:mod((10*b),a)=0|Le dernier chiffre de ${{expression1}}$, $\\textcolor{{{color:primary.0}}}{{{eval:10*b/a}}}$, est au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$.{{if:gcd((10*b/a),10)>1| Le numérateur et le dénominateur sont divisibles par $\\textcolor{{{color:primary.1}}}{{{eval:gcd((10*b/a),10)}}}$ : on simplifie.|}}|Le dernier chiffre de ${{expression1}}$, $\\textcolor{{{color:primary.0}}}{{{eval:mod((100*b/a),10)}}}$, est au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$.{{if:gcd((100*b/a),100)>1| Le numérateur et le dénominateur sont divisibles par $\\textcolor{{{color:primary.1}}}{{{eval:gcd((100*b/a),100)}}}$ : on simplifie.|}}}}",
+					"{{if:mod((10*b),a)=0|$$\\begin{align} {{expression1}} &= \\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:10*b/a}}}}{10}{{if:gcd((10*b/a),10)>1| \\\\ &= \\dfrac{{{eval:10*b/a}} : \\textcolor{{{color:primary.1}}}{{{eval:gcd((10*b/a),10)}}}}{10 : \\textcolor{{{color:primary.1}}}{{{eval:gcd((10*b/a),10)}}}} \\\\ &= \\dfrac{{{eval:10*b/a/gcd((10*b/a),10)}}}{{{eval:10/gcd((10*b/a),10)}}}|}} \\end{align}$$|$$\\begin{align} {{expression1}} &= \\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:100*b/a}}}}{100}{{if:gcd((100*b/a),100)>1| \\\\ &= \\dfrac{{{eval:100*b/a}} : \\textcolor{{{color:primary.1}}}{{{eval:gcd((100*b/a),100)}}}}{100 : \\textcolor{{{color:primary.1}}}{{{eval:gcd((100*b/a),100)}}}} \\\\ &= \\dfrac{{{eval:100*b/a/gcd((100*b/a),100)}}}{{{eval:100/gcd((100*b/a),100)}}}|}} \\end{align}$$}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète l'égalité.\n\n$${{x}} = \\frac{?}{{{D}}}$$",
+			"variables": [
+				{
+					"name": "d0",
+					"expression": "2|4"
+				},
+				{
+					"name": "n0",
+					"expression": "1|3|5"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:n0/d0;d"
+				},
+				{
+					"name": "N",
+					"expression": "eval:n0*m"
+				},
+				{
+					"name": "D",
+					"expression": "eval:d0*m"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n0*(5+10*(d0-2))}}",
+							"message": "Tu as recopié les chiffres de ${{x}}$ sans la virgule : cherche combien de $\\frac{1}{{{D}}}$ il faut pour faire ${{x}}$.",
+							"label": "Chiffres recopiés"
+						},
+						{
+							"answer": "{{n0}}",
+							"message": "$\\frac{{{n0}}}{{{d0}}}$ vaut bien ${{x}}$, mais le dénominateur est ici ${{D}}$ : multiplie aussi le numérateur par ${{m}}$.",
+							"label": "Numérateur non agrandi"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Demis et quarts.** $0{,}5 = \\frac{1}{2}$ et $0{,}25 = \\frac{1}{4}$ : ${{x}}$, c'est ${{n0}}$ {{if:d0==2|demis|quarts}}, soit $\\frac{{{n0}}}{{{d0}}}$.",
+					"{{if:m==1|$${{x}} = \\frac{{{N}}}{{{D}}}$$|On multiplie le numérateur et le dénominateur par ${{m}}$ : $${{x}} = \\frac{{{n0}}}{{{d0}}} = \\frac{{{n0}} \\times \\textcolor{{{color:primary.1}}}{{{m}}} }{{{d0}} \\times \\textcolor{{{color:primary.1}}}{{{m}}} } = \\frac{{{N}}}{{{D}}}$$}}"
+				]
+			},
+			"hint": "Écris d'abord ${{x}}$ en demis ou en quarts : $1 = \\frac{2}{2} = \\frac{4}{4}$."
+		},
+		{
+			"statement": "Complète l'égalité.\n\n$${{x}} = \\frac{{{N}}}{?}$$",
+			"variables": [
+				{
+					"name": "d0",
+					"expression": "2|4"
+				},
+				{
+					"name": "n0",
+					"expression": "1|3|5"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:n0/d0;d"
+				},
+				{
+					"name": "N",
+					"expression": "eval:n0*m"
+				},
+				{
+					"name": "D",
+					"expression": "eval:d0*m"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{D}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:mod(n0*(5+10*(d0-2)),10+45*(d0-2))}}",
+							"message": "Les chiffres après la virgule ne donnent pas le dénominateur : cherche en combien de parts égales il faut partager l'unité.",
+							"label": "Partie décimale recopiée"
+						},
+						{
+							"answer": "{{d0}}",
+							"message": "$\\frac{{{n0}}}{{{d0}}}$ vaut bien ${{x}}$, mais le numérateur est ici ${{N}}$ : multiplie aussi le dénominateur par ${{m}}$.",
+							"label": "Dénominateur non agrandi"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Demis et quarts.** $0{,}5 = \\frac{1}{2}$ et $0{,}25 = \\frac{1}{4}$ : ${{x}}$, c'est ${{n0}}$ {{if:d0==2|demis|quarts}}, soit $\\frac{{{n0}}}{{{d0}}}$.",
+					"{{if:m==1|$${{x}} = \\frac{{{N}}}{{{D}}}$$|On multiplie le numérateur et le dénominateur par ${{m}}$ : $${{x}} = \\frac{{{n0}}}{{{d0}}} = \\frac{{{n0}} \\times \\textcolor{{{color:primary.1}}}{{{m}}} }{{{d0}} \\times \\textcolor{{{color:primary.1}}}{{{m}}} } = \\frac{{{N}}}{{{D}}}$$}}"
+				]
+			},
+			"hint": "Écris d'abord ${{x}}$ en demis ou en quarts : $1 = \\frac{2}{2} = \\frac{4}{4}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{4}{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "4"
+			},
+			"description": "0,8 = 4/5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{8}{10}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "4"
+			},
+			"description": "0,8 = 8/10 (non simplifiée, acceptée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}8"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "5",
+				"b": "4"
+			},
+			"description": "Décimal recopié : refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{5}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "4"
+			},
+			"description": "Fraction renversée 5/4 : refusée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{50}{100}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"b": "5"
+			},
+			"description": "0,5 = 50/100",
+			"variationIndex": 0
+		},
+		{
+			"description": "F2 num : 0,75 = 3/4",
+			"variationIndex": 1,
+			"variables": {
+				"d0": "4",
+				"n0": "3",
+				"m": "1",
+				"x": "0.75",
+				"N": "3",
+				"D": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F2 num : 0,75 = ?/4, chiffres recopiés (75)",
+			"variationIndex": 1,
+			"variables": {
+				"d0": "4",
+				"n0": "3",
+				"m": "1",
+				"x": "0.75",
+				"N": "3",
+				"D": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as recopié les chiffres de $0.75$ sans la virgule : cherche combien de $\\frac{1}{4}$ il faut pour faire $0.75$."
+			},
+			"answers": ["75"]
+		},
+		{
+			"description": "F2 num : 1,5 = 6/4",
+			"variationIndex": 1,
+			"variables": {
+				"d0": "2",
+				"n0": "3",
+				"m": "2",
+				"x": "1.5",
+				"N": "6",
+				"D": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "F2 num : 1,5 = ?/4, numérateur non agrandi (3)",
+			"variationIndex": 1,
+			"variables": {
+				"d0": "2",
+				"n0": "3",
+				"m": "2",
+				"x": "1.5",
+				"N": "6",
+				"D": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\frac{3}{2}$ vaut bien $1.5$, mais le dénominateur est ici $4$ : multiplie aussi le numérateur par $2$."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F2 dén : 1,5 = 6/4",
+			"variationIndex": 2,
+			"variables": {
+				"d0": "2",
+				"n0": "3",
+				"m": "2",
+				"x": "1.5",
+				"N": "6",
+				"D": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "F2 dén : 1,5 = 6/?, partie décimale (5)",
+			"variationIndex": 2,
+			"variables": {
+				"d0": "2",
+				"n0": "3",
+				"m": "2",
+				"x": "1.5",
+				"N": "6",
+				"D": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les chiffres après la virgule ne donnent pas le dénominateur : cherche en combien de parts égales il faut partager l'unité."
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "F2 dén : 1,5 = 6/?, dénominateur non agrandi (2)",
+			"variationIndex": 2,
+			"variables": {
+				"d0": "2",
+				"n0": "3",
+				"m": "2",
+				"x": "1.5",
+				"N": "6",
+				"D": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\frac{3}{2}$ vaut bien $1.5$, mais le numérateur est ici $6$ : multiplie aussi le dénominateur par $2$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "F2 dén : 1,25 = 15/12",
+			"variationIndex": 2,
+			"variables": {
+				"d0": "4",
+				"n0": "5",
+				"m": "3",
+				"x": "1.25",
+				"N": "15",
+				"D": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "F2 dén : 1,25 = 15/?, partie décimale (25)",
+			"variationIndex": 2,
+			"variables": {
+				"d0": "4",
+				"n0": "5",
+				"m": "3",
+				"x": "1.25",
+				"N": "15",
+				"D": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les chiffres après la virgule ne donnent pas le dénominateur : cherche en combien de parts égales il faut partager l'unité."
+			},
+			"answers": ["25"]
+		}
+	]
+}

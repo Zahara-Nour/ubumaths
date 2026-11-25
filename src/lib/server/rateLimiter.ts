@@ -681,6 +681,26 @@ export async function checkChildSignupRateLimitByParentEmail(
 }
 
 /**
+ * Invitations de cours particulier : « Inviter » et « Renvoyer » de la page admin (décision 9
+ * de David, 2026-11-25). Au plus 20 envois par heure et par admin : le quota de Brevo
+ * (300 courriels par jour) sert aussi aux consentements et au carnet. Fermé en cas de panne :
+ * chaque essai envoie un courriel.
+ */
+export async function checkPrivateLessonInvitationRateLimit(
+	adminUserId: string
+): Promise<RateLimitResult> {
+	const message = 'Trop d’invitations envoyées cette heure-ci. Réessayez plus tard.';
+	if (!adminUserId) return { allowed: false, message };
+	return checkRateLimitWithMessage(
+		`ratelimit:private-lesson-invitation:${adminUserId}`,
+		20,
+		3600,
+		message,
+		true
+	);
+}
+
+/**
  * « J'inscris mon enfant » : plafond par classe (M1 bis, David, 2026-10-21).
  *
  * Au plus 5 inscriptions par classe et par 24 h : un code de classe qui circule n'ouvre pas une
