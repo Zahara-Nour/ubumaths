@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, plan de la PR 1 validé par David (« oui »), aucun code écrit._
+_Mis à jour le 2026-11-25, PR 1 en cours (2 commits locaux, aucune PR ouverte)._
 
-- **État** : phase 0 close ([ADR 0044](../adr/0044-versions-d-un-exercice.md), points 1 à 12) ; rangement **A** (toutes les versions dans `exercise_versions`) ; question d'accès tranchée (personne ne gagne de lecture) ; plan de la PR 1 validé (§ Plan de la PR 1).
-- **Prochaine action** : PR 1 — écrire les tests d'intégration **rouges** (§ Tests), puis la migration (`pnpm migration:horodatage`), `pnpm db:types`, la bascule des lectures et écritures.
+- **État** : migration `20261125153651_versions_exercices` (rouge sans, verte avec : `versions-exercices.test.ts`) ; code basculé sur `src/lib/server/exercise-versions.ts` ; 6349 tests unitaires verts ; doc (`base-de-donnees.md`, `fiches-exercices.md` § 2.5, CONTEXT.md) à jour.
+- **Prochaine action** : 21 tests d'intégration à adapter (lignes de fiche sans version ; un agent y travaillait au moment du `/clear` : `git status` du worktree, ses modifs NON commitées, les relire puis relancer ces 21 fichiers) ; faire tourner `versions-exercices-lectures.test.ts` ; `pnpm voir` ; revue `code-reviewer` (opus) + `security-auditor` ; PR.
 - **En attente de David** : rien. ⚠️ Au merge : **pas de `db:migrate` seul** — le dire à David, `db:migrate` puis `deploy:prod` coup sur coup (§ Entre-deux, B).
-- **Pièges en cours** : FK de version en `NO ACTION` (pas `RESTRICT`), sinon supprimer un exercice utilisé dans une fiche casse ; jointures PostgREST en chaînes = invisibles au typecheck → tests d'intégration ; « version » a trois autres sens dans le code (ADR 0044).
+- **Pièges en cours** : `as unknown as` dans les routes cache au typecheck un contenu absent → seuls les tests le voient ; test de reprise : verrou `profiles`/`exercises` (suites en parallèle) ; inventaire de phase 0 incomplet : liens de partage d'une fiche (2 RPC) et tuteur (fiche, pas hors fiche) ajoutés.
 - **Worktree / branche** : `../ubumaths-wt-versions-exercices`, `feat/versions-exercices`.
 
 ## Décisions (2026-11-25)

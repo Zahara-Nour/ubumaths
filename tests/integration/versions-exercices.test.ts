@@ -327,6 +327,10 @@ describe('reprise : rollback documenté, puis migration rejouée depuis son fich
 
 		await pg.query('begin');
 		try {
+			// Les autres suites tournent en parallèle : un profil effacé entre la lecture des exercices et
+			// la vérification de la clé étrangère ferait échouer la reprise. Le verrou fige les deux
+			// tables le temps de la transaction (lectures permises, écritures en attente).
+			await pg.query('lock table public.profiles, public.exercises in share mode');
 			await pg.query(rollback);
 
 			// L'état d'avant : plus de table des versions, plus de colonne de version
