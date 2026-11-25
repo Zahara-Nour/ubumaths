@@ -57,15 +57,25 @@ const createMockSupabase = () => {
 	// `order` rend les versions lues (dernière d'abord), `select` rend la ligne écrite.
 	const versionsQuery = {
 		select: vi.fn().mockReturnThis(),
-		in: vi.fn().mockReturnThis(),
-		order: vi.fn().mockResolvedValue({ data: [], error: null }),
-		insert: vi.fn().mockReturnThis(),
-		update: vi.fn().mockReturnThis(),
-		eq: vi.fn().mockReturnThis()
+		insert: vi.fn().mockReturnThis()
 	};
+
+	// RPC `latest_exercise_versions` : la base rend UNE ligne par exercice (la dernière version).
+	const latestQuery = { select: vi.fn().mockResolvedValue({ data: [], error: null }) };
+	// RPC `save_exercise_with_version` : identité + contenu écrits ensemble, rend la version écrite.
+	const saveQuery = {
+		select: vi.fn().mockReturnThis(),
+		single: vi.fn().mockResolvedValue({ data: null, error: null })
+	};
+	const rpc = vi.fn((name: string) =>
+		name === 'latest_exercise_versions' ? latestQuery : saveQuery
+	);
 
 	return {
 		from: vi.fn((table: string) => (table === 'exercise_versions' ? versionsQuery : mockQuery)),
+		rpc,
+		__latestQuery: latestQuery,
+		__saveQuery: saveQuery,
 		__mockQuery: mockQuery, // For internal test access
 		__versionsQuery: versionsQuery
 	};
@@ -127,7 +137,7 @@ describe('getExercises', () => {
 			count: 1
 		});
 		// Le contenu vient de la dernière version, pas des anciennes colonnes de la ligne
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
+		mockSupabase.__latestQuery.select.mockResolvedValue({
 			data: [versionRow('1', { number: 2, variations: [{ label: 'v2' }] })],
 			error: null
 		});
@@ -135,7 +145,9 @@ describe('getExercises', () => {
 		const result = await getExercises(mockSupabase, {}, { page: 1, limit: 50 });
 
 		expect(mockSupabase.from).toHaveBeenCalledWith('exercises');
-		expect(mockSupabase.from).toHaveBeenCalledWith('exercise_versions');
+		expect(mockSupabase.rpc).toHaveBeenCalledWith('latest_exercise_versions', {
+			p_exercise_ids: ['1']
+		});
 		expect(result.data?.[0].variations).toEqual([{ label: 'v2' }]);
 		expect(result.error).toBeNull();
 		expect(result.count).toBe(1);
@@ -233,12 +245,9 @@ describe('getExercise', () => {
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: mockExercise, error: null });
-		// La dernière version (plus grand numéro, rendue en premier) fait foi pour le contenu
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
-			data: [
-				versionRow('ex-123', { number: 2, variations: [{ label: 'v2' }] }),
-				versionRow('ex-123', { id: 'old', number: 1, variations: [{ label: 'v1' }] })
-			],
+		// La base rend UNE ligne par exercice : la dernière version (numéro 2) fait foi pour le contenu
+		mockSupabase.__latestQuery.select.mockResolvedValue({
+			data: [versionRow('ex-123', { number: 2, variations: [{ label: 'v2' }] })],
 			error: null
 		});
 		// Simulate the junction returning a resolved tag name.
@@ -251,7 +260,9 @@ describe('getExercise', () => {
 		// Contenu : celui de la dernière version, pas l'ancien `variations` de la ligne
 		expect(mockExercise.variations).not.toEqual([{ label: 'v2' }]);
 		expect(result.data?.variations).toEqual([{ label: 'v2' }]);
-		expect(mockSupabase.__versionsQuery.in).toHaveBeenCalledWith('exercise_id', ['ex-123']);
+		expect(mockSupabase.rpc).toHaveBeenCalledWith('latest_exercise_versions', {
+			p_exercise_ids: ['ex-123']
+		});
 		// Tags come from the junction helper, not the row column.
 		expect(result.data?.tags).toEqual(['algèbre']);
 		expect(result.error).toBeNull();
@@ -400,42 +411,44 @@ describe('updateExercise', () => {
 			variations: newVariations
 		};
 
-		// Mock getExercise call, puis la mise à jour de l'identité (sans contenu en retour)
+		// Mock getExercise call, puis la relecture de la ligne après l'écriture (sans contenu)
 		mockSupabase.__mockQuery.single
 			.mockResolvedValueOnce({ data: existingExercise, error: null })
 			.mockResolvedValueOnce({
 				data: { ...existingExercise, title: 'Updated Title', variations: [{ label: 'ancien' }] },
 				error: null
 			});
-		// Versions : lue deux fois (getExercise, puis la cible de l'écriture), puis écrite
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
+		// Dernière version lue par getExercise
+		mockSupabase.__latestQuery.select.mockResolvedValue({
 			data: [versionRow('ex-123', { id: 'v-last', number: 3 })],
 			error: null
 		});
-		mockSupabase.__versionsQuery.select
-			.mockReturnValueOnce(mockSupabase.__versionsQuery)
-			.mockReturnValueOnce(mockSupabase.__versionsQuery)
-			.mockResolvedValueOnce({
-				data: [versionRow('ex-123', { id: 'v-last', number: 3, variations: newVariations })],
-				error: null
-			});
+		// Écriture groupée : la base rend la version écrite
+		mockSupabase.__saveQuery.single.mockResolvedValue({
+			data: versionRow('ex-123', { id: 'v-last', number: 3, variations: newVariations }),
+			error: null
+		});
 
 		const result = await updateExercise(mockSupabase, 'ex-123', updates, 'user-123');
 
 		expect(result.error).toBeNull();
 		expect(result.data?.title).toBe('Updated Title');
 		expect(result.data?.category).toBe('automatisme');
-		// Le contenu part vers la DERNIÈRE version, modifiée sur place...
-		expect(mockSupabase.__versionsQuery.update).toHaveBeenCalledWith({ variations: newVariations });
-		expect(mockSupabase.__versionsQuery.eq).toHaveBeenCalledWith('id', 'v-last');
-		expect(mockSupabase.__versionsQuery.eq).toHaveBeenCalledWith('exercise_id', 'ex-123');
-		// ... et pas vers `exercises` (identité seule, toujours datée)
-		const identityUpdate = mockSupabase.__mockQuery.update.mock.calls[0][0];
-		expect(identityUpdate).not.toHaveProperty('variations');
-		expect(identityUpdate).toMatchObject({
-			title: 'Updated Title',
-			updated_at: expect.any(String)
-		});
+		// Identité ET contenu partent ensemble dans UN appel de la base (tout ou rien)...
+		const saveCalls = mockSupabase.rpc.mock.calls.filter(
+			(c: unknown[]) => c[0] === 'save_exercise_with_version'
+		);
+		expect(saveCalls).toHaveLength(1);
+		const args = saveCalls[0][1];
+		expect(args.p_exercise_id).toBe('ex-123');
+		expect(args.p_content).toEqual({ variations: newVariations });
+		// ... l'identité ne porte pas le contenu
+		expect(args.p_identity).not.toHaveProperty('variations');
+		expect(args.p_identity).toMatchObject({ title: 'Updated Title' });
+		// Pas de version ciblée : la base prend la dernière
+		expect(args).not.toHaveProperty('p_version_id');
+		// Plus d'écriture directe sur `exercises`
+		expect(mockSupabase.__mockQuery.update).not.toHaveBeenCalled();
 		// Le contenu rendu est celui de la version écrite
 		expect(result.data?.variations).toEqual(newVariations);
 	});
@@ -451,15 +464,24 @@ describe('updateExercise', () => {
 		mockSupabase.__mockQuery.single
 			.mockResolvedValueOnce({ data: existingExercise, error: null })
 			.mockResolvedValueOnce({ data: { ...existingExercise, title: 'Après' }, error: null });
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
+		mockSupabase.__latestQuery.select.mockResolvedValue({
 			data: [versionRow('ex-123', { variations: [{ label: 'v1' }] })],
+			error: null
+		});
+		mockSupabase.__saveQuery.single.mockResolvedValue({
+			data: versionRow('ex-123', { variations: [{ label: 'v1' }] }),
 			error: null
 		});
 
 		const result = await updateExercise(mockSupabase, 'ex-123', { title: 'Après' }, 'user-123');
 
 		expect(result.error).toBeNull();
-		expect(mockSupabase.__versionsQuery.update).not.toHaveBeenCalled();
+		// Seule l'identité est écrite : le contenu passé à la base est vide (aucune version modifiée)
+		const args = mockSupabase.rpc.mock.calls.find(
+			(c: unknown[]) => c[0] === 'save_exercise_with_version'
+		)[1];
+		expect(args.p_content).toEqual({});
+		expect(args.p_identity).toMatchObject({ title: 'Après' });
 		expect(result.data?.variations).toEqual([{ label: 'v1' }]);
 	});
 
@@ -495,7 +517,7 @@ describe('updateExercise', () => {
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
+		mockSupabase.__latestQuery.select.mockResolvedValue({
 			data: [versionRow('ex-123')],
 			error: null
 		});
@@ -542,7 +564,7 @@ describe('deleteExercise', () => {
 
 		// getExercise : .select('*').eq().single() rend l'exercice
 		mockSupabase.__mockQuery.single.mockResolvedValueOnce({ data: existingExercise, error: null });
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
+		mockSupabase.__latestQuery.select.mockResolvedValue({
 			data: [versionRow('ex-123')],
 			error: null
 		});
@@ -566,7 +588,7 @@ describe('deleteExercise', () => {
 			variations: []
 		};
 		mockSupabase.__mockQuery.single.mockResolvedValueOnce({ data: existingExercise, error: null });
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
+		mockSupabase.__latestQuery.select.mockResolvedValue({
 			data: [versionRow('ex-123')],
 			error: null
 		});
@@ -613,7 +635,7 @@ describe('deleteExercise', () => {
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });
-		mockSupabase.__versionsQuery.order.mockResolvedValue({
+		mockSupabase.__latestQuery.select.mockResolvedValue({
 			data: [versionRow('ex-123')],
 			error: null
 		});

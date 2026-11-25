@@ -25,6 +25,7 @@ import {
 import { POST as duplicateWorksheet } from '../../src/routes/api/worksheets/[id]/duplicate/+server';
 import { GET as getStudentWorksheet } from '../../src/routes/api/student/worksheets/[assignmentId]/+server';
 import { GET as getPreview } from '../../src/routes/api/worksheets/assignments/[assignmentId]/preview/+server';
+import { GET as getCorrection } from '../../src/routes/api/worksheets/assignments/[assignmentId]/correction/+server';
 import {
 	GET as getReport,
 	PUT as reviewReport
@@ -257,6 +258,20 @@ describe('dans la fiche restée en v1', () => {
 		);
 		expect(text).toContain('Énoncé v1');
 		expect(text).not.toContain('Énoncé v2');
+	});
+
+	it('corrigé de la classe (GET …/correction) : v1', async () => {
+		const text = JSON.stringify(
+			await json(
+				await getCorrection({
+					locals: teacherLocals,
+					params: { assignmentId },
+					url: new URL('http://localhost/test?format=json')
+				} as never)
+			)
+		);
+		expect(text).toContain('Corrigé v1');
+		expect(text).not.toContain('Corrigé v2');
 	});
 
 	it('tuteur : le corrigé est celui de la version de la fiche', async () => {

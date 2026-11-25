@@ -99,7 +99,13 @@ export const exerciseBackupRecordSchema = z.object({
 	// Versions de l'exercice (ADR 0044) : absentes des sauvegardes antérieures, dont le contenu
 	// ci-dessus (variations, shared, generic_functions) devient alors la version 1. Présentes, le
 	// contenu ci-dessus est celui de la dernière, pour les lecteurs de l'ancien format.
-	versions: z.array(exerciseVersionBackupSchema).max(1000).optional(),
+	versions: z
+		.array(exerciseVersionBackupSchema)
+		.max(1000)
+		.refine((versions) => new Set(versions.map((v) => v.number)).size === versions.length, {
+			message: 'Numéros de version en double'
+		})
+		.optional(),
 
 	// Audit fields
 	created_at: datetimeSchema,

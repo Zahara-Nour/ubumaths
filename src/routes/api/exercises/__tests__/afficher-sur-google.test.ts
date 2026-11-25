@@ -135,7 +135,8 @@ describe('PUT /api/exercises/[id] — privé + Google', () => {
 			undefined, // locals.supabase : sans objet ici, `updateExercise` est simulé
 			EXERCISE_ID,
 			expect.objectContaining({ search_indexed: true }),
-			TEACHER_ID
+			TEACHER_ID,
+			undefined // sans `version_id` : la dernière version (ADR 0044)
 		);
 	});
 
