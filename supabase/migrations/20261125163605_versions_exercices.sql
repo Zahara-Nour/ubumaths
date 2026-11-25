@@ -517,7 +517,9 @@ create policy "Teachers can update versions of own exercises" on public.exercise
 		)
 	)
 	with check (
-		exists (
+		-- created_by reste celui de l'auteur : personne ne l'attribue à un autre profil
+		created_by = (select auth.uid())
+		and exists (
 			select 1 from public.exercises e
 			where e.id = exercise_versions.exercise_id and e.created_by = (select auth.uid())
 		)

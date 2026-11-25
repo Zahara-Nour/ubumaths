@@ -19,23 +19,17 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '#lib/types/database.ts';
+import type { Database } from '#lib/types/database.ts';
+import type { ExerciseVersionContent, ExerciseVersionRead } from '#lib/types/database-helpers.ts';
+
+export type { ExerciseVersionContent, ExerciseVersionRead };
+import { createServerLogger } from '#lib/utils/logger.ts';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-type VersionRow = Tables<'exercise_versions'>;
-
-/** Le contenu d'une version : ce qui change d'une version à l'autre. */
-export type ExerciseVersionContent = Pick<
-	VersionRow,
-	'variations' | 'shared' | 'generic_functions'
->;
-
-/** Une version telle que les lectures la rendent. */
-export type ExerciseVersionRead = Pick<VersionRow, 'id' | 'number' | 'exercise_id'> &
-	ExerciseVersionContent;
+// ExerciseVersionContent, ExerciseVersionRead : #lib/types/database-helpers.ts (règle 6)
 
 // ============================================================================
 // CONSTANTES
@@ -53,6 +47,8 @@ export const WORKSHEET_LINE_VERSION =
 
 /** Au-delà, l'adresse de la requête `in.(…)` devient trop longue pour PostgREST. */
 const IDS_PER_QUERY = 100;
+
+const logger = createServerLogger('server/exercise-versions');
 
 // ============================================================================
 // FONCTIONS — LECTURE
@@ -119,7 +115,8 @@ export async function fetchLatestVersions(
 
 /**
  * Les exercices, chacun avec le contenu de sa DERNIÈRE version (lecture hors fiche).
- * Un exercice sans version est une incohérence de la base : erreur, pas un exercice vide.
+ * Un exercice sans version est une incohérence de la base : il est écarté de la liste et
+ * journalisé, pour qu'un seul exercice cassé ne fasse pas tomber toute une liste.
  */
 export async function withLatestVersions<T extends { id: string }>(
 	supabase: SupabaseClient<Database>,
@@ -129,11 +126,16 @@ export async function withLatestVersions<T extends { id: string }>(
 		supabase,
 		exercises.map((e) => e.id)
 	);
-	return exercises.map((exercise) => {
+	const withContent: (T & ExerciseVersionContent)[] = [];
+	for (const exercise of exercises) {
 		const version = latest.get(exercise.id);
-		if (!version) throw new Error(`Exercice ${exercise.id} sans version lisible`);
-		return withVersionContent(exercise, version);
-	});
+		if (!version) {
+			logger.error(`Exercice ${exercise.id} sans version lisible : écarté de la liste`);
+			continue;
+		}
+		withContent.push(withVersionContent(exercise, version));
+	}
+	return withContent;
 }
 
 /** Un exercice avec le contenu de sa DERNIÈRE version (lecture hors fiche). */
@@ -142,6 +144,7 @@ export async function withLatestVersion<T extends { id: string }>(
 	exercise: T
 ): Promise<T & ExerciseVersionContent> {
 	const [withContent] = await withLatestVersions(supabase, [exercise]);
+	if (!withContent) throw new Error(`Exercice ${exercise.id} sans version lisible`);
 	return withContent;
 }
 

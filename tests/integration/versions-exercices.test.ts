@@ -595,6 +595,22 @@ describe('accès : une version se lit exactement quand son exercice se lit', () 
 		expect(data ?? []).toEqual([]);
 	});
 
+	it('l’auteur n’attribue pas une version existante à un autre profil', async () => {
+		const autreId = (
+			await sql<{ id: string }>(`select id from public.profiles where id <> $1 limit 1`, [auteurId])
+		)[0].id;
+		const { data } = await auteur
+			.from('exercise_versions')
+			.update({ created_by: autreId } as never)
+			.eq('id', exoPriveV2)
+			.select('id');
+		expect(data ?? []).toEqual([]);
+		const createur = await sql('select created_by from public.exercise_versions where id = $1', [
+			exoPriveV2
+		]);
+		expect(createur).toEqual([{ created_by: auteurId }]);
+	});
+
 	it('seul l’auteur modifie ou supprime une version', async () => {
 		for (const [nom, client] of acteurs().slice(1)) {
 			const maj = await client

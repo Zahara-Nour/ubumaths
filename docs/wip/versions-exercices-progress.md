@@ -66,9 +66,10 @@ ACTION`** : supprimer une version pointée est refusé, supprimer l'exercice pas
 
 1. Reprise : chaque exercice a une v1 identique à son contenu ; chaque ligne de fiche → v1 de son
    exercice.
-2. Accès : lisent une version l'auteur, tous si public, le lien de partage, l'élève qui l'a reçue
-   (fiche ou affectation directe) ; ne la lisent pas un autre prof, un élève d'une autre classe ;
-   seul l'auteur écrit.
+2. Accès : une version se lit exactement quand son exercice se lit (ADR 0044) — l'auteur, tous si
+   public, le lien de partage, l'élève qui lit l'exercice (il lit alors TOUTES ses versions, pas
+   seulement celle de sa fiche ; relevé par l'audit, conforme à l'ADR) ; ne la lisent pas un autre
+   prof, un élève d'une autre classe ; seul l'auteur écrit.
 3. Version pointée non supprimable ; exercice supprimé → lignes de fiche parties ; ligne de fiche
    vers la version d'un autre exercice refusée.
 4. v2 ajoutée en test : fiche restée en v1 → v1 dans copie élève, aperçu, corrigé, PDF ; page
@@ -109,3 +110,30 @@ pas `db:migrate` seule : elle prévient David, qui demande `db:migrate` + `deplo
 
 - Formulaire d'exercice : carte « Variations » et toasts « Variation ajoutee », « Maximum 10
   variations autorisees » (mot contraire à CONTEXT.md, accents manquants) → PR 2.
+
+## Revues de la PR 1 (2026-11-25)
+
+Corrigés dans la PR 1 : policy UPDATE qui fige `created_by` (+ test d'intégration) ; un exercice
+sans version est écarté d'une LISTE et journalisé au lieu de la faire tomber (lu seul : erreur) ;
+alias de types de version déplacés dans `database-helpers.ts` (règle 6). Migration renommée
+`20261125163605` (une migration de `main` horodatée après l'ancienne).
+
+Conforme à l'ADR, pas un bug : l'élève qui lit un exercice lit TOUTES ses versions (corrigés
+compris), pas seulement celle de sa fiche. Déjà vrai avant (contenu unique), mais les anciennes
+versions restent lisibles ; une version publique ancienne reste lisible par `anon` → « retirer un
+contenu » = modifier ou supprimer la version qui le porte. Corrigés lisibles par REST par l'élève :
+existait avant la branche, chantier à part si David le veut.
+
+Reportés :
+
+- PR 2 : la correction après signalement ne touche plus `exercises.updated_at` (plan du site, tri
+  « modifié le ») ; `fetchLatestVersions` sans pagination (`max_rows = 1000`) → « dernière version
+  par exercice » en SQL dès que les v2 existent ; restauration d'une ancienne sauvegarde (→ v1)
+  qui réécrit la v1 pointée par les fiches, et numéros de version non uniques dans le Zod de
+  `backup.ts` ; sauvegarde qui s'interrompt sur un exercice sans version ; `updateExercise` /
+  import `replace` : `exercises` écrit avant la version (pas atomique) ; test d'intégration de la
+  jointure de `/correction`.
+- PR 4 (inventaire du DROP) : `admin/exercise-backup.ts` écrit encore `variations`, `shared`,
+  `generic_functions` sur `exercises` (dump SQL l. ~400-438, restauration l. ~855, ~891) ; anciens
+  scripts `scripts/create-*.ts` qui font `.from('exercises').update({ generic_functions })` (réussit
+  sans effet) → le dire dans la skill `fiches-exercices`.
