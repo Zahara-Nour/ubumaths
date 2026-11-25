@@ -117,6 +117,7 @@ async function reecritureRefusee(
 		.select('id');
 	expect(data).toBeNull();
 	expect(error?.code).toBe('42501');
+	expect(error?.message).toContain('ne se reecrit pas');
 	expect(await enBase(messageId)).toEqual(avant);
 }
 
