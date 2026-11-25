@@ -521,6 +521,7 @@
 					viewBox="0 0 {barFit.viewWidth} {barFit.viewHeight}"
 					style:max-width="{barFit.viewWidth}px"
 					style:min-width={barsMeasured ? `${barFit.viewWidth}px` : undefined}
+					style:height={barsMeasured ? `${barFit.viewHeight}px` : undefined}
 					class="stat-svg stat-barres"
 				>
 					<title id={titleId}>{scene.accessibleTitle}</title>

@@ -71,6 +71,7 @@
 		viewBox="0 0 {fit.viewWidth} {totalHeight}"
 		style:max-width="{fit.viewWidth}px"
 		style:min-width={measured ? `${fit.viewWidth}px` : undefined}
+		style:height={measured ? `${totalHeight}px` : undefined}
 		class="stat-svg stat-boites"
 	>
 		<title id={titleId}>{scene.accessibleTitle}</title>

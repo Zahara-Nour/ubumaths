@@ -331,6 +331,7 @@
 					viewBox="0 0 {viewWidth} {viewHeight}"
 					style:max-width="{viewWidth}px"
 					style:min-width={measured ? `${viewWidth}px` : undefined}
+					style:height={measured ? `${viewHeight}px` : undefined}
 					class="stat-svg barres-dessin"
 					class:placer-verrouille={locked}
 					role="slider"

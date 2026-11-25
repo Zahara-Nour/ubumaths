@@ -17,7 +17,10 @@
  * Le dessin est donc toujours à l'échelle 1 : son texte fait sa taille CSS
  * (12 px). Pur : aucune mesure ici, la largeur disponible vient du composant
  * (`bind:contentRect`), qui pose aussi `min-width: viewWidth` sur le SVG : un
- * dessin plus large que la place défile, il n'est pas rétréci. Le PDF n'est pas concerné.
+ * dessin plus large que la place défile, il n'est pas rétréci. Il pose de même
+ * `height: viewHeight` : Safari calcule une hauteur automatique 1/64 px trop
+ * courte (375,984 pour 376), ce qui rétrécit tout le dessin (texte de 11,9995 px).
+ * Le PDF n'est pas concerné.
  *
  * @module ubumark/utils/stat-chart-fit
  */
@@ -133,7 +136,7 @@ function rotatedExtentOf(scene: BarScene): number {
 function barBasePad(scene: BarScene): number {
 	const ticks = 12 + Math.max(...scene.ticks.map((t) => t.label.length)) * BAR_TICK_CHAR_PX;
 	// Marges entières : un dessin de largeur entière n'est jamais rétréci d'un cheveu
-	// par l'arrondi du navigateur (11,9995 px sous Safari)
+	// par l'arrondi du navigateur
 	return Math.ceil(Math.max(BAR_PAD_LEFT_MIN, ticks));
 }
 
@@ -183,7 +186,7 @@ function barMinView(scene: BarScene, canRebuild: boolean): number {
 
 function barFit(scene: BarScene, padLeft: number, plotWidth: number): BarFit {
 	const rotatedExtent = rotatedExtentOf(scene);
-	// Entière, comme les marges de côté : hauteur du dessin entière (Safari)
+	// Entière, comme les marges de côté : hauteur du dessin entière
 	const padBottom = Math.ceil(
 		(scene.rotateLabels ? 16 + rotatedExtent : BAR_PAD_BOTTOM_FLAT) +
 			(scene.axisTitles.x ? AXIS_TITLE_PX : 0)
