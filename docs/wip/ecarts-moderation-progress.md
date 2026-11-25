@@ -6,11 +6,11 @@ status: PR 1 (#3115), PR 2 (#3125) et PR 3 (#3132) mergées ; migration de la PR
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (10), après #3140._
+_Mis à jour le 2026-11-25 (11), après #3140 et sa migration en prod._
 
-- **État** : quatre PR mergées : #3115 (T20, T25, T27), #3125 (T22, C32, marque non maquillable), #3132 (T21), **#3140 (T31 : un message ne change pas de conversation)**. Registre : T31 barré, T32, T33 et M59 entrés. En prod : toutes les migrations jusqu'à `20261125072915` (jouées par David le 2026-11-25, fonction `get_flagged_messages_for_teacher` vérifiée en lecture). **Migration `20261125093026` (T31) PAS encore en prod.** Rien n'est déployé (`deploy:prod` sur demande de David).
+- **État** : quatre PR mergées : #3115 (T20, T25, T27), #3125 (T22, C32, marque non maquillable), #3132 (T21), **#3140 (T31 : un message ne change pas de conversation)**. Registre : T31 barré, T32, T33 et M59 entrés. En prod : les migrations jusqu'à `20261125072915` (jouées par David le 2026-11-25, fonction `get_flagged_messages_for_teacher` vérifiée en lecture). **Migration `20261125093026` (T31) en prod** (jouée par David, trigger vérifié en lecture). Rien n'est déployé (`deploy:prod` sur demande de David).
 - **Prochaine action** : si David dit oui à T32, une PR : personne ne change la conversation d'une participation par l'API (même forme que T31 : trigger sur `conversation_participants`, test d'intégration rouge d'abord, `code-reviewer` + `security-auditor`). Avant d'écrire : greper qui modifie `conversation_participants` (`src` et fonctions de la base).
-- **En attente de David** : (1) **`! pnpm db:migrate`** pour `20261125093026` (écriture en prod refusée à la session ; `migration list --linked` d'abord, `--include-all` si le refus « inserted before » revient) ; (2) **T32** : fermer le déplacement de participation ? (question d'accès en miroir posée le 2026-11-25, sans réponse) ; (3) **T33** : garder le texte d'origine d'un message marqué que l'élève réécrit ?
+- **En attente de David** : (1) **T32** : fermer le déplacement de participation ? (question d'accès en miroir posée le 2026-11-25, sans réponse) ; (2) **T33** : garder le texte d'origine d'un message marqué que l'élève réécrit ?
 - **Pièges en cours** : T30 (déjà au registre) couvre la date d'envoi réécrite ; ma sonde du 2026-11-25 n'a modifié aucune ligne en changeant `created_at`, à reprouver avant d'y toucher. Un élève ne supprime pas son message par un UPDATE direct de `deleted_at` (RLS). La mention de l'onglet est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève ». Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David.
 - **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
 
