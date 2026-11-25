@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 2 (éditeur) ouverte, CI en cours._
+_Mis à jour le 2026-11-25, après #3154 (PR 2, éditeur de versions, mergée)._
 
-- **État** : PR 2 sur `feat/versions-exercices-editeur` (worktree `../ubumaths-wt-versions-exercices-editeur`) : migration additive `20261125183550`, routes, éditeur, sauvegarde ; revues faites et corrigées. Détail : § PR 2 — fait.
-- **Prochaine action** : PR 2 ouverte (correctifs de revue rejoués : intégration 57/57, verifs Chrome, suite complète 616/616 verte avant correctifs) → CI verte → `pnpm pr:merger` → `db:migrate` depuis la branche mergée (4 conditions réunies : accès « personne », rouge prouvé, audit sans bloquant, additive + rollback). Puis PR 3 (la fiche : menu de version à l'import, « version plus récente existe »).
-- **En attente de David** : rien.
-- **Pièges en cours** : `deploy:prod` lancé par David (`! pnpm deploy:prod`) ; le code de la PR 2 appelle les nouvelles fonctions SQL → `db:migrate` AVANT ou AVEC le `deploy:prod`. Base locale de dev : migration de la branche jouée (`db:a-jour`) et `create_exercise_version` / `save_exercise_with_version` redéfinies à la main après retouche.
-- **Worktree / branche** : `../ubumaths-wt-versions-exercices-editeur` / `feat/versions-exercices-editeur`.
+- **État** : PR 2 mergée (#3154). Migration `20261125183550_versions_exercices_editeur` PAS encore jouée en prod : `db:migrate` suspendu, deux autres migrations en attente (`20261125183322`, `20261125183331`, chantier idees-tle-continuite-combinatoire, #3153) que `db:migrate` pousserait avec. Les 4 conditions de la nôtre sont réunies.
+- **Prochaine action** : quand David le dit (ou quand les deux autres sont jouées), `pnpm exec supabase migration list --linked` puis `pnpm db:migrate` depuis `main` ; ensuite PR 3 (la fiche : menu de version à l'import, « une version plus récente existe »).
+- **En attente de David** : feu vert pour `db:migrate` (pousse aussi les 2 migrations de #3153), puis `deploy:prod` APRÈS la migration (le code appelle les nouvelles fonctions SQL : déployer avant = page d'édition et listes en erreur).
+- **Pièges en cours** : `deploy:prod` lancé par David (`! pnpm deploy:prod`) ; base locale de dev : fonctions de la PR 2 redéfinies à la main pendant la session, identiques au fichier final.
+- **Worktree / branche** : aucun (retiré au merge) ; PR 3 → `../ubumaths-wt-versions-exercices-fiche`.
 
 ## Décisions (2026-11-25)
 
