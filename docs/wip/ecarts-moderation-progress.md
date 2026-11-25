@@ -6,14 +6,15 @@ status: PR 1 (T20, T25, T27) mergée (#3115) ; PR 2 (T21, T22) en cours, T21 cod
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (3), après #3115 (PR 2 en cours d'ouverture)._
+_Mis à jour le 2026-11-25 (4), après #3115 (PR 2 = #3125, ouverte, CI en cours)._
 
-- **État** : PR 1 mergée (#3115). PR 2 (T21, T22, C32, correctif du maquillage) : code, tests, revues et doc faits, `origin/main` fusionné ; reste typecheck, PR, CI, merge, `db:migrate`.
-- **Prochaine action** : `pnpm check:incremental`, ouvrir la PR, `pnpm check:migrations --pr <n>`, CI, `pnpm pr:merger <n>`, `db:migrate` depuis la branche mergée (les 4 conditions sont réunies ; `migration list --linked` avant : une autre migration en attente → stop), barrer T22 et C32 au registre (preuves à la main), mettre ce bloc à jour.
-- **En attente de David** (3 questions, aucune ne bloque la PR) :
-  1. « tg » marque aussi « tg x » (ancienne notation de la tangente) : le garder ou le retirer ? (recommandé : retirer). **Sans réponse : il reste dans la liste.**
-  2. **L'onglet « Messages marqués » sera vide en prod** : le prof ne lit aucune conversation à deux entre élèves, et en prod les 284 messages du chat sont tous dans 41 conversations à deux entre élèves (7 chats de classe, 0 message). Faut-il que le prof lise les messages marqués des conversations à deux entre ses élèves ? C'est un accès nouveau, donc à David. **T21 n'est pas barré au registre tant que ce n'est pas tranché.**
-  3. Un élève peut encore cacher son message marqué en le supprimant par l'API (`soft_delete_message`, que l'appli n'appelle pas) : l'onglet ne montre pas les messages supprimés. Réserver cette fonction au prof et au serveur, ou montrer aussi les messages marqués supprimés ?
+- **État** : PR 1 mergée (#3115). PR 2 (T21, T22, C32, correctif du maquillage) : code, tests, revues et doc faits, `origin/main` fusionné ; PR #3125 ouverte ; reste CI, merge, `db:migrate`.
+- **Prochaine action** : `pnpm pr:merger 3125` (CI), `db:migrate` depuis la branche mergée (les 4 conditions sont réunies ; `migration list --linked` avant : une autre migration en attente → stop), barrer T22 et C32 au registre (preuves à la main), mettre ce bloc à jour.
+- **En attente de David** : rien.
+- **Tranché par David le 2026-11-25** (« je valide » sur les trois recommandations) :
+  1. « tg » retiré de la liste (ancienne notation de la tangente) ; fait dans la PR 2.
+  2. Le prof lira les messages **marqués** des conversations à deux entre ses élèves, ce message-là et son auteur, pas le reste de la conversation. Accès nouveau : **PR à part (nouveau chantier), avec sa question d'accès posée avant le SQL et son audit**. T21 n'est barré au registre qu'après cette PR.
+  3. L'onglet montrera aussi les messages marqués **supprimés**, avec la mention « supprimé par l'élève » ; même PR que le point 2. On ne retire aucun geste à l'élève.
 - **Pièges en cours** : la pile de test rejoue seule une migration modifiée. Écarts à entrer au registre depuis le dépôt principal : onglet sans lien direct vers la conversation, sans état « traité » ; l'élève réécrit encore `edited_at`, `created_at`, `is_reported` de ses messages et modifie d'anciens messages alors qu'il est restreint ; aucune borne de taille sur `content`. T24 hors lot.
 - **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-moderation` / `fix/ecarts-moderation`.
 

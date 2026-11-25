@@ -453,6 +453,7 @@ describe('Chat System Triggers', () => {
 			'personne ne t’aime',
 			'nique ta mère',
 			'fdp',
+			'ta gueule',
 			'con',
 			// accent saisi en deux caractères (lettre + accent combinant)
 			'encule\u0301 va',
@@ -482,6 +483,8 @@ describe('Chat System Triggers', () => {
 			'une dispute entre amis',
 			'une salopette bleue',
 			'il a compté les points',
+			// « tg » : ancienne notation de la tangente, retirée de la liste
+			'tg x = 3',
 			// les mêmes déguisements dans un mot innocent ne le marquent pas
 			'je suis conte\u0301nt',
 			'co\u200Bntent de toi',

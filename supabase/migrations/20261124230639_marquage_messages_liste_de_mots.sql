@@ -18,6 +18,9 @@
 -- marqués » du prof (écart T21), qui ne montre que les conversations qu'il peut
 -- déjà ouvrir. Le message part toujours : le filtre ne bloque rien.
 --
+-- « tg » n'est pas dans la liste (décision de David, 2026-11-25) : c'est aussi
+-- l'ancienne notation de la tangente (« tg x = 3 »). « ta gueule » y est.
+--
 -- Les messages déjà envoyés ne sont pas relus (le trigger ne joue qu'à l'envoi
 -- et à la modification du contenu).
 --
@@ -60,7 +63,7 @@ DECLARE
     'merde', 'putain', 'ptn', 'connard', 'connasse', 'con', 'conne', 'salaud', 'salopard',
     'enfoire', 'encule', 'batard', 'bouffon', 'abruti', 'cretin', 'debile', 'tocard',
     'cassos', 'boloss', 'clochard', 'trou du cul', 'fdp', 'fils de pute', 'ntm',
-    'nique ta mere', 'nique', 'niquer', 'tg', 'ta gueule', 'ferme ta gueule', 'vtff',
+    'nique ta mere', 'nique', 'niquer', 'ta gueule', 'ferme ta gueule', 'vtff',
     'va te faire foutre', 'fais chier', 'chier',
     -- insultes sexistes et propos sexuels
     'salope', 'pute', 'petasse', 'pouffiasse', 'grognasse', 'garce', 'chienne', 'trainee',
