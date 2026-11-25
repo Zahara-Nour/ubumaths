@@ -37,6 +37,8 @@ async function runLoad(rpc: { reports: RpcResult; count: RpcResult }) {
 	client.rpc.mockImplementation(async (name: string) => {
 		if (name === 'get_reports_for_moderation') return rpc.reports;
 		if (name === 'get_pending_reports_count') return rpc.count;
+		// Messages marqués du prof (écart T21) : hors sujet ici, liste vide.
+		if (name === 'get_flagged_messages_for_teacher') return { data: [], error: null };
 		throw new Error(`RPC inattendue dans le test : ${name}`);
 	});
 
