@@ -9,7 +9,7 @@ _Mis à jour le 2026-11-24, après #3076._
 - **À vérifier** : premières vraies alertes des 4 nouvelles (faux positifs ?), seuils en tête de `surveillance-machine.sh` et `machine-commun.sh`.
 - **À reprendre à tête reposée** (§ « 2026-11-20 — disque et worktrees ») : 6 worktrees à travail unique (2 articles du Shtam jamais commités) ; Time Machine non configuré ; mise à jour de macOS (Preboot 20 Go, demande un redémarrage) ; cache de Brave 3,7 Go (à vider par David).
 - **Prochaine action** : idée 2 (alerte sauvegarde) une fois Time Machine configuré ; sinon clore le chantier (archivage du journal ; doc dans `docs/pratiques/environnement-de-dev.md` et `alertes-machine.md`).
-- **Pièges** : CI Linux → `date_modif` / `date_de` ; `| grep -q` + pipefail = SIGPIPE (lire d'un bloc) ; faux `ps` des tests aiguillés par les champs (`ppid=` contient `pid=`) ; `git -C ""` = dossier courant ; disque = `/System/Volumes/Data`.
+- **Pièges** : `osascript … count windows` expire (-1712) même sur un navigateur tout juste relancé (autorisation d'automatisation sans doute en attente à l'écran) : ce n'est PAS une preuve de blocage, seuls les processus morts non ramassés le sont ; CI Linux → `date_modif` / `date_de` ; `| grep -q` + pipefail = SIGPIPE (lire d'un bloc) ; faux `ps` des tests aiguillés par les champs (`ppid=` contient `pid=`) ; `git -C ""` = dossier courant ; disque = `/System/Volumes/Data`.
 - **Worktree / branche** : aucun.
 
 ## Contexte
@@ -81,3 +81,10 @@ Restent, côté David :
 - Laissés : webkit-2359 de Playwright (worktrees en 1.59.1), cache de Brave (3,7 Go, à vider depuis Brave), mise à jour de macOS (Preboot 20 Go, demande un redémarrage).
 - `pnpm disque:liberer` (`scripts/liberer-disque.sh`) refait ces gestes sûrs. David (2026-11-24) : worktrees finis listés avec un exemple de commande ; « j'ai besoin de connaître les commandes utiles pour faire ça sans toi » (section « Libérer de la place » d'`alertes-machine.md`) ; jamais automatique, l'alerte disque propose `pnpm disque:liberer --essai`.
 - Revue Sonnet de `disque:liberer` : version actuelle ET la plus récente de Claude gardées, lien illisible → rien ; lsof muet → section worktrees sautée ; worktree tout neuf (reflog « branch: Created » seul) jamais « fini » ; Docker seulement si la pile Supabase tourne ; ÉCHEC affiché ; délais (perl alarm) sur `docker info` et `git fetch` ; `production` exclue. Piège trouvé : `git log -g | grep -qv` + pipefail = SIGPIPE → faux négatif : lire d'un bloc.
+
+## 2026-11-25 — l'extension Claude s'emballe
+
+- Bilan de David : 2 extensions Chrome à 98 % (7 h de CPU en 2 j), Brave extension 98 % + utilitaire 93 % (23 h), processus morts non ramassés dans les deux.
+- Coupable : l'extension **Claude in Chrome** (`fcoeoabgfenejglbffodgkkbkcdhcgfn`) — seule extension commune aux deux navigateurs, seule active dans Brave (lu par `lsof` du processus principal : `Local Extension Settings/<id>`), nommée par `NativeMessagingHosts/com.anthropic.claude_code_browser_extension.json`. Les hôtes natifs (`claude --chrome-native-host`) restent à 0 %.
+- 4 processus arrêtés (`kill`), puis Chrome et Brave fermés de force et relancés (autorisation de David, à distance) : 0 processus mort, CPU ~0 %.
+- Piste pour David : retirer l'extension de Brave s'il ne s'en sert pas ; relancer Chrome de temps en temps.
