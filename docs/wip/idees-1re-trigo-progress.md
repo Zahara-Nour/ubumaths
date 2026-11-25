@@ -2,6 +2,8 @@
 
 ## Reprendre ici
 
+> **Note de la session `ecarts-moderation`, 2026-11-25** : `20261125064801` et `20261125065639` sont **en prod**. David a joué lui-même `pnpm db:migrate --include-all` (quatre migrations mergées d'un coup) ; `migration list --linked` ne montre plus rien en attente. Le `db:migrate` de la prochaine action est donc fait.
+
 _Mis à jour le 2026-11-25, après #3135._
 
 - **État** : #3135 mergée (2 brouillons rangés par migration, 7 variations de 5 publiés par

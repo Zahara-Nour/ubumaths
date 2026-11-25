@@ -2,6 +2,8 @@
 
 ## Reprendre ici
 
+> **Note de la session `ecarts-moderation`, 2026-11-25** : `20261125072915` sont **en prod**. David a joué lui-même `pnpm db:migrate --include-all` (quatre migrations mergées d'un coup) ; `migration list --linked` ne montre plus rien en attente. Le `db:migrate` de la prochaine action est donc fait.
+
 _Mis à jour le 2026-11-25, après #3139 (mergée). `db:migrate` NON joué : 3 autres migrations en
 attente en prod (063042 modération, 064801 et 065639 idees-1re-trigo) → décision de David._
 
