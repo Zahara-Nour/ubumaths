@@ -182,6 +182,16 @@ Worktree `ubumaths-wt-ecarts-verifs-e57`, branche `fix/ecarts-verifs-e57`.
 - **Revue** : aucune (un message retiré, le verdict « faux » ne change pas, moins de 30 lignes).
 - **Après le merge** : barrer E57 et E62 au registre depuis `main` (E57 : `pnpm ecarts rejouer --barrer` ; E62 : à la main, preuve « à la main »).
 
+## PR Q : E58 à E60, page des modèles de message du prof retirée (2026-11-25)
+
+Worktree `ubumaths-wt-ecarts-verifs-e58`, branche `fix/ecarts-verifs-e58`.
+
+- **Retiré** : `src/routes/(protected)/dashboard/teacher/message-templates/` (page de 1 039 lignes, aucun lien n'y menait) et les quatre tests de #2482 dans `e2e/verifs/pages-paquet6.spec.ts` (dont les trois `test.fail` de E58, E59, E60), qui n'ont plus de page à ouvrir.
+- **Gardé, lecture stricte de « retirer la page »** : la table `message_templates` et ses règles d'accès (tranché), mais aussi les deux pages admin (`dashboard/admin/message-templates/` et `stats/`), les 10 routes `api/messages/templates/`, le store `messageTemplates.svelte.ts` (importé nulle part), le moteur `src/lib/templates/`, la validation et leurs tests.
+- **Question à David** : retirer aussi ce reste (pages admin, routes, store, moteur) ? Les modèles de message ne servent à aucun envoi (`compose/` ne les lit pas), aucun lien ne mène aux pages admin.
+- **Revue** : aucune (une page retirée, pas de logique ajoutée).
+- **Après le merge** : barrer E58, E59, E60 au registre à la main depuis `main` (preuve « à la main »).
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |
