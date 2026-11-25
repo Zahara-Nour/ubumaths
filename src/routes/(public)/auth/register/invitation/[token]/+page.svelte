@@ -62,7 +62,7 @@
 			</Card.Header>
 			<Card.Content class="space-y-4 text-center">
 				<div class="rounded-lg border bg-muted/40 p-4">
-					<p class="text-sm text-muted-foreground">Identifiant de connexion — notez-le :</p>
+					<p class="text-sm text-muted-foreground">Identifiant de connexion — notez-le :</p>
 					<p class="mt-1 font-mono text-3xl font-bold tracking-wide">{form.loginId}</p>
 					<p class="mt-2 text-sm text-muted-foreground">
 						Avec le mot de passe que vous venez de choisir.
@@ -168,21 +168,23 @@
 
 					<div class="space-y-1">
 						<input type="hidden" name="acceptTerms" value={acceptTerms ? 'true' : 'false'} />
-						<MyCheckbox bind:checked={acceptTerms}>
-							J'accepte les
-							<a
-								href={resolve('legal/cgu')}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="text-primary hover:underline">conditions générales d'utilisation</a
+						<MyCheckbox bind:checked={acceptTerms} labelClass="leading-snug">
+							<span
+								>J'accepte les
+								<a
+									href={resolve('legal/cgu')}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="text-primary hover:underline">conditions générales d'utilisation</a
+								>
+								et la
+								<a
+									href={resolve('legal/confidentialite')}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="text-primary hover:underline">politique de confidentialité</a
+								>.</span
 							>
-							et la
-							<a
-								href={resolve('legal/confidentialite')}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="text-primary hover:underline">politique de confidentialité</a
-							>.
 						</MyCheckbox>
 						{#if fieldError('acceptTerms')}
 							<p class="text-sm text-destructive">{fieldError('acceptTerms')}</p>
@@ -195,9 +197,11 @@
 							est nécessaire.
 						</div>
 						<input type="hidden" name="consent" value={consent ? 'true' : 'false'} />
-						<MyCheckbox bind:checked={consent}>
-							Je suis le parent ou le responsable légal de {invitation.firstname} et j'autorise son inscription
-							sur Chiphre.
+						<MyCheckbox bind:checked={consent} labelClass="leading-snug">
+							<span
+								>Je suis le parent ou le responsable légal de {invitation.firstname} et j'autorise son
+								inscription sur Chiphre.</span
+							>
 						</MyCheckbox>
 						{#if fieldError('consent')}
 							<p class="text-sm text-destructive">{fieldError('consent')}</p>
