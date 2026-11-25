@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, lot en cours d'écriture._
+_Mis à jour le 2026-11-25, lot écrit._
 
-- **État** : phase 0 validée (« je valide »). Variations des 4 modèles publiés écrites et vérifiées (`question:specs` : 5 fichiers « importable ») dans `scripts/questions/idees-6e-proportionnalite-publies/` + `docs/wip/questions/idees-6e-proportionnalite-publies.py`, commités sur la branche. Modèles neufs N1 à N5 : un agent les écrivait (`docs/wip/questions/idees-6e-proportionnalite-neufs.py` → `scripts/questions/idees-6e-proportionnalite-neufs/`) ; regarder dans le worktree ce qui existe et le vérifier.
-- **Prochaine action** : finir et vérifier N1 à N5 (`create-questions` en simulation, `question:specs --file`, `--apercu 5`), essai en base locale, puis donner à David la commande `create-questions --publier` des neufs.
-- **En attente de David** : question sur e0ccaf84 : `constraints.zeros: off` pour accepter « 21,60 € » (aujourd'hui « forme à améliorer » ; les nouvelles variations écrivent « 7,2 € »).
-- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test ; `migration-rangement.ts` n'ajoute pas de point à un modèle déjà tagué. Rangements des neufs : quatrième proportionnelle niveaux 4, 5, 6 (N1, N2, N3 en 6-192) ; caractérisation niveaux 8, 9 (N4 6-189, N5 6-190).
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite`.
+- **État** : lot entier écrit, vérifié (`question:specs --file` : 10 fichiers « importable ») et poussé sur la branche : 4 publiés (+6 variations) et 5 neufs (N1 à N5, `scripts/questions/idees-6e-proportionnalite-neufs/`).
+- **Prochaine action** : essai en base LOCALE (neufs + copie brouillon des publiés, aperçus avec `pnpm voir`, puis suppression), puis donner à David `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier`.
+- **En attente de David** : (1) `zeros: off` sur e0ccaf84 pour accepter « 21,60 € » ? (les neufs N1-N3 l'ont déjà) ; (2) prix affichés « 3,7 € » et non « 3,70 € » (`eval` ne force pas deux décimales) : acceptable ? ; (3) N5 v2 : l'âge du père se calcule par l'écart (réponse = valeur, pas « on ne peut pas ») : écart à la fiche à confirmer ; (4) N5 : le choix « valeur × quantité » donne parfois une valeur absurde (piège facile) : garder ? ; (5) N4 relier : deux séries fixes : assez ?
+- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Rangements des neufs dans les fichiers (quatrième proportionnelle 4, 5, 6 ; caractérisation 8, 9) : relever les niveaux en prod avant la migration.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite` (poussée, pas de PR).
 
 ## Journal
 
@@ -48,3 +48,8 @@ donc aucune note). Modèles publiés réservés dans le tableau de répartition 
 - Exportés de prod : e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d, 06df72fd (ce dernier inchangé : F4 se fait par migration).
 - e0ccaf84 +2 (masses au dixième ; diviser), 7981dab0 +2 (tiers / quart de grands nombres ; de décimaux), 52bf3fb9 +1 et 5e4e5e9d +1 (échelle graphique dessinée par un bloc `figure`, 1 cm pour 2, 4 ou 5 m, deux cases). Coup de pouce et trois erreurs prévues par case.
 - Écarts : prix écrits « 7,2 € » (la règle des zéros juge « 21,60 € » forme à améliorer) ; espace des milliers écrit à la main (`2\,700`) ; une échelle par terrain, ni tennis ni handball (dimensions connues).
+
+### 2026-11-25 : modèles neufs
+
+- N1 retour à l'unité (4 var., 23 specs), N2 linéarité additive (4, 17), N3 compléter un tableau (3, 26, point 6-192), N4 grandeurs (2 : choix plusieurs, relier ; 10), N5 peut-on le calculer (2, 12). `zeros: off` sur N1 à N3.
+- Écarts : N3 moyen x pair ∈ {4, 8, 10} (sinon la différence vaut 1 = valeur pour 1) ; prix unitaire 1,10 à 3,50 € jamais entier ; N1 recette 2 à 10, sirop 2 à 9 ; certaines cases n'ont que deux erreurs prévues (pas d'invention) ; N5 v2 : l'âge du père se calcule par l'écart.
