@@ -172,6 +172,16 @@ Worktree `ubumaths-wt-ecarts-verifs-n`, branche `fix/ecarts-verifs-n`.
   en attente de David).
 - **Revue** : `code-reviewer` Opus, aucun bloquant ; 3 mineurs (tests) ajoutés sauf le seuil de 24.
 
+## PR P : E57 et E62 (2026-11-25)
+
+Worktree `ubumaths-wt-ecarts-verifs-e57`, branche `fix/ecarts-verifs-e57`.
+
+- **E57** (en-tête du PDF anglais d'une fiche, titre traduit) : **déjà corrigé sur `main`** par une autre session le 2026-11-25 (a047d74f9c, chantier `sections-pdf-anglais` : le schéma de réponse de `GET /api/worksheets/[id]` retirait `translations`). Constaté en rejouant le test de #2509 marqué `test.fail` : « Expected to fail, but passed ». Ici : le `test.fail` retiré, le test renommé (plus « ÉCART »), l'attendu inchangé.
+- **E62** (cercle de rayon donné par un segment) : le message « Ton compas est ouvert à l'œil : prends l'écartement DE avec le Report. » retiré (`centeredRadiusEyeballedFeedback`, `questions/construction/circle.ts`). Un bon rayon pris à l'œil reçoit le message du mauvais rayon, « Ton cercle a le bon centre mais pas le bon rayon : reporte la longueur DE. », le seul que l'élève lisait déjà. Le message « ouvert à l'œil » du cercle `passant=` (« …ouvre-le jusqu'à A. ») et celui de la règle graduée ne changent pas. Catalogue des blocs et `docs/systeme/questions.md` mis d'accord ; titre du test de #2463 raccourci, attendu inchangé.
+- **Vu à l'écran par la session** (`pnpm test:verifs`, ordi-chrome) : les 5 tests de #2463 et les 2 de #2509 verts, dont le PDF anglais qui porte « Retake test: quadratic functions ».
+- **Revue** : aucune (un message retiré, le verdict « faux » ne change pas, moins de 30 lignes).
+- **Après le merge** : barrer E57 et E62 au registre depuis `main` (E57 : `pnpm ecarts rejouer --barrer` ; E62 : à la main, preuve « à la main »).
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |

@@ -970,8 +970,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    quadrillage par le parseur). Lecture des deux formes : `centeredCircleOf` (`ubumark/types/construction.ts`).
    Juste : un cercle de l'élève qui recouvre le cercle attendu, construit (sur quadrillage, tout cercle
    tracé l'est : les touchers vont aux nœuds). Sinon, dans l'ordre : bon cercle au point de passage non
-   construit → « Ton compas est ouvert à l'œil : ouvre-le jusqu'à A. » (rayon : « … prends l'écartement DE
-   avec le Report. ») ; aucun cercle → « Trace le cercle de centre O passant par A. » (« … et de rayon
+   construit → « Ton compas est ouvert à l'œil : ouvre-le jusqu'à A. » (rayon donné par un segment : le
+   message du mauvais rayon ci-dessous, le seul, E62) ; aucun cercle → « Trace le cercle de centre O passant par A. » (« … et de rayon
    DE. ») ; aucun cercle centré en O → « Pique ton compas en O. » ; sinon « Ton cercle a le bon centre mais
    ne passe pas par A. » (« … mais pas le bon rayon : reporte la longueur DE. »). Erreurs de l'auteur :
    point nommé invisible, cercle qui sort de la fenêtre, centre ou point de passage hors des nœuds sur
