@@ -8658,6 +8658,121 @@ export type Database = {
 					}
 				];
 			};
+			private_lesson_invitations: {
+				Row: {
+					cancelled_at: string | null;
+					claimed_at: string | null;
+					class_id: string | null;
+					created_at: string;
+					created_by: string | null;
+					email_sent_at: string | null;
+					expires_at: string;
+					firstname: string;
+					grade: string;
+					id: string;
+					parent_email: string;
+					school_id: string;
+					sent_count: number;
+					student_id: string | null;
+					token_hash: string;
+					used_at: string | null;
+				};
+				ComputedFields: never;
+				Insert: {
+					cancelled_at?: string | null;
+					claimed_at?: string | null;
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					email_sent_at?: string | null;
+					expires_at: string;
+					firstname: string;
+					grade: string;
+					id?: string;
+					parent_email: string;
+					school_id: string;
+					sent_count?: number;
+					student_id?: string | null;
+					token_hash: string;
+					used_at?: string | null;
+				};
+				Update: {
+					cancelled_at?: string | null;
+					claimed_at?: string | null;
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					email_sent_at?: string | null;
+					expires_at?: string;
+					firstname?: string;
+					grade?: string;
+					id?: string;
+					parent_email?: string;
+					school_id?: string;
+					sent_count?: number;
+					student_id?: string | null;
+					token_hash?: string;
+					used_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'private_lesson_invitations_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'private_lesson_invitations_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'private_lesson_invitations_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'private_lesson_invitations_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'private_lesson_invitations_school_id_fkey';
+						columns: ['school_id'];
+						isOneToOne: false;
+						referencedRelation: 'schools';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'private_lesson_invitations_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'private_lesson_invitations_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'private_lesson_invitations_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			private_messages: {
 				Row: {
 					class_id: string | null;
@@ -10427,6 +10542,7 @@ export type Database = {
 					created_at: string | null;
 					id: string;
 					is_active: boolean | null;
+					is_private_lessons: boolean;
 					logo_url: string | null;
 					name: string;
 					timetable: Json | null;
@@ -10442,6 +10558,7 @@ export type Database = {
 					created_at?: string | null;
 					id?: string;
 					is_active?: boolean | null;
+					is_private_lessons?: boolean;
 					logo_url?: string | null;
 					name: string;
 					timetable?: Json | null;
@@ -10456,6 +10573,7 @@ export type Database = {
 					created_at?: string | null;
 					id?: string;
 					is_active?: boolean | null;
+					is_private_lessons?: boolean;
 					logo_url?: string | null;
 					name?: string;
 					timetable?: Json | null;
@@ -16222,6 +16340,7 @@ export type Database = {
 				Returns: number;
 			};
 			get_pending_reports_count: { Args: Record<PropertyKey, never>; Returns: number };
+			get_private_lesson_invitation: { Args: { p_token: string }; Returns: Json };
 			get_private_messages_unread_count: { Args: { p_user_id: string }; Returns: number };
 			get_reaction_users: {
 				Args: { p_emoji: string; p_message_id: string };

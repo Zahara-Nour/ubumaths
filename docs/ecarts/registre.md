@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V125 · L123 · M58 · C43 · D44 · T29 · E81
+Derniers numéros : V125 · L123 · M58 · C43 · D44 · T29 · E82
 
 ## Écarts
 
@@ -310,3 +310,4 @@ Derniers numéros : V125 · L123 · M58 · C43 · D44 · T29 · E81
 - L122 · bug latent · rapports de bug · au remplacement d'une capture de rapport de bug, l'effacement de l'ancienne ne regarde pas ce que le stockage rend : un refus silencieux laisse l'ancienne capture orpheline · preuve : à la main · à faire (relevé par code-reviewer sur #3115 ; test de preuve à écrire)
 - L123 · bug latent · modération · quand le compteur de signalements est illisible, le badge du menu de modération disparaît sans rien dire hors de l'onglet Signalements · preuve : à la main · à faire (relevé par code-reviewer sur #3115 ; test de preuve à écrire)
 - E81 · vérification à l'écran · navigation au téléphone · dans le menu du téléphone, le bloc « Préférences » (Lecture facilitée, taille du texte, mode sombre) est sous le bas de l'écran et ne s'atteint pas : la liste du menu ne défile pas (MobileNavDrawer.svelte, nav sans défilement) ; élève et prof, iPhone et Android à 390 px ; ligne #2898 (deux test.fail dans e2e/verifs/lecture-facilitee-paquet9.spec.ts ; vu en local seulement) · preuve : à la main · tranché par David le 2026-11-24 : à corriger (liste défilable, Préférences fixé en bas)
+- E82 · vérification à l'écran · modèles de questions · sur iPhone (393 px), dans « Inégalités et intervalles » v4 de 2de, les nombres négatifs sous la droite graduée de −6 à 6 se touchent (« −6 » déborde de 1,2 px sur « −5 », on lit « −6−5−4… ») ; Android (412 px) passe ; même défaut que E63 sur un autre modèle ; ligne #2946 (test.fail dans e2e/verifs/modeles-paquet9.spec.ts) · preuve : à la main · tranché par David le 2026-11-25 : à corriger avec E63, même correctif (une graduation étiquetée sur deux à 390 px, PR « téléphone »)
