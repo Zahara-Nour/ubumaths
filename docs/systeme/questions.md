@@ -1346,8 +1346,14 @@ même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions d�
 reçoivent pas (aucune réponse attendue à majuscules collées en base).
 
 Plusieurs cases : positionnelles par défaut ; `options.orderIndependent` → appariement maximal
-réponses ↔ cases (pas glouton). `validateAnswerDetailed` rend le verdict par case qu'utilise la
-correction.
+réponses ↔ cases (pas glouton), en deux temps (`matchAnswersToBlanks`) : les réponses justes
+d'abord, puis, sans en détacher aucune, celles qu'une case n'accepte qu'à un défaut d'écriture
+près (`looseMatchOf` : arrondi non fait, ou nombre seul mal écrit `58,` / `,5` dont la valeur relue
+est juste, même règle qu'en ordre fixé) ; celles-là sont `bad_form` avec leur message.
+`validateAnswerDetailed` rend le verdict par case qu'utilise la correction. Une saisie qui ne
+s'évalue pas (`58,5,`, `(`) dans une case à arrondi est une réponse fausse de CETTE case, jamais
+une exception (`evaluatedStudentNumber`) : les autres cases gardent leur verdict ; seule une
+erreur du modèle (attendu illisible, figure sans positions) lève encore.
 
 Où la validation tourne : **dans le navigateur** partout (ADR 0001 : le serveur reçoit un verdict),
 **sauf les évaluations notées**, corrigées par le serveur avec la même fonction (ADR 0015), sous un

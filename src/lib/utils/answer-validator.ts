@@ -565,6 +565,15 @@ function numericalVerdict(
 	return { result, roundingAtFault, onlyRoundingMissing };
 }
 
+/** Valeur de la saisie de l'élève, `undefined` si elle ne s'évalue pas */
+function evaluatedStudentNumber(answer: string): ReturnType<typeof evaluateExpression> | undefined {
+	try {
+		return evaluateExpression(answer);
+	} catch {
+		return undefined;
+	}
+}
+
 function numericalResult(
 	userAnswer: string | number,
 	correctAnswer: string,
@@ -574,8 +583,10 @@ function numericalResult(
 	// Convert to string if number
 	const userStr = typeof userAnswer === 'number' ? String(userAnswer) : userAnswer;
 
-	// Evaluate both answers
-	const userNum = evaluateExpression(userStr);
+	// Evaluate both answers. La saisie de l'élève peut ne pas s'évaluer (`58,5,`, `(`) :
+	// c'est une réponse non numérique, jamais une exception — elle ferait perdre le verdict
+	// des AUTRES cases (V126). L'attendu, lui, garde son exception (erreur de modèle)
+	const userNum = evaluatedStudentNumber(userStr);
 	const correctNum = evaluateExpression(correctAnswer);
 
 	// Check if evaluation succeeded
@@ -1392,8 +1403,8 @@ function validateSingleBlank(
 	try {
 		verdict = judgeSingleBlank(userAnswer, blank, userAnswerLatex, instance);
 	} catch (thrown) {
-		// Case à arrondi : `58,` ne s'évalue pas et la chaîne lève. Nombre seul mal écrit →
-		// un refus, relu comme les autres ; toute autre saisie garde son exception
+		// Nombre seul mal écrit que la chaîne ne sait pas lire → un refus, relu comme les
+		// autres ; toute autre exception (erreur de modèle) reste visible
 		if (repaired === null) throw thrown;
 		verdict = { isCorrect: false };
 	}
@@ -2209,43 +2220,71 @@ function maximumMatching(accepts: boolean[][], blankCount: number, initial?: num
 	return matching;
 }
 
+/** Réponse appariée sans être juste telle quelle : ce qui lui manque, et son message */
+interface LooseMatch {
+	constraint: 'rounding' | 'form';
+	feedback: string;
+}
+
+/**
+ * Réponse acceptée par cette case à un défaut d'écriture près, sinon `undefined` :
+ * - trop de chiffres, mais la réponse arrondie redonne l'attendu (cf. questions/rounding) ;
+ * - nombre seul mal écrit (`58,`, `,5`) dont la valeur relue est juste (même règle qu'en
+ *   ordre fixé, cf. `validateSingleBlank`).
+ */
+function looseMatchOf(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): LooseMatch | undefined {
+	const repaired =
+		blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire
+			? malformedBareNumber(answer)
+			: null;
+	if (repaired !== null) {
+		return validateBlankValue(repaired, blank, instance)
+			? { constraint: 'form', feedback: CONSTRAINT_FEEDBACK['form'].single }
+			: undefined;
+	}
+	const feedback = roundingOnlyFeedback(answer, blank, instance);
+	return feedback === undefined ? undefined : { constraint: 'rounding', feedback };
+}
+
 /**
  * Appariement réponses → cases (`orderIndependent`), en deux temps : d'abord les
  * réponses justes, puis — sans en détacher aucune — celles qui ne sont justes
- * qu'à l'arrondi près (trop de chiffres, cf. questions/rounding). Une réponse
- * exacte passe donc avant une trop précise pour la même case.
+ * qu'à un défaut d'écriture près (trop de chiffres, nombre mal écrit : `looseMatchOf`).
+ * Une réponse exacte passe donc avant une mal écrite pour la même case.
  *
  * @returns `matching[a]` = case de la réponse `a` (`-1` si aucune) ;
- *   `roundingFeedback[a]` = message d'arrondi si elle n'y est juste qu'à l'arrondi près
+ *   `looseMatch[a]` = son défaut d'écriture si elle n'y est juste qu'à ce défaut près
  */
 function matchAnswersToBlanks(
 	userAnswers: string[],
 	instance: QuestionInstance
-): { matching: number[]; roundingFeedback: (string | undefined)[] } {
+): { matching: number[]; looseMatch: (LooseMatch | undefined)[] } {
 	const blanks = instance.blanks ?? [];
 	const accepts = userAnswers.map((answer) =>
 		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
 	);
 	const exactMatching = maximumMatching(accepts, blanks.length);
 	if (exactMatching.every((b, a) => b !== -1 || !userAnswers[a].trim())) {
-		return { matching: exactMatching, roundingFeedback: userAnswers.map(() => undefined) };
+		return { matching: exactMatching, looseMatch: userAnswers.map(() => undefined) };
 	}
 
-	const roundingFeedbacks = userAnswers.map((answer, a) =>
+	const looseMatches = userAnswers.map((answer, a) =>
 		blanks.map((blank, b) =>
-			answer.trim() !== '' && !accepts[a][b]
-				? roundingOnlyFeedback(answer, blank, instance)
-				: undefined
+			answer.trim() !== '' && !accepts[a][b] ? looseMatchOf(answer, blank, instance) : undefined
 		)
 	);
 	const looseAccepts = accepts.map((row, a) =>
-		row.map((ok, b) => ok || roundingFeedbacks[a][b] !== undefined)
+		row.map((ok, b) => ok || looseMatches[a][b] !== undefined)
 	);
 	const matching = maximumMatching(looseAccepts, blanks.length, exactMatching);
 	return {
 		matching,
-		roundingFeedback: matching.map((b, a) =>
-			b !== -1 && !accepts[a][b] ? roundingFeedbacks[a][b] : undefined
+		looseMatch: matching.map((b, a) =>
+			b !== -1 && !accepts[a][b] ? looseMatches[a][b] : undefined
 		)
 	};
 }
@@ -2259,13 +2298,14 @@ function matchedAnswerForm(
 	blankLatex: string | undefined,
 	blank: InstanceBlank,
 	instance: QuestionInstance,
-	roundingFeedback?: string
+	looseMatch?: LooseMatch
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
-	// Appariée à l'arrondi près : mauvaise forme, violation `rounding` (cf. questions/rounding)
-	if (roundingFeedback) {
+	// Appariée à un défaut d'écriture près (arrondi non fait, nombre mal écrit) : mauvaise
+	// forme, violation `rounding` ou `form` (cf. `looseMatchOf`)
+	if (looseMatch) {
 		return {
 			status: 'bad_form',
-			violations: roundingBadForm(roundingFeedback).constraintViolations
+			violations: [{ ...looseMatch, severity: 'error' }]
 		};
 	}
 
@@ -2409,7 +2449,7 @@ function validateBlanksOrderIndependent(
 	// Compatibilités réponse × case (valeur seule), puis appariement MAXIMAL.
 	// Un appariement glouton (première case libre qui accepte) pouvait prendre
 	// la seule case d'une autre réponse et refuser une copie juste.
-	const { matching, roundingFeedback } = matchAnswersToBlanks(userAnswers, instance);
+	const { matching, looseMatch } = matchAnswersToBlanks(userAnswers, instance);
 	const used = new Set(matching.filter((b) => b !== -1));
 
 	// Count unmatched non-empty answers
@@ -2458,7 +2498,7 @@ function validateBlanksOrderIndependent(
 			userAnswersLatex?.[a],
 			blanks[matching[a]],
 			instance,
-			roundingFeedback[a]
+			looseMatch[a]
 		);
 		if (form.status === 'bad_form') worstStatus = 'bad_form';
 		else if (form.status === 'unoptimal_form' && worstStatus === 'correct')
@@ -2639,7 +2679,7 @@ function orderIndependentDetails(
 ): { status: ValidationStatus; remarks: string[] }[] {
 	const blanks = instance.blanks ?? [];
 
-	const { matching, roundingFeedback } = matchAnswersToBlanks(userAnswers, instance);
+	const { matching, looseMatch } = matchAnswersToBlanks(userAnswers, instance);
 	const used = new Set(matching.filter((b) => b !== -1));
 	const freeBlanks = blanks.filter((_, b) => !used.has(b));
 	return userAnswers.map((answer, a) => {
@@ -2655,7 +2695,7 @@ function orderIndependentDetails(
 			userAnswersLatex?.[a],
 			blanks[matching[a]],
 			instance,
-			roundingFeedback[a]
+			looseMatch[a]
 		);
 		return { status: form.status, remarks: remarksOf(undefined, form.violations) };
 	});
