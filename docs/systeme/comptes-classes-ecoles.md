@@ -18,6 +18,7 @@ couvre:
   - 'src/lib/server/admin/**'
   - src/lib/email-templates/welcome.ts
   - src/lib/utils/welcome-email-state.ts
+  - src/lib/utils/student-deletion.ts
   - 'src/lib/utils/{age-declaration,timezones}.ts'
   - src/lib/components/AgeQuestionDialog.svelte
   - src/lib/components/MyPasswordInput.svelte
