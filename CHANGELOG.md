@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.110.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.109.0...v0.110.0) (2026-11-25)
+
+### ✨ Features
+
+- **auth:** nettoyage de nuit des comptes orphelins d'une invitation interrompue ([aa6d378](https://github.com/Zahara-Nour/ubumaths/commit/aa6d37867ba49e82f3f40d2f67e20c34df8378a8))
+- **questions:** idees-1re-trigo, 2 modeles neufs et 7 variations de 5 publies ([84396b7](https://github.com/Zahara-Nour/ubumaths/commit/84396b7da4c51959f6c3573b83691b727821515b))
+- **questions:** idees-1re-trigo, ids des 2 brouillons crees en prod ([ccc87a9](https://github.com/Zahara-Nour/ubumaths/commit/ccc87a95df9ad36fb490bbefff7cf2fa201ac041))
+- **questions:** idees-1re-trigo, migration de contenu des 5 publies ([53fa874](https://github.com/Zahara-Nour/ubumaths/commit/53fa874298d027cb76ab553748f5b66e964babc3))
+- **questions:** idees-1re-trigo, migration de rangement des 2 neufs ([0b67027](https://github.com/Zahara-Nour/ubumaths/commit/0b67027f53a3d5314257c5924bd39fcc784b9214))
+- **questions:** idees-3e-trigonometrie, migration de contenu des modeles publies ([d0a3d48](https://github.com/Zahara-Nour/ubumaths/commit/d0a3d48663fbce2c6a845982fe5907ec877d770e))
+- **questions:** idees-3e-trigonometrie, modeles neufs N1 a N4 ([151ca8a](https://github.com/Zahara-Nour/ubumaths/commit/151ca8a539ac151ef0ef0b63819f6f88a134e31b))
+- **questions:** idees-3e-trigonometrie, variations F1 et F2 des modeles publies ([4d32b62](https://github.com/Zahara-Nour/ubumaths/commit/4d32b621367cec49dd3501ca17946bbfccff01c9))
+
+### 🐛 Bug Fixes
+
+- **auth:** revues de la PR 4, classe ancienne protegee et taches de nuit independantes ([40069f2](https://github.com/Zahara-Nour/ubumaths/commit/40069f2831d2a905e0dd5965384c25c535678cec))
+- **ecarts:** familles trigo en degrés, ordre libre mal écrit, case à arrondi (E54, V126) ([57dc01b](https://github.com/Zahara-Nour/ubumaths/commit/57dc01be99bba0c56d1fa5a74b00b48d3f60e2e7))
+- **fiches:** badge du niveau aussi dans le PDF anglais (nom francais) ([07bed83](https://github.com/Zahara-Nour/ubumaths/commit/07bed831cee89dc4b3eede614071c4ec9d0902d7))
+- **moderation:** écart T21, le prof lit les messages marqués des conversations à deux et supprimés ([e9f6ed2](https://github.com/Zahara-Nour/ubumaths/commit/e9f6ed2cd0669867e4eee0db1b5461a41877c8c8))
+- **moderation:** mention de suppression prouvée, cas de tests de la revue, journal ([a6fcfc5](https://github.com/Zahara-Nour/ubumaths/commit/a6fcfc5055bc1a3719749c378a6d86dcfc91491c))
+- **moderation:** un élève qui quitte la conversation ne cache pas son message marqué ([489c663](https://github.com/Zahara-Nour/ubumaths/commit/489c663f83c10c9e7e8e70c865a7aa1be7d432ed))
+- **moderation:** un message ne change pas de conversation (T31) ([7bea46f](https://github.com/Zahara-Nour/ubumaths/commit/7bea46fd7d38042324161e29c08c2d9c3066c355))
+
+### 📚 Documentation
+
+- **archive:** badge-niveau-anglais clos apres [#3136](https://github.com/Zahara-Nour/ubumaths/issues/3136) ([fed519b](https://github.com/Zahara-Nour/ubumaths/commit/fed519b4170990e7247dc2f6ee98e767c03744a6))
+- **moderation:** doc de la base inchangée pour la fonction des messages marqués ([44acb0f](https://github.com/Zahara-Nour/ubumaths/commit/44acb0faef9511b94f93c33375e7cc5f458d4285))
+- **moderation:** garde de doc pour T31 ([309c477](https://github.com/Zahara-Nour/ubumaths/commit/309c4774825db6e538776ee20eb1d162558dbe96))
+- **wip:** ecarts-moderation, migration de T31 en prod ([e63385a](https://github.com/Zahara-Nour/ubumaths/commit/e63385a24dc3ce45e8fd200fbda5389ea9214aec))
+- **wip:** ecarts-moderation, reprendre ici après [#3132](https://github.com/Zahara-Nour/ubumaths/issues/3132), T21 clos, T31 entré ([b64cac5](https://github.com/Zahara-Nour/ubumaths/commit/b64cac522d5147a6d3de600751888387535943ed))
+- **wip:** ecarts-moderation, reprendre ici après [#3140](https://github.com/Zahara-Nour/ubumaths/issues/3140), T31 clos, T32 T33 M59 entrés ([0e4da79](https://github.com/Zahara-Nour/ubumaths/commit/0e4da79fa19f1d0bc31d19c08f928868d1d04031))
+- **wip:** ecarts-verifs, reprendre ici après [#3137](https://github.com/Zahara-Nour/ubumaths/issues/3137), E54 et V126 barrés ([40f7422](https://github.com/Zahara-Nour/ubumaths/commit/40f74229a7986548ed1ae3d5fe5155308401cead))
+- **wip:** idees-1re-trigo et idees-3e-trigonometrie, migrations jouées en prod ([534bc0e](https://github.com/Zahara-Nour/ubumaths/commit/534bc0eafefe600565bf9e10d6fa7ef1b553e59a))
+- **wip:** idees-1re-trigo, reprendre ici apres [#3135](https://github.com/Zahara-Nour/ubumaths/issues/3135) ([1beb745](https://github.com/Zahara-Nour/ubumaths/commit/1beb7456ebd66fac94ba76b420cb277157151fba))
+- **wip:** idees-3e-trigonometrie, migration auditee, PR ([7a9a730](https://github.com/Zahara-Nour/ubumaths/commit/7a9a7305cf8f573437b999180dcf22bdf137f8fe))
+- **wip:** idees-3e-trigonometrie, relevé et phase 0 ([858eaa6](https://github.com/Zahara-Nour/ubumaths/commit/858eaa6c0d43629ed659aba089b363b9b482ef4c))
+- **wip:** idees-3e-trigonometrie, reprendre ici après [#3139](https://github.com/Zahara-Nour/ubumaths/issues/3139) ([2363447](https://github.com/Zahara-Nour/ubumaths/commit/236344765a976ed83eb54aa3faf1805183a993c7))
+- **wip:** idees-tle-integration, modèles validés, publication à lancer ([1cbe2aa](https://github.com/Zahara-Nour/ubumaths/commit/1cbe2aac20edbf3a697213fc59e13234204a0905))
+- **wip:** invitation-cours-particulier, reprendre ici après [#3138](https://github.com/Zahara-Nour/ubumaths/issues/3138) ([5048048](https://github.com/Zahara-Nour/ubumaths/commit/50480486ee1799ec38d36d8b1cbb0247bc863b71))
+
 ## [0.109.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.108.0...v0.109.0) (2026-11-25)
 
 ### ✨ Features
