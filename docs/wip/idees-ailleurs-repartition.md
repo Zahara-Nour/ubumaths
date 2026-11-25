@@ -67,18 +67,18 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 
 ### Spécialité
 
-| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session        |
-| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ---------------------- |
-| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`     |
-| Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`    |
-| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation` |
-| Continuité des fonctions                                                       | TSA4        | 6         | libre                |                        |
-| Fonction logarithme népérien                                                   | TSA5        | 12        | publiée (2026-11-24) | `idees-tle-ln`         |
-| Primitives et équations différentielles                                        | TSA7        | 7         | libre                |                        |
-| Intégration                                                                    | TSA8        | 5         | libre                |                        |
-| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                        |
-| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                        |
-| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`     |
+| Rubrique                                                                       | Codes       | Exercices | État                 | Sujet / session         |
+| ------------------------------------------------------------------------------ | ----------- | --------- | -------------------- | ----------------------- |
+| Suites numériques                                                              | TSA1        | 26        | publiée (2026-11-22) | `idees-tle-suites`      |
+| Limites de fonctions                                                           | TSA2        | 18        | publiée (2026-11-23) | `idees-tle-limites`     |
+| Compléments sur la dérivation                                                  | TSA3, TCA7  | 14 + 3    | publiée (2026-11-24) | `idees-tle-derivation`  |
+| Continuité des fonctions                                                       | TSA4        | 6         | libre                |                         |
+| Fonction logarithme népérien                                                   | TSA5        | 12        | publiée (2026-11-24) | `idees-tle-ln`          |
+| Primitives et équations différentielles                                        | TSA7        | 7         | prise (2026-11-25)   | `idees-tle-integration` |
+| Intégration                                                                    | TSA8        | 5         | prise (2026-11-25)   | `idees-tle-integration` |
+| Combinatoire et dénombrement                                                   | TSG1        | 9         | libre                |                         |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                         |
+| Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`      |
 
 ### Maths expertes
 
@@ -144,7 +144,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Probabilités                             | 3S2       | 5         | libre                                                      |                              |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
 | Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
-| Trigonométrie                            | 3G3       | 13        | libre                                                      |                              |
+| Trigonométrie                            | 3G3       | 13        | prise (2026-11-25)                                         | `idees-3e-trigonometrie`     |
 | Espace                                   | 3G4       | 6         | libre                                                      |                              |
 | Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
