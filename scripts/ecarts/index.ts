@@ -10,6 +10,8 @@
  *                                     vertes, cassées, toujours ouverts, à la main
  *   pnpm ecarts rejouer --barrer      en plus, barre dans le registre les lignes à
  *                                     preuve verte (à commiter : doc, direct sur main)
+ *   pnpm ecarts rejouer --json=<f>    en plus, écrit le bilan dans <f> (identifiant,
+ *                                     verdict, détail) : lu par la tâche de nuit
  *   pnpm ecarts ajouter <lettre> --domaine <d> --constat <c> --preuve <p> [--etat <e>]
  *                                     ajoute un écart, donne son numéro
  *
@@ -39,6 +41,7 @@ import {
 	isVitestReport,
 	parseArgs,
 	parseRegistry,
+	resultsToJson,
 	strikeEntries,
 	vitestOutcome,
 	type Entry,
@@ -58,7 +61,7 @@ const REGISTRY_FILE = process.env.ECARTS_REGISTRE ?? join(ROOT, 'docs/ecarts/reg
 const COMMAND_TIMEOUT_MS = 120_000;
 const VITEST_TIMEOUT_MS = 600_000;
 const USAGE = `Usage : pnpm ecarts
-        pnpm ecarts rejouer [<id>…] [--barrer]
+        pnpm ecarts rejouer [<id>…] [--barrer] [--json=<fichier>]
         pnpm ecarts ajouter <${Object.keys(TYPES).join('|')}> --domaine <d> --constat <c> --preuve <p> [--etat <e>]`;
 
 // ============================================================================
@@ -142,7 +145,7 @@ function replayCommand(entry: Entry, proof: Extract<Proof, { kind: 'command' }>)
 	return { entry, outcome, detail: `la commande n'a pas pu tourner : ${cause}` };
 }
 
-function replay(ids: string[], strike: boolean): void {
+function replay(ids: string[], strike: boolean, jsonFile: string | undefined): void {
 	const { registry } = readRegistry();
 	const unknown = ids.filter((id) => !registry.entries.some((e) => e.id === id && !e.closed));
 	if (unknown.length > 0) stop(`⛔ Pas d'écart ouvert de ce nom : ${unknown.join(', ')}`);
@@ -181,6 +184,7 @@ function replay(ids: string[], strike: boolean): void {
 	});
 
 	console.log(formatReport(results));
+	if (jsonFile !== undefined) writeFileSync(jsonFile, resultsToJson(results));
 
 	if (!strike) return;
 	// Le rejeu a pu durer : le registre est relu, une ligne ajoutée entre-temps n'est pas perdue.
@@ -207,7 +211,7 @@ function main(): void {
 		process.exit(2);
 	}
 	if (args.command === 'list') list();
-	else if (args.command === 'replay') replay(args.ids, args.strike);
+	else if (args.command === 'replay') replay(args.ids, args.strike, args.json);
 	else add(args.input);
 }
 

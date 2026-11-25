@@ -81,6 +81,7 @@ pnpm ecarts                    # les écarts ouverts, par type
 pnpm ecarts rejouer            # rejoue les preuves, affiche le bilan, n'écrit rien
 pnpm ecarts rejouer V35 L9     # seulement ceux-là
 pnpm ecarts rejouer --barrer   # barre en plus les lignes à preuve verte
+pnpm ecarts rejouer --json=<f> # écrit en plus le bilan dans <f>, pour un script
 pnpm ecarts ajouter V --domaine mathAST --constat "…" --preuve "à la main" [--etat "en attente"]
 ```
 
@@ -94,6 +95,9 @@ pnpm ecarts ajouter V --domaine mathAST --constat "…" --preuve "à la main" [-
   direct sur `main`.
 - Le bilan a quatre parties : preuves vertes, preuves cassées, toujours ouverts, à la main.
   `rejouer` sort en 0 même avec des preuves rouges ou cassées : c'est le bilan qui le dit.
+- `--json=<fichier>` : une ligne par écart rejoué (`id`, `outcome` parmi `green`, `red`, `broken`,
+  `manual`, `detail` s'il y en a un). C'est ce que lit la [tâche de nuit](tache-de-nuit.md), qui
+  rejoue les preuves chaque nuit, barre les vertes et pousse le commit sur `main`.
 - Avant de barrer, le registre est relu : une ligne ajoutée pendant le rejeu n'est pas perdue,
   une ligne fermée ou dont la preuve a changé entre-temps n'est pas barrée.
 - Registre mal formé (champ manquant, type qui ne va pas avec la lettre, identifiant en double) :

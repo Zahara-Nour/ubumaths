@@ -71,6 +71,7 @@ Toutes les commandes `pnpm <script>` de `package.json`, par usage. Vérifié con
 | `pnpm test:client <chemin>`  | Tests navigateur (`*.svelte.test.ts`)             | Chromium / Playwright                            |
 | `pnpm test:integration`      | Intégration, sur la pile de test (démarrée seule) | ~180 s ; `test:integration:watch`                |
 | `pnpm ecarts`                | Registre des écarts : liste, `rejouer`, `ajouter` | [registre-des-ecarts.md](registre-des-ecarts.md) |
+| `pnpm nuit`                  | Bilan de la tâche de nuit (`--lancer` la joue)    | [tache-de-nuit.md](tache-de-nuit.md)             |
 | `pnpm test:definer-guard`    | Garde des fonctions `SECURITY DEFINER`            | Verrou Supabase                                  |
 | `pnpm test` / `test:changed` | Vitest sur les fichiers modifiés                  |                                                  |
 | `pnpm test:e2e`              | Playwright end-to-end                             |                                                  |
