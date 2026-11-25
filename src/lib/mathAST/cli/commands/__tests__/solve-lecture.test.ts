@@ -150,6 +150,19 @@ describe('.solve : les degrés sont lus', () => {
 		);
 	});
 
+	// Tout ou rien : une seule solution sans mesure simple en degrés, et toute la
+	// famille reste en radians (jamais deux unités dans le même S)
+	it('famille en degrés : tout ou rien', () => {
+		const mixed = solved('(cos(x) - cos(20°))(cos(x) - 1/3) = 0').answer ?? '';
+		expect(mixed).toContain('2k\\pi');
+		expect(mixed).not.toContain('k \\cdot');
+		expect(flat(solved('(cos(x) - cos(20°))(sin(x) - 1/2) = 0').answer)).toBe(
+			flat(
+				'S = \\left\\{ -20~\\unit{°} + k \\cdot 360~\\unit{°} \\,;\\, 20~\\unit{°} + k \\cdot 360~\\unit{°} \\,;\\, 30~\\unit{°} + k \\cdot 360~\\unit{°} \\,;\\, 150~\\unit{°} + k \\cdot 360~\\unit{°} ,\\; k \\in \\mathbb{Z} \\right\\}'
+			)
+		);
+	});
+
 	// Sans degré tapé, rien ne change (E54) — `cos(π/5)` garde son arccos (écart
 	// à part, signalé), le cas mêlé degrés + radians aussi, et `cos(x°)` résout x
 	// en nombre de degrés

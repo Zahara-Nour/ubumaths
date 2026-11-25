@@ -147,6 +147,31 @@ Worktree `ubumaths-wt-ecarts-verifs-n`, branche `fix/ecarts-verifs-n`.
   quand une saisie ne s'évalue pas dans une case à arrondi (`58,5,`) — à vérifier puis à inscrire
   au registre.
 
+## PR O : « correction des réponses » — E54, ordre libre, V126 (2026-11-25)
+
+- **Barème vérifié en premier** : une saisie qui ne s'évalue pas (`58,5,`, `(`) dans une case à
+  arrondi faisait LEVER `validateBlanksDetailed`. Rien ne plantait pour l'élève (tous les appelants
+  rattrapent) et la note restait juste (0, une case fausse), mais la correction montrait TOUTES les
+  cases fausses, même les justes. Inscrit **V126**. Correctif à la racine : la saisie de l'élève qui
+  ne s'évalue pas est « non numérique » (`evaluatedStudentNumber`, `numericalResult`) ; une erreur
+  de modèle (attendu illisible, figure sans positions) lève toujours (test).
+- **Ordre libre** : `58,` pour 58 → `bad_form` + message de forme, comme en ordre fixé
+  (`looseMatchOf`, deuxième temps de `matchAnswersToBlanks`, après les réponses exactes). Note
+  inchangée (0 avant, 0 après ; mesuré par la revue sur main et sur la branche).
+- **E54** : `.résoudre cos(x) = cos(20°)` → `S = {−20° + k·360° ; 20° + k·360°, k ∈ ℤ}` ; sin
+  (20° ; 160°), tan (20° + k·180°), angle remarquable (`cos(60°)` → ±60°), argument multiple
+  (`cos(2x)` → ±10° + k·180°). Le solveur reste en radians ; l'écriture relit en degrés la valeur
+  de chaque solution et de la période (`familyInDegrees`, `degreeMembers`). Écriture choisie :
+  `k · 360°` (pas `360k°`). Inchangés : radians, cas mêlé `cos(x + π/3) = cos(20°)`, `cos(x°)`.
+  Vu à l'écran (iPhone, Atelier) ; attendu de #2501 durci dans `atelier-paquet6.spec.ts`.
+- **Limite connue, à dire à David** : la mesure n'est relue en degrés que si elle est un rationnel
+  de dénominateur ≤ 24 : `cos(20,1°)` → ±20,1°, mais `cos(12,34°)` garde l'arccos (comme avant).
+- **Relevés pendant E54, au registre** : V127 (`cos(x) = 2cos(20°)` répond une famille alors qu'il
+  n'y a pas de solution : le solveur lit la valeur approchée de cos(20°) en radians), V128
+  (`cos(x) = cos(π/5)` garde l'arccos, en attente de David), V129 (`dans [0;360]` lu en radians,
+  en attente de David).
+- **Revue** : `code-reviewer` Opus, aucun bloquant ; 3 mineurs (tests) ajoutés sauf le seuil de 24.
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |

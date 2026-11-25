@@ -92,7 +92,12 @@ test('#2501 — .résoudre lit comme le registre : degrés gardés, paramètre, 
 
 	// Famille périodique : 20° écrit en degrés, sans `rad`
 	const family = await calc(page, '.résoudre cos(x) = cos(20°)');
-	expect(family.latex).toContain('20{}^{\\circ}');
+	// E54 (David, 2026-11-24) : la famille en degrés, période comprise, sans arccos
+	expect(normalizeLatex(family.latex ?? '')).toBe(
+		normalizeLatex(
+			'S = \\left\\{ -20{}^{\\circ} + k \\cdot 360{}^{\\circ} \\,;\\, 20{}^{\\circ} + k \\cdot 360{}^{\\circ} ,\\; k \\in \\mathbb{Z} \\right\\}'
+		)
+	);
 	expect(family.latex).toContain('k \\in \\mathbb{Z}');
 	expect(family.latex + family.text).not.toMatch(/\\unit|rad/);
 

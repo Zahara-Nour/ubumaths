@@ -66,6 +66,12 @@ describe('V126 — saisie qui ne s’évalue pas dans une case à arrondi (ordre
 		}
 	});
 
+	it('une erreur de MODÈLE lève encore : attendu illisible', () => {
+		const broken: InstanceBlank = { ...TENTH, expectedAnswer: '(' };
+		const answers = ['58', '7'];
+		expect(() => validateBlanksDetailed(answers, instanceOf([broken, SEVEN]), answers)).toThrow();
+	});
+
 	it('limite : 58,5 et 7 → juste', () => {
 		const answers = ['58,5', '7'];
 		expect(validateBlanksDetailed(answers, instanceOf([TENTH, SEVEN]), answers).statuses).toEqual([
