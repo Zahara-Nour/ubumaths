@@ -160,39 +160,46 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 93147367 Déterminer la forme décimale d'une fraction                | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 000368e1 Déterminer une forme fractionnaire                         | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 6fdcdda1 Définition par quotient                                    | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| c415d81d Définition par quotient (égalités à trous)                 | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 5aa1d44c Compléter une égalité de fractions                         | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| afebbb91 Comparer deux fractions de même dénominateur ou numérateur | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 6818662d Comparer deux fractions à 1 ou à 1/2                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 83c835bb Ranger des fractions                                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 58bbee5d Additionner des fractions                                  | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 0be55013 Calculer une fraction d'une quantité                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 5cd25c2b Problèmes de fractions                                     | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| f9e9637c Comprendre le sens d'un pourcentage                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 5c8a6da6 Exprimer une proportion en pourcentage                     | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 31096bae Traduire un énoncé en notations de probabilités            | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
-| 69a05f98 Probabilité « inverse » à partir d'un arbre                | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
-| 04b1cc7f Puissance d'un produit                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ?        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                               | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 93147367 Déterminer la forme décimale d'une fraction                   | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 000368e1 Déterminer une forme fractionnaire                            | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 6fdcdda1 Définition par quotient                                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| c415d81d Définition par quotient (égalités à trous)                    | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 5aa1d44c Compléter une égalité de fractions                            | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| afebbb91 Comparer deux fractions de même dénominateur ou numérateur    | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 6818662d Comparer deux fractions à 1 ou à 1/2                          | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 83c835bb Ranger des fractions                                          | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 58bbee5d Additionner des fractions                                     | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 0be55013 Calculer une fraction d'une quantité                          | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 5cd25c2b Problèmes de fractions                                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| f9e9637c Comprendre le sens d'un pourcentage                           | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 5c8a6da6 Exprimer une proportion en pourcentage                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 31096bae Traduire un énoncé en notations de probabilités               | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
+| 69a05f98 Probabilité « inverse » à partir d'un arbre                   | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
+| 04b1cc7f Puissance d'un produit                                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ?           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3dbc5a7b Deux primitives d'une même fonction diffèrent d'une constante | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| 2d480f3d Primitive de la forme u′eᵘ                                    | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| fe25be0a Primitive d'un polynôme vérifiant une condition               | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| b52c53d8 Calculer une intégrale à l'aide d'une primitive               | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| 74da1cd6 Positivité et intégration des inégalités                      | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| fc2ea212 Intégration par parties                                       | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| 6035aa61 Suite d'intégrales                                            | `idees-tle-integration`                                     | 2026-11-25 |                                      |
 
 ## Idées en attente
 
