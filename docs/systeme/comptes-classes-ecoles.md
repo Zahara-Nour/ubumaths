@@ -224,13 +224,41 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
 
 - **Limites connues** (revues de la PR 3, 2026-11-25) :
   - une fonction tuée en route (délai de Vercel, crash) entre le compte et `used_at` laisse un
-    compte approuvé et une classe, sans lien vers l'invitation ; la réservation se périme au bout
-    de 5 minutes et un nouvel essai crée un second compte. Rien ne les repère aujourd'hui ;
+    compte approuvé et une classe ; la réservation se périme au bout de 5 minutes et un nouvel
+    essai crée un second compte. L'orphelin est supprimé la nuit suivante (§ « Comptes
+    orphelins », PR 4) ;
   - les journaux de requêtes de Vercel gardent le chemin, donc le jeton (comme `/carnet/[token]`) ;
   - pas de repli sans JavaScript : avec `no-referrer`, un POST de formulaire natif part avec
     `Origin: null` et la garde CSRF le refuse ; `use:enhance` envoie la vraie origine.
 
-- Tests : `tests/integration/invitations-cours-particuliers-parent.test.ts` (création complète,
+- **Comptes orphelins** (PR 4, décision de David du 2026-11-25 : suppression automatique) :
+  `src/lib/server/private-lessons/orphans.ts`. À la création, `redeemInvitation` pose sur le
+  compte la marque serveur `app_metadata.private_lesson_invitation_id` (`INVITATION_MARK`, par
+  `createChildAuthUser`) ; elle tombe au succès (`clearInvitationMark`). Le cron de nuit des
+  invitations appelle ensuite `cleanupOrphanAccounts` : chaque compte encore marqué depuis plus
+  d'une heure (`auth.admin.listUsers`, toutes les pages) est regardé.
+  - invitation utilisée par CE compte → succès dont la marque n'est pas tombée : marque retirée ;
+  - invitation présente, pas utilisée par lui, compte jamais connecté → **orphelin** : sa classe
+    puis son compte sont supprimés. La classe visée : même nom que l'identifiant, même école,
+    inscriptions fermées, née après le compte, et dont il est le seul élève (ou sans élève, née
+    dans l'heure qui suit le compte). Une classe plus ancienne de même nom (identifiant libéré
+    puis redonné) n'est jamais touchée. Classe non supprimée → le compte reste marqué, la nuit
+    suivante recommence ;
+  - compte déjà connecté, ou invitation disparue (purgée) → gardé, journalisé « à vérifier ».
+
+  Seuls les comptes marqués sont regardés : aucun autre élève ne peut être supprimé par ce
+  nettoyage. Un compte en échec n'arrête pas les suivants. Le cron lance le nettoyage puis la
+  purge, indépendants : l'échec de l'un n'empêche pas l'autre, le passage est alors noté
+  `failed` avec le rapport partiel. Le rapport (`checked`, `cleared`, `deleted`, `kept`,
+  `failed`) va dans `background_job_runs` (clé `orphans`), sans prénom ni adresse.
+
+- **Réponse perdue à l'étape 5** de `redeemInvitation` (erreur réseau après l'écriture) :
+  l'invitation est relue avant de rien défaire ; si elle désigne déjà le compte, c'est un succès
+  (défaire effacerait l'invitation avec le compte, cascade).
+- Tests : `tests/integration/invitations-cours-particuliers-orphelins.test.ts` (succès : marque
+  retirée ; orphelin de plus d'une heure supprimé avec sa classe ; de moins d'une heure, connecté,
+  invitation disparue, non marqué : gardés ; classe partagée gardée),
+  `tests/integration/invitations-cours-particuliers-parent.test.ts` (création complète,
   double validation, liens plus valables, réservation récente ou périmée, annulation pendant la
   création, école sans année, courriel final refusé, sur la vraie base),
   `src/routes/(public)/auth/register/invitation/[token]/__tests__/page.server.test.ts`,

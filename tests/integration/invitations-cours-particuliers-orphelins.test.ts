@@ -185,6 +185,9 @@ describe('invitations de cours particulier : comptes orphelins (base locale)', (
 		if (!outcome.ok) throw new Error(outcome.reason);
 		comptes.push(outcome.studentId);
 		expect(await marque(outcome.studentId)).toBeNull();
+		// Le retrait de la marque garde les autres marques serveur.
+		const { data } = await service.auth.admin.getUserById(outcome.studentId);
+		expect(data.user?.app_metadata?.child_account).toBe(true);
 	});
 
 	it('orphelin de plus d’une heure : compte et classe supprimés, le lien reste valable', async () => {
@@ -279,5 +282,35 @@ describe('invitations de cours particulier : comptes orphelins (base locale)', (
 
 		await cleanupOrphanAccounts(service);
 		expect(await existe(o.userId, o.classId)).toEqual({ compte: 0, classe: 1 });
+	});
+
+	it('classe vide plus ancienne au même nom (identifiant redonné) : gardée', async () => {
+		const inv = await inviter();
+		const o = await creationInterrompue({
+			firstname: inv.firstname,
+			mark: inv.id,
+			ageMs: 2 * 3600_000
+		});
+		const { data: ancienne, error } = await service
+			.from('classes')
+			.insert({
+				name: o.loginId.toUpperCase(),
+				school_id: ecole.id,
+				grade: '5',
+				join_code: `OA${crypto.randomUUID().replaceAll('-', '').slice(0, 10).toUpperCase()}`,
+				is_active: true,
+				registration_open: false
+			})
+			.select('id')
+			.single();
+		if (error || !ancienne) throw new Error(`classe : ${error?.message}`);
+		const pg = await getPostgresClient();
+		await pg.query(`update classes set created_at = now() - interval '3 days' where id = $1`, [
+			ancienne.id
+		]);
+
+		await cleanupOrphanAccounts(service);
+		expect(await existe(o.userId, o.classId)).toEqual({ compte: 0, classe: 0 });
+		expect((await existe(o.userId, ancienne.id)).classe).toBe(1);
 	});
 });

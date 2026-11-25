@@ -257,7 +257,7 @@ chaque jour à 16:00 UTC, passage quotidien du carnet de liaison (liens manquant
 d'exception, message trimestriel, effacement des adresses ; `src/lib/server/carnet/courriels.ts`,
 [carnet-de-liaison.md](carnet-de-liaison.md#le-passage-quotidien)). Quatrième (2026-11-25) :
 `/api/cron/invitations-cours-particulier`, chaque jour à 03:30 UTC, efface les invitations de cours
-particulier finies depuis 30 jours ([comptes-classes-ecoles.md](comptes-classes-ecoles.md#admin--cours-particuliers)).
+particulier finies depuis 30 jours et supprime les comptes orphelins d'une création interrompue ([comptes-classes-ecoles.md](comptes-classes-ecoles.md#admin--cours-particuliers)).
 Les quatre s'authentifient par `Bearer CRON_SECRET` seul
 (`verifyCronAuth`, `src/lib/server/auth/cron.ts`) : Vercel envoie ce jeton à ses crons, et
 l'en-tête `x-vercel-cron`, que n'importe qui peut envoyer, n'ouvre plus rien. Le reste du

@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3133._
+_Mis à jour le 2026-11-25, PR 4 ouverte._
 
-- **État** : les 3 PR mergées (#3119, #3127, #3133) ; `deploy:prod` demandé par David (« fais les 2 »), lancé par cette session · **Prochaine action** : PR 4 (nettoyage des comptes orphelins) après validation de sa phase 0 · **En attente de David** : phase 0 de la PR 4 (§ PR 4), question « supprimer automatiquement ou signaler » · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, invitation « Jade » utilisée (`jade373`) · **Worktree / branche** : aucun
+- **État** : PR 1 à 3 mergées (#3119, #3127, #3133) ; `deploy:prod` lancé par cette session à la demande de David ; PR 4 (nettoyage de nuit des comptes orphelins, suppression automatique validée par David) ouverte, revues faites et corrigées · **Prochaine action** : après le merge de la PR 4, clôture → versement (journal archivé ; le durable est dans `docs/systeme/comptes-classes-ecoles.md` et `auth.md`) ; la PR 4 part en prod au prochain `deploy:prod` · **En attente de David** : le `deploy:prod` de la PR 4 · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, invitation « Jade » utilisée (`jade373`) · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-orphelins`, `feat/invitation-cours-particulier-orphelins`
 
 ## But
 
@@ -137,7 +137,7 @@ personne ne connaît.
 
 - Suppression impossible → le journal de la tâche le dit, on réessaie la nuit suivante.
 
-**Question à David** : supprimer l'orphelin automatiquement (recommandé : personne n'a jamais reçu
+**Tranché par David le 2026-11-25 (« je te suis ») : suppression automatique.** Question posée : supprimer l'orphelin automatiquement (recommandé : personne n'a jamais reçu
 son identifiant, il ne contient aucun travail), ou seulement le signaler à l'admin pour qu'il le
 supprime à la main ?
 
@@ -185,3 +185,5 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-25 : revues de la PR 2 (code-reviewer, security-auditor : aucun bloquant) ; décision 9 de David ; corrections commitées (annulation et renvoi gardés, refus du doublon, 20 envois/h/admin, test de la garde, journal sans la ligne).
 - 2026-11-25 : PR 3 écrite (page du parent, `redeem.ts` sans migration : réservation atomique, compte sans code puis approuvé, classe fermée, CGU, consentement accordé, `used_at` gardé ; tout défait en cas d'échec ; courriel final) ; 8 tests d'intégration ; parcours vu à l'écran (WebKit iPhone : formulaire, succès `jade373`, lien relu « plus valable », classe dans « Mes Bataillons ») ; revues code-reviewer + security-auditor corrigées.
 - 2026-11-25 : #3133 mergée (PR 3) ; chantier complet côté code, en attente du déploiement.
+- 2026-11-25 : `deploy:prod` demandé par David (« fais les 2 ») ; attendu que `idees-tle-integration` joue ses 2 migrations, puis lancé. Plafond des crons Vercel vérifié : Hobby = 100 par projet, une fois par jour, ±59 min (page du 2026-07-15) ; on en a 4.
+- 2026-11-25 : PR 4 écrite (marque `app_metadata.private_lesson_invitation_id`, `cleanupOrphanAccounts` dans le cron de nuit, sans migration) ; 9 tests d'intégration ; revues code-reviewer + security-auditor (aucun bloquant) corrigées : classe ancienne de même nom protégée, compte supprimé seulement si sa classe l'est, un compte en échec n'arrête pas les autres, nettoyage et purge indépendants, pagination par `nextPage`, réponse perdue à l'étape 5 relue avant de défaire.

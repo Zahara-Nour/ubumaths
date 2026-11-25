@@ -205,6 +205,20 @@ async function undo(service: Client, created: Created): Promise<boolean> {
 	return classGone && accountGone;
 }
 
+/** Vrai si l'invitation est marquée utilisée par ce compte (relecture après une réponse perdue). */
+async function usedBy(service: Client, invitationId: string, userId: string): Promise<boolean> {
+	try {
+		const { data } = await service
+			.from('private_lesson_invitations')
+			.select('used_at, student_id')
+			.eq('id', invitationId)
+			.maybeSingle();
+		return Boolean(data?.used_at) && data?.student_id === userId;
+	} catch {
+		return false;
+	}
+}
+
 /** Étapes 2 à 5, sur une invitation réservée. Toute erreur lève : l'appelant défait. */
 async function createEverything(
 	service: Client,
@@ -303,20 +317,35 @@ async function createEverything(
 
 	// 5. Invitation utilisée, sur NOTRE réservation, si personne ne l'a annulée entre-temps.
 	await options.beforeFinalize?.();
-	const { data: used, error: usedError } = await service
-		.from('private_lesson_invitations')
-		.update({
-			used_at: (options.now ?? new Date()).toISOString(),
-			student_id: userId,
-			class_id: cls.id
-		})
-		.eq('id', invitation.id)
-		.eq('claimed_at', claimedAt)
-		.is('used_at', null)
-		.is('cancelled_at', null)
-		.select('id');
-	if (usedError) throw new RedeemStepError('Utilisation', 'server_error', usedError.code);
-	if (!used || used.length !== 1) throw new RedeemStepError('Utilisation', 'invalid', 'annulée');
+	let usedError: string | null = null;
+	let usedRows = 0;
+	try {
+		const { data: used, error } = await service
+			.from('private_lesson_invitations')
+			.update({
+				used_at: (options.now ?? new Date()).toISOString(),
+				student_id: userId,
+				class_id: cls.id
+			})
+			.eq('id', invitation.id)
+			.eq('claimed_at', claimedAt)
+			.is('used_at', null)
+			.is('cancelled_at', null)
+			.select('id');
+		usedError = error ? (error.code ?? 'sans code') : null;
+		usedRows = used?.length ?? 0;
+	} catch {
+		usedError = 'exception';
+	}
+	if (usedError) {
+		// Réponse perdue : l'écriture a peut-être eu lieu. Défaire un compte que l'invitation
+		// désigne déjà effacerait l'invitation avec lui (cascade) : on relit d'abord.
+		if (await usedBy(service, invitation.id, userId)) {
+			return { loginId, studentId: userId, classId: cls.id };
+		}
+		throw new RedeemStepError('Utilisation', 'server_error', usedError);
+	}
+	if (usedRows !== 1) throw new RedeemStepError('Utilisation', 'invalid', 'annulée');
 
 	return { loginId, studentId: userId, classId: cls.id };
 }

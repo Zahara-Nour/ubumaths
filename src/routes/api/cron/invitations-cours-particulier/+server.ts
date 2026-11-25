@@ -34,30 +34,32 @@ const handler: RequestHandler = async ({ request }) => {
 	// Le journal sert à l'admin ; son absence ne doit pas empêcher la purge.
 	if (startError) logger.error('[CRON] Journal de la tâche non ouvert :', startError);
 
-	try {
-		const purge = await purgeEndedInvitations(serviceClient);
-		const orphans = await cleanupOrphanAccounts(serviceClient);
-		const report = { ...purge, orphans };
-		if (runId) {
-			await serviceClient.rpc('complete_job_run', {
-				p_run_id: runId,
-				p_status: 'success',
-				p_metadata: { ...report }
-			});
-		}
-		return Response.json({ success: true, report });
-	} catch (err) {
-		const message = err instanceof Error ? err.message : 'Erreur inconnue';
-		if (runId) {
-			await serviceClient.rpc('complete_job_run', {
-				p_run_id: runId,
-				p_status: 'failed',
-				p_error_message: message
-			});
-		}
-		logger.error('[CRON] Purge des invitations de cours particulier :', err);
+	// Deux travaux indépendants : l'échec de l'un n'empêche pas l'autre. Le nettoyage des
+	// orphelins d'abord : il relit l'invitation, que la purge pourrait effacer.
+	const errors: string[] = [];
+	const orphans = await cleanupOrphanAccounts(serviceClient).catch((err: unknown) => {
+		errors.push(`Orphelins : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+		return null;
+	});
+	const purge = await purgeEndedInvitations(serviceClient).catch((err: unknown) => {
+		errors.push(err instanceof Error ? err.message : 'Purge : erreur inconnue');
+		return null;
+	});
+	const report = { ...purge, orphans };
+
+	if (runId) {
+		await serviceClient.rpc('complete_job_run', {
+			p_run_id: runId,
+			p_status: errors.length === 0 ? 'success' : 'failed',
+			p_metadata: { ...report },
+			...(errors.length > 0 ? { p_error_message: errors.join(' ; ') } : {})
+		});
+	}
+	if (errors.length > 0) {
+		logger.error('[CRON] Invitations de cours particulier :', errors.join(' ; '));
 		throw error(500, 'Purge des invitations impossible');
 	}
+	return Response.json({ success: true, report });
 };
 
 export const GET = handler;
