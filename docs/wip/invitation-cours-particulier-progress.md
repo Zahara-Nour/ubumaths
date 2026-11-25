@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-25, après #3119._
 
-- **État** : PR 1 mergée (#3119) — migration `20261124224822` (table `private_lesson_invitations`, `schools.is_private_lessons`, `get_private_lesson_invitation`), 21 tests d'intégration · **Prochaine action** : vérifier que `db:migrate` est passé (`migration list --linked` : plus rien en attente ; MCP : `select is_private_lessons from schools where name = 'Akadada'` = true), puis PR 2 (admin : formulaire, liste, renvoyer/annuler, courriel d'invitation, **purge à 30 jours**, décision 8) dans un worktree neuf `../ubumaths-wt-invitation-cours-particulier-admin` · **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm db:migrate` (refusée à Claude par le classifieur le 2026-11-25) · **Pièges en cours** : « Dette pour les PR 2 et 3 » ci-dessous ; le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes (classe d'invitation née fermée → adhésion côté serveur) · **Worktree / branche** : aucun (celui de la PR 1 est retiré)
+- **État** : PR 1 mergée (#3119) et migrée en prod par David le 2026-11-25 (vérifié au MCP : Akadada seule réglée, table vide, lien et empreinte fermés à `anon` / `authenticated`) · **Prochaine action** : PR 2 (admin : formulaire, liste, renvoyer/annuler, courriel d'invitation, **purge à 30 jours**, décision 8) dans un worktree neuf `../ubumaths-wt-invitation-cours-particulier-admin` · **En attente de David** : rien · **Pièges en cours** : « Dette pour les PR 2 et 3 » ci-dessous ; le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes (classe d'invitation née fermée → adhésion côté serveur) · **Worktree / branche** : aucun (celui de la PR 1 est retiré)
 
 ## But
 
@@ -94,4 +94,4 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-24 : chantier ouvert ; décisions 1 à 7 de David ; phase 0 écrite.
 - 2026-11-24 : phase 0 validée par David, point A compris (réglage « école de cours particuliers »).
 - 2026-11-24 : PR 1 écrite (migration + 21 tests) ; revues security-auditor (aucun bloquant) et code-reviewer (niveaux, format d'adresse, réservation `claimed_at`, plafond d'envois, assertions strictes : corrigés).
-- 2026-11-25 : #3119 mergée (PR 1) ; décision 8 de David (purge à 30 jours) ; `db:migrate` refusé à Claude par le classifieur, laissé à David.
+- 2026-11-25 : #3119 mergée (PR 1) ; décision 8 de David (purge à 30 jours) ; `db:migrate` refusé à Claude par le classifieur, lancé par David, vérifié en prod.
