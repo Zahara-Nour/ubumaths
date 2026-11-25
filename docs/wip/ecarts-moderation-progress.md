@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: cinq PR mergées (#3115, #3125, #3132, #3140, #3143), migrations en prod ; PR 6 (#3147, T33 et T30) ouverte, deux migrations à jouer en prod après le merge
+status: cinq PR mergées (#3115, #3125, #3132, #3140, #3143), migrations en prod ; six PR mergées, dernière #3147 (T33 et T30) ; ses deux migrations restent à jouer en prod par David
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (17), PR 6 ouverte (#3147), CI en cours._
+_Mis à jour le 2026-11-25 (18), après #3147 ; ses deux migrations ne sont PAS encore en prod._
 
-- **État** : cinq PR mergées (#3115, #3125, #3132, #3140, #3143), migrations en prod jusqu'à `20261125114503`, rien n'est déployé. **PR 6 = #3147 ouverte** (T33 et T30) : deux migrations additives, `20261125145621_message_chat_non_reecrit.sql` (un message envoyé ne se réécrit plus, prof et admin compris, décision « go A » de David) et `20261125152013_message_chat_date_d_envoi.sql` (un compte connecté ne choisit pas la date de son message à l'envoi). Suite d'intégration entière verte avec les deux (612 fichiers, 7971 tests), `security-auditor` deux passages sans finding bloquant.
-- **Prochaine action**, dans l'ordre : (1) `pnpm check:migrations --pr 3147`, puis `pnpm pr:merger 3147` (CI verte → merge) ; (2) demander à David de jouer les deux migrations en prod (`! pnpm db:migrate`, après `pnpm exec supabase migration list --linked` : une autre migration en attente → stop) ; (3) vérifier en prod, en lecture seule, que les deux triggers sont actifs ; (4) mettre ce bloc à jour sur `main`, puis voir avec David la suite du chantier (registre : `pnpm ecarts`).
-- **En attente de David** : rien avant le merge ; ensuite, les migrations en prod.
-- **Pièges en cours** : la garde est un trigger, pas un retrait de droits par colonne (qui masquerait le message de T31). Écrire `deleted_at` par l'API est refusé par la RLS (ligne nouvelle illisible par son auteur) : la suppression passe par `soft_delete_message`. Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Motif « policy UPDATE ou INSERT sans contrôle de colonnes » possible sur d'autres tables d'élèves (non prouvé).
-- **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-moderation-t33` · `fix/ecarts-moderation-t33`. Lire CET exemplaire du journal tant que #3147 n'est pas mergée, celui de `main` est en retard.
+- **État** : six PR mergées (#3115, #3125, #3132, #3140, #3143, #3147). Migrations en prod jusqu'à `20261125114503`. **En attente en prod, celles de #3147 seulement** (`migration list --linked` relu après le merge : aucune autre) : `20261125145621_message_chat_non_reecrit.sql` (un message de chat envoyé ne se réécrit plus, prof et admin compris) et `20261125152013_message_chat_date_d_envoi.sql` (un compte connecté ne choisit pas la date de son message à l'envoi). T30 et T33 barrés au registre. Rien n'est déployé (les deux migrations ne dépendent d'aucun code à livrer).
+- **Prochaine action** : (1) David joue les migrations : `! pnpm db:migrate` depuis le dépôt principal (relire `pnpm exec supabase migration list --linked` juste avant : une autre migration en attente → stop) ; (2) vérifier en prod, en lecture seule, que `guard_message_reecriture_trg` et `guard_message_envoi_trg` sont actifs sur `messages`, fonctions non `SECURITY DEFINER`, `search_path` fixé ; (3) noter le résultat ici ; (4) suite du chantier à voir avec David (`pnpm ecarts`).
+- **En attente de David** : jouer les deux migrations en prod.
+- **Pièges en cours** : la garde est un trigger, pas un retrait de droits par colonne (qui masquerait le message de T31). Écrire `deleted_at` par l'API est refusé par la RLS : la suppression passe par `soft_delete_message`. Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Motif « policy UPDATE ou INSERT sans contrôle de colonnes » possible sur d'autres tables d'élèves (non prouvé).
+- **Worktree / branche** : aucun (worktree et branche de #3147 retirés). Ce journal, sur `main`, fait foi.
 
 ---
 
@@ -125,4 +125,4 @@ _Mis à jour le 2026-11-25 (17), PR 6 ouverte (#3147), CI en cours._
 - **Second passage du `security-auditor`** (trigger d'envoi) : aucun finding bloquant ni important ; upsert, COPY, vues, `anon`, ordre des triggers examinés, rien exécuté. Mineur relevé : `deleted_at` au choix de l'élève par la liste blanche. **Rejoué : non exploitable**, écrire `deleted_at` par l'API est refusé par la RLS (`new row violates row-level security policy`) ; la migration n'est pas changée, trois tests de non-régression ajoutés (date de suppression non choisie, suppression par l'application datée de maintenant, message supprimé non restauré). `is_reported` à vrai dès l'envoi : sans effet, aucun écran ne lit la colonne.
 - **Commentaires** : migration `20261125145621` (`delete_user_account` supprime les messages), deux tests de `lecture-seule-garde-base.test.ts` (refus venus désormais des gardes de réécriture et de conversation).
 - **Suite d'intégration entière, deux migrations** : 612 fichiers, 7971 tests, 0 échec (814 s). `check:incremental` 0 erreur, `db:types:verifier` conforme. Fichier de la PR : 25 tests verts.
-- **PR ouverte : #3147.**
+- **PR #3147 mergée le 2026-11-25** (CI verte ; `gh pr merge` a rendu un 502 mais le merge était fait, rangement rejoué par `pnpm pr:merger 3147`).
