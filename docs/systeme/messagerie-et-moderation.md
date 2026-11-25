@@ -192,8 +192,10 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 ### Modèles de messages
 
-- Pages : `src/routes/(protected)/dashboard/teacher/message-templates/` et
-  `dashboard/admin/message-templates/` (+ `stats/`), avec `FiltersHelp`, `TagsInput` et
+- Pages : `src/routes/(protected)/dashboard/admin/message-templates/` (+ `stats/`). La page du
+  prof (`dashboard/teacher/message-templates/`) a été retirée le 2026-11-25 (écarts E58 à E60 :
+  aperçu qui plantait, corps sans champ de saisie, création refusée ; David ne s'en servait
+  pas) ; la table `message_templates` et ses règles d'accès restent. Les pages admin utilisent `FiltersHelp`, `TagsInput` et
   `VariableAutocomplete` de `src/lib/components/templates/` (`TagsInput` sert aussi à
   `src/routes/(protected)/constructions/conversion/+page.svelte`).
 - API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul :
@@ -480,7 +482,7 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 - **Messagerie privée sans lien d'entrée** : aucune page hors de `src/routes/(protected)/messages/`
   ne pointe vers `/messages` (grep sur `src/`, hors `skeleton-detector.ts`). Même constat pour
   `dashboard/teacher/notifications`, `dashboard/admin/notifications`,
-  `dashboard/{teacher,admin}/message-templates` et `dashboard/admin/friendships`.
+  `dashboard/admin/message-templates` et `dashboard/admin/friendships`.
 - **Modèles de messages jamais utilisés pour envoyer** : `compose/` ne les lit pas ; seul
   `src/lib/stores/messageTemplates.svelte.ts` appelle `/api/messages/templates/match`, et ce
   store n'est importé nulle part.
