@@ -9,7 +9,8 @@
 -- le handicap, menaces et incitations à se faire du mal). Le mot ou l'expression
 -- est cherché EN ENTIER, sans tenir compte des majuscules, des accents, de la
 -- ponctuation ni d'un « s » final (« con » marque « t'es trop CON », pas
--- « content »).
+-- « content »). Les accents saisis en deux caractères et les caractères
+-- invisibles glissés dans un mot ne le cachent pas.
 --
 -- Accès (tranché par David le 2026-11-25) : personne ne lit rien de nouveau.
 -- Davantage de messages portent `is_flagged`, donc la mention « signalé
@@ -21,12 +22,28 @@
 -- et à la modification du contenu).
 --
 -- Écart C32 au passage : le commentaire de `process_message_content` promettait
--- un contrôle « plus sophistiqué » côté serveur qui n'existe pas. Corps inchangé.
+-- un contrôle « plus sophistiqué » côté serveur qui n'existe pas.
 --
--- ADDITIF (deux fonctions remplacées, mêmes signatures, droits conservés).
+-- La marque ne se maquille plus (constat du security-auditor, 2026-11-25). Les
+-- policies UPDATE de `messages` n'ont pas de liste de colonnes et le trigger ne
+-- jouait que sur `UPDATE OF content` : un élève pouvait, par l'API de la base,
+-- retirer la marque de son message, changer la raison, ou remplacer le texte lu
+-- par le prof (`plain_text`). Le trigger joue maintenant sur tout UPDATE.
+-- Accès en miroir (tranché par David le 2026-11-25) : qui ne pourra plus écrire
+-- ce qu'il écrivait ? L'élève n'écrit plus `is_flagged`, `flag_reason` ni
+-- `plain_text` de ses messages (l'application ne le faisait jamais) ; il garde
+-- la modification du contenu. Prof, admin et serveur écrivent toujours la marque.
+-- `plain_text` est recalculé depuis le contenu pour tout le monde.
+-- Test : tests/integration/messages-marque-non-maquillable.test.ts
+--
+-- ADDITIF (deux fonctions remplacées, mêmes signatures, droits conservés ; un
+-- trigger redéfini sur la même fonction). Aucune donnée touchée.
 -- Rollback : rejouer la définition de `check_profanity_simple` de
--- `20260616220000_baseline_schema.sql` (quatre mots, `position()`) et celle de
--- `process_message_content` de `20260616250000_trim_message_plain_text.sql`.
+-- `20260616220000_baseline_schema.sql` (quatre mots, `position()`), celle de
+-- `process_message_content` de `20260616250000_trim_message_plain_text.sql`, puis
+--   CREATE OR REPLACE TRIGGER trigger_process_message_content
+--     BEFORE INSERT OR UPDATE OF content ON public.messages
+--     FOR EACH ROW EXECUTE FUNCTION public.process_message_content();
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION public.check_profanity_simple(p_text text) RETURNS boolean
@@ -74,11 +91,16 @@ BEGIN
     RETURN false;
   END IF;
 
-  v_norm := lower(p_text);
+  -- Forme décomposée (NFKD) : une lettre accentuée devient la lettre suivie de
+  -- son accent, quelle que soit la façon dont elle a été saisie ; les variantes
+  -- de présentation (pleine chasse, ligatures) redeviennent des lettres simples.
+  -- On retire ensuite les accents et les caractères invisibles (trait d'union
+  -- conditionnel, espaces et liants de largeur nulle), qui couperaient un mot
+  -- sans se voir à l'écran.
+  v_norm := lower(normalize(p_text, NFKD));
+  v_norm := regexp_replace(v_norm,
+    '[\u0300-\u036F\u00AD\u200B-\u200F\u2060-\u2064\uFEFF]', '', 'g');
   v_norm := replace(replace(v_norm, 'œ', 'oe'), 'æ', 'ae');
-  v_norm := translate(v_norm,
-    'àâäáãåçéèêëíìîïñóòôöõúùûüýÿ',
-    'aaaaaaceeeeiiiinooooouuuuyy');
   v_norm := btrim(regexp_replace(v_norm, '[^a-z0-9]+', ' ', 'g'));
 
   IF v_norm = '' THEN
@@ -95,23 +117,58 @@ CREATE OR REPLACE FUNCTION public.process_message_content() RETURNS trigger
     SET search_path TO 'public', 'extensions', 'pg_temp'
     AS $$
 DECLARE
-  v_plain_text TEXT;
-  v_has_profanity BOOLEAN;
+  c_reason CONSTANT text := 'Profanité détectée automatiquement';
+  v_plain_text text;
+  v_privileged boolean;
+  v_content_changed boolean;
+  v_detected boolean;
+  v_was_flagged boolean;
 BEGIN
-  -- Extract plain text from TipTap JSON, trimming leading/trailing whitespace
-  -- (extract_plain_text_from_tiptap appends a separator space after each block).
+  -- Le texte lu par le prof vient TOUJOURS du contenu, jamais de ce que l'appelant
+  -- écrit dans `plain_text` (extract_plain_text_from_tiptap ajoute une espace après
+  -- chaque bloc, d'où btrim).
   v_plain_text := btrim(extract_plain_text_from_tiptap(NEW.content));
   NEW.plain_text := v_plain_text;
 
-  -- Seul contrôle du contenu : la liste de mots de check_profanity_simple.
-  -- Le message part toujours ; la marque le fait remonter chez le prof.
-  v_has_profanity := check_profanity_simple(v_plain_text);
+  -- Seul contrôle du contenu : la liste de mots de check_profanity_simple, jouée à
+  -- l'envoi et quand le contenu change. Le message part toujours ; la marque le
+  -- fait remonter chez le prof.
+  v_content_changed := TG_OP = 'INSERT' OR NEW.content IS DISTINCT FROM OLD.content;
+  v_detected := v_content_changed AND check_profanity_simple(v_plain_text);
 
-  IF v_has_profanity THEN
-    NEW.is_flagged := true;
-    NEW.flag_reason := 'Profanité détectée automatiquement';
+  -- Qui peut écrire la marque à la main : le serveur (service_role, tâche système :
+  -- pas d'utilisateur connecté), le prof et l'admin. Les policies de `messages`
+  -- ne laissent passer aucune écriture d'un visiteur non connecté.
+  v_privileged := auth.uid() IS NULL OR is_teacher_or_admin();
+
+  IF v_privileged THEN
+    IF v_detected THEN
+      NEW.is_flagged := true;
+      NEW.flag_reason := c_reason;
+    END IF;
+    RETURN NEW;
+  END IF;
+
+  -- Un élève n'écrit ni la marque ni sa raison : elles viennent de la détection,
+  -- et une marque posée ne se retire pas.
+  IF TG_OP = 'INSERT' THEN
+    NEW.is_flagged := v_detected;
+    NEW.flag_reason := CASE WHEN v_detected THEN c_reason END;
+  ELSE
+    v_was_flagged := coalesce(OLD.is_flagged, false);
+    NEW.is_flagged := v_was_flagged OR v_detected;
+    NEW.flag_reason := CASE
+      WHEN v_detected AND NOT v_was_flagged THEN c_reason
+      ELSE OLD.flag_reason
+    END;
   END IF;
 
   RETURN NEW;
 END;
 $$;
+
+-- Le trigger ne jouait que sur `UPDATE OF content` : un UPDATE des seules colonnes
+-- `is_flagged`, `flag_reason` ou `plain_text` lui échappait.
+CREATE OR REPLACE TRIGGER trigger_process_message_content
+  BEFORE INSERT OR UPDATE ON public.messages
+  FOR EACH ROW EXECUTE FUNCTION public.process_message_content();

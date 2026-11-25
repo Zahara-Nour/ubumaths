@@ -453,7 +453,15 @@ describe('Chat System Triggers', () => {
 			'personne ne t’aime',
 			'nique ta mère',
 			'fdp',
-			'con'
+			'con',
+			// accent saisi en deux caractères (lettre + accent combinant)
+			'encule\u0301 va',
+			'nique ta me\u0300re',
+			// caractère invisible glissé dans le mot
+			'me\u200Brde',
+			'pu\u00ADtain',
+			// lettres de pleine chasse
+			'\uFF4D\uFF45\uFF52\uFF44\uFF45'
 		];
 
 		const NON_MARQUES = [

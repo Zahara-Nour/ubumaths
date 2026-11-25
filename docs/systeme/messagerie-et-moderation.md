@@ -287,8 +287,17 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   physique ou le handicap, menaces et incitations à se faire du mal. Le mot est cherché **en
   entier**, sans tenir compte des majuscules, des accents, de la ponctuation ni d'un « s » final :
   « con » marque « t'es trop CON », pas « content ». Changer la liste = une migration qui
-  redéfinit la fonction. Limites : une faute voulue (« c0nnard », « meeerde ») passe ; les
-  messages envoyés avant la migration ne sont pas relus.
+  redéfinit la fonction. Un accent saisi en deux caractères, une lettre de pleine chasse ou un
+  caractère invisible glissé dans le mot ne le cachent pas (forme NFKD, puis retrait des accents
+  et des caractères de largeur nulle). Limites : une faute voulue (« c0nnard », « meeerde »)
+  passe ; les messages envoyés avant la migration ne sont pas relus.
+- **La marque ne se maquille pas.** Le trigger joue à l'envoi et sur **tout** `UPDATE` de
+  `messages`. `plain_text` est toujours recalculé depuis `content`, pour tout le monde. Un élève
+  n'écrit ni `is_flagged` ni `flag_reason` : à l'envoi elles viennent de la détection ; ensuite
+  une marque posée reste, et modifier le contenu la recalcule sans jamais la retirer. Prof, admin
+  et serveur (pas d'utilisateur connecté) écrivent la marque à la main. La détection ne rejoue
+  que si le contenu change : retirer une marque à la main tient. Test :
+  `tests/integration/messages-marque-non-maquillable.test.ts`.
 - Aucun filtre sur `private_messages`, ni sur les notifications.
 - L'ancien filtre côté serveur (`profanity-filter.ts`, jamais branché) a été retiré le 2026-10-13.
 
@@ -299,7 +308,10 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Messages marqués automatiquement : onglet « Messages marqués » de `gestion/`
   (`FlaggedMessagesList.svelte`). `load` lit `messages` (`is_flagged = true`, 100 plus récents)
   avec le client du prof, sans fonction privilégiée : la RLS de `messages` borne la liste aux
-  conversations qu'il peut déjà ouvrir et masque les messages supprimés. Lecture seule ; une
+  conversations qu'il peut déjà ouvrir et masque les messages supprimés. **Mesuré le
+  2026-11-25 : ce sont les chats de classe et les conversations où il participe, pas les
+  conversations à deux entre élèves** (la policy SELECT les nomme, mais lit
+  `conversation_participants` sous la RLS du prof, qui n'y voit que les siennes). Lecture seule ; une
   lecture en échec rend `flaggedMessagesLoadFailed` et une alerte, jamais « aucun message ».
   Pas de lien direct vers la conversation, pas d'état « traité ».
 - Restrictions : la page `gestion/` ne liste que celles qu'**il** a posées (`restricted_by`).
