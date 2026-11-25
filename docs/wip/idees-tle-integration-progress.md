@@ -51,7 +51,7 @@ _Mis à jour le 2026-11-25, lot écrit et vérifié._
 - Écarts à la fiche, sans changer l'idée : pas d'erreurs prévues sur les cases à choix (F8, F10) ni
   sur la case « primitive » (F4a) : le moteur les refuse, les explications sont dans le corrigé ;
   F2 corrigé par « deux primitives diffèrent d'une constante » (le point du modèle).
-- Vérifié : `question:specs` vert sur les 9 fichiers (185 specs, 300 tirages par variation) ;
+- Vérifié : `question:specs` vert sur les 9 fichiers (200 specs, 300 tirages par variation) ;
   `create-questions` en simulation vert ; `sonde-courbes` 0 problème ; 1 262 formules distinctes des
   aperçus passées à `validateLatex` + accolades (0 problème, après correction d'un `$f$` imbriqué
   dans `\text` en F8) ; « 2e-1 » tapé par l'élève jugé juste. Copies créées en base locale, F1
