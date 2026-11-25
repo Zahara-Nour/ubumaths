@@ -91,34 +91,48 @@ function versionRow(overrides: Record<string, unknown> = {}) {
 }
 
 /**
- * Table `exercise_versions` : `latest` est ce que rend la lecture des versions (`.in().order()`),
- * `written` ce que rend une écriture (`insert/update … .select()`).
+ * Table `exercise_versions` : `written` est ce que rend une écriture (`insert … .select()`),
+ * utilisée par la création (version 1).
  */
-function versionsQuery(latest = [versionRow()], written = [versionRow()]) {
-	const q = {
-		in: vi.fn(),
-		eq: vi.fn(),
-		insert: vi.fn(),
-		update: vi.fn(),
-		order: vi.fn().mockResolvedValue({ data: latest, error: null }),
-		select: vi.fn()
-	};
-	q.in.mockReturnValue(q);
-	q.eq.mockReturnValue(q);
+function versionsQuery(written = [versionRow()]) {
+	const q = { insert: vi.fn(), select: vi.fn() };
 	q.insert.mockReturnValue(q);
-	q.update.mockReturnValue(q);
-	// `select()` est la fin d'une écriture (attendue) ou le début d'une lecture (`.in().order()`)
-	q.select.mockImplementation(() =>
-		Object.assign(Promise.resolve({ data: written, error: null }), q)
-	);
+	q.select.mockImplementation(() => Promise.resolve({ data: written, error: null }));
 	return q;
+}
+
+/**
+ * Les deux fonctions de la base (`rpc`) : `latest_exercise_versions` rend la dernière version de
+ * chaque exercice, `save_exercise_with_version` écrit identité + contenu ensemble et rend la
+ * version écrite (ou l'erreur PostgREST donnée). `calls` garde les arguments passés.
+ */
+function versionsRpc(
+	saved: { data: unknown; error: unknown } = { data: versionRow(), error: null },
+	latest = [versionRow()]
+) {
+	const calls: { name: string; args: Record<string, unknown> }[] = [];
+	const rpc = vi.fn((name: string, args: Record<string, unknown>) => {
+		calls.push({ name, args });
+		if (name === 'latest_exercise_versions') {
+			return { select: vi.fn().mockResolvedValue({ data: latest, error: null }) };
+		}
+		return {
+			select: vi.fn(() => ({ single: vi.fn().mockResolvedValue(saved) }))
+		};
+	});
+	return {
+		rpc,
+		/** Arguments du premier appel à `save_exercise_with_version` */
+		saveArgs: () => calls.find((c) => c.name === 'save_exercise_with_version')?.args,
+		saveCount: () => calls.filter((c) => c.name === 'save_exercise_with_version').length
+	};
 }
 
 /**
  * Client minimal pour create/update de `server/exercises.ts` : chaque appel
  * renvoie la chaîne ; `single` rend successivement les réponses données.
  */
-function chainClient(singleResponses: unknown[]) {
+function chainClient(singleResponses: unknown[], saved?: { data: unknown; error: unknown }) {
 	const query = {
 		select: vi.fn().mockReturnThis(),
 		eq: vi.fn().mockReturnThis(),
@@ -129,10 +143,12 @@ function chainClient(singleResponses: unknown[]) {
 	};
 	for (const response of singleResponses) query.single.mockResolvedValueOnce(response);
 	const versions = versionsQuery();
+	const base = versionsRpc(saved);
 	const client = {
-		from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : query))
+		from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : query)),
+		rpc: base.rpc
 	};
-	return { client: client as unknown as SupabaseClient<Database>, query, versions };
+	return { client: client as unknown as SupabaseClient<Database>, query, versions, ...base };
 }
 
 beforeEach(() => {
@@ -287,21 +303,21 @@ describe('createExercise : search_indexed', () => {
 describe('updateExercise : search_indexed', () => {
 	it('dépublier un exercice coché décoche Google dans la même écriture', async () => {
 		const existing = exerciseRow();
-		const { client, query } = chainClient([
+		const { client, query, saveArgs, saveCount } = chainClient([
 			{ data: existing, error: null },
 			{ data: { ...existing, is_public: false, search_indexed: false }, error: null }
 		]);
 		const result = await updateExercise(client, EXERCISE_ID, { is_public: false }, TEACHER_ID);
 		expect(result.error).toBeNull();
-		expect(query.update).toHaveBeenCalledTimes(1);
-		expect(query.update).toHaveBeenCalledWith(
-			expect.objectContaining({ is_public: false, search_indexed: false })
-		);
+		// Un seul appel d'écriture, qui porte les DEUX colonnes (sinon la base refuse : 23514)
+		expect(saveCount()).toBe(1);
+		expect(saveArgs()?.p_identity).toMatchObject({ is_public: false, search_indexed: false });
+		expect(query.update).not.toHaveBeenCalled();
 	});
 
 	it('une mise à jour partielle (titre) garde l’exercice public et coché', async () => {
 		const existing = exerciseRow();
-		const { client, query } = chainClient([
+		const { client, saveArgs } = chainClient([
 			{ data: existing, error: null },
 			{ data: { ...existing, title: 'Nouveau titre' }, error: null }
 		]);
@@ -314,22 +330,24 @@ describe('updateExercise : search_indexed', () => {
 			parsed as Parameters<typeof updateExercise>[2],
 			TEACHER_ID
 		);
-		const payload = query.update.mock.calls[0][0] as Record<string, unknown>;
+		const payload = saveArgs()?.p_identity as Record<string, unknown>;
+		expect(payload).toMatchObject({ title: 'Nouveau titre' });
 		expect(payload).not.toHaveProperty('is_public');
 		expect(payload).not.toHaveProperty('search_indexed');
 	});
 
 	it('cocher Google sur un exercice resté privé est refusé sans écrire', async () => {
 		const existing = exerciseRow({ is_public: false, search_indexed: false });
-		const { client, query } = chainClient([{ data: existing, error: null }]);
+		const { client, query, saveCount } = chainClient([{ data: existing, error: null }]);
 		const result = await updateExercise(client, EXERCISE_ID, { search_indexed: true }, TEACHER_ID);
 		expect(result.error).toBeInstanceOf(SearchIndexedRequiresPublicError);
+		expect(saveCount()).toBe(0);
 		expect(query.update).not.toHaveBeenCalled();
 	});
 
 	it('cocher Google sur un exercice public passe tel quel', async () => {
 		const existing = exerciseRow({ search_indexed: false });
-		const { client, query } = chainClient([
+		const { client, saveArgs } = chainClient([
 			{ data: existing, error: null },
 			{ data: { ...existing, search_indexed: true }, error: null }
 		]);
@@ -339,17 +357,16 @@ describe('updateExercise : search_indexed', () => {
 			{ is_public: true, search_indexed: true },
 			TEACHER_ID
 		);
-		expect(query.update).toHaveBeenCalledWith(
-			expect.objectContaining({ is_public: true, search_indexed: true })
-		);
+		expect(saveArgs()?.p_identity).toMatchObject({ is_public: true, search_indexed: true });
 	});
 
 	it('remonte le refus de la base tel quel, reconnaissable', async () => {
 		const existing = exerciseRow({ search_indexed: false });
-		const { client } = chainClient([
-			{ data: existing, error: null },
-			{ data: null, error: CHECK_ERROR }
-		]);
+		// La base refuse l'écriture groupée : l'erreur PostgREST ressort de l'appel `rpc`
+		const { client } = chainClient([{ data: existing, error: null }], {
+			data: null,
+			error: CHECK_ERROR
+		});
 		const result = await updateExercise(
 			client,
 			EXERCISE_ID,
@@ -382,6 +399,12 @@ function restoreClient(rowExists: boolean) {
 		}
 		if (table === 'exercise_versions') {
 			return {
+				// Lecture de la dernière version existante (`select().eq().order().limit()`) : aucune
+				select: () => ({
+					eq: () => ({
+						order: () => ({ limit: () => Promise.resolve({ data: [], error: null }) })
+					})
+				}),
 				upsert: (rows: unknown[]) => {
 					versionUpserts.push(rows);
 					return {
@@ -535,17 +558,18 @@ describe('import : search_indexed', () => {
 			error: null
 		});
 		const versions = versionsQuery();
+		const base = versionsRpc();
 		if (duplicate) {
-			query.single
-				.mockResolvedValueOnce({ data: { created_by: TEACHER_ID }, error: null })
-				.mockResolvedValueOnce({ data: exerciseRow(), error: null });
+			// Le remplacement ne lit que l'auteur ; l'écriture passe par `save_exercise_with_version`
+			query.single.mockResolvedValueOnce({ data: { created_by: TEACHER_ID }, error: null });
 		} else {
 			query.single.mockResolvedValueOnce({ data: exerciseRow(), error: null });
 		}
 		const client = {
-			from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : query))
+			from: vi.fn((table: string) => (table === 'exercise_versions' ? versions : query)),
+			rpc: base.rpc
 		};
-		return { client: client as unknown as SupabaseClient<Database>, query, versions };
+		return { client: client as unknown as SupabaseClient<Database>, query, versions, ...base };
 	}
 
 	it('un nouvel exercice importé n’est jamais affiché sur Google', async () => {
@@ -557,7 +581,7 @@ describe('import : search_indexed', () => {
 	});
 
 	it('remplacer un exercice ne touche ni à sa visibilité ni à Google', async () => {
-		const { client, query, versions } = importClient(true);
+		const { client, query, saveArgs, saveCount } = importClient(true);
 		const newVariations = [{ label: 'default', statement_md: 'Autre Q ?', solution_md: 'Autre R' }];
 		const result = await importExerciseFromJSON(
 			client,
@@ -566,14 +590,13 @@ describe('import : search_indexed', () => {
 			{ onDuplicate: 'replace' }
 		);
 		expect(result.success).toBe(true);
-		expect(query.update).toHaveBeenCalledTimes(1);
-		const payload = query.update.mock.calls[0][0] as Record<string, unknown>;
+		expect(saveCount()).toBe(1);
+		expect(query.update).not.toHaveBeenCalled();
+		const payload = saveArgs()?.p_identity as Record<string, unknown>;
 		expect(payload).not.toHaveProperty('is_public');
 		expect(payload).not.toHaveProperty('search_indexed');
-		// Le contenu remplacé part vers la version, pas vers la ligne d'`exercises`
+		// Le contenu remplacé part vers la version, pas dans l'identité
 		expect(payload).not.toHaveProperty('variations');
-		expect(versions.update).toHaveBeenCalledWith(
-			expect.objectContaining({ variations: newVariations })
-		);
+		expect(saveArgs()?.p_content).toEqual(expect.objectContaining({ variations: newVariations }));
 	});
 });
