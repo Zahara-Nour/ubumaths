@@ -138,15 +138,9 @@ begin
 		v_assignments := v_assignments || format(', %I = r.%I', v_key, v_key);
 	end loop;
 
-	execute format(
-		'update public.exercises e set %s from jsonb_populate_record(null::public.exercises, $1) r where e.id = $2',
-		v_assignments
-	) using coalesce(p_identity, '{}'::jsonb), p_exercise_id;
-	get diagnostics v_rows = row_count;
-	-- Refus RLS ou exercice absent : zéro ligne, sans erreur → on la lève
-	if v_rows <> 1 then
-		raise exception 'exercise not updated' using errcode = 'P0002';
-	end if;
+	-- Ordre des verrous : la VERSION d'abord, puis l'exercice — le même que toute autre écriture
+	-- d'une version, dont le déclencheur rajeunit l'exercice ensuite (sinon interblocage possible
+	-- entre « Enregistrer » et, par exemple, la note ou une correction après signalement).
 
 	-- Contenu : la version demandée (de CET exercice), sinon la dernière. Seules les clés données
 	-- changent ; `null` les vide.
@@ -156,32 +150,40 @@ begin
 		 where v.exercise_id = p_exercise_id order by v.number desc limit 1)
 	);
 
-	-- Rien à changer dans le contenu : la version est seulement lue (son `updated_at` ne bouge pas)
 	if coalesce(p_content, '{}'::jsonb) = '{}'::jsonb then
+		-- Rien à changer dans le contenu : la version est seulement lue (son `updated_at` ne bouge pas)
 		select * into v_saved from public.exercise_versions v
 		where v.id = v_target and v.exercise_id = p_exercise_id;
-		if v_saved.id is null then
-			raise exception 'version not found' using errcode = 'P0002';
-		end if;
-		return v_saved;
+	else
+		update public.exercise_versions v set
+			variations = case when p_content ? 'variations'
+				then nullif(p_content -> 'variations', 'null'::jsonb) else v.variations end,
+			shared = case when p_content ? 'shared'
+				then nullif(p_content -> 'shared', 'null'::jsonb) else v.shared end,
+			generic_functions = case when p_content ? 'generic_functions'
+				then (case when jsonb_typeof(p_content -> 'generic_functions') = 'array'
+					then array(select jsonb_array_elements_text(p_content -> 'generic_functions'))
+					else null end)
+				else v.generic_functions end
+		where v.id = v_target and v.exercise_id = p_exercise_id
+		returning * into v_saved;
 	end if;
 
-	update public.exercise_versions v set
-		variations = case when p_content ? 'variations'
-			then nullif(p_content -> 'variations', 'null'::jsonb) else v.variations end,
-		shared = case when p_content ? 'shared'
-			then nullif(p_content -> 'shared', 'null'::jsonb) else v.shared end,
-		generic_functions = case when p_content ? 'generic_functions'
-			then (case when jsonb_typeof(p_content -> 'generic_functions') = 'array'
-				then array(select jsonb_array_elements_text(p_content -> 'generic_functions'))
-				else null end)
-			else v.generic_functions end
-	where v.id = v_target and v.exercise_id = p_exercise_id
-	returning * into v_saved;
-
+	-- Version absente, d'un autre exercice, ou refusée par la RLS (zéro ligne, sans erreur)
 	if v_saved.id is null then
 		raise exception 'version not found' using errcode = 'P0002';
 	end if;
+
+	execute format(
+		'update public.exercises e set %s from jsonb_populate_record(null::public.exercises, $1) r where e.id = $2',
+		v_assignments
+	) using coalesce(p_identity, '{}'::jsonb), p_exercise_id;
+	get diagnostics v_rows = row_count;
+	-- Refus RLS : zéro ligne, sans erreur → on la lève (code distinct de « version introuvable »)
+	if v_rows <> 1 then
+		raise exception 'exercise not updated' using errcode = '42501';
+	end if;
+
 	return v_saved;
 end;
 $$;

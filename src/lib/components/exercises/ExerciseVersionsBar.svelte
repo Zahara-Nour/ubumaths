@@ -181,7 +181,7 @@
 			}
 			deleteDialogOpen = false;
 			toaster.success(`Version ${edited.number} supprimée`);
-			// La plus récente restante
+			// Sans `?version` : la plus récente restante, ou, venue d'une fiche, la version de la fiche
 			const url = new URL(page.url.href);
 			url.searchParams.delete(VERSION_PARAM);
 			await goto(url, { refreshAll: true });

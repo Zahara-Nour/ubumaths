@@ -775,6 +775,9 @@ async function restoreVersions(
 	const fail = (error: string) =>
 		result.errors.push({ table: 'exercise_versions', record_id: record.id, error });
 
+	// `versions` absent : sauvegarde antérieure aux versions. `[]` : exercice exporté sans version
+	// (incohérence de la base) — rien à restaurer s'il en a, sinon une v1 de son contenu.
+	const legacy = record.versions === undefined;
 	if (!record.versions || record.versions.length === 0) {
 		const { data: existing, error: readError } = await supabase
 			.from('exercise_versions')
@@ -785,7 +788,7 @@ async function restoreVersions(
 		if (readError) return void fail(readError.message);
 		const latest = existing?.[0];
 		if (latest) {
-			if (sameContent(latest, record)) return;
+			if (!legacy || sameContent(latest, record)) return;
 			const { data, error } = await supabase
 				.from('exercise_versions')
 				.insert({

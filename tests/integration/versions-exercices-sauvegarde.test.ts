@@ -10,7 +10,8 @@
  * 2. Restaurer une sauvegarde ANTÉRIEURE aux versions sur un exercice qui en a déjà ne touche pas
  *    sa v1 (qu'une fiche pointe) : son contenu devient une NOUVELLE version ; restaurer deux fois
  *    le même fichier n'en crée pas une deuxième.
- * 3. Sur un exercice absent, la même sauvegarde crée la version 1.
+ * 3. Sur un exercice absent, la même sauvegarde crée la version 1 ; un exercice exporté sans
+ *    version (`versions: []`) ne reçoit pas de version vide.
  * 4. Une sauvegarde dont deux versions ont le même numéro est refusée à la lecture.
  *
  * La sauvegarde est une action d'admin : client service (hors RLS), comme la route.
@@ -150,6 +151,22 @@ describe('restauration d’une sauvegarde antérieure aux versions', () => {
 		const again = await restoreFromBackup(service, legacy, { conflict_strategy: 'replace' });
 		expect(again.errors).toEqual([]);
 		expect((await versionsOf(pointedId)).map((v) => v.number)).toEqual([1, 2]);
+	});
+
+	it('exercice exporté SANS version (`versions: []`) : aucune version vide ajoutée', async () => {
+		const before = await versionsOf(pointedId);
+		const empty: ExerciseBackup = {
+			...backup,
+			data: {
+				exercises: [{ ...recordOf(pointedId), variations: null, versions: [] }],
+				exercise_templates: [],
+				exercise_favorites: [],
+				exercise_share_tokens: []
+			}
+		};
+		const result = await restoreFromBackup(service, empty, { conflict_strategy: 'replace' });
+		expect(result.errors).toEqual([]);
+		expect(await versionsOf(pointedId)).toEqual(before);
 	});
 
 	it('exercice absent : la sauvegarde crée sa version 1', async () => {

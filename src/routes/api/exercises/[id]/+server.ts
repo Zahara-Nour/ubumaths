@@ -99,10 +99,11 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		if (result.error.message === 'Exercise not found') {
 			throw error(404, 'Exercice introuvable');
 		}
-		// Version absente, ou d'un autre exercice (`save_exercise_with_version`)
-		if ((result.error as { code?: string }).code === 'P0002') {
-			throw error(404, 'Version introuvable');
-		}
+		// `save_exercise_with_version` : version absente ou d'un autre exercice (P0002), écriture de
+		// l'exercice refusée par la RLS (42501)
+		const code = (result.error as { code?: string }).code;
+		if (code === 'P0002') throw error(404, 'Version introuvable');
+		if (code === '42501') throw error(403, 'Seul l’auteur de l’exercice peut le modifier');
 		// « Privé + Google » : refus métier ou contrainte de la base (23514)
 		if (isSearchIndexedViolation(result.error)) {
 			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
