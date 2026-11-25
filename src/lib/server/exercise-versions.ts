@@ -180,6 +180,42 @@ export async function latestVersionId(
 	return version?.id ?? null;
 }
 
+/** Une version précise d'un exercice (de CET exercice), `null` si elle ne se lit pas. */
+export async function fetchVersion(
+	supabase: SupabaseClient<Database>,
+	exerciseId: string,
+	versionId: string
+): Promise<ExerciseVersionRead | null> {
+	const { data, error } = await supabase
+		.from('exercise_versions')
+		.select(VERSION_COLUMNS)
+		.eq('id', versionId)
+		.eq('exercise_id', exerciseId)
+		.maybeSingle();
+	if (error) throw new Error(`Version illisible : ${error.message}`);
+	return data;
+}
+
+/**
+ * La version qu'une fiche donne à un exercice (sa première ligne, par position), `null` si
+ * l'exercice n'est pas dans la fiche ou que la fiche ne se lit pas.
+ */
+export async function worksheetVersionIdOf(
+	supabase: SupabaseClient<Database>,
+	worksheetId: string,
+	exerciseId: string
+): Promise<string | null> {
+	const { data, error } = await supabase
+		.from('worksheet_exercises')
+		.select('exercise_version_id')
+		.eq('worksheet_id', worksheetId)
+		.eq('exercise_id', exerciseId)
+		.order('position')
+		.limit(1);
+	if (error) throw new Error(`Fiche illisible : ${error.message}`);
+	return data?.[0]?.exercise_version_id ?? null;
+}
+
 // ============================================================================
 // FONCTIONS — ÉCRITURE
 // ============================================================================

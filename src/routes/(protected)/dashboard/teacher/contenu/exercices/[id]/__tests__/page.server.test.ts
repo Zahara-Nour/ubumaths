@@ -38,6 +38,32 @@ vi.mock('#lib/server/exercises.ts', () => ({
 	})
 }));
 
+const WORKSHEET_ID = '44444444-4444-4444-8444-444444444444';
+const VERSIONS = [
+	{ id: 'v1', number: 1, note: null, created_at: '', updated_at: '', worksheets: [] },
+	{ id: 'v2', number: 2, note: null, created_at: '', updated_at: '', worksheets: [] }
+];
+/** Version que la fiche WORKSHEET_ID donne à l'exercice */
+const versionOfWorksheet = { id: 'v1' as string | null };
+
+vi.mock('#lib/server/exercise-versions.ts', () => ({
+	listVersionsWithUsage: async () => VERSIONS,
+	worksheetVersionIdOf: async (_s: unknown, worksheetId: string) =>
+		worksheetId === WORKSHEET_ID ? versionOfWorksheet.id : null,
+	fetchVersion: async (_s: unknown, exerciseId: string, versionId: string) => ({
+		id: versionId,
+		number: Number(versionId.slice(1)),
+		exercise_id: exerciseId,
+		variations: [{ label: `contenu de ${versionId}` }],
+		shared: null,
+		generic_functions: null
+	}),
+	withVersionContent: (exercise: object, version: { variations: unknown }) => ({
+		...exercise,
+		variations: version.variations
+	})
+}));
+
 import { load } from '../+page.server';
 
 // ============================================================================
@@ -51,7 +77,12 @@ type LoadEvent = Parameters<typeof load>[0];
 // ============================================================================
 
 /** Charge l'exercice, de ces niveaux, rangé sur ces nœuds et portant ces tags. */
-async function loadWith(grades: string[], nodeIds: string[], taggedPointIds: string[] = []) {
+async function loadWith(
+	grades: string[],
+	nodeIds: string[],
+	taggedPointIds: string[] = [],
+	search = ''
+) {
 	exercise.grades = grades;
 	const fake = createFakeSupabase((table, calls) => {
 		const programme = answerProgramme(table, calls);
@@ -70,7 +101,8 @@ async function loadWith(grades: string[], nodeIds: string[], taggedPointIds: str
 			safeGetSession: async () => ({ user: { id: USER_ID } })
 		},
 		params: { id: EXERCISE_ID },
-		fetch: async () => new Response('[]')
+		fetch: async () => new Response('[]'),
+		url: new URL(`http://localhost/dashboard/teacher/contenu/exercices/${EXERCISE_ID}${search}`)
 	} as unknown as LoadEvent;
 	return (await load(event)) as PageServerData;
 }
@@ -146,5 +178,25 @@ describe('édition d’un exercice — tags du programme (C5, B2)', () => {
 		const result = await loadWith(['6'], ['s-addition']);
 		expect(result.exerciseUnranked).toBe(false);
 		expect(result.curriculumByGrade).toEqual([]);
+	});
+});
+
+describe('version ouverte (ADR 0044)', () => {
+	it('sans rien demander : la plus récente, avec son contenu', async () => {
+		const data = await loadWith(['5'], []);
+		expect(data.editedVersionId).toBe('v2');
+		expect(data.exercise.variations).toEqual([{ label: 'contenu de v2' }]);
+		expect(data.versions.map((v) => v.number)).toEqual([1, 2]);
+	});
+
+	it('ouverte depuis une fiche : la version de cette fiche', async () => {
+		const data = await loadWith(['5'], [], [], `?fiche=${WORKSHEET_ID}`);
+		expect(data.editedVersionId).toBe('v1');
+		expect(data.exercise.variations).toEqual([{ label: 'contenu de v1' }]);
+	});
+
+	it('?version= l’emporte sur la fiche', async () => {
+		const data = await loadWith(['5'], [], [], `?fiche=${WORKSHEET_ID}&version=2`);
+		expect(data.editedVersionId).toBe('v2');
 	});
 });

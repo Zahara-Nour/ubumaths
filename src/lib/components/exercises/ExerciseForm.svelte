@@ -259,7 +259,7 @@
 	 */
 	function addVariation() {
 		if (variations.length >= 10) {
-			toaster.warning('Maximum 10 variations autorisees');
+			toaster.warning('10 niveaux de guidage au plus');
 			return;
 		}
 
@@ -272,7 +272,7 @@
 
 		variations = [...variations, newVariation];
 		activeVariationTab = String(variations.length - 1);
-		toaster.success('Variation ajoutee');
+		toaster.success('Niveau de guidage ajouté');
 	}
 
 	/**
@@ -280,7 +280,7 @@
 	 */
 	function removeVariation(index: number) {
 		if (variations.length <= 1) {
-			toaster.warning('Au moins une variation est requise');
+			toaster.warning('Il faut au moins un niveau de guidage');
 			return;
 		}
 
@@ -300,7 +300,7 @@
 	 */
 	function duplicateVariation(index: number) {
 		if (variations.length >= 10) {
-			toaster.warning('Maximum 10 variations autorisees');
+			toaster.warning('10 niveaux de guidage au plus');
 			return;
 		}
 
@@ -325,7 +325,7 @@
 
 		// Switch to the new duplicate
 		activeVariationTab = String(index + 1);
-		toaster.success('Variation dupliquee');
+		toaster.success('Niveau de guidage dupliqué');
 	}
 
 	/**
@@ -371,10 +371,10 @@
 		for (let i = 0; i < variations.length; i++) {
 			const v = variations[i];
 			if (!v.statement_md.trim()) {
-				errors[`variation_${i}_statement`] = `L'enonce de la variation ${i + 1} est requis`;
+				errors[`variation_${i}_statement`] = `L’énoncé du niveau de guidage ${i + 1} est requis`;
 			}
 			if (!v.solution_md.trim()) {
-				errors[`variation_${i}_solution`] = `La solution de la variation ${i + 1} est requise`;
+				errors[`variation_${i}_solution`] = `La solution du niveau de guidage ${i + 1} est requise`;
 			}
 		}
 
@@ -412,7 +412,7 @@
 				if (match) {
 					activeVariationTab = match[1];
 				}
-				toaster.error('Veuillez corriger les erreurs dans les variations');
+				toaster.error('Corrige les erreurs dans les niveaux de guidage');
 			}
 			return;
 		}
@@ -469,7 +469,7 @@
 		const hasExistingSolution = currentVariation?.solution_md.trim().length > 0;
 
 		if (hasExistingStatement || hasExistingSolution) {
-			const confirmMsg = 'Le contenu existant de cette variation sera remplace. Continuer ?';
+			const confirmMsg = 'Le contenu existant de ce niveau de guidage sera remplacé. Continuer ?';
 			if (!confirm(confirmMsg)) {
 				return;
 			}
@@ -658,7 +658,7 @@
 	<!-- Variations Editor -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Variations</Card.Title>
+			<Card.Title>Niveaux de guidage</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<Tabs.Root bind:value={activeVariationTab}>
@@ -690,7 +690,7 @@
 											}
 										}}
 										class="absolute top-1/2 right-1 -translate-y-1/2 cursor-pointer rounded-full p-0.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
-										title="Supprimer cette variation"
+										title="Supprimer ce niveau de guidage"
 									>
 										<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path
@@ -711,7 +711,7 @@
 						size="sm"
 						onclick={() => duplicateVariation(parseInt(activeVariationTab))}
 						disabled={variations.length >= 10}
-						title="Dupliquer la variation active"
+						title="Dupliquer le niveau de guidage affiché"
 					>
 						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -728,7 +728,7 @@
 						size="sm"
 						onclick={addVariation}
 						disabled={variations.length >= 10}
-						title="Ajouter une variation vide"
+						title="Ajouter un niveau de guidage vide"
 					>
 						+
 					</Button>
