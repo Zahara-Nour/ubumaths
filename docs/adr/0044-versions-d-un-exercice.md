@@ -43,6 +43,17 @@ rédaction là où elle sert, et proposer la nouvelle.
    cette version 1. Rien ne change à l'écran.
 10. Le **niveau de guidage** reste choisi à l'affectation (ADR 0023), **dans la version** de la
     fiche.
+11. **Rangement (David, 2026-11-25 : « quelque chose de propre », option A)** : l'exercice ne garde
+    que sa fiche d'identité ; **toutes** les versions, la dernière comprise, sont dans une table des
+    versions (numéro, note, contenu : `variations`, `shared`, `generic_functions`). La dernière =
+    le plus grand numéro (aucun pointeur à tenir). Une ligne de fiche pointe vers **une version**,
+    et la base refuse de supprimer une version pointée (point 8 tenu par la base). Une seule
+    fonction lit le contenu d'une version. L'ancien format `variables` (0 exercice en prod) n'est
+    pas repris.
+12. **Livraison** : PR 1 = la bascule (table, reprise en v1, toutes les lectures et écritures du
+    contenu par les versions, rien ne change à l'écran) ; PR 2 = l'éditeur ; PR 3 = la fiche ;
+    PR 4 = effacement des anciennes colonnes de contenu, **destructif**, après le `deploy:prod` du
+    code qui ne les lit plus et avec le go de David.
 
 ## Conséquences
 
@@ -57,8 +68,9 @@ rédaction là où elle sert, et proposer la nouvelle.
 - Le reste de ce qui pointe vers un exercice (maîtrise de l'élève, vues, favoris, jetons de
   partage, étiquettes, chapitres, points du programme) reste attaché à l'**exercice**, pas à une
   version.
-- Migration : une table des versions et une version par ligne de fiche. Accès : une version se lit
-  exactement quand son exercice se lit (question d'accès posée à David avant le SQL).
+- Migration : une table des versions et une version par ligne de fiche. Accès (David, 2026-11-25) :
+  une version se lit exactement quand son exercice se lit, s'écrit quand il s'écrit ; personne ne
+  gagne de lecture.
 
 ## Écarté
 
@@ -69,3 +81,5 @@ rédaction là où elle sert, et proposer la nouvelle.
 - **Une version = un exercice séparé relié à son origine** : la fiche d'identité serait recopiée et
   divergerait (titre, notion, étiquettes).
 - **Les fiches suivent toujours la dernière version** : c'est le problème d'aujourd'hui.
+- **La dernière version reste dans l'exercice, les anciennes en archives** (option B) : moins de
+  code à toucher, mais une version change de place quand elle cesse d'être la dernière.
