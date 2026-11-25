@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3121._
+_Mis à jour le 2026-11-25, après #3121 et `db:migrate`._
 
-- **État** : #3121 mergée (ids des 4 brouillons, migrations de rangement et de contenu). `db:migrate` refusé à la session par le mode auto (écriture en prod) : les 2 migrations (`20261124220806`, `20261124220853`) sont les seules en attente, `--dry-run --include-all` les liste toutes deux.
-- **Prochaine action** : David lance `! pnpm db:migrate --include-all` → vérifier en prod nœud, tag, brouillon des 4, et les variations ajoutées (31096bae : 5, 69a05f98 : 4) → donner l'adresse `/dev/modeles` de relecture.
-- **En attente de David** : le `db:migrate --include-all`, puis la relecture.
-- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). Les variations ajoutées à F1 et F3 sont visibles des élèves dès le `db:migrate`. `garde-niveaux-tags.ts` avant `publier-lot.ts`.
-- **Worktree / branche** : aucun (retiré après #3121).
+- **État** : migrations passées en prod (lancées par David), vérifiées : 4 brouillons rangés (289a085b 2-390, 0bcf9fae et 201e64fd 1SPE-340, ab35bb06 1SPE-424), 31096bae à 5 variations, 69a05f98 à 4.
+- **Prochaine action** : lire `question_template_reviews` des 6 modèles (verdicts postérieurs au 2026-11-25) ; « À revoir » → corriger ; tout valide → `garde-niveaux-tags.ts` puis `publier-lot.ts --dir scripts/questions/idees-1re-probas-cond-neufs` (simulation), David lance `--publier`.
+- **En attente de David** : la relecture dans `/dev/modeles` (`?point=2-390`, `?point=1SPE-340`, `?point=1SPE-424`, `?point=2-395`).
+- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). F1 et F3 sont déjà visibles des élèves : une correction passe par `migration-contenu.ts`.
+- **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -53,3 +53,7 @@ _Mis à jour le 2026-11-25, après #3121._
 ### 2026-11-25 : #3121 mergée
 
 - CI verte, `pr:merger` a mergé. `security-auditor` : aucun finding sur les deux migrations. Tests `migrations-rangement-tags` et `migrations-contenu-publie` verts en local.
+
+### 2026-11-25 : migrations en prod
+
+- `db:migrate --include-all` lancé par David (refusé à la session par le mode auto). Vérifié par MCP : statuts, niveaux, nœuds, points et nombre de variations conformes.
