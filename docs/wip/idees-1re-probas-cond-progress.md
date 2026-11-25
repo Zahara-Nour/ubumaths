@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, PR de rangement et de contenu en cours._
+_Mis à jour le 2026-11-25, après #3121._
 
-- **État** : 4 brouillons en prod (F2 289a085b, F5 0bcf9fae, F6 ab35bb06, F7 201e64fd), ids commités. Branche `feat/idees-1re-probas-cond-rangement` : migration de rangement générée (4 modèles rangés) et migration de contenu générée (F1 → 31096bae, F3 → 69a05f98 : +1 variation chacun, specs).
-- **Prochaine action** : CI verte → merge → `pnpm db:migrate` depuis le dépôt principal (vérifier d'abord `migration list --linked`) → vérifier en prod nœud, tag, brouillon, et les 2 variations ajoutées → donner à David l'adresse de relecture `/dev/modeles` (brouillons : filtre nœud/point ; F1 et F3 publiés : ils se jouent déjà en prod).
-- **En attente de David** : rien avant le merge ; ensuite la relecture dans `/dev/modeles`, puis `publier-lot.ts --publier`.
-- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). Les variations ajoutées à F1 et F3 sont visibles des élèves dès le `db:migrate`. Garde des niveaux (`garde-niveaux-tags.ts`) à lancer avant la publication.
-- **Worktree / branche** : `ubumaths-wt-idees-1re-probas-cond-rangement` / `feat/idees-1re-probas-cond-rangement`.
+- **État** : #3121 mergée (ids des 4 brouillons, migrations de rangement et de contenu). `db:migrate` refusé à la session par le mode auto (écriture en prod) : les 2 migrations (`20261124220806`, `20261124220853`) sont les seules en attente, `--dry-run --include-all` les liste toutes deux.
+- **Prochaine action** : David lance `! pnpm db:migrate --include-all` → vérifier en prod nœud, tag, brouillon des 4, et les variations ajoutées (31096bae : 5, 69a05f98 : 4) → donner l'adresse `/dev/modeles` de relecture.
+- **En attente de David** : le `db:migrate --include-all`, puis la relecture.
+- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). Les variations ajoutées à F1 et F3 sont visibles des élèves dès le `db:migrate`. `garde-niveaux-tags.ts` avant `publier-lot.ts`.
+- **Worktree / branche** : aucun (retiré après #3121).
 
 ## Historique
 
@@ -49,3 +49,7 @@ _Mis à jour le 2026-11-24, PR de rangement et de contenu en cours._
 
 - David a lancé `create-questions --publier` en prod : 4 brouillons, ids écrits en tête des fichiers (vérifiés par `migration-rangement.ts`, appariés en prod).
 - `migration-rangement.ts` : 4 « rangé » → `20261124220806_…_neufs_rangement_tags.sql`. `migration-contenu.ts` : 31096bae et 69a05f98 « migré » (+1 variation, specs) → `20261124220853_…_publies_contenu.sql`. Une seule PR pour les deux, comme dans `idees-tle-probas`.
+
+### 2026-11-25 : #3121 mergée
+
+- CI verte, `pr:merger` a mergé. `security-auditor` : aucun finding sur les deux migrations. Tests `migrations-rangement-tags` et `migrations-contenu-publie` verts en local.
