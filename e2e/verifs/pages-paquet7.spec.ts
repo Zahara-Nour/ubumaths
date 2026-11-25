@@ -17,6 +17,7 @@ import {
 	ADMIN
 } from './helpers/carnet';
 import {
+	assignWorksheet,
 	createWorksheet,
 	pdfFonts,
 	pdfText,
@@ -47,9 +48,8 @@ import { expectNoHorizontalOverflow, gotoSettled } from './helpers/pages';
  * Non testé, relu contre les lignes : #2596, « si l'ancien z reste, recharger sans cache » (cache du
  * navigateur de David) et « rien d'autre ne change dans les formules » (seuls le z, le 2 et le texte
  * voisin sont mesurés) ; #2581 / #2582, les huit PDF du zip sont comparés par la valeur tirée dans la
- * fiche, le corrigé et la fiche-corrigé (« Réponses » : présence du fichier seulement), et « les PDF par
- * élève de l'onglet Lot finissent en _EN » est un ÉCART (l'onglet n'a jamais d'élèves, cf. son test) ;
- * aucune impression papier.
+ * fiche, le corrigé et la fiche-corrigé (« Réponses » : présence du fichier seulement) ; l'onglet Lot est joué sur une fiche
+ * affectée à deux élèves (ses élèves sont ceux des affectations de la fiche) ; aucune impression papier.
  */
 
 test.skip(process.env.VERIFS_URL !== undefined, 'serveur de dev et base locale seulement');
@@ -998,7 +998,46 @@ test.describe('#2581, #2582 — aperçu PDF d’une fiche (langue d’impression
 		await expect(page.getByRole('button', { name: 'Tout télécharger (.zip)' })).toBeEnabled();
 	});
 
-	test('#2581, #2582 — onglet « Lot » : la langue d’impression y est visible et les PDF par élève finissent en _EN en anglais (ÉCART : l’onglet n’a jamais d’élèves)', async ({
+	test('#2581, #2582 — onglet « Lot » : la langue d’impression y est visible et les PDF par élève finissent en _EN en anglais', async ({
+		page
+	}) => {
+		const fiche = await ficheEnPartieTraduite();
+		// Les élèves du lot sont ceux des affectations de la fiche : deux élèves visés nommément
+		await assignWorksheet(fiche.id, ['eleve01@local.test', 'eleve02@local.test']);
+		await login(page, TEACHER.email, TEACHER.password);
+		await gotoSettled(page, `/dashboard/teacher/contenu/worksheets/${fiche.id}`);
+		await page.getByRole('tab', { name: 'PDF' }).click();
+		await page.getByRole('tab', { name: 'Lot' }).click();
+		await expect(page.getByText('2 eleves', { exact: true })).toBeVisible();
+		await expect(page.getByText('Aucun eleve disponible')).toHaveCount(0);
+		const langue = page.getByRole('combobox', { name: "Langue d'impression du lot", exact: true });
+		await expect(langue).toBeVisible();
+		await langue.click();
+		await page.getByRole('option', { name: /^English( ✓)?$/ }).click();
+		await expect(
+			page.getByRole('tabpanel', { name: 'Lot' }).getByText('1 exercice sortira en français')
+		).toBeVisible();
+
+		const lot = page.getByRole('button', { name: 'Generer pour tous les eleves' });
+		await expect(lot).toBeEnabled({ timeout: 90_000 });
+		const telechargement = page.waitForEvent('download', { timeout: 240_000 });
+		await lot.click();
+		const zipFichier = await telechargement;
+		expect(zipFichier.suggestedFilename()).toBe(`${fiche.fichier}_worksheet_EN.zip`);
+		mkdirSync(FICHES_PDF, { recursive: true });
+		const chemin = resolve(FICHES_PDF, 'pages7-lot.zip');
+		await zipFichier.saveAs(chemin);
+		const archive = await JSZip.loadAsync(readFileSync(chemin));
+		const pdfs = Object.keys(archive.files).filter((nom) => nom.endsWith('.pdf'));
+		expect(pdfs, 'un PDF par élève').toHaveLength(2);
+		for (const nom of pdfs) expect(nom, 'PDF par élève en anglais').toMatch(/_EN\.pdf$/);
+		// En anglais pour de bon : l'exercice traduit sort en anglais
+		const cible = resolve(FICHES_PDF, 'pages7-lot-eleve.pdf');
+		writeFileSync(cible, await archive.files[pdfs[0]].async('nodebuffer'));
+		expect(pdfText(cible).join('\n')).toMatch(/double of \d{3}/);
+	});
+
+	test('#2581 — onglet « Lot » d’une fiche affectée à personne : « Aucun eleve disponible »', async ({
 		page
 	}) => {
 		const fiche = await ficheEnPartieTraduite();
@@ -1006,20 +1045,6 @@ test.describe('#2581, #2582 — aperçu PDF d’une fiche (langue d’impression
 		await gotoSettled(page, `/dashboard/teacher/contenu/worksheets/${fiche.id}`);
 		await page.getByRole('tab', { name: 'PDF' }).click();
 		await page.getByRole('tab', { name: 'Lot' }).click();
-		// Symptôme : « Aucun eleve disponible » (la page n'envoie jamais d'élèves à l'aperçu PDF :
-		// `<PdfPreview {worksheet} />`, worksheets/[id]/+page.svelte:852, sans `students`)
 		await expect(page.getByText('Aucun eleve disponible')).toBeVisible();
-		await expect(
-			page.getByRole('combobox', { name: "Langue d'impression du lot", exact: true })
-		).toHaveCount(0);
-		// Nom réel de la liste : `triggerAriaLabel="Langue d'impression du lot"`, src/lib/components/worksheets/PdfPreview.svelte:1054
-		// (même nom dans PdfPreview-langues-zip.svelte.test.ts:246) ; elle n'est rendue que dans la branche
-		// `students.length > 0` (l. 1004), d'où son absence ici : ce n'est pas un mauvais nom, c'est l'écart.
-		test.fail();
-		await expect(
-			page.getByRole('combobox', { name: "Langue d'impression du lot", exact: true })
-		).toBeVisible({
-			timeout: 2000
-		});
 	});
 });
