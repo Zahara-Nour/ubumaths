@@ -279,7 +279,7 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
     NULL = français seulement ; même forme que `worksheets.translations`. Suit les droits de la
     ligne (personne ne gagne d'accès, David, 2026-11-25) ; aucun CHECK, la lecture
     (`asRowTranslations`) écarte une forme inattendue.
-- `exercise_versions` (ADR 0044, `20261125153651`) : les versions successives d'un exercice
+- `exercise_versions` (ADR 0044, `20261125163605`) : les versions successives d'un exercice
   (`number` ≥ 1, unique par exercice ; `note` facultative, 1 à 500 caractères). Elles portent le
   **contenu** (`variations`, `shared`, `generic_functions`, mêmes CHECK que sur `exercises`) ; la
   ligne d'`exercises` garde la fiche d'identité. Hors fiche, on lit la dernière (plus grand
@@ -421,7 +421,7 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   attente et n'en change que la description (pas d'affectation, d'exercice ni d'auteur) ; `status`, `reviewed_by`, `reviewed_at` et `response` sont
   au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
   `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
-- `worksheet_exercises.exercise_version_id` (ADR 0044, `20261125153651`) : la version de
+- `worksheet_exercises.exercise_version_id` (ADR 0044, `20261125163605`) : la version de
   l'exercice que la fiche utilise, obligatoire. Clé composée `(exercise_id, exercise_version_id)`
   vers `exercise_versions (exercise_id, id)`, en NO ACTION : une ligne ne pointe pas la version d'un
   autre exercice, une version utilisée par une fiche ne se supprime pas, supprimer l'exercice emporte

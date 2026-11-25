@@ -2,7 +2,7 @@
  * Versions d'un exercice : la fiche choisit la sienne — (Supabase local requis)
  * =============================================================================
  *
- * Migration `20261125153651_versions_exercices` (ADR 0044, chantier versions-exercices, PR 1).
+ * Migration `20261125163605_versions_exercices` (ADR 0044, chantier versions-exercices, PR 1).
  *
  * Ce que le test prouve :
  * 1. Reprise : dans une transaction annulée, le rollback écrit en commentaire remet l'état d'avant,
@@ -50,7 +50,7 @@ interface LigneRendue {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261125153651_versions_exercices.sql';
+const MIGRATION = 'supabase/migrations/20261125163605_versions_exercices.sql';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
