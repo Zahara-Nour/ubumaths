@@ -7,12 +7,13 @@ Page à cocher de la phase 0 : https://claude.ai/artifact/SmYJM9k1YCqeck3Qs98W4T
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 validée._
+_Mis à jour le 2026-11-25, lot écrit et commité sur la branche (f35bb7e08)._
 
-- **État** : phase 0 validée (toutes les fiches oui, Q1 oui) ; 2491dd75, 10393ff9 et 0965c56c
-  réservés · **Prochaine action** : écrire le gros lot (scripts `docs/wip/questions/`, export des
-  publiés, simulation, essai en base locale), puis PR · **En attente de David** : rien ·
-  **Pièges en cours** : 2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** :
+- **État** : 4 modèles neufs (15 variations) et 5 variations de 3 publiés écrits, specs vertes,
+  vus à l'écran en local · **Prochaine action** : ids des brouillons commités, migrations de
+  rangement et de contenu générées, `security-auditor`, PR · **En attente de David** : créer les
+  4 brouillons en prod (`create-questions --publier` sur `idees-tle-continuite-combinatoire-neufs`)
+  · **Pièges en cours** : 2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** :
   `../ubumaths-wt-idees-tle-continuite-combinatoire`, `feat/idees-tle-continuite-combinatoire`.
 
 ## Historique
@@ -42,3 +43,25 @@ _Mis à jour le 2026-11-25, phase 0 validée._
   [idees-tle-continuite-combinatoire-fiches.md](idees-tle-continuite-combinatoire-fiches.md).
 - 2491dd75, 10393ff9 et 0965c56c réservés dans le tableau de répartition ; l'idée en attente
   TSA5-41 retirée de « Idées en attente » (reprise par V1).
+
+### 2026-11-25 — lot écrit
+
+- Scripts `docs/wip/questions/idees-tle-continuite-combinatoire-neufs.py` (→
+  `scripts/questions/idees-tle-continuite-combinatoire-neufs/`) et `…-publies.py` (→
+  `…-publies/`, 3 modèles exportés de prod le 2026-11-25, variations ajoutées à la fin, relançable).
+- Neufs : N1 (3 var., niveau 2, « continuité en un point », TSPE-425), N2 (4 var., niveau 2,
+  « valeurs intermédiaires », TSPE-430), N4 (4 var., niveau 2, « point fixe », TSPE-427), N5
+  (4 var., niveau 3, « Problèmes de dénombrement », TSPE-319). Publiés : 2491dd75 +2, 10393ff9 +2,
+  0965c56c +1.
+- Écarts à la fiche, sans changer l'idée : N2 c tire k parmi 1/4, 1/2, 3/4, 1 (fractions et non
+  décimaux : une réponse en fraction était refusée quand l'attendue était décimale) ; V1 b tire b
+  parmi −2, 0, 1, 2 (b = −1 donnerait e⁰) et ajoute k = 0 (1 solution, la limite 0 n'est pas
+  atteinte) ; V1 a et b font aussi tomber k pile sur le minimum.
+- Limite du juge vue en N2 c : h(π/2) = π/2 − 1/2 est accepté, mais (π − 1)/2 est refusé en
+  `bad_form` (forme différente de l'attendue). Pas contourné : signalé à David.
+- Vérifié : `question:specs` vert sur les 7 fichiers ; `create-questions` en simulation vert ;
+  `sonde-courbes` 0 problème ; 640 formules des aperçus passées à `validateLatex` + accolades
+  (1 seul signalement, `\dots` dans une variation déjà en prod de 0965c56c) ; copies créées en
+  base locale et vues dans l'aperçu (`pnpm voir`, iPhone) : N1 v0 (accolade, limites, choix),
+  V2 b (courbe à deux sauts, points pleins et creux), V1 a et V1 b (tableaux avec ln et e) ;
+  brouillons d'essai supprimés de la base locale.
