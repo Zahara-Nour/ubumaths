@@ -1582,7 +1582,7 @@ test('#2551 — prof, analyse de la classe, « Détail par élève » : la courb
 	await expect(page.getByText('Régularité', { exact: true })).toBeVisible();
 });
 
-test('#2551 — ÉCART : la légende de « Détail par élève » promet encore une « distribution des grades sur les 7 derniers jours » alors que l’histogramme est retiré', async ({
+test('#2551 — la légende de « Détail par élève » ne promet plus de « distribution des grades sur les 7 derniers jours » (histogramme retiré)', async ({
 	page
 }) => {
 	test.setTimeout(240_000);
@@ -1595,7 +1595,6 @@ test('#2551 — ÉCART : la légende de « Détail par élève » promet encore 
 	await page.waitForLoadState('networkidle');
 	await expect(page.getByText(/^Rétention de /)).toBeVisible();
 	// La ligne dit « la courbe de rétention seule » : la légende ne doit plus parler de distribution
-	test.fail();
 	await expect(page.getByText(/distribution des grades/)).toHaveCount(0);
 });
 

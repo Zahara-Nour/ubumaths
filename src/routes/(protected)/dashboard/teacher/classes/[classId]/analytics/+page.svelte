@@ -140,10 +140,7 @@
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Détail par {lore.entities.student}</Card.Title>
-						<Card.Description>
-							Rétention sur une branche du programme + distribution des grades sur les 7 derniers
-							jours.
-						</Card.Description>
+						<Card.Description>Rétention sur une branche du programme.</Card.Description>
 						<div class="mt-3 flex flex-wrap gap-3">
 							<div class="min-w-[12rem]">
 								<MySelect

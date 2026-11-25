@@ -441,6 +441,9 @@ function normalizeForFuzzy(s: string): string {
  */
 const FUZZY_MIN_LETTERS = 5;
 
+/** Nombre seul dont le séparateur décimal n'a pas de chiffre après (`58,`) ou avant (`,5`) */
+const MALFORMED_BARE_NUMBER = /^[+-]?(?:\d+(?: \d+)*[.,]|[.,]\d+)$/;
+
 /**
  * Fuzzy text matching: case insensitive, accents ignored ; Levenshtein distance
  * <= 1 only when the expected word has at least FUZZY_MIN_LETTERS letters.
@@ -1354,19 +1357,77 @@ function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boo
 }
 
 /**
- * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
+ * Nombre SEUL mal écrit : séparateur décimal sans chiffre après (`58,`, `58{,}`) ou sans
+ * chiffre avant (`,5`). Rend le nombre RELU (`58`, `0.5`), null pour toute autre saisie.
+ * Lecture seulement : l'appelant refuse toujours la saisie (forme ou valeur).
+ */
+function malformedBareNumber(answer: string): string | null {
+	const cleaned = answer
+		.replace(/\{,\}/g, ',')
+		.replace(/\\[,;: ]/g, ' ')
+		.trim();
+	if (!MALFORMED_BARE_NUMBER.test(cleaned)) return null;
+	return cleaned
+		.replace(/\s/g, '')
+		.replace(',', '.')
+		.replace(/\.$/, '')
+		.replace(/^([+-]?)\./, (_, sign: string) => `${sign}0.`);
+}
+
+/**
+ * Jugement d'une case. Un nombre seul mal écrit (`58,`, `,5`) dans une case sans unité,
+ * refusé par la chaîne, est relu : valeur relue juste → mauvaise forme et message de
+ * forme (même règle que devant une unité, `numberWritingAtFault`) ; sinon le refus reste.
  */
 function validateSingleBlank(
 	userAnswer: string,
 	blank: InstanceBlank,
 	userAnswerLatex: string | undefined,
 	instance: QuestionInstance
-): {
+): SingleBlankVerdict {
+	const rereadable =
+		blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire;
+	const repaired = rereadable ? malformedBareNumber(userAnswer) : null;
+	let verdict: SingleBlankVerdict;
+	try {
+		verdict = judgeSingleBlank(userAnswer, blank, userAnswerLatex, instance);
+	} catch (thrown) {
+		// Case à arrondi : `58,` ne s'évalue pas et la chaîne lève. Nombre seul mal écrit →
+		// un refus, relu comme les autres ; toute autre saisie garde son exception
+		if (repaired === null) throw thrown;
+		verdict = { isCorrect: false };
+	}
+	if (verdict.isCorrect || verdict.status === 'bad_form' || verdict.status === 'empty') {
+		return verdict;
+	}
+	if (repaired === null) return verdict;
+	const reread = judgeSingleBlank(repaired, blank, repaired, instance);
+	if (!reread.isCorrect) return verdict;
+	const feedback = CONSTRAINT_FEEDBACK['form'].single;
+	return {
+		isCorrect: false,
+		status: 'bad_form',
+		feedback,
+		constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
+	};
+}
+
+interface SingleBlankVerdict {
 	isCorrect: boolean;
 	status?: ValidationStatus;
 	feedback?: string;
 	constraintViolations?: NonNullable<ValidationResult['constraintViolations']>;
-} {
+}
+
+/**
+ * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
+ */
+function judgeSingleBlank(
+	userAnswer: string,
+	blank: InstanceBlank,
+	userAnswerLatex: string | undefined,
+	instance: QuestionInstance
+): SingleBlankVerdict {
 	// 0. Empty answer — skip all checks
 	if (!userAnswer.trim()) {
 		return { isCorrect: false, status: 'empty' };

@@ -118,6 +118,34 @@ Choix pour David :
 - Revue `code-reviewer` : aucun bloquant. Noté : au premier rendu (serveur), « Acheter » est
   actif puis se grise à l'hydratation (le serveur refuse de toute façon).
 
+## PR N : E53, E55 et E61 (2026-11-25)
+
+Worktree `ubumaths-wt-ecarts-verifs-n`, branche `fix/ecarts-verifs-n`.
+
+- **E53** (`src/lib/utils/answer-validator.ts`) : dans une case sans unité, un nombre seul mal
+  écrit (`58,`, `58{,}`, `,5`) refusé par la chaîne est relu (`58`, `0,5`) ; valeur relue juste →
+  mauvaise forme et « Ta réponse n'est pas écrite sous la forme demandée. » ; valeur fausse → le
+  refus d'avant, sans ce message. Même règle que devant une unité (E31). `validateSingleBlank`
+  enveloppe l'ancienne chaîne, renommée `judgeSingleBlank`. Tests rouges d'abord
+  (`answer-validator-bare-comma.test.ts`), puis un test de vérification ajouté
+  (`reponses-unites.spec.ts`, « #1574 (E53) », arrondi à l'unité) : message lu à l'écran.
+  L'attendu de #1573/#1574 (« 58, » refusé pour 58,5) n'a pas changé : 58 n'est pas 58,5.
+- **E55** (`FigureACompleterView.svelte`) : `.bon-point circle.bon-triangle-arc` ajouté à la règle
+  des arcs ; les trois arcs de la correction font 1 d'épaisseur (bissectrice 2,5). `test.fail`
+  de #2439 retiré, capture regardée (`2439-correction-clair-ordi-chrome.png`).
+- **E61** (page d'analyse d'une classe) : légende « Rétention sur une branche du programme. ».
+  `test.fail` de #2551 retiré, test renommé (plus « ÉCART »).
+- **Revue `code-reviewer` Opus (E53)** : aucun bloquant. Corrigé : dans une case à arrondi, `58,`
+  faisait lever la chaîne (« Failed to evaluate expression ») avant toute relecture ; l'enveloppe
+  capte cette exception pour un nombre seul mal écrit et le relit (test rouge puis vert : `58,`
+  pour 58,488 à l'unité → message de forme). Mesuré par la revue : aucune saisie juste ne devient
+  refusée ; couple, ensemble, liste, intervalle, texte : pas de message de forme à tort.
+- **Laissé hors de cette PR, à présenter à David** : (a) cases à ordre libre (`orderIndependent`) :
+  `58,` pour 58 y reste « faux » sans message de forme (comme avant) ; (b) antérieur à la PR :
+  `validateBlanksDetailed` (barème des évaluations, `questions/grading.ts`) n'est pas protégé
+  quand une saisie ne s'évalue pas dans une case à arrondi (`58,5,`) — à vérifier puis à inscrire
+  au registre.
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |

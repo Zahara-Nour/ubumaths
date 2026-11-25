@@ -249,3 +249,27 @@ test('#1573 #1574 — même chose dans une case sans unité à arrondi : 58,5 ju
 	await openQuestion(page, ARRONDIR, 1);
 	expect((await answer(page, '58,')).state).toBe('Case 1 : fausse');
 });
+
+test('#1574 (E53) — case sans unité, arrondi à l’unité : la bonne valeur suivie d’une virgule seule est refusée avec le message de forme ; une valeur fausse suivie d’une virgule, sans ce message', async ({
+	page
+}) => {
+	test.setTimeout(120_000);
+	const FORM = "Ta réponse n'est pas écrite sous la forme demandée.";
+	await openQuestion(page, ARRONDIR, 0);
+	const formulas = await statementFormulas(page);
+	const x = formulas.map((tex) => /^(\d+)\{,\}(\d+)$/.exec(tex)).find((match) => match !== null);
+	if (!x) throw new Error(`nombre à arrondir introuvable dans ${JSON.stringify(formulas)}`);
+	const rounded = Math.round(Number(`${x[1]}.${x[2]}`));
+
+	const trailingComma = await answer(page, `${rounded},`);
+	expect(trailingComma.state).toBe('Case 1 : fausse');
+	expect(trailingComma.text).toContain(FORM);
+
+	await openQuestion(page, ARRONDIR, 0);
+	const wrongValue = await answer(page, `${rounded + 1},`);
+	expect(wrongValue.state).toBe('Case 1 : fausse');
+	expect(wrongValue.text).not.toContain(FORM);
+
+	await openQuestion(page, ARRONDIR, 0);
+	expect((await answer(page, `${rounded}`)).state).toBe('Case 1 : juste');
+});
