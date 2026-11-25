@@ -157,3 +157,71 @@ describe('virgule nue — nombre mal écrit devant une unité : le message de fo
 		expect(check('36\\,xyz', PERIMETER).feedback).toBe('Unité inconnue : xyz.');
 	});
 });
+
+// #1574 (E53) : la même règle que E31 dans une case SANS unité
+describe('virgule nue — nombre mal écrit dans une case sans unité : le message de forme', () => {
+	const WHOLE: InstanceBlank = { expectedAnswer: '58', type: 'math' };
+	const HALF: InstanceBlank = { expectedAnswer: '0.5', type: 'math' };
+	const TENTH: InstanceBlank = {
+		expectedAnswer: '58.488',
+		type: 'math',
+		precision: { type: 'decimal', digits: 1 }
+	};
+	const FORM = "Ta réponse n'est pas écrite sous la forme demandée.";
+
+	it('58, (virgule sans décimale) pour 58 → refusé, message de forme', () => {
+		for (const typed of ['58,', '58{,}', '58.']) {
+			const result = check(typed, WHOLE);
+			expect(result.isCorrect, typed).toBe(false);
+			expect(result.status, typed).toBe('bad_form');
+			expect(result.feedback, typed).toBe(FORM);
+		}
+	});
+
+	it(',5 (sans zéro devant la virgule) pour 0,5 → refusé, message de forme', () => {
+		for (const typed of [',5', '{,}5', '-,5']) {
+			const blank = typed.startsWith('-') ? { ...HALF, expectedAnswer: '-0.5' } : HALF;
+			const result = check(typed, blank);
+			expect(result.isCorrect, typed).toBe(false);
+			expect(result.status, typed).toBe('bad_form');
+			expect(result.feedback, typed).toBe(FORM);
+		}
+	});
+
+	it('limite : 58 et 0,5 restent justes', () => {
+		expect(check('58', WHOLE).status).toBe('correct');
+		expect(check('0,5', HALF).status).toBe('correct');
+	});
+
+	it('valeur fausse mal écrite : 57, pour 58, et 58, pour 58,5 au dixième → faux (pas la forme)', () => {
+		for (const [typed, blank] of [
+			['57,', WHOLE],
+			[',6', HALF],
+			['58,', TENTH]
+		] as const) {
+			const result = check(typed, blank);
+			expect(result.isCorrect, typed).toBe(false);
+			expect(result.status, typed).not.toBe('bad_form');
+			expect(result.feedback, typed).not.toBe(FORM);
+		}
+	});
+
+	it('case à arrondi : 58,5 reste juste', () => {
+		expect(check('58,5', TENTH).status).toBe('correct');
+	});
+
+	it('case à arrondi : 58, pour 58,488 à l’unité → refusé, message de forme', () => {
+		const unit: InstanceBlank = { ...TENTH, precision: { type: 'decimal', digits: 0 } };
+		const result = check('58,', unit);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe(FORM);
+		// Valeur fausse : le refus, sans le message de forme
+		expect(check('59,', unit).status).not.toBe('bad_form');
+		expect(check('59,', unit).feedback).not.toBe(FORM);
+	});
+
+	it('une réponse qui n’est pas un nombre seul n’est pas relue : 58,+1', () => {
+		expect(check('58,+1', { expectedAnswer: '59', type: 'math' }).status).not.toBe('correct');
+	});
+});
