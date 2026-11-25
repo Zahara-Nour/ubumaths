@@ -1,0 +1,335 @@
+{
+	"rangement": {
+		"noeud": "Proportionnalité > Situations de proportionnalité > caractérisation",
+		"point": "6-190"
+	},
+	"title": "Peut-on le calculer ?",
+	"description": "Dire si une valeur se calcule : taille, masse, pointure selon l'âge (non) ou prix au kilo, distance à vitesse constante, pages imprimées (oui, proportionnel) ; âge du père (non proportionnel, mais l'écart reste) ou recette (oui) ; piège : multiplier quand ce n'est pas proportionnel",
+	"grades": ["6"],
+	"level": 9,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:t==0|À ${{q}}$ ans, Léo mesure ${{V}}~\\unit{cm}$. Peut-on calculer sa taille à ${{eval:k*q}}$ ans ?|{{if:t==1|À ${{q}}$ ans, Zoé pèse ${{V}}~\\unit{kg}$. Peut-on calculer sa masse à ${{eval:k*q}}$ ans ?|{{if:t==2|À ${{q}}$ ans, Tom chausse du ${{V}}$. Peut-on calculer sa pointure à ${{eval:k*q}}$ ans ?|{{if:t==3|Au marché, ${{q}}~\\unit{kg}$ de pommes coûtent ${{eval:V/10;d}}~\\unit{€}$. Peut-on calculer le prix de ${{eval:k*q}}~\\unit{kg}$ de ces pommes ?|{{if:t==4|Un car roule toujours à la même vitesse. Il parcourt ${{V}}~\\unit{km}$ en ${{q}}~\\unit{h}$. Peut-on calculer la distance qu'il parcourt en ${{eval:k*q}}~\\unit{h}$ ?|Une imprimante imprime toujours au même rythme : ${{V}}$ pages en ${{q}}~\\unit{min}$. Peut-on calculer le nombre de pages imprimées en ${{eval:k*q}}~\\unit{min}$ ?}}}}}}}}}}\n\n```choix\n- {{if:t==0|Oui : il mesurera ${{eval:k*V/f;d}}~\\unit{cm}$.|{{if:t==1|Oui : elle pèsera ${{eval:k*V/f;d}}~\\unit{kg}$.|{{if:t==2|Oui : il chaussera du ${{eval:k*V/f;d}}$.|{{if:t==3|Oui : elles coûteront ${{eval:k*V/f;d}}~\\unit{€}$.|{{if:t==4|Oui : il parcourra ${{eval:k*V/f;d}}~\\unit{km}$.|Oui : elle imprimera ${{eval:k*V/f;d}}$ pages.}}}}}}}}}}\n- {{if:t==0|Oui : il mesurera ${{eval:V/f+(k-1)*q;d}}~\\unit{cm}$.|{{if:t==1|Oui : elle pèsera ${{eval:V/f+(k-1)*q;d}}~\\unit{kg}$.|{{if:t==2|Oui : il chaussera du ${{eval:V/f+(k-1)*q;d}}$.|{{if:t==3|Oui : elles coûteront ${{eval:V/f+(k-1)*q;d}}~\\unit{€}$.|{{if:t==4|Oui : il parcourra ${{eval:V/f+(k-1)*q;d}}~\\unit{km}$.|Oui : elle imprimera ${{eval:V/f+(k-1)*q;d}}$ pages.}}}}}}}}}}\n- {{if:t==0|Oui : il mesurera ${{eval:k*q*V/f;d}}~\\unit{cm}$.|{{if:t==1|Oui : elle pèsera ${{eval:k*q*V/f;d}}~\\unit{kg}$.|{{if:t==2|Oui : il chaussera du ${{eval:k*q*V/f;d}}$.|{{if:t==3|Oui : elles coûteront ${{eval:k*q*V/f;d}}~\\unit{€}$.|{{if:t==4|Oui : il parcourra ${{eval:k*q*V/f;d}}~\\unit{km}$.|Oui : elle imprimera ${{eval:k*q*V/f;d}}$ pages.}}}}}}}}}}\n- Non : on ne peut pas le calculer.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "2..6"
+				},
+				{
+					"name": "u",
+					"expression": "11..35"
+				},
+				{
+					"name": "w",
+					"expression": "4..9"
+				},
+				{
+					"name": "r",
+					"expression": "8..20"
+				},
+				{
+					"name": "V",
+					"expression": "eval:(80+6*q)*(1-min(abs(t-0),1))+(2*q+10)*(1-min(abs(t-1),1))+(18+2*q)*(1-min(abs(t-2),1))+q*u*(1-min(abs(t-3),1))+q*10*w*(1-min(abs(t-4),1))+q*r*(1-min(abs(t-5),1))"
+				},
+				{
+					"name": "f",
+					"expression": "eval:1+9*(1-min(abs(t-3),1))"
+				},
+				{
+					"name": "a",
+					"expression": "eval:3-3*floor(t/3)"
+				}
+			],
+			"conditions": ["mod(u,10)!=0", "V!=q*f", "(k-1)*q*f!=(k*q-1)*V"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportionnel ou pas ?** Deux grandeurs sont proportionnelles quand, si l'une est multipliée par un nombre, l'autre est multipliée par le même nombre.",
+					"{{if:t==0|La taille n'est pas proportionnelle à l'âge : on ne grandit pas toujours de la même façon, et à ${{eval:k*q}}$ ans on ne mesure pas ${{k}}$ fois sa taille de ${{q}}$ ans. Aucun calcul ne donne la réponse : $\\textcolor{{{color:primary.0}}}{\\text{on ne peut pas la calculer}}$.|{{if:t==1|La masse n'est pas proportionnelle à l'âge : on ne grossit pas toujours de la même façon. Aucun calcul ne donne la réponse : $\\textcolor{{{color:primary.0}}}{\\text{on ne peut pas la calculer}}$.|{{if:t==2|La pointure n'est pas proportionnelle à l'âge : le pied grandit puis s'arrête de grandir. Aucun calcul ne donne la réponse : $\\textcolor{{{color:primary.0}}}{\\text{on ne peut pas la calculer}}$.|{{if:t==3|Le prix est proportionnel à la masse : chaque kilogramme coûte le même prix. ${{eval:k*q}}~\\unit{kg}$, c'est ${{k}}$ fois ${{q}}~\\unit{kg}$, donc le prix est multiplié par ${{k}}$ : ${{eval:V/10;d}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:k*V/f;d}}~\\unit{€}}$.|{{if:t==4|La vitesse ne change pas : la distance est proportionnelle à la durée. ${{eval:k*q}}~\\unit{h}$, c'est ${{k}}$ fois ${{q}}~\\unit{h}$, donc la distance est multipliée par ${{k}}$ : ${{V}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:k*V/f;d}}~\\unit{km}}$.|Le rythme ne change pas : le nombre de pages est proportionnel à la durée. ${{eval:k*q}}~\\unit{min}$, c'est ${{k}}$ fois ${{q}}~\\unit{min}$, donc le nombre de pages est multiplié par ${{k}}$ : ${{V}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:k*V/f;d}}}$ pages.}}}}}}}}}}"
+				]
+			},
+			"hint": "Si la première grandeur est multipliée par ${{k}}$, la seconde l'est-elle forcément aussi ?"
+		},
+		{
+			"statement": "{{if:t==0|Quand Lina a ${{q}}$ ans, son père a ${{V}}$ ans. Peut-on calculer l'âge de son père quand Lina aura ${{eval:k*q}}$ ans ?|Pour ${{q}}$ personnes, une recette de crêpes demande ${{V}}~\\unit{g}$ de farine. Peut-on calculer la masse de farine pour ${{eval:k*q}}$ personnes ?}}\n\n```choix\n- {{if:t==0|Oui : il aura ${{eval:k*V}}$ ans.|Oui : il faudra ${{eval:k*V}}~\\unit{g}$ de farine.}}\n- {{if:t==0|Oui : il aura ${{eval:V+(k-1)*q}}$ ans.|Oui : il faudra ${{eval:V+(k-1)*q}}~\\unit{g}$ de farine.}}\n- {{if:t==0|Oui : il aura ${{eval:V+k*q}}$ ans.|Oui : il faudra ${{eval:V+k*q}}~\\unit{g}$ de farine.}}\n- Non : on ne peut pas le calculer.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "3..8"
+				},
+				{
+					"name": "ecart",
+					"expression": "24..38"
+				},
+				{
+					"name": "g",
+					"expression": "20|25|30|40|50|60"
+				},
+				{
+					"name": "V",
+					"expression": "eval:(1-t)*(q+ecart)+t*q*g"
+				},
+				{
+					"name": "a",
+					"expression": "eval:1-t"
+				}
+			],
+			"conditions": ["(k-1)*V!=k*q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportionnel ou pas ?** Deux grandeurs sont proportionnelles quand, si l'une est multipliée par un nombre, l'autre est multipliée par le même nombre.",
+					"{{if:t==0|L'âge du père n'est pas proportionnel à celui de Lina : quand Lina aura ${{k}}$ fois son âge, son père n'aura pas ${{k}}$ fois le sien. Mais l'écart d'âge ne change jamais : ${{V}} - {{q}} = {{eval:V-q}}$ ans.|La masse de farine est proportionnelle au nombre de personnes : pour ${{k}}$ fois plus de personnes, il faut ${{k}}$ fois plus de farine.}}",
+					"{{if:t==0|Quand Lina aura ${{eval:k*q}}$ ans, son père aura ${{eval:k*q}} + {{eval:V-q}} = \\textcolor{{{color:primary.0}}}{{{eval:V+(k-1)*q}}}$ ans.|${{V}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:k*V}}~\\unit{g}}$.}}"
+				]
+			},
+			"hint": "Les deux grandeurs sont-elles proportionnelles ? Sinon, y a-t-il quand même quelque chose qui ne change pas ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Taille : on ne peut pas",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "2",
+				"q": "5",
+				"u": "15",
+				"w": "6",
+				"r": "10",
+				"V": "110",
+				"f": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Taille : piège du double",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"k": "2",
+				"q": "5",
+				"u": "15",
+				"w": "6",
+				"r": "10",
+				"V": "110",
+				"f": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Pointure : on ne peut pas",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"k": "3",
+				"q": "4",
+				"u": "15",
+				"w": "6",
+				"r": "10",
+				"V": "26",
+				"f": "1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Pommes : 2 kg → 3 €, 6 kg → 9 €",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"k": "3",
+				"q": "2",
+				"u": "15",
+				"w": "6",
+				"r": "10",
+				"V": "30",
+				"f": "10",
+				"a": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Pommes : « on ne peut pas » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"k": "3",
+				"q": "2",
+				"u": "15",
+				"w": "6",
+				"r": "10",
+				"V": "30",
+				"f": "10",
+				"a": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Pommes : écart ajouté refusé",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"k": "3",
+				"q": "2",
+				"u": "15",
+				"w": "6",
+				"r": "10",
+				"V": "30",
+				"f": "10",
+				"a": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Car : 3 h → 180 km, 6 h → 360 km",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4",
+				"k": "2",
+				"q": "3",
+				"u": "15",
+				"w": "6",
+				"r": "10",
+				"V": "180",
+				"f": "1",
+				"a": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Père : l'écart reste (correct = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"k": "2",
+				"q": "4",
+				"ecart": "30",
+				"g": "50",
+				"V": "34",
+				"a": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Père : piège du double",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"k": "2",
+				"q": "4",
+				"ecart": "30",
+				"g": "50",
+				"V": "34",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Père : « on ne peut pas » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"k": "2",
+				"q": "4",
+				"ecart": "30",
+				"g": "50",
+				"V": "34",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Recette : 4 → 200 g, 8 → 400 g",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"k": "2",
+				"q": "4",
+				"ecart": "30",
+				"g": "50",
+				"V": "200",
+				"a": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "Recette : écart ajouté refusé",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"k": "2",
+				"q": "4",
+				"ecart": "30",
+				"g": "50",
+				"V": "200",
+				"a": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		}
+	]
+}

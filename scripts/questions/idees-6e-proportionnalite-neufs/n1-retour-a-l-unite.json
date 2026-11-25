@@ -1,0 +1,561 @@
+{
+	"rangement": {
+		"noeud": "Proportionnalité > Situations de proportionnalité > quatrième proportionnelle",
+		"point": "6-191"
+	},
+	"title": "Résoudre un problème par le retour à l'unité",
+	"description": "Trouver la valeur pour m connaissant la valeur pour n (n et m de 2 à 13, ni l'un multiple de l'autre) en passant par la valeur pour 1 : achat, recette, sirop dans l'eau (réponse avec son unité), puis tableau n, 1, m ; pièges : valeur pour 1 seulement, écart ajouté, oubli de la division",
+	"grades": ["6"],
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Tous les {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} ont le même prix. ${{n}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} coûtent ${{eval:n*p/10;d}}~\\unit{€}$.\n\nCombien coûtent ${{m}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} ? Écris l'unité dans ta réponse.\n\n${{m}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} coûtent $?$.",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "2..13"
+				},
+				{
+					"name": "m",
+					"expression": "2..13"
+				},
+				{
+					"name": "p",
+					"expression": "11..35"
+				}
+			],
+			"conditions": ["mod(m,n)!=0", "mod(n,m)!=0", "mod(p,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m*p/10)[€]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(p/10)[€]}}",
+							"message": "C'est la valeur pour $1$ : il reste à la multiplier par ${{m}}$.",
+							"label": "Valeur pour 1 seulement"
+						},
+						{
+							"answer": "{{eval:(n*p/10+m-n)[€]}}",
+							"message": "Quand la quantité change de ${{eval:abs(m-n)}}$, le résultat ne change pas de ${{eval:abs(m-n)}}$ : passe par la valeur pour $1$.",
+							"label": "Écart des quantités ajouté au résultat"
+						},
+						{
+							"answer": "{{eval:(n*p/10*m)[€]}}",
+							"message": "Tu as multiplié la valeur pour ${{n}}$ par ${{m}}$ : c'est la valeur pour ${{n}} \\times {{m}}$. Divise d'abord par ${{n}}$.",
+							"label": "Oubli de la division par n"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Retour à l'unité.** On cherche d'abord le prix d'un {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} : ${{eval:n*p/10;d}} \\div {{n}} = {{eval:p/10;d}}$. Un {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} coûte ${{eval:p/10;d}}~\\unit{€}$.",
+					"Puis on multiplie par ${{m}}$ : ${{eval:p/10;d}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:m*p/10;d}}~\\unit{€}}$."
+				]
+			},
+			"hint": "Combien coûte un seul {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} ?"
+		},
+		{
+			"statement": "Pour ${{n}}$ personnes, une recette demande ${{eval:n*g}}~\\unit{g}$ de {{if:i==0|farine|{{if:i==1|sucre|beurre}}}}.\n\nQuelle masse de {{if:i==0|farine|{{if:i==1|sucre|beurre}}}} faut-il pour ${{m}}$ personnes ? Écris l'unité dans ta réponse.\n\nPour ${{m}}$ personnes, il faut $?$ de {{if:i==0|farine|{{if:i==1|sucre|beurre}}}}.",
+			"variables": [
+				{
+					"name": "i",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				},
+				{
+					"name": "m",
+					"expression": "2..10"
+				},
+				{
+					"name": "g",
+					"expression": "20|25|30|35|40|45|50|60|70|80"
+				}
+			],
+			"conditions": ["mod(m,n)!=0", "mod(n,m)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m*g)[g]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(g)[g]}}",
+							"message": "C'est la valeur pour $1$ : il reste à la multiplier par ${{m}}$.",
+							"label": "Valeur pour 1 seulement"
+						},
+						{
+							"answer": "{{eval:(n*g+m-n)[g]}}",
+							"message": "Quand la quantité change de ${{eval:abs(m-n)}}$, le résultat ne change pas de ${{eval:abs(m-n)}}$ : passe par la valeur pour $1$.",
+							"label": "Écart des quantités ajouté au résultat"
+						},
+						{
+							"answer": "{{eval:(n*g*m)[g]}}",
+							"message": "Tu as multiplié la valeur pour ${{n}}$ par ${{m}}$ : c'est la valeur pour ${{n}} \\times {{m}}$. Divise d'abord par ${{n}}$.",
+							"label": "Oubli de la division par n"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Retour à l'unité.** On cherche d'abord la masse pour une personne : ${{eval:n*g}} \\div {{n}} = {{g}}$. Il faut ${{g}}~\\unit{g}$ de {{if:i==0|farine|{{if:i==1|sucre|beurre}}}} par personne.",
+					"Puis on multiplie par ${{m}}$ : ${{g}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:m*g}}~\\unit{g}}$."
+				]
+			},
+			"hint": "Quelle masse de {{if:i==0|farine|{{if:i==1|sucre|beurre}}}} faut-il pour une seule personne ?"
+		},
+		{
+			"statement": "Pour préparer une boisson, Hugo mélange ${{eval:n*h/2;d}}~\\unit{cL}$ de sirop avec ${{n}}~\\unit{L}$ d'eau.\n\nQuelle quantité de sirop doit-il verser dans ${{m}}~\\unit{L}$ d'eau pour que la boisson ait le même goût ? Écris l'unité dans ta réponse.\n\nIl faut $?$ de sirop.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "5..20"
+				}
+			],
+			"conditions": ["mod(m,n)!=0", "mod(n,m)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m*h/2)[cL]}}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(h/2)[cL]}}",
+							"message": "C'est la valeur pour $1$ : il reste à la multiplier par ${{m}}$.",
+							"label": "Valeur pour 1 seulement"
+						},
+						{
+							"answer": "{{eval:(n*h/2+m-n)[cL]}}",
+							"message": "Quand la quantité change de ${{eval:abs(m-n)}}$, le résultat ne change pas de ${{eval:abs(m-n)}}$ : passe par la valeur pour $1$.",
+							"label": "Écart des quantités ajouté au résultat"
+						},
+						{
+							"answer": "{{eval:(n*h/2*m)[cL]}}",
+							"message": "Tu as multiplié la valeur pour ${{n}}$ par ${{m}}$ : c'est la valeur pour ${{n}} \\times {{m}}$. Divise d'abord par ${{n}}$.",
+							"label": "Oubli de la division par n"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Retour à l'unité.** On cherche d'abord le sirop pour $1~\\unit{L}$ d'eau : ${{eval:n*h/2;d}} \\div {{n}} = {{eval:h/2;d}}$. Il faut ${{eval:h/2;d}}~\\unit{cL}$ de sirop par litre d'eau.",
+					"Puis on multiplie par ${{m}}$ : ${{eval:h/2;d}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:m*h/2;d}}~\\unit{cL}}$."
+				]
+			},
+			"hint": "Combien de sirop faut-il pour $1~\\unit{L}$ d'eau ?"
+		},
+		{
+			"statement": "Tous les cahiers ont le même prix. Complète le tableau en passant par le prix d'un cahier.\n\n| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n| Prix (€) | ${{eval:n*p/10;d}}$ | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..13"
+				},
+				{
+					"name": "m",
+					"expression": "2..13"
+				},
+				{
+					"name": "p",
+					"expression": "11..35"
+				}
+			],
+			"conditions": ["mod(m,n)!=0", "mod(n,m)!=0", "mod(p,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n*n*p/10;d}}",
+							"message": "Tu as multiplié par ${{n}}$ : pour passer de ${{n}}$ cahiers à $1$ cahier, on divise par ${{n}}$.",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "{{eval:n*p/10-n+1;d}}",
+							"message": "Enlever ${{eval:n-1}}$ cahiers n'enlève pas ${{eval:n-1}}~\\unit{€}$ : on divise le prix par ${{n}}$.",
+							"label": "Écart des quantités retiré du prix"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:m*p/10;d}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n*p*m/10;d}}",
+							"message": "Tu as multiplié le prix de ${{n}}$ cahiers par ${{m}}$ : pars du prix d'un cahier.",
+							"label": "Prix de n multiplié par m"
+						},
+						{
+							"answer": "{{eval:n*p/10+m-n;d}}",
+							"message": "Quand la quantité change de ${{eval:abs(m-n)}}$, le résultat ne change pas de ${{eval:abs(m-n)}}$ : passe par la valeur pour $1$.",
+							"label": "Écart des quantités ajouté au prix"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Retour à l'unité.** De ${{n}}$ cahiers à $1$ cahier, on divise par ${{n}}$ : ${{eval:n*p/10;d}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:p/10;d}}}$. Un cahier coûte ${{eval:p/10;d}}~\\unit{€}$.",
+					"De $1$ cahier à ${{m}}$ cahiers, on multiplie par ${{m}}$ : ${{eval:p/10;d}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:m*p/10;d}}}$.",
+					"| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n| Prix (€) | ${{eval:n*p/10;d}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:p/10;d}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:m*p/10;d}}}$ |"
+				]
+			},
+			"hint": "Pour passer de ${{n}}$ cahiers à $1$ cahier, que fait-on au nombre de cahiers ? Fais de même au prix."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Achat : 3 pour 4,50 € → 7 pour 10,50 €",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10{,}5\\,€"]
+		},
+		{
+			"description": "Achat : 10,50 € accepté",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10{,}50\\,€"]
+		},
+		{
+			"description": "Achat : sans unité refusé",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["10{,}5"]
+		},
+		{
+			"description": "Achat : prix d'un seul (1,50 €)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la valeur pour $1$ : il reste à la multiplier par $7$."
+			},
+			"answers": ["1{,}5\\,€"]
+		},
+		{
+			"description": "Achat : écart ajouté (8,50 €)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand la quantité change de $4$, le résultat ne change pas de $4$ : passe par la valeur pour $1$."
+			},
+			"answers": ["8{,}5\\,€"]
+		},
+		{
+			"description": "Achat : 4,50 × 7 (31,50 €)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "0",
+				"n": "3",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la valeur pour $3$ par $7$ : c'est la valeur pour $3 \\times 7$. Divise d'abord par $3$."
+			},
+			"answers": ["31{,}5\\,€"]
+		},
+		{
+			"description": "Achat : 9 pour 20,70 € → 4 pour 9,20 €",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"n": "9",
+				"m": "4",
+				"p": "23"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9{,}2\\,€"]
+		},
+		{
+			"description": "Recette : 4 pour 200 g → 6 pour 300 g",
+			"variationIndex": 1,
+			"variables": {
+				"i": "0",
+				"n": "4",
+				"m": "6",
+				"g": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["300\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Recette : 0,3 kg accepté",
+			"variationIndex": 1,
+			"variables": {
+				"i": "0",
+				"n": "4",
+				"m": "6",
+				"g": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}3\\,\\mathrm{kg}"]
+		},
+		{
+			"description": "Recette : pour une personne (50 g)",
+			"variationIndex": 1,
+			"variables": {
+				"i": "0",
+				"n": "4",
+				"m": "6",
+				"g": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la valeur pour $1$ : il reste à la multiplier par $6$."
+			},
+			"answers": ["50\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Recette : écart ajouté (202 g)",
+			"variationIndex": 1,
+			"variables": {
+				"i": "0",
+				"n": "4",
+				"m": "6",
+				"g": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand la quantité change de $2$, le résultat ne change pas de $2$ : passe par la valeur pour $1$."
+			},
+			"answers": ["202\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Recette : 200 × 6 (1 200 g)",
+			"variationIndex": 1,
+			"variables": {
+				"i": "0",
+				"n": "4",
+				"m": "6",
+				"g": "50"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la valeur pour $4$ par $6$ : c'est la valeur pour $4 \\times 6$. Divise d'abord par $4$."
+			},
+			"answers": ["1\\,200\\,\\mathrm{g}"]
+		},
+		{
+			"description": "Sirop : 10,5 cL pour 3 L → 17,5 cL pour 5 L",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"m": "5",
+				"h": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["17{,}5\\,\\mathrm{cL}"]
+		},
+		{
+			"description": "Sirop : 175 mL accepté",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"m": "5",
+				"h": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["175\\,\\mathrm{mL}"]
+		},
+		{
+			"description": "Sirop : pour 1 L (3,5 cL)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"m": "5",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la valeur pour $1$ : il reste à la multiplier par $5$."
+			},
+			"answers": ["3{,}5\\,\\mathrm{cL}"]
+		},
+		{
+			"description": "Sirop : écart ajouté (12,5 cL)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"m": "5",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand la quantité change de $2$, le résultat ne change pas de $2$ : passe par la valeur pour $1$."
+			},
+			"answers": ["12{,}5\\,\\mathrm{cL}"]
+		},
+		{
+			"description": "Sirop : 10,5 × 5 (52,5 cL)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"m": "5",
+				"h": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la valeur pour $3$ par $5$ : c'est la valeur pour $3 \\times 5$. Divise d'abord par $3$."
+			},
+			"answers": ["52{,}5\\,\\mathrm{cL}"]
+		},
+		{
+			"description": "Tableau : 4 pour 6 € → 1,50 € et 10,50 €",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}5", "10{,}5"]
+		},
+		{
+			"description": "Tableau : 1,50 et 10,50 acceptés",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}50", "10{,}50"]
+		},
+		{
+			"description": "Tableau : × 4 au lieu de ÷ 4 (24)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $4$ : pour passer de $4$ cahiers à $1$ cahier, on divise par $4$."
+			},
+			"answers": ["24", "10{,}5"]
+		},
+		{
+			"description": "Tableau : 3 € retirés (3)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Enlever $3$ cahiers n'enlève pas $3~\\unit{€}$ : on divise le prix par $4$."
+			},
+			"answers": ["3", "10{,}5"]
+		},
+		{
+			"description": "Tableau : 6 × 7 (42)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié le prix de $4$ cahiers par $7$ : pars du prix d'un cahier."
+			},
+			"answers": ["1{,}5", "42"]
+		},
+		{
+			"description": "Tableau : écart ajouté (9)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "4",
+				"m": "7",
+				"p": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand la quantité change de $3$, le résultat ne change pas de $3$ : passe par la valeur pour $1$."
+			},
+			"answers": ["1{,}5", "9"]
+		}
+	]
+}
