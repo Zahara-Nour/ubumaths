@@ -8,15 +8,15 @@ https://claude.ai/artifact/Tw3TtUfAWtsn6CPudQcxot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, lot écrit et vérifié._
+_Mis à jour le 2026-11-25, migrations générées, PR à ouvrir._
 
-- **État** : phase 0 validée, lot écrit (2 neufs, 11 variations sur 7 publiés), tout vert ·
-  **Prochaine action** : David crée les 2 brouillons en prod (commande ci-dessous), je commite les
-  ids, puis migrations de rangement et de contenu, PR · **En attente de David** :
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-tle-integration-neufs --publier`
-  dans le worktree · **Pièges en cours** : réponses attendues avec e : constante d'abord
-  (« 3e-1 » se lit 3 × 10⁻¹) ; 7 publiés réservés (48d8d729f) · **Worktree / branche** :
-  `../ubumaths-wt-idees-tle-integration`, `feat/idees-tle-integration`.
+- **État** : 2 brouillons créés en prod (e6f2aed3 F1, 1093da29 F7), ids commités ; migrations de
+  rangement (20261125065055) et de contenu (20261125065101) générées, tests d'intégration rouges
+  sans elles et verts avec · **Prochaine action** : revue sécurité, PR, CI, merge, `db:migrate` (4
+  conditions), puis relecture dans `/dev/modeles` · **En attente de David** : rien pour l'instant ·
+  **Pièges en cours** : réponses attendues avec e : constante d'abord (« 3e-1 » se lit 3 × 10⁻¹) ;
+  7 publiés réservés (48d8d729f) · **Worktree / branche** : `../ubumaths-wt-idees-tle-integration`,
+  `feat/idees-tle-integration`.
 
 ## Historique
 
@@ -57,3 +57,13 @@ _Mis à jour le 2026-11-25, lot écrit et vérifié._
   dans `\text` en F8) ; « 2e-1 » tapé par l'élève jugé juste. Copies créées en base locale, F1
   (courbe), F7, F8 vus dans l'aperçu (`pnpm voir`, iPhone, 0 erreur de console) ; brouillons d'essai
   supprimés de la base locale.
+
+### 2026-11-25 — brouillons en prod, migrations
+
+- David a lancé `create-questions --publier` : F1 e6f2aed3, F7 1093da29 (brouillons, T_SPE, sans
+  nœud) ; ids commités.
+- `migration-rangement.ts` : 20261125065055 (F1 → primitives : notion, TSPE-462 ; F7 → par une
+  primitive, TSPE-487). `migration-contenu.ts` : 20261125065101 (7 publiés, +11 variations, 0
+  corrigée). Tests d'intégration verts (256), rouges sans les migrations (12 en échec, fichier
+  introuvable).
+- `garde-niveaux-tags` verte. Question d'accès : personne (on range des modèles).
