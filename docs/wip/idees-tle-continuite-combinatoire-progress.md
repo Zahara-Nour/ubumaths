@@ -7,12 +7,12 @@ Page à cocher de la phase 0 : https://claude.ai/artifact/SmYJM9k1YCqeck3Qs98W4T
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 envoyée._
+_Mis à jour le 2026-11-25, phase 0 validée._
 
-- **État** : relevé fait, fiches publiées sur la page à cocher · **Prochaine action** : lire les
-  verdicts de la page (collection `verdicts`), puis écrire le gros lot · **En attente de David** :
-  verdicts des fiches N1, N2, N4, N5, V1, V2, V3, R et Q1 · **Pièges en cours** : réserver 2491dd75,
-  10393ff9 et 0965c56c dans le tableau avant d'y ajouter des variations · **Worktree / branche** :
+- **État** : phase 0 validée (toutes les fiches oui, Q1 oui) ; 2491dd75, 10393ff9 et 0965c56c
+  réservés · **Prochaine action** : écrire le gros lot (scripts `docs/wip/questions/`, export des
+  publiés, simulation, essai en base locale), puis PR · **En attente de David** : rien ·
+  **Pièges en cours** : 2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** :
   `../ubumaths-wt-idees-tle-continuite-combinatoire`, `feat/idees-tle-continuite-combinatoire`.
 
 ## Historique
@@ -34,3 +34,11 @@ _Mis à jour le 2026-11-25, phase 0 envoyée._
   2491dd75, rangé aussi en TCOMP).
 - Outils : rien ne manque. Question d'accès : personne (on range des modèles).
 - Q1 : N4 couvre TSPE-427 sans être reprise d'un exercice ; recommandation : l'écrire dans ce lot.
+
+### 2026-11-25 — phase 0 validée
+
+- David : « je valide » (dans la conversation ; la page à cocher est restée vide) → N1, N2, N4, N5,
+  V1, V2, V3 oui, R accepté, Q1 oui (N4 écrit dans ce lot). Fiches copiées dans
+  [idees-tle-continuite-combinatoire-fiches.md](idees-tle-continuite-combinatoire-fiches.md).
+- 2491dd75, 10393ff9 et 0965c56c réservés dans le tableau de répartition ; l'idée en attente
+  TSA5-41 retirée de « Idées en attente » (reprise par V1).

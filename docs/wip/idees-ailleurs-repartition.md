@@ -160,33 +160,36 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| e0ccaf84 Résoudre un petit exercice de proportionnalité      | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 7981dab0 Repérer double, moitié, quadruple, quart et tiers   | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 52bf3fb9 Calculer la longueur réelle                         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 5e4e5e9d Calculer la longueur sur une carte                  | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 06df72fd Reconnaître des situations de proportionnalité      | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
-| 15368b02 Définition d'une puissance à exposant négatif       | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| bb9cff7b Multiplier 2 puissances d'un même nombre            | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 18761148 Diviser 2 puissances d'un même nombre               | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 3fe98dd9 Traduire une puissance en produit                   | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                        | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| --------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 2491dd75 TVI : nombre de solutions de f(x) = k                  | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
+| 10393ff9 Continuité lue sur une courbe : saut ou point anguleux | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
+| 0965c56c k-uplets d'éléments distincts : codes, bureaux…        | `idees-tle-continuite-combinatoire`                         | 2026-11-25 |                                      |
+| e0ccaf84 Résoudre un petit exercice de proportionnalité         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 7981dab0 Repérer double, moitié, quadruple, quart et tiers      | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 52bf3fb9 Calculer la longueur réelle                            | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 5e4e5e9d Calculer la longueur sur une carte                     | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
+| 06df72fd Reconnaître des situations de proportionnalité         | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
+| 15368b02 Définition d'une puissance à exposant négatif          | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| bb9cff7b Multiplier 2 puissances d'un même nombre               | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 18761148 Diviser 2 puissances d'un même nombre                  | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 3fe98dd9 Traduire une puissance en produit                      | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 04b1cc7f Puissance d'un produit                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ?    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                         | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 
@@ -194,8 +197,6 @@ Ce sont des idées notées pour un modèle déjà réservé, ou reportées par D
 
 - `ensembles-2de` : fiches 16, 17, 34, 52 du relevé « nombres et calculs » (rares mais au
   programme, voir le journal).
-- `idees-tle-ln` (2026-11-24, pour la session de la rubrique continuité, TSA4) : « f(x) = 0 a deux
-  solutions » sur ax + b + k ln x (TSA5-41), par le théorème des valeurs intermédiaires.
 - `idees-6e-entiers` (plus tard, David, 2026-11-22) : la rose des sommes (6N0A-2), en attente d'un outil
   « grille ou figure jugée par ses contraintes » (`outils-manquants.md`).
 - `idees-3e-arithmetique` (2026-11-23, pour la session d'une rubrique de 6e sur la division) : « quel est le
