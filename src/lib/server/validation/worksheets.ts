@@ -722,6 +722,15 @@ const timestampSchema = z
 	.string()
 	.refine((val) => !isNaN(Date.parse(val)), { message: 'Date invalide' });
 
+/**
+ * Traductions d'une ligne lue en base (fiche, section, exercice de la fiche).
+ * Sans cette clé, le schéma la retirait en silence : le PDF anglais de la page
+ * imprimait les titres de section en français et les éditeurs affichaient un
+ * anglais vide. Souple exprès : la base borne déjà la forme, et un écart ne doit
+ * pas rendre toute la fiche illisible.
+ */
+const storedTranslationsSchema = z.record(z.string(), z.unknown()).nullable().optional();
+
 export const worksheetResponseSchema = z.object({
 	id: z.string().uuid(),
 	title: z.string(),
@@ -744,6 +753,7 @@ export const worksheetResponseSchema = z.object({
 	custom_title: z.boolean().optional(),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),
+	translations: storedTranslationsSchema,
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -758,6 +768,7 @@ export const worksheetSectionResponseSchema = z.object({
 	instructions: z.string().nullable(),
 	position: z.number().int(),
 	points_total: z.number().int().nullable(),
+	translations: storedTranslationsSchema,
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -775,6 +786,7 @@ export const worksheetExerciseResponseSchema = z.object({
 	variant_mode: variantModeSchema,
 	variant_config: z.record(z.string(), z.unknown()),
 	custom_instructions: z.string().nullable(),
+	translations: storedTranslationsSchema,
 	is_essential: z.boolean(),
 	/** Lignes des cadres ; sans cette clé, le schéma la retire en silence */
 	answer_frame_lines: answerFrameLinesSchema.optional(),
