@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 1 prête (PR ouverte, merge en attente de David)._
+_Mis à jour le 2026-11-25, après #3150 (PR 1 en prod, v0.111.0)._
 
-- **État** : PR 1 complète. Intégration complète verte (8010 tests ; seul rouge = test F1 avant son correctif, vert ensuite) ; `pnpm voir` + appels réels vérifiés (liste, page d'exercice, fiche élève 18 énoncés, aperçu prof, source Typst du corrigé) ; revues code (opus) + sécurité : rien de bloquant, corrigés F1/F2/règle 6, reste → § Revues de la PR 1.
-- **Prochaine action** : après le go de David, merger, puis `db:migrate` + `deploy:prod` coup sur coup (sur sa demande).
-- **En attente de David** : QUAND merger. Une fois sur `main`, le `db:migrate` de n'importe quelle session pousse notre migration sans le code (ajout à une fiche refusé, exercice créé sans v1) → merger juste avant que David enchaîne `db:migrate` + `deploy:prod`.
-- **Pièges en cours** : base LOCALE de dev jouée avec l'ancienne policy UPDATE (avant F1 ; `db:a-jour` ne rejoue pas un fichier déjà passé) — sans effet sur les tests ; `as unknown as` dans les routes cache au typecheck un contenu absent → seuls les tests le voient.
-- **Worktree / branche** : `../ubumaths-wt-versions-exercices`, `feat/versions-exercices`.
+- **État** : PR 1 mergée (#3150), migration jouée en prod puis `deploy:prod` v0.111.0 coup sur coup (décision B). Prod mesurée après : 428 exercices = 428 versions, 0 ligne de fiche sans version, aucune écriture d'exercice pendant l'entre-deux.
+- **Prochaine action** : PR 2 (éditeur de versions) — commencer par les points reportés de § Revues de la PR 1 (pagination de `fetchLatestVersions`, `updated_at` après signalement, sauvegarde).
+- **En attente de David** : rien.
+- **Pièges en cours** : `deploy:prod` est refusé à Claude par le classifieur → David le lance (`! pnpm deploy:prod`) ; base LOCALE de dev jouée avec l'ancienne policy UPDATE (avant F1), sans effet sur les tests ; `as unknown as` dans les routes cache au typecheck un contenu absent.
+- **Worktree / branche** : aucun (retiré au merge) ; PR 2 → nouveau worktree `../ubumaths-wt-versions-exercices-editeur`.
 
 ## Décisions (2026-11-25)
 
