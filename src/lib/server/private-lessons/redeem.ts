@@ -41,6 +41,7 @@ import {
 	deleteChildAccount
 } from '#lib/server/child-registration.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { clearInvitationMark, INVITATION_MARK } from '#lib/server/private-lessons/orphans.ts';
 
 // Types
 
@@ -224,7 +225,10 @@ async function createEverything(
 	const account = await createChildAuthUser(service, {
 		childFirstname: invitation.firstname,
 		password: input.password,
-		userMetadata: { firstname: invitation.firstname, lastname: '' }
+		userMetadata: { firstname: invitation.firstname, lastname: '' },
+		// Marque « en cours de création » : un compte resté marqué est un orphelin si
+		// l'invitation n'est pas utilisée par lui (fonction tuée en route, `orphans.ts`).
+		appMetadata: { [INVITATION_MARK]: invitation.id }
 	});
 	if (!account.ok) {
 		throw new RedeemStepError(
@@ -364,6 +368,10 @@ export async function redeemInvitation(
 	} catch {
 		logger.error(`[Invitation ${claimed.id}] Courriel final : exception`);
 	}
+
+	// Succès : la marque tombe. Un échec ici ne gêne pas : la tâche de nuit la retirera en
+	// voyant l'invitation utilisée par ce compte.
+	await clearInvitationMark(service, result.studentId);
 
 	return { ok: true, childFirstname: claimed.firstname, emailSent, ...result };
 }

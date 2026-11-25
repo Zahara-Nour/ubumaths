@@ -3,7 +3,9 @@
  * ================================================
  * Décision 8 du chantier `invitation-cours-particulier` : une invitation de cours
  * particulier expirée, annulée ou utilisée est effacée 30 jours après sa fin
- * (`purgeEndedInvitations`, `src/lib/server/private-lessons/invitations.ts`).
+ * (`purgeEndedInvitations`, `src/lib/server/private-lessons/invitations.ts`). PR 4 : le même
+ * passage supprime les comptes orphelins d'une création interrompue
+ * (`cleanupOrphanAccounts`, `src/lib/server/private-lessons/orphans.ts`).
  *
  * Appelée chaque nuit par le cron Vercel (GET, `vercel.json`) et à la demande depuis
  * `/dashboard/admin/cron` (POST). AUTH : `Bearer CRON_SECRET` seulement.
@@ -15,6 +17,7 @@ import type { RequestHandler } from './$types';
 import { verifyCronAuth } from '#lib/server/auth/cron.ts';
 import { createServiceRoleClient } from '#lib/server/serviceRoleClient.ts';
 import { purgeEndedInvitations } from '#lib/server/private-lessons/invitations.ts';
+import { cleanupOrphanAccounts } from '#lib/server/private-lessons/orphans.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/cron/invitations-cours-particulier/+server');
@@ -32,7 +35,9 @@ const handler: RequestHandler = async ({ request }) => {
 	if (startError) logger.error('[CRON] Journal de la tâche non ouvert :', startError);
 
 	try {
-		const report = await purgeEndedInvitations(serviceClient);
+		const purge = await purgeEndedInvitations(serviceClient);
+		const orphans = await cleanupOrphanAccounts(serviceClient);
+		const report = { ...purge, orphans };
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
 				p_run_id: runId,

@@ -71,7 +71,13 @@ async function takenLoginIds(service: ServiceClient, base: string): Promise<Set<
  */
 export async function createChildAuthUser(
 	service: ServiceClient,
-	input: { childFirstname: string; password: string; userMetadata: Record<string, string> }
+	input: {
+		childFirstname: string;
+		password: string;
+		userMetadata: Record<string, string>;
+		/** Marques serveur en plus de `child_account` (ex. l'invitation qui crée le compte). */
+		appMetadata?: Record<string, string>;
+	}
 ): Promise<CreateChildAuthUserResult> {
 	const base = childLoginBase(input.childFirstname);
 	if (!base) return { ok: false, reason: 'invalid_firstname' };
@@ -85,7 +91,7 @@ export async function createChildAuthUser(
 			email: childAccountEmail(loginId),
 			password: input.password,
 			email_confirm: true,
-			app_metadata: { child_account: true },
+			app_metadata: { ...input.appMetadata, child_account: true },
 			user_metadata: input.userMetadata
 		});
 
