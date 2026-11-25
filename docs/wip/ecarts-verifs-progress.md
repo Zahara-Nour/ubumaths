@@ -220,6 +220,16 @@ Worktree `ubumaths-wt-ecarts-verifs-telephone`, branche `fix/ecarts-verifs-telep
 - **Vu à l'écran par la session** : captures iPhone de la droite de −6 à 6 (« −6 −4 −2 0 2 4 6 ») et du modèle 2de à courbes. **Pas vu** : le corrigé de « Résoudre |x| > k » lui-même (E63, preuve « à la main ») ; même composant, cas de −8 à 8 couvert par un test unitaire.
 - **Merge** : GitHub a répondu 502 à huit essais de merge sur vingt minutes (CI verte, PR `CLEAN`), puis a accepté une heure plus tard, sans rien changer. E63, E70 et E82 barrés au registre à la main depuis `main`.
 
+## PR T : E73, dernière pastille d'Automaths sous Chromium au téléphone (2026-11-25)
+
+Worktree `ubumaths-wt-ecarts-verifs-e73`, branche `fix/ecarts-verifs-e73`.
+
+- **Cause mesurée** : le recalage partait 400 ms après le début du défilement doux, donc pendant l'animation ; Chromium ajoutait ce recalage à l'animation en cours et finissait tout en bas de la page (haut de la section 1 053 px au-dessus des pastilles). WebKit finit son défilement avant, d'où l'écart entre les deux.
+- **Correctif** (`settleUnderChips`, `CatalogueNotionSections.svelte`) : la section est regardée toutes les 100 ms, 3 s au plus, et recalée seulement quand la page ne bouge plus ; un geste de l'élève (doigt, molette, clavier), une autre pastille ou le retrait du composant arrêtent tout.
+- **Mesuré après** : la section arrive à 14 px sous les pastilles sous Chromium (Pixel 7) comme sous WebKit (iPhone 13), notion « Entiers : addition et soustraction », 111 questions.
+- **Vérifs** : `test.fail` de E73 retiré (automaths-paquet8, #2854), attendu inchangé ; tests #2854 verts sur android, iphone, ordi-chrome, ordi-safari, ordi-firefox (firefox-390 ne joue pas ce fichier).
+- **Revue** : `code-reviewer`, aucun finding bloquant ni à corriger. Mineur noté, non reproduit : la toute fin d'un défilement doux pourrait passer pour « immobile » ; si ça reparaît, exiger deux relevés immobiles d'affilée.
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |
