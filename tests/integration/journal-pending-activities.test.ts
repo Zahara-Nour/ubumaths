@@ -16,6 +16,7 @@ import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
 
 import { actions } from '../../src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.server';
+import { latestTestVersionId } from '../helpers/database/trigger-test-helpers';
 import {
 	createServiceRoleClient,
 	TestData,
@@ -211,6 +212,7 @@ async function putInWorksheet(teacherId: string, exerciseId: string): Promise<st
 		.insert({
 			worksheet_id: (ws as { id: string }).id,
 			exercise_id: exerciseId,
+			exercise_version_id: await latestTestVersionId(exerciseId),
 			position: 3
 		} as never)
 		.select('id')

@@ -94,8 +94,8 @@ async function seedWorksheet(withSection: boolean): Promise<string> {
 	for (const [position, lines] of Object.entries(LINES_BY_POSITION)) {
 		await sql(
 			`insert into public.worksheet_exercises
-			 (worksheet_id, exercise_id, section_id, position, answer_frame_lines)
-			 values ($1, $2, $3, $4, $5)`,
+			 (worksheet_id, exercise_id, exercise_version_id, section_id, position, answer_frame_lines)
+			 values ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), $3, $4, $5)`,
 			[id, exerciseId, sectionId, Number(position), lines === null ? null : JSON.stringify(lines)]
 		);
 	}

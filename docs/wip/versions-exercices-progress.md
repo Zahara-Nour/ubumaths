@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 1 en cours (2 commits locaux, aucune PR ouverte)._
+_Mis à jour le 2026-11-25, PR 1 en cours (branche poussée, aucune PR ouverte)._
 
-- **État** : migration `20261125153651_versions_exercices` (rouge sans, verte avec : `versions-exercices.test.ts`) ; code basculé sur `src/lib/server/exercise-versions.ts` ; 6349 tests unitaires verts ; doc (`base-de-donnees.md`, `fiches-exercices.md` § 2.5, CONTEXT.md) à jour.
-- **Prochaine action** : 21 tests d'intégration à adapter (lignes de fiche sans version ; un agent y travaillait au moment du `/clear` : `git status` du worktree, ses modifs NON commitées, les relire puis relancer ces 21 fichiers) ; faire tourner `versions-exercices-lectures.test.ts` ; `pnpm voir` ; revue `code-reviewer` (opus) + `security-auditor` ; PR.
+- **État** : migration + code + doc poussés sur `feat/versions-exercices` (aucune PR) ; 6349 tests unitaires verts ; 21 tests d'intégration adaptés + `versions-exercices*.test.ts` verts (29). Bug d'avant le chantier corrigé : l'import créait l'exercice avec `statement_md`/`solution_md` → refus PostgREST. Prod mesurée : 0 exercice sans auteur (la base de TEST en a 119, nettoyages en `replica`).
+- **Prochaine action** : suite d'intégration complète (`pnpm test:integration`, ~14 min) ; `pnpm voir` (liste d'exercices, page d'exercice, fiche élève, PDF) ; revue `code-reviewer` (opus) + `security-auditor` ; ouvrir la PR.
 - **En attente de David** : rien. ⚠️ Au merge : **pas de `db:migrate` seul** — le dire à David, `db:migrate` puis `deploy:prod` coup sur coup (§ Entre-deux, B).
 - **Pièges en cours** : `as unknown as` dans les routes cache au typecheck un contenu absent → seuls les tests le voient ; test de reprise : verrou `profiles`/`exercises` (suites en parallèle) ; inventaire de phase 0 incomplet : liens de partage d'une fiche (2 RPC) et tuteur (fiche, pas hors fiche) ajoutés.
 - **Worktree / branche** : `../ubumaths-wt-versions-exercices`, `feat/versions-exercices`.

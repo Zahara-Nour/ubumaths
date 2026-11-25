@@ -331,6 +331,14 @@ describe('reprise : rollback documenté, puis migration rejouée depuis son fich
 			// la vérification de la clé étrangère ferait échouer la reprise. Le verrou fige les deux
 			// tables le temps de la transaction (lectures permises, écritures en attente).
 			await pg.query('lock table public.profiles, public.exercises in share mode');
+			// La base de TEST garde des exercices sans auteur : des nettoyages en mode `replica` effacent
+			// des profils sans cascade. La prod n'en a aucun (mesuré le 2026-11-25 : 0 sur 428) ; ils sont
+			// retirés ici, dans la transaction annulée, sinon la v1 de l'un d'eux heurte la clé de
+			// `exercise_versions.created_by`.
+			await pg.query(
+				`delete from public.exercises e
+				  where not exists (select 1 from public.profiles p where p.id = e.created_by)`
+			);
 			await pg.query(rollback);
 
 			// L'état d'avant : plus de table des versions, plus de colonne de version

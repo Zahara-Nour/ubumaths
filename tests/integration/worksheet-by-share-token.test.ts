@@ -17,7 +17,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	cleanupAllTestData,
-	createServiceRoleClient
+	createServiceRoleClient,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { Database } from '#lib/types/database.ts';
@@ -86,19 +87,21 @@ describe('fiche accessible par le lien de consultation', () => {
 		const exercise = (await TestData.exercise(teacher.id).create()) as { id: string };
 		// Lettres déclarées comme fonctions : le PDF en a besoin pour lire C'(x)
 		const { error: declarationError } = await service
-			.from('exercises')
+			.from('exercise_versions')
 			.update({ generic_functions: ['C', 'u', 'v'] })
-			.eq('id', exercise.id);
+			.eq('exercise_id', exercise.id);
 		if (declarationError) throw new Error(`déclaration : ${declarationError.message}`);
 		sansDeclaration = (await TestData.exercise(teacher.id).create()) as { id: string };
 		await insert('worksheet_exercises', {
 			worksheet_id: citee,
 			exercise_id: exercise.id,
+			exercise_version_id: await latestTestVersionId(exercise.id),
 			position: 1
 		});
 		await insert('worksheet_exercises', {
 			worksheet_id: citee,
 			exercise_id: sansDeclaration.id,
+			exercise_version_id: await latestTestVersionId(sansDeclaration.id),
 			position: 2
 		});
 

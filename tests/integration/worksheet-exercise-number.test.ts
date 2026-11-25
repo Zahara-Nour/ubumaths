@@ -19,7 +19,8 @@ import type { User } from '@supabase/supabase-js';
 import { GET as exerciseAtNumber } from '../../src/routes/api/worksheets/[id]/exercise-number/[number]/+server';
 import {
 	cleanupAllTestData,
-	createServiceRoleClient
+	createServiceRoleClient,
+	latestTestVersionId
 } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
 
@@ -79,6 +80,7 @@ describe('numéro d’exercice → identifiant de jonction', () => {
 					.insert({
 						worksheet_id: worksheetId,
 						exercise_id: exercise.id,
+						exercise_version_id: await latestTestVersionId(exercise.id),
 						section_id: sectionId,
 						position
 					})

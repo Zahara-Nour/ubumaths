@@ -345,25 +345,25 @@ describe('hors fiche : la dernière version', () => {
 		expect(row?.variations).toEqual(V2);
 	});
 
-	it('ajouter l’exercice à une fiche (POST …/exercises) : la ligne prend la v2', async () => {
+	it('ajouter l’exercice à un brouillon de fiche (POST …/exercises) : la ligne prend la v2', async () => {
+		// Seul un brouillon reçoit des exercices
+		const { data: draft, error: draftError } = await service
+			.from('worksheets')
+			.insert({ title: 'Brouillon', type: 'worksheet', status: 'draft', created_by: teacherId })
+			.select('id')
+			.single();
+		if (draftError) throw new Error(`brouillon : ${draftError.message}`);
 		const response = await addWorksheetLine({
 			locals: teacherLocals,
-			params: { id: worksheetId },
-			request: jsonRequest({ exercise_id: exerciseId, position: 2 })
+			params: { id: draft.id },
+			request: jsonRequest({ exercise_id: exerciseId, position: 1 })
 		} as never);
 		expect(response.status).toBeLessThan(300);
 		const { data } = await service
 			.from('worksheet_exercises')
 			.select('exercise_version_id')
-			.eq('worksheet_id', worksheetId)
-			.eq('position', 2)
-			.single();
-		expect(data?.exercise_version_id).toBe(v2Id);
-		await service
-			.from('worksheet_exercises')
-			.delete()
-			.eq('worksheet_id', worksheetId)
-			.eq('position', 2);
+			.eq('worksheet_id', draft.id);
+		expect(data).toEqual([{ exercise_version_id: v2Id }]);
 	});
 });
 

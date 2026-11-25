@@ -238,6 +238,19 @@ async function findDuplicateExercise(
 }
 
 /**
+ * `statement_md` / `solution_md` du format d'échange ne sont pas des colonnes d'`exercises` :
+ * l'énoncé et la correction vivent dans `variations` (version de l'exercice). Les envoyer à la
+ * création faisait refuser l'insertion par PostgREST (« Could not find the 'solution_md' column »),
+ * ce que les tests unitaires, qui simulent la base, ne voyaient pas.
+ */
+function withoutLegacyStatement<T extends { statement_md?: unknown; solution_md?: unknown }>(
+	data: T
+): Omit<T, 'statement_md' | 'solution_md'> {
+	const { statement_md: _statement, solution_md: _solution, ...rest } = data;
+	return rest;
+}
+
+/**
  * Generate a unique title with " (copie)" suffix for creating copies
  *
  * @param supabase - Supabase client
@@ -415,7 +428,7 @@ export async function importExerciseFromJSON(
 			const result = await createExercise(
 				supabase,
 				{
-					...cleanData,
+					...withoutLegacyStatement(cleanData),
 					title: newTitle
 				},
 				userId
@@ -431,7 +444,7 @@ export async function importExerciseFromJSON(
 
 	// Sanitize and create exercise
 	const cleanData = sanitizeExerciseForInsert(exerciseData);
-	const result = await createExercise(supabase, cleanData, userId);
+	const result = await createExercise(supabase, withoutLegacyStatement(cleanData), userId);
 
 	if (result.error) {
 		return { success: false, error: result.error.message };
