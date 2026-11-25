@@ -308,7 +308,10 @@ export const JAMAIS: readonly string[] = [
 	'game_challenge_attempts',
 	// Sans lecteur ni écrivain dans l'appli (ADR 0023 : la copie d'une fiche se recalcule à chaque
 	// ouverture), suppression prévue : rien à inventer.
-	'worksheet_instances'
+	'worksheet_instances',
+	// Invitations de cours particulier (2026-11-24) : adresses de parents réelles et liens ;
+	// pas encore de page qui les lit, à inventer avec la PR 2 si l'essai local en a besoin.
+	'private_lesson_invitations'
 ];
 
 /**

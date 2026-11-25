@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3110._
+_Mis à jour le 2026-11-25, après #3121 et `db:migrate`._
 
-- **État** : lot écrit (F2, F5, F6, F7 neufs ; F1, F3 en fin de 31096bae et 69a05f98) et joué dans l'aperçu admin local : 19 variations, réponse juste → « Juste », fausse → « Faux », chaque `choix` de F6 a une seule proposition juste sur 4. Fichiers mergés sur `main` (#3110). Page à cocher : https://claude.ai/artifact/GsJy6qx8vPfv2rJVbjNhhM.
-- **Prochaine action** : étape 6 de `couvrir-un-niveau.md` : David lance `create-questions --dir scripts/questions/idees-1re-probas-cond-neufs --publier` en prod (brouillons), je commite les ids, puis rangement, relecture dans `/dev/modeles`, `migration-contenu.ts` pour F1 et F3.
-- **En attente de David** : le `create-questions --publier` en prod (commande `!` donnée).
-- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). `migration-contenu.ts` (pour les publiés) n'a pas de simulation : il écrit la migration et sa fixture, il se lance à l'étape 4, après les brouillons en prod. `create-questions` ne touche jamais un modèle publié, même en local : F1 et F3 ont été copiés en base locale par un PATCH ponctuel. Dans l'aperçu, la variation affichée est numérotée à partir de 1.
-- **Worktree / branche** : aucun (retiré après #3110) ; nouveau worktree pour commiter les ids.
+- **État** : migrations passées en prod (lancées par David), vérifiées : 4 brouillons rangés (289a085b 2-390, 0bcf9fae et 201e64fd 1SPE-340, ab35bb06 1SPE-424), 31096bae à 5 variations, 69a05f98 à 4.
+- **Prochaine action** : lire `question_template_reviews` des 6 modèles (verdicts postérieurs au 2026-11-25) ; « À revoir » → corriger ; tout valide → `garde-niveaux-tags.ts` puis `publier-lot.ts --dir scripts/questions/idees-1re-probas-cond-neufs` (simulation), David lance `--publier`.
+- **En attente de David** : la relecture dans `/dev/modeles` (`?point=2-390`, `?point=1SPE-340`, `?point=1SPE-424`, `?point=2-395`).
+- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). F1 et F3 sont déjà visibles des élèves : une correction passe par `migration-contenu.ts`.
+- **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -44,3 +44,16 @@ _Mis à jour le 2026-11-24, après #3110._
 - 4 modèles neufs créés en brouillon dans la base locale (`create-questions --publier` avec `.env.local`), ids retirés des fichiers ensuite (`git restore`). F1 et F3 copiés dans 31096bae et 69a05f98 locaux (variations, `shared`, `test_specs`).
 - Jeu automatique (Playwright, aperçu admin sur `http://[::1]:5178`) : une graine par variation, les 19 tirées. 17 variations à saisie : réponse attendue → « Juste », `0` → « Faux » (captures relues pour F7 v3 et F1, valeurs refaites à la main). 2 variations `choix` de F6 : chaque proposition essayée, une seule « Juste » sur 4.
 - Seules erreurs de console : des 429 (limite de débit du serveur de dev, dus au rythme du script), aucune liée aux modèles.
+
+### 2026-11-24 : brouillons en prod, migrations générées
+
+- David a lancé `create-questions --publier` en prod : 4 brouillons, ids écrits en tête des fichiers (vérifiés par `migration-rangement.ts`, appariés en prod).
+- `migration-rangement.ts` : 4 « rangé » → `20261124220806_…_neufs_rangement_tags.sql`. `migration-contenu.ts` : 31096bae et 69a05f98 « migré » (+1 variation, specs) → `20261124220853_…_publies_contenu.sql`. Une seule PR pour les deux, comme dans `idees-tle-probas`.
+
+### 2026-11-25 : #3121 mergée
+
+- CI verte, `pr:merger` a mergé. `security-auditor` : aucun finding sur les deux migrations. Tests `migrations-rangement-tags` et `migrations-contenu-publie` verts en local.
+
+### 2026-11-25 : migrations en prod
+
+- `db:migrate --include-all` lancé par David (refusé à la session par le mode auto). Vérifié par MCP : statuts, niveaux, nœuds, points et nombre de variations conformes.

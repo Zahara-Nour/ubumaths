@@ -2,7 +2,7 @@
 scripts/questions/idees-3e-fonctions-affines-neufs/.
 
 Phase 0 validée par David le 2026-11-24 (« je suis tes recos » ; journal
-docs/wip/idees-3e-fonctions-affines-progress.md, § Phase 0) : N1 à N4, Q1 (N2 au point de Seconde
+docs/archive/wip/idees-3e-fonctions-affines/idees-3e-fonctions-affines-progress.md, § Phase 0) : N1 à N4, Q1 (N2 au point de Seconde
 2-322, grades 3 et 2), Q3 (N1 : seule forme fractionnaire x/c + b).
 
 Rangement (lu par migration-rangement.ts) :
