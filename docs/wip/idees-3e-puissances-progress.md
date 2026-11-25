@@ -7,18 +7,18 @@ https://claude.ai/artifact/LGpQYL1RscgPbBHoZRCUFA
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR des fichiers et de la migration de contenu ouverte._
+_Mis à jour le 2026-11-25, après #3148._
 
-- **État** : lot écrit et joué en local (N5, N6 : juste accepté, faux refusé) ; migration de
-  contenu des 4 publiés générée (`20261125153849_…_publies_contenu`), test d'intégration vert,
-  PR ouverte (fichiers + migration de contenu). · **Prochaine action** : après le merge,
-  `db:migrate` de la migration de contenu (4 conditions, `migration list --linked` d'abord) ;
-  David lance `create-questions --publier` sur `scripts/questions/idees-3e-puissances-neufs`
-  (N5, N6 en brouillons), puis migration de rangement (nœud + point) · **En attente de David** :
-  la publication des brouillons en prod, après le merge · **Pièges en cours** : options de
-  3fe98dd9 changées (`signs: off`, `allowBracketsInFirstNegativeTerm`), voir § Lot ;
-  `--publier` en local réécrit les ids dans les fichiers → les retirer · **Worktree / branche** :
-  `../ubumaths-wt-idees-3e-puissances`, `docs/idees-3e-puissances`.
+- **État** : #3148 mergée (N5, N6 en fichiers ; 7 variations sur 4 publiés + migration de contenu
+  `20261125153849_…_publies_contenu`, PAS encore jouée en prod). · **Prochaine action** :
+  `db:migrate` de cette migration quand `migration list --linked` ne montre qu'elle (le
+  2026-11-25, deux migrations de modération du chat, 20261125145621 et 20261125152013, d'une
+  autre session, attendaient aussi → pas lancé) ; puis migration de rangement (nœud + point) de
+  N5, N6 dans un nouveau worktree · **En attente de David** : `create-questions --publier` sur
+  `scripts/questions/idees-3e-puissances-neufs` (N5, N6 en brouillons en prod) ; dire si les
+  migrations du chat peuvent partir avec la mienne · **Pièges en cours** : options de 3fe98dd9
+  changées (`signs: off`, `allowBracketsInFirstNegativeTerm`), voir § Lot ; `--publier` en
+  local réécrit les ids → les retirer · **Worktree / branche** : aucun (retiré après #3148).
 
 ## Phase 0 (2026-11-25)
 
