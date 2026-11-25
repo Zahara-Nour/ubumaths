@@ -332,7 +332,8 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 - Le jeton d'un lien du carnet de liaison (ADR 0040) est dans le CHEMIN (`/carnet/<jeton>`,
   `/carnet/confirmer/<jeton>`), que `sanitizeUrl` ne voit pas : `logError` le remplace par
   `[token]` dans l'URL et le message (`redactSecretUrl`, `src/lib/utils/analytics-redact.ts`,
-  depuis le 2026-11-16). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
+  depuis le 2026-11-16) ; de même le jeton d'une invitation de cours particulier
+  (`/auth/register/invitation/<jeton>`, depuis le 2026-11-25). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
   lente et exception de `hooks.server.ts`.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les

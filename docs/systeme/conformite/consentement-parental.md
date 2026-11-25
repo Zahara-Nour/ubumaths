@@ -23,6 +23,17 @@ couvre:
 > fixe 2026-06-30 a disparu) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
 > [`README.md`](README.md) §4.
 
+> **Invitation de cours particulier (2026-11-25)** : le consentement d'un élève invité par l'admin
+> est recueilli sur la page du lien d'invitation (`/auth/register/invitation/[token]`), dans le même
+> formulaire que la création du compte : case explicite, toujours exigée (décision 6). Le serveur
+> crée une demande `parental_consents` à l'adresse de l'invitation (`createParentRequest`) et
+> l'accorde aussitôt par `grant_parental_consent`, avec l'IP et le navigateur de la requête : la
+> preuve a la même forme qu'un clic sur `/consent/[token]`, et l'adresse est confirmée (lien reçu à
+> cette adresse), donc « Mot de passe oublié » y part. Le courriel final
+> (`sendPrivateLessonWelcomeEmail`, `src/lib/email-templates/private-lesson-welcome.ts`) redit
+> l'identifiant ; il ne porte aucun lien de consentement.
+> [comptes-classes-ecoles.md § Admin : cours particuliers](../comptes-classes-ecoles.md#admin--cours-particuliers).
+
 > **Adresse du parent et lien (2026-10-21, PR 3 de l'inscription par le parent)** : l'adresse
 > d'une demande `granted` est celle où part le lien « Mot de passe oublié » d'un enfant à
 > identifiant. Elle est donc **figée** : `updateParentEmail` répond 409. Une demande `pending`
