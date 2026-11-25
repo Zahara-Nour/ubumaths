@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 2 (éditeur) commitée, correctifs de revue à rejouer en intégration._
+_Mis à jour le 2026-11-25, PR 2 (éditeur) ouverte, CI en cours._
 
 - **État** : PR 2 sur `feat/versions-exercices-editeur` (worktree `../ubumaths-wt-versions-exercices-editeur`) : migration additive `20261125183550`, routes, éditeur, sauvegarde ; revues faites et corrigées. Détail : § PR 2 — fait.
-- **Prochaine action** : rejouer `pnpm test:integration tests/integration/versions-exercices*.test.ts` + `pnpm test:verifs e2e/verifs/versions-exercices-editeur.spec.ts` (correctifs de revue pas encore rejoués : ordre des verrous, `versions: []`, 42501), puis `pnpm lint:fast`, ouvrir la PR, CI, merge ; au merge, `db:migrate` (4 conditions réunies : accès tranché « personne », rouge prouvé, audit sans bloquant, additive + rollback). Puis PR 3 (la fiche : menu de version à l'import, « version plus récente existe »).
+- **Prochaine action** : PR 2 ouverte (correctifs de revue rejoués : intégration 57/57, verifs Chrome, suite complète 616/616 verte avant correctifs) → CI verte → `pnpm pr:merger` → `db:migrate` depuis la branche mergée (4 conditions réunies : accès « personne », rouge prouvé, audit sans bloquant, additive + rollback). Puis PR 3 (la fiche : menu de version à l'import, « version plus récente existe »).
 - **En attente de David** : rien.
 - **Pièges en cours** : `deploy:prod` lancé par David (`! pnpm deploy:prod`) ; le code de la PR 2 appelle les nouvelles fonctions SQL → `db:migrate` AVANT ou AVEC le `deploy:prod`. Base locale de dev : migration de la branche jouée (`db:a-jour`) et `create_exercise_version` / `save_exercise_with_version` redéfinies à la main après retouche.
 - **Worktree / branche** : `../ubumaths-wt-versions-exercices-editeur` / `feat/versions-exercices-editeur`.
