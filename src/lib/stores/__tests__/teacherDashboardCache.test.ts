@@ -148,6 +148,7 @@ function createMockSchoolInfo(): SchoolInfo {
 			timezone: 'Europe/Paris',
 			uai: null,
 			is_active: true,
+			is_private_lessons: false,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
 		},
