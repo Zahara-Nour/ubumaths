@@ -11,8 +11,8 @@
 -- Accès (question en miroir, tranchée par David le 2026-11-25) : plus aucun compte
 -- connecté (élève, prof, admin) ne change la conversation d'une participation.
 -- Aucun écran ni aucune route ne le fait (`grep -rn "conversation_participants" src` :
--- côté application, une seule lecture, dans api/moderation/messages/[id], aucune
--- écriture) ; la seule fonction de la base qui met à jour la table,
+-- côté application, une seule route la lit, api/moderation/messages/[id], aucune
+-- ne l'écrit) ; la seule fonction de la base qui met à jour la table,
 -- `mark_conversation_read`, écrit `last_read_at` et `last_read_message_id`,
 -- jamais `conversation_id`. Personne ne gagne d'accès. Le serveur (service_role,
 -- tâche système : pas d'utilisateur connecté) garde la main.

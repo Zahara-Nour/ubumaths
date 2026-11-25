@@ -193,16 +193,17 @@ describe('Chat — une participation ne change pas de conversation', () => {
 
 		it('ne déplace pas sa participation même en changeant autre chose en même temps', async () => {
 			const { id } = await participation(entreEleves, eleve.id);
+			const avant = await enBase(id);
 
 			const { data, error } = await eleveClient
 				.from('conversation_participants')
-				.update({ conversation_id: entreAutres, is_muted: true })
+				.update({ conversation_id: entreAutres, is_muted: !avant.is_muted })
 				.eq('id', id)
 				.select('id');
 
 			expect(data).toBeNull();
 			expect(error?.code).toBe('42501');
-			expect(await enBase(id)).toMatchObject({ conversation_id: entreEleves, is_muted: false });
+			expect(await enBase(id)).toEqual(avant);
 		});
 
 		it('règle toujours sa participation (archive, sourdine)', async () => {
