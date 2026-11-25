@@ -482,9 +482,15 @@
 		column-gap: clamp(2rem, 12vw, 6rem);
 	}
 
-	/* Courbes à gauche : au téléphone, la courbe garde ~130 px à côté de son point */
+	/* Courbes à gauche : au téléphone (393 px), la courbe garde 130 px au moins à côté de son point :
+	   colonne des courbes plus large, espace du milieu plus étroit, pas de marge à gauche du dessin */
 	.relier-avec-blocs {
-		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+		grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+		column-gap: clamp(1.5rem, 8vw, 6rem);
+	}
+
+	.relier-avec-blocs .relier-element {
+		padding-left: 0;
 	}
 
 	.relier-colonne {

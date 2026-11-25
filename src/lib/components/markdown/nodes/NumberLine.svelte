@@ -16,6 +16,8 @@
 	  commune (`resolveNumberLineColors`, partagée avec le PDF)
 	- Avertissements d'auteur (couleur inconnue, hex peu lisible en sombre),
 	  visibles du prof seulement (`showErrors`, ou contexte d'édition)
+	- Nombres écrits trop serrés pour la largeur (téléphone) : un sur deux, traits gardés
+	  (`thinLabels`)
 	- Largeur réelle : dessinée en px à la largeur du conteneur (pas de viewBox
 	  réduite) ; chiffres, points, traits à taille fixe, seul l'écart entre
 	  graduations se resserre (droite à placer : avertissement téléphone dans
@@ -44,13 +46,14 @@
 		valLatex,
 		valueToX,
 		computeGraduations,
+		thinLabels,
 		computeLineExtents,
 		pointsInside,
-		isLabeledAt,
 		resolveNumberLineColors,
 		bracketDirection,
 		bracketPoints,
-		segmentLevels
+		segmentLevels,
+		type Graduation
 	} from '#lib/ubumark/utils/number-line-render.ts';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { readContentLocale } from '../content-locale';
@@ -147,6 +150,16 @@
 		});
 	}
 
+	/** La graduation de `value` porte-t-elle un nombre écrit à l'écran (étiquettes éclaircies) ? */
+	function isLabeledOnScreen(
+		graduations: Graduation[],
+		config: NumberLineConfig,
+		value: number
+	): boolean {
+		const tolerance = numVal(config.step) * 0.001;
+		return graduations.some((g) => g.label !== null && Math.abs(g.value - value) < tolerance);
+	}
+
 	// =========================================================================
 	// DROITES (la principale, puis un zoom chacune plus bas)
 	// =========================================================================
@@ -159,7 +172,8 @@
 			return {
 				config,
 				lineY,
-				graduations: computeGraduations(config, width),
+				// Nombres écrits trop serrés pour la largeur : un sur deux (traits tous gardés)
+				graduations: thinLabels(computeGraduations(config, width)),
 				points: placePoints(points, config, lineY),
 				...computeLineExtents(k === 0 && config.arrows, width)
 			};
@@ -175,7 +189,7 @@
 			const bottom = row.lineY - MAJOR_TICK_HEIGHT / 2;
 			/** Sous la graduation, ou sous son nombre écrit s'il y en a un */
 			const top = (v: NumberLineConfig['start']) =>
-				isLabeledAt(above.config, numVal(v))
+				isLabeledOnScreen(above.graduations, above.config, numVal(v))
 					? above.lineY + LABEL_Y_OFFSET + LINK_BELOW_LABEL
 					: above.lineY + MAJOR_TICK_HEIGHT / 2;
 			const fromX = (v: NumberLineConfig['start']) =>
