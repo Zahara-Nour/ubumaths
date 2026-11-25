@@ -65,7 +65,8 @@
 	// Form state
 	let title = $state(initialExercise?.title || '');
 	// Titre des fiches en anglais ; vide = le titre français y est imprimé
-	let englishTitle = $state(initialExercise?.translations?.en?.title ?? '');
+	const storedEnglishTitle = initialExercise?.translations?.en?.title;
+	let englishTitle = $state(typeof storedEnglishTitle === 'string' ? storedEnglishTitle : '');
 	let slug = $state(initialExercise?.slug || '');
 	let source = $state(initialExercise?.source || '');
 	let category = $state<ExerciseCategory | ''>(initialExercise?.category || '');

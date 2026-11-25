@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-25, avant la PR._
 
-- **État** : code + tests sur la branche, PR pas encore ouverte · **Prochaine action** : revue (code-reviewer + security-auditor), rendu à l'écran, PR, merge, puis `db:migrate` (migration additive, 4 conditions) · **En attente de David** : rien · **Pièges en cours** : chaque schéma Zod de réponse doit connaître `translations` (sinon retiré en silence, cf. #3124) · **Worktree / branche** : `ubumaths-wt-titre-exercice-anglais` · `feat/titre-exercice-anglais`
+- **État** : code, tests, revues et rendu faits ; PR ouverte · **Prochaine action** : CI verte → merge → `db:migrate` (migration additive, 4 conditions réunies) → archiver ce journal et celui de `sections-pdf-anglais` · **En attente de David** : rien · **Pièges en cours** : chaque schéma Zod de réponse doit connaître `translations` (sinon retiré en silence, cf. #3124) · **Worktree / branche** : `ubumaths-wt-titre-exercice-anglais` · `feat/titre-exercice-anglais`
 
 ## Origine
 
@@ -53,3 +53,19 @@ Comportements :
 - Intégration `tests/integration/exercices-titre-anglais.test.ts` : 4/4 rouges sans la migration
   (« Could not find the 'translations' column »), 4/4 verts avec.
 - `check:incremental` 0 erreur.
+- `types:cliquet` tenu ; tests ciblés verts (2 108 serveur, 17 client).
+- Revue de code : aucun bloquant, aucun important. Audit de sécurité : aucun bloquant ; personne ne
+  gagne ni ne perd d'accès (policies de `exercises` relues en prod). Corrigé : une forme inattendue
+  en base n'affiche plus « [object Object] » dans l'éditeur.
+- À l'écran (Playwright, compte prof local, données fictives « ZZ ») : la case « Titre en anglais »
+  s'affiche, se charge, s'enregistre, survit au rechargement et s'efface ; l'aperçu PDF de la fiche
+  anglaise imprime « ZZ Using formulas » sous « Compute 3 × 4. ». L'écran de l'élève n'a pas été
+  vu (pas d'affectation locale) : couvert par le test de la route élève, même champ `title`.
+
+## Laissé de côté (non bloquant, relevé par la revue)
+
+- L'export / import d'un exercice (`exercise-import-export.ts`) ne porte pas le titre anglais : un
+  exercice exporté puis réimporté le perd.
+- Écrans du prof (liste des exercices de la fiche, gestion des corrections) : titre français.
+- Aucun CHECK en base sur la forme de `translations` (comme les autres colonnes `translations`) ;
+  la lecture (`asRowTranslations`) neutralise une forme farfelue.
