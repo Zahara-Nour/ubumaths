@@ -282,7 +282,12 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
   à la colonne ne l'efface pas à la restauration. Les versions d'un exercice (ADR 0044) suivent
   dans `versions` (export JSON et SQL) ; le contenu de premier niveau est celui de la dernière. À la
   restauration, chaque version est écrite par numéro (une version plus récente que la sauvegarde
-  reste) ; une sauvegarde sans `versions` devient la version 1.
+  reste ; deux versions au même numéro → fichier refusé). Une sauvegarde sans `versions` devient la
+  version 1 d'un exercice qui n'en a pas ; sur un exercice qui en a déjà, elle devient une
+  **nouvelle** version (note « Restaurée depuis une sauvegarde antérieure aux versions »), jamais la
+  v1 qu'une fiche peut pointer, et rien si son contenu est déjà celui de la dernière. Un exercice
+  sans version (incohérence) est exporté sans contenu, avec `versions: []`, au lieu d'interrompre
+  l'export.
   Ce n'est **pas** une sauvegarde de la base : voir
   [procedure-restauration.md](../pratiques/procedure-restauration.md).
 - Page `src/routes/(protected)/dashboard/admin/settings/+page.svelte` : version de l'application et

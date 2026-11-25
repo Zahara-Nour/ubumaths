@@ -1,8 +1,9 @@
 ---
 couvre:
   - 'src/lib/components/exercises/**'
-  - 'src/lib/server/{exercises,exercise-assignments,exercise-import-export,exercise-share-tokens,resource-tags}.ts'
-  - 'src/lib/server/validation/{exercises,exercise-mastery,image-upload,tags}.ts'
+  - 'src/lib/server/{exercises,exercise-assignments,exercise-import-export,exercise-share-tokens,resource-tags,exercise-versions-access}.ts'
+  - 'src/lib/server/validation/{exercises,exercise-mastery,image-upload,tags,exercise-versions}.ts'
+  - src/lib/exercises/edited-version.ts
   - 'src/lib/types/exercise-*.ts'
   - 'src/routes/api/exercises/**'
   - 'src/routes/api/teacher/exercises/**'
@@ -20,7 +21,7 @@ couvre:
 # Exercices : éditeur, partage, affectation, maîtrise
 
 > Première doc de la zone, écrite à partir du code (règle « doc d'abord », 2026-10-12).
-> Vérifié contre le code le 2026-10-12 ; réponses des niveaux de guidage le 2026-10-13 ; points du programme (C5, B2) le 2026-10-21.
+> Vérifié contre le code le 2026-10-12 ; réponses des niveaux de guidage le 2026-10-13 ; points du programme (C5, B2) le 2026-10-21 ; versions dans l'éditeur (ADR 0044) le 2026-11-25.
 
 ## À quoi ça sert
 
@@ -94,12 +95,27 @@ Notebooks ([python/README.md](python/README.md)). `+page.server.ts` redirige (30
 Templates. Le hub n'a pas de garde à lui : celle de `dashboard/teacher/+layout.server.ts`
 (prof seul, 403 sinon) s'applique, et certains onglets en ajoutent une.
 
-| Page (`dashboard/teacher/contenu/exercices/`) | Rôle                                                                                                                                                                                                                                                                                                    |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `+page`                                       | Liste (`getTeacherExercises` au chargement, `/api/teacher/exercises` pour filtrer), aperçu (`ExerciseDisplay mode="template"`), export / import groupés, suppression (action de formulaire).                                                                                                            |
-| `new/`                                        | `ExerciseForm` → `POST /api/exercises`.                                                                                                                                                                                                                                                                 |
-| `[id]/`                                       | Édition (`ExerciseForm` → `PUT /api/exercises/[id]`), énoncé et correction rendus, JSON, PDF (Typst, `generateExerciseTypst`), liens de partage, points du programme (par niveau de l'exercice, ceux de ses notions de rangement ; non rangé → aucun, l'écran le dit). Réservée à l'auteur (403 sinon). |
-| `[id]/assign/`                                | Affectation à des élèves, des classes, ou publique (`POST/GET /api/exercises/[id]/assign`, suppression par `/api/exercises/assignments/[assignmentId]`).                                                                                                                                                |
+| Page (`dashboard/teacher/contenu/exercices/`) | Rôle                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `+page`                                       | Liste (`getTeacherExercises` au chargement, `/api/teacher/exercises` pour filtrer), aperçu (`ExerciseDisplay mode="template"`), export / import groupés, suppression (action de formulaire).                                                                                                                                                                            |
+| `new/`                                        | `ExerciseForm` → `POST /api/exercises`.                                                                                                                                                                                                                                                                                                                                 |
+| `[id]/`                                       | Édition d'**une version** (ADR 0044, détail plus bas) (`ExerciseForm` → `PUT /api/exercises/[id]` avec `version_id`), énoncé et correction rendus, JSON, PDF (Typst, `generateExerciseTypst`), liens de partage, points du programme (par niveau de l'exercice, ceux de ses notions de rangement ; non rangé → aucun, l'écran le dit). Réservée à l'auteur (403 sinon). |
+| `[id]/assign/`                                | Affectation à des élèves, des classes, ou publique (`POST/GET /api/exercises/[id]/assign`, suppression par `/api/exercises/assignments/[assignmentId]`).                                                                                                                                                                                                                |
+
+**Versions dans la page `[id]/`** (ADR 0044, PR 2 du chantier `versions-exercices`) :
+`ExerciseVersionsBar.svelte` au-dessus du formulaire. La page ouvre `?version=<numéro>`, sinon,
+venue d'une fiche (`?fiche=<id>`), la version de cette fiche, sinon la plus récente
+(`src/lib/exercises/edited-version.ts`, `pickEditedVersion`). « Mettre à jour » modifie **sur
+place** la version affichée, aucune autre (`save_exercise_with_version` : fiche d'identité et
+contenu ensemble). Menu des versions (numéro, note, nombre de fiches) ; « Nouvelle version »
+(`POST /api/exercises/[id]/versions`, note facultative ≤ 500) recopie la **plus récente**, même si
+on en regarde une autre ; « Note » (`PATCH …/versions/[versionId]`) ; « Supprimer » (`DELETE`),
+refusé (409) si une fiche utilise la version — le refus nomme les fiches — ou si c'est la seule.
+Bandeau : les fiches qui utilisent la version affichée (« distribuée » = une affectation active),
+et un rappel quand ce n'est pas la plus récente. Routes réservées à l'auteur
+(`src/lib/server/exercise-versions-access.ts`, 404 / 403), note validée par
+`src/lib/server/validation/exercise-versions.ts`. Vérification à l'écran :
+`e2e/verifs/versions-exercices-editeur.spec.ts`.
 
 **`ExerciseForm.svelte`** est l'éditeur : titre, slug (format `^[a-z0-9][a-z0-9-]*[a-z0-9]$`,
 3 à 100 caractères ; proposé par `/api/exercises/generate-slug` à partir du `topic`), source,
@@ -208,11 +224,13 @@ leur **dernière** version) ; `on_duplicate` : `skip` (défaut), `replace`
 (seulement son propre exercice), `create-copy` (titre suffixé « (copie) »). L'import ne porte ni
 `is_public` ni `search_indexed` : un exercice importé naît privé. Versions (ADR 0044) : l'export
 lit la dernière version ; un import crée la version 1 ; `replace` réécrit la dernière version, sur
-place.
+place, avec la fiche d'identité dans la même écriture (tout ou rien).
 
 `/api/admin/exercises/backup` (admin) : sauvegarde JSON ou SQL des tables d'exercices, restauration
 avec mot de confirmation ; `backup-stats` compte les lignes. Chaque exercice sauvegardé emporte
-**toutes** ses versions (`versions`) ; une sauvegarde antérieure devient la version 1. Code : `src/lib/server/admin/exercise-backup.ts`.
+**toutes** ses versions (`versions`) ; une sauvegarde antérieure devient la version 1, ou une
+nouvelle version d'un exercice qui en a déjà (détail dans
+[comptes-classes-ecoles.md](comptes-classes-ecoles.md)). Code : `src/lib/server/admin/exercise-backup.ts`.
 
 ## Maîtrise
 

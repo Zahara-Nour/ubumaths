@@ -289,8 +289,18 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
   ses anciennes colonnes de contenu, figées à la reprise : plus rien ne les lit ni ne les écrit.
   Accès : une version se lit exactement quand son exercice se lit (la policy délègue à la RLS
   d'`exercises`) ; elle s'écrit par le prof auteur de l'exercice. Personne ne gagne d'accès (David,
-  2026-11-25). Tests : `tests/integration/versions-exercices.test.ts`,
-  `tests/integration/versions-exercices-lectures.test.ts`.
+  2026-11-25). Fonctions (`20261125183550`, PR 2, toutes avec les droits de l'appelant) :
+  `latest_exercise_versions(ids)` rend la dernière version de chaque exercice (une ligne par
+  exercice, jamais tronquée par la limite de lignes de PostgREST) ; `create_exercise_version`
+  (« Nouvelle version ») recopie la dernière au numéro suivant (`created_by` = l'appelant, ou, sans
+  compte connecté, l'auteur de la version recopiée) ; `save_exercise_with_version` écrit ensemble la
+  fiche d'identité (clés = colonnes d'`exercises`, inconnue ou interdite → 22023) et le contenu
+  d'une version, tout ou rien. Déclencheur `exercise_versions_touch_exercise` : toute écriture
+  d'une version remet à jour `exercises.updated_at` (y compris une restauration ou un script).
+  Tests : `tests/integration/versions-exercices.test.ts`,
+  `tests/integration/versions-exercices-lectures.test.ts`,
+  `tests/integration/versions-exercices-editeur.test.ts`,
+  `tests/integration/versions-exercices-sauvegarde.test.ts`.
 - `migration_images` : reste de l'import des questions TinyMath, terminé ; aucun code ne la lit. `migration_tracking`, `migration_edits` et la vue `migration_review_tree` ont été supprimées le 2026-10-29 (migration `20261029203000`) ; leur contenu est exporté dans `data/import-tinymath/`.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
