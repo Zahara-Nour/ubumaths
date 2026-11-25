@@ -30,7 +30,10 @@
  *      T30) : un compte connecté ne choisit pas la date de son message. Envoyé
  *      daté d'il y a quatre ans (sous la purge de conservation) ou de 2099 (en
  *      tête de l'onglet du prof pour toujours), il part quand même, daté de
- *      maintenant, ni « modifié » ni « supprimé ». Le serveur garde la main.
+ *      maintenant, ni « modifié » ni « supprimé ». Le serveur garde la main ;
+ *   6. non-régression sur la date de suppression (question du même rapport) :
+ *      l'élève n'en choisit pas la valeur par l'API (refus de la RLS), et un
+ *      message supprimé ne se restaure pas.
  *
  * @vitest-environment node
  */
@@ -364,6 +367,54 @@ describe('Chat — un message envoyé ne se réécrit pas', () => {
 			expect(error?.code).toBe('42501');
 			expect(error?.message).toContain('ne se retire pas');
 			expect(await enBase(id)).toMatchObject({ is_reported: true });
+		});
+	});
+
+	describe('la date de suppression', () => {
+		// Non-régression : la suppression passe par `soft_delete_message`, qui date
+		// elle-même. Écrire `deleted_at` par l'API est refusé par la RLS (la ligne
+		// nouvelle ne serait plus lisible par son auteur), donc aucune date choisie.
+		it('l’élève ne choisit pas la date de suppression de son message', async () => {
+			const id = await envoyer(entreEleves, eleve.id, INSULTE);
+			const avant = await enBase(id);
+
+			const { error } = await eleveClient
+				.from('messages')
+				.update({ deleted_at: IL_Y_A_QUATRE_ANS })
+				.eq('id', id);
+
+			expect(error?.code).toBe('42501');
+			expect(await enBase(id)).toEqual(avant);
+		});
+
+		it('la suppression par l’application est datée de maintenant', async () => {
+			const id = await envoyer(entreEleves, eleve.id, INSULTE);
+
+			const { error } = await eleveClient.rpc('soft_delete_message', { p_message_id: id });
+
+			expect(error).toBeNull();
+			expectDateDeMaintenant((await enBase(id)).deleted_at);
+		});
+
+		it('l’élève ne restaure pas son message supprimé', async () => {
+			const id = await envoyer(entreEleves, eleve.id, INSULTE);
+			const { error: suppression } = await eleveClient.rpc('soft_delete_message', {
+				p_message_id: id
+			});
+			expect(suppression).toBeNull();
+			const avant = await enBase(id);
+			expect(avant.deleted_at).not.toBeNull();
+
+			// Pas de `.select()` : la ligne supprimée n'est plus lisible par l'élève.
+			const { error } = await eleveClient
+				.from('messages')
+				.update({ deleted_at: null })
+				.eq('id', id);
+
+			// Refus en silence (la RLS ne montre pas la ligne) ou erreur : dans les deux
+			// cas le message reste supprimé, à la même date.
+			if (error) expect(error.code).toBe('42501');
+			expect(await enBase(id)).toEqual(avant);
 		});
 	});
 
