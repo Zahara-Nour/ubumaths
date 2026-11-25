@@ -180,6 +180,10 @@ de contenu appliquée en prod.
 | 5cd25c2b Problèmes de fractions                                     | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | f9e9637c Comprendre le sens d'un pourcentage                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 5c8a6da6 Exprimer une proportion en pourcentage                     | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
+| 15368b02 Définition d'une puissance à exposant négatif              | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| bb9cff7b Multiplier 2 puissances d'un même nombre                   | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 18761148 Diviser 2 puissances d'un même nombre                      | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 3fe98dd9 Traduire une puissance en produit                          | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
 | 04b1cc7f Puissance d'un produit                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
