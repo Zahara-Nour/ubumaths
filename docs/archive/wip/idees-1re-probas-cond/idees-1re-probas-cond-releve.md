@@ -12,10 +12,10 @@ problèmes d'E3C rédigés, sans saisie.
 
 **Bornes** :
 
-- [2de](../systeme/programmes/bornes/lycee/2de.md) : P_A(B), arbres et tableaux croisés
+- [2de](../../../systeme/programmes/bornes/lycee/2de.md) : P_A(B), arbres et tableaux croisés
   d'effectifs ; **pas de probabilités totales**. Sur un arbre, on calcule un chemin et on lit les
   probabilités conditionnelles (décision l2-4).
-- [1re spé](../systeme/programmes/bornes/lycee/1spe.md) : la formule des probabilités totales sur
+- [1re spé](../../../systeme/programmes/bornes/lycee/1spe.md) : la formule des probabilités totales sur
   toute partition finie lisible sur un arbre, en calcul direct (décision l1s-4), et l'indépendance de
   deux évènements au plus.
 

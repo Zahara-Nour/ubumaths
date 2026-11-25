@@ -42,7 +42,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Fonctions trigonométriques        | 1AN4  | 6         | libre                |                           |
 | Produit scalaire                  | 1G1   | 10        | libre                |                           |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                           |
-| Probabilités conditionnelles      | 1P1   | 8         | prise (2026-11-24)   | `idees-1re-probas-cond`   |
+| Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`   |
 | Variables aléatoires réelles      | 1P2   | 1         | libre                |                           |
 
 ### Automatismes de l'épreuve anticipée
@@ -175,8 +175,6 @@ de contenu appliquée en prod.
 | 5cd25c2b Problèmes de fractions                                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | f9e9637c Comprendre le sens d'un pourcentage                           | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 5c8a6da6 Exprimer une proportion en pourcentage                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 31096bae Traduire un énoncé en notations de probabilités               | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
-| 69a05f98 Probabilité « inverse » à partir d'un arbre                   | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

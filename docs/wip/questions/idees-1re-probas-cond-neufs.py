@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-1re-probas-cond dans
 scripts/questions/idees-1re-probas-cond-neufs/.
 
-Phase 0 : fiches docs/wip/idees-1re-probas-cond-fiches.md, validées par David le 2026-11-24 :
+Phase 0 : fiches docs/archive/wip/idees-1re-probas-cond/idees-1re-probas-cond-fiches.md, validées par David le 2026-11-24 :
 F2, F5, F6 et F7 sont des modèles neufs (F1 et F3 : variations de modèles publiés, script
 idees-1re-probas-cond-publies.py ; F4 : rien).
 
