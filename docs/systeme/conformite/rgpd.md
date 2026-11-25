@@ -497,10 +497,14 @@ CRON_SECRET                   # Secret taches planifiees
 > limite que l'inscription de l'élève seul. En 1re/Tle, le clic est une confirmation d'adresse
 > enregistrée dans `parental_consents` comme un accord (`granted`) : décision de David.
 > **2026-11-25, cours particuliers** : l'admin peut inviter un élève de moins de 15 ans ; le parent
-> reçoit un courriel Brevo (`sendPrivateLessonInvitationEmail`) avec un lien de 7 jours qui créera
-> le compte et recueillera le consentement (page du lien : PR 3). Prénom et adresse du parent sont
-> gardés dans `private_lesson_invitations`, effacés 30 jours après la fin de l'invitation (cron
-> quotidien) ; la politique de confidentialité le dira avec la PR 3 (décision 9 de David).
+> reçoit un courriel Brevo (`sendPrivateLessonInvitationEmail`) avec un lien de 7 jours. La page
+> du lien (`/auth/register/invitation/[token]`) crée le compte et recueille CGU et consentement en
+> une fois (même preuve que `/consent/[token]` : IP et navigateur de la requête, par
+> `grant_parental_consent`) ; un second courriel Brevo (`sendPrivateLessonWelcomeEmail`) redit
+> l'identifiant au parent. Prénom et adresse du parent sont gardés dans `private_lesson_invitations`,
+> effacés 30 jours après la fin de l'invitation (cron quotidien) ; la politique de confidentialité
+> le dit depuis sa v1.5 (2026-11-25, décision 9 de David). Le jeton du lien ne sort pas : pas de
+> referer, chemin masqué dans l'analytique et le journal des erreurs.
 > Le courriel d'inscription dit aussi comment réinitialiser le mot de passe (PR 3). « Mot de passe
 > oublié » avec l'identifiant envoie un second courriel Brevo (`sendChildPasswordResetEmail`) à
 > l'adresse du parent de la demande la plus récente, **seulement si elle est confirmée**

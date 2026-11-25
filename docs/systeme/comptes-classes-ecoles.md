@@ -8,6 +8,7 @@ couvre:
   - 'src/lib/server/private-lessons/**'
   - src/lib/server/validation/private-lessons.ts
   - src/lib/email-templates/private-lesson-invitation.ts
+  - src/lib/email-templates/private-lesson-welcome.ts
   - src/routes/api/cron/invitations-cours-particulier/**
   - 'src/routes/(protected)/dashboard/teacher/{classes,students,welcome-email,settings}/**'
   - 'src/routes/(protected)/dashboard/profile/**'
@@ -146,7 +147,7 @@ de 2nde de répondre une fois à la question d'âge.
 
 Chantier `invitation-cours-particulier` ([journal](../wip/invitation-cours-particulier-progress.md)) :
 l'admin invite un élève de moins de 15 ans sans code de classe ; le parent reçoit un lien qui crée
-le compte et la classe (page du lien : PR 3, pas encore livrée). Table et accès :
+le compte et la classe (page du lien : § « Page du parent » ci-dessous). Table et accès :
 [base-de-donnees.md § Cours particuliers](base-de-donnees.md).
 
 - Page `src/routes/(protected)/dashboard/admin/cours-particuliers/+page.svelte` (+ `+page.server.ts`),
@@ -186,7 +187,54 @@ le compte et la classe (page du lien : PR 3, pas encore livrée). Table et accè
   d'annulation, sinon d'expiration). Cron Vercel quotidien `src/routes/api/cron/invitations-cours-particulier/+server.ts`
   (`vercel.json`, 3 h 30 UTC), lançable depuis `/dashboard/admin/cron` ; journal
   `background_job_runs` (job `private_lesson_invitations_purge`), nombres seulement.
-- Tests : `tests/integration/invitations-cours-particuliers-envoi.test.ts` (écritures, doublon,
+- **Page du parent** `src/routes/(public)/auth/register/invitation/[token]/` (publique, sans
+  session ; décrite aussi dans [auth.md](auth.md#invitation-de-cours-particulier-authregisterinvitationtoken)).
+  `load` lit l'invitation par `get_private_lesson_invitation` (service role) : prénom, niveau,
+  école, échéance ; jamais l'adresse du parent. Lien mal formé, inconnu, expiré, annulé ou utilisé :
+  la même page « Ce lien n'est plus valable », rien de révélé. Formulaire
+  (`privateLessonRedeemFormSchema`) : mot de passe deux fois, case CGU, case consentement ; le
+  prénom n'est pas un champ. Limite par IP des inscriptions (`checkSignupRateLimitByIP`) sur
+  l'action `create`.
+- **Création** : `redeemInvitation` (`src/lib/server/private-lessons/redeem.ts`), en service role.
+  1. **Réservation** : `claimed_at` posé par un `update` gardé (empreinte du lien, ni utilisée ni
+     annulée, pas expirée, réservation absente ou de plus de 5 minutes). De deux validations
+     simultanées, une seule réserve ; l'autre lit « déjà en cours de création » (409).
+  2. **Compte** par `createChildAuthUser` (`src/lib/server/child-registration.ts`, identifiant
+     `prenom` + 3 chiffres, domaine fictif), **sans** code de classe : `handle_new_user` le crée en
+     attente, puis le serveur le passe `approved` avec l'école et le niveau de l'invitation.
+  3. **Classe** nommée d'après l'identifiant en majuscules (`JADE123`), école et niveau de
+     l'invitation, année en cours (`current_school_year`), `registration_open = false`, code tiré
+     par `generate_join_code` ; l'enfant y est inscrit (`class_members`).
+  4. **CGU** (`terms_acceptances`), puis **consentement** : demande `parental_consents` à l'adresse
+     de l'invitation, accordée aussitôt par `grant_parental_consent` avec l'IP et le navigateur de
+     la requête ([conformite/consentement-parental.md](conformite/consentement-parental.md)).
+  5. **Invitation utilisée** : `used_at`, `student_id` et `class_id` ensemble, gardés sur NOTRE
+     `claimed_at` et `cancelled_at is null`. Une annulation passée entre-temps (l'admin est refusé
+     pendant une réservation, mais une réservation périmée ne le retient plus) fait échouer la
+     création.
+  6. **Courriel final** au parent (`sendPrivateLessonWelcomeEmail`,
+     `src/lib/email-templates/private-lesson-welcome.ts`) : identifiant et adresse de connexion. Son
+     échec n'annule rien ; l'écran affiche l'identifiant dans tous les cas.
+
+  Échec à une étape 2 à 5 : la classe puis le compte sont supprimés (le profil, l'adhésion, les CGU
+  et le consentement partent avec le compte), la réservation est retirée, le lien reste valable
+  (« Réessayez dans un instant »). École sans année en cours : même chose. Défait **en partie**
+  (suppression de la classe ou du compte en échec) : la réservation n'est pas retirée (le lien
+  reste bloqué 5 minutes) et le journal nomme compte et classe « à retirer » à la main.
+
+- **Limites connues** (revues de la PR 3, 2026-11-25) :
+  - une fonction tuée en route (délai de Vercel, crash) entre le compte et `used_at` laisse un
+    compte approuvé et une classe, sans lien vers l'invitation ; la réservation se périme au bout
+    de 5 minutes et un nouvel essai crée un second compte. Rien ne les repère aujourd'hui ;
+  - les journaux de requêtes de Vercel gardent le chemin, donc le jeton (comme `/carnet/[token]`) ;
+  - pas de repli sans JavaScript : avec `no-referrer`, un POST de formulaire natif part avec
+    `Origin: null` et la garde CSRF le refuse ; `use:enhance` envoie la vraie origine.
+
+- Tests : `tests/integration/invitations-cours-particuliers-parent.test.ts` (création complète,
+  double validation, liens plus valables, réservation récente ou périmée, annulation pendant la
+  création, école sans année, courriel final refusé, sur la vraie base),
+  `src/routes/(public)/auth/register/invitation/[token]/__tests__/page.server.test.ts`,
+  `tests/integration/invitations-cours-particuliers-envoi.test.ts` (écritures, doublon,
   renvoi et renvois simultanés, annulation, purge, sur la vraie base),
   `src/routes/(protected)/dashboard/admin/cours-particuliers/__tests__/garde.test.ts` (prof non
   élevé et élève refusés avant tout envoi, limite de débit), `src/lib/server/validation/__tests__/private-lessons.test.ts`,

@@ -52,6 +52,10 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Inscription par code de classe : résolution du code par une RPC réservée à
 	// service_role, derrière les limites de débit (pas d'énumération des codes)
 	'/auth/register/+page.server',
+	// Invitation de cours particulier : lecture par le lien (RPC réservée à service_role,
+	// jeton vérifié en base) et création du compte de l'enfant, après la forme du jeton,
+	// le formulaire et la limite de débit
+	'/auth/register/invitation/[token]/+page.server',
 	// Lien du cours (ADR 0025) : chemin de stockage d'un document rendu par une RPC
 	// réservée à service_role, jeton vérifié en base, puis URL signée de 60 s
 	'/cours/[token]/document/[id]/+server',

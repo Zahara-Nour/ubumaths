@@ -25,6 +25,15 @@ describe('redactSecretUrl', () => {
 		);
 	});
 
+	it('masque le jeton d’une invitation de cours particulier', () => {
+		expect(redactSecretUrl(`https://chiph.re/auth/register/invitation/${JETON}?/create`)).toBe(
+			'https://chiph.re/auth/register/invitation/[token]?/create'
+		);
+		expect(redactSecretUrl('https://chiph.re/auth/register/parent')).toBe(
+			'https://chiph.re/auth/register/parent'
+		);
+	});
+
 	it('laisse les autres adresses intactes', () => {
 		expect(redactSecretUrl('https://chiph.re/parents')).toBe('https://chiph.re/parents');
 		expect(redactSecretUrl('https://chiph.re/dashboard/student/carnet')).toBe(

@@ -158,6 +158,16 @@ function redactEmails(value: unknown): unknown {
 }
 
 /**
+ * Valeur texte du contexte : adresses courriel ET jetons des liens personnels (carnet,
+ * invitation de cours particulier) masqués. Le contexte porte parfois l'URL de la page
+ * (`freezeDetection` : tâche longue, gel), que le masquage de `url` ne voit pas.
+ */
+function redactValue(value: unknown): unknown {
+	const masked = redactEmails(value);
+	return typeof masked === 'string' ? redactSecretUrl(masked) : masked;
+}
+
+/**
  * Sanitize an object by removing sensitive fields
  *
  * Les clés sensibles (password, token…) sont remplacées ; dans les autres, les
@@ -183,10 +193,10 @@ function sanitizeObject(
 		} else if (Array.isArray(value)) {
 			// Sanitize arrays of objects
 			sanitized[key] = value.map((item) =>
-				item && typeof item === 'object' ? sanitizeObject(item) : redactEmails(item)
+				item && typeof item === 'object' ? sanitizeObject(item) : redactValue(item)
 			);
 		} else {
-			sanitized[key] = redactEmails(value);
+			sanitized[key] = redactValue(value);
 		}
 	}
 
