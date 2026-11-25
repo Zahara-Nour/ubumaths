@@ -144,7 +144,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Probabilités                             | 3S2       | 5         | libre                                                      |                              |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
 | Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
-| Trigonométrie                            | 3G3       | 13        | libre                                                      |                              |
+| Trigonométrie                            | 3G3       | 13        | prise (2026-11-25)                                         | `idees-3e-trigonometrie`     |
 | Espace                                   | 3G4       | 6         | libre                                                      |                              |
 | Algorithmique et programmation           | 3I1       | 11        | libre                                                      |                              |
 | Automatismes (mélange des rubriques)     | 3Auto, 3a | 34        | libre ; **à faire en dernier**, après les autres rubriques |                              |
