@@ -8,16 +8,17 @@ https://claude.ai/artifact/Tw3TtUfAWtsn6CPudQcxot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3134._
+_Mis à jour le 2026-11-25, modèles validés par David._
 
-- **État** : PR #3134 mergée (2 neufs rangés et tagués, +11 variations sur 7 publiés, migrations
-  20261125065055 et 20261125065101) ; worktree retiré · **Prochaine action** : `db:migrate` depuis
-  le dépôt principal (4 conditions réunies ; `migration list --linked` d'abord, une autre migration en
-  attente = stop), puis relecture dans `/dev/modeles` (brouillons F1 e6f2aed3, F7 1093da29 ; série
-  de relecture pour les 7 publiés) · **En attente de David** : relecture · **Pièges en cours** :
-  réponses attendues avec e : constante d'abord (« 3e-1 » se lit 3 × 10⁻¹) ; 7 publiés réservés
-  (48d8d729f) jusqu'à la migration appliquée · **Worktree / branche** : aucun (nouveau worktree sur
-  `origin/main` pour la PR suivante).
+- **État** : migrations de #3134 en prod ; David a validé les 9 modèles (de vive voix, aucun verdict
+  en base) ; `publier-lot.ts` en simulation vert pour F1 e6f2aed3 et F7 1093da29 · **Prochaine
+  action** : relire le statut `published` des 2 brouillons, puis clore (tableau « publiée », journal
+  versé selon `couvrir-un-niveau.md`) · **En attente de David** :
+  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/idees-tle-integration-neufs --publier`
+  (dans `../ubumaths-wt-idees-tle-integration`) ; abandon de la branche
+  `chore/idees-tle-integration-serie` (série de relecture devenue inutile, commit non poussé) ·
+  **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-idees-tle-integration`,
+  `chore/idees-tle-integration-serie` (à retirer).
 
 ## Historique
 
@@ -75,3 +76,13 @@ _Mis à jour le 2026-11-25, après #3134._
   ids, gardes sur le contenu en prod ; additif, rollback en commentaire). Non bloquants : modèle
   absent ignoré sans erreur (voulu pour la base locale) ; rangement sans garde « encore brouillon ».
 - CI verte, mergée par `pnpm pr:merger 3134` (2026-11-25 07:12 UTC).
+
+### 2026-11-25 — modèles validés
+
+- Migrations appliquées en prod (`db:migrate` depuis `main`, seules nos 2 en attente) ; relu en prod :
+  F1 et F7 rangés et tagués, 7 publiés complétés. Réservations levées, rubriques « en prod »
+  (d18e5d519).
+- David : « je valide les modèles ». Aucun verdict dans `question_template_reviews` après le lot :
+  validation de vive voix. La série de relecture des publiés (préparée sur
+  `chore/idees-tle-integration-serie`, non poussée) n'est plus utile.
+- `publier-lot.ts` en simulation : les 2 brouillons passent le contrôle.
