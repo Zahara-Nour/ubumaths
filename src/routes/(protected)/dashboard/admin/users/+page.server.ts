@@ -76,6 +76,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		classes: classes || [],
 		schools: schools || [],
-		pendingCount: pendingCount ?? 0
+		pendingCount: pendingCount ?? 0,
+		// Suppression définitive d'un élève : même règle que `requireAdmin` (élévation
+		// active ou vrai compte admin) ; la route la revérifie
+		canDeleteStudents: Boolean(locals.adminElevation?.active) || profile.role === 'admin'
 	};
 };
