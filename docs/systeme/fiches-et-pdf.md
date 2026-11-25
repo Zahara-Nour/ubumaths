@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03 ; labyrinthe (`labyrinthe) le 2026-11-24 ; noms anglais des notions au PDF anglais (ADR 0043) le 2026-11-24.
+> Vérifié contre le code le 2026-10-11 ; catégorie, notions, titre composé et badge du niveau (ADR 0041) le 2026-11-19, plusieurs notions pour toute fiche le 2026-11-19 (amendement) ; texte à trous (`trous) le 2026-11-14 ; programme tortue (`tortue) le 2026-11-14 ; refus des questions à programme dans une série et programme de calcul (`calcul, cadres de réponse, PDF) le 2026-11-14 ; robot (`robot, cadres de réponse) le 2026-11-15, son PDF et la série d'automatismes (PR 1b) le 2026-11-15 ; coupures de colonne et de page le 2026-11-09 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; boîte à moustaches à construire dans une série le 2026-11-04 ; points à placer (droite graduée, repère) dans une série le 2026-11-08 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03 ; labyrinthe (`labyrinthe) le 2026-11-24 ; noms anglais des notions au PDF anglais (ADR 0043) le 2026-11-24 ; titre d'exercice en anglais le 2026-11-25.
 
 ## À quoi ça sert
 
@@ -786,11 +786,15 @@ indisponible ».
 `worksheets.config.language` (`fr` par défaut), lue par `worksheetLocale`. Elle pilote **tout** le
 document : contenu (`variation.translations.en` → `variation` → `shared.translations.en` →
 `shared`), titre et consignes (`translations` des lignes `worksheets`, `worksheet_sections`,
-`worksheet_exercises`, lus par `localizedText`), habillage (`documentLabels`), `lang` Typst
+`worksheet_exercises`, lus par `localizedText`), titre de chaque exercice (`exercises.translations`,
+`{"en": {"title": …}}`, case « Titre en anglais » de l'éditeur, lu par `localizedExerciseTitle` :
+PDF, écran de l'élève, aperçu d'affectation, corrigé), habillage (`documentLabels`), `lang` Typst
 (césure, guillemets, point décimal) et date (`DATE_LOCALES`, `en-US`). Tout ce qui manque retombe
 sur le français **champ par champ**. `UntranslatedExercisesNotice.svelte` liste les exercices qui
 sortiraient en français (à côté de la liste des exercices, et dans l'aperçu PDF où il suit la langue
-d'impression).
+d'impression). Un titre d'exercice sans anglais n'y est **pas** compté : il retombe sur le
+français, ce n'est pas un trou (David, 2026-11-25). Les écrans du prof (liste des exercices de la
+fiche, gestion des corrections) et l'export d'un exercice gardent le titre français.
 
 **Langue d'impression** (aperçu PDF du prof, `PdfPreview.svelte`) : part de la langue de la fiche et ne
 change **que le PDF** — `worksheetForLocale` remplace `config.language` dans une copie de la fiche

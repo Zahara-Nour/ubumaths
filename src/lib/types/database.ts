@@ -3610,6 +3610,7 @@ export type Database = {
 					source_type_id: string | null;
 					title: string | null;
 					topic: string | null;
+					translations: Json | null;
 					updated_at: string;
 					variables: NonNullable<Json>;
 					variations: Json | null;
@@ -3632,6 +3633,7 @@ export type Database = {
 					source_type_id?: string | null;
 					title?: string | null;
 					topic?: string | null;
+					translations?: Json | null;
 					updated_at?: string;
 					variables?: NonNullable<Json>;
 					variations?: Json | null;
@@ -3653,6 +3655,7 @@ export type Database = {
 					source_type_id?: string | null;
 					title?: string | null;
 					topic?: string | null;
+					translations?: Json | null;
 					updated_at?: string;
 					variables?: NonNullable<Json>;
 					variations?: Json | null;
@@ -16143,6 +16146,7 @@ export type Database = {
 					source_type_id: string | null;
 					title: string | null;
 					topic: string | null;
+					translations: Json | null;
 					updated_at: string;
 					variables: NonNullable<Json>;
 					variations: Json | null;

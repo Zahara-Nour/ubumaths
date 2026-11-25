@@ -41,7 +41,8 @@ import {
 	Shapes,
 	DatabaseCheck,
 	Cat,
-	NotebookText
+	NotebookText,
+	UserPlus
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
 import { lore } from '#lib/config/lore.ts';
@@ -171,6 +172,7 @@ export function getNavLinks(
 			...common,
 			{ href: '/dashboard/admin', label: 'Administration', icon: ShieldCheck },
 			{ href: '/dashboard/admin/schools', label: 'Schools', icon: School },
+			{ href: '/dashboard/admin/cours-particuliers', label: 'Cours particuliers', icon: UserPlus },
 			{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 			{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
 			{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },

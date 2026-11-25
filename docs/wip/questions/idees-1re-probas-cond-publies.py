@@ -1,7 +1,7 @@
 """Ajoute les variations validées aux 2 modèles publiés exportés de prod dans
 scripts/questions/idees-1re-probas-cond-publies/ (chantier idees-1re-probas-cond).
 
-Phase 0 : fiches docs/wip/idees-1re-probas-cond-fiches.md, validées par David le 2026-11-24 :
+Phase 0 : fiches docs/archive/wip/idees-1re-probas-cond/idees-1re-probas-cond-fiches.md, validées par David le 2026-11-24 :
 F1 (V5 de 31096bae, point 2-395) et F3 (V4 de 69a05f98, point 1SPE-340). Les variations
 s'ajoutent À LA FIN (les réponses des élèves gardent l'indice de leur variation) ; la migration de
 contenu est générée par scripts/questions/migration-contenu.ts.

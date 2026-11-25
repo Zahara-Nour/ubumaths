@@ -934,10 +934,7 @@ test.describe('#2439 — bissectrice construite', () => {
 			};
 		});
 		expect(traits.arcOpacite, 'arcs atténués').toBeLessThan(1);
-		// ÉCART : la ligne dit « arcs en traits fins », le style déclare `.bon-triangle-arc { stroke-width: 1 }`
-		// mais `.bon-point circle { stroke-width: 2.5 }` (groupe « bonne-bissectrice ») l'emporte : les arcs
-		// sont aussi épais (2,5) que la bissectrice
-		test.fail();
+		// La ligne dit « arcs en traits fins »
 		expect(
 			traits.arcLargeur,
 			`arcs en traits fins (${traits.arcLargeur} contre ${traits.droiteLargeur} pour la bissectrice)`

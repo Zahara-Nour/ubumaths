@@ -161,6 +161,7 @@
 			auto_select_daily_riddle: '/api/cron/riddle-of-the-day',
 			deleted_account_files: '/api/cron/deleted-account-files',
 			carnet_de_liaison: '/api/cron/carnet-de-liaison',
+			private_lesson_invitations_purge: '/api/cron/invitations-cours-particulier',
 			// pg_cron jobs (triggered via RPC, not HTTP)
 			cleanup_all: 'rpc:run_cleanup_all',
 			cleanup_stale_trades: 'rpc:cleanup_stale_trades',

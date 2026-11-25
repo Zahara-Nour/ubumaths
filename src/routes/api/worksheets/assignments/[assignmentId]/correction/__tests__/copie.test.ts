@@ -330,3 +330,17 @@ describe('Corrigé de classe d’une affectation individualisée (D6)', () => {
 		).rejects.toMatchObject({ status: 400 });
 	});
 });
+
+// Titre d'exercice en anglais (2026-11-25) : la colonne `exercises.translations`
+describe('Corrigé du prof : titre de l’exercice dans la langue de la fiche', () => {
+	it('fiche anglaise : le PDF reçoit le titre anglais, lu avec l’exercice', async () => {
+		rendered.instances = [];
+		const exercise = { ...twoLevelExercise(), translations: { en: { title: 'Proportionality' } } };
+		const mock = supabase('guided', false, exercise, undefined, { config: { language: 'en' } });
+		await correction(mock, 'typst');
+		expect(selectedColumns(mock, 'worksheet_assignments')).toMatch(
+			/exercises\s*\([^)]*\btranslations\b/
+		);
+		expect(rendered.instances[0].exercises[0].title).toBe('Proportionality');
+	});
+});

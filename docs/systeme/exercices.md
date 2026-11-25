@@ -45,7 +45,7 @@ de guidage** (`guided`, `intermediate`, `autonomous`), pas des « variations » 
 
 | Table                                      | Rôle                                                                                                                                                                                                                                                                                                              |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `exercises`                                | L'exercice. Contenu dans `variations` (jsonb, **seule source** de l'énoncé et de la correction) + `shared` (valeurs communes). `variables` (jsonb) = ancien format, encore validé. `is_public`, `search_indexed`, `distribution_mode`, `generic_functions`.                                                       |
+| `exercises`                                | L'exercice. Contenu dans `variations` (jsonb, **seule source** de l'énoncé et de la correction) + `shared` (valeurs communes). `variables` (jsonb) = ancien format, encore validé. `is_public`, `search_indexed`, `distribution_mode`, `generic_functions`, `translations` (titre en anglais).                    |
 | `resource_tags` (+ `tags`)                 | Étiquettes : jonction polymorphe `(resource_kind, resource_id, tag_id)`, `resource_kind = 'exercise'`. Les étiquettes ne sont **pas** une colonne d'`exercises`.                                                                                                                                                  |
 | `exercise_share_tokens`                    | Liens de partage d'un exercice privé (jeton de 16 caractères, expiration facultative, révocation par `is_active = false`).                                                                                                                                                                                        |
 | `exercise_assignments`                     | Affectation hors fiche : `assigned_to_type` ∈ `student` / `class` / `public`, `optional_deadline`, `is_active`.                                                                                                                                                                                                   |
@@ -108,7 +108,11 @@ par [questions.md](questions.md), avec `BareGreekWarning`), ressources (`Exercis
 l'écriture comme à l'import),
 fonctions génériques (`GenericFunctionInput`), import LaTeX (`LaTeXImportDialog`). À l'envoi, le
 formulaire écrit **toujours** `variations` ; `shared` n'est envoyé que s'il porte quelque chose ;
-`search_indexed` vaut `isPublic && searchIndexed`.
+`search_indexed` vaut `isPublic && searchIndexed`. Case **« Titre en anglais »** sous le titre :
+`translations: {"en": {"title"}}`, ou `null` si elle est vide (Zod `exerciseRowTranslationsSchema`,
+strict, 200 caractères ; la réponse de l'API la rend, sinon l'éditeur la perdait). Imprimé dans les
+fiches en anglais ([fiches-et-pdf.md](fiches-et-pdf.md)) ; l'export / import d'un exercice ne le
+porte pas encore.
 
 Chaque niveau de guidage porte, en plus de l'énoncé et de la correction, des **réponses**
 facultatives (`answers_md`, et `translations.en.answers_md`) : les résultats seuls, sans détail,

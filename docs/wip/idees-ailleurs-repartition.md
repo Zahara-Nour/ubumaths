@@ -39,10 +39,10 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
 | Variations                        | 1AN2  | 5         | libre                |                           |
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle` |
-| Fonctions trigonométriques        | 1AN4  | 6         | libre                |                           |
+| Fonctions trigonométriques        | 1AN4  | 6         | prise (2026-11-25)   | `idees-1re-trigo`         |
 | Produit scalaire                  | 1G1   | 10        | libre                |                           |
 | Géométrie repérée                 | 1G2   | 5         | libre                |                           |
-| Probabilités conditionnelles      | 1P1   | 8         | prise (2026-11-24)   | `idees-1re-probas-cond`   |
+| Probabilités conditionnelles      | 1P1   | 8         | publiée (2026-11-25) | `idees-1re-probas-cond`   |
 | Variables aléatoires réelles      | 1P2   | 1         | libre                |                           |
 
 ### Automatismes de l'épreuve anticipée
@@ -162,6 +162,11 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                               | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ---------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 4b3c1d88 Convertir des degrés en radians                               | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| f7194c9d Ramener un réel dans ]−π ; π]                                 | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| aad6c700 Lire le réel associé à un point du cercle                     | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| 679a2e3e Cosinus et sinus d'angles associés                            | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
+| ee4e2ac6 Calculer cos x connaissant sin x                              | `idees-1re-trigo`                                           | 2026-11-25 |                                      |
 | 93147367 Déterminer la forme décimale d'une fraction                   | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 000368e1 Déterminer une forme fractionnaire                            | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 6fdcdda1 Définition par quotient                                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
@@ -175,8 +180,6 @@ de contenu appliquée en prod.
 | 5cd25c2b Problèmes de fractions                                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | f9e9637c Comprendre le sens d'un pourcentage                           | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
 | 5c8a6da6 Exprimer une proportion en pourcentage                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 31096bae Traduire un énoncé en notations de probabilités               | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
-| 69a05f98 Probabilité « inverse » à partir d'un arbre                   | `idees-1re-probas-cond`                                     | 2026-11-24 |                                      |
 | 04b1cc7f Puissance d'un produit                                        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
@@ -200,6 +203,8 @@ de contenu appliquée en prod.
 | 74da1cd6 Positivité et intégration des inégalités                      | `idees-tle-integration`                                     | 2026-11-25 |                                      |
 | fc2ea212 Intégration par parties                                       | `idees-tle-integration`                                     | 2026-11-25 |                                      |
 | 6035aa61 Suite d'intégrales                                            | `idees-tle-integration`                                     | 2026-11-25 |                                      |
+| 57c73be1 Calculer une longueur ou un angle                             | `idees-3e-trigonometrie`                                    | 2026-11-25 |                                      |
+| dbd5debf Écrire cos, sin ou tan d'un angle                             | `idees-3e-trigonometrie`                                    | 2026-11-25 |                                      |
 
 ## Idées en attente
 

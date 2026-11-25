@@ -260,6 +260,7 @@ export async function exportBackupJSON(
 			shared: ex.shared,
 			resources: ex.resources,
 			generic_functions: ex.generic_functions,
+			translations: ex.translations,
 			created_at: ex.created_at,
 			updated_at: ex.updated_at,
 			created_by: ex.created_by,
@@ -386,7 +387,7 @@ export async function exportBackupSQL(
 			lines.push(`INSERT INTO exercises (
   id, slug, title, source, category,
   grades, topic, is_public, search_indexed, distribution_mode, variables, variations,
-  shared, resources, generic_functions, created_at, updated_at, created_by
+  shared, resources, generic_functions, translations, created_at, updated_at, created_by
 ) VALUES (
   ${escapeSQL(ex.id)},
   ${escapeSQL(ex.slug)},
@@ -403,6 +404,7 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.shared)},
   ${escapeSQL(ex.resources)},
   ${escapeSQL(ex.generic_functions)},
+  ${escapeSQL(ex.translations ?? null)},
   ${escapeSQL(ex.created_at)},
   ${escapeSQL(ex.updated_at)},
   ${escapeSQL(ex.created_by)}
@@ -421,6 +423,7 @@ export async function exportBackupSQL(
   shared = EXCLUDED.shared,
   resources = EXCLUDED.resources,
   generic_functions = EXCLUDED.generic_functions,
+  translations = EXCLUDED.translations,
   updated_at = EXCLUDED.updated_at;`);
 			lines.push('');
 
@@ -736,6 +739,10 @@ async function restoreExercises(
 						shared: record.shared as Json | null,
 						resources: record.resources as Json | null,
 						generic_functions: record.generic_functions,
+						// Sauvegarde antérieure à la colonne : le titre anglais en place reste
+						...(record.translations !== undefined && {
+							translations: record.translations as Json | null
+						}),
 						updated_at: new Date().toISOString()
 					})
 					.eq('id', record.id);
@@ -767,6 +774,7 @@ async function restoreExercises(
 					shared: record.shared as Json | null,
 					resources: record.resources as Json | null,
 					generic_functions: record.generic_functions,
+					translations: (record.translations ?? null) as Json | null,
 					created_at: record.created_at,
 					updated_at: record.updated_at,
 					created_by: createdBy

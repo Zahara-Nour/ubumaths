@@ -10,6 +10,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import {
+	selectedColumns,
 	tableMock,
 	twoLevelExercise,
 	type TableMock
@@ -60,7 +61,12 @@ const STUDENTS = [
 	'550e8400-e29b-41d4-a716-446655440024'
 ];
 
-function supabase(guidanceLevel: string, individualized: boolean): TableMock {
+function supabase(
+	guidanceLevel: string,
+	individualized: boolean,
+	exercise: object = twoLevelExercise(),
+	config: Record<string, unknown> = {}
+): TableMock {
 	return tableMock({
 		worksheet_assignments: {
 			data: {
@@ -78,7 +84,7 @@ function supabase(guidanceLevel: string, individualized: boolean): TableMock {
 					title: 'Fiche',
 					description: null,
 					type: 'worksheet',
-					config: {},
+					config,
 					translations: null
 				}
 			},
@@ -98,7 +104,7 @@ function supabase(guidanceLevel: string, individualized: boolean): TableMock {
 					variation_index: null,
 					section_id: null,
 					is_essential: false,
-					exercise: twoLevelExercise()
+					exercise
 				}
 			],
 			error: null
@@ -182,6 +188,19 @@ describe('Aperçu d’affectation : la copie de l’élève', () => {
 			.map((select) => select.columns);
 		expect(columns.some((c) => /\bguidance_level\b/.test(c) && /\bindividualized\b/.test(c))).toBe(
 			true
+		);
+	});
+});
+
+// Titre d'exercice en anglais (2026-11-25) : la colonne `exercises.translations`
+describe('Aperçu d’affectation : titre de l’exercice dans la langue de la fiche', () => {
+	it('fiche anglaise : le titre anglais, lu avec l’exercice', async () => {
+		const exercise = { ...twoLevelExercise(), translations: { en: { title: 'Proportionality' } } };
+		const mock = supabase('guided', false, exercise, { language: 'en' });
+		const view = (await preview(mock)) as unknown as { exercises: Array<{ title: string | null }> };
+		expect(view.exercises[0].title).toBe('Proportionality');
+		expect(selectedColumns(mock, 'worksheet_exercises')).toMatch(
+			/exercises\s*\([^)]*\btranslations\b/
 		);
 	});
 });

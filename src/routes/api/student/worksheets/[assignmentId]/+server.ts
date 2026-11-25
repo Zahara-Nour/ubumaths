@@ -59,6 +59,7 @@ import type { ExerciseResource } from '#lib/exercises/types.ts';
 import {
 	assignmentCopyScope,
 	copyExerciseOrder,
+	localizedExerciseTitle,
 	resolveWorksheetExerciseCopy,
 	type ExerciseContentRow
 } from '#lib/worksheets/worksheet-copy.ts';
@@ -211,6 +212,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				exercise:exercises (
 					id,
 					title,
+					translations,
 					variables,
 					shared,
 					variations,
@@ -310,7 +312,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			const exerciseView: StudentExerciseView = {
 				id: we.id,
 				exercise_id: exerciseData.id,
-				title: exerciseData.title,
+				title: localizedExerciseTitle(exerciseData, locale),
 				position: we.position,
 				points: we.points,
 				custom_instructions: localizedText(

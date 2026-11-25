@@ -8,7 +8,8 @@
 	"crons": [
 		{ "path": "/api/cron/deleted-account-files", "schedule": "0 4 * * 0" },
 		{ "path": "/api/cron/riddle-of-the-day", "schedule": "5 0 * * *" },
-		{ "path": "/api/cron/carnet-de-liaison", "schedule": "0 16 * * *" }
+		{ "path": "/api/cron/carnet-de-liaison", "schedule": "0 16 * * *" },
+		{ "path": "/api/cron/invitations-cours-particulier", "schedule": "30 3 * * *" }
 	],
 	"ignoreCommand": "bash scripts/vercel-ignore-build.sh",
 	"headers": [

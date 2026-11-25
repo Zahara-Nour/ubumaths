@@ -1789,7 +1789,10 @@
 		opacity: 0.6;
 	}
 
-	.bon-triangle-arc {
+	/* Le second sélecteur : dans un groupe `.bon-point` (bissectrice), `.bon-point circle`
+	   l'emporterait et l'arc aurait l'épaisseur du tracé attendu */
+	.bon-triangle-arc,
+	.bon-point circle.bon-triangle-arc {
 		fill: none;
 		stroke: var(--color-success);
 		stroke-width: 1;

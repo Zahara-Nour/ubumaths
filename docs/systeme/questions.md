@@ -1310,7 +1310,10 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    nombre simple (fraction admise en `rulesSuffice`) — `isSimpleNumberLatex` : un nombre, un signe ; entre
    parenthèses inutiles (`(-3)`), il reste juste mais perfectible (`brackets`) ; un séparateur décimal sans
    chiffre d'un côté (`.5`, `5{,}`) est `bad_form` (BIPM § 5.4.4), y compris dans une fraction ou une
-   notation scientifique (décisions de David du 2026-10-21) ; `acceptCombinatorialNotation`,
+   notation scientifique (décisions de David du 2026-10-21) ; dans toute autre case sans unité, un
+   nombre seul ainsi mal écrit (`58,`, `,5`) que la chaîne refuse est relu par `validateSingleBlank`
+   (`malformedBareNumber`) : valeur relue juste → `bad_form` et message de forme, valeur fausse → le
+   refus d'origine (même règle que devant une unité, cf. [grandeurs.md](grandeurs.md)) ; `acceptCombinatorialNotation`,
    `acceptDecimal`, `angleModulo` → exceptions documentées dans `types.ts` ; sinon **mode exact** :
    `checkFormUnified` passe réponse et attendu dans le même pipeline de retouches cosmétiques
    (`cosmetic-transforms.ts`) puis les compare.

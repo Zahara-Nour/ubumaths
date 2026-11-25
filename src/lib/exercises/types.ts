@@ -345,6 +345,9 @@ export interface Exercise {
 	/** Exercise title (optional, for organization) */
 	title?: string;
 
+	/** Titre traduit (`exercises.translations`) ; le français reste dans `title` */
+	translations?: ExerciseTitleTranslations | null;
+
 	/** Source reference (e.g., book name, author) */
 	source?: string;
 
@@ -598,6 +601,12 @@ export interface TranslatedExerciseContent {
 
 /** Translations by locale. French is never a key: it is the base content. */
 export type ExerciseTranslations = Partial<Record<TranslatedLocale, TranslatedExerciseContent>>;
+
+/**
+ * Traductions des colonnes de l'exercice (`exercises.translations`) : le titre
+ * seul, sur le modèle des fiches. Le contenu se traduit dans les variations.
+ */
+export type ExerciseTitleTranslations = Partial<Record<TranslatedLocale, { title?: string }>>;
 
 export interface ExerciseVariation {
 	/**

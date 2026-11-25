@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3124 et la réponse de David._
+_Mis à jour le 2026-11-25 : chantier clos, journal archivé._
 
-- **État** : correctif mergé (#3124), pas encore en prod · **Prochaine action** : ouvrir le chantier « titre d'exercice en anglais » (décidé par David le 2026-11-25 : « oui on le fait ») — phase 0 d'abord : comportements en français, question d'accès si migration, attendre sa validation ; puis archiver ce journal · **En attente de David** : `deploy:prod` pour livrer (avec #3104 de `notions-en-anglais`, dont le journal reste aussi à archiver) · **Pièges en cours** : un exercice n'a aucun champ pour un titre anglais (traductions = énoncé, corrigé, réponses, indices) · **Worktree / branche** : aucun
+- **État** : clos. Correctif #3124 mergé ; la suite (titre d'exercice en anglais) a son propre journal, `docs/wip/titre-exercice-anglais-progress.md` (#3129) · **En attente de David** : `deploy:prod` pour livrer #3124 et #3129
 
 ## Le bug (signalé par David le 2026-11-25)
 
