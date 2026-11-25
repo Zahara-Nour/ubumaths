@@ -36,6 +36,13 @@ Il ne touche à rien. Il dit presque toujours qui est le coupable.
 | **Disque : N Go perdus en 24 h…** (1 fois par jour)                        | Le disque fond vite.                                                                       | Chercher ce qui a grossi : nouveaux worktrees, images Docker, caches. Demander « cherche ce qui a grossi ».                                               |
 | **Le Mac a redémarré le … (plantage du système)**                          | Redémarrage ; « plantage » si macOS a laissé un rapport de panique.                        | Après un plantage : `pnpm surveillance:historique` pour voir ce qui montait avant.                                                                        |
 
+## Les autres notifications (pas le Mac mini)
+
+- **« Claude a besoin de toi »** : une session s'est arrêtée et attend un geste (lien à essayer,
+  question, page à relire). Le message donne le nom de la session : l'ouvrir. →
+  [prevenir-david.md](prevenir-david.md)
+- **« Claude attend ton accord »** : une session attend la réponse à une demande d'autorisation.
+
 ## Les commandes
 
 | Commande                       | Ce qu'elle fait                                                                                                                                                          | Touche à quelque chose ? |
