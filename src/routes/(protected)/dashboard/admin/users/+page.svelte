@@ -537,10 +537,6 @@
 	}
 
 	/**
-	 * Select a user to view/edit in the right panel
-	 * Resets all editing states when selecting a new user
-	 */
-	/**
 	 * Élève supprimé définitivement : retiré des listes, fiche refermée
 	 */
 	function handleStudentDeleted(studentId: string) {
@@ -552,6 +548,10 @@
 		if (selectedUser?.id === studentId) selectedUser = null;
 	}
 
+	/**
+	 * Select a user to view/edit in the right panel
+	 * Resets all editing states when selecting a new user
+	 */
 	function selectUser(user: ExtendedProfile) {
 		selectedUser = user;
 		initTempValues(user);

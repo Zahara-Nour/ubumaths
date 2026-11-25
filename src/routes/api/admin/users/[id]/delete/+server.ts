@@ -5,7 +5,8 @@
  * DELETE /api/admin/users/[id]/delete
  * Corps : { confirmationName: string } — le nom de l'élève, retapé.
  *
- * Gardes, dans l'ordre (rien n'est écrit avant qu'elles passent) :
+ * Gardes, dans l'ordre (rien n'est supprimé avant qu'elles passent ; la limite de débit
+ * compte aussi les essais refusés ensuite, nom faux compris) :
  * 1. admin (vrai compte admin ou élévation) — `requireAdmin` ;
  * 2. identifiant UUID, corps valide (Zod) ;
  * 3. jamais son propre compte ;
@@ -53,7 +54,8 @@ export const DELETE: RequestHandler = async ({ request, locals, params, getClien
 	if (!idCheck.success) {
 		throw error(400, 'Identifiant d’élève invalide');
 	}
-	const studentId = idCheck.data;
+	// Minuscules : `ABC…` et `abc…` désignent le même compte
+	const studentId = idCheck.data.toLowerCase();
 
 	let body: unknown;
 	try {
@@ -67,7 +69,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params, getClien
 	}
 
 	// 3. Jamais son propre compte
-	if (studentId === adminUserId) {
+	if (studentId === adminUserId.toLowerCase()) {
 		throw error(403, 'Impossible de supprimer son propre compte');
 	}
 

@@ -148,6 +148,13 @@ describe('DELETE /api/admin/users/[id]/delete', () => {
 		expect(mocks.deleteStudentAccount).not.toHaveBeenCalled();
 	});
 
+	test('son propre compte écrit en majuscules : 403', async () => {
+		expect(await statusOf(call(ADMIN_ID.toUpperCase(), { confirmationName: 'Zoé Martin' }))).toBe(
+			403
+		);
+		expect(mocks.deleteStudentAccount).not.toHaveBeenCalled();
+	});
+
 	test('limite de débit dépassée : refusé avant toute lecture', async () => {
 		mocks.rateLimit.mockRejectedValue(httpError(429, 'Trop de requêtes'));
 

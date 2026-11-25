@@ -59,6 +59,7 @@
 				return;
 			}
 			toaster.success(`${expectedName} a été supprimé définitivement.`);
+			// Avant la fermeture : `onOpenChange` refuse de fermer pendant une suppression
 			isDeleting = false;
 			onOpenChange(false);
 			ondeleted(student.id);
