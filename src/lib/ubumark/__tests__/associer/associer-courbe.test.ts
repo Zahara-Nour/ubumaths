@@ -211,4 +211,9 @@ describe('courbe dans un élément : PDF', () => {
 		expect(typst).toContain('[•]');
 		expect(typst).not.toContain('Figure indisponible');
 	});
+
+	it('chaque rangée est insécable : une courbe qui change de page emmène son numéro et son point', () => {
+		const typst = generateTypst(parseMarkdown(block(...COURBES)));
+		expect(typst.split('grid.cell(breakable: false)[#grid(').length - 1).toBe(3);
+	});
 });

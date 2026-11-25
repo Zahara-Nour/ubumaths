@@ -2,7 +2,7 @@
 
 Chantier [`idees-1re-trigo`](idees-1re-trigo-progress.md). Rubrique 1AN4 de l'autre plateforme : 6 exercices
 (les `-old` ignorés), lus dans leur code source (copie locale), comparés aux modèles de 1re spé en prod
-(MCP, lecture seule). Bornes : [1spe.md](../systeme/programmes/bornes/lycee/1spe.md), § Trigonométrie et
+(MCP, lecture seule). Bornes : [1spe.md](../../../systeme/programmes/bornes/lycee/1spe.md), § Trigonométrie et
 décision **l1s-3** de David (valeurs 0, π/6, π/4, π/3, π/2 et tout réel associé lisible sur le cercle, à 2kπ
 près ; **valeurs numériques seulement, pas de simplification littérale**).
 
