@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, lot complet écrit (F1, F2, N1-N4), migration de contenu prouvée._
+_Mis à jour le 2026-11-25, migration auditée, PR ouverte._
 
 - **État** : F1-F2 (commit 4d32b62136) et N1-N4 (commit suivant) écrits, simulation verte,
   `sonde-figures` 0 problème, rendu vu à l'écran (§ Historique). Migration de contenu des publiés
   `20261125072915_…_publies_contenu.sql` + fixture : test vert (165), rouge sans elle (5 échecs).
-  Rien poussé depuis 4d32b62136. · **Prochaine action** : `security-auditor` sur la migration
-  (condition 3 de `db:migrate`), puis push, PR (« revue : contenu » + audit), CI verte, merge,
+  `security-auditor` : aucun finding (ni policy ni grant, variations 0-3 intactes, pas d'injection,
+  rollback symétrique). · **Prochaine action** : CI verte, merge,
   `db:migrate` (seule migration en attente ? `migration list --linked`) ; ensuite David lance
   `create-questions --publier` (N1-N4 en brouillon en prod), migration de rangement, relecture
   dans `/dev/modeles`. Page à cocher sautée : la relecture se fait dans `/dev/modeles`.
