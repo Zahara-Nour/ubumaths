@@ -1,0 +1,310 @@
+{
+	"id": "58bbee5d-b4b1-4d03-9fad-08ec6172a580",
+	"title": "Additionner des fractions",
+	"description": "Fractions de même dénominateur, nombres positifs, sans simplification",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a+b}}}{{{c}}}"
+				}
+			],
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..13"
+				},
+				{
+					"name": "b",
+					"expression": "2..13"
+				},
+				{
+					"name": "c",
+					"expression": "2..25!cd(a),cd(b),cd({{eval:b+a}})"
+				},
+				{
+					"name": "expression1",
+					"expression": "a/c+b/c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule. Donne le résultat sous la forme d'une seule fraction.\n\n$${{n}} + \\frac{{{a}}}{{{b}}} = ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:n*b+a}}}{{{b}}}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{eval:n+a}}}{{{b}}}",
+							"message": "${{n}}$, ce n'est pas ${{n}}$ {{if:b==2|demis|{{if:b==3|tiers|{{if:b==4|quarts|cinquièmes}}}}}} : écris d'abord ${{n}}$ avec le dénominateur ${{b}}$.",
+							"label": "Entier ajouté au numérateur"
+						},
+						{
+							"answer": "\\frac{{{eval:n+a}}}{{{eval:b+1}}}",
+							"message": "On n'additionne pas les dénominateurs : écris ${{n}}$ avec le dénominateur ${{b}}$.",
+							"label": "Dénominateurs additionnés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un entier en fraction.** ${{n}} = \\frac{{{eval:n*b}}}{{{b}}}$ (dans une unité, il y a ${{b}}$ parts de $\\frac{1}{{{b}}}$).",
+					"$${{n}} + \\frac{{{a}}}{{{b}}} = \\frac{{{eval:n*b}}}{{{b}}} + \\frac{{{a}}}{ {{b}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:n*b+a}}}{{{b}}}}$$"
+				]
+			},
+			"hint": "Écris d'abord ${{n}}$ sous la forme d'une fraction de dénominateur ${{b}}$."
+		},
+		{
+			"statement": "On met bout à bout quatre segments, de longueurs $\\frac{{{a}}}{{{d}}}~\\unit{m}$, $\\frac{{{b}}}{{{d}}}~\\unit{m}$, $\\frac{{{c}}}{{{d}}}~\\unit{m}$ et $\\frac{{{f}}}{{{d}}}~\\unit{m}$.\n\nQuelle est la longueur du segment obtenu ? Donne-la sous la forme d'une seule fraction.\n\n$$?~\\text{m}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "5..8"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a+b+c+f"
+				}
+			],
+			"conditions": ["gcd(S,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{S}}}{{{d}}}",
+					"requiredForm": {
+						"pattern": "u:integer / w:integer"
+					},
+					"expectedErrors": [
+						{
+							"answer": "\\frac{{{S}}}{{{eval:4*d}}}",
+							"message": "On n'additionne pas les dénominateurs : ce sont des {{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|huitièmes}}}}}} de mètre, on compte combien il y en a en tout.",
+							"label": "Dénominateurs additionnés"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Les quatre longueurs sont des {{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|huitièmes}}}}}} de mètre : on additionne les numérateurs, le dénominateur reste ${{d}}$.",
+					"$$\\frac{{{a}}}{{{d}}} + \\frac{{{b}}}{{{d}}} + \\frac{{{c}}}{{{d}}} + \\frac{{{f}}}{{{d}}} = \\frac{{{a}} + {{b}} + {{c}} + {{f}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{S}}}{{{d}}}}$$",
+					"Le segment obtenu mesure $\\frac{{{S}}}{{{d}}}~\\unit{m}$."
+				]
+			},
+			"hint": "Les quatre fractions ont le même dénominateur : que devient-il quand on les additionne ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{9}{7}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "7"
+			},
+			"description": "bonne réponse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{26}{25}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "13",
+				"b": "13",
+				"c": "25"
+			},
+			"description": "bornes hautes",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3"
+			},
+			"description": "bornes basses",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{18}{14}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "7"
+			},
+			"description": "non simplifiée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{9}{14}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "7"
+			},
+			"description": "addition des dénominateurs",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{4+5}{7}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "7"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 0
+		},
+		{
+			"description": "F8 : 2 + 1/3 = 7/3",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"b": "3",
+				"a": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{7}{3}"]
+		},
+		{
+			"description": "F8 : entier au numérateur (3/3)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"b": "3",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$2$, ce n'est pas $2$ tiers : écris d'abord $2$ avec le dénominateur $3$."
+			},
+			"answers": ["\\frac{3}{3}"]
+		},
+		{
+			"description": "F8 : dénominateurs additionnés (3/4)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"b": "3",
+				"a": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'additionne pas les dénominateurs : écris $2$ avec le dénominateur $3$."
+			},
+			"answers": ["\\frac{3}{4}"]
+		},
+		{
+			"description": "F8 : somme recopiée",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"b": "3",
+				"a": "1"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["2 + \\frac{1}{3}"]
+		},
+		{
+			"description": "F8 segments : 11/7",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"f": "5",
+				"S": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{11}{7}"]
+		},
+		{
+			"description": "F8 segments : dénominateurs additionnés (11/28)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7",
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"f": "5",
+				"S": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On n'additionne pas les dénominateurs : ce sont des septièmes de mètre, on compte combien il y en a en tout."
+			},
+			"answers": ["\\frac{11}{28}"]
+		}
+	]
+}
