@@ -51,6 +51,14 @@ export interface Night {
 	proofs: Step<ProofsData>;
 	verifs: Step<VerifsData>;
 	guards: Step<Guard[]>;
+	/** Rouges nouveaux dont la notification n'est pas partie : repris la nuit suivante. */
+	pending?: string[];
+}
+
+export interface ReplayLine {
+	id: string;
+	outcome: 'green' | 'red' | 'broken' | 'manual';
+	detail?: string;
 }
 
 export type Args = { command: 'show' } | { command: 'run'; trial: boolean };
@@ -58,6 +66,9 @@ export type Args = { command: 'show' } | { command: 'run'; trial: boolean };
 // ============================================================================
 // Constantes
 // ============================================================================
+
+const WORST_FIRST: TestStatus[] = ['red', 'skipped', 'green'];
+const DAY_MS = 86_400_000;
 
 const STEP_NAMES = {
 	proofs: 'preuves des écarts pas jouées',
@@ -103,7 +114,12 @@ function readSuite(suite: unknown, path: string[], into: Record<string, TestStat
 			if (!isRecord(test) || typeof test.projectName !== 'string') return false;
 			const status = playwrightStatus(test.status);
 			if (status === null) return false;
-			into[[test.projectName, spec.file, ...path, spec.title].join(' › ')] = status;
+			const key = [test.projectName, spec.file, ...path, spec.title].join(' › ');
+			// Deux tests de même nom : le pire verdict, un vert n'efface jamais un rouge.
+			const known = into[key];
+			if (known === undefined || WORST_FIRST.indexOf(status) < WORST_FIRST.indexOf(known)) {
+				into[key] = status;
+			}
 		}
 	}
 	for (const child of suites) {
@@ -124,7 +140,36 @@ export function playwrightTests(report: unknown): Record<string, TestStatus> | n
 	for (const suite of report.suites) {
 		if (!readSuite(suite, [], tests)) return null;
 	}
-	return Object.keys(tests).length > 0 ? tests : null;
+	if (Object.keys(tests).length === 0) return null;
+	// Un fichier qui ne se charge pas n'a aucune suite : sans cette ligne, il serait un silence.
+	const errors = Array.isArray(report.errors) ? report.errors : [];
+	for (const error of errors) {
+		const message = isRecord(error) && typeof error.message === 'string' ? error.message : '';
+		const first = message.split('\n')[0].trim().slice(0, 160) || 'sans message';
+		tests[`erreur de chargement › ${first}`] = 'red';
+	}
+	return tests;
+}
+
+/** Le bilan de `pnpm ecarts rejouer --json` ; `null` si un verdict est inconnu (jamais un vert par défaut). */
+export function readReplay(value: unknown): ReplayLine[] | null {
+	if (!Array.isArray(value)) return null;
+	const lines: ReplayLine[] = [];
+	for (const line of value) {
+		if (!isRecord(line) || typeof line.id !== 'string' || typeof line.outcome !== 'string') {
+			return null;
+		}
+		const outcome = line.outcome;
+		if (outcome !== 'green' && outcome !== 'red' && outcome !== 'broken' && outcome !== 'manual') {
+			return null;
+		}
+		lines.push({
+			id: line.id,
+			outcome,
+			...(typeof line.detail === 'string' ? { detail: line.detail } : {})
+		});
+	}
+	return lines;
 }
 
 function isStep(value: unknown, isData: (data: unknown) => boolean): boolean {
@@ -175,7 +220,8 @@ export function isNight(value: unknown): value is Night {
 		typeof value.commit === 'string' &&
 		isStep(value.proofs, isProofsData) &&
 		isStep(value.verifs, isVerifsData) &&
-		isStep(value.guards, isGuards)
+		isStep(value.guards, isGuards) &&
+		(value.pending === undefined || isStringArray(value.pending))
 	);
 }
 
@@ -248,6 +294,18 @@ export function newReds(previous: Night[], current: Night): string[] {
 	}
 
 	return reds;
+}
+
+/** Ce dont David doit être prévenu : les rouges nouveaux, et ceux de la veille restés sans notification. */
+export function redsToNotify(previous: Night[], current: Night): string[] {
+	const unsent = previous.at(0)?.pending ?? [];
+	return [...new Set([...unsent, ...newReds(previous, current)])];
+}
+
+/** Nuits manquées entre le dernier bilan et aujourd'hui (0 : celui de ce matin ou d'hier). */
+export function staleDays(lastDate: string, today: string): number {
+	const days = Math.round((Date.parse(today) - Date.parse(lastDate)) / DAY_MS);
+	return Number.isFinite(days) ? Math.max(0, days - 1) : 0;
 }
 
 /** Les écarts entrés au registre depuis la dernière nuit où les preuves ont tourné. */
@@ -331,6 +389,27 @@ export function formatSummary(current: Night, previous: Night[]): string {
 		verifsBlock(current),
 		guardsBlock(current)
 	].join('\n\n');
+}
+
+/**
+ * Un processus et tous ses descendants, d'après `ps -axo pid=,ppid=`. pnpm met
+ * chaque script dans son propre groupe : arrêter un groupe ne suffit pas, il
+ * faut suivre la parenté.
+ */
+export function processTree(psOutput: string, root: number): number[] {
+	const children = new Map<number, number[]>();
+	for (const line of psOutput.split('\n')) {
+		const [pid, parent] = line.trim().split(/\s+/).map(Number);
+		if (!Number.isInteger(pid) || !Number.isInteger(parent)) continue;
+		children.set(parent, [...(children.get(parent) ?? []), pid]);
+	}
+	const tree = [root];
+	for (let i = 0; i < tree.length; i++) {
+		for (const child of children.get(tree[i]) ?? []) {
+			if (!tree.includes(child)) tree.push(child);
+		}
+	}
+	return tree;
 }
 
 /** Les arguments de `pnpm nuit`, ou `null` : on affiche l'usage. */

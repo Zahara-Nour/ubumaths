@@ -22,6 +22,10 @@ import {
 	newReds,
 	parseArgs,
 	playwrightTests,
+	processTree,
+	readReplay,
+	redsToNotify,
+	staleDays,
 	type Night
 } from '../nuit/logique.ts';
 
@@ -97,6 +101,25 @@ describe('playwrightTests', () => {
 			expect(playwrightTests(value)).toBeNull();
 		}
 	);
+
+	it('un fichier qui ne se charge pas est un rouge, pas un silence', () => {
+		const broken = { ...report, errors: [{ message: 'SyntaxError: x\n    at carnet.spec.ts:3' }] };
+		expect(playwrightTests(broken)).toMatchObject({
+			'erreur de chargement › SyntaxError: x': 'red'
+		});
+	});
+
+	it('deux tests de même nom : le pire verdict est gardé', () => {
+		const spec = (status: string): unknown => ({
+			title: 't',
+			file: 'a.spec.ts',
+			tests: [{ projectName: 'iphone', status }]
+		});
+		const twice = {
+			suites: [{ title: 'a.spec.ts', specs: [spec('unexpected'), spec('expected')] }]
+		};
+		expect(playwrightTests(twice)).toEqual({ 'iphone › a.spec.ts › t': 'red' });
+	});
 
 	it('aucun test joué : null, une suite vide ne prouve rien', () => {
 		expect(playwrightTests({ suites: [] })).toBeNull();
@@ -197,6 +220,62 @@ describe('newReds', () => {
 	});
 });
 
+describe('redsToNotify', () => {
+	const red = night({ verifs: verifs({ [TEST_A]: 'red', [TEST_B]: 'green' }) });
+
+	it('les rouges nouveaux de la nuit', () => {
+		expect(redsToNotify([night()], red)).toEqual([`test rouge : ${TEST_A}`]);
+	});
+
+	it('une notification pas partie la veille est reprise, sans doublon', () => {
+		const unsent = { ...red, pending: [`test rouge : ${TEST_A}`] };
+		expect(redsToNotify([unsent], red)).toEqual([`test rouge : ${TEST_A}`]);
+		const other = night({ verifs: verifs({ [TEST_A]: 'red', [TEST_B]: 'red' }) });
+		expect(redsToNotify([unsent], other)).toEqual([
+			`test rouge : ${TEST_A}`,
+			`test rouge : ${TEST_B}`
+		]);
+	});
+
+	it('notification partie la veille : rien à reprendre', () => {
+		expect(redsToNotify([red], red)).toEqual([]);
+	});
+});
+
+describe('readReplay', () => {
+	it('le bilan de `pnpm ecarts rejouer --json`', () => {
+		const lines = [
+			{ id: 'V35', outcome: 'red' },
+			{ id: 'L9', outcome: 'broken', detail: 'fichier absent' },
+			{ id: 'D1', outcome: 'manual' },
+			{ id: 'M2', outcome: 'green' }
+		];
+		expect(readReplay(lines)).toEqual(lines);
+	});
+
+	it.each([
+		[null],
+		[{}],
+		[[{ id: 'V35' }]],
+		[[{ id: 'V35', outcome: 'failed' }]],
+		[[{ outcome: 'red' }]]
+	])('verdict inconnu ou forme inattendue : null, jamais un vert par défaut (%j)', (value) => {
+		expect(readReplay(value)).toBeNull();
+	});
+});
+
+describe('staleDays', () => {
+	it('nuit de ce matin ou d’hier : 0', () => {
+		expect(staleDays('2026-11-26', '2026-11-26')).toBe(0);
+		expect(staleDays('2026-11-25', '2026-11-26')).toBe(0);
+	});
+
+	it('au-delà : le nombre de nuits manquées', () => {
+		expect(staleDays('2026-11-23', '2026-11-26')).toBe(2);
+		expect(staleDays('2026-10-30', '2026-11-02')).toBe(2);
+	});
+});
+
 describe('newGaps', () => {
 	it('les écarts ouverts absents de la veille', () => {
 		const current = night({
@@ -265,6 +344,8 @@ describe('isNight', () => {
 			JSON.stringify(night({ guards: { ok: false, failure: 'x' } }))
 		);
 		expect(isNight(down)).toBe(true);
+		expect(isNight({ ...night(), pending: ['test rouge : x'] })).toBe(true);
+		expect(isNight({ ...night(), pending: 'x' })).toBe(false);
 	});
 
 	it.each([[null], [{}], [{ date: '2026-11-26' }], [{ ...night(), verifs: { ok: true } }]])(
@@ -273,6 +354,19 @@ describe('isNight', () => {
 			expect(isNight(value)).toBe(false);
 		}
 	);
+});
+
+describe('processTree', () => {
+	const ps = '  10   1\n  11  10\n  12  11\n  20   1\n  21  20\n';
+
+	it('le processus et toute sa descendance, pas ses voisins', () => {
+		expect(processTree(ps, 10)).toEqual([10, 11, 12]);
+	});
+
+	it('processus sans enfant, ou absent : lui seul', () => {
+		expect(processTree(ps, 12)).toEqual([12]);
+		expect(processTree('', 99)).toEqual([99]);
+	});
 });
 
 describe('parseArgs', () => {

@@ -35,7 +35,9 @@ détaché sur `origin/main` et remis à jour chaque nuit (créé à la première
 - **Preuve verte** : la ligne est barrée dans le [registre](../ecarts/registre.md), commitée et
   poussée sur `main` (`docs(ecarts): preuves vertes de la nuit…`). C'est le **seul** commit de la
   tâche. `main` a bougé pendant la nuit : une reprise, une seule. Push toujours refusé : le bilan
-  dit « pas poussés sur main », les lignes seront barrées de nouveau la nuit suivante.
+  dit « pas poussés sur main », les lignes seront barrées de nouveau la nuit suivante (le commit
+  resté local est abandonné au `git checkout` de la nuit d'après). Commit refusé par un hook : le
+  registre est remis comme il était, pour que le worktree reste propre.
 - **Vérifications à l'écran** : le serveur de dev du worktree, port 5190, lancé et arrêté par
   Playwright ; la **base locale**, dont des décors sont remis à zéro pendant la suite. Un test à
   `test.fail()` (écart connu) qui échoue comme prévu est **vert**.
@@ -93,8 +95,15 @@ Une étape qui n'a pas pu tourner est dite avec sa cause dans le bilan (« pas j
   regarder `git -C ../ubumaths-wt-nuit status` ;
 - **vérifications à l'écran** : port 5190 déjà pris (un serveur déjà là serait réutilisé par
   Playwright, ce ne serait pas le code de `main`), serveur qui ne démarre pas (base locale
-  arrêtée : `pnpm db:start`), suite arrêtée au bout de 4 heures ;
-- **une autre nuit tourne déjà** (`~/.local/state/nuit/verrou`) : la seconde s'arrête, code 1.
+  arrêtée : `pnpm db:start`), suite arrêtée au bout de 4 heures (tout le groupe de processus est arrêté, serveur de dev
+  compris), fichier de test qui ne se charge pas (une ligne « erreur de chargement », rouge) ;
+- **une autre nuit tourne déjà** (`~/.local/state/nuit/verrou`) : la seconde s'arrête, code 1. Un
+  verrou dont le processus a disparu, ou vieux de plus de 8 heures, est repris ;
+- **erreur imprévue** : les trois étapes sont dites en panne avec le message, jamais un silence ;
+- **notification pas partie** (réseau coupé) : `pnpm nuit` le dit, et les mêmes rouges sont
+  renvoyés la nuit suivante ;
+- **Mac éteint à 2 h** : launchd rejoue la tâche au réveil. Aucune nuit depuis plus d'un jour :
+  `pnpm nuit` l'écrit en tête (« Aucune nuit jouée depuis le … »).
 
 ⚠️ Une panne qui dure ne renotifie pas : le lendemain d'une notification « pas jouées », lire
 `pnpm nuit` jusqu'à ce que l'étape rejoue.

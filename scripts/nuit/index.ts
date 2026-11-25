@@ -31,14 +31,16 @@
  * Doc : docs/pratiques/tache-de-nuit.md.
  */
 
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import {
 	copyFileSync,
 	existsSync,
 	mkdirSync,
+	openSync,
 	readFileSync,
 	readdirSync,
 	rmSync,
+	statSync,
 	writeFileSync
 } from 'node:fs';
 import { createConnection } from 'node:net';
@@ -48,9 +50,12 @@ import { fileURLToPath } from 'node:url';
 import {
 	formatSummary,
 	isNight,
-	newReds,
 	parseArgs,
 	playwrightTests,
+	processTree,
+	readReplay,
+	redsToNotify,
+	staleDays,
 	type BrokenProof,
 	type Guard,
 	type Night,
@@ -64,6 +69,7 @@ import {
 // ============================================================================
 
 interface Run {
+	/** `null` : arrêtée au délai. */
 	status: number | null;
 	output: string;
 }
@@ -84,6 +90,12 @@ const REGISTRY = 'docs/ecarts/registre.md';
 const NIGHT_FILE = /^\d{4}-\d{2}-\d{2}\.json$/;
 const NIGHTS_KEPT = 60;
 const MINUTE = 60_000;
+/** Une nuit dure moins que cela : un verrou plus vieux est celui d'une nuit morte. */
+const LOCK_MAX_MS = 8 * 60 * MINUTE;
+/** Ce qui est gardé de la sortie d'une commande : la fin suffit à dire la cause. */
+const OUTPUT_KEPT = 200_000;
+/** Démarrage à froid du serveur de dev (migrations locales comprises). */
+const SERVER_START_MS = 5 * MINUTE;
 const GUARDS: Array<[string, string[]]> = [
 	['docs:check-links', ['docs:check-links']],
 	['docs:check-refs', ['docs:check-refs', '--strict']],
@@ -95,20 +107,68 @@ const USAGE = 'Usage : pnpm nuit [--lancer [--essai]]';
 // Fonctions : outils
 // ============================================================================
 
+/**
+ * Arrête des processus et toute leur descendance. Arrêter un groupe ne suffit
+ * pas : pnpm met chaque script dans le sien (vu à l'essai du 2026-11-25, le
+ * serveur de dev survivait à Playwright).
+ */
+function stopTrees(roots: number[]): void {
+	const ps = spawnSync('ps', ['-axo', 'pid=,ppid='], { encoding: 'utf8' }).stdout ?? '';
+	const pids = [...new Set(roots.flatMap((root) => processTree(ps, root)))];
+	const signalAll = (signal: NodeJS.Signals): void => {
+		for (const pid of pids) {
+			try {
+				process.kill(pid, signal);
+			} catch {
+				// Déjà parti.
+			}
+		}
+	};
+	signalAll('SIGTERM');
+	setTimeout(() => signalAll('SIGKILL'), 5_000).unref();
+}
+
+/**
+ * Lance une commande ; au délai, elle et toute sa descendance sont arrêtées
+ * (pnpm, Playwright, navigateurs).
+ */
 function run(
 	command: string,
 	args: string[],
 	cwd: string,
 	options: { minutes: number; env?: NodeJS.ProcessEnv }
-): Run {
-	const result = spawnSync(command, args, {
-		cwd,
-		encoding: 'utf8',
-		timeout: options.minutes * MINUTE,
-		maxBuffer: 256 * 1024 * 1024,
-		env: { ...process.env, ...options.env }
+): Promise<Run> {
+	return new Promise((done) => {
+		let output = '';
+		let timedOut = false;
+		const child = spawn(command, args, {
+			cwd,
+			detached: true,
+			stdio: ['ignore', 'pipe', 'pipe'],
+			env: { ...process.env, ...options.env }
+		});
+		const keep = (chunk: Buffer): void => {
+			output = `${output}${chunk.toString('utf8')}`.slice(-OUTPUT_KEPT);
+		};
+		child.stdout.on('data', keep);
+		child.stderr.on('data', keep);
+
+		const timer = setTimeout(() => {
+			timedOut = true;
+			if (child.pid !== undefined) stopTrees([child.pid]);
+		}, options.minutes * MINUTE);
+
+		child.once('error', (error) => {
+			clearTimeout(timer);
+			done({ status: 127, output: `${output}${error.message}` });
+		});
+		// `exit` et non `close` : un petit-enfant resté en vie garde les tuyaux ouverts, et
+		// `close` n'arriverait jamais. Un court délai laisse arriver la fin de la sortie.
+		child.once('exit', (status) => {
+			clearTimeout(timer);
+			setTimeout(() => done({ status: timedOut ? null : (status ?? 1), output }), 300);
+		});
 	});
-	return { status: result.status, output: `${result.stdout ?? ''}${result.stderr ?? ''}` };
 }
 
 function lastLines(text: string, count: number): string {
@@ -138,10 +198,14 @@ function portBusy(port: number): Promise<boolean> {
 }
 
 /** Le dépôt principal, même lancé depuis un worktree. */
-function mainRepository(): string {
-	const common = run('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], ROOT, {
-		minutes: 1
-	});
+async function mainRepository(): Promise<string> {
+	const common = await run(
+		'git',
+		['rev-parse', '--path-format=absolute', '--git-common-dir'],
+		ROOT,
+		{ minutes: 1 }
+	);
+	if (common.status !== 0) throw new Error(`dépôt principal introuvable : ${cause(common)}`);
 	return dirname(common.output.trim());
 }
 
@@ -165,81 +229,84 @@ function pastNights(before?: string): Night[] {
 		.filter((night): night is Night => night !== null);
 }
 
+function today(): string {
+	return new Date().toLocaleDateString('sv-SE');
+}
+
 // ============================================================================
 // Fonctions : étapes
 // ============================================================================
 
 /** Met le worktree de la nuit sur `REF`, à neuf. Rend la cause d'un échec, ou `null`. */
-function prepare(depot: string, worktree: string): string | null {
+async function prepare(depot: string, worktree: string): Promise<string | null> {
 	// Sans `.env.local`, le serveur de dev parlerait à la base DISTANTE : on n'y va pas.
 	if (!existsSync(join(depot, '.env.local'))) return '.env.local absent du dépôt principal';
 
-	const fetched = run('git', ['fetch', '--quiet', 'origin', 'main'], depot, { minutes: 5 });
+	const fetched = await run('git', ['fetch', '--quiet', 'origin', 'main'], depot, { minutes: 5 });
 	if (fetched.status !== 0) return `git fetch : ${cause(fetched)}`;
 
 	if (!existsSync(worktree)) {
-		const added = run('git', ['worktree', 'add', '--detach', worktree, REF], depot, { minutes: 5 });
+		const added = await run('git', ['worktree', 'add', '--detach', worktree, REF], depot, {
+			minutes: 5
+		});
 		if (added.status !== 0) return `git worktree add : ${cause(added)}`;
 	} else {
-		const dirty = run('git', ['status', '--porcelain'], worktree, { minutes: 1 });
+		const dirty = await run('git', ['status', '--porcelain'], worktree, { minutes: 1 });
 		if (dirty.status !== 0) return `git status : ${cause(dirty)}`;
 		// Jamais de ménage à l'aveugle : ce qui traîne là se regarde à la main.
 		if (dirty.output.trim() !== '') return `${worktree} n'est pas propre (git status)`;
-		const moved = run('git', ['checkout', '--quiet', '--detach', REF], worktree, { minutes: 5 });
+		const moved = await run('git', ['checkout', '--quiet', '--detach', REF], worktree, {
+			minutes: 5
+		});
 		if (moved.status !== 0) return `git checkout : ${cause(moved)}`;
 	}
 
 	for (const name of ['.env', '.env.local']) {
 		if (existsSync(join(depot, name))) copyFileSync(join(depot, name), join(worktree, name));
 	}
-	const installed = run('pnpm', ['install', '--prefer-offline', '--frozen-lockfile'], worktree, {
-		minutes: 20
-	});
+	const installed = await run(
+		'pnpm',
+		['install', '--prefer-offline', '--frozen-lockfile'],
+		worktree,
+		{ minutes: 20 }
+	);
 	return installed.status === 0 ? null : `pnpm install : ${cause(installed)}`;
 }
 
 /** Pousse le commit du registre sur `main` ; une seule reprise si `main` a bougé entre-temps. */
-function pushRegistry(worktree: string): string | null {
-	const push = (): Run => run('git', ['push', 'origin', 'HEAD:main'], worktree, { minutes: 15 });
-	const first = push();
+async function pushRegistry(worktree: string): Promise<string | null> {
+	const push = (): Promise<Run> =>
+		run('git', ['push', 'origin', 'HEAD:main'], worktree, { minutes: 15 });
+	const first = await push();
 	if (first.status === 0) return null;
-	const fetched = run('git', ['fetch', '--quiet', 'origin', 'main'], worktree, { minutes: 5 });
-	const rebased = run('git', ['rebase', 'origin/main'], worktree, { minutes: 5 });
-	if (fetched.status !== 0 || rebased.status !== 0) {
-		run('git', ['rebase', '--abort'], worktree, { minutes: 1 });
+	const fetched = await run('git', ['fetch', '--quiet', 'origin', 'main'], worktree, {
+		minutes: 5
+	});
+	if (fetched.status !== 0) return cause(first);
+	const rebased = await run('git', ['rebase', 'origin/main'], worktree, { minutes: 5 });
+	if (rebased.status !== 0) {
+		await run('git', ['rebase', '--abort'], worktree, { minutes: 1 });
 		return cause(first);
 	}
-	const second = push();
+	const second = await push();
 	return second.status === 0 ? null : cause(second);
 }
 
-function isReplayLine(value: unknown): value is { id: string; outcome: string; detail?: string } {
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		'id' in value &&
-		typeof value.id === 'string' &&
-		'outcome' in value &&
-		typeof value.outcome === 'string'
-	);
-}
-
-function proofsStep(worktree: string, trial: boolean): Step<ProofsData> {
+async function proofsStep(worktree: string, trial: boolean): Promise<Step<ProofsData>> {
 	const file = join(OUTPUTS, 'ecarts.json');
 	rmSync(file, { force: true });
 	const args = ['--silent', 'ecarts', 'rejouer', `--json=${file}`, ...(trial ? [] : ['--barrer'])];
-	const replay = run('pnpm', args, worktree, { minutes: 30 });
+	const replay = await run('pnpm', args, worktree, { minutes: 30 });
 	if (replay.status !== 0 || !existsSync(file)) return { ok: false, failure: cause(replay) };
 
-	let lines: unknown;
+	let lines: ReturnType<typeof readReplay> = null;
 	try {
-		lines = JSON.parse(readFileSync(file, 'utf8'));
+		lines = readReplay(JSON.parse(readFileSync(file, 'utf8')));
 	} catch {
-		return { ok: false, failure: 'bilan du rejeu illisible' };
+		// Fichier illisible : dit juste en dessous.
 	}
-	if (!Array.isArray(lines) || !lines.every(isReplayLine)) {
-		return { ok: false, failure: 'bilan du rejeu illisible' };
-	}
+	if (lines === null) return { ok: false, failure: 'bilan du rejeu illisible' };
+
 	const broken: BrokenProof[] = lines
 		.filter((line) => line.outcome === 'broken')
 		.map((line) => ({ id: line.id, detail: line.detail ?? 'preuve cassée' }));
@@ -256,19 +323,86 @@ function proofsStep(worktree: string, trial: boolean): Step<ProofsData> {
 	data.struck = struck[1].split(', ');
 
 	const message = `docs(ecarts): preuves vertes de la nuit, ${data.struck.length} écart(s) barré(s)`;
-	const commit = run('git', ['commit', '-m', message, '--', REGISTRY], worktree, { minutes: 10 });
-	data.pushFailure =
-		commit.status === 0 ? pushRegistry(worktree) : `commit refusé : ${cause(commit)}`;
+	const commit = await run('git', ['commit', '-m', message, '--', REGISTRY], worktree, {
+		minutes: 10
+	});
+	if (commit.status === 0) {
+		data.pushFailure = await pushRegistry(worktree);
+	} else {
+		data.pushFailure = `commit refusé : ${cause(commit)}`;
+		// Le registre barré ne reste pas modifié : le worktree sale bloquerait toutes les nuits
+		// suivantes. Les lignes seront barrées de nouveau au prochain rejeu.
+		await run('git', ['restore', '--staged', '--worktree', '--', REGISTRY], worktree, {
+			minutes: 1
+		});
+	}
 	return { ok: true, data };
 }
 
-async function verifsStep(worktree: string): Promise<Step<VerifsData>> {
-	// Un serveur déjà là serait réutilisé par Playwright : ce ne serait pas le code de `main`.
-	if (await portBusy(PORT)) return { ok: false, failure: `le port ${PORT} est déjà pris` };
+/**
+ * Lance le serveur de dev du worktree et attend qu'il réponde. Rend de quoi
+ * l'arrêter, ou la cause de l'échec. La tâche le lance elle-même : Playwright
+ * ne sait pas arrêter celui qu'il lance par pnpm (il attend sans fin).
+ */
+async function startServer(worktree: string): Promise<{ stop: () => void } | string> {
+	const logFile = join(OUTPUTS, 'serveur.log');
+	const log = openSync(logFile, 'w');
+	const child = spawn('pnpm', ['dev', '--port', String(PORT), '--strictPort'], {
+		cwd: worktree,
+		detached: true,
+		// Un fichier, pas un tuyau : rien ne retient la tâche quand elle s'arrête.
+		stdio: ['ignore', log, log]
+	});
+	child.unref();
+	let exited = false;
+	child.once('exit', () => {
+		exited = true;
+	});
+	child.once('error', () => {
+		exited = true;
+	});
 
+	const stop = (): void => {
+		// Ce qui écoute encore sur le port est le nôtre : il était libre avant le lancement.
+		const listening = spawnSync('lsof', ['-ti', `tcp:${PORT}`, '-sTCP:LISTEN'], {
+			encoding: 'utf8'
+		});
+		const listeners = (listening.stdout ?? '')
+			.split('\n')
+			.map(Number)
+			.filter((pid) => Number.isInteger(pid) && pid > 0);
+		stopTrees([...(child.pid === undefined ? [] : [child.pid]), ...listeners]);
+	};
+
+	const deadline = Date.now() + SERVER_START_MS;
+	while (Date.now() < deadline) {
+		if (await portBusy(PORT)) return { stop };
+		if (exited) break;
+		await new Promise((resolve) => setTimeout(resolve, 1_000));
+	}
+	stop();
+	const said = existsSync(logFile) ? lastLines(readFileSync(logFile, 'utf8'), 1) : '';
+	return `le serveur de dev ne démarre pas${said === '' ? '' : ` (${said})`}`;
+}
+
+async function verifsStep(worktree: string): Promise<Step<VerifsData>> {
+	// Un serveur déjà là ne serait pas le code de `main`.
+	if (await portBusy(PORT)) return { ok: false, failure: `le port ${PORT} est déjà pris` };
+	const server = await startServer(worktree);
+	if (typeof server === 'string') return { ok: false, failure: server };
+	try {
+		return await playVerifs(worktree);
+	} finally {
+		server.stop();
+		// Le temps que le port se libère avant la fin de la tâche (SIGKILL à 5 s).
+		await new Promise((resolve) => setTimeout(resolve, 6_000));
+	}
+}
+
+async function playVerifs(worktree: string): Promise<Step<VerifsData>> {
 	const file = join(OUTPUTS, 'verifs.json');
 	rmSync(file, { force: true });
-	const played = run(
+	const played = await run(
 		'pnpm',
 		[
 			'--silent',
@@ -283,6 +417,7 @@ async function verifsStep(worktree: string): Promise<Step<VerifsData>> {
 			env: { VERIFS_PORT: String(PORT), PLAYWRIGHT_JSON_OUTPUT_NAME: file }
 		}
 	);
+	if (played.status === null) return { ok: false, failure: 'arrêtées (délai dépassé)' };
 	// Sortie non nulle = des tests rouges, ou rien de joué : c'est le compte rendu qui tranche.
 	if (!existsSync(file)) return { ok: false, failure: cause(played) };
 	let report: unknown;
@@ -293,41 +428,52 @@ async function verifsStep(worktree: string): Promise<Step<VerifsData>> {
 	}
 	const tests = playwrightTests(report);
 	if (tests === null) return { ok: false, failure: `aucun test joué (${cause(played)})` };
-	if (played.status === null) return { ok: false, failure: 'arrêtées (délai dépassé)' };
 	return { ok: true, data: { tests } };
 }
 
-function guardsStep(worktree: string): Step<Guard[]> {
-	return {
-		ok: true,
-		data: GUARDS.map(([name, args]): Guard => {
-			const result = run('pnpm', ['--silent', ...args], worktree, { minutes: 10 });
-			const ok = result.status === 0;
-			return { name, ok, detail: ok ? '' : lastLines(result.output, 8) || cause(result) };
-		})
-	};
+async function guardsStep(worktree: string): Promise<Step<Guard[]>> {
+	const guards: Guard[] = [];
+	for (const [name, args] of GUARDS) {
+		const result = await run('pnpm', ['--silent', ...args], worktree, { minutes: 10 });
+		const ok = result.status === 0;
+		guards.push({ name, ok, detail: ok ? '' : lastLines(result.output, 8) || cause(result) });
+	}
+	return { ok: true, data: guards };
 }
 
 // ============================================================================
 // Fonctions : commandes
 // ============================================================================
 
-/** `false` si une autre nuit tourne ; un verrou laissé par un processus mort est repris. */
+/**
+ * `false` si une autre nuit tourne. Un verrou dont le processus a disparu, ou
+ * plus vieux qu'une nuit (machine éteinte en route, PID repris par un autre
+ * processus), est périmé : il est repris.
+ */
 function takeLock(): boolean {
 	mkdirSync(OUTPUTS, { recursive: true });
 	if (existsSync(LOCK)) {
 		const pid = Number(readFileSync(LOCK, 'utf8').trim());
+		const recent = Date.now() - statSync(LOCK).mtimeMs < LOCK_MAX_MS;
+		let alive = false;
 		try {
 			if (Number.isInteger(pid) && pid > 0) {
 				process.kill(pid, 0);
-				return false;
+				alive = true;
 			}
 		} catch {
-			// Processus disparu : le verrou est périmé.
+			// Processus disparu.
 		}
+		if (alive && recent) return false;
+		rmSync(LOCK, { force: true });
 	}
-	writeFileSync(LOCK, `${process.pid}\n`);
-	return true;
+	try {
+		// `wx` : deux lancements au même instant, un seul écrit le verrou.
+		writeFileSync(LOCK, `${process.pid}\n`, { flag: 'wx' });
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 function forget(): void {
@@ -338,53 +484,65 @@ function forget(): void {
 	for (const name of files.slice(NIGHTS_KEPT)) rmSync(join(STATE, name), { force: true });
 }
 
+/** Joue les trois étapes. Une erreur imprévue donne une nuit « tout en panne », jamais un silence. */
+async function play(date: string, trial: boolean): Promise<Night> {
+	try {
+		const depot = await mainRepository();
+		const worktree = process.env.NUIT_WORKTREE ?? join(dirname(depot), 'ubumaths-wt-nuit');
+		const failure = await prepare(depot, worktree);
+		if (failure !== null) {
+			const down = { ok: false, failure: `préparation : ${failure}` } as const;
+			return { date, commit: 'inconnu', proofs: down, verifs: down, guards: down };
+		}
+		const head = await run('git', ['rev-parse', '--short', 'HEAD'], worktree, { minutes: 1 });
+		return {
+			date,
+			commit: head.output.trim() || 'inconnu',
+			proofs: await proofsStep(worktree, trial),
+			verifs: await verifsStep(worktree),
+			guards: await guardsStep(worktree)
+		};
+	} catch (error) {
+		const detail = error instanceof Error ? error.message.split('\n')[0] : String(error);
+		const down = { ok: false, failure: `erreur imprévue : ${detail}` } as const;
+		return { date, commit: 'inconnu', proofs: down, verifs: down, guards: down };
+	}
+}
+
 async function launch(trial: boolean): Promise<void> {
 	if (!takeLock()) {
 		console.error('⛔ Une nuit tourne déjà.');
 		process.exit(1);
 	}
 	try {
-		const depot = mainRepository();
-		const worktree = process.env.NUIT_WORKTREE ?? join(dirname(depot), 'ubumaths-wt-nuit');
-		const date = new Date().toLocaleDateString('sv-SE');
-		const failure = prepare(depot, worktree);
-
-		let night: Night;
-		if (failure !== null) {
-			const down = { ok: false, failure: `préparation : ${failure}` } as const;
-			night = { date, commit: 'inconnu', proofs: down, verifs: down, guards: down };
-		} else {
-			const head = run('git', ['rev-parse', '--short', 'HEAD'], worktree, { minutes: 1 });
-			night = {
-				date,
-				commit: head.output.trim() || 'inconnu',
-				proofs: proofsStep(worktree, trial),
-				verifs: await verifsStep(worktree),
-				guards: guardsStep(worktree)
-			};
-		}
-
+		const date = today();
+		const night = await play(date, trial);
 		const previous = pastNights(date);
-		writeFileSync(
-			join(STATE, trial ? 'essai.json' : `${date}.json`),
-			`${JSON.stringify(night, null, '\t')}\n`
-		);
 		console.log(formatSummary(night, previous));
 		if (trial) {
+			writeFileSync(join(STATE, 'essai.json'), `${JSON.stringify(night, null, '\t')}\n`);
 			console.log('\n(essai : rien de barré, rien de commité, pas de notification)');
 			return;
 		}
-		forget();
-		if (newReds(previous, night).length > 0) {
+
+		const reds = redsToNotify(previous, night);
+		if (reds.length > 0) {
 			// Le message ne dit rien du contenu : David lit le bilan par `pnpm nuit`.
-			const sent = run(
+			const sent = await run(
 				'pnpm',
 				['--silent', 'prevenir', 'geste', 'bilan de la nuit à lire', '--session', 'tache-de-nuit'],
 				ROOT,
 				{ minutes: 2 }
 			);
-			console.log(lastLines(sent.output, 1));
+			const line = lastLines(sent.output, 1);
+			console.log(line);
+			// `pnpm prevenir` sort en 0 même sans réseau : seule sa ligne « envoyé » fait foi.
+			// (« déjà envoyé » : même message il y a moins de 10 minutes, David est prévenu.)
+			const delivered = sent.status === 0 && /^(✅ envoyé|⏸ déjà envoyé)/.test(line);
+			if (!delivered) night.pending = reds;
 		}
+		writeFileSync(join(STATE, `${date}.json`), `${JSON.stringify(night, null, '\t')}\n`);
+		forget();
 	} finally {
 		rmSync(LOCK, { force: true });
 	}
@@ -396,7 +554,16 @@ function show(): void {
 		console.log(`Aucune nuit jouée (${STATE}). Installation : pnpm surveillance:installer`);
 		return;
 	}
+	const missed = staleDays(latest.date, today());
+	if (missed > 0) {
+		console.log(
+			`⚠️ Aucune nuit jouée depuis le ${latest.date} (${missed} manquée${missed > 1 ? 's' : ''}) : voir ${join(STATE, 'launchd.log')}\n`
+		);
+	}
 	console.log(formatSummary(latest, previous));
+	if (latest.pending !== undefined && latest.pending.length > 0) {
+		console.log('\n⚠️ La notification de cette nuit n’est pas partie.');
+	}
 }
 
 async function main(): Promise<void> {
