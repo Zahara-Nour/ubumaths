@@ -7,13 +7,10 @@ https://claude.ai/artifact/LGpQYL1RscgPbBHoZRCUFA
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3151._
+_Mis à jour le 2026-11-25, chantier clos._
 
-- **État** : contenu des 4 publiés en prod ; N5 (dfe8ca79) et N6 (dc68386c) en brouillons en prod,
-  rangés (N5 → 4-015, N6 → 3-052) par #3151, `db:migrate` joué. · **Prochaine action** : relecture
-  des 2 brouillons et des variations dans `/dev/modeles` avec David, puis publication · **En
-  attente de David** : la relecture · **Pièges en cours** : options de 3fe98dd9 changées, voir §
-  Lot · **Worktree / branche** : aucun (retiré par `pr:merger`).
+- **État** : clos. N5 (dfe8ca79) et N6 (dc68386c) publiés par David après sa relecture ;
+  variations des 4 modèles publiés en prod depuis #3148 ; rangement par #3151. Journal archivé.
 
 ## Phase 0 (2026-11-25)
 
@@ -76,3 +73,4 @@ les 6 modèles.
 - Preuve rouge : `migrations-rangement-tags` sans le .sql → 5 échecs, tous sur 20261125163550 ;
   avec → 111 verts.
 - #3151 mergée, `db:migrate` joué (seule migration en attente).
+- Relecture validée par David ; `publier-lot.ts --publier` lancé par David : N5 et N6 publiés.
