@@ -2,10 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3123 (R12, `pnpm prevenir`)._
+_Mis à jour le 2026-11-25, à l'ouverture de la PR « tâche de nuit » (branche `feat/verifs-nuit`)._
 
 - **État** : tri des vérifications manuelles TERMINÉ : paquets 1 à 8 mergés (#3061, #3064, #3065, #3066, #3074, #3085, #3093, #3105), paquet 9 mergé (#3118) : **391 → 76 lignes**. Ce qui reste dans la liste ne se joue pas par un test (vrai doigt, vidéoprojecteur, prod, contenu, décisions de David). #3096 mergée, pas encore en prod. Stash « verifs-tri-7 » inutile, encore dans `git stash list`.
-- **Prochaine action** : la tâche de nuit unique (à accorder avec `ecarts-a-trier` ; elle préviendra par `pnpm prevenir geste "…" --session <nom>`, seulement d'un rouge nouveau), puis R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé) : ordre validé par David. R12 fait (#3123). Les corrections d'écarts avancent dans le chantier `ecarts-verifs`. ⛔ ne jamais jouer la déconnexion du prof local (elle révoque toutes ses sessions).
+- **Prochaine action** : après le merge de la PR « tâche de nuit » : `pnpm surveillance:installer` depuis le dépôt principal (installe le lancement de 2 h), puis **lire le bilan de la première nuit** (`pnpm nuit`) : durée de la suite complète sur six navigateurs, et push du registre sous launchd, jamais essayés. Ensuite R13 (prod après `deploy:prod`), puis clôture (versement dans `docs/systeme/`, journal archivé) : ordre validé par David. Les corrections d'écarts avancent dans le chantier `ecarts-verifs`. ⛔ ne jamais jouer la déconnexion du prof local (elle révoque toutes ses sessions).
+- **Tâche de nuit (PR `feat/verifs-nuit`), phase 0 validée par David le 2026-11-25 (« go », puis trois choix répondus un par un)** : un **script** lancé par launchd (pas une session Claude), à **2 h**, bilan **hors dépôt** (`~/.local/state/nuit/`, lu par `pnpm nuit`). Elle joue dans son worktree `../ubumaths-wt-nuit` (détaché sur `origin/main`, à ne pas retirer) : `pnpm ecarts rejouer --barrer` (lignes vertes barrées, commitées et poussées sur `main`), `pnpm test:verifs:tout`, trois gardes de doc. Notification seulement d'un rouge nouveau. Doc : `docs/pratiques/tache-de-nuit.md`. Session `ecarts-a-trier` d'accord (elle n'avait rien commencé).
 - **R12 livré (#3123), phase 0 validée par David le 2026-11-25 (« je te suis »)** : `pnpm prevenir lien | question | geste "…"`, lancée par la session quand elle s'arrête pour un geste de lui ; ni le lien ni le texte de la question dans le message (ntfy.sh est un service extérieur) ; David a bien reçu les notifications d'essai. Doc : `docs/pratiques/prevenir-david.md`. Laissé : le transcript est lu en entier pour trouver le `/rename`.
 
 - **Tranché par David le 2026-11-24 (« je suis tes recos », paquet 9)** : E76 à E81 tous à corriger (E78 : question d'accès avant toute migration ; E80 : essai sur un build d'abord). États au [registre](../ecarts/registre.md) et dans [ecarts-verifs-progress.md](ecarts-verifs-progress.md).
@@ -18,9 +19,31 @@ _Mis à jour le 2026-11-25, après #3123 (R12, `pnpm prevenir`)._
 - **Tranché par David le 2026-11-24 (après #3085, « je valide »)** : #2346 : garder la droite ET la courbe (pas un doublon), ligne sortie de la liste ; E63 : à corriger, une graduation étiquetée sur deux à 390 px, dans la PR « téléphone » ; E58 à E60 : retirer la page des modèles de message (il ne s'en sert pas), la table et ses règles d'accès restent, question à part ; E21 : rien dans le code, la ligne reste ouverte tant qu'aucune énigme n'est publiée.
 - **En attente de David** : E21 (publier des énigmes, contenu). À regarder par la session : ce que l'élève voit à la place de l'énigme du jour (encart vide → écart à part).
 - **Registre des écarts** : `docs/ecarts/registre.md` (mode d'emploi : `docs/pratiques/registre-des-ecarts.md`). Écarts suivants : `pnpm ecarts ajouter E …` depuis le dépôt principal, après `git pull --rebase`, commit aussitôt (suivant : E83).
-- **Tâche de nuit** : la session du chantier `ecarts-a-trier` annonce (message du 2026-11-24, à relire dans `docs/wip/ecarts-a-trier-progress.md`) que David veut UNE seule tâche de nuit (`test:verifs`, preuves des écarts, gardes de doc, sans merge) : ne pas créer celle de R12 ici sans s'être accordé avec elle sur son contenu.
 - **Pièges en cours** : `--output=<dossier>` par lancement ; `networkidle` avant un clic après `goto` ; `locator('visible=true')` et navigation par `href` quand un lien est redessiné ; lire des éléments d'un seul coup (`evaluateAll`) après un changement de thème ; gestes à deux doigts = `Fingers` (CDP, Android) ; présence notée une fois par jour et par processus du serveur ; décor partagé en `serial`, élèves partagés sous verrou ; **brouillons d'un fichier parallèle : préfixe de titre avec le projet et `parallelIndex`, sinon l'`afterAll` d'un worker efface ceux des autres** ; `test.fail()` juste avant l'assertion de l'écart ; un agent qui a livré mais garde des lancements en fond : l'arrêter (TaskStop) ; ne JAMAIS changer l'attendu seul ; un modèle `published` sans nœud de l'arbre s'affiche dans `/automaths` sous « Non classés » : ceux que créent `questions-paquet5` et `blocs-geometrie-5` y passent le temps de leur test ; le worktree d'un paquet ne s'appelle pas `…-verifs-auto` : avant un `/reprendre`, chercher aussi `ubumaths-wt-verifs-tri-*`. Paquet 6 : `--output` efface les captures du dossier (un dossier par lancement ET par projet) ; trois agents sur le même serveur le font recharger des pages en plein test (rouges de charge, verts rejoués seuls) ; `goto` juste après une connexion → attendre `networkidle`.
-- **Worktree / branche** : aucun (celui de #3123 retiré).
+- **Worktree / branche** : `../ubumaths-wt-verifs-nuit`, branche `feat/verifs-nuit` (retirés au merge) ; `../ubumaths-wt-nuit` est celui de la tâche de nuit, il reste.
+
+## Tâche de nuit unique (2026-11-25)
+
+**Phase 0 (validée par David)** : nominal : chaque nuit à 2 h, un script joue les preuves des écarts, les vérifications à l'écran sur les six navigateurs et les gardes de doc, dans un worktree à lui ; `pnpm nuit` affiche le bilan. Limites : un test déjà rouge la veille, une preuve verte barrée ne notifient pas. Erreur : une étape qui ne peut pas tourner ne commite rien et prévient une fois.
+
+**Livré** : `scripts/nuit/` (`logique.ts`, `index.ts`), `pnpm nuit [--lancer [--essai]]`, `pnpm ecarts rejouer --json=<fichier>`, lancement de 2 h dans `scripts/surveillance-machine-installer.sh`, doc `docs/pratiques/tache-de-nuit.md`.
+
+**Essais réels (`--essai`, un seul fichier de vérifications, `connexion.spec.ts`)** :
+
+1. Premier essai : preuves des écarts jouées en 2 min (161 rouges, 116 à la main, aucune verte ni cassée), gardes vertes, mais **vérifications à l'écran bloquées 32 min** : Playwright n'arrête pas le serveur de dev qu'il lance par `pnpm dev` (pnpm met chaque script dans son propre groupe de processus ; le serveur survit, Playwright attend sans fin, aucun compte rendu). Le jour, personne ne le voit : un serveur déjà lancé est réutilisé.
+2. Correctif : la tâche lance et arrête elle-même le serveur (parenté suivie par `ps`, plus ce qui écoute sur le port), et un délai dépassé arrête toute la descendance d'une commande.
+3. Second essai : 1 min 55, « 30 verts, 0 rouge, 0 sauté » (5 tests × 6 navigateurs), port 5190 libéré, aucun processus restant, worktree de la nuit propre.
+
+**Revue `code-reviewer` (Sonnet)** : corrigés : arrêt de la descendance au délai, verrou périmé (processus disparu ou plus de 8 h) repris, erreur imprévue = nuit « tout en panne » et non un silence, notification pas partie reprise la nuit suivante, commit refusé = registre remis en état (worktree propre), fichier de test qui ne se charge pas = rouge, deux tests de même nom = pire verdict, verdict inconnu du rejeu = panne. `pnpm nuit` écrit en tête quand aucune nuit n'a tourné depuis plus d'un jour.
+
+**Laissé, à dire à David** :
+
+- **jamais essayés** : la suite complète sur six navigateurs (durée inconnue, délai de 4 h), le commit et le push du registre barré (aucune preuve verte aujourd'hui), le lancement par launchd (PATH, droits de push) ;
+- **une panne qui dure ne renotifie pas** (« prévient une fois », validé) : push refusé chaque nuit, port pris, worktree pas propre restent visibles par `pnpm nuit` seulement ;
+- un lancement à la main sans `--essai` le même jour écrase le bilan de 2 h ;
+- le chemin du dépôt n'est pas échappé dans le plist (sans effet avec le chemin actuel) ;
+- `index.ts` n'a pas de test (il lance des commandes) : seuls les essais réels le couvrent ; aucun typecheck ne lit `scripts/` ;
+- vu en passant : le verrou des vérifs entre fichiers (`e2e/verifs/helpers/verrou.ts`) est un dossier **relatif au worktree** : il ne protège pas deux worktrees qui jouent `test:verifs` sur la même base locale.
 
 ## Tri — paquet 9 : lignes du 19 au 22 novembre (2026-11-24)
 
