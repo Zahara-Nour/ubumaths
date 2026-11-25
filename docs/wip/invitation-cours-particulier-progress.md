@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, PR 2 commitée (f056676d6f), revue de code et audit de sécurité lus, findings à corriger._
+_Mis à jour le 2026-11-25, corrections des revues commitées (PR 2 pas encore poussée)._
 
-- **État** : PR 2 (admin) écrite et commitée, NON poussée, sur `feat/invitation-cours-particulier-admin` : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien, sans migration) ; 13 tests d'intégration verts, tests unitaires verts, parcours inviter/renvoyer/annuler vu à l'écran (0 erreur de console) ; dernier `check:incremental` à 0 erreur avant la retouche du sélecteur de niveau · **Prochaine action** : corriger les findings de `code-reviewer` notés ci-dessous (« Revue de la PR 2 »), et ceux de `security-auditor` (« Audit de sécurité de la PR 2 », aucun bloquant), puis `check:incremental` + `types:cliquet`, push, push, PR, `pnpm pr:merger` ; puis PR 3 (page du parent `/auth/register/invitation/<jeton>`) · **En attente de David** : rien (décision 9) · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à une page de la PR 3) ; base locale : réglage `is_private_lessons` posé à la main sur Akadada ; serveur de dev du worktree sur 5178 · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
+- **État** : PR 2 (admin) commitée sur `feat/invitation-cours-particulier-admin`, NON poussée, 4 commits : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien), corrections des deux revues validées par David (décision 9) ; tests serveur verts (1 715), `lint:fast` et `docs:check-a-jour` verts, garde des actions testée · **Prochaine action** : relancer `pnpm test:integration tests/integration/invitations-cours-particuliers-envoi.test.ts` (nouveaux cas : doublon, renvois simultanés, annulation réservée ; pas encore passé après les corrections), `pnpm check:incremental`, `pnpm types:cliquet` (verrous tenus par d'autres sessions au moment du `/clear`) ; puis `git merge origin/main` (branche en retard), push, PR, `pnpm pr:merger` ; puis PR 3 · **En attente de David** : rien · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à la page de la PR 3) ; PR 3 : phrase de confidentialité (décision 9), `Referrer-Policy: no-referrer` sur la page du lien ; base locale : réglage `is_private_lessons` posé à la main sur Akadada · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
 
 ## But
 
@@ -81,7 +81,7 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 - **PR 3** — page du parent : création du compte, de la classe, adhésion, consentement ; courriel final.
   code-reviewer + security-auditor.
 
-## Revue de la PR 2 (code-reviewer, 2026-11-25) — à corriger avant la PR
+## Revue de la PR 2 (code-reviewer, 2026-11-25) — corrigée (décision 9 ; point 4 assumé, point 5 laissé)
 
 1. « Annuler » ignore une réservation `claimed_at` de moins de 5 min (`cancelInvitation`) :
    ajouter `.or(claimFreeFilter(now))`, motif `in_use`, et un test.
@@ -95,7 +95,7 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 5. (mineur) Exception de l'expéditeur après l'insertion → 500 « non créée », alors que la ligne existe.
 6. (mineur) Champ absent → message Zod en anglais.
 
-## Audit de sécurité de la PR 2 (security-auditor, 2026-11-25) — aucun bloquant
+## Audit de sécurité de la PR 2 (security-auditor, 2026-11-25) — aucun bloquant ; C1, C2, N1 corrigés ; N3 pour la PR 3
 
 - **C1** : aucun test sur la garde des actions `invite` / `resend` / `cancel` → test serveur :
   prof non élevé et élève → 403, `createServiceRoleClient` et l'expéditeur jamais appelés ; admin élevé passe.
@@ -131,3 +131,4 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-24 : PR 1 écrite (migration + 21 tests) ; revues security-auditor (aucun bloquant) et code-reviewer (niveaux, format d'adresse, réservation `claimed_at`, plafond d'envois, assertions strictes : corrigés).
 - 2026-11-25 : #3119 mergée (PR 1) ; décision 8 de David (purge à 30 jours) ; `db:migrate` refusé à Claude par le classifieur, lancé par David, vérifié en prod.
 - 2026-11-25 : PR 2 écrite (page admin, courriel, renvoi/annulation, purge à 30 jours par un cron Vercel quotidien `api/cron/invitations-cours-particulier`, sans migration) ; 13 tests d'intégration verts ; parcours inviter/renvoyer/annuler vu à l'écran (Playwright, 0 erreur de console).
+- 2026-11-25 : revues de la PR 2 (code-reviewer, security-auditor : aucun bloquant) ; décision 9 de David ; corrections commitées (annulation et renvoi gardés, refus du doublon, 20 envois/h/admin, test de la garde, journal sans la ligne).
