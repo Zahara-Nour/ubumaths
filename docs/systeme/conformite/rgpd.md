@@ -653,13 +653,22 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 
 **Implementation** : `src/routes/api/account/delete/+server.ts` → RPC `delete_user_account(p_user_id)`
 (service_role seul) → `auth.admin.deleteUser`, dont la cascade sur `profiles` emporte le reste.
+Le déroulé (audit, RPC, compte, fichiers, audit final) vit dans `src/lib/server/account-deletion.ts`
+(`deleteStudentAccount`), partagé par deux portes :
+
+- l'**élève lui-même**, page Profil (`/api/account/delete`) ; `requested_by` reste nul ;
+- l'**admin**, page Users (`/api/admin/users/[id]/delete`, 2026-11-25) : nom de l'élève retapé,
+  20 / h par admin, `requested_by` = l'admin
+  ([comptes-classes-ecoles.md](../comptes-classes-ecoles.md#admin--comptes-et-élèves)). Preuve :
+  `tests/integration/suppression-eleve-par-admin.test.ts`.
 
 - **Comptes élèves seulement** : un prof ou un admin reçoit 403 (le bouton n'est affiché qu'aux
   élèves, page profil). En mono-prof, la cascade d'un prof emporterait classes et travaux de tous
   les élèves ; ces comptes se ferment à la main. La fonction refuse aussi tout rôle non élève.
 - **Confirmation** : saisie de `SUPPRIMER MON COMPTE` (`src/lib/server/validation/account.ts`).
 - **Limite** : 1 demande / 24 h (limiteur en base, partagé par toutes les instances).
-- **Audit** : `account_deletion_audit` (hash SHA-256 de l'e-mail, IP, navigateur, statut) ;
+- **Audit** : `account_deletion_audit` (hash SHA-256 de l'e-mail, IP, navigateur, statut, admin
+  demandeur `requested_by`) ;
   `user_id` passé à NULL une fois la suppression terminée.
 - **Navigateur** : après la suppression réussie, `AccountDeletionDialog` efface de l'appareil les
   données de travail de l'élève (`clearWorkData`, voir ci-dessous).

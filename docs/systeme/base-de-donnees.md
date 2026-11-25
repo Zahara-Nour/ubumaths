@@ -770,7 +770,8 @@ et ne peut ni les dater ni les modifier ; **l'admin seul les lit** (policy
 (appelée par `run_cleanup_expired_data`, serveur seul) efface les lignes de plus de **90 jours**.
 Preuve : `tests/integration/mesures-web-vitals.test.ts`.
 `account_deletion_audit` (RLS sans policy : client service seul) trace chaque suppression de
-compte, par l'élève ou par la purge de conservation ; `cleanup_result.storage_paths` liste ses
+compte, par l'élève, par l'admin (`requested_by`, `20261125170922` ; nul = l'élève ou la purge)
+ou par la purge de conservation ; `cleanup_result.storage_paths` liste ses
 fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retirés du storage
 (nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés et les
 captures de signalement, que les chemins rangés chez l'élève (`20261016101200`) : il en écrit

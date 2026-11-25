@@ -74,12 +74,12 @@ sous-traitants **incomplet** (IA tierce non listée) + des **docts datés** à r
 
 ### 2. Droit à l'effacement (Art. 17)
 
-| Élément       | Doc janv.                        | **Code actuel**                      | Drift         |
-| ------------- | -------------------------------- | ------------------------------------ | ------------- |
-| Endpoint      | `DELETE /api/account/delete`     | identique                            | ✓             |
-| RPC SQL       | `delete_user_account_rgpd(uuid)` | **`delete_user_account(p_user_id)`** | nom différent |
-| Table d'audit | `account_deletion_requests`      | **`account_deletion_audit`**         | nom différent |
-| Rate limit    | —                                | 1 / 24 h                             | ✓ (ajouté)    |
+| Élément       | Doc janv.                        | **Code actuel**                                                        | Drift         |
+| ------------- | -------------------------------- | ---------------------------------------------------------------------- | ------------- |
+| Endpoint      | `DELETE /api/account/delete`     | identique, + `DELETE /api/admin/users/[id]/delete` (admin, 2026-11-25) | ✓             |
+| RPC SQL       | `delete_user_account_rgpd(uuid)` | **`delete_user_account(p_user_id)`**                                   | nom différent |
+| Table d'audit | `account_deletion_requests`      | **`account_deletion_audit`**                                           | nom différent |
+| Rate limit    | —                                | 1 / 24 h                                                               | ✓ (ajouté)    |
 
 > 🔴 **Ce tableau disait « fonctionnel » : c'était faux.** Mesuré en prod le 2026-10-10 : la
 > fonction écrivait dans des tables disparues → 500 pour tout le monde, aucune suppression jamais
