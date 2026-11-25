@@ -1,0 +1,482 @@
+{
+	"rangement": {
+		"noeud": "Nombres et calculs > Puissances : calculs > quotient de puissances",
+		"point": "3-052"
+	},
+	"title": "Puissances : bases cachées",
+	"description": "Écrire sous la forme d’une puissance de a un quotient où une puissance de a est écrite en nombre (25 = 5², 49 = 7²) ; base positive ou négative, exposants relatifs (pièges : le nombre caché compté comme a ou oublié, exposant du dénominateur ajouté)",
+	"grades": ["3"],
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"brackets": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris ce nombre sous la forme d’une puissance de ${{a}}$.\n\n$$\\dfrac{ {{a}}^{ {{n}} } \\times {{A}} }{ {{a}}^{ {{m}} } \\times {{a}}^{ {{p}} } } = {{a}}^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*a"
+				},
+				{
+					"name": "n",
+					"expression": "2..7"
+				},
+				{
+					"name": "m",
+					"expression": "2..7"
+				},
+				{
+					"name": "p",
+					"expression": "2..7"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n+2-m-p"
+				}
+			],
+			"conditions": ["r!=0", "r!=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n+1-m-p}}",
+							"message": "Tu as compté ${{A}}$ comme un seul facteur : ${{A}} = {{a}}^2$.",
+							"label": "Nombre caché compté comme a"
+						},
+						{
+							"answer": "{{eval:n-m-p}}",
+							"message": "Tu as oublié ${{A}}$ : c’est une puissance cachée, ${{A}} = {{a}}^2$.",
+							"label": "Nombre caché oublié"
+						},
+						{
+							"answer": "{{eval:n+2-m+p}}",
+							"message": "Tous les exposants du dénominateur se retranchent : tu en as ajouté un.",
+							"label": "Exposant du dénominateur ajouté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit ${{A}}$ comme une puissance de ${{a}}$ : ${{A}} = {{a}} \\times {{a}} = \\textcolor{{{color:primary.0}}}{{{a}}^2}$.",
+					"$$\\dfrac{ {{a}}^{ {{n}} } \\times \\textcolor{{{color:primary.0}}}{{{a}}^2} }{ {{a}}^{ {{m}} } \\times {{a}}^{ {{p}} } } = \\dfrac{ {{a}}^{ {{eval:n+2}} } }{ {{a}}^{ {{eval:m+p}} } } = {{a}}^{ {{eval:n+2}} - {{eval:m+p}} } = \\textcolor{{{color:primary.1}}}{{{a}}^{ {{r}} }}$$"
+				]
+			},
+			"hint": "Écris ${{A}}$ comme une puissance de ${{a}}$, puis regroupe le numérateur et le dénominateur."
+		},
+		{
+			"statement": "Écris ce nombre sous la forme d’une puissance de ${{a}}$.\n\n$$\\dfrac{ {{a}} \\times {{a}}^{ {{n}} } }{ {{A}} \\times {{A}} } = {{a}}^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*a"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n+1-4"
+				}
+			],
+			"conditions": ["r!=0", "r!=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n+1-2}}",
+							"message": "Chaque ${{A}}$ vaut ${{a}}^2$ : le dénominateur est ${{a}}^4$.",
+							"label": "Nombres cachés comptés comme a"
+						},
+						{
+							"answer": "{{eval:n-4}}",
+							"message": "Le facteur ${{a}}$ écrit seul compte aussi : ${{a}} = {{a}}^1$.",
+							"label": "Facteur a seul oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit ${{A}}$ comme une puissance de ${{a}}$ : ${{A}} = \\textcolor{{{color:primary.0}}}{{{a}}^2}$, et ${{a}} = {{a}}^1$.",
+					"$$\\dfrac{ {{a}}^1 \\times {{a}}^{ {{n}} } }{ \\textcolor{{{color:primary.0}}}{{{a}}^2} \\times \\textcolor{{{color:primary.0}}}{{{a}}^2} } = \\dfrac{ {{a}}^{ {{eval:n+1}} } }{ {{a}}^4 } = {{a}}^{ {{eval:n+1}} - 4 } = \\textcolor{{{color:primary.1}}}{{{a}}^{ {{r}} }}$$"
+				]
+			},
+			"hint": "Écris ${{A}}$ comme une puissance de ${{a}}$, sans oublier le facteur ${{a}}$ écrit seul."
+		},
+		{
+			"statement": "Écris ce nombre sous la forme d’une puissance de $(-{{a}})$.\n\n$$\\dfrac{ (-{{a}})^{ {{n}} } \\times {{A}} }{ (-{{a}})^{ {{m}} } } = (-{{a}})^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*a"
+				},
+				{
+					"name": "n",
+					"expression": "2..7"
+				},
+				{
+					"name": "m",
+					"expression": "2..7"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n+2-m"
+				}
+			],
+			"conditions": ["r!=0", "r!=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:n+1-m}}",
+							"message": "Tu as compté ${{A}}$ comme un seul facteur : ${{A}} = \\left( -{{a}} \\right)^2$.",
+							"label": "Nombre caché compté comme un facteur"
+						},
+						{
+							"answer": "{{eval:n-m}}",
+							"message": "Tu as oublié ${{A}}$ : c’est une puissance cachée, ${{A}} = \\left( -{{a}} \\right)^2$.",
+							"label": "Nombre caché oublié"
+						},
+						{
+							"answer": "{{eval:n+2+m}}",
+							"message": "Tous les exposants du dénominateur se retranchent : tu en as ajouté un.",
+							"label": "Exposant du dénominateur ajouté"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est positif : ${{A}} = (-{{a}}) \\times (-{{a}}) = \\textcolor{{{color:primary.0}}}{(-{{a}})^2}$.",
+					"$$\\dfrac{ (-{{a}})^{ {{n}} } \\times \\textcolor{{{color:primary.0}}}{(-{{a}})^2} }{ (-{{a}})^{ {{m}} } } = \\dfrac{ (-{{a}})^{ {{eval:n+2}} } }{ (-{{a}})^{ {{m}} } } = (-{{a}})^{ {{eval:n+2}} - {{m}} } = \\textcolor{{{color:primary.1}}}{(-{{a}})^{ {{r}} }}$$"
+				]
+			},
+			"hint": "Écris ${{A}}$ comme une puissance de $(-{{a}})$ : le produit de deux nombres négatifs est positif."
+		},
+		{
+			"statement": "Écris ce nombre sous la forme d’une puissance de ${{a}}$.\n\n$$\\dfrac{ {{a}}^{-{{n}}} \\times {{A}} }{ {{a}}^{ {{m}} } } = {{a}}^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "A",
+					"expression": "eval:a*a"
+				},
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "r",
+					"expression": "eval:-n+2-(m)"
+				}
+			],
+			"conditions": ["r!=0", "r!=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-n+1-(m)}}",
+							"message": "Tu as compté ${{A}}$ comme un seul facteur : ${{A}} = {{a}}^2$.",
+							"label": "Nombre caché compté comme a"
+						},
+						{
+							"answer": "{{eval:-n-(m)}}",
+							"message": "Tu as oublié ${{A}}$ : c’est une puissance cachée, ${{A}} = {{a}}^2$.",
+							"label": "Nombre caché oublié"
+						},
+						{
+							"answer": "{{eval:n+2-(m)}}",
+							"message": "L’exposant $-{{n}}$ est négatif : garde son signe dans le calcul.",
+							"label": "Signe d’un exposant oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit ${{A}}$ comme une puissance de ${{a}}$ : ${{A}} = \\textcolor{{{color:primary.0}}}{{{a}}^2}$.",
+					"$$\\dfrac{ {{a}}^{-{{n}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}^2} }{ {{a}}^{ {{m}} } } = \\dfrac{ {{a}}^{ {{eval:2-n}} } }{ {{a}}^{ {{m}} } } = {{a}}^{ {{eval:2-n}} {{eval:-(m);+}} } = \\textcolor{{{color:primary.1}}}{{{a}}^{ {{r}} }}$$"
+				]
+			},
+			"hint": "Écris ${{A}}$ comme une puissance de ${{a}}$, puis garde le signe de chaque exposant."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "V1 : 5^6 × 25 / (5^3 × 5^2) → 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"n": "6",
+				"m": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "V1 : 25 compté comme 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"n": "6",
+				"m": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $25$ comme un seul facteur : $25 = 5^2$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "V1 : 25 oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"n": "6",
+				"m": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié $25$ : c’est une puissance cachée, $25 = 5^2$."
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "V1 : exposant du dénominateur ajouté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"n": "6",
+				"m": "3",
+				"p": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tous les exposants du dénominateur se retranchent : tu en as ajouté un."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "V1 : 2^2 × 4 / (2^5 × 2^4) → -5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2",
+				"m": "5",
+				"p": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5"]
+		},
+		{
+			"description": "V2 : 3 × 3^8 / (9 × 9) → 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "V2 : 9 compté comme 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Chaque $9$ vaut $3^2$ : le dénominateur est $3^4$."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "V2 : facteur seul oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"n": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le facteur $3$ écrit seul compte aussi : $3 = 3^1$."
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "V2 : 7 × 7^2 / (49 × 49) → -1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1"]
+		},
+		{
+			"description": "V3 : (-5)^3 × 25 / (-5)^7 → -2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3",
+				"m": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2"]
+		},
+		{
+			"description": "V3 : 25 compté comme -5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3",
+				"m": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $25$ comme un seul facteur : $25 = \\left( -5 \\right)^2$."
+			},
+			"answers": ["-3"]
+		},
+		{
+			"description": "V3 : 25 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3",
+				"m": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié $25$ : c’est une puissance cachée, $25 = \\left( -5 \\right)^2$."
+			},
+			"answers": ["-4"]
+		},
+		{
+			"description": "V3 : exposant du dénominateur ajouté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"n": "3",
+				"m": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tous les exposants du dénominateur se retranchent : tu en as ajouté un."
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "V4 : 3^-4 × 9 / 3^3 → -5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "4",
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5"]
+		},
+		{
+			"description": "V4 : 2^-3 × 4 / 2^-5 → 4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"n": "3",
+				"m": "-5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "V4 : 9 compté comme 3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "4",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as compté $9$ comme un seul facteur : $9 = 3^2$."
+			},
+			"answers": ["-6"]
+		},
+		{
+			"description": "V4 : 9 oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "4",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié $9$ : c’est une puissance cachée, $9 = 3^2$."
+			},
+			"answers": ["-7"]
+		},
+		{
+			"description": "V4 : signe de l’exposant oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "4",
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L’exposant $-4$ est négatif : garde son signe dans le calcul."
+			},
+			"answers": ["3"]
+		}
+	]
+}
