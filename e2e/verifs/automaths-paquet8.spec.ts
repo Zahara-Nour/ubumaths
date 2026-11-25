@@ -480,8 +480,7 @@ test.describe('#2854 — pastilles des sous-notions', () => {
 	test.use({ viewport: PHONE });
 
 	test('#2854 — les pastilles restent collées en haut ; la dernière pastille d’une grosse notion descend juste dessous sans figer la page', async ({
-		page,
-		browserName
+		page
 	}) => {
 		test.setTimeout(180_000);
 		const catalogue = await openCatalogue(page);
@@ -568,15 +567,6 @@ test.describe('#2854 — pastilles des sous-notions', () => {
 			.toBeLessThan(y);
 
 		// La section visée arrive juste sous les pastilles (à quelques pixels) : mesure prise au repos
-		if (browserName === 'chromium') {
-			// ÉCART (Chrome, Android) : la page dépasse la section d'environ 1 200 px (elle finit tout en bas
-			// de la dernière section, son haut passe au-dessus de l'écran) ; WebKit (iPhone) la pose juste sous les pastilles
-			expect(
-				drift,
-				'symptôme sous Chromium : le haut de la section est passé au-dessus'
-			).toBeLessThan(-200);
-			test.fail();
-		}
 		expect(Math.abs(drift), 'la section est juste sous les pastilles (px)').toBeLessThanOrEqual(24);
 	});
 
