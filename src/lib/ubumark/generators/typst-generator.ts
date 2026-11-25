@@ -4027,7 +4027,9 @@ function generateAssocierTypst(
 		const item = items[k];
 		const label = labels[k];
 		cells.push(
-			item === undefined ? '[]' : `[${item}]`,
+			// Rangée insécable : sans cela, une courbe qui ne tient plus en bas de page passe
+			// à la suivante en laissant son numéro et son point derrière elle
+			item === undefined ? '[]' : `grid.cell(breakable: false)[${item}]`,
 			item === undefined ? '[]' : '[•]',
 			'[]',
 			label === undefined ? '[]' : '[•]',

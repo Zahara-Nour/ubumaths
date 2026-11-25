@@ -74,3 +74,20 @@ export function worksheetPdfFileName(
 	const student = studentName ? `_${sanitizeForFileName(studentName)}` : '';
 	return `${sanitizeForFileName(title)}${student}${PDF_KIND_SUFFIXES[kind]}${localeFileNameSuffix(locale)}.pdf`;
 }
+
+/**
+ * Un nom de fichier libre dans une archive : `name`, ou `name` suivi de « _2 »,
+ * « _3 »… avant l'extension s'il est déjà pris (deux élèves homonymes, noms
+ * vides). Le nom rendu est noté dans `used`.
+ */
+export function uniqueFileName(name: string, used: Set<string>): string {
+	const dot = name.lastIndexOf('.');
+	const stem = dot > 0 ? name.slice(0, dot) : name;
+	const extension = dot > 0 ? name.slice(dot) : '';
+	let candidate = name;
+	for (let rank = 2; used.has(candidate); rank++) {
+		candidate = `${stem}_${rank}${extension}`;
+	}
+	used.add(candidate);
+	return candidate;
+}

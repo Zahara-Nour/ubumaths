@@ -193,6 +193,19 @@ Worktree `ubumaths-wt-ecarts-verifs-e58`, branche `fix/ecarts-verifs-e58`.
 - **Après le merge** : E58, E59, E60 barrés au registre à la main depuis `main`.
 - **Vu à l'écran par la session** : `pnpm voir /dashboard/teacher/message-templates --compte prof` → « Page introuvable ».
 
+## PR R : E68 et E69, onglet « Lot » et bloc « associer » en PDF (2026-11-25)
+
+Worktree `ubumaths-wt-ecarts-verifs`, branche `fix/ecarts-verifs-e68`.
+
+- **E68** : l'onglet « Lot » de l'aperçu PDF d'une fiche reçoit les élèves des affectations de la fiche (membres actifs des classes visées et élèves visés nommément), sans doublon, triés par nom. Lus à chaque ouverture de l'onglet PDF par la route qui sert déjà aux copies par élève (`fetchBatchStudents`, `src/lib/worksheets/batch-students.ts`) : aucune route, migration ni règle d'accès nouvelle. Fiche affectée à personne : « Aucun eleve disponible », comme avant.
+- **Choisi sans David (à confirmer)** : « les élèves du lot » = ceux de TOUTES les affectations de la fiche réunies (le message de l'onglet parlait déjà d'une classe « associée à cette feuille ») ; pas de choix d'une classe ou d'une affectation dans l'onglet.
+- **E69** : dans le PDF, chaque rangée d'un bloc « associer » est insécable (`grid.cell(breakable: false)`) : la courbe qui ne tient plus en bas de page passe à la suivante avec son numéro et son point.
+- **Revue** : `code-reviewer` et `security-auditor`, aucun finding bloquant ; personne ne lit un nom qu'il ne lisait pas déjà. Corrigé d'après elles : affectations illisibles → message (sinon « aucun élève » à tort) ; deux ouvertures rapprochées de l'onglet → seule la dernière lecture compte ; liste figée pendant le lot ; deux élèves homonymes → `_2` au nom du second PDF (`uniqueFileName`), le premier n'est plus écrasé dans le zip.
+- **Vérifs** : `test.fail` de #2581 (pages-paquet7) et de #2637 PDF (blocs-paquet7) retirés ; le test de l'onglet « Lot » joue maintenant une fiche affectée à deux élèves (2 PDF en `_EN`, texte anglais lu dans le PDF), plus un test « fiche affectée à personne ».
+- **Vu à l'écran par la session** : PDF `paquet7-une-colonne` (courbe 3, son « 3. » et son point ensemble en page 2) ; onglet « Lot » par le test (« 2 eleves », liste de langue, zip téléchargé).
+- **Non fait** : avertissement d'un lot incomplet affiché dans l'onglet lui-même (aujourd'hui un message qui passe) ; plafond de demandes simultanées (une par affectation).
+- **Après le merge** : `pnpm ecarts rejouer --barrer` depuis `main` (E68, E69).
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |

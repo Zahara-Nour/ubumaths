@@ -1119,7 +1119,7 @@ test.describe('PDF de fiche', { tag: '@bureau' }, () => {
 		).toBeGreaterThanOrEqual(6);
 	});
 
-	test('#2637 — PDF d’une fiche avec le bloc « associer » à courbes : chaque courbe est sur la page de son numéro (ÉCART : la courbe 3 passe page 2, son « 3. » reste page 1)', async ({
+	test('#2637 — PDF d’une fiche avec le bloc « associer » à courbes : chaque courbe est sur la page de son numéro', async ({
 		page
 	}) => {
 		await pdfs(page);
@@ -1151,10 +1151,6 @@ test.describe('PDF de fiche', { tag: '@bureau' }, () => {
 		);
 		expect(pagesDesCourbes, 'trois courbes dans l’exemple').toHaveLength(3);
 		expect(pagesDesNumeros, 'les trois numéros sont imprimés').not.toContain(undefined);
-		// Symptôme (capture : paquet7-une-colonne-1.png / -2.png dans .captures/verifs/fiches/) : « 3. » page 1, sa courbe page 2
-		expect(pagesDesNumeros, 'les trois numéros sont sur la page 1').toEqual([1, 1, 1]);
-		expect(pagesDesCourbes, 'la courbe 3 passe sur la page 2').toEqual([1, 1, 2]);
-		test.fail();
 		expect(pagesDesCourbes, 'chaque courbe est sur la page de son numéro').toEqual(pagesDesNumeros);
 	});
 
