@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 validée._
+_Mis à jour le 2026-11-25, lot en cours d'écriture._
 
-- **État** : rubrique 6P3 réservée (commit sur `main`), relevé écrit ([idees-6e-proportionnalite-releve.md](idees-6e-proportionnalite-releve.md)), 12 fiches de phase 0 sur la page à cocher https://claude.ai/artifact/8WUcuNwaQY2PvBydaLivW3 (collection `verdicts`).
-- **Prochaine action** : écrire le gros lot (modèles neufs N1 à N5, variations F1 à F3, ouverture de 06df72fd à la 6e en F4).
-- **En attente de David** : rien.
-- **Pièges en cours** : les variations de modèles publiés (e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d, 06df72fd) se réservent dans le tableau avant l'export. Bornes de 6e : pas de produit en croix (6-191, 6-192), échelles graphiques seulement (6-193).
+- **État** : phase 0 validée (« je valide »). Variations des 4 modèles publiés écrites et vérifiées (`question:specs` : 5 fichiers « importable ») dans `scripts/questions/idees-6e-proportionnalite-publies/` + `docs/wip/questions/idees-6e-proportionnalite-publies.py`, commités sur la branche. Modèles neufs N1 à N5 : un agent les écrivait (`docs/wip/questions/idees-6e-proportionnalite-neufs.py` → `scripts/questions/idees-6e-proportionnalite-neufs/`) ; regarder dans le worktree ce qui existe et le vérifier.
+- **Prochaine action** : finir et vérifier N1 à N5 (`create-questions` en simulation, `question:specs --file`, `--apercu 5`), essai en base locale, puis donner à David la commande `create-questions --publier` des neufs.
+- **En attente de David** : question sur e0ccaf84 : `constraints.zeros: off` pour accepter « 21,60 € » (aujourd'hui « forme à améliorer » ; les nouvelles variations écrivent « 7,2 € »).
+- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test ; `migration-rangement.ts` n'ajoute pas de point à un modèle déjà tagué. Rangements des neufs : quatrième proportionnelle niveaux 4, 5, 6 (N1, N2, N3 en 6-192) ; caractérisation niveaux 8, 9 (N4 6-189, N5 6-190).
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite`.
 
 ## Journal
@@ -42,3 +42,9 @@ _Mis à jour le 2026-11-25, phase 0 validée._
 « Je valide » : toutes les fiches acceptées telles que recommandées (aucune case cochée sur la page,
 donc aucune note). Modèles publiés réservés dans le tableau de répartition : e0ccaf84, 7981dab0,
 52bf3fb9, 5e4e5e9d, 06df72fd. Idée R2 (échelles 1/n) notée dans « Idées en attente » pour la 5e.
+
+### 2026-11-25 : lot des modèles publiés
+
+- Exportés de prod : e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d, 06df72fd (ce dernier inchangé : F4 se fait par migration).
+- e0ccaf84 +2 (masses au dixième ; diviser), 7981dab0 +2 (tiers / quart de grands nombres ; de décimaux), 52bf3fb9 +1 et 5e4e5e9d +1 (échelle graphique dessinée par un bloc `figure`, 1 cm pour 2, 4 ou 5 m, deux cases). Coup de pouce et trois erreurs prévues par case.
+- Écarts : prix écrits « 7,2 € » (la règle des zéros juge « 21,60 € » forme à améliorer) ; espace des milliers écrit à la main (`2\,700`) ; une échelle par terrain, ni tennis ni handball (dimensions connues).
