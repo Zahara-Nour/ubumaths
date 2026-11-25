@@ -6,6 +6,11 @@
 	(`messages.is_flagged`), pour l'onglet « Messages marqués » de la modération
 	(écart T21). Lecture seule : le prof agit depuis la conversation, dans le chat.
 
+	Un message supprimé reste listé, avec son texte (décision de David,
+	2026-11-25) : supprimer une insulte ne la cache pas au prof. La mention dit
+	« par la modération » seulement quand la suppression est tracée ; sinon
+	« supprimé » seul, car rien ne prouve qui l'a fait.
+
 	Le texte est celui de `plain_text`, rendu comme du texte (jamais comme du HTML).
 
 	Props:
@@ -25,6 +30,8 @@
 		senderName: string | null;
 		conversationName: string | null;
 		isGroup: boolean | null;
+		/** Suppression tracée par la modération, non tracée, ou `null` si non supprimé. */
+		deletedBy: 'moderation' | 'untraced' | null;
 	}
 
 	interface Props {
@@ -46,6 +53,12 @@
 		if (message.isGroup === false) return 'Conversation privée';
 		return 'Conversation sans nom';
 	}
+
+	function deletionLabel(deletedBy: FlaggedMessage['deletedBy']): string | null {
+		if (deletedBy === 'moderation') return 'supprimé par la modération';
+		if (deletedBy === 'untraced') return 'supprimé';
+		return null;
+	}
 </script>
 
 {#if messages.length === 0}
@@ -62,6 +75,7 @@
 {:else}
 	<ul class="space-y-3">
 		{#each messages as message (message.id)}
+			{@const deletion = deletionLabel(message.deletedBy)}
 			<li class="rounded-lg border border-border p-4">
 				<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
 					<span>
@@ -73,6 +87,9 @@
 				<p class="mt-2 text-sm break-words whitespace-pre-wrap">
 					{message.text || '(message sans texte)'}
 				</p>
+				{#if deletion}
+					<p class="mt-2 text-xs text-muted-foreground italic">Message {deletion}</p>
+				{/if}
 			</li>
 		{/each}
 	</ul>

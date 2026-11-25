@@ -306,14 +306,32 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 - Signalements : tous, via `get_reports_for_moderation` (`is_teacher_or_admin()`), triés
   `pending` d'abord.
 - Messages marqués automatiquement : onglet « Messages marqués » de `gestion/`
-  (`FlaggedMessagesList.svelte`). `load` lit `messages` (`is_flagged = true`, 100 plus récents)
-  avec le client du prof, sans fonction privilégiée : la RLS de `messages` borne la liste aux
-  conversations qu'il peut déjà ouvrir et masque les messages supprimés. **Mesuré le
-  2026-11-25 : ce sont les chats de classe et les conversations où il participe, pas les
-  conversations à deux entre élèves** (la policy SELECT les nomme, mais lit
-  `conversation_participants` sous la RLS du prof, qui n'y voit que les siennes). Lecture seule ; une
-  lecture en échec rend `flaggedMessagesLoadFailed` et une alerte, jamais « aucun message ».
+  (`FlaggedMessagesList.svelte`), 100 plus récents, lecture seule. Deux lectures selon le rôle
+  (`loadFlaggedMessages` dans `+page.server.ts`) :
+  - **prof** : fonction `get_flagged_messages_for_teacher` (`SECURITY DEFINER`, réservée au rôle
+    `teacher` : élève, admin et visiteur refusés en `42501`). Décision de David du 2026-11-25.
+    Elle rend les messages `is_flagged`, **et eux seuls**, de ses conversations, des chats de
+    groupe et des **conversations à deux entre deux élèves** (en classe ou hors-classe) : texte,
+    date, raison, nom de l'auteur ; jamais les messages non marqués de la conversation ni le nom
+    de l'autre élève. Elle rend aussi les messages marqués **supprimés**, texte compris, avec
+    `deleted_by_moderation` (une suppression tracée dans `moderation_logs`) : l'onglet écrit
+    « supprimé par la modération » quand elle est tracée, « supprimé » seul sinon. Faux ne veut
+    pas dire « par l'élève » : `review_report` (suppression depuis un signalement) et
+    `soft_delete_message` ne tracent rien, et il n'y a pas de colonne `deleted_by`. Une conversation à deux où l'un
+    des deux n'est pas un élève reste fermée. Un élève qui **quitte** la conversation (possible
+    par l'API) ne cache pas son message : une conversation non groupe à moins de deux
+    participants reste lue si l'auteur du message est un élève et qu'aucun participant restant
+    n'est autre chose qu'un élève. Aucune policy n'est touchée : la lecture directe de
+    `messages` par le prof ne rend toujours ni ces conversations ni les messages supprimés (la
+    policy SELECT nomme les conversations à deux, mais lit `conversation_participants` sous la
+    RLS du prof, qui n'y voit que les siennes). Test :
+    `tests/integration/messages-marques-prof.test.ts`.
+  - **admin** : accès inchangés. Lecture de `messages` (`is_flagged = true`) avec son client,
+    bornée par la RLS : conversations qu'il peut ouvrir, messages non supprimés.
+
+  Une lecture en échec rend `flaggedMessagesLoadFailed` et une alerte, jamais « aucun message ».
   Pas de lien direct vers la conversation, pas d'état « traité ».
+
 - Restrictions : la page `gestion/` ne liste que celles qu'**il** a posées (`restricted_by`).
   Un prof ne restreint qu'un élève (contrôle de rôle dans `restrict-user/`).
 - **Une restriction bloque l'écriture dans le chat** : la policy « Users can send messages to

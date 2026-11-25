@@ -465,6 +465,11 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin (lot 4)'
 	},
+	'get_flagged_messages_for_teacher(p_limit integer)': {
+		categorie: 'prof',
+		justification:
+			'refus 42501 si auth.uid() est NULL ou si son rôle lu dans profiles n’est pas teacher (ni élève, ni admin) ; ne rend que des messages is_flagged (écart T21)'
+	},
 	'get_pending_reports_count()': {
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin'
