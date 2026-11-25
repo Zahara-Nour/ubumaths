@@ -1,0 +1,42 @@
+{
+	"migration": "supabase/migrations/20261124220806_questions_idees_1re_probas_cond_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "289a085b-f715-4efe-8765-13ee57d30ce8",
+			"title": "Probabilité conditionnelle et intersection : P(A ∩ B) = P(A) × P_A(B)",
+			"fichier": "f2-intersection-et-probabilite-conditionnelle.json",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sousNotion": null,
+			"point": "2-390"
+		},
+		{
+			"id": "0bcf9fae-bd15-43c8-94c8-92c1cb1ffa93",
+			"title": "Retrouver P(A) par la formule des probabilités totales",
+			"fichier": "f5-retrouver-p-a-par-les-probabilites-totales.json",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sousNotion": "probabilités totales",
+			"point": "1SPE-340"
+		},
+		{
+			"id": "ab35bb06-4828-4574-969b-25364b1d3c04",
+			"title": "Indépendance lue sur un tableau d'effectifs",
+			"fichier": "f6-independance-sur-un-tableau-d-effectifs.json",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sousNotion": "indépendance",
+			"point": "1SPE-424"
+		},
+		{
+			"id": "201e64fd-6964-44a3-b250-51d2ae164e90",
+			"title": "Problème à données mélangées : retrouver P_A(B), puis P(B), puis inverser",
+			"fichier": "f7-probleme-a-donnees-melangees.json",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sousNotion": "probabilités totales",
+			"point": "1SPE-340"
+		}
+	],
+	"niveaux": []
+}

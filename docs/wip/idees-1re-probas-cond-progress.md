@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, après #3110._
+_Mis à jour le 2026-11-24, PR de rangement et de contenu en cours._
 
-- **État** : lot écrit (F2, F5, F6, F7 neufs ; F1, F3 en fin de 31096bae et 69a05f98) et joué dans l'aperçu admin local : 19 variations, réponse juste → « Juste », fausse → « Faux », chaque `choix` de F6 a une seule proposition juste sur 4. Fichiers mergés sur `main` (#3110). Page à cocher : https://claude.ai/artifact/GsJy6qx8vPfv2rJVbjNhhM.
-- **Prochaine action** : étape 6 de `couvrir-un-niveau.md` : David lance `create-questions --dir scripts/questions/idees-1re-probas-cond-neufs --publier` en prod (brouillons), je commite les ids, puis rangement, relecture dans `/dev/modeles`, `migration-contenu.ts` pour F1 et F3.
-- **En attente de David** : le `create-questions --publier` en prod (commande `!` donnée).
-- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). `migration-contenu.ts` (pour les publiés) n'a pas de simulation : il écrit la migration et sa fixture, il se lance à l'étape 4, après les brouillons en prod. `create-questions` ne touche jamais un modèle publié, même en local : F1 et F3 ont été copiés en base locale par un PATCH ponctuel. Dans l'aperçu, la variation affichée est numérotée à partir de 1.
-- **Worktree / branche** : aucun (retiré après #3110) ; nouveau worktree pour commiter les ids.
+- **État** : 4 brouillons en prod (F2 289a085b, F5 0bcf9fae, F6 ab35bb06, F7 201e64fd), ids commités. Branche `feat/idees-1re-probas-cond-rangement` : migration de rangement générée (4 modèles rangés) et migration de contenu générée (F1 → 31096bae, F3 → 69a05f98 : +1 variation chacun, specs).
+- **Prochaine action** : CI verte → merge → `pnpm db:migrate` depuis le dépôt principal (vérifier d'abord `migration list --linked`) → vérifier en prod nœud, tag, brouillon, et les 2 variations ajoutées → donner à David l'adresse de relecture `/dev/modeles` (brouillons : filtre nœud/point ; F1 et F3 publiés : ils se jouent déjà en prod).
+- **En attente de David** : rien avant le merge ; ensuite la relecture dans `/dev/modeles`, puis `publier-lot.ts --publier`.
+- **Pièges en cours** : F2 est un modèle de 2de (`grades = ["2"]`, 2-390). Les variations ajoutées à F1 et F3 sont visibles des élèves dès le `db:migrate`. Garde des niveaux (`garde-niveaux-tags.ts`) à lancer avant la publication.
+- **Worktree / branche** : `ubumaths-wt-idees-1re-probas-cond-rangement` / `feat/idees-1re-probas-cond-rangement`.
 
 ## Historique
 
@@ -44,3 +44,8 @@ _Mis à jour le 2026-11-24, après #3110._
 - 4 modèles neufs créés en brouillon dans la base locale (`create-questions --publier` avec `.env.local`), ids retirés des fichiers ensuite (`git restore`). F1 et F3 copiés dans 31096bae et 69a05f98 locaux (variations, `shared`, `test_specs`).
 - Jeu automatique (Playwright, aperçu admin sur `http://[::1]:5178`) : une graine par variation, les 19 tirées. 17 variations à saisie : réponse attendue → « Juste », `0` → « Faux » (captures relues pour F7 v3 et F1, valeurs refaites à la main). 2 variations `choix` de F6 : chaque proposition essayée, une seule « Juste » sur 4.
 - Seules erreurs de console : des 429 (limite de débit du serveur de dev, dus au rythme du script), aucune liée aux modèles.
+
+### 2026-11-24 : brouillons en prod, migrations générées
+
+- David a lancé `create-questions --publier` en prod : 4 brouillons, ids écrits en tête des fichiers (vérifiés par `migration-rangement.ts`, appariés en prod).
+- `migration-rangement.ts` : 4 « rangé » → `20261124220806_…_neufs_rangement_tags.sql`. `migration-contenu.ts` : 31096bae et 69a05f98 « migré » (+1 variation, specs) → `20261124220853_…_publies_contenu.sql`. Une seule PR pour les deux, comme dans `idees-tle-probas`.
