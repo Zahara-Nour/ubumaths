@@ -128,12 +128,12 @@ async function seedWorksheet(): Promise<string> {
 	);
 	await sql(
 		`insert into public.worksheet_exercises
-		 (worksheet_id, exercise_id, section_id, position, points, variant_mode, variant_config,
+		 (worksheet_id, exercise_id, exercise_version_id, section_id, position, points, variant_mode, variant_config,
 		  custom_instructions, answer_frame_lines, translations, is_essential, variation_index,
 		  correction_visible)
 		 values
-		 ($1, $2, $3, 1, 7, 'n_versions', $4, 'Fais-le', $5, $6, true, 2, false),
-		 ($1, $2, null, 2, 3, 'none', null, null, null, null, false, null, true)`,
+		 ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), $3, 1, 7, 'n_versions', $4, 'Fais-le', $5, $6, true, 2, false),
+		 ($1, $2, (select v.id from public.exercise_versions v where v.exercise_id = $2 order by v.number desc limit 1), null, 2, 3, 'none', null, null, null, null, false, null, true)`,
 		[
 			id,
 			exerciseId,

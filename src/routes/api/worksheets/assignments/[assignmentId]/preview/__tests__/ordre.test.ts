@@ -13,6 +13,7 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	tableMock,
 	twoLevelExercise,
+	versionedLines,
 	type TableMock
 } from '#lib/server/worksheets/__tests__/table-mock.ts';
 import { assignmentCopyScope, copyExerciseOrder } from '#lib/worksheets/worksheet-copy.ts';
@@ -78,6 +79,12 @@ interface MockOptions {
 	sectionsError?: boolean;
 }
 
+/** Ancien contenu de la ligne d'`exercises` : périmé, il ne doit jamais sortir (ADR 0044) */
+const STALE = {
+	variations: [{ label: 'guided', statement_md: 'PERIME', solution_md: 'PERIME' }],
+	shared: null
+};
+
 function supabase(
 	individualized: boolean,
 	config: Record<string, unknown>,
@@ -110,18 +117,22 @@ function supabase(
 		worksheet_assignment_students: { data: { id: 'was-1' }, error: null },
 		worksheet_exercises: {
 			// Ordre de la base : `order('position')`, positions qui redémarrent par section
-			data: [...ROWS]
-				.sort((a, b) => a.position - b.position)
-				.map((row) => ({
-					...row,
-					points: null,
-					custom_instructions: null,
-					translations: null,
-					correction_visible: true,
-					variation_index: null,
-					is_essential: false,
-					exercise: row.id === options.orphanId ? null : twoLevelExercise()
-				})),
+			// Contenu sur la version de la ligne (ADR 0044) ; l'exercice garde un ancien contenu
+			data: versionedLines(
+				[...ROWS]
+					.sort((a, b) => a.position - b.position)
+					.map((row) => ({
+						...row,
+						points: null,
+						custom_instructions: null,
+						translations: null,
+						correction_visible: true,
+						variation_index: null,
+						is_essential: false,
+						exercise: row.id === options.orphanId ? null : twoLevelExercise()
+					})),
+				STALE
+			),
 			error: null
 		},
 		worksheet_sections: options.sectionsError

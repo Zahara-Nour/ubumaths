@@ -8,6 +8,11 @@
  */
 
 import { error } from '@sveltejs/kit';
+import {
+	WORKSHEET_LINE_VERSION,
+	withLineVersion,
+	writeVersionContent
+} from '#lib/server/exercise-versions.ts';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '#lib/server/middleware/auth.ts';
 import { fetchCopyNumbering } from '#lib/server/worksheets/display-number.ts';
@@ -122,11 +127,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					exercise:exercises!worksheet_exercises_exercise_id_fkey (
 						id,
 						slug,
-						shared,
-						variations,
-						generic_functions,
 						topic
-					)
+					),
+					${WORKSHEET_LINE_VERSION}
 				)
 			`
 			)
@@ -152,7 +155,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(500, 'Exercice du signalement introuvable');
 		}
 
-		const exerciseData = worksheetExercise.exercise;
+		// Contenu : la version de la fiche signalée (ADR 0044), celle que l'élève a vue
+		const exerciseData = withLineVersion(worksheetExercise).exercise;
 		const exercise = Array.isArray(exerciseData) ? exerciseData[0] : exerciseData;
 
 		if (!exercise) {
@@ -376,7 +380,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		// Step 2: Get exercise data (position and exercise_id)
 		const { data: worksheetExerciseData, error: worksheetExerciseError } = await locals.supabase
 			.from('worksheet_exercises')
-			.select('id, position, exercise_id, worksheet_id')
+			.select('id, position, exercise_id, exercise_version_id, worksheet_id')
 			.eq('id', existingReport.worksheet_exercise_id)
 			.single();
 
@@ -386,6 +390,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		}
 
 		const exerciseId = worksheetExerciseData.exercise_id;
+		// La correction touche la version de la fiche signalée (ADR 0044), pas la dernière
+		const exerciseVersionId = worksheetExerciseData.exercise_version_id;
 
 		// Le numéro ANNONCÉ À L'ÉLÈVE est celui qu'il lit sur SA copie (D6) :
 		// ordre mélangé compris, même calcul que la copie. Ni `position` (elle
@@ -459,9 +465,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			} else if (newStatementMd) {
 				// Legacy format: Update only the first variation with statement_md/solution_md
 				const { data: currentExercise, error: fetchExerciseError } = await locals.supabase
-					.from('exercises')
+					.from('exercise_versions')
 					.select('variations')
-					.eq('id', exerciseId)
+					.eq('id', exerciseVersionId)
+					.eq('exercise_id', exerciseId)
 					.single();
 
 				if (fetchExerciseError || !currentExercise) {
@@ -490,13 +497,16 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				throw error(400, 'Les niveaux de guidage ou l’énoncé corrigé sont requis');
 			}
 
-			const { error: exerciseUpdateError } = await locals.supabase
-				.from('exercises')
-				// Colonne jsonb : conversion réelle plutôt que passage direct.
-				.update({ variations: toJson(updatedVariations) })
-				.eq('id', exerciseId);
-
-			if (exerciseUpdateError) {
+			// Colonne jsonb : conversion réelle plutôt que passage direct. `writeVersionContent`
+			// vérifie la ligne rendue : un refus RLS ne passe plus en silence.
+			try {
+				await writeVersionContent(
+					locals.supabase,
+					exerciseId,
+					{ variations: toJson(updatedVariations) },
+					exerciseVersionId
+				);
+			} catch (exerciseUpdateError) {
 				logger.error('[API] Error updating exercise variations:', exerciseUpdateError);
 				throw error(500, 'Impossible de modifier l’exercice');
 			}

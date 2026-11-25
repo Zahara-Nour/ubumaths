@@ -3592,6 +3592,75 @@ export type Database = {
 					}
 				];
 			};
+			exercise_versions: {
+				Row: {
+					created_at: string;
+					created_by: string;
+					exercise_id: string;
+					generic_functions: string[] | null;
+					id: string;
+					note: string | null;
+					number: number;
+					shared: Json | null;
+					updated_at: string;
+					variations: Json | null;
+				};
+				ComputedFields: never;
+				Insert: {
+					created_at?: string;
+					created_by: string;
+					exercise_id: string;
+					generic_functions?: string[] | null;
+					id?: string;
+					note?: string | null;
+					number: number;
+					shared?: Json | null;
+					updated_at?: string;
+					variations?: Json | null;
+				};
+				Update: {
+					created_at?: string;
+					created_by?: string;
+					exercise_id?: string;
+					generic_functions?: string[] | null;
+					id?: string;
+					note?: string | null;
+					number?: number;
+					shared?: Json | null;
+					updated_at?: string;
+					variations?: Json | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'exercise_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'exercise_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'exercise_versions_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			exercises: {
 				Row: {
 					category: string;
@@ -14289,6 +14358,7 @@ export type Database = {
 					created_at: string;
 					custom_instructions: string | null;
 					exercise_id: string;
+					exercise_version_id: string;
 					id: string;
 					is_essential: boolean;
 					points: number | null;
@@ -14308,6 +14378,7 @@ export type Database = {
 					created_at?: string;
 					custom_instructions?: string | null;
 					exercise_id: string;
+					exercise_version_id: string;
 					id?: string;
 					is_essential?: boolean;
 					points?: number | null;
@@ -14326,6 +14397,7 @@ export type Database = {
 					created_at?: string;
 					custom_instructions?: string | null;
 					exercise_id?: string;
+					exercise_version_id?: string;
 					id?: string;
 					is_essential?: boolean;
 					points?: number | null;
@@ -14345,6 +14417,13 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'exercises';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_exercises_exercise_version_fkey';
+						columns: ['exercise_id', 'exercise_version_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercise_versions';
+						referencedColumns: ['exercise_id', 'id'];
 					},
 					{
 						foreignKeyName: 'worksheet_exercises_section_id_fkey';

@@ -217,7 +217,8 @@ pour tous », la graine de série `SERIES_SEED_PARAM`). L'ancienne forme (catég
   du bas sur téléphone (bouton « Notion : … · n ») ; seule la branche de la notion affichée est
   dépliée au départ. La notion (`CatalogueNotionSections`) montre ses sous-notions toutes dépliées,
   avec des pastilles à compteurs collées en haut qui y descendent (les sections du dessus sont
-  d'abord calculées, pour que la cible ne glisse pas). Cartes plus basses sur téléphone (9rem au
+  d'abord calculées, pour que la cible ne glisse pas ; une fois la page immobile, la section est
+  recalée sous les pastilles, jamais pendant le défilement doux ni après un geste de l'élève). Cartes plus basses sur téléphone (9rem au
   lieu de 12rem, variable `--tile-card-height` de `QuestionPreviewCard`, règle `@media`).
   Les modèles posés sur la notion elle-même forment la rubrique « Général », en tête ; une branche,
   notion ou sous-notion sans modèle publié n'apparaît pas ; un modèle hors de l'arbre lu va dans

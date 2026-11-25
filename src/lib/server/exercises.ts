@@ -27,6 +27,13 @@ import {
 	syncResourceTags
 } from '#lib/server/resource-tags.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import {
+	createFirstVersion,
+	splitVersionContent,
+	withLatestVersion,
+	withLatestVersions,
+	writeVersionContent
+} from '#lib/server/exercise-versions.ts';
 
 const logger = createServerLogger('server/exercises');
 
@@ -211,9 +218,11 @@ export async function getExercises(
 		(data ?? []).map((row) => (row as { id: string }).id)
 	);
 
-	const enriched = (data ?? []).map((row) => ({
-		...(row as Record<string, unknown>),
-		tags: tagsByExercise.get((row as { id: string }).id) ?? []
+	// Contenu : la DERNIÈRE version de chaque exercice (hors fiche, ADR 0044).
+	const withContent = await withLatestVersions(supabase, data ?? []);
+	const enriched = withContent.map((row) => ({
+		...row,
+		tags: tagsByExercise.get(row.id) ?? []
 	}));
 
 	return {
@@ -241,7 +250,9 @@ export async function getExercise(supabase: SupabaseClient<Database>, id: string
 	}
 
 	const tags = await fetchResourceTagNames(supabase, 'exercise', id).catch(() => []);
-	return { data: { ...data, tags }, error: null };
+	// Contenu : la DERNIÈRE version (hors fiche, ADR 0044).
+	const withContent = await withLatestVersion(supabase, data);
+	return { data: { ...withContent, tags }, error: null };
 }
 
 /**
@@ -259,7 +270,9 @@ export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug
 	}
 
 	const tags = await fetchResourceTagNames(supabase, 'exercise', data.id).catch(() => []);
-	return { data: { ...data, tags }, error: null };
+	// Contenu : la DERNIÈRE version (hors fiche, ADR 0044).
+	const withContent = await withLatestVersion(supabase, data);
+	return { data: { ...withContent, tags }, error: null };
 }
 
 /**
@@ -315,11 +328,11 @@ export async function createExercise(
 		'created_by'
 	> & { tags?: string[] };
 
-	// Prepare insert data
-	// variations and shared are already validated by Zod at API level
-	// They are JSONB columns and will be stored as-is
+	// Le contenu (variations, shared, generic_functions) va dans la version 1 (ADR 0044) ;
+	// la ligne d'`exercises` ne garde que la fiche d'identité. Contenu validé par Zod à l'API.
+	const { identity, content } = splitVersionContent(exerciseWithoutTags);
 	const insertData = {
-		...exerciseWithoutTags,
+		...identity,
 		slug,
 		variables:
 			variablesValidation.variables.length > 0
@@ -328,18 +341,37 @@ export async function createExercise(
 		distribution_mode: distributionMode,
 		created_by: userId,
 		// Jamais coché implicitement : seule une demande explicite sur un exercice public.
-		search_indexed: consistentSearchIndexed(exercise.is_public, exercise.search_indexed),
-		variations: (exercise as { variations?: unknown })
-			.variations as Database['public']['Tables']['exercises']['Row']['variations'],
-		shared: (exercise as { shared?: unknown })
-			.shared as Database['public']['Tables']['exercises']['Row']['shared']
+		search_indexed: consistentSearchIndexed(exercise.is_public, exercise.search_indexed)
 	};
 
-	const { data, error } = await supabase.from('exercises').insert(insertData).select().single();
+	const { data: created, error } = await supabase
+		.from('exercises')
+		.insert(insertData)
+		.select()
+		.single();
 
 	if (error) {
 		logger.error('Error creating exercise:', error);
 		return { data: null, error };
+	}
+
+	// Version 1. En cas d'échec, l'exercice sans version est retiré : il ne se lirait pas.
+	let data: typeof created;
+	try {
+		const v1 = await createFirstVersion(supabase, created.id, content, userId);
+		data = {
+			...created,
+			variations: v1.variations,
+			shared: v1.shared,
+			generic_functions: v1.generic_functions
+		};
+	} catch (e) {
+		logger.error('Failed to create version 1 — rolling back:', e);
+		await supabase.from('exercises').delete().eq('id', created.id).select('id');
+		return {
+			data: null,
+			error: e instanceof Error ? e : new Error('Failed to create version 1')
+		};
 	}
 
 	// Attach tags via the junction (auto-creates missing catalog rows).
@@ -436,18 +468,14 @@ export async function updateExercise(
 		'id' | 'created_by' | 'created_at'
 	> & { tags?: string[] };
 
-	// Prepare update data
-	// variations and shared are validated by Zod at API level and pass through as JSONB
-	const updateData = {
-		...updatesWithoutTags,
-		variations: (updates as { variations?: unknown })
-			.variations as Database['public']['Tables']['exercises']['Row']['variations'],
-		shared: (updates as { shared?: unknown })
-			.shared as Database['public']['Tables']['exercises']['Row']['shared']
-	};
+	// Le contenu (validé par Zod à l'API) va dans la DERNIÈRE version, modifiée sur place
+	// (ADR 0044 point 3) ; la fiche d'identité reste sur `exercises`. `updated_at` est toujours
+	// écrit : la ligne n'est jamais mise à jour à vide, et la liste du prof la date.
+	const { identity, content } = splitVersionContent(updatesWithoutTags);
+	const updateData = { ...identity, updated_at: new Date().toISOString() };
 
 	// Update the exercise
-	const { data, error } = await supabase
+	const { data: updated, error } = await supabase
 		.from('exercises')
 		.update(updateData)
 		.eq('id', id)
@@ -458,6 +486,24 @@ export async function updateExercise(
 	if (error) {
 		logger.error('Error updating exercise:', error);
 		return { data: null, error };
+	}
+
+	let data: typeof updated;
+	try {
+		const version =
+			Object.keys(content).length > 0 ? await writeVersionContent(supabase, id, content) : existing;
+		data = {
+			...updated,
+			variations: version.variations,
+			shared: version.shared,
+			generic_functions: version.generic_functions
+		};
+	} catch (e) {
+		logger.error('Failed to update exercise version:', e);
+		return {
+			data: null,
+			error: e instanceof Error ? e : new Error('Failed to update exercise version')
+		};
 	}
 
 	// Sync tags via the junction if the caller supplied any.
@@ -607,9 +653,11 @@ export async function getTeacherExercises(
 		(data ?? []).map((row) => (row as { id: string }).id)
 	);
 
-	const enriched = (data ?? []).map((row) => ({
-		...(row as Record<string, unknown>),
-		tags: tagsByExercise.get((row as { id: string }).id) ?? []
+	// Contenu : la DERNIÈRE version de chaque exercice (hors fiche, ADR 0044).
+	const withContent = await withLatestVersions(supabase, data ?? []);
+	const enriched = withContent.map((row) => ({
+		...row,
+		tags: tagsByExercise.get(row.id) ?? []
 	}));
 
 	return {

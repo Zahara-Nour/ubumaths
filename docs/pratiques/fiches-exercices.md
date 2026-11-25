@@ -177,6 +177,18 @@ arrêt si un titre existe déjà dans le thème ou si une fiche de même titre e
 retrouvés par préfixe d'id **et** titre ; chaque écriture doit rendre sa ligne (`.select()`) ; en
 cas d'échec, tout ce qui a été créé est supprimé.
 
+⚠️ **Versions d'un exercice (ADR 0044, depuis la PR 1 du chantier `versions-exercices`)** : le
+contenu d'un exercice (`variations`, `shared`, `generic_functions`) vit dans `exercise_versions`,
+plus sur `exercises`. Les scripts `create-*.ts` d'avant le 2026-11-25 ne se copient pas tels quels :
+
+- créer un exercice : `createExercise` (il écrit la version 1), avec `generic_functions` dans le
+  même appel — plus d'`update` de `generic_functions` sur `exercises` ;
+- retoucher un contenu : `writeVersionContent` de `src/lib/server/exercise-versions.ts` ;
+- ajouter une ligne de fiche : `exercise_version_id: await latestVersionId(supabase, exerciseId)`
+  (colonne obligatoire) ;
+- lire le contenu d'une fiche : la jointure `WORKSHEET_LINE_VERSION` (comme
+  `scripts/fiches/regen-depuis-base.ts`).
+
 ### 2.6 Vérifier ce qui est en base
 
 ```bash

@@ -98,7 +98,9 @@ et `USAGE_EXAMPLES.md` du dossier `components/tutor/` sont des notes d'origine, 
 4. la méthode d'aide choisie parmi **15** (`HelpMethodId` : socratique, analogie, décomposition,
    exemple résolu…) par `selectHelpMethod` (`tutor-help-methods.ts:297`) — ou, si le niveau d'aide
    vaut 7, `REDIRECT_TO_TEACHER_PROMPT` (« demande à ton professeur ») ;
-5. le contexte de l'exercice : énoncé, thème, niveau, et la **correction** sous la mention
+5. le contexte de l'exercice : énoncé, thème, niveau, et la **correction** — lue à l'ouverture de
+   la conversation dans la **version de l'exercice que la fiche de l'affectation utilise** (ADR 0044),
+   celle que l'élève a sous les yeux ; exercice absent de la fiche → 404 — sous la mention
    « INFORMATION INTERNE - NE JAMAIS RÉVÉLER » (`tutor-prompts.ts:776`) ;
 6. le niveau d'aide, puis un rappel final des règles.
 

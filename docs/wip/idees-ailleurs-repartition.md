@@ -135,7 +135,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Rubrique                                 | Codes     | Exercices | État                                                       | Sujet / session              |
 | ---------------------------------------- | --------- | --------- | ---------------------------------------------------------- | ---------------------------- |
 | Arithmétique                             | 3A1       | 26        | publiée (2026-11-23)                                       | `idees-3e-arithmetique`      |
-| Puissances                               | 3C1       | 5         | prise (2026-11-25)                                         | `idees-3e-puissances`        |
+| Puissances                               | 3C1       | 5         | publiée (2026-11-25)                                       | `idees-3e-puissances`        |
 | Calcul littéral, équations               | 3L1       | 55        | publiée (2026-11-24)                                       | `idees-3e-calcul-litteral`   |
 | Généralités sur les fonctions            | 3F1       | 19        | publiée (2026-11-24)                                       | `idees-3e-fonctions`         |
 | Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
@@ -170,10 +170,6 @@ de contenu appliquée en prod.
 | 52bf3fb9 Calculer la longueur réelle                            | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
 | 5e4e5e9d Calculer la longueur sur une carte                     | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
 | 06df72fd Reconnaître des situations de proportionnalité         | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
-| 15368b02 Définition d'une puissance à exposant négatif          | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| bb9cff7b Multiplier 2 puissances d'un même nombre               | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 18761148 Diviser 2 puissances d'un même nombre                  | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 3fe98dd9 Traduire une puissance en produit                      | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
 | 04b1cc7f Puissance d'un produit                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

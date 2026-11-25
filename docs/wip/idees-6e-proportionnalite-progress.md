@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-25, lot écrit._
 
 - **État** : lot entier écrit, vérifié (`question:specs --file` : 10 fichiers « importable ») et poussé sur la branche : 4 publiés (+6 variations) et 5 neufs (N1 à N5, `scripts/questions/idees-6e-proportionnalite-neufs/`).
-- **Prochaine action** : essai en base LOCALE (neufs + copie brouillon des publiés, aperçus avec `pnpm voir`, puis suppression), puis donner à David `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier`.
-- **En attente de David** : (1) `zeros: off` sur e0ccaf84 pour accepter « 21,60 € » ? (les neufs N1-N3 l'ont déjà) ; (2) prix affichés « 3,7 € » et non « 3,70 € » (`eval` ne force pas deux décimales) : acceptable ? ; (3) N5 v2 : l'âge du père se calcule par l'écart (réponse = valeur, pas « on ne peut pas ») : écart à la fiche à confirmer ; (4) N5 : le choix « valeur × quantité » donne parfois une valeur absurde (piège facile) : garder ? ; (5) N4 relier : deux séries fixes : assez ?
+- **Prochaine action** : les retouches validées (ci-dessous), puis essai en base LOCALE (neufs + copie brouillon des publiés, aperçus avec `pnpm voir`, puis suppression), puis donner à David `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier`.
+- **En attente de David** : prix à deux décimales (« 3,70 € ») : réglage automatique des grandeurs en € ou modificateur `{{eval:…;…}}` explicite (petite PR du moteur, avant le lot) ? Le reste est tranché (journal, 2026-11-25 « retouches validées »).
 - **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Rangements des neufs dans les fichiers (quatrième proportionnelle 4, 5, 6 ; caractérisation 8, 9) : relever les niveaux en prod avant la migration.
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite` (poussée, pas de PR).
 
@@ -53,3 +53,15 @@ donc aucune note). Modèles publiés réservés dans le tableau de répartition 
 
 - N1 retour à l'unité (4 var., 23 specs), N2 linéarité additive (4, 17), N3 compléter un tableau (3, 26, point 6-192), N4 grandeurs (2 : choix plusieurs, relier ; 10), N5 peut-on le calculer (2, 12). `zeros: off` sur N1 à N3.
 - Écarts : N3 moyen x pair ∈ {4, 8, 10} (sinon la différence vaut 1 = valeur pour 1) ; prix unitaire 1,10 à 3,50 € jamais entier ; N1 recette 2 à 10, sirop 2 à 9 ; certaines cases n'ont que deux erreurs prévues (pas d'invention) ; N5 v2 : l'âge du père se calcule par l'écart.
+
+### 2026-11-25 : retouches validées par David (« je valide »)
+
+1. e0ccaf84 : `zeros: off` (« 21,60 € » accepté), par migration de contenu (options).
+2. Prix affichés à deux décimales : David demande pourquoi un outil à part, et propose que le moteur
+   écrive lui-même une grandeur en € avec deux décimales (option du format). Vérifié : les
+   modificateurs de `{{eval:…}}` sont `d`, `+`, `()`, `'`, `hms`, `sci`, `[unité]`
+   (`src/lib/ubumark/parameterization/parser/eval-parser.ts`) ; rien pour les centimes. Choix posé à David.
+3. N5 v2 : l'âge du père reste calculable par l'écart ; ajouter une situation vraiment incalculable
+   (pointure du père) pour que « on ne peut pas » soit parfois juste.
+4. N5 : le piège « valeur × quantité » seulement quand il reste vraisemblable, sinon l'écart ajouté.
+5. N4 relier : une série tirée parmi 4 ou 5 situations.

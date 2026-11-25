@@ -1,16 +1,16 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: cinq PR mergées (#3115, #3125, #3132, #3140, #3143), migrations en prod ; six PR mergées, dernière #3147 (T33 et T30) ; ses deux migrations restent à jouer en prod par David
+status: six PR mergées (#3115, #3125, #3132, #3140, #3143, #3147), toutes les migrations du chantier en prod (vérifié le 2026-11-25)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (18), après #3147 ; ses deux migrations ne sont PAS encore en prod._
+_Mis à jour le 2026-11-25 (19), après #3147 ; ses deux migrations sont en prod, vérifiées._
 
-- **État** : six PR mergées (#3115, #3125, #3132, #3140, #3143, #3147). Migrations en prod jusqu'à `20261125114503`. **En attente en prod, celles de #3147 seulement** (`migration list --linked` relu après le merge : aucune autre) : `20261125145621_message_chat_non_reecrit.sql` (un message de chat envoyé ne se réécrit plus, prof et admin compris) et `20261125152013_message_chat_date_d_envoi.sql` (un compte connecté ne choisit pas la date de son message à l'envoi). T30 et T33 barrés au registre. Rien n'est déployé (les deux migrations ne dépendent d'aucun code à livrer).
-- **Prochaine action** : (1) David joue les migrations : `! pnpm db:migrate` depuis le dépôt principal (relire `pnpm exec supabase migration list --linked` juste avant : une autre migration en attente → stop) ; (2) vérifier en prod, en lecture seule, que `guard_message_reecriture_trg` et `guard_message_envoi_trg` sont actifs sur `messages`, fonctions non `SECURITY DEFINER`, `search_path` fixé ; (3) noter le résultat ici ; (4) suite du chantier à voir avec David (`pnpm ecarts`).
-- **En attente de David** : jouer les deux migrations en prod.
+- **État** : six PR mergées (#3115, #3125, #3132, #3140, #3143, #3147). **Toutes les migrations du chantier sont en prod** : David a joué `db:migrate` le 2026-11-25, `migration list --linked` relu ensuite, 694 migrations, aucun écart local / prod. Vérifié en prod en lecture seule : `guard_message_reecriture_trg` (BEFORE UPDATE) et `guard_message_envoi_trg` (BEFORE INSERT) actifs sur `messages`, fonctions non `SECURITY DEFINER`, `search_path=public, pg_temp`. Le même `db:migrate` a aussi joué `20261125153849_questions_idees_3e_puissances_publies_contenu` (chantier `idees-3e-puissances`, #3148), dit à David. T30 et T33 barrés au registre. Aucun code à déployer pour ces migrations.
+- **Prochaine action** : suite du chantier à choisir avec David dans `pnpm ecarts` (candidats proches du sujet : T29 rapport de bug réécrit par son auteur, T28 règles du stockage des captures hors migration, D45 onglet « Messages marqués », E78 exercice assigné directement) ; ou clore le chantier (versement dans `docs/systeme/`, journal archivé).
+- **En attente de David** : dire la suite (un écart de plus, ou clôture).
 - **Pièges en cours** : la garde est un trigger, pas un retrait de droits par colonne (qui masquerait le message de T31). Écrire `deleted_at` par l'API est refusé par la RLS : la suppression passe par `soft_delete_message`. Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Motif « policy UPDATE ou INSERT sans contrôle de colonnes » possible sur d'autres tables d'élèves (non prouvé).
 - **Worktree / branche** : aucun (worktree et branche de #3147 retirés). Ce journal, sur `main`, fait foi.
 

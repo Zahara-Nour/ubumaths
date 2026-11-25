@@ -52,6 +52,7 @@ import type { GradeCode } from '#lib/types/grades.ts';
 import { validateAssignmentData } from '#lib/exercises/types.ts';
 import { validateSearchQuery } from '#lib/utils/search.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { withLatestVersions } from '#lib/server/exercise-versions.ts';
 
 const logger = createServerLogger('server/exercise-assignments');
 
@@ -590,7 +591,9 @@ export async function getAssignmentsForStudent(
 		.range(offset, offset + limit - 1)
 		.order('created_at', { ascending: false });
 
-	const { data: exercises, error: exercisesError } = await exerciseQuery;
+	const { data: exerciseRows, error: exercisesError } = await exerciseQuery;
+	// Contenu : la DERNIÈRE version de chaque exercice (hors fiche, ADR 0044).
+	const exercises = exerciseRows ? await withLatestVersions(supabase, exerciseRows) : exerciseRows;
 
 	if (exercisesError) {
 		logger.error('Error fetching exercises:', exercisesError);
@@ -1424,7 +1427,8 @@ export async function getAccessibleExercises(
 		return { data: [], error: exercisesError.message };
 	}
 
-	return { data: exercises || [], error: null };
+	// Contenu : la DERNIÈRE version de chaque exercice (hors fiche, ADR 0044).
+	return { data: await withLatestVersions(supabase, exercises ?? []), error: null };
 }
 
 // ============================================================================
