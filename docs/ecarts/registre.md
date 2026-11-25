@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V126 · L124 · M58 · C43 · D45 · T30 · E82
+Derniers numéros : V129 · L124 · M58 · C43 · D45 · T30 · E82
 
 ## Écarts
 
@@ -315,3 +315,6 @@ Derniers numéros : V126 · L124 · M58 · C43 · D45 · T30 · E82
 - L124 · bug latent · modération · aucune borne de taille sur le contenu d'un message du chat : un message énorme ralentit le marquage à l'envoi et à chaque modification · preuve : à la main · à faire
 - D45 · décision produit · modération · l'onglet « Messages marqués » du prof n'a ni lien vers la conversation ni état « traité » · preuve : à la main · à faire
 - V126 · bug visible · correction des réponses · dans une question à plusieurs cases, une saisie qui ne s'évalue pas (« 58,5, », « ( ») dans une case à arrondi fait lever la correction case par case : la note reste juste (0, une case fausse), mais la correction montre TOUTES les cases fausses, même les justes, et les messages des autres cases sont perdus ; en ordre libre, « 58, » et « ,5 » lèvent aussi ; antérieur à #3130 (validateBlanksDetailed, validateAnswerDetailed) · preuve : à la main · à corriger dans la PR « correction des réponses » (tranché par David le 2026-11-25 ; confirmé par sonde le 2026-11-25)
+- V127 · bug visible · Atelier · `.résoudre cos(x) = 2cos(20°)` répond une famille en arccos(2cos(20°)) alors que 2cos(20°) > 1 et qu'il n'y a aucune solution : le solveur (solve/solvers/transcendental.ts) lit la valeur approchée de cos(20°) comme le cosinus de 20 radians · preuve : à la main · à faire (relevé pendant E54, sondé le 2026-11-25 ; test de preuve à écrire)
+- V128 · bug visible · Atelier · `.résoudre cos(x) = cos(π/5)` répond ±arccos(cos(π/5)) + 2kπ au lieu de ±π/5 + 2kπ (pareil pour cos(0,4)) : même défaut que E54, côté radians, figé par un test de solve-lecture.test.ts · preuve : à la main · en attente de David (relevé pendant E54, sondé le 2026-11-25)
+- V129 · bug visible · Atelier · `.résoudre cos(x) = cos(20°) dans [0;360]` lit 360 en radians et liste plus de cent solutions en arccos(cos(20°)), au lieu de 20° et 340° · preuve : à la main · en attente de David (relevé pendant E54, sondé le 2026-11-25 : un intervalle se lit-il en degrés quand l'angle est tapé en degrés ?)
