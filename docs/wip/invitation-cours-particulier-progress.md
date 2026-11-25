@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3119._
+_Mis à jour le 2026-11-25, corrections des revues commitées (PR 2 pas encore poussée)._
 
-- **État** : PR 1 mergée (#3119) et migrée en prod par David le 2026-11-25 (vérifié au MCP : Akadada seule réglée, table vide, lien et empreinte fermés à `anon` / `authenticated`) · **Prochaine action** : PR 2 (admin : formulaire, liste, renvoyer/annuler, courriel d'invitation, **purge à 30 jours**, décision 8) dans un worktree neuf `../ubumaths-wt-invitation-cours-particulier-admin` · **En attente de David** : rien · **Pièges en cours** : « Dette pour les PR 2 et 3 » ci-dessous ; le trigger `handle_new_user` ne range un compte dans une classe que si ses inscriptions sont ouvertes (classe d'invitation née fermée → adhésion côté serveur) · **Worktree / branche** : aucun (celui de la PR 1 est retiré)
+- **État** : PR 2 (admin) commitée sur `feat/invitation-cours-particulier-admin`, NON poussée, 4 commits : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours (cron Vercel quotidien), corrections des deux revues validées par David (décision 9) ; tests serveur verts (1 715), intégration 17/17, `lint:fast` et `docs:check-a-jour` verts, garde des actions testée · **Prochaine action** : `pnpm types:cliquet` (seul contrôle restant : intégration 17/17 verte après les corrections, `check:incremental` 0 erreur) ; puis `git merge origin/main` (branche en retard), push, PR, `pnpm pr:merger` ; puis PR 3 · **En attente de David** : rien · **Pièges en cours** : ⛔ ne pas déployer la PR 2 seule (le lien du courriel mène à la page de la PR 3) ; PR 3 : phrase de confidentialité (décision 9), `Referrer-Policy: no-referrer` sur la page du lien ; base locale : réglage `is_private_lessons` posé à la main sur Akadada · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-admin` / `feat/invitation-cours-particulier-admin`
 
 ## But
 
@@ -27,6 +27,13 @@ le compte, la classe et recueille CGU + consentement en une fois.
 8. **Conservation** (2026-11-25) : une invitation expirée, annulée ou utilisée est **effacée 30 jours
    après sa fin** (date d'expiration, d'annulation ou d'utilisation), par une tâche de nuit. Pendant
    ces 30 jours, une expirée reste dans la liste et peut être renvoyée. Codé avec la PR 2.
+
+9. **Revues de la PR 2** (2026-11-25) : David valide les corrections proposées (annuler refusé
+   pendant une réservation, un seul renvoi à la fois, vraie raison du refus, test de la garde,
+   refus d'une 2e invitation ouverte même enfant + même adresse, 20 envois/heure/admin, journal
+   sans la ligne, message Zod en français). Renvoi refusé par Brevo : l'ancien lien est mort,
+   assumé et écrit dans la doc. **Page de confidentialité** : une phrase sur la conservation des
+   invitations, livrée avec la PR 3.
 
 ## Phase 0 — comportements (validés le 2026-11-24)
 
@@ -74,6 +81,30 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 - **PR 3** — page du parent : création du compte, de la classe, adhésion, consentement ; courriel final.
   code-reviewer + security-auditor.
 
+## Revue de la PR 2 (code-reviewer, 2026-11-25) — corrigée (décision 9 ; point 4 assumé, point 5 laissé)
+
+1. « Annuler » ignore une réservation `claimed_at` de moins de 5 min (`cancelInvitation`) :
+   ajouter `.or(claimFreeFilter(now))`, motif `in_use`, et un test.
+2. Deux « Renvoyer » simultanés passent tous les deux (la garde `sent_count` ne change pas au
+   renouvellement) : garder l'`update` sur l'empreinte lue (`.eq('token_hash', …)`, lue côté
+   serveur seulement).
+3. Renvoi qui ne touche aucune ligne → « a déjà servi » même si elle est vivante : relire et
+   distinguer `in_use` / `ended`.
+4. Renvoi refusé par Brevo : l'ancien lien est déjà mort. À assumer dans la doc, ou garder
+   l'ancienne empreinte jusqu'à l'envoi.
+5. (mineur) Exception de l'expéditeur après l'insertion → 500 « non créée », alors que la ligne existe.
+6. (mineur) Champ absent → message Zod en anglais.
+
+## Audit de sécurité de la PR 2 (security-auditor, 2026-11-25) — aucun bloquant ; C1, C2, N1 corrigés ; N3 pour la PR 3
+
+- **C1** : aucun test sur la garde des actions `invite` / `resend` / `cancel` → test serveur :
+  prof non élevé et élève → 403, `createServiceRoleClient` et l'expéditeur jamais appelés ; admin élevé passe.
+- **C2** : plafond de 5 contournable (N invitations pour la même adresse ; délai d'attente de Brevo
+  compté « non parti ») ; quota Brevo partagé (300/jour) → limite de débit par admin sur `invite`
+  et `resend` (`rateLimiter.ts`, ex. 20/h) ou refus d'un doublon ouvert (même adresse + prénom).
+- N1 : `invitations.ts` journalise l'erreur PostgREST entière dans `sendAndRecord` → `error.code` seul.
+- N3 (PR 3) : jeton dans le chemin → `Referrer-Policy: no-referrer` et aucune ressource tierce sur la page du lien.
+
 ## Dette pour les PR 2 et 3 (revues de la PR 1)
 
 - **PR 2** : écrire en service role après la garde de rôle admin ; poser `created_by` (id de l'admin
@@ -85,6 +116,10 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 - **PR 3** : réserver le lien par un `update … set claimed_at = now() where … and (claimed_at is
 null or claimed_at < now() - interval '5 minutes') returning` atomique ; la retirer si la
   création échoue ; `used_at` + `student_id` + `class_id` ensemble à la fin.
+- **PR 3 (ajouts de la PR 2)** : page à l'adresse `/auth/register/invitation/[token]` (déjà écrite dans
+  les courriels) ; « Annuler » n'attend pas la fin d'une réservation : la mise à jour finale
+  (`used_at` + `student_id` + `class_id`) doit exiger `cancelled_at is null` et la création échouer
+  proprement sinon ; « Renvoyer » refuse pendant une réservation de moins de 5 min.
 - **Essais en local** : la base locale n'a pas d'Akadada (le réglage n'y est pas posé) → une graine
   ou une école de test réglée à la main pour essayer les PR 2 et 3.
 - **Conservation** : tranchée (décision 8, 30 jours après la fin) ; purge à coder en PR 2.
@@ -95,3 +130,5 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-24 : phase 0 validée par David, point A compris (réglage « école de cours particuliers »).
 - 2026-11-24 : PR 1 écrite (migration + 21 tests) ; revues security-auditor (aucun bloquant) et code-reviewer (niveaux, format d'adresse, réservation `claimed_at`, plafond d'envois, assertions strictes : corrigés).
 - 2026-11-25 : #3119 mergée (PR 1) ; décision 8 de David (purge à 30 jours) ; `db:migrate` refusé à Claude par le classifieur, lancé par David, vérifié en prod.
+- 2026-11-25 : PR 2 écrite (page admin, courriel, renvoi/annulation, purge à 30 jours par un cron Vercel quotidien `api/cron/invitations-cours-particulier`, sans migration) ; 13 tests d'intégration verts ; parcours inviter/renvoyer/annuler vu à l'écran (Playwright, 0 erreur de console).
+- 2026-11-25 : revues de la PR 2 (code-reviewer, security-auditor : aucun bloquant) ; décision 9 de David ; corrections commitées (annulation et renvoi gardés, refus du doublon, 20 envois/h/admin, test de la garde, journal sans la ligne).
