@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, avant la PR._
+_Mis à jour le 2026-11-25 : chantier clos après #3136, journal archivé._
 
-- **État** : correctif sur la branche · **Prochaine action** : PR, CI, merge, archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `ubumaths-wt-badge-niveau-anglais` · `fix/badge-niveau-anglais`
+- **État** : clos, #3136 mergée · **En attente de David** : `deploy:prod` (la v0.109.0 est partie avant le merge)
 
 ## Le constat (David, 2026-11-25)
 
