@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { CHILD_ACCOUNT_DOMAIN } from '#lib/utils/child-account.ts';
 import {
 	privateLessonInvitationCreateSchema,
-	privateLessonInvitationIdSchema
+	privateLessonInvitationIdSchema,
+	privateLessonRedeemFormSchema,
+	privateLessonTokenSchema
 } from '../private-lessons';
 
 const VALIDE = { firstname: '  Jade ', parentEmail: ' Parent.Jade@Example.TEST ', grade: '5' };
@@ -51,5 +53,53 @@ describe("entrées d'une invitation de cours particulier", () => {
 			privateLessonInvitationIdSchema.safeParse({ id: '11111111-1111-4111-8111-111111111111' })
 				.success
 		).toBe(true);
+	});
+});
+
+describe('formulaire de la page du parent (PR 3)', () => {
+	const FORMULAIRE = {
+		password: 'Zz-Enfant-2026!',
+		confirmPassword: 'Zz-Enfant-2026!',
+		acceptTerms: 'true',
+		consent: 'true'
+	};
+
+	function champsEnErreur(entree: Record<string, string | undefined>): string[] {
+		const res = privateLessonRedeemFormSchema.safeParse(entree);
+		return res.success ? [] : [...new Set(res.error.issues.map((i) => String(i.path[0])))];
+	}
+
+	it('mot de passe confirmé, CGU et consentement cochés : accepté', () => {
+		expect(privateLessonRedeemFormSchema.parse(FORMULAIRE)).toEqual({
+			password: 'Zz-Enfant-2026!',
+			confirmPassword: 'Zz-Enfant-2026!',
+			acceptTerms: true,
+			consent: true
+		});
+	});
+
+	it('consentement ou CGU non cochés : refusé sur leur champ', () => {
+		expect(champsEnErreur({ ...FORMULAIRE, consent: 'false' })).toEqual(['consent']);
+		expect(champsEnErreur({ ...FORMULAIRE, consent: undefined })).toEqual(['consent']);
+		expect(champsEnErreur({ ...FORMULAIRE, acceptTerms: 'false' })).toEqual(['acceptTerms']);
+	});
+
+	it('mots de passe différents, trop court ou trop courant : refusé', () => {
+		expect(champsEnErreur({ ...FORMULAIRE, confirmPassword: 'Autre-2026!' })).toEqual([
+			'confirmPassword'
+		]);
+		expect(champsEnErreur({ ...FORMULAIRE, password: 'court', confirmPassword: 'court' })).toEqual([
+			'password'
+		]);
+		expect(
+			champsEnErreur({ ...FORMULAIRE, password: 'password123', confirmPassword: 'password123' })
+		).toEqual(['password']);
+	});
+
+	it('jeton : 43 caractères base64url, rien d’autre', () => {
+		expect(privateLessonTokenSchema.safeParse('A'.repeat(42) + '_').success).toBe(true);
+		for (const jeton of ['', 'A'.repeat(42), 'A'.repeat(44), 'A'.repeat(42) + '/', '../x']) {
+			expect(privateLessonTokenSchema.safeParse(jeton).success).toBe(false);
+		}
 	});
 });

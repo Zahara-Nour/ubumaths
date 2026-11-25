@@ -17,7 +17,7 @@ import {
  * sets a new password (register, update after reset), so complexity + common-
  * password checks are actually applied server-side.
  */
-function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
+export function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
 	const result = validatePasswordPolicy(password);
 	if (!result.valid) {
 		for (const message of result.errors) {

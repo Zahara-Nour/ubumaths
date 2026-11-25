@@ -27,6 +27,10 @@ import { createServerLogger } from '#lib/utils/logger.ts';
 
 type ServiceClient = SupabaseClient<Database>;
 
+export type CreateChildAuthUserResult =
+	| { ok: true; userId: string; loginId: string }
+	| { ok: false; reason: 'invalid_firstname' | 'weak_password' | 'server_error' };
+
 export type CreateChildAccountResult =
 	| { ok: true; userId: string; loginId: string; grade: string | null }
 	| { ok: false; reason: 'invalid_firstname' | 'class_closed' | 'weak_password' | 'server_error' };
@@ -61,13 +65,14 @@ async function takenLoginIds(service: ServiceClient, base: string): Promise<Set<
 }
 
 /**
- * Crée le compte de l'enfant dans la classe du code. Le code est re-résolu par le trigger :
- * une classe fermée entre-temps laisse un profil non approuvé, que l'on supprime.
+ * Crée le compte Auth de l'enfant (identifiant libre, domaine fictif, marque `child_account`).
+ * Le profil naît du trigger `handle_new_user` selon `userMetadata` : avec un code de classe
+ * ouvert → approuvé dans la classe ; sans code → en attente (l'appelant le complète).
  */
-export async function createChildAccount(
+export async function createChildAuthUser(
 	service: ServiceClient,
-	input: { childFirstname: string; password: string; classCode: string; termsVersion: string }
-): Promise<CreateChildAccountResult> {
+	input: { childFirstname: string; password: string; userMetadata: Record<string, string> }
+): Promise<CreateChildAuthUserResult> {
 	const base = childLoginBase(input.childFirstname);
 	if (!base) return { ok: false, reason: 'invalid_firstname' };
 
@@ -81,12 +86,7 @@ export async function createChildAccount(
 			password: input.password,
 			email_confirm: true,
 			app_metadata: { child_account: true },
-			user_metadata: {
-				class_code: input.classCode,
-				firstname: input.childFirstname,
-				lastname: '',
-				terms_version: input.termsVersion
-			}
+			user_metadata: input.userMetadata
 		});
 
 		if (error?.code === 'email_exists') {
@@ -102,41 +102,63 @@ export async function createChildAccount(
 			logger.error('Création du compte de l’enfant impossible :', error?.message);
 			return { ok: false, reason: 'server_error' };
 		}
-
-		const userId = data.user.id;
-		const { data: profile, error: profileError } = await service
-			.from('profiles')
-			.select('status, grade')
-			.eq('id', userId)
-			.maybeSingle();
-
-		if (profileError || profile?.status !== 'approved') {
-			// Code fermé entre la vérification et la création, ou profil non créé : on ne
-			// laisse pas un compte orphelin qui bloquerait l'identifiant.
-			if (profileError) logger.error('Profil de l’enfant illisible :', profileError.message);
-			await deleteChildAccount(service, userId);
-			return { ok: false, reason: profileError ? 'server_error' : 'class_closed' };
-		}
-
-		// Lecture seule jusqu'au clic du parent (Q2, David, 2026-10-21) : la règle commune
-		// (apply_consent_rule_by_grade) donne 30 jours d'accès complet à tout nouveau compte ;
-		// ici, sans adresse vérifiée, aucun. La clé service peut écrire ces champs.
-		const { data: closed, error: graceError } = await service
-			.from('profiles')
-			.update({ consent_grace_period_ends: null })
-			.eq('id', userId)
-			.select('id');
-		if (graceError || closed?.length !== 1) {
-			logger.error('Délai de grâce non retiré :', graceError?.message);
-			await deleteChildAccount(service, userId);
-			return { ok: false, reason: 'server_error' };
-		}
-
-		return { ok: true, userId, loginId, grade: profile.grade };
+		return { ok: true, userId: data.user.id, loginId };
 	}
 
 	logger.error('Aucun identifiant libre après plusieurs essais');
 	return { ok: false, reason: 'server_error' };
+}
+
+/**
+ * Crée le compte de l'enfant dans la classe du code. Le code est re-résolu par le trigger :
+ * une classe fermée entre-temps laisse un profil non approuvé, que l'on supprime.
+ */
+export async function createChildAccount(
+	service: ServiceClient,
+	input: { childFirstname: string; password: string; classCode: string; termsVersion: string }
+): Promise<CreateChildAccountResult> {
+	const created = await createChildAuthUser(service, {
+		childFirstname: input.childFirstname,
+		password: input.password,
+		userMetadata: {
+			class_code: input.classCode,
+			firstname: input.childFirstname,
+			lastname: '',
+			terms_version: input.termsVersion
+		}
+	});
+	if (!created.ok) return created;
+	const { userId, loginId } = created;
+
+	const { data: profile, error: profileError } = await service
+		.from('profiles')
+		.select('status, grade')
+		.eq('id', userId)
+		.maybeSingle();
+
+	if (profileError || profile?.status !== 'approved') {
+		// Code fermé entre la vérification et la création, ou profil non créé : on ne
+		// laisse pas un compte orphelin qui bloquerait l'identifiant.
+		if (profileError) logger.error('Profil de l’enfant illisible :', profileError.message);
+		await deleteChildAccount(service, userId);
+		return { ok: false, reason: profileError ? 'server_error' : 'class_closed' };
+	}
+
+	// Lecture seule jusqu'au clic du parent (Q2, David, 2026-10-21) : la règle commune
+	// (apply_consent_rule_by_grade) donne 30 jours d'accès complet à tout nouveau compte ;
+	// ici, sans adresse vérifiée, aucun. La clé service peut écrire ces champs.
+	const { data: closed, error: graceError } = await service
+		.from('profiles')
+		.update({ consent_grace_period_ends: null })
+		.eq('id', userId)
+		.select('id');
+	if (graceError || closed?.length !== 1) {
+		logger.error('Délai de grâce non retiré :', graceError?.message);
+		await deleteChildAccount(service, userId);
+		return { ok: false, reason: 'server_error' };
+	}
+
+	return { ok: true, userId, loginId, grade: profile.grade };
 }
 
 /** Annule une inscription inachevée (compte créé, demande au parent impossible). */

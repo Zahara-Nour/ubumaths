@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de confidentialité</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 17 novembre 2026 | Version 1.4</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 25 novembre 2026 | Version 1.5</p>
 
 		<hr />
 
@@ -385,6 +385,16 @@
 								Tant que l'élève est dans une classe ; effacée 90 jours après qu'il n'est plus dans
 								aucune classe, aussitôt si le destinataire indique ne pas être le parent ou si
 								l'enseignant la retire
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Invitation de cours particulier (prénom de l'enfant, adresse e-mail du parent,
+								niveau ; lien conservé sous forme chiffrée)
+							</td>
+							<td>
+								Effacée 30 jours après sa fin : création du compte, annulation, ou expiration du
+								lien (valable 7 jours)
 							</td>
 						</tr>
 						<tr>
