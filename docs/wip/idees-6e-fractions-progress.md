@@ -4,12 +4,12 @@ Skill `idees-rubrique`. Rubrique réservée le 2026-11-24 (commit `331a401c9` su
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après l'écriture du lot._
+_Mis à jour le 2026-11-25, migrations générées, PR ouverte._
 
-- **État** : lot écrit et vert (simulation, specs, sondes) : 23 variations ajoutées à 13 modèles publiés (`scripts/questions/idees-6e-fractions-publies/`), 6 modèles neufs (`…-neufs/`, champ `rangement` posé). Joué en base locale, puis retiré. Commité sur la branche, pas de PR.
-- **Prochaine action** : David lance en prod `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-fractions-neufs --publier` (depuis le worktree) ; je commite les ids, relève les niveaux, puis `migration-rangement.ts` et `migration-contenu.ts --dir scripts/questions/idees-6e-fractions-publies`, une seule PR, `security-auditor`.
-- **En attente de David** : la commande de publication des brouillons ; deux écarts à la fiche à confirmer (§ « Lot écrit »).
-- **Pièges en cours** : scripts relançables (`docs/wip/questions/idees-6e-fractions-{publies,neufs}.py`), ils gardent les ids et les chemins du labyrinthe ; N6 en CM2 (CM2-130).
+- **État** : 6 brouillons créés en prod par David (3e683a73 N1, 0a21fe2f N2, eae76a51 N3, 727794bb N4, f2ffb9fd N5, 517dce40 N6), ids commités. Migrations `20261125054953_…_neufs_rangement_tags.sql` et `20261125055001_…_publies_contenu.sql` ; tests d'intégration verts ; `security-auditor` sans finding bloquant. PR ouverte (voir l'historique).
+- **Prochaine action** : PR mergée → `db:migrate` (David, comme pour #3121), vérifier en prod (nœuds, tags, nombre de variations) ; puis relecture dans `/dev/modeles` (`?point=6-126`, `6-128`, `6-132`, `6-133`, `6-141`, `CM2-130`, et série de relecture des 13 publiés).
+- **En attente de David** : deux écarts à la fiche à confirmer (§ « Lot écrit ») ; la commande `db:migrate` après le merge.
+- **Pièges en cours** : scripts relançables (`docs/wip/questions/idees-6e-fractions-{publies,neufs}.py`) ; N6 en CM2 (CM2-130).
 - **Worktree / branche** : `../ubumaths-wt-idees-6e-fractions` / `feat/idees-6e-fractions`
 
 ## Décisions de phase 0 (David, 2026-11-25 : « je suis tes recos »)
@@ -44,3 +44,9 @@ Points des fractions et des pourcentages (6-125 à 6-141, 6-203, 6-205) : modèl
   - F6 (6818662d) : la variation 0 compare déjà deux fractions de part et d'autre de 1 avec des dénominateurs différents. À la place : une fraction égale à 1 (n/n) face à une fraction plus petite, égale ou plus grande que 1 (leur cas « 5/5 et 7/7 »).
   - F6 (afebbb91) : la réponse n'est pas toujours « = » (sinon elle se devine) : la seconde fraction vaut k·a/k·b, ou son numérateur est à 1 près.
 - **Autres choix** : F9 demande l'écriture décimale (le juge du modèle refuse 27/2, ses options jugent toutes les variations) ; F10 garde un total ≤ 990 (pas d'espace des milliers dans `${{N}}$`) ; F2 n'a que 2 erreurs prévues par case, F4 (trou au dénominateur) et F8 (segments) une seule, faute d'autre erreur réelle.
+
+## Brouillons en prod, migrations (2026-11-25)
+
+- David a lancé `create-questions --publier` : 6 brouillons, vérifiés par MCP (statut, niveau, sans nœud). Niveaux relevés de nouveau : toujours libres.
+- `migration-rangement.ts` : 6 « rangé ». `migration-contenu.ts` : 13 « migré » (+23 variations, specs). Tests `migrations-rangement-tags` et `migrations-contenu-publie` verts (256 passés).
+- `security-auditor` : aucun finding bloquant ; deux faibles hérités du générateur (`set local lock_timeout` sans effet hors transaction explicite, `disable trigger` = verrou bref), identiques aux migrations jumelles déjà mergées.
