@@ -1,0 +1,596 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Fonctions trigonométriques > cosinus et sinus d'un réel",
+		"point": "1SPE-305"
+	},
+	"title": "Calculer sin x connaissant cos x",
+	"description": "cos²x + sin²x = 1 : cos x donné (3/5, 2/3, 0,6…) et un demi-tour pour le signe de sin x ; fraction réduite, avec une racine si besoin",
+	"grades": ["1_SPE"],
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On sait que $\\cos x={{if:s<0|-|}}\\frac{ {{a}} }{ {{b}} }$ et que $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$.\n\nCalcule la valeur exacte de $\\sin x$.\n\n$\\sin x=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "b",
+					"expression": "5|13|17|25"
+				},
+				{
+					"name": "a",
+					"expression": "1..b!cd(b)"
+				}
+			],
+			"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-2*w)*sqrt(1-(a/b)^2)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(1-2*w)*sqrt(1-(a/b)^2)}}",
+							"message": "Attention au signe : regarde sur quel demi-cercle se trouve $x$.",
+							"label": "Mauvais signe"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*(1-(a/b)^2)}}",
+							"message": "Tu as calculé le carré : il reste à prendre la racine carrée.",
+							"label": "Racine oubliée"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*(1-s*a/b)}}",
+							"message": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$.",
+							"label": "1 − cos x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\sin^2x=1-\\cos^2x$.",
+					"$$\\sin^2x=1-\\left({{if:s<0|-|}}\\frac{ {{a}} }{ {{b}} }\\right)^2={{eval:1-(a/b)^2}}$$",
+					"Donc $\\sin x=\\sqrt{{{eval:1-(a/b)^2}}}$ ou $\\sin x=-\\sqrt{{{eval:1-(a/b)^2}}}$.",
+					"Comme $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$, $\\sin x{{if:w==0|\\geqslant|\\leqslant}}0$ : $\\sin x=\\textcolor{{{color:primary.0}}}{ {{eval:(1-2*w)*sqrt(1-(a/b)^2)}} }$."
+				]
+			},
+			"hint": "Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$. Le signe de $\\sin x$ se lit sur le demi-cercle où se trouve $x$."
+		},
+		{
+			"statement": "On sait que $\\cos x={{if:s<0|-|}}\\frac{ {{a}} }{ {{b}} }$ et que $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$.\n\nCalcule la valeur exacte de $\\sin x$.\n\n$\\sin x=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "b",
+					"expression": "5|13|17|25"
+				},
+				{
+					"name": "a",
+					"expression": "1..b!cd(b)"
+				}
+			],
+			"conditions": ["round(sqrt(b^2-a^2))^2=b^2-a^2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-2*w)*sqrt(1-(a/b)^2)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(1-2*w)*sqrt(1-(a/b)^2)}}",
+							"message": "Attention au signe : regarde sur quel demi-cercle se trouve $x$.",
+							"label": "Mauvais signe"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*(1-(a/b)^2)}}",
+							"message": "Tu as calculé le carré : il reste à prendre la racine carrée.",
+							"label": "Racine oubliée"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*(1-s*a/b)}}",
+							"message": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$.",
+							"label": "1 − cos x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\sin^2x=1-\\cos^2x$.",
+					"$$\\sin^2x=1-\\left({{if:s<0|-|}}\\frac{ {{a}} }{ {{b}} }\\right)^2={{eval:1-(a/b)^2}}$$",
+					"Donc $\\sin x=\\sqrt{{{eval:1-(a/b)^2}}}$ ou $\\sin x=-\\sqrt{{{eval:1-(a/b)^2}}}$.",
+					"Comme $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$, $\\sin x{{if:w==0|\\geqslant|\\leqslant}}0$ : $\\sin x=\\textcolor{{{color:primary.0}}}{ {{eval:(1-2*w)*sqrt(1-(a/b)^2)}} }$."
+				]
+			},
+			"hint": "Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$. Le signe de $\\sin x$ se lit sur le demi-cercle où se trouve $x$."
+		},
+		{
+			"statement": "On sait que $\\cos x={{if:s<0|-|}}\\frac{ {{a}} }{ {{b}} }$ et que $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$.\n\nCalcule la valeur exacte de $\\sin x$.\n\n$\\sin x=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..b!cd(b)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b^2-a^2"
+				}
+			],
+			"conditions": ["mod(d,4)!=0", "mod(d,9)!=0", "mod(d,25)!=0", "mod(d,49)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-2*w)*sqrt(1-(a/b)^2)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(1-2*w)*sqrt(1-(a/b)^2)}}",
+							"message": "Attention au signe : regarde sur quel demi-cercle se trouve $x$.",
+							"label": "Mauvais signe"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*(1-(a/b)^2)}}",
+							"message": "Tu as calculé le carré : il reste à prendre la racine carrée.",
+							"label": "Racine oubliée"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*sqrt(1-s*a/b)}}",
+							"message": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$.",
+							"label": "1 − cos x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\sin^2x=1-\\cos^2x$.",
+					"$$\\sin^2x=1-\\left({{if:s<0|-|}}\\frac{ {{a}} }{ {{b}} }\\right)^2={{eval:1-(a/b)^2}}$$",
+					"Donc $\\sin x=\\sqrt{{{eval:1-(a/b)^2}}}$ ou $\\sin x=-\\sqrt{{{eval:1-(a/b)^2}}}$.",
+					"Comme $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$, $\\sin x{{if:w==0|\\geqslant|\\leqslant}}0$ : $\\sin x=\\textcolor{{{color:primary.0}}}{ {{eval:(1-2*w)*sqrt(1-(a/b)^2)}} }$."
+				]
+			},
+			"hint": "Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$. Le signe de $\\sin x$ se lit sur le demi-cercle où se trouve $x$."
+		},
+		{
+			"statement": "On sait que $\\cos x={{if:s<0|-|}}0{,}{{a}}$ et que $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$.\n\nCalcule la valeur exacte de $\\sin x$, sans racine d'un nombre décimal ($\\frac{\\sqrt{91}}{10}$ plutôt que $\\sqrt{0{,}91}$).\n\n$\\sin x=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "a",
+					"expression": "3|6|7|8|9"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-2*w)*sqrt(1-(a/10)^2)}}",
+					"acceptDecimal": true,
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-(1-2*w)*sqrt(1-(a/10)^2)}}",
+							"message": "Attention au signe : regarde sur quel demi-cercle se trouve $x$.",
+							"label": "Mauvais signe"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*(1-(a/10)^2)}}",
+							"message": "Tu as calculé le carré : il reste à prendre la racine carrée.",
+							"label": "Racine oubliée"
+						},
+						{
+							"answer": "{{eval:(1-2*w)*(1-s*a/10)}}",
+							"message": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$.",
+							"label": "1 − cos x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$, donc $\\sin^2x=1-\\cos^2x$.",
+					"$$\\sin^2x=1-\\left({{if:s<0|-|}}0{,}{{a}}\\right)^2={{eval:1-(a/10)^2}}$$",
+					"Donc $\\sin x=\\sqrt{{{eval:1-(a/10)^2}}}$ ou $\\sin x=-\\sqrt{{{eval:1-(a/10)^2}}}$.",
+					"Comme $x\\in{{if:w==0|\\left[0\\,;\\pi\\right]|\\left[-\\pi\\,;0\\right]}}$, $\\sin x{{if:w==0|\\geqslant|\\leqslant}}0$ : $\\sin x=\\textcolor{{{color:primary.0}}}{ {{eval:(1-2*w)*sqrt(1-(a/10)^2)}} }$."
+				]
+			},
+			"hint": "Pour tout réel $x$, $\\cos^2x+\\sin^2x=1$. Le signe de $\\sin x$ se lit sur le demi-cercle où se trouve $x$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "cos x = 3/5, x ∈ [0 ; π] : sin x = 4/5",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "5",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{4}{5}"]
+		},
+		{
+			"description": "décimal 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "5",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}8"]
+		},
+		{
+			"description": "mauvais signe −4/5",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "5",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde sur quel demi-cercle se trouve $x$."
+			},
+			"answers": ["-\\frac{4}{5}"]
+		},
+		{
+			"description": "racine oubliée 16/25",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "5",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le carré : il reste à prendre la racine carrée."
+			},
+			"answers": ["\\frac{16}{25}"]
+		},
+		{
+			"description": "1 − cos x : 2/5",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "5",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$."
+			},
+			"answers": ["\\frac{2}{5}"]
+		},
+		{
+			"description": "cos x = −5/13, x ∈ [0 ; π] : sin x = 12/13",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0",
+				"s": "-1",
+				"b": "13",
+				"a": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{12}{13}"]
+		},
+		{
+			"description": "cos x = 8/17, x ∈ [−π ; 0] : sin x = −15/17",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"s": "1",
+				"b": "17",
+				"a": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{15}{17}"]
+		},
+		{
+			"description": "signe oublié 15/17",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"s": "1",
+				"b": "17",
+				"a": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde sur quel demi-cercle se trouve $x$."
+			},
+			"answers": ["\\frac{15}{17}"]
+		},
+		{
+			"description": "racine oubliée −225/289",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"s": "1",
+				"b": "17",
+				"a": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le carré : il reste à prendre la racine carrée."
+			},
+			"answers": ["-\\frac{225}{289}"]
+		},
+		{
+			"description": "cos x = 2/3, x ∈ [0 ; π] : sin x = √5/3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "3",
+				"a": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{\\sqrt{5}}{3}"]
+		},
+		{
+			"description": "mauvais signe −√5/3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "3",
+				"a": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde sur quel demi-cercle se trouve $x$."
+			},
+			"answers": ["-\\frac{\\sqrt{5}}{3}"]
+		},
+		{
+			"description": "racine oubliée 5/9",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "3",
+				"a": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le carré : il reste à prendre la racine carrée."
+			},
+			"answers": ["\\frac{5}{9}"]
+		},
+		{
+			"description": "√(1 − cos x) : √3/3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "3",
+				"a": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$."
+			},
+			"answers": ["\\frac{\\sqrt{3}}{3}"]
+		},
+		{
+			"description": "√5/√9 non réduit",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"b": "3",
+				"a": "2",
+				"d": "5"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			},
+			"answers": ["\\frac{\\sqrt{5}}{\\sqrt{9}}"]
+		},
+		{
+			"description": "cos x = −1/4, x ∈ [−π ; 0] : sin x = −√15/4",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1",
+				"s": "-1",
+				"b": "4",
+				"a": "1",
+				"d": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{\\sqrt{15}}{4}"]
+		},
+		{
+			"description": "signe oublié √15/4",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1",
+				"s": "-1",
+				"b": "4",
+				"a": "1",
+				"d": "15"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde sur quel demi-cercle se trouve $x$."
+			},
+			"answers": ["\\frac{\\sqrt{15}}{4}"]
+		},
+		{
+			"description": "cos x = 0,6, x ∈ [0 ; π] : sin x = 0,8",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"a": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}8"]
+		},
+		{
+			"description": "fraction 4/5 acceptée",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"a": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{4}{5}"]
+		},
+		{
+			"description": "mauvais signe −0,8",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"a": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde sur quel demi-cercle se trouve $x$."
+			},
+			"answers": ["-0{,}8"]
+		},
+		{
+			"description": "racine oubliée 0,64",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"a": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le carré : il reste à prendre la racine carrée."
+			},
+			"answers": ["0{,}64"]
+		},
+		{
+			"description": "1 − cos x : 0,4",
+			"variationIndex": 3,
+			"variables": {
+				"w": "0",
+				"s": "1",
+				"a": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Ce sont les carrés qui s'ajoutent : $\\cos^2x+\\sin^2x=1$."
+			},
+			"answers": ["0{,}4"]
+		},
+		{
+			"description": "cos x = −0,3, x ∈ [−π ; 0] : sin x = −√91/10",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"s": "-1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{\\sqrt{91}}{10}"]
+		},
+		{
+			"description": "−√0,91 refusé (forme, annoncé)",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"s": "-1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["-\\sqrt{0{,}91}"]
+		},
+		{
+			"description": "signe oublié √91/10",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"s": "-1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : regarde sur quel demi-cercle se trouve $x$."
+			},
+			"answers": ["\\frac{\\sqrt{91}}{10}"]
+		},
+		{
+			"description": "racine oubliée −0,91",
+			"variationIndex": 3,
+			"variables": {
+				"w": "1",
+				"s": "-1",
+				"a": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé le carré : il reste à prendre la racine carrée."
+			},
+			"answers": ["-0{,}91"]
+		}
+	]
+}
