@@ -105,7 +105,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Nombres entiers                    | 6N0   | 18        | publiée (2026-11-22) | `idees-6e-entiers`          |
 | Nombres entiers et décimaux        | 6N1   | 38        | publiée (2026-11-23) | `idees-6e-entiers-decimaux` |
 | Nombres décimaux                   | 6N2   | 55        | publiée (2026-11-23) | `idees-6e-decimaux`         |
-| Fractions                          | 6N3   | 53        | prise (2026-11-24)   | `idees-6e-fractions`        |
+| Fractions                          | 6N3   | 53        | publiée (2026-11-25) | `idees-6e-fractions`        |
 | Algèbre                            | 6N4   | 9         | libre                |                             |
 | Résolution de problèmes            | 6N5   | 24        | libre                |                             |
 | Longueurs                          | 6M1   | 16        | libre                |                             |
@@ -160,41 +160,28 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| 93147367 Déterminer la forme décimale d'une fraction                | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 000368e1 Déterminer une forme fractionnaire                         | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 6fdcdda1 Définition par quotient                                    | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| c415d81d Définition par quotient (égalités à trous)                 | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 5aa1d44c Compléter une égalité de fractions                         | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| afebbb91 Comparer deux fractions de même dénominateur ou numérateur | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 6818662d Comparer deux fractions à 1 ou à 1/2                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 83c835bb Ranger des fractions                                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 58bbee5d Additionner des fractions                                  | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 0be55013 Calculer une fraction d'une quantité                       | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 5cd25c2b Problèmes de fractions                                     | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| f9e9637c Comprendre le sens d'un pourcentage                        | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 5c8a6da6 Exprimer une proportion en pourcentage                     | `idees-6e-fractions`                                        | 2026-11-25 |                                      |
-| 15368b02 Définition d'une puissance à exposant négatif              | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| bb9cff7b Multiplier 2 puissances d'un même nombre                   | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 18761148 Diviser 2 puissances d'un même nombre                      | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 3fe98dd9 Traduire une puissance en produit                          | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
-| 04b1cc7f Puissance d'un produit                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ?        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| 15368b02 Définition d'une puissance à exposant négatif       | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| bb9cff7b Multiplier 2 puissances d'un même nombre            | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 18761148 Diviser 2 puissances d'un même nombre               | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 3fe98dd9 Traduire une puissance en produit                   | `idees-3e-puissances`                                       | 2026-11-25 |                                      |
+| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 
