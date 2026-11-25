@@ -62,7 +62,7 @@
 			</Card.Header>
 			<Card.Content class="space-y-4 text-center">
 				<div class="rounded-lg border bg-muted/40 p-4">
-					<p class="text-sm text-muted-foreground">Identifiant de connexion — notez-le :</p>
+					<p class="text-sm text-muted-foreground">Identifiant de connexion — notez-le&nbsp;:</p>
 					<p class="mt-1 font-mono text-3xl font-bold tracking-wide">{form.loginId}</p>
 					<p class="mt-2 text-sm text-muted-foreground">
 						Avec le mot de passe que vous venez de choisir.
