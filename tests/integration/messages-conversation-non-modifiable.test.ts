@@ -19,9 +19,8 @@
  *      reste rendu au prof par `get_flagged_messages_for_teacher` ;
  *   2. le prof ne déplace pas un message du chat de sa classe, l'admin ne
  *      déplace pas le sien ;
- *   3. non-régression : l'élève modifie toujours le contenu de son message ;
- *      renvoyer la même conversation dans la mise à jour passe ; le service
- *      déplace un message.
+ *   3. non-régression : renvoyer la même conversation n'est pas refusé ; le
+ *      service déplace un message.
  *
  * @vitest-environment node
  */
@@ -215,25 +214,17 @@ describe('Chat — un message ne change pas de conversation', () => {
 			});
 		});
 
-		it('modifie toujours le contenu de son message', async () => {
+		// Réécrire le contenu n'est plus possible depuis l'écart T33
+		// (`messages-chat-non-reecrits.test.ts`) : la non-régression porte sur un
+		// UPDATE qui renvoie la même conversation sans rien changer.
+		it('renvoie la même conversation sans être refusé', async () => {
 			const id = await envoyer(entreEleves, eleve.id, PROPRE);
 
-			await modifier(eleveClient, id, { content: doc('bonsoir') });
+			await modifier(eleveClient, id, { conversation_id: entreEleves });
 
 			expect(await enBase(id)).toMatchObject({
 				conversation_id: entreEleves,
-				plain_text: 'bonsoir'
-			});
-		});
-
-		it('modifie son message en renvoyant la même conversation', async () => {
-			const id = await envoyer(entreEleves, eleve.id, PROPRE);
-
-			await modifier(eleveClient, id, { conversation_id: entreEleves, content: doc('bonsoir') });
-
-			expect(await enBase(id)).toMatchObject({
-				conversation_id: entreEleves,
-				plain_text: 'bonsoir'
+				plain_text: PROPRE
 			});
 		});
 	});

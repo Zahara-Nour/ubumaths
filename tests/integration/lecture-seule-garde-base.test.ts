@@ -335,6 +335,9 @@ describe('lecture seule gardée par la base', () => {
 			return data.id;
 		}
 
+		// Depuis la garde `guard_message_reecriture` (aucun compte connecté ne réécrit
+		// un message), ce refus vient d'elle : elle passe avant la garde de lecture
+		// seule. Le test reste la preuve que l'élève restreint est refusé.
 		it('réécrire son ancien message : refusé', async () => {
 			const id = await ancienMessage();
 			const { error } = await eleve
@@ -390,6 +393,9 @@ describe('lecture seule gardée par la base', () => {
 			await pg.query('rollback');
 		});
 
+		// Refusé avant la garde de lecture seule, par `guard_message_conversation`
+		// (changement de conversation) ; `created_at` seul le serait par
+		// `guard_message_reecriture`.
 		it('déplacer son ancien message dans une autre conversation : refusé', async () => {
 			const id = await ancienMessage();
 			const autre = await conversationAvec(teacherId, eleveId);

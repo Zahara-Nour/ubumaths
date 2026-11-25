@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 validée._
+_Mis à jour le 2026-11-25, lot écrit._
 
-- **État** : rubrique 6P3 réservée (commit sur `main`), relevé écrit ([idees-6e-proportionnalite-releve.md](idees-6e-proportionnalite-releve.md)), 12 fiches de phase 0 sur la page à cocher https://claude.ai/artifact/8WUcuNwaQY2PvBydaLivW3 (collection `verdicts`).
-- **Prochaine action** : écrire le gros lot (modèles neufs N1 à N5, variations F1 à F3, ouverture de 06df72fd à la 6e en F4).
-- **En attente de David** : rien.
-- **Pièges en cours** : les variations de modèles publiés (e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d, 06df72fd) se réservent dans le tableau avant l'export. Bornes de 6e : pas de produit en croix (6-191, 6-192), échelles graphiques seulement (6-193).
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite`.
+- **État** : lot entier écrit, vérifié (`question:specs --file` : 10 fichiers « importable ») et poussé sur la branche : 4 publiés (+6 variations) et 5 neufs (N1 à N5, `scripts/questions/idees-6e-proportionnalite-neufs/`).
+- **Prochaine action** : essai en base LOCALE (neufs + copie brouillon des publiés, aperçus avec `pnpm voir`, puis suppression), puis donner à David `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier`.
+- **En attente de David** : (1) `zeros: off` sur e0ccaf84 pour accepter « 21,60 € » ? (les neufs N1-N3 l'ont déjà) ; (2) prix affichés « 3,7 € » et non « 3,70 € » (`eval` ne force pas deux décimales) : acceptable ? ; (3) N5 v2 : l'âge du père se calcule par l'écart (réponse = valeur, pas « on ne peut pas ») : écart à la fiche à confirmer ; (4) N5 : le choix « valeur × quantité » donne parfois une valeur absurde (piège facile) : garder ? ; (5) N4 relier : deux séries fixes : assez ?
+- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Rangements des neufs dans les fichiers (quatrième proportionnelle 4, 5, 6 ; caractérisation 8, 9) : relever les niveaux en prod avant la migration.
+- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite` (poussée, pas de PR).
 
 ## Journal
 
@@ -42,3 +42,14 @@ _Mis à jour le 2026-11-25, phase 0 validée._
 « Je valide » : toutes les fiches acceptées telles que recommandées (aucune case cochée sur la page,
 donc aucune note). Modèles publiés réservés dans le tableau de répartition : e0ccaf84, 7981dab0,
 52bf3fb9, 5e4e5e9d, 06df72fd. Idée R2 (échelles 1/n) notée dans « Idées en attente » pour la 5e.
+
+### 2026-11-25 : lot des modèles publiés
+
+- Exportés de prod : e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d, 06df72fd (ce dernier inchangé : F4 se fait par migration).
+- e0ccaf84 +2 (masses au dixième ; diviser), 7981dab0 +2 (tiers / quart de grands nombres ; de décimaux), 52bf3fb9 +1 et 5e4e5e9d +1 (échelle graphique dessinée par un bloc `figure`, 1 cm pour 2, 4 ou 5 m, deux cases). Coup de pouce et trois erreurs prévues par case.
+- Écarts : prix écrits « 7,2 € » (la règle des zéros juge « 21,60 € » forme à améliorer) ; espace des milliers écrit à la main (`2\,700`) ; une échelle par terrain, ni tennis ni handball (dimensions connues).
+
+### 2026-11-25 : modèles neufs
+
+- N1 retour à l'unité (4 var., 23 specs), N2 linéarité additive (4, 17), N3 compléter un tableau (3, 26, point 6-192), N4 grandeurs (2 : choix plusieurs, relier ; 10), N5 peut-on le calculer (2, 12). `zeros: off` sur N1 à N3.
+- Écarts : N3 moyen x pair ∈ {4, 8, 10} (sinon la différence vaut 1 = valeur pour 1) ; prix unitaire 1,10 à 3,50 € jamais entier ; N1 recette 2 à 10, sirop 2 à 9 ; certaines cases n'ont que deux erreurs prévues (pas d'invention) ; N5 v2 : l'âge du père se calcule par l'écart.

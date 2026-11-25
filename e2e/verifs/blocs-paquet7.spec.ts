@@ -605,8 +605,7 @@ test.describe('#2637 — courbe dans un élément d’associer', () => {
 const LARGEUR_ATTENDUE = 130;
 
 /**
- * Courbe lisible : au moins 130 px de large (l'attendu de la ligne, sans tolérance). Sous ce seuil c'est
- * un ÉCART : le symptôme est écrit en positif (les largeurs mesurées), puis `test.fail()` précède l'attendu.
+ * Courbe lisible : au moins 130 px de large (l'attendu de la ligne, sans tolérance ; écart E70 corrigé).
  * Le NOMBRE de courbes mesurées est asserté : un tableau vide donnerait `Math.min()` = `Infinity` et passerait.
  */
 function courbeAssezLarge(largeurs: number[], attendues: number, lieu: string): void {
@@ -616,10 +615,6 @@ function courbeAssezLarge(largeurs: number[], attendues: number, lieu: string): 
 	expect(largeurs, `${lieu} : nombre de courbes mesurées`).toHaveLength(attendues);
 	const plusPetite = Math.min(...largeurs);
 	expect(plusPetite, `${lieu} : chaque courbe a une largeur mesurée`).toBeGreaterThan(0);
-	test.fail(
-		plusPetite < LARGEUR_ATTENDUE,
-		`${lieu} : plus petite courbe ${Math.round(plusPetite)} px, la ligne attend ~ ${LARGEUR_ATTENDUE} px`
-	);
 	expect(plusPetite, `${lieu} : courbe ≥ ~${LARGEUR_ATTENDUE} px`).toBeGreaterThanOrEqual(
 		LARGEUR_ATTENDUE
 	);
