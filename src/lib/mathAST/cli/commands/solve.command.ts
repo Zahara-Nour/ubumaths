@@ -37,7 +37,11 @@ import {
 	approximateSolutionsText,
 	type SolutionWriting
 } from './solve-latex';
-import { anglesAsTyped, remarkableValuesInTrigonometry } from '../core/angle-radians';
+import {
+	anglesAsTyped,
+	familyInDegrees,
+	remarkableValuesInTrigonometry
+} from '../core/angle-radians';
 import { parameterSolveRefusal } from '../core/parameter-refusal';
 import { hasDecimalLiteral } from '../../tidy/decimal';
 // La virgule décimale lue comme dans l'Atelier (registre-reference, PR 2c, Q3)
@@ -982,7 +986,9 @@ export class SolveCommand extends BaseCommand {
 		if (isRelation(given)) relation = given;
 		const writing: SolutionWriting = {
 			decimal: hasDecimalLiteral(relation),
-			angles: anglesAsTyped(relation)
+			angles: anglesAsTyped(relation),
+			// E54 : la ligne TAPÉE (`cos(60°)` y est encore un angle en degrés)
+			degrees: familyInDegrees(parseResult.ast, relation)
 		};
 		const solved = this.solveRead(relation, chosen.variable, reading.args.interval, {
 			parserOptions,

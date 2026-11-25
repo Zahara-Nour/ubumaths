@@ -399,6 +399,15 @@ la valeur remarquable (« On utilise une valeur remarquable : cos(60°) = 1/2 »
 table reste en degrés (`.simplifier cos(20°)x`, `.développer x(cos(20°)+1)`, et `.résoudre
 cos(20°)x=1` → `S = {1/cos(20°)}` depuis la PR 2c de registre-reference, 2026-11-09 : ses étapes
 calculent en radians exacts, `radiansInTrigonometry`, puis `anglesAsTyped` remet l'angle tapé).
+**Une famille périodique s'écrit en degrés** quand la ligne tapée mesure un angle en degrés dans
+un sin, cos, tan et rien en radians (E54, 2026-11-25 ; `familyInDegrees`, `angle-radians.ts`) :
+`.résoudre cos(x) = cos(20°)` → `S = {−20° + k·360° ; 20° + k·360°, k ∈ ℤ}`, `sin(x) = sin(20°)` →
+20° et 160°, `tan(x) = tan(20°)` → `20° + k·180°`, `cos(2x) = cos(20°)` → ±10° + k·180°, angle
+remarquable compris (`cos(x) = cos(60°)` → ±60°). Le solveur calcule toujours en radians : c'est
+l'écriture (`degreeMembers`, `solve-latex.ts`) qui relit en degrés la valeur de chaque solution et
+de la période, quand la mesure est un rationnel simple ; sinon l'écriture en radians reste
+(`cos(x) = cos(20°)/2` garde son arccos). Un cas mêlé (`cos(x + π/3) = cos(20°)`) et une inconnue
+déjà en degrés (`cos(x°) = cos(20°)`) ne changent pas.
 Le moteur de `.résoudre` reçoit les degrés tels quels : le registre les lit lui-même. **Une variable en degrés** (choix prudent, à trancher par David) :
 `f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
 angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur

@@ -245,6 +245,9 @@ valeurs tombent dans le même passage (`withValuesTogether`, `pipeline.ts`). Rè
 actives avec `enableTrig` (lycée par défaut). Un angle en degrés est lu tel quel (`cos(60°)`,
 `cos(−60°)`, `cos(420°)` → 60°) ; hors table (`cos(π/5)`, `cos(20°)`) ou non défini (`tan(π/2)`),
 il reste écrit. `tidy` ne calcule aucune valeur (une ligne tapée seule garde `cos(π/3)`).
+`.solve` écrit en degrés, période comprise, une famille périodique venue d'un angle tapé en degrés
+(`cos(x) = cos(20°)` → `−20° + k·360° ; 20° + k·360°` ; `familyInDegrees`, `cli/core/angle-radians.ts`,
+`degreeMembers`, `cli/commands/solve-latex.ts` ; détail dans [atelier.md](../atelier.md)).
 `developper` n'a pas de phase A : `explainExpansion` calcule d'abord les valeurs
 (`generateRemarkableValueSteps`, `pipeline.ts`, qui ne garde rien si aucune valeur n'est
 atteinte), puis développe — `(x + cos(π/3))²` → étape de valeur, puis `x² + x + 1/4` ; l'atelier

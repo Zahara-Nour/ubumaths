@@ -97,13 +97,94 @@ describe('.solve : les degrés sont lus', () => {
 			'S = \\left\\{ \\sqrt{\\cos\\left( 20~\\unit{°} \\right)} \\right\\}'
 		],
 		// Revue : le moteur sort le signe d'un angle opposé (`-sin(π/9)`)
-		['sin(-20°)x=1', 'S = \\left\\{ -\\dfrac{1}{\\sin\\left( 20~\\unit{°} \\right)} \\right\\}'],
-		// Revue : une famille périodique aussi
-		[
-			'cos(x) = cos(20°)',
-			'S = \\left\\{ -\\arccos\\left( \\cos\\left( 20~\\unit{°} \\right) \\right) + 2k\\pi \\,;\\, \\arccos\\left( \\cos\\left( 20~\\unit{°} \\right) \\right) + 2k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
-		]
+		['sin(-20°)x=1', 'S = \\left\\{ -\\dfrac{1}{\\sin\\left( 20~\\unit{°} \\right)} \\right\\}']
 	])('angle quelconque : %s', (line, answer) => {
+		expect(flat(solved(line).answer)).toBe(flat(answer));
+	});
+
+	// E54 (David, 2026-11-24) : une famille venue d'un angle tapé en degrés
+	// s'écrit en degrés, période comprise — « 20° + k·360° et −20° + k·360° »,
+	// sans arccos ni radians
+	it.each([
+		['cos(x) = cos(20°)', ['-20', '20'], '360'],
+		['sin(x) = sin(20°)', ['20', '160'], '360'],
+		['tan(x) = tan(20°)', ['20'], '180'],
+		// Angle remarquable tapé en degrés : en degrés aussi
+		['cos(x) = cos(60°)', ['-60', '60'], '360'],
+		// Argument multiple : la période se divise
+		['cos(2x) = cos(20°)', ['-10', '10'], '180'],
+		// Angle négatif, angle au-delà d'un tour : la mesure principale
+		['cos(x) = cos(-20°)', ['-20', '20'], '360'],
+		['cos(x) = cos(400°)', ['-40', '40'], '360'],
+		['sin(x) = sin(-20°)', ['-20', '200'], '360'],
+		// Un angle décimal garde sa virgule
+		['cos(x) = cos(22,5°)', ['-22{,}5', '22{,}5'], '360'],
+		// sin = cos, −cos : la mesure de la solution, pas un arcsin
+		['sin(x) = cos(20°)', ['70', '110'], '360'],
+		['cos(x) = -cos(20°)', ['-160', '160'], '360']
+	])('famille en degrés : %s', (line, bases, period) => {
+		const k = `k \\cdot ${period}~\\unit{°}`;
+		const members = bases.map((base) => `${base}~\\unit{°} + ${k}`).join(' \\,;\\, ');
+		expect(flat(solved(line).answer)).toBe(
+			flat(`S = \\left\\{ ${members} ,\\; k \\in \\mathbb{Z} \\right\\}`)
+		);
+	});
+
+	it('famille en degrés : une solution nulle se réduit à la période', () => {
+		expect(flat(solved('sin(x) = sin(0°)').answer)).toBe(
+			flat('S = \\left\\{ k \\cdot 180~\\unit{°} ,\\; k \\in \\mathbb{Z} \\right\\}')
+		);
+	});
+
+	it('famille en degrés : une période fractionnaire reste exacte (cos(7x) = cos(20°))', () => {
+		expect(flat(solved('cos(7x) = cos(20°)').answer)).toBe(
+			flat(
+				'S = \\left\\{ -\\dfrac{20}{7}~\\unit{°} + k \\cdot \\dfrac{360}{7}~\\unit{°} \\,;\\, \\dfrac{20}{7}~\\unit{°} + k \\cdot \\dfrac{360}{7}~\\unit{°} ,\\; k \\in \\mathbb{Z} \\right\\}'
+			)
+		);
+	});
+
+	it('famille en degrés : le texte du terminal dit la même chose', () => {
+		expect(lastLine(solved('cos(x) = cos(20°)').output)).toBe(
+			'S = {-20[°] + k·360[°] ; 20[°] + k·360[°], k ∈ ℤ}'
+		);
+	});
+
+	// Tout ou rien : une seule solution sans mesure simple en degrés, et toute la
+	// famille reste en radians (jamais deux unités dans le même S)
+	it('famille en degrés : tout ou rien', () => {
+		const mixed = solved('(cos(x) - cos(20°))(cos(x) - 1/3) = 0').answer ?? '';
+		expect(mixed).toContain('2k\\pi');
+		expect(mixed).not.toContain('k \\cdot');
+		expect(flat(solved('(cos(x) - cos(20°))(sin(x) - 1/2) = 0').answer)).toBe(
+			flat(
+				'S = \\left\\{ -20~\\unit{°} + k \\cdot 360~\\unit{°} \\,;\\, 20~\\unit{°} + k \\cdot 360~\\unit{°} \\,;\\, 30~\\unit{°} + k \\cdot 360~\\unit{°} \\,;\\, 150~\\unit{°} + k \\cdot 360~\\unit{°} ,\\; k \\in \\mathbb{Z} \\right\\}'
+			)
+		);
+	});
+
+	// Sans degré tapé, rien ne change (E54) — `cos(π/5)` garde son arccos (écart
+	// à part, signalé), le cas mêlé degrés + radians aussi, et `cos(x°)` résout x
+	// en nombre de degrés
+	it.each([
+		[
+			'cos(x) = cos(π/5)',
+			'S = \\left\\{ -\\arccos\\left( \\cos\\left( \\dfrac{\\pi}{5} \\right) \\right) + 2k\\pi \\,;\\, \\arccos\\left( \\cos\\left( \\dfrac{\\pi}{5} \\right) \\right) + 2k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
+		],
+		['cos(2x) = cos(x)', 'S = \\left\\{ \\dfrac{2k\\pi}{3} ,\\; k \\in \\mathbb{Z} \\right\\}'],
+		[
+			'cos(x) = 0,5',
+			'S = \\left\\{ -\\dfrac{\\pi}{3} + 2k\\pi \\,;\\, \\dfrac{\\pi}{3} + 2k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
+		],
+		[
+			'cos(x+π/3) = cos(20°)',
+			'S = \\left\\{ -\\dfrac{\\pi}{3} - \\arccos\\left( \\cos\\left( 20~\\unit{°} \\right) \\right) + 2k\\pi \\,;\\, \\arccos\\left( \\cos\\left( 20~\\unit{°} \\right) \\right) - \\dfrac{\\pi}{3} + 2k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
+		],
+		[
+			'cos(x°) = cos(20°)',
+			'S = \\left\\{ -20 + 360k \\,;\\, 20 + 360k ,\\; k \\in \\mathbb{Z} \\right\\}'
+		]
+	])('famille sans degré tapé seul, inchangée : %s', (line, answer) => {
 		expect(flat(solved(line).answer)).toBe(flat(answer));
 	});
 });

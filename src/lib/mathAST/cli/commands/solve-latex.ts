@@ -44,6 +44,9 @@ import {
 	type ApproximateDigits
 } from '../approximation';
 import { computeNumericValue } from '../../eval/numeric-value';
+import { numericNode } from '../../common/numeric';
+import { divide, number, opposite, withUnit } from '../../factory';
+import { parseOrThrow as parseUnitOrThrow } from '../../units';
 
 // =============================================================================
 // Types
@@ -53,11 +56,14 @@ import { computeNumericValue } from '../../eval/numeric-value';
  * L'écriture des valeurs d'une réponse, d'après la ligne tapée (registre-reference,
  * PR 2c, David, 2026-11-09) : `decimal`, un décimal tapé garde les solutions à
  * écriture décimale finie en décimal (Q46 : `x + 0,5 = 2` → `S = \{1,5\}`) ;
- * `angles`, un angle tapé en degrés reste en degrés (`anglesAsTyped`).
+ * `angles`, un angle tapé en degrés reste en degrés (`anglesAsTyped`) ;
+ * `degrees`, une famille périodique s'écrit en degrés, période comprise
+ * (`familyInDegrees`, E54 : `cos(x) = cos(20°)` → `20° + k·360°`).
  */
 export interface SolutionWriting {
 	readonly decimal: boolean;
 	readonly angles: (node: MathNode) => MathNode;
+	readonly degrees?: boolean;
 }
 
 /** Sans décimal ni degré tapé : les valeurs telles que le solveur les rend. */
@@ -260,6 +266,94 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
 	return [...solutions].sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 }
 
+/** Un degré : π/180 rad. */
+const DEGREE_UNIT = parseUnitOrThrow('°');
+
+/**
+ * Un nombre de RADIANS écrit en degrés, quand la mesure en degrés est un
+ * rationnel de petit dénominateur : 0,349… → `20°`, 0,392… → `22,5°`,
+ * 2π/7 → `360/7 °`. Lue sur la valeur : `arccos(cos(20°))` ou
+ * `π − arcsin(sin(20°))` n'ont pas d'écriture exacte plus simple dans le
+ * moteur, mais leur mesure en degrés est celle que l'élève a tapée.
+ * `null` sinon : la famille garde son écriture en radians.
+ */
+function degreeAngle(radians: number): MathNode | null {
+	if (!Number.isFinite(radians)) return null;
+	const degrees = (radians * 180) / Math.PI;
+	const tolerance = PERIOD_TOLERANCE * Math.max(1, Math.abs(degrees));
+	for (let q = 1; q <= MAX_PERIOD_DENOMINATOR; q++) {
+		const p = Math.round(degrees * q);
+		if (Math.abs(degrees * q - p) > tolerance * q) continue;
+		const g = gcd(Math.abs(p), q);
+		const [top, bottom] = [p / g, q / g];
+		// Une écriture décimale finie (dénominateur 2^a·5^b) : `22.5`, à la française plus loin
+		const finite = primeFactors(bottom).every((factor) => factor === 2 || factor === 5);
+		const magnitude = Math.abs(top);
+		const measure: MathNode = finite
+			? numericNode(String(magnitude / bottom))
+			: divide(number(String(magnitude)), number(String(bottom)), 'fraction');
+		// Le signe hors de la grandeur : `-(20/7)[°]` se relit, `-20/7[°]` non
+		const angle = withUnit(measure, DEGREE_UNIT);
+		return top < 0 ? opposite(angle) : angle;
+	}
+	return null;
+}
+
+/** Les facteurs premiers d'un entier ≥ 1 (`20` → [2, 2, 5]). */
+function primeFactors(n: number): number[] {
+	const factors: number[] = [];
+	let rest = n;
+	for (let d = 2; d * d <= rest; d++) {
+		while (rest % d === 0) {
+			factors.push(d);
+			rest /= d;
+		}
+	}
+	if (rest > 1) factors.push(rest);
+	return factors;
+}
+
+/**
+ * Les membres d'une famille écrits en degrés (E54, David, 2026-11-24) :
+ * `-20~\unit{°} + k \cdot 360~\unit{°}`, en texte `-20[°] + k·360[°]` —
+ * `k \cdot T` plutôt que `Tk` : `360k°` se lirait mal. `null` dès qu'une
+ * valeur (solution ou période) n'a pas de mesure simple en degrés.
+ */
+function degreeMembers(
+	family: PeriodicSolutionFamily
+): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
+	const period = degreeAngle(computeNumericValue(family.period) ?? Number.NaN);
+	if (period === null) return null;
+	// La valeur du NŒUD, pas `approximate` : le solveur calcule celle-ci en
+	// lisant `cos(20°)` comme cos de 20 radians (arccos(cos 20) ≈ 1,15)
+	const radians: number[] = [];
+	for (const solution of family.baseSolutions) {
+		const value = computeNumericValue(solution.value);
+		if (value === null) return null;
+		radians.push(value);
+	}
+	const bases: MathNode[] = [];
+	for (const value of [...radians].sort((a, b) => a - b)) {
+		const base = degreeAngle(value);
+		if (base === null) return null;
+		bases.push(base);
+	}
+	const periodLatex = frenchDecimals(toLatex(period));
+	const periodText = toCustom(period);
+	// Une solution nulle : la période seule (`k \cdot 180°`), comme `kπ`
+	const isZero = (base: MathNode) => computeNumericValue(base) === 0;
+	return {
+		latex: bases.map((base) =>
+			isZero(base)
+				? `k \\cdot ${periodLatex}`
+				: `${frenchDecimals(toLatex(base))} + k \\cdot ${periodLatex}`
+		),
+		text: bases.map((base) =>
+			isZero(base) ? `k·${periodText}` : `${toCustom(base)} + k·${periodText}`
+		)
+	};
+}
+
 /**
  * Les membres d'UNE famille, éléments de S, en LaTeX (`a + 2k\pi`) et en
  * texte (`a + 2kπ`) — ou `null`.
@@ -270,6 +364,10 @@ function familyMembers(
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
 	const family = shortestFamily(periodic);
 	if (family.baseSolutions.length === 0) return null;
+	if (writing.degrees === true) {
+		const inDegrees = degreeMembers(family);
+		if (inDegrees !== null) return inDegrees;
+	}
 	const term = periodTerm(family.period);
 	if (term === null) return null;
 	const bases = sorted(family.baseSolutions).map((solution) => {
