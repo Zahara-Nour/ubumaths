@@ -2,19 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, phase 0 validée, F1-F2 écrites._
+_Mis à jour le 2026-11-25, lot complet écrit (F1, F2, N1-N4), migration de contenu prouvée._
 
-- **État** : phase 0 validée par David (« je te suis » : toutes les recos, § Décisions de David).
-  57c73be1 et dbd5debf réservés sur main (9178f32291, commité par la session idees-1re-trigo).
-  F1 (57c73be1 v5-v9) et F2 (dbd5debf v5-v6) écrites :
-  `docs/wip/questions/idees-3e-trigonometrie-publies.py` → `scripts/questions/idees-3e-trigonometrie-publies/`,
-  `checkTemplate` vert (39 specs ajoutées). · **Prochaine action** : écrire N1-N4
-  (`idees-3e-trigonometrie-neufs.py`, outils communs dans `idees_3e_trigonometrie_outils.py`,
-  rangement : `Géométrie > Trigonométrie du triangle rectangle[ > calcul de longueurs | > calcul d'angles]`),
-  puis `create-questions` en simulation, `sonde-figures.ts`, essai en base locale, page à cocher, PR.
-  · **En attente de David** : rien. · **Pièges en cours** : une variable ne vaut pas une lettre
-  (lettres tirées = `{{if:s==k|…|}}` dans le texte) ; une erreur prévue ≤ 500 caractères
-  (`par_jeu`) ; le détail des refus de schéma ne s'affiche pas, le lire par `questionTemplateSchema.safeParse`.
+- **État** : F1-F2 (commit 4d32b62136) et N1-N4 (commit suivant) écrits, simulation verte,
+  `sonde-figures` 0 problème, rendu vu à l'écran (§ Historique). Migration de contenu des publiés
+  `20261125072915_…_publies_contenu.sql` + fixture : test vert (165), rouge sans elle (5 échecs).
+  Rien poussé depuis 4d32b62136. · **Prochaine action** : `security-auditor` sur la migration
+  (condition 3 de `db:migrate`), puis push, PR (« revue : contenu » + audit), CI verte, merge,
+  `db:migrate` (seule migration en attente ? `migration list --linked`) ; ensuite David lance
+  `create-questions --publier` (N1-N4 en brouillon en prod), migration de rangement, relecture
+  dans `/dev/modeles`. Page à cocher sautée : la relecture se fait dans `/dev/modeles`.
+  · **En attente de David** : rien. · **Pièges en cours** : `e` interdit comme variable (Euler) ;
+  réponses de specs ≥ 4 chiffres avec `\,` ; `create-questions` vise la PROD sans
+  `set -a; . ./.env.local; set +a` ; une case choix ne porte pas d'erreurs prévues.
   · **Worktree / branche** : `../ubumaths-wt-idees-3e-trigonometrie`, `feat/idees-3e-trigonometrie`.
 
 ## Phase 0 (2026-11-25)
@@ -143,6 +143,26 @@ d'angles », N2 et N4 sur la notion). Précisions annoncées dans le résumé et
   simple pour l'élève que d'accepter trois réponses).
 - N4 v6 (terrain en pente) : angles tirés loin du seuil de 8,5°.
 - N4 : pas la montagne.
+
+## Historique
+
+### 2026-11-25 — N1-N4 écrits, rendu vérifié, migration de contenu
+
+- Script `docs/wip/questions/idees-3e-trigonometrie-neufs.py` → `scripts/questions/idees-3e-trigonometrie-neufs/` :
+  N1 2 var. / 10 specs, N2 3 / 16, N3 2 / 8, N4 6 / 31. `question:specs` 300 tirages verts,
+  `sonde-figures` 0 problème (neufs et publiés).
+- Écarts aux fiches (dits en tête du script) : N1 sans erreurs prévues (une case choix n'en porte
+  pas), les messages des mauvais choix vont dans le corrigé ; N4 réponses en nombre, unité après la
+  case (comme 57c73be1) ; N4 « garde les valeurs exactes » dans chaque énoncé, l'arrondi trop tôt
+  en erreur prévue (v1-v4), et en v5 seuls les tirages où l'angle arrondi donne le même AB ;
+  fenêtres des figures réglées sur la hauteur tirée.
+- Essai en base locale : 4 brouillons créés, ids locaux retirés. `db:a-jour` a joué la migration
+  de contenu en local. Captures de `/dev/modeles` dépliées (admin fictif, Chromium) : toutes les
+  figures de N1, N3, N4 et de F1-F2 justes, réponses attendues recalculées à la main sur chaque
+  tirage affiché.
+- Migration `20261125072915_questions_idees_3e_trigonometrie_publies_contenu.sql` (57c73be1 +5
+  variations, dbd5debf +2) : `migrations-contenu-publie` vert (165), rouge avec la migration vidée
+  (5 échecs, tous sur elle), fichier restauré depuis une copie.
 
 ### Questions
 
