@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V125 · L124 · M58 · C43 · D45 · T30 · E82
+Derniers numéros : V126 · L124 · M58 · C43 · D45 · T30 · E82
 
 ## Écarts
 
@@ -314,3 +314,4 @@ Derniers numéros : V125 · L124 · M58 · C43 · D45 · T30 · E82
 - T30 · RGPD · modération · un élève peut réécrire par l'API la date d'envoi, la date de modification et le signalement de ses messages du chat, et modifier ses anciens messages alors qu'il est restreint · preuve : à la main · à faire
 - L124 · bug latent · modération · aucune borne de taille sur le contenu d'un message du chat : un message énorme ralentit le marquage à l'envoi et à chaque modification · preuve : à la main · à faire
 - D45 · décision produit · modération · l'onglet « Messages marqués » du prof n'a ni lien vers la conversation ni état « traité » · preuve : à la main · à faire
+- V126 · bug visible · correction des réponses · dans une question à plusieurs cases, une saisie qui ne s'évalue pas (« 58,5, », « ( ») dans une case à arrondi fait lever la correction case par case : la note reste juste (0, une case fausse), mais la correction montre TOUTES les cases fausses, même les justes, et les messages des autres cases sont perdus ; en ordre libre, « 58, » et « ,5 » lèvent aussi ; antérieur à #3130 (validateBlanksDetailed, validateAnswerDetailed) · preuve : à la main · à corriger dans la PR « correction des réponses » (tranché par David le 2026-11-25 ; confirmé par sonde le 2026-11-25)
