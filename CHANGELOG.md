@@ -2,6 +2,83 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.111.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.110.0...v0.111.0) (2026-11-25)
+
+### ✨ Features
+
+- **db:** versions d'un exercice, table exercise_versions et version par ligne de fiche ([1a494e7](https://github.com/Zahara-Nour/ubumaths/commit/1a494e75ac9f233f83db77c2ef2971ffe8f3a77a))
+- **exercices:** lectures et écritures du contenu par la version de l'exercice ([775466c](https://github.com/Zahara-Nour/ubumaths/commit/775466cc56547d62e601a7b99009bf672e948a62))
+- **questions:** idees-3e-puissances, 7 variations et 2 modeles neufs ([a662541](https://github.com/Zahara-Nour/ubumaths/commit/a662541a893cb1f59c78e8fa1e9d05f6f5ddd736))
+- **questions:** idees-3e-puissances, ids des brouillons et migration de rangement ([28ed017](https://github.com/Zahara-Nour/ubumaths/commit/28ed017ad055e845ca84c1fc726bdd7d6c4bc359))
+- **questions:** idees-3e-puissances, migration de contenu des 4 publies ([159d390](https://github.com/Zahara-Nour/ubumaths/commit/159d390029c65d2ec4c14b4cef3971c386ad585b))
+- **questions:** idees-3e-trigonometrie, ids des brouillons N1-N4 et migration de rangement ([55884c6](https://github.com/Zahara-Nour/ubumaths/commit/55884c6fb0897e398cfa841fef059379ebdd6ce3))
+
+### 🐛 Bug Fixes
+
+- **automaths:** la dernière pastille pose sa section sous les pastilles sous Chromium (E73) ([56bc2d0](https://github.com/Zahara-Nour/ubumaths/commit/56bc2d07c2ad4016732bee18e43d20f76c2d188c))
+- **chat:** retours de revue de T32, journal de la PR 5 ([7e94d00](https://github.com/Zahara-Nour/ubumaths/commit/7e94d00a374d0627ffeec1ab229f1636111d040f))
+- **chat:** une participation ne change pas de conversation (T32) ([e95bb3a](https://github.com/Zahara-Nour/ubumaths/commit/e95bb3a48c15efa0c7998a1c0c8f260c05b17cdc))
+- **ecarts:** élèves de l'onglet Lot d'une fiche, rangées insécables d'associer en PDF (E68, E69) ([f48f5f7](https://github.com/Zahara-Nour/ubumaths/commit/f48f5f71c50ef03c9a1aef202d4da9ab2caed4fa))
+- **ecarts:** page des modèles de message du prof retirée (E58, E59, E60) ([e49b47f](https://github.com/Zahara-Nour/ubumaths/commit/e49b47fb24badee4174936ec874d52d46bd2c406)), closes [#2482](https://github.com/Zahara-Nour/ubumaths/issues/2482)
+- **ecarts:** un seul message pour un mauvais rayon reporté, titre anglais du PDF (E57, E62) ([f364739](https://github.com/Zahara-Nour/ubumaths/commit/f364739b0d1e0e85c8162e66c14a0bfd92d58bd7)), closes [#2509](https://github.com/Zahara-Nour/ubumaths/issues/2509)
+- **exercices:** created_by fige sur une version, exercice sans version ecarte d'une liste ([cf18a56](https://github.com/Zahara-Nour/ubumaths/commit/cf18a56dfc9e5f75fde605a27c1bafd25d64e304))
+- **moderation:** un compte connecté ne choisit pas la date de son message à l'envoi (T30) ([480b615](https://github.com/Zahara-Nour/ubumaths/commit/480b615f7b09cf33e5e8b31b364edd2f1a0f2a45))
+- **moderation:** un message de chat envoyé ne se réécrit pas (T33, T30) ([9b4bd4a](https://github.com/Zahara-Nour/ubumaths/commit/9b4bd4a5b264f54e6751d976da0aeef9afc9f494))
+- **seed:** exercise_versions copiee avec les exercices dans la base locale remplie ([3844260](https://github.com/Zahara-Nour/ubumaths/commit/38442603cb72c8d2d45f9db91e7fbb3c578952df))
+- **ubumark:** droite graduée et courbes d'associer lisibles au téléphone (E63, E70, E82) ([11bf5f7](https://github.com/Zahara-Nour/ubumaths/commit/11bf5f73b70744eaa85d79d906b411c6943f2f8f))
+
+### 📚 Documentation
+
+- **adr:** 0044 rangement des versions (option A) et découpage ([7af767c](https://github.com/Zahara-Nour/ubumaths/commit/7af767c28c8df397a971714773626aff902b403f))
+- **adr:** 0044 versions d'un exercice, la fiche choisit la sienne ([9e67fd3](https://github.com/Zahara-Nour/ubumaths/commit/9e67fd3a3e31979c061be938102c8d869c3cfb80))
+- **context:** une variation est une autre rédaction, pas un tirage de valeurs ([a30618b](https://github.com/Zahara-Nour/ubumaths/commit/a30618b58033f9914e7b07383d6d3dd62ee6a7b6))
+- **questions:** recalage de la section sous les pastilles d'Automaths (E73) ([73d0bf3](https://github.com/Zahara-Nour/ubumaths/commit/73d0bf302b94aded4a682db02a240681b8e8550c))
+- **systeme:** base-de-donnees couvre exercise-versions.ts ([72b1f14](https://github.com/Zahara-Nour/ubumaths/commit/72b1f1401cbc2481142bc46f3f277d1d0ca572e6))
+- **systeme:** versions d'un exercice dans exercices, fiches, tuteur et sauvegarde ([7ab59ce](https://github.com/Zahara-Nour/ubumaths/commit/7ab59ce9d395636a929355d7a4d2cc6ae00a7d98))
+- **wip:** ecarts-moderation, migration de T32 en prod ([d3a6a5c](https://github.com/Zahara-Nour/ubumaths/commit/d3a6a5ce455dc251c8049611a47e9bc835fe84e1))
+- **wip:** ecarts-moderation, migrations de [#3147](https://github.com/Zahara-Nour/ubumaths/issues/3147) en prod, triggers vérifiés ([7d901da](https://github.com/Zahara-Nour/ubumaths/commit/7d901dadafa2b9a77aac603113013bfee430405a))
+- **wip:** ecarts-moderation, rapport de sécurité de la PR 6 et suite ([a8dc26b](https://github.com/Zahara-Nour/ubumaths/commit/a8dc26b0fdd4cf5abd7db2ad557da5d5572f094c))
+- **wip:** ecarts-moderation, reprendre ici après [#3143](https://github.com/Zahara-Nour/ubumaths/issues/3143), T32 clos ([492f77d](https://github.com/Zahara-Nour/ubumaths/commit/492f77dc294fc02f7d39b8e06b8a2b43841e5126))
+- **wip:** ecarts-moderation, reprendre ici après [#3147](https://github.com/Zahara-Nour/ubumaths/issues/3147), migrations à jouer en prod ([77d10bc](https://github.com/Zahara-Nour/ubumaths/commit/77d10bc2852e0a32b2ee76fbac8abb544212443d))
+- **wip:** ecarts-moderation, reprendre ici, T32 commencé ([0ede8b1](https://github.com/Zahara-Nour/ubumaths/commit/0ede8b1f83ae8b130598d46213339c137f40e920))
+- **wip:** ecarts-moderation, suite d'intégration verte sur la première migration ([e9f49ea](https://github.com/Zahara-Nour/ubumaths/commit/e9f49ea8160af721b4f5660a4241e551176ddaa3))
+- **wip:** ecarts-moderation, T32 et T33 tranchés ([3887eba](https://github.com/Zahara-Nour/ubumaths/commit/3887eba8010bb30133b398e40ed62747fb4226ea))
+- **wip:** ecarts-verifs, [#3146](https://github.com/Zahara-Nour/ubumaths/issues/3146) ouverte, merge refusé par GitHub (502) ([ec09b08](https://github.com/Zahara-Nour/ubumaths/commit/ec09b08bf196f8b5911eb0860d75499bb14e5eea))
+- **wip:** ecarts-verifs, élèves de l'onglet Lot confirmés par David ([8a3b46a](https://github.com/Zahara-Nour/ubumaths/commit/8a3b46a18133ec39e46cd1e2e0c9a49241eef698))
+- **wip:** ecarts-verifs, reprendre ici après [#3142](https://github.com/Zahara-Nour/ubumaths/issues/3142), E57 et E62 barrés ([2319b88](https://github.com/Zahara-Nour/ubumaths/commit/2319b8802acb327763b5bdb9663f1f1d61f00323))
+- **wip:** ecarts-verifs, reprendre ici après [#3144](https://github.com/Zahara-Nour/ubumaths/issues/3144), E58 à E60 barrés ([55bd71d](https://github.com/Zahara-Nour/ubumaths/commit/55bd71d3e112406dc7b95084e9713671dfc9a3ce))
+- **wip:** ecarts-verifs, reprendre ici après [#3145](https://github.com/Zahara-Nour/ubumaths/issues/3145), E68 et E69 barrés ([5d02d83](https://github.com/Zahara-Nour/ubumaths/commit/5d02d835a5216407765ff2808b3b4c7718ededd7))
+- **wip:** ecarts-verifs, reprendre ici après [#3146](https://github.com/Zahara-Nour/ubumaths/issues/3146), E63, E70 et E82 barrés ([c13c194](https://github.com/Zahara-Nour/ubumaths/commit/c13c194bcbeaf47b8b4578e3e4648f84ad6d27d0))
+- **wip:** ecarts-verifs, reprendre ici après [#3149](https://github.com/Zahara-Nour/ubumaths/issues/3149), E73 barré ([091400e](https://github.com/Zahara-Nour/ubumaths/commit/091400ecc33aa02730b1b4d5b8b619b818f17bce))
+- **wip:** idees-1re-trigo publiee, journal archive ([d68734a](https://github.com/Zahara-Nour/ubumaths/commit/d68734ad4136f7ccd33cb25a845628bf8c3171f0))
+- **wip:** idees-3e-puissances, phase 0 validee, lot ecrit ([054a3bf](https://github.com/Zahara-Nour/ubumaths/commit/054a3bf20771614a006c2716997534e514d269b7))
+- **wip:** idees-3e-puissances, preuve rouge de la migration de rangement ([e03be0a](https://github.com/Zahara-Nour/ubumaths/commit/e03be0ab86756c1da3df135be78a2f73a3ebc43f))
+- **wip:** idees-3e-puissances, quatre modeles publies reserves ([8ecd20f](https://github.com/Zahara-Nour/ubumaths/commit/8ecd20f3d7a6ae241b356d356110a1838865801a))
+- **wip:** idees-3e-puissances, releve et fiches de phase 0 ([5cab3fc](https://github.com/Zahara-Nour/ubumaths/commit/5cab3fcc1710b7aa6f28d7aa49e5c71c5d76dc13))
+- **wip:** idees-3e-puissances, releve et fiches de phase 0 ([a1d6ad6](https://github.com/Zahara-Nour/ubumaths/commit/a1d6ad6888f1c7b14fdcb919fffdf7436d80576e))
+- **wip:** idees-3e-puissances, reprendre ici apres [#3148](https://github.com/Zahara-Nour/ubumaths/issues/3148) ([be9a1b8](https://github.com/Zahara-Nour/ubumaths/commit/be9a1b818845b6850d95bc0e0ce83ea531c2ec98))
+- **wip:** idees-3e-puissances, reprendre ici apres [#3151](https://github.com/Zahara-Nour/ubumaths/issues/3151) ([503550c](https://github.com/Zahara-Nour/ubumaths/commit/503550ca2ab2c75007b1c2e2da8a94e49e93c9e7))
+- **wip:** idees-3e-puissances, rubrique 3C1 prise ([7c9d006](https://github.com/Zahara-Nour/ubumaths/commit/7c9d00648b585120d427512373ace46430638a6d))
+- **wip:** idees-3e-trigonometrie publiee, journal archive ([5cec399](https://github.com/Zahara-Nour/ubumaths/commit/5cec3990321c1cd716812a45433dd665fa9a769e))
+- **wip:** idees-3e-trigonometrie, brouillons en prod, rangement audite ([97b0522](https://github.com/Zahara-Nour/ubumaths/commit/97b052207239a2105325a36d093243a0c1749cc7))
+- **wip:** idees-3e-trigonometrie, reprendre ici après [#3141](https://github.com/Zahara-Nour/ubumaths/issues/3141) ([551706e](https://github.com/Zahara-Nour/ubumaths/commit/551706e0e1e2d951e02ac84c4b0ff2e0b90ab464))
+- **wip:** idees-6e-fractions publiee, journal archive ([5124451](https://github.com/Zahara-Nour/ubumaths/commit/5124451b1bacce86c9c158367e2a37325ef4a9b3))
+- **wip:** idees-6e-proportionnalite, lot des publies ecrit ([12fc0a9](https://github.com/Zahara-Nour/ubumaths/commit/12fc0a9b3e7a04dbe5e7c69a107bdd26bdb0a251))
+- **wip:** idees-6e-proportionnalite, lot ecrit ([e3674a5](https://github.com/Zahara-Nour/ubumaths/commit/e3674a5c95f93f5b33e7620670bb8c62cbd8bd4a))
+- **wip:** idees-6e-proportionnalite, phase 0 validee, modeles reserves ([10e01f4](https://github.com/Zahara-Nour/ubumaths/commit/10e01f413b51eead5408b484b08032b3ffc628ff))
+- **wip:** idees-6e-proportionnalite, releve et phase 0 ([e2e1102](https://github.com/Zahara-Nour/ubumaths/commit/e2e1102a1d7303fc496b5b5331b493a39341a725))
+- **wip:** idees-6e-proportionnalite, retouches validees ([024f086](https://github.com/Zahara-Nour/ubumaths/commit/024f086bac4a2fb41c1cd8f564edd939ee163b0e))
+- **wip:** idees-6e-proportionnalite, rubrique 6P3 prise ([1b94968](https://github.com/Zahara-Nour/ubumaths/commit/1b949686e52a9e7dd49f43a693ea544d857067da))
+- **wip:** idees-tle-continuite-combinatoire, lot ecrit ([c1a482f](https://github.com/Zahara-Nour/ubumaths/commit/c1a482f2a58eef868c71593303060a2f525adeb4))
+- **wip:** idees-tle-continuite-combinatoire, phase 0 validee, trois modeles reserves ([cd36e66](https://github.com/Zahara-Nour/ubumaths/commit/cd36e660e2330bcbea381f0acfc5acda2cc6420f))
+- **wip:** idees-tle-continuite-combinatoire, releve et phase 0 ([f9ee139](https://github.com/Zahara-Nour/ubumaths/commit/f9ee139885fee2af591b831121ca7d304ab39aeb))
+- **wip:** idees-tle-continuite-combinatoire, TSA4 et TSG1 prises ([0a32051](https://github.com/Zahara-Nour/ubumaths/commit/0a32051afb30cd1449e3bb54808d273259092049))
+- **wip:** idees-tle-integration publiee, journal archive ([00b4769](https://github.com/Zahara-Nour/ubumaths/commit/00b47691dde674060d647cdf35b763b2cf2ed28f))
+- **wip:** versions-exercices, plan de la PR 1 validé ([d4da8e6](https://github.com/Zahara-Nour/ubumaths/commit/d4da8e6d65406feb76ef4134043811f35bce215c))
+- **wip:** versions-exercices, question sur l'entre-deux merge et mise en prod ([90a35db](https://github.com/Zahara-Nour/ubumaths/commit/90a35db8e6dd7aae570318b3f5061c163a0c0ee8))
+- **wip:** versions-exercices, reprendre ici (PR 1 en cours) ([8ea90e9](https://github.com/Zahara-Nour/ubumaths/commit/8ea90e99b5c0371362acfcdbd3e87241f90b5d66))
+- **wip:** versions-exercices, reprendre ici (PR 1 prete) ([a17167c](https://github.com/Zahara-Nour/ubumaths/commit/a17167cbb517f4d0dfeb2f6e129d2e8abe8e0f10))
+
 ## [0.110.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.109.0...v0.110.0) (2026-11-25)
 
 ### ✨ Features
