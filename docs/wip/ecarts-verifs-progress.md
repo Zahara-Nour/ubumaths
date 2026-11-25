@@ -5,7 +5,7 @@
 _Mis à jour le 2026-11-25, après #3122._
 
 - **État** : A (#3050), B (#3054), #3059, C (#3063), D (#3067), E (#3073), F (#3075), G (#3079), H (#3082 : E36, E37, → / ← / boutons / balayage montrent un fragment avant de changer de diapositive) mergées ; E36, E37 barrés au registre ; E56 corrigé (#3087 : droite graduée dessinée dans un item de liste), barré ; I (#3097 : E29), E29 barré ; **J (#3107 : E32, formules lues en français par un lecteur d'écran, sans balises ; anglais sans balises dans un contenu anglais), E32 barré ; **K (#3111 : E41, au téléphone la barre de formule de Données reste en haut, le reste défile dessous ; ligne #1813 changée), E41 barré** ; **L (#3122 : E46, barres et boîtes à moustaches dessinées à la largeur disponible, texte de 12 px ; sous 300 px ou trop de colonnes, le dessin défile dans son cadre), E46 barré** ; #3063 à #3122 pas encore en prod.
-- **À confirmer par David sur la PR L (signalé deux fois, sans réponse ; non bloquant)** : une étiquette de graduation sur deux sur un axe de boîte serré au téléphone ; l'outil `boxSpot` de la vérif #2162 changé (attendus inchangés).
+- **Confirmé par David le 2026-11-25 (PR L)** : une étiquette de graduation sur deux sur un axe de boîte serré au téléphone ; l'outil `boxSpot` de la vérif #2162 changé (attendus inchangés).
 - **Prochaine action** : nouveau worktree, puis l'ordre de David du 2026-11-24 : E66+E67 (Marché, boutique d'avatars) → E55+E61+E53 → E54 (moteur, Opus) et E57 → E62 → E58 à E60 (retirer la page) → E68, E69 → PR « téléphone » (E63, E70, E82) ; E73 (Automaths, dernière pastille sous Chromium au téléphone, tranché le 2026-11-24 : à corriger) ; E76 à E81 (paquet 9 des vérifs, tranchés le 2026-11-24 : tous à corriger ; E78 demande la question d'accès avant toute migration, E80 un essai sur un build d'abord ; les `test.fail` arrivent avec la PR du paquet 9, `test/verifs-tri-9`) ; E65, E71, E72, E74, E75 : retirer le `test.fail` seulement ; E39 : à creuser puis présenter.
 - **En attente de David** : relire les tournures de lecture des formules (liste dans « PR J » ci-dessous ; non bloquant, une ligne à changer chacune) ; dire s'il faut regarder la lecture des champs de réponse. **Tranché le 2026-11-24** : E34 publié en prod par David (modèle mis à jour, vu en base ; à vérifier à l’écran après la mise en prod de #3075, puis barrer) ; E53 à corriger (message de forme si la valeur relue est juste, comme E31) dans la PR de E55 et E61 ; primitive factorisée 0,3x(x + 4) confirmée (test de #3075 gardé tel quel) (E58 à E60 : confirmé par David le 2026-11-24, il ne se sert pas de la page des modèles de message, à retirer ; E63 : à corriger avec la PR téléphone, une graduation étiquetée sur deux)
 - **Tranché par David le 2026-11-24 (recos du paquet 6 du tri validées)** : E56 en premier (FAIT, #3087) ; puis E55, E61 et E53 (petits, une PR) ; puis E54 (moteur, revue Opus) et E57 ; E62 : un seul message ; E58 à E60 : retirer la page.
@@ -85,10 +85,10 @@ Choix pour David :
   garde sa largeur et défile dans son cadre (trouvé par la revue : sans `min-width` posé sur le
   SVG, il était encore rétréci).
 - **Axe écrit trop serré pour le cadre** (boîte, 0 à 20 de 1 en 1, au téléphone) : une
-  graduation étiquetée sur deux, tous les traits gardés (même règle que E63). **À confirmer par
-  David**, signalé le 2026-11-24.
+  graduation étiquetée sur deux, tous les traits gardés (même règle que E63). **Confirmé par
+  David le 2026-11-25.**
 - **Outil d'une vérif changé, pas son attendu** : `boxSpot` (#2162) cherchait l'étiquette de la
-  graduation à toucher ; il calcule maintenant sa place entre deux étiquettes. Signalé à David.
+  graduation à toucher ; il calcule maintenant sa place entre deux étiquettes. Confirmé par David le 2026-11-25.
 - Barres : le haut du cadre passe de 26 à 32 px et le titre de l'axe vertical monte, sinon la
   valeur écrite sur une première barre haute le touchait à 12 px.
 - **Échec Safari résolu (2026-11-25)** : « Alphaville » à 11,9995 px sous `ordi-safari` (exemple « Choisir
