@@ -4,9 +4,17 @@ Skill `idees-rubrique`. Rubrique réservée le 2026-11-24 (commit `331a401c9` su
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-24, ouverture du chantier._
+_Mis à jour le 2026-11-25, après les verdicts de phase 0._
 
-- **État** : relevé fait (`idees-6e-fractions-releve.md`, 53 exercices : 9 ✅, 32 🟡, 12 ❌), phase 0 publiée en page à cocher : https://claude.ai/artifact/9zQXcoLFb3GMuoKyrdANzq (F1-F12 variations de 13 modèles publiés, N1-N6 modèles neufs, R1-R4 rien, Q1-Q2 outils) · **Prochaine action** : lire les verdicts de David (ArtifactData, collection `verdicts`), réserver les 13 modèles publiés retenus dans le tableau de répartition, écrire le gros lot · **En attente de David** : les verdicts de la page à cocher · **Pièges en cours** : 6N3 mélange fractions, pourcentages et multiples ; pas de point de 6e pour les multiples (N6 va en CM2-130) ; 6-129 « Graduer un segment » sans modèle ni geste (Q1) · **Worktree / branche** : `../ubumaths-wt-idees-6e-fractions` / `feat/idees-6e-fractions`
+- **État** : phase 0 tranchée (David suit toutes mes recos, 2026-11-25, voir « Décisions de phase 0 ») ; 13 modèles publiés réservés et outil n° 61 « graduer un segment » ajouté sur `main` (`03398b278`) · **Prochaine action** : écrire le gros lot d'un coup : F1-F12 (export des 13 modèles de prod dans `scripts/questions/idees-6e-fractions-publies/`, variations à la fin), N1-N6 (`docs/wip/questions/idees-6e-fractions-<x>.py`), testSpecs + 3 erreurs prévues par case + coup de pouce ; bornes de `cycle3.md` · **En attente de David** : rien · **Pièges en cours** : N6 va en CM2 (CM2-130), pas de point de 6e pour les multiples ; 6-129 sans modèle tant que l'outil 61 n'existe pas ; fiches détaillées dans la page https://claude.ai/artifact/9zQXcoLFb3GMuoKyrdANzq et `idees-6e-fractions-releve.md` · **Worktree / branche** : `../ubumaths-wt-idees-6e-fractions` / `feat/idees-6e-fractions`
+
+## Décisions de phase 0 (David, 2026-11-25 : « je suis tes recos »)
+
+- **Oui** : F1 à F12 (variations de 93147367, 000368e1, 6fdcdda1, c415d81d, 5aa1d44c, afebbb91 + 6818662d, 83c835bb, 58bbee5d, 0be55013, 5cd25c2b, f9e9637c, 5c8a6da6), N1 à N6 (N6 en CM2-130).
+- **Rien** : R1 à R4.
+- **Q1** : oui, « graduer un segment » ajouté à `outils-manquants.md` (n° 61). **Q2** : non.
+- **Question d'accès** : personne ne gagne d'accès.
+- Priorités si le lot devait rétrécir : F7, F9, N1, N2 ; les plus faibles : F12, N6.
 
 ## Couverture des points de 6e en prod (2026-11-24, avant le lot)
 
@@ -20,3 +28,4 @@ Points des fractions et des pourcentages (6-125 à 6-141, 6-203, 6-205) : modèl
 
 - 2026-11-24 : rubrique prise, worktree créé. Liste des modèles de prod (non archivés, 1079) relevée pour la comparaison.
 - 2026-11-24 : relevé en quatre lots (agents Sonnet), verdicts relus dans le code et en prod (6N3F corrigé en ✅). Phase 0 publiée.
+- 2026-11-25 : David suit toutes les recos de phase 0. Modèles réservés, outil 61 ajouté sur `main`.
