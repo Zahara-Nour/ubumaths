@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: PR 1 (#3115) et PR 2 (#3125) mergées, migration en prod ; PR 3 ouverte (messages marqués des conversations à deux, supprimés et élève parti compris)
+status: PR 1 (#3115), PR 2 (#3125) et PR 3 (#3132) mergées ; migration de la PR 3 à jouer en prod ; T31 à trancher
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (7), après #3125, PR 3 ouverte._
+_Mis à jour le 2026-11-25 (8), après #3132._
 
-- **État** : PR 1 (#3115) et PR 2 (#3125) mergées, migration `20261124230639` en prod, rien n'est déployé. **PR 3 poussée** (`fix/ecarts-moderation-marques`) : fonction `get_flagged_messages_for_teacher` (migration `20261125063042`, additive), page, onglet, tests, doc. Revues faites (code, sécurité, ré-audit du delta « élève parti »), aucun bloquant. Rendu vu à l'écran.
-- **Prochaine action** : `pnpm check:migrations --pr <n>`, `pnpm pr:merger <n>`, puis `migration list --linked` et `db:migrate` (4 conditions réunies : accès tranché, tests rouges sans la migration, audit sans bloquant, additive avec rollback). Ensuite, sur `main` : barrer T21 au registre avec le numéro de la PR, inscrire l'écart « un élève déplace son message marqué » (section « PR 3 »), réécrire ce bloc.
-- **En attente de David** : rien pour cette PR. Après : la question d'accès en miroir de l'écart « message déplacé » (interdire à l'élève de changer la conversation de son message ?).
-- **Pièges en cours** : accès tranché le 2026-11-25 = élèves hors-classe compris, texte du message supprimé lisible, élève parti compris, rien ne change pour l'admin ni les élèves. La mention est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève » (non prouvable). L'admin a un 403 sur la page de modération du prof. La base locale a déjà la fonction. T24 hors lot.
-- **Worktree / branche** : `/Users/david/Coding/js/ubumaths-wt-ecarts-moderation-marques` · `fix/ecarts-moderation-marques`.
+- **État** : les trois PR sont mergées : #3115 (T20, T25, T27), #3125 (T22, C32, marque non maquillable), **#3132 (T21 : le prof lit les messages marqués des conversations à deux entre élèves, supprimés et élève parti compris)**. Registre : T21 barré, T31 entré. Migration `20261124230639` en prod. **Migration `20261125063042` (fonction `get_flagged_messages_for_teacher`) PAS encore en prod.** Rien n'est déployé (`deploy:prod` sur demande de David) : tant que le code n'est pas déployé, l'onglet de la prod ne change pas.
+- **Prochaine action** : jouer la migration `20261125063042` en prod. Le 2026-11-25, `migration list --linked` montrait deux autres migrations en attente, d'autres sessions (`20261125064801`, `20261125065639`, modèles de 1re trigo) : `db:migrate` les pousserait toutes, donc arrêt. Refaire `pnpm exec supabase migration list --linked` ; si seule `20261125063042` attend, `pnpm db:migrate` (4 conditions réunies), puis vérifier en lecture que la fonction existe. **La migration doit être en prod avant le `deploy:prod` qui livre #3132**, sinon l'onglet du prof affiche « n'ont pas pu être chargés ».
+- **En attente de David** : (1) T31 : interdire à l'élève de changer la conversation de son propre message ? (question d'accès en miroir, correctif = une migration) ; (2) l'admin reçoit un 403 sur la page de modération du prof : voulu ?
+- **Pièges en cours** : la mention de l'onglet est « supprimé par la modération » ou « supprimé » seul, jamais « par l'élève » (non prouvable : `review_report` et `soft_delete_message` suppriment sans trace). Deux fichiers de tests pour la page de modération (`messages-marques.test.ts`, `lecture-en-echec.test.ts`) : lancer le dossier entier (CI rouge une fois sur #3132 pour l'avoir oublié). T24 hors lot.
+- **Worktree / branche** : aucun (retirés par `pnpm pr:merger`).
 
 ---
 
@@ -86,3 +86,4 @@ _Mis à jour le 2026-11-25 (7), après #3125, PR 3 ouverte._
 - **Élève parti, tranché par David le 2026-11-25 (« je te suis » sur le oui)** : le prof lit aussi le message marqué d'une conversation à deux dont un élève est parti. Règle : conversation non groupe, aucun participant restant qui ne soit pas un élève, et soit deux participants (auteur élève ou sans compte), soit moins de deux et auteur élève. Limite acceptée, écrite dans la migration : si un adulte quitte une conversation avec un élève, le message marqué de l'élève devient lisible par le prof, jamais ceux de l'adulte. Tests : 20 verts, dont le départ par l'API avec le client de l'élève.
 - Ré-audit `security-auditor` du delta : **aucun bloquant**. Conversation à 0 participant créée par un élève : il ne peut ni y écrire ni y déplacer un message. Resserrement repris : la branche « deux participants » exige un auteur élève ou sans compte.
   - **À inscrire au registre après le merge (ancien, hors PR)** : un élève à accès complet peut changer `conversation_id` de son propre message (policy « Users can edit their own messages », `guard_read_only_actor` ne le bloque que pour les comptes en lecture seule) et le déplacer vers une conversation avec un adulte : la marque reste, le prof ne le voit plus. Rejoué sur la pile de test. Correctif proposé : refuser le changement de `conversation_id` hors prof et admin (question d'accès en miroir pour David).
+- **Merge (#3132)** : CI rouge au premier passage (« Server Tests, shard 1/4 » : `lecture-en-echec.test.ts`, test voisin de la même page, ne connaissait pas la nouvelle fonction dans son décor ; je n'avais lancé qu'un des deux fichiers). Corrigé, CI verte, mergée. Migration non jouée en prod : deux migrations d'autres sessions en attente.
