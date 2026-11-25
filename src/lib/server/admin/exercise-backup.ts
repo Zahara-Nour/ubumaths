@@ -33,6 +33,12 @@ import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('server/admin/exercise-backup');
 
+/** Contenu d'un exercice sans version (incohérence de la base) */
+const NO_CONTENT = { variations: null, shared: null, generic_functions: null } as const;
+
+/** Note de la version créée par la restauration d'une sauvegarde antérieure aux versions */
+const RESTORED_NOTE = 'Restaurée depuis une sauvegarde antérieure aux versions';
+
 /**
  * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). Pendant une
  * restauration, « la ligne n'existe pas encore » est le cas NORMAL : c'est
@@ -241,8 +247,10 @@ export async function exportBackupJSON(
 		// Contenu de premier niveau = la DERNIÈRE version (lecteurs de l'ancien format) ; toutes
 		// les versions suivent dans `versions` (ADR 0044).
 		const versions = versionsByExercise.get(ex.id) ?? [];
-		const latest = versions.at(-1);
-		if (!latest) throw new Error(`Exercice ${ex.id} sans version`);
+		// Exercice sans version (incohérence de la base) : sauvegardé quand même, sans contenu,
+		// plutôt que d'interrompre toute la sauvegarde
+		const latest = versions.at(-1) ?? NO_CONTENT;
+		if (versions.length === 0) logger.error(`[export] Exercice ${ex.id} sans version`);
 		// Note: statement_md and solution_md are now in variations, but backup format preserves them for compatibility
 		// We extract from the first variation if available, or use empty strings
 		const variations = latest.variations as Array<{
@@ -750,9 +758,13 @@ function backupVersions(record: ExerciseBackupRecord): ExerciseVersionBackupReco
 }
 
 /**
- * Écrit les versions d'un exercice restauré, par numéro (une version déjà en base au même numéro
- * est remplacée ; une version plus récente que la sauvegarde reste). `.select()` : un refus RLS
- * rend zéro ligne, sans erreur.
+ * Écrit les versions d'un exercice restauré.
+ * - Sauvegarde avec versions : par numéro (une version déjà en base au même numéro est remplacée ;
+ *   une version plus récente que la sauvegarde reste).
+ * - Sauvegarde antérieure aux versions : son contenu devient la version 1 d'un exercice qui n'en a
+ *   pas ; un exercice qui en a déjà reçoit une NOUVELLE version (jamais la v1 qu'une fiche pointe
+ *   peut-être), sauf si son contenu est déjà celui de la dernière.
+ * `.select()` : un refus RLS rend zéro ligne, sans erreur.
  */
 async function restoreVersions(
 	supabase: SupabaseClientType,
@@ -760,6 +772,37 @@ async function restoreVersions(
 	createdBy: string,
 	result: RestoreResult
 ): Promise<void> {
+	const fail = (error: string) =>
+		result.errors.push({ table: 'exercise_versions', record_id: record.id, error });
+
+	if (!record.versions || record.versions.length === 0) {
+		const { data: existing, error: readError } = await supabase
+			.from('exercise_versions')
+			.select('number, variations, shared, generic_functions')
+			.eq('exercise_id', record.id)
+			.order('number', { ascending: false })
+			.limit(1);
+		if (readError) return void fail(readError.message);
+		const latest = existing?.[0];
+		if (latest) {
+			if (sameContent(latest, record)) return;
+			const { data, error } = await supabase
+				.from('exercise_versions')
+				.insert({
+					exercise_id: record.id,
+					number: latest.number + 1,
+					note: RESTORED_NOTE,
+					variations: (record.variations ?? null) as Json | null,
+					shared: (record.shared ?? null) as Json | null,
+					generic_functions: record.generic_functions,
+					created_by: createdBy
+				})
+				.select('id');
+			if (error || (data ?? []).length !== 1) fail(error?.message ?? 'version non écrite');
+			return;
+		}
+	}
+
 	const rows = backupVersions(record).map((v) => ({
 		exercise_id: record.id,
 		number: v.number,
@@ -776,12 +819,28 @@ async function restoreVersions(
 		.upsert(rows, { onConflict: 'exercise_id,number' })
 		.select('id');
 	if (error || (data ?? []).length !== rows.length) {
-		result.errors.push({
-			table: 'exercise_versions',
-			record_id: record.id,
-			error: error?.message ?? `${(data ?? []).length} version(s) écrite(s) sur ${rows.length}`
-		});
+		fail(error?.message ?? `${(data ?? []).length} version(s) écrite(s) sur ${rows.length}`);
 	}
+}
+
+/** Même contenu (comparaison JSON : jsonb rend les clés dans son propre ordre, on les trie) */
+function sameContent(
+	a: { variations: unknown; shared: unknown; generic_functions: string[] | null },
+	b: { variations?: unknown; shared?: unknown; generic_functions: string[] | null }
+): boolean {
+	return (
+		stableJson(a.variations) === stableJson(b.variations ?? null) &&
+		stableJson(a.shared) === stableJson(b.shared ?? null) &&
+		stableJson(a.generic_functions) === stableJson(b.generic_functions)
+	);
+}
+
+function stableJson(value: unknown): string {
+	return JSON.stringify(value, (_key, v: unknown) =>
+		v && typeof v === 'object' && !Array.isArray(v)
+			? Object.fromEntries(Object.entries(v).sort(([x], [y]) => x.localeCompare(y)))
+			: v
+	);
 }
 
 async function restoreExercises(
