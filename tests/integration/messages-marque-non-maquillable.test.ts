@@ -44,6 +44,7 @@ import type { Database } from '#lib/types/database.ts';
 
 type Client = SupabaseClient<Database>;
 type Profile = Database['public']['Tables']['profiles']['Row'];
+type MessageUpdate = Database['public']['Tables']['messages']['Update'];
 
 // ============================================================================
 // CONSTANTES
@@ -83,6 +84,21 @@ async function enBase(messageId: string) {
 		.single();
 	if (error || !data) throw new Error(`lecture du message impossible : ${error?.message}`);
 	return data;
+}
+
+/**
+ * UPDATE d'un message par un compte connecté, qui doit ATTEINDRE la ligne : sans
+ * erreur et une ligne rendue. Sinon un refus de la RLS laisserait la ligne
+ * intacte et le test passerait sans que le trigger ait rien prouvé.
+ */
+async function modifier(client: Client, messageId: string, patch: MessageUpdate): Promise<void> {
+	const { data, error } = await client
+		.from('messages')
+		.update(patch)
+		.eq('id', messageId)
+		.select('id');
+	expect(error).toBeNull();
+	expect(data).toHaveLength(1);
 }
 
 /** Conversation privée (non groupe) entre deux comptes ; rend son identifiant. */
@@ -164,19 +180,11 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 			const id = await envoyer(classeConversationId, eleve.id, INSULTE);
 			expect(await enBase(id)).toMatchObject({ is_flagged: true, flag_reason: RAISON });
 
-			await eleveClient
-				.from('messages')
-				.update({ is_flagged: false, flag_reason: null })
-				.eq('id', id)
-				.select('id');
+			await modifier(eleveClient, id, { is_flagged: false, flag_reason: null });
 
 			expect(await enBase(id)).toMatchObject({ is_flagged: true, flag_reason: RAISON });
 
-			await eleveClient
-				.from('messages')
-				.update({ flag_reason: 'raison inventée' })
-				.eq('id', id)
-				.select('id');
+			await modifier(eleveClient, id, { flag_reason: 'raison inventée' });
 
 			expect(await enBase(id)).toMatchObject({ is_flagged: true, flag_reason: RAISON });
 		});
@@ -184,7 +192,7 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 		it('ne réécrit pas le texte lu par le prof', async () => {
 			const id = await envoyer(classeConversationId, eleve.id, INSULTE);
 
-			await eleveClient.from('messages').update({ plain_text: PROPRE }).eq('id', id).select('id');
+			await modifier(eleveClient, id, { plain_text: PROPRE });
 
 			expect(await enBase(id)).toMatchObject({ plain_text: INSULTE, is_flagged: true });
 		});
@@ -192,11 +200,7 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 		it('ne maquille pas tout d’un coup (marque, raison et texte)', async () => {
 			const id = await envoyer(classeConversationId, eleve.id, INSULTE);
 
-			await eleveClient
-				.from('messages')
-				.update({ is_flagged: false, flag_reason: null, plain_text: PROPRE })
-				.eq('id', id)
-				.select('id');
+			await modifier(eleveClient, id, { is_flagged: false, flag_reason: null, plain_text: PROPRE });
 
 			expect(await enBase(id)).toMatchObject({
 				plain_text: INSULTE,
@@ -208,11 +212,7 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 		it('ne se marque pas lui-même avec une raison inventée', async () => {
 			const id = await envoyer(classeConversationId, eleve.id, PROPRE);
 
-			await eleveClient
-				.from('messages')
-				.update({ is_flagged: true, flag_reason: 'raison inventée' })
-				.eq('id', id)
-				.select('id');
+			await modifier(eleveClient, id, { is_flagged: true, flag_reason: 'raison inventée' });
 
 			expect(await enBase(id)).toMatchObject({ is_flagged: false, flag_reason: null });
 		});
@@ -222,13 +222,19 @@ describe('Chat — la marque automatique ne se maquille pas', () => {
 			await mettreEnLectureSeule(lectureSeule.id);
 			const client = await createAuthenticatedClient(lectureSeule.email);
 
-			await client
-				.from('messages')
-				.update({ is_flagged: false, flag_reason: null })
-				.eq('id', id)
-				.select('id');
+			await modifier(client, id, { is_flagged: false, flag_reason: null });
 
 			expect(await enBase(id)).toMatchObject({ is_flagged: true, flag_reason: RAISON });
+
+			// Le texte seul : refusé plus tôt, par la garde de lecture seule
+			// (`guard_read_only_actor_trg`, qui passe avant le trigger de marquage).
+			const { error } = await client
+				.from('messages')
+				.update({ plain_text: PROPRE })
+				.eq('id', id)
+				.select('id');
+			expect(error?.code).toBe('42501');
+			expect(await enBase(id)).toMatchObject({ plain_text: INSULTE, is_flagged: true });
 		});
 	});
 

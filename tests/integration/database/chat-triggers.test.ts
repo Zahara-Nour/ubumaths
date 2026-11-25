@@ -461,7 +461,11 @@ describe('Chat System Triggers', () => {
 			'me\u200Brde',
 			'pu\u00ADtain',
 			// lettres de pleine chasse
-			'\uFF4D\uFF45\uFF52\uFF44\uFF45'
+			'\uFF4D\uFF45\uFF52\uFF44\uFF45',
+			// marque de sens d'écriture, sélecteur de variante, accent de symbole
+			'm\u202Eerde',
+			'co\uFE0Fn',
+			'co\u20DDn'
 		];
 
 		const NON_MARQUES = [
@@ -478,6 +482,10 @@ describe('Chat System Triggers', () => {
 			'une dispute entre amis',
 			'une salopette bleue',
 			'il a compté les points',
+			// les mêmes déguisements dans un mot innocent ne le marquent pas
+			'je suis conte\u0301nt',
+			'co\u200Bntent de toi',
+			'\uFF43\uFF4F\uFF4E\uFF54\uFF45\uFF4E\uFF54',
 			''
 		];
 

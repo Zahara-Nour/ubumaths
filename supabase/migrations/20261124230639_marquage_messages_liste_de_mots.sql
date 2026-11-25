@@ -94,12 +94,15 @@ BEGIN
   -- Forme décomposée (NFKD) : une lettre accentuée devient la lettre suivie de
   -- son accent, quelle que soit la façon dont elle a été saisie ; les variantes
   -- de présentation (pleine chasse, ligatures) redeviennent des lettres simples.
-  -- On retire ensuite les accents et les caractères invisibles (trait d'union
-  -- conditionnel, espaces et liants de largeur nulle), qui couperaient un mot
-  -- sans se voir à l'écran.
+  -- On retire ensuite les accents (de lettres et de symboles) et les caractères
+  -- invisibles (trait d'union conditionnel, espaces et liants de largeur nulle,
+  -- marques de sens d'écriture, sélecteurs de variante, étiquettes), qui
+  -- couperaient un mot sans se voir à l'écran. Non traités : une lettre d'un
+  -- autre alphabet qui ressemble à la nôtre, un chiffre à la place d'une lettre.
   v_norm := lower(normalize(p_text, NFKD));
   v_norm := regexp_replace(v_norm,
-    '[\u0300-\u036F\u00AD\u200B-\u200F\u2060-\u2064\uFEFF]', '', 'g');
+    '[\u0300-\u036F\u20D0-\u20FF\uFE00-\uFE0F\u00AD\u061C\u180E\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF\U000E0000-\U000E007F]',
+    '', 'g');
   v_norm := replace(replace(v_norm, 'œ', 'oe'), 'æ', 'ae');
   v_norm := btrim(regexp_replace(v_norm, '[^a-z0-9]+', ' ', 'g'));
 

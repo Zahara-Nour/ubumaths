@@ -289,8 +289,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   « con » marque « t'es trop CON », pas « content ». Changer la liste = une migration qui
   redéfinit la fonction. Un accent saisi en deux caractères, une lettre de pleine chasse ou un
   caractère invisible glissé dans le mot ne le cachent pas (forme NFKD, puis retrait des accents
-  et des caractères de largeur nulle). Limites : une faute voulue (« c0nnard », « meeerde »)
-  passe ; les messages envoyés avant la migration ne sont pas relus.
+  et des caractères invisibles). Limites : une faute voulue (« c0nnard », « meeerde ») ou une
+  lettre d'un autre alphabet qui ressemble à la nôtre passe ; les messages envoyés avant la migration ne sont pas relus.
 - **La marque ne se maquille pas.** Le trigger joue à l'envoi et sur **tout** `UPDATE` de
   `messages`. `plain_text` est toujours recalculé depuis `content`, pour tout le monde. Un élève
   n'écrit ni `is_flagged` ni `flag_reason` : à l'envoi elles viennent de la détection ; ensuite
