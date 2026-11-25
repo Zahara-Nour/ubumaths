@@ -1,0 +1,625 @@
+{
+	"id": "52bf3fb9-a815-4a94-9425-f524278fbbc1",
+	"title": "Calculer la longueur réelle",
+	"grades": ["6"],
+	"level": 2,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$."
+	},
+	"options": {
+		"constraints": {
+			"unit": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c)*a;[dm]}}"
+				}
+			],
+			"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10"
+				},
+				{
+					"name": "b1",
+					"expression": "2..9"
+				},
+				{
+					"name": "b2",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:b1*10^b2"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(b)[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a)[cm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+					"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c)*a;[m]}}"
+				}
+			],
+			"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:b[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a)[cm];[m]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+					"$${{b}} \\times {{d}} = {{solution:0}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c)*a;[m]}}"
+				}
+			],
+			"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100"
+				},
+				{
+					"name": "b1",
+					"expression": "2..9"
+				},
+				{
+					"name": "b2",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:b1*10^b2"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(b)[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a)[cm];[m]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+					"$${{b}} \\times {{d}} = {{solution:0}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c)*a;[dam]}}"
+				}
+			],
+			"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1000"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:b[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a)[cm];[m]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+					"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c)*a;[km]}}"
+				}
+			],
+			"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100000"
+				},
+				{
+					"name": "b1",
+					"expression": "2..9"
+				},
+				{
+					"name": "b2",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:b1*10^b2"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(b)[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a)[cm];[km]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+					"$${{b}} \\times {{d}} = {{solution:0}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c)*a;[km]}}"
+				}
+			],
+			"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1000000"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:b[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a)[cm];[km]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+					"$${{b}} \\times {{d}} = {{solution:0}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici l'échelle d'un plan : le segment ci-dessous mesure $1$ cm sur le plan et représente ${{ech}}$ m dans la réalité.\n\n```figure\nfenetre: -0.5 ; 1.5 ; -0.4 ; 0.6\ntaille: petite\ndescription: Échelle graphique : un segment de 1 cm marqué {{ech}} m.\n---\nA = point(0, 0, visible=faux)\nB = point(1, 0, visible=faux)\nsegment(A, B, epaisseur=3)\nA1 = point(0, -0.1, visible=faux)\nA2 = point(0, 0.1, visible=faux)\nsegment(A1, A2, epaisseur=3)\nB1 = point(1, -0.1, visible=faux)\nB2 = point(1, 0.1, visible=faux)\nsegment(B1, B2, epaisseur=3)\ntexte(0.5, 0.35, \"{{ech}} m\")\n```\n\nSur ce plan, {{if:o==0|une salle de classe|{{if:o==1|un gymnase|{{if:o==2|une cour de récréation|un terrain de football}}}}}} rectangulaire mesure ${{pl}}$ cm de long et ${{pw}}$ cm de large. Calcule ses dimensions réelles.\n\nLongueur réelle : $?$\n\nLargeur réelle : $?$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..3"
+				},
+				{
+					"name": "ech",
+					"expression": "eval:2*(1-min(abs(o-0),1))+2*(1-min(abs(o-1),1))+4*(1-min(abs(o-2),1))+5*(1-min(abs(o-3),1))"
+				},
+				{
+					"name": "xl",
+					"expression": "{{eval:35*(1-min(abs(o-0),1))+150*(1-min(abs(o-1),1))+80*(1-min(abs(o-2),1))+180*(1-min(abs(o-3),1))}}..{{eval:50*(1-min(abs(o-0),1))+220*(1-min(abs(o-1),1))+120*(1-min(abs(o-2),1))+240*(1-min(abs(o-3),1))}}"
+				},
+				{
+					"name": "xw",
+					"expression": "{{eval:25*(1-min(abs(o-0),1))+90*(1-min(abs(o-1),1))+50*(1-min(abs(o-2),1))+100*(1-min(abs(o-3),1))}}..{{eval:34*(1-min(abs(o-0),1))+130*(1-min(abs(o-1),1))+70*(1-min(abs(o-2),1))+140*(1-min(abs(o-3),1))}}"
+				},
+				{
+					"name": "pl",
+					"expression": "eval:xl/10;d"
+				},
+				{
+					"name": "pw",
+					"expression": "eval:xw/10;d"
+				},
+				{
+					"name": "rl",
+					"expression": "eval:ech*xl/10;d"
+				},
+				{
+					"name": "rw",
+					"expression": "eval:ech*xw/10;d"
+				}
+			],
+			"conditions": ["10*xw<=8*xl"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rl}}\\unit{m}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:xl/(10*ech);d}}\\unit{m}",
+							"message": "La longueur réelle est plus grande que sur le plan : chaque centimètre du plan représente ${{ech}}$ m.",
+							"label": "Division au lieu de multiplication"
+						},
+						{
+							"answer": "{{rl}}\\unit{cm}",
+							"message": "Vérifie l'unité : sur le plan, $1$ cm représente ${{ech}}$ m, pas ${{ech}}$ cm.",
+							"label": "Mauvaise unité"
+						},
+						{
+							"answer": "{{rw}}\\unit{m}",
+							"message": "Tu as donné la largeur : la longueur est le plus grand côté du rectangle.",
+							"label": "Longueur et largeur échangées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{rw}}\\unit{m}",
+					"unit": {
+						"expected": true
+					},
+					"expectedErrors": [
+						{
+							"answer": "{{eval:xw/(10*ech);d}}\\unit{m}",
+							"message": "La largeur réelle est plus grande que sur le plan : chaque centimètre du plan représente ${{ech}}$ m.",
+							"label": "Division au lieu de multiplication"
+						},
+						{
+							"answer": "{{rw}}\\unit{cm}",
+							"message": "Vérifie l'unité : sur le plan, $1$ cm représente ${{ech}}$ m, pas ${{ech}}$ cm.",
+							"label": "Mauvaise unité"
+						},
+						{
+							"answer": "{{rl}}\\unit{m}",
+							"message": "Tu as donné la longueur : la largeur est le plus petit côté du rectangle.",
+							"label": "Longueur et largeur échangées"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Échelle.** Sur le plan, $1$ cm représente ${{ech}}$ m dans la réalité : chaque longueur du plan, en centimètres, est multipliée par ${{ech}}$ pour obtenir la longueur réelle, en mètres.",
+					"$${{pl}} \\times {{ech}} = \\textcolor{{{color:primary.0}}}{{{rl}}~\\text{m}} \\qquad {{pw}} \\times {{ech}} = \\textcolor{{{color:primary.0}}}{{{rw}}~\\text{m}}$$",
+					"Dans la réalité, le rectangle mesure ${{rl}}$ m de long et ${{rw}}$ m de large."
+				]
+			},
+			"hint": "Chaque centimètre du plan représente ${{ech}}$ m dans la réalité : combien de mètres représentent ${{pl}}$ cm ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["9~\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b1": "9",
+				"b2": "0"
+			},
+			"description": "v0 : 9 cm (1 cm pour 10 cm) → 9 dm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9~\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "v1 : 9 cm (1 cm pour 1 m) → 9 m",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["90~\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b1": "9",
+				"b2": "1"
+			},
+			"description": "v2 : 90 cm (1 cm pour 1 m) → 90 m",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["9~\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "v3 : 9 cm (1 cm pour 10 m) → 9 dam",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["30~\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b1": "3",
+				"b2": "1"
+			},
+			"description": "v4 : 30 cm (1 cm pour 1 km) → 30 km",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["90~\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "v5 : 9 cm (1 cm pour 10 km) → 90 km",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["900~\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "unité équivalente acceptée (900 cm)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["9~\\unit{cm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "division au lieu de multiplication",
+			"variationIndex": 1
+		},
+		{
+			"description": "F3 réel : 4,3 cm × 3,1 cm (1 cm pour 2 m) → 8,6 m × 6,2 m",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8{,}6~\\unit{m}", "6{,}2~\\unit{m}"]
+		},
+		{
+			"description": "F3 réel : en centimètres (860 cm, 620 cm)",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["860~\\unit{cm}", "620~\\unit{cm}"]
+		},
+		{
+			"description": "F3 réel : sans unité",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["8{,}6", "6{,}2"]
+		},
+		{
+			"description": "F3 réel : longueur divisée (2,15 m)",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La longueur réelle est plus grande que sur le plan : chaque centimètre du plan représente $2$ m."
+			},
+			"answers": ["2{,}15~\\unit{m}", "6{,}2~\\unit{m}"]
+		},
+		{
+			"description": "F3 réel : largeur divisée (1,55 m)",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La largeur réelle est plus grande que sur le plan : chaque centimètre du plan représente $2$ m."
+			},
+			"answers": ["8{,}6~\\unit{m}", "1{,}55~\\unit{m}"]
+		},
+		{
+			"description": "F3 réel : longueur en cm (8,6 cm)",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie l'unité : sur le plan, $1$ cm représente $2$ m, pas $2$ cm."
+			},
+			"answers": ["8{,}6~\\unit{cm}", "6{,}2~\\unit{m}"]
+		},
+		{
+			"description": "F3 réel : largeur en cm (6,2 cm)",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Vérifie l'unité : sur le plan, $1$ cm représente $2$ m, pas $2$ cm."
+			},
+			"answers": ["8{,}6~\\unit{m}", "6{,}2~\\unit{cm}"]
+		},
+		{
+			"description": "F3 réel : largeur à la place de la longueur",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la largeur : la longueur est le plus grand côté du rectangle."
+			},
+			"answers": ["6{,}2~\\unit{m}", "6{,}2~\\unit{m}"]
+		},
+		{
+			"description": "F3 réel : longueur à la place de la largeur",
+			"variationIndex": 6,
+			"variables": {
+				"o": "0",
+				"ech": "2",
+				"xl": "43",
+				"xw": "31",
+				"pl": "4.3",
+				"pw": "3.1",
+				"rl": "8.6",
+				"rw": "6.2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la longueur : la largeur est le plus petit côté du rectangle."
+			},
+			"answers": ["8{,}6~\\unit{m}", "8{,}6~\\unit{m}"]
+		},
+		{
+			"description": "F3 réel : football 21,3 cm × 12,8 cm (1 cm pour 5 m)",
+			"variationIndex": 6,
+			"variables": {
+				"o": "3",
+				"ech": "5",
+				"xl": "213",
+				"xw": "128",
+				"pl": "21.3",
+				"pw": "12.8",
+				"rl": "106.5",
+				"rw": "64"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["106{,}5~\\unit{m}", "64~\\unit{m}"]
+		}
+	]
+}
