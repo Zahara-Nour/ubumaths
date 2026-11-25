@@ -1,0 +1,463 @@
+{
+	"id": "15368b02-73cc-4f0d-b978-fa0d0848eb03",
+	"title": "Définition d'une puissance à exposant négatif",
+	"grades": ["3"],
+	"level": 3,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"brackets": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{1}{{{a}}^{{{b}}}}"
+				}
+			],
+			"statement": "Écris la définition de cette puissance.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "expression1",
+					"expression": "a^{-b}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+					"L’exposant $\\textcolor{{{color:primary.0}}}{-{{b}}}$ est négatif : ${{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}}$ est l’inverse de ${{a}}^{\\textcolor{{{color:primary.1}}}{{{b}}}}$.",
+					"$$\\begin{align} {{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}} &= {{solution}} \\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule. Donne le résultat sous la forme d’une fraction, sans puissance.\n\n$${{a}}^{-{{n}}} = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "eval:a^n"
+				}
+			],
+			"conditions": ["q<=1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{1}{ {{q}} }",
+					"expectedErrors": [
+						{
+							"answer": "-{{q}}",
+							"message": "Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance.",
+							"label": "Puissance rendue négative"
+						},
+						{
+							"answer": "-{{eval:a*n}}",
+							"message": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base. Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance.",
+							"label": "Base × exposant, et signe moins"
+						},
+						{
+							"answer": "\\dfrac{1}{ {{eval:a*n}} }",
+							"message": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base.",
+							"label": "Base × exposant"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$.",
+					"$${{a}}^{\\textcolor{{{color:primary.0}}}{-{{n}}}} = \\dfrac{1}{ {{a}}^{\\textcolor{{{color:primary.1}}}{{{n}}}} } = \\dfrac{1}{ {{if:n==2|{{a}}\\times{{a}}|{{if:n==3|{{a}}\\times{{a}}\\times{{a}}|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}}}}} } = \\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{q}} }}$$"
+				]
+			},
+			"hint": "$a^{-n}$ est l’inverse de $a^n$ : calcule d’abord $a^n$."
+		},
+		{
+			"statement": "Calcule.\n\n$${{if:s==1|(-{{a}})|{{a}}}}^{0} = ?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "2..15"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Un exposant nul ne donne pas zéro : tout nombre non nul élevé à la puissance $0$ vaut $1$.",
+							"label": "Zéro"
+						},
+						{
+							"answer": "{{if:s==1|-{{a}}|{{a}}}}",
+							"message": "L’exposant $0$ ne laisse pas la base telle quelle : tout nombre non nul élevé à la puissance $0$ vaut $1$.",
+							"label": "La base recopiée"
+						},
+						{
+							"answer": "-1",
+							"message": "Le résultat ne dépend pas du signe de la base : tout nombre non nul élevé à la puissance $0$ vaut $1$.",
+							"label": "Moins un"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Exposant nul.** Pour $a \\neq 0$ : $a^0 = 1$. On le retrouve avec un quotient : $\\dfrac{a^3}{a^3} = 1$ et $\\dfrac{a^3}{a^3} = a^{3-3} = a^0$.",
+					"$${{if:s==1|(-{{a}})|{{a}}}}^{0} = \\textcolor{{{color:primary.0}}}{1}$$"
+				]
+			},
+			"hint": "Calcule $\\dfrac{a^3}{a^3}$ de deux façons : en simplifiant, puis avec la règle des exposants."
+		},
+		{
+			"statement": "Écris sous la forme d’une seule puissance.\n\n$$\\dfrac{1}{{{if:n==2|{{a}}\\times{{a}}|{{if:n==3|{{a}}\\times{{a}}\\times{{a}}|{{if:n==4|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}\\times{{a}}}}}}}}} = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}^{-{{n}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{a}}^{ {{n}} }",
+							"message": "Tu as oublié le signe moins : le produit est au dénominateur, c’est un inverse.",
+							"label": "Signe moins oublié"
+						},
+						{
+							"answer": "-{{a}}^{ {{n}} }",
+							"message": "Le signe moins va sur l’exposant, pas devant la puissance : ce nombre est positif.",
+							"label": "Moins devant la puissance"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dénominateur compte \\textcolor{{{color:primary.1}}}{{{n}}} facteurs égaux à ${{a}}$ : c’est ${{a}}^{ {{n}} }$.",
+					"**Exposant négatif.** $\\dfrac{1}{a^n} = a^{-n}$.",
+					"$$\\dfrac{1}{{{if:n==2|{{a}}\\times{{a}}|{{if:n==3|{{a}}\\times{{a}}\\times{{a}}|{{if:n==4|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}|{{a}}\\times{{a}}\\times{{a}}\\times{{a}}\\times{{a}}}}}}}}} = \\dfrac{1}{ {{a}}^{\\textcolor{{{color:primary.1}}}{{{n}}}} } = \\textcolor{{{color:primary.0}}}{{{a}}^{-{{n}}}}$$"
+				]
+			},
+			"hint": "Compte les facteurs du dénominateur, puis pense à l’inverse d’une puissance."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{6^3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "3"
+			},
+			"description": "1/6^3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{b^4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "b|b",
+				"b": "4"
+			},
+			"description": "lettre b avec exposant 4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{216}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "6",
+				"b": "3"
+			},
+			"description": "valeur 1/216 : forme refusée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-6^3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "3"
+			},
+			"description": "signe : -6^3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{6^{-3}}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "3"
+			},
+			"description": "1/6^{-3}",
+			"variationIndex": 0
+		},
+		{
+			"description": "F1 : 2^-3 → 1/8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{8}"]
+		},
+		{
+			"description": "F1 : 1/2^3, puissance gardée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{1}{2^3}"]
+		},
+		{
+			"description": "F1 : -8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance."
+			},
+			"answers": ["-8"]
+		},
+		{
+			"description": "F1 : -6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base. Un exposant négatif ne rend pas le nombre négatif : il donne l’inverse de la puissance."
+			},
+			"answers": ["-6"]
+		},
+		{
+			"description": "F1 : 1/6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié la base par l’exposant : l’exposant compte les facteurs égaux à la base."
+			},
+			"answers": ["\\frac{1}{6}"]
+		},
+		{
+			"description": "F1 : 10^-3 → 1/1000",
+			"variationIndex": 1,
+			"variables": {
+				"a": "10",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{1000}"]
+		},
+		{
+			"description": "F1 : 9^-2 → 1/81",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{81}"]
+		},
+		{
+			"description": "F1b : 7^0 → 1",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"a": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F1b : (-12)^0 → 1",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"a": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "F1b : 0",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un exposant nul ne donne pas zéro : tout nombre non nul élevé à la puissance $0$ vaut $1$."
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "F1b : la base recopiée",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"a": "7"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L’exposant $0$ ne laisse pas la base telle quelle : tout nombre non nul élevé à la puissance $0$ vaut $1$."
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "F1b : -1 pour (-12)^0",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"a": "12"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le résultat ne dépend pas du signe de la base : tout nombre non nul élevé à la puissance $0$ vaut $1$."
+			},
+			"answers": ["-1"]
+		},
+		{
+			"description": "F2 : 1/(5×5×5) → 5^-3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5^{-3}"]
+		},
+		{
+			"description": "F2 : 1/5^3, pas une seule puissance",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{1}{5^3}"]
+		},
+		{
+			"description": "F2 : 1/125",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\frac{1}{125}"]
+		},
+		{
+			"description": "F2 : 5^3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié le signe moins : le produit est au dénominateur, c’est un inverse."
+			},
+			"answers": ["5^3"]
+		},
+		{
+			"description": "F2 : -5^3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le signe moins va sur l’exposant, pas devant la puissance : ce nombre est positif."
+			},
+			"answers": ["-5^3"]
+		},
+		{
+			"description": "F2 : 1/(3×3) → 3^-2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3^{-2}"]
+		}
+	]
+}
