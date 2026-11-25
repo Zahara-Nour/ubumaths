@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3124._
+_Mis à jour le 2026-11-25, après #3124 et la réponse de David._
 
-- **État** : correctif mergé (#3124), pas encore en prod · **Prochaine action** : selon la réponse de David sur le titre d'exercice en anglais (nouveau chantier ou non), puis clore (journal archivé) · **En attente de David** : titre d'exercice en anglais (voir « Question en suspens ») ; `deploy:prod` pour livrer (avec #3104 de `notions-en-anglais`) · **Pièges en cours** : aucun · **Worktree / branche** : aucun (retiré par `pr:merger`)
+- **État** : correctif mergé (#3124), pas encore en prod · **Prochaine action** : ouvrir le chantier « titre d'exercice en anglais » (décidé par David le 2026-11-25 : « oui on le fait ») — phase 0 d'abord : comportements en français, question d'accès si migration, attendre sa validation ; puis archiver ce journal · **En attente de David** : `deploy:prod` pour livrer (avec #3104 de `notions-en-anglais`, dont le journal reste aussi à archiver) · **Pièges en cours** : un exercice n'a aucun champ pour un titre anglais (traductions = énoncé, corrigé, réponses, indices) · **Worktree / branche** : aucun
 
 ## Le bug (signalé par David le 2026-11-25)
 
@@ -41,7 +41,7 @@ validée → copie → Typst), rouge avant (4 sur 5), vert après.
   admin, sur ses propres fiches ; le lien de partage rendait déjà ces traductions). Non bloquant,
   non fait : un schéma de réponse moins souple.
 
-## Question en suspens pour David
+## Titre d'exercice en anglais — décidé : on le fait (David, 2026-11-25)
 
 Le titre d'un **exercice** reste en français dans le PDF anglais (« Calculer avec les formules »).
 Ce n'est pas le même trou : le modèle n'a pas de titre anglais pour un exercice (ses traductions ne
