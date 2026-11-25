@@ -1,0 +1,347 @@
+{
+	"rangement": {
+		"noeud": "Intégration > Calcul d'intégrales > par une primitive",
+		"point": "TSPE-487"
+	},
+	"title": "Intégrale de cos et de sin",
+	"description": "Calculer une intégrale de k cos x, k sin x, cos(ωx) ou sin(ωx) entre des bornes remarquables, à l'aide d'une primitive (pièges : primitive de sin sans le signe moins, primitive de cos prise égale à −sin, facteur 1/ω)",
+	"grades": ["T_SPE"],
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule la valeur exacte de $\\displaystyle\\int_{{{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|0}}}^{{{if:j==0|\\frac{\\pi}{6}}}{{if:j==1|\\frac{\\pi}{2}}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}}{{if:k<0|\\left(}}{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\cos(x){{if:k<0|\\right)}}\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:j==0|{{eval:k/2}}}}{{if:j==1|{{k}}}}{{if:j==2|{{eval:2*k}}}}{{if:j==3|0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:j==0|{{eval:-k/2}}}}{{if:j==1|{{eval:-k}}}}{{if:j==2|{{eval:-2*k}}}}{{if:j==3|0}}",
+							"message": "Une primitive de $\\cos$ est $\\sin$ (et non $-\\sin$), et l'on calcule $F\\left( b \\right) - F\\left( a \\right)$, borne du haut moins borne du bas.",
+							"label": "Signe"
+						},
+						{
+							"answer": "{{if:j==2|{{k}}|{{if:j==0|{{eval:k/2}}}}{{if:j==1|{{k}}}}{{if:j==2|{{eval:2*k}}}}{{if:j==3|0}}}}",
+							"message": "Tu as oublié de retrancher $F\\left({{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|0}}\\right)$, qui ne vaut pas $0$ ici.",
+							"label": "F(a) oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto {{if:k==1||{{if:k==-1|-|{{k}}}}}}\\cos(x)$ est $F(x)={{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sin(x)$.",
+					"$\\displaystyle\\int_{{{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|0}}}^{{{if:j==0|\\frac{\\pi}{6}}}{{if:j==1|\\frac{\\pi}{2}}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}}{{if:k<0|\\left(}}{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\cos(x){{if:k<0|\\right)}}\\,\\mathrm{d}x=F\\left({{if:j==0|\\frac{\\pi}{6}}}{{if:j==1|\\frac{\\pi}{2}}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}\\right)-F\\left({{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|0}}\\right)={{if:k==1||{{if:k==-1|-|{{k}}}}}}\\left(\\sin\\left({{if:j==0|\\frac{\\pi}{6}}}{{if:j==1|\\frac{\\pi}{2}}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}\\right)-\\sin\\left({{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|0}}\\right)\\right)={{k}}\\times{{if:j==0|\\frac{1}{2}}}{{if:j==1|1}}{{if:j==2|2}}{{if:j==3|0}}=\\textcolor{{{color:primary.0}}}{{{if:j==0|{{eval:k/2}}}}{{if:j==1|{{k}}}}{{if:j==2|{{eval:2*k}}}}{{if:j==3|0}}}$."
+				]
+			},
+			"hint": "Cherche une primitive de $\\cos$, puis calcule $F(b)-F(a)$ avec les valeurs remarquables du sinus."
+		},
+		{
+			"statement": "Calcule la valeur exacte de $\\displaystyle\\int_{{{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|\\frac{\\pi}{2}}}}^{{{if:j==0|\\frac{\\pi}{2}}}{{if:j==1|\\pi}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}}{{if:k<0|\\left(}}{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sin(x){{if:k<0|\\right)}}\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:j==0|{{k}}}}{{if:j==1|{{eval:2*k}}}}{{if:j==2|0}}{{if:j==3|{{k}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:j==0|{{eval:-k}}}}{{if:j==1|{{eval:-2*k}}}}{{if:j==2|0}}{{if:j==3|{{eval:-k}}}}",
+							"message": "Une primitive de $\\sin$ est $-\\cos$ : $(-\\cos)'=\\sin$. Tu as pris $\\cos$, sans le signe moins (ou inversé les bornes).",
+							"label": "Primitive cos"
+						},
+						{
+							"answer": "{{if:j==1|{{k}}|{{if:j==0|{{k}}}}{{if:j==1|{{eval:2*k}}}}{{if:j==2|0}}{{if:j==3|{{k}}}}}}",
+							"message": "Tu as oublié de retrancher $F\\left({{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|\\frac{\\pi}{2}}}\\right)$ : $\\cos(0)=1$, pas $0$.",
+							"label": "F(a) oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto {{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sin(x)$ est $F(x)={{if:k==-1||{{if:k==1|-|{{eval:-k}}}}}}\\cos(x)$, car $(-\\cos)'=\\sin$.",
+					"$\\displaystyle\\int_{{{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|\\frac{\\pi}{2}}}}^{{{if:j==0|\\frac{\\pi}{2}}}{{if:j==1|\\pi}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}}{{if:k<0|\\left(}}{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sin(x){{if:k<0|\\right)}}\\,\\mathrm{d}x=F\\left({{if:j==0|\\frac{\\pi}{2}}}{{if:j==1|\\pi}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}\\right)-F\\left({{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|\\frac{\\pi}{2}}}\\right)={{if:k==-1||{{if:k==1|-|{{eval:-k}}}}}}\\left(\\cos\\left({{if:j==0|\\frac{\\pi}{2}}}{{if:j==1|\\pi}}{{if:j==2|\\frac{\\pi}{2}}}{{if:j==3|\\pi}}\\right)-\\cos\\left({{if:j==0|0}}{{if:j==1|0}}{{if:j==2|-\\frac{\\pi}{2}}}{{if:j==3|\\frac{\\pi}{2}}}\\right)\\right)={{eval:-k;()}}\\times\\left({{if:j==0|0-1}}{{if:j==1|-1-1}}{{if:j==2|0-0}}{{if:j==3|-1-0}}\\right)=\\textcolor{{{color:primary.0}}}{{{if:j==0|{{k}}}}{{if:j==1|{{eval:2*k}}}}{{if:j==2|0}}{{if:j==3|{{k}}}}}$."
+				]
+			},
+			"hint": "Cherche une primitive de $\\sin$ (attention au signe), puis calcule $F(b)-F(a)$ avec les valeurs remarquables du cosinus."
+		},
+		{
+			"statement": "Calcule la valeur exacte de $\\displaystyle\\int_{0}^{\\frac{\\pi}{ {{eval:(2-j)*w}} }}{{if:j==0|\\cos|\\sin}}({{w}}x)\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..4"
+				},
+				{
+					"name": "j",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+j)/w}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(1+j)*w}}",
+							"message": "La dérivée de ${{if:j==0|\\sin|\\cos}}({{w}}x)$ fait apparaître un facteur ${{w}}$ : une primitive de ${{if:j==0|\\cos|\\sin}}({{w}}x)$ est ${{if:j==1|-}}\\dfrac{1}{ {{w}} }{{if:j==0|\\sin|\\cos}}({{w}}x)$. Il faut diviser par ${{w}}$, pas multiplier.",
+							"label": "Multiplié par ω"
+						},
+						{
+							"answer": "{{eval:1+j}}",
+							"message": "Tu as oublié le facteur $\\dfrac{1}{ {{w}} }$ : la dérivée de ${{if:j==0|\\sin|\\cos}}({{w}}x)$ vaut ${{if:j==1|-}}{{w}}{{if:j==0|\\cos|\\sin}}({{w}}x)$.",
+							"label": "1/ω oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto{{if:j==0|\\cos|\\sin}}({{w}}x)$ est $F(x)={{if:j==1|-}}\\dfrac{1}{ {{w}} }{{if:j==0|\\sin|\\cos}}({{w}}x)$ : dérive-la pour vérifier.",
+					"$F\\left(\\frac{\\pi}{ {{eval:(2-j)*w}} }\\right)-F(0)={{if:j==0|\\dfrac{1}{ {{w}} }\\left(\\sin\\left(\\frac{\\pi}{2}\\right)-\\sin(0)\\right)|-\\dfrac{1}{ {{w}} }\\left(\\cos(\\pi)-\\cos(0)\\right)}}=\\textcolor{{{color:primary.0}}}{ {{eval:(1+j)/w}} }$."
+				]
+			},
+			"hint": "Dérive ${{if:j==0|\\sin|\\cos}}({{w}}x)$ : quel facteur apparaît ? Ajuste la primitive en conséquence."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a : 3 cos sur [0 ; π/6] → 3/2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{3}{2}"]
+		},
+		{
+			"description": "a : décimal accepté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1.5"]
+		},
+		{
+			"description": "a : primitive −sin",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une primitive de $\\cos$ est $\\sin$ (et non $-\\sin$), et l'on calcule $F\\left( b \\right) - F\\left( a \\right)$, borne du haut moins borne du bas."
+			},
+			"answers": ["-\\frac{3}{2}"]
+		},
+		{
+			"description": "a : −2 cos sur [−π/2 ; π/2] → −4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"j": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4"]
+		},
+		{
+			"description": "a : signe faux",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"j": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "a : 4 cos sur [0 ; π] → 0",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"j": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "a : F(a) oublié sur [−π/2 ; π/2]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"j": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-2"]
+		},
+		{
+			"description": "b : 3 sin sur [0 ; π] → 6",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "b : primitive cos",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-6"]
+		},
+		{
+			"description": "b : F(a) oublié sur [0 ; π]",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"j": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "b : 5 sin sur [−π/2 ; π/2] → 0",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"j": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0"]
+		},
+		{
+			"description": "b : −1 sin sur [π/2 ; π] → −1",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-1",
+				"j": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1"]
+		},
+		{
+			"description": "c : cos(3x) sur [0 ; π/6] → 1/3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "3",
+				"j": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{1}{3}"]
+		},
+		{
+			"description": "c : multiplié par ω",
+			"variationIndex": 2,
+			"variables": {
+				"w": "3",
+				"j": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "c : 1/ω oublié",
+			"variationIndex": 2,
+			"variables": {
+				"w": "3",
+				"j": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "c : sin(2x) sur [0 ; π/2] → 1",
+			"variationIndex": 2,
+			"variables": {
+				"w": "2",
+				"j": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "c : sin(4x), 1/ω oublié",
+			"variationIndex": 2,
+			"variables": {
+				"w": "4",
+				"j": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		}
+	]
+}
