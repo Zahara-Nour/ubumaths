@@ -161,12 +161,24 @@ export async function createChildAccount(
 	return { ok: true, userId, loginId, grade: profile.grade };
 }
 
-/** Annule une inscription inachevée (compte créé, demande au parent impossible). */
-export async function deleteChildAccount(service: ServiceClient, userId: string): Promise<void> {
-	const { error } = await service.auth.admin.deleteUser(userId);
-	// ⚠️ Compte approuvé dans la classe sans demande au parent : le prof le verrait comme
-	// un élève fantôme. Le message nomme l'id pour le retrouver dans les journaux.
-	if (error) logger.error(`Compte de l’enfant ${userId} NON supprimé (à retirer) :`, error.message);
+/**
+ * Annule une inscription inachevée (compte créé, demande au parent impossible). Rend `false`
+ * si le compte n'a pas pu être supprimé (journalisé « à retirer »), y compris sur exception.
+ */
+export async function deleteChildAccount(service: ServiceClient, userId: string): Promise<boolean> {
+	try {
+		const { error } = await service.auth.admin.deleteUser(userId);
+		if (!error) return true;
+		// ⚠️ Compte approuvé dans la classe sans demande au parent : le prof le verrait comme
+		// un élève fantôme. Le message nomme l'id pour le retrouver dans les journaux.
+		logger.error(`Compte de l’enfant ${userId} NON supprimé (à retirer) :`, error.message);
+	} catch (err) {
+		logger.error(
+			`Compte de l’enfant ${userId} NON supprimé (à retirer) :`,
+			err instanceof Error ? err.message : 'exception'
+		);
+	}
+	return false;
 }
 
 /**

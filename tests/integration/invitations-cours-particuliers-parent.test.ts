@@ -353,7 +353,36 @@ describe('invitation de cours particulier : la page du parent (base locale)', ()
 
 	it('annulé pendant la création : tout est défait, rien ne reste', async () => {
 		const inv = await inviter();
+		const pg = await getPostgresClient();
+		let ids: { student: string; cls: string } | null = null;
+		const lignesLiees = async (student: string, cls: string) => {
+			const r = await pg.query(
+				`select
+					(select count(*)::int from profiles where id = $1) as profils,
+					(select count(*)::int from class_members where student_id = $1 or class_id = $2) as adhesions,
+					(select count(*)::int from terms_acceptances where user_id = $1) as cgu,
+					(select count(*)::int from parental_consents where student_id = $1) as consentements,
+					(select count(*)::int from conversations where class_id = $2) as conversations`,
+				[student, cls]
+			);
+			return r.rows[0];
+		};
 		const outcome = await valider(inv.token, expediteurFinal, async () => {
+			// Tout existe à ce moment-là : on le relève, pour prouver ensuite que tout est parti.
+			const cree = await pg.query(
+				`select p.id as student, c.id as cls from profiles p, classes c
+				 where p.email like $1 and c.name = upper(split_part(p.email, '@', 1))`,
+				[`${inv.firstname.toLowerCase()}%@${CHILD_ACCOUNT_DOMAIN}`]
+			);
+			expect(cree.rows).toHaveLength(1);
+			ids = cree.rows[0];
+			expect(await lignesLiees(ids!.student, ids!.cls)).toEqual({
+				profils: 1,
+				adhesions: 1,
+				cgu: 1,
+				consentements: 1,
+				conversations: 1
+			});
 			// L'admin annule pendant que le serveur crée (sa garde le refuse ; ici, en direct).
 			const { data } = await service
 				.from(TABLE)
@@ -365,6 +394,14 @@ describe('invitation de cours particulier : la page du parent (base locale)', ()
 		expect(outcome).toEqual({ ok: false, reason: 'invalid' });
 
 		expect(await traces(inv.firstname)).toEqual({ users: 0, classes: 0 });
+		expect(ids).not.toBeNull();
+		expect(await lignesLiees(ids!.student, ids!.cls)).toEqual({
+			profils: 0,
+			adhesions: 0,
+			cgu: 0,
+			consentements: 0,
+			conversations: 0
+		});
 		const ligne = await invitation(inv.id);
 		expect(ligne).toMatchObject({ used_at: null, student_id: null, class_id: null });
 		expect(ligne.cancelled_at).not.toBeNull();

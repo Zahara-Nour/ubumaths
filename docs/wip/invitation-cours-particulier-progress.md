@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3127._
+_Mis à jour le 2026-11-25, PR 3 ouverte._
 
-- **État** : PR 1 (migration) et PR 2 (admin, #3127 : page `/dashboard/admin/cours-particuliers`, courriel, purge à 30 jours) mergées ; rien en prod pour ce chantier · **Prochaine action** : PR 3, la page du parent `/auth/register/invitation/[token]` (création du compte, de la classe, adhésion, consentement, courriel final) ; nouveau worktree `../ubumaths-wt-invitation-cours-particulier-parent`, branche `feat/invitation-cours-particulier-parent` ; tout ce qu'elle doit faire est listé dans « Dette pour les PR 2 et 3 » (§ PR 3), N3 de l'audit et décision 9 ; revue : code-reviewer + security-auditor · **En attente de David** : rien · **Pièges en cours** : ⛔ ne pas déployer avant la PR 3 (le lien du courriel mène à sa page) ; `Referrer-Policy: no-referrer` et aucune ressource tierce sur la page du lien ; phrase de conservation des invitations sur la page de confidentialité ; base locale : réglage `is_private_lessons` posé à la main sur Akadada · **Worktree / branche** : aucun pour l'instant
+- **État** : PR 1 (#3119), PR 2 (#3127) mergées ; PR 3 (page du parent `/auth/register/invitation/[token]`, `redeem.ts`) ouverte, revues faites et corrigées ; rien en prod pour ce chantier · **Prochaine action** : après le merge de la PR 3, le chantier est complet → versement (journal archivé, le durable est déjà dans `docs/systeme/comptes-classes-ecoles.md` et `auth.md`) · **En attente de David** : le `deploy:prod` (sur sa demande seulement ; plus de blocage côté code) ; dire s'il veut traiter la limite « fonction tuée en route » (compte orphelin, § Revues de la PR 3) · **Pièges en cours** : base locale : réglage `is_private_lessons` posé à la main sur Akadada, une invitation « Jade » utilisée (compte `jade373`, classe `JADE373`) · **Worktree / branche** : `../ubumaths-wt-invitation-cours-particulier-parent`, `feat/invitation-cours-particulier-parent`
 
 ## But
 
@@ -105,6 +105,21 @@ social borné au groupe (décision du 2026-10-21). Autre choix : le nom « Akada
 - N1 : `invitations.ts` journalise l'erreur PostgREST entière dans `sendAndRecord` → `error.code` seul.
 - N3 (PR 3) : jeton dans le chemin → `Referrer-Policy: no-referrer` et aucune ressource tierce sur la page du lien.
 
+## Revues de la PR 3 (2026-11-25) — corrigées, sauf limites notées
+
+- **code-reviewer** : retour arrière qui pouvait lever avant de libérer le lien, ou rester partiel
+  → chaque suppression tentée à part ; lien libéré seulement si tout est défait, sinon journal
+  « à retirer » ; limite de débit déplacée après le formulaire ; test d'annulation qui compte
+  profil, adhésion, CGU, consentement, conversation de classe. Laissés : crochet de test
+  `beforeFinalize` (commenté), écran de succès perdu au rechargement (l'écran dit de noter),
+  libellé « moins de 15 ans » (décision 6 : formulaire réservé aux moins de 15 ans).
+- **security-auditor** (aucun bloquant) : jeton possible dans `error_logs.context.url`
+  (`freezeDetection`) → toutes les valeurs texte du contexte passent par `redactSecretUrl` ;
+  route ajoutée à `ALLOWED_SERVICE_ROLE_PATHS`.
+- **Limites notées** (doc `comptes-classes-ecoles.md`) : fonction tuée en route → compte et classe
+  orphelins, second compte possible au nouvel essai (rien ne les repère ; à décider par David) ;
+  journaux de requêtes de Vercel qui gardent le jeton (comme le carnet) ; pas de repli sans JS.
+
 ## Dette pour les PR 2 et 3 (revues de la PR 1)
 
 - **PR 2** : écrire en service role après la garde de rôle admin ; poser `created_by` (id de l'admin
@@ -132,3 +147,4 @@ null or claimed_at < now() - interval '5 minutes') returning` atomique ; la reti
 - 2026-11-25 : #3119 mergée (PR 1) ; décision 8 de David (purge à 30 jours) ; `db:migrate` refusé à Claude par le classifieur, lancé par David, vérifié en prod.
 - 2026-11-25 : PR 2 écrite (page admin, courriel, renvoi/annulation, purge à 30 jours par un cron Vercel quotidien `api/cron/invitations-cours-particulier`, sans migration) ; 13 tests d'intégration verts ; parcours inviter/renvoyer/annuler vu à l'écran (Playwright, 0 erreur de console).
 - 2026-11-25 : revues de la PR 2 (code-reviewer, security-auditor : aucun bloquant) ; décision 9 de David ; corrections commitées (annulation et renvoi gardés, refus du doublon, 20 envois/h/admin, test de la garde, journal sans la ligne).
+- 2026-11-25 : PR 3 écrite (page du parent, `redeem.ts` sans migration : réservation atomique, compte sans code puis approuvé, classe fermée, CGU, consentement accordé, `used_at` gardé ; tout défait en cas d'échec ; courriel final) ; 8 tests d'intégration ; parcours vu à l'écran (WebKit iPhone : formulaire, succès `jade373`, lien relu « plus valable », classe dans « Mes Bataillons ») ; revues code-reviewer + security-auditor corrigées.

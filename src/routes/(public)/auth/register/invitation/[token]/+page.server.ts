@@ -96,12 +96,13 @@ export const actions = {
 		const token = privateLessonTokenSchema.safeParse(params.token);
 		if (!token.success) return fail(410, { invalid: true as const });
 
+		// Formulaire d'abord : un mot de passe refusé ne consomme pas le quota de l'IP.
+		const validation = validateFormData(privateLessonRedeemFormSchema, await request.formData());
+		if (!validation.success) return fail(400, { errors: validation.errors });
+
 		const ip = getClientAddress();
 		const ipLimit = await checkSignupRateLimitByIP(ip);
 		if (!ipLimit.allowed) return fail(429, { error: ipLimit.message });
-
-		const validation = validateFormData(privateLessonRedeemFormSchema, await request.formData());
-		if (!validation.success) return fail(400, { errors: validation.errors });
 
 		const outcome = await redeemInvitation(
 			createServiceRoleClient(),

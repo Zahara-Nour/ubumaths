@@ -218,7 +218,17 @@ le compte et la classe (page du lien : § « Page du parent » ci-dessous). Tabl
 
   Échec à une étape 2 à 5 : la classe puis le compte sont supprimés (le profil, l'adhésion, les CGU
   et le consentement partent avec le compte), la réservation est retirée, le lien reste valable
-  (« Réessayez dans un instant »). École sans année en cours : même chose.
+  (« Réessayez dans un instant »). École sans année en cours : même chose. Défait **en partie**
+  (suppression de la classe ou du compte en échec) : la réservation n'est pas retirée (le lien
+  reste bloqué 5 minutes) et le journal nomme compte et classe « à retirer » à la main.
+
+- **Limites connues** (revues de la PR 3, 2026-11-25) :
+  - une fonction tuée en route (délai de Vercel, crash) entre le compte et `used_at` laisse un
+    compte approuvé et une classe, sans lien vers l'invitation ; la réservation se périme au bout
+    de 5 minutes et un nouvel essai crée un second compte. Rien ne les repère aujourd'hui ;
+  - les journaux de requêtes de Vercel gardent le chemin, donc le jeton (comme `/carnet/[token]`) ;
+  - pas de repli sans JavaScript : avec `no-referrer`, un POST de formulaire natif part avec
+    `Origin: null` et la garde CSRF le refuse ; `use:enhance` envoie la vraie origine.
 
 - Tests : `tests/integration/invitations-cours-particuliers-parent.test.ts` (création complète,
   double validation, liens plus valables, réservation récente ou périmée, annulation pendant la

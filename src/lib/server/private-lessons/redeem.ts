@@ -84,7 +84,7 @@ export interface RedeemOptions {
 	now?: Date;
 	/**
 	 * Appelé juste avant de marquer l'invitation utilisée. Pour les tests seulement : y
-	 * simuler une annulation par l'admin pendant la création.
+	 * simuler une annulation par l'admin pendant la création. Jamais passé par la page.
 	 */
 	beforeFinalize?: () => Promise<void>;
 }
@@ -165,25 +165,43 @@ async function claim(
 	return stillValid && row.claimed_at !== null ? 'in_use' : 'invalid';
 }
 
-/** Retire NOTRE réservation : le lien redevient utilisable. */
+/** Retire NOTRE réservation : le lien redevient utilisable. Sans retrait, il se libère seul au bout de 5 min. */
 async function release(service: Client, invitationId: string, claimedAt: string): Promise<void> {
-	const { error } = await service
-		.from('private_lesson_invitations')
-		.update({ claimed_at: null })
-		.eq('id', invitationId)
-		.eq('claimed_at', claimedAt)
-		.is('used_at', null);
-	// Sans retrait, le lien se libère seul au bout de 5 min.
-	if (error) logger.error(`[Invitation ${invitationId}] Réservation non retirée : ${error.code}`);
+	try {
+		const { error } = await service
+			.from('private_lesson_invitations')
+			.update({ claimed_at: null })
+			.eq('id', invitationId)
+			.eq('claimed_at', claimedAt)
+			.is('used_at', null)
+			.select('id');
+		if (error) logger.error(`[Invitation ${invitationId}] Réservation non retirée : ${error.code}`);
+	} catch {
+		logger.error(`[Invitation ${invitationId}] Réservation non retirée : exception`);
+	}
 }
 
-/** Défait ce qui a été créé (classe, puis compte : profil, adhésion, CGU, consentement). */
-async function undo(service: Client, created: Created): Promise<void> {
-	if (created.classId) {
-		const { error } = await service.from('classes').delete().eq('id', created.classId);
-		if (error) logger.error(`Classe ${created.classId} NON supprimée (à retirer) : ${error.code}`);
+/** Supprime la classe créée (adhésion et conversation de classe partent avec elle). */
+async function deleteClass(service: Client, classId: string): Promise<boolean> {
+	try {
+		const { data, error } = await service.from('classes').delete().eq('id', classId).select('id');
+		if (!error && data?.length === 1) return true;
+		logger.error(`Classe ${classId} NON supprimée (à retirer) : ${error?.code ?? 'aucune ligne'}`);
+	} catch {
+		logger.error(`Classe ${classId} NON supprimée (à retirer) : exception`);
 	}
-	if (created.userId) await deleteChildAccount(service, created.userId);
+	return false;
+}
+
+/**
+ * Défait ce qui a été créé : la classe, puis le compte (profil, CGU, consentement partent
+ * avec lui). Chaque suppression est tentée même si l'autre échoue. Rend `true` si tout est
+ * défait.
+ */
+async function undo(service: Client, created: Created): Promise<boolean> {
+	const classGone = created.classId ? await deleteClass(service, created.classId) : true;
+	const accountGone = created.userId ? await deleteChildAccount(service, created.userId) : true;
+	return classGone && accountGone;
 }
 
 /** Étapes 2 à 5, sur une invitation réservée. Toute erreur lève : l'appelant défait. */
@@ -321,8 +339,16 @@ export async function redeemInvitation(
 		logger.error(
 			`[Invitation ${claimed.id}] Création défaite : ${err instanceof Error ? err.message : 'exception'}`
 		);
-		await undo(service, created);
-		await release(service, claimed.id, claimedAt);
+		// Tout défait → le lien redevient utilisable. Défait en partie → la réservation reste
+		// (5 min) : un compte prêt à l'emploi peut encore exister, à retirer à la main d'après
+		// le journal ; retenter tout de suite en créerait un second.
+		if (await undo(service, created)) {
+			await release(service, claimed.id, claimedAt);
+		} else {
+			logger.error(
+				`[Invitation ${claimed.id}] Défaite en partie (à retirer) : compte ${created.userId ?? '-'}, classe ${created.classId ?? '-'}`
+			);
+		}
 		return { ok: false, reason };
 	}
 

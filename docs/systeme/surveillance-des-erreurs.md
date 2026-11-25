@@ -335,6 +335,9 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   depuis le 2026-11-16) ; de même le jeton d'une invitation de cours particulier
   (`/auth/register/invitation/<jeton>`, depuis le 2026-11-25). Toutes les sources y passent : navigateur (`/api/errors/log`), requête
   lente et exception de `hooks.server.ts`.
+- Les valeurs texte du `context` passent aussi par `redactSecretUrl` (`redactValue` dans
+  `sanitizeObject`, depuis le 2026-11-25) : `freezeDetection` y range l'URL de la page
+  (`context.url` d'une tâche longue ou d'un gel), que le masquage de `url` ne voyait pas.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les
   erreurs récentes de l'auteur n'y sont **pas** enregistrées : son auteur peut le relire, et
