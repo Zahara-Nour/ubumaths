@@ -12,6 +12,8 @@
 	Features:
 	- Automatically disables if consent.isReadOnly is true
 	- Shows tooltip explaining why button is disabled
+	- Porte son propre Tooltip.Provider : la page qui l'accueille n'a pas à en fournir un
+	  (E66 : le Marché plantait en erreur 500, « Context Tooltip.Provider not found »)
 	- Falls back to standard Button behavior if requiresConsent is false
 
 	Usage:
@@ -54,28 +56,30 @@
 
 {#if isConsentDisabled}
 	<!-- Wrap in tooltip when disabled due to consent -->
-	<Tooltip.Root>
-		<Tooltip.Trigger>
-			{#snippet child({ props })}
-				<span {...props as Record<string, unknown>} class="inline-block">
-					<Button
-						{variant}
-						{size}
-						disabled={isDisabled}
-						{onclick}
-						{...restProps as Record<string, unknown>}
-					>
-						{#if children}
-							{@render children()}
-						{/if}
-					</Button>
-				</span>
-			{/snippet}
-		</Tooltip.Trigger>
-		<Tooltip.Content>
-			<p>{tooltipText}</p>
-		</Tooltip.Content>
-	</Tooltip.Root>
+	<Tooltip.Provider>
+		<Tooltip.Root>
+			<Tooltip.Trigger>
+				{#snippet child({ props })}
+					<span {...props as Record<string, unknown>} class="inline-block">
+						<Button
+							{variant}
+							{size}
+							disabled={isDisabled}
+							{onclick}
+							{...restProps as Record<string, unknown>}
+						>
+							{#if children}
+								{@render children()}
+							{/if}
+						</Button>
+					</span>
+				{/snippet}
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				<p>{tooltipText}</p>
+			</Tooltip.Content>
+		</Tooltip.Root>
+	</Tooltip.Provider>
 {:else}
 	<!-- Standard button without tooltip wrapper -->
 	<Button

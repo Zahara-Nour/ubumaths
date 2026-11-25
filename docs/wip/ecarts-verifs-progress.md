@@ -103,6 +103,21 @@ Choix pour David :
   binomiale (iPhone) ; vérifs `blocs-divers` E46 / #2151 / #2162 / #1908 / #1947 sur Chrome,
   Safari, iPhone, Android.
 
+## PR M : E66 et E67, Marché et boutique d'avatars sans consentement parental (2026-11-25)
+
+- **E66** : `ConsentButton` porte son propre `Tooltip.Provider`. La page du Marché d'un élève
+  sans consentement (délai de grâce passé) s'affiche, « Acheter » y est grisé, « Porter » marche.
+- **E67** : le magasin `consent` est rempli par `src/routes/(protected)/+layout.svelte` (un
+  `$effect` sur `data.consentStatus`), donc pour toutes les pages protégées ; « Mon profil »
+  grise « Acheter ». L'hydratation `onMount` du layout de l'espace élève reste (même valeur).
+- **Vérif #2574** (`e2e/verifs/palotin-paquet7.spec.ts`) : les deux `test.fail` retirés avec les
+  assertions du symptôme. Décor adapté, attendus inchangés : au Marché, la question « As-tu
+  15 ans ou plus ? » (cachée jusque-là par l'erreur 500) est fermée sans répondre ; sur « Mon
+  profil », le bouton étant grisé, le refus du serveur est prouvé par un appel direct à l'API
+  d'achat (403, rien débité, rien en collection).
+- Revue `code-reviewer` : aucun bloquant. Noté : au premier rendu (serveur), « Acheter » est
+  actif puis se grise à l'hydratation (le serveur refuse de toute façon).
+
 ## Découpage E12-E49 (validé par David le 2026-11-24)
 
 | PR  | Écarts                                                                             | Sujet                                                                                                                                                              | Revue                                          |
