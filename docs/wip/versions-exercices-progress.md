@@ -2,13 +2,31 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3194._
+_Mis à jour le 2026-11-26, PR 4 en cours (phase 0 validée)._
 
-- **État** : PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0). PR 3 (la fiche, #3194) mergée, **pas encore en prod**.
-- **Prochaine action** : PR 4 (destructive : retrait des anciennes colonnes de contenu d'`exercises`), seulement après le `deploy:prod` qui livre la PR 3, et avec le go de David. Phase 0 d'abord (grep des usages + réconciliation des données).
-- **En attente de David** : `deploy:prod` (livre #3194), puis go pour la PR 4.
-- **Pièges en cours** : bouton d'annulation de `ConfirmDialog` = « Renoncer » (lore). Le merge d'une PR destructive ne se fait pas avant le go (un `db push` d'une autre session la jouerait).
-- **Worktree / branche** : aucun (celui de la PR 3 retiré) ; PR 4 → nouveau worktree depuis `origin/main`.
+- **État** : PR 1 (#3150), PR 2 (#3154) en prod (v0.112.0) ; PR 3 (#3194) mergée, **pas en prod**. PR 4 (retrait de l'ancien contenu d'`exercises`) en écriture.
+- **Prochaine action** : finir la PR 4 (tests rouges → migration → code → revues), l'ouvrir, **ne pas la merger**.
+- **En attente de David** : `deploy:prod` (livre #3194), puis go pour merger la PR 4 et `db:migrate`.
+- **Pièges en cours** : merge d'une PR destructive interdit avant le go (le `db push` d'une autre session la jouerait). `ConfirmDialog` : « Renoncer ».
+- **Worktree / branche** : `../ubumaths-wt-versions-exercices-retrait`, `feat/versions-exercices-retrait`.
+
+## Phase 0 de la PR 4 — retrait de l'ancien contenu (validée le 2026-11-26 : « je te suis »)
+
+- Colonnes supprimées : `exercises.variations`, `shared`, `generic_functions` (ADR 0044 point 11).
+  **`variables` reste** (Q1 : encore écrite à la création, lue par 3 fonctions ; chantier à part).
+- Réconciliation (prod, lecture seule, 2026-11-26) : 428 exercices, 428 avec une v1 identique à
+  l'ancien contenu, 0 contenu qui n'existerait que dans les anciennes colonnes, 0 exercice à
+  plusieurs versions, 0 exercice à `variables`. **Rien n'est perdu.**
+- Usages (grep du 2026-11-26) : aucun `from('exercises')` de `src/` ne nomme ces colonnes ; 5
+  fonctions SQL mortes (`get_my|teacher|all_exercise_assignments`,
+  `exercise_has_multiple_variations`, `exercise_variation_count`), appelées seulement par des tests ;
+  `get_exercise_by_share_token` (forme `exercises`, contenu glissé dedans) → table explicite, mêmes
+  champs ; sauvegarde admin (restauration + dump SQL) écrit encore ces colonnes → par les versions
+  seulement ; 4 index (2 du contenu supprimés) et 3 règles (2 du contenu supprimées).
+- Vieux scripts `scripts/create-*.ts`, `fix-*.ts` (déjà joués, hors typecheck) : laissés tels
+  quels (Q2) ; une ligne dans la skill `fiches-exercices`.
+- Calendrier (Q3) : PR écrite et ouverte sans merge ; `deploy:prod` de #3194, go de David, merge,
+  `db:migrate`.
 
 ## Décisions (2026-11-25)
 
