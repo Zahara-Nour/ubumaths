@@ -266,13 +266,24 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
 	return [...solutions].sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 }
 
+/**
+ * Les dénominateurs d'une mesure en degrés : les petits (`360/7 °`), puis les
+ * décimaux tapés (`12,34 °`, jusqu'à quatre chiffres après la virgule).
+ */
+const DEGREE_DENOMINATORS: readonly number[] = [
+	...Array.from({ length: MAX_PERIOD_DENOMINATOR }, (_, index) => index + 1),
+	100,
+	1000,
+	10000
+];
+
 /** Un degré : π/180 rad. */
 const DEGREE_UNIT = parseUnitOrThrow('°');
 
 /**
  * Un nombre de RADIANS écrit en degrés, quand la mesure en degrés est un
- * rationnel de petit dénominateur : 0,349… → `20°`, 0,392… → `22,5°`,
- * 2π/7 → `360/7 °`. Lue sur la valeur : `arccos(cos(20°))` ou
+ * rationnel de petit dénominateur ou un décimal : 0,349… → `20°`, 0,392… →
+ * `22,5°`, 2π/7 → `360/7 °`, 0,2153… → `12,34°`. Lue sur la valeur : `arccos(cos(20°))` ou
  * `π − arcsin(sin(20°))` n'ont pas d'écriture exacte plus simple dans le
  * moteur, mais leur mesure en degrés est celle que l'élève a tapée.
  * `null` sinon : la famille garde son écriture en radians.
@@ -281,7 +292,7 @@ function degreeAngle(radians: number): MathNode | null {
 	if (!Number.isFinite(radians)) return null;
 	const degrees = (radians * 180) / Math.PI;
 	const tolerance = PERIOD_TOLERANCE * Math.max(1, Math.abs(degrees));
-	for (let q = 1; q <= MAX_PERIOD_DENOMINATOR; q++) {
+	for (const q of DEGREE_DENOMINATORS) {
 		const p = Math.round(degrees * q);
 		if (Math.abs(degrees * q - p) > tolerance * q) continue;
 		const g = gcd(Math.abs(p), q);
@@ -297,6 +308,26 @@ function degreeAngle(radians: number): MathNode | null {
 		return top < 0 ? opposite(angle) : angle;
 	}
 	return null;
+}
+
+/**
+ * Des solutions isolées écrites en degrés (V129, David, 2026-11-26 : `cos(x) =
+ * cos(20°) dans [0;360]` → 20° et 340°), en LaTeX et en texte. Tout ou rien,
+ * comme une famille : `null` dès qu'une valeur n'a pas de mesure simple en degrés.
+ */
+export function degreeValues(
+	values: readonly MathNode[]
+): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
+	const angles: MathNode[] = [];
+	for (const value of values) {
+		const angle = degreeAngle(computeNumericValue(value) ?? Number.NaN);
+		if (angle === null) return null;
+		angles.push(angle);
+	}
+	return {
+		latex: angles.map((angle) => frenchDecimals(toLatex(angle))),
+		text: angles.map((angle) => toCustom(angle))
+	};
 }
 
 /** Les facteurs premiers d'un entier ≥ 1 (`20` → [2, 2, 5]). */
@@ -371,13 +402,16 @@ function familyMembers(
 	const term = periodTerm(family.period);
 	if (term === null) return null;
 	const bases = sorted(family.baseSolutions).map((solution) => {
-		const base = exactValueToShow(writing.angles(solution.value));
+		// Un décimal tapé reste décimal (Q46) : `cos(x) = cos(0,4)` → 0,4 + 2kπ
+		const base = exactValueToShow(writing.angles(solution.value), { decimal: writing.decimal });
 		return { base, isZero: isNumber(base) && base.value === '0' };
 	});
 	const member = (written: string, isZero: boolean, k: string) =>
 		isZero ? k : `${written} + ${k}`;
 	return {
-		latex: bases.map(({ base, isZero }) => member(toLatex(base), isZero, term.latex)),
+		latex: bases.map(({ base, isZero }) =>
+			member(frenchDecimals(toLatex(base)), isZero, term.latex)
+		),
 		text: bases.map(({ base, isZero }) => member(toCustom(base), isZero, term.text))
 	};
 }

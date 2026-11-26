@@ -405,9 +405,26 @@ un sin, cos, tan et rien en radians (E54, 2026-11-25 ; `familyInDegrees`, `angle
 20° et 160°, `tan(x) = tan(20°)` → `20° + k·180°`, `cos(2x) = cos(20°)` → ±10° + k·180°, angle
 remarquable compris (`cos(x) = cos(60°)` → ±60°). Le solveur calcule toujours en radians : c'est
 l'écriture (`degreeMembers`, `solve-latex.ts`) qui relit en degrés la valeur de chaque solution et
-de la période, quand la mesure est un rationnel simple ; sinon l'écriture en radians reste
-(`cos(x) = cos(20°)/2` garde son arccos). Un cas mêlé (`cos(x + π/3) = cos(20°)`) et une inconnue
-déjà en degrés (`cos(x°) = cos(20°)`) ne changent pas.
+de la période, quand la mesure est un rationnel simple ou un décimal (`cos(12,34°)` → ±12,34°) ;
+sinon l'écriture en radians reste (`cos(x) = cos(20°)/2` garde son arccos). Un cas mêlé
+(`cos(x + π/3) = cos(20°)`) reste en radians (−4π/9 et −2π/9, à 2kπ près), une inconnue déjà en
+degrés (`cos(x°) = cos(20°)`) répond des nombres.
+**Le solveur reçoit l'équation en radians** (V127, 2026-11-26 : `radiansInTrigonometry` avant
+`solveRead`, `solve.command.ts`) : il lisait la valeur de `cos(20°)` comme le cosinus de 20 radians
+(`cos(x) = 2cos(20°)` avait une famille de solutions, `sin(x) = 2sin(10°)` aucune).
+**sin, cos, tan d'un angle connu au second membre** (V128, 2026-11-26 ; `inverseOfKnownAngle`,
+`solve/solvers/transcendental.ts`) : `.résoudre cos(x) = cos(π/5)` → `±π/5 + 2kπ`, sans
+`arccos(cos(π/5))`. L'angle est ramené dans l'intervalle de l'arc (`cos(11π/5)` → π/5,
+`sin(3π/5)` → 2π/5 et 3π/5), signe et fonction croisée lus (`−cos(π/5)` → ±4π/5, `sin(x) =
+cos(π/5)` → 3π/10 et 7π/10), angle sans π compris (`cos(0,4)` → ±0,4 + 2kπ ; `cos(7)` → ±(7 − 2π)).
+Tout autre second membre garde son arc (`2cos(π/5) − 1`, `1/3`).
+**`dans [0 ; 360]` se lit en degrés** quand la réponse s'écrit en degrés (même condition,
+`familyInDegrees`) et que l'inconnue est un angle (elle figure dans un sin, cos, tan) — V129,
+2026-11-26 ; `domainOfDegrees`, `solve.command.ts`, `degreeValues`, `solve-latex.ts` :
+`.résoudre cos(x) = cos(20°) dans [0;360]` → `S = {20° ; 340°}`. Les bornes sont converties en
+radians pour le calcul, les solutions relues en degrés (tout ou rien : `sin(x) = 2sin(10°) dans
+[0;360]` garde ses deux arcsin). Une borne avec π ou `rad` (`dans [0 ; 2π]`) garde la lecture en
+radians (π/9 et 17π/9), comme `x^2 = cos(20°) dans [0;5]`, où x n'est pas un angle.
 Le moteur de `.résoudre` reçoit les degrés tels quels : le registre les lit lui-même. **Une variable en degrés** (choix prudent, à trancher par David) :
 `f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
 angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur

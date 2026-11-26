@@ -33,13 +33,16 @@ import {
 	withRealLineWritten,
 	solutionValueLatex,
 	domainWritten,
+	degreeValues,
 	solutionsSetText,
 	approximateSolutionsText,
 	type SolutionWriting
 } from './solve-latex';
 import {
 	anglesAsTyped,
+	degreeBoundInRadians,
 	familyInDegrees,
+	radiansInTrigonometry,
 	remarkableValuesInTrigonometry
 } from '../core/angle-radians';
 import { parameterSolveRefusal } from '../core/parameter-refusal';
@@ -51,7 +54,14 @@ import { formatInterval } from '../../domain/format';
 import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError, unwrapGroupingMembers } from '../../solve';
 import { isSolverFailure } from '../../solve/types';
-import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
+import {
+	isFunction,
+	isInfinity,
+	isRelation,
+	isMultiplication,
+	isOpposite,
+	isVariable
+} from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { preprocess } from '../../normal';
 import { number, opposite, add, subtract } from '../../factory';
@@ -64,6 +74,7 @@ import { parseStudentDomain } from '../../domain/validation/parse-student-domain
 import { toLatex } from '../../latex-generator';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
+import { findNodes } from '../../transforms';
 import { getVariables, substitute } from '../../eval/substitute';
 import { exactValueToShow } from '../../eval/exact-value';
 import { evaluate } from '../../eval/evaluate';
@@ -109,6 +120,45 @@ function parameterMessage(letters: readonly string[]): string {
  * Negate a math node, properly handling double negatives.
  * For numbers like -4, returns 4 (not --4).
  */
+/**
+ * Un ensemble tapé en degrés, bornes converties en nombres de radians (V129) :
+ * `[0 ; 360]` → `[0 ; 2π]`. `null` s'il ne se lit pas en degrés — une borne
+ * porte π ou `rad`, ou ce n'est pas une réunion d'intervalles.
+ */
+function domainOfDegrees(domain: Domain): Domain | null {
+	if (domain.kind !== 'interval_set') return null;
+	let readable = true;
+	const value = (node: MathNode): MathNode => {
+		if (isInfinity(node)) return node;
+		const radians = degreeBoundInRadians(node);
+		if (radians === null) readable = false;
+		return radians ?? node;
+	};
+	const converted: Domain = {
+		...domain,
+		intervals: domain.intervals.map((i) => ({
+			...i,
+			lower: { ...i.lower, value: value(i.lower.value) },
+			upper: { ...i.upper, value: value(i.upper.value) }
+		})),
+		excludedPoints: domain.excludedPoints.map((p) => ({ ...p, value: value(p.value) }))
+	};
+	return readable ? converted : null;
+}
+
+/** L'inconnue est-elle un angle : figure-t-elle dans un sin, cos ou tan ? */
+function isAngleUnknown(equation: MathNode, variable: string): boolean {
+	return (
+		findNodes(
+			equation,
+			(node) =>
+				isFunction(node) &&
+				(node.name === 'sin' || node.name === 'cos' || node.name === 'tan') &&
+				getVariables(node).has(variable)
+		).length > 0
+	);
+}
+
 function negate(node: MathNode): MathNode {
 	// If it's already an opposite, return the inner operand: -(-x) = x
 	if (isOpposite(node)) {
@@ -990,7 +1040,12 @@ export class SolveCommand extends BaseCommand {
 			// E54 : la ligne TAPÉE (`cos(60°)` y est encore un angle en degrés)
 			degrees: familyInDegrees(parseResult.ast, relation)
 		};
-		const solved = this.solveRead(relation, chosen.variable, reading.args.interval, {
+		// Le solveur calcule en radians (V127) : il lisait la valeur de `cos(20°)`
+		// comme le cosinus de 20 radians — `cos(x) = 2cos(20°)` avait des solutions.
+		// L'écriture (`writing`) rend ensuite aux angles leurs degrés
+		const inRadians = radiansInTrigonometry(relation);
+		const solvable: RelationNode = isRelation(inRadians) ? inRadians : relation;
+		const solved = this.solveRead(solvable, chosen.variable, reading.args.interval, {
 			parserOptions,
 			verbosity,
 			ctx,
@@ -1297,7 +1352,17 @@ export class SolveCommand extends BaseCommand {
 		});
 		const read = this.readSolvingDomain(text, variable, parserOptions);
 		if (!read.ok) return fail(read.message);
-		const { domain, intervalLatex, intervalText, bounded } = read;
+		const { intervalLatex, intervalText, bounded } = read;
+		// V129 (David, 2026-11-26) : quand la réponse s'écrit en degrés, l'intervalle
+		// se lit en degrés lui aussi — `dans [0;360]` est un tour, pas 360 radians.
+		// Le calcul reste en radians : les bornes y sont converties
+		// Seulement si l'inconnue est un angle (dans un sin, cos, tan) : `x^2 =
+		// cos(20°) dans [0;5]` cherche un nombre entre 0 et 5
+		const degreeDomain =
+			writing.degrees === true && isAngleUnknown(equation, variable)
+				? domainOfDegrees(read.domain)
+				: null;
+		const domain = degreeDomain ?? read.domain;
 		// Une inéquation : son ensemble solution, restreint à l'intervalle
 		if (equation.relation !== '=') {
 			return this.solveInequalityInInterval(equation, variable, domain, writing);
@@ -1376,6 +1441,15 @@ export class SolveCommand extends BaseCommand {
 		// Les solutions en ln : décimaux gardés, comme sans `dans` ; l'ensemble des
 		// solutions toujours (Q2), la valeur approchée au bouton ≈
 		const written = (v: MathNode) => logarithmicExactLatex(v) ?? solutionValueLatex(v, writing);
+		// Intervalle lu en degrés : solutions en degrés (tout ou rien, comme une famille)
+		const inDegrees = degreeDomain === null || values.length === 0 ? null : degreeValues(values);
+		if (inDegrees !== null) {
+			return {
+				success: true,
+				output: `S = {${inDegrees.text.join(' ; ')}}`,
+				latex: `S = \\left\\{ ${inDegrees.latex.join(' \\,;\\, ')} \\right\\}`
+			};
+		}
 		const latex =
 			values.length === 0
 				? 'S = \\emptyset'

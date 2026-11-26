@@ -115,6 +115,31 @@ test('#2501 — .résoudre lit comme le registre : degrés gardés, paramètre, 
 	);
 });
 
+test('V127, V128, V129 — .résoudre en trigonométrie : angle connu, degrés, intervalle', async ({
+	page
+}) => {
+	await openAtelier(page);
+
+	// V128 : l'angle lui-même, sans arccos
+	const radians = await calc(page, '.résoudre cos(x) = cos(π/5)');
+	expect(normalizeLatex(radians.latex ?? '')).toBe(
+		normalizeLatex(
+			'S = \\left\\{ -\\dfrac{\\pi}{5} + 2k\\pi \\,;\\, \\dfrac{\\pi}{5} + 2k\\pi ,\\; k \\in \\mathbb{Z} \\right\\}'
+		)
+	);
+
+	// V127 : 2cos(20°) > 1, aucune solution
+	const none = await calc(page, '.résoudre cos(x) = 2cos(20°)');
+	expect(normalizeLatex(none.latex ?? '')).toBe(normalizeLatex('S = \\emptyset'));
+
+	// V129 : l'intervalle se lit en degrés
+	const interval = await calc(page, '.résoudre cos(x) = cos(20°) dans [0;360]');
+	expect(normalizeLatex(interval.latex ?? '')).toBe(
+		normalizeLatex('S = \\left\\{ 20{}^{\\circ} \\,;\\, 340{}^{\\circ} \\right\\}')
+	);
+	expect(interval.latex + interval.text).not.toMatch(/\\unit|rad|arccos/);
+});
+
 test('#2545 — chargement allégé : polices de maths, étapes à la demande, stats, loi, figure', async ({
 	page
 }) => {
