@@ -140,6 +140,21 @@ export function familyInDegrees(typed: MathNode, solved: MathNode): boolean {
 }
 
 /**
+ * Une borne d'intervalle lue en degrés, en nombre de radians : `360` → 2π,
+ * `360 °` aussi (V129). `null` si la borne porte une trace de radians (π,
+ * `rad`) : l'intervalle `[0 ; 2π]` garde sa lecture en radians.
+ */
+export function degreeBoundInRadians(bound: MathNode): MathNode | null {
+	if (findNodes(bound, isRadianMark).length > 0) return null;
+	const measure = transformAST(bound, {
+		enterUnit: (unit) => (isDegreeAngle(unit) ? { node: unit.expression, skip: true } : undefined)
+	});
+	return simplifyExact(
+		divide(multiply(measure, piConstant(), 'implicit'), mathNumber('180'), 'fraction')
+	);
+}
+
+/**
  * L'écriture des angles d'une RÉPONSE, d'après la ligne tapée (Q1 de la PR 2c,
  * David, 2026-11-09) : un sin, cos, tan d'un angle tapé en degrés, sans valeur
  * remarquable, se réécrit tel qu'il a été tapé — `cos(20°)`, comme
