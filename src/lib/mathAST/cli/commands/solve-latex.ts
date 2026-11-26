@@ -267,34 +267,36 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
 }
 
 /**
- * Les dénominateurs d'une mesure en degrés : les petits (`360/7 °`), puis les
- * décimaux tapés (`12,34 °`, jusqu'à quatre chiffres après la virgule).
+ * Les dénominateurs décimaux d'une mesure en degrés (`12,34 °`, jusqu'à quatre
+ * chiffres après la virgule) : essayés seulement quand la ligne tapée porte un
+ * décimal, et à 10⁻⁹ degré près — sinon une mesure quelconque passait pour
+ * exacte (`cos(x) = cos(17°)/2 dans [180;360]` répondait 298,5648°, revue).
  */
-const DEGREE_DENOMINATORS: readonly number[] = [
-	...Array.from({ length: MAX_PERIOD_DENOMINATOR }, (_, index) => index + 1),
-	100,
-	1000,
-	10000
-];
+const DECIMAL_DEGREE_DENOMINATORS: readonly number[] = [100, 1000, 10000];
+
+/** Écart toléré, en degrés, pour reconnaître une mesure décimale. */
+const DECIMAL_DEGREE_TOLERANCE = 1e-9;
 
 /** Un degré : π/180 rad. */
 const DEGREE_UNIT = parseUnitOrThrow('°');
 
 /**
  * Un nombre de RADIANS écrit en degrés, quand la mesure en degrés est un
- * rationnel de petit dénominateur ou un décimal : 0,349… → `20°`, 0,392… →
+ * rationnel de petit dénominateur, ou un décimal si la ligne en porte un (`decimal`) : 0,349… → `20°`, 0,392… →
  * `22,5°`, 2π/7 → `360/7 °`, 0,2153… → `12,34°`. Lue sur la valeur : `arccos(cos(20°))` ou
  * `π − arcsin(sin(20°))` n'ont pas d'écriture exacte plus simple dans le
  * moteur, mais leur mesure en degrés est celle que l'élève a tapée.
  * `null` sinon : la famille garde son écriture en radians.
  */
-function degreeAngle(radians: number): MathNode | null {
+function degreeAngle(radians: number, decimal: boolean): MathNode | null {
 	if (!Number.isFinite(radians)) return null;
 	const degrees = (radians * 180) / Math.PI;
 	const tolerance = PERIOD_TOLERANCE * Math.max(1, Math.abs(degrees));
-	for (const q of DEGREE_DENOMINATORS) {
+	const small = Array.from({ length: MAX_PERIOD_DENOMINATOR }, (_, index) => index + 1);
+	for (const q of decimal ? [...small, ...DECIMAL_DEGREE_DENOMINATORS] : small) {
 		const p = Math.round(degrees * q);
-		if (Math.abs(degrees * q - p) > tolerance * q) continue;
+		const allowed = q > MAX_PERIOD_DENOMINATOR ? DECIMAL_DEGREE_TOLERANCE : tolerance;
+		if (Math.abs(degrees * q - p) > allowed * q) continue;
 		const g = gcd(Math.abs(p), q);
 		const [top, bottom] = [p / g, q / g];
 		// Une écriture décimale finie (dénominateur 2^a·5^b) : `22.5`, à la française plus loin
@@ -316,11 +318,12 @@ function degreeAngle(radians: number): MathNode | null {
  * comme une famille : `null` dès qu'une valeur n'a pas de mesure simple en degrés.
  */
 export function degreeValues(
-	values: readonly MathNode[]
+	values: readonly MathNode[],
+	writing: SolutionWriting
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
 	const angles: MathNode[] = [];
 	for (const value of values) {
-		const angle = degreeAngle(computeNumericValue(value) ?? Number.NaN);
+		const angle = degreeAngle(computeNumericValue(value) ?? Number.NaN, writing.decimal);
 		if (angle === null) return null;
 		angles.push(angle);
 	}
@@ -351,9 +354,10 @@ function primeFactors(n: number): number[] {
  * valeur (solution ou période) n'a pas de mesure simple en degrés.
  */
 function degreeMembers(
-	family: PeriodicSolutionFamily
+	family: PeriodicSolutionFamily,
+	decimal: boolean
 ): { readonly latex: readonly string[]; readonly text: readonly string[] } | null {
-	const period = degreeAngle(computeNumericValue(family.period) ?? Number.NaN);
+	const period = degreeAngle(computeNumericValue(family.period) ?? Number.NaN, decimal);
 	if (period === null) return null;
 	// La valeur du NŒUD, pas `approximate` : le solveur calcule celle-ci en
 	// lisant `cos(20°)` comme cos de 20 radians (arccos(cos 20) ≈ 1,15)
@@ -365,7 +369,7 @@ function degreeMembers(
 	}
 	const bases: MathNode[] = [];
 	for (const value of [...radians].sort((a, b) => a - b)) {
-		const base = degreeAngle(value);
+		const base = degreeAngle(value, decimal);
 		if (base === null) return null;
 		bases.push(base);
 	}
@@ -396,7 +400,7 @@ function familyMembers(
 	const family = shortestFamily(periodic);
 	if (family.baseSolutions.length === 0) return null;
 	if (writing.degrees === true) {
-		const inDegrees = degreeMembers(family);
+		const inDegrees = degreeMembers(family, writing.decimal);
 		if (inDegrees !== null) return inDegrees;
 	}
 	const term = periodTerm(family.period);

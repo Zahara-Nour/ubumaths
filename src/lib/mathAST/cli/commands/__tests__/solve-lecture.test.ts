@@ -268,7 +268,7 @@ describe('.solve : `dans [0;360]` se lit en degrés quand la réponse est en deg
 		['cos(x) = cos(20°) dans ]20;340]', ['340']],
 		// Bornes tapées en degrés : en degrés aussi
 		['cos(x) = cos(20°) dans [0°;360°]', ['20', '340']],
-		,
+		['cos(x) = cos(20°) dans [-360;0]', ['-340', '-20']],
 		['cos(x) = cos(20°) dans [0;90] ∪ [180;360]', ['20', '340']],
 		['cos(x) = cos(12,34°) dans [0;360]', ['12{,}34', '347{,}66']],
 		['sin(x) = sin(0°) dans [0;360]', ['0', '180', '360']]
@@ -296,6 +296,18 @@ describe('.solve : `dans [0;360]` se lit en degrés quand la réponse est en deg
 	it('sin(x) = 2sin(10°) dans [0;360] : deux solutions, écrites avec arcsin', () => {
 		const answer = solved('sin(x) = 2sin(10°) dans [0;360]').answer ?? '';
 		expect(answer.match(/\\arcsin/g)).toHaveLength(2);
+	});
+
+	// Revue : une mesure quelconque ne passe pas pour un décimal exact (298,5648°)
+	it('cos(x) = cos(17°)/2 dans [180;360] : pas de décimal inventé', () => {
+		const answer = solved('cos(x) = cos(17°)/2 dans [180;360]').answer ?? '';
+		expect(answer).toContain('\\arccos');
+		expect(answer).not.toContain('{,}');
+	});
+
+	// Une inéquation : son ensemble s'écrit en radians, l'intervalle se lit de même
+	it('cos(x) < 2cos(20°) dans [0;7] : intervalle en radians', () => {
+		expect(flat(solved('cos(x) < 2cos(20°) dans [0;7]').answer)).toBe('S=[0;7]');
 	});
 
 	// Inchangés : un intervalle en radians, une équation sans degré tapé, le cas mêlé

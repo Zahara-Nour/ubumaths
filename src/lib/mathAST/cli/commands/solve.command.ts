@@ -117,13 +117,9 @@ function parameterMessage(letters: readonly string[]): string {
 }
 
 /**
- * Negate a math node, properly handling double negatives.
- * For numbers like -4, returns 4 (not --4).
- */
-/**
  * Un ensemble tapé en degrés, bornes converties en nombres de radians (V129) :
  * `[0 ; 360]` → `[0 ; 2π]`. `null` s'il ne se lit pas en degrés — une borne
- * porte π ou `rad`, ou ce n'est pas une réunion d'intervalles.
+ * porte π, ou ce n'est pas une réunion d'intervalles.
  */
 function domainOfDegrees(domain: Domain): Domain | null {
 	if (domain.kind !== 'interval_set') return null;
@@ -159,6 +155,10 @@ function isAngleUnknown(equation: MathNode, variable: string): boolean {
 	);
 }
 
+/**
+ * Negate a math node, properly handling double negatives.
+ * For numbers like -4, returns 4 (not --4).
+ */
 function negate(node: MathNode): MathNode {
 	// If it's already an opposite, return the inner operand: -(-x) = x
 	if (isOpposite(node)) {
@@ -1357,9 +1357,10 @@ export class SolveCommand extends BaseCommand {
 		// se lit en degrés lui aussi — `dans [0;360]` est un tour, pas 360 radians.
 		// Le calcul reste en radians : les bornes y sont converties
 		// Seulement si l'inconnue est un angle (dans un sin, cos, tan) : `x^2 =
-		// cos(20°) dans [0;5]` cherche un nombre entre 0 et 5
+		// cos(20°) dans [0;5]` cherche un nombre entre 0 et 5. Une équation seulement :
+		// l'ensemble d'une inéquation s'écrit en radians, son intervalle se lit de même
 		const degreeDomain =
-			writing.degrees === true && isAngleUnknown(equation, variable)
+			writing.degrees === true && equation.relation === '=' && isAngleUnknown(equation, variable)
 				? domainOfDegrees(read.domain)
 				: null;
 		const domain = degreeDomain ?? read.domain;
@@ -1442,7 +1443,8 @@ export class SolveCommand extends BaseCommand {
 		// solutions toujours (Q2), la valeur approchée au bouton ≈
 		const written = (v: MathNode) => logarithmicExactLatex(v) ?? solutionValueLatex(v, writing);
 		// Intervalle lu en degrés : solutions en degrés (tout ou rien, comme une famille)
-		const inDegrees = degreeDomain === null || values.length === 0 ? null : degreeValues(values);
+		const inDegrees =
+			degreeDomain === null || values.length === 0 ? null : degreeValues(values, writing);
 		if (inDegrees !== null) {
 			return {
 				success: true,
