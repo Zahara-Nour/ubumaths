@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR des retouches F5 et F6 ouverte._
+_Mis à jour le 2026-11-26, après #3199._
 
-- **État** : #3196 mergée et migrée par David ; retouches F5 (erreur « exposants oubliés » = a + c) et
-  F6 (coup de pouce « cherche p tel que (xᵃ)ᵖ = x ») sur `fix/idees-tle-techno-f5-f6`, migration
-  `20261126200955_…_publies_contenu` · **Prochaine action** : merge de cette PR, `db:migrate`
-  (David), puis verser le chantier (archiver le journal, ligne de la répartition) · **En attente de
-  David** : `db:migrate` après le merge · **Pièges en cours** : le moteur ne voit pas
-  4^(1/4) = 2^(1/2) (F6 limitée à r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** :
-  `../ubumaths-wt-idees-tle-techno-f5-f6`, `fix/idees-tle-techno-f5-f6`.
+- **État** : #3196 mergée et migrée ; #3199 (retouches F5 et F6) mergée, migration
+  `20261126200955_…_publies_contenu` en attente · **Prochaine action** : `pnpm db:migrate` (David),
+  puis verser le chantier (archiver le journal, ligne de la répartition) · **En attente de David** :
+  `db:migrate` · **Pièges en cours** : le moteur ne voit pas 4^(1/4) = 2^(1/2) (F6 limitée à
+  r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** : aucun.
 
 ## Journal
 
