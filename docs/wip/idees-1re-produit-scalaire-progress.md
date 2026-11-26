@@ -7,7 +7,7 @@ _Mis à jour le 2026-11-26, phase 0 envoyée._
 - **État** : relevé fait ([relevé](idees-1re-produit-scalaire-releve.md)), 12 fiches écrites
   ([fiches](idees-1re-produit-scalaire-fiches.md)) : 5 modèles neufs et 11 variations sur 7 modèles publiés ·
   **Prochaine action** : écrire le gros lot quand David aura validé les fiches · **En attente de
-  David** : verdict des fiches sur la page à cocher (F5 : garder l'étape « AB·HC = 0 » ?) ·
+  David** : verdict des fiches sur la page à cocher (https://claude.ai/artifact/Pq3pagc1h93TH99Lo5hgze) (F5 : garder l'étape « AB·HC = 0 » ?) ·
   **Pièges en cours** : f2cc01fc a un écart ouvert (termes nuls dans le corrigé) ·
   **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire`, `docs/idees-1re-produit-scalaire`.
 
@@ -27,3 +27,4 @@ _Mis à jour le 2026-11-26, phase 0 envoyée._
 - Question d'accès : personne ne gagne d'accès (rangement et variations de modèles).
 - Rien pour `outils-manquants.md` : le bloc `figure` fait le quadrillage, les vecteurs et le
   parallélogramme.
+- Page à cocher (verdicts dans sa base, collection `verdicts`) : https://claude.ai/artifact/Pq3pagc1h93TH99Lo5hgze.
