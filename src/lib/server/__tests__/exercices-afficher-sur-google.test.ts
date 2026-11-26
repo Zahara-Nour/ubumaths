@@ -14,6 +14,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '#lib/types/database.ts';
+import type { ExerciseVersionContent } from '#lib/types/database-helpers.ts';
 import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	SearchIndexedRequiresPublicError,
@@ -34,7 +35,8 @@ vi.mock('#lib/server/resource-tags.ts', () => ({
 
 // Types
 
-type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
+// Un exercice tel que le code le rend : fiche d'identité + contenu de sa version (ADR 0044)
+type ExerciseRow = Database['public']['Tables']['exercises']['Row'] & ExerciseVersionContent;
 
 // Constantes
 

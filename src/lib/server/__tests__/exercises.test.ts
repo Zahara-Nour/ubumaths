@@ -18,6 +18,7 @@ import {
 	EXERCISE_NOT_DELETED
 } from '../exercises';
 import type { Database } from '#lib/types/database.ts';
+import type { ExerciseVersionContent } from '#lib/types/database-helpers.ts';
 
 // Stub the tag-resolution helpers so tests don't need to mock junction queries.
 // Individual tests that need specific return values can override via mockResolvedValueOnce.
@@ -30,7 +31,8 @@ vi.mock('#lib/server/resource-tags.ts', () => ({
 
 import { fetchResourceIdsByAnyTag, fetchResourceTagNames } from '#lib/server/resource-tags.ts';
 
-type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
+// Un exercice tel que le code le rend : fiche d'identité + contenu de sa version (ADR 0044)
+type ExerciseRow = Database['public']['Tables']['exercises']['Row'] & ExerciseVersionContent;
 
 // Mock Supabase client
 const createMockSupabase = () => {

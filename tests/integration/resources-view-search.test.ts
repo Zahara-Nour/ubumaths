@@ -82,8 +82,7 @@ function exercise(id: string, title: string | null, isPublic: boolean, createdBy
 		is_public: isPublic,
 		created_by: createdBy,
 		grades: ['6'],
-		variables: [],
-		variations: [{ label: 'default', statement_md: 'Combien font 2+2 ?', solution_md: '4' }]
+		variables: []
 	};
 }
 
