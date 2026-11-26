@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, brouillons créés en prod par David, PR pas encore ouverte._
+_Mis à jour le 2026-11-26, brouillons créés en prod par David, PR ouverte._
 
-- **État** : 3 brouillons en prod (6c2e48c3 N1, 35c6fad0 N2, d2ad4df0 N3), ids commités ; migrations `20261126092502_…_publies_contenu.sql` (11 variations sur 9 publiés) et `20261126103343_…_neufs_rangement_tags.sql` ; tests d'intégration verts, garde des niveaux verte ; `security-auditor` lancé (résultat à lire).
-- **Prochaine action** : verdict `security-auditor`, ouvrir la PR, CI verte → merge ; puis `db:migrate` (4 conditions, `migration list --linked` d'abord), relecture des 3 brouillons et des 9 publiés dans `/dev/modeles`, publication par David.
+- **État** : 3 brouillons en prod (6c2e48c3 N1, 35c6fad0 N2, d2ad4df0 N3), ids commités ; migrations `20261126092502_…_publies_contenu.sql` (11 variations sur 9 publiés) et `20261126103343_…_neufs_rangement_tags.sql` ; tests d'intégration verts, garde des niveaux verte ; `security-auditor` sans finding bloquant.
+- **Prochaine action** : CI verte → merge ; puis `db:migrate` (4 conditions, `migration list --linked` d'abord), relecture des 3 brouillons et des 9 publiés dans `/dev/modeles`, publication par David.
 - **En attente de David** : rien avant le merge.
 - **Pièges en cours** : `shared.blankDefaults` de 2b240d8c (`vecteur` + `colineaire`) : le schéma refuse de surcharger `answerKind`, la case choix de V5 n'en est pas gênée. aaa16821 sans `cleanCoefficients` : équation par `equation_propre()`. Message d'erreur prévue sous sa forme réécrite (`$x = x_A + a t$`, `$\left( AB \right)$`). Fichier publié modifié → relancer `migration-contenu.ts` (retirer l'ancienne). Base locale : 3 neufs et 9 copies « [essai local] » laissés en brouillon.
 - **Worktree / branche** : `../ubumaths-wt-idees-tle-geometrie-espace`, `chore/idees-tle-geometrie-espace`.
