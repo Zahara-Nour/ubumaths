@@ -1,7 +1,7 @@
 """Écrit les modèles neufs du chantier idees-3e-probabilites dans
 scripts/questions/idees-3e-probabilites-neufs/.
 
-Phase 0 : fiches de docs/wip/idees-3e-probabilites-progress.md, validées par David le 2026-11-26 :
+Phase 0 : fiches de docs/archive/wip/idees-3e-probabilites/idees-3e-probabilites-progress.md, validées par David le 2026-11-26 :
 N1 (tableau d'effectifs) et N2 (jeux à deux épreuves) sont des modèles neufs de 3e, point 3-033
 (Q1 = oui). V1 à V3 : variations de modèles publiés, script idees-3e-probabilites-publies.py.
 

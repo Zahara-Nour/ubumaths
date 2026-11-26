@@ -2,13 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, relecture validée par David._
+_Mis à jour le 2026-11-26 : rubrique publiée, chantier clos._
 
-- **État** : #3169 mergée, migrations appliquées en prod et vérifiées (N1, N2 brouillons sur « événements » + 3-033 ; 247fddd1 5 var., b28ed4fa 8, e73b947f 5). Série de relecture `5425b075…` enregistrée. David a validé la relecture (aucun verdict en base, validation dite en session). `publier-lot.ts --dir scripts/questions/idees-3e-probabilites-neufs` : simulation verte (2 brouillons).
-- **Prochaine action** : vérifier en prod N1 et N2 publiés ; fin de chantier (tableau de répartition : rubrique « publiée », versement du journal).
-- **En attente de David** : `--publier` de `publier-lot.ts` (commande dans le dernier message de la session).
-- **Pièges en cours** : la base locale garde 5 brouillons d'essai.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites-serie` · `feat/idees-3e-probabilites-serie`.
+- **État** : 2 modèles neufs publiés (2c0bc696, bfb21166, point 3-033) ; 247fddd1, b28ed4fa et e73b947f complétés (#3169, `db:migrate` fait) ; série de relecture `5425b075…` (#3171). Rubrique « publiée » dans le tableau de répartition, réservations levées, journal et relevé archivés.
+- **Reste** : rien. La base locale garde 5 brouillons d'essai (sans effet en prod).
+
+### 2026-11-26 — relecture validée, publication
+
+- David : « je valide la relecture » (aucun verdict en base). `publier-lot.ts` en simulation :
+  2 brouillons passent ; David l'a lancé avec `--publier` ; statuts vérifiés par le MCP.
+- Rubrique « publiée », réservations de 247fddd1, b28ed4fa, e73b947f levées, journal et relevé
+  archivés.
 
 ## Migrations (2026-11-26)
 

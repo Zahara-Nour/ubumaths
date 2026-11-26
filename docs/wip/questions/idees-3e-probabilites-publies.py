@@ -1,7 +1,7 @@
 """Ajoute les variations validées aux 3 modèles publiés exportés de prod dans
 scripts/questions/idees-3e-probabilites-publies/ (chantier idees-3e-probabilites).
 
-Phase 0 : fiches de docs/wip/idees-3e-probabilites-progress.md, validées par David le 2026-11-26 :
+Phase 0 : fiches de docs/archive/wip/idees-3e-probabilites/idees-3e-probabilites-progress.md, validées par David le 2026-11-26 :
 V1 (4 variations de b28ed4fa « Deux épreuves », 4-049), V2 (1 variation de e73b947f
 « Probabilité d'un évènement », 4-048), V3 (1 variation de 247fddd1 « Évènement contraire »,
 4-079). Les variations s'ajoutent À LA FIN (les réponses des élèves gardent l'indice de leur

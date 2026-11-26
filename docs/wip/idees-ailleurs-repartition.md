@@ -141,7 +141,7 @@ pas. Le fichier `beta3I12` n'est pas repris.
 | Fonctions affines et linéaires           | 3F2       | 14        | publiée (2026-11-24)                                       | `idees-3e-fonctions-affines` |
 | Proportionnalité                         | 3P1       | 3         | libre                                                      |                              |
 | Statistiques                             | 3S1       | 3         | libre                                                      |                              |
-| Probabilités                             | 3S2       | 5         | prise (2026-11-25)                                         | `idees-3e-probabilites`      |
+| Probabilités                             | 3S2       | 5         | publiée (2026-11-26)                                       | `idees-3e-probabilites`      |
 | Homothétie et rotation                   | 3G1       | 8         | libre                                                      |                              |
 | Théorème de Thalès                       | 3G2       | 10        | libre                                                      |                              |
 | Trigonométrie                            | 3G3       | 13        | publiée (2026-11-25)                                       | `idees-3e-trigonometrie`     |
@@ -178,9 +178,6 @@ de contenu appliquée en prod.
 | 4f056eb3 Espace : distance d'un point à une droite                  | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
 | aaa16821 Espace : aire et volume en repère                          | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
 | 31b49cdf Espace : distance d'un point à un plan                     | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| b28ed4fa Deux épreuves                                              | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| e73b947f Probabilité d'un évènement                                 | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
-| 247fddd1 Évènement contraire                                        | `idees-3e-probabilites`                                     | 2026-11-26 |                                      |
 | e0ccaf84 Résoudre un petit exercice de proportionnalité             | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
 | 7981dab0 Repérer double, moitié, quadruple, quart et tiers          | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
 | 52bf3fb9 Calculer la longueur réelle                                | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
