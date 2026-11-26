@@ -6,8 +6,8 @@ _Mis à jour le 2026-11-26, après #2875 (et #3149, E73)._
 
 - **État** : découpage initial livré (#2842, #2847, #2854, #2866, #2875) et en prod. 2026-11-25 : nouvelle demande de David (cartes + recherche), phase 0 EN COURS, rien codé, aucun worktree.
 - **Prochaine action** : obtenir les réponses de David (§ 2026-11-25 ci-dessous), puis 2 PR : (A) cartes (badge niveau, flèches de variations, bouton de retournement plus petit, hauteur × 1,5, corbeille dans Ma série) ; (B) recherche par rangs.
-- **En attente de David** : (1) les 5 points de la recherche + groupe « Aussi dans le programme » replié ou retiré + ce que tape un prof ; (2) badge « CM1–CM2 » ou « CM1 · CM2 » ; (3) suite à donner aux incohérences niveaux / points (relevé ci-dessous).
-- **Tranché** : difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points).
+- **En attente de David** : (1) les 5 points de la recherche + groupe « Aussi dans le programme » replié ou retiré + ce que tape un prof ; (2) badge « CM1–CM2 » ou « CM1 · CM2 ».
+- **Tranché** : difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points) ; vérification des niveaux face aux points = futur chantier à part (David, 2026-11-26), hors `automaths`.
 - **Pièges en cours** : séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
 - **Worktree / branche** : aucun (à créer : `../ubumaths-wt-automaths-cartes`, `feat/automaths-cartes`).
 
