@@ -30,6 +30,8 @@ import { gradedPart } from '#lib/questions/graded-part.ts';
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '#lib/math/index.ts';
 import { checkUnit } from '#lib/questions/constraint-validators.ts';
 import { SUPERFLU_RULE_IDS } from '#lib/mathAST/superflu/rules.ts';
+import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
+import { numberAfterFactorIn } from '#lib/mathAST/parser/number-after-factor.ts';
 import {
 	checkForm as checkFormUnified,
 	type CheckFormOptions,
@@ -48,7 +50,8 @@ import { studentValueLatex } from '#lib/questions/units/student-calculation.ts';
 import {
 	CONSTRAINT_FEEDBACK,
 	FORGOTTEN_PERCENT_SIGN,
-	MISSING_CHOICES_FEEDBACK
+	MISSING_CHOICES_FEEDBACK,
+	numberAfterFactorFeedback
 } from '#lib/questions/feedback.ts';
 import { evaluateRule, type EvaluationContext } from '#lib/questions/validation-rule-evaluator.ts';
 import { readingOf, type FormulaReading } from '#lib/questions/formula-reading.ts';
@@ -1386,6 +1389,20 @@ function malformedBareNumber(answer: string): string | null {
 }
 
 /**
+ * Message à l'élève si la réponse est refusée par le parseur pour un nombre collé derrière
+ * un facteur (`(n+2)4^n`, `x2` : règle du 2026-10-08), `undefined` pour toute autre saisie.
+ * Lecture seulement : le verdict (faux) ne change pas.
+ */
+function numberAfterFactorRefusal(answer: string, instance: QuestionInstance): string | undefined {
+	const { errors } = parseLatexSafe(answer, readingOf(instance));
+	for (const error of errors) {
+		const num = error.code === 'MISSING_OPERATOR' ? numberAfterFactorIn(error.message) : null;
+		if (num !== null) return numberAfterFactorFeedback(num);
+	}
+	return undefined;
+}
+
+/**
  * Jugement d'une case. Un nombre seul mal écrit (`58,`, `,5`) dans une case sans unité,
  * refusé par la chaîne, est relu : valeur relue juste → mauvaise forme et message de
  * forme (même règle que devant une unité, `numberWritingAtFault`) ; sinon le refus reste.
@@ -1411,7 +1428,15 @@ function validateSingleBlank(
 	if (verdict.isCorrect || verdict.status === 'bad_form' || verdict.status === 'empty') {
 		return verdict;
 	}
-	if (repaired === null) return verdict;
+	if (repaired === null) {
+		// Faux sans un mot : si l'écriture est refusée pour un nombre collé derrière un
+		// facteur, le dire (écart E76)
+		if (!rereadable || verdict.status !== undefined || verdict.feedback !== undefined) {
+			return verdict;
+		}
+		const feedback = numberAfterFactorRefusal(userAnswerLatex || userAnswer, instance);
+		return feedback === undefined ? verdict : { ...verdict, feedback };
+	}
 	const reread = judgeSingleBlank(repaired, blank, repaired, instance);
 	if (!reread.isCorrect) return verdict;
 	const feedback = CONSTRAINT_FEEDBACK['form'].single;
@@ -2472,6 +2497,16 @@ function validateBlanksOrderIndependent(
 				)
 		);
 		if (forgotPercent) return { isCorrect: false, feedback: FORGOTTEN_PERCENT_SIGN };
+		// Nombre collé derrière un facteur sur une réponse non appariée : même message
+		// qu'en mode positionnel
+		const refusal = userAnswers
+			.map((answer, i) =>
+				answer.trim() && matching[i] === -1 && blanks.some((blank) => blank.type === 'math')
+					? numberAfterFactorRefusal(userAnswersLatex?.[i] || answer, instance)
+					: undefined
+			)
+			.find((feedback) => feedback !== undefined);
+		if (refusal !== undefined) return { isCorrect: false, feedback: refusal };
 		return { isCorrect: false, message: 'Incorrect' };
 	}
 

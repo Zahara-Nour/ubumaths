@@ -13,7 +13,9 @@ import { buildSeriesLink } from '../../src/lib/validation/series';
  *
  * Ce que la ligne soupçonnait n'existe pas : `k^{n+1}(n+1)` est lu. Ce qui est refusé, c'est le
  * NOMBRE collé derrière une parenthèse, `(n+2)k^n` : règle écrite du 2026-10-08
- * (`src/lib/mathAST/parser/number-after-factor.ts`), « le refus dit quoi écrire ».
+ * (`src/lib/mathAST/parser/number-after-factor.ts`), « le refus dit quoi écrire » ; la carte
+ * l'écrit sous la case depuis l'écart E76. Le quotient juste mais non simplifié vaut ½ point
+ * depuis l'écart E77 (modèle : `scripts/questions/1spe-quotient-simplifie-existants/`).
  *
  * La réponse de l'élève est insérée en LaTeX dans la case MathLive (commande `insert`), pas tapée
  * touche à touche : c'est le juge qui est regardé, pas le clavier.
@@ -27,6 +29,8 @@ const QUOTIENT = 'cdb5a1cf-f8df-4ab1-9305-4d1b5b790711';
 /** Énoncé de la variation jouée : u_n = (n+1)/k^n, réponse attendue (n+2)/(k(n+1)) */
 const VARIATION_MARK = '\\dfrac{n+1}{ {{k}}^n}';
 const REFUSAL = 'écrit après un facteur';
+/** Message d'un quotient juste mais non simplifié (motif `acceptable` du modèle) */
+const NOT_SIMPLIFIED = 'La réponse est juste, mais pas écrite sous la forme demandée.';
 
 // ============================================================================
 // FUNCTIONS
@@ -150,19 +154,18 @@ test.describe('#3007 — le vrai modèle publié cdb5a1cf', () => {
 		expect(expectedResult.verdict).toBe('Juste');
 	});
 
-	test('ÉCART — `(n+2)k^n` au numérateur : compté « Faux » sans dire pourquoi (le refus devrait dire quoi écrire)', async ({
+	test('`(n+2)k^n` au numérateur : compté « Faux », et la carte dit quoi écrire (E76)', async ({
 		page
 	}) => {
 		const variation = await variationIndex();
 		const { card, k } = await openQuestion(page, variation);
 		const result = await answer(page, card, `\\frac{(n+2)${k}^n}{${k}^{n+1}(n+1)}`);
-		// Le symptôme : un « Faux » nu, pour une valeur juste
+		// L'écriture reste refusée (règle du 2026-10-08), mais plus sans un mot
 		expect(result.verdict).toBe('Faux');
-		test.fail(true, 'écart : la carte ne dit pas que le nombre est mal placé');
-		expect(result.text).toContain(REFUSAL);
+		expect(result.text).toContain(`Nombre « ${k} » ${REFUSAL}`);
 	});
 
-	test('ÉCART — quotient non simplifié `k^n(n+2) / (k^{n+1}(n+1))` : compté « Juste » alors que l’énoncé demande « un seul quotient simplifié »', async ({
+	test('quotient non simplifié `k^n(n+2) / (k^{n+1}(n+1))` : ½ point, l’énoncé demande « un seul quotient simplifié » (E77)', async ({
 		page
 	}) => {
 		const variation = await variationIndex();
@@ -171,9 +174,7 @@ test.describe('#3007 — le vrai modèle publié cdb5a1cf', () => {
 			'un seul quotient simplifié'
 		);
 		const result = await answer(page, card, `\\frac{${k}^n(n+2)}{${k}^{n+1}(n+1)}`);
-		// Le symptôme : la forme non simplifiée passe pour juste
-		expect(result.verdict).not.toBe('Faux');
-		test.fail(true, 'écart : forme non simplifiée acceptée');
-		expect(result.verdict).not.toBe('Juste');
+		expect(result.verdict).toBe('½ point');
+		expect(result.text).toContain(NOT_SIMPLIFIED);
 	});
 });
