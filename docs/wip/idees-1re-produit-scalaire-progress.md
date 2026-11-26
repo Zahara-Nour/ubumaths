@@ -2,15 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, brouillons en prod, PR en cours._
+_Mis à jour le 2026-11-26, après #3189 (mergée, 2 migrations jouées en prod et vérifiées)._
 
-- **État** : brouillons créés en prod par David (f114cc04 N1, b4a813ae N2, e25be0a4 N3, 18ff9913 N4,
-  ed2c1c0b N5) ; migrations de contenu (`20261126090426`) et de rangement (`20261126092228`)
-  générées, tests verts et rouges sans elles · **Prochaine action** : ouvrir la PR (audit fait, aucun bloquant), merge, `db:migrate`
-  (4 conditions), puis relecture dans `/dev/modeles` (`?point=` des neufs ; série de relecture pour
-  les publiés) · **En attente de David** : relecture · **Pièges en cours** : `migration list
---linked` avant `db:migrate` (autres sessions) ; relancer le script des neufs garde les ids ·
-  **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire`, `docs/idees-1re-produit-scalaire`.
+- **État** : #3189 mergée ; `db:migrate --include-all` a joué `20261126090426` (11 variations des
+  7 publiés) et `20261126092228` (rangement des 5 neufs, vérifié en prod : nœud + point posés,
+  toujours `draft`) · **Prochaine action** : David enregistre la série de relecture des publiés
+  (`scripts/series/1_SPE-relecture-produit-scalaire-publies.json`, simulée, dans le worktree
+  `-relecture`) ; commit du fichier avec son id (PR), puis relecture · **En attente de David** :
+  `--publier` de la série, puis relecture dans `/dev/modeles` : neufs par `?noeud=…&statut=draft`
+  (nœuds 3779c173, 35cfd263, b5b42982), publiés par `?serie=<id>` ; verdicts lus dans
+  `question_template_reviews` · **Pièges en cours** : relancer le script des neufs garde les ids ·
+  **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire-relecture`,
+  `chore/idees-1re-produit-scalaire-relecture`.
 
 ## Journal
 
