@@ -84,3 +84,47 @@ describe('avertissements d’écriture des nombres', () => {
 		expect(report.passed).toBe(true);
 	});
 });
+
+describe('avertissements d’écriture : relecture du 2026-11-26', () => {
+	it('un tirage rejeté par une condition ne dépose pas d’avertissement', () => {
+		const t = template('${{y}}$', '1');
+		t.variations[0].variables = [
+			{ name: 'x', expression: '1..2' },
+			{ name: 'y', expression: '{{eval:(x+0.005*(x-1))[€]}}' }
+		];
+		t.variations[0].conditions = ['x == 1'];
+		const report = checkTemplate(t, { instances: 20 });
+		expect(report.generation.failures).toEqual([]);
+		expect(report.warnings).toEqual([]);
+	});
+
+	it('(c) ;dN dans la réponse attendue, case sans précision : signalé', () => {
+		const warnings = reportOf(template('$x$', '{{eval:2*x;d4}}')).warnings;
+		expect(warnings).toHaveLength(1);
+		expect(warnings[0]).toContain('décimales imposées dans la réponse attendue');
+		expect(warnings[0]).toContain('forme à améliorer');
+	});
+
+	it.each([
+		['{{eval:x;a2}}', 'arrondi dans la réponse attendue'],
+		['{{eval:x;p2}}', 'arrondi dans la réponse attendue'],
+		['{{eval:2*x;d4}}', 'décimales imposées']
+	])('(c) variable %s citée par {{p}} dans l’attendu : signalé', (expression, message) => {
+		const t = template('$x$', '{{p}}');
+		t.variations[0].variables = [
+			{ name: 'x', expression: '3.755' },
+			{ name: 'p', expression }
+		];
+		const warnings = reportOf(t).warnings;
+		expect(warnings).toHaveLength(1);
+		expect(warnings[0]).toContain(message);
+		expect(warnings[0]).toContain('{{p}}');
+	});
+
+	it('euro avec ;dN : pas d’avertissement « au-delà du centime »', () => {
+		expect(reportOf(template('${{eval:3.7[€];d3}}$', '1')).warnings).toEqual([]);
+		const warnings = reportOf(template('${{eval:3.755[€];d2}}$', '1')).warnings;
+		expect(warnings).toHaveLength(1);
+		expect(warnings[0]).toContain(';d2');
+	});
+});

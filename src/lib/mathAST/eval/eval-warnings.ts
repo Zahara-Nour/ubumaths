@@ -21,6 +21,14 @@ export function warnEval(message: string): void {
 	collectors.at(-1)?.push(message);
 }
 
+/**
+ * Redépose des avertissements collectés à part (ceux du tirage retenu, quand un tirage
+ * rejeté par une condition a aussi évalué ses `{{eval}}`) dans le collecteur ouvert
+ */
+export function replayEvalWarnings(warnings: readonly string[]): void {
+	for (const warning of warnings) warnEval(warning);
+}
+
 /** Exécute `run` en collectant les avertissements des `{{eval}}` qu'il évalue */
 export function collectEvalWarnings<T>(run: () => T): { result: T; warnings: string[] } {
 	const warnings: string[] = [];

@@ -325,11 +325,6 @@ function hasNumberWriting(modifiers: EvalModifiers): boolean {
 	);
 }
 
-/** Un arrondi est demandé : `;aN` ou `;pN` */
-function hasRounding(modifiers: EvalModifiers): boolean {
-	return modifiers.roundDecimals !== undefined || modifiers.significantDigits !== undefined;
-}
-
 /** Le réglage écrit, pour les messages : `;a2`, `;p3`, `;d2` */
 function writingName(modifiers: EvalModifiers): string {
 	if (modifiers.roundDecimals !== undefined) return `;a${modifiers.roundDecimals}`;
@@ -533,13 +528,14 @@ function isEuro(unitWriting: string): boolean {
 /**
  * Euro : sans `;aN`, `;pN`, `;dN` ni `;sci`, un prix à UNE décimale s'écrit avec deux
  * (`3.7[€]` → `3.70[€]` : les centimes) ; un prix au-delà du centime (`3.755[€]`) est
- * écrit tel quel et signalé, sauf arrondi demandé. Toute autre grandeur : inchangée.
+ * écrit tel quel et signalé, sauf réglage écrit (`;aN`, `;pN`, `;dN`). Toute autre grandeur : inchangée.
  */
 function euroWriting(writing: string, modifiers: EvalModifiers, source: string): string {
 	const match = QUANTITY_WRITING.exec(writing);
 	if (!match || !isEuro(match[3])) return writing;
 	const decimals = decimalsOf(match[2]) ?? 0;
-	if (decimals > 2 && !hasRounding(modifiers)) {
+	// `;dN` écrit : l'auteur a choisi ses décimales (l'avertissement de `;dN` dit le reste)
+	if (decimals > 2 && !hasNumberWriting(modifiers)) {
 		warnEval(
 			`{{eval:${source}}} vaut ${writing} : des euros au-delà du centime (arrondir avec ;a2 ?)`
 		);

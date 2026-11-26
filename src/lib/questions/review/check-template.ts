@@ -197,34 +197,75 @@ function firstEvalWarnings(warnings: string[]): string[] {
 /** `{{eval:…}}` d'un texte de modèle */
 const EVAL_TOKEN = /\{\{eval:(?:[^{}]|\{\{[^{}]*\}\}|\{[^{}]*\})*\}\}/g;
 
+/** `{{p}}` (ou `{{p;()}}`) : une variable citée dans un texte de modèle */
+const VARIABLE_REFERENCE = /\{\{([A-Za-z_]\w*)(?:;[^{}]*)?\}\}/g;
+
+/** Réglage d'écriture d'un `{{eval:…}}` : arrondi (`;aN`, `;pN`), décimales (`;dN`), aucun */
+function writingKind(token: string): 'rounding' | 'decimals' | null {
+	try {
+		const modifiers = parseEvalExpressionWithModifiers(token)?.modifiers;
+		if (modifiers?.roundDecimals !== undefined || modifiers?.significantDigits !== undefined) {
+			return 'rounding';
+		}
+		return modifiers?.minDecimals !== undefined ? 'decimals' : null;
+	} catch {
+		// Réglage refusé : l'erreur de tirage le dit déjà
+		return null;
+	}
+}
+
 /**
- * Réponse attendue arrondie (`;aN`, `;pN`) dans une case sans `precision` (ni dans la case,
- * ni dans `blankDefaults` de la variation ou du modèle) : l'élève qui n'arrondit pas, ou
- * arrondit autrement, est compté faux sans message.
+ * Les `{{eval:…}}` réglés d'une réponse attendue : écrits dans l'attendu, ou dans la
+ * définition d'une variable qu'il cite (`{{p}}`, p = `{{eval:x;a2}}`). L'arrondi d'abord.
+ */
+function answerWritings(
+	expectedAnswer: string,
+	variables: ReadonlyMap<string, string>
+): { where: string; kind: 'rounding' | 'decimals' }[] {
+	const direct = (expectedAnswer.match(EVAL_TOKEN) ?? []).map((token) => ({
+		where: token,
+		token
+	}));
+	const cited = [...expectedAnswer.matchAll(VARIABLE_REFERENCE)].flatMap(([reference, name]) =>
+		(variables.get(name)?.match(EVAL_TOKEN) ?? []).map((token) => ({
+			where: `${reference} (${name} = ${token})`,
+			token
+		}))
+	);
+	const found = [...direct, ...cited].flatMap(({ where, token }) => {
+		const kind = writingKind(token);
+		return kind === null ? [] : [{ where, kind }];
+	});
+	return found.sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'rounding' ? -1 : 1));
+}
+
+/**
+ * Réponse attendue réglée dans une case sans `precision` (ni dans la case, ni dans
+ * `blankDefaults` de la variation ou du modèle) : arrondie (`;aN`, `;pN`), l'élève qui
+ * n'arrondit pas est compté faux sans message ; décimales imposées (`;dN`), l'élève qui
+ * recopie les zéros du corrigé est en forme à améliorer.
  */
 function roundedAnswerWithoutPrecision(template: QuestionTemplate): string[] {
 	const shared = template.shared?.blankDefaults?.precision;
-	return template.variations.flatMap((variation, variationIndex) =>
-		(variation.blanks ?? []).flatMap((blank, blankIndex) => {
+	return template.variations.flatMap((variation, variationIndex) => {
+		const variables = new Map(
+			[...(template.shared?.variables ?? []), ...(variation.variables ?? [])].map(
+				(variable) => [variable.name, variable.expression] as const
+			)
+		);
+		return (variation.blanks ?? []).flatMap((blank, blankIndex) => {
 			if ((blank.precision ?? variation.blankDefaults?.precision ?? shared) !== undefined)
 				return [];
-			const rounded = (blank.expectedAnswer.match(EVAL_TOKEN) ?? []).find((token) => {
-				try {
-					const modifiers = parseEvalExpressionWithModifiers(token)?.modifiers;
-					return (
-						modifiers?.roundDecimals !== undefined || modifiers?.significantDigits !== undefined
-					);
-				} catch {
-					// Réglage refusé : l'erreur de tirage le dit déjà
-					return false;
-				}
-			});
-			if (rounded === undefined) return [];
+			const [first] = answerWritings(blank.expectedAnswer, variables);
+			if (first === undefined) return [];
+			const where = `variation ${variationIndex + 1}, case ${blankIndex + 1} : ${first.where}`;
 			return [
-				`variation ${variationIndex + 1}, case ${blankIndex + 1} : ${rounded} — arrondi dans la réponse attendue, mais la case n’a pas de précision : l’élève qui n’arrondit pas sera compté faux sans message (donner une \`precision\`)`
+				first.kind === 'rounding'
+					? `${where} — arrondi dans la réponse attendue, mais la case n’a pas de précision : l’élève qui n’arrondit pas sera compté faux sans message (donner une \`precision\`)`
+					: `${where} — décimales imposées dans la réponse attendue, mais la case n’a pas de précision : l’élève qui recopie ces zéros sera en forme à améliorer (donner une \`precision\`)`
 			];
-		})
-	);
+		});
+	});
 }
 
 /** Statuts d'une réponse de la bonne valeur : l'erreur prévue tombe sur la bonne réponse */

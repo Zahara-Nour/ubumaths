@@ -1967,15 +1967,20 @@ complément est fait sur le résultat du `{{eval}}` (`euroWriting`), pas dans l'
 (`generateUnit`), qui sert aussi aux réponses des élèves.
 
 `round(x, n)` (n entier de 0 à 15) : le même arrondi exact que `;aN`, mais la **valeur** seulement,
-sans zéro d'écriture (`round(3.704, 2)` vaut 3,7) ; `round(x)` est inchangé ; calcul évalué et
-compilé (`mathAST/eval/decimal-rounding.ts`).
+sans zéro d'écriture (`round(3.704, 2)` vaut 3,7). Les moitiés vont vers l'extérieur, `n = 0`
+compris (`round(-2.5, 0)` = −3), alors que `round(x)` garde son comportement historique
+(`round(-2.5)` = −2) : il ne change pas, à cause des modèles publiés. Calcul évalué et compilé
+(`mathAST/eval/decimal-rounding.ts`) ; dans le chemin compilé, un `n` invalide (négatif, non
+entier, > 15) donne NaN au lieu de lever.
 
 **Avertissements** de `pnpm question:specs` (`checkTemplate`, sans effet sur le verdict) : des
-euros qui gardent plus de deux décimales sans `;aN`/`;pN` ; `;dN` sur une valeur qui a plus de N
-décimales ; une réponse attendue arrondie (`;aN`, `;pN`) dans une case sans `precision` (l'élève
-qui n'arrondit pas serait compté faux sans message). Les deux premiers sont dits par les `{{eval}}`
-pendant les tirages (`collectEvalWarnings` / `warnEval`, `mathAST/eval/eval-warnings.ts`) ; au plus
-trois différents sont listés. Tests : `src/lib/questions/generator/__tests__/eval-ecriture-nombres.test.ts`,
+euros qui gardent plus de deux décimales sans `;aN`, `;pN` ni `;dN` ; `;dN` sur une valeur qui a
+plus de N décimales ; dans une case sans `precision`, une réponse attendue arrondie (`;aN`, `;pN` :
+l'élève qui n'arrondit pas serait compté faux sans message) ou à décimales imposées (`;dN` :
+l'élève qui recopie ces zéros serait en forme à améliorer), écrite dans l'attendu ou dans une
+variable qu'il cite (`{{p}}`). Les deux premiers sont dits par les `{{eval}}` du tirage RETENU
+(`collectEvalWarnings` / `warnEval`, `mathAST/eval/eval-warnings.ts` ; `generateInstance` écarte
+ceux d'un tirage rejeté par une condition) ; au plus trois différents sont listés. Tests : `src/lib/questions/generator/__tests__/eval-ecriture-nombres.test.ts`,
 `src/lib/mathAST/eval/__tests__/round-decimales.test.ts`,
 `src/lib/questions/review/__tests__/ecriture-nombres-warnings.test.ts`.
 
