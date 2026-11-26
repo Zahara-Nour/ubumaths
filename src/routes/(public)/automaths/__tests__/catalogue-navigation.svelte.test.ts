@@ -248,19 +248,19 @@ describe('Catalogue Automaths — téléphone', () => {
 		expect(lastUrl().searchParams.get('notion')).toBe('n-frac');
 	});
 
-	it('cartes plus basses sur téléphone (9rem au lieu de 12rem)', async () => {
+	it('cartes plus basses sur téléphone (13,5rem au lieu de 18rem)', async () => {
 		await render(Page);
 
 		const card = page.getByRole('region', { name: /^Somme/ }).element();
 		await vi.waitFor(() => expect(card.querySelector('.flip-card')).not.toBeNull());
 		const height = card.querySelector('.flip-card')!.getBoundingClientRect().height;
 		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-		expect(height).toBe(9 * rem);
+		expect(height).toBe(13.5 * rem);
 	});
 });
 
 describe('Catalogue Automaths — hauteur des cartes sur grand écran', () => {
-	it('12rem, comme avant', async () => {
+	it('18rem (12rem × 1,5, 2026-11-26)', async () => {
 		await useWideScreen();
 		await render(Page);
 
@@ -268,6 +268,6 @@ describe('Catalogue Automaths — hauteur des cartes sur grand écran', () => {
 		await vi.waitFor(() => expect(card.querySelector('.flip-card')).not.toBeNull());
 		const height = card.querySelector('.flip-card')!.getBoundingClientRect().height;
 		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-		expect(height).toBe(12 * rem);
+		expect(height).toBe(18 * rem);
 	});
 });

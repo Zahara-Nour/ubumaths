@@ -11,6 +11,7 @@ import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
 import { PREVIEW_SEED } from '#lib/questions/cart-preview.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { variationExample } from '#lib/questions/series-draw.ts';
 import type { QuestionTemplate } from '#lib/questions/types.ts';
 import type { SeriesItem } from '#lib/validation/series.ts';
 import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
@@ -247,5 +248,119 @@ describe('CartQuestionCard — variations choisies (idée 2)', () => {
 	it('sans gestionnaire (élève) : rien', async () => {
 		const screen = await renderCard();
 		expect(screen.container.querySelector('[data-choix-variations]')).toBeNull();
+	});
+});
+
+/** Chantier `automaths`, PR A (phase 0 validée le 2026-11-26) */
+describe('CartQuestionCard — corbeille, niveaux, variations', () => {
+	it('corbeille entre la durée et les répétitions : retire la ligne sans confirmation', async () => {
+		const onRemove = vi.fn();
+		const screen = await renderCard({ onRemove });
+
+		const trash = screen.getByRole('button', { name: 'Retirer de ma série' });
+		await expect.element(trash).toBeVisible();
+		const duration = screen.getByTitle('Durée par question').element();
+		const repeats = screen.getByTitle('Nombre de répétitions').element();
+		const trashBox = trash.element().getBoundingClientRect();
+		expect(trashBox.left).toBeGreaterThan(duration.getBoundingClientRect().right);
+		expect(trashBox.right).toBeLessThan(repeats.getBoundingClientRect().left);
+
+		await trash.click();
+
+		expect(onRemove).toHaveBeenCalledWith(ITEM.templateId);
+		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
+		await expect.element(page.getByRole('alertdialog')).not.toBeInTheDocument();
+	});
+
+	it('badge des niveaux et flèches des variations au-dessus de la carte', async () => {
+		const screen = await renderCard();
+
+		expect(screen.container.querySelector('[data-tile-grades]')?.textContent?.trim()).toBe('CE1');
+		await expect
+			.element(screen.getByRole('button', { name: 'Variation suivante' }))
+			.toBeInTheDocument();
+	});
+
+	it('une seule variation choisie par le prof : pas de flèches', async () => {
+		const generatedFor = generateInstance(
+			{ ...TEMPLATE_WITH_ID, variations: [TEMPLATE_WITH_ID.variations[1]] },
+			PREVIEW_SEED
+		);
+		const screen = await render(CartQuestionCard, {
+			item: { ...ITEM, variations: [1] },
+			template: TEMPLATE_WITH_ID,
+			instance: generatedFor.success ? generatedFor.instance : instance,
+			onIncrementQuantity: vi.fn(),
+			onDecrementQuantity: vi.fn(),
+			onUpdateQuantity: vi.fn(),
+			onUpdateDelay: vi.fn(),
+			onRemove: vi.fn()
+		});
+
+		expect(screen.container.querySelector('[data-tile-grades]')).not.toBeNull();
+		expect(screen.container.querySelector('[data-tile-variations]')).toBeNull();
+	});
+
+	it('carte de 18rem, bouton de retournement de 32 px', async () => {
+		const screen = await renderCard();
+
+		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		await vi.waitFor(() => expect(screen.container.querySelector('.flip-card')).not.toBeNull());
+		expect(screen.container.querySelector('.flip-card')!.getBoundingClientRect().height).toBe(
+			18 * rem
+		);
+		const flip = page.getByRole('button', { name: 'Voir la correction' }).first().element();
+		expect(flip.getBoundingClientRect().width).toBe(2 * rem);
+	});
+});
+
+/** Chantier `automaths`, PR A : points de la revue (2026-11-26) */
+describe('CartQuestionCard — points de la revue', () => {
+	it('aperçu d’une variation que le prof n’a pas choisie : la carte montre une variation choisie', async () => {
+		// Aperçu tiré sur la variation 0, mais le prof n'a gardé que la 1 et la 2
+		const three = {
+			...TEMPLATE_WITH_ID,
+			variations: [
+				TEMPLATE_WITH_ID.variations[0],
+				TEMPLATE_WITH_ID.variations[1],
+				TEMPLATE_WITH_ID.variations[1]
+			]
+		};
+		const preview = variationExample(three, 0, generateInstance);
+		expect(preview?.selectedVariationIndex).toBe(0);
+		const props = {
+			template: three,
+			instance: preview!,
+			onIncrementQuantity: vi.fn(),
+			onDecrementQuantity: vi.fn(),
+			onUpdateQuantity: vi.fn(),
+			onUpdateDelay: vi.fn(),
+			onRemove: vi.fn()
+		};
+		const statement = (container: HTMLElement) =>
+			container.querySelector('.flip-card-front .statement-content')?.textContent ?? '';
+		const all = await render(CartQuestionCard, { ...props, item: ITEM });
+		const previewText = statement(all.container);
+		await all.unmount();
+
+		const screen = await render(CartQuestionCard, {
+			...props,
+			item: { ...ITEM, variations: [1, 2] }
+		});
+
+		const counter = screen.container.querySelector<HTMLElement>('[data-tile-variations]');
+		expect(counter?.textContent).toContain('1/2');
+		await expect.poll(() => statement(screen.container)).not.toBe('');
+		expect(statement(screen.container)).not.toBe(previewText);
+	});
+
+	it('la tuile est un groupe nommé par le titre du modèle', async () => {
+		const screen = await renderCard();
+
+		const tile = screen.getByRole('group', { name: TEMPLATE.title, exact: false });
+		await expect.element(tile).toBeInTheDocument();
+		await expect
+			.element(tile.getByRole('button', { name: 'Retirer de ma série' }))
+			.toBeInTheDocument();
 	});
 });
