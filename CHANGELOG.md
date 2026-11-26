@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.112.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.111.0...v0.112.0) (2026-11-26)
+
+### ✨ Features
+
+- **exercices:** editeur de versions (menu, nouvelle version, note, suppression) ([ec35663](https://github.com/Zahara-Nour/ubumaths/commit/ec35663aec5048bbc5931a814a13f59f2d1a37d1))
+- **exercices:** nouvelle version sans compte connecte, verification a l'ecran ([a8ef956](https://github.com/Zahara-Nour/ubumaths/commit/a8ef956b3284533d9ab6cb57d31a16568a67c8cf))
+- **exercices:** versions, fonctions de base et routes de l'editeur (PR 2) ([067f660](https://github.com/Zahara-Nour/ubumaths/commit/067f660c92c8fcc853306e130675ea06b79ded0b))
+- **questions:** idees tle continuite et denombrement, 4 modeles neufs et 5 variations ([f35bb7e](https://github.com/Zahara-Nour/ubumaths/commit/f35bb7e0803042329f8fea9528446dc6a95d163b))
+- **questions:** migrations de rangement et de contenu du lot continuite et denombrement ([f31d999](https://github.com/Zahara-Nour/ubumaths/commit/f31d9995e0acedf624d5778e1f5d4db6132ee30c))
+
+### 🐛 Bug Fixes
+
+- **exercices:** correctifs de revue (ordre des verrous, restauration, refus 403) ([8c66965](https://github.com/Zahara-Nour/ubumaths/commit/8c669653e1bc240305cb9df10eb6a8ab1af9f72f))
+- **exercices:** sauvegarde et restauration des versions (points reportes de la PR 1) ([dd2fdf2](https://github.com/Zahara-Nour/ubumaths/commit/dd2fdf27e890dd5ab186fa54c2bd1ffa95350f60))
+
+### 📚 Documentation
+
+- **exercices:** versions dans l'editeur, fonctions de la base, sauvegarde ([b7b4374](https://github.com/Zahara-Nour/ubumaths/commit/b7b4374b5effa76bf53ef9dd5f0bf4acca60df7f))
+- **pratiques:** exception R2 pour deux fetch simultanés, pas de pull masqué avant un push ([573b79d](https://github.com/Zahara-Nour/ubumaths/commit/573b79d70ec6fdccf9b68e9df75c9d205c91cd36))
+- **wip:** ecarts-verifs, ordre des PR E76 à E81 et question d'accès de E78 validés ([2288bc1](https://github.com/Zahara-Nour/ubumaths/commit/2288bc1c022d5c1dd970acd1c8b5cdb2c2c2647c))
+- **wip:** idees-3e-probabilites reserve trois modeles de probabilites de 4e ([686483c](https://github.com/Zahara-Nour/ubumaths/commit/686483c9e5141635b5fd0216d910949f0cbff566))
+- **wip:** idees-3e-puissances publiée, journal archivé ([efadca7](https://github.com/Zahara-Nour/ubumaths/commit/efadca7b3ade18a3284d1decfd8f266c1185c02c))
+- **wip:** idees-tle-continuite-combinatoire, reprendre ici apres [#3153](https://github.com/Zahara-Nour/ubumaths/issues/3153) ([13eda19](https://github.com/Zahara-Nour/ubumaths/commit/13eda191b1e9944a2edbdb32ab709e46e6cf1eb1))
+- **wip:** rubrique probabilites de 3e prise (idees-3e-probabilites) ([83bb7ea](https://github.com/Zahara-Nour/ubumaths/commit/83bb7ea10d286d40735df09ae3f722dbce975cc3))
+- **wip:** versions-exercices, phase 0 de la PR 2 (editeur) ([790ddd5](https://github.com/Zahara-Nour/ubumaths/commit/790ddd542355eced2030e2a5f5124ae3e22032cc))
+- **wip:** versions-exercices, PR 2 prete ([acfe888](https://github.com/Zahara-Nour/ubumaths/commit/acfe8881f00fed804f6db488c774a47cbc38ca4f))
+- **wip:** versions-exercices, reprendre ici apres [#3150](https://github.com/Zahara-Nour/ubumaths/issues/3150) (en prod v0.111.0) ([feba764](https://github.com/Zahara-Nour/ubumaths/commit/feba764e387416564e9fb609ac9722ecea614bc1))
+- **wip:** versions-exercices, reprendre ici apres [#3154](https://github.com/Zahara-Nour/ubumaths/issues/3154) ([7dd229c](https://github.com/Zahara-Nour/ubumaths/commit/7dd229c70ef5bcc757b541ebb9d75263c6c3b32a))
+
 ## [0.111.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.110.0...v0.111.0) (2026-11-25)
 
 ### ✨ Features

@@ -8,12 +8,10 @@ import type { Database } from '#lib/types/database.ts';
 import { withLatestVersion, withLatestVersions } from '#lib/server/exercise-versions.ts';
 
 function clientAvecVersions(versions: Record<string, unknown>[]) {
-	const query = {
-		select: vi.fn().mockReturnThis(),
-		in: vi.fn().mockReturnThis(),
-		order: vi.fn().mockResolvedValue({ data: versions, error: null })
-	};
-	return { from: vi.fn(() => query) } as unknown as SupabaseClient<Database>;
+	// La base rend UNE ligne par exercice (RPC `latest_exercise_versions`) ; un exercice sans
+	// version lisible n'a simplement pas de ligne.
+	const query = { select: vi.fn().mockResolvedValue({ data: versions, error: null }) };
+	return { rpc: vi.fn(() => query) } as unknown as SupabaseClient<Database>;
 }
 
 const version = {

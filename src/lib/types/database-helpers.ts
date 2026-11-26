@@ -707,3 +707,9 @@ export type ExerciseVersionContent = Pick<
 /** Une version telle que les lectures la rendent. */
 export type ExerciseVersionRead = Pick<ExerciseVersionRow, 'id' | 'number' | 'exercise_id'> &
 	ExerciseVersionContent;
+
+/** Une version vue par l'éditeur : numéro, note, dates (sans le contenu) */
+export type ExerciseVersionSummary = Pick<
+	ExerciseVersionRow,
+	'id' | 'number' | 'note' | 'created_at' | 'updated_at'
+>;

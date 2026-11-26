@@ -2,13 +2,33 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-19, après #2875._
+_Mis à jour le 2026-11-26, après #2875 (et #3149, E73)._
 
-- **État** : les 4 PR du découpage sont mergées : 1 (#2842), 2 (#2847), 3a (#2854), 3b (#2866), 4 « Ma série » (#2875). Rien en prod tant que David n'a pas fait `deploy:prod` (pas de migration).
-- **Prochaine action** : retours de David sur #2866 et #2875 ; s'il n'y a rien, clore le chantier (recompter le découpage, verser le durable dans `docs/systeme/questions.md`, archiver ce journal). Laissés par la revue de #2875 : aperçu monté sous 1 280 px, panneau ouvert à la rotation, texte OpenAPI « panier ».
-- **En attente de David** : vérifications manuelles #2866 et #2875 (`verifications-manuelles.md`).
-- **Pièges en cours** : séparateur de `rubrique` = « > » en base ; liste servie sans `points` (cache Vercel d'avant le déploiement) → vue Notions seule ; banc de test : `overflow: hidden` sur html et body (pas de défilement sans le lever) ; élément `display: none` absent de `getByRole`.
-- **Worktree / branche** : `../ubumaths-wt-automaths` (5176, Serve 443 et 8443) et `../ubumaths-wt-automaths-serie` (5180, Serve 8444) gardés pour les tests de David ; ensuite arrêter les serveurs, `tailscale serve --https=443 off`, `--https=8444 off` (8443 : Supabase, partagé), `git worktree remove` les deux, `git branch -d feat/automaths-programme feat/automaths-ma-serie`.
+- **État** : découpage initial livré (#2842, #2847, #2854, #2866, #2875) et en prod. 2026-11-25 : nouvelle demande de David (cartes + recherche), phase 0 EN COURS, rien codé, aucun worktree.
+- **Prochaine action** : obtenir les réponses de David (§ 2026-11-25 ci-dessous), puis 2 PR : (A) cartes (badge niveau, flèches de variations, bouton de retournement plus petit, hauteur × 1,5, corbeille dans Ma série) ; (B) recherche par rangs.
+- **En attente de David** : (1) les 5 points de la recherche + groupe « Aussi dans le programme » replié ou retiré + ce que tape un prof ; (2) badge « CM1–CM2 » ou « CM1 · CM2 » ; (3) suite à donner aux incohérences niveaux / points (relevé ci-dessous).
+- **Tranché** : difficulté gardée telle quelle sur la carte ; badge = `grades` du modèle (pas ceux des points).
+- **Pièges en cours** : séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole`.
+- **Worktree / branche** : aucun (à créer : `../ubumaths-wt-automaths-cartes`, `feat/automaths-cartes`).
+
+### 2026-11-25 — nouvelle demande de David, phase 0 en cours
+
+Demande : badge de niveau en haut à gauche au-dessus de chaque carte, flèches pour faire défiler les variations en haut à droite ; bouton de retournement trop gros ; cartes 1,5 × plus hautes ; même chose dans Ma série + corbeille entre durée et répétitions ; « pourquoi des cartes sans rapport avec le cercle ? ».
+
+Constats (prod, lecture seule) :
+
+- Le « 1 » des tuiles = difficulté (`level`), pas le niveau scolaire. Les deux cartes « 1 » de cercle : un modèle de 6e, un de CM1-CM2.
+- Les cartes sans rapport viennent de la RECHERCHE « cercle » (31 résultats en 6e + inférieurs) : 16 par titre/description, 3 par nom de sous-notion, 12 par le seul texte d'un point du programme (« Reproduire ou construire un carré, …, un cercle… »). « Décrire une figure » est rangée dans « propriétés ».
+- Pastille : la descente prend ~2 s et passe devant les sections du dessus ; un geste pendant ce temps l'arrête (pas la cause du constat de David).
+- Mesures de la recherche (6e + inférieurs, titre / notion seule / point seul) : triangle 45/0/13, nombres décimaux 16/0/31 (titres au singulier), multiplication 67/84/8, fraction 148/9/0. Script : rejouer sur `/api/questions/templates/all`.
+
+Proposition recherche (non validée) : 1. raccourci vers la sous-notion/notion dont le nom correspond ; 2. résultats titre/description/sous-notion, groupe le plus pertinent d'abord ; 3. point du programme seul → groupe replié « Aussi dans le programme » ; 4. singulier/pluriel confondus ; 5. pas de recherche dans l'énoncé.
+
+Niveaux d'un modèle (`grades`) et points : deux informations voulues séparées. Garde `scripts/lib/niveaux-des-tags.ts` (à la publication) : niveau d'un point ⊂ `grades`, 12 exceptions décidées, 0 écart restant. Sens inverse non vérifié. Relevé du 2026-11-26 :
+
+- 109 modèles publiés sans AUCUN point (66 de CP-CE2, surtout calcul ; 12 de 5e ; 8 de 3e ; 7 de 4e ; 7 de 2de ; 5 de 6e ; 3 de 1re spé ; 1 de T spé).
+- Année en plus sans point : logique 2de → +1re spé (décision 2026-11-09, 13 tracés sur 17) ; CM2 → +6e (décision idees-6e-entiers Q1) ; non tracés : « Déterminer une fonction affine par deux images » (3+2), « Résoudre un problème par une équation » (4+3), « Calculer une expression avec parenthèses » (CM1+6), « Coefficient multiplicateur d'une évolution répétée » (2+1re spé).
+- Même année, autre filière sans point (T_SPE/T_COMP, 1_SPE/1_GEN) : ~11, acceptable selon David.
 
 ### 2026-11-18 — recherche
 

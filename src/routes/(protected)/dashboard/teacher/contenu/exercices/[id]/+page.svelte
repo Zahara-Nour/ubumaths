@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/env';
 	import ExerciseForm from '#lib/components/exercises/ExerciseForm.svelte';
+	import ExerciseVersionsBar from '#lib/components/exercises/ExerciseVersionsBar.svelte';
 	import MySelect from '#lib/components/MySelect.svelte';
 	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import { toaster } from '#lib/stores/toaster.svelte.ts';
@@ -207,7 +208,8 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify(updatedData)
+				// La version affichée est modifiée sur place (ADR 0044), pas forcément la plus récente
+				body: JSON.stringify({ ...updatedData, version_id: data.editedVersionId })
 			});
 
 			if (!response.ok) {
@@ -599,15 +601,24 @@
 		</div>
 	</div>
 
-	<ExerciseForm
-		exercise={data.exercise as unknown as import('#lib/exercises/types.ts').Exercise}
-		onsubmit={handleUpdate}
-		{submitting}
-		supabase={data.supabase}
-		userId={data.user?.id}
-		{initialVariation}
-		onvariationchange={handleVariationChange}
+	<ExerciseVersionsBar
+		exerciseId={data.exercise.id}
+		versions={data.versions}
+		editedVersionId={data.editedVersionId}
 	/>
+
+	<!-- Une autre version = un autre contenu : le formulaire repart de zéro -->
+	{#key data.editedVersionId}
+		<ExerciseForm
+			exercise={data.exercise as unknown as import('#lib/exercises/types.ts').Exercise}
+			onsubmit={handleUpdate}
+			{submitting}
+			supabase={data.supabase}
+			userId={data.user?.id}
+			{initialVariation}
+			onvariationchange={handleVariationChange}
+		/>
+	{/key}
 
 	<!-- Points de programme (tagging → couverture auto dans le cahier de texte) -->
 	<Card.Root class="mt-6">
