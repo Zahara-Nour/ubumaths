@@ -265,8 +265,13 @@ function expectLine(reading: LineReading, start: number, end: number, expected: 
 	expect(reading.ticks, 'une graduation par entier').toHaveLength(count);
 	// Au téléphone, les nombres trop serrés ne sont écrits qu'un sur deux (ou sur trois…), comptés
 	// depuis 0 (E63, tranché par David le 2026-11-24, #3146) ; les traits restent tous
+	// Hors téléphone, tous les nombres sont exigés ; au téléphone, le pas se lit sur les deux premiers
+	const onPhone = test.info().project.use.isMobile === true;
 	const stride =
-		reading.labels.length < 2 ? 1 : Number(reading.labels[1]) - Number(reading.labels[0]);
+		onPhone && reading.labels.length >= 2
+			? Number(reading.labels[1]) - Number(reading.labels[0])
+			: 1;
+	expect(reading.labels.length, 'au moins un nombre écrit').toBeGreaterThan(0);
 	expect(reading.labels, 'chaque graduation écrite, ou une sur `stride` comptée depuis 0').toEqual(
 		Array.from({ length: count }, (_, i) => start + i)
 			.filter((value) => value % stride === 0)

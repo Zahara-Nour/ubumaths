@@ -793,6 +793,13 @@ test.describe('#1731 — présentation d’un carnet Python (/python-notebook/[i
 			});
 		} else {
 			const errors = bag.errors.filter((e) => !isNavigationAbortNoise(e, testInfo.project.name));
+			// Le bruit écarté reste lisible dans le rapport
+			if (errors.length < bag.errors.length) {
+				testInfo.annotations.push({
+					type: 'bruit de navigation écarté',
+					description: `${bag.errors.length - errors.length} erreur(s) de requête coupée`
+				});
+			}
 			expect(errors, 'erreurs').toEqual([]);
 		}
 	});
