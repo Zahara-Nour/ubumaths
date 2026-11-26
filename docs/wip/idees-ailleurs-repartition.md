@@ -37,7 +37,7 @@ anciennes versions. Deux fichiers `1E11` ne figurent dans aucune rubrique : ils 
 | Suites numériques                 | 1AL1  | 19        | publiée (2026-11-22) | `idees-1re-suites`        |
 | Fonctions polynomiales de degré 2 | 1AL2  | 22        | publiée (2026-11-23) | `idees-1re-second-degre`  |
 | Dérivation                        | 1AN1  | 12        | publiée (2026-11-24) | `idees-1re-derivation`    |
-| Variations                        | 1AN2  | 5         | libre                |                           |
+| Variations                        | 1AN2  | 5         | prise (2026-11-26)   | `idees-1re-variations`    |
 | Fonction exponentielle            | 1AN3  | 11        | publiée (2026-11-24) | `idees-1re-exponentielle` |
 | Fonctions trigonométriques        | 1AN4  | 6         | publiée (2026-11-25) | `idees-1re-trigo`         |
 | Produit scalaire                  | 1G1   | 10        | libre                |                           |
