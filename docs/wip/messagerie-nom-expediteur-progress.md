@@ -6,14 +6,14 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3174 et sa migration jouée en prod._
+_Mis à jour le 2026-11-26, après #3188 et la migration jouée en prod._
 
-- **État** : #3174 mergée, **migration `20261126094959` jouée en prod par David** (vérifié en lecture seule : le trigger porte le repli, `search_path` conservé) : l'envoi d'un message remarche pour un élève sans nom complet (V131 clos). Les pannes de la relecture sont au registre : V132 (message à une classe), V133 (« Répondre » s'écrit à soi-même), V134 (noms « Inconnu »), L128 à L130, T37.
-- **Prochaine action** : **PR suivante, validée par David le 2026-11-26 (« je suis tes recos »)** : V132, V133 et V134 dans une même PR, nouveau worktree (`ubumaths-wt-messagerie-nom-expediteur-suite`), tests rouges d'abord (envoi à une classe par `send_private_message` avec des élèves sans nom complet ; réponse depuis un fil ouvert par l'élève ; noms rendus par les cinq fonctions de lecture), migration additive, `code-reviewer` + `security-auditor`, rendu vérifié à l'écran (`pnpm voir`, parcours `e2e/verifs/messagerie.spec.ts` avec des comptes sans nom complet). L128 à L130 et T37 restent au registre.
-- **Décisions d'accès de David (2026-11-26, mes recommandations suivies)** : le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit le prénom et le nom du prof qui lui écrit ; **un élève qui reçoit un message envoyé à sa classe ne voit PAS le prénom ni le nom des autres destinataires** (afficher « ta classe » ou le nombre de destinataires) : vérifier d'abord ce que sa page affiche aujourd'hui (`get_message_details.recipients`).
-- **En attente de David** : rien. **Essai fait en prod le 2026-11-26 (v0.114.0)** : l'envoi marche ; **V134 constaté** (page « Écrire » du prof : certains élèves « Inconnu ») ; **V133 constaté** (élève, « Répondre » depuis un fil : `POST /api/messages/send` → 500, « You do not have permission to send messages to one or more recipients »). Le lien « Messages » du menu (V104, journal `ecarts-a-trier`) attendait cet essai.
-- **Pièges en cours** : les comptes des tests ont tous un nom complet, pas ceux de la prod (la fabrique `TestData.profile()` en met un : le vider dans le test) ; la preuve rouge d'une migration se prend avant de créer son fichier ; `pnpm db:migrate` pousse toutes les migrations en attente, il est lancé par David ; V133 est du code d'application : il lui faut un `pnpm deploy:prod`, à la demande de David.
-- **Worktree / branche** : aucun (retirés au merge de #3174).
+- **État** : #3188 mergée (V132 message à une classe, V133 « Répondre », V134 noms « Inconnu » : clos au registre). **Migration `20261126132310` jouée en prod par David le 2026-11-26**, vérifiée en lecture seule : les sept fonctions de la messagerie portent la nouvelle version (`messagerie_nom_affiche`, refus de la classe sans élève actif, destinataires masqués à l'élève), `search_path` et droits en place. **Le code n'est pas encore déployé** : les noms et le message à une classe marchent déjà en prod, « Répondre » et les libellés attendent la mise en prod.
+- **Prochaine action** : aucune côté code. Après `pnpm deploy:prod`, proposer à David de refaire son essai (page « Écrire » du prof, « Répondre » depuis un fil côté élève, message à une classe).
+- **En attente de David** : (1) `pnpm deploy:prod` quand il le veut (V133 et l'affichage sont du code d'application) ; (2) confirmer l'extension de sa décision d'accès : un élève ne voit pas non plus les autres destinataires d'un message envoyé à plusieurs élèves cochés un à un (il voit « et N autres destinataires »).
+- **Décisions d'accès de David (2026-11-26)** : le prof voit le prénom et le nom de ses élèves partout dans la messagerie ; l'élève voit ceux du prof qui lui écrit ; un élève qui reçoit un message envoyé à sa classe ne voit pas l'identité des autres destinataires.
+- **Pièges en cours** : entre la migration et la mise en prod, l'ancien code tourne avec les nouvelles fonctions (compatible : mêmes signatures, noms en plus) ; `CREATE OR REPLACE` garde les droits mais pas le `search_path` ; le cliquet des types peut rougir sur un fichier non touché quand des fichiers de test s'ajoutent (vu sur la route du détail d'un échange du marché, typée à la main dans #3188) ; restes au registre : L128 à L135, V135, T37.
+- **Worktree / branche** : aucun (retirés au merge de #3188).
 
 ## Le constat (essai de David en prod, v0.113.0)
 
@@ -57,3 +57,33 @@ Vérifiées dans le code et en prod pour les trois premières ; découpage et qu
 - **Détail du message côté prof** : « Expéditeur inconnu » à la place du nom de l'élève (V134, attendu), alors que le destinataire (le prof) porte son nom.
 - **Page de réponse du prof** (« En réponse à ») : « 1 destinataire sélectionné » et « Destinataire fixe pour la réponse », mais la liste ne montre que trois élèves, tous décochés, et pas l'élève à qui il répond. À regarder dans la PR de V134 : pourquoi trois élèves seulement (le prof en a bien plus), et afficher le destinataire de la réponse par son nom.
 - Vus aussi sur ces écrans, à traiter dans la même PR si c'est simple : le rôle affiché en anglais, « (student) », à côté de chaque nom.
+
+## PR de V132, V133 et V134 (2026-11-26)
+
+**Migration `20261126132310_messagerie_noms_et_message_de_classe.sql`** (additive, rollback en tête du fichier) :
+
+- `get_students_in_class` lit `classes.is_active` (la colonne `archived` n'existe plus) ; `send_private_message` refuse une classe sans élève actif (code `P0002`) au lieu de tomber sur un tableau vide.
+- Nouvelle fonction d'aide `messagerie_nom_affiche` (nom complet, sinon « prénom nom », sinon rien), sans droit pour les rôles clients ; les cinq fonctions de lecture l'utilisent (`get_allowed_recipients`, `get_user_inbox`, `get_user_sent_messages`, `get_message_details`, `get_message_thread`). `get_allowed_recipients` trie par ce nom.
+- **Accès retiré** : `get_message_details` ne rend la liste complète des destinataires qu'à l'expéditeur du message et aux comptes prof ou admin ; un élève destinataire n'y lit que sa propre ligne, le nombre de destinataires reste rendu. Avant, tout destinataire recevait identifiant, nom, avatar et rôle des autres (la page les cachait pour un message de classe, pas la réponse du serveur ; pour un message à plusieurs élèves cochés, la page les affichait).
+
+**Code d'application** :
+
+- `src/lib/utils/message-reply.ts` : à qui part la réponse (le dernier qui m'a écrit ; sinon l'unique destinataire de mon message ; sinon personne, et le bouton « Répondre » n'est pas proposé). Utilisé par la page du message et celle du fil ; la route du fil rend les destinataires de chaque message.
+- Page « Écrire » : en réponse, le destinataire est affiché seul, par son nom (plus de liste de cases grisées à faire défiler : c'était la « liste de trois élèves » vue par David, une boîte de 12 rem de haut) ; rôle affiché dans les mots du Royaume, plus « (student) ».
+- `POST /api/messages/send` : les refus de la base ne sont plus rendus en anglais (403 destinataire non permis, 400 classe sans élève actif, 500 sans le message technique).
+- Page du message : « et N autres destinataires » quand la liste est incomplète.
+
+**Preuves** :
+
+- Preuve rouge prise avant le fichier de migration : `tests/integration/messagerie-noms-et-classe.test.ts`, 8 rouges sur 13 (les 5 verts sont les refus « comme avant »), 13 verts avec la migration. Clients connectés, comptes sans nom complet.
+- Tests unitaires : `src/lib/utils/message-reply.test.ts`, `send.test.ts` (refus en français), `thread.test.ts` (destinataires).
+- Parcours navigateur `e2e/verifs/messagerie.spec.ts`, bloc « comptes sans nom complet » (nom complet vidé le temps du test, comme en prod) : la page « Écrire » nomme chacun ; l'élève répond depuis le fil qu'il a ouvert et le prof lui répond ; le prof écrit à une classe et l'élève ne reçoit que sa propre ligne de destinataire. 5 verts sur 5 (Chromium, serveur de dev de la branche, base locale).
+- Vu à l'écran (`pnpm voir /messages/compose --compte prof`) : rôle « (Galopin) » à la place de « (student) », 0 erreur de console. La liste des destinataires passe de 12 à 20 rem de haut.
+
+**Revues** (2026-11-26) :
+
+- `code-reviewer` : corps SQL recopiés sans régression (comparés un à un). Trois points sur la page « Écrire » en réponse, corrigés : la réponse n'est plus bloquée quand le destinataire n'est pas dans la liste des destinataires permis (élève de test, liste non chargée), le serveur décide ; un brouillon rouvert ne remplace plus le destinataire d'une réponse.
+- `security-auditor` : aucun finding bloquant. Le retrait de `get_message_details` est étanche (rôle non falsifiable, pas d'autre chemin vers les destinataires) ; droits conservés par `CREATE OR REPLACE` ; la fonction d'aide n'est appelable ni par `anon` ni par `authenticated`.
+- **Restes à inscrire au registre après le merge** (antérieurs à la branche, sauf le premier) : la liste des destinataires d'un élève ne filtre pas un compte prof de test ; `send_private_message` ne vérifie pas que l'appelant a envoyé ou reçu le message parent ; un message à une personne peut porter une étiquette de classe ; un message supprimé par son destinataire lui reste lisible par son adresse ; un destinataire en double donne un 500 ; un élève voit « Répondre » sur un message de l'admin alors que l'envoi sera refusé (403 en français).
+
+**CI et merge de #3188** : deux rouges avant le vert, aucun dû à la messagerie. (1) Cliquet des types : le typage de la requête de `src/routes/api/marketplace/trades/[id]/+server.ts` tombait selon l'ordre de vérification des fichiers (rouge avec mes deux nouveaux fichiers de test, vert en en retirant un, n'importe lequel) ; résultat typé à la main (`overrideTypes`), sans effet à l'exécution. (2) Garde `SECURITY DEFINER` : base de test de la CI tombée en cours de route (connexion refusée), verte en local (7 sur 7) et à la relance.

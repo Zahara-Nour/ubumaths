@@ -123,7 +123,7 @@ anciennes versions. Les deux fichiers d'automatismes `6AutoN4` ne sont pas repri
 | Espace                             | 6G8   | 4         | libre                |                             |
 | Organisation et gestion de données | 6P1   | 6         | libre                |                             |
 | Probabilités                       | 6P2   | 3         | libre                |                             |
-| Proportionnalité                   | 6P3   | 16        | prise (2026-11-25)   | `idees-6e-proportionnalite` |
+| Proportionnalité                   | 6P3   | 16        | publiée (2026-11-26) | `idees-6e-proportionnalite` |
 | Pensée informatique                | 6I1   | 10        | libre                |                             |
 
 ## Troisième
@@ -162,6 +162,9 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| ccb51039 Augmentation et coefficient multiplicateur                 | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 76f5f143 Diminution et coefficient multiplicateur                   | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 8b59ca4b Coefficient multiplicateur d'une évolution répétée         | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
 | b73923a1 Choisir la méthode dans une figure usuelle                 | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
 | 9c7f7ef0 Produit scalaire par projection orthogonale                | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
 | d787d8c0 Produit scalaire avec les normes                           | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
@@ -178,11 +181,6 @@ de contenu appliquée en prod.
 | 4f056eb3 Espace : distance d'un point à une droite                  | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
 | aaa16821 Espace : aire et volume en repère                          | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
 | 31b49cdf Espace : distance d'un point à un plan                     | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| e0ccaf84 Résoudre un petit exercice de proportionnalité             | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 7981dab0 Repérer double, moitié, quadruple, quart et tiers          | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 52bf3fb9 Calculer la longueur réelle                                | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 5e4e5e9d Calculer la longueur sur une carte                         | `idees-6e-proportionnalite`                                 | 2026-11-25 |                                      |
-| 06df72fd Reconnaître des situations de proportionnalité             | `idees-6e-proportionnalite` (niveau 6e ajouté)              | 2026-11-25 |                                      |
 | 04b1cc7f Puissance d'un produit                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 2069ac7e Représenter un intervalle sur la droite graduée            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | 39b4823d Calculer le tout connaissant une partie                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |

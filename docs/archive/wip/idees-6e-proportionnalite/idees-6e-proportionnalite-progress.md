@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3179 (lot mergé)._
+_Mis à jour le 2026-11-26, chantier clos après #3186._
 
-- **État** : #3179 mergée : 5 modèles neufs + variations de e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d sur `main` (177 specs vertes, prix en €). Rien écrit en prod. Worktree retiré.
-- **Prochaine action** : David lance en prod `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-proportionnalite-neufs --publier` ; nouveau worktree, ids commités ; niveaux relevés en prod ; migrations de rangement (neufs) et de contenu (4 publiés) générées, F4 (06df72fd) à la main ; `security-auditor`.
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
-- **Pièges en cours** : F4 = migration à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 4 publiés y portent déjà les variations ajoutées (PATCH local), les 5 neufs y sont en brouillon.
-- **Worktree / branche** : aucun (à recréer depuis `origin/main` pour la suite).
+- **État** : rubrique publiée : 5 modèles neufs (N1-N5) relus et validés par David (« je valide les modèles »), publiés par David, vérifiés au MCP (`published`, 6e) ; 4 publiés complétés de 6 variations et 06df72fd ouvert à la 6e (#3186, `db:migrate` le 2026-11-26) ; journal archivé.
+- **Prochaine action** : aucune.
+- **En attente de David** : rien.
+- **Pièges en cours** : d'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé).
+- **Worktree / branche** : aucun.
 
 ## Journal
 
@@ -148,3 +148,13 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - Retouche 4 : N5 v1, piège « valeur × nouvelle quantité » pour les prix et l'imprimante seulement ; ailleurs, la nouvelle quantité ajoutée (variable `z` : une grandeur `[€]` ne simplifie pas `min`/`abs`).
 - Retouche 5 : N4 relier, une série parmi cinq (éléphant, lettre, camion, récréation, vacances, marathon, crayon, cuillère…), une unité par sorte de grandeur dans chaque série.
 - Essai local : `create-questions --publier` en base locale (ids restaurés), variations des 4 publiés posées par PATCH local ; `pnpm voir` des aperçus N5 et N2 : rendu juste (« 13,30 € »), 0 erreur de console. Réponses justes et fausses jugées par les specs (même juge), pas rejouées à la main.
+- #3179 mergée le 2026-11-26. David valide « masse du père » (« je te suis »), puis lance `create-questions --publier` en prod : 5 brouillons (N1 3cfccd63, N2 057a1424, N3 33d2cad7, N4 376e7768, N5 5600e665), ids commités sur `feat/idees-6e-proportionnalite-rangement`.
+
+### 2026-11-26 : migrations de rangement, de contenu et F4
+
+- Relevé de la prod (MCP) : 06df72fd publié, grades {5}, rangé sur « caractérisation » (le nœud de 6-190), seul tag 5-087.
+- `migration-rangement.ts --dir …-neufs` : 5 rangés (6-191 ×2, 6-192, 6-189, 6-190). `migration-contenu.ts --dir …-publies` : 4 migrés (+1, +1, +2, +2 variations), 06df72fd inchangé.
+- F4 à la main (`20261126131952_…_06df72fd_6e.sql`) : `array_append` de `6`, tag 6-190, `updated_at` préservé, rollback gardé. Preuve rouge : migration vidée (rollback gardé) → 4 échecs et suite principale tombée ; fichier restauré d'une copie, 12 verts.
+- `security-auditor` : aucun bloquant ; ajout de l'assertion « trigger de date réactivé » qu'il suggérait. Question d'accès : personne ne gagne ni ne perd d'accès.
+- #3186 mergée le 2026-11-26 ; `db:migrate` : seules ses 3 migrations étaient en attente (`migration list --linked`). Preuve rouge des 2 générées : corps vidés → 8 échecs, tous sur elles. État de la prod vérifié par MCP après coup.
+- 2026-11-26 : David relit et valide les 5 neufs (« je valide les modèles ») ; `publier-lot.ts` simulé (5 passent), lancé par David avec `--publier` ; MCP : 5/5 `published`, niveau 6. Rubrique publiée, réservations levées, journal archivé.

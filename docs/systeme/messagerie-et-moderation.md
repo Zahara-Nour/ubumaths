@@ -13,6 +13,7 @@ couvre:
   - 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts'
   - src/lib/server/message-attachments.ts
   - src/lib/utils/message-attachment-rules.ts
+  - src/lib/utils/message-reply.ts
   - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
   - src/lib/navigation/goto-notification.ts
@@ -73,7 +74,8 @@ Cette zone couvre cinq choses :
     La réponse suit la forme de la RPC, `id` en plus (copie de `message_id`) : `inboxMessagesResponseSchema`
     et `sentMessagesResponseSchema`, sans adresse de courriel. Ni l'une ni l'autre ne rend
     `parent_message_id` / `thread_root_id` : la marque « fil » des listes ne s'affiche donc pas ;
-  - `thread/` → `get_message_details` + `get_message_thread` ;
+  - `thread/` → `get_message_details` + `get_message_thread` ; chaque message y porte ses
+    destinataires (identifiant et nom), pour « Répondre » ;
   - `[id]/` : GET (`get_message_details`, `mark_message_as_read`), PATCH (actions
     `updateStatus`, `moveToFolder`, `toggleRead`, `toggleStar`), DELETE (corbeille côté
     expéditeur `deleted_by_sender`, côté destinataire `message_inbox.deleted`) ;
@@ -138,6 +140,27 @@ avant, l'envoi d'un message par un de ces élèves rendait 500 (V131). Le nom es
 Tests : `tests/integration/database/messaging-triggers.test.ts`, bloc « expéditeur sans nom
 complet ». La fabrique de profils de test donne un nom complet à tout le monde : un test de
 messagerie qui doit ressembler à la prod le vide lui-même.
+
+#### Noms affichés
+
+Les fonctions de lecture (`get_allowed_recipients`, `get_user_inbox`, `get_user_sent_messages`,
+`get_message_details`, `get_message_thread`) rendent le nom par `messagerie_nom_affiche` : nom
+complet, sinon « prénom nom », sinon rien (la page écrit alors « Inconnu »). Cette fonction
+d'aide n'est appelable ni par `anon` ni par `authenticated`. `get_allowed_recipients` garde le
+nom de colonne `full_name` et trie par ce nom (migration `20261126132310`, V134). Le rôle
+s'affiche par `messageRoleLabel` (`src/lib/utils/message-reply.ts`), jamais par son nom technique.
+
+#### Répondre
+
+`replyRecipientId` (`src/lib/utils/message-reply.ts`) choisit le destinataire d'une réponse,
+depuis un message ouvert comme depuis un fil : le dernier qui m'a écrit ; sinon l'unique
+destinataire de mon message ; sinon personne, et les pages ne proposent pas « Répondre » (V133 :
+avant, l'élève qui avait ouvert un fil s'écrivait à lui-même). La page d'écriture affiche alors
+ce seul destinataire, sans liste ; s'il n'est pas dans la liste des destinataires permis (élève
+de test), la réponse part quand même et le serveur décide. Les refus de la base ne sont jamais
+rendus tels quels par `send/` : 403 (destinataire non permis), 400 (classe sans élève actif,
+code `P0002`), 500 sans le message technique. Tests : `src/lib/utils/message-reply.test.ts`,
+`send.test.ts`, bloc « comptes sans nom complet » de `e2e/verifs/messagerie.spec.ts`.
 
 ### Modération et signalements (chat)
 
@@ -267,11 +290,19 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
    `get_allowed_recipients` et `search_private_messages`.
 3. **Un message de groupe** ne part que du prof ou de l'admin, vers une classe active
    (`validate_class_message_recipients`) ; la fonction remplace les destinataires par les élèves
-   de la classe. Test : `tests/integration/message-group-recipients.test.ts`.
+   de la classe (`get_students_in_class` : membres actifs d'une classe active). Une classe sans
+   élève actif est refusée, aucun message n'est créé (`20261126132310`, V132). Tests :
+   `tests/integration/message-group-recipients.test.ts`,
+   `tests/integration/messagerie-noms-et-classe.test.ts`.
 4. **Un fil ne montre que ses propres messages** : `get_message_thread` filtre sur
    expéditeur ou destinataire (`20260902102000_security_message_thread_filter.sql`, finding
    H12 : la réponse privée d'un élève fuitait vers ses camarades). Test :
    `tests/integration/security-message-thread.test.ts`.
+   4 bis. **Un élève ne lit pas l'identité des autres destinataires** (décision de David,
+   2026-11-26) : `get_message_details` ne rend la liste complète des destinataires qu'à
+   l'expéditeur du message et aux comptes prof ou admin ; tout autre destinataire n'y lit que sa
+   propre ligne, avec le nombre de destinataires (`20261126132310`). La page écrit « et N autres
+   destinataires ». Test : `tests/integration/messagerie-noms-et-classe.test.ts`.
 5. **On n'agit que sur sa boîte** : `update_message_status`, `move_message_to_folder`,
    `toggle_message_star`, `mark_message_as_read` refusent un autre `p_user_id`
    (`20261003190000_rpc_lot3_compte_autrui.sql`).

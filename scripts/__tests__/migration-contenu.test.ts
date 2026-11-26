@@ -316,6 +316,22 @@ describe('genererMigration', () => {
 		expect(corps.filter((l) => l.startsWith('do $'))).toHaveLength(1);
 	});
 
+	it('modèle absent : sauté, mais nommé par un notice (aller et rollback)', () => {
+		const sql = genererMigration(ENTETE, [
+			migre(),
+			migre({ id: '0000000b-0000-4000-8000-000000000000' })
+		]);
+		const corps = sql.split('\n').filter((l) => !l.startsWith('--'));
+		const retour = sql.split('\n').filter((l) => l.startsWith('-- '));
+		for (const lignes of [corps, retour]) {
+			for (const id8 of ['0000000a', '0000000b']) {
+				expect(
+					lignes.filter((l) => l.includes(`raise notice '${id8} absent, saute'`))
+				).toHaveLength(1);
+			}
+		}
+	});
+
 	it('options changées : écrites et gardées (aller et rollback), signalées en en-tête', () => {
 		const prod = { constraints: { spacesFromFourDigits: true } };
 		const voulues = { constraints: { spacesFromFourDigits: true, fractions: 'off' } };

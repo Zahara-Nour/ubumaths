@@ -1,7 +1,7 @@
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { expect, type Page } from '@playwright/test';
-import { sql } from './carnet';
+import { sql, withFirstVersion, LATEST_VERSION_OF } from './carnet';
 
 /**
  * Le décor des fiches d'exercices et de leurs PDF, sur la base LOCALE seulement
@@ -72,8 +72,10 @@ export async function createExercise(
 	answers?: string
 ): Promise<FicheExercise> {
 	const rows = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ($1, 'verifs', '{}', 'Verifs', $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ($1, 'verifs', '{}', 'Verifs', $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[title, TEACHER_ID, JSON.stringify(variation(statement, solution, answers))]
 	);
 	return { id: rows[0].id, title };
@@ -129,8 +131,8 @@ export async function createWorksheet(spec: WorksheetSpec): Promise<string> {
 		const position = (counters.get(key) ?? 0) + 1;
 		counters.set(key, position);
 		await sql(
-			`insert into worksheet_exercises (worksheet_id, exercise_id, section_id, position, points, answer_frame_lines)
-			 values ($1, $2, $3, $4, $5, $6::jsonb)`,
+			`insert into worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, section_id, position, points, answer_frame_lines)
+			 values ($1, $2, ${LATEST_VERSION_OF('$2')}, $3, $4, $5, $6::jsonb)`,
 			[
 				worksheetId,
 				placed.exercise.id,

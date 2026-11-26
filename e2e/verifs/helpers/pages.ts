@@ -1,5 +1,5 @@
 import { mkdir } from 'node:fs/promises';
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type JSHandle, type Locator, type Page } from '@playwright/test';
 
 /**
  * Mesures et captures communes aux vérifications des pages (`pages-demo`, `pages-prof-admin`)
@@ -66,14 +66,58 @@ export async function shoot(page: Page, name: string, project: string): Promise<
 	await page.screenshot({ path: `${SHOTS_DIR}/${name}-${project}.png` });
 }
 
+/**
+ * Une erreur de console née d'une navigation : la page qu'on quitte voit ses requêtes de fond
+ * coupées et l'écrit. Firefox le fait à chaque navigation (« NetworkError when attempting to fetch
+ * resource. », et son canal temps réel fermé : « Channel "user-notifications" error »), WebKit
+ * (« Load failed ») et Chromium (« Failed to fetch ») plus rarement. Aucune n'est vue en prod
+ * (journal d'erreurs, 30 jours, relevé le 2026-11-26) : bruit des tests, pas de la page.
+ */
+export function isNavigationAbortNoise(error: string, projectName: string): boolean {
+	if (
+		/NetworkError when attempting to fetch resource|TypeError: (Load failed|Failed to fetch)/.test(
+			error
+		)
+	) {
+		return true;
+	}
+	return projectName.includes('firefox') && /Channel "user-notifications" error/.test(error);
+}
+
+/** Le texte d'un argument de `console.error` : message d'une erreur, champs d'un objet */
+function consoleArgText(arg: JSHandle): Promise<string> {
+	return arg.evaluate((value) => {
+		const describe = (v: unknown): string =>
+			v instanceof Error
+				? `${v.name}: ${v.message}`
+				: typeof v === 'object' && v !== null
+					? JSON.stringify(v, (_key, inner: unknown) =>
+							inner instanceof Error ? `${inner.name}: ${inner.message}` : inner
+						)
+					: String(v);
+		return describe(value);
+	});
+}
+
 /** Page sans erreur de console ni d'exception de page, jusqu'à l'appel de `stop()` */
 export function collectErrors(page: Page): { errors: string[] } {
 	const bag = { errors: [] as string[] };
 	page.on('pageerror', (error) => bag.errors.push(`exception : ${error.message}`));
 	page.on('console', (message) => {
 		// « Failed to load resource » : la ressource est dite (avec son adresse) par l'écoute des réponses
-		if (message.type() === 'error' && !message.text().startsWith('Failed to load resource')) {
-			bag.errors.push(`console : ${message.text()}`);
+		if (message.type() !== 'error' || message.text().startsWith('Failed to load resource')) return;
+		const line = `console : ${message.text()}`;
+		bag.errors.push(line);
+		// Firefox écrit un objet passé à `console.error` « JSHandle@object » : on lit son texte.
+		// L'erreur est notée tout de suite ; son texte complet remplace la ligne si elle est encore
+		// là (un test qui a vidé la liste entre-temps ne la voit pas revenir)
+		if (message.text().includes('JSHandle@')) {
+			void Promise.all(message.args().map(consoleArgText))
+				.then((parts) => {
+					const index = bag.errors.indexOf(line);
+					if (index !== -1) bag.errors[index] = `console : ${parts.join(' ')}`;
+				})
+				.catch(() => undefined);
 		}
 	});
 	// Une ressource refusée : on veut son adresse, que la console ne donne pas
