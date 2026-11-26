@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3169 et son `db:migrate`._
+_Mis à jour le 2026-11-26, relecture validée par David._
 
-- **État** : #3169 mergée, migrations appliquées en prod et vérifiées (N1, N2 brouillons sur « événements » + 3-033 ; 247fddd1 5 var., b28ed4fa 8, e73b947f 5). Série de relecture des 3 publiés (4e) écrite, simulation verte, pas encore enregistrée.
-- **Prochaine action** : après le `--publier` de David, commiter l'id de la série, PR, merge. Puis lire les verdicts (`question_template_reviews`), corriger, `publier-lot.ts` en simulation.
-- **En attente de David** : `--publier` de la série (commande dans le dernier message de la session), puis relecture : brouillons `/dev/modeles?point=3-033`, publiés `/dev/modeles?serie=<id>`.
+- **État** : #3169 mergée, migrations appliquées en prod et vérifiées (N1, N2 brouillons sur « événements » + 3-033 ; 247fddd1 5 var., b28ed4fa 8, e73b947f 5). Série de relecture `5425b075…` enregistrée. David a validé la relecture (aucun verdict en base, validation dite en session). `publier-lot.ts --dir scripts/questions/idees-3e-probabilites-neufs` : simulation verte (2 brouillons).
+- **Prochaine action** : vérifier en prod N1 et N2 publiés ; fin de chantier (tableau de répartition : rubrique « publiée », versement du journal).
+- **En attente de David** : `--publier` de `publier-lot.ts` (commande dans le dernier message de la session).
 - **Pièges en cours** : la base locale garde 5 brouillons d'essai.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites-serie` · `feat/idees-3e-probabilites-serie`.
 
