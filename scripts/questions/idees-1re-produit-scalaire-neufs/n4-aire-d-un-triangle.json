@@ -1,0 +1,523 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Produit scalaire > angles et longueurs",
+		"point": "1SPE-320"
+	},
+	"title": "Aire d'un triangle avec le produit scalaire",
+	"description": "Dans un repère : AB·AC, puis la distance AD au projeté orthogonal D de C sur (AB), la hauteur CD et l'aire du triangle ABC, en valeurs exactes",
+	"grades": ["1_SPE"],
+	"level": 9,
+	"delay": 300,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C({{xc}}\\,;{{yc}})$. On note $D$ le projeté orthogonal de $C$ sur la droite $(AB)$.\n\nDonne les valeurs exactes.\n\n**1.** $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n**2.** $AD=?$\n\n**3.** $CD=?$\n\n**4.** L'aire du triangle $ABC$ : $\\mathcal{A}=?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ya",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ec",
+					"expression": "0..1"
+				},
+				{
+					"name": "sp",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sq",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "eval:sp*(3+ec)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:sq*(4-ec)"
+				},
+				{
+					"name": "r",
+					"expression": "-5..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:xa+p"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya+q"
+				},
+				{
+					"name": "xc",
+					"expression": "eval:xa+r"
+				},
+				{
+					"name": "yc",
+					"expression": "eval:ya+s"
+				},
+				{
+					"name": "N",
+					"expression": "eval:p*r+q*s"
+				},
+				{
+					"name": "S",
+					"expression": "eval:p^2+q^2"
+				},
+				{
+					"name": "W",
+					"expression": "eval:abs(p*s-q*r)"
+				}
+			],
+			"conditions": [
+				"N > 0",
+				"W != 0",
+				"abs(xb) <= 6",
+				"abs(yb) <= 6",
+				"abs(xc) <= 6",
+				"abs(yc) <= 6",
+				"r != 0",
+				"s != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*r-q*s}}",
+							"message": "Le produit scalaire s'écrit $xx'+yy'$ : abscisses entre elles, ordonnées entre elles.",
+							"label": "Signe moins au lieu de plus"
+						},
+						{
+							"answer": "{{eval:p*s+q*r}}",
+							"message": "Le produit scalaire s'écrit $xx'+yy'$ : abscisses entre elles, ordonnées entre elles.",
+							"label": "Coordonnées croisées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:N/sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{N}}",
+							"message": "Tu as donné $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$ : comme $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=AB\\times AD$, il reste à diviser par $AB$.",
+							"label": "Pas divisé par AB"
+						},
+						{
+							"answer": "{{eval:N/S}}",
+							"message": "Tu as divisé par $AB^2$ : on divise par $AB$.",
+							"label": "Divisé par AB²"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:W/sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:W^2/S}}",
+							"message": "Tu as donné $CD^2$ : prends la racine carrée.",
+							"label": "CD² donné"
+						},
+						{
+							"answer": "{{eval:N/sqrt(S)}}",
+							"message": "Tu as donné $AD$ : la hauteur issue de $C$ est $CD$.",
+							"label": "AD donné"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:W/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{W}}",
+							"message": "L'aire d'un triangle est $\\dfrac{\\text{base}\\times\\text{hauteur}}{2}$ : n'oublie pas de diviser par $2$.",
+							"label": "Division par 2 oubliée"
+						},
+						{
+							"answer": "{{eval:N/2}}",
+							"message": "La hauteur issue de $C$ est $CD$, pas $AD$.",
+							"label": "AD pris pour hauteur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{r}}\\\\{{s}}\\end{pmatrix}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{p}}\\times {{r;()}}+{{q;()}}\\times {{s;()}}=\\textcolor{{{color:primary.0}}}{ {{N}} }$.",
+					"$AB=\\sqrt{ {{p;()}}^2+{{q;()}}^2}=5$. Comme $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}>0$, $D$ est sur la demi-droite $[AB)$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=AB\\times AD$, donc $AD=\\dfrac{ {{N}} }{5}=\\textcolor{{{color:primary.0}}}{ {{eval:N/sqrt(S)}} }$.",
+					"Le triangle $ACD$ est rectangle en $D$ : $CD^2=AC^2-AD^2={{eval:r^2+s^2}}-{{eval:N^2/S}}={{eval:W^2/S}}$, donc $CD=\\textcolor{{{color:primary.0}}}{ {{eval:W/sqrt(S)}} }$.",
+					"$\\mathcal{A}=\\dfrac{AB\\times CD}{2}=\\textcolor{{{color:primary.0}}}{ {{eval:W/2}} }$."
+				]
+			},
+			"hint": "$D$ est le projeté orthogonal de $C$ sur $(AB)$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}$. Le triangle $ACD$ est rectangle en $D$."
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C({{xc}}\\,;{{yc}})$. On note $D$ le projeté orthogonal de $C$ sur la droite $(AB)$.\n\nDonne les valeurs exactes, avec un dénominateur sans racine.\n\n**1.** $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n**2.** $AD=?$\n\n**3.** $CD=?$\n\n**4.** L'aire du triangle $ABC$ : $\\mathcal{A}=?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ya",
+					"expression": "-2..2"
+				},
+				{
+					"name": "p",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "q",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "r",
+					"expression": "-5..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:xa+p"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya+q"
+				},
+				{
+					"name": "xc",
+					"expression": "eval:xa+r"
+				},
+				{
+					"name": "yc",
+					"expression": "eval:ya+s"
+				},
+				{
+					"name": "N",
+					"expression": "eval:p*r+q*s"
+				},
+				{
+					"name": "S",
+					"expression": "eval:p^2+q^2"
+				},
+				{
+					"name": "W",
+					"expression": "eval:abs(p*s-q*r)"
+				}
+			],
+			"conditions": [
+				"N > 0",
+				"W != 0",
+				"abs(xb) <= 6",
+				"abs(yb) <= 6",
+				"abs(xc) <= 6",
+				"abs(yc) <= 6",
+				"r != 0",
+				"s != 0",
+				"round(sqrt(S))^2 != S"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p*r-q*s}}",
+							"message": "Le produit scalaire s'écrit $xx'+yy'$ : abscisses entre elles, ordonnées entre elles.",
+							"label": "Signe moins au lieu de plus"
+						},
+						{
+							"answer": "{{eval:p*s+q*r}}",
+							"message": "Le produit scalaire s'écrit $xx'+yy'$ : abscisses entre elles, ordonnées entre elles.",
+							"label": "Coordonnées croisées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:N/sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{N}}",
+							"message": "Tu as donné $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$ : comme $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=AB\\times AD$, il reste à diviser par $AB$.",
+							"label": "Pas divisé par AB"
+						},
+						{
+							"answer": "{{eval:N/S}}",
+							"message": "Tu as divisé par $AB^2$ : on divise par $AB$.",
+							"label": "Divisé par AB²"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:W/sqrt(S)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:W^2/S}}",
+							"message": "Tu as donné $CD^2$ : prends la racine carrée.",
+							"label": "CD² donné"
+						},
+						{
+							"answer": "{{eval:N/sqrt(S)}}",
+							"message": "Tu as donné $AD$ : la hauteur issue de $C$ est $CD$.",
+							"label": "AD donné"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:W/2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{W}}",
+							"message": "L'aire d'un triangle est $\\dfrac{\\text{base}\\times\\text{hauteur}}{2}$ : n'oublie pas de diviser par $2$.",
+							"label": "Division par 2 oubliée"
+						},
+						{
+							"answer": "{{eval:N/2}}",
+							"message": "La hauteur issue de $C$ est $CD$, pas $AD$.",
+							"label": "AD pris pour hauteur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{r}}\\\\{{s}}\\end{pmatrix}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{p}}\\times {{r;()}}+{{q;()}}\\times {{s;()}}=\\textcolor{{{color:primary.0}}}{ {{N}} }$.",
+					"$AB=\\sqrt{ {{p;()}}^2+{{q;()}}^2}=\\sqrt{ {{S}} }$. Comme $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}>0$, $D$ est sur la demi-droite $[AB)$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=AB\\times AD$, donc $AD=\\dfrac{ {{N}} }{\\sqrt{ {{S}} }}=\\textcolor{{{color:primary.0}}}{ {{eval:N/sqrt(S)}} }$.",
+					"Le triangle $ACD$ est rectangle en $D$ : $CD^2=AC^2-AD^2={{eval:r^2+s^2}}-{{eval:N^2/S}}={{eval:W^2/S}}$, donc $CD=\\textcolor{{{color:primary.0}}}{ {{eval:W/sqrt(S)}} }$.",
+					"$\\mathcal{A}=\\dfrac{AB\\times CD}{2}=\\textcolor{{{color:primary.0}}}{ {{eval:W/2}} }$."
+				]
+			},
+			"hint": "$D$ est le projeté orthogonal de $C$ sur $(AB)$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AD}$. Le triangle $ACD$ est rectangle en $D$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB(3 ; 4), AC(5 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["19", "\\frac{19}{5}", "\\frac{17}{5}", "\\frac{17}{2}"]
+		},
+		{
+			"description": "décimaux acceptés",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["19", "3{,}8", "3{,}4", "8{,}5"]
+		},
+		{
+			"description": "AB·AC : signe moins",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le produit scalaire s'écrit $xx'+yy'$ : abscisses entre elles, ordonnées entre elles."
+			},
+			"answers": ["11", "\\frac{19}{5}", "\\frac{17}{5}", "\\frac{17}{2}"]
+		},
+		{
+			"description": "AD = 19",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$ : comme $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=AB\\times AD$, il reste à diviser par $AB$."
+			},
+			"answers": ["19", "19", "\\frac{17}{5}", "\\frac{17}{2}"]
+		},
+		{
+			"description": "AD = 19/25",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par $AB^2$ : on divise par $AB$."
+			},
+			"answers": ["19", "\\frac{19}{25}", "\\frac{17}{5}", "\\frac{17}{2}"]
+		},
+		{
+			"description": "CD² donné",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $CD^2$ : prends la racine carrée."
+			},
+			"answers": ["19", "\\frac{19}{5}", "\\frac{289}{25}", "\\frac{17}{2}"]
+		},
+		{
+			"description": "aire sans /2",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "L'aire d'un triangle est $\\dfrac{\\text{base}\\times\\text{hauteur}}{2}$ : n'oublie pas de diviser par $2$."
+			},
+			"answers": ["19", "\\frac{19}{5}", "\\frac{17}{5}", "17"]
+		},
+		{
+			"description": "aire avec AD",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"r": "5",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La hauteur issue de $C$ est $CD$, pas $AD$."
+			},
+			"answers": ["19", "\\frac{19}{5}", "\\frac{17}{5}", "\\frac{19}{2}"]
+		},
+		{
+			"description": "AB(2 ; 1), AC(1 ; 3)",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"r": "1",
+				"s": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "\\sqrt{5}", "\\sqrt{5}", "\\frac{5}{2}"]
+		},
+		{
+			"description": "CD² = 5",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"r": "1",
+				"s": "3"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné $CD^2$ : prends la racine carrée."
+			},
+			"answers": ["5", "\\sqrt{5}", "5", "\\frac{5}{2}"]
+		},
+		{
+			"description": "AB(1 ; 2), AC(4 ; 1)",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"p": "1",
+				"q": "2",
+				"r": "4",
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "\\frac{6\\sqrt{5}}{5}", "\\frac{7\\sqrt{5}}{5}", "\\frac{7}{2}"]
+		},
+		{
+			"description": "AD = 6/5",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "0",
+				"ya": "0",
+				"p": "1",
+				"q": "2",
+				"r": "4",
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as divisé par $AB^2$ : on divise par $AB$."
+			},
+			"answers": ["6", "\\frac{6}{5}", "\\frac{7\\sqrt{5}}{5}", "\\frac{7}{2}"]
+		}
+	]
+}

@@ -1,0 +1,513 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Produit scalaire > expressions du produit scalaire",
+		"point": "1SPE-310"
+	},
+	"title": "Produit scalaire par projection sur une figure graduée",
+	"description": "Calculer un produit scalaire en projetant sur une droite graduée en dix parties égales : projetés de même sens ou de sens contraires, graduation de 0,5, 1 ou 2",
+	"grades": ["1_SPE"],
+	"level": 7,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Sur la figure, les points marqués partagent le segment $[AB]$ en $10$ parties égales, et $AB={{L}}$. Les droites $(AC)$ et $(EF)$ sont perpendiculaires à $(AB)$, et $H$ est le point d'intersection de $(EF)$ et $(AB)$.\n\n```figure\nfenetre: -1 ; 11 ; -5 ; 5\ntaille: moyenne\ndescription: Segment AB partagé en dix parties égales ; C au-dessus de A, (AC) perpendiculaire à (AB) ; D sur [AB] ; E et F de part et d'autre de H, (EF) perpendiculaire à (AB).\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(10, 0, etiquette=\"bas-droite\")\npour i de 1 a 9:\n    T[i] = point(i, 0, forme=\"croix\", etiquette=\"aucune\")\nC = point(0, 3, etiquette=\"haut-gauche\")\nD = point({{d}}, 0, etiquette=\"bas\")\nH = point({{h}}, 0, etiquette=\"bas-droite\")\nE = point({{h}}, 4, etiquette=\"haut\")\nF = point({{h}}, -4, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, C)\nsegment(C, D)\nsegment(D, E)\nsegment(C, E)\nsegment(E, F)\nsegment(F, B)\nsegment(F, C)\nangle(B, A, C, marque=\"carre\")\nangle(B, H, E, marque=\"carre\")\n```\n\nCalcule le produit scalaire ${{if:o==0|\\overrightarrow{AB}\\cdot\\overrightarrow{DE}}}{{if:o==1|\\overrightarrow{AB}\\cdot\\overrightarrow{ED}}}$.\n\n${{if:o==0|\\overrightarrow{AB}\\cdot\\overrightarrow{DE}}}{{if:o==1|\\overrightarrow{AB}\\cdot\\overrightarrow{ED}}}=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "10|5|20"
+				},
+				{
+					"name": "g",
+					"expression": "eval:L/10"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1-2*o"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*(10*(h-d))*g^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-s*(10*(h-d))*g^2}}",
+							"message": "Regarde le sens des deux vecteurs une fois projetés sur $(AB)$ : de sens contraires, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:(10*sqrt((h-d)^2+16))*g^2}}",
+							"message": "Tu as multiplié les longueurs des deux vecteurs : projette d'abord le second sur $(AB)$.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:s*(10*(h-d))}}",
+							"message": "Une graduation ne mesure pas $1$ : $[AB]$ en compte $10$.",
+							"label": "Graduation comptée pour 1"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une graduation mesure $\\dfrac{ {{L}} }{10}={{g}}$.",
+					"Le projeté orthogonal de $E$ sur $(AB)$ est $H$, donc ${{if:o==0|\\overrightarrow{AB}\\cdot\\overrightarrow{DE}=\\overrightarrow{AB}\\cdot\\overrightarrow{DH}}}{{if:o==1|\\overrightarrow{AB}\\cdot\\overrightarrow{ED}=\\overrightarrow{AB}\\cdot\\overrightarrow{HD}}}$, avec $AB={{L}}$ et $DH={{eval:(h-d)*g}}$, {{if:o==0|de même sens}}{{if:o==1|de sens contraires}}.",
+					"${{if:o==0|\\overrightarrow{AB}\\cdot\\overrightarrow{DE}}}{{if:o==1|\\overrightarrow{AB}\\cdot\\overrightarrow{ED}}}=\\textcolor{{{color:primary.0}}}{ {{eval:s*(10*(h-d))*g^2}} }$."
+				]
+			},
+			"hint": "Projette orthogonalement sur $(AB)$ les deux extrémités de l'autre vecteur : le produit scalaire ne change pas, et il devient un produit de longueurs, avec un signe."
+		},
+		{
+			"statement": "Sur la figure, les points marqués partagent le segment $[AB]$ en $10$ parties égales, et $AB={{L}}$. Les droites $(AC)$ et $(EF)$ sont perpendiculaires à $(AB)$, et $H$ est le point d'intersection de $(EF)$ et $(AB)$.\n\n```figure\nfenetre: -1 ; 11 ; -5 ; 5\ntaille: moyenne\ndescription: Segment AB partagé en dix parties égales ; C au-dessus de A, (AC) perpendiculaire à (AB) ; D sur [AB] ; E et F de part et d'autre de H, (EF) perpendiculaire à (AB).\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(10, 0, etiquette=\"bas-droite\")\npour i de 1 a 9:\n    T[i] = point(i, 0, forme=\"croix\", etiquette=\"aucune\")\nC = point(0, 3, etiquette=\"haut-gauche\")\nD = point({{d}}, 0, etiquette=\"bas\")\nH = point({{h}}, 0, etiquette=\"bas-droite\")\nE = point({{h}}, 4, etiquette=\"haut\")\nF = point({{h}}, -4, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, C)\nsegment(C, D)\nsegment(D, E)\nsegment(C, E)\nsegment(E, F)\nsegment(F, B)\nsegment(F, C)\nangle(B, A, C, marque=\"carre\")\nangle(B, H, E, marque=\"carre\")\n```\n\nCalcule le produit scalaire ${{if:o==0|\\overrightarrow{AD}\\cdot\\overrightarrow{CF}}}{{if:o==1|\\overrightarrow{AD}\\cdot\\overrightarrow{FC}}}$.\n\n${{if:o==0|\\overrightarrow{AD}\\cdot\\overrightarrow{CF}}}{{if:o==1|\\overrightarrow{AD}\\cdot\\overrightarrow{FC}}}=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "10|5|20"
+				},
+				{
+					"name": "g",
+					"expression": "eval:L/10"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1-2*o"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*(d*h)*g^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-s*(d*h)*g^2}}",
+							"message": "Regarde le sens des deux vecteurs une fois projetés sur $(AB)$ : de sens contraires, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:(d*sqrt(h^2+49))*g^2}}",
+							"message": "Tu as multiplié les longueurs des deux vecteurs : projette d'abord le second sur $(AB)$.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:s*(d*h)}}",
+							"message": "Une graduation ne mesure pas $1$ : $[AB]$ en compte $10$.",
+							"label": "Graduation comptée pour 1"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une graduation mesure $\\dfrac{ {{L}} }{10}={{g}}$.",
+					"Les projetés orthogonaux de $C$ et de $F$ sur $(AB)$ sont $A$ et $H$, donc ${{if:o==0|\\overrightarrow{AD}\\cdot\\overrightarrow{CF}=\\overrightarrow{AD}\\cdot\\overrightarrow{AH}}}{{if:o==1|\\overrightarrow{AD}\\cdot\\overrightarrow{FC}=\\overrightarrow{AD}\\cdot\\overrightarrow{HA}}}$, avec $AD={{eval:d*g}}$ et $AH={{eval:h*g}}$.",
+					"${{if:o==0|\\overrightarrow{AD}\\cdot\\overrightarrow{CF}}}{{if:o==1|\\overrightarrow{AD}\\cdot\\overrightarrow{FC}}}=\\textcolor{{{color:primary.0}}}{ {{eval:s*(d*h)*g^2}} }$."
+				]
+			},
+			"hint": "Projette orthogonalement sur $(AB)$ les deux extrémités de l'autre vecteur : le produit scalaire ne change pas, et il devient un produit de longueurs, avec un signe."
+		},
+		{
+			"statement": "Sur la figure, les points marqués partagent le segment $[AB]$ en $10$ parties égales, et $AB={{L}}$. Les droites $(AC)$ et $(EF)$ sont perpendiculaires à $(AB)$, et $H$ est le point d'intersection de $(EF)$ et $(AB)$.\n\n```figure\nfenetre: -1 ; 11 ; -5 ; 5\ntaille: moyenne\ndescription: Segment AB partagé en dix parties égales ; C au-dessus de A, (AC) perpendiculaire à (AB) ; D sur [AB] ; E et F de part et d'autre de H, (EF) perpendiculaire à (AB).\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(10, 0, etiquette=\"bas-droite\")\npour i de 1 a 9:\n    T[i] = point(i, 0, forme=\"croix\", etiquette=\"aucune\")\nC = point(0, 3, etiquette=\"haut-gauche\")\nD = point({{d}}, 0, etiquette=\"bas\")\nH = point({{h}}, 0, etiquette=\"bas-droite\")\nE = point({{h}}, 4, etiquette=\"haut\")\nF = point({{h}}, -4, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, C)\nsegment(C, D)\nsegment(D, E)\nsegment(C, E)\nsegment(E, F)\nsegment(F, B)\nsegment(F, C)\nangle(B, A, C, marque=\"carre\")\nangle(B, H, E, marque=\"carre\")\n```\n\nCalcule le produit scalaire ${{if:o==0|\\overrightarrow{CE}\\cdot\\overrightarrow{DB}}}{{if:o==1|\\overrightarrow{EC}\\cdot\\overrightarrow{DB}}}$.\n\n${{if:o==0|\\overrightarrow{CE}\\cdot\\overrightarrow{DB}}}{{if:o==1|\\overrightarrow{EC}\\cdot\\overrightarrow{DB}}}=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "10|5|20"
+				},
+				{
+					"name": "g",
+					"expression": "eval:L/10"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1-2*o"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*((10-d)*h)*g^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-s*((10-d)*h)*g^2}}",
+							"message": "Regarde le sens des deux vecteurs une fois projetés sur $(AB)$ : de sens contraires, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:((10-d)*sqrt(h^2+1))*g^2}}",
+							"message": "Tu as multiplié les longueurs des deux vecteurs : projette d'abord le second sur $(AB)$.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:s*((10-d)*h)}}",
+							"message": "Une graduation ne mesure pas $1$ : $[AB]$ en compte $10$.",
+							"label": "Graduation comptée pour 1"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une graduation mesure $\\dfrac{ {{L}} }{10}={{g}}$.",
+					"Les projetés orthogonaux de $C$ et de $E$ sur $(AB)$ sont $A$ et $H$, donc ${{if:o==0|\\overrightarrow{CE}\\cdot\\overrightarrow{DB}=\\overrightarrow{AH}\\cdot\\overrightarrow{DB}}}{{if:o==1|\\overrightarrow{EC}\\cdot\\overrightarrow{DB}=\\overrightarrow{HA}\\cdot\\overrightarrow{DB}}}$, avec $AH={{eval:h*g}}$ et $DB={{eval:(10-d)*g}}$.",
+					"${{if:o==0|\\overrightarrow{CE}\\cdot\\overrightarrow{DB}}}{{if:o==1|\\overrightarrow{EC}\\cdot\\overrightarrow{DB}}}=\\textcolor{{{color:primary.0}}}{ {{eval:s*((10-d)*h)*g^2}} }$."
+				]
+			},
+			"hint": "Projette orthogonalement sur $(AB)$ les deux extrémités de l'autre vecteur : le produit scalaire ne change pas, et il devient un produit de longueurs, avec un signe."
+		},
+		{
+			"statement": "Sur la figure, les points marqués partagent le segment $[AB]$ en $10$ parties égales, et $AB={{L}}$. Les droites $(AC)$ et $(EF)$ sont perpendiculaires à $(AB)$, et $H$ est le point d'intersection de $(EF)$ et $(AB)$.\n\n```figure\nfenetre: -1 ; 11 ; -5 ; 5\ntaille: moyenne\ndescription: Segment AB partagé en dix parties égales ; C au-dessus de A, (AC) perpendiculaire à (AB) ; D sur [AB] ; E et F de part et d'autre de H, (EF) perpendiculaire à (AB).\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(10, 0, etiquette=\"bas-droite\")\npour i de 1 a 9:\n    T[i] = point(i, 0, forme=\"croix\", etiquette=\"aucune\")\nC = point(0, 3, etiquette=\"haut-gauche\")\nD = point({{d}}, 0, etiquette=\"bas\")\nH = point({{h}}, 0, etiquette=\"bas-droite\")\nE = point({{h}}, 4, etiquette=\"haut\")\nF = point({{h}}, -4, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, C)\nsegment(C, D)\nsegment(D, E)\nsegment(C, E)\nsegment(E, F)\nsegment(F, B)\nsegment(F, C)\nangle(B, A, C, marque=\"carre\")\nangle(B, H, E, marque=\"carre\")\n```\n\nCalcule le produit scalaire ${{if:o==0|\\overrightarrow{DC}\\cdot\\overrightarrow{HB}}}{{if:o==1|\\overrightarrow{DC}\\cdot\\overrightarrow{BH}}}$.\n\n${{if:o==0|\\overrightarrow{DC}\\cdot\\overrightarrow{HB}}}{{if:o==1|\\overrightarrow{DC}\\cdot\\overrightarrow{BH}}}=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "10|5|20"
+				},
+				{
+					"name": "g",
+					"expression": "eval:L/10"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:1-2*o"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*(-d*(10-h))*g^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:-s*(-d*(10-h))*g^2}}",
+							"message": "Regarde le sens des deux vecteurs une fois projetés sur $(AB)$ : de sens contraires, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:(sqrt(d^2+9)*(10-h))*g^2}}",
+							"message": "Tu as multiplié les longueurs des deux vecteurs : projette d'abord le second sur $(AB)$.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:s*(-d*(10-h))}}",
+							"message": "Une graduation ne mesure pas $1$ : $[AB]$ en compte $10$.",
+							"label": "Graduation comptée pour 1"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une graduation mesure $\\dfrac{ {{L}} }{10}={{g}}$.",
+					"Le projeté orthogonal de $C$ sur $(AB)$ est $A$, donc ${{if:o==0|\\overrightarrow{DC}\\cdot\\overrightarrow{HB}=\\overrightarrow{DA}\\cdot\\overrightarrow{HB}}}{{if:o==1|\\overrightarrow{DC}\\cdot\\overrightarrow{BH}=\\overrightarrow{DA}\\cdot\\overrightarrow{BH}}}$, avec $DA={{eval:d*g}}$ et $HB={{eval:(10-h)*g}}$, {{if:o==0|de sens contraires}}{{if:o==1|de même sens}}.",
+					"${{if:o==0|\\overrightarrow{DC}\\cdot\\overrightarrow{HB}}}{{if:o==1|\\overrightarrow{DC}\\cdot\\overrightarrow{BH}}}=\\textcolor{{{color:primary.0}}}{ {{eval:s*(-d*(10-h))*g^2}} }$."
+				]
+			},
+			"hint": "Projette orthogonalement sur $(AB)$ les deux extrémités de l'autre vecteur : le produit scalaire ne change pas, et il devient un produit de longueurs, avec un signe."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB = 10, AB·DE = 50",
+			"variationIndex": 0,
+			"variables": {
+				"L": "10",
+				"d": "3",
+				"h": "8",
+				"o": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["50"]
+		},
+		{
+			"description": "AB·DE : signe faux",
+			"variationIndex": 0,
+			"variables": {
+				"L": "10",
+				"d": "3",
+				"h": "8",
+				"o": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le sens des deux vecteurs une fois projetés sur $\\left( AB \\right)$ : de sens contraires, le produit scalaire est négatif."
+			},
+			"answers": ["-50"]
+		},
+		{
+			"description": "AB·DE : produit des longueurs 10√41",
+			"variationIndex": 0,
+			"variables": {
+				"L": "10",
+				"d": "3",
+				"h": "8",
+				"o": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs des deux vecteurs : projette d'abord le second sur $\\left( AB \\right)$."
+			},
+			"answers": ["10\\sqrt{41}"]
+		},
+		{
+			"description": "AB = 5, AB·ED = −12,5",
+			"variationIndex": 0,
+			"variables": {
+				"L": "5",
+				"d": "3",
+				"h": "8",
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-12{,}5"]
+		},
+		{
+			"description": "AB·ED : graduation comptée 1, −50",
+			"variationIndex": 0,
+			"variables": {
+				"L": "5",
+				"d": "3",
+				"h": "8",
+				"o": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une graduation ne mesure pas $1$ : $\\left[ AB \\right]$ en compte $10$."
+			},
+			"answers": ["-50"]
+		},
+		{
+			"description": "AB = 20, AD·CF = 56",
+			"variationIndex": 1,
+			"variables": {
+				"L": "20",
+				"d": "2",
+				"h": "7",
+				"o": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["56"]
+		},
+		{
+			"description": "AD·CF : graduation 1 → 14",
+			"variationIndex": 1,
+			"variables": {
+				"L": "20",
+				"d": "2",
+				"h": "7",
+				"o": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une graduation ne mesure pas $1$ : $\\left[ AB \\right]$ en compte $10$."
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "AD·CF : signe faux",
+			"variationIndex": 1,
+			"variables": {
+				"L": "20",
+				"d": "2",
+				"h": "7",
+				"o": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le sens des deux vecteurs une fois projetés sur $\\left( AB \\right)$ : de sens contraires, le produit scalaire est négatif."
+			},
+			"answers": ["-56"]
+		},
+		{
+			"description": "AB = 10, AD·FC = −24",
+			"variationIndex": 1,
+			"variables": {
+				"L": "10",
+				"d": "4",
+				"h": "6",
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-24"]
+		},
+		{
+			"description": "AB = 10, CE·DB = 72",
+			"variationIndex": 2,
+			"variables": {
+				"L": "10",
+				"d": "2",
+				"h": "9",
+				"o": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["72"]
+		},
+		{
+			"description": "CE·DB : produit des longueurs 8√82",
+			"variationIndex": 2,
+			"variables": {
+				"L": "10",
+				"d": "2",
+				"h": "9",
+				"o": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs des deux vecteurs : projette d'abord le second sur $\\left( AB \\right)$."
+			},
+			"answers": ["8\\sqrt{82}"]
+		},
+		{
+			"description": "AB = 5, EC·DB = −9",
+			"variationIndex": 2,
+			"variables": {
+				"L": "5",
+				"d": "4",
+				"h": "6",
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-9"]
+		},
+		{
+			"description": "EC·DB : signe faux",
+			"variationIndex": 2,
+			"variables": {
+				"L": "5",
+				"d": "4",
+				"h": "6",
+				"o": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le sens des deux vecteurs une fois projetés sur $\\left( AB \\right)$ : de sens contraires, le produit scalaire est négatif."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "AB = 10, DC·HB = −9",
+			"variationIndex": 3,
+			"variables": {
+				"L": "10",
+				"d": "3",
+				"h": "7",
+				"o": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-9"]
+		},
+		{
+			"description": "DC·HB : signe faux",
+			"variationIndex": 3,
+			"variables": {
+				"L": "10",
+				"d": "3",
+				"h": "7",
+				"o": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde le sens des deux vecteurs une fois projetés sur $\\left( AB \\right)$ : de sens contraires, le produit scalaire est négatif."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "AB = 20, DC·BH = 16",
+			"variationIndex": 3,
+			"variables": {
+				"L": "20",
+				"d": "2",
+				"h": "8",
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["16"]
+		},
+		{
+			"description": "DC·BH : graduation 1 → 4",
+			"variationIndex": 3,
+			"variables": {
+				"L": "20",
+				"d": "2",
+				"h": "8",
+				"o": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Une graduation ne mesure pas $1$ : $\\left[ AB \\right]$ en compte $10$."
+			},
+			"answers": ["4"]
+		}
+	]
+}

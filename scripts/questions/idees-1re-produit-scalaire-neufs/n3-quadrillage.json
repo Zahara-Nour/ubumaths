@@ -1,0 +1,545 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Produit scalaire > expressions du produit scalaire",
+		"point": "1SPE-310"
+	},
+	"title": "Produit scalaire sur un quadrillage",
+	"description": "Calculer AB·AC sur un quadrillage en projetant C sur (AB) : AB horizontal, vertical ou penché, projeté du côté de B ou du côté opposé",
+	"grades": ["1_SPE"],
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Sur le quadrillage ci-dessous, l'unité est le côté d'un carreau.\n\n```figure\nfenetre: -{{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; {{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; -{{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; {{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}}\ntaille: moyenne\ngrille: oui\ndescription: Quadrillage ; vecteurs AB et AC partant du même point A.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:(1-o)*sb*m}}, {{eval:o*sb*m}}, etiquette=\"droite\")\nC = point({{eval:(1-o)*k+o*c}}, {{eval:o*k+(1-o)*c}}, etiquette=\"haut\")\nvecteur(A, B, couleur=\"bleu\")\nvecteur(A, C, couleur=\"rouge\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "3..6"
+				},
+				{
+					"name": "sb",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k0",
+					"expression": "1..6"
+				},
+				{
+					"name": "c0",
+					"expression": "1..4"
+				},
+				{
+					"name": "sc",
+					"expression": "1|-1"
+				},
+				{
+					"name": "z",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(1)*sb*k0"
+				},
+				{
+					"name": "c",
+					"expression": "eval:sc*c0"
+				},
+				{
+					"name": "o",
+					"expression": "0"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sb*m*k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m*sqrt(k^2+c^2)}}",
+							"message": "Tu as multiplié les longueurs $AB$ et $AC$ : c'est le projeté de $C$ sur $(AB)$ qui compte.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:-sb*m*k}}",
+							"message": "Regarde où tombe le projeté de $C$ : du côté opposé à $B$, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:m*c0}}",
+							"message": "Tu as utilisé la distance de $C$ à la droite $(AB)$ : il faut la position du projeté de $C$ sur $(AB)$.",
+							"label": "Distance de C à (AB)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le projeté orthogonal $H$ de $C$ sur $(AB)$ est sur la ligne du quadrillage qui porte $[AB]$, à ${{eval:abs(k)}}$ carreaux de $A$, {{if:k*sb>0|du côté de $B$}}{{if:k*sb<0|du côté opposé à $B$}}.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}={{if:k*sb<0|-}}AB\\times AH={{if:k*sb<0|-}}{{m}}\\times {{eval:abs(k)}}=\\textcolor{{{color:primary.0}}}{ {{eval:sb*m*k}} }$."
+				]
+			},
+			"hint": "Trace la perpendiculaire à $(AB)$ qui passe par $C$ : son pied $H$ donne $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}$."
+		},
+		{
+			"statement": "Sur le quadrillage ci-dessous, l'unité est le côté d'un carreau.\n\n```figure\nfenetre: -{{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; {{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; -{{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; {{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}}\ntaille: moyenne\ngrille: oui\ndescription: Quadrillage ; vecteurs AB et AC partant du même point A.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:(1-o)*sb*m}}, {{eval:o*sb*m}}, etiquette=\"droite\")\nC = point({{eval:(1-o)*k+o*c}}, {{eval:o*k+(1-o)*c}}, etiquette=\"haut\")\nvecteur(A, B, couleur=\"bleu\")\nvecteur(A, C, couleur=\"rouge\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "3..6"
+				},
+				{
+					"name": "sb",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k0",
+					"expression": "1..6"
+				},
+				{
+					"name": "c0",
+					"expression": "1..4"
+				},
+				{
+					"name": "sc",
+					"expression": "1|-1"
+				},
+				{
+					"name": "z",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(-1)*sb*k0"
+				},
+				{
+					"name": "c",
+					"expression": "eval:sc*c0"
+				},
+				{
+					"name": "o",
+					"expression": "1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sb*m*k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m*sqrt(k^2+c^2)}}",
+							"message": "Tu as multiplié les longueurs $AB$ et $AC$ : c'est le projeté de $C$ sur $(AB)$ qui compte.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:-sb*m*k}}",
+							"message": "Regarde où tombe le projeté de $C$ : du côté opposé à $B$, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:m*c0}}",
+							"message": "Tu as utilisé la distance de $C$ à la droite $(AB)$ : il faut la position du projeté de $C$ sur $(AB)$.",
+							"label": "Distance de C à (AB)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le projeté orthogonal $H$ de $C$ sur $(AB)$ est sur la ligne du quadrillage qui porte $[AB]$, à ${{eval:abs(k)}}$ carreaux de $A$, {{if:k*sb>0|du côté de $B$}}{{if:k*sb<0|du côté opposé à $B$}}.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}={{if:k*sb<0|-}}AB\\times AH={{if:k*sb<0|-}}{{m}}\\times {{eval:abs(k)}}=\\textcolor{{{color:primary.0}}}{ {{eval:sb*m*k}} }$."
+				]
+			},
+			"hint": "Trace la perpendiculaire à $(AB)$ qui passe par $C$ : son pied $H$ donne $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}$."
+		},
+		{
+			"statement": "Sur le quadrillage ci-dessous, l'unité est le côté d'un carreau.\n\n```figure\nfenetre: -{{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; {{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; -{{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}} ; {{eval:max(abs((1-o)*sb*m),abs(o*sb*m),abs((1-o)*k+o*c),abs(o*k+(1-o)*c))+1}}\ntaille: moyenne\ngrille: oui\ndescription: Quadrillage ; vecteurs AB et AC partant du même point A.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:(1-o)*sb*m}}, {{eval:o*sb*m}}, etiquette=\"droite\")\nC = point({{eval:(1-o)*k+o*c}}, {{eval:o*k+(1-o)*c}}, etiquette=\"haut\")\nvecteur(A, B, couleur=\"bleu\")\nvecteur(A, C, couleur=\"rouge\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "3..6"
+				},
+				{
+					"name": "sb",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k0",
+					"expression": "1..6"
+				},
+				{
+					"name": "c0",
+					"expression": "1..4"
+				},
+				{
+					"name": "sc",
+					"expression": "1|-1"
+				},
+				{
+					"name": "z",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(z)*sb*k0"
+				},
+				{
+					"name": "c",
+					"expression": "eval:sc*c0"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sb*m*k}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:m*sqrt(k^2+c^2)}}",
+							"message": "Tu as multiplié les longueurs $AB$ et $AC$ : c'est le projeté de $C$ sur $(AB)$ qui compte.",
+							"label": "Produit des longueurs"
+						},
+						{
+							"answer": "{{eval:-sb*m*k}}",
+							"message": "Regarde où tombe le projeté de $C$ : du côté opposé à $B$, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						},
+						{
+							"answer": "{{eval:m*c0}}",
+							"message": "Tu as utilisé la distance de $C$ à la droite $(AB)$ : il faut la position du projeté de $C$ sur $(AB)$.",
+							"label": "Distance de C à (AB)"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le projeté orthogonal $H$ de $C$ sur $(AB)$ est sur la ligne du quadrillage qui porte $[AB]$, à ${{eval:abs(k)}}$ carreaux de $A$, {{if:k*sb>0|du côté de $B$}}{{if:k*sb<0|du côté opposé à $B$}}.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}={{if:k*sb<0|-}}AB\\times AH={{if:k*sb<0|-}}{{m}}\\times {{eval:abs(k)}}=\\textcolor{{{color:primary.0}}}{ {{eval:sb*m*k}} }$."
+				]
+			},
+			"hint": "Trace la perpendiculaire à $(AB)$ qui passe par $C$ : son pied $H$ donne $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}$."
+		},
+		{
+			"statement": "Sur le quadrillage ci-dessous, l'unité est le côté d'un carreau.\n\n```figure\nfenetre: -{{eval:max(abs(p),abs(q),abs(k*p-n*q),abs(k*q+n*p))+1}} ; {{eval:max(abs(p),abs(q),abs(k*p-n*q),abs(k*q+n*p))+1}} ; -{{eval:max(abs(p),abs(q),abs(k*p-n*q),abs(k*q+n*p))+1}} ; {{eval:max(abs(p),abs(q),abs(k*p-n*q),abs(k*q+n*p))+1}}\ntaille: moyenne\ngrille: oui\ndescription: Quadrillage ; vecteurs AB et AC partant du même point A.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:p}}, {{eval:q}}, etiquette=\"droite\")\nC = point({{eval:k*p-n*q}}, {{eval:k*q+n*p}}, etiquette=\"haut\")\nvecteur(A, B, couleur=\"bleu\")\nvecteur(A, C, couleur=\"rouge\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "ec",
+					"expression": "0..1"
+				},
+				{
+					"name": "sp",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sq",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "eval:sp*(m+ec*(1-m))"
+				},
+				{
+					"name": "q",
+					"expression": "eval:sq*(1+ec*(m-1))"
+				},
+				{
+					"name": "k",
+					"expression": "-2..3!0,1,-1"
+				},
+				{
+					"name": "n",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "S",
+					"expression": "eval:p^2+q^2"
+				}
+			],
+			"conditions": ["abs(k*p-n*q) <= 7", "abs(k*q+n*p) <= 7"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*S}}",
+					"expectedErrors": [
+						{
+							"answer": "{{k}}",
+							"message": "$AH=|k|\\times AB$ : le produit $AB\\times AH$ fait apparaître $AB^2$, pas seulement le nombre de « pas » de $\\overrightarrow{AB}$.",
+							"label": "AB² oublié"
+						},
+						{
+							"answer": "{{eval:k*sqrt(S)}}",
+							"message": "Tu as multiplié par $AB$ une seule fois : $AB\\times AH$, avec $AH$ multiple de $AB$, donne $AB^2$.",
+							"label": "AB au lieu de AB²"
+						},
+						{
+							"answer": "{{eval:-k*S}}",
+							"message": "Regarde où tombe le projeté de $C$ : du côté opposé à $B$, le produit scalaire est négatif.",
+							"label": "Signe faux"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La perpendiculaire à $(AB)$ passant par $C$ coupe $(AB)$ en $H$ tel que $\\overrightarrow{AH}={{k}}\\,\\overrightarrow{AB}$ : on le voit en comptant les carreaux le long de $(AB)$.",
+					"$AB^2={{p;()}}^2+{{q;()}}^2={{S}}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}={{k}}\\times AB^2=\\textcolor{{{color:primary.0}}}{ {{eval:k*S}} }$."
+				]
+			},
+			"hint": "Trace la perpendiculaire à $(AB)$ qui passe par $C$ : son pied $H$ donne $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "B(4 ; 0), C(3 ; 2) : 12",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"sb": "1",
+				"k0": "3",
+				"c0": "2",
+				"sc": "1",
+				"z": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "longueurs 4√13",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"sb": "1",
+				"k0": "3",
+				"c0": "2",
+				"sc": "1",
+				"z": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié les longueurs $AB$ et $AC$ : c'est le projeté de $C$ sur $\\left( AB \\right)$ qui compte."
+			},
+			"answers": ["4\\sqrt{13}"]
+		},
+		{
+			"description": "signe faux",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"sb": "1",
+				"k0": "3",
+				"c0": "2",
+				"sc": "1",
+				"z": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde où tombe le projeté de $C$ : du côté opposé à $B$, le produit scalaire est négatif."
+			},
+			"answers": ["-12"]
+		},
+		{
+			"description": "distance de C : 8",
+			"variationIndex": 0,
+			"variables": {
+				"m": "4",
+				"sb": "1",
+				"k0": "3",
+				"c0": "2",
+				"sc": "1",
+				"z": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé la distance de $C$ à la droite $\\left( AB \\right)$ : il faut la position du projeté de $C$ sur $\\left( AB \\right)$."
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "B(0 ; 5), C(−3 ; −2) : −10",
+			"variationIndex": 1,
+			"variables": {
+				"m": "5",
+				"sb": "1",
+				"k0": "2",
+				"c0": "3",
+				"sc": "-1",
+				"z": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-10"]
+		},
+		{
+			"description": "signe faux 10",
+			"variationIndex": 1,
+			"variables": {
+				"m": "5",
+				"sb": "1",
+				"k0": "2",
+				"c0": "3",
+				"sc": "-1",
+				"z": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde où tombe le projeté de $C$ : du côté opposé à $B$, le produit scalaire est négatif."
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "B(−3 ; 0), C(4 ; 1) : −12",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"sb": "-1",
+				"k0": "4",
+				"c0": "1",
+				"sc": "1",
+				"z": "-1",
+				"o": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-12"]
+		},
+		{
+			"description": "distance de C : 3",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"sb": "-1",
+				"k0": "4",
+				"c0": "1",
+				"sc": "1",
+				"z": "-1",
+				"o": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as utilisé la distance de $C$ à la droite $\\left( AB \\right)$ : il faut la position du projeté de $C$ sur $\\left( AB \\right)$."
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "B(0 ; −6), C(2 ; −2) : 12",
+			"variationIndex": 2,
+			"variables": {
+				"m": "6",
+				"sb": "-1",
+				"k0": "2",
+				"c0": "2",
+				"sc": "1",
+				"z": "1",
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "AB(2 ; 1), k = 2 : 10",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"k": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "AB² oublié : 2",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"k": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$AH=|k|\\times AB$ : le produit $AB\\times AH$ fait apparaître $AB^2$, pas seulement le nombre de « pas » de $\\overrightarrow{AB}$."
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "AB une fois : 2√5",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"k": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as multiplié par $AB$ une seule fois : $AB\\times AH$, avec $AH$ multiple de $AB$, donne $AB^2$."
+			},
+			"answers": ["2\\sqrt{5}"]
+		},
+		{
+			"description": "signe faux",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2",
+				"ec": "0",
+				"sp": "1",
+				"sq": "1",
+				"k": "2",
+				"n": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Regarde où tombe le projeté de $C$ : du côté opposé à $B$, le produit scalaire est négatif."
+			},
+			"answers": ["-10"]
+		},
+		{
+			"description": "AB(1 ; 3), k = −2 : −20",
+			"variationIndex": 3,
+			"variables": {
+				"m": "3",
+				"ec": "1",
+				"sp": "1",
+				"sq": "1",
+				"k": "-2",
+				"n": "-1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-20"]
+		}
+	]
+}

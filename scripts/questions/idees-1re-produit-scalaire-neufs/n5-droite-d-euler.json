@@ -1,0 +1,603 @@
+{
+	"rangement": {
+		"noeud": "Géométrie > Produit scalaire > propriétés",
+		"point": "1SPE-436"
+	},
+	"title": "Droite d'Euler dans un repère",
+	"description": "Dans un repère : montrer par le produit scalaire que H est l'orthocentre, que K est le centre du cercle circonscrit, calculer le centre de gravité G et le réel k tel que KH = k·KG",
+	"grades": ["1_SPE"],
+	"level": 8,
+	"delay": 420,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xA}}\\,;{{yA}})$, $B({{xB}}\\,;{{yB}})$, $C({{xC}}\\,;{{yC}})$, $K({{kx}}\\,;{{ky}})$ et $H({{xH}}\\,;{{yH}})$.\n\n**1.** Calcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{HC}=?$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{HB}=?$\n\n**2.** Que représente le point $H$ pour le triangle $ABC$ ?\n\n```choix\n- l'orthocentre du triangle $ABC$ (le point de concours des hauteurs)\n- le centre du cercle circonscrit au triangle $ABC$\n- le centre de gravité du triangle $ABC$\n- le milieu du segment $[BC]$\n```\n\n**3.** Calcule $KA^2$. On trouve aussi $KB^2=KC^2=KA^2$ : $K$ est le centre du cercle circonscrit au triangle $ABC$.\n\n$KA^2=?$\n\n**4.** Le centre de gravité $G$ du triangle $ABC$ vérifie $\\overrightarrow{AG}=\\dfrac{2}{3}\\overrightarrow{AM}$, où $M$ est le milieu de $[BC]$. Donne ses coordonnées.\n\n$G(?\\,;?)$\n\n**5.** Détermine le réel $k$ tel que $\\overrightarrow{KH}=k\\,\\overrightarrow{KG}$. Les points $K$, $G$ et $H$ sont donc alignés, sur la droite d'Euler du triangle.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3"
+				},
+				{
+					"name": "b",
+					"expression": "6"
+				},
+				{
+					"name": "kx",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ky",
+					"expression": "-2..2"
+				},
+				{
+					"name": "sA",
+					"expression": "1|-1"
+				},
+				{
+					"name": "tA",
+					"expression": "1|-1"
+				},
+				{
+					"name": "wA",
+					"expression": "0..1"
+				},
+				{
+					"name": "uA",
+					"expression": "eval:sA*(a+wA*(b-a))"
+				},
+				{
+					"name": "vA",
+					"expression": "eval:tA*(b+wA*(a-b))"
+				},
+				{
+					"name": "xA",
+					"expression": "eval:kx+uA"
+				},
+				{
+					"name": "yA",
+					"expression": "eval:ky+vA"
+				},
+				{
+					"name": "sB",
+					"expression": "1|-1"
+				},
+				{
+					"name": "tB",
+					"expression": "1|-1"
+				},
+				{
+					"name": "wB",
+					"expression": "0..1"
+				},
+				{
+					"name": "uB",
+					"expression": "eval:sB*(a+wB*(b-a))"
+				},
+				{
+					"name": "vB",
+					"expression": "eval:tB*(b+wB*(a-b))"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:kx+uB"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:ky+vB"
+				},
+				{
+					"name": "sC",
+					"expression": "1|-1"
+				},
+				{
+					"name": "tC",
+					"expression": "1|-1"
+				},
+				{
+					"name": "wC",
+					"expression": "0..1"
+				},
+				{
+					"name": "uC",
+					"expression": "eval:sC*(a+wC*(b-a))"
+				},
+				{
+					"name": "vC",
+					"expression": "eval:tC*(b+wC*(a-b))"
+				},
+				{
+					"name": "xC",
+					"expression": "eval:kx+uC"
+				},
+				{
+					"name": "yC",
+					"expression": "eval:ky+vC"
+				},
+				{
+					"name": "xH",
+					"expression": "eval:xA+xB+xC-2*kx"
+				},
+				{
+					"name": "yH",
+					"expression": "eval:yA+yB+yC-2*ky"
+				},
+				{
+					"name": "R",
+					"expression": "eval:a^2+b^2"
+				}
+			],
+			"conditions": [
+				"uA != uB || vA != vB",
+				"uA != -uB || vA != -vB",
+				"uA != uC || vA != vC",
+				"uA != -uC || vA != -vC",
+				"uB != uC || vB != vC",
+				"uB != -uC || vB != -vC",
+				"uA+uB+uC != 0 || vA+vB+vC != 0",
+				"xB != xA",
+				"yB != yA",
+				"xC != xA",
+				"yC != yA",
+				"xC != xH",
+				"yC != yH",
+				"xB != xH",
+				"yB != yH"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xB-xA)*(xC+xH)+(yB-yA)*(yC+yH)}}",
+							"message": "Calcule d'abord les coordonnées des deux vecteurs, puis $xx'+yy'$.",
+							"label": "Coordonnées additionnées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:sqrt(R)}}",
+							"message": "On demande $KA^2$, pas $KA$.",
+							"label": "KA au lieu de KA²"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(xA+xB+xC)/3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xB+xC)/2}}",
+							"message": "Tu as donné le milieu $M$ de $[BC]$ : $G$ est aux deux tiers de $[AM]$ en partant de $A$.",
+							"label": "Milieu de [BC]"
+						},
+						{
+							"answer": "{{eval:xA+((xB+xC)/2-xA)/3}}",
+							"message": "Tu as pris $\\overrightarrow{AG}=\\dfrac{1}{3}\\overrightarrow{AM}$ : c'est $\\dfrac{2}{3}$.",
+							"label": "Un tiers"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(yA+yB+yC)/3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(yB+yC)/2}}",
+							"message": "Tu as donné le milieu $M$ de $[BC]$ : $G$ est aux deux tiers de $[AM]$ en partant de $A$.",
+							"label": "Milieu de [BC]"
+						},
+						{
+							"answer": "{{eval:yA+((yB+yC)/2-yA)/3}}",
+							"message": "Tu as pris $\\overrightarrow{AG}=\\dfrac{1}{3}\\overrightarrow{AM}$ : c'est $\\dfrac{2}{3}$.",
+							"label": "Un tiers"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "3",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{1}{3}",
+							"message": "Le rapport est à l'envers : c'est $\\overrightarrow{KH}$ qui est le plus long.",
+							"label": "Rapport inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{eval:xB-xA}}\\\\{{eval:yB-yA}}\\end{pmatrix}$ et $\\overrightarrow{HC}\\begin{pmatrix}{{eval:xC-xH}}\\\\{{eval:yC-yH}}\\end{pmatrix}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{HC}={{eval:xB-xA}}\\times {{eval:xC-xH;()}}+{{eval:yB-yA;()}}\\times {{eval:yC-yH;()}}=\\textcolor{{{color:primary.0}}}{ 0 }$.",
+					"$\\overrightarrow{AC}\\begin{pmatrix}{{eval:xC-xA}}\\\\{{eval:yC-yA}}\\end{pmatrix}$ et $\\overrightarrow{HB}\\begin{pmatrix}{{eval:xB-xH}}\\\\{{eval:yB-yH}}\\end{pmatrix}$, donc $\\overrightarrow{AC}\\cdot\\overrightarrow{HB}={{eval:xC-xA}}\\times {{eval:xB-xH;()}}+{{eval:yC-yA;()}}\\times {{eval:yB-yH;()}}=\\textcolor{{{color:primary.0}}}{ 0 }$.",
+					"$H$ est donc sur la hauteur issue de $C$ (perpendiculaire à $(AB)$) et sur la hauteur issue de $B$ (perpendiculaire à $(AC)$) : c'est $\\textcolor{{{color:primary.0}}}{ \\text{l'orthocentre} }$ du triangle $ABC$.",
+					"$KA^2=({{xA}}-{{kx;()}})^2+({{yA}}-{{ky;()}})^2={{eval:uA^2}}+{{eval:vA^2}}=\\textcolor{{{color:primary.0}}}{ {{R}} }$.",
+					"$M\\left({{eval:(xB+xC)/2}}\\,;{{eval:(yB+yC)/2}}\\right)$ ; $\\overrightarrow{AG}=\\dfrac{2}{3}\\overrightarrow{AM}$ donne $G\\left(\\textcolor{{{color:primary.0}}}{ {{eval:(xA+xB+xC)/3}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:(yA+yB+yC)/3}} }\\right)$.",
+					"$\\overrightarrow{KG}\\begin{pmatrix}{{eval:(xA+xB+xC)/3-kx}}\\\\{{eval:(yA+yB+yC)/3-ky}}\\end{pmatrix}$ et $\\overrightarrow{KH}\\begin{pmatrix}{{eval:xH-kx}}\\\\{{eval:yH-ky}}\\end{pmatrix}$, donc $\\overrightarrow{KH}=\\textcolor{{{color:primary.0}}}{ 3 }\\,\\overrightarrow{KG}$ : ces vecteurs sont colinéaires, et $K$, $G$, $H$ sont alignés."
+				]
+			},
+			"hint": "Une hauteur passe par un sommet et est perpendiculaire au côté opposé : un produit scalaire nul le montre. Pour $G$, calcule d'abord les coordonnées de $M$."
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xA}}\\,;{{yA}})$, $B({{xB}}\\,;{{yB}})$, $C({{xC}}\\,;{{yC}})$, $K({{kx}}\\,;{{ky}})$ et $H({{xH}}\\,;{{yH}})$.\n\n**1.** Calcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{HC}=?$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{HB}=?$\n\n**2.** Que représente le point $H$ pour le triangle $ABC$ ?\n\n```choix\n- l'orthocentre du triangle $ABC$ (le point de concours des hauteurs)\n- le centre du cercle circonscrit au triangle $ABC$\n- le centre de gravité du triangle $ABC$\n- le milieu du segment $[BC]$\n```\n\n**3.** Calcule $KA^2$. On trouve aussi $KB^2=KC^2=KA^2$ : $K$ est le centre du cercle circonscrit au triangle $ABC$.\n\n$KA^2=?$\n\n**4.** Le centre de gravité $G$ du triangle $ABC$ vérifie $\\overrightarrow{AG}=\\dfrac{2}{3}\\overrightarrow{AM}$, où $M$ est le milieu de $[BC]$. Donne ses coordonnées.\n\n$G(?\\,;?)$\n\n**5.** Détermine le réel $k$ tel que $\\overrightarrow{KH}=k\\,\\overrightarrow{KG}$. Les points $K$, $G$ et $H$ sont donc alignés, sur la droite d'Euler du triangle.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3"
+				},
+				{
+					"name": "b",
+					"expression": "9"
+				},
+				{
+					"name": "kx",
+					"expression": "-2..2"
+				},
+				{
+					"name": "ky",
+					"expression": "-2..2"
+				},
+				{
+					"name": "sA",
+					"expression": "1|-1"
+				},
+				{
+					"name": "tA",
+					"expression": "1|-1"
+				},
+				{
+					"name": "wA",
+					"expression": "0..1"
+				},
+				{
+					"name": "uA",
+					"expression": "eval:sA*(a+wA*(b-a))"
+				},
+				{
+					"name": "vA",
+					"expression": "eval:tA*(b+wA*(a-b))"
+				},
+				{
+					"name": "xA",
+					"expression": "eval:kx+uA"
+				},
+				{
+					"name": "yA",
+					"expression": "eval:ky+vA"
+				},
+				{
+					"name": "sB",
+					"expression": "1|-1"
+				},
+				{
+					"name": "tB",
+					"expression": "1|-1"
+				},
+				{
+					"name": "wB",
+					"expression": "0..1"
+				},
+				{
+					"name": "uB",
+					"expression": "eval:sB*(a+wB*(b-a))"
+				},
+				{
+					"name": "vB",
+					"expression": "eval:tB*(b+wB*(a-b))"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:kx+uB"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:ky+vB"
+				},
+				{
+					"name": "sC",
+					"expression": "1|-1"
+				},
+				{
+					"name": "tC",
+					"expression": "1|-1"
+				},
+				{
+					"name": "wC",
+					"expression": "0..1"
+				},
+				{
+					"name": "uC",
+					"expression": "eval:sC*(a+wC*(b-a))"
+				},
+				{
+					"name": "vC",
+					"expression": "eval:tC*(b+wC*(a-b))"
+				},
+				{
+					"name": "xC",
+					"expression": "eval:kx+uC"
+				},
+				{
+					"name": "yC",
+					"expression": "eval:ky+vC"
+				},
+				{
+					"name": "xH",
+					"expression": "eval:xA+xB+xC-2*kx"
+				},
+				{
+					"name": "yH",
+					"expression": "eval:yA+yB+yC-2*ky"
+				},
+				{
+					"name": "R",
+					"expression": "eval:a^2+b^2"
+				}
+			],
+			"conditions": [
+				"uA != uB || vA != vB",
+				"uA != -uB || vA != -vB",
+				"uA != uC || vA != vC",
+				"uA != -uC || vA != -vC",
+				"uB != uC || vB != vC",
+				"uB != -uC || vB != -vC",
+				"uA+uB+uC != 0 || vA+vB+vC != 0",
+				"xB != xA",
+				"yB != yA",
+				"xC != xA",
+				"yC != yA",
+				"xC != xH",
+				"yC != yH",
+				"xB != xH",
+				"yB != yH"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xB-xA)*(xC+xH)+(yB-yA)*(yC+yH)}}",
+							"message": "Calcule d'abord les coordonnées des deux vecteurs, puis $xx'+yy'$.",
+							"label": "Coordonnées additionnées"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:sqrt(R)}}",
+							"message": "On demande $KA^2$, pas $KA$.",
+							"label": "KA au lieu de KA²"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(xA+xB+xC)/3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(xB+xC)/2}}",
+							"message": "Tu as donné le milieu $M$ de $[BC]$ : $G$ est aux deux tiers de $[AM]$ en partant de $A$.",
+							"label": "Milieu de [BC]"
+						},
+						{
+							"answer": "{{eval:xA+((xB+xC)/2-xA)/3}}",
+							"message": "Tu as pris $\\overrightarrow{AG}=\\dfrac{1}{3}\\overrightarrow{AM}$ : c'est $\\dfrac{2}{3}$.",
+							"label": "Un tiers"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(yA+yB+yC)/3}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(yB+yC)/2}}",
+							"message": "Tu as donné le milieu $M$ de $[BC]$ : $G$ est aux deux tiers de $[AM]$ en partant de $A$.",
+							"label": "Milieu de [BC]"
+						},
+						{
+							"answer": "{{eval:yA+((yB+yC)/2-yA)/3}}",
+							"message": "Tu as pris $\\overrightarrow{AG}=\\dfrac{1}{3}\\overrightarrow{AM}$ : c'est $\\dfrac{2}{3}$.",
+							"label": "Un tiers"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "3",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{1}{3}",
+							"message": "Le rapport est à l'envers : c'est $\\overrightarrow{KH}$ qui est le plus long.",
+							"label": "Rapport inversé"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{eval:xB-xA}}\\\\{{eval:yB-yA}}\\end{pmatrix}$ et $\\overrightarrow{HC}\\begin{pmatrix}{{eval:xC-xH}}\\\\{{eval:yC-yH}}\\end{pmatrix}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{HC}={{eval:xB-xA}}\\times {{eval:xC-xH;()}}+{{eval:yB-yA;()}}\\times {{eval:yC-yH;()}}=\\textcolor{{{color:primary.0}}}{ 0 }$.",
+					"$\\overrightarrow{AC}\\begin{pmatrix}{{eval:xC-xA}}\\\\{{eval:yC-yA}}\\end{pmatrix}$ et $\\overrightarrow{HB}\\begin{pmatrix}{{eval:xB-xH}}\\\\{{eval:yB-yH}}\\end{pmatrix}$, donc $\\overrightarrow{AC}\\cdot\\overrightarrow{HB}={{eval:xC-xA}}\\times {{eval:xB-xH;()}}+{{eval:yC-yA;()}}\\times {{eval:yB-yH;()}}=\\textcolor{{{color:primary.0}}}{ 0 }$.",
+					"$H$ est donc sur la hauteur issue de $C$ (perpendiculaire à $(AB)$) et sur la hauteur issue de $B$ (perpendiculaire à $(AC)$) : c'est $\\textcolor{{{color:primary.0}}}{ \\text{l'orthocentre} }$ du triangle $ABC$.",
+					"$KA^2=({{xA}}-{{kx;()}})^2+({{yA}}-{{ky;()}})^2={{eval:uA^2}}+{{eval:vA^2}}=\\textcolor{{{color:primary.0}}}{ {{R}} }$.",
+					"$M\\left({{eval:(xB+xC)/2}}\\,;{{eval:(yB+yC)/2}}\\right)$ ; $\\overrightarrow{AG}=\\dfrac{2}{3}\\overrightarrow{AM}$ donne $G\\left(\\textcolor{{{color:primary.0}}}{ {{eval:(xA+xB+xC)/3}} }\\,;\\textcolor{{{color:primary.0}}}{ {{eval:(yA+yB+yC)/3}} }\\right)$.",
+					"$\\overrightarrow{KG}\\begin{pmatrix}{{eval:(xA+xB+xC)/3-kx}}\\\\{{eval:(yA+yB+yC)/3-ky}}\\end{pmatrix}$ et $\\overrightarrow{KH}\\begin{pmatrix}{{eval:xH-kx}}\\\\{{eval:yH-ky}}\\end{pmatrix}$, donc $\\overrightarrow{KH}=\\textcolor{{{color:primary.0}}}{ 3 }\\,\\overrightarrow{KG}$ : ces vecteurs sont colinéaires, et $K$, $G$, $H$ sont alignés."
+				]
+			},
+			"hint": "Une hauteur passe par un sommet et est perpendiculaire au côté opposé : un produit scalaire nul le montre. Pour $G$, calcule d'abord les coordonnées de $M$."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "R² = 45 : A(4 ; 5), B(7 ; −4), C(−5 ; −4)",
+			"variationIndex": 0,
+			"variables": {
+				"kx": "1",
+				"ky": "-1",
+				"sA": "1",
+				"tA": "1",
+				"wA": "0",
+				"sB": "1",
+				"tB": "-1",
+				"wB": "1",
+				"sC": "-1",
+				"tC": "-1",
+				"wC": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "0", "0", "45", "2", "-1", "3"]
+		},
+		{
+			"description": "KA au lieu de KA²",
+			"variationIndex": 0,
+			"variables": {
+				"kx": "1",
+				"ky": "-1",
+				"sA": "1",
+				"tA": "1",
+				"wA": "0",
+				"sB": "1",
+				"tB": "-1",
+				"wB": "1",
+				"sC": "-1",
+				"tC": "-1",
+				"wC": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On demande $KA^2$, pas $KA$."
+			},
+			"answers": ["0", "0", "0", "3\\sqrt{5}", "2", "-1", "3"]
+		},
+		{
+			"description": "G milieu de [BC]",
+			"variationIndex": 0,
+			"variables": {
+				"kx": "1",
+				"ky": "-1",
+				"sA": "1",
+				"tA": "1",
+				"wA": "0",
+				"sB": "1",
+				"tB": "-1",
+				"wB": "1",
+				"sC": "-1",
+				"tC": "-1",
+				"wC": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné le milieu $M$ de $\\left[ BC \\right]$ : $G$ est aux deux tiers de $\\left[ AM \\right]$ en partant de $A$."
+			},
+			"answers": ["0", "0", "0", "45", "1", "-1", "3"]
+		},
+		{
+			"description": "k = 1/3",
+			"variationIndex": 0,
+			"variables": {
+				"kx": "1",
+				"ky": "-1",
+				"sA": "1",
+				"tA": "1",
+				"wA": "0",
+				"sB": "1",
+				"tB": "-1",
+				"wB": "1",
+				"sC": "-1",
+				"tC": "-1",
+				"wC": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le rapport est à l'envers : c'est $\\overrightarrow{KH}$ qui est le plus long."
+			},
+			"answers": ["0", "0", "0", "45", "2", "-1", "\\frac{1}{3}"]
+		},
+		{
+			"description": "H pris pour le centre du cercle",
+			"variationIndex": 0,
+			"variables": {
+				"kx": "1",
+				"ky": "-1",
+				"sA": "1",
+				"tA": "1",
+				"wA": "0",
+				"sB": "1",
+				"tB": "-1",
+				"wB": "1",
+				"sC": "-1",
+				"tC": "-1",
+				"wC": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0", "0", "1", "45", "2", "-1", "3"]
+		},
+		{
+			"description": "R² = 90 : A(−3 ; 11), B(9 ; 5), C(9 ; −1)",
+			"variationIndex": 1,
+			"variables": {
+				"kx": "0",
+				"ky": "2",
+				"sA": "-1",
+				"tA": "1",
+				"wA": "0",
+				"sB": "1",
+				"tB": "1",
+				"wB": "1",
+				"sC": "1",
+				"tC": "-1",
+				"wC": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0", "0", "0", "90", "5", "5", "3"]
+		},
+		{
+			"description": "G avec un tiers (abscisse 1)",
+			"variationIndex": 1,
+			"variables": {
+				"kx": "0",
+				"ky": "2",
+				"sA": "-1",
+				"tA": "1",
+				"wA": "0",
+				"sB": "1",
+				"tB": "1",
+				"wB": "1",
+				"sC": "1",
+				"tC": "-1",
+				"wC": "1"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as pris $\\overrightarrow{AG}=\\dfrac{1}{3}\\overrightarrow{AM}$ : c'est $\\dfrac{2}{3}$."
+			},
+			"answers": ["0", "0", "0", "90", "1", "5", "3"]
+		}
+	]
+}
