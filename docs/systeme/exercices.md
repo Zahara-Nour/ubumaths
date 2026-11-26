@@ -267,12 +267,10 @@ longueur. Journal : [longueurs-segments-progress.md](../archive/wip/longueurs-se
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 - **`GET /api/exercises`** a un appelant (`ExerciseSelector`, éditeur de fiche) : gardée. Les
   routes `by-slug/[slug]`, `[id]/stats`, `[id]/export` et `ExerciseParameterizationEditor.svelte`,
   sans appelant, ont été retirées le 2026-10-12.
-- **`exerciseFont.svelte.ts` sans effet** : le store (police d'affichage des exercices, clé
-  `localStorage` `exerciseFont`, variable CSS `--exercise-font-family` lue par `app.css`) n'a qu'un
-  importeur, `FontSelector.svelte`, lui-même sans importeur
-  ([coquille-et-caches.md](coquille-et-caches.md)) : la police reste celle de `app.css` (Inter).
-- **Libellés du hub sans accents ni français** : « Contenu pedagogique », « Gerez », « Enigmes »,
-  et les onglets « Templates », « Worksheets », « Notebooks ».

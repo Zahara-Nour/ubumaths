@@ -1802,12 +1802,10 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 
 ## Écarts connus
 
-- **Sens de `AB` dans les exercices rédigés** : résolu par leur thème depuis le lot 6
-  (`exerciseCapitalPairs`, voir [exercices.md](exercices.md)) ; une copie de fiche stockée avant
-  garde le produit (Q-L).
-- **Évaluations notées** : le serveur régénère l'instance depuis la graine au moment de corriger ;
-  une copie commencée avant un changement de sens est corrigée avec le sens nouveau (aucune
-  réponse attendue à majuscules collées en base au 2026-10-12 : aucun verdict ne change).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 - **Case graphique (droite graduée)** : `InstanceBlank.type` admet `'graphical'` et
   `graphicalConfig`, mais aucun générateur ne la produit (la droite à placer passe par
   `NumberLinePlacer.svelte` et `construire: 'line'`) ; `NumberLineInput.svelte` a été retiré.
@@ -1822,9 +1820,3 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - `question_templates.type` existe en base et reste lu (filtre `type` de
   `api/questions/templates`, entre autres), alors que l'affichage déduit le type de la structure (`getQuestionType`) : deux
   sources pour une même notion.
-- **Durées du panier ≠ durées d'une série** : `questionCart.updateDelay` et `CartQuestionCard`
-  bornent à 5..300 s, la série enregistrée accepte jusqu'à `MAX_QUESTION_DELAY_SECONDS` (600).
-  Une série à 600 s chargée par `replaceWith` garde sa durée, mais le premier « − » la ramène à 300.
-- **Contrôles natifs** malgré la règle MySelect / MyCheckbox : `<select>` dans
-  `PrecisionEditor.svelte` et `QuestionPreview.svelte`, `<input type="checkbox">` dans
-  `QuestionPreview.svelte`.

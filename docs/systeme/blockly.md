@@ -438,7 +438,4 @@ sinon [ … ]`, `répéter <calcul> [ … ]` (un entier écrit reste le bloc de 
 
 ## Écarts connus
 
-- Aucun dans le module partagé depuis le ménage du 2026-11-16 (chantier `blockly-menage`) : types,
-  délais et messages de l'ancien exécuteur retirés, ainsi que les deux `README.md` en anglais du
-  prototype (cette page fait foi). `QUICK_REFERENCE.md` et les deux `EXAMPLES.md` avaient été
-  retirés avec l'exécution du code généré (#2715).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

@@ -215,15 +215,13 @@ anonymise les emails avant insertion.
 
 ## Écarts à traiter (priorisés)
 
-| #   | Écart                                                                                                            | Priorité   | Article   | Piste                                                                                                                             |
-| --- | ---------------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Rétention pédagogique non appliquée (cron ne couvre plus exercise_completions/mastery)                           | 🔴 Haute   | 5.1.e     | Réintégrer au cron OU ajuster la politique                                                                                        |
-| 2   | ~~Export Art. 20 : tables inexistantes → données pédagogiques vides~~ ✅ **CORRIGÉ (2026-06-15)**                | ✔️ Fait    | 20        | Repointé sur `exercise_completions`/`student_exercise_mastery`/`srs_decks` (+ private_messages/notifications/game_players) + test |
-| 3   | Registre sous-traitants : ~~HuggingFace absent, Vercel Analytics non détaillé~~ ✅ 2026-11-03 ; reste Groq (CCT) | 🟠 Moyenne | 28        | Compléter le registre + CCT/zero-retention                                                                                        |
-| 4   | ~~Période de grâce consentement expire 2026-06-30~~ ✅ 30 jours glissants (confirmé 2026-11-03)                  | ✔️ Fait    | 8         | —                                                                                                                                 |
-| 5   | Docs datées (hébergement US, email Gmail, durées)                                                                | 🟡 Basse   | —         | Bandeaux ajoutés ; rafraîchir au besoin                                                                                           |
-| 6   | `[A COMPLÉTER]` mentions légales (identité, statut, directeur publication)                                       | 🟠 Moyenne | LCEN      | Saisir les infos éditeur                                                                                                          |
-| 7   | AIPD à finaliser ; DSA (signalement) ; DPA signés                                                                | 🟠 Moyenne | 35/DSA/28 | Cf. `aipd-dpia.md`                                                                                                                |
+Les écarts de cette zone sont au [registre des écarts](../../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
+| #   | Écart                                             | Priorité | Article | Piste                                   |
+| --- | ------------------------------------------------- | -------- | ------- | --------------------------------------- |
+| 5   | Docs datées (hébergement US, email Gmail, durées) | 🟡 Basse | —       | Bandeaux ajoutés ; rafraîchir au besoin |
 
 ---
 

@@ -252,6 +252,10 @@ Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun te
 
 ## Écarts connus
 
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### Points non vérifiés
+
 - **Le jeu de référence s'éloigne de la base** à mesure que l'admin modifie le dictionnaire :
   c'est voulu (les tests ne dépendent pas des données vivantes). Une base locale fraîche
   (`db:reset`) contient la reprise (la référence), puis les entrées ajoutées par migration, chacune

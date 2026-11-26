@@ -448,7 +448,10 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
 
 ## Écarts connus
 
-- **Anti-triche cassé** (voir plus haut) : à réparer avant tout rallumage.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
 - **Paquets de chapitre et révision forcée : en sommeil, pas morts** (décision de David,
   2026-10-12). Construits exprès le 2026-09-14 : `chapter_decks` rattache un paquet SOURCE à un
   chapitre (modes `algorithme` / `force`, publié comme le reste du contenu), et `all=true` sur
@@ -456,18 +459,6 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
   contrôle »). Serveur, policies et tests d'intégration sont en place ; manquent les écrans
   (rattacher un paquet côté prof, bouton « Tout réviser » côté élève). À construire le jour où un
   contrôle se prépare avec un paquet de chapitre ; ne pas les supprimer comme code mort.
-- ✅ **Suppressions sans `.select()`** (corrigé le 2026-10-10, E20) : les trois `DELETE` vérifient
-  désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
-  ou géré automatiquement — Programme, chapitre). Test :
-  `src/routes/api/srs/__tests__/suppressions-silencieuses.test.ts`.
-- ✅ **FSRS-6 mal recopié** (corrigé le 2026-11-15, chantier `fsrs`) : la classe mêlait la courbe d'oubli
-  de FSRS-4 (`9·S`, puissance −0,5) aux paramètres de FSRS-6 (intervalles ≈ 2,1 fois trop longs), fixait la
-  difficulté initiale à 5, ne l'amortissait pas (un seul échec la mettait à 10 pour toujours), ignorait la
-  note après la 1re révision et n'avait ni plafond après un oubli ni court terme. Depuis : conforme à FSRS-6,
-  test de référence `fsrs-reference.test.ts` contre `ts-fsrs`. Les fiches écrites avant gardent leurs anciennes
-  valeurs jusqu'à leur recalcul (chantier `fsrs`, PR 2).
-- `reviewedToday` (`src/lib/server/course-card-attempts.ts`) n'a aucun appelant hors de ses tests
-  (relevé du 2026-10-12).
 
 ---
 
