@@ -7,14 +7,16 @@ Page à cocher de la phase 0 : https://claude.ai/artifact/SmYJM9k1YCqeck3Qs98W4T
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, après #3153._
+_Mis à jour le 2026-11-26, après #3153 et `db:migrate`._
 
-- **État** : 4 brouillons en prod (a94acfec, bb7dc033, 3603141b, c3f70ab6) ; #3153 mergée (migrations
-  de rangement et de contenu) · **Prochaine action** : après `db:migrate`, garde
-  `garde-niveaux-tags.ts`, puis relecture dans `/dev/modeles` (série de relecture pour les 3 publiés)
-  et `publier-lot` · **En attente de David** : `pnpm db:migrate` depuis le dépôt principal (seules
-  20261125183322 et 20261125183331 sont en attente) · **Pièges en cours** : 2491dd75 et 10393ff9 sont
-  aussi en T_COMP · **Worktree / branche** : aucun (retirés par `pr:merger`).
+- **État** : 4 brouillons rangés en prod (a94acfec, bb7dc033, 3603141b, c3f70ab6) ; 5 variations
+  ajoutées à 2491dd75, 10393ff9, 0965c56c ; migrations jouées, garde des niveaux verte ·
+  **Prochaine action** : créer la série de relecture des 3 publiés (`creer-serie.ts`), puis lire les
+  verdicts de `/dev/modeles`, corriger, `publier-lot.ts` en simulation · **En attente de David** :
+  relecture dans `/dev/modeles` (brouillons par `?noeud=`, publiés par la série) · **Pièges en
+  cours** : 2491dd75 et 10393ff9 sont aussi en T_COMP ; (π−1)/2 refusé par le juge en N2 c (à
+  ajouter à `outils-manquants.md` si David le veut) · **Worktree / branche** : aucun (nouveau
+  worktree sur `origin/main` pour la PR de corrections).
 
 ## Historique
 
@@ -76,3 +78,5 @@ _Mis à jour le 2026-11-25, après #3153._
   aucun finding bloquant (non bloquant : `updated_at` des 3 publiés avance, normal, leur contenu
   change). Question d'accès : personne (phase 0).
 - `db:migrate` refusé à la session (écriture en prod) : à lancer par David.
+- David a lancé `db:migrate` (2026-11-26). `garde-niveaux-tags.ts` : 2744 modèles tagués, aucun
+  niveau manquant.
