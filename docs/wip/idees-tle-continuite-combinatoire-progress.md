@@ -7,15 +7,15 @@ Page à cocher de la phase 0 : https://claude.ai/artifact/SmYJM9k1YCqeck3Qs98W4T
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, série de relecture enregistrée, 7 modèles validés._
+_Mis à jour le 2026-11-26, après #3161._
 
 - **État** : série de relecture b15c9d00 enregistrée (3 publiés) ; David a validé les 7 modèles ;
   `publier-lot.ts` en simulation vert sur les 4 brouillons · **Prochaine action** : vérifier en
   base que les 4 sont publiés, puis finir (tableau de répartition : rubriques « publiées »,
   réservations levées ; journal versé) · **En attente de David** : `publier-lot.ts --dir
 scripts/questions/idees-tle-continuite-combinatoire-neufs --publier` · **Pièges en cours** :
-  2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** :
-  `ubumaths-wt-idees-tle-continuite-combinatoire-serie`, `chore/idees-tle-continuite-combinatoire-serie`.
+  2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** : aucun
+  (#3161 mergée, worktree retiré ; la fin du chantier est de la doc, sur `main`).
 
 ## Historique
 
