@@ -39,8 +39,6 @@ import type {
 	CreateExerciseAssignment,
 	BulkAssignmentData,
 	AssignedExerciseWithDetails,
-	ExerciseWithCompletion,
-	StudentExerciseFilters,
 	TeacherAssignmentFilters,
 	AssignmentStats,
 	PaginationParams,
@@ -50,7 +48,6 @@ import type {
 } from '#lib/exercises/types.ts';
 import type { GradeCode } from '#lib/types/grades.ts';
 import { validateAssignmentData } from '#lib/exercises/types.ts';
-import { validateSearchQuery } from '#lib/utils/search.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 import { withLatestVersions } from '#lib/server/exercise-versions.ts';
 
@@ -230,14 +227,13 @@ export async function createExerciseAssignment(
  * // result = { count: 3, error: null }
  * ```
  *
- * @example Assign to classes and make public
+ * @example Assign to classes
  * ```typescript
  * const result = await createBulkAssignments(supabase, {
  *   exercise_id: 'ex-456',
- *   classes: ['class-3eme-a', 'class-3eme-b'],
- *   make_public: true
+ *   classes: ['class-3eme-a', 'class-3eme-b']
  * }, 'teacher-789');
- * // result = { count: 3, error: null } (2 classes + 1 public)
+ * // result = { count: 2, error: null }
  * ```
  */
 export async function createBulkAssignments(
@@ -248,8 +244,7 @@ export async function createBulkAssignments(
 	// Validate at least one target
 	if (
 		(!data.students || data.students.length === 0) &&
-		(!data.classes || data.classes.length === 0) &&
-		!data.make_public
+		(!data.classes || data.classes.length === 0)
 	) {
 		return { count: 0, error: 'At least one assignment target required' };
 	}
@@ -269,7 +264,7 @@ export async function createBulkAssignments(
 	const assignments: Array<{
 		exercise_id: string;
 		assigned_by: string;
-		assigned_to_type: 'student' | 'class' | 'public';
+		assigned_to_type: 'student' | 'class';
 		student_id: string | null;
 		class_id: string | null;
 		optional_deadline: string | null;
@@ -307,20 +302,6 @@ export async function createBulkAssignments(
 				is_active: true
 			});
 		}
-	}
-
-	// Create public assignment
-	if (data.make_public) {
-		assignments.push({
-			exercise_id: data.exercise_id,
-			assigned_by: userId,
-			assigned_to_type: 'public',
-			student_id: null,
-			class_id: null,
-			optional_deadline: data.optional_deadline || null,
-			notes: data.notes || null,
-			is_active: true
-		});
 	}
 
 	// Insert all assignments (atomic transaction)
@@ -483,294 +464,6 @@ export async function getAssignmentsForExercise(
 
 	return {
 		data: rows,
-		total,
-		limit,
-		offset,
-		hasMore: offset + limit < total
-	};
-}
-
-/**
- * Get all exercises assigned to a student
- *
- * Includes:
- * - Direct student assignments
- * - Class assignments (via class membership)
- * - Public assignments
- *
- * Uses optimized batch queries to avoid N+1 problem.
- * Joins with completion data to show progress.
- *
- * **Performance**: Uses three batched queries instead of N queries in loop:
- * 1. Get exercise IDs via RPC function
- * 2. Batch-fetch all assignments
- * 3. Batch-fetch all completions
- * Then enriches in memory (no DB calls in loop).
- *
- * @param supabase - Supabase client
- * @param studentId - Student user ID
- * @param filters - Optional filters (completion, deadline, search)
- * @param pagination - Optional pagination parameters
- * @returns Paginated exercises with assignment and completion data
- *
- * @example Get uncompleted assignments
- * ```typescript
- * const result = await getAssignmentsForStudent(supabase, 'student-abc', {
- *   show_completed: false
- * });
- * ```
- *
- * @example Get assignments with deadlines
- * ```typescript
- * const result = await getAssignmentsForStudent(supabase, 'student-xyz', {
- *   has_deadline: true
- * }, { limit: 20, offset: 0 });
- * ```
- */
-export async function getAssignmentsForStudent(
-	supabase: TypedSupabaseClient,
-	studentId: string,
-	filters?: StudentExerciseFilters,
-	pagination?: PaginationParams
-): Promise<PaginatedResponse<ExerciseWithCompletion>> {
-	const limit = pagination?.limit || 50;
-	const offset = pagination?.offset || 0;
-
-	// Step 1: Get all accessible exercise IDs via RPC function
-	const { data: exerciseIds, error: functionError } = await supabase.rpc('get_student_exercises', {
-		p_student_id: studentId
-	});
-
-	if (functionError) {
-		logger.error('Error fetching student exercises:', functionError);
-		return {
-			data: [],
-			total: 0,
-			limit,
-			offset,
-			hasMore: false
-		};
-	}
-
-	const exerciseIdArray = toExerciseIds(exerciseIds);
-	if (!exerciseIdArray || exerciseIdArray.length === 0) {
-		return {
-			data: [],
-			total: 0,
-			limit,
-			offset,
-			hasMore: false
-		};
-	}
-
-	// Step 2: Build exercise query with search filter
-	let exerciseQuery = supabase.from('exercises').select('*').in('id', exerciseIdArray);
-
-	// Apply search filter using Supabase's textSearch (safe from SQL injection)
-	// SECURITY NOTE: validateSearchQuery() sanitizes input before passing to textSearch()
-	// This prevents SQL injection attacks through the search parameter. The textSearch()
-	// method uses PostgreSQL's full-text search which is parameterized and safe.
-	if (filters?.search) {
-		const validation = validateSearchQuery(filters.search);
-		if (validation.valid && validation.sanitized) {
-			// Use Supabase's built-in textSearch which safely handles the query
-			// The 'websearch' type allows natural language queries like "algebra equations"
-			// The 'french' config uses French stemming rules for better search results
-			exerciseQuery = exerciseQuery.textSearch('fts_column', validation.sanitized, {
-				type: 'websearch',
-				config: 'french'
-			});
-		}
-	}
-
-	// Get total count before pagination
-	const { count: totalCount } = await exerciseQuery;
-
-	// Apply pagination to exercise query
-	exerciseQuery = exerciseQuery
-		.range(offset, offset + limit - 1)
-		.order('created_at', { ascending: false });
-
-	const { data: exerciseRows, error: exercisesError } = await exerciseQuery;
-	// Contenu : la DERNIÈRE version de chaque exercice (hors fiche, ADR 0044).
-	const exercises = exerciseRows ? await withLatestVersions(supabase, exerciseRows) : exerciseRows;
-
-	if (exercisesError) {
-		logger.error('Error fetching exercises:', exercisesError);
-		return {
-			data: [],
-			total: 0,
-			limit,
-			offset,
-			hasMore: false
-		};
-	}
-
-	if (!exercises || exercises.length === 0) {
-		return {
-			data: [],
-			total: totalCount || 0,
-			limit,
-			offset,
-			hasMore: false
-		};
-	}
-
-	// Step 3: Batch-fetch all assignments for these exercises
-	const exerciseIdsForBatch = exercises.map((e) => e.id);
-
-	// Fetch direct assignments (student or public)
-	// SECURITY NOTE: The .or() filter with string interpolation looks dangerous, but is safe here:
-	// - studentId comes from authenticated session (event.locals.user.id), not user input
-	// - Supabase's .or() method still uses parameterized queries internally
-	// - The string is only used to construct the filter logic, not as raw SQL
-	// - This is a documented pattern in Supabase docs for OR conditions
-	const { data: directAssignments, error: directAssignmentsError } = await supabase
-		.from('exercise_assignments')
-		.select('*')
-		.in('exercise_id', exerciseIdsForBatch)
-		.eq('is_active', true)
-		.or(`student_id.eq.${studentId},assigned_to_type.eq.public`);
-
-	if (directAssignmentsError) {
-		logger.error('Lecture impossible :', directAssignmentsError);
-		throw new Error(directAssignmentsError.message);
-	}
-
-	// Fetch class assignments (requires join with class_members)
-	// SECURITY NOTE: studentId comes from authenticated session (event.locals.user.id)
-	// and is never user-provided input, making this query safe from SQL injection.
-	// The nested query uses Supabase's query builder which automatically parameterizes
-	// all values, preventing injection even if studentId were somehow manipulated.
-	//
-	// PERFORMANCE: This nested query is efficient because:
-	// 1. class_members table has index on student_id
-	// 2. Result is a small array of class IDs (typically 1-3 classes per student)
-	// 3. The .in() filter is optimized by Postgres using the class_id index
-	const { data: classAssignments, error: classAssignmentsError } = await supabase
-		.from('exercise_assignments')
-		.select('*')
-		.in('exercise_id', exerciseIdsForBatch)
-		.eq('assigned_to_type', 'class')
-		.eq('is_active', true)
-		.in('class_id', [
-			...(await supabase
-				.from('class_members')
-				.select('class_id')
-				.eq('student_id', studentId)
-				.eq('status', 'active')
-				.then((res) => res.data?.map((cm) => cm.class_id) || []))
-		]);
-
-	if (classAssignmentsError) {
-		logger.error('Lecture impossible :', classAssignmentsError);
-		throw new Error(classAssignmentsError.message);
-	}
-
-	// Combine all assignments
-	const allAssignments = [
-		...(directAssignments || []),
-		...(classAssignments || [])
-	] as unknown as ExerciseAssignment[];
-
-	// Step 4: Batch-fetch all completions for these exercises
-	const { data: allCompletions, error: allCompletionsError } = await supabase
-		.from('exercise_completions')
-		.select('*')
-		.in('exercise_id', exerciseIdsForBatch)
-		.eq('student_id', studentId);
-
-	if (allCompletionsError) {
-		logger.error('Lecture impossible :', allCompletionsError);
-		throw new Error(allCompletionsError.message);
-	}
-
-	// Step 5: Create lookup maps for O(1) access
-	const assignmentMap = new Map<string, ExerciseAssignment>();
-	for (const assignment of allAssignments) {
-		// Store the most recent assignment for each exercise
-		if (
-			!assignmentMap.has(assignment.exercise_id) ||
-			new Date(assignment.assigned_at) >
-				new Date(assignmentMap.get(assignment.exercise_id)!.assigned_at)
-		) {
-			assignmentMap.set(assignment.exercise_id, assignment);
-		}
-	}
-
-	const completionMap = new Map(
-		allCompletions?.map((c: unknown) => [
-			(c as ExerciseCompletion).exercise_id,
-			c as ExerciseCompletion
-		])
-	);
-
-	// Step 6: Enrich exercises with assignment and completion data (no DB calls!)
-	const enriched: ExerciseWithCompletion[] = [];
-
-	for (const exercise of exercises) {
-		const assignment = assignmentMap.get(exercise.id);
-		const completion = completionMap.get(exercise.id) as ExerciseCompletion | undefined;
-
-		// Apply completion filter
-		if (filters?.show_completed === false && completion?.completed_at) {
-			continue; // Skip completed exercises
-		}
-
-		// Apply deadline filter
-		if (filters?.has_deadline && !assignment?.optional_deadline) {
-			continue; // Skip assignments without deadlines
-		}
-
-		// Apply assigned-only filter
-		if (filters?.show_assigned_only && !assignment) {
-			continue; // Skip public exercises without assignment
-		}
-
-		// Apply public filter
-		if (filters?.show_public === false && !assignment) {
-			continue; // Skip public exercises
-		}
-
-		// Determine accessibility
-		const is_accessible = !!(assignment || exercise.is_public);
-
-		enriched.push({
-			...exercise,
-			assignment,
-			completion,
-			is_accessible
-		} as unknown as ExerciseWithCompletion);
-	}
-
-	// Step 7: Sort by deadline (urgent first), then by assigned_at (recent first)
-	enriched.sort((a, b) => {
-		const aDeadline = a.assignment?.optional_deadline;
-		const bDeadline = b.assignment?.optional_deadline;
-		const aAssignedAt = a.assignment?.assigned_at;
-		const bAssignedAt = b.assignment?.assigned_at;
-
-		// Prioritize assignments with deadlines
-		if (aDeadline && !bDeadline) return -1;
-		if (!aDeadline && bDeadline) return 1;
-
-		// Both have deadlines - sort by deadline
-		if (aDeadline && bDeadline) {
-			return new Date(aDeadline).getTime() - new Date(bDeadline).getTime();
-		}
-
-		// Neither has deadline - sort by assigned_at
-		if (aAssignedAt && bAssignedAt) {
-			return new Date(bAssignedAt).getTime() - new Date(aAssignedAt).getTime();
-		}
-
-		return 0;
-	});
-
-	const total = totalCount || 0;
-
-	return {
-		data: enriched,
 		total,
 		limit,
 		offset,

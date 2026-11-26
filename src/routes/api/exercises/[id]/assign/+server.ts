@@ -46,8 +46,8 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 
 	const body = await request.json();
 
-	// Check if bulk assignment (has students[] or classes[] or make_public)
-	if (body.students || body.classes || body.make_public) {
+	// Check if bulk assignment (has students[] or classes[])
+	if (body.students || body.classes) {
 		// Validate bulk assignment
 		const validation = validateBulkAssign(body);
 		if (!validation.success) {
@@ -61,7 +61,6 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 			exercise_id: exerciseId,
 			students: validation.data.students,
 			classes: validation.data.classes,
-			make_public: validation.data.make_public,
 			optional_deadline: validation.data.optional_deadline || null,
 			notes: validation.data.notes
 		};

@@ -364,40 +364,10 @@ describe('createBulkAssignments', () => {
 		expect(result.count).toBe(2);
 	});
 
-	it('should create mix of students, classes, and public', async () => {
-		const bulkData: BulkAssignmentData = {
-			exercise_id: mockExerciseId,
-			students: ['student-1'],
-			classes: ['class-3a'],
-			make_public: true
-		};
-
-		// Mock ownership check
-		supabase._mockChain.single.mockResolvedValueOnce({
-			data: mockExercise,
-			error: null
-		});
-
-		// Mock bulk insert (1 student + 1 class + 1 public = 3)
-		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
-			return Promise.resolve(
-				onFulfilled({
-					data: [{}, {}, {}],
-					error: null
-				})
-			);
-		});
-
-		const result = await assignments.createBulkAssignments(supabase, bulkData, mockTeacherId);
-
-		expect(result.error).toBeNull();
-		expect(result.count).toBe(3);
-	});
-
 	it('should reject bulk assignment without targets', async () => {
 		const bulkData: BulkAssignmentData = {
 			exercise_id: mockExerciseId
-			// No students, classes, or make_public
+			// No students or classes
 		};
 
 		const result = await assignments.createBulkAssignments(supabase, bulkData, mockTeacherId);

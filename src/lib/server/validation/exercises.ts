@@ -422,17 +422,14 @@ export const bulkAssignSchema = z
 			.array(z.string().uuid('Identifiant de classe invalide'))
 			.max(50, '50 classes au maximum')
 			.optional(),
-		make_public: z.boolean().optional(),
 		optional_deadline: z.string().datetime('Date invalide').optional().nullable(),
 		notes: z.string().trim().max(1000, 'Notes trop longues').optional()
 	})
 	.refine(
 		(data) =>
-			(data.students && data.students.length > 0) ||
-			(data.classes && data.classes.length > 0) ||
-			data.make_public === true,
+			(data.students && data.students.length > 0) || (data.classes && data.classes.length > 0),
 		{
-			message: 'Choisir au moins un élève ou une classe, ou rendre l’exercice public'
+			message: 'Choisir au moins un élève ou une classe'
 		}
 	);
 
@@ -478,29 +475,6 @@ export const assignmentQuerySchema = z.object({
 		.string()
 		.optional()
 		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined))
-});
-
-/**
- * Schema for student exercise filters (GET /api/exercises/assigned)
- */
-export const studentExerciseFiltersSchema = z.object({
-	completed: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	assigned_only: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	public: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	has_deadline: z
-		.string()
-		.optional()
-		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	search: z.string().trim().max(200, 'Recherche trop longue').optional()
 });
 
 /**
@@ -603,13 +577,6 @@ export function validateSingleAssign(data: unknown) {
  */
 export function validateAssignmentQuery(params: URLSearchParams) {
 	return assignmentQuerySchema.safeParse(Object.fromEntries(params));
-}
-
-/**
- * Validate student exercise filters
- */
-export function validateStudentExerciseFilters(params: URLSearchParams) {
-	return studentExerciseFiltersSchema.safeParse(Object.fromEntries(params));
 }
 
 /**
@@ -747,42 +714,6 @@ export const exerciseAssignmentSchema = z.object({
  */
 export const exerciseAssignmentsResponseSchema = z.object({
 	assignments: z.array(exerciseAssignmentSchema)
-});
-
-/**
- * Assigned exercise (for student view) schema
- */
-export const assignedExerciseSchema = z.object({
-	id: z.string().uuid(),
-	statement_md: z.string(),
-	solution_md: z.string(),
-	category: z.enum([
-		'automatisme',
-		'application',
-		'adaptation',
-		'recherche',
-		'tache_complexe',
-		'situation_probleme',
-		'challenge',
-		'mission',
-		'synthese'
-	]),
-	tags: z.array(z.string()).optional(),
-	grades: z.array(gradeCodeSchema).optional(),
-	topic: z.string().nullable().optional(),
-	title: z.string().nullable().optional(),
-	assignment_id: z.string().uuid().nullable().optional(),
-	optional_deadline: z.string().datetime().nullable().optional(),
-	notes: z.string().nullable().optional(),
-	completed: z.boolean().optional(),
-	completed_at: z.string().datetime().nullable().optional()
-});
-
-/**
- * Student exercises response schema (GET /api/exercises/assigned)
- */
-export const studentExercisesResponseSchema = z.object({
-	exercises: z.array(assignedExerciseSchema)
 });
 
 /**

@@ -446,3 +446,15 @@ Cinq écarts tranchés par David le 2026-11-24 « pas de correctif » : la véri
 **Revue** (`code-reviewer`) : rien de bloquant. Aucun appelant des invalidations du cache hors du store ; l'expiration du cache ne relançait déjà pas l'effet ; pas d'autre boucle vue dans le composant (lecture seule).
 
 **Après le merge** : barrer E83 au registre depuis main (preuve : le bloc « E83 » de la vérification).
+
+## PR AA : retraits, route des exercices assignés et `make_public` (2026-11-26)
+
+**Tranché par David le 2026-11-26** (points (1) et (2) de l'ordre validé, étape b.).
+
+**Retiré** : la route `GET /api/exercises/assigned` et sa fonction de lecture dans `exercise-assignments.ts` (sans appelant depuis #3178), avec ce qui ne servait qu'à elles : le schéma des filtres et sa fonction de validation, deux schémas de réponse déjà sans usage (`assignedExerciseSchema`, `studentExercisesResponseSchema`), les types `StudentExerciseFilters` et `ExerciseWithCompletion`. `make_public` : retiré du schéma Zod de l'envoi groupé, de `createBulkAssignments`, du type `BulkAssignmentData` et de la route `POST /api/exercises/[id]/assign`.
+
+**Pas touché** : les affectations `public` déjà en base ; la fonction SQL `get_student_exercises` (encore appelée par `getStudentProgress` et `getAccessibleExercises`) ; `validateSearchQuery` (`#lib/utils/search.ts`), qui n'a plus d'appelant dans ce module.
+
+**Reste, à dire à David** : l'envoi d'UNE affectation par la même route accepte encore `assigned_to_type: 'public'` (schéma `singleAssignSchema`), sans appelant dans l'appli. Hors de ce qui a été tranché : pas retiré.
+
+**Preuves** : `{ make_public: true }` seul était accepté (l'ancien test l'affirmait) ; il est refusé par le schéma et la route répond 400 sans rien écrire ; avec des élèves, la clé est retirée des données validées. Tests ciblés : 140 verts ; `pnpm check:incremental` : 0 erreur.
