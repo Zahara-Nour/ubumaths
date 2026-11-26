@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-26, après #3177._
 
 - **État** : #3177 mergée. 3 brouillons en prod (6c2e48c3 N1, 35c6fad0 N2, d2ad4df0 N3). Migrations `20261126092502_…_publies_contenu.sql` (11 variations sur 9 publiés) et `20261126103343_…_neufs_rangement_tags.sql` **pas encore jouées** (seules en attente au `migration list --linked` du 2026-11-26) ; tests d'intégration verts (le test lit l'état d'avant, différent de l'attendu), `security-auditor` sans finding bloquant (faible : la migration de contenu saute un modèle absent sans exiger « 9 ou aucun », à corriger dans `migration-contenu.ts`).
-- **Prochaine action** : réponse de David à la question d'accès → `pnpm db:migrate` depuis le dépôt principal (relancer `migration list --linked` d'abord) ; puis relecture des 3 brouillons et des 9 publiés dans `/dev/modeles`, publication par David.
-- **En attente de David** : question d'accès, jamais posée en phase 0 : « qui pourra lire quoi qu'il ne pouvait pas lire avant ? » — réponse proposée : personne (aucune policy ne change ; 3 brouillons invisibles aux élèves ; 11 variations de plus dans 9 modèles déjà publiés).
+- **Prochaine action** : `pnpm db:migrate` depuis le dépôt principal — les 4 conditions sont réunies ; relancer `migration list --linked` juste avant (le 2026-11-26, seules nos deux étaient en attente) ; puis relecture des 3 brouillons et des 9 publiés dans `/dev/modeles`, publication par David.
+- **En attente de David** : rien. Question d'accès tranchée : David a validé « personne » (2026-11-26).
 - **Pièges en cours** : `shared.blankDefaults` de 2b240d8c (`vecteur` + `colineaire`) : le schéma refuse de surcharger `answerKind`, la case choix de V5 n'en est pas gênée. aaa16821 sans `cleanCoefficients` : équation par `equation_propre()`. Message d'erreur prévue sous sa forme réécrite (`$x = x_A + a t$`, `$\left( AB \right)$`). Fichier publié modifié → relancer `migration-contenu.ts` (retirer l'ancienne). Base locale : 3 neufs et 9 copies « [essai local] » laissés en brouillon.
 - **Worktree / branche** : aucun (retiré par `pr:merger`) ; `db:migrate` depuis le dépôt principal.
 
