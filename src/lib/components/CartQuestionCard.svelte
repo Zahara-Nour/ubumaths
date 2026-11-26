@@ -13,10 +13,12 @@
 	 * puis la durée observée chez ses élèves, à appliquer (chantier `durees-ajustees`).
 	 * Plus de répétitions que de questions différentes (chantier `idees-format`) :
 	 * la tuile le dit et propose d'abaisser (une série ne répète jamais une question).
-	 * Prof seulement : le choix des variations de la ligne (idée 2), sous les réglages.
+	 * Prof seulement : le choix des variations de la ligne (idée 2), sur la carte.
 	 * Chantier `automaths` (2026-11-26) : niveaux et flèches des variations au-dessus
 	 * de la carte (`TileCard`, variations choisies seulement) ; corbeille « Retirer
 	 * de ma série » entre la durée et les répétitions, sans confirmation.
+	 * PR A2 : le prof choisit les variations (et le QCM) sur la carte même, plus de
+	 * fenêtre de `VariationPicker` ici.
 	 */
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import TileCard from '#lib/components/questions/TileCard.svelte';
@@ -29,7 +31,6 @@
 	import type { QuestionTiming } from '#lib/types/evaluation-breakdown.ts';
 	import TooShortMark from '#lib/components/series/TooShortMark.svelte';
 	import ObservedDelayHint from '#lib/components/series/ObservedDelayHint.svelte';
-	import VariationPicker from '#lib/components/series/VariationPicker.svelte';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
@@ -128,6 +129,13 @@
 			preview={instance}
 			variations={item.variations}
 			height={CATALOGUE_TILE_CARD_HEIGHT}
+			onvariationschange={onUpdateVariations
+				? (variations) => onUpdateVariations(item.templateId, variations)
+				: undefined}
+			choiceVariations={item.choiceVariations}
+			onchoicechange={onUpdateChoiceVariations
+				? (choiceVariations) => onUpdateChoiceVariations(item.templateId, choiceVariations)
+				: undefined}
 		/>
 	{:else}
 		<div
@@ -213,18 +221,6 @@
 			</Button>
 		</div>
 	</div>
-
-	{#if template && onUpdateVariations}
-		<VariationPicker
-			{template}
-			selected={item.variations}
-			onchange={(variations) => onUpdateVariations(item.templateId, variations)}
-			choiceSelected={item.choiceVariations}
-			onchoicechange={onUpdateChoiceVariations
-				? (choiceVariations) => onUpdateChoiceVariations(item.templateId, choiceVariations)
-				: undefined}
-		/>
-	{/if}
 
 	{#if distinctMax !== null}
 		<!-- Couleur d'accent sur l'icône seule : le texte garde son contraste -->
