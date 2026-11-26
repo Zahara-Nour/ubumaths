@@ -77,7 +77,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Primitives et équations différentielles                                        | TSA7        | 7         | publiée (2026-11-25) | `idees-tle-integration`             |
 | Intégration                                                                    | TSA8        | 5         | publiée (2026-11-25) | `idees-tle-integration`             |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | publiée (2026-11-26) | `idees-tle-continuite-combinatoire` |
-| Géométrie dans l'espace                                                        | TSG2        | 26        | prise (2026-11-26)   | `idees-tle-geometrie-espace`        |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | publiée (2026-11-26) | `idees-tle-geometrie-espace`        |
 | Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`                  |
 
 ### Maths expertes
@@ -160,43 +160,34 @@ La première session qui prend un niveau liste son dossier dans la copie locale
 Une session qui ajoute des variations à un modèle publié le réserve ici, jusqu'à sa migration
 de contenu appliquée en prod.
 
-| Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
-| ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
-| ccb51039 Augmentation et coefficient multiplicateur                 | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| 76f5f143 Diminution et coefficient multiplicateur                   | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| 8b59ca4b Coefficient multiplicateur d'une évolution répétée         | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
-| b73923a1 Choisir la méthode dans une figure usuelle                 | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 9c7f7ef0 Produit scalaire par projection orthogonale                | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| d787d8c0 Produit scalaire avec les normes                           | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| fe407c88 Produit scalaire avec les coordonnées                      | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| f2cc01fc Orthogonaux ou non ?                                       | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| 6058963e Produit scalaire : résoudre un problème géométrique        | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| bf5dadf6 Angle de deux vecteurs                                     | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
-| d192da3e Espace : équation cartésienne d'un plan (calculer d)       | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| d6938108 Espace : coordonnées de vecteurs et de points              | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| ac94a453 Espace : décomposer un vecteur, vecteurs coplanaires       | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 33be404b Espace : lire une représentation paramétrique de droite    | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 2b240d8c Espace : trouver un vecteur directeur ou un vecteur normal | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| eae25eba Espace : projeté orthogonal d'un point sur une droite      | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 4f056eb3 Espace : distance d'un point à une droite                  | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| aaa16821 Espace : aire et volume en repère                          | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 31b49cdf Espace : distance d'un point à un plan                     | `idees-tle-geometrie-espace`                                | 2026-11-26 |                                      |
-| 04b1cc7f Puissance d'un produit                                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 2069ac7e Représenter un intervalle sur la droite graduée            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 39b4823d Calculer le tout connaissant une partie                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 3b0a04c0 Placer un réel sur une droite graduée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 5b20321f À quels ensembles de nombres appartient ce nombre ?        | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 634b55b8 Écrire sous la forme d'une seule puissance                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 73514cdb Puissance d'un quotient                                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 7d411132 Encadrement d'amplitude donnée                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| 9660771f Comparer deux nombres par leur différence                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| a692569a Lire l'abscisse d'un point                                 | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| b720edd7 Inégalités et intervalles                                  | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| bfcbf381 Le plus petit ensemble de nombres                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                            | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d03e49c0 Calculer la valeur d'une valeur absolue                    | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
-| fa65910d Multiple : a = k × b                                       | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| Modèle (id court, titre)                                     | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
+| ------------------------------------------------------------ | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| ccb51039 Augmentation et coefficient multiplicateur          | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 76f5f143 Diminution et coefficient multiplicateur            | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 8b59ca4b Coefficient multiplicateur d'une évolution répétée  | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| b73923a1 Choisir la méthode dans une figure usuelle          | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 9c7f7ef0 Produit scalaire par projection orthogonale         | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| d787d8c0 Produit scalaire avec les normes                    | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| fe407c88 Produit scalaire avec les coordonnées               | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| f2cc01fc Orthogonaux ou non ?                                | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 6058963e Produit scalaire : résoudre un problème géométrique | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| bf5dadf6 Angle de deux vecteurs                              | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
+| 04b1cc7f Puissance d'un produit                              | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 2069ac7e Représenter un intervalle sur la droite graduée     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 39b4823d Calculer le tout connaissant une partie             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 3b0a04c0 Placer un réel sur une droite graduée               | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 5b20321f À quels ensembles de nombres appartient ce nombre ? | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 634b55b8 Écrire sous la forme d'une seule puissance          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 73514cdb Puissance d'un quotient                             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 7d411132 Encadrement d'amplitude donnée                      | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 9660771f Comparer deux nombres par leur différence           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| a692569a Lire l'abscisse d'un point                          | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| b720edd7 Inégalités et intervalles                           | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| bfcbf381 Le plus petit ensemble de nombres                   | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| c99ae1e8 Encadrement décimal à 10⁻ⁿ près                     | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 
 ## Idées en attente
 

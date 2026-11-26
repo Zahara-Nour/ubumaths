@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-geometrie-espace-publies/ (chantier idees-tle-geometrie-espace).
 
 Phase 0 validée par David le 2026-11-26 (« je valide » : toutes les fiches oui ; fiches
-docs/wip/idees-tle-geometrie-espace-fiches.md). Les variations s'ajoutent À LA FIN (les réponses
+docs/archive/wip/idees-tle-geometrie-espace/idees-tle-geometrie-espace-fiches.md). Les variations s'ajoutent À LA FIN (les réponses
 des élèves gardent l'indice de leur variation) ; la migration de contenu est générée par
 scripts/questions/migration-contenu.ts. Les options et `shared` des modèles ne changent pas.
 

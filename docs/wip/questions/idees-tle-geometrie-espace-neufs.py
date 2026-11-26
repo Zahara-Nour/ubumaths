@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-geometrie-espace-neufs/.
 
 Phase 0 validée par David le 2026-11-26 (« je valide » : toutes les fiches oui, Q1 oui ; fiches
-docs/wip/idees-tle-geometrie-espace-fiches.md) : N1, N2, N3, trois modèles neufs de Terminale spé.
+docs/archive/wip/idees-tle-geometrie-espace/idees-tle-geometrie-espace-fiches.md) : N1, N2, N3, trois modèles neufs de Terminale spé.
 
 Rangement (migration générée après la création en brouillon) :
 - N1 : « Géométrie > Espace > représentation paramétrique », TSPE-365 (nœud de 0003deae) ;
