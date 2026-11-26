@@ -1,0 +1,711 @@
+{
+	"id": "52b884ee-9347-4f87-b878-971caa286535",
+	"title": "Résoudre une équation aˣ = b ou xᵃ = b avec log",
+	"description": "10ˣ = b ; aˣ = b en valeur exacte ; k·aˣ = b au centième ; capital doublé (durée réelle) ; xᵃ = b, x > 0 ; taux d'évolution annuel moyen",
+	"grades": ["T_TECHNO"],
+	"level": 2,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\log({{b}})"
+				}
+			],
+			"statement": "Résous l'équation $10^x={{b}}$. Donne la valeur exacte.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|3|5|7|15|40|0.3"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"Pour $b>0$, $10^x=b$ a une unique solution : $x=\\log(b)$.",
+					"$10^x={{eval:b;d}}\\iff x=\\textcolor{{{color:primary.0}}}{\\log({{eval:b;d}})}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{\\log({{b}})}{\\log({{a}})}"
+				}
+			],
+			"statement": "Résous l'équation ${{a}}^x={{b}}$. Donne la valeur exacte.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "3|5|6|10|11|12|15|20|50"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{a}}^x={{b}}\\iff x\\log({{a}})=\\log({{b}})\\iff x=\\textcolor{{{color:primary.0}}}{\\dfrac{\\log({{b}})}{\\log({{a}})}}$ (environ ${{eval:round(100*x)/100;a2}}$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+				}
+			],
+			"statement": "Résous l'équation ${{k}}\\times{{a}}^x={{b}}$. Donne une valeur approchée de la solution au centième.\n\n$x\\approx ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "b",
+					"expression": "30..90"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(b/k)/log(a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001", "abs(b/k-round(b/k)) > 0.001"],
+			"correction": {
+				"steps": [
+					"On isole d'abord la puissance : ${{a}}^x=\\dfrac{ {{b}} }{ {{k}} }$.",
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"$x=\\dfrac{\\log\\left(\\frac{ {{b}} }{ {{k}} }\\right)}{\\log({{a}})}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+				}
+			],
+			"statement": "Un capital placé à intérêts composés au taux annuel de ${{t}}\\,\\%$ est multiplié par ${{eval:1+t/100;d}}^x$ au bout de $x$ années.\n\nRésous l'équation ${{eval:1+t/100;d}}^x=2$ pour trouver la durée au bout de laquelle le capital a doublé. Donne une valeur approchée au centième.\n\n$x\\approx ?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..8"
+				},
+				{
+					"name": "x",
+					"expression": "eval:log(2)/log(1+t/100)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.01"],
+			"correction": {
+				"steps": [
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"$x=\\dfrac{\\log(2)}{\\log({{eval:1+t/100;d}})}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$ : le capital double entre ${{eval:floor(x)}}$ et ${{eval:floor(x)+1}}$ ans."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:round(100*x)/100;a2}}"
+				}
+			],
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $x^{ {{a}} }={{b}}$. Donne une valeur approchée de la solution au centième.\n\n$x\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3|4|5"
+				},
+				{
+					"name": "b",
+					"expression": "10..90"
+				},
+				{
+					"name": "x",
+					"expression": "eval:10^(log(b)/a)"
+				}
+			],
+			"conditions": ["abs(x-round(x)) > 0.001"],
+			"correction": {
+				"steps": [
+					"$x>0$ et ${{b}}>0$ : on prend le logarithme des deux membres.",
+					"$\\log\\left(x^{ {{a}} }\\right)=\\log({{b}})\\iff {{a}}\\log(x)=\\log({{b}})\\iff \\log(x)=\\dfrac{\\log({{b}})}{ {{a}} }$.",
+					"$x=10^{\\frac{\\log({{b}})}{ {{a}} }}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(100*x)/100;a2}}}$ (c'est aussi ${{b}}^{\\frac{1}{ {{a}} }}$)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					},
+					"expectedAnswer": "{{eval:round(1000*(x-1))/10;a1}}"
+				}
+			],
+			"statement": "Le prix d'un article a augmenté de ${{p}}\\,\\%$ en ${{n}}$ ans. On cherche le taux d'évolution annuel moyen $t$, tel que $(1+t)^{ {{n}} }={{eval:1+p/100;d}}$.\n\nDonne ce taux en pourcentage, arrondi au dixième.\n\n$t\\approx ?\\,\\%$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "20|30|40|50|60|80"
+				},
+				{
+					"name": "n",
+					"expression": "3..8"
+				},
+				{
+					"name": "x",
+					"expression": "eval:10^(log(1+p/100)/n)"
+				}
+			],
+			"conditions": [],
+			"correction": {
+				"steps": [
+					"On pose $X=1+t>0$ : $X^{ {{n}} }={{eval:1+p/100;d}}\\iff {{n}}\\log(X)=\\log({{eval:1+p/100;d}})$.",
+					"$X=10^{\\frac{\\log({{eval:1+p/100;d}})}{ {{n}} }}\\approx{{eval:round(10000*x)/10000;a4}}$, donc $t\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(1000*(x-1))/10;a1}}}\\,\\%$ par an.",
+					"Ce n'est pas ${{p}}\\div{{n}}$ : les hausses successives se multiplient."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$, sans calculatrice, l'équation ${{eval:c^p;d}}^x={{eval:c^q;d}}$. Donne la valeur exacte, sous la forme d'un entier ou d'une fraction simplifiée.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "p",
+					"expression": "-3|-2|-1|2|3|4|5"
+				},
+				{
+					"name": "q",
+					"expression": "-3..5"
+				}
+			],
+			"conditions": [
+				"q != 0",
+				"abs(q) != abs(p)",
+				"c != 3 || p > 0",
+				"c != 3 || q > 0",
+				"c^p <= 625",
+				"c^q <= 625"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:p/q}}",
+							"message": "${{if:p==1||{{if:p==-1|-|{{p}}}}}}x={{q}}$ : on divise ${{q}}$ par ${{p}}$, pas l'inverse.",
+							"label": "Fraction renversée"
+						},
+						{
+							"answer": "{{eval:-q/p}}",
+							"message": "Écris ${{eval:c^p;d}}={{c}}^{ {{p}} }$ et ${{eval:c^q;d}}={{c}}^{ {{q}} }$ : vérifie le signe des exposants.",
+							"label": "Signe"
+						},
+						{
+							"answer": "{{eval:c^q/c^p}}",
+							"message": "On ne divise pas ${{eval:c^q;d}}$ par ${{eval:c^p;d}}$ : écris les deux nombres comme des puissances de ${{c}}$.",
+							"label": "b/a"
+						}
+					],
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:c^p;d}}={{c}}^{ {{p}} }$ et ${{eval:c^q;d}}={{c}}^{ {{q}} }$ : l'équation s'écrit $\\left({{c}}^{ {{p}} }\\right)^x={{c}}^{ {{q}} }$, soit ${{c}}^{ {{if:p==1||{{if:p==-1|-|{{p}}}}}}x}={{c}}^{ {{q}} }$.",
+					"Les deux membres sont strictement positifs : on prend leur logarithme, qui garde l'égalité (ou le sens de l'inégalité, car $\\log$ est strictement croissante), et on utilise $\\log\\left(a^x\\right)=x\\log(a)$.",
+					"${{if:p==1||{{if:p==-1|-|{{p}}}}}}x\\log({{c}})={{if:q==1||{{if:q==-1|-|{{q}}}}}}\\log({{c}})$, et $\\log({{c}})\\neq 0$ : ${{if:p==1||{{if:p==-1|-|{{p}}}}}}x={{q}}$, donc $x=\\textcolor{{{color:primary.0}}}{ {{eval:q/p}} }$."
+				]
+			},
+			"hint": "Écris les deux nombres comme des puissances d'un même entier."
+		},
+		{
+			"statement": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'équation $x^{ {{a}} }={{b}}$. Donne la valeur exacte : un entier si c'est possible, sinon une puissance de ${{b}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "w",
+					"expression": "0|0|1"
+				},
+				{
+					"name": "c",
+					"expression": "2|3"
+				},
+				{
+					"name": "r",
+					"expression": "2|3|5|6|7"
+				},
+				{
+					"name": "b",
+					"expression": "eval:w*c^a+(1-w)*r"
+				}
+			],
+			"conditions": [
+				"w + abs(r-a) > 0",
+				"w*c^a <= 1000",
+				"w + abs(r^(1/a)-round(r^(1/a))) > 0.001"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==1|{{c}}|{{b}}^{\\frac{1}{ {{a}} }}}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{ {{b}} }{ {{a}} }",
+							"message": "$x^{ {{a}} }$ n'est pas ${{a}}x$ : on ne divise pas par ${{a}}$.",
+							"label": "b/a"
+						},
+						{
+							"answer": "{{b}}^{ {{a}} }",
+							"message": "Pour défaire la puissance ${{a}}$, on élève à la puissance $\\dfrac{1}{ {{a}} }$, pas à la puissance ${{a}}$.",
+							"label": "b puissance a"
+						},
+						{
+							"answer": "\\frac{\\log({{b}})}{ {{a}} }",
+							"message": "$\\dfrac{\\log({{b}})}{ {{a}} }$ est la valeur de $\\log(x)$, pas de $x$ : écris $x$ {{if:w==1|comme un entier|comme une puissance de ${{b}}$}}.",
+							"label": "log(x) au lieu de x"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x>0$ et ${{b}}>0$ : on prend le logarithme des deux membres.",
+					"${{a}}\\log(x)=\\log({{b}})\\iff\\log(x)=\\dfrac{\\log({{b}})}{ {{a}} }$, donc $x=10^{\\frac{\\log({{b}})}{ {{a}} }}={{b}}^{\\frac{1}{ {{a}} }}$.",
+					"{{if:w==1|Or ${{b}}={{c}}^{ {{a}} }$ : $x=\\textcolor{{{color:primary.0}}}{ {{c}} }$.|$x=\\textcolor{{{color:primary.0}}}{ {{b}}^{\\frac{1}{ {{a}} }} }$ (environ ${{eval:round(100*b^(1/a))/100;a2}}$).}}"
+				]
+			},
+			"hint": "Élève les deux membres à la puissance $\\dfrac{1}{ {{a}} }$, ou prends leur logarithme."
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\log(7)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "7"
+			},
+			"description": "10^x = 7 : x = log 7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\log 7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "7"
+			},
+			"description": "log 7 sans parenthèses",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\dfrac{7}{10}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "7"
+			},
+			"description": "Erreur : 7/10",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\dfrac{\\log(5)}{\\log(2)}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "2^x = 5 : log 5 / log 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{\\log 5}{\\log 2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "2^x = 5 : \\frac sans parenthèses",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2,32"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : valeur approchée 2,32 (exacte demandée)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\log\\left(\\dfrac{5}{2}\\right)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : log(5/2)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\dfrac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"description": "Erreur : 5/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4,06"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "50",
+				"k": "3"
+			},
+			"description": "3 × 2^x = 50 : 4,06",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2,18"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "50",
+				"k": "3"
+			},
+			"description": "Erreur : log(50)/log(6) ≈ 2,18",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["17,67"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "4"
+			},
+			"description": "1,04^x = 2 : 17,67",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1,92"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "4"
+			},
+			"description": "Erreur : 2/1,04 ≈ 1,92",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2,71"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "20"
+			},
+			"description": "x^3 = 20 : 2,71",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["6,67"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "20"
+			},
+			"description": "Erreur : 20/3 ≈ 6,67",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["8,4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5",
+				"p": "50"
+			},
+			"description": "+50 % en 5 ans : 8,4 %",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5",
+				"p": "50"
+			},
+			"description": "Erreur : 50/5 = 10",
+			"variationIndex": 5
+		},
+		{
+			"description": "F1 : 0,25ˣ = 32 → −5/2",
+			"variationIndex": 6,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{5}{2}"]
+		},
+		{
+			"description": "F1 : −2,5",
+			"variationIndex": 6,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2.5"]
+		},
+		{
+			"description": "F1 : fraction renversée",
+			"variationIndex": 6,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$-2 x = 5$ : on divise $5$ par $-2$, pas l'inverse."
+			},
+			"answers": ["-\\frac{2}{5}"]
+		},
+		{
+			"description": "F1 : signe",
+			"variationIndex": 6,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Écris $0.25 = 2^{-2}$ et $32 = 2^5$ : vérifie le signe des exposants."
+			},
+			"answers": ["\\frac{5}{2}"]
+		},
+		{
+			"description": "F1 : b/a",
+			"variationIndex": 6,
+			"variables": {
+				"c": "2",
+				"p": "-2",
+				"q": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "On ne divise pas $32$ par $0.25$ : écris les deux nombres comme des puissances de $2$."
+			},
+			"answers": ["128"]
+		},
+		{
+			"description": "F1 : 8ˣ = 4 → 2/3",
+			"variationIndex": 6,
+			"variables": {
+				"c": "2",
+				"p": "3",
+				"q": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{2}{3}"]
+		},
+		{
+			"description": "F1 : 8ˣ = 4, inverse",
+			"variationIndex": 6,
+			"variables": {
+				"c": "2",
+				"p": "3",
+				"q": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["\\frac{3}{2}"]
+		},
+		{
+			"description": "F6 : x³ = 5",
+			"variationIndex": 7,
+			"variables": {
+				"a": "3",
+				"w": "0",
+				"c": "2",
+				"r": "5",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5^{\\frac{1}{3}}"]
+		},
+		{
+			"description": "F6 : racine cubique (la consigne demande une puissance)",
+			"variationIndex": 7,
+			"variables": {
+				"a": "3",
+				"w": "0",
+				"c": "2",
+				"r": "5",
+				"b": "5"
+			},
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"answers": ["\\sqrt[3]{5}"]
+		},
+		{
+			"description": "F6 : b/a",
+			"variationIndex": 7,
+			"variables": {
+				"a": "3",
+				"w": "0",
+				"c": "2",
+				"r": "5",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$x^3$ n'est pas $3 x$ : on ne divise pas par $3$."
+			},
+			"answers": ["\\frac{5}{3}"]
+		},
+		{
+			"description": "F6 : b puissance a",
+			"variationIndex": 7,
+			"variables": {
+				"a": "3",
+				"w": "0",
+				"c": "2",
+				"r": "5",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour défaire la puissance $3$, on élève à la puissance $\\dfrac{1}{3}$, pas à la puissance $3$."
+			},
+			"answers": ["5^{3}"]
+		},
+		{
+			"description": "F6 : log(x)",
+			"variationIndex": 7,
+			"variables": {
+				"a": "3",
+				"w": "0",
+				"c": "2",
+				"r": "5",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$\\dfrac{\\log(5)}{ 3 }$ est la valeur de $\\log(x)$, pas de $x$ : écris $x$ comme une puissance de $5$."
+			},
+			"answers": ["\\frac{\\log(5)}{3}"]
+		},
+		{
+			"description": "F6 : x³ = 27 → 3",
+			"variationIndex": 7,
+			"variables": {
+				"a": "3",
+				"w": "1",
+				"c": "3",
+				"r": "2",
+				"b": "27"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "F6 : x³ = 27, b/a",
+			"variationIndex": 7,
+			"variables": {
+				"a": "3",
+				"w": "1",
+				"c": "3",
+				"r": "2",
+				"b": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["9"]
+		}
+	]
+}
