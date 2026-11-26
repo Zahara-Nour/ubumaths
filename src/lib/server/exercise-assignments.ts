@@ -116,7 +116,7 @@ function callExerciseAccess(
 /**
  * Create a new exercise assignment
  *
- * Teacher assigns an exercise to a student, class, or makes it public.
+ * Teacher assigns an exercise to a student or to a class.
  * Validates ownership and assignment data before creation.
  *
  * @param supabase - Supabase client
