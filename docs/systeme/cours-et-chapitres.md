@@ -634,5 +634,4 @@ Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) 
 
 - **`src/lib/components/templates/`** ne garde que `ChapterTemplateIndicator` pour les modèles de
   chapitre (les composants de l'ancien système ont été supprimés à l'étape 5A) ; il héberge aussi
-  `VariableAutocomplete`, `TagsInput`, `FiltersHelp`, qui servent les **modèles de message**
-  (hors de cette zone, donc hors `couvre:`).
+  `TagsInput` (page de conversion des constructions, hors de cette zone, donc hors `couvre:`).

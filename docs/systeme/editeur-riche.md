@@ -98,7 +98,7 @@ de planter. 8 appelants (messages, signalements de fiches, notebook).
 
 | Fonction                          | Ce qu'elle fait                                                                 | Appelants                                                                                                          |
 | --------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `sanitizeHtml`                    | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs     | notebook, aperçu de variante, modèles de messages                                                                  |
+| `sanitizeHtml`                    | DOMPurify (`isomorphic-dompurify`), liste blanche de balises et d'attributs     | notebook, aperçu de variante                                                                                       |
 | `sanitizePlainText`               | retire toute balise, garde le texte                                             | `ReportErrorDialog.svelte`                                                                                         |
 | `sanitizeUrl` (`sanitize-url.ts`) | lien inchangé si schéma `http`, `https`, `mailto` ou relatif ; sinon `'#'`      | rendu markdown : `InlineRenderer`, `ParagraphNode`, `HeadingNode`, `HintReference`, `ImageDisplay`, `VideoDisplay` |
 | `containsDangerousHtml`           | détecte `<script`, `<iframe`, `on…=`, `javascript:`…                            | aucun (doublon, voir Écarts)                                                                                       |
@@ -153,7 +153,7 @@ est {{score}}.</p>` → `<p> .</p>` ; `$\sqrt{\frac{1}{2}}$ fin` → `$ fin` (ap
     (`math-field`, `math-inline`, `math-display`, attributs `read-only` / `disabled`). MathLive lit
     leur texte comme du LaTeX, où `\htmlStyle`, `\class`, `\cssId`, `\htmlData`, `\href` posent
     style, classe, identifiant, données ou lien. Aucun appelant de `sanitizeHtml` (sorties HTML
-    du carnet, modèles de messages) n'en produit (grep), et la prod n'en contenait pas au
+    du carnet) n'en produit (grep), et la prod n'en contenait pas au
     2026-11-08 (0 carnet sur 2, 0 modèle de message). Garde : `describeSansMathLive`
     (`sanitize-attack-vectors.ts`).
   - `\href` de MathLive (0.111.1, mesuré dans son code) : au rendu, une adresse autre que `http:`

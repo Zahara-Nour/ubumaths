@@ -139,8 +139,7 @@ describe('createAdminElevationHandle — sections où l’élévation compte', (
 		'/api/questions/templates/bulk-status',
 		'/api/errors/bulk-resolve',
 		'/api/errors/delete-resolved',
-		'/api/bug-reports/config',
-		'/api/messages/templates/22222222-2222-4222-8222-222222222222/approve'
+		'/api/bug-reports/config'
 	])('%s : route d’écriture admin, un cookie valide donne l’élévation', async (chemin) => {
 		const client = adminClient();
 		const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client });

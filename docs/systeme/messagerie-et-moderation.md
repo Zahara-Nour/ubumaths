@@ -1,23 +1,22 @@
 ---
 couvre:
-  - 'src/lib/components/templates/{FiltersHelp,TagsInput,VariableAutocomplete}.svelte'
-  - 'src/lib/templates/**'
+  - src/lib/components/templates/TagsInput.svelte
   - 'src/routes/(protected)/messages/**'
   - 'src/routes/api/{messages,moderation,notifications,warnings}/**'
   - 'src/routes/api/{student,classes,students}/*/warnings/**'
   - 'src/routes/api/student/warnings/**'
   - 'src/lib/components/{moderation,notifications,student-inbox}/**'
   - 'src/lib/components/{AddFriend,FriendRequests,FriendsList,OnlineStatus}.svelte'
-  - 'src/lib/stores/{privateMessages,notifications,messageTemplates,mentions,hashtags}.svelte.ts'
+  - 'src/lib/stores/{privateMessages,notifications,mentions,hashtags}.svelte.ts'
   - 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox}.ts'
-  - 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts'
+  - 'src/lib/server/validation/{messages,moderation,notifications,warnings}.ts'
   - src/lib/server/message-attachments.ts
   - src/lib/utils/message-attachment-rules.ts
   - src/lib/utils/message-reply.ts
-  - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
+  - 'src/lib/types/{notification,warnings,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
   - src/lib/navigation/goto-notification.ts
-  - 'src/routes/(protected)/dashboard/{teacher,admin}/{moderation,notifications,message-templates,friendships}/**'
+  - 'src/routes/(protected)/dashboard/{teacher,admin}/{moderation,notifications,friendships}/**'
   - 'src/routes/(protected)/dashboard/notifications/**'
 ---
 
@@ -239,21 +238,18 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 ### Modèles de messages
 
-- Pages : `src/routes/(protected)/dashboard/admin/message-templates/` (+ `stats/`). La page du
-  prof (`dashboard/teacher/message-templates/`) a été retirée le 2026-11-25 (écarts E58 à E60 :
-  aperçu qui plantait, corps sans champ de saisie, création refusée ; David ne s'en servait
-  pas) ; la table `message_templates` et ses règles d'accès restent. Les pages admin utilisent `FiltersHelp`, `TagsInput` et
-  `VariableAutocomplete` de `src/lib/components/templates/` (`TagsInput` sert aussi à
-  `src/routes/(protected)/constructions/conversion/+page.svelte`).
-- API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul :
-  `requireAdmin`, prof en mode administration compris),
-  `[id]/duplicate/`, `[id]/preview/`, `[id]/versions/`, `favorites/`, `match/`, `stats/`.
-- Moteur de variables : `src/lib/templates/` (vérifié le 2026-10-13) — `templateVariables.ts`
-  (variables par déclencheur, `VARIABLES_BY_TRIGGER`), `templateEngine.ts` (`renderTemplate`,
-  `previewTemplate`, `validateTemplate`, placeholders `{{…}}`), `advancedEngine.ts` (blocs
-  `{{#if}}…{{/if}}`, filtres `{{var | filtre}}`, `TEMPLATE_FILTERS`) ; tests dans
-  `src/lib/templates/__tests__/`. Types `src/lib/types/messageTemplates.ts` ; validation
-  `src/lib/server/validation/message-templates.ts`. Sans rapport avec les modèles de chapitre.
+- **Plus aucun code** : les modèles de message ne servaient à aucun envoi (la page d'écriture
+  d'un message ne les lit pas). La page du prof a été retirée le 2026-11-25 (écarts E58 à E60),
+  puis le reste le 2026-11-26 : pages admin (`dashboard/admin/message-templates/`), routes
+  `api/messages/templates/`, store, moteur de variables `src/lib/templates/`, composants
+  `FiltersHelp` et `VariableAutocomplete`, types et validation.
+- **Restent en base** : la table `message_templates`, ses tables liées (versions, favoris,
+  usages), ses règles d'accès et ses fonctions, couvertes par les tests d'intégration
+  (`tests/integration/database/template-triggers.test.ts`, entre autres). Rien de l'appli ne
+  les lit ni ne les écrit.
+- `TagsInput` (`src/lib/components/templates/`) sert à
+  `src/routes/(protected)/constructions/conversion/+page.svelte`. Sans rapport avec les modèles
+  de chapitre.
 
 ### Amitiés
 
@@ -480,8 +476,7 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessageSchema`,
 `searchMessagesQuerySchema`, `restrictUserSchema`, `deleteMessageSchema`, `addWarningsBulkSchema`,
-`removeWarningsBulkSchema`, `createNotificationSchema`, `markNotificationReadSchema`, schémas de
-`message-templates.ts`. `reports/[id]/` porte son schéma en local (`reviewReportSchema`) ;
+`removeWarningsBulkSchema`, `createNotificationSchema`, `markNotificationReadSchema`. `reports/[id]/` porte son schéma en local (`reviewReportSchema`) ;
 `messages/[id]/context/` borne `count` à la main (1 à 50).
 
 ## Comment étendre
@@ -516,7 +511,7 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   `sent/__tests__/sent.test.ts`, `thread/__tests__/thread.test.ts` (le `GET` appelé avec l'adresse
   de la page et des lignes à la forme réelle des RPC).
 - Validation : `src/lib/server/validation/__tests__/warnings.test.ts`,
-  `message-templates.test.ts`, `rewards-messages-notifications.test.ts`.
+  `rewards-messages-notifications.test.ts`.
 - Client : `src/lib/stores/__tests__/notifications.test.ts`,
   `src/lib/utils/__tests__/sanitize-notification.test.ts`,
   `src/lib/components/student-inbox/__tests__/`,
