@@ -77,7 +77,7 @@ figurent pas. Les deux fichiers `TA` ne sont pas repris.
 | Primitives et équations différentielles                                        | TSA7        | 7         | publiée (2026-11-25) | `idees-tle-integration`             |
 | Intégration                                                                    | TSA8        | 5         | publiée (2026-11-25) | `idees-tle-integration`             |
 | Combinatoire et dénombrement                                                   | TSG1        | 9         | publiée (2026-11-26) | `idees-tle-continuite-combinatoire` |
-| Géométrie dans l'espace                                                        | TSG2        | 26        | libre                |                                     |
+| Géométrie dans l'espace                                                        | TSG2        | 26        | prise (2026-11-26)   | `idees-tle-geometrie-espace`        |
 | Probabilités (conditionnelles, binomiale, variables aléatoires, concentration) | TSP1 à TSP4 | 11        | publiée (2026-11-24) | `idees-tle-probas`                  |
 
 ### Maths expertes
