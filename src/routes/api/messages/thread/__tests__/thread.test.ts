@@ -173,4 +173,23 @@ describe('GET /api/messages/thread', () => {
 			sender_avatar_url: 'a.png'
 		});
 	});
+
+	// Écart V133 : la page du fil choisit à qui répondre d'après les destinataires
+	it('chaque message porte ses destinataires (identifiant et nom), rien d’autre', async () => {
+		const { promise } = call((name) => {
+			if (name === 'get_message_thread') return { data: [threadRow(ROOT, USER, 0)], error: null };
+			return {
+				data: [
+					{
+						...detailsRow(ROOT, USER),
+						recipients: [{ id: TEACHER, name: 'M. Prof', avatar_url: null, role: 'teacher' }]
+					}
+				],
+				error: null
+			};
+		});
+
+		const { messages } = await (await promise).json();
+		expect(messages[0].recipients).toEqual([{ id: TEACHER, name: 'M. Prof' }]);
+	});
 });
