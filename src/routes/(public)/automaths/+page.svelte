@@ -23,7 +23,11 @@
 		filterTemplatesByGrade,
 		notionTemplateCount
 	} from '#lib/questions/catalogue.ts';
-	import { initiallyOpenGroups, searchCatalogue } from '#lib/questions/catalogue-search.ts';
+	import {
+		initiallyOpenGroups,
+		searchCatalogue,
+		type SearchShortcut
+	} from '#lib/questions/catalogue-search.ts';
 	import {
 		buildProgramme,
 		chapterTemplateCount,
@@ -32,6 +36,8 @@
 	import { GRADE_CODES, GRADES, isGradeCode, type GradeCode } from '#lib/types/grades.ts';
 
 	const UNCLASSIFIED_VALUE = 'non-classes';
+	// Groupe replié des résultats trouvés seulement par la correction ou le programme
+	const OTHERS_GROUP_VALUE = 'aussi';
 	// Valeur du menu « Niveau » quand aucun niveau n'est choisi
 	const ALL_GRADES_VALUE = 'tous';
 	// Paramètres d'adresse du filtre : un rechargement ou un lien le conserve
@@ -103,6 +109,8 @@
 
 	// Notion choisie (celle de l'adresse au chargement)
 	let chosenNotionId = $state<string | undefined>(initialParams.get(NOTION_PARAM) ?? undefined);
+	// Sous-notion où descendre à l'arrivée sur la notion (raccourci de la recherche)
+	let arrivalRubricId = $state<string | null>(null);
 
 	// Branche de la notion choisie ; sinon la première (notion absente au niveau, ou inconnue)
 	let selectedBranch = $derived(
@@ -196,8 +204,29 @@
 	async function handleNavSelect(id: string) {
 		if (activeView === PROGRAMME_VIEW) chosenChapterId = id;
 		else chosenNotionId = id;
+		arrivalRubricId = null;
 		navSheetOpen = false;
 		writeChoicesToUrl();
+		await showChosenContent();
+	}
+
+	/**
+	 * Raccourci de la recherche : la recherche s'efface, la notion s'affiche
+	 * (vue « Notions »), et la page descend à la sous-notion s'il y en a une
+	 */
+	async function handleShortcut(shortcut: SearchShortcut) {
+		clearTimeout(searchTimer);
+		searchInput = '';
+		searchQuery = '';
+		chosenView = NOTIONS_VIEW;
+		chosenNotionId = shortcut.notionId;
+		arrivalRubricId = shortcut.rubricId;
+		writeChoicesToUrl();
+		await showChosenContent();
+	}
+
+	/** Haut du contenu choisi à l'écran, focus sur son titre */
+	async function showChosenContent() {
 		// Panneau refermé et contenu rendu avant de défiler (le panneau bloque le défilement)
 		await tick();
 		// Choisi après avoir descendu : on remonte au début
@@ -271,6 +300,7 @@
 	/** Efface la recherche : retour à la notion où l'on était */
 	function clearSearch() {
 		clearTimeout(searchTimer);
+		arrivalRubricId = null;
 		searchInput = '';
 		searchQuery = '';
 		writeChoicesToUrl();
@@ -473,9 +503,23 @@
 					{/if}
 				</div>
 
+				{#if searchResult && searchResult.shortcuts.length > 0}
+					<!-- Raccourcis : le mot cherché est le nom d'une notion ou d'une sous-notion -->
+					<nav aria-label="Aller à" class="mb-6 flex flex-wrap items-center gap-2">
+						<span class="text-sm text-muted-foreground">Aller à :</span>
+						{#each searchResult.shortcuts as shortcut (shortcut.rubricId ?? shortcut.notionId)}
+							<Button variant="outline" size="sm" onclick={() => handleShortcut(shortcut)}>
+								{shortcut.path.join(' › ')}
+								<span class="text-muted-foreground" aria-hidden="true">· {shortcut.count}</span>
+								<span class="sr-only">, {questionCount(shortcut.count)}</span>
+							</Button>
+						{/each}
+					</nav>
+				{/if}
+
 				{#if searchResult}
 					<!-- Résultats de la recherche, à la place de la liste des notions -->
-					{#if searchResult.total === 0}
+					{#if searchResult.total === 0 && searchResult.others.length === 0}
 						<div class="space-y-4 rounded-lg border border-dashed p-12 text-center">
 							<p class="text-muted-foreground">Aucune question pour « {searchQuery.trim()} »</p>
 							{#if chosenGrade}
@@ -486,7 +530,9 @@
 						</div>
 					{:else}
 						<p class="mb-4 text-sm text-muted-foreground" aria-live="polite">
-							{questionCount(searchResult.total)}
+							{searchResult.total === 0
+								? 'Aucune question dans les titres et les énoncés'
+								: questionCount(searchResult.total)}
 						</p>
 						<Accordion.Root
 							type="multiple"
@@ -515,6 +561,27 @@
 									</Accordion.Content>
 								</Accordion.Item>
 							{/each}
+							{#if searchResult.others.length > 0}
+								<!-- Mot trouvé seulement dans la correction ou un point du programme : replié -->
+								<Accordion.Item
+									value={OTHERS_GROUP_VALUE}
+									class="rounded-lg border !border-b-0 bg-background"
+								>
+									<Accordion.Trigger class="px-4 hover:bg-muted/50 hover:no-underline">
+										<span class="font-medium text-foreground">
+											Aussi dans les corrigés et le programme
+											<span class="font-normal text-muted-foreground">
+												· {searchResult.others.length}</span
+											>
+										</span>
+									</Accordion.Trigger>
+									<Accordion.Content class="px-4 pt-2 pb-4">
+										{#if openSearchGroups.includes(OTHERS_GROUP_VALUE)}
+											<CatalogueGallery templates={searchResult.others} />
+										{/if}
+									</Accordion.Content>
+								</Accordion.Item>
+							{/if}
 						</Accordion.Root>
 					{/if}
 				{:else if activeView === NOTIONS_VIEW && catalogue.branches.length === 0 && catalogue.unclassified.length === 0}
@@ -548,7 +615,7 @@
 					)}
 					{#snippet notionContent()}
 						{#key notion.id}
-							<CatalogueNotionSections {notion} />
+							<CatalogueNotionSections {notion} initialRubricId={arrivalRubricId} />
 						{/key}
 					{/snippet}
 				{/if}
