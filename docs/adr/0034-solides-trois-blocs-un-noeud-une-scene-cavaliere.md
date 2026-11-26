@@ -2,6 +2,8 @@
 
 - **Statut** : acceptée — mise en œuvre terminée le 2026-11-01 (chantier solides, #2003→#2046 ; journal
   archivé : `docs/archive/wip/solides-progress.md`)
+- **Amendée par** : [ADR 0045](0045-figures-de-l-espace-qui-tournent.md) pour le point 3 (la cavalière reste
+  la vue au repos et au PDF ; une figure peut tourner à l'écran dans une autre vue)
 - **Date** : 2026-10-30 · **Décidée par** : David (« je te suis » aux questions Q1, Q2 et Q5 de la phase 0,
   qui portaient chacune une recommandation)
 
