@@ -2,13 +2,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après le `--publier` de David (avant /clear)._
+_Mis à jour le 2026-11-26, migrations générées, PR à ouvrir._
 
-- **État** : N1 (`2c0bc696…`) et N2 (`bfb21166…`) sont en prod en brouillon, sans nœud (vérifié par MCP). Leurs ids sont commités et poussés sur `feat/idees-3e-probabilites-migrations` (fae366bf2). Aucune PR ouverte.
-- **Prochaine action** : dans le worktree, `cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline` ; générer les migrations de rangement (`migration-rangement.ts --dir scripts/questions/idees-3e-probabilites-neufs`) et de contenu (`migration-contenu.ts --dir scripts/questions/idees-3e-probabilites-publies`) ; vérifier les règles du tag en base ; `security-auditor` ; PR, CI, merge ; `db:migrate` (4 conditions, `migration list --linked` d'abord). Ensuite relecture dans `/dev/modeles` (`?point=3-033`, série pour les publiés).
+- **État** : migrations `20261126090110_…_neufs_rangement_tags` (N1, N2 → « événements », 3-033) et `20261126090116_…_publies_contenu` (+1, +4, +1 variations) générées et commitées sur la branche. Tests d'intégration verts, rouges sans les écritures ; règles du tag vérifiées en prod (MCP).
+- **Prochaine action** : PR, CI, merge ; `db:migrate` (4 conditions, `migration list --linked` d'abord). Ensuite relecture dans `/dev/modeles` (`?point=3-033`, série pour les publiés).
 - **En attente de David** : rien.
-- **Pièges en cours** : `migration-contenu.ts` refuse si un des trois publiés a changé en prod depuis l'export du 2026-11-26. Le worktree n'a pas encore `.env`/`.env.local` ni `node_modules`. La base locale garde 5 brouillons d'essai.
+- **Pièges en cours** : les gardes des migrations refusent si un modèle a changé en prod depuis le relevé du 2026-11-26. La base locale garde 5 brouillons d'essai.
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites-migrations` · `feat/idees-3e-probabilites-migrations`.
+
+## Migrations (2026-11-26)
+
+- Rangement : 2 modèles neufs sur « Probabilités > Expériences aléatoires > événements », tag
+  3-033 (point posé sur cette sous-notion, vérifié en prod ; modèles sans nœud ni tag).
+- Contenu : 247fddd1 (+ variation 5), b28ed4fa (+ variations 5 à 8), e73b947f (+ variation 5).
+- Condition (2) de `db:migrate` : écritures neutralisées dans une copie du SQL → 4 tests rouges
+  (2 par fichier), puis SQL d'origine remis (empreintes identiques) → verts.
 
 ## Lot (2026-11-26)
 

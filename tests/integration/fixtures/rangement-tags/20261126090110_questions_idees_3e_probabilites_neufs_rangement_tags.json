@@ -1,0 +1,24 @@
+{
+	"migration": "supabase/migrations/20261126090110_questions_idees_3e_probabilites_neufs_rangement_tags.sql",
+	"ranges": [
+		{
+			"id": "2c0bc696-a8ad-4fd0-be34-b61637a6b620",
+			"title": "Probabilités dans un tableau d'effectifs",
+			"fichier": "n1-probabilites-dans-un-tableau-d-effectifs.json",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sousNotion": "événements",
+			"point": "3-033"
+		},
+		{
+			"id": "bfb21166-6482-4f30-b2e5-b5f86f5de0e0",
+			"title": "Jeux à deux épreuves : évènements « et », « ou »",
+			"fichier": "n2-jeux-a-deux-epreuves-et-ou.json",
+			"branche": "Probabilités",
+			"notion": "Expériences aléatoires",
+			"sousNotion": "événements",
+			"point": "3-033"
+		}
+	],
+	"niveaux": []
+}
