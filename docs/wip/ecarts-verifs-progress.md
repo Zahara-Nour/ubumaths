@@ -374,3 +374,24 @@ Worktree `ubumaths-wt-ecarts-verifs-e77-variation-0`, branche `fix/ecarts-verifs
 | E82 | tranché par David le 2026-11-25 : à corriger avec E63, même correctif (une graduation étiquetée sur deux à 390 px, PR « téléphone »)                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 `#1337` (iPhone : bandeau d'atelier partagé + « Mes objets » ouvert, plus de place pour la console à 659 px) n'est pas ici : c'est la prochaine étape de `verifs-auto`, qui l'enquête elle-même (vrai ou test ?) et l'ajoute ici si c'est un écart.
+
+## PR W : E78, un élève lit l'exercice assigné hors fiche (2026-11-26)
+
+**Trouvé** : deux règles se contredisaient. La route d'accès (`student_has_exercise_access(uuid, uuid)`) disait oui pour une affectation à l'élève, à sa classe ou « public » ; la règle de lecture d'`exercises` (`student_has_exercise_access(uuid)`) ne regardait que les fiches → 404. En prod le 2026-11-26 : 0 affectation hors fiche, 428 exercices, 11 publics.
+
+**Tranché par David le 2026-11-26** :
+
+- affectation à une **classe** : ses membres actifs lisent l'exercice (oui) ;
+- onglet **« Rendre public »** de la page « Assigner » : **à retirer** (il n'ouvre rien, la migration ne lui donne aucun accès) ;
+- liste **« Mes exercices »** de l'élève (`/dashboard/student/exercises`) : **à retirer** avec ses deux entrées (lien du tableau de bord, bouton de « Mon travail ») ; la page d'UN exercice reste. Conséquence dite à David : les exercices publics ne sont plus listés nulle part pour l'élève. Les deux retraits vont dans une même petite PR d'interface, rien n'est supprimé en base ;
+- idée notée, **pas un écart** : une page où tout élève cherche dans la base d'exercices pour réviser (thème, notion, sujet de bac) et compose sa propre fiche à imprimer. Questions à lui poser avant : quels exercices un élève a le droit de trouver, corrigés visibles ou non, fiche enregistrée ou seulement imprimée.
+
+**Fait** : migration `20261126091954` (additive, rollback en commentaire) ; page de l'exercice : l'affectation montrée (note, échéance) est celle de l'élève, sinon celle de sa classe (`pickStudentAssignment`, avant : une affectation de classe n'affichait rien) ; `test.fail` de #3012 retiré.
+
+**Revues** : `code-reviewer` (aucun bloquant ; l'affectation de classe non lue par la page : corrigé) ; `security-auditor` (aucun bloquant ; un compte capable d'assigner pouvait se donner la lecture de l'exercice privé d'un autre en se l'assignant : fermé dans la fonction, l'affectation ne compte que si elle vient de l'auteur de l'exercice ; prouvé sur la base locale, 1 ligne lue sans la garde, 0 avec).
+
+**Preuves** : `tests/integration/exercise-direct-assignment-read.test.ts` rouge sans la migration (2 échecs : élève désigné, classe), 12 verts avec ; #3012 vert sous ordi-chrome, ordi-safari, iphone ; `pnpm voir` avec l'Élève 01 (non assigné) : 403.
+
+**Attendu d'un test changé** : `tests/integration/versions-exercices.test.ts` affirmait l'ancien comportement (l'élève affecté sans fiche ne lit ni l'exercice ni ses versions par la base) ; il attend maintenant les deux versions. Vu rouge en CI au premier push, la suite d'intégration complète est verte en local (619 fichiers, 8155 tests).
+
+**Restes, à part** : la policy d'insertion `exercise_assignments_insert` ne vérifie ni que l'exercice est à celui qui assigne, ni que la classe ou l'élève est le sien (sans effet en mono-professeur ; question d'accès à poser si un second prof arrive). `pnpm voir --compte eleve` ne connecte que l'Élève 01 : pas de capture de la page avec l'Élève 02 (vue par Playwright seulement).

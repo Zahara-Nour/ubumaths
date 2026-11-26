@@ -64,7 +64,13 @@ une catégorie inconnue devient `automatisme`, un mode de distribution inconnu `
 - **Lecture de `exercises`** (policies permissives, combinées en OU) : l'auteur (`Teachers can
 view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof ne lit plus les
   exercices des autres) ; tout le monde, anonyme compris, si `is_public` ; l'élève par
-  `student_has_exercise_access(id)`. Écriture et suppression : l'auteur.
+  `student_has_exercise_access(id)` : par une fiche qui lui est distribuée, ou (depuis
+  20261126091954, écart E78) par une affectation hors fiche **active**, posée par l'**auteur** de
+  l'exercice, à lui ou à une classe dont il est membre **actif**. Une affectation `public`
+  n'ouvre pas la lecture, ni celle qu'un autre compte que l'auteur poserait (la policy
+  d'insertion `exercise_assignments_insert` ne regarde pas à qui est l'exercice : c'est la
+  fonction de lecture qui refuse). Écriture et
+  suppression : l'auteur.
 - **Jeton de partage** : aucune policy ne l'ouvre (les deux policies « à tout le monde » ont été
   retirées par 20260902101000, finding H8 : elles exposaient tout exercice partagé). L'accès passe
   par la RPC `SECURITY DEFINER` `get_exercise_by_share_token(p_token)`, qui exige le jeton exact,
@@ -74,6 +80,10 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   (dernière version : 20261003230000) = exercice public, ou affectation active directe, à une
   classe dont l'adhésion est **active** (20260912150000 : l'élève archivé perd les exercices de
   la classe quittée), ou `public`. Garde d'appelant : son propre compte, ou prof/admin.
+  ⚠️ Cette surcharge répond à la route d'accès ; c'est l'autre, `(id)`, qui garde la **lecture**
+  de la ligne. Elles s'accordent sur l'élève désigné et la classe, pas sur `public` (cette
+  surcharge dit oui, la lecture reste fermée : décision de David du 2026-11-26, qui retire
+  l'onglet « Rendre public » de la page d'affectation).
   ⚠️ La fonction a deux surcharges, que le générateur de types saute : l'appel passe par
   `callExerciseAccess` (`exercise-assignments.ts`), seul contournement de typage du module.
 - **Maîtrise** : l'élève lit et écrit ses lignes ; le prof (et l'admin) **lit** celles des élèves
@@ -176,8 +186,9 @@ graine.
 `noindex` partout **sauf** exercice public coché « Afficher sur Google » ouvert **sans** jeton.
 
 **Page élève** `dashboard/student/exercises/` : la liste lit `/api/exercises/assigned`
-(`getAssignmentsForStudent`) ; `[id]` vérifie l'accès (`/api/exercises/[id]/access`), affiche
-l'exercice (`ExerciseDisplay mode="instance"`), enregistre une vue (`POST …/view`) et le
+(`getAssignmentsForStudent`) ; `[id]` vérifie l'accès (`/api/exercises/[id]/access`), lit
+l'affectation à montrer (note, échéance : celle de l'élève, sinon celle d'une de ses classes
+actives, `pickStudentAssignment`), affiche l'exercice (`ExerciseDisplay mode="instance"`), enregistre une vue (`POST …/view`) et le
 « terminé » (`POST`/`DELETE …/complete`, dans `exercise_completions`).
 
 ## Partage par jeton

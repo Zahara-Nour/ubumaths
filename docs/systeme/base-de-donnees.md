@@ -305,7 +305,9 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
 professeur ; l'écriture des modèles est admin. Un exercice est lu par son auteur, par un élève qui y a
-accès (`student_has_exercise_access`) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
+accès (`student_has_exercise_access` : par une fiche qui lui est distribuée ou, depuis `20261126091954`,
+par une affectation hors fiche active posée par l'auteur, à lui ou à une classe dont il est membre
+actif ; détail dans [exercices.md](exercices.md#accès-rls-et-gardes)) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
 complétions et sa maîtrise ; depuis `20261012120000`, le professeur lit la maîtrise des élèves inscrits
 dans une classe (`is_teacher_of_student`). Un exercice privé partagé par lien se lit par la RPC
 `SECURITY DEFINER` `get_exercise_by_share_token` (jeton exact, actif, non expiré), qui incrémente
