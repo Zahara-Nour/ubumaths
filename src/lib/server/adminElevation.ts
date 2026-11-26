@@ -178,8 +178,7 @@ const ADMIN_WRITE_API_PREFIXES = [
 	'/api/questions/templates',
 	'/api/errors/bulk-resolve',
 	'/api/errors/delete-resolved',
-	'/api/bug-reports/config',
-	'/api/messages/templates'
+	'/api/bug-reports/config'
 ] as const;
 
 /** Liste publique des modèles (anonyme, lue par tous) : jamais d'élévation à vérifier */

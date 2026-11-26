@@ -19,7 +19,6 @@ export * from './games';
 export * from './google';
 export * from './image-upload';
 export * from './latex';
-export * from './message-templates';
 export * from './messages';
 export * from './notifications';
 export * from './questions';

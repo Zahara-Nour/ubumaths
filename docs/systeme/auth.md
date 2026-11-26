@@ -501,8 +501,7 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
 3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*`, `/api/admin*`, `/dev`
    (pages de dev, gardées par l'élévation : `reservedAreasHandle`) et les routes d'écriture
    admin restées hors de `/api/admin` (`ADMIN_WRITE_API_PREFIXES` : `/api/questions/templates`,
-   `/api/errors/bulk-resolve`, `/api/errors/delete-resolved`, `/api/bug-reports/config`,
-   `/api/messages/templates`). Elles vérifiaient `requireRole(locals, 'admin')`, qui lit le rôle
+   `/api/errors/bulk-resolve`, `/api/errors/delete-resolved`, `/api/bug-reports/config`). Elles vérifiaient `requireRole(locals, 'admin')`, qui lit le rôle
    du compte **connecté** (toujours `teacher` en mode administration) : 403 au prof élevé
    (2026-11-11). Sans cookie, le handle rend la main avant toute requête ; `/api/errors/log` et
    `/api/questions/templates/all` (liste publique, anonyme), appelés par tous, restent hors
