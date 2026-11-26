@@ -3,7 +3,7 @@ scripts/questions/idees-tle-continuite-combinatoire-publies/ (chantier
 idees-tle-continuite-combinatoire).
 
 Phase 0 validée par David le 2026-11-25 (« je valide », fiches
-docs/wip/idees-tle-continuite-combinatoire-fiches.md) : V1 a et V1 b (2491dd75, dont l'idée en
+docs/archive/wip/idees-tle-continuite-combinatoire/idees-tle-continuite-combinatoire-fiches.md) : V1 a et V1 b (2491dd75, dont l'idée en
 attente TSA5-41), V2 a et V2 b (10393ff9), V3 (0965c56c). Les variations s'ajoutent À LA FIN (les
 réponses des élèves gardent l'indice de leur variation) ; la migration de contenu est générée par
 scripts/questions/migration-contenu.ts.

@@ -100,8 +100,4 @@ Trois appelants :
 
 ## Écarts connus
 
-- **Deux `SITE_URL`** : `src/lib/seo/site.ts` (`https://www.chiph.re`, sans barre finale) et
-  `src/lib/email-templates/welcome.ts` (`https://www.chiph.re/`, avec). Le second ne passe pas
-  par `site.ts`.
-- **Données structurées limitées à deux pages** (accueil, article du Shtam). Pas de JSON-LD pour
-  les exercices publics ni les pages outils.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

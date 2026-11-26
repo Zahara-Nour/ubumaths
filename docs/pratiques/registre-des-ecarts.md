@@ -16,6 +16,50 @@ Ce qui n'y va pas : les vérifications à faire à l'écran
 ([verifications-manuelles.md](../wip/verifications-manuelles.md)) sont des choses à regarder, pas
 des défauts. Une vérification qui échoue produit un écart, qui entre ici.
 
+## Vue d'ensemble
+
+Il y a **une liste** (le registre) et **plusieurs chantiers** qui travaillent dessus. Un chantier
+a son journal `docs/wip/<sujet>-progress.md` ; le journal raconte l'avancement, il ne liste pas
+les écarts.
+
+### Le parcours d'un écart
+
+1. **Trouvé** : par un test de `pnpm test:verifs`, par une revue (`code-reviewer`,
+   `security-auditor`), par une lecture du code, ou par David à l'écran.
+2. **Inscrit** aussitôt au registre par `pnpm ecarts ajouter`, même si personne ne le corrige ce
+   jour-là. Un défaut relevé par une revue et laissé hors de la PR entre au registre **avant** la
+   fin de la session : un journal de chantier finit aux archives, le registre non.
+3. **Corrigé** par une PR, dans le chantier qui le prend.
+4. **Barré** : à la main avec le numéro de la PR, ou par la tâche de nuit quand sa preuve passe
+   au vert. Jamais effacé.
+
+### Qui fait quoi (chantiers au 2026-11-26)
+
+| Chantier         | Rôle                                                                     | Effet sur le registre |
+| ---------------- | ------------------------------------------------------------------------ | --------------------- |
+| `verifs-auto`    | remplace les vérifications à la main par des tests qui ouvrent les pages | ajoute des écarts E   |
+| `ecarts-verifs`  | corrige les écarts E trouvés par ces tests                               | barre des E           |
+| `ecarts-a-trier` | trie et corrige tous les autres (V, L, M, C, D, T), par lots             | barre le reste        |
+
+Un lot de `ecarts-a-trier` peut avoir son propre journal (`ecarts-moderation`,
+`ecarts-valeurs-fausses`…) : c'est une PR ou une suite de PR sur un même sujet, clos dès que ses
+écarts sont barrés.
+
+### Ce qu'une doc système contient
+
+Une doc de `docs/systeme/` décrit ce que fait le code. Elle ne liste **aucun écart** : sa section
+« Écarts connus », quand elle en a une, tient en un renvoi au registre. Deux rubriques peuvent
+suivre ce renvoi :
+
+- **« À savoir (voulu) »** : un fait vrai et voulu, qui ressemble à un défaut mais n'en est pas un
+  (« pas de QR pour l'Atelier »). Il reste dans la doc, écrit comme une description.
+- **« Points non vérifiés »** : des points restés là au retrait des sections (2026-11-26), que
+  personne n'a retrouvés au registre ni vérifiés dans le code. Chacun finit soit au registre, soit
+  en « À savoir », soit supprimé ; on n'en ajoute pas de nouveau.
+
+Les anciennes listes (`ecarts-a-trier.md`, sa recollecte) sont dans `docs/archive/wip/` et ne font
+plus foi.
+
 ## Une ligne
 
 ```

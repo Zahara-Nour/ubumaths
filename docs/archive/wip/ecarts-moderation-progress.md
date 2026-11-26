@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: six PR mergées (#3115, #3125, #3132, #3140, #3143, #3147), toutes les migrations du chantier en prod (vérifié le 2026-11-25)
+status: chantier clos le 2026-11-26 ; sept PR mergées (#3115, #3125, #3132, #3140, #3143, #3147, #3158), toutes les migrations en prod
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25 (19), après #3147 ; ses deux migrations sont en prod, vérifiées._
+_Mis à jour le 2026-11-26, après #3158 — chantier clos (décision de David, « oui »)._
 
-- **État** : six PR mergées (#3115, #3125, #3132, #3140, #3143, #3147). **Toutes les migrations du chantier sont en prod** : David a joué `db:migrate` le 2026-11-25, `migration list --linked` relu ensuite, 694 migrations, aucun écart local / prod. Vérifié en prod en lecture seule : `guard_message_reecriture_trg` (BEFORE UPDATE) et `guard_message_envoi_trg` (BEFORE INSERT) actifs sur `messages`, fonctions non `SECURITY DEFINER`, `search_path=public, pg_temp`. Le même `db:migrate` a aussi joué `20261125153849_questions_idees_3e_puissances_publies_contenu` (chantier `idees-3e-puissances`, #3148), dit à David. T30 et T33 barrés au registre. Aucun code à déployer pour ces migrations.
-- **Prochaine action** : suite du chantier à choisir avec David dans `pnpm ecarts` (candidats proches du sujet : T29 rapport de bug réécrit par son auteur, T28 règles du stockage des captures hors migration, D45 onglet « Messages marqués », E78 exercice assigné directement) ; ou clore le chantier (versement dans `docs/systeme/`, journal archivé).
-- **En attente de David** : dire la suite (un écart de plus, ou clôture).
-- **Pièges en cours** : la garde est un trigger, pas un retrait de droits par colonne (qui masquerait le message de T31). Écrire `deleted_at` par l'API est refusé par la RLS : la suppression passe par `soft_delete_message`. Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Motif « policy UPDATE ou INSERT sans contrôle de colonnes » possible sur d'autres tables d'élèves (non prouvé).
-- **Worktree / branche** : aucun (worktree et branche de #3147 retirés). Ce journal, sur `main`, fait foi.
+- **État** : **clos**. Sept PR mergées (#3115 à #3158), toutes les migrations en prod et vérifiées en lecture seule. Écarts fermés : T20, T21, T22, T25, T27, T28, T29, T30, T31, T32, T33 (recomptés au registre le 2026-11-26, tous barrés). Doc durable : `docs/systeme/messagerie-et-moderation.md`, `docs/systeme/surveillance-des-erreurs.md`, `docs/systeme/base-de-donnees.md` § Exploitation, et la leçon du chantier dans `docs/pratiques/rls-echecs-silencieux.md` § « une policy ne borne pas les colonnes ».
+- **Prochaine action** : aucune. Restes au registre, hors chantier : T34 (fichiers du stockage hors rapport, non effacés à la suppression du compte : session à part, question d'accès), L122, L123, L125, M59 ; T24 suspendu avec le tuteur. Le code de #3158 (route de capture) part à la prochaine mise en prod, rien n'en dépend.
+- **En attente de David** : rien.
+- **Pièges durables** : versés dans `docs/pratiques/rls-echecs-silencieux.md`. Fausses alertes possibles de la liste de gros mots en maths (« tg », « traînée », « mongol »), relevées par les revues de la PR 2 : liste validée par David, à lui de la retoucher.
+- **Worktree / branche** : aucun. Journal archivé dans `docs/archive/wip/`.
 
 ---
 
@@ -126,3 +126,14 @@ _Mis à jour le 2026-11-25 (19), après #3147 ; ses deux migrations sont en prod
 - **Commentaires** : migration `20261125145621` (`delete_user_account` supprime les messages), deux tests de `lecture-seule-garde-base.test.ts` (refus venus désormais des gardes de réécriture et de conversation).
 - **Suite d'intégration entière, deux migrations** : 612 fichiers, 7971 tests, 0 échec (814 s). `check:incremental` 0 erreur, `db:types:verifier` conforme. Fichier de la PR : 25 tests verts.
 - **PR #3147 mergée le 2026-11-25** (CI verte ; `gh pr merge` a rendu un 502 mais le merge était fait, rangement rejoué par `pnpm pr:merger 3147`).
+
+## PR 7 : l'auteur d'un rapport de bug n'écrit que ce que l'écran lui propose, écarts T29 et T28 (2026-11-26)
+
+- **Question d'accès, validée par David le 2026-11-26 (« je valide »)** : à la création, le rapport naît « en attente », daté de maintenant, sans capture ni résolution, toute autre valeur refusée ; tant qu'il est en attente, l'auteur ne change que titre, description et capture (chemin `<auteur>/<rapport>/<fichier>`) ; l'admin garde tous ses droits ; T28 = règles de la prod recopiées, aucun accès changé. Titre et description restent modifiables (c'était dans la liste validée, et c'est le choix qui ne change rien).
+- **Mesure en prod (lecture seule, 2026-11-26)** : 245 rapports, tous en attente, 0 capture, 0 adresse, 0 résolution, 0 objet dans le bucket ; les 5 policies du bucket relues dans `pg_policies`, noms et conditions identiques à la migration, pas de policy « Public can view ».
+- **Fait** : `20261126060048_rapport_de_bug_non_reecrit.sql` (`guard_bug_report_creation_trg`, `guard_bug_report_reecriture_trg`, liste blanche, non `SECURITY DEFINER`) ; `20261126060050_captures_rapports_de_bug_regles_de_stockage.sql` (5 policies, `DROP IF EXISTS` puis `CREATE`) ; `tests/integration/rapports-de-bug-non-reecrits.test.ts` (61 tests, 36 rouges sans les migrations au premier jet) ; route de capture : extension tirée du type vérifié, ancienne capture effacée seulement après le rattachement de la nouvelle ; `docs/systeme/base-de-donnees.md`.
+- **Choix techniques** : exception `resolved_by` → vide seul (clé étrangère `ON DELETE SET NULL`, sinon la suppression du compte d'un admin échouerait) ; dates comparées à `now()` (égal au `DEFAULT` dans la transaction) ; une capture jointe se remplace mais ne se retire pas ; chemin comparé à l'exact (casse comprise) ; le bucket n'est pas créé par la migration (`supabase/seed.sql` le fait, un doublon casserait le seed).
+- **Revues** : `code-reviewer`, un point important corrigé (nom de fichier forgé « x.a/b » → chemin à 4 segments, refusé par la garde APRÈS l'effacement de l'ancienne capture : extension par type, effacement après coup), mineurs corrigés (message « Adresse de capture non modifiable », tests de l'admin à la création, du chemin remis à vide, de `resolved_by` vidé, du remplacement au même chemin). `security-auditor` : aucun bloquant, comparaison de casse rendue exacte.
+- **Restes relevés par `security-auditor`, hors de cette PR** :
+  - **I1 (à inscrire au registre)** : un compte connecté peut déposer par l'API du stockage des fichiers sous `<son id>/<n'importe quoi>` (5 Mo chacun, type déclaré seulement), qu'aucun rapport ne nomme ; `delete_user_account` ne les efface donc pas à la suppression du compte. Existait avant, 0 objet en prod. Piste : effacer tout le dossier `<id>/` à la suppression du compte.
+  - **M2** : quand l'admin remet un rapport en attente, `resolved_by` et `resolved_at` restent, et l'auteur peut vider `resolved_by` (trace perdue, rien d'autre). Piste : la route admin vide les deux en remettant en attente.

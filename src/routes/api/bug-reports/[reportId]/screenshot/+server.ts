@@ -29,6 +29,16 @@ const reportIdSchema = z.string().uuid('ID de rapport invalide');
 
 const BUCKET_NAME = 'bug-report-screenshots';
 
+/** Types acceptés (pas de SVG pour une capture) et l'extension rangée pour chacun. */
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const;
+type AllowedType = (typeof ALLOWED_TYPES)[number];
+const EXTENSION_BY_TYPE: Record<AllowedType, string> = {
+	'image/jpeg': 'jpg',
+	'image/png': 'png',
+	'image/gif': 'gif',
+	'image/webp': 'webp'
+};
+
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = await requireAuth(locals);
 
@@ -76,10 +86,9 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(400, `Le fichier ne doit pas dépasser ${MAX_IMAGE_SIZE_BYTES / 1024 / 1024} Mo`);
 		}
 
-		// Validate MIME type (excluding SVG for bug reports)
-		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const;
-		if (!allowedTypes.includes(file.type as (typeof allowedTypes)[number])) {
-			throw error(400, `Type de fichier non autorisé. Types acceptés: ${allowedTypes.join(', ')}`);
+		// Validate MIME type
+		if (!ALLOWED_TYPES.includes(file.type as AllowedType)) {
+			throw error(400, `Type de fichier non autorisé. Types acceptés: ${ALLOWED_TYPES.join(', ')}`);
 		}
 
 		// Read file buffer for magic byte validation
@@ -95,15 +104,12 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			);
 		}
 
-		// Generate storage path: user_id/report_id/timestamp.ext
-		const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
+		// Chemin de stockage : user_id/report_id/timestamp.ext. L'extension vient du
+		// type vérifié, jamais du nom du fichier : un nom forgé (« x.a/b ») donnait un
+		// chemin à quatre segments, que la base refuse (guard_bug_report_reecriture).
+		const ext = EXTENSION_BY_TYPE[file.type as AllowedType];
 		const timestamp = Date.now();
 		const storagePath = `${user.id}/${params.reportId}/${timestamp}.${ext}`;
-
-		// Delete existing screenshot if any
-		if (report.screenshot_path) {
-			await locals.supabase.storage.from(BUCKET_NAME).remove([report.screenshot_path]);
-		}
 
 		// Upload new screenshot
 		const { error: uploadError } = await locals.supabase.storage
@@ -146,6 +152,17 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			// resterait orphelin dans le bucket.
 			await locals.supabase.storage.from(BUCKET_NAME).remove([storagePath]);
 			throw error(403, 'Capture non enregistrée : rapport non modifiable');
+		}
+
+		// L'ancienne capture ne part qu'une fois la nouvelle rattachée au rapport :
+		// retirée avant, un refus de la base laissait le rapport sans capture.
+		if (report.screenshot_path && report.screenshot_path !== storagePath) {
+			const { error: removeError } = await locals.supabase.storage
+				.from(BUCKET_NAME)
+				.remove([report.screenshot_path]);
+			if (removeError) {
+				logger.warn('[API] Ancienne capture non effacée :', removeError.message);
+			}
 		}
 
 		// Return a short-lived signed URL so the client can preview immediately.

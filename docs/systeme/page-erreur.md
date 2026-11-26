@@ -173,9 +173,4 @@ serveur sans pile. Exclue par `robots.txt`, `noindex`.
 
 ## Écarts connus
 
-- Les messages 4xx des chargements de page et de `src/lib/server` sont en français correct
-  depuis le 2026-10-11 (~100 messages traduits), et le restent : le garde
-  `src/lib/__tests__/messages-erreur-en-francais.test.ts` refuse un mot anglais ou un mot sans
-  accent dans un `error(4xx, '…')` de ces fichiers. Hors garde : les `+server.ts` (API, réponse
-  JSON qui n'atteint pas la page d'erreur) et les messages dynamiques venus de la base
-  (`warnings.ts` relaie le texte d'une RPC).
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.

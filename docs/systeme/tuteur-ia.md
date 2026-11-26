@@ -258,29 +258,4 @@ conversations (`src/routes/api/account/export/+server.ts:183`).
 
 ## Écarts connus
 
-1. **Statistiques vides pour un professeur.** `TutorChat` n'envoie jamais `classId` à
-   `POST /api/tutor/conversations` : `class_id` reste NULL. `/api/tutor/stats` filtre un `teacher`
-   sur `class_id IN (ses classes)` (`stats/+server.ts:165`), et la policy de lecture des messages
-   exige aussi un `class_id` : seul un `admin` voit quelque chose.
-2. **`effort_score` et `topics_covered` ne sont jamais écrits** (aucune écriture dans `src`) : les
-   colonnes « effort moyen » et « thèmes » des statistiques restent à 0 et vides.
-3. **La RPC `rag_hybrid_search` lit une colonne absente.** Elle utilise `c.content_tsv`
-   (`baseline_schema.sql:15080`) ; la colonne de `rag_chunks` s'appelle `search_vector`. Chaque
-   recherche hybride échoue et retombe sur le plein texte, après avoir envoyé la question à
-   HuggingFace. La RPC ne filtre pas non plus `enabled_for_rag`, et ne rend ni `vector_score` ni
-   `fts_score` que `search.ts` attend.
-4. **Les quotas « glissants » ne glissent pas.** `increment_rate_limit` garde une ligne par clé,
-   ajoute 1 et repousse l'expiration (`baseline_schema.sql:11780-11786`). Une ligne expirée n'est
-   lue comme 0 que jusqu'au message suivant : tant que la purge de 02:00 UTC ne l'a pas supprimée,
-   l'incrément repart de l'**ancien total**. Le compteur « heure » ne revient donc à zéro qu'à la
-   purge de la nuit : 30 messages dans la journée, même espacés, suffisent, et l'élève n'obtient
-   ensuite qu'un message par heure. Le compteur « jour » exige 24 h sans message, puis la purge.
-5. `GROQ_MODEL` ignoré (modèle en dur) ; `enabledForRag` du dépôt ignoré (`indexDocument` force
-   `true`).
-6. `/tuteur`, `/dashboard/tutor-stats` et `/dashboard/teacher/documents` : aucun lien n'y mène.
-   `/pere-ubu` garde un bouton « Retour à l'accueil » (`Button`), pas un `BackLink`.
-7. Code sans appelant : `TutorWidget`, `TutorHelpButton`, `determineMaxHelpLevel`,
-   `shouldEscalate`, `escalate`, `createInitialState` (`help-escalation.ts`),
-   `searchSimilarExercises`, `batchIndexDocuments`, `reindexAllDocuments`.
-8. [base-de-donnees.md](base-de-donnees.md) dit que « le professeur lit [les conversations] de tous
-   les élèves » : vrai pour `tutor_conversations`, faux pour `tutor_messages` sans `class_id`.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
