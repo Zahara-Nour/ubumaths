@@ -1,18 +1,18 @@
 ---
 title: Écarts graves de modération et de données d'élèves (T20, T25, T27, puis T21, T22) — journal
 date: 2026-11-24
-status: sept PR mergées (#3115, #3125, #3132, #3140, #3143, #3147, #3158), toutes les migrations du chantier en prod (vérifié le 2026-11-26) ; clôture à décider avec David
+status: chantier clos le 2026-11-26 ; sept PR mergées (#3115, #3125, #3132, #3140, #3143, #3147, #3158), toutes les migrations en prod
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3158 ; ses deux migrations sont en prod, vérifiées._
+_Mis à jour le 2026-11-26, après #3158 — chantier clos (décision de David, « oui »)._
 
-- **État** : sept PR mergées (#3115 à #3158). **Toutes les migrations du chantier sont en prod** : David a joué `db:migrate` le 2026-11-26, `migration list --linked` relu ensuite, 701 migrations, aucun écart local / prod. Vérifié en prod en lecture seule : `guard_bug_report_creation_trg` (BEFORE INSERT) et `guard_bug_report_reecriture_trg` (BEFORE UPDATE) actifs sur `bug_reports`, fonctions non `SECURITY DEFINER`, `search_path=public, pg_temp`, non exécutables par `authenticated` ni `anon` ; les 5 policies du bucket `bug-report-screenshots` présentes, sans doublon, conditions inchangées. T28 et T29 barrés au registre, T34 ajouté. Le code de #3158 (route de capture : extension par type, ancienne capture effacée après coup) n'est pas déployé ; rien n'en dépend.
-- **Prochaine action** : clore le chantier si David le dit (versement du durable dans `docs/systeme/`, journal archivé dans `docs/archive/`). Restes hors chantier : T34 (fichiers du stockage hors rapport, non effacés à la suppression du compte) et M2 de la section PR 7 (`resolved_by` gardé quand l'admin remet un rapport en attente).
-- **En attente de David** : dire si on clôt ; dire si T34 se traite maintenant ou plus tard.
-- **Pièges en cours** : la garde est un trigger, pas un retrait de droits par colonne (qui masquerait le message de T31). Écrire `deleted_at` par l'API est refusé par la RLS : la suppression passe par `soft_delete_message`. Page de modération : lancer le dossier de tests entier. Écriture en prod = toujours David. Motif « policy UPDATE ou INSERT sans contrôle de colonnes » possible sur d'autres tables d'élèves (non prouvé).
-- **Worktree / branche** : aucun (worktree et branche de #3158 retirés). Ce journal, sur `main`, fait foi.
+- **État** : **clos**. Sept PR mergées (#3115 à #3158), toutes les migrations en prod et vérifiées en lecture seule. Écarts fermés : T20, T21, T22, T25, T27, T28, T29, T30, T31, T32, T33 (recomptés au registre le 2026-11-26, tous barrés). Doc durable : `docs/systeme/messagerie-et-moderation.md`, `docs/systeme/surveillance-des-erreurs.md`, `docs/systeme/base-de-donnees.md` § Exploitation, et la leçon du chantier dans `docs/pratiques/rls-echecs-silencieux.md` § « une policy ne borne pas les colonnes ».
+- **Prochaine action** : aucune. Restes au registre, hors chantier : T34 (fichiers du stockage hors rapport, non effacés à la suppression du compte : session à part, question d'accès), L122, L123, L125, M59 ; T24 suspendu avec le tuteur. Le code de #3158 (route de capture) part à la prochaine mise en prod, rien n'en dépend.
+- **En attente de David** : rien.
+- **Pièges durables** : versés dans `docs/pratiques/rls-echecs-silencieux.md`. Fausses alertes possibles de la liste de gros mots en maths (« tg », « traînée », « mongol »), relevées par les revues de la PR 2 : liste validée par David, à lui de la retoucher.
+- **Worktree / branche** : aucun. Journal archivé dans `docs/archive/wip/`.
 
 ---
 
