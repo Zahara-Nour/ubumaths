@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V129 · L126 · M59 · C43 · D45 · T35 · E82
+Derniers numéros : V130 · L126 · M59 · C43 · D45 · T35 · E82
 
 ## Écarts
 
@@ -326,3 +326,4 @@ Derniers numéros : V129 · L126 · M59 · C43 · D45 · T35 · E82
 - L125 · bug latent · rapports de bug · quand l'admin remet un rapport de bug en attente, le nom de celui qui l'avait résolu et la date de résolution restent, et l'auteur du rapport peut effacer ce nom par l'API (trace perdue, rien d'autre) · preuve : à la main · à faire (relevé par security-auditor sur #3158 ; piste : la route admin vide les deux champs en remettant en attente)
 - L126 · bug latent · anti-fraude · aucun effet visible, l'anti-triche est éteint en prod ; rallumé tel quel il ne fonctionnerait pas : le relevé des paires à analyser lit encore des colonnes supprimées par la fusion du référentiel (skill_id, skills.family) · preuve : commande `f=src/lib/server/anti-fraud/runner.ts; test -f $f && ! grep -q "skill_id" $f` · à faire avant tout rallumage (correction décrite en tête de runner.ts ; relevé de docs/systeme/srs.md, hors du tri du 2026-11-24)
 - T35 · RGPD · conformité · la purge automatique n'efface plus aucune donnée pédagogique (exercise_completions, student_exercise_mastery), alors que la politique de confidentialité promet une durée de conservation · preuve : à la main · à vérifier dans le code puis à trancher (réintégrer à la purge ou ajuster la politique ; relevé de docs/systeme/conformite/README.md, trou n°1, hors du tri du 2026-11-24)
+- V130 · bug visible · messagerie · personne ne peut envoyer un message privé : la page envoie le document de l'éditeur riche (un objet), la validation de l'envoi attend une chaîne et répond 400 « chaîne de caractères attendu, objet reçu » · preuve : à la main · à faire (trouvé par David en prod le 2026-11-26, pendant l'essai de V104 ; test de preuve à écrire avec la correction)
