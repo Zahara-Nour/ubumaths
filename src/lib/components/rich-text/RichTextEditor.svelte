@@ -23,7 +23,7 @@
 <script lang="ts">
 	import '#lib/utils/mathlive-styles.ts';
 	import { lore } from '#lib/config/lore.ts';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.ts';
@@ -551,10 +551,11 @@
 					content: initialContent,
 					editorProps,
 					editable: !disabled,
-					onCreate: () => {
+					onCreate: ({ editor: ed }) => {
 						// TipTap signals it's fully initialized - now safe to track user changes
 						hasInitialized = true;
 						isUpdatingFromProp = false;
+						syncJsonFromHtml(ed);
 						updateFormattingState();
 					},
 					onUpdate: ({ editor: ed }) => {
@@ -617,8 +618,21 @@
 			isUpdatingFromProp = true;
 			editor.commands.setContent(htmlValue);
 			isUpdatingFromProp = false;
+			const ed = editor;
+			untrack(() => syncJsonFromHtml(ed));
 		}
 	});
+
+	/**
+	 * Contenu posé depuis `htmlValue` (brouillon repris) : aucun événement d'édition
+	 * ne suit, donc `jsonValue` resterait vide tant que personne ne tape. Si la page
+	 * le lie (valeur `null`, pas `undefined`), on lui donne le document de l'éditeur.
+	 */
+	function syncJsonFromHtml(ed: Editor): void {
+		if (mode === 'form' && jsonValue === null && htmlValue) {
+			jsonValue = ed.getJSON();
+		}
+	}
 
 	/**
 	 * Sync external jsonValue changes (form mode only)
