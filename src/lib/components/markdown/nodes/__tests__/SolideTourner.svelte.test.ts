@@ -121,6 +121,42 @@ describe('Solide — tourner: oui', () => {
 		expect(document.activeElement).toBe(svg);
 	});
 
+	it('dans un choix : tourner la figure ne coche pas le choix, la toucher si', async () => {
+		const main = mainElement();
+		let clicks = 0;
+		main.addEventListener('click', () => clicks++);
+		const screen = await render(Espace, {
+			target: main,
+			props: { node: node(...PAVE, 'tourner: oui') }
+		});
+		const svg = svgOf(screen.container);
+		drag(svg, 120, 30);
+		svg.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		expect(clicks).toBe(0);
+		// Un vrai clic, sans glissement, passe
+		drag(svg, 1, 0);
+		svg.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		expect(clicks).toBe(1);
+	});
+
+	it('Alt + flèche (retour du navigateur) n’est pas pris par la figure', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node(...PAVE, 'tourner: oui') }
+		});
+		const svg = svgOf(screen.container);
+		const event = new KeyboardEvent('keydown', {
+			key: 'ArrowLeft',
+			altKey: true,
+			bubbles: true,
+			cancelable: true
+		});
+		svg.dispatchEvent(event);
+		expect(event.defaultPrevented).toBe(false);
+		await new Promise((resolve) => setTimeout(resolve, 100));
+		expect(resetButton(screen.container)).toBeUndefined();
+	});
+
 	it('un simple toucher ne tourne pas la figure', async () => {
 		const screen = await render(Espace, {
 			target: mainElement(),

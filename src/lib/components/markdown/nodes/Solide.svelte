@@ -27,6 +27,7 @@
 	@module components/markdown/nodes/Solide
 -->
 <script lang="ts">
+	import { on } from 'svelte/events';
 	import { Rotate3d, RotateCcw } from '@lucide/svelte';
 	import { Button } from '#lib/components/ui/button/index.ts';
 	import { ESPACE_UNAVAILABLE, type EspaceNode } from '#lib/ubumark/types/espace.ts';
@@ -91,6 +92,8 @@
 	/** Animation en cours (passage ou retour) ; 0 : aucune */
 	let animation = 0;
 	let returning = false;
+	/** Le glissement vient de finir : le clic qui le suit ne doit rien cocher (figure dans un choix) */
+	let justDragged = false;
 
 	const setVue = (next: EspaceVue) => {
 		turned = { source: node.source, vue: next };
@@ -159,6 +162,7 @@
 
 	function handlePointerDown(event: PointerEvent) {
 		if (!event.isPrimary || event.button !== 0) return;
+		justDragged = false;
 		drag = { id: event.pointerId, x: event.clientX, y: event.clientY, started: false };
 		// Le glissement continue hors de la figure ; pointeur déjà relâché : sans capture
 		try {
@@ -170,6 +174,11 @@
 
 	function handlePointerMove(event: PointerEvent) {
 		if (drag === null || event.pointerId !== drag.id) return;
+		// Souris relâchée hors de la figure sans capture : le glissement est fini
+		if (event.pointerType === 'mouse' && event.buttons === 0) {
+			handlePointerEnd(event);
+			return;
+		}
 		const dx = event.clientX - drag.x;
 		const dy = event.clientY - drag.y;
 		if (!drag.started) {
@@ -186,11 +195,28 @@
 
 	function handlePointerEnd(event: PointerEvent) {
 		if (drag === null || event.pointerId !== drag.id) return;
+		justDragged = drag.started;
 		drag = null;
 		dragging = false;
 	}
 
+	/**
+	 * Tourner une figure posée dans un choix ne coche pas ce choix : le clic qui
+	 * suit un glissement s'arrête à la figure. Écouteur posé sur la figure même
+	 * (un `onclick` de Svelte est délégué à la racine : trop tard pour un parent)
+	 */
+	function stopClickAfterDrag(element: SVGSVGElement) {
+		return on(element, 'click', (event) => {
+			if (!justDragged) return;
+			justDragged = false;
+			event.preventDefault();
+			event.stopPropagation();
+		});
+	}
+
 	function handleKeyDown(event: KeyboardEvent) {
+		// Alt + flèche, Cmd + flèche : raccourcis du navigateur, laissés tranquilles
+		if (event.altKey || event.ctrlKey || event.metaKey) return;
 		const turn = KEY_TURNS[event.key];
 		if (turn !== undefined) {
 			// Les flèches tournent la figure au lieu de faire défiler la page
@@ -206,6 +232,11 @@
 
 	// Le composant retiré en pleine animation : plus rien à dessiner
 	$effect(() => stopAnimation);
+	// Un autre bloc en pleine animation : elle ne doit pas se poursuivre sur la nouvelle figure
+	$effect(() => {
+		void node.source;
+		stopAnimation();
+	});
 
 	/** Points au format de l'attribut `points`, marge comprise */
 	const pointsOf = (points: { x: number; y: number }[]) =>
@@ -258,6 +289,7 @@
 			onpointerup={rotatable ? handlePointerEnd : undefined}
 			onpointercancel={rotatable ? handlePointerEnd : undefined}
 			onkeydown={rotatable ? handleKeyDown : undefined}
+			{@attach rotatable ? stopClickAfterDrag : undefined}
 			style:width="{width}cm"
 			style:aspect-ratio="{width} / {height}"
 			fill="none"

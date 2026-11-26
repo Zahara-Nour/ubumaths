@@ -143,3 +143,9 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   mention sans déplacer la suite. **Pas vu** : le geste du doigt sur un vrai téléphone (défilement de la
   page bloqué sur la figure, fluidité).
 - Catalogue (`block-catalog/solide.ts` : réglage et exemple), doc `docs/systeme/ubumark.md`.
+- Revue (`code-reviewer`) : aucun bug d'animation ni de fuite ; figure sans la clé inchangée (diff, 414 tests
+  de la scène) ; cadre balayé par pas de 5° sur 6 solides, passage compris : aucun débordement. Corrigé avant
+  la PR : tourner une figure posée dans un choix ne coche plus ce choix (le clic qui suit un glissement
+  s'arrête à la figure) ; Alt / Ctrl / Cmd + flèche laissés au navigateur ; souris relâchée hors de la figure
+  sans capture ; animation arrêtée quand le bloc change. Restent sans test : « moins d'animations »
+  (comportement 11), le vrai geste tactile (comportement 10).
