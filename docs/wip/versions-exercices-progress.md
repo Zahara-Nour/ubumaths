@@ -2,13 +2,32 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR 4 en cours (phase 0 validée)._
+_Mis à jour le 2026-11-26, PR 4 ouverte, **non mergée**._
 
-- **État** : PR 1 (#3150), PR 2 (#3154) en prod (v0.112.0) ; PR 3 (#3194) mergée, **pas en prod**. PR 4 (retrait de l'ancien contenu d'`exercises`) en écriture.
-- **Prochaine action** : finir la PR 4 (tests rouges → migration → code → revues), l'ouvrir, **ne pas la merger**.
-- **En attente de David** : `deploy:prod` (livre #3194), puis go pour merger la PR 4 et `db:migrate`.
-- **Pièges en cours** : merge d'une PR destructive interdit avant le go (le `db push` d'une autre session la jouerait). `ConfirmDialog` : « Renoncer ».
+- **État** : PR 1 (#3150), PR 2 (#3154) en prod (v0.112.0) ; PR 3 (#3194) mergée, **pas en prod**. PR 4 (retrait de l'ancien contenu d'`exercises`, destructive) ouverte, revues faites, **ne pas merger**.
+- **Prochaine action** : après le `deploy:prod` de #3194 ET le go de David : `pnpm check:migrations --pr <n>`, merge, `migration list --linked` (aucune autre en attente), `db:migrate` ; puis vérifier à l'écran (page d'exercice, lien de partage, sauvegarde admin).
+- **En attente de David** : `deploy:prod` (livre #3194), puis go pour merger la PR 4.
+- **Pièges en cours** : merge interdit avant le go (le `db push` d'une autre session la jouerait). Une migration plus récente arrivée sur `main` → renommer celle de la PR 4 (`pnpm migration:horodatage`), déjà fait une fois. `ConfirmDialog` : « Renoncer ».
 - **Worktree / branche** : `../ubumaths-wt-versions-exercices-retrait`, `feat/versions-exercices-retrait`.
+
+## PR 4 — fait (2026-11-26)
+
+- Migration `20261126203512_versions_exercices_retrait_ancien_contenu` (destructive, rollback en
+  commentaire, éprouvé par deux tests) : 5 fonctions mortes, 2 index, 2 CHECK, 3 colonnes ;
+  `get_exercise_by_share_token` en table explicite (mêmes champs, mêmes droits). Rouge prouvé
+  sans elle (`versions-exercices-retrait.test.ts`).
+- Code : types d'écriture d'un exercice = identité + contenu de version (`exercises.ts`,
+  `ExerciseForm`) ; sauvegarde (restauration + fichier SQL) n'écrit plus le contenu sur
+  `exercises`. Tests : fabriques et fixtures sans contenu sur `exercises` ; « élève archivé » passe
+  par `get_student_exercises` ; rejeu de la PR 1 précédé du rollback de la PR 4.
+- Revues : `security-auditor` aucun finding bloquant (personne ne gagne ni ne perd de lecture
+  utilisée). `code-reviewer` (opus) : fichier SQL de sauvegarde non rejouable sur un exercice à
+  niveaux (`grades` écrit en JSON dans un `text[]`, **déjà vrai sur `main`**) → corrigé, test rouge
+  puis vert ; commentaires `exercises.generic_functions` périmés → corrigés. Vieux scripts : laissés
+  (Q2).
+- Suite d'intégration complète : 1 seul échec (compteur d'`anon-option-b`), corrigé.
+- Pas vu à l'écran : la base de dev locale est partagée et la migration est destructive ; vérifier
+  après `db:migrate`.
 
 ## Phase 0 de la PR 4 — retrait de l'ancien contenu (validée le 2026-11-26 : « je te suis »)
 
