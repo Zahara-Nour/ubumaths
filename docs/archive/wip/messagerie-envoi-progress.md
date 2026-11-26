@@ -1,18 +1,18 @@
 ---
 title: Messagerie privée, l'envoi refusé (V130) — journal
 date: 2026-11-26
-status: PR en cours
+status: #3168 mergée ; chantier clos
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, avant la PR._
+_Mis à jour le 2026-11-26, après #3168._
 
-- **État** : correction écrite et vérifiée dans un navigateur (parcours `e2e/verifs/messagerie.spec.ts` vert) ; revues puis PR à faire.
-- **Prochaine action** : après le merge, barrer V130 au registre (commit de doc sur `main`), archiver ce journal, le dire dans [ecarts-a-trier](ecarts-a-trier-progress.md).
-- **En attente de David** : son essai de la messagerie (V104) reprend une fois la correction en prod (`pnpm deploy:prod` sur sa demande) ou par le lien du serveur de la branche.
-- **Pièges en cours** : `pnpm test:verifs messagerie` dans ce worktree joue TOUTES les specs (le filtre est lu sur le chemin entier, qui contient « messagerie ») : écrire `verifs/messagerie.spec`.
-- **Worktree / branche** : `ubumaths-wt-messagerie-envoi` · `fix/messagerie-envoi`.
+- **État** : #3168 mergée, V130 clos au registre ; la correction n'est PAS encore en prod (elle attend un `pnpm deploy:prod` demandé par David). Restes des revues inscrits : T36, L127, C44.
+- **Prochaine action** : aucune ici ; la suite est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
+- **En attente de David** : la mise en prod, puis son essai de la messagerie (V104).
+- **Pièges en cours** : `pnpm test:verifs messagerie` dans un worktree dont le nom contient « messagerie » joue TOUTES les specs : écrire `verifs/messagerie.spec`.
+- **Worktree / branche** : aucun (retirés au merge de #3168).
 
 ---
 
