@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Tous les cahiers ont le même prix. Complète ce tableau de proportionnalité.\n\n| Nombre de cahiers | ${{x}}$ | ${{y}}$ | ${{eval:x+y}}$ | ${{eval:2*x}}$ | ${{eval:10*x}}$ |\n|---|---|---|---|---|---|\n| Prix (€) | ${{eval:x*p/10;d}}$ | ${{eval:y*p/10;d}}$ | $?$ | $?$ | $?$ |",
+			"statement": "Tous les cahiers ont le même prix. Complète ce tableau de proportionnalité.\n\n| Nombre de cahiers | ${{x}}$ | ${{y}}$ | ${{eval:x+y}}$ | ${{eval:2*x}}$ | ${{eval:10*x}}$ |\n|---|---|---|---|---|---|\n| Prix (€) | ${{if:mod(100*(x*p/10),100)==0|{{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}}|{{eval:x*p/10;d2}}}}$ | ${{if:mod(100*(y*p/10),100)==0|{{if:mod(100*(y*p/10),100)==0|{{eval:y*p/10;d}}|{{eval:y*p/10;d2}}}}|{{eval:y*p/10;d2}}}}$ | $?$ | $?$ | $?$ |",
 			"variables": [
 				{
 					"name": "x",
@@ -38,7 +38,7 @@
 					"expectedErrors": [
 						{
 							"answer": "{{eval:y*p/10+x;d}}",
-							"message": "Tu as ajouté ${{x}}~\\unit{€}$ : ${{x}}$ cahiers de plus coûtent ${{eval:x*p/10;d}}~\\unit{€}$ de plus.",
+							"message": "Tu as ajouté ${{x}}~\\unit{€}$ : ${{x}}$ cahiers de plus coûtent ${{eval:(x*p/10)[€]}}$ de plus.",
 							"label": "Quantité ajoutée au prix"
 						},
 						{
@@ -91,9 +91,9 @@
 			],
 			"correction": {
 				"steps": [
-					"**Combiner les colonnes.** ${{eval:x+y}} = {{x}} + {{y}}$, donc le prix de ${{eval:x+y}}$ cahiers est ${{eval:x*p/10;d}} + {{eval:y*p/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(x+y)*p/10;d}}}$.",
-					"${{eval:2*x}} = 2 \\times {{x}}$, donc le prix est $2 \\times {{eval:x*p/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*x*p/10;d}}}$.",
-					"${{eval:10*x}} = 10 \\times {{x}}$, donc le prix est $10 \\times {{eval:x*p/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:x*p}}}$."
+					"**Combiner les colonnes.** ${{eval:x+y}} = {{x}} + {{y}}$, donc le prix de ${{eval:x+y}}$ cahiers est ${{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}} + {{if:mod(100*(y*p/10),100)==0|{{eval:y*p/10;d}}|{{eval:y*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{if:mod(100*((x+y)*p/10),100)==0|{{eval:(x+y)*p/10;d}}|{{eval:(x+y)*p/10;d2}}}}}$.",
+					"${{eval:2*x}} = 2 \\times {{x}}$, donc le prix est $2 \\times {{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{if:mod(100*(2*x*p/10),100)==0|{{eval:2*x*p/10;d}}|{{eval:2*x*p/10;d2}}}}}$.",
+					"${{eval:10*x}} = 10 \\times {{x}}$, donc le prix est $10 \\times {{if:mod(100*(x*p/10),100)==0|{{eval:x*p/10;d}}|{{eval:x*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:x*p}}}$."
 				]
 			},
 			"hint": "Pour chaque colonne, écris le nombre de cahiers à l'aide de ${{x}}$ et de ${{y}}$."
@@ -291,7 +291,7 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.5~\\unit{€}$ de plus."
+				"expectedErrorMessage": "Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.50~\\unit{€}$ de plus."
 			},
 			"answers": ["10{,}5", "9", "45"]
 		},

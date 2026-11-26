@@ -117,7 +117,7 @@
 			}
 		},
 		{
-			"statement": "${{x}}\\,\\text{kg}$ de cerises coûtent ${{eval:t*u/10;d}}\\,€$. Combien coûtent ${{y}}\\,\\text{kg}$ de cerises ?\n\n${{y}}\\,\\text{kg}$ de cerises coûtent $?$.",
+			"statement": "${{x}}\\,\\text{kg}$ de cerises coûtent ${{eval:(t*u/10)[€]}}$. Combien coûtent ${{y}}\\,\\text{kg}$ de cerises ?\n\n${{y}}\\,\\text{kg}$ de cerises coûtent $?$.",
 			"variables": [
 				{
 					"name": "t",
@@ -148,23 +148,23 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:t*u*k/10;d}}\\unit{€}",
+					"expectedAnswer": "{{eval:(t*u*k/10)[€]}}",
 					"unit": {
 						"expected": true
 					},
 					"expectedErrors": [
 						{
-							"answer": "{{eval:(t*u+t*(k-1))/10;d}}\\unit{€}",
+							"answer": "{{eval:((t*u+t*(k-1))/10)[€]}}",
 							"message": "Le prix n'augmente pas de l'écart des masses : cherche par combien la masse est multipliée.",
 							"label": "Écart des masses ajouté au prix"
 						},
 						{
-							"answer": "{{eval:t*u*k;d}}\\unit{€}",
+							"answer": "{{eval:(t*u*k)[€]}}",
 							"message": "Vérifie la place de la virgule dans ton produit.",
 							"label": "Virgule mal placée"
 						},
 						{
-							"answer": "{{eval:t*t*u*k/100;d}}\\unit{€}",
+							"answer": "{{eval:(t*t*u*k/100)[€]}}",
 							"message": "On ne multiplie pas le prix par la nouvelle masse : cherche combien de fois ${{x}}$ kg il y a dans ${{y}}$ kg.",
 							"label": "Prix multiplié par la masse"
 						}
@@ -173,13 +173,13 @@
 			],
 			"correction": {
 				"steps": [
-					"${{y}}\\,\\text{kg}$ de cerises, c'est $\\textcolor{{{color:primary.0}}}{{{k}}\\text{ fois}}$ plus que ${{x}}\\,\\text{kg}$, car ${{x}} \\times {{k}} = {{y}}$. Le prix est donc lui aussi multiplié par ${{k}}$ : ${{eval:t*u/10;d}}\\,€ \\textcolor{{{color:primary.0}}}{\\times {{k}}} = \\textcolor{{{color:primary.0}}}{{{eval:t*u*k/10;d}}\\,€}$."
+					"${{y}}\\,\\text{kg}$ de cerises, c'est $\\textcolor{{{color:primary.0}}}{{{k}}\\text{ fois}}$ plus que ${{x}}\\,\\text{kg}$, car ${{x}} \\times {{k}} = {{y}}$. Le prix est donc lui aussi multiplié par ${{k}}$ : ${{eval:(t*u/10)[€]}} \\textcolor{{{color:primary.0}}}{\\times {{k}}} = \\textcolor{{{color:primary.0}}}{{{eval:(t*u*k/10)[€]}}}$."
 				]
 			},
 			"hint": "Par combien faut-il multiplier ${{x}}$ kg pour obtenir ${{y}}$ kg ? Fais de même avec le prix."
 		},
 		{
-			"statement": "${{G}}\\,\\text{kg}$ de pommes coûtent ${{eval:h*k/10;d}}\\,€$. Combien {{if:s==1|coûte|coûtent}} ${{s}}\\,\\text{kg}$ de pommes ?\n\n${{s}}\\,\\text{kg}$ de pommes {{if:s==1|coûte|coûtent}} $?$.",
+			"statement": "${{G}}\\,\\text{kg}$ de pommes coûtent ${{eval:(h*k/10)[€]}}$. Combien {{if:s==1|coûte|coûtent}} ${{s}}\\,\\text{kg}$ de pommes ?\n\n${{s}}\\,\\text{kg}$ de pommes {{if:s==1|coûte|coûtent}} $?$.",
 			"variables": [
 				{
 					"name": "s",
@@ -201,23 +201,23 @@
 			"conditions": ["mod(h,10)!=0", "h*k>10*s*(k-1)"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:h/10;d}}\\unit{€}",
+					"expectedAnswer": "{{eval:(h/10)[€]}}",
 					"unit": {
 						"expected": true
 					},
 					"expectedErrors": [
 						{
-							"answer": "{{eval:h*k*k/10;d}}\\unit{€}",
+							"answer": "{{eval:(h*k*k/10)[€]}}",
 							"message": "Ici la masse diminue : ${{s}}$ kg, c'est moins que ${{G}}$ kg, donc le prix est plus petit.",
 							"label": "Multiplication au lieu de division"
 						},
 						{
-							"answer": "{{eval:(h*k-10*s*(k-1))/10;d}}\\unit{€}",
+							"answer": "{{eval:((h*k-10*s*(k-1))/10)[€]}}",
 							"message": "Le prix ne baisse pas de l'écart des masses : cherche par combien la masse est divisée.",
 							"label": "Écart des masses retranché au prix"
 						},
 						{
-							"answer": "{{eval:h;d}}\\unit{€}",
+							"answer": "{{eval:(h)[€]}}",
 							"message": "Vérifie la place de la virgule dans ta division.",
 							"label": "Virgule mal placée"
 						}
@@ -226,7 +226,7 @@
 			],
 			"correction": {
 				"steps": [
-					"${{s}}\\,\\text{kg}$ de pommes, c'est $\\textcolor{{{color:primary.0}}}{{{k}}\\text{ fois}}$ moins que ${{G}}\\,\\text{kg}$, car ${{G}} \\div {{k}} = {{s}}$. Le prix est donc lui aussi divisé par ${{k}}$ : ${{eval:h*k/10;d}}\\,€ \\textcolor{{{color:primary.0}}}{\\div {{k}}} = \\textcolor{{{color:primary.0}}}{{{eval:h/10;d}}\\,€}$."
+					"${{s}}\\,\\text{kg}$ de pommes, c'est $\\textcolor{{{color:primary.0}}}{{{k}}\\text{ fois}}$ moins que ${{G}}\\,\\text{kg}$, car ${{G}} \\div {{k}} = {{s}}$. Le prix est donc lui aussi divisé par ${{k}}$ : ${{eval:(h*k/10)[€]}} \\textcolor{{{color:primary.0}}}{\\div {{k}}} = \\textcolor{{{color:primary.0}}}{{{eval:(h/10)[€]}}}$."
 				]
 			},
 			"hint": "Par combien faut-il diviser ${{G}}$ kg pour obtenir ${{s}}$ kg ? Fais de même avec le prix."
@@ -366,6 +366,21 @@
 			"answers": ["21{,}6\\,€"]
 		},
 		{
+			"description": "F1 masses : 21,60 € accepté",
+			"variationIndex": 6,
+			"variables": {
+				"t": "12",
+				"u": "6",
+				"k": "3",
+				"x": "1.2",
+				"y": "3.6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["21{,}60\\,€"]
+		},
+		{
 			"description": "F1 masses : sans unité",
 			"variationIndex": 6,
 			"variables": {
@@ -441,6 +456,20 @@
 				"status": "correct"
 			},
 			"answers": ["9{,}9\\,€"]
+		},
+		{
+			"description": "F1 diviser : 9,90 € accepté",
+			"variationIndex": 7,
+			"variables": {
+				"s": "4",
+				"k": "3",
+				"h": "99",
+				"G": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["9{,}90\\,€"]
 		},
 		{
 			"description": "F1 diviser : multiplié (89,1 €)",

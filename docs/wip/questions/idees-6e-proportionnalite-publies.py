@@ -14,10 +14,9 @@ Programme de 6e : linéarité et retour à l'unité, jamais de produit en croix 
 graphiques seulement (« 1 cm pour … »), pas d'écriture 1/n.
 
 Écarts à la fiche, à signaler à David :
-- F1 (a) : les prix s'écrivent 7,2 € et non 7,20 € comme dans la fiche : la règle des zéros juge
-  « 21,60 € » forme à améliorer (vérifié par une spec, retirée), et les options du modèle ne
-  changent pas ici. Question ouverte : `constraints.zeros: off` sur ce modèle (migration-contenu
-  sait changer les options ; elles jugeraient aussi les 6 variations d'origine).
+- F1 : les prix sont des grandeurs en euros (`{{eval:(…)[€]}}`) : le moteur écrit « 7,20 € »
+  (écriture des nombres, #3170) et le juge accepte « 21,6 € » comme « 21,60 € ». Le
+  `zeros: off` envisagé le 2026-11-25 ne sert plus : les options du modèle ne changent pas.
 - F2 (a) : un nombre de 4 chiffres (3 600) s'écrit sans espace par `${{N}}$` (règle du BIPM, dès
   5 chiffres ; le modèle n'est pas réglé « Espaces dès 4 chiffres », et ses options ne changent
   pas). L'énoncé l'écrit donc groupé à la main (`3\\,600`, NAFF) ; les réponses restent ≤ 900.
@@ -105,8 +104,9 @@ def selon(v, textes, k=0):
 
 
 def euros(nombre_dixiemes):
-	"""Prix en euros écrit à partir de son nombre de dixièmes : 7,2 (pas 7,20, cf. en-tête)."""
-	return '{{eval:' + nombre_dixiemes + '/10;d}}'
+	"""Prix écrit en grandeur en euros à partir de son nombre de dixièmes : le moteur écrit les
+	centimes (7,20 €) et laisse un prix entier sans zéros (12 €)."""
+	return '{{eval:(' + nombre_dixiemes + '/10)[€]}}'
 
 
 def ajouter(court, variations, specs):
@@ -136,25 +136,25 @@ def ajouter(court, variations, specs):
 # coefficient k. En centièmes d'euro : juste 10tuk ; écart ajouté 10tu + 10t(k−1) ; virgule
 # décalée 100tuk ; prix × nouvelle masse t²uk.
 F1_MULT = variation(
-	'${{x}}\\,\\text{kg}$ de cerises coûtent $' + euros('t*u') + '\\,€$. Combien coûtent '
+	'${{x}}\\,\\text{kg}$ de cerises coûtent $' + euros('t*u') + '$. Combien coûtent '
 	'${{y}}\\,\\text{kg}$ de cerises ?\n\n${{y}}\\,\\text{kg}$ de cerises coûtent $?$.',
 	[var('t', '5..30'), var('u', '2..9'), var('k', '2..5'), var('x', 'eval:t/10;d'),
 	 var('y', 'eval:t*k/10;d')],
-	[case('{{eval:t*u*k/10;d}}\\unit{€}', [
-		erreur('{{eval:(t*u+t*(k-1))/10;d}}\\unit{€}',
+	[case('{{eval:(t*u*k/10)[€]}}', [
+		erreur('{{eval:((t*u+t*(k-1))/10)[€]}}',
 			   'Le prix n\'augmente pas de l\'écart des masses : cherche par combien la masse est '
 			   'multipliée.', 'Écart des masses ajouté au prix'),
-		erreur('{{eval:t*u*k;d}}\\unit{€}',
+		erreur('{{eval:(t*u*k)[€]}}',
 			   'Vérifie la place de la virgule dans ton produit.', 'Virgule mal placée'),
-		erreur('{{eval:t*t*u*k/100;d}}\\unit{€}',
+		erreur('{{eval:(t*t*u*k/100)[€]}}',
 			   'On ne multiplie pas le prix par la nouvelle masse : cherche combien de fois '
 			   '${{x}}$ kg il y a dans ${{y}}$ kg.', 'Prix multiplié par la masse'),
 	], unite=True)],
 	[
 		'${{y}}\\,\\text{kg}$ de cerises, c\'est $' + couleur('{{k}}\\text{ fois}') + '$ plus que '
 		'${{x}}\\,\\text{kg}$, car ${{x}} \\times {{k}} = {{y}}$. Le prix est donc lui aussi '
-		'multiplié par ${{k}}$ : $' + euros('t*u') + '\\,€ ' + couleur('\\times {{k}}') + ' = '
-		+ couleur(euros('t*u*k') + '\\,€') + '$.',
+		'multiplié par ${{k}}$ : $' + euros('t*u') + ' ' + couleur('\\times {{k}}') + ' = '
+		+ couleur(euros('t*u*k')) + '$.',
 	],
 	'Par combien faut-il multiplier ${{x}}$ kg pour obtenir ${{y}}$ kg ? Fais de même avec le '
 	'prix.',
@@ -166,25 +166,25 @@ F1_MULT = variation(
 # dixièmes d'euro : juste h ; multiplié hk² ; écart retranché hk − 10s(k−1) (positif) ; virgule
 # décalée 10h. Ces valeurs sont distinctes dès que h n'est pas un multiple de 10.
 F1_DIV = variation(
-	'${{G}}\\,\\text{kg}$ de pommes coûtent $' + euros('h*k') + '\\,€$. Combien '
+	'${{G}}\\,\\text{kg}$ de pommes coûtent $' + euros('h*k') + '$. Combien '
 	'{{if:s==1|coûte|coûtent}} ${{s}}\\,\\text{kg}$ de pommes ?\n\n${{s}}\\,\\text{kg}$ de pommes '
 	'{{if:s==1|coûte|coûtent}} $?$.',
 	[var('s', '1..6'), var('k', '2..5'), var('h', '11..99'), var('G', 'eval:s*k')],
-	[case('{{eval:h/10;d}}\\unit{€}', [
-		erreur('{{eval:h*k*k/10;d}}\\unit{€}',
+	[case('{{eval:(h/10)[€]}}', [
+		erreur('{{eval:(h*k*k/10)[€]}}',
 			   'Ici la masse diminue : ${{s}}$ kg, c\'est moins que ${{G}}$ kg, donc le prix est '
 			   'plus petit.', 'Multiplication au lieu de division'),
-		erreur('{{eval:(h*k-10*s*(k-1))/10;d}}\\unit{€}',
+		erreur('{{eval:((h*k-10*s*(k-1))/10)[€]}}',
 			   'Le prix ne baisse pas de l\'écart des masses : cherche par combien la masse est '
 			   'divisée.', 'Écart des masses retranché au prix'),
-		erreur('{{eval:h;d}}\\unit{€}',
+		erreur('{{eval:(h)[€]}}',
 			   'Vérifie la place de la virgule dans ta division.', 'Virgule mal placée'),
 	], unite=True)],
 	[
 		'${{s}}\\,\\text{kg}$ de pommes, c\'est $' + couleur('{{k}}\\text{ fois}') + '$ moins que '
 		'${{G}}\\,\\text{kg}$, car ${{G}} \\div {{k}} = {{s}}$. Le prix est donc lui aussi divisé '
-		'par ${{k}}$ : $' + euros('h*k') + '\\,€ ' + couleur('\\div {{k}}') + ' = '
-		+ couleur(euros('h') + '\\,€') + '$.',
+		'par ${{k}}$ : $' + euros('h*k') + ' ' + couleur('\\div {{k}}') + ' = '
+		+ couleur(euros('h')) + '$.',
 	],
 	'Par combien faut-il diviser ${{G}}$ kg pour obtenir ${{s}}$ kg ? Fais de même avec le prix.',
 	['mod(h,10)!=0', 'h*k>10*s*(k-1)'],
@@ -194,6 +194,7 @@ V_CERISES = {'t': '12', 'u': '6', 'k': '3', 'x': '1.2', 'y': '3.6'}
 V_POMMES = {'s': '4', 'k': '3', 'h': '99', 'G': '12'}
 SPECS_E0C = [
 	spec('F1 masses : 1,2 kg à 7,2 €, 3,6 kg → 21,6 €', 0, V_CERISES, 'correct', ['21{,}6\\,€']),
+	spec('F1 masses : 21,60 € accepté', 0, V_CERISES, 'correct', ['21{,}60\\,€']),
 	spec('F1 masses : sans unité', 0, V_CERISES, 'incorrect', ['21{,}6']),
 	spec('F1 masses : écart ajouté (9,6 €)', 0, V_CERISES, 'incorrect', ['9{,}6\\,€'],
 		 'Le prix n\'augmente pas de l\'écart des masses : cherche par combien la masse est '
@@ -204,6 +205,7 @@ SPECS_E0C = [
 		 'On ne multiplie pas le prix par la nouvelle masse : cherche combien de fois $1{,}2$ kg '
 		 'il y a dans $3{,}6$ kg.'),
 	spec('F1 diviser : 12 kg à 29,7 €, 4 kg → 9,9 €', 1, V_POMMES, 'correct', ['9{,}9\\,€']),
+	spec('F1 diviser : 9,90 € accepté', 1, V_POMMES, 'correct', ['9{,}90\\,€']),
 	spec('F1 diviser : multiplié (89,1 €)', 1, V_POMMES, 'incorrect', ['89{,}1\\,€'],
 		 'Ici la masse diminue : $4$ kg, c\'est moins que $12$ kg, donc le prix est plus petit.'),
 	spec('F1 diviser : écart retranché (21,7 €)', 1, V_POMMES, 'incorrect', ['21{,}7\\,€'],

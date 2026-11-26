@@ -15,10 +15,15 @@ N3 → 6-192 (tableau), N4 → 6-189 et N5 → 6-190 (caractérisation). Niveaux
 N4 8, N5 9 (fiche de phase 0), à relever de nouveau avant la migration de rangement.
 
 Choix d'écriture :
-- prix tirés en DIXIÈMES d'euro (entiers), affichés par `;d` : pas de flottants ; prix unitaire
-  entre 1,10 € et 3,50 €, jamais entier (`mod(p,10)!=0`), donc jamais 1 € (sinon l'erreur
-  « ajouter la quantité au prix » tomberait sur la bonne réponse) ;
-- `zeros: off` sur N1, N2, N3 : « 8,50 € » est l'écriture ordinaire d'un prix ;
+- prix tirés en DIXIÈMES d'euro (entiers) : pas de flottants ; prix unitaire entre 1,10 € et
+  3,50 €, jamais entier (`mod(p,10)!=0`), donc jamais 1 € (sinon l'erreur « ajouter la quantité
+  au prix » tomberait sur la bonne réponse) ;
+- un prix suivi de son unité est une grandeur en euros (`prix`, `{{eval:(…)[€]}}`) : le moteur
+  écrit « 4,50 € », « 12 € » ; un prix sans unité (case d'un tableau « Prix (€) », calcul du
+  corrigé) s'écrit de même (`prix_nu`, `prix_ecrits`) ;
+- `zeros: off` sur N1, N2, N3 : leurs cases de prix sans unité (tableaux, « ? € ») sont des
+  nombres pour le juge, qui y jugerait « 8,50 » forme à améliorer ; la règle de l'euro ne
+  vaut que pour une réponse écrite avec « € » ;
 - N1 (achat, recette, sirop) : la réponse porte son unité (`unit.expected`, comme le modèle
   publié e0ccaf84), et la consigne le dit ; N1 tableau, N2, N3 : nombre seul (l'unité est dans
   l'en-tête du tableau ou écrite après la case) ;
@@ -28,7 +33,11 @@ Choix d'écriture :
 - N5 : chaque choix commence par « Oui : … » ou « Non : on ne peut pas le calculer », la question
   est « Peut-on calculer… ? » ; la moitié des tirages de la variation 1 sont proportionnels ; en
   variation 2, l'âge du père n'est pas proportionnel mais se CALCULE (l'écart reste le même) :
-  la bonne réponse est alors la valeur additive, pas « on ne peut pas ».
+  la bonne réponse est alors la valeur additive, pas « on ne peut pas » ; la masse du père,
+  elle, ne se calcule pas (retouche validée le 2026-11-25 : « on ne peut pas » parfois juste) ;
+- N5 : le piège « valeur × nouvelle quantité » seulement quand il reste vraisemblable (prix,
+  pages imprimées), sinon la nouvelle quantité ajoutée (taille : 330 cm à 15 ans écarté) ;
+- N4 relier : une série tirée parmi cinq (retouche validée le 2026-11-25).
 
 Règles suivies (couvrir-un-niveau.md § 5) : erreurs prévues par case d'écriture ordinaire (de
 vraies erreurs d'élèves, sans en inventer pour atteindre trois), chacune avec sa spec `incorrect`
@@ -42,6 +51,7 @@ Usage : python3 docs/wip/questions/idees-6e-proportionnalite-neufs.py scripts/qu
 """
 import json
 import os
+import re
 import sys
 
 DOSSIER = sys.argv[1]
@@ -97,7 +107,17 @@ def case(attendue, erreurs=None, unite=False):
     return c
 
 
+PRIX_DECIMAL = re.compile(r'\{\{eval:([^{}]*p/(?:10|20)[^{}]*);d\}\}')
+
+
+def prix_ecrits(texte):
+    """Dans un énoncé, un corrigé ou un coup de pouce, un prix calculé en dixièmes d'euro
+    (`…p/10`, `…p/20`) s'écrit comme un prix (4,50 ; 12), pas comme un décimal (4,5)."""
+    return PRIX_DECIMAL.sub(lambda m: prix_nu(m.group(1)), texte)
+
+
 def variation(statement, variables, blanks, steps, hint, conditions=None):
+    statement, steps, hint = prix_ecrits(statement), [prix_ecrits(t) for t in steps], prix_ecrits(hint)
     v = {'statement': statement, 'variables': variables, 'conditions': conditions or []}
     if blanks is not None:
         v['blanks'] = blanks
@@ -130,6 +150,18 @@ def selon(v, textes):
 def d(expr):
     """Nombre calculé, écrit en décimal."""
     return '{{eval:' + expr + ';d}}'
+
+
+def prix(expr):
+    """Prix en grandeur en euros : le moteur écrit les centimes (4,50 €), un prix entier reste
+    entier (12 €)."""
+    return '{{eval:(' + expr + ')[€]}}'
+
+
+def prix_nu(expr):
+    """Prix sans son unité (case d'un tableau « Prix (€) »), écrit comme un prix : 4,50 ; 12."""
+    return ('{{if:mod(100*(' + expr + '),100)==0|{{eval:' + expr + ';d}}|{{eval:' + expr
+            + ';d2}}}}')
 
 
 def ecrire(nom, m):
@@ -178,17 +210,17 @@ OBJ = selon('o', OBJETS)
 OBJS = selon('o', OBJETS_PL)
 
 N1_ACHAT = variation(
-    'Tous les ' + OBJS + ' ont le même prix. ${{n}}$ ' + OBJS + ' coûtent ${{eval:n*p/10;d}}~'
-    '\\unit{€}$.\n\nCombien coûtent ${{m}}$ ' + OBJS + ' ? Écris l\'unité dans ta réponse.\n\n'
+    'Tous les ' + OBJS + ' ont le même prix. ${{n}}$ ' + OBJS + ' coûtent $' + prix('n*p/10') + '$'
+    '.\n\nCombien coûtent ${{m}}$ ' + OBJS + ' ? Écris l\'unité dans ta réponse.\n\n'
     '${{m}}$ ' + OBJS + ' coûtent $?$.',
     [var('o', '0..2'), var('n', '2..13'), var('m', '2..13'), var('p', '11..35')],
     [case('{{eval:(m*p/10)[€]}}', n1_erreurs('p/10', 'n*p/10', '€'), unite=True)],
     [
         '**Retour à l\'unité.** On cherche d\'abord le prix d\'un ' + OBJ + ' : $'
         + d('n*p/10') + ' \\div {{n}} = ' + d('p/10') + '$. Un ' + OBJ + ' coûte $'
-        + d('p/10') + '~\\unit{€}$.',
+        + prix('p/10') + '$.',
         'Puis on multiplie par ${{m}}$ : $' + d('p/10') + ' \\times {{m}} = '
-        + couleur(d('m*p/10') + '~\\unit{€}') + '$.',
+        + couleur(prix('m*p/10')) + '$.',
     ],
     'Combien coûte un seul ' + OBJ + ' ?',
     N1_COND + ['mod(p,10)!=0'],
@@ -233,7 +265,7 @@ N1_TABLEAU = variation(
     'Tous les cahiers ont le même prix. Complète le tableau en passant par le prix d\'un '
     'cahier.\n\n'
     '| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n'
-    '| Prix (€) | ${{eval:n*p/10;d}}$ | $?$ | $?$ |',
+    '| Prix (€) | $' + prix_nu('n*p/10') + '$ | $?$ | $?$ |',
     [var('n', '2..13'), var('m', '2..13'), var('p', '11..35')],
     [
         case(d('p/10'), [
@@ -252,12 +284,12 @@ N1_TABLEAU = variation(
     [
         '**Retour à l\'unité.** De ${{n}}$ cahiers à $1$ cahier, on divise par ${{n}}$ : $'
         + d('n*p/10') + ' \\div {{n}} = ' + couleur(d('p/10')) + '$. Un cahier coûte $'
-        + d('p/10') + '~\\unit{€}$.',
+        + prix('p/10') + '$.',
         'De $1$ cahier à ${{m}}$ cahiers, on multiplie par ${{m}}$ : $' + d('p/10')
         + ' \\times {{m}} = ' + couleur(d('m*p/10')) + '$.',
         '| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n'
-        '| Prix (€) | $' + d('n*p/10') + '$ | $' + couleur(d('p/10')) + '$ | $'
-        + couleur(d('m*p/10')) + '$ |',
+        '| Prix (€) | $' + prix_nu('n*p/10') + '$ | $' + couleur(prix_nu('p/10')) + '$ | $'
+        + couleur(prix_nu('m*p/10')) + '$ |',
     ],
     'Pour passer de ${{n}}$ cahiers à $1$ cahier, que fait-on au nombre de cahiers ? Fais de même '
     'au prix.',
@@ -338,8 +370,8 @@ N2_COND = ['mod(n1,n2)!=0', 'mod(n2,n1)!=0', 'mod(p,10)!=0']
 
 
 def n2_donnees(objets):
-    return ('Tous les ' + objets + ' ont le même prix. ${{n1}}$ ' + objets + ' coûtent $' + P1
-            + '~\\unit{€}$ et ${{n2}}$ ' + objets + ' coûtent $' + P2 + '~\\unit{€}$.')
+    return ('Tous les ' + objets + ' ont le même prix. ${{n1}}$ ' + objets + ' coûtent $' + prix('n1*p/10')
+            + '$ et ${{n2}}$ ' + objets + ' coûtent $' + prix('n2*p/10') + '$.')
 
 
 N2_SOMME = variation(
@@ -347,7 +379,7 @@ N2_SOMME = variation(
     N2_VARS,
     [case(d('(n1+n2)*p/10'), [
         erreur(d('n2*p/10+n1'), 'Tu as ajouté ${{n1}}~\\unit{€}$ : ${{n1}}$ cahiers de plus '
-               'coûtent $' + P1 + '~\\unit{€}$ de plus.', 'Quantité ajoutée au prix'),
+               'coûtent $' + prix('n1*p/10') + '$ de plus.', 'Quantité ajoutée au prix'),
         erreur(d('abs(n2-n1)*p/10'), 'Tu as fait la différence des prix : c\'est le prix de '
                '${{eval:abs(n2-n1)}}$ cahiers. Pour ${{eval:n1+n2}}$ cahiers, additionne.',
                'Différence au lieu de somme'),
@@ -358,7 +390,7 @@ N2_SOMME = variation(
         '**Additionner deux lignes.** ${{eval:n1+n2}} = {{n1}} + {{n2}}$ : ${{eval:n1+n2}}$ '
         'cahiers, c\'est ${{n1}}$ cahiers et encore ${{n2}}$ cahiers.',
         'On additionne leurs prix : $' + P1 + ' + ' + P2 + ' = '
-        + couleur(d('(n1+n2)*p/10') + '~\\unit{€}') + '$.',
+        + couleur(prix('(n1+n2)*p/10')) + '$.',
     ],
     'Écris ${{eval:n1+n2}}$ à l\'aide des deux quantités de l\'énoncé.',
     N2_COND,
@@ -373,13 +405,13 @@ N2_DIFF = variation(
                '${{eval:n1+n2}}$ bouteilles. Pour ${{eval:n1-n2}}$ bouteilles, soustrais.',
                'Somme au lieu de différence'),
         erreur(d('n1*p/10-n2'), 'Tu as enlevé ${{n2}}~\\unit{€}$ : ${{n2}}$ bouteilles de moins '
-               'coûtent $' + P2 + '~\\unit{€}$ de moins.', 'Quantité retirée du prix'),
+               'coûtent $' + prix('n2*p/10') + '$ de moins.', 'Quantité retirée du prix'),
     ])],
     [
         '**Soustraire deux lignes.** ${{eval:n1-n2}} = {{n1}} - {{n2}}$ : ${{eval:n1-n2}}$ '
         'bouteilles, c\'est ${{n1}}$ bouteilles moins ${{n2}}$ bouteilles.',
         'On soustrait leurs prix : $' + P1 + ' - ' + P2 + ' = '
-        + couleur(d('(n1-n2)*p/10') + '~\\unit{€}') + '$.',
+        + couleur(prix('(n1-n2)*p/10')) + '$.',
     ],
     'Écris ${{eval:n1-n2}}$ à l\'aide des deux quantités de l\'énoncé.',
     N2_COND + ['n1>n2'],
@@ -387,14 +419,14 @@ N2_DIFF = variation(
 
 PN = d('n*p/10')
 N2_DEMI = variation(
-    'Tous les paquets de gâteaux ont le même prix. ${{n}}$ paquets coûtent $' + PN
-    + '~\\unit{€}$.\n\nCombien coûtent ${{eval:3*n/2}}$ paquets ?\n\n$$?~\\text{€}$$',
+    'Tous les paquets de gâteaux ont le même prix. ${{n}}$ paquets coûtent $' + prix('n*p/10')
+    + '$.\n\nCombien coûtent ${{eval:3*n/2}}$ paquets ?\n\n$$?~\\text{€}$$',
     [var('n', '4|6|8'), var('p', '11..35')],
     [case(d('3*n*p/20'), [
         erreur(d('n*p/20'), 'C\'est le prix de ${{eval:n/2}}$ paquets : il faut aussi ajouter '
                'le prix des ${{n}}$ premiers.', 'Moitié seulement'),
         erreur(d('n*p/10+n/2'), 'Tu as ajouté ${{eval:n/2}}~\\unit{€}$ : ${{eval:n/2}}$ paquets '
-               'de plus coûtent la moitié de $' + PN + '~\\unit{€}$ de plus.',
+               'de plus coûtent la moitié de $' + prix('n*p/10') + '$ de plus.',
                'Quantité ajoutée au prix'),
         erreur(d('3*n*n*p/20'), 'Tu as multiplié le prix de ${{n}}$ paquets par '
                '${{eval:3*n/2}}$ : c\'est le prix de ${{n}} \\times {{eval:3*n/2}}$ paquets.',
@@ -402,10 +434,10 @@ N2_DEMI = variation(
     ])],
     [
         '**Une fois et demie.** ${{eval:3*n/2}} = {{n}} + {{eval:n/2}}$, et ${{eval:n/2}}$ est la '
-        'moitié de ${{n}}$ : ${{eval:n/2}}$ paquets coûtent la moitié de $' + PN
-        + '~\\unit{€}$, soit $' + d('n*p/20') + '~\\unit{€}$.',
+        'moitié de ${{n}}$ : ${{eval:n/2}}$ paquets coûtent la moitié de $' + prix('n*p/10')
+        + '$, soit $' + prix('n*p/20') + '$.',
         'On additionne : $' + PN + ' + ' + d('n*p/20') + ' = '
-        + couleur(d('3*n*p/20') + '~\\unit{€}') + '$.',
+        + couleur(prix('3*n*p/20')) + '$.',
     ],
     'Écris ${{eval:3*n/2}}$ comme ${{n}}$ plus un autre nombre : lequel ?',
     ['mod(p,10)!=0'],
@@ -413,7 +445,7 @@ N2_DEMI = variation(
 
 N2_INVERSE = variation(
     n2_donnees('cahiers') + '\n\nCombien de cahiers peut-on acheter avec $'
-    + d('(n1+n2)*p/10') + '~\\unit{€}$ ?\n\n$$?~\\text{ cahiers}$$',
+    + prix('(n1+n2)*p/10') + '$ ?\n\n$$?~\\text{ cahiers}$$',
     N2_VARS,
     [case('{{eval:n1+n2}}', [
         erreur('{{eval:abs(n1-n2)}}', 'Tu as fait la différence des quantités : regarde comment '
@@ -426,7 +458,7 @@ N2_INVERSE = variation(
     ])],
     [
         '**Additionner deux lignes.** $' + P1 + ' + ' + P2 + ' = ' + d('(n1+n2)*p/10')
-        + '$ : avec $' + d('(n1+n2)*p/10') + '~\\unit{€}$, on paie ${{n1}}$ cahiers et encore '
+        + '$ : avec $' + prix('(n1+n2)*p/10') + '$, on paie ${{n1}}$ cahiers et encore '
         '${{n2}}$ cahiers.',
         'On peut donc acheter ${{n1}} + {{n2}} = ' + couleur('{{eval:n1+n2}}') + '$ cahiers.',
     ],
@@ -441,7 +473,7 @@ SPECS_N2 = [
     spec('Somme : 3 → 4,50, 5 → 7,50 ; 8 → 12', 0, V_N2, 'correct', ['12']),
     spec('Somme : 12,00 accepté', 0, V_N2, 'correct', ['12{,}00']),
     spec('Somme : 7,50 + 3 (10,5)', 0, V_N2, 'incorrect', ['10{,}5'],
-         'Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.5~\\unit{€}$ de plus.'),
+         'Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.50~\\unit{€}$ de plus.'),
     spec('Somme : différence (3)', 0, V_N2, 'incorrect', ['3'],
          'Tu as fait la différence des prix : c\'est le prix de $2$ cahiers. Pour $8$ cahiers, '
          'additionne.'),
@@ -452,7 +484,7 @@ SPECS_N2 = [
          'Tu as additionné les prix : c\'est le prix de $10$ bouteilles. Pour $4$ bouteilles, '
          'soustrais.'),
     spec('Différence : 10,50 − 3 (7,5)', 1, V_N2d, 'incorrect', ['7{,}5'],
-         'Tu as enlevé $3~\\unit{€}$ : $3$ bouteilles de moins coûtent $4.5~\\unit{€}$ de moins.'),
+         'Tu as enlevé $3~\\unit{€}$ : $3$ bouteilles de moins coûtent $4.50~\\unit{€}$ de moins.'),
     spec('Une fois et demie : 6 → 9 ; 9 → 13,5', 2, V_N2h, 'correct', ['13{,}5']),
     spec('Une fois et demie : 13,50 accepté', 2, V_N2h, 'correct', ['13{,}50']),
     spec('Une fois et demie : moitié (4,5)', 2, V_N2h, 'incorrect', ['4{,}5'],
@@ -499,12 +531,12 @@ N3_FACILE = variation(
     'Tous les cahiers ont le même prix. Complète ce tableau de proportionnalité.\n\n'
     + tableau('Nombre de cahiers', 'Prix (€)',
               ['${{x}}$', '${{y}}$', '${{eval:x+y}}$', '${{eval:2*x}}$', '${{eval:10*x}}$'],
-              ['$' + X3 + '$', '$' + Y3 + '$', '$?$', '$?$', '$?$']),
+              ['$' + prix_nu('x*p/10') + '$', '$' + prix_nu('y*p/10') + '$', '$?$', '$?$', '$?$']),
     [var('x', '2..7'), var('y', '2..7'), var('p', '11..35')],
     [
         case(d('(x+y)*p/10'), [
             erreur(d('y*p/10+x'), 'Tu as ajouté ${{x}}~\\unit{€}$ : ${{x}}$ cahiers de plus '
-                   'coûtent $' + X3 + '~\\unit{€}$ de plus.', 'Quantité ajoutée au prix'),
+                   'coûtent $' + prix('x*p/10') + '$ de plus.', 'Quantité ajoutée au prix'),
             erreur(d('abs(y-x)*p/10'), 'Tu as fait la différence des prix : c\'est le prix de '
                    '${{eval:abs(y-x)}}$ cahiers.', 'Différence au lieu de somme'),
             erreur(d('(2*y-x)*p/10'), 'Le tableau ne continue pas avec le même écart : '
@@ -635,7 +667,7 @@ SPECS_N3 = [
     spec('Facile : 3 → 4,50, 5 → 7,50 ; 12, 9, 45', 0, V_N3, 'correct', ['12', '9', '45']),
     spec('Facile : 12,00 et 9,00 acceptés', 0, V_N3, 'correct', ['12{,}00', '9{,}00', '45']),
     spec('Facile : 7,50 + 3 (10,5)', 0, V_N3, 'incorrect', ['10{,}5', '9', '45'],
-         'Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.5~\\unit{€}$ de plus.'),
+         'Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.50~\\unit{€}$ de plus.'),
     spec('Facile : différence des prix (3)', 0, V_N3, 'incorrect', ['3', '9', '45'],
          'Tu as fait la différence des prix : c\'est le prix de $2$ cahiers.'),
     spec('Facile : même écart (7,5)', 0, {'x': '3', 'y': '4', 'p': '15'},
@@ -745,39 +777,55 @@ N4_COCHER = variation(
     'Une grandeur se mesure ; l\'unité dit avec quoi on la mesure.',
 )
 
+# Relier : une série tirée parmi cinq (s). Chaque ligne donne, série par série, la grandeur et
+# son unité ; dans une série, une seule unité par sorte de grandeur (masse, durée…), et l'intrus
+# mesure une grandeur absente de la série : chaque grandeur n'a qu'une unité possible.
 N4_PAIRES = [
-    (['la masse d\'une pastèque', 'la masse d\'un stylo'], ['le kilogramme', 'le gramme']),
-    (['la durée d\'un film', 'la durée d\'une course de $100~\\unit{m}$'],
-     ['l\'heure', 'la seconde']),
-    (['le prix d\'un livre', 'la distance entre deux villes'], ['l\'euro', 'le kilomètre']),
-    (['la longueur d\'une piscine', 'l\'aire d\'une chambre'], ['le mètre', 'le mètre carré']),
-    (['la contenance d\'une bouteille d\'eau', 'la contenance d\'un verre'],
-     ['le litre', 'le centilitre']),
+    (['la masse d\'une pastèque', 'la masse d\'un stylo', 'la masse d\'un éléphant',
+      'la masse d\'une lettre', 'la masse d\'un camion'],
+     ['le kilogramme', 'le gramme', 'la tonne', 'le gramme', 'la tonne']),
+    (['la durée d\'un film', 'la durée d\'une course de $100~\\unit{m}$',
+      'la durée d\'une récréation', 'la durée des vacances d\'été',
+      'la durée d\'un vol de Paris à New York'],
+     ['l\'heure', 'la seconde', 'la minute', 'le jour', 'l\'heure']),
+    (['le prix d\'un livre', 'la distance entre deux villes', 'le prix d\'une voiture',
+      'la longueur d\'un marathon', 'le prix d\'un vélo'],
+     ['l\'euro', 'le kilomètre', 'l\'euro', 'le kilomètre', 'l\'euro']),
+    (['la longueur d\'une piscine', 'l\'aire d\'une chambre', 'la longueur d\'un crayon',
+      'l\'aire d\'un terrain de football', 'l\'épaisseur d\'un cahier'],
+     ['le mètre', 'le mètre carré', 'le centimètre', 'le mètre carré', 'le millimètre']),
+    (['la contenance d\'une bouteille d\'eau', 'la contenance d\'un verre',
+      'la contenance d\'une baignoire', 'la contenance d\'une cuillère',
+      'la contenance d\'un seau'],
+     ['le litre', 'le centilitre', 'le litre', 'le millilitre', 'le litre']),
 ]
-N4_INTRUS = ['le mètre carré', 'l\'euro']
+N4_INTRUS = ['le mètre carré', 'l\'euro', 'le mètre carré', 'l\'euro', 'le mètre carré']
+N4_INTRUS_GRANDEUR = ['une aire', 'un prix', 'une aire', 'un prix', 'une aire']
+
+
+def n4_corrige(k):
+    """Corrigé de la série k : chaque grandeur avec son unité, puis l'intrus."""
+    morceaux = []
+    for g, u in N4_PAIRES:
+        nom = g[k][0].upper() + g[k][1:]
+        morceaux.append(nom + ' : ' + ctexte(u[k]))
+    intrus = N4_INTRUS[k][0].upper() + N4_INTRUS[k][1:]
+    return (' ; '.join(morceaux) + '. ' + intrus + ' mesure ' + N4_INTRUS_GRANDEUR[k]
+            + ' : il ne sert pas.')
+
 
 N4_RELIER = variation(
     'Relie chaque grandeur à l\'unité qui sert à la mesurer. Une unité ne sert pas.\n\n'
     + bloc('associer', *['- ' + selon('s', g) + ' -> ' + selon('s', u) for g, u in N4_PAIRES],
            '- -> ' + selon('s', N4_INTRUS)),
-    [var('s', '0..1')],
+    [var('s', '0..4')],
     None,
     [
         '**Grandeur et unité.** Une grandeur se mesure ; son unité dit avec quoi on la mesure : '
-        'une masse en kilogrammes ou en grammes, une durée en heures ou en secondes, une longueur '
-        'en mètres, une contenance en litres.',
-        selon('s', [
-            'Masse de la pastèque : ' + ctexte('le kilogramme') + ' ; durée du film : '
-            + ctexte('l\'heure') + ' ; prix du livre : ' + ctexte('l\'euro')
-            + ' ; longueur de la piscine : ' + ctexte('le mètre') + ' ; contenance de la '
-            'bouteille : ' + ctexte('le litre') + '. Le mètre carré mesure une aire : '
-            'il ne sert pas.',
-            'Masse du stylo : ' + ctexte('le gramme') + ' ; durée de la course : '
-            + ctexte('la seconde') + ' ; distance entre deux villes : '
-            + ctexte('le kilomètre') + ' ; aire de la chambre : '
-            + ctexte('le mètre carré') + ' ; contenance du verre : '
-            + ctexte('le centilitre') + '. L\'euro mesure un prix : il ne sert pas.',
-        ]),
+        'une masse en grammes, en kilogrammes ou en tonnes, une durée en secondes, en minutes, en '
+        'heures ou en jours, une longueur en mètres, une aire en mètres carrés, une contenance en '
+        'litres.',
+        selon('s', [n4_corrige(k) for k in range(5)]),
     ],
     'Une grandeur se mesure ; l\'unité dit avec quoi on la mesure.',
 )
@@ -798,21 +846,30 @@ SPECS_N4 = [
          ['5', '4', '1', '3', '2']),
     spec('Relier : série 2, le bon classement', 1, {'s': '1'}, 'correct',
          ['5', '4', '1', '0', '2']),
+    spec('Relier : série 3, le bon classement', 1, {'s': '2'}, 'correct',
+         ['5', '4', '1', '0', '2']),
+    spec('Relier : série 3, le mètre carré (intrus) pour le crayon', 1, {'s': '2'}, 'incorrect',
+         ['5', '4', '1', '3', '2']),
+    spec('Relier : série 4, le bon classement', 1, {'s': '3'}, 'correct',
+         ['5', '4', '1', '0', '2']),
+    spec('Relier : série 5, le bon classement', 1, {'s': '4'}, 'correct',
+         ['5', '4', '1', '0', '2']),
 ]
 
 N4 = modele(
     'Reconnaître les grandeurs d\'une situation',
     'Dans une situation (achat, recette, trajet, robinet), cocher les deux grandeurs parmi des '
     'unités et des objets ; puis relier chaque grandeur (masse, durée, prix, longueur, '
-    'contenance, aire) à son unité, avec une unité en trop',
+    'contenance, aire) à son unité, avec une unité en trop (une série parmi cinq)',
     8, 60, [N4_COCHER, N4_RELIER], SPECS_N4,
     rangement=GRANDEURS)
 
 
 # =============================================================================================
 # N5 — 6-190 : peut-on le calculer ? Choix unique : « Oui : » la valeur proportionnelle, deux
-# autres valeurs (écart ajouté, produit par la nouvelle quantité), « Non : on ne peut pas le
-# calculer ». Variation 1 : t ≤ 2 non proportionnel (taille, masse, pointure selon l'âge),
+# autres valeurs (écart ajouté ; produit par la nouvelle quantité s'il reste vraisemblable, sinon
+# la nouvelle quantité ajoutée), « Non : on ne peut pas le calculer ». Variation 2 : âge du père
+# (l'écart reste), recette (proportionnelle), masse du père (rien ne la donne). Variation 1 : t ≤ 2 non proportionnel (taille, masse, pointure selon l'âge),
 # t ≥ 3 proportionnel (prix au kilo, distance à vitesse constante, imprimante).
 # Valeur de départ V tirée en entier (prix en dixièmes d'euro, divisé par f = 10 à l'affichage).
 # =============================================================================================
@@ -829,7 +886,7 @@ N5_ENONCES = [
     'À ${{q}}$ ans, Léo mesure ${{V}}~\\unit{cm}$. Peut-on calculer sa taille à ${{eval:k*q}}$ ans ?',
     'À ${{q}}$ ans, Zoé pèse ${{V}}~\\unit{kg}$. Peut-on calculer sa masse à ${{eval:k*q}}$ ans ?',
     'À ${{q}}$ ans, Tom chausse du ${{V}}$. Peut-on calculer sa pointure à ${{eval:k*q}}$ ans ?',
-    'Au marché, ${{q}}~\\unit{kg}$ de pommes coûtent $' + d('V/10') + '~\\unit{€}$. Peut-on '
+    'Au marché, ${{q}}~\\unit{kg}$ de pommes coûtent $' + prix('V/10') + '$. Peut-on '
     'calculer le prix de ${{eval:k*q}}~\\unit{kg}$ de ces pommes ?',
     'Un car roule toujours à la même vitesse. Il parcourt ${{V}}~\\unit{km}$ en ${{q}}~\\unit{h}$. '
     'Peut-on calculer la distance qu\'il parcourt en ${{eval:k*q}}~\\unit{h}$ ?',
@@ -838,20 +895,28 @@ N5_ENONCES = [
 ]
 
 
-def n5_oui(valeur):
+def n5_oui(expr):
+    valeur = d(expr)
     return selon('t', [
         'Oui : il mesurera $' + valeur + '~\\unit{cm}$.',
         'Oui : elle pèsera $' + valeur + '~\\unit{kg}$.',
         'Oui : il chaussera du $' + valeur + '$.',
-        'Oui : elles coûteront $' + valeur + '~\\unit{€}$.',
+        'Oui : elles coûteront $' + prix(expr) + '$.',
         'Oui : il parcourra $' + valeur + '~\\unit{km}$.',
         'Oui : elle imprimera $' + valeur + '$ pages.',
     ])
 
 
-N5_PROP = d('k*V/f')
-N5_PLUS = d('V/f+(k-1)*q')
-N5_FOIS = d('k*q*V/f')
+N5_PROP_E = 'k*V/f'
+N5_PROP = d(N5_PROP_E)
+N5_PLUS = 'V/f+(k-1)*q'
+# Troisième choix : la valeur multipliée par la nouvelle quantité quand le résultat reste
+# vraisemblable (prix, pages imprimées) ; sinon (taille, masse, pointure, distance du car, où il
+# donnerait 2 000 cm ou 1 000 km) la nouvelle quantité ajoutée à la valeur.
+N5_VRAISEMBLABLE = '(' + ind('t', 3) + '+' + ind('t', 5) + ')'
+# calculé dans la variable z : une grandeur (`[€]`) ne simplifie pas min et abs
+N5_Z = ('eval:k*q*V/f*' + N5_VRAISEMBLABLE + '+(V/f+k*q)*(1-' + N5_VRAISEMBLABLE + ')')
+N5_FOIS = 'z'
 
 N5_CORRIGE_1 = selon('t', [
     'La taille n\'est pas proportionnelle à l\'âge : on ne grandit pas toujours de la même '
@@ -864,8 +929,8 @@ N5_CORRIGE_1 = selon('t', [
     + ctexte('on ne peut pas la calculer') + '.',
     'Le prix est proportionnel à la masse : chaque kilogramme coûte le même prix. '
     '${{eval:k*q}}~\\unit{kg}$, c\'est ${{k}}$ fois ${{q}}~\\unit{kg}$, donc le prix est '
-    'multiplié par ${{k}}$ : $' + d('V/10') + ' \\times {{k}} = '
-    + couleur(N5_PROP + '~\\unit{€}') + '$.',
+    'multiplié par ${{k}}$ : $' + prix_nu('V/10') + ' \\times {{k}} = '
+    + couleur(prix(N5_PROP_E)) + '$.',
     'La vitesse ne change pas : la distance est proportionnelle à la durée. '
     '${{eval:k*q}}~\\unit{h}$, c\'est ${{k}}$ fois ${{q}}~\\unit{h}$, donc la distance est '
     'multipliée par ${{k}}$ : ${{V}} \\times {{k}} = ' + couleur(N5_PROP + '~\\unit{km}') + '$.',
@@ -876,10 +941,10 @@ N5_CORRIGE_1 = selon('t', [
 
 N5_AGE = variation(
     selon('t', N5_ENONCES) + '\n\n'
-    + bloc('choix', '- ' + n5_oui(N5_PROP), '- ' + n5_oui(N5_PLUS), '- ' + n5_oui(N5_FOIS),
+    + bloc('choix', '- ' + n5_oui(N5_PROP_E), '- ' + n5_oui(N5_PLUS), '- ' + n5_oui(N5_FOIS),
            '- Non : on ne peut pas le calculer.'),
     [var('t', '0..5'), var('k', '2..3'), var('q', '2..6'), var('u', '11..35'), var('w', '4..9'),
-     var('r', '8..20'), var('V', N5_V), var('f', N5_F), var('a', 'eval:3-3*floor(t/3)')],
+     var('r', '8..20'), var('V', N5_V), var('f', N5_F), var('z', N5_Z), var('a', 'eval:3-3*floor(t/3)')],
     [case('{{a}}')],
     [
         '**Proportionnel ou pas ?** Deux grandeurs sont proportionnelles quand, si l\'une est '
@@ -887,7 +952,8 @@ N5_AGE = variation(
         N5_CORRIGE_1,
     ],
     'Si la première grandeur est multipliée par ${{k}}$, la seconde l\'est-elle forcément aussi ?',
-    ['mod(u,10)!=0', 'V!=q*f', '(k-1)*q*f!=(k*q-1)*V'],
+    ['mod(u,10)!=0', 'V!=q*f', '(k-1)*q*f!=(k*q-1)*V',
+     'abs((k-1)*V-k*q*f)+' + N5_VRAISEMBLABLE + '>0'],
 )
 
 N5_ENONCES_2 = [
@@ -895,20 +961,25 @@ N5_ENONCES_2 = [
     'Lina aura ${{eval:k*q}}$ ans ?',
     'Pour ${{q}}$ personnes, une recette de crêpes demande ${{V}}~\\unit{g}$ de farine. Peut-on '
     'calculer la masse de farine pour ${{eval:k*q}}$ personnes ?',
+    'Quand Lina a ${{q}}$ ans, son père pèse ${{V}}~\\unit{kg}$. Peut-on calculer la masse de son '
+    'père quand Lina aura ${{eval:k*q}}$ ans ?',
 ]
 
 
 def n5_oui_2(valeur):
     return selon('t', ['Oui : il aura $' + valeur + '$ ans.',
-                       'Oui : il faudra $' + valeur + '~\\unit{g}$ de farine.'])
+                       'Oui : il faudra $' + valeur + '~\\unit{g}$ de farine.',
+                       'Oui : il pèsera $' + valeur + '~\\unit{kg}$.'])
 
 
 N5_FAMILLE = variation(
     selon('t', N5_ENONCES_2) + '\n\n'
     + bloc('choix', '- ' + n5_oui_2('{{eval:k*V}}'), '- ' + n5_oui_2('{{eval:V+(k-1)*q}}'),
            '- ' + n5_oui_2('{{eval:V+k*q}}'), '- Non : on ne peut pas le calculer.'),
-    [var('t', '0..1'), var('k', '2..3'), var('q', '3..8'), var('ecart', '24..38'),
-     var('g', '20|25|30|40|50|60'), var('V', 'eval:(1-t)*(q+ecart)+t*q*g'), var('a', 'eval:1-t')],
+    [var('t', '0..2'), var('k', '2..3'), var('q', '3..8'), var('ecart', '24..38'),
+     var('g', '20|25|30|40|50|60'), var('m', '65..95'),
+     var('V', 'eval:(q+ecart)*' + ind('t', 0) + '+q*g*' + ind('t', 1) + '+m*' + ind('t', 2)),
+     var('a', 'eval:' + ind('t', 0) + '+3*' + ind('t', 2))],
     [case('{{a}}')],
     [
         '**Proportionnel ou pas ?** Deux grandeurs sont proportionnelles quand, si l\'une est '
@@ -919,38 +990,42 @@ N5_FAMILLE = variation(
             'jamais : ${{V}} - {{q}} = {{eval:V-q}}$ ans.',
             'La masse de farine est proportionnelle au nombre de personnes : pour ${{k}}$ fois '
             'plus de personnes, il faut ${{k}}$ fois plus de farine.',
+            'La masse du père n\'est pas proportionnelle à l\'âge de Lina : quand Lina aura '
+            '${{k}}$ fois son âge, son père ne pèsera pas ${{k}}$ fois plus. Et rien ne reste '
+            'pareil : il peut grossir ou maigrir.',
         ]),
         selon('t', [
             'Quand Lina aura ${{eval:k*q}}$ ans, son père aura ${{eval:k*q}} + {{eval:V-q}} = '
             + couleur('{{eval:V+(k-1)*q}}') + '$ ans.',
             '${{V}} \\times {{k}} = ' + couleur('{{eval:k*V}}~\\unit{g}') + '$.',
+            'Aucun calcul ne donne la réponse : ' + ctexte('on ne peut pas la calculer') + '.',
         ]),
     ],
     'Les deux grandeurs sont-elles proportionnelles ? Sinon, y a-t-il quand même quelque chose '
-    'qui ne change pas ?',
+    'qui ne change pas ? Si rien ne reste pareil, aucun calcul ne donne la réponse.',
     ['(k-1)*V!=k*q'],
 )
 
 SPECS_N5 = [
     spec('Taille : on ne peut pas', 0, {'t': '0', 'k': '2', 'q': '5', 'u': '15', 'w': '6', 'r': '10',
-                                       'V': '110', 'f': '1', 'a': '3'}, 'correct', ['3']),
+                                       'V': '110', 'f': '1', 'z': '120', 'a': '3'}, 'correct', ['3']),
     spec('Taille : piège du double', 0, {'t': '0', 'k': '2', 'q': '5', 'u': '15', 'w': '6',
-                                        'r': '10', 'V': '110', 'f': '1', 'a': '3'},
+                                        'r': '10', 'V': '110', 'f': '1', 'z': '120', 'a': '3'},
          'incorrect', ['0']),
     spec('Pointure : on ne peut pas', 0, {'t': '2', 'k': '3', 'q': '4', 'u': '15', 'w': '6',
-                                         'r': '10', 'V': '26', 'f': '1', 'a': '3'}, 'correct', ['3']),
+                                         'r': '10', 'V': '26', 'f': '1', 'z': '38', 'a': '3'}, 'correct', ['3']),
     spec('Pommes : 2 kg → 3 €, 6 kg → 9 €', 0, {'t': '3', 'k': '3', 'q': '2', 'u': '15', 'w': '6',
-                                                'r': '10', 'V': '30', 'f': '10', 'a': '0'},
+                                                'r': '10', 'V': '30', 'f': '10', 'z': '18', 'a': '0'},
          'correct', ['0']),
     spec('Pommes : « on ne peut pas » refusé', 0, {'t': '3', 'k': '3', 'q': '2', 'u': '15',
                                                    'w': '6', 'r': '10', 'V': '30', 'f': '10',
-                                                   'a': '0'}, 'incorrect', ['3']),
+                                                 'z': '18', 'a': '0'}, 'incorrect', ['3']),
     spec('Pommes : écart ajouté refusé', 0, {'t': '3', 'k': '3', 'q': '2', 'u': '15', 'w': '6',
-                                             'r': '10', 'V': '30', 'f': '10', 'a': '0'},
+                                             'r': '10', 'V': '30', 'f': '10', 'z': '18', 'a': '0'},
          'incorrect', ['1']),
     spec('Car : 3 h → 180 km, 6 h → 360 km', 0, {'t': '4', 'k': '2', 'q': '3', 'u': '15',
                                                   'w': '6', 'r': '10', 'V': '180', 'f': '1',
-                                                  'a': '0'}, 'correct', ['0']),
+                                                'z': '186', 'a': '0'}, 'correct', ['0']),
     spec('Père : l\'écart reste (correct = 1)', 1, {'t': '0', 'k': '2', 'q': '4', 'ecart': '30',
                                                     'g': '50', 'V': '34', 'a': '1'},
          'correct', ['1']),
@@ -961,6 +1036,15 @@ SPECS_N5 = [
          'incorrect', ['3']),
     spec('Recette : 4 → 200 g, 8 → 400 g', 1, {'t': '1', 'k': '2', 'q': '4', 'ecart': '30',
                                                 'g': '50', 'V': '200', 'a': '0'}, 'correct', ['0']),
+    spec('Masse du père : on ne peut pas', 1, {'t': '2', 'k': '2', 'q': '5', 'ecart': '30',
+                                               'g': '50', 'm': '80', 'V': '80', 'a': '3'},
+         'correct', ['3']),
+    spec('Masse du père : piège du double refusé', 1, {'t': '2', 'k': '2', 'q': '5',
+                                                       'ecart': '30', 'g': '50', 'm': '80',
+                                                       'V': '80', 'a': '3'}, 'incorrect', ['0']),
+    spec('Masse du père : écart ajouté refusé', 1, {'t': '2', 'k': '2', 'q': '5', 'ecart': '30',
+                                                    'g': '50', 'm': '80', 'V': '80', 'a': '3'},
+         'incorrect', ['1']),
     spec('Recette : écart ajouté refusé', 1, {'t': '1', 'k': '2', 'q': '4', 'ecart': '30',
                                                'g': '50', 'V': '200', 'a': '0'},
          'incorrect', ['1']),
@@ -970,7 +1054,8 @@ N5 = modele(
     'Peut-on le calculer ?',
     'Dire si une valeur se calcule : taille, masse, pointure selon l\'âge (non) ou prix au '
     'kilo, distance à vitesse constante, pages imprimées (oui, proportionnel) ; âge du père '
-    '(non proportionnel, mais l\'écart reste) ou recette (oui) ; piège : multiplier quand ce '
+    '(non proportionnel, mais l\'écart reste), recette (oui) ou masse du père (non) ; piège : '
+    'multiplier quand ce '
     'n\'est pas proportionnel',
     9, 60, [N5_AGE, N5_FAMILLE], SPECS_N5,
     rangement=CALCULABLE)

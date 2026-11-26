@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Tous les cahiers ont le même prix. ${{n1}}$ cahiers coûtent ${{eval:n1*p/10;d}}~\\unit{€}$ et ${{n2}}$ cahiers coûtent ${{eval:n2*p/10;d}}~\\unit{€}$.\n\nCombien coûtent ${{eval:n1+n2}}$ cahiers ?\n\n$$?~\\text{€}$$",
+			"statement": "Tous les cahiers ont le même prix. ${{n1}}$ cahiers coûtent ${{eval:(n1*p/10)[€]}}$ et ${{n2}}$ cahiers coûtent ${{eval:(n2*p/10)[€]}}$.\n\nCombien coûtent ${{eval:n1+n2}}$ cahiers ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "n1",
@@ -38,7 +38,7 @@
 					"expectedErrors": [
 						{
 							"answer": "{{eval:n2*p/10+n1;d}}",
-							"message": "Tu as ajouté ${{n1}}~\\unit{€}$ : ${{n1}}$ cahiers de plus coûtent ${{eval:n1*p/10;d}}~\\unit{€}$ de plus.",
+							"message": "Tu as ajouté ${{n1}}~\\unit{€}$ : ${{n1}}$ cahiers de plus coûtent ${{eval:(n1*p/10)[€]}}$ de plus.",
 							"label": "Quantité ajoutée au prix"
 						},
 						{
@@ -57,13 +57,13 @@
 			"correction": {
 				"steps": [
 					"**Additionner deux lignes.** ${{eval:n1+n2}} = {{n1}} + {{n2}}$ : ${{eval:n1+n2}}$ cahiers, c'est ${{n1}}$ cahiers et encore ${{n2}}$ cahiers.",
-					"On additionne leurs prix : ${{eval:n1*p/10;d}} + {{eval:n2*p/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(n1+n2)*p/10;d}}~\\unit{€}}$."
+					"On additionne leurs prix : ${{if:mod(100*(n1*p/10),100)==0|{{eval:n1*p/10;d}}|{{eval:n1*p/10;d2}}}} + {{if:mod(100*(n2*p/10),100)==0|{{eval:n2*p/10;d}}|{{eval:n2*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:((n1+n2)*p/10)[€]}}}$."
 				]
 			},
 			"hint": "Écris ${{eval:n1+n2}}$ à l'aide des deux quantités de l'énoncé."
 		},
 		{
-			"statement": "Tous les bouteilles de jus ont le même prix. ${{n1}}$ bouteilles de jus coûtent ${{eval:n1*p/10;d}}~\\unit{€}$ et ${{n2}}$ bouteilles de jus coûtent ${{eval:n2*p/10;d}}~\\unit{€}$.\n\nCombien coûtent ${{eval:n1-n2}}$ bouteilles de jus ?\n\n$$?~\\text{€}$$",
+			"statement": "Tous les bouteilles de jus ont le même prix. ${{n1}}$ bouteilles de jus coûtent ${{eval:(n1*p/10)[€]}}$ et ${{n2}}$ bouteilles de jus coûtent ${{eval:(n2*p/10)[€]}}$.\n\nCombien coûtent ${{eval:n1-n2}}$ bouteilles de jus ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "n1",
@@ -90,7 +90,7 @@
 						},
 						{
 							"answer": "{{eval:n1*p/10-n2;d}}",
-							"message": "Tu as enlevé ${{n2}}~\\unit{€}$ : ${{n2}}$ bouteilles de moins coûtent ${{eval:n2*p/10;d}}~\\unit{€}$ de moins.",
+							"message": "Tu as enlevé ${{n2}}~\\unit{€}$ : ${{n2}}$ bouteilles de moins coûtent ${{eval:(n2*p/10)[€]}}$ de moins.",
 							"label": "Quantité retirée du prix"
 						}
 					]
@@ -99,13 +99,13 @@
 			"correction": {
 				"steps": [
 					"**Soustraire deux lignes.** ${{eval:n1-n2}} = {{n1}} - {{n2}}$ : ${{eval:n1-n2}}$ bouteilles, c'est ${{n1}}$ bouteilles moins ${{n2}}$ bouteilles.",
-					"On soustrait leurs prix : ${{eval:n1*p/10;d}} - {{eval:n2*p/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(n1-n2)*p/10;d}}~\\unit{€}}$."
+					"On soustrait leurs prix : ${{if:mod(100*(n1*p/10),100)==0|{{eval:n1*p/10;d}}|{{eval:n1*p/10;d2}}}} - {{if:mod(100*(n2*p/10),100)==0|{{eval:n2*p/10;d}}|{{eval:n2*p/10;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:((n1-n2)*p/10)[€]}}}$."
 				]
 			},
 			"hint": "Écris ${{eval:n1-n2}}$ à l'aide des deux quantités de l'énoncé."
 		},
 		{
-			"statement": "Tous les paquets de gâteaux ont le même prix. ${{n}}$ paquets coûtent ${{eval:n*p/10;d}}~\\unit{€}$.\n\nCombien coûtent ${{eval:3*n/2}}$ paquets ?\n\n$$?~\\text{€}$$",
+			"statement": "Tous les paquets de gâteaux ont le même prix. ${{n}}$ paquets coûtent ${{eval:(n*p/10)[€]}}$.\n\nCombien coûtent ${{eval:3*n/2}}$ paquets ?\n\n$$?~\\text{€}$$",
 			"variables": [
 				{
 					"name": "n",
@@ -128,7 +128,7 @@
 						},
 						{
 							"answer": "{{eval:n*p/10+n/2;d}}",
-							"message": "Tu as ajouté ${{eval:n/2}}~\\unit{€}$ : ${{eval:n/2}}$ paquets de plus coûtent la moitié de ${{eval:n*p/10;d}}~\\unit{€}$ de plus.",
+							"message": "Tu as ajouté ${{eval:n/2}}~\\unit{€}$ : ${{eval:n/2}}$ paquets de plus coûtent la moitié de ${{eval:(n*p/10)[€]}}$ de plus.",
 							"label": "Quantité ajoutée au prix"
 						},
 						{
@@ -141,14 +141,14 @@
 			],
 			"correction": {
 				"steps": [
-					"**Une fois et demie.** ${{eval:3*n/2}} = {{n}} + {{eval:n/2}}$, et ${{eval:n/2}}$ est la moitié de ${{n}}$ : ${{eval:n/2}}$ paquets coûtent la moitié de ${{eval:n*p/10;d}}~\\unit{€}$, soit ${{eval:n*p/20;d}}~\\unit{€}$.",
-					"On additionne : ${{eval:n*p/10;d}} + {{eval:n*p/20;d}} = \\textcolor{{{color:primary.0}}}{{{eval:3*n*p/20;d}}~\\unit{€}}$."
+					"**Une fois et demie.** ${{eval:3*n/2}} = {{n}} + {{eval:n/2}}$, et ${{eval:n/2}}$ est la moitié de ${{n}}$ : ${{eval:n/2}}$ paquets coûtent la moitié de ${{eval:(n*p/10)[€]}}$, soit ${{eval:(n*p/20)[€]}}$.",
+					"On additionne : ${{if:mod(100*(n*p/10),100)==0|{{eval:n*p/10;d}}|{{eval:n*p/10;d2}}}} + {{if:mod(100*(n*p/20),100)==0|{{eval:n*p/20;d}}|{{eval:n*p/20;d2}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(3*n*p/20)[€]}}}$."
 				]
 			},
 			"hint": "Écris ${{eval:3*n/2}}$ comme ${{n}}$ plus un autre nombre : lequel ?"
 		},
 		{
-			"statement": "Tous les cahiers ont le même prix. ${{n1}}$ cahiers coûtent ${{eval:n1*p/10;d}}~\\unit{€}$ et ${{n2}}$ cahiers coûtent ${{eval:n2*p/10;d}}~\\unit{€}$.\n\nCombien de cahiers peut-on acheter avec ${{eval:(n1+n2)*p/10;d}}~\\unit{€}$ ?\n\n$$?~\\text{ cahiers}$$",
+			"statement": "Tous les cahiers ont le même prix. ${{n1}}$ cahiers coûtent ${{eval:(n1*p/10)[€]}}$ et ${{n2}}$ cahiers coûtent ${{eval:(n2*p/10)[€]}}$.\n\nCombien de cahiers peut-on acheter avec ${{eval:((n1+n2)*p/10)[€]}}$ ?\n\n$$?~\\text{ cahiers}$$",
 			"variables": [
 				{
 					"name": "n1",
@@ -188,7 +188,7 @@
 			],
 			"correction": {
 				"steps": [
-					"**Additionner deux lignes.** ${{eval:n1*p/10;d}} + {{eval:n2*p/10;d}} = {{eval:(n1+n2)*p/10;d}}$ : avec ${{eval:(n1+n2)*p/10;d}}~\\unit{€}$, on paie ${{n1}}$ cahiers et encore ${{n2}}$ cahiers.",
+					"**Additionner deux lignes.** ${{if:mod(100*(n1*p/10),100)==0|{{eval:n1*p/10;d}}|{{eval:n1*p/10;d2}}}} + {{if:mod(100*(n2*p/10),100)==0|{{eval:n2*p/10;d}}|{{eval:n2*p/10;d2}}}} = {{if:mod(100*((n1+n2)*p/10),100)==0|{{eval:(n1+n2)*p/10;d}}|{{eval:(n1+n2)*p/10;d2}}}}$ : avec ${{eval:((n1+n2)*p/10)[€]}}$, on paie ${{n1}}$ cahiers et encore ${{n2}}$ cahiers.",
 					"On peut donc acheter ${{n1}} + {{n2}} = \\textcolor{{{color:primary.0}}}{{{eval:n1+n2}}}$ cahiers."
 				]
 			},
@@ -232,7 +232,7 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.5~\\unit{€}$ de plus."
+				"expectedErrorMessage": "Tu as ajouté $3~\\unit{€}$ : $3$ cahiers de plus coûtent $4.50~\\unit{€}$ de plus."
 			},
 			"answers": ["10{,}5"]
 		},
@@ -301,7 +301,7 @@
 			},
 			"expected": {
 				"status": "incorrect",
-				"expectedErrorMessage": "Tu as enlevé $3~\\unit{€}$ : $3$ bouteilles de moins coûtent $4.5~\\unit{€}$ de moins."
+				"expectedErrorMessage": "Tu as enlevé $3~\\unit{€}$ : $3$ bouteilles de moins coûtent $4.50~\\unit{€}$ de moins."
 			},
 			"answers": ["7{,}5"]
 		},

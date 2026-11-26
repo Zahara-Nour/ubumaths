@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Tous les {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} ont le même prix. ${{n}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} coûtent ${{eval:n*p/10;d}}~\\unit{€}$.\n\nCombien coûtent ${{m}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} ? Écris l'unité dans ta réponse.\n\n${{m}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} coûtent $?$.",
+			"statement": "Tous les {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} ont le même prix. ${{n}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} coûtent ${{eval:(n*p/10)[€]}}$.\n\nCombien coûtent ${{m}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} ? Écris l'unité dans ta réponse.\n\n${{m}}$ {{if:o==0|croissants|{{if:o==1|cahiers|stylos}}}} coûtent $?$.",
 			"variables": [
 				{
 					"name": "o",
@@ -63,8 +63,8 @@
 			],
 			"correction": {
 				"steps": [
-					"**Retour à l'unité.** On cherche d'abord le prix d'un {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} : ${{eval:n*p/10;d}} \\div {{n}} = {{eval:p/10;d}}$. Un {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} coûte ${{eval:p/10;d}}~\\unit{€}$.",
-					"Puis on multiplie par ${{m}}$ : ${{eval:p/10;d}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:m*p/10;d}}~\\unit{€}}$."
+					"**Retour à l'unité.** On cherche d'abord le prix d'un {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} : ${{if:mod(100*(n*p/10),100)==0|{{eval:n*p/10;d}}|{{eval:n*p/10;d2}}}} \\div {{n}} = {{if:mod(100*(p/10),100)==0|{{eval:p/10;d}}|{{eval:p/10;d2}}}}$. Un {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} coûte ${{eval:(p/10)[€]}}$.",
+					"Puis on multiplie par ${{m}}$ : ${{if:mod(100*(p/10),100)==0|{{eval:p/10;d}}|{{eval:p/10;d2}}}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:(m*p/10)[€]}}}$."
 				]
 			},
 			"hint": "Combien coûte un seul {{if:o==0|croissant|{{if:o==1|cahier|stylo}}}} ?"
@@ -174,7 +174,7 @@
 			"hint": "Combien de sirop faut-il pour $1~\\unit{L}$ d'eau ?"
 		},
 		{
-			"statement": "Tous les cahiers ont le même prix. Complète le tableau en passant par le prix d'un cahier.\n\n| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n| Prix (€) | ${{eval:n*p/10;d}}$ | $?$ | $?$ |",
+			"statement": "Tous les cahiers ont le même prix. Complète le tableau en passant par le prix d'un cahier.\n\n| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n| Prix (€) | ${{if:mod(100*(n*p/10),100)==0|{{if:mod(100*(n*p/10),100)==0|{{eval:n*p/10;d}}|{{eval:n*p/10;d2}}}}|{{eval:n*p/10;d2}}}}$ | $?$ | $?$ |",
 			"variables": [
 				{
 					"name": "n",
@@ -224,9 +224,9 @@
 			],
 			"correction": {
 				"steps": [
-					"**Retour à l'unité.** De ${{n}}$ cahiers à $1$ cahier, on divise par ${{n}}$ : ${{eval:n*p/10;d}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:p/10;d}}}$. Un cahier coûte ${{eval:p/10;d}}~\\unit{€}$.",
-					"De $1$ cahier à ${{m}}$ cahiers, on multiplie par ${{m}}$ : ${{eval:p/10;d}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{eval:m*p/10;d}}}$.",
-					"| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n| Prix (€) | ${{eval:n*p/10;d}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:p/10;d}}}$ | $\\textcolor{{{color:primary.0}}}{{{eval:m*p/10;d}}}$ |"
+					"**Retour à l'unité.** De ${{n}}$ cahiers à $1$ cahier, on divise par ${{n}}$ : ${{if:mod(100*(n*p/10),100)==0|{{eval:n*p/10;d}}|{{eval:n*p/10;d2}}}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{if:mod(100*(p/10),100)==0|{{eval:p/10;d}}|{{eval:p/10;d2}}}}}$. Un cahier coûte ${{eval:(p/10)[€]}}$.",
+					"De $1$ cahier à ${{m}}$ cahiers, on multiplie par ${{m}}$ : ${{if:mod(100*(p/10),100)==0|{{eval:p/10;d}}|{{eval:p/10;d2}}}} \\times {{m}} = \\textcolor{{{color:primary.0}}}{{{if:mod(100*(m*p/10),100)==0|{{eval:m*p/10;d}}|{{eval:m*p/10;d2}}}}}$.",
+					"| Nombre de cahiers | ${{n}}$ | $1$ | ${{m}}$ |\n|---|---|---|---|\n| Prix (€) | ${{if:mod(100*(n*p/10),100)==0|{{if:mod(100*(n*p/10),100)==0|{{eval:n*p/10;d}}|{{eval:n*p/10;d2}}}}|{{eval:n*p/10;d2}}}}$ | $\\textcolor{{{color:primary.0}}}{{{if:mod(100*(p/10),100)==0|{{if:mod(100*(p/10),100)==0|{{eval:p/10;d}}|{{eval:p/10;d2}}}}|{{eval:p/10;d2}}}}}$ | $\\textcolor{{{color:primary.0}}}{{{if:mod(100*(m*p/10),100)==0|{{if:mod(100*(m*p/10),100)==0|{{eval:m*p/10;d}}|{{eval:m*p/10;d2}}}}|{{eval:m*p/10;d2}}}}}$ |"
 				]
 			},
 			"hint": "Pour passer de ${{n}}$ cahiers à $1$ cahier, que fait-on au nombre de cahiers ? Fais de même au prix."
