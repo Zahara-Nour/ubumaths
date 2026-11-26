@@ -230,9 +230,10 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
 - **`/api/bug-reports/[reportId]/screenshot`** : `POST`, l'auteur seul. Taille plafonnée
   par `MAX_IMAGE_SIZE_BYTES`, signature binaire vérifiée (`validateFileSignature`).
   Chemin `<id utilisateur>/<id du rapport>/<horodatage>.<ext>` dans le bucket
-  `bug-report-screenshots` ; l'ancienne capture est retirée. Si la mise à jour du rapport ne
-  touche aucune ligne (rapport plus `pending`, refus de la RLS), le fichier envoyé est retiré
-  et la route rend 403.
+  `bug-report-screenshots` ; l'extension vient du type vérifié (`jpg`, `png`, `gif`, `webp`),
+  jamais du nom du fichier. L'ancienne capture n'est retirée qu'une fois la nouvelle rattachée
+  au rapport. Si la mise à jour du rapport ne touche aucune ligne (rapport plus `pending`, refus
+  de la RLS), le fichier envoyé est retiré, l'ancienne capture reste, et la route rend 403.
 - **Suppression d'un rapport** (`DELETE` seul ou en lot, admin) : `deleteBugReportWithScreenshot`
   retire d'abord la capture du bucket, puis la ligne. Capture impossible à effacer → la ligne
   est gardée (500 « Suppression impossible : la capture n'a pas pu être effacée », ou une
@@ -316,11 +317,15 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   `requireRole(locals, 'admin')`.
 - `bug_reports` : l'auteur voit les siens et modifie les siens **tant qu'ils sont
   `pending`** ; l'admin voit, modifie et supprime tout. Les routes recopient ces règles
-  (403 si ce n'est ni l'auteur ni l'admin).
+  (403 si ce n'est ni l'auteur ni l'admin). L'auteur n'écrit que le titre, la description et
+  la capture, et un rapport naît toujours `pending`, sans capture ni résolution : deux gardes
+  en base (`20261126060048`) refusent le reste, même par l'API de la base →
+  [base-de-donnees.md](base-de-donnees.md#exploitation-journaux-configuration-cache).
 - `bug_reports_config` : lisible par tout compte connecté, modifiable par l'admin.
 - Captures : bucket privé ; l'auteur lit son propre dossier (premier segment = son id),
-  l'admin tout. Les policies du storage ne sont pas dans `supabase/migrations/` : elles
-  datent d'avant le baseline (`supabase/migrations_archive/20260614101541_bug_report_screenshots_private.sql`).
+  l'admin tout. Les policies du storage sont dans
+  `supabase/migrations/20261126060050_captures_rapports_de_bug_regles_de_stockage.sql`
+  (recopie de celles de la prod) ; le bucket lui-même est créé par `supabase/seed.sql`.
 
 ### Données d'élèves mineurs
 
