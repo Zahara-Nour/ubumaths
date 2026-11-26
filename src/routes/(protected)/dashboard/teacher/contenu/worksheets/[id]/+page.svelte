@@ -580,6 +580,9 @@
 						{answersOnSheet}
 						answerFrameMode={worksheet.config.answer_frames ?? 'question'}
 						language={worksheetLocale(worksheet.config)}
+						versionChoices={data.versionChoices}
+						versionsLocked={worksheet.status === 'archived'}
+						onVersionChange={refreshAll}
 					>
 						{#snippet actions()}
 							{#if isDraft}

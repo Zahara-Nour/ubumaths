@@ -414,6 +414,12 @@ export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema
 	.strict();
 
 /**
+ * Version d'une ligne de fiche (PUT /api/worksheets/[id]/exercises/[exerciseId]/version,
+ * ADR 0044 point 6)
+ */
+export const setLineVersionSchema = z.object({ exercise_version_id: uuidSchema }).strict();
+
+/**
  * Schema for reordering exercises (PUT /api/worksheets/[id]/exercises)
  */
 export const reorderExercisesSchema = z.object({

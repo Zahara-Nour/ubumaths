@@ -12,7 +12,7 @@ import {
 	validateUpdateWorksheetExercise,
 	worksheetExerciseResponseSchema
 } from '#lib/server/validation/worksheets.ts';
-import { uuidSchema } from '#lib/server/validation/common.ts';
+import { verifyWorksheetLineAccess } from '#lib/server/worksheets/worksheet-line-access.ts';
 import { validateJsonResponse } from '#lib/server/validation/response-utils.ts';
 import type { TablesUpdate } from '#lib/types/database.ts';
 import { toJson } from '#lib/types/database-helpers.ts';
@@ -23,70 +23,13 @@ const logger = createServerLogger('api/worksheets/[id]/exercises/[exerciseId]/+s
 type ZodIssue = { path: (string | number)[]; message: string };
 
 /**
- * Verify worksheet and exercise exist and user has permission
- */
-async function verifyAccess(
-	supabase: App.Locals['supabase'],
-	worksheetId: string,
-	exerciseId: string,
-	userId: string,
-	role: string,
-	schoolId: string | null
-) {
-	// Validate UUID formats
-	const worksheetIdValidation = uuidSchema.safeParse(worksheetId);
-	if (!worksheetIdValidation.success) {
-		throw error(400, 'Identifiant de fiche invalide');
-	}
-
-	const exerciseIdValidation = uuidSchema.safeParse(exerciseId);
-	if (!exerciseIdValidation.success) {
-		throw error(400, 'Identifiant d’exercice invalide');
-	}
-
-	// Fetch worksheet
-	const { data: worksheet, error: worksheetError } = await supabase
-		.from('worksheets')
-		.select('id, created_by, school_id, status')
-		.eq('id', worksheetId)
-		.single();
-
-	if (worksheetError || !worksheet) {
-		throw error(404, 'Fiche introuvable');
-	}
-
-	// Verify ownership/authorization
-	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Accès réservé à l’auteur de la fiche');
-	}
-
-	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Cette fiche appartient à une autre école');
-	}
-
-	// Fetch worksheet exercise
-	const { data: worksheetExercise, error: exerciseError } = await supabase
-		.from('worksheet_exercises')
-		.select('*')
-		.eq('id', exerciseId)
-		.eq('worksheet_id', worksheetId)
-		.single();
-
-	if (exerciseError || !worksheetExercise) {
-		throw error(404, 'Exercice introuvable dans cette fiche');
-	}
-
-	return { worksheet, worksheetExercise };
-}
-
-/**
  * GET /api/worksheets/[id]/exercises/[exerciseId]
  * Get a specific worksheet exercise
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheetExercise } = await verifyAccess(
+	const { worksheetExercise } = await verifyWorksheetLineAccess(
 		locals.supabase,
 		params.id,
 		params.exerciseId,
@@ -111,7 +54,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheet } = await verifyAccess(
+	const { worksheet } = await verifyWorksheetLineAccess(
 		locals.supabase,
 		params.id,
 		params.exerciseId,
@@ -213,7 +156,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const { worksheet } = await verifyAccess(
+	const { worksheet } = await verifyWorksheetLineAccess(
 		locals.supabase,
 		params.id,
 		params.exerciseId,

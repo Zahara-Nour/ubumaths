@@ -213,6 +213,7 @@ on:
       - 'src/routes/api/exercises/*/versions/*server.ts'
       - 'src/routes/api/exercises/*/versions/*/*server.ts'
       - 'src/routes/api/worksheets/*/exercises/*server.ts'
+      - 'src/routes/api/worksheets/*/exercises/*/version/*server.ts'
       - 'src/routes/api/tutor/conversations/*server.ts'
       - 'src/routes/api/worksheets/assignments/*/students/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*server.ts'
