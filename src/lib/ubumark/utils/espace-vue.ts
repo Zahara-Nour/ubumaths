@@ -116,21 +116,26 @@ export function vueProjection(vue: EspaceVue, pivot: Point3): VueProjection {
  * La vue tournée de `dyaw` et `dpitch` (radians). Glisser vers la droite
  * (`dyaw` négatif) amène la face de gauche devant ; glisser vers le bas
  * (`dpitch` positif) montre le dessus. La bascule s'arrête à la vue de dessus
- * et à la vue de dessous de la vue droite : le haut reste en haut.
+ * et à la vue de dessous : le haut reste en haut, dans la vue en cours comme
+ * dans la vue droite vers laquelle elle passe (`oblique` qui descend vers 0
+ * ajoute de la bascule vers le dessus). Le tour est ramené entre −π et π.
  */
 export function turnVue(vue: EspaceVue, dyaw: number, dpitch: number): EspaceVue {
 	const limit = Math.PI / 2;
 	const pitch = Math.max(
-		-limit - VUE_DROITE_PITCH,
+		-limit - (1 - vue.oblique) * VUE_DROITE_PITCH,
 		Math.min(limit - VUE_DROITE_PITCH, vue.pitch + dpitch)
 	);
-	return { ...vue, yaw: vue.yaw + dyaw, pitch };
+	const yaw = vue.yaw + dyaw;
+	return { ...vue, yaw: Math.atan2(Math.sin(yaw), Math.cos(yaw)), pitch };
 }
 
 /**
  * La face tourne-t-elle vers l'œil ? `face` : ses sommets tournés (au moins
  * trois, dans l'ordre du tour) ; `center` : le centre tourné du solide, qui dit
- * où est l'extérieur. Vue de face ou par la tranche : oui.
+ * où est l'extérieur. Vue de face ou par la tranche : oui (seuil absolu : la
+ * normale grandit comme l'aire de la face, sûr pour des dimensions ≤ 1000,
+ * la limite du parseur).
  */
 export function faceTowardEye(face: Point3[], center: Point3, toEye: Point3): boolean {
 	const [a, b, c] = face;

@@ -102,3 +102,7 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   (commit à part), toutes identiques après.
 - Tests du moteur : `espace-vue.test.ts` (départ au chiffre près, longueurs gardées, pivot fixe,
   arêtes cachées vues de derrière, de dessous, sous une grille d'angles).
+- Revue (`code-reviewer`, opus) : dessin au repos identique, vérifié opération par opération ; corrigé
+  avant la PR : bornes de `turnVue` justes aussi en glissant depuis la cavalière et pendant le
+  passage (la figure pouvait passer tête en bas), tour ramené entre −π et π, tests du passage
+  (`oblique` entre 0 et 1).

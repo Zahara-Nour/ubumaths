@@ -10,10 +10,10 @@
  * Perspective : celle de ```cubes — face avant en vraie grandeur, fuyantes à
  * 45° vers le haut à droite, réduites de moitié. Polyèdres : projection et
  * arêtes cachées par le moteur de vue (`espace-vue.ts`), à la vue de départ ;
- * une arête est cachée (tirets) quand toutes ses faces tournent le dos à l'œil. Cylindre,
- * cône, boule : ellipses « à plat » (horizontales, comme le CP et les
- * manuels), moitié arrière en tirets ; les génératrices du cône sont
- * tangentes à l'ellipse.
+ * une arête est cachée (tirets) quand toutes ses faces tournent le dos à
+ * l'œil. Cylindre, cône, boule : ellipses « à plat » (horizontales, comme le
+ * CP et les manuels), moitié arrière en tirets ; les génératrices du cône
+ * sont tangentes à l'ellipse.
  *
  * Section (`section:`, lot 6) : le polygone de coupe, teinté, contour en
  * trait plein épais ; le plan n'est pas dessiné ; boule coupée : sans équateur.

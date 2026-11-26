@@ -185,5 +185,44 @@ describe('tourner la vue', () => {
 		const [e, f, g] = [4, 5, 6].map((i) => view.project(vertices[i]));
 		expect(Math.hypot(f.x - e.x, f.y - e.y)).toBeCloseTo(3, 9);
 		expect(Math.hypot(g.x - f.x, g.y - f.y)).toBeCloseTo(3, 9);
+		// Pas renversé : le devant (E) est en bas du dessin, le fond (H) en haut
+		expect(e.y).toBeLessThan(view.project(vertices[7]).y);
+	});
+
+	it('ne renverse jamais la figure, même en glissant depuis la cavalière ou pendant le passage', () => {
+		const limit = Math.PI / 2 + 1e-12;
+		for (const oblique of [1, 0.5, 0]) {
+			for (const dpitch of [10, -10]) {
+				const vue = turnVue({ yaw: 0, pitch: 0, oblique }, 0, dpitch);
+				// Bascule réelle dans la vue en cours, puis une fois arrivé à la vue droite
+				expect(Math.abs(vue.pitch + (1 - oblique) * VUE_DROITE_PITCH)).toBeLessThanOrEqual(limit);
+				expect(Math.abs(vue.pitch + VUE_DROITE_PITCH)).toBeLessThanOrEqual(limit);
+			}
+		}
+	});
+
+	it('ramène le tour entre −π et π', () => {
+		expect(turnVue(droite(3), 1, 0).yaw).toBeCloseTo(4 - 2 * Math.PI, 12);
+	});
+});
+
+describe('pendant le passage d’une vue à l’autre (oblique entre 0 et 1)', () => {
+	it('cache les mêmes arêtes qu’au départ quand rien n’a tourné', () => {
+		for (const oblique of [0.25, 0.5, 0.75]) {
+			expect(hiddenOf('cube', [3], { yaw: 0, pitch: 0, oblique })).toEqual(
+				hiddenOf('cube', [3], VUE_DE_DEPART)
+			);
+		}
+	});
+
+	it('deux points alignés vers l’œil se confondent au dessin', () => {
+		// Angles qui annulent la rotation de la vue : le repère tourné est celui de calcul
+		const vue = { yaw: -0.5 * VUE_DROITE_YAW, pitch: -0.5 * VUE_DROITE_PITCH, oblique: 0.5 };
+		const view = vueProjection(vue, ORIGIN);
+		const p = { x: 1, y: 2, z: 3 };
+		const q = { x: p.x + 2 * view.toEye.x, y: p.y + 2 * view.toEye.y, z: p.z + 2 * view.toEye.z };
+		expect(view.toEye.x).toBeGreaterThan(0);
+		expect(view.project(q).x).toBeCloseTo(view.project(p).x, 12);
+		expect(view.project(q).y).toBeCloseTo(view.project(p).y, 12);
 	});
 });
