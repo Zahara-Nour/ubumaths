@@ -8,10 +8,9 @@ _Mis à jour le 2026-11-26, chantier clos après #3189._
   les modèles »), publiés par David, vérifiés au MCP (5/5 `published`) ; 7 publiés complétés de
   11 variations (#3189, `db:migrate --include-all` le 2026-11-26) ; journal archivé.
 - **Prochaine action** : aucune.
-- **En attente de David** : garder ou non la série de relecture jamais publiée
-  (`scripts/series/1_SPE-relecture-produit-scalaire-publies.json`, commitée sur la branche locale
-  `chore/idees-1re-produit-scalaire-relecture`, non poussée).
-- **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire-relecture` (pour la série seule).
+- **En attente de David** : rien.
+- **Worktree / branche** : aucun (série de relecture jamais publiée abandonnée, sur la recommandation
+  acceptée par David ; worktree et branche retirés).
 
 ## Journal
 
