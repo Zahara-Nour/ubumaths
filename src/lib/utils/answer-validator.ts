@@ -32,6 +32,7 @@ import { checkUnit } from '#lib/questions/constraint-validators.ts';
 import { SUPERFLU_RULE_IDS } from '#lib/mathAST/superflu/rules.ts';
 import { parseLatexSafe } from '#lib/mathAST/parser/index.ts';
 import { numberAfterFactorIn } from '#lib/mathAST/parser/number-after-factor.ts';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '#lib/mathAST/decimal-comma.ts';
 import {
 	checkForm as checkFormUnified,
 	type CheckFormOptions,
@@ -1394,12 +1395,30 @@ function malformedBareNumber(answer: string): string | null {
  * Lecture seulement : le verdict (faux) ne change pas.
  */
 function numberAfterFactorRefusal(answer: string, instance: QuestionInstance): string | undefined {
-	const { errors } = parseLatexSafe(answer, readingOf(instance));
+	const num = numberAfterFactorOf(answer, instance);
+	if (num === null) return undefined;
+	// `12 500`, `1 2` : une espace entre deux nombres n'est pas un facteur suivi d'un
+	// nombre ; sans ses espaces, la saisie doit être refusée pour la même raison
+	const withoutSpaces = answer.replace(/\\[,;: ]|\s/g, '');
+	if (numberAfterFactorOf(withoutSpaces, instance) === null) return undefined;
+	return numberAfterFactorFeedback(num.replace('.', ','));
+}
+
+/** Nombre mis en cause par le refus « nombre après un facteur » du parseur, sinon `null` */
+function numberAfterFactorOf(answer: string, instance: QuestionInstance): string | null {
+	// Virgule nue décimale (`x0,5`), comme pour le juge de valeur
+	const latex = expectsSeparatorComma(answer) ? answer : bareDecimalCommaToPoint(answer);
+	const { errors } = parseLatexSafe(latex, readingOf(instance));
 	for (const error of errors) {
 		const num = error.code === 'MISSING_OPERATOR' ? numberAfterFactorIn(error.message) : null;
-		if (num !== null) return numberAfterFactorFeedback(num);
+		if (num !== null) return num;
 	}
-	return undefined;
+	return null;
+}
+
+/** Case de formule nue : ni unité, ni figure, ni réponse écrite par un composant */
+function isBareFormulaBlank(blank: InstanceBlank): boolean {
+	return blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire;
 }
 
 /**
@@ -1413,8 +1432,7 @@ function validateSingleBlank(
 	userAnswerLatex: string | undefined,
 	instance: QuestionInstance
 ): SingleBlankVerdict {
-	const rereadable =
-		blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire;
+	const rereadable = isBareFormulaBlank(blank);
 	const repaired = rereadable ? malformedBareNumber(userAnswer) : null;
 	let verdict: SingleBlankVerdict;
 	try {
@@ -2262,10 +2280,7 @@ function looseMatchOf(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): LooseMatch | undefined {
-	const repaired =
-		blank.type === 'math' && !blank.unit && !blank.construction && !blank.construire
-			? malformedBareNumber(answer)
-			: null;
+	const repaired = isBareFormulaBlank(blank) ? malformedBareNumber(answer) : null;
 	if (repaired !== null) {
 		return validateBlankValue(repaired, blank, instance)
 			? { constraint: 'form', feedback: CONSTRAINT_FEEDBACK['form'].single }
@@ -2501,7 +2516,9 @@ function validateBlanksOrderIndependent(
 		// qu'en mode positionnel
 		const refusal = userAnswers
 			.map((answer, i) =>
-				answer.trim() && matching[i] === -1 && blanks.some((blank) => blank.type === 'math')
+				answer.trim() &&
+				matching[i] === -1 &&
+				blanks.some((blank, b) => !used.has(b) && isBareFormulaBlank(blank))
 					? numberAfterFactorRefusal(userAnswersLatex?.[i] || answer, instance)
 					: undefined
 			)

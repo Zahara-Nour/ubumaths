@@ -75,6 +75,42 @@ describe('nombre écrit après un facteur : faux, avec le message du refus', () 
 		expect(result.feedback ?? '').not.toContain('écrit après un facteur');
 	});
 
+	it.each([
+		['12 500', '12400'],
+		['1 2', '13'],
+		['12\\ 500', '12400']
+	])('`%s` (espace entre deux nombres, valeur fausse) : aucun message', (answer, expected) => {
+		const result = check(answer, { expectedAnswer: expected, type: 'math' });
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback ?? '').not.toContain('écrit après un facteur');
+	});
+
+	it('`(x+1) 2` (espace devant le nombre collé) : le message reste', () => {
+		const result = check('(x+1) 2', { expectedAnswer: '2(x+1)', type: 'math' });
+		expect(result.feedback).toBe(numberAfterFactorFeedback('2'));
+	});
+
+	it.each(['x0,5', 'x0{,}5'])('`%s` : le nombre est cité en entier, avec sa virgule', (answer) => {
+		const result = check(answer, { expectedAnswer: '0{,}5x', type: 'math' });
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe(numberAfterFactorFeedback('0,5'));
+	});
+
+	it('cases à unité en ordre libre : aucun message, comme en ordre fixé', () => {
+		const blanks: InstanceBlank[] = [
+			{ expectedAnswer: '3\\text{ cm}^2', type: 'math', unit: { expected: true } },
+			{ expectedAnswer: '5\\text{ cm}^2', type: 'math', unit: { expected: true } }
+		];
+		const answers = ['3\\text{ cm}^2', '5cm2'];
+		const free = validateAnswer(
+			answers,
+			createInstance(blanks, { orderIndependent: true }),
+			answers
+		);
+		expect(free.isCorrect).toBe(false);
+		expect(free.feedback ?? '').not.toContain('écrit après un facteur');
+	});
+
 	it('cases à ordre libre : la réponse non appariée garde le message', () => {
 		const instance = createInstance(
 			[
