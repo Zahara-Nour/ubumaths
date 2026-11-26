@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR des migrations ouverte._
+_Mis à jour le 2026-11-26, après #3186 et `db:migrate`._
 
-- **État** : 3 migrations de données sur `feat/idees-6e-proportionnalite-rangement` : rangement et tags des 5 neufs (généré), variations des 4 publiés (généré), F4 06df72fd niveau 6 + tag 6-190 (à la main, test `questions-idees-6e-proportionnalite-06df72fd-6e.test.ts`, rouge sans la migration, 12 verts). `security-auditor` : aucun bloquant.
-- **Prochaine action** : CI verte → merge (`pnpm pr:merger`) ; puis `db:migrate` depuis la branche mergée si `migration list --linked` ne montre que ces 3 en attente ; vérifier par MCP ; publier les 5 neufs (relecture dans `/dev/modeles`) ; versement et clôture.
-- **En attente de David** : rien.
+- **État** : #3186 mergée ; ses 3 migrations jouées en prod et vérifiées par MCP : 5 neufs en brouillon rangés et tagués (6-189 à 6-192), 4 publiés avec leurs variations (8, 4, 7, 7), 06df72fd en {5, 6} avec 5-087 et 6-190, `updated_at` préservé.
+- **Prochaine action** : relecture des 5 neufs par David dans `/dev/modeles` (série de relecture), puis publication ; ensuite versement et clôture du chantier.
+- **En attente de David** : la relecture des 5 neufs dans `/dev/modeles`.
 - **Pièges en cours** : d'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 5 neufs y sont en brouillon sous d'autres ids.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite-rangement` (`feat/idees-6e-proportionnalite-rangement`).
+- **Worktree / branche** : aucun (retiré par `pr:merger`) ; un neuf pour la suite.
 
 ## Journal
 
@@ -156,3 +156,4 @@ renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales o
 - `migration-rangement.ts --dir …-neufs` : 5 rangés (6-191 ×2, 6-192, 6-189, 6-190). `migration-contenu.ts --dir …-publies` : 4 migrés (+1, +1, +2, +2 variations), 06df72fd inchangé.
 - F4 à la main (`20261126131952_…_06df72fd_6e.sql`) : `array_append` de `6`, tag 6-190, `updated_at` préservé, rollback gardé. Preuve rouge : migration vidée (rollback gardé) → 4 échecs et suite principale tombée ; fichier restauré d'une copie, 12 verts.
 - `security-auditor` : aucun bloquant ; ajout de l'assertion « trigger de date réactivé » qu'il suggérait. Question d'accès : personne ne gagne ni ne perd d'accès.
+- #3186 mergée le 2026-11-26 ; `db:migrate` : seules ses 3 migrations étaient en attente (`migration list --linked`). Preuve rouge des 2 générées : corps vidés → 8 échecs, tous sur elles. État de la prod vérifié par MCP après coup.
