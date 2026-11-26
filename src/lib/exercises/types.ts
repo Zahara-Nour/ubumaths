@@ -1739,8 +1739,8 @@ export interface CreateExerciseAssignment {
 	/** Exercise to assign */
 	exercise_id: string;
 
-	/** Who to assign to */
-	assigned_to_type: AssignmentTargetType;
+	/** Who to assign to (« public » ne se crée plus : élève ou classe seulement) */
+	assigned_to_type: Exclude<AssignmentTargetType, 'public'>;
 
 	/** Student ID (required if assigned_to_type='student') */
 	student_id?: string;
@@ -2086,7 +2086,7 @@ export interface AssignmentStats {
  * Ensures that assignment data has the correct target fields:
  * - student assignments must have student_id
  * - class assignments must have class_id
- * - public assignments must not have student_id or class_id
+ * - any other target (« public » compris) is refused
  *
  * @param data - Assignment data to validate
  * @returns Validation result with error message if invalid
@@ -2120,8 +2120,10 @@ export function validateAssignmentData(data: CreateExerciseAssignment): {
 	if (data.assigned_to_type === 'class' && !data.class_id) {
 		return { valid: false, error: 'class_id required for class assignment' };
 	}
-	if (data.assigned_to_type === 'public' && (data.student_id || data.class_id)) {
-		return { valid: false, error: 'public assignment cannot have student_id or class_id' };
+	// Garde à l'exécution : le type interdit déjà « public », une valeur venue d'ailleurs aussi.
+	const target: string = data.assigned_to_type;
+	if (target !== 'student' && target !== 'class') {
+		return { valid: false, error: 'assignment target must be a student or a class' };
 	}
 	return { valid: true };
 }
