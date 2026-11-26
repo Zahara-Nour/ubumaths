@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.114.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.113.0...v0.114.0) (2026-11-26)
+
+### ✨ Features
+
+- **automaths:** groupes de résultats, le plus de titres d'abord ([7afc348](https://github.com/Zahara-Nour/ubumaths/commit/7afc34822a66aade52be4bc6c376a3ec795909e5))
+- **automaths:** recherche en trois parts, raccourcis, énoncés et groupe « aussi » ([a2dc5b2](https://github.com/Zahara-Nour/ubumaths/commit/a2dc5b2eb63e5e019e8b696aafffe961f2e6ab48))
+- **questions:** idees-6e-proportionnalite, 5 modeles neufs ([f75d9e8](https://github.com/Zahara-Nour/ubumaths/commit/f75d9e8fc59c3c0ced9e7f33f879b5d1ebe47ace))
+- **questions:** idees-6e-proportionnalite, variations de 4 modeles publies ([9d3b76a](https://github.com/Zahara-Nour/ubumaths/commit/9d3b76a6fe05c3184ee23d15233631328d92de64))
+- **questions:** idees-tle-geometrie-espace, lot de 3 modeles et 11 variations ([d93a709](https://github.com/Zahara-Nour/ubumaths/commit/d93a7091c7cc985d8f7ae2b59417340154fcf10a))
+- **questions:** prix en grandeurs en euros et retouches 3 a 5 du lot 6e proportionnalite ([3898485](https://github.com/Zahara-Nour/ubumaths/commit/38984851337d23250e44391cd4bbadcbe1d84fbc))
+- **questions:** zeros utiles des arrondis dans 28 modeles publies ([d7b6a57](https://github.com/Zahara-Nour/ubumaths/commit/d7b6a57aec1e6406affa5d01fd1e3ec887c8c0d3)), closes [#3170](https://github.com/Zahara-Nour/ubumaths/issues/3170)
+- **series:** idees-3e-probabilites, id de la série de relecture ([3b33c3c](https://github.com/Zahara-Nour/ubumaths/commit/3b33c3c571669b991e489a484b0165d3ddc26742))
+- **series:** idees-3e-probabilites, série de relecture des 3 modèles publiés complétés ([f8c101d](https://github.com/Zahara-Nour/ubumaths/commit/f8c101ded8c90942c4a3451d12d0e7e04661f4da))
+
+### 🐛 Bug Fixes
+
+- **automaths:** pluriels en -eaux, singulier en mot entier, sous-notion d'arrivée oubliée ([9082975](https://github.com/Zahara-Nour/ubumaths/commit/9082975a646056ae304088c350b1466c1c9e26db))
+- **dashboard:** un seul essai de chargement des classes et des périodes par ouverture (E83) ([a23453a](https://github.com/Zahara-Nour/ubumaths/commit/a23453ac7c8c2e2ceb94670e64b156e9fe4b8c72))
+- **exercices:** onglet « Rendre public » et liste « Mes exercices » de l'élève retirés ([9c8c53d](https://github.com/Zahara-Nour/ubumaths/commit/9c8c53d0a6f566731026609b29b0f7d5ba1f37a6))
+- **exercices:** un eleve lit l'exercice qui lui est assigne hors fiche (E78) ([3bc0255](https://github.com/Zahara-Nour/ubumaths/commit/3bc0255e196b3b7bef356e38f8caf1b38f97d142))
+- **messagerie:** l'envoi d'un message ne dépend plus du nom complet de l'expéditeur ([3356ebb](https://github.com/Zahara-Nour/ubumaths/commit/3356ebbe5c90fff653c9e749115695581569d897))
+- **questions:** idees-tle-geometrie-espace, leurres de V3 et V4 aux coefficients distincts ([e6cb4d1](https://github.com/Zahara-Nour/ubumaths/commit/e6cb4d1e0f1577b64aac2f655a10e880b20fc518))
+
+### 📚 Documentation
+
+- **ecarts:** inscrire E83 et E84, clore E39 (requêtes coupées, pas un refus) ([bb8847f](https://github.com/Zahara-Nour/ubumaths/commit/bb8847fa3debc73c71b52bb060a82021cb63b5df))
+- **ecarts:** messagerie, V131 clos ([#3174](https://github.com/Zahara-Nour/ubumaths/issues/3174)), V132 à V134, L128 à L130, T37 inscrits ; suite validée ([d0f13f9](https://github.com/Zahara-Nour/ubumaths/commit/d0f13f9212fbf02f88fb2ed8ffe321c67729d1c7))
+- **systeme:** exercice hors fiche de l'élève, retour et entrées après le retrait de la liste ([38a84de](https://github.com/Zahara-Nour/ubumaths/commit/38a84de16b73c0f78ba61fc67ca57819bf320cb6))
+- **systeme:** lecture d'un exercice par une affectation hors fiche (E78) ([d6d4fed](https://github.com/Zahara-Nour/ubumaths/commit/d6d4fedcb8aeea030bd23826d39612b627f7d116))
+- **systeme:** messagerie, index de recherche et nom de l'expéditeur ([55a96b4](https://github.com/Zahara-Nour/ubumaths/commit/55a96b42a5b65a83b1c1c7c260784152c06a4a10))
+- **wip:** automaths, dossier de worktree résiduel supprimé ([7cbf18d](https://github.com/Zahara-Nour/ubumaths/commit/7cbf18d11938999328616edd72a9b84459c9a135))
+- **wip:** automaths, reprendre ici apres [#3172](https://github.com/Zahara-Nour/ubumaths/issues/3172) ([802a495](https://github.com/Zahara-Nour/ubumaths/commit/802a495cb981250c512837363b7e00944ef95fcf))
+- **wip:** automaths, reprendre ici apres [#3176](https://github.com/Zahara-Nour/ubumaths/issues/3176) ([bde1394](https://github.com/Zahara-Nour/ubumaths/commit/bde1394d9226849bd0a1c6523524bc05494d5301))
+- **wip:** ecarts-a-trier, v0.113.0 en prod, essai de la messagerie a reprendre ([1eef090](https://github.com/Zahara-Nour/ubumaths/commit/1eef090ff839d4fb854c06b9d45096ee5348a0aa))
+- **wip:** ecarts-verifs, migration de E78 jouée en prod ([b17d07b](https://github.com/Zahara-Nour/ubumaths/commit/b17d07b6c2f099c7342666a8836afde13ff0e507))
+- **wip:** ecarts-verifs, recos validées par David après [#3178](https://github.com/Zahara-Nour/ubumaths/issues/3178) ([20e224f](https://github.com/Zahara-Nour/ubumaths/commit/20e224f90f584a2ed32b50a115c273f77cde831b))
+- **wip:** ecarts-verifs, reprendre ici après [#3173](https://github.com/Zahara-Nour/ubumaths/issues/3173), E78 barré ([6234d35](https://github.com/Zahara-Nour/ubumaths/commit/6234d35d350d2a1dfab720f5cd4cfce272078b33))
+- **wip:** ecarts-verifs, reprendre ici après [#3178](https://github.com/Zahara-Nour/ubumaths/issues/3178) ([d9aba03](https://github.com/Zahara-Nour/ubumaths/commit/d9aba037c5255522df0bbe977c5e24cbcbcd86d0))
+- **wip:** ecarts-verifs, reprendre ici après [#3180](https://github.com/Zahara-Nour/ubumaths/issues/3180) ; E65, E71, E72, E74, E75 clos ([3ad0544](https://github.com/Zahara-Nour/ubumaths/commit/3ad0544f68224c929bfa3acb6c7cc91d443468c8))
+- **wip:** ecarts-verifs, reprendre ici après [#3181](https://github.com/Zahara-Nour/ubumaths/issues/3181) ; E83 clos ([f824c46](https://github.com/Zahara-Nour/ubumaths/commit/f824c461f48768cdbbdfaae0e1f5d87c02077dc0))
+- **wip:** ecarts-verifs, revues de la PR X ([de8e7e5](https://github.com/Zahara-Nour/ubumaths/commit/de8e7e5d14579fd7af7d87fc97279925226dc04b))
+- **wip:** ecarts-verifs, V129 tranché (intervalle lu en degrés) ([9d7b7d3](https://github.com/Zahara-Nour/ubumaths/commit/9d7b7d3aa8deea4a2e4537c84c4a83569651f3aa))
+- **wip:** idees-3e-probabilites publiée, journal archivé ([bafb013](https://github.com/Zahara-Nour/ubumaths/commit/bafb013fcd7f6d2e3ec3a77d800e34076d4a128d))
+- **wip:** idees-3e-probabilites, lien du relevé archivé ([d8122a2](https://github.com/Zahara-Nour/ubumaths/commit/d8122a2f34507fd9c5823d8f5b5992942d3d6042))
+- **wip:** idees-3e-probabilites, reprendre ici apres [#3169](https://github.com/Zahara-Nour/ubumaths/issues/3169) ([95e5b6e](https://github.com/Zahara-Nour/ubumaths/commit/95e5b6edd0c38e7b0a8e0d5be1fc4cbb3fbb1e43))
+- **wip:** idees-6e-proportionnalite, lot repris avant la PR des fichiers ([18729ba](https://github.com/Zahara-Nour/ubumaths/commit/18729ba10b04a7ced7583aa5c96a60fd4431faf2))
+- **wip:** idees-6e-proportionnalite, masse du pere validee ([062b924](https://github.com/Zahara-Nour/ubumaths/commit/062b924986ff944697c7bfd044596c4dad40d55d))
+- **wip:** idees-6e-proportionnalite, migration [#3175](https://github.com/Zahara-Nour/ubumaths/issues/3175) jouee, reservations liberees ([894f1a9](https://github.com/Zahara-Nour/ubumaths/commit/894f1a910b420dcd31f6824d7194c2c7fc9ac406))
+- **wip:** idees-6e-proportionnalite, reprendre ici apres [#3170](https://github.com/Zahara-Nour/ubumaths/issues/3170) ([4acba1a](https://github.com/Zahara-Nour/ubumaths/commit/4acba1a9a2115406e5b402bbee88cd9d3ac57b9d))
+- **wip:** idees-6e-proportionnalite, reprendre ici apres [#3175](https://github.com/Zahara-Nour/ubumaths/issues/3175) ([b0506be](https://github.com/Zahara-Nour/ubumaths/commit/b0506beec79e3528821ac75032f1d3b353554499))
+- **wip:** idees-6e-proportionnalite, reprendre ici apres [#3179](https://github.com/Zahara-Nour/ubumaths/issues/3179) ([fd6ae2a](https://github.com/Zahara-Nour/ubumaths/commit/fd6ae2a126ef8bfbea6ca0ed280444a3065f2668))
+- **wip:** idees-tle-geometrie-espace, brouillons en prod et rangement genere ([b3755b3](https://github.com/Zahara-Nour/ubumaths/commit/b3755b308a25a4d4dff4dc6dc1b1944e6846fa67))
+- **wip:** idees-tle-geometrie-espace, lot joue en base locale ([97efcbb](https://github.com/Zahara-Nour/ubumaths/commit/97efcbb36e47f8ed5e9666834c737cb73afabe5d))
+- **wip:** idees-tle-geometrie-espace, phase 0 validee ([e52a0f5](https://github.com/Zahara-Nour/ubumaths/commit/e52a0f52ff8edb8d6f2ee5dee41752c1ef2070c5))
+- **wip:** idees-tle-geometrie-espace, question d'acces tranchee ([7b4d70a](https://github.com/Zahara-Nour/ubumaths/commit/7b4d70a3fe6e7d45b97424d69e9caaafa9b4607c))
+- **wip:** idees-tle-geometrie-espace, releve TSG2 et fiches de phase 0 ([16106e0](https://github.com/Zahara-Nour/ubumaths/commit/16106e08418c74969686d2b436ba325b588516c5))
+- **wip:** idees-tle-geometrie-espace, reprendre ici apres [#3177](https://github.com/Zahara-Nour/ubumaths/issues/3177) ([b619bcc](https://github.com/Zahara-Nour/ubumaths/commit/b619bcc04a83e233837e3c1442bfa01dc43428fe))
+- **wip:** idees-tle-geometrie-espace, revue de securite faite ([940a27d](https://github.com/Zahara-Nour/ubumaths/commit/940a27d716b45bb152b2172b33daa15ee457c8ce))
+- **wip:** messagerie-nom-expediteur, essai de David en prod après la migration ([efca54d](https://github.com/Zahara-Nour/ubumaths/commit/efca54d543eb543ff6b070c261d513888850da82))
+- **wip:** messagerie-nom-expediteur, preuves, revues et autres pannes relevées ([e42baac](https://github.com/Zahara-Nour/ubumaths/commit/e42baac9d2e8d61af76e36eca66404d49af73d70))
+- **wip:** messagerie-nom-expediteur, reprendre ici après [#3174](https://github.com/Zahara-Nour/ubumaths/issues/3174) ([4182cb3](https://github.com/Zahara-Nour/ubumaths/commit/4182cb372b9b4a584a0c8f1c0c8695d76c68a3ae))
+- **wip:** reserve les 28 modeles a arrondi pour la migration des zeros ([142acf5](https://github.com/Zahara-Nour/ubumaths/commit/142acf598eb98aa9896490d5bd00c778d4caacd7))
+
 ## [0.113.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.112.0...v0.113.0) (2026-11-26)
 
 ### ✨ Features
