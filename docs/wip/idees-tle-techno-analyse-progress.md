@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3196._
+_Mis à jour le 2026-11-26, PR des retouches F5 et F6 ouverte._
 
-- **État** : #3196 mergée (9 variations sur 7 modèles publiés, migration
-  `20261126195520_questions_idees_tle_techno_analyse_publies_contenu`) ; worktree retiré ·
-  **Prochaine action** : `pnpm db:migrate` (David) ; puis verser le chantier (archiver le journal,
-  ligne de la répartition) · **En attente de David** : `db:migrate` ; deux mineurs conformes à la
-  fiche validée, à trancher (F6 : coup de pouce « puissance 1/a » qui donne presque la réponse ; F5 :
-  erreur « exposants oubliés » d'une somme = a × c, plutôt a + c chez l'élève) · **Pièges en cours** :
-  le moteur ne voit pas 4^(1/4) = 2^(1/2) (F6 limitée à r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** :
-  aucun.
+- **État** : #3196 mergée et migrée par David ; retouches F5 (erreur « exposants oubliés » = a + c) et
+  F6 (coup de pouce « cherche p tel que (xᵃ)ᵖ = x ») sur `fix/idees-tle-techno-f5-f6`, migration
+  `20261126200955_…_publies_contenu` · **Prochaine action** : merge de cette PR, `db:migrate`
+  (David), puis verser le chantier (archiver le journal, ligne de la répartition) · **En attente de
+  David** : `db:migrate` après le merge · **Pièges en cours** : le moteur ne voit pas
+  4^(1/4) = 2^(1/2) (F6 limitée à r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** :
+  `../ubumaths-wt-idees-tle-techno-f5-f6`, `fix/idees-tle-techno-f5-f6`.
 
 ## Journal
 
@@ -62,3 +61,13 @@ _Mis à jour le 2026-11-26, après #3196._
 - Non corrigé, conforme à la fiche validée, **à trancher par David** : F6, le coup de pouce « élève à
   la puissance 1/a » donne presque la réponse ; F5, l'erreur « exposants oubliés » d'une somme vaut
   a × c (un élève trouverait plutôt a + c).
+
+### 2026-11-26 — #3196 mergée, retouches F5 et F6
+
+- #3196 mergée ; `db:migrate` fait par David.
+- David suit mes deux recommandations :
+  - F5 : l'erreur « exposants oubliés » d'une somme vaut a + c (3 log(10²) − 2 log(0,01) → 1), plus
+    a × c que personne n'écrit ;
+  - F6 : coup de pouce « Cherche le nombre p tel que (xᵃ)ᵖ = x », qui ne donne plus la réponse.
+- `question:specs` vert, migration de contenu générée (2 variations corrigées), test d'intégration
+  vert (266 tests).
