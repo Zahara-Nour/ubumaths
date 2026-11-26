@@ -44,7 +44,12 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 	const exerciseId = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
 
-	const body = await request.json();
+	// Corps illisible ou qui n'est pas un objet : 400, jamais un plantage à l'aiguillage ci-dessous.
+	const rawBody: unknown = await request.json().catch(() => null);
+	if (typeof rawBody !== 'object' || rawBody === null || Array.isArray(rawBody)) {
+		throw error(400, 'Données invalides');
+	}
+	const body = rawBody as Record<string, unknown>;
 
 	// Check if bulk assignment (has students[] or classes[])
 	if (body.students || body.classes) {
