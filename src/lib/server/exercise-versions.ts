@@ -27,6 +27,7 @@ import type {
 } from '#lib/types/database-helpers.ts';
 
 export type { ExerciseVersionContent, ExerciseVersionRead, ExerciseVersionSummary };
+import type { LineVersionChoice, WorksheetVersionChoices } from '#lib/worksheets/line-version.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 // ============================================================================
@@ -45,6 +46,11 @@ export interface VersionWorksheetUsage {
 export type ExerciseVersionWithUsage = ExerciseVersionSummary & {
 	worksheets: VersionWorksheetUsage[];
 };
+
+/** Changer la version d'une ligne de fiche (ADR 0044 point 6) */
+export type SetLineVersionResult =
+	| { updated: true; number: number }
+	| { updated: false; reason: 'line_not_found' | 'wrong_version' };
 
 export type DeleteVersionResult =
 	| { deleted: true }
@@ -73,6 +79,9 @@ export const WORKSHEET_LINE_VERSION =
 
 /** Exercices par appel : au plus autant de lignes rendues, loin de la limite de PostgREST. */
 const IDS_PER_QUERY = 500;
+
+/** Lignes par page quand une lecture peut en rendre plus que la limite de PostgREST (1 000). */
+const ROWS_PER_PAGE = 1000;
 
 const logger = createServerLogger('server/exercise-versions');
 
@@ -214,6 +223,65 @@ export async function worksheetVersionIdOf(
 		.limit(1);
 	if (error) throw new Error(`Fiche illisible : ${error.message}`);
 	return data?.[0]?.exercise_version_id ?? null;
+}
+
+/**
+ * Ce que la page d'édition d'une fiche montre des versions de ses exercices (ADR 0044 point 6) :
+ * pour chaque ligne dont l'exercice a PLUSIEURS versions, la version de la ligne et toutes celles
+ * de l'exercice ; et le nombre d'affectations en cours de la fiche (confirmation avant de changer).
+ * Droits de l'appelant : une version se lit quand son exercice se lit.
+ */
+export async function loadWorksheetVersionChoices(
+	supabase: SupabaseClient<Database>,
+	worksheetId: string
+): Promise<WorksheetVersionChoices> {
+	const [linesResult, assignmentsResult] = await Promise.all([
+		supabase
+			.from('worksheet_exercises')
+			.select('id, exercise_id, exercise_version_id')
+			.eq('worksheet_id', worksheetId),
+		supabase
+			.from('worksheet_assignments')
+			.select('id', { count: 'exact', head: true })
+			.eq('worksheet_id', worksheetId)
+			.eq('status', 'active')
+	]);
+	if (linesResult.error) throw new Error(`Fiche illisible : ${linesResult.error.message}`);
+	if (assignmentsResult.error) {
+		throw new Error(`Affectations illisibles : ${assignmentsResult.error.message}`);
+	}
+
+	const lines = linesResult.data ?? [];
+	const versionsByExercise = new Map<string, LineVersionChoice['versions']>();
+	const exerciseIds = [...new Set(lines.map((line) => line.exercise_id))];
+	for (let start = 0; start < exerciseIds.length; start += IDS_PER_QUERY) {
+		const ids = exerciseIds.slice(start, start + IDS_PER_QUERY);
+		// Plusieurs versions par exercice : la lecture peut dépasser la limite de lignes, d'où les pages
+		for (let from = 0; ; from += ROWS_PER_PAGE) {
+			const { data, error } = await supabase
+				.from('exercise_versions')
+				.select('id, exercise_id, number, note, created_at')
+				.in('exercise_id', ids)
+				.order('exercise_id')
+				.order('number')
+				.range(from, from + ROWS_PER_PAGE - 1);
+			if (error) throw new Error(`Versions illisibles : ${error.message}`);
+			for (const { exercise_id, ...version } of data ?? []) {
+				const versions = versionsByExercise.get(exercise_id) ?? [];
+				versions.push(version);
+				versionsByExercise.set(exercise_id, versions);
+			}
+			if ((data ?? []).length < ROWS_PER_PAGE) break;
+		}
+	}
+
+	const choices: Record<string, LineVersionChoice> = {};
+	for (const line of lines) {
+		const versions = versionsByExercise.get(line.exercise_id) ?? [];
+		if (versions.length < 2) continue;
+		choices[line.id] = { current_version_id: line.exercise_version_id, versions };
+	}
+	return { active_assignments: assignmentsResult.count ?? 0, lines: choices };
 }
 
 // ============================================================================
@@ -419,6 +487,35 @@ export async function deleteVersion(
 	if (error) throw new Error(`Version non supprimée : ${error.message}`);
 	if (!data || data.length !== 1) return { deleted: false, reason: 'not_found' };
 	return { deleted: true };
+}
+
+/**
+ * Fait pointer une ligne de fiche vers une autre version de SON exercice (ADR 0044 point 6).
+ * La version doit être lisible et appartenir à l'exercice de la ligne ; la clé étrangère composée
+ * le refuse aussi (23503). `.select()` : un refus RLS rend 0 ligne, pas une erreur.
+ */
+export async function setLineVersion(
+	supabase: SupabaseClient<Database>,
+	worksheetId: string,
+	lineId: string,
+	exerciseId: string,
+	versionId: string
+): Promise<SetLineVersionResult> {
+	const version = await fetchVersion(supabase, exerciseId, versionId);
+	if (!version) return { updated: false, reason: 'wrong_version' };
+
+	const { data, error } = await supabase
+		.from('worksheet_exercises')
+		.update({ exercise_version_id: versionId })
+		.eq('id', lineId)
+		.eq('worksheet_id', worksheetId)
+		.eq('exercise_id', exerciseId)
+		.select('id');
+	// Version supprimée entre la lecture et l'écriture
+	if (error?.code === FOREIGN_KEY_VIOLATION) return { updated: false, reason: 'wrong_version' };
+	if (error) throw new Error(`Version de la ligne non modifiée : ${error.message}`);
+	if (!data || data.length !== 1) return { updated: false, reason: 'line_not_found' };
+	return { updated: true, number: version.number };
 }
 
 /** Retire de `row` les champs de contenu, qui ne s'écrivent plus sur `exercises`. */
