@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import { requestedProjects } from './e2e/verifs/projets';
+import { devServerCommandFromPackage } from './e2e/verifs/serveur-de-dev';
 
 /**
  * Captures des vérifications « à l'œil » (`e2e/verifs/captures/`)
@@ -60,7 +61,7 @@ export default defineConfig({
 			: [])
 	],
 	webServer: {
-		command: `pnpm dev --port ${port} --strictPort`,
+		command: devServerCommandFromPackage(port),
 		port,
 		reuseExistingServer: true,
 		timeout: 120 * 1000
