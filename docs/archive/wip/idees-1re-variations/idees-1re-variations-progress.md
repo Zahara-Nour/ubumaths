@@ -2,13 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3162._
+_Mis à jour le 2026-11-26 : rubrique publiée, chantier clos._
 
-- **État** : #3162 mergée ; `db:migrate` fait (rangement 20261126072904 et contenu 20261126072928, vérifiés par le MCP) : 3 brouillons rangés (80c43412 1SPE-283, 8f08fca1 et 61c4a8ed 1SPE-401), 2b382069 publié à 4 variations.
-- **Prochaine action** : lire les verdicts de David en base (`question_template_reviews`, `reviewed_at` postérieur au 2026-11-26 07:40), corriger, puis `publier-lot.ts --dir scripts/questions/idees-1re-variations-neufs` en simulation ; David le lance avec `--publier`.
-- **En attente de David** : relecture dans `/dev/modeles?noeud=2e77d4d9-646d-495e-b379-b662f7947a4f` (les 3 brouillons et 2b382069, variation 4).
-- **Pièges en cours** : choix + tableau à compléter dans une même variation = réponse du choix perdue ; flèche cachée près de `||` refusée (outils-manquants 59 et 63) ; pas d'erreur prévue dans une case de tableau.
-- **Worktree / branche** : aucun (retiré par `pr:merger`) ; un nouveau worktree sur `origin/main` pour les corrections.
+- **État** : 3 modèles neufs publiés (80c43412, 8f08fca1, 61c4a8ed) et 2b382069 à 4 variations ; rubrique « publiée » dans le tableau de répartition, réservation de 2b382069 levée, journal archivé.
+- **Reste** : rien. Deux défauts de l'outil laissés à `docs/wip/outils-manquants.md` (59 et 63).
 
 ## Historique
 
@@ -65,3 +62,9 @@ _Mis à jour le 2026-11-26, après #3162._
 
 - CI verte, merge par `pr:merger`. `migration list --linked` : seules les deux du lot en attente ;
   `db:migrate` ; état vérifié par le MCP (nœud, points, 4 variations pour 2b382069).
+
+### 2026-11-26 — relecture validée, publication
+
+- David : « je valide les modèles » (aucun verdict en base). `publier-lot.ts` en simulation :
+  3 brouillons passent ; David l'a lancé avec `--publier` ; statuts vérifiés par le MCP.
+- Rubrique « publiée », réservation de 2b382069 levée, journal et relevé archivés.
