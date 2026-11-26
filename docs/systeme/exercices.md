@@ -84,8 +84,9 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   de la ligne. Elles s'accordent sur l'élève désigné et la classe, pas sur `public` (cette
   surcharge dit oui, la lecture reste fermée : décision de David du 2026-11-26). L'onglet
   « Rendre public » de la page d'affectation est retiré : la page n'assigne plus qu'à des élèves
-  ou à des classes ; une ancienne affectation `public` reste listée et supprimable, et l'API
-  accepte encore `make_public`, sans appelant.
+  ou à des classes ; une ancienne affectation `public` reste listée et supprimable. L'envoi
+  groupé de l'API n'accepte plus `make_public` (retiré le 2026-11-26) ; l'envoi d'une seule
+  affectation accepte encore `assigned_to_type: 'public'`, sans appelant.
   ⚠️ La fonction a deux surcharges, que le générateur de types saute : l'appel passe par
   `callExerciseAccess` (`exercise-assignments.ts`), seul contournement de typage du module.
 - **Maîtrise** : l'élève lit et écrit ses lignes ; le prof (et l'admin) **lit** celles des élèves
@@ -188,8 +189,8 @@ graine.
 `noindex` partout **sauf** exercice public coché « Afficher sur Google » ouvert **sans** jeton.
 
 **Page élève** `dashboard/student/exercises/[id]` : il n'y a plus de liste « Mes exercices »
-(retirée le 2026-11-26 avec ses entrées ; `/api/exercises/assigned` et `getAssignmentsForStudent`
-restent, sans appelant). L'élève arrive sur un exercice par « Mon travail » ou par un chapitre
+(retirée le 2026-11-26 avec ses entrées, puis la route `/api/exercises/assigned` et sa fonction
+de lecture). L'élève arrive sur un exercice par « Mon travail » ou par un chapitre
 de cours (`?depuis=cours&chapitre=<uuid>`, `studentExerciseHref`), et « Quitter » l'y ramène
 (`studentExerciseReturnHref`, « Mon travail » par défaut). « Mon travail » ne liste pas une
 affectation `public` (`fetchExerciseItems`, `student-inbox.ts`) : elle n'ouvre rien. La page vérifie l'accès (`/api/exercises/[id]/access`), lit

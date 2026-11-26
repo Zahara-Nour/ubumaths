@@ -5,10 +5,9 @@
  * Tests for all exercise assignment API endpoints.
  * Focuses on authentication, authorization, request validation, and responses.
  *
- * Tests 8 key endpoints:
+ * Tests 7 key endpoints:
  * - POST /api/exercises/[id]/assign - Create assignments
  * - GET /api/exercises/[id]/assign - List assignments
- * - GET /api/exercises/assigned - Student's exercises
  * - POST /api/exercises/[id]/view - Track views
  * - POST /api/exercises/[id]/complete - Mark complete
  * - DELETE /api/exercises/[id]/complete - Mark incomplete
@@ -21,12 +20,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, vi } from 'vitest';
-import {
-	createMockSupabase,
-	createMockLocals,
-	createMockRequest,
-	createMockURL
-} from '#tests/helpers/index.ts';
+import { createMockSupabase, createMockLocals, createMockRequest } from '#tests/helpers/index.ts';
 
 // ============================================================================
 // MOCK SETUP
@@ -261,130 +255,48 @@ describe('POST /api/exercises/[id]/assign', () => {
 			} as any)
 		).rejects.toThrow();
 	});
-});
 
-// ============================================================================
-// GET /api/exercises/assigned - STUDENT'S EXERCISES
-// ============================================================================
+	it.each([[null], [['a']], ['texte']])(
+		'répond 400 à un corps qui n’est pas un objet : %j',
+		async (body) => {
+			const { POST } = await import('../[id]/assign/+server');
 
-describe('GET /api/exercises/assigned', () => {
-	it('should reject unauthenticated requests', async () => {
-		const { GET } = await import('../assigned/+server');
+			const mockSupabase = createMockSupabase();
+			const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
-		const locals = createMockLocals(); // No user
-		const url = createMockURL();
-
-		try {
-			await GET({
-				url,
-				locals
-			} as any);
-			expect.fail('Should have thrown');
-		} catch (err: unknown) {
-			const error = err as { status: number; body: { message: string } };
-			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Non autorisé - Authentification requise');
-		}
-	});
-
-	it('should return student exercises with filters', async () => {
-		const { GET } = await import('../assigned/+server');
-
-		const mockSupabase = createMockSupabase();
-		const locals = createMockLocals(mockStudent.id, mockSupabase);
-
-		// Mock profile fetch (consumed by requireAuth)
-		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: { id: mockStudent.id, role: 'student' },
-			error: null
-		});
-
-		// Mock RPC call for student exercises
-
-		(locals.supabase.rpc as any).mockResolvedValueOnce({
-			data: ['ex-1', 'ex-2', 'ex-3'],
-			error: null
-		});
-
-		// Mock exercises query
-		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
-			return Promise.resolve(
-				onFulfilled({
-					data: [
-						{ id: 'ex-1', title: 'Exercise 1' },
-						{ id: 'ex-2', title: 'Exercise 2' },
-						{ id: 'ex-3', title: 'Exercise 3' }
-					],
-					error: null
-				})
-			);
-		});
-
-		// Mock assignment queries (for each exercise)
-		for (let i = 0; i < 3; i++) {
-			mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
-				return Promise.resolve(
-					onFulfilled({
-						data: [],
-						error: null
-					})
-				);
-			});
-			mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
-				data: null,
+			// Profil du professeur (lu par requireRole)
+			mockSupabase._mockChain.single.mockResolvedValueOnce({
+				data: { role: 'teacher' },
 				error: null
 			});
+
+			const request = createMockRequest(body);
+
+			await expect(
+				POST({ request, params: { id: mockExerciseId }, locals } as any)
+			).rejects.toMatchObject({ status: 400 });
+			expect(mockSupabase.from).not.toHaveBeenCalledWith('exercise_assignments');
 		}
+	);
 
-		const url = createMockURL({
-			completed: 'false',
-			assigned_only: 'true'
-		});
-
-		const response = await GET({
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(200);
-		expect(Array.isArray(data)).toBe(true);
-	});
-
-	it('should parse filter parameters correctly', async () => {
-		const { GET } = await import('../assigned/+server');
+	it('refuse « make_public » seul : ce n’est plus une cible d’affectation', async () => {
+		const { POST } = await import('../[id]/assign/+server');
 
 		const mockSupabase = createMockSupabase();
-		const locals = createMockLocals(mockStudent.id, mockSupabase);
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
-		// Mock profile fetch (consumed by requireAuth)
+		// Profil du professeur (lu par requireRole)
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: { id: mockStudent.id, role: 'student' },
+			data: { role: 'teacher' },
 			error: null
 		});
 
-		// Mock empty result
+		const request = createMockRequest({ make_public: true });
 
-		(locals.supabase.rpc as any).mockResolvedValueOnce({
-			data: [],
-			error: null
-		});
-
-		const url = createMockURL({
-			completed: 'true',
-			has_deadline: 'true',
-			search: 'algebra'
-		});
-
-		const response = await GET({
-			url,
-			locals
-		} as any);
-
-		expect(response.status).toBe(200);
-		expect(locals.supabase.rpc).toHaveBeenCalledWith('get_student_exercises', {
-			p_student_id: mockStudent.id
-		});
+		await expect(
+			POST({ request, params: { id: mockExerciseId }, locals } as any)
+		).rejects.toMatchObject({ status: 400 });
+		expect(mockSupabase.from).not.toHaveBeenCalledWith('exercise_assignments');
 	});
 });
 
@@ -931,40 +843,6 @@ describe('Request validation', () => {
 // ============================================================================
 
 describe('Error handling', () => {
-	it('should handle database connection errors gracefully', async () => {
-		const { GET } = await import('../assigned/+server');
-
-		const mockSupabase = createMockSupabase();
-		const locals = createMockLocals(mockStudent.id, mockSupabase);
-
-		// Mock profile fetch (consumed by requireAuth)
-		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: { id: mockStudent.id, role: 'student' },
-			error: null
-		});
-
-		// Mock RPC call for getting student assignments with error
-		// Note: getAssignmentsForStudent handles errors gracefully by returning empty data
-		locals.supabase.rpc = vi.fn().mockResolvedValueOnce({
-			data: null,
-			error: { message: 'Connection failed' }
-		});
-
-		const url = createMockURL();
-
-		const response = await GET({
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		// Function handles errors gracefully and returns empty paginated response with 200 status
-		// Note: The route has a bug - it destructures {data, error} from PaginatedResponse
-		// which doesn't have an error field, so it returns the empty response array
-		expect(response.status).toBe(200);
-		expect(Array.isArray(data) || data === undefined).toBe(true);
-	});
-
 	it('should handle missing parameters gracefully', async () => {
 		const { POST } = await import('../[id]/view/+server');
 
