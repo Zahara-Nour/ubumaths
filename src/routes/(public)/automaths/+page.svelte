@@ -223,6 +223,9 @@
 		arrivalRubricId = shortcut.rubricId;
 		writeChoicesToUrl();
 		await showChosenContent();
+		// Lue au montage de la notion : oubliée aussitôt, sinon un retour plus
+		// tard sur cette notion (vue, recherche raccourcie) y redescendrait
+		arrivalRubricId = null;
 	}
 
 	/** Haut du contenu choisi à l'écran, focus sur son titre */

@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-26, PR B en cours._
 
-- **État** : PR B (recherche) codée sur `feat/automaths-recherche`, tests verts, vue à l'écran ; revue puis PR.
+- **État** : PR B (recherche) codée, revue corrigée, tests verts, vue à l'écran ; PR ouverte.
 - **Prochaine action** : PR B ouverte → CI → merge.
 - **En attente de David** : rien (choix non écrits en phase 0 listés plus bas, à lui dire).
 - **Pièges en cours** : figure dans une variable (`{{if:k==1|```figure…}}`) → retirer les variables AVANT les blocs ; choix QCM DANS l'énoncé ; séparateur de `rubrique` = « > » ; `aria-disabled` → `click({ force: true })` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed`.
@@ -19,6 +19,7 @@ _Mis à jour le 2026-11-26, PR B en cours._
 - Tests : 35 unitaires (`catalogue-search.test.ts`, 17 rouges avant le code), 4 nouveaux sur la page (`catalogue-recherche`) ; 425 navigateur verts (`automaths/`, `components/questions/`) ; `check:incremental` 0 erreur ; cliquet tenu.
 - Vu : `pnpm voir --ordi --chrome` (« cercle », 6e + inférieurs) et iPhone (« multiplication ») : raccourcis, groupes, « Aussi » replié ; 0 erreur de console.
 - Doc : `questions.md`.
+- Revue `code-reviewer` (Sonnet). Corrigés : « tableaux » donnait « tableal » (-eaux → -eau avant -aux → -al) ; mot mis au singulier par la recherche cherché en mot entier (« mois » trouvait « moitié », « temps » « température ») ; sous-notion d'arrivée oubliée après le montage (un retour plus tard sur la notion y redescendait). Tests ajoutés (38 unitaires). Raccourci revu à l'écran : descente à « cercle » sous les pastilles, 0 erreur. Laissés : ordre des groupes par SOMME (un groupe de 4 énoncés passe devant 1 titre : à dire à David) ; double `buildCatalogue` (avertissement « Non classés » doublé en console) ; « a b » passe le seuil de 2 lettres ; bloc non refermé gardé.
 
 ### 2026-11-26 — PR A3 mergée (#3167) : « · 1 en QCM » sous la carte
 

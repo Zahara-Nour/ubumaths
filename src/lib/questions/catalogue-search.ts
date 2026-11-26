@@ -135,6 +135,8 @@ export function normalizeForSearch(text: string): string {
  */
 function singular(word: string): string {
 	if (word.length < 4) return word;
+	// « tableaux » → « tableau », avant « -aux » → « -al » (« décimaux » → « décimal »)
+	if (word.endsWith('eaux')) return word.slice(0, -1);
 	if (word.endsWith('aux')) return `${word.slice(0, -3)}al`;
 	if (word.endsWith('s') || word.endsWith('x')) return word.slice(0, -1);
 	return word;
@@ -227,7 +229,13 @@ function haystacksOf(
 	const main = described + searchableWords([place?.subnotion?.name ?? '', ...statements].join(' '));
 	const all =
 		main + searchableWords([...corrections, ...(pointNames[template.id] ?? [])].join(' '));
-	const result = { title, described, main, all };
+	// Espace finale : un mot entier se cherche « ␣mot␣ »
+	const result = {
+		title: `${title} `,
+		described: `${described} `,
+		main: `${main} `,
+		all: `${all} `
+	};
 	haystacks.set(template, result);
 	return result;
 }
@@ -248,10 +256,10 @@ function findShortcuts(
 	nodesById: ReadonlyMap<string, CatalogueNode>,
 	words: readonly string[]
 ): SearchShortcut[] {
-	const exact = words.join('');
+	const exact = ` ${words.map((word) => word.trim()).join(' ')} `;
 	const candidates = nodes
 		.filter((node) => node.kind === 'notion' || node.kind === 'subnotion')
-		.map((node) => ({ node, name: searchableWords(node.name) }))
+		.map((node) => ({ node, name: `${searchableWords(node.name)} ` }))
 		.filter(({ name }) => containsAll(name, words));
 	if (candidates.length === 0) return [];
 
@@ -316,10 +324,11 @@ export function searchCatalogue(
 	const normalized = normalizeForSearch(query);
 	if (normalized.replace(/ /g, '').length < SEARCH_MIN_CHARACTERS) return null;
 
-	const words = searchableWords(normalized)
-		.trim()
+	// Mot mis au singulier par la recherche (« mois » → « moi ») : cherché en
+	// mot entier, sinon « mois » trouverait « moitié » ; les autres, en début de mot
+	const words = normalized
 		.split(' ')
-		.map((word) => ` ${word}`);
+		.map((word) => (singular(word) === word ? ` ${word}` : ` ${singular(word)} `));
 	const nodesById = new Map(nodes.map((n) => [n.id, n]));
 	const scores = new Map<QuestionTemplate, number>();
 	const others: QuestionTemplate[] = [];

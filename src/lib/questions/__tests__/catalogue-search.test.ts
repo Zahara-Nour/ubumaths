@@ -277,6 +277,28 @@ describe('PR B — singulier et pluriel confondus', () => {
 	it('-x : « prix »', () => {
 		expect(idsMots('prix')).toEqual(['prix']);
 	});
+
+	it('-eaux / -eau : « tableau » et « tableaux »', () => {
+		const tableaux = [modele('t', 's-disque', 'Tableau de proportionnalité')];
+		expect(searchCatalogue(tableaux, ARBRE, {}, 'tableaux')?.total).toBe(1);
+		const pluriel = [modele('t', 's-disque', 'Des tableaux')];
+		expect(searchCatalogue(pluriel, ARBRE, {}, 'tableau')?.total).toBe(1);
+	});
+
+	it('mot mis au singulier : cherché en mot entier (« mois » ne trouve pas « moitié »)', () => {
+		const textes = [
+			modele('moitie', 's-disque', 'La moitié'),
+			modele('mois', 's-disque', 'Les mois')
+		];
+		const ids = searchCatalogue(textes, ARBRE, {}, 'mois')?.groups.flatMap((g) =>
+			g.templates.map((t) => t.id)
+		);
+		expect(ids).toEqual(['mois']);
+	});
+
+	it('nom exact d’un nœud au pluriel dans la recherche : raccourci en tête', () => {
+		expect(chercher('cercles')?.shortcuts[0]?.notionId).toBe('n-cercle');
+	});
 });
 
 describe('PR B — groupe « aussi » : correction et points du programme seulement', () => {
