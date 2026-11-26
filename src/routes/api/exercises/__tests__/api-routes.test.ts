@@ -972,3 +972,61 @@ describe('Authorization edge cases', () => {
 		).rejects.toThrow();
 	});
 });
+
+// ============================================================================
+// PATCH / DELETE /api/exercises/assignments/[assignmentId] - ENTRÉES
+// ============================================================================
+
+describe('PATCH et DELETE /api/exercises/assignments/[assignmentId] : entrées refusées', () => {
+	function teacherLocals() {
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
+		// Profil du professeur (lu par requireRole)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { role: 'teacher' },
+			error: null
+		});
+		return { mockSupabase, locals };
+	}
+
+	it('PATCH répond 400 à un corps illisible, sans rien lire ni écrire des affectations', async () => {
+		const { PATCH } = await import('../assignments/[assignmentId]/+server');
+		const { mockSupabase, locals } = teacherLocals();
+
+		const request = new Request('http://localhost/api/exercises/assignments/x', {
+			method: 'PATCH',
+			body: '{pas du json'
+		});
+
+		await expect(
+			PATCH({ request, params: { assignmentId: mockAssignmentId }, locals } as any)
+		).rejects.toMatchObject({ status: 400 });
+		expect(mockSupabase.from).not.toHaveBeenCalledWith('exercise_assignments');
+	});
+
+	it('PATCH répond 400 à un identifiant qui n’est pas un UUID', async () => {
+		const { PATCH } = await import('../assignments/[assignmentId]/+server');
+		const { mockSupabase, locals } = teacherLocals();
+
+		const request = createMockRequest({ notes: 'x' });
+
+		await expect(
+			PATCH({ request, params: { assignmentId: 'pas-un-uuid' }, locals } as any)
+		).rejects.toMatchObject({ status: 400 });
+		expect(mockSupabase.from).not.toHaveBeenCalledWith('exercise_assignments');
+	});
+
+	it('DELETE répond 400 à un identifiant qui n’est pas un UUID', async () => {
+		const { DELETE } = await import('../assignments/[assignmentId]/+server');
+		const { mockSupabase, locals } = teacherLocals();
+
+		await expect(
+			DELETE({
+				params: { assignmentId: 'pas-un-uuid' },
+				url: new URL('http://localhost/api/exercises/assignments/pas-un-uuid'),
+				locals
+			} as any)
+		).rejects.toMatchObject({ status: 400 });
+		expect(mockSupabase.from).not.toHaveBeenCalledWith('exercise_assignments');
+	});
+});

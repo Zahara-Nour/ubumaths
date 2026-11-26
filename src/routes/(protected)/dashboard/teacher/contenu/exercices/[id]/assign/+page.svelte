@@ -6,7 +6,7 @@
 	import { Input } from '#lib/components/ui/input/index.ts';
 	import { Label } from '#lib/components/ui/label/index.ts';
 	import { Textarea } from '#lib/components/ui/textarea/index.ts';
-	import { Checkbox } from '#lib/components/ui/checkbox/index.ts';
+	import MyCheckbox from '#lib/components/MyCheckbox.svelte';
 	import * as Tabs from '#lib/components/ui/tabs/index.ts';
 	import * as Card from '#lib/components/ui/card/index.ts';
 	import { Badge } from '#lib/components/ui/badge/index.ts';
@@ -262,18 +262,19 @@
 									{:else}
 										<div class="max-h-60 overflow-y-auto rounded-md border">
 											{#each data.students as student (student.id)}
-												<button
-													type="button"
+												<label
 													class="flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 hover:bg-accent"
-													onclick={() => toggleStudent(student.id)}
-													aria-label="Sélectionner le {lore.entities.student} {student.full_name}"
 												>
-													<Checkbox checked={selectedStudents.includes(student.id)} />
+													<MyCheckbox
+														checked={selectedStudents.includes(student.id)}
+														onchange={() => toggleStudent(student.id)}
+														aria-label="Sélectionner le {lore.entities.student} {student.full_name}"
+													/>
 													<div class="flex-1">
 														<div class="font-medium">{student.full_name}</div>
 														<div class="text-xs text-muted-foreground">{student.email}</div>
 													</div>
-												</button>
+												</label>
 											{/each}
 										</div>
 									{/if}
@@ -343,13 +344,14 @@
 									{:else}
 										<div class="space-y-2">
 											{#each data.classes as classItem (classItem.id)}
-												<button
-													type="button"
+												<label
 													class="flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-accent"
-													onclick={() => toggleClass(classItem.id)}
-													aria-label="Sélectionner le {lore.entities.class} {classItem.name}"
 												>
-													<Checkbox checked={selectedClasses.includes(classItem.id)} />
+													<MyCheckbox
+														checked={selectedClasses.includes(classItem.id)}
+														onchange={() => toggleClass(classItem.id)}
+														aria-label="Sélectionner le {lore.entities.class} {classItem.name}"
+													/>
 													<div class="flex-1">
 														<div class="font-medium">{classItem.name}</div>
 														<div class="text-xs text-muted-foreground">
@@ -357,7 +359,7 @@
 															{lore.entities.student}{classItem.student_count > 1 ? 's' : ''}
 														</div>
 													</div>
-												</button>
+												</label>
 											{/each}
 										</div>
 									{/if}

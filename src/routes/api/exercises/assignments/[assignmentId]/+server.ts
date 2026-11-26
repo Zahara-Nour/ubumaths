@@ -5,11 +5,13 @@
  * DELETE - Remove/deactivate an assignment (teacher only)
  */
 
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateAssignment, deleteAssignment } from '#lib/server/exercise-assignments.ts';
 import type { ExerciseAssignment } from '#lib/exercises/types.ts';
 import { validateUpdateAssignment } from '#lib/server/validation/index.ts';
 import { requireRole } from '#lib/server/middleware/auth.ts';
+import { validateUuidParam } from '#lib/server/validation/params.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
 
 const logger = createServerLogger('api/exercises/assignments/[assignmentId]/+server');
@@ -27,8 +29,13 @@ const logger = createServerLogger('api/exercises/assignments/[assignmentId]/+ser
 export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
-	const assignmentId = params.assignmentId;
-	const body = await request.json();
+	const assignmentId = validateUuidParam(params.assignmentId, 'assignmentId');
+
+	// Corps illisible : 400, jamais un plantage (le schéma refuse ensuite ce qui n'est pas un objet).
+	const body: unknown = await request.json().catch(() => undefined);
+	if (body === undefined) {
+		throw error(400, 'Données invalides');
+	}
 
 	// Validate update body
 	const validation = validateUpdateAssignment(body);
@@ -77,7 +84,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 export const DELETE: RequestHandler = async ({ params, url, locals }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
-	const assignmentId = params.assignmentId;
+	const assignmentId = validateUuidParam(params.assignmentId, 'assignmentId');
 	const hardDelete = url.searchParams.get('hard') === 'true';
 
 	// Delete assignment
