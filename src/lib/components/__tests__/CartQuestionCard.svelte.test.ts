@@ -341,7 +341,7 @@ describe('CartQuestionCard — points de la revue', () => {
 			container.querySelector('.flip-card-front .statement-content')?.textContent ?? '';
 		const all = await render(CartQuestionCard, { ...props, item: ITEM });
 		const previewText = statement(all.container);
-		all.unmount();
+		await all.unmount();
 
 		const screen = await render(CartQuestionCard, {
 			...props,
