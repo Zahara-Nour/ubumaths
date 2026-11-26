@@ -13,6 +13,7 @@ import {
 	gotoSettled,
 	isNavigationAbortNoise
 } from './helpers/pages';
+import { requiresParentalConsent } from '../../src/lib/utils/consent';
 
 /**
  * Base locale remplie (`pnpm db:seed-riche`) — paquet 9 du tri
@@ -44,6 +45,9 @@ const ELEVE02 = { email: 'eleve02@local.test', password: 'local-eleve' };
 const TEACHER = { email: 'teacher@local.test', password: 'local-teacher' };
 const ADMIN = { email: 'admin@local.test', password: 'local-admin' };
 const ELEVE02_ID = '5eed0000-0000-4000-8000-000000000002';
+/** L'élève que le seed rend muet (`scripts/db-seed-riche/echanges.ts`) */
+const ELEVE_MUET_ID = '5eed0000-0000-4000-8000-000000000012';
+const ELEVE_MUET_NOM = /Capucine Fictivec|Élève 12/;
 /** « 1SPE 2 » : la classe de l'année, six élèves « Élève NN » */
 const CLASSE = '25f632f6-99a4-42ff-898a-fdb4d85ac487';
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
@@ -763,44 +767,86 @@ test.describe('Base locale — compte prof, lecture seule', () => {
 			'modération'
 		);
 		await openTab(session.page, /Restrictions actives/, /Liste des restrictions/);
-		const [muet] = await sql<{ n: string }>(
-			`select count(*) as n from user_restrictions
-			  where restriction_type in ('mute', 'timeout') and (expires_at is null or expires_at > now())`
+		// Seul le mute du seed compte : d'autres vérifications posent et lèvent leurs propres
+		// restrictions sur la même base. Il dure environ un jour après le seed, puis expire
+		// (`scripts/db-seed-riche/echanges.ts`) : passé ce délai, rien à voir, on le dit.
+		const [muteDuSeed] = await sql<{ actif: boolean }>(
+			`select (expires_at is null or expires_at > now()) as actif from user_restrictions
+			  where user_id = $1 and restriction_type = 'mute'
+			  order by created_at desc limit 1`,
+			[ELEVE_MUET_ID]
 		);
-		// Constat : la restriction « mute » du seed dure 24 h après sa pose, puis expire
-		const [expirees] = await sql<{ n: string }>(
-			`select count(*) as n from user_restrictions where restriction_type = 'mute' and expires_at <= now()`
+		test.skip(
+			!muteDuSeed?.actif,
+			'Le mute du seed (Élève 12) a expiré : à rejouer après `pnpm db:neuf`'
 		);
-		if (Number(muet.n) === 0) {
-			expect(Number(expirees.n), 'restriction du seed expirée').toBeGreaterThanOrEqual(1);
-			await expectText(session.page, 'Aucune restriction active', 'symptôme');
-			test.fail(
-				true,
-				'Le seed pose le mute avec une fin à +24 h : après un jour, plus aucun élève muet'
-			);
-		}
-		expect(Number(muet.n), 'un élève muet (restriction non expirée)').toBeGreaterThanOrEqual(1);
+		await expectText(session.page, ELEVE_MUET_NOM, 'élève muet du seed visible');
 		expect(await bodyText(session.page), 'un élève muet visible').not.toMatch(
 			/Aucune restriction/i
 		);
 	});
 
 	test('#3011 : Statistiques du tuteur', async () => {
+		// Les compteurs de la page = ceux de la base : les conversations du seed vieillissent
+		// (« Cette semaine » se vide) et d'autres vérifications en ajoutent. Période « Tout »,
+		// conversations rattachées à une classe du prof (règle de `/api/tutor/stats`).
 		await check(
 			'/dashboard/tutor-stats',
-			['Statistiques du Tuteur IA', /Conversations 4/, /Galopins actifs 4/, /Score d'effort moyen/],
+			['Statistiques du Tuteur IA', /Score d'effort moyen/],
 			'tuteur'
 		);
+		await session.page.getByRole('combobox').filter({ hasText: 'Cette semaine' }).click();
+		await session.page.getByRole('option', { name: /^Tout( ✓)?$/ }).click();
+		const [attendu] = await sql<{ conversations: string; eleves: string }>(
+			`select count(*) as conversations, count(distinct student_id) as eleves
+			   from tutor_conversations where class_id in (select id from classes)`
+		);
+		expect(Number(attendu.conversations), 'conversations du seed en base').toBeGreaterThanOrEqual(
+			1
+		);
+		await expectText(
+			session.page,
+			new RegExp(`Conversations ${attendu.conversations} Total`),
+			'tuteur'
+		);
+		await expectText(session.page, new RegExp(`Galopins actifs ${attendu.eleves} `), 'tuteur');
+		expect(realErrors(session), 'tuteur : erreurs de la page').toEqual([]);
 	});
 
-	test('#3011 : Consentements — 13 concernés, 4 accordés, 8 en période de grâce, 1 en attente', async () => {
+	test('#3011 : Consentements — compteurs de la page = états en base', async () => {
+		// Les nombres de la ligne (13 / 4 / 8 / 1) sont ceux du jour du seed : les périodes de
+		// grâce expirent et d'autres vérifications ajoutent des élèves. On recompte en base avec
+		// la règle de la page (`dashboard/teacher/consent/+page.server.ts`).
+		const lignes = await sql<{
+			grade: string | null;
+			consent_required: boolean;
+			consent_granted_at: string | null;
+			consent_grace_period_ends: string | null;
+		}>(
+			`select p.grade, p.consent_required, p.consent_granted_at, p.consent_grace_period_ends
+			   from class_members m
+			   join classes c on c.id = m.class_id and c.is_active
+			   join profiles p on p.id = m.student_id`
+		);
+		const now = Date.now();
+		const concernes = lignes.filter((l) => requiresParentalConsent(l.grade) || l.consent_required);
+		const soumis = concernes.filter((l) => l.consent_required);
+		const accordes = soumis.filter((l) => l.consent_granted_at).length;
+		const grace = soumis.filter(
+			(l) =>
+				!l.consent_granted_at &&
+				l.consent_grace_period_ends &&
+				new Date(l.consent_grace_period_ends).getTime() > now
+		).length;
+		const attente = soumis.length - accordes - grace;
+		expect(concernes.length, 'élèves du seed concernés').toBeGreaterThanOrEqual(1);
 		await check(
 			'/dashboard/teacher/consent',
 			[
-				/13 Galopins concernés/,
-				/4 Consentements accordés/,
-				/8 En période de grâce/,
-				/1 En attente/
+				new RegExp(`${concernes.length} Galopins concernés`),
+				new RegExp(`${accordes} Consentements accordés`),
+				new RegExp(`${grace} En période de grâce`),
+				new RegExp(`${attente} En attente`)
 			],
 			'consentements'
 		);
