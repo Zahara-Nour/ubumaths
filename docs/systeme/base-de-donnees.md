@@ -438,7 +438,10 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   vers `exercise_versions (exercise_id, id)`, en NO ACTION : une ligne ne pointe pas la version d'un
   autre exercice, une version utilisée par une fiche ne se supprime pas, supprimer l'exercice emporte
   ses versions et ses lignes. Une ligne neuve prend la dernière version ; dupliquer la fiche garde
-  les versions. Les liens de partage d'une fiche (`get_worksheet_by_share_token`,
+  les versions. L'auteur de la fiche change la version d'une ligne (brouillon ou publiée, jamais
+  archivée) par `PUT /api/worksheets/[id]/exercises/[ligne]/version` (`setLineVersion`) : aucune
+  migration, la policy « Teachers can manage own worksheet exercises » le permettait déjà ; test
+  `tests/integration/versions-exercices-fiche.test.ts`. Les liens de partage d'une fiche (`get_worksheet_by_share_token`,
   `get_course_worksheet_by_share_token`) rendent le contenu de cette version ;
   `get_exercise_by_share_token` et `get_student_exercises` (hors fiche) celui de la dernière.
 - `worksheet_exercises.answer_frame_lines` (ADR 0030 lot 4, `20261016103900`) : nombre de lignes

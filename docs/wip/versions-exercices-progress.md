@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, phase 0 de la PR 3 validée._
+_Mis à jour le 2026-11-26, PR 3 prête (revues faites, vérifiée à l'écran)._
 
-- **État** : PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0). Phase 0 de la PR 3 (la fiche) validée.
-- **Prochaine action** : tests rouges de la PR 3, puis implémentation (voir « Phase 0 de la PR 3 »).
+- **État** : PR 1 (#3150) et PR 2 (#3154) en prod (v0.112.0). PR 3 (la fiche) ouverte, merge à la CI verte (voir « PR 3 — fait »).
+- **Prochaine action** : si la PR 3 n'est pas mergée, `pnpm pr:merger <n>` ; sinon PR 4 (destructive), seulement après le `deploy:prod` qui livre la PR 3 et le go de David.
 - **En attente de David** : rien.
 - **Pièges en cours** : base locale de dev : fonctions de la PR 2 redéfinies à la main pendant la session, identiques au fichier final.
 - **Worktree / branche** : `../ubumaths-wt-versions-exercices-fiche`, `feat/versions-exercices-fiche`.
@@ -110,6 +110,14 @@ pas `db:migrate` seule : elle prévient David, qui demande `db:migrate` + `deplo
 
 - Formulaire d'exercice : carte « Variations » et toasts « Variation ajoutee », « Maximum 10
   variations autorisees » (mot contraire à CONTEXT.md, accents manquants) → PR 2.
+
+## PR 3 — fait (2026-11-26)
+
+- Lecture : `loadWorksheetVersionChoices` (lignes dont l'exercice a ≥ 2 versions, affectations `active`). Écriture : `setLineVersion` + route `PUT /api/worksheets/[id]/exercises/[ligne]/version` (fiche archivée → 400, version d'un autre exercice ou disparue → 400, ligne absente → 404). Garde d'accès extraite dans `worksheet-line-access.ts`. Aucune migration.
+- UI : `LineVersionControl` sous le titre de la ligne (menu vN · note · date, « une version plus récente existe », « Passer à la vN »), confirmation si affectation en cours ; Échap, clic dehors et « Renoncer » remettent le menu.
+- Tests : 9 unitaires (`line-version.test.ts`), 9 d'intégration (`versions-exercices-fiche.test.ts`), 2 à l'écran (`e2e/verifs/versions-exercices-fiche.spec.ts`, verts). Doc : `fiches-et-pdf.md`, `base-de-donnees.md`.
+- Revues : `code-reviewer` (Échap/clic dehors et ordre rechargement → corrigés ; pagination commentée ; affectation active mais close comptée, voulu). `security-auditor` : aucun finding bloquant, personne ne gagne d'accès ; 2 tests ajoutés (élève en PostgREST direct, clé composée 23503).
+- Piège : le bouton d'annulation de `ConfirmDialog` s'appelle « Renoncer » (lore), pas « Annuler ».
 
 ## Phase 0 de la PR 3 — la fiche (validée le 2026-11-26 : « je valide »)
 
