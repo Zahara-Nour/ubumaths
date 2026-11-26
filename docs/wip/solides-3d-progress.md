@@ -2,16 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, avant tout code._
+_Mis à jour le 2026-11-26, lot 1 en PR._
 
-- **État** : décision de fond prise ([ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md)) ;
-  phase 0 écrite (§ 2), **pas encore validée**.
-- **Prochaine action** : obtenir de David la validation des comportements du § 2 et les réponses aux
-  questions Q1 à Q4 du § 3 ; ensuite seulement, worktree et lot 1.
-- **En attente de David** : § 2 (comportements) et § 3 (Q1 à Q4).
-- **Pièges en cours** : une figure sans rotation doit rester strictement celle d'aujourd'hui (écran
-  et PDF) ; ne pas confondre « toucher un point » et « glisser pour tourner ».
-- **Worktree / branche** : aucun pour l'instant.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée par David
+  (§ 2, et Q1 à Q4 du § 3 selon les recommandations) ; **lot 1 fait** (moteur de vue, § 5).
+- **Prochaine action** : lot 2 — clé `tourner:` du bloc ` ```solide ` pour les polyèdres (§ 4), dans
+  une nouvelle session.
+- **En attente de David** : rien.
+- **Pièges en cours** : une figure sans rotation doit rester strictement celle d'aujourd'hui
+  (`solide-scene-figee.test.ts`) ; cylindre, cône et boule sont dessinés « à plat » (ellipses
+  conventionnelles, pas une vraie projection) : leur passage à la vue tournée est à concevoir au
+  lot 3 ; le cadre du dessin tourné (échelle fixe, pivot fixe) est à faire au lot 2.
+- **Worktree / branche** : `../ubumaths-wt-solides-3d`, `feat/solides-3d` (retirés au merge).
 
 ## 1. D'où l'on part
 
@@ -23,7 +25,7 @@ _Mis à jour le 2026-11-26, avant tout code._
 - Maquette hors dépôt montrée à David (pavé et vecteur, pyramide, cylindre, cube coupé par un plan),
   puis « je valide » aux cinq recommandations → ADR 0045.
 
-## 2. Phase 0 — comportements (à valider)
+## 2. Phase 0 — comportements (validés par David le 2026-11-26)
 
 Exemple suivi : un pavé ABCDEFGH avec le vecteur AG, bloc ` ```solide ` avec la clé `tourner: oui`.
 
@@ -59,7 +61,7 @@ Exemple suivi : un pavé ABCDEFGH avec le vecteur AG, bloc ` ```solide ` avec la
 15. `tourner: oui` sur une forme ou un réglage pas encore pris en charge par le lot en cours (par
     exemple une section) : message pour l'auteur, figure fixe pour l'élève. Jamais de figure fausse.
 
-## 3. Questions ouvertes (à David)
+## 3. Questions (tranchées le 2026-11-26 : « je valide », chaque recommandation retenue)
 
 - **Q1 — Les cotes pendant la rotation** (`cotes: cm`) : les garder écrites le long des arêtes qui
   tournent, ou ne les montrer que dans la vue de départ ? Recommandation : vue de départ seulement
@@ -72,7 +74,7 @@ Exemple suivi : un pavé ABCDEFGH avec le vecteur AG, bloc ` ```solide ` avec la
 - **Q4 — Patrons** : hors chantier (un patron est à plat) ? Recommandation : oui. Le pliage d'un
   patron en solide serait un autre chantier.
 
-## 4. Découpage proposé (après validation)
+## 4. Découpage (validé le 2026-11-26)
 
 | Lot | Contenu                                                                                                                                                                   | Revue                             |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
@@ -87,3 +89,24 @@ Exemple suivi : un pavé ABCDEFGH avec le vecteur AG, bloc ` ```solide ` avec la
 Agents : `geometry-expert` n'est pas le bon (il couvre `geometry-core`) ; lots 1, 3 et 4 en session
 principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-developer` pour le composant
 (lot 2).
+
+## 5. Lot 1 — moteur de vue (2026-11-26)
+
+- `src/lib/ubumark/utils/espace-vue.ts` : `EspaceVue` (`yaw`, `pitch`, `oblique`), `VUE_DE_DEPART`
+  (cavalière), `vueProjection(vue, pivot)`, `hiddenEdges` (polyèdres convexes), `turnVue` (bascule
+  bornée). La vue droite part des angles où une profondeur de 1 se projette comme en cavalière
+  (`VUE_DROITE_YAW`, `VUE_DROITE_PITCH`) : le passage d'une vue à l'autre déplace à peine le dessin.
+- `espace-solides.ts` : les polyèdres passent par le moteur, à la vue de départ. Aucun réglage
+  nouveau, rien de branché à l'écran.
+- Preuve que rien ne bouge : `solide-scene-figee.test.ts`, 22 scènes figées **avant** le moteur
+  (commit à part), toutes identiques après.
+- Tests du moteur : `espace-vue.test.ts` (départ au chiffre près, longueurs gardées, pivot fixe,
+  arêtes cachées vues de derrière, de dessous, sous une grille d'angles).
+- Revue (`code-reviewer`, opus) : dessin au repos identique, vérifié opération par opération ; corrigé
+  avant la PR : bornes de `turnVue` justes aussi en glissant depuis la cavalière et pendant le
+  passage (la figure pouvait passer tête en bas), tour ramené entre −π et π, tests du passage
+  (`oblique` entre 0 et 1).
+- CI de #3195 rouge une fois : l'instantané du **cône** différait au 16e chiffre entre le Mac et la
+  CI (cosinus de la machine, code non touché). Instantanés arrondis au milliardième de centimètre ;
+  l'identité exacte avec l'ancien code a été vérifiée en local avant l'arrondi. À retenir pour les
+  lots suivants : jamais d'instantané de flottants bruts.
