@@ -2,15 +2,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, relevé fait, phase 0 publiée._
+_Mis à jour le 2026-11-26, phase 0 validée, modèles réservés._
 
-- **État** : rubrique 3P1 réservée (commit sur `main`), relevé écrit
-  ([idees-3e-proportionnalite-releve.md](idees-3e-proportionnalite-releve.md)), fiches de phase 0 sur
-  la page à cocher (lien ci-dessous). Rien d'écrit en code.
-- **Prochaine action** : lire les verdicts de la page à cocher, puis écrire le lot.
-- **En attente de David** : verdicts des fiches V1 à V4 et Q1.
+- **État** : relevé écrit ([idees-3e-proportionnalite-releve.md](idees-3e-proportionnalite-releve.md)).
+  **Phase 0 validée en entier par David** (« je valide tout », dans la session, pas sur la page à
+  cocher) : V1 à V4 comme écrites ci-dessous, Q1 = oui (variations sur les modèles publiés, vues
+  aussi en 4e). ccb51039, 76f5f143 et 8b59ca4b réservés dans le tableau (commit sur `main`). Rien
+  d'écrit en code.
+- **Prochaine action** : exporter les 3 modèles de prod dans
+  `scripts/questions/idees-3e-proportionnalite-publies/` (`scripts/export-question-templates.ts`),
+  écrire `docs/wip/questions/idees-3e-proportionnalite-publies.py` (10 variations ajoutées à la
+  fin, specs, 3 erreurs prévues par case, coup de pouce), `question:specs`, essai en base locale,
+  puis `migration-contenu.ts --dir …`.
+- **En attente de David** : rien.
 - **Pièges en cours** : ccb51039 et 76f5f143 portent aussi le niveau 4e (4-057, 4-080) : leurs
-  variations ajoutées sont vues en 4e. Modèles à réserver dans le tableau avant d'écrire.
+  variations ajoutées sont vues en 4e (accepté, Q1). 8b59ca4b : réponse en puissance acceptée
+  (`acceptDecimal`, comme ses variations existantes).
 - **Worktree / branche** : `../ubumaths-wt-idees-3e-proportionnalite`, `feat/idees-3e-proportionnalite`.
 
 ## Relevé (2026-11-26)
