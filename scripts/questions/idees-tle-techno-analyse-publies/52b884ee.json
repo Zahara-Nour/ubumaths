@@ -311,7 +311,7 @@
 					"{{if:w==1|Or ${{b}}={{c}}^{ {{a}} }$ : $x=\\textcolor{{{color:primary.0}}}{ {{c}} }$.|$x=\\textcolor{{{color:primary.0}}}{ {{b}}^{\\frac{1}{ {{a}} }} }$ (environ ${{eval:round(100*b^(1/a))/100;a2}}$).}}"
 				]
 			},
-			"hint": "Élève les deux membres à la puissance $\\dfrac{1}{ {{a}} }$, ou prends leur logarithme."
+			"hint": "Cherche le nombre $p$ tel que $\\left(x^{ {{a}} }\\right)^{p}=x$."
 		}
 	],
 	"testSpecs": [

@@ -184,7 +184,7 @@
 				},
 				{
 					"name": "w3",
-					"expression": "eval:(1-o)*a*c+o*(n+m)"
+					"expression": "eval:(1-o)*(a+c)+o*(n+m)"
 				}
 			],
 			"conditions": ["r != w1", "r != w2", "r != w3", "w1 != w2", "w1 != w3", "w2 != w3"],
@@ -433,7 +433,7 @@
 				"r": "10",
 				"w1": "2",
 				"w2": "8",
-				"w3": "-6"
+				"w3": "1"
 			},
 			"expected": {
 				"status": "correct"
@@ -452,7 +452,7 @@
 				"r": "10",
 				"w1": "2",
 				"w2": "8",
-				"w3": "-6"
+				"w3": "1"
 			},
 			"expected": {
 				"status": "incorrect",
@@ -472,7 +472,7 @@
 				"r": "10",
 				"w1": "2",
 				"w2": "8",
-				"w3": "-6"
+				"w3": "1"
 			},
 			"expected": {
 				"status": "incorrect",
@@ -492,13 +492,13 @@
 				"r": "10",
 				"w1": "2",
 				"w2": "8",
-				"w3": "-6"
+				"w3": "1"
 			},
 			"expected": {
 				"status": "incorrect",
 				"expectedErrorMessage": "Les coefficients ne suffisent pas : $\\log\\left(10^{n}\\right)=n$ donne la valeur de chaque logarithme."
 			},
-			"answers": ["-6"]
+			"answers": ["1"]
 		},
 		{
 			"description": "F5 : log(10³) × log(100) = 6",
