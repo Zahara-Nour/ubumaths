@@ -2,18 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3206._
+_Mis à jour le 2026-11-26, après #3206 et sa migration jouée en prod._
 
-- **État** : #3206 mergée (migration `20261126205931`, rangement 1SPE-355 du brouillon `505ee05a`),
-  **pas encore jouée en prod**.
-- **Prochaine action** : `db:migrate` depuis `main`, seulement quand `migration list --linked` ne
-  montre plus que `20261126205931` en attente ; puis vérifier en prod (MCP : nœud + tag), relecture
-  dans `/dev/modeles`, publication.
-- **En attente de David** : `20261126200955_questions_idees_tle_techno_analyse_publies_contenu`
-  (autre session) attend aussi : à jouer par sa session, ou feu vert pour pousser les deux.
+- **État** : brouillon `505ee05a` rangé en prod (« loi d'une variable aléatoire », tag 1SPE-355),
+  vérifié par MCP ; toujours en brouillon.
+- **Prochaine action** : relecture par David dans `/dev/modeles` (série de relecture), puis
+  publication.
+- **En attente de David** : la relecture.
 - **Pièges en cours** : second tag 1TECHNO-095 non posé (`outils-manquants.md` n° 66) ; saisie
   scriptée des cases d'un tableau dans l'aperçu : « Valider » inactif.
-- **Worktree / branche** : aucun (retiré après #3206).
+- **Worktree / branche** : aucun.
 
 ## Historique
 
@@ -34,3 +32,6 @@ _Mis à jour le 2026-11-26, après #3206._
   vert (145) ; rouge avec un corps vide (3 échecs d'assertion : nœud absent, gardes muettes).
 - 2026-11-26 : `security-auditor` sans finding bloquant ; #3206 mergée (CI verte). `db:migrate` non
   lancé : une migration d'une autre session (`20261126200955`) partirait avec.
+
+- 2026-11-26 : migration `20261126205931` jouée en prod (avec `20261126200955` de la session Tle
+  techno) ; `migration list --linked` sans écart ; nœud et tag vérifiés par MCP.
