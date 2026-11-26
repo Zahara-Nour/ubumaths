@@ -1,0 +1,617 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "1SPE-401"
+	},
+	"title": "Variations et extremums d'un polynôme de degré 3 sur un intervalle",
+	"description": "Polynôme de degré 3 sur un intervalle fermé, dérivée factorisée donnée : tableau de variations avec les valeurs, maximum et minimum (extremum local ou valeur à une borne).",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 300,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[{{m}}\\,;{{n}}\\right]$ par $f(x)={{eval:2*A*x^3-3*A*(p+q)*x^2+6*A*p*q*x+k}}$. On admet que $f'(x)={{eval:6*A}}({{eval:x-p}})({{eval:x-q}})$.\n\nComplète le tableau de variations de $f$.\n\n```variation\nvariable: x\ndomain: {{m}}, {{p}}, {{q}}, {{n}}\n\nsign: f'(x)\n  {{m}},{{p}}: ?{{if:A>0|+|-}}\n  {{p}}: z\n  {{p}},{{q}}: ?{{if:A>0|-|+}}\n  {{q}}: z\n  {{q}},{{n}}: ?{{if:A>0|+|-}}\n\nvariation: f(x)\n  {{m}}: {{Fm}}, {{if:A>0|bottom|top}}\n  {{p}}: ?{{Fp}}, {{if:A>0|top|bottom}}\n  {{q}}: ?{{Fq}}, {{if:A>0|bottom|top}}\n  {{n}}: {{Fn}}, {{if:A>0|top|bottom}}\n  {{m}},{{p}}: ?flèche\n  {{p}},{{q}}: ?flèche\n  {{q}},{{n}}: ?flèche\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "A",
+					"expression": "1..1;±"
+				},
+				{
+					"name": "p",
+					"expression": "-3..2"
+				},
+				{
+					"name": "dd",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+dd"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				},
+				{
+					"name": "e1",
+					"expression": "1..2"
+				},
+				{
+					"name": "e2",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "eval:p-e1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q+e2"
+				},
+				{
+					"name": "Fm",
+					"expression": "eval:A*(2*m^3-3*(p+q)*m^2+6*p*q*m)+k"
+				},
+				{
+					"name": "Fp",
+					"expression": "eval:A*(2*p^3-3*(p+q)*p^2+6*p*q*p)+k"
+				},
+				{
+					"name": "Fq",
+					"expression": "eval:A*(2*q^3-3*(p+q)*q^2+6*p*q*q)+k"
+				},
+				{
+					"name": "Fn",
+					"expression": "eval:A*(2*n^3-3*(p+q)*n^2+6*p*q*n)+k"
+				}
+			],
+			"conditions": ["q <= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				},
+				{
+					"expectedAnswer": ""
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)$ est un produit : ${{eval:6*A}}$ est {{if:A>0|positif|négatif}}, $x{{eval:-p;+}}$ et $x{{eval:-q;+}}$ changent de signe en ${{p}}$ et en ${{q}}$. $f'(x)$ est {{if:A>0|positif à l'extérieur des racines, négatif entre elles|négatif à l'extérieur des racines, positif entre elles}}.",
+					"$f({{p}})=\\textcolor{{{color:primary.0}}}{ {{Fp}} }$ et $f({{q}})=\\textcolor{{{color:primary.0}}}{ {{Fq}} }$.",
+					"```variation\nvariable: x\ndomain: {{m}}, {{p}}, {{q}}, {{n}}\n\nsign: f'(x)\n  {{m}},{{p}}: {{if:A>0|+|-}}\n  {{p}}: z\n  {{p}},{{q}}: {{if:A>0|-|+}}\n  {{q}}: z\n  {{q}},{{n}}: {{if:A>0|+|-}}\n\nvariation: f(x)\n  {{m}}: {{Fm}}, {{if:A>0|bottom|top}}\n  {{p}}: {{Fp}}, {{if:A>0|top|bottom}}\n  {{q}}: {{Fq}}, {{if:A>0|bottom|top}}\n  {{n}}: {{Fn}}, {{if:A>0|top|bottom}}\n```"
+				]
+			},
+			"hint": "Étudie le signe de chaque facteur de $f'(x)$ sur l'intervalle. Pour les valeurs, remplace $x$ dans l'expression de $f(x)$, sans oublier le terme constant."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[{{m}}\\,;{{n}}\\right]$ par $f(x)={{eval:2*A*x^3-3*A*(p+q)*x^2+6*A*p*q*x+k}}$. On admet que $f'(x)={{eval:6*A}}({{eval:x-p}})({{eval:x-q}})$.\n\nSur $\\left[{{m}}\\,;{{n}}\\right]$, le maximum de $f$ est $?$ et son minimum est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "A",
+					"expression": "1..1;±"
+				},
+				{
+					"name": "p",
+					"expression": "-3..2"
+				},
+				{
+					"name": "dd",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+dd"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				},
+				{
+					"name": "e1",
+					"expression": "1..2"
+				},
+				{
+					"name": "e2",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "eval:p-e1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q+e2"
+				},
+				{
+					"name": "Fm",
+					"expression": "eval:A*(2*m^3-3*(p+q)*m^2+6*p*q*m)+k"
+				},
+				{
+					"name": "Fp",
+					"expression": "eval:A*(2*p^3-3*(p+q)*p^2+6*p*q*p)+k"
+				},
+				{
+					"name": "Fq",
+					"expression": "eval:A*(2*q^3-3*(p+q)*q^2+6*p*q*q)+k"
+				},
+				{
+					"name": "Fn",
+					"expression": "eval:A*(2*n^3-3*(p+q)*n^2+6*p*q*n)+k"
+				}
+			],
+			"conditions": ["q <= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:max(Fm,Fp,Fq,Fn)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:A>0|{{Fp}}|{{Fq}}}}",
+							"message": "C'est un extremum local. Compare-le aux valeurs de $f$ aux bornes de l'intervalle.",
+							"label": "Maximum local pris pour le maximum"
+						},
+						{
+							"answer": "{{if:A>0|{{p}}|{{q}}}}",
+							"message": "Tu as donné l'abscisse : la réponse est la valeur de $f$ en ce point.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:min(Fm,Fp,Fq,Fn)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{if:A>0|{{Fq}}|{{Fp}}}}",
+							"message": "C'est un extremum local. Compare-le aux valeurs de $f$ aux bornes de l'intervalle.",
+							"label": "Minimum local pris pour le minimum"
+						},
+						{
+							"answer": "{{if:A>0|{{q}}|{{p}}}}",
+							"message": "Tu as donné l'abscisse : la réponse est la valeur de $f$ en ce point.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)$ s'annule en ${{p}}$ et en ${{q}}$ : $f$ est {{if:A>0|croissante, décroissante puis croissante|décroissante, croissante puis décroissante}} sur $\\left[{{m}}\\,;{{n}}\\right]$.",
+					"On compare les valeurs aux bornes et aux extremums locaux : $f({{m}})={{Fm}}$, $f({{p}})={{Fp}}$, $f({{q}})={{Fq}}$, $f({{n}})={{Fn}}$.",
+					"Maximum : $\\textcolor{{{color:primary.0}}}{ {{eval:max(Fm,Fp,Fq,Fn)}} }$ ; minimum : $\\textcolor{{{color:primary.0}}}{ {{eval:min(Fm,Fp,Fq,Fn)}} }$."
+				]
+			},
+			"hint": "Dresse le tableau de variations : le maximum sur un intervalle fermé est soit un maximum local, soit la valeur à une borne. Compare-les."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[{{m}}\\,;{{n}}\\right]$ par $f(x)={{eval:2*A*x^3-3*A*(p+q)*x^2+6*A*p*q*x+k}}$. On admet que $f'(x)={{eval:6*A}}({{eval:x-p}})({{eval:x-q}})$.\n\nSur $\\left[{{m}}\\,;{{n}}\\right]$, le maximum de $f$ est $?$ et son minimum est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "A",
+					"expression": "1..1;±"
+				},
+				{
+					"name": "p",
+					"expression": "-3..1"
+				},
+				{
+					"name": "dd",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+dd"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				},
+				{
+					"name": "e1",
+					"expression": "1..2"
+				},
+				{
+					"name": "m",
+					"expression": "eval:p-e1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q-1"
+				},
+				{
+					"name": "Fm",
+					"expression": "eval:A*(2*m^3-3*(p+q)*m^2+6*p*q*m)+k"
+				},
+				{
+					"name": "Fp",
+					"expression": "eval:A*(2*p^3-3*(p+q)*p^2+6*p*q*p)+k"
+				},
+				{
+					"name": "Fn",
+					"expression": "eval:A*(2*n^3-3*(p+q)*n^2+6*p*q*n)+k"
+				}
+			],
+			"conditions": ["q <= 3", "Fm != Fn"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:A>0|{{Fp}}|{{eval:max(Fm,Fn)}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as donné l'abscisse : la réponse est la valeur de $f$ en ce point.",
+							"label": "Abscisse au lieu de la valeur"
+						},
+						{
+							"answer": "{{if:A>0|{{eval:max(Fm,Fn)}}|{{Fp}}}}",
+							"message": "Compare toutes les valeurs : celles aux bornes et celle de l'extremum local.",
+							"label": "Comparaison incomplète"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{if:A>0|{{eval:min(Fm,Fn)}}|{{Fp}}}}",
+					"expectedErrors": [
+						{
+							"answer": "{{p}}",
+							"message": "Tu as donné l'abscisse : la réponse est la valeur de $f$ en ce point.",
+							"label": "Abscisse au lieu de la valeur"
+						},
+						{
+							"answer": "{{if:A>0|{{eval:max(Fm,Fn)}}|{{eval:min(Fm,Fn)}}}}",
+							"message": "Le minimum est la plus petite des valeurs : compare $f({{m}})$ et $f({{n}})$.",
+							"label": "Mauvaise borne"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left[{{m}}\\,;{{n}}\\right]$, seul ${{p}}$ annule $f'(x)$ (${{q}}$ est hors de l'intervalle) : $f$ est {{if:A>0|croissante puis décroissante|décroissante puis croissante}}.",
+					"$f({{m}})={{Fm}}$, $f({{p}})={{Fp}}$, $f({{n}})={{Fn}}$.",
+					"Maximum : $\\textcolor{{{color:primary.0}}}{{{if:A>0|{{Fp}}|{{eval:max(Fm,Fn)}}}}}$ ; minimum : $\\textcolor{{{color:primary.0}}}{{{if:A>0|{{eval:min(Fm,Fn)}}|{{Fp}}}}}$."
+				]
+			},
+			"hint": "Regarde quelles racines de $f'(x)$ sont dans l'intervalle, puis compare les valeurs de $f$ en ces points et aux bornes."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x³ − 6x + 2 sur [−2 ; 2] : +, ↗, 6, −, ↘, −2, +, ↗",
+			"variationIndex": 0,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "2",
+				"e1": "1",
+				"e2": "1",
+				"m": "-2",
+				"n": "2",
+				"Fm": "-2",
+				"Fp": "6",
+				"Fq": "-2",
+				"Fn": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["+", "-", "+", "↗", "6", "↘", "-2", "↗"]
+		},
+		{
+			"description": "f(−1) sans la constante (4)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "2",
+				"e1": "1",
+				"e2": "1",
+				"m": "-2",
+				"n": "2",
+				"Fm": "-2",
+				"Fp": "6",
+				"Fq": "-2",
+				"Fn": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["+", "-", "+", "↗", "4", "↘", "-2", "↗"]
+		},
+		{
+			"description": "Signes inversés",
+			"variationIndex": 0,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "2",
+				"e1": "1",
+				"e2": "1",
+				"m": "-2",
+				"n": "2",
+				"Fm": "-2",
+				"Fp": "6",
+				"Fq": "-2",
+				"Fn": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-", "+", "-", "↘", "6", "↗", "-2", "↘"]
+		},
+		{
+			"description": "−2x³ + 6x² + 1 sur [−1 ; 3] : −, ↘, 1, +, ↗, 9, −, ↘",
+			"variationIndex": 0,
+			"variables": {
+				"A": "-1",
+				"p": "0",
+				"dd": "2",
+				"q": "2",
+				"k": "1",
+				"e1": "1",
+				"e2": "1",
+				"m": "-1",
+				"n": "3",
+				"Fm": "9",
+				"Fp": "1",
+				"Fq": "9",
+				"Fn": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-", "+", "-", "↘", "1", "↗", "9", "↘"]
+		},
+		{
+			"description": "2x³ − 6x sur [−2 ; 3] : max 36 (borne), min −4",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "0",
+				"e1": "1",
+				"e2": "2",
+				"m": "-2",
+				"n": "3",
+				"Fm": "-4",
+				"Fp": "4",
+				"Fq": "-4",
+				"Fn": "36"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36", "-4"]
+		},
+		{
+			"description": "Maximum local 4 pris pour le maximum",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "0",
+				"e1": "1",
+				"e2": "2",
+				"m": "-2",
+				"n": "3",
+				"Fm": "-4",
+				"Fp": "4",
+				"Fq": "-4",
+				"Fn": "36"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un extremum local. Compare-le aux valeurs de $f$ aux bornes de l'intervalle."
+			},
+			"answers": ["4", "-4"]
+		},
+		{
+			"description": "Abscisse −1 donnée",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "0",
+				"e1": "1",
+				"e2": "2",
+				"m": "-2",
+				"n": "3",
+				"Fm": "-4",
+				"Fp": "4",
+				"Fq": "-4",
+				"Fn": "36"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'abscisse : la réponse est la valeur de $f$ en ce point."
+			},
+			"answers": ["-1", "-4"]
+		},
+		{
+			"description": "Max et min échangés",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "0",
+				"e1": "1",
+				"e2": "2",
+				"m": "-2",
+				"n": "3",
+				"Fm": "-4",
+				"Fp": "4",
+				"Fq": "-4",
+				"Fn": "36"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["-4", "36"]
+		},
+		{
+			"description": "2x³ − 3x² sur [−1 ; 2] : max 4, min −5",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"p": "0",
+				"dd": "1",
+				"q": "1",
+				"k": "0",
+				"e1": "1",
+				"e2": "1",
+				"m": "-1",
+				"n": "2",
+				"Fm": "-5",
+				"Fp": "0",
+				"Fq": "-1",
+				"Fn": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "-5"]
+		},
+		{
+			"description": "Minimum local −1 pris pour le minimum",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"p": "0",
+				"dd": "1",
+				"q": "1",
+				"k": "0",
+				"e1": "1",
+				"e2": "1",
+				"m": "-1",
+				"n": "2",
+				"Fm": "-5",
+				"Fp": "0",
+				"Fq": "-1",
+				"Fn": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un extremum local. Compare-le aux valeurs de $f$ aux bornes de l'intervalle."
+			},
+			"answers": ["4", "-1"]
+		},
+		{
+			"description": "2x³ − 6x sur [−3 ; 0] : max 4, min −36",
+			"variationIndex": 2,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "0",
+				"e1": "2",
+				"m": "-3",
+				"n": "0",
+				"Fm": "-36",
+				"Fp": "4",
+				"Fn": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4", "-36"]
+		},
+		{
+			"description": "Abscisse −1",
+			"variationIndex": 2,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "0",
+				"e1": "2",
+				"m": "-3",
+				"n": "0",
+				"Fm": "-36",
+				"Fp": "4",
+				"Fn": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'abscisse : la réponse est la valeur de $f$ en ce point."
+			},
+			"answers": ["-1", "-36"]
+		},
+		{
+			"description": "Minimum : mauvaise borne (0)",
+			"variationIndex": 2,
+			"variables": {
+				"A": "1",
+				"p": "-1",
+				"dd": "2",
+				"q": "1",
+				"k": "0",
+				"e1": "2",
+				"m": "-3",
+				"n": "0",
+				"Fm": "-36",
+				"Fp": "4",
+				"Fn": "0"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le minimum est la plus petite des valeurs : compare $f\\left( -3 \\right)$ et $f\\left( 0 \\right)$."
+			},
+			"answers": ["4", "0"]
+		}
+	]
+}

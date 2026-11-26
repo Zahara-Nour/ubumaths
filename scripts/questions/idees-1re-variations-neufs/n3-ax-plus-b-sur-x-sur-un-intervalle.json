@@ -1,0 +1,562 @@
+{
+	"rangement": {
+		"noeud": "Fonctions > Dérivation > variations et extremums",
+		"point": "1SPE-401"
+	},
+	"title": "Maximum et minimum de ax + b/x sur un intervalle",
+	"description": "Fonction x ↦ ax + b/x sur un intervalle fermé : extremum local ou valeurs aux bornes, selon le signe de la dérivée.",
+	"grades": ["1_SPE"],
+	"level": 4,
+	"delay": 240,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[{{m}}\\,;{{n}}\\right]$ par $f(x)={{eval:a*x}}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{x}$.\n\nSur $\\left[{{m}}\\,;{{n}}\\right]$, le minimum de $f$ est $?$ et son maximum est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a*r^2"
+				},
+				{
+					"name": "u",
+					"expression": "1..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:r-u"
+				},
+				{
+					"name": "w",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:r+w"
+				}
+			],
+			"conditions": ["m >= 1", "m*n != r^2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a*r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{r}}",
+							"message": "Tu as donné l'abscisse de l'extremum : la réponse est son image par $f$.",
+							"label": "Abscisse au lieu de la valeur"
+						},
+						{
+							"answer": "0",
+							"message": "$0$ est la valeur de $f'$ en ce point : la réponse est la valeur de $f$.",
+							"label": "f′(r) au lieu de f(r)"
+						},
+						{
+							"answer": "{{eval:(a*m^2+b)/m}}",
+							"message": "Le minimum n'est pas à une borne : $f$ décroît puis croît, il est atteint là où $f'$ s'annule.",
+							"label": "Valeur à une borne"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:max((a*m^2+b)/m,(a*n^2+b)/n)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:min((a*m^2+b)/m,(a*n^2+b)/n)}}",
+							"message": "Compare les valeurs de $f$ aux deux bornes : il faut la plus grande.",
+							"label": "Plus petite des bornes"
+						},
+						{
+							"answer": "{{eval:2*a*r}}",
+							"message": "C'est le minimum : ici $f$ n'a pas de maximum local, le maximum est à une borne.",
+							"label": "Minimum pris pour le maximum"
+						},
+						{
+							"answer": "{{n}}",
+							"message": "Tu as donné une borne de l'intervalle : la réponse est la valeur de $f$.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{a}}{{if:b>0|-|+}}\\dfrac{ {{eval:abs(b)}} }{x^2}=\\dfrac{ {{eval:a*x^2-b}} }{x^2}$, du signe de ${{eval:a*x^2-b}}$ (car $x^2>0$). Il s'annule en $x={{r}}$ : $f$ est décroissante sur $\\left[{{m}}\\,;{{r}}\\right]$, croissante sur $\\left[{{r}}\\,;{{n}}\\right]$.",
+					"Minimum : $f({{r}})=\\textcolor{{{color:primary.0}}}{ {{eval:2*a*r}} }$.",
+					"Aux bornes : $f({{m}})={{eval:(a*m^2+b)/m}}$ et $f({{n}})={{eval:(a*n^2+b)/n}}$ ; maximum : $\\textcolor{{{color:primary.0}}}{ {{eval:max((a*m^2+b)/m,(a*n^2+b)/n)}} }$."
+				]
+			},
+			"hint": "Écris $f'(x)$ avec un seul dénominateur $x^2$ : son signe est celui du numérateur. Sur un intervalle fermé, compare l'extremum local aux valeurs aux bornes."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[{{m}}\\,;{{n}}\\right]$ par $f(x)={{eval:a*x}}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{x}$.\n\nSur $\\left[{{m}}\\,;{{n}}\\right]$, le minimum de $f$ est $?$ et son maximum est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "A",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:-A"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a*r^2"
+				},
+				{
+					"name": "u",
+					"expression": "1..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:r-u"
+				},
+				{
+					"name": "w",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:r+w"
+				}
+			],
+			"conditions": ["m >= 1", "m*n != r^2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:min((a*m^2+b)/m,(a*n^2+b)/n)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:max((a*m^2+b)/m,(a*n^2+b)/n)}}",
+							"message": "Compare les valeurs de $f$ aux deux bornes : il faut la plus petite.",
+							"label": "Plus grande des bornes"
+						},
+						{
+							"answer": "{{eval:2*a*r}}",
+							"message": "C'est le maximum : ici $f$ n'a pas de minimum local, le minimum est à une borne.",
+							"label": "Maximum pris pour le minimum"
+						},
+						{
+							"answer": "{{n}}",
+							"message": "Tu as donné une borne de l'intervalle : la réponse est la valeur de $f$.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:2*a*r}}",
+					"expectedErrors": [
+						{
+							"answer": "{{r}}",
+							"message": "Tu as donné l'abscisse de l'extremum : la réponse est son image par $f$.",
+							"label": "Abscisse au lieu de la valeur"
+						},
+						{
+							"answer": "0",
+							"message": "$0$ est la valeur de $f'$ en ce point : la réponse est la valeur de $f$.",
+							"label": "f′(r) au lieu de f(r)"
+						},
+						{
+							"answer": "{{eval:-2*a*r}}",
+							"message": "Attention au signe : $a$ et $b$ sont négatifs, $f$ l'est aussi sur l'intervalle.",
+							"label": "Signe"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{a}}{{if:b>0|-|+}}\\dfrac{ {{eval:abs(b)}} }{x^2}=\\dfrac{ {{eval:a*x^2-b}} }{x^2}$, du signe de ${{eval:a*x^2-b}}$ (car $x^2>0$). Il s'annule en $x={{r}}$ : $f$ est croissante sur $\\left[{{m}}\\,;{{r}}\\right]$, décroissante sur $\\left[{{r}}\\,;{{n}}\\right]$.",
+					"Maximum : $f({{r}})=\\textcolor{{{color:primary.0}}}{ {{eval:2*a*r}} }$.",
+					"Aux bornes : $f({{m}})={{eval:(a*m^2+b)/m}}$ et $f({{n}})={{eval:(a*n^2+b)/n}}$ ; minimum : $\\textcolor{{{color:primary.0}}}{ {{eval:min((a*m^2+b)/m,(a*n^2+b)/n)}} }$."
+				]
+			},
+			"hint": "Écris $f'(x)$ avec un seul dénominateur $x^2$ : son signe est celui du numérateur. Sur un intervalle fermé, compare l'extremum local aux valeurs aux bornes."
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\left[{{m}}\\,;{{n}}\\right]$ par $f(x)={{eval:a*x}}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{x}$.\n\nSur $\\left[{{m}}\\,;{{n}}\\right]$, le minimum de $f$ est $?$ et son maximum est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "B",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-B"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:m+w"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*m^2+b)/m}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*n^2+b)/n}}",
+							"message": "Les extremums sont échangés : $f$ est croissante, son minimum est à la borne de gauche.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{m}}",
+							"message": "Tu as donné la borne : la réponse est la valeur de $f$ en cette borne.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(a*n^2+b)/n}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(a*m^2+b)/m}}",
+							"message": "Les extremums sont échangés : $f$ est croissante, son maximum est à la borne de droite.",
+							"label": "Bornes échangées"
+						},
+						{
+							"answer": "{{n}}",
+							"message": "Tu as donné la borne : la réponse est la valeur de $f$ en cette borne.",
+							"label": "Abscisse au lieu de la valeur"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{a}}{{if:b>0|-|+}}\\dfrac{ {{eval:abs(b)}} }{x^2}=\\dfrac{ {{eval:a*x^2-b}} }{x^2}$, du signe de ${{eval:a*x^2-b}}$ (car $x^2>0$). Or ${{a}}x^2>0$ et ${{eval:-b}}>0$ : $f'(x)>0$, $f$ est croissante sur $\\left[{{m}}\\,;{{n}}\\right]$, sans extremum local.",
+					"Minimum : $f({{m}})=\\textcolor{{{color:primary.0}}}{ {{eval:(a*m^2+b)/m}} }$ ; maximum : $f({{n}})=\\textcolor{{{color:primary.0}}}{ {{eval:(a*n^2+b)/n}} }$."
+				]
+			},
+			"hint": "Écris $f'(x)$ avec un seul dénominateur : le numérateur peut-il s'annuler sur l'intervalle ? Si non, le sens de variation suffit."
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x + 9/x sur [1 ; 5] : min 6, max 10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"b": "9",
+				"u": "2",
+				"m": "1",
+				"w": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6", "10"]
+		},
+		{
+			"description": "Abscisse 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"b": "9",
+				"u": "2",
+				"m": "1",
+				"w": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'abscisse de l'extremum : la réponse est son image par $f$."
+			},
+			"answers": ["3", "10"]
+		},
+		{
+			"description": "0 donné",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"b": "9",
+				"u": "2",
+				"m": "1",
+				"w": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$0$ est la valeur de $f'$ en ce point : la réponse est la valeur de $f$."
+			},
+			"answers": ["0", "10"]
+		},
+		{
+			"description": "Plus petite borne 34/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"b": "9",
+				"u": "2",
+				"m": "1",
+				"w": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compare les valeurs de $f$ aux deux bornes : il faut la plus grande."
+			},
+			"answers": ["6", "\\frac{34}{5}"]
+		},
+		{
+			"description": "Minimum pris pour le maximum",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"b": "9",
+				"u": "2",
+				"m": "1",
+				"w": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le minimum : ici $f$ n'a pas de maximum local, le maximum est à une borne."
+			},
+			"answers": ["6", "6"]
+		},
+		{
+			"description": "2x + 8/x sur [1 ; 6] : min 8, max 40/3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "2",
+				"b": "8",
+				"u": "1",
+				"m": "1",
+				"w": "4",
+				"n": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["8", "\\frac{40}{3}"]
+		},
+		{
+			"description": "max écrit 13,333 (arrondi)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "2",
+				"b": "8",
+				"u": "1",
+				"m": "1",
+				"w": "4",
+				"n": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["8", "13{,}333"]
+		},
+		{
+			"description": "−x − 4/x sur [1 ; 5] : min −29/5, max −4",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"a": "-1",
+				"r": "2",
+				"b": "-4",
+				"u": "1",
+				"m": "1",
+				"w": "3",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-\\frac{29}{5}", "-4"]
+		},
+		{
+			"description": "min décimal −5,8",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"a": "-1",
+				"r": "2",
+				"b": "-4",
+				"u": "1",
+				"m": "1",
+				"w": "3",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-5{,}8", "-4"]
+		},
+		{
+			"description": "Plus grande borne −5",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"a": "-1",
+				"r": "2",
+				"b": "-4",
+				"u": "1",
+				"m": "1",
+				"w": "3",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Compare les valeurs de $f$ aux deux bornes : il faut la plus petite."
+			},
+			"answers": ["-5", "-4"]
+		},
+		{
+			"description": "Max : signe (4)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"a": "-1",
+				"r": "2",
+				"b": "-4",
+				"u": "1",
+				"m": "1",
+				"w": "3",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Attention au signe : $a$ et $b$ sont négatifs, $f$ l'est aussi sur l'intervalle."
+			},
+			"answers": ["-\\frac{29}{5}", "4"]
+		},
+		{
+			"description": "Max : abscisse 2",
+			"variationIndex": 1,
+			"variables": {
+				"A": "1",
+				"a": "-1",
+				"r": "2",
+				"b": "-4",
+				"u": "1",
+				"m": "1",
+				"w": "3",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné l'abscisse de l'extremum : la réponse est son image par $f$."
+			},
+			"answers": ["-\\frac{29}{5}", "2"]
+		},
+		{
+			"description": "2x − 3/x sur [1 ; 4] : min −1, max 29/4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"B": "3",
+				"b": "-3",
+				"m": "1",
+				"w": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "\\frac{29}{4}"]
+		},
+		{
+			"description": "max décimal 7,25",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"B": "3",
+				"b": "-3",
+				"m": "1",
+				"w": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-1", "7{,}25"]
+		},
+		{
+			"description": "Bornes échangées",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"B": "3",
+				"b": "-3",
+				"m": "1",
+				"w": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les extremums sont échangés : $f$ est croissante, son minimum est à la borne de gauche."
+			},
+			"answers": ["\\frac{29}{4}", "-1"]
+		},
+		{
+			"description": "Abscisses 1 et 4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"B": "3",
+				"b": "-3",
+				"m": "1",
+				"w": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as donné la borne : la réponse est la valeur de $f$ en cette borne."
+			},
+			"answers": ["1", "4"]
+		}
+	]
+}
