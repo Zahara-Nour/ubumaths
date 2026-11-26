@@ -281,6 +281,52 @@ describe('Private Messaging Triggers', () => {
 				expect(await nomDansLIndex(senderId)).toBe('Sans nom');
 			});
 
+			it("nom seul : l'index porte le nom, sans espace en trop", async () => {
+				const senderId = await expediteurSansNomComplet(null, 'Fictif');
+				expect(await nomDansLIndex(senderId)).toBe('Fictif');
+			});
+
+			// Le trigger joue aussi à la mise à jour (suppression côté expéditeur,
+			// correction) : le NOT NULL est vérifié avant le ON CONFLICT.
+			it('message modifié par un expéditeur sans nom complet : la mise à jour passe', async () => {
+				const senderId = await expediteurSansNomComplet('Camille', 'Fictif');
+				const { data: message } = await serviceClient
+					.from('private_messages')
+					.insert({
+						sender_id: senderId,
+						subject: 'Avant',
+						content: { type: 'doc', content: [] },
+						plain_text: 'Bonjour',
+						recipient_count: 1
+					})
+					.select('id')
+					.single();
+				expect(message).not.toBeNull();
+
+				const { data: avant } = await serviceClient
+					.from('message_search_index')
+					.select('subject_tsv')
+					.eq('message_id', message!.id)
+					.single();
+
+				const { data: modifies, error } = await serviceClient
+					.from('private_messages')
+					.update({ subject: 'Pythagore' })
+					.eq('id', message!.id)
+					.select('id');
+				expect(error).toBeNull();
+				expect(modifies).toHaveLength(1);
+
+				const { data: apres } = await serviceClient
+					.from('message_search_index')
+					.select('subject_tsv, sender_name')
+					.eq('message_id', message!.id)
+					.single();
+				expect(apres?.sender_name).toBe('Camille Fictif');
+				expect(String(apres?.subject_tsv)).toContain('pythagor');
+				expect(apres?.subject_tsv).not.toEqual(avant?.subject_tsv);
+			});
+
 			it("nom complet fait d'espaces : traité comme vide", async () => {
 				const senderId = await expediteurSansNomComplet('Camille', 'Fictif');
 				const { data, error } = await serviceClient

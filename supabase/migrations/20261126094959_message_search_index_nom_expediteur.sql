@@ -22,6 +22,7 @@
 -- `v_sender_name` ci-dessous par :
 --   SELECT full_name, role INTO v_sender_name, v_sender_role
 --   FROM profiles WHERE id = NEW.sender_id;
+-- et supprimer l'affectation `v_sender_name := COALESCE(v_sender_name, 'Sans nom');`.
 
 CREATE OR REPLACE FUNCTION public.update_message_search_index() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
