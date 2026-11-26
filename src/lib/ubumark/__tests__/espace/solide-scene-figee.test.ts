@@ -5,7 +5,9 @@
  * arêtes cachées passent par le moteur de vue (`utils/espace-vue.ts`), qui sait
  * aussi tourner la figure. Une figure qui ne tourne pas doit rester STRICTEMENT
  * celle d'avant : ces instantanés, pris avant le moteur, fixent chaque trait,
- * chaque point et chaque étiquette ; un seul chiffre qui bouge les fait échouer.
+ * chaque point et chaque étiquette, au milliardième de centimètre : au-delà, le
+ * dernier chiffre d'un cosinus dépend de la machine (cône : écart de 1e-15
+ * entre le Mac et la CI, sur du code que le chantier ne touche pas).
  */
 
 import { describe, expect, it } from 'vitest';
@@ -63,6 +65,20 @@ const BLOCS: Record<string, string[]> = {
 };
 
 // ============================================================================
+// FONCTIONS
+// ============================================================================
+
+/** La scène, chaque nombre arrondi à 9 chiffres après la virgule */
+function rounded(value: unknown): unknown {
+	if (typeof value === 'number') return Math.round(value * 1e9) / 1e9 + 0;
+	if (Array.isArray(value)) return value.map(rounded);
+	if (value !== null && typeof value === 'object') {
+		return Object.fromEntries(Object.entries(value).map(([key, v]) => [key, rounded(v)]));
+	}
+	return value;
+}
+
+// ============================================================================
 // TESTS
 // ============================================================================
 
@@ -71,7 +87,7 @@ describe('solide — scènes figées (vue de départ, avant et après le moteur 
 		it(name, () => {
 			const node = parseEspaceContent(lines.join('\n'), 'solide');
 			expect(node.errors).toEqual([]);
-			expect(buildSolideScene(node.spec as SolideSpec)).toMatchSnapshot();
+			expect(rounded(buildSolideScene(node.spec as SolideSpec))).toMatchSnapshot();
 		});
 	}
 });

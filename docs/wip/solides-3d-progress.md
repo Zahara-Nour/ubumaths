@@ -106,3 +106,7 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   avant la PR : bornes de `turnVue` justes aussi en glissant depuis la cavalière et pendant le
   passage (la figure pouvait passer tête en bas), tour ramené entre −π et π, tests du passage
   (`oblique` entre 0 et 1).
+- CI de #3195 rouge une fois : l'instantané du **cône** différait au 16e chiffre entre le Mac et la
+  CI (cosinus de la machine, code non touché). Instantanés arrondis au milliardième de centimètre ;
+  l'identité exacte avec l'ancien code a été vérifiée en local avant l'arrondi. À retenir pour les
+  lots suivants : jamais d'instantané de flottants bruts.
