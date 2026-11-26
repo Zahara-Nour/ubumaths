@@ -7,14 +7,14 @@ Page à cocher de la phase 0 : https://claude.ai/artifact/SmYJM9k1YCqeck3Qs98W4T
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, lot écrit et commité sur la branche (f35bb7e08)._
+_Mis à jour le 2026-11-25, après #3153._
 
-- **État** : 4 modèles neufs (15 variations) et 5 variations de 3 publiés écrits, specs vertes,
-  vus à l'écran en local · **Prochaine action** : ids des brouillons commités, migrations de
-  rangement et de contenu générées, `security-auditor`, PR · **En attente de David** : créer les
-  4 brouillons en prod (`create-questions --publier` sur `idees-tle-continuite-combinatoire-neufs`)
-  · **Pièges en cours** : 2491dd75 et 10393ff9 sont aussi en T_COMP · **Worktree / branche** :
-  `../ubumaths-wt-idees-tle-continuite-combinatoire`, `feat/idees-tle-continuite-combinatoire`.
+- **État** : 4 brouillons en prod (a94acfec, bb7dc033, 3603141b, c3f70ab6) ; #3153 mergée (migrations
+  de rangement et de contenu) · **Prochaine action** : après `db:migrate`, garde
+  `garde-niveaux-tags.ts`, puis relecture dans `/dev/modeles` (série de relecture pour les 3 publiés)
+  et `publier-lot` · **En attente de David** : `pnpm db:migrate` depuis le dépôt principal (seules
+  20261125183322 et 20261125183331 sont en attente) · **Pièges en cours** : 2491dd75 et 10393ff9 sont
+  aussi en T_COMP · **Worktree / branche** : aucun (retirés par `pr:merger`).
 
 ## Historique
 
@@ -65,3 +65,14 @@ _Mis à jour le 2026-11-25, lot écrit et commité sur la branche (f35bb7e08)._
   base locale et vues dans l'aperçu (`pnpm voir`, iPhone) : N1 v0 (accolade, limites, choix),
   V2 b (courbe à deux sauts, points pleins et creux), V1 a et V1 b (tableaux avec ln et e) ;
   brouillons d'essai supprimés de la base locale.
+
+### 2026-11-25 — brouillons en prod, #3153 mergée
+
+- David a créé les 4 brouillons en prod (15 variations) ; ids commités.
+- Niveaux relevés en prod : voisins de N1 (1 à 4), N2 (1 à 3), N5 (1 à 3) ; N4 (niveau 2) est le
+  plus simple de « point fixe » (3 à 5) : il ne demande que f(ℓ).
+- Migrations générées : rangement 20261125183322 (nœud + tag des 4) et contenu 20261125183331
+  (2491dd75 +2, 10393ff9 +2, 0965c56c +1). Tests d'intégration verts (316). `security-auditor` :
+  aucun finding bloquant (non bloquant : `updated_at` des 3 publiés avance, normal, leur contenu
+  change). Question d'accès : personne (phase 0).
+- `db:migrate` refusé à la session (écriture en prod) : à lancer par David.
