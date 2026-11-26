@@ -2,13 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR A2 en cours._
+_Mis à jour le 2026-11-26, après #3166._
 
-- **État** : PR A2 (variations choisies sur la carte) codée, revue traitée, PR ouverte.
-- **Prochaine action** : merger la PR A2 à la CI verte ; puis PR B (`feat/automaths-recherche`).
-- **En attente de David** : dire si le résumé « · k en QCM » de l'ancienne fenêtre doit revenir sous la carte (point 4 de la revue).
+- **État** : PR A2 (variations choisies sur la carte de Ma série) mergée (#3166), worktree retiré.
+- **Prochaine action** : PR B (recherche, branche `feat/automaths-recherche`, worktree `../ubumaths-wt-automaths-recherche`), phase 0 validée (section du 2026-11-26 ci-dessous).
+- **En attente de David** : dire si le résumé « · k en QCM » de l'ancienne fenêtre doit revenir sous la carte (point 4 de la revue de la PR A2).
 - **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; `aria-disabled` → Playwright refuse le clic (`click({ force: true })`) ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
-- **Worktree / branche** : `../ubumaths-wt-automaths-variations`, `feat/automaths-variations-carte` ; serveur de dev 5178.
+- **Worktree / branche** : aucun pour l'instant.
+
+### 2026-11-26 — PR A2 mergée (#3166)
+
+- CI verte, mergée par `pnpm pr:merger`.
 
 ### 2026-11-26 — PR A2, réalisation
 
