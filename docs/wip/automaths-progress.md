@@ -2,13 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR A (cartes) ouverte ; phase 0 de la PR A2 validée._
+_Mis à jour le 2026-11-26, après #3164._
 
-- **État** : PR A (`feat/automaths-cartes`) poussée et ouverte, revue corrigée (§ ci-dessous), merge par `pnpm pr:merger`.
-- **Prochaine action** : après le merge, PR A2 (variations choisies sur la carte, phase 0 validée ci-dessous, branche `feat/automaths-variations-carte`, nouveau worktree) ; puis PR B (`feat/automaths-recherche`, phase 0 validée ci-dessous).
+- **État** : PR A (cartes) mergée (#3164), worktree retiré. Phase 0 de la PR A2 et de la PR B validées (ci-dessous).
+- **Prochaine action** : PR A2 (variations choisies sur la carte, branche `feat/automaths-variations-carte`, worktree `../ubumaths-wt-automaths-variations`) ; puis PR B (`feat/automaths-recherche`).
 - **En attente de David** : rien.
-- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable (s'arrête vers 120 fichiers, E28 du grapheur rouge sous charge, vert seul) → tests ciblés.
-- **Worktree / branche** : `../ubumaths-wt-automaths-cartes` · `feat/automaths-cartes`.
+- **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`) ; grosse passe `test:client src/lib/components/` instable → tests ciblés ; `garde-migrations-horodatage` (« seconde déjà prise ») rouge par hasard en CI → `gh run rerun --failed` une fois la CI finie.
+- **Worktree / branche** : aucun pour l'instant.
+
+### 2026-11-26 — PR A mergée (#3164)
+
+- CI : `garde-migrations-horodatage` rouge (dépend de l'heure, sans rapport), job relancé, vert. Mergée.
 
 ### 2026-11-26 — PR A, revue corrigée
 
