@@ -84,24 +84,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		return Response.json({ error: 'Impossible de lire les signalements' }, { status: 500 });
 	}
 
-	type FlagRow = {
-		id: string;
-		student_id: string;
-		capacity_point_id: string | null;
-		flag_type: string;
-		severity: number;
-		score: number;
-		sample_size: number;
-		details: Record<string, unknown> | null;
-		resolved: boolean;
-		resolved_by: string | null;
-		resolved_at: string | null;
-		created_at: string;
-		profiles: { id: string; firstname: string | null; lastname: string | null } | null;
-		curriculum_points: { id: string; name: string } | null;
-	};
-
-	const flags = ((flagRows ?? []) as unknown as FlagRow[]).map((row) => ({
+	const flags = (flagRows ?? []).map((row) => ({
 		id: row.id,
 		student_id: row.student_id,
 		capacity_point_id: row.capacity_point_id,
