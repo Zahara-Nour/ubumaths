@@ -1,22 +1,22 @@
 ---
 title: Tests de preuve des écarts de géométrie et du grapheur — journal
 date: 2026-11-26
-status: PR ouverte
+status: #3163 mergée ; chantier clos
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, à l'ouverture de la PR._
+_Mis à jour le 2026-11-26, après #3163._
 
-- **État** : `tests/ecarts/geometrie.test.ts` écrit : 6 écarts (L57, L58, L59, L60, L61, V77), 7 tests, tous rouges ; leurs lignes du registre pointent le test.
-- **Prochaine action** : merger à la CI verte, puis archiver ce journal ; la suite (autres domaines) est dans [ecarts-a-trier](ecarts-a-trier-progress.md).
+- **État** : `tests/ecarts/geometrie.test.ts` écrit : 6 écarts (L57, L58, L59, L60, L61, V77), 7 tests, tous rouges ; leurs lignes du registre pointent le test. #3163 mergée.
+- **Prochaine action** : aucune ici ; la suite (autres domaines) est dans [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md).
 - **En attente de David** : rien.
 - **Pièges en cours** : `Figure.getPosition` rend des valeurs exactes (`GeoValue`), à passer par `geoToNumber` avant toute comparaison.
-- **Worktree / branche** : `ubumaths-wt-ecarts-preuves-geometrie` / `test/ecarts-preuves-geometrie`.
+- **Worktree / branche** : aucun (retirés au merge de #3163).
 
 ---
 
-Chantier fils de [ecarts-a-trier](ecarts-a-trier-progress.md) : une PR de tests de preuve par domaine.
+Chantier fils de [ecarts-a-trier](../../wip/ecarts-a-trier-progress.md) : une PR de tests de preuve par domaine.
 
 ## Ce que chaque test affirme
 
