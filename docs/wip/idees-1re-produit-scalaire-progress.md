@@ -2,16 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, lot écrit._
+_Mis à jour le 2026-11-26, brouillons en prod, PR en cours._
 
-- **État** : phase 0 validée (« je valide tout ») ; lot écrit et vérifié : 5 modèles neufs
-  (`scripts/questions/idees-1re-produit-scalaire-neufs/`) et 11 variations sur 7 publiés
-  (`…-publies/`, migration de contenu `20261126090426` générée, test vert) ·
-  **Prochaine action** : quand David a créé les brouillons en prod, commiter les ids, générer la
-  migration de rangement, `security-auditor`, PR · **En attente de David** :
-  `create-questions --dir scripts/questions/idees-1re-produit-scalaire-neufs --publier` en prod ·
-  **Pièges en cours** : relancer le script des neufs GARDE les ids écrits en tête ; f2cc01fc a un
-  écart ouvert (termes nuls), la variation ajoutée n'en écrit pas ·
+- **État** : brouillons créés en prod par David (f114cc04 N1, b4a813ae N2, e25be0a4 N3, 18ff9913 N4,
+  ed2c1c0b N5) ; migrations de contenu (`20261126090426`) et de rangement (`20261126092228`)
+  générées, tests verts et rouges sans elles · **Prochaine action** : relancer `security-auditor` sur les deux migrations (lancé le 2026-11-26, résultat non lu avant le /clear), puis PR, merge, `db:migrate`
+  (4 conditions), puis relecture dans `/dev/modeles` (`?point=` des neufs ; série de relecture pour
+  les publiés) · **En attente de David** : relecture · **Pièges en cours** : `migration list
+--linked` avant `db:migrate` (autres sessions) ; relancer le script des neufs garde les ids ·
   **Worktree / branche** : `../ubumaths-wt-idees-1re-produit-scalaire`, `docs/idees-1re-produit-scalaire`.
 
 ## Journal
@@ -55,3 +53,13 @@ _Mis à jour le 2026-11-26, lot écrit._
   `{{if}}` (calcul arithmétique à la place) ; pas d'`eval` imbriqué dans une figure ; messages
   réécrits à la résolution (`(AB)` → `\left( AB \right)`, `ED=AD-AE` → `ED = AD - AE`).
 - 7 modèles publiés réservés dans le tableau de répartition (`a21fe1500`).
+
+### 2026-11-26 : brouillons en prod, migrations
+
+- David a créé les 5 brouillons en prod ; ids commités (`b4441ed69`).
+- Migration de rangement générée (`20261126092228`) : 1SPE-412 et 1SPE-310 sur expressions du produit
+  scalaire, 1SPE-320 sur angles et longueurs, 1SPE-436 sur propriétés. Tests d'intégration des deux
+  fixtures verts (339), **rouges sans les migrations** (12 échecs, fichiers écartés le temps d'un
+  passage puis remis depuis une copie) ; `garde-niveaux-tags` : aucun manque.
+- Push bloqué une fois par `check-integration-paths.ts` (`git ls-files` au-delà de 1 Mio, ENOBUFS) ;
+  le même correctif était déjà sur `main`, fusionné dans la branche.
