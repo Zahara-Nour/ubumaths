@@ -116,6 +116,8 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   section en petite étiquette en majuscules, documents (et fiches publiques, exercices) en
   lignes compactes `ResourceRow` (pastille du type, titre tel que saisi, bouton de
   téléchargement), regroupées dans un même cadre par `groupPlanItems` (`plan-groups.ts`) ;
+  la ligne d'un exercice, côté élève connecté, mène à sa page avec `?depuis=cours&chapitre=<uuid>`
+  (`studentExerciseHref`) : « Quitter » y ramène au chapitre ;
   objectifs, séries et fiches de l'élève connecté restent des blocs. ⚠️ Le titre d'un document
   n'est pas un titre HTML : la règle globale `main h3` de `app.css` (`!important`) lui donnerait
   la taille d'une section. `DocumentCard` ne sert plus qu'au prof. Modèles :
@@ -165,7 +167,7 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   `…/document-upload-url`, `…/documents` (seules routes restantes sous
   `api/teacher/chapter-templates/`). Le reste de `api/teacher/chapters/**`,
   `api/student/chapters/**` et `api/student/checklist/**` n'a pas d'appelant dans `src/` (voir
-  « Écarts connus »).
+  « Écarts connus », qui renvoie au registre).
 
 ### Cahier de texte
 
@@ -614,57 +616,23 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
 
 ## Écarts connus
 
-1. **Le cahier de texte publie autrement que le reste** : `class_journal_entries.is_published` a le
-   **troisième sens** de « publier » de [CONTEXT.md](../../CONTEXT.md) (mis à disposition des élèves),
-   mais par un booléen, plus `entry_date <= current_date` dans la policy élève, et non par une date
-   `published_at` testée `<= now()` comme le veut l'[ADR 0005](../adr/0005-publication-par-element-acces-herite-de-la-classe.md).
-2. _(Résolu le 2026-10-15 : les colonnes de l'ancien système de versions sont supprimées,
-   migration `20261016103800`.)_
-3. _(Résolu le 2026-10-15 : « Faire un modèle » compte les séries, comme `templateHasContent` —
-   `chapterHasTemplateContent`, `src/lib/components/cours/teacher/chapter-has-template-content.ts`.
-   La règle Q128 venait de l'ancien modèle « snapshot ».)_
-4. **API REST sans appelant dans `src/`** (grep du 2026-10-14) : `api/teacher/chapters` (racine,
-   `[id]`, `checklist`, `exercises`, `worksheets`, `progress`, `reorder`),
-   `api/student/chapters/**`, `api/student/checklist/**`. L'interface passe par les actions de
-   formulaire des pages. Doublons à surveiller : une règle corrigée d'un côté ne l'est pas de
-   l'autre. (Les routes de l'ancien système de modèles — `chapter-templates` racine, `[id]`,
-   `publish`, `versions`, `instantiate`, et `chapters/[id]/{create-template,detach,migrate,template-updates}` —
-   ont été supprimées à l'étape 5A.)
-5. **`src/lib/components/templates/`** ne garde que `ChapterTemplateIndicator` pour les modèles de
-   chapitre (les composants de l'ancien système ont été supprimés à l'étape 5A) ; il héberge aussi
-   `VariableAutocomplete`, `TagsInput`, `FiltersHelp`, qui servent les **modèles de message**
-   (hors de cette zone, donc hors `couvre:`).
-6. **Fonctions sans appelant hors tests** : `reorderDocuments`, `reorderExercises`
-   (`chapters.ts`, aucun appelant du tout) ; `getTeacherJournalEntries`, `getJournalStatistics`,
-   `getNextClassDate` (`journal.ts`) ; `getTimeSlots`, `findScheduleAtSlot`, `calculateSlotSpan`,
-   `isScheduleStart`, `isValidTimeRange`, `getDefaultStartTime`, `getDefaultEndTime`
-   (`schedule.ts`) ; `findMatchingPeriod`, `isTimetableEmpty`, `getNextTimePeriod`
-   (`timetable.ts`). L'action `reorder` de `dashboard/teacher/cours/[classId]/` n'est appelée par
-   aucun formulaire de la page.
-7. **`src/lib/types/academic_periods_types.ts` est mort** : aucun import, et il déclare sa propre
-   interface `Database` (« à ajouter à database.ts ») — en contradiction avec la règle « types
-   dérivés dans `database-helpers.ts` ».
-8. **Trois définitions de l'année scolaire** : la page Avancement la calcule (1ᵉʳ septembre →
-   1ᵉʳ septembre), `endOfSchoolYear` en a une autre (31 août), les tables `school_years` /
-   `academic_periods` une troisième, propre à l'école. Elles concordent pour une école française,
-   pas au-delà.
-9. **Chevauchement avec [fiches-et-pdf.md](fiches-et-pdf.md)** : `src/routes/(public)/cahier/*/fiche/**`
-   et `api/teacher/chapters/*/worksheets/**` sont couverts par les deux docs.
-10. L'en-tête de l'éditeur de chapitre (`[classId]/[chapterId]/+page.server.ts`) annonce un
-    réordonnancement des documents, objectifs et exercices qui n'a pas d'action.
-11. **Un modèle ne se modifiait qu'en passant par un chapitre** (un chapitre de classe, puis
-    « Mettre à jour depuis un chapitre » : un geste que personne n'avait choisi, bouche-trou du
-    2026-09-14). Tranché par l'[ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md) :
-    le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
-    ([journal](../archive/wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
-    chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.
-12. _(Résolu le 2026-11-06, décision de David : au cahier, `JournalContent` passe
-    `projectMediaOnly` ; une vidéo hors de notre stockage — YouTube compris — devient un lien
-    « Vidéo : … », aucune requête tierce à l'affichage. Le reste de l'application est inchangé.)_
-    _(Même traitement pour les formules, décision de David du 2026-11-08 : une formule qui
-    porte une commande MathLive à attributs — `\htmlStyle`, `\href`, `\color`… — s'affiche en
-    texte ; un bloc spécial qui en porte une devient un bloc de code. Prod au 2026-11-08 :
-    aucune formule au cahier.)_
-    _(Et pour les images, décision de David du 2026-11-09 : une image hors de notre stockage
-    devient un lien « Image : … » (`ImageDisplay`). Un nom de fichier seul reste une image du
-    stockage des questions. Prod au 2026-11-09 : aucune image au cahier.)_
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
+- Au cahier, `JournalContent` passe `projectMediaOnly` (décision du 2026-11-06) : une vidéo hors de
+  notre stockage, YouTube compris, devient un lien « Vidéo : … », sans requête tierce à l'affichage.
+  Le reste de l'application est inchangé.
+- Même traitement pour les formules (décision du 2026-11-08) : une formule qui porte une commande
+  MathLive à attributs (`\htmlStyle`, `\href`, `\color`…) s'affiche en texte, et un bloc spécial qui
+  en porte une devient un bloc de code. Prod au 2026-11-08 : aucune formule au cahier.
+- Et pour les images (décision du 2026-11-09) : une image hors de notre stockage devient un lien
+  « Image : … » (`ImageDisplay`). Un nom de fichier seul reste une image du stockage des questions.
+  Prod au 2026-11-09 : aucune image au cahier.
+
+### Points non vérifiés
+
+- **`src/lib/components/templates/`** ne garde que `ChapterTemplateIndicator` pour les modèles de
+  chapitre (les composants de l'ancien système ont été supprimés à l'étape 5A) ; il héberge aussi
+  `VariableAutocomplete`, `TagsInput`, `FiltersHelp`, qui servent les **modèles de message**
+  (hors de cette zone, donc hors `couvre:`).

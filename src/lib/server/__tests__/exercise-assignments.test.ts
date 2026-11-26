@@ -199,7 +199,8 @@ describe('createExerciseAssignment', () => {
 	it('should reject assignment when exercise not found', async () => {
 		const assignmentData: CreateExerciseAssignment = {
 			exercise_id: 'non-existent-id',
-			assigned_to_type: 'public'
+			assigned_to_type: 'class',
+			class_id: mockClassId
 		};
 
 		// Mock exercise not found
@@ -256,29 +257,11 @@ describe('createExerciseAssignment', () => {
 		expect(result.data?.student_id).toBeNull();
 	});
 
-	it('should create public assignment', async () => {
-		const assignmentData: CreateExerciseAssignment = {
+	it('refuse une affectation « public » sans rien écrire', async () => {
+		const assignmentData = {
 			exercise_id: mockExerciseId,
 			assigned_to_type: 'public'
-		};
-
-		// Mock ownership check
-		supabase._mockChain.single.mockResolvedValueOnce({
-			data: mockExercise,
-			error: null
-		});
-
-		// Mock creation
-		const publicAssignment = {
-			...mockAssignment,
-			assigned_to_type: 'public',
-			student_id: null,
-			class_id: null
-		};
-		supabase._mockChain.single.mockResolvedValueOnce({
-			data: publicAssignment,
-			error: null
-		});
+		} as unknown as CreateExerciseAssignment;
 
 		const result = await assignments.createExerciseAssignment(
 			supabase,
@@ -286,10 +269,9 @@ describe('createExerciseAssignment', () => {
 			mockTeacherId
 		);
 
-		expect(result.error).toBeNull();
-		expect(result.data?.assigned_to_type).toBe('public');
-		expect(result.data?.student_id).toBeNull();
-		expect(result.data?.class_id).toBeNull();
+		expect(result.data).toBeNull();
+		expect(result.error).toBe('assignment target must be a student or a class');
+		expect(supabase.from).not.toHaveBeenCalled();
 	});
 });
 
@@ -364,40 +346,10 @@ describe('createBulkAssignments', () => {
 		expect(result.count).toBe(2);
 	});
 
-	it('should create mix of students, classes, and public', async () => {
-		const bulkData: BulkAssignmentData = {
-			exercise_id: mockExerciseId,
-			students: ['student-1'],
-			classes: ['class-3a'],
-			make_public: true
-		};
-
-		// Mock ownership check
-		supabase._mockChain.single.mockResolvedValueOnce({
-			data: mockExercise,
-			error: null
-		});
-
-		// Mock bulk insert (1 student + 1 class + 1 public = 3)
-		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
-			return Promise.resolve(
-				onFulfilled({
-					data: [{}, {}, {}],
-					error: null
-				})
-			);
-		});
-
-		const result = await assignments.createBulkAssignments(supabase, bulkData, mockTeacherId);
-
-		expect(result.error).toBeNull();
-		expect(result.count).toBe(3);
-	});
-
 	it('should reject bulk assignment without targets', async () => {
 		const bulkData: BulkAssignmentData = {
 			exercise_id: mockExerciseId
-			// No students, classes, or make_public
+			// No students or classes
 		};
 
 		const result = await assignments.createBulkAssignments(supabase, bulkData, mockTeacherId);
@@ -1107,36 +1059,68 @@ describe('validateAssignmentData', () => {
 		expect(result.error).toBe('class_id required for class assignment');
 	});
 
-	it('should validate public assignment without target IDs', () => {
-		const data: CreateExerciseAssignment = {
+	it('refuse une affectation « public »', () => {
+		const data = {
 			exercise_id: 'ex-123',
 			assigned_to_type: 'public'
-		};
-
-		const result = validateAssignmentData(data);
-		expect(result.valid).toBe(true);
-	});
-
-	it('should reject public assignment with student_id', () => {
-		const data: CreateExerciseAssignment = {
-			exercise_id: 'ex-123',
-			assigned_to_type: 'public',
-			student_id: 'student-456'
-		};
+		} as unknown as CreateExerciseAssignment;
 
 		const result = validateAssignmentData(data);
 		expect(result.valid).toBe(false);
-		expect(result.error).toBe('public assignment cannot have student_id or class_id');
+		expect(result.error).toBe('assignment target must be a student or a class');
+	});
+});
+
+describe('pickStudentAssignment — affectation montrée sur la page de l’exercice', () => {
+	const row = (
+		id: string,
+		assigned_to_type: string,
+		target: { student_id?: string; class_id?: string },
+		is_active = true
+	) => ({
+		id,
+		assigned_to_type,
+		student_id: target.student_id ?? null,
+		class_id: target.class_id ?? null,
+		is_active
 	});
 
-	it('should reject public assignment with class_id', () => {
-		const data: CreateExerciseAssignment = {
-			exercise_id: 'ex-123',
-			assigned_to_type: 'public',
-			class_id: 'class-abc'
-		};
+	it('rend l’affectation de l’élève', () => {
+		const rows = [row('a', 'student', { student_id: 'eleve-02' })];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', [])?.id).toBe('a');
+	});
 
-		const result = validateAssignmentData(data);
-		expect(result.valid).toBe(false);
+	it('rend celle de sa classe quand il n’en a pas en propre', () => {
+		const rows = [row('c', 'class', { class_id: 'classe-1' })];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', ['classe-1'])?.id).toBe('c');
+	});
+
+	it('préfère la sienne à celle de sa classe, quel que soit l’ordre', () => {
+		const rows = [
+			row('c', 'class', { class_id: 'classe-1' }),
+			row('a', 'student', { student_id: 'eleve-02' })
+		];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', ['classe-1'])?.id).toBe('a');
+	});
+
+	it('ignore l’affectation d’un autre élève et celle d’une autre classe', () => {
+		const rows = [
+			row('a', 'student', { student_id: 'eleve-03' }),
+			row('c', 'class', { class_id: 'classe-2' })
+		];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', ['classe-1'])).toBeNull();
+	});
+
+	it('ignore une affectation désactivée', () => {
+		const rows = [row('a', 'student', { student_id: 'eleve-02' }, false)];
+		expect(assignments.pickStudentAssignment(rows, 'eleve-02', [])).toBeNull();
+	});
+
+	it('ignore une affectation « public »', () => {
+		expect(assignments.pickStudentAssignment([row('p', 'public', {})], 'eleve-02', [])).toBeNull();
+	});
+
+	it('rend null sans aucune ligne', () => {
+		expect(assignments.pickStudentAssignment([], 'eleve-02', ['classe-1'])).toBeNull();
 	});
 });

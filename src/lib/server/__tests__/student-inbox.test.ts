@@ -414,6 +414,42 @@ describe('getStudentWorkInbox — A1 (direct + class fan-out)', () => {
 	});
 });
 
+describe('getStudentWorkInbox — affectation « public » d’un exercice', () => {
+	it("n'est pas listée : elle n'ouvre l'exercice à personne (décision du 2026-11-26)", async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', []);
+		mock.enqueue('evaluation_assignments', []);
+		mock.enqueue('exercise_assignments', [
+			{
+				id: 'ea-public',
+				exercise_id: 'ex-public',
+				student_id: null,
+				class_id: null,
+				is_active: true,
+				assigned_to_type: 'public',
+				assigned_by: 'teacher-1',
+				assigned_at: ISO.twoDaysAgo,
+				optional_deadline: null,
+				notes: null
+			}
+		]);
+		mock.enqueue('worksheet_assignment_classes', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		expect([
+			...inbox.late,
+			...inbox.thisWeek,
+			...inbox.later,
+			...inbox.noDeadline,
+			...inbox.doneRecently
+		]).toEqual([]);
+	});
+});
+
 describe('getStudentWorkInbox — A2 (dedup precedence)', () => {
 	it('dedups item assigned both directly and via class, preferring the direct one', async () => {
 		const mock = createMockSupabase();

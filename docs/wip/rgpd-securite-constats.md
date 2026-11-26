@@ -86,7 +86,7 @@ planifie cette route ; le bouton admin envoie `CRON_SECRET`, pas cette clé (→
 
 ## F. Ajouts du tri des écarts (2026-10-10)
 
-15 points de sécurité ou de RGPD relevés dans les docs système, non listés ci-dessus : voir la rubrique « À transmettre à la session RGPD » de [ecarts-a-trier.md](ecarts-a-trier.md) (`user_presence`, canaux realtime, `new Function` sur une chaîne venue de la base, CSP `unsafe-eval`, PII dans `error_logs`, période de grâce du consentement échue le 2026-06-30, mentions légales, AIPD…).
+15 points de sécurité ou de RGPD relevés dans les docs système, non listés ci-dessus : voir la rubrique « À transmettre à la session RGPD » de [ecarts-a-trier.md](../archive/wip/ecarts-a-trier.md) (`user_presence`, canaux realtime, `new Function` sur une chaîne venue de la base, CSP `unsafe-eval`, PII dans `error_logs`, période de grâce du consentement échue le 2026-06-30, mentions légales, AIPD…).
 
 ## Méthode (CLAUDE.md)
 

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-25, lot écrit._
+_Mis à jour le 2026-11-26, après #3179 (lot mergé)._
 
-- **État** : lot entier écrit, vérifié (`question:specs --file` : 10 fichiers « importable ») et poussé sur la branche : 4 publiés (+6 variations) et 5 neufs (N1 à N5, `scripts/questions/idees-6e-proportionnalite-neufs/`).
-- **Prochaine action** : les retouches validées (ci-dessous), puis essai en base LOCALE (neufs + copie brouillon des publiés, aperçus avec `pnpm voir`, puis suppression), puis donner à David `create-questions --dir scripts/questions/idees-6e-proportionnalite-neufs --publier`.
-- **En attente de David** : prix à deux décimales (« 3,70 € ») : réglage automatique des grandeurs en € ou modificateur `{{eval:…;…}}` explicite (petite PR du moteur, avant le lot) ? Le reste est tranché (journal, 2026-11-25 « retouches validées »).
-- **Pièges en cours** : F4 (06df72fd : niveau 6 + point 6-190) = migration écrite à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. Rangements des neufs dans les fichiers (quatrième proportionnelle 4, 5, 6 ; caractérisation 8, 9) : relever les niveaux en prod avant la migration.
-- **Worktree / branche** : `../ubumaths-wt-idees-6e-proportionnalite`, `docs/idees-6e-proportionnalite` (poussée, pas de PR).
+- **État** : #3179 mergée : 5 modèles neufs + variations de e0ccaf84, 7981dab0, 52bf3fb9, 5e4e5e9d sur `main` (177 specs vertes, prix en €). Rien écrit en prod. Worktree retiré.
+- **Prochaine action** : David lance en prod `pnpm tsx scripts/create-questions.ts --dir scripts/questions/idees-6e-proportionnalite-neufs --publier` ; nouveau worktree, ids commités ; niveaux relevés en prod ; migrations de rangement (neufs) et de contenu (4 publiés) générées, F4 (06df72fd) à la main ; `security-auditor`.
+- **En attente de David** : la commande `create-questions --publier` ci-dessus.
+- **Pièges en cours** : F4 = migration à la main, gabarit `20261118202805_questions_1techno_lot5_communs_tags.sql` + son test. D'autres modèles publiés hors des 32 peuvent avoir des specs rouges depuis #3170 (non balayé). Base locale : les 4 publiés y portent déjà les variations ajoutées (PATCH local), les 5 neufs y sont en brouillon.
+- **Worktree / branche** : aucun (à recréer depuis `origin/main` pour la suite).
 
 ## Journal
 
@@ -65,3 +65,86 @@ donc aucune note). Modèles publiés réservés dans le tableau de répartition 
    (pointure du père) pour que « on ne peut pas » soit parfois juste.
 4. N5 : le piège « valeur × quantité » seulement quand il reste vraisemblable, sinon l'écart ajouté.
 5. N4 relier : une série tirée parmi 4 ou 5 situations.
+
+### 2026-11-26 : écriture des nombres, réglages validés par David
+
+PR du moteur à part, avant la suite du lot (prix à réécrire en grandeurs en €). Validé par David :
+
+- **Règle des zéros finaux** : un zéro final ne s'écrit que s'il dit quelque chose. C'est le cas pour
+  un arrondi (précision), pour des centimes, ou quand l'auteur le demande. Une valeur exacte s'écrit
+  sans zéro final.
+- **Euro automatique** : une grandeur en € à une décimale s'écrit avec deux (« 3,70 € ») ; un prix
+  entier reste entier ; avec plus de deux décimales, on affiche tout, plus un avertissement (pas un
+  refus) à la vérification du modèle.
+- **`;dN`** : au moins N décimales, sans arrondir (1,5 → « 1,50 » ; 3,755 → « 3,755 » + avertissement).
+- **`;aN`** : arrondit à N décimales (au plus proche, 5 vers le haut, calcul exact) et les écrit
+  toutes (3,04 → « 3,0 » avec `;a1`).
+- **`;pN`** : arrondit à N chiffres significatifs et les écrit tous (3,04 → « 3,0 » avec `;p2` ;
+  1 234 → « 1 200 », « 1,2 × 10³ » avec `;sci;p2`).
+- `;a` avec `;p`, `;d` avec `;a` ou `;p`, `;a`/`;p` avec `;hms`, `;a` sans chiffre : refusés à la
+  vérification. Un réglage écrit l'emporte sur l'euro automatique.
+- **`round(x, n)`** : la fonction, pour arrondir dans un calcul (même arrondi que `;aN`).
+- **Juge** : « 3,0 » attendu (arrondi) → « 3,0 » juste ; « 3 » → forme à améliorer, message du type
+  « Arrondi au dixième : écris le chiffre des dixièmes, même si c'est 0 ». « 3,70 € » jamais en forme
+  à améliorer.
+
+Pourquoi `;aN` tient : la réponse attendue s'écrit avec les mêmes `{{eval:…}}` que l'énoncé
+(`"answer": "{{eval:n/d;d}}%"`), elle est donc arrondie de la même façon.
+
+#### Vérification du juge actuel (2026-11-26)
+
+Modèle d'essai passé à `question:specs` (cases avec et sans `precision`, attendu « 3 » ou « 3{,}0 ») :
+
+| Case                                              | Réponse de l'élève | Aujourd'hui                       | Voulu                                              |
+| ------------------------------------------------- | ------------------ | --------------------------------- | -------------------------------------------------- |
+| prix 3,7 € (grandeur), avec ou sans `precision` 2 | 3,7 €              | juste                             | juste                                              |
+| idem                                              | 3,70 €             | forme à améliorer                 | juste                                              |
+| nombre exact 3,7                                  | 3,70               | forme à améliorer                 | forme à améliorer (inchangé)                       |
+| `precision` décimale 1, arrondi de 3,04           | 3                  | juste                             | forme à améliorer                                  |
+| idem                                              | 3,0                | forme à améliorer                 | juste                                              |
+| idem                                              | 3,00               | mauvaise forme (« Arrondis… »)    | inchangé                                           |
+| idem                                              | 3,04               | mauvaise forme (arrondi non fait) | inchangé                                           |
+| sans `precision`, attendu écrit « 3{,}0 »         | 3 / 3,0            | juste / forme à améliorer         | les zéros de l'attendu ne comptent pas aujourd'hui |
+
+Le juge retire les zéros finaux de la réponse sans regarder l'attendu (`removeZeros`,
+`checkForm` et `cosmeticViolations` de `mathAST/cosmetic-transforms.ts`). La règle écrite dans
+`docs/systeme/questions.md` (« moins de décimales accepté si la valeur est exactement l'arrondi ») sera
+renversée. En prod : 32 modèles publiés ont une case à arrondi (décimales ou chiffres significatifs),
+1 seul a une grandeur en €, et 66 ont `zeros: off`.
+
+#### Renversement validé et écriture (2026-11-26)
+
+- David valide le renversement pour les 32 modèles à arrondi, et « 3,7 € » qui reste juste. Dans
+  une case au centième, « 3,7 € » est perfectible : la règle de l'arrondi passe d'abord.
+- Écrit par deux agents en parallèle (mathAST : écriture des `{{eval}}` ; pédagogie : juge),
+  tests rouges d'abord. Choix laissés aux agents, des défauts sans conséquence :
+  - refus de `;sci` avec `;aN` ou `;dN` (renvoi vers `;pN`), et de `;dN` avec `;hms` ;
+  - `0;pN` s'écrit « 0 » ;
+  - bornes : `;a` de 0 à 15, `;p` et `;d` de 1 à 15 ;
+  - `round(x, n)` invalide donne NaN dans le chemin compilé.
+- Avertissements : collecteur ouvert seulement autour des tirages de `checkGeneration`
+  (`eval-warnings.ts`), rien gardé dans l'appli.
+- Essai de bout en bout : corrigé « 3,0 » et « 3,70 € » ; juge : « 3,0 » et « 3,70 € » justes,
+  « 3 » et « 0,1 » en forme à améliorer.
+- Suite : les 32 modèles écrivent leur attendu `round(k*x)/k;d`, qui perd les zéros (« 0,3 » au
+  centième). Une migration de contenu les passera à `;aN` après le merge (les modèles à l'unité ne
+  changent pas).
+- #3170 mergée le 2026-11-26 (CI verte). Relecture Opus : aucun bug de correction ; corrigés avant
+  l'ouverture : avertissements des tirages rejetés, `;dN` signalé dans une case sans `precision`,
+  pas d'avertissement euro avec `;dN`.
+
+### 2026-11-26 : zéros des arrondis dans les modèles publiés (#3175)
+
+- 32 modèles à `precision` décimale relevés ; 27 touchés (5 à l'unité seulement ou sans `round…;d` : f7c15433, bf5dadf6, 245b4eb1, 5ec00b89, 10a51999). 126 écritures `;d` → `;aN`, valeur inchangée (le `round` reste), blocs `figure` exclus (60 coordonnées d'Al-Kashi).
+- 11 specs de 7 modèles assertaient l'ancienne règle (rouges en prod depuis #3170) : remises à la règle ; 10a51999 ajouté pour sa spec seule (28 modèles migrés).
+- `security-auditor` : aucun finding bloquant. Migration non jouée : deux autres migrations en attente.
+- Migration jouée en prod par David le 2026-11-26 (avec les deux autres en attente) ; vérifiée par MCP (aucun `round…;d` hors figures).
+
+### 2026-11-26 : reprise du lot (prix en €, retouches 3 à 5, essai local)
+
+- Prix en grandeurs en euros (`{{eval:(…)[€]}}`) : « 7,20 € », « 12 € » écrits par le moteur. Prix sans unité (cases « Prix (€) », calculs du corrigé) écrits de même (`prix_nu` : `;d2` sauf prix entier).
+- Retouche 1 (`zeros: off` de e0ccaf84) abandonnée : « 21,60 € » est juste depuis #3170 (spec ajoutée). `zeros: off` gardé sur N1 à N3 : leurs cases de prix sans unité sont des nombres pour le juge (« 8,50 » y serait perfectible).
+- Retouche 3 : N5 v2 gagne une situation incalculable, **la masse du père** (au lieu de la pointure : un adulte garde sa pointure, et le coup de pouce « quelque chose qui ne change pas ? » y mènerait à « la même »). Validé par David le 2026-11-26 (« je te suis »).
+- Retouche 4 : N5 v1, piège « valeur × nouvelle quantité » pour les prix et l'imprimante seulement ; ailleurs, la nouvelle quantité ajoutée (variable `z` : une grandeur `[€]` ne simplifie pas `min`/`abs`).
+- Retouche 5 : N4 relier, une série parmi cinq (éléphant, lettre, camion, récréation, vacances, marathon, crayon, cuillère…), une unité par sorte de grandeur dans chaque série.
+- Essai local : `create-questions --publier` en base locale (ids restaurés), variations des 4 publiés posées par PATCH local ; `pnpm voir` des aperçus N5 et N2 : rendu juste (« 13,30 € »), 0 erreur de console. Réponses justes et fausses jugées par les specs (même juge), pas rejouées à la main.

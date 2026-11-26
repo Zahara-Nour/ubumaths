@@ -76,23 +76,23 @@ pas des notes.
 
 ### Routes
 
-| Route                                                                                  | Qui           | Quoi                                                                                                                                                                               |
-| -------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou contrôle.                                                                                                                        |
-| `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.                                                                                                 |
-| `GET /api/series/duration-signals?templates=<uuid,…>`                                  | prof, admin   | `{ signals, observed }` : durées sans doute trop courtes et durées observées des modèles du panier (1 à 100 UUID, Zod) ; des comptes, aucun nom.                                   |
-| `POST /api/tests/save`                                                                 | connecté      | Fin d'une série **libre** : gain du Palotin seulement, rien d'écrit. Refuse un contrôle.                                                                                           |
-| `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.                                                                                                |
-| `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses contrôles ; ses tentatives (`[id]` = identifiant de l'**assignation**). S'ouvre depuis « Mon travail » (« Tous mes contrôles »), y revient (`BackLink`).                       |
-| `GET /api/evaluations/assignments/[id]`                                                | élève, prof   | Page d'attente, lecture seule : titre, forme, questions, durée, reprise ; mêmes refus que `start`. 30 appels/min.                                                                  |
-| `POST /api/evaluations/assignments/[id]/start`                                         | élève, prof   | Démarrer / reprendre (élève) ou aperçu (propriétaire, admin). 20 appels/min.                                                                                                       |
-| `POST /api/evaluations/attempts/[id]/submit`                                           | élève         | Envoyer la copie, recevoir la note et la correction. 10 appels/min.                                                                                                                |
-| `/dashboard/teacher/evaluation-tasks` (+ `new`, `[id]`, `[id]/saisie`)                 | prof          | Observations famille B : périmètre, saisie en séance.                                                                                                                              |
-| `/dashboard/student/competences/[code]`                                                | élève         | Détail d'une compétence mathématique (la liste redirige vers `progression`).                                                                                                       |
-| `/presques-evaluations` · `/dashboard/teacher/presques-evaluations`                    | public · prof | Lecture publique · dépôt, édition, suppression.                                                                                                                                    |
-| `POST /api/test-mode`                                                                  | prof          | Basculer le mode test.                                                                                                                                                             |
-| `/dashboard/student/work`                                                              | élève         | Boîte « travail à faire » (`getStudentWorkInbox`, quatre systèmes d'assignation) ; seule entrée vers les listes complètes des fiches et des contrôles.                             |
-| `/dashboard/student/reports`, `GET /api/student/reports`                               | élève         | Ses signalements d'erreur de fiche (RPC `get_my_error_reports`) ; numéro de l'exercice dans sa copie, `null` si la fiche lui est illisible ([fiches-et-pdf.md](fiches-et-pdf.md)). |
+| Route                                                                                  | Qui           | Quoi                                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/automaths/test` (couverte par [questions.md](questions.md))                          | tous          | Page unique qui joue toutes les formes, libres ou contrôle.                                                                                                                                                |
+| `POST /api/series`                                                                     | prof, admin   | Enregistrer le panier comme série. Liste et édition : `/dashboard/teacher/series`.                                                                                                                         |
+| `GET /api/series/duration-signals?templates=<uuid,…>`                                  | prof, admin   | `{ signals, observed }` : durées sans doute trop courtes et durées observées des modèles du panier (1 à 100 UUID, Zod) ; des comptes, aucun nom.                                                           |
+| `POST /api/tests/save`                                                                 | connecté      | Fin d'une série **libre** : gain du Palotin seulement, rien d'écrit. Refuse un contrôle.                                                                                                                   |
+| `/dashboard/teacher/assessments` (+ `new`, `[id]/edit`, `[id]/assign`, `[id]/results`) | prof, admin   | Créer depuis une série, régler (brouillon seulement), publier, assigner, résultats.                                                                                                                        |
+| `/dashboard/student/assessments` (+ `[id]/results`)                                    | élève         | Ses contrôles ; ses tentatives (`[id]` = identifiant de l'**assignation**). S'ouvre depuis « Mon travail » (« Tous mes contrôles »), y revient (`BackLink`).                                               |
+| `GET /api/evaluations/assignments/[id]`                                                | élève, prof   | Page d'attente, lecture seule : titre, forme, questions, durée, reprise ; mêmes refus que `start`. 30 appels/min.                                                                                          |
+| `POST /api/evaluations/assignments/[id]/start`                                         | élève, prof   | Démarrer / reprendre (élève) ou aperçu (propriétaire, admin). 20 appels/min.                                                                                                                               |
+| `POST /api/evaluations/attempts/[id]/submit`                                           | élève         | Envoyer la copie, recevoir la note et la correction. 10 appels/min.                                                                                                                                        |
+| `/dashboard/teacher/evaluation-tasks` (+ `new`, `[id]`, `[id]/saisie`)                 | prof          | Observations famille B : périmètre, saisie en séance.                                                                                                                                                      |
+| `/dashboard/student/competences/[code]`                                                | élève         | Détail d'une compétence mathématique (la liste redirige vers `progression`).                                                                                                                               |
+| `/presques-evaluations` · `/dashboard/teacher/presques-evaluations`                    | public · prof | Lecture publique · dépôt, édition, suppression.                                                                                                                                                            |
+| `POST /api/test-mode`                                                                  | prof          | Basculer le mode test.                                                                                                                                                                                     |
+| `/dashboard/student/work`                                                              | élève         | Boîte « travail à faire » (`getStudentWorkInbox`, quatre systèmes d'assignation) ; seule entrée vers les listes complètes des fiches et des contrôles ; écran vide : un seul bouton, les exercices Python. |
+| `/dashboard/student/reports`, `GET /api/student/reports`                               | élève         | Ses signalements d'erreur de fiche (RPC `get_my_error_reports`) ; numéro de l'exercice dans sa copie, `null` si la fiche lui est illisible ([fiches-et-pdf.md](fiches-et-pdf.md)).                         |
 
 ## Les formes d'une série
 
@@ -107,9 +107,10 @@ que le modèle de la ligne (le choix ne la restreint pas). Variations **« en QC
 erreurs prévues ([questions.md](questions.md), `choice-from-errors.ts`), sur la même graine ; le
 tirage le fait pour toutes les formes sauf les flash-cards (`choiceCases`), et pour l'évaluation,
 dont l'instance figée au démarrage garde la forme QCM (la régénération depuis la graine seule, repli
-des tentatives d'avant Q42, la redonnerait en saisie). Le prof les coche dans la fenêtre des
-variations (`VariationPicker`, case « En QCM » sous chaque variation qui le permet, prof seulement),
-dans le panier comme dans l'éditeur de série ; retirer une variation retire son QCM ; le panier garde
+des tentatives d'avant Q42, la redonnerait en saisie). Le prof les coche : dans le panier (Ma série),
+sur la carte même (`TileCard`, case « En QCM » de la variation affichée, chantier `automaths`) ; dans
+l'éditeur de série, dans la fenêtre des variations (`VariationPicker`, case sous chaque variation qui
+le permet) ; prof seulement ; retirer une variation retire son QCM ; le panier garde
 le choix à la fusion et par un lien, comme les variations choisies. Elle est tirée **à
 neuf à chaque usage** : `drawSeriesQuestions` (`src/lib/questions/series-items.ts`) donne à
 chaque ligne une graine neuve (sauf lien « Mêmes nombres pour tous », ci-dessous), d'où sortent les
@@ -540,35 +541,22 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ## Écarts connus
 
-- **`shuffle_questions` sans effet** : réglé dans `EvaluationConfigForm` (« Mélanger l'ordre des
-  questions », coché par défaut), stocké, mais jamais lu au tirage : l'ordre suit toujours la
-  composition.
-- **`validateAttempt` (`evaluations.ts`) n'est appelé que par les tests** : `startEvaluationAttempt`
-  refait les mêmes contrôles à sa façon. Deux règles à tenir d'accord.
-- **Archivage sans écran** : seule l'action `publish` existe sur `/dashboard/teacher/assessments` ;
-  aucune route ne passe un contrôle en `archived`.
-- **Assignation à un élève sans écran** : `assignEvaluation` accepte `student_ids`, la page
-  `[id]/assign` n'envoie que des classes.
-- **Saisie des observations** : `DELETE` puis `INSERT` sans `.select()` ni transaction ; un
-  refus RLS du `DELETE` rend 0 ligne sans erreur et la grille est **doublée**
-  ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)). Les caches ne se recalculent
-  qu'à l'`INSERT` : un observable retiré du périmètre garde ses anciennes observations dans le cache.
-- **Mode test, deux sources** : le store `testMode` part de `localStorage`, la vérité est
-  `user_preferences`. Sur un nouvel appareil, l'interrupteur peut afficher l'inverse de l'état serveur
-  et le premier clic renvoyer la valeur déjà enregistrée. Le store utilise `writable`, pas les runes.
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
+
+### À savoir (voulu)
+
 - **Temps de course par défaut** : 5 min dans `TestModeDialog` (séance libre), 7 min pour un
   contrôle.
-- **Fenêtre de choix du panier** (`TestModeDialog`) : un clic sur une carte lance la série ; seule la
-  Course aux nombres affiche d'abord le temps imparti, puis « Commencer le test ». La fenêtre défile
-  (`max-h-[90vh]`) : avec quatre cartes, elle dépasse un écran bas.
-- **En-têtes de code anglais et anciens** : `test.ts`, `TestCourse`, `TestResults`, `test-mode.ts`
-  parlent encore de « quiz », « Revision », « assessment ».
 - **Le code garde les anciens noms** : les écrans disent **contrôle** et **observation** depuis le
   2026-10-11, mais les URL (`/assessments`, `/evaluation-tasks`), les tables et les identifiants
   (`evaluations`, `EvaluationCard`…) n'ont pas été renommés. Les notifications déjà envoyées et les
   modèles de messages en base gardent « évaluation ».
-- **Couverture mal rangée** : `grades.ts` (niveaux scolaires) et les signalements de fiches
-  (`student/reports`) relèveraient d'autres docs.
+
+### Points non vérifiés
+
+- **Fenêtre de choix du panier** (`TestModeDialog`) : un clic sur une carte lance la série ; seule la
+  Course aux nombres affiche d'abord le temps imparti, puis « Commencer le test ». La fenêtre défile
+  (`max-h-[90vh]`) : avec quatre cartes, elle dépasse un écran bas.
 
 ---
 

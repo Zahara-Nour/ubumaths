@@ -79,7 +79,18 @@ Cette zone couvre cinq choses :
     expéditeur `deleted_by_sender`, côté destinataire `message_inbox.deleted`) ;
   - `drafts/`, `drafts/[id]/` → table `message_drafts`.
 - Validation : `src/lib/server/validation/messages.ts` (`sendMessageSchema` : sujet 1-200,
-  contenu 1-10 000, 100 destinataires max ; `updateMessageSchema` en union discriminée).
+  100 destinataires max ; `updateMessageSchema` en union discriminée). Le **contenu** d'un envoi
+  est le document de l'éditeur riche (`{ type: 'doc', content: [...] }`, le jsonb de
+  `send_private_message`), jamais une chaîne : `messageDocumentProblem` le refuse s'il n'a pas
+  cette forme (« Message illisible », 20 niveaux d'emboîtement au plus), s'il dépasse 10 000
+  caractères de texte (« Message trop long »), 100 000 caractères une fois écrit en JSON
+  (« Message trop lourd »), ou
+  s'il ne montre rien (« Le message est vide » ; une formule seule compte). Tests :
+  `src/routes/api/messages/send/__tests__/send.test.ts` (le corps exact de la page) et le
+  parcours `e2e/verifs/messagerie.spec.ts` (l'élève écrit, le prof répond, l'élève lit ; un
+  brouillon repris part sans y toucher). La page n'envoie jamais le HTML d'un brouillon :
+  `RichTextEditor` rend le document dès qu'il pose un contenu venu de `htmlValue`
+  (`syncJsonFromHtml`).
 - Tables : `private_messages` (le message), `message_inbox` (une ligne par destinataire :
   lu, étoilé, dossier, statut).
 
@@ -114,6 +125,19 @@ Jusque-là, le bucket n'existait pas en prod et toute pièce jointe échouait en
 Tests : `tests/integration/messagerie-pieces-jointes.test.ts` (bucket, policies),
 `tests/integration/messagerie-pieces-jointes-liens.test.ts` (envoi et lecture de bout en bout),
 `src/routes/api/messages/__tests__/attachments.test.ts` (routes).
+
+#### Index de recherche et nom de l'expéditeur
+
+Chaque message inséré ou modifié passe par le trigger `update_message_search_index`, qui écrit
+une ligne de `message_search_index` (sujet, texte, nom et rôle de l'expéditeur). La colonne
+`sender_name` est obligatoire, alors que `profiles.full_name` ne l'est pas : **en prod, presque
+tous les élèves ont un nom complet vide** (prénom et nom remplis). Depuis la migration
+`20261126094959`, le trigger prend le nom complet, sinon « prénom nom », sinon `Sans nom` ;
+avant, l'envoi d'un message par un de ces élèves rendait 500 (V131). Le nom est figé à l'envoi.
+
+Tests : `tests/integration/database/messaging-triggers.test.ts`, bloc « expéditeur sans nom
+complet ». La fabrique de profils de test donne un nom complet à tout le monde : un test de
+messagerie qui doit ressembler à la prod le vide lui-même.
 
 ### Modération et signalements (chat)
 
@@ -222,7 +246,8 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
 
 - `src/lib/server/student-inbox.ts` (`getStudentWorkInbox`) est la **boîte de travail** de
   l'élève : évaluations, exercices, fiches et Python à faire, rangés en cinq sections
-  (`late`, `thisWeek`, `later`, `noDeadline`, `doneRecently`). Rien à voir avec les messages.
+  (`late`, `thisWeek`, `later`, `noDeadline`, `doneRecently`). Une affectation d'exercice
+  `public` n'y figure pas (elle n'ouvre rien, cf. [exercices.md](exercices.md)). Rien à voir avec les messages.
   Composants `src/lib/components/student-inbox/` ; appelée par
   `src/routes/(protected)/dashboard/+page.server.ts` et `dashboard/student/work/+page.server.ts`.
 - `src/lib/stores/mentions.svelte.ts` et `hashtags.svelte.ts` alimentent les extensions
@@ -488,47 +513,17 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   système au serveur (`20261001140000`), Q77 (`20261001220000`), lecture seule gardée par la
   base (`20261014110000`, décision de David du 2026-10-10).
 
-## Écarts connus (constatés le 2026-10-13, non corrigés)
+## Écarts connus
 
-### ⚠️ Safeguarding (élèves mineurs)
+Les écarts de cette zone sont au [registre des écarts](../ecarts/registre.md) : `pnpm ecarts`. Un écart s'écrit là-bas, jamais ici.
 
-- **Mentions factices dans l'éditeur riche.** `src/lib/stores/mentions.svelte.ts` propose une
-  liste en dur (« Alice Dupont », « Bob Durand »…) ; l'extension `Mention` est active dans
-  `editor-config.ts`. Aucune vraie personne, mais des noms inventés offerts à l'autocomplétion.
+### À savoir (voulu)
 
-### Code mort ou sans appelant
+- L'en-tête de `student-inbox.ts` parle de « quatre systèmes d'affectation » (évaluations,
+  exercices à l'unité, fiches, Python) : la liste est exacte au niveau des systèmes. Python en
+  regroupe trois tables, donc la fonction interroge six sources.
 
-- **Messagerie privée sans lien d'entrée** : aucune page hors de `src/routes/(protected)/messages/`
-  ne pointe vers `/messages` (grep sur `src/`, hors `skeleton-detector.ts`). Même constat pour
-  `dashboard/teacher/notifications`, `dashboard/admin/notifications`,
-  `dashboard/admin/message-templates` et `dashboard/admin/friendships`.
-- **Modèles de messages jamais utilisés pour envoyer** : `compose/` ne les lit pas ; seul
-  `src/lib/stores/messageTemplates.svelte.ts` appelle `/api/messages/templates/match`, et ce
-  store n'est importé nulle part.
-- Méthodes du store `privateMessages` sans appelant : `moveToFolder`, `loadUnreadCount`,
-  `searchMessages` (donc la route `search/` n'a pas d'appelant d'interface).
-- `auto-notifications.ts` : 7 fonctions sur 10 sans appelant (`notifyNewAssignment`,
-  `notifyNewResource`, `notifyRewardEarned`, `notifyVipCardEarned`, `notifyBadgeUnlocked`,
-  `notifyMaintenance`, `notifyFeatureRelease`). `cleanupExpiredNotifications` sans appelant.
-- Route d'avertissements sans appelant dans `src/` : `POST /api/warnings` (ajout unitaire,
-  seul usage d'`addWarning`).
+### Points non vérifiés
 
-### Commentaires faux, incohérences
-
-- **Tri des notifications par priorité** : `getUnreadNotifications` trie la colonne texte
-  `priority` en ordre décroissant, donc alphabétique : `urgent`, `normal`, puis `important`.
-  Le commentaire promet « urgent first » ; `important` passe après `normal`.
-- **`NotificationType`** (`src/lib/types/notification.ts`) accepte `warning`, `success`,
-  `error`, `system`, que la contrainte `notifications_type_check` refuse.
-- `src/routes/api/student/warnings/[periodId]/+server.ts` dit que l'élève ne voit pas ses
-  avertissements : `RewardsBlock` les affiche.
-- `getClassWarnings` reçoit `teacherId` sans s'en servir ; ses commentaires parlent encore de
-  « vérifier la propriété de la classe » (mono-prof : il vérifie seulement qu'elle existe).
-- `add_warning` / `add_warnings_bulk` ne vérifient pas que l'élève est membre de la classe.
-- `createNotification` (cible `users`) accepte tout élève présent dans `class_members`, quel
-  que soit le statut de l'adhésion ; un élève hors-classe ne peut pas être ciblé nommément par
-  le prof.
-- `send_private_message` laisse le prof écrire à un élève de test ; `get_allowed_recipients`
-  les masque de la liste.
-- L'en-tête de `student-inbox.ts` parle de « quatre systèmes d'affectation » ; la fonction en
-  interroge six sources (Python compte pour trois).
+- Aucune page ne pointe vers `dashboard/teacher/notifications`, `dashboard/admin/notifications` ni
+  `dashboard/admin/friendships` (grep sur `src/` du 2026-10-13, jamais revérifié depuis).

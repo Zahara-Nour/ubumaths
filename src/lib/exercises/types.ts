@@ -1739,8 +1739,8 @@ export interface CreateExerciseAssignment {
 	/** Exercise to assign */
 	exercise_id: string;
 
-	/** Who to assign to */
-	assigned_to_type: AssignmentTargetType;
+	/** Who to assign to (« public » ne se crée plus : élève ou classe seulement) */
+	assigned_to_type: Exclude<AssignmentTargetType, 'public'>;
 
 	/** Student ID (required if assigned_to_type='student') */
 	student_id?: string;
@@ -1839,77 +1839,6 @@ export interface AssignedExerciseWithDetails extends ExerciseAssignment {
 }
 
 /**
- * Exercise with completion status for student view
- *
- * Combines Exercise with optional assignment and completion data.
- * Used when displaying exercises to students to show which are assigned
- * and track their progress.
- *
- * @example Assigned exercise with completion
- * ```typescript
- * const exercise: ExerciseWithCompletion = {
- *   // ... all Exercise fields ...
- *   id: 'ex-123',
- *   title: 'Addition Practice',
- *   // ... other exercise fields ...
- *
- *   assignment: {
- *     id: 'assign-456',
- *     exercise_id: 'ex-123',
- *     assigned_by: 'teacher-789',
- *     assigned_to_type: 'student',
- *     student_id: 'student-abc',
- *     class_id: null,
- *     assigned_at: '2024-01-15T10:00:00Z',
- *     optional_deadline: '2024-01-20T23:59:59Z',
- *     notes: 'Complete this week',
- *     is_active: true
- *   },
- *
- *   completion: {
- *     id: 'complete-789',
- *     exercise_id: 'ex-123',
- *     assignment_id: 'assign-456',
- *     student_id: 'student-abc',
- *     completed_at: '2024-01-16T14:30:00Z',
- *     last_viewed_at: '2024-01-16T14:30:00Z',
- *     view_count: 2,
- *     created_at: '2024-01-15T10:30:00Z'
- *   },
- *
- *   is_accessible: true // Has assignment
- * };
- * ```
- *
- * @example Public exercise without assignment
- * ```typescript
- * const exercise: ExerciseWithCompletion = {
- *   // ... all Exercise fields ...
- *   id: 'ex-456',
- *   is_public: true,
- *   // ... other fields ...
- *
- *   assignment: undefined, // Not assigned, just public
- *   completion: undefined, // Not yet viewed
- *   is_accessible: true // Is public
- * };
- * ```
- */
-export interface ExerciseWithCompletion extends Exercise {
-	/** Assignment data if exercise was assigned to this student */
-	assignment?: ExerciseAssignment;
-
-	/** Completion tracking data if student has viewed/completed */
-	completion?: ExerciseCompletion;
-
-	/**
-	 * Whether student can access this exercise
-	 * True if: has assignment OR exercise.is_public=true
-	 */
-	is_accessible: boolean;
-}
-
-/**
  * Union type for assignment target data
  *
  * Type-safe representation of assignment targets.
@@ -1953,12 +1882,11 @@ export type AssignmentTarget =
  * };
  * ```
  *
- * @example Assign to classes and make public
+ * @example Assign to classes
  * ```typescript
  * const bulk: BulkAssignmentData = {
  *   exercise_id: 'ex-456',
- *   classes: ['class-3eme-a', 'class-3eme-b'],
- *   make_public: true
+ *   classes: ['class-3eme-a', 'class-3eme-b']
  * };
  * ```
  */
@@ -1971,9 +1899,6 @@ export interface BulkAssignmentData {
 
 	/** Class IDs to assign to (creates one assignment per class) */
 	classes?: string[];
-
-	/** Whether to create a public assignment (accessible to all students) */
-	make_public?: boolean;
 
 	/** Optional deadline for all assignments */
 	optional_deadline?: string | null;
@@ -2072,37 +1997,6 @@ export interface PaginatedResponse<T> {
 // ============================================================================
 
 /**
- * Filter options for student exercise list
- *
- * Used when students browse available exercises.
- * Helps filter by completion status, assignment status, and accessibility.
- *
- * @example Show only assigned uncompleted exercises
- * ```typescript
- * const filters: StudentExerciseFilters = {
- *   show_completed: false,
- *   show_assigned_only: true
- * };
- * ```
- */
-export interface StudentExerciseFilters {
-	/** Include completed exercises in results */
-	show_completed?: boolean;
-
-	/** Show only assigned exercises (exclude public exercises) */
-	show_assigned_only?: boolean;
-
-	/** Show public exercises (not assigned to student) */
-	show_public?: boolean;
-
-	/** Show only exercises with deadlines */
-	has_deadline?: boolean;
-
-	/** Search in title and statement */
-	search?: string;
-}
-
-/**
  * Filter options for teacher assignment management
  *
  * Used when teachers view and manage their assignments.
@@ -2192,7 +2086,7 @@ export interface AssignmentStats {
  * Ensures that assignment data has the correct target fields:
  * - student assignments must have student_id
  * - class assignments must have class_id
- * - public assignments must not have student_id or class_id
+ * - any other target (« public » compris) is refused
  *
  * @param data - Assignment data to validate
  * @returns Validation result with error message if invalid
@@ -2226,8 +2120,10 @@ export function validateAssignmentData(data: CreateExerciseAssignment): {
 	if (data.assigned_to_type === 'class' && !data.class_id) {
 		return { valid: false, error: 'class_id required for class assignment' };
 	}
-	if (data.assigned_to_type === 'public' && (data.student_id || data.class_id)) {
-		return { valid: false, error: 'public assignment cannot have student_id or class_id' };
+	// Garde à l'exécution : le type interdit déjà « public », une valeur venue d'ailleurs aussi.
+	const target: string = data.assigned_to_type;
+	if (target !== 'student' && target !== 'class') {
+		return { valid: false, error: 'assignment target must be a student or a class' };
 	}
 	return { valid: true };
 }

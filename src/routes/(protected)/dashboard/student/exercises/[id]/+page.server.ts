@@ -5,6 +5,7 @@ import { validateUuidParam } from '#lib/server/validation/params.ts';
 import { toExercise } from '#lib/types/exercise-row.ts';
 import { fetchResourceTagNames } from '#lib/server/resource-tags.ts';
 import { createServerLogger } from '#lib/utils/logger.ts';
+import { pickStudentAssignment } from '#lib/server/exercise-assignments.ts';
 
 const logger = createServerLogger('(protected)/dashboard/student/exercises/[id]/+page.server');
 
@@ -44,20 +45,6 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 
 	const tags = await fetchResourceTagNames(locals.supabase, 'exercise', exerciseId).catch(() => []);
 
-	// Fetch assignment (if any)
-	const { data: assignment, error: assignmentError } = await locals.supabase
-		.from('exercise_assignments')
-		.select('*')
-		.eq('exercise_id', exerciseId)
-		.or(`student_id.eq.${user.id},assigned_to_type.eq.public`)
-		.maybeSingle();
-
-	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
-	// ne doit pas se confondre avec une donnée réellement vide.
-	if (assignmentError && assignmentError.code !== 'PGRST116') {
-		logger.error('Contexte illisible :', assignmentError);
-	}
-
 	// Fetch completion
 	const { data: completion, error: completionError } = await locals.supabase
 		.from('exercise_completions')
@@ -87,6 +74,23 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	}
 
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
+
+	// Affectation hors fiche (s'il y en a une) : celle de l'élève, sinon celle d'une de ses
+	// classes. La RLS ne rend que les lignes qui le concernent ; plusieurs lignes possibles
+	// (élève ET classe), d'où une liste et un choix, jamais `maybeSingle()`.
+	const { data: assignmentRows, error: assignmentError } = await locals.supabase
+		.from('exercise_assignments')
+		.select('*')
+		.eq('exercise_id', exerciseId)
+		.eq('is_active', true)
+		.in('assigned_to_type', ['student', 'class']);
+
+	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
+	// ne doit pas se confondre avec une donnée réellement vide.
+	if (assignmentError) {
+		logger.error('Contexte illisible :', assignmentError);
+	}
+	const assignment = pickStudentAssignment(assignmentRows ?? [], user.id, classIds);
 
 	return {
 		exercise: toExercise(exercise, tags),

@@ -44,10 +44,15 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 	const exerciseId = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
 
-	const body = await request.json();
+	// Corps illisible ou qui n'est pas un objet : 400, jamais un plantage à l'aiguillage ci-dessous.
+	const rawBody: unknown = await request.json().catch(() => null);
+	if (typeof rawBody !== 'object' || rawBody === null || Array.isArray(rawBody)) {
+		throw error(400, 'Données invalides');
+	}
+	const body = rawBody as Record<string, unknown>;
 
-	// Check if bulk assignment (has students[] or classes[] or make_public)
-	if (body.students || body.classes || body.make_public) {
+	// Check if bulk assignment (has students[] or classes[])
+	if (body.students || body.classes) {
 		// Validate bulk assignment
 		const validation = validateBulkAssign(body);
 		if (!validation.success) {
@@ -61,7 +66,6 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 			exercise_id: exerciseId,
 			students: validation.data.students,
 			classes: validation.data.classes,
-			make_public: validation.data.make_public,
 			optional_deadline: validation.data.optional_deadline || null,
 			notes: validation.data.notes
 		};

@@ -8,4 +8,7 @@ quand `ECARTS_PREUVES=1`) ; la CI, `test:server` et `test:changed` ne les voient
 
 À la correction de l'écart, le test part d'ici et devient un test ordinaire à côté du code corrigé.
 
+Un écart qui demande une vraie base n'a pas son test ici : il est en `it.fails` dans
+`tests/integration/ecarts-<domaine>.test.ts`, et le registre le suit par un marqueur.
+
 Mode d'emploi : [docs/pratiques/registre-des-ecarts.md](../../docs/pratiques/registre-des-ecarts.md).

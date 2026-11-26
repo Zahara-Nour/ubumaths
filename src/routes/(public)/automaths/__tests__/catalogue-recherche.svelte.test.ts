@@ -56,7 +56,7 @@ const TEMPLATES = [
 	modele('add', 'n-add', ['CP'], 'Ajouter deux nombres'),
 	modele('frac-1', 's-simplifier', ['5'], 'Simplifier une fraction'),
 	modele('frac-2', 's-simplifier', ['4'], 'Fraction irréductible'),
-	modele('pyth', 'n-pyth', ['4'], 'Calculer une longueur')
+	modele('pyth', 'n-pyth', ['4'], 'Pythagore : calculer une longueur')
 ];
 
 const POINT_NAMES = { pyth: ['Utiliser le théorème de Pythagore'] };
@@ -173,15 +173,57 @@ describe('Catalogue Automaths — recherche', () => {
 		await expect.element(notionButton('Addition')).toBeVisible();
 	});
 
-	it('cherche aussi dans les intitulés des points du programme', async () => {
+	it('mot seulement dans un point du programme : groupe « aussi », replié', async () => {
 		await render(Page);
 
 		await searchBox().fill('théorème');
 
-		await expect.element(page.getByText('1 question', { exact: true })).toBeVisible();
 		await expect
-			.element(page.getByRole('heading', { name: /Géométrie › Pythagore/ }))
+			.element(page.getByText('Aucune question dans les titres et les énoncés'))
 			.toBeVisible();
+		const aussi = page.getByRole('button', { name: /Aussi dans les corrigés et le programme · 1/ });
+		await expect.element(aussi).toHaveAttribute('aria-expanded', 'false');
+
+		await aussi.click();
+
+		await expect.element(aussi).toHaveAttribute('aria-expanded', 'true');
+	});
+
+	it('nom d’une notion : raccourci « Aller à », qui efface la recherche et ouvre la notion', async () => {
+		await render(Page);
+		await searchBox().fill('fractions');
+		const raccourci = page
+			.getByRole('navigation', { name: 'Aller à' })
+			.getByRole('button', { name: /^Fractions\s*, 2 questions$/ });
+		await expect.element(raccourci).toBeVisible();
+
+		await raccourci.click();
+
+		await expect.element(searchBox()).toHaveValue('');
+		await expect.element(notionButton('Fractions')).toHaveAttribute('aria-current', 'true');
+		expect(lastUrl().searchParams.get('q')).toBeNull();
+		expect(lastUrl().searchParams.get('notion')).toBe('n-frac');
+	});
+
+	it('nom d’une sous-notion : le raccourci ouvre sa notion, avec la section de la sous-notion', async () => {
+		await render(Page);
+		await searchBox().fill('simplifier');
+
+		await page
+			.getByRole('navigation', { name: 'Aller à' })
+			.getByRole('button', { name: /^Fractions › simplifier\s*, 2 questions$/ })
+			.click();
+
+		await expect.element(notionButton('Fractions')).toHaveAttribute('aria-current', 'true');
+		await expect.element(page.getByRole('region', { name: /simplifier/ })).toBeInTheDocument();
+	});
+
+	it('aucun raccourci quand le mot n’est le nom d’aucune notion', async () => {
+		await render(Page);
+		await searchBox().fill('longueur');
+
+		await expect.element(page.getByText('1 question', { exact: true })).toBeVisible();
+		expect(page.getByRole('navigation', { name: 'Aller à' }).elements()).toHaveLength(0);
 	});
 
 	it('le niveau filtre les résultats', async () => {

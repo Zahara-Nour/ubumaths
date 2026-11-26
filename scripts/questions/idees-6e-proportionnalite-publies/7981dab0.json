@@ -1,0 +1,507 @@
+{
+	"id": "7981dab0-c1f9-4e87-961f-91be61e698dc",
+	"title": "Repérer double, moitié, quadruple, quart et tiers",
+	"description": "Nommer la relation entre deux nombres (12 est le tiers de 36) ou retrouver le nombre (12 est le tiers de 36 : 12 × 3)",
+	"grades": ["6"],
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "Quel mot manque ?\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est } \\ldots \\text{ de } {{if:r<2|{{n}}|{{eval:r*n}}}}$$\n\n```choix\n- le double\n- le quadruple\n- la moitié\n- le tiers\n- le quart\n- le triple\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "3..25"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+					"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\times 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} = {{if:r<2|{{n}}|{{eval:r*n}}}} \\div 4}}}}}}}}$$",
+					"${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}}}}$ de ${{if:r<2|{{n}}|{{eval:r*n}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:r<2|{{n}}|{{eval:r*n}}}}"
+				}
+			],
+			"statement": "Complète.\n\n$${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\text{ est {{if:r==0|le double|{{if:r==1|le quadruple|{{if:r==2|la moitié|{{if:r==3|le tiers|le quart}}}}}}}} de } ?$$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..4"
+				},
+				{
+					"name": "n",
+					"expression": "3..25"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relations.** Le double : $\\times 2$ ; le quadruple : $\\times 4$ ; la moitié : $\\div 2$ ; le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+					"{{if:r==0|Le nombre cherché est $2$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==1|Le nombre cherché est $4$ fois plus petit que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==2|Le nombre cherché est $2$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|{{if:r==3|Le nombre cherché est $3$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.|Le nombre cherché est $4$ fois plus grand que ${{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}}$.}}}}}}}}",
+					"$${{if:r==0|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 2|{{if:r==1|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\div 4|{{if:r==2|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 2|{{if:r==3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 3|{{if:r<2|{{eval:(2+2*r)*n}}|{{n}}}} \\times 4}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$$\\text{Le {{if:f==3|tiers|quart}} de } {{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}} \\text{ est } ?$$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "3|4"
+				},
+				{
+					"name": "z",
+					"expression": "1|2"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "N",
+					"expression": "eval:f*a*10^z"
+				},
+				{
+					"name": "R",
+					"expression": "eval:a*10^z"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:N/2}}",
+							"message": "Tu as calculé la moitié : le {{if:f==3|tiers|quart}}, c'est diviser par ${{f}}$.",
+							"label": "Moitié au lieu du {{if:f==3|tiers|quart}}"
+						},
+						{
+							"answer": "{{eval:N*f}}",
+							"message": "Le {{if:f==3|tiers|quart}} est plus petit que le nombre de départ : on divise par ${{f}}$, on ne multiplie pas.",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "{{eval:R/10}}",
+							"message": "Il manque un zéro : le nombre de départ, c'est ${{eval:f*a}}$ {{if:z==1|dizaines|centaines}}, et son {{if:f==3|tiers|quart}} est un nombre de {{if:z==1|dizaines|centaines}}.",
+							"label": "Zéro oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le tiers, le quart.** Le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+					"${{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}}$, c'est ${{eval:f*a}}$ {{if:z==1|dizaines|centaines}} : ${{eval:f*a}} \\div {{f}} = {{a}}$, donc le {{if:f==3|tiers|quart}} est ${{a}}$ {{if:z==1|dizaines|centaines}}.",
+					"$${{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}} \\div {{f}} = \\textcolor{{{color:primary.0}}}{{{R}}}$$"
+				]
+			},
+			"hint": "Le {{if:f==3|tiers|quart}}, c'est diviser par ${{f}}$. Pense à ${{if:N>=1000|{{eval:floor(N/1000)}}\\,{{eval:mod(N,1000)/100}}00|{{N}}}}$ comme à ${{eval:f*a}}$ {{if:z==1|dizaines|centaines}}."
+		},
+		{
+			"statement": "Complète. Donne le résultat en écriture décimale.\n\n$$\\text{Le {{if:f==3|tiers|quart}} de } {{X}} \\text{ est } ?$$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "9..39"
+				},
+				{
+					"name": "s",
+					"expression": "eval:floor(g/2)"
+				},
+				{
+					"name": "f",
+					"expression": "eval:3+min(g,1)"
+				},
+				{
+					"name": "X",
+					"expression": "eval:((1-s)*f*(100*a+b)/100+s*n);d"
+				},
+				{
+					"name": "R",
+					"expression": "eval:(1-s)*(100*a+b)/100+s*n/4;d"
+				}
+			],
+			"conditions": ["mod(n,4)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:((1-s)*f*(100*a+b)/100+s*n)/2;d}}",
+							"message": "Tu as calculé la moitié : le {{if:f==3|tiers|quart}}, c'est diviser par ${{f}}$.",
+							"label": "Moitié au lieu du {{if:f==3|tiers|quart}}"
+						},
+						{
+							"answer": "{{eval:((1-s)*f*(100*a+b)/100+s*n)*f;d}}",
+							"message": "Le {{if:f==3|tiers|quart}} est plus petit que le nombre de départ : on divise par ${{f}}$, on ne multiplie pas.",
+							"label": "Multiplication au lieu de division"
+						},
+						{
+							"answer": "{{eval:(1-s)*(10*a+b)/10+s*(floor(n/4)+mod(n,4)/10);d}}",
+							"message": "{{if:s==1|Le reste de la division n'est pas la partie décimale : continue la division après la virgule.|Il manque un zéro au quotient : quand un chiffre ne contient pas ${{f}}$, on écrit $0$ au quotient.}}",
+							"label": "Reste lu comme une partie décimale, ou zéro oublié"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le tiers, le quart.** Le tiers : $\\div 3$ ; le quart : $\\div 4$.",
+					"{{if:s==1|On pose la division ${{n}} \\div 4$ et on la continue après la virgule : ${{n}} = 4 \\times {{eval:floor(n/4)}} + {{eval:mod(n,4)}}$, puis ${{eval:mod(n,4)}} \\div 4 = {{eval:mod(n,4)/4;d}}$.|${{X}} = {{eval:f*a}} + {{eval:f*b/100;d}}$ : le {{if:f==3|tiers|quart}} de ${{eval:f*a}}$ est ${{a}}$, celui de ${{eval:f*b/100;d}}$ est ${{eval:b/100;d}}$.}}",
+					"$${{X}} \\div {{f}} = \\textcolor{{{color:primary.0}}}{{{R}}}$$"
+				]
+			},
+			"hint": "{{if:s==1|Pose la division ${{n}} \\div 4$ : quand il reste quelque chose, continue après la virgule.|Pose la division ${{X}} \\div {{f}}$ : quand un chiffre ne contient pas ${{f}}$, écris $0$ au quotient.}}"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "12",
+				"r": "3"
+			},
+			"description": "12 est le tiers de 36",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "12",
+				"r": "3"
+			},
+			"description": "Erreur : le triple (sens inversé)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "12",
+				"r": "0"
+			},
+			"description": "24 est le double de 12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "12",
+				"r": "0"
+			},
+			"description": "Erreur : la moitié (sens inversé)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "12",
+				"r": "3"
+			},
+			"description": "12 est le tiers de 36",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "12",
+				"r": "3"
+			},
+			"description": "Erreur : 4 (12 ÷ 3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10",
+				"r": "1"
+			},
+			"description": "40 est le quadruple de 10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["160"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10",
+				"r": "1"
+			},
+			"description": "Erreur : 160 (40 × 4)",
+			"variationIndex": 1
+		},
+		{
+			"description": "F2 entiers : le tiers de 2 100 = 700",
+			"variationIndex": 2,
+			"variables": {
+				"f": "3",
+				"z": "2",
+				"a": "7",
+				"N": "2100",
+				"R": "700"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["700"]
+		},
+		{
+			"description": "F2 entiers : moitié (1 050)",
+			"variationIndex": 2,
+			"variables": {
+				"f": "3",
+				"z": "2",
+				"a": "7",
+				"N": "2100",
+				"R": "700"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la moitié : le tiers, c'est diviser par $3$."
+			},
+			"answers": ["1050"]
+		},
+		{
+			"description": "F2 entiers : multiplié (6 300)",
+			"variationIndex": 2,
+			"variables": {
+				"f": "3",
+				"z": "2",
+				"a": "7",
+				"N": "2100",
+				"R": "700"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le tiers est plus petit que le nombre de départ : on divise par $3$, on ne multiplie pas."
+			},
+			"answers": ["6300"]
+		},
+		{
+			"description": "F2 entiers : zéro oublié (70)",
+			"variationIndex": 2,
+			"variables": {
+				"f": "3",
+				"z": "2",
+				"a": "7",
+				"N": "2100",
+				"R": "700"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque un zéro : le nombre de départ, c'est $21$ centaines, et son tiers est un nombre de centaines."
+			},
+			"answers": ["70"]
+		},
+		{
+			"description": "F2 entiers : le quart de 360 = 90",
+			"variationIndex": 2,
+			"variables": {
+				"f": "4",
+				"z": "1",
+				"a": "9",
+				"N": "360",
+				"R": "90"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["90"]
+		},
+		{
+			"description": "F2 entiers : quart, zéro oublié (9)",
+			"variationIndex": 2,
+			"variables": {
+				"f": "4",
+				"z": "1",
+				"a": "9",
+				"N": "360",
+				"R": "90"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque un zéro : le nombre de départ, c'est $36$ dizaines, et son quart est un nombre de dizaines."
+			},
+			"answers": ["9"]
+		},
+		{
+			"description": "F2 décimaux : le tiers de 12,09 = 4,03",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"a": "4",
+				"b": "3",
+				"n": "9",
+				"s": "0",
+				"f": "3",
+				"X": "12.09",
+				"R": "4.03"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4{,}03"]
+		},
+		{
+			"description": "F2 décimaux : zéro oublié (4,3)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"a": "4",
+				"b": "3",
+				"n": "9",
+				"s": "0",
+				"f": "3",
+				"X": "12.09",
+				"R": "4.03"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il manque un zéro au quotient : quand un chiffre ne contient pas $3$, on écrit $0$ au quotient."
+			},
+			"answers": ["4{,}3"]
+		},
+		{
+			"description": "F2 décimaux : moitié (6,045)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"a": "4",
+				"b": "3",
+				"n": "9",
+				"s": "0",
+				"f": "3",
+				"X": "12.09",
+				"R": "4.03"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as calculé la moitié : le tiers, c'est diviser par $3$."
+			},
+			"answers": ["6{,}045"]
+		},
+		{
+			"description": "F2 décimaux : multiplié (36,27)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0",
+				"a": "4",
+				"b": "3",
+				"n": "9",
+				"s": "0",
+				"f": "3",
+				"X": "12.09",
+				"R": "4.03"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le tiers est plus petit que le nombre de départ : on divise par $3$, on ne multiplie pas."
+			},
+			"answers": ["36{,}27"]
+		},
+		{
+			"description": "F2 décimaux : le quart de 20,16 = 5,04",
+			"variationIndex": 3,
+			"variables": {
+				"g": "1",
+				"a": "5",
+				"b": "4",
+				"n": "9",
+				"s": "0",
+				"f": "4",
+				"X": "20.16",
+				"R": "5.04"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5{,}04"]
+		},
+		{
+			"description": "F2 décimaux : le quart de 9 = 2,25",
+			"variationIndex": 3,
+			"variables": {
+				"g": "2",
+				"a": "4",
+				"b": "3",
+				"n": "9",
+				"s": "1",
+				"f": "4",
+				"X": "9",
+				"R": "2.25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2{,}25"]
+		},
+		{
+			"description": "F2 décimaux : reste lu comme décimale (2,1)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "2",
+				"a": "4",
+				"b": "3",
+				"n": "9",
+				"s": "1",
+				"f": "4",
+				"X": "9",
+				"R": "2.25"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le reste de la division n'est pas la partie décimale : continue la division après la virgule."
+			},
+			"answers": ["2{,}1"]
+		}
+	]
+}

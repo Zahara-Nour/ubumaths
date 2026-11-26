@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-01, PR ouverte._
 
 ## Journal
 
-- 2026-11-01 : ouverture. Source : [ecarts-a-trier.md](ecarts-a-trier.md), groupe A « Écriture vue
+- 2026-11-01 : ouverture. Source : [ecarts-a-trier.md](../archive/wip/ecarts-a-trier.md), groupe A « Écriture vue
   par l'élève ».
 - 2026-11-01 : les cinq écarts re-mesurés (tous présents), corrigés un commit chacun, test rouge
   vérifié d'abord. Doc : `docs/systeme/mathast/README.md` (paragraphe « Écarts d'écriture »).
