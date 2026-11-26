@@ -6,7 +6,7 @@ _Mis à jour le 2026-11-26, brouillons en prod, PR en cours._
 
 - **État** : brouillons créés en prod par David (f114cc04 N1, b4a813ae N2, e25be0a4 N3, 18ff9913 N4,
   ed2c1c0b N5) ; migrations de contenu (`20261126090426`) et de rangement (`20261126092228`)
-  générées, tests verts et rouges sans elles · **Prochaine action** : relancer `security-auditor` sur les deux migrations (lancé le 2026-11-26, résultat non lu avant le /clear), puis PR, merge, `db:migrate`
+  générées, tests verts et rouges sans elles · **Prochaine action** : ouvrir la PR (audit fait, aucun bloquant), merge, `db:migrate`
   (4 conditions), puis relecture dans `/dev/modeles` (`?point=` des neufs ; série de relecture pour
   les publiés) · **En attente de David** : relecture · **Pièges en cours** : `migration list
 --linked` avant `db:migrate` (autres sessions) ; relancer le script des neufs garde les ids ·
@@ -63,3 +63,8 @@ _Mis à jour le 2026-11-26, brouillons en prod, PR en cours._
   passage puis remis depuis une copie) ; `garde-niveaux-tags` : aucun manque.
 - Push bloqué une fois par `check-integration-paths.ts` (`git ls-files` au-delà de 1 Mio, ENOBUFS) ;
   le même correctif était déjà sur `main`, fusionné dans la branche.
+- `security-auditor` sur les deux migrations : **aucun finding bloquant**. À noter : `updated_at` des
+  7 publiés passe à la date du jour (voulu) ; le trigger coupé le temps de l'UPDATE du rangement ne
+  peut rester coupé que si le fichier était joué hors transaction (jamais par `db push`) ; 1SPE-436
+  est sur la notion, admis par la règle. Personne ne gagne ni ne perd d'accès ; les élèves verront
+  les 11 variations dès `db:migrate`, les 5 brouillons restent dans l'admin.
