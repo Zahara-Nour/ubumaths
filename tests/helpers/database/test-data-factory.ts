@@ -10,6 +10,13 @@ import { generateTestId, generateTestEmail, createServiceRoleClient } from './tr
 import { insertAuthUser } from './postgres-client';
 
 type Tables = Database['public']['Tables'];
+/** Contenu d'une version (ADR 0044) : il ne vit plus sur la ligne d'`exercises`. */
+type ExerciseContent = Pick<
+	Tables['exercise_versions']['Row'],
+	'variations' | 'shared' | 'generic_functions'
+>;
+/** Un exercice de test : sa fiche d'identité et le contenu de sa version 1. */
+export type TestExercise = Tables['exercises']['Row'] & ExerciseContent;
 
 /**
  * Builder for creating test profiles
@@ -159,7 +166,7 @@ export class ClassBuilder {
  * Builder for creating test exercises
  */
 export class ExerciseBuilder {
-	private data: Partial<Tables['exercises']['Insert']> = {};
+	private data: Partial<Tables['exercises']['Insert'] & ExerciseContent> = {};
 
 	constructor(createdBy: string) {
 		this.data = {
@@ -227,7 +234,7 @@ export class ExerciseBuilder {
 	 * shared, generic_functions) va dans la version, la ligne d'`exercises` garde l'identité.
 	 * Rend la ligne avec le contenu de la v1.
 	 */
-	async create(): Promise<Tables['exercises']['Row']> {
+	async create(): Promise<TestExercise> {
 		const client = createServiceRoleClient();
 		const { variations, shared, generic_functions, ...identity } = this.data;
 		const { data, error } = await client

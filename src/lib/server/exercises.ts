@@ -33,14 +33,18 @@ import {
 	splitVersionContent,
 	withLatestVersion,
 	withLatestVersions,
-	withVersionContent
+	withVersionContent,
+	type ExerciseVersionContent
 } from '#lib/server/exercise-versions.ts';
 
 const logger = createServerLogger('server/exercises');
 
 type _Exercise = Database['public']['Tables']['exercises']['Row'];
-type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
-type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
+// Écriture d'un exercice : sa fiche d'identité (`exercises`) et le contenu de sa version (ADR 0044).
+type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'] &
+	Partial<ExerciseVersionContent>;
+type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'] &
+	Partial<ExerciseVersionContent>;
 
 /**
  * Exercise category type
@@ -357,7 +361,7 @@ export async function createExercise(
 	}
 
 	// Version 1. En cas d'échec, l'exercice sans version est retiré : il ne se lirait pas.
-	let data: typeof created;
+	let data: typeof created & ExerciseVersionContent;
 	try {
 		const v1 = await createFirstVersion(supabase, created.id, content, userId);
 		data = {

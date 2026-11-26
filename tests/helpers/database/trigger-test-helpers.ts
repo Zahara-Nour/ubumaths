@@ -355,10 +355,11 @@ export async function insertTestClass(params: {
 /**
  * Insert a test exercise
  */
-export async function insertTestExercise(params: {
-	createdBy: string;
-	type?: string;
-}): Promise<Database['public']['Tables']['exercises']['Row']> {
+export async function insertTestExercise(params: { createdBy: string; type?: string }): Promise<
+	Database['public']['Tables']['exercises']['Row'] & {
+		variations: Database['public']['Tables']['exercise_versions']['Row']['variations'];
+	}
+> {
 	const serviceClient = createServiceRoleClient();
 
 	const exercise = {

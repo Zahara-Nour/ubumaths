@@ -204,8 +204,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.enforce_kanban_tags_per_board_cap()',
 	'public.enforce_single_teacher()',
 	'public.ensure_single_active_deck()',
-	'public.exercise_has_multiple_variations(uuid)',
-	'public.exercise_variation_count(uuid)',
 	'public.exercises_search_vector(text,text,text,text[])',
 	'public.extract_plain_text_from_tiptap(jsonb)',
 	'public.friendships_freeze_parties()',

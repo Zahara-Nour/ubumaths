@@ -52,6 +52,8 @@ interface LigneRendue {
 
 const MIGRATION = 'supabase/migrations/20261125163605_versions_exercices.sql';
 const MIGRATION_EDITEUR = 'supabase/migrations/20261125183550_versions_exercices_editeur.sql';
+const MIGRATION_RETRAIT =
+	'supabase/migrations/20261126200501_versions_exercices_retrait_ancien_contenu.sql';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -340,7 +342,10 @@ describe('reprise : rollback documenté, puis migration rejouée depuis son fich
 				`delete from public.exercises e
 				  where not exists (select 1 from public.profiles p where p.id = e.created_by)`
 			);
-			// Les fonctions de l'éditeur (PR 2) dépendent de la table : leur rollback passe d'abord
+			// Les migrations suivantes passent d'abord, de la plus récente à la plus ancienne : la PR 4
+			// remet les anciennes colonnes de contenu, puis les fonctions de l'éditeur (PR 2), qui
+			// dépendent de la table, s'en vont.
+			await pg.query(extractRollback(MIGRATION_RETRAIT));
 			await pg.query(extractRollback(MIGRATION_EDITEUR));
 			await pg.query(rollback);
 

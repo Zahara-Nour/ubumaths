@@ -89,7 +89,6 @@ describe('exercises.search_indexed — « Afficher sur Google »', () => {
 				created_by: teacherId,
 				category: 'automatisme',
 				title: 'Google ZZ',
-				variations: [{ label: 'default', statement_md: 'Q ?', solution_md: 'R' }],
 				is_public: isPublic
 			})
 			.select('id')
@@ -146,7 +145,6 @@ describe('exercises.search_indexed — « Afficher sur Google »', () => {
 		const { error } = await teacher.from('exercises').insert({
 			created_by: teacherId,
 			category: 'automatisme',
-			variations: [{ label: 'default', statement_md: 'Q ?', solution_md: 'R' }],
 			is_public: false,
 			search_indexed: true
 		});
