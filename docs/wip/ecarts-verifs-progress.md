@@ -392,4 +392,6 @@ Worktree `ubumaths-wt-ecarts-verifs-e77-variation-0`, branche `fix/ecarts-verifs
 
 **Preuves** : `tests/integration/exercise-direct-assignment-read.test.ts` rouge sans la migration (2 échecs : élève désigné, classe), 12 verts avec ; #3012 vert sous ordi-chrome, ordi-safari, iphone ; `pnpm voir` avec l'Élève 01 (non assigné) : 403.
 
+**Attendu d'un test changé** : `tests/integration/versions-exercices.test.ts` affirmait l'ancien comportement (l'élève affecté sans fiche ne lit ni l'exercice ni ses versions par la base) ; il attend maintenant les deux versions. Vu rouge en CI au premier push, la suite d'intégration complète est verte en local (619 fichiers, 8155 tests).
+
 **Restes, à part** : la policy d'insertion `exercise_assignments_insert` ne vérifie ni que l'exercice est à celui qui assigne, ni que la classe ou l'élève est le sien (sans effet en mono-professeur ; question d'accès à poser si un second prof arrive). `pnpm voir --compte eleve` ne connecte que l'Élève 01 : pas de capture de la page avec l'Élève 02 (vue par Playwright seulement).
