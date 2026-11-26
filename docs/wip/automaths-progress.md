@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, PR A (cartes) en cours._
+_Mis à jour le 2026-11-26, PR A (cartes) en cours ; phase 0 de la PR A2 validée._
 
 - **État** : PR A codée sur `feat/automaths-cartes` (worktree `../ubumaths-wt-automaths-cartes`), commitée, PAS poussée : tests verts, rendu vu (catalogue ordi + téléphone, Ma série). Revue `code-reviewer` faite : aucun bloquant (§ ci-dessous).
-- **Prochaine action** : corriger les points 1, 3, 4 de la revue (tests d'abord), `git merge origin/main` (worktree en retard), push, PR, `pnpm pr:merger <n>` ; puis PR B (`feat/automaths-recherche`, phase 0 validée ci-dessous).
+- **Prochaine action** : corriger les points 1, 3, 4 de la revue (tests d'abord), `git merge origin/main` (worktree en retard), push, PR, `pnpm pr:merger <n>` ; puis PR A2 (variations choisies sur la carte, phase 0 validée ci-dessous, branche `feat/automaths-variations-carte`) ; puis PR B (`feat/automaths-recherche`, phase 0 validée ci-dessous).
 - **En attente de David** : rien.
 - **Pièges en cours** : choix QCM DANS l'énoncé (bloc ```choix) → les retirer avant de chercher ; bonne réponse d'un QCM souvent variable (`{{r}}`) ; séparateur de `rubrique` = « > » ; banc de test : `overflow: hidden` sur html et body ; élément `display: none` absent de `getByRole` ; capture WebKit d'une carte = miroir (`pnpm voir --chrome`).
 - **Worktree / branche** : `../ubumaths-wt-automaths-cartes` · `feat/automaths-cartes`.
@@ -20,6 +20,18 @@ _Mis à jour le 2026-11-26, PR A (cartes) en cours._
 - Choix non écrits en phase 0 (à dire à David) : intitulé « Niveau » de la difficulté renommé « Difficulté » (infobulle) ; la position de départ des flèches est la variation de l'aperçu, et la graine fixe des aperçus tombe presque toujours sur la DERNIÈRE variation (« 2/2 », « 4/4 », « 8/8 » au départ).
 - Tests : `grade-badge.test.ts` (8), 5 cas dans `QuestionPreviewCard`, 4 dans `CartQuestionCard`, hauteurs de `catalogue-navigation` ; rouges 11/11 sur les fichiers d'origine (copie restaurée ensuite). 1 204 tests navigateur verts sur `components/` et `automaths/`.
 - Vu : `pnpm voir --chrome` (ordi, téléphone) et script Playwright sur `/automaths/panier` (série en `localStorage`) : flèche « 3/3 » → « 1/3 », corbeille 2 → 1 ligne, 0 erreur de console.
+
+### 2026-11-26 — PR A2 « variations choisies sur la carte », phase 0 validée par David (« je valide »)
+
+Idée de David : dans Ma série, choisir les variations avec les flèches de la carte au lieu de la fenêtre de `VariationPicker`.
+
+1. Flèches « ‹ k/n › » sur la carte de Ma série : elles parcourent TOUTES les variations, retirées comprises (sinon on ne peut plus en remettre une). Remplace le « seules les variations gardées défilent » de la PR A.
+2. Toutes gardées par défaut, numéro en vert ; clic sur le numéro (prof seulement) → variation retirée : numéro en rouge ET barré (jamais la couleur seule), phrase « 2 variations sur 3 » sous la ligne. Nouveau clic → remise.
+3. Infobulle sur le numéro : « Retirer cette variation de la série » / « Remettre cette variation ».
+4. La dernière variation gardée ne se retire pas : clic sans effet, l'infobulle le dit.
+5. Case « En QCM » sur la ligne fine, visible seulement quand la variation affichée peut se poser en QCM (remplace celle de la fenêtre).
+6. Élève / visiteur : flèches seulement, numéro non cliquable.
+7. La fenêtre de `VariationPicker` disparaît de Ma série. PR à part, juste après la PR A.
 
 ### 2026-11-26 — PR A, revue `code-reviewer` (Sonnet) : aucun bloquant
 
