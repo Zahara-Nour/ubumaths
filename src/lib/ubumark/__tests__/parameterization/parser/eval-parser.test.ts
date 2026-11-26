@@ -325,3 +325,41 @@ describe('modificateur ;sci', () => {
 		expect(parseEvalExpressionWithModifiers(token)).toEqual(expected);
 	});
 });
+
+// Écriture des nombres (2026-11-26) : `;dN` au moins N décimales, `;aN` arrondi à N décimales,
+// `;pN` arrondi à N chiffres significatifs
+describe('modificateurs ;dN, ;aN, ;pN', () => {
+	it.each([
+		['{{eval:x;d2}}', { expression: 'x', modifiers: { minDecimals: 2 } }],
+		['{{eval:x;a2}}', { expression: 'x', modifiers: { roundDecimals: 2 } }],
+		['{{eval:x;a0}}', { expression: 'x', modifiers: { roundDecimals: 0 } }],
+		['{{eval:x;p3}}', { expression: 'x', modifiers: { significantDigits: 3 } }],
+		[
+			'{{eval:x;sci;p2}}',
+			{ expression: 'x', modifiers: { scientific: true, significantDigits: 2 } }
+		],
+		[
+			'{{eval:(x)[m];[cm];a1,+}}',
+			{ expression: '(x)[m]', modifiers: { unit: 'cm', roundDecimals: 1, addPositive: true } }
+		],
+		// `;d` seul garde son sens
+		['{{eval:x;d}}', { expression: 'x', modifiers: { decimal: true } }]
+	])('%s', (token, expected) => {
+		expect(parseEvalExpressionWithModifiers(token)).toEqual(expected);
+	});
+
+	it.each([
+		['{{eval:x;a2;p2}}', /;a.*;p|;p.*;a/],
+		['{{eval:x;d2;a1}}', /;d2/],
+		['{{eval:x;p2,d3}}', /;d3/],
+		['{{eval:135[min];hms;a1}}', /;hms/],
+		['{{eval:135[min];hms;p2}}', /;hms/],
+		['{{eval:x;a}}', /chiffre/],
+		['{{eval:x;p}}', /chiffre/],
+		['{{eval:x;a16}}', /entre 0 et 15/],
+		['{{eval:x;p0}}', /entre 1 et 15/],
+		['{{eval:x;d0}}', /entre 1 et 15/]
+	])('%s → erreur claire', (token, message) => {
+		expect(() => parseEvalExpressionWithModifiers(token)).toThrow(message);
+	});
+});

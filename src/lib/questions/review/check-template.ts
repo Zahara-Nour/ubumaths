@@ -15,7 +15,10 @@
  *   serait jugée fausse : `eval:` qui rend une fraction LaTeX, CP-058).
  *
  * Les avertissements (`warnings`) ne changent jamais le verdict : variable qui peut
- * être négative citée sans parenthèses (`x-{{a}}` → `x--3`), cf. negative-substitution.ts.
+ * être négative citée sans parenthèses (`x-{{a}}` → `x--3`), cf. negative-substitution.ts ;
+ * écriture des nombres (2026-11-26) : euros au-delà du centime, `;dN` sur une valeur qui a
+ * plus de N décimales (dits par les `{{eval}}` pendant les tirages, `collectEvalWarnings`),
+ * réponse attendue arrondie (`;aN`, `;pN`) dans une case sans `precision`.
  *
  * « 0 problème » n'est une preuve que si on sait combien d'éléments ont été
  * analysés : le rapport compte les specs et les tirages.
@@ -26,6 +29,8 @@ import { validateTemplate } from '#lib/questions/validators/template-validator.t
 import { questionTemplateSchema } from '#lib/questions/template-schema.ts';
 import { runAllTestSpecs, type TestSpecResult } from '#lib/questions/test-spec-runner.ts';
 import { generateInstance } from '#lib/questions/generator/instance-generator.ts';
+import { collectEvalWarnings } from '#lib/mathAST/eval/eval-warnings.ts';
+import { parseEvalExpressionWithModifiers } from '#lib/ubumark/index.ts';
 import { calculusFinalAnswerLatex } from '#lib/questions/generator/correction-generator.ts';
 import { requiredFormVerdict } from '#lib/questions/required-form-validator.ts';
 import { readingOf } from '#lib/questions/formula-reading.ts';
@@ -124,11 +129,14 @@ function checkGeneration(
 	draws: VariableDraw[];
 	correctionForm: TemplateCheckReport['correctionForm'];
 	figures: TemplateCheckReport['figures'];
+	/** Ce que les `{{eval}}` ont signalé pendant les tirages (écriture des nombres) */
+	evalWarnings: string[];
 } {
 	const failures: GenerationFailure[] = [];
 	const draws: VariableDraw[] = [];
 	const correctionForm: TemplateCheckReport['correctionForm'] = { checked: 0, failures: [] };
 	const figures: TemplateCheckReport['figures'] = { checked: 0, failures: [] };
+	const evalWarnings: string[] = [];
 	const cleanCoefficients = template.shared?.cleanCoefficients === true;
 	let attempts = 0;
 
@@ -136,7 +144,8 @@ function checkGeneration(
 		const single: QuestionTemplate = { ...template, variations: [variation] };
 		for (let seed = 1; seed <= instances; seed++) {
 			attempts++;
-			const result = generateInstance(single, seed);
+			const { result, warnings } = collectEvalWarnings(() => generateInstance(single, seed));
+			evalWarnings.push(...warnings);
 			if (!result.success) {
 				failures.push({ variationIndex, seed, errors: result.errors });
 				continue;
@@ -169,7 +178,53 @@ function checkGeneration(
 		}
 	});
 
-	return { attempts, failures, draws, correctionForm, figures };
+	return { attempts, failures, draws, correctionForm, figures, evalWarnings };
+}
+
+/** Avertissements d'écriture gardés, les autres comptés (chaque tirage a ses valeurs) */
+const MAX_EVAL_WARNINGS = 3;
+
+/** Un même avertissement revient à chaque tirage : dit une fois, et au plus 3 différents */
+function firstEvalWarnings(warnings: string[]): string[] {
+	const distinct = [...new Set(warnings)];
+	if (distinct.length <= MAX_EVAL_WARNINGS) return distinct;
+	return [
+		...distinct.slice(0, MAX_EVAL_WARNINGS),
+		`… et ${distinct.length - MAX_EVAL_WARNINGS} autre(s) avertissement(s) d’écriture des nombres sur d’autres tirages`
+	];
+}
+
+/** `{{eval:…}}` d'un texte de modèle */
+const EVAL_TOKEN = /\{\{eval:(?:[^{}]|\{\{[^{}]*\}\}|\{[^{}]*\})*\}\}/g;
+
+/**
+ * Réponse attendue arrondie (`;aN`, `;pN`) dans une case sans `precision` (ni dans la case,
+ * ni dans `blankDefaults` de la variation ou du modèle) : l'élève qui n'arrondit pas, ou
+ * arrondit autrement, est compté faux sans message.
+ */
+function roundedAnswerWithoutPrecision(template: QuestionTemplate): string[] {
+	const shared = template.shared?.blankDefaults?.precision;
+	return template.variations.flatMap((variation, variationIndex) =>
+		(variation.blanks ?? []).flatMap((blank, blankIndex) => {
+			if ((blank.precision ?? variation.blankDefaults?.precision ?? shared) !== undefined)
+				return [];
+			const rounded = (blank.expectedAnswer.match(EVAL_TOKEN) ?? []).find((token) => {
+				try {
+					const modifiers = parseEvalExpressionWithModifiers(token)?.modifiers;
+					return (
+						modifiers?.roundDecimals !== undefined || modifiers?.significantDigits !== undefined
+					);
+				} catch {
+					// Réglage refusé : l'erreur de tirage le dit déjà
+					return false;
+				}
+			});
+			if (rounded === undefined) return [];
+			return [
+				`variation ${variationIndex + 1}, case ${blankIndex + 1} : ${rounded} — arrondi dans la réponse attendue, mais la case n’a pas de précision : l’élève qui n’arrondit pas sera compté faux sans message (donner une \`precision\`)`
+			];
+		})
+	);
 }
 
 /** Statuts d'une réponse de la bonne valeur : l'erreur prévue tombe sur la bonne réponse */
@@ -275,8 +330,15 @@ export function checkTemplate(
 		? []
 		: schema.error.issues.map((issue) => `${issue.path.join('.')} : ${issue.message}`);
 	const specs = runAllTestSpecs(template);
-	const { draws, correctionForm, figures, ...generation } = checkGeneration(template, instances);
-	const warnings = findUnparenthesizedNegatives(template, draws);
+	const { draws, correctionForm, figures, evalWarnings, ...generation } = checkGeneration(
+		template,
+		instances
+	);
+	const warnings = [
+		...findUnparenthesizedNegatives(template, draws),
+		...firstEvalWarnings(evalWarnings),
+		...roundedAnswerWithoutPrecision(template)
+	];
 
 	const reasons: string[] = [];
 	// Contrainte `question_templates_level_positive` ; les niveaux TinyMath commencent à 0

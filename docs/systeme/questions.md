@@ -1314,7 +1314,8 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    ADR 0012) ou valeur numérique (`precision` : `decimal`, `significant`, `magnitude`,
    `tolerance`), grandeur, `angleModulo: '2pi'`. Arrondi : plus de chiffres que demandé mais bon
    arrondi → `bad_form` (contrainte `rounding`, non réglable, message « Arrondis au … ») ; moins de
-   décimales accepté si la valeur est exactement l'arrondi. Réponse comptée fausse sans autre
+   décimales, valeur exactement l'arrondi → juste en valeur, jugé à l'étape 5 (perfectible : la règle
+   est renversée le 2026-11-26, cf. **Zéros finaux** ci-dessous). Réponse comptée fausse sans autre
    message, dans une case de formule sans unité : si le parseur la refuse pour un nombre collé
    derrière un facteur (`(n+2)4^n`, `x2` ; règle du 2026-10-08, `mathAST/parser/number-after-factor.ts`),
    la carte le dit (`numberAfterFactorFeedback` : « Nombre « 4 » écrit après un facteur : écris le
@@ -1343,6 +1344,37 @@ cercle(O, passant=A)` (palette : le compas ; papier uni ou quadrillage, O et A s
    `acceptDecimal`, `angleModulo` → exceptions documentées dans `types.ts` ; sinon **mode exact** :
    `checkFormUnified` passe réponse et attendu dans le même pipeline de retouches cosmétiques
    (`cosmetic-transforms.ts`) puis les compare.
+
+**Zéros finaux** (`zeros`, décision de l'auteur du 2026-11-26) : un zéro final ne s'écrit que s'il
+dit quelque chose : arrondi, centimes, ou demandé par l'auteur. Le juge ne le signale donc pas
+sans regarder la case (`questions/meaningful-zeros.ts`, option `meaningfulTrailingZeros` de
+`cosmeticViolations`, qui ne juge alors plus que les zéros de tête) :
+
+- **arrondi à N décimales** (`precision: { type: 'decimal', digits: N }`) : la bonne écriture a
+  exactement N décimales. `3,0` au dixième de 3,04 est juste, sans violation `zeros`, quelle que
+  soit l'écriture de l'attendu et même en `zeros: 'strict'` ; `3` (valeur exactement l'arrondi) est
+  `unoptimal_form`, violation `rounding` en avertissement, message « Arrondi au dixième : écris le
+  chiffre des dixièmes, même si c'est 0. » (centième, millième ; au-delà « Arrondi à N décimales :
+  écris les N décimales, même les zéros. ») ; à l'unité (N = 0), rien ne change. Trop de chiffres
+  (`3,00`) ou arrondi non fait (`3,04`) : étape 3, inchangé ;
+- **arrondi à N chiffres significatifs** : ramené aux décimales que ces N chiffres font écrire
+  (3,04 à 2 chiffres → `3,0` juste, `3` perfectible, « Arrondi à 2 chiffres significatifs : écris
+  les 2 chiffres, même les zéros. ») ; aucune exigence quand le dernier chiffre gardé est dans la
+  partie entière (`1 200` pour 1 234 à 2 chiffres) ;
+- **bonne réponse montrée** par le message d'une valeur fausse (« La réponse arrondie à 1 décimales
+  est 3,0 », « … avec 2 chiffres significatifs est 3,0 ») : écrite avec les mêmes zéros utiles,
+  virgule française (`writtenRoundedValue`) ;
+- **grandeur en euros** (unité tapée `€`, `euro(s)`, `EUR`) : exactement deux décimales (`3,70 €`)
+  est juste, sans violation `zeros` ; `3,7 €` reste juste ; `3,700 €` suit la règle `zeros`. Avec
+  un arrondi au centième en plus, `3,7 €` est perfectible (règle de l'arrondi) ;
+- partout ailleurs (valeur exacte, `none`, `magnitude`, `tolerance`, autres unités : `3,70 m`), la
+  règle `zeros` ne change pas ; `zeros: 'off'` coupe tout sauf le message d'arrondi.
+
+Mêmes verdicts en ordre fixé (`validateSingleBlank`, étape 5 : `checkSimpleNumberForm` et partie
+numérique d'une grandeur) et en ordre libre (`matchedAnswerForm`, qui passe par les mêmes
+fonctions). Seules les écritures décimales simples sont lues : une notation scientifique
+(`3{,}0\times10^{2}`) garde la règle `zeros` d'avant. Une case sans `precision` dont l'attendu
+s'écrit `3{,}0` reste en mode exact : `3{,}0` y est perfectible (`zeros`).
 
 Contraintes réglables (`options.constraints`, `ConfigurableConstraintId`) : `spaces`, `products`,
 `brackets`, `zeros`, `form`, `nullTerms`, `factorOne`, `factorZero`, `signs`, `reducedFractions`,

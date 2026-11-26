@@ -13,6 +13,9 @@
  * - '/derivative: Take derivative before evaluating
  * - [unité]: grandeur exprimée dans cette unité (`{{eval:3[h];[min]}}` → 180[min])
  * - hms: durée écrite en h, min, s (`{{eval:135[min];hms}}` → 2 h 15 min)
+ * - dN: au moins N décimales, sans arrondir (`{{eval:1.5;d2}}` → 1,50)
+ * - aN: arrondi à N décimales, N décimales écrites (`{{eval:3.704;a2}}` → 3,70)
+ * - pN: arrondi à N chiffres significatifs, tous écrits (`{{eval:0.0996;p2}}` → 0,10)
  *
  * @module ubumark/parameterization/parser/eval-parser
  */
@@ -35,11 +38,27 @@ const MODIFIER_ALIASES: Record<string, FlagModifier> = {
 	sci: 'scientific'
 };
 
-/** Modificateurs booléens (tous sauf l'unité imposée `;[unité]`) */
-type FlagModifier = Exclude<keyof EvalModifiers, 'unit'>;
+/** Modificateurs d'écriture des nombres, suivis d'un entier : `;d2`, `;a2`, `;p3` */
+type DigitsModifier = 'minDecimals' | 'roundDecimals' | 'significantDigits';
+
+/** Modificateurs booléens (tous sauf l'unité imposée `;[unité]` et les `;dN`, `;aN`, `;pN`) */
+type FlagModifier = Exclude<keyof EvalModifiers, 'unit' | DigitsModifier>;
 
 /** `[min]`, `[mm^2]`, `[km/h]` : l'unité dans laquelle exprimer une grandeur */
 const UNIT_MODIFIER_REGEX = /^\[([^[\]]+)\]$/;
+
+/** `d2`, `a0`, `p3` : lettre du réglage et nombre de chiffres */
+const DIGITS_MODIFIER_REGEX = /^([dap])(\d+)$/;
+
+/** Plus grand N de `;dN`, `;aN`, `;pN` (au-delà, le flottant n'a plus de chiffres vrais) */
+const MAX_WRITING_DIGITS = 15;
+
+/** Chaque lettre : sa clé, son plus petit N, et ce que N compte (messages d'erreur) */
+const DIGITS_MODIFIERS: Record<string, { key: DigitsModifier; min: number; counts: string }> = {
+	d: { key: 'minDecimals', min: 1, counts: 'le nombre de décimales' },
+	a: { key: 'roundDecimals', min: 0, counts: 'le nombre de décimales' },
+	p: { key: 'significantDigits', min: 1, counts: 'le nombre de chiffres significatifs' }
+};
 
 /**
  * Parse an eval expression token (backward compatible)
@@ -135,6 +154,7 @@ export function parseEvalExpressionWithModifiers(token: string): ParsedEvalExpre
 		expression = expression.slice(0, lastSemicolonIndex);
 	}
 
+	assertCompatibleWritings(modifiers);
 	return { expression, modifiers };
 }
 
@@ -164,6 +184,7 @@ function isValidModifierString(str: string): boolean {
 		.every(
 			(segment) =>
 				UNIT_MODIFIER_REGEX.test(segment.trim()) ||
+				DIGITS_MODIFIER_REGEX.test(segment.trim()) ||
 				(/^[d+(),'a-z\s]+$/i.test(segment) && !/\d/.test(segment))
 		);
 }
@@ -183,7 +204,25 @@ function parseModifiers(modifierString: string): EvalModifiers {
 			modifiers.unit = unit[1].trim();
 			continue;
 		}
+		const digits = DIGITS_MODIFIER_REGEX.exec(mod.trim());
+		if (digits) {
+			const [, letter, count] = digits;
+			const { key, min, counts } = DIGITS_MODIFIERS[letter];
+			const value = Number(count);
+			if (value < min || value > MAX_WRITING_DIGITS) {
+				throw new Error(
+					`;${letter}${count} : ${counts} doit être entre ${min} et ${MAX_WRITING_DIGITS}`
+				);
+			}
+			modifiers[key] = value;
+			continue;
+		}
 		const trimmed = mod.trim().toLowerCase();
+		// `;a`, `;p` sans chiffre : le réglage ne dit pas à quoi arrondir
+		if (trimmed === 'a') throw new Error(';a sans chiffre : écrire par exemple ;a2 (2 décimales)');
+		if (trimmed === 'p') {
+			throw new Error(';p sans chiffre : écrire par exemple ;p3 (3 chiffres significatifs)');
+		}
 		if (trimmed) {
 			const key = MODIFIER_ALIASES[trimmed];
 			if (key) {
@@ -193,4 +232,37 @@ function parseModifiers(modifierString: string): EvalModifiers {
 	}
 
 	return modifiers;
+}
+
+/**
+ * Réglages d'écriture qui se contredisent : refusés (erreur de tirage), jamais l'un
+ * des deux ignoré en silence.
+ */
+function assertCompatibleWritings(modifiers: EvalModifiers): void {
+	const { minDecimals, roundDecimals, significantDigits } = modifiers;
+	const rounding =
+		roundDecimals !== undefined
+			? `;a${roundDecimals}`
+			: significantDigits !== undefined
+				? `;p${significantDigits}`
+				: null;
+	if (roundDecimals !== undefined && significantDigits !== undefined) {
+		throw new Error(
+			`;a${roundDecimals} et ;p${significantDigits} ensemble : choisir un arrondi, en décimales (;aN) ou en chiffres significatifs (;pN)`
+		);
+	}
+	if (minDecimals !== undefined && rounding !== null) {
+		throw new Error(
+			`;d${minDecimals} avec ${rounding} : l'arrondi fixe déjà les décimales écrites, retirer ;d${minDecimals}`
+		);
+	}
+	const written = rounding ?? (minDecimals !== undefined ? `;d${minDecimals}` : null);
+	if (modifiers.hms && written !== null) {
+		throw new Error(`;hms avec ${written} : une durée écrite en h, min, s ne s'arrondit pas`);
+	}
+	if (modifiers.scientific && (roundDecimals !== undefined || minDecimals !== undefined)) {
+		throw new Error(
+			`;sci avec ${written} : en notation scientifique, arrondir avec ;pN (chiffres significatifs)`
+		);
+	}
 }

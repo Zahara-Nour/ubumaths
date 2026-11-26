@@ -1940,6 +1940,45 @@ validation `custom`) passe par `numberToLatexSafe` (`mathAST/common/numeric.ts`)
 `String(n)` (`String(3e-7)` = `3e-7`, relu 3e − 7). Tests :
 `src/lib/mathAST/eval/__tests__/evaluate-with-modifiers-sans-notation-js.test.ts`.
 
+**Décimales et arrondis** (2026-11-26). Règle : **un zéro final ne s'écrit que s'il dit quelque
+chose : arrondi, centimes, ou demandé par l'auteur.** Sans réglage, `1.5` reste `1,5`.
+
+| Modificateur | Ce qu'il fait                                                  | Exemples                                                                      |
+| ------------ | -------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `;dN`        | au moins N décimales, **sans arrondir** (N de 1 à 15)          | `1.5;d2` → 1,50 · `4;d2` → 4,00 · `3.755;d2` → 3,755                          |
+| `;aN`        | arrondit à N décimales et en écrit exactement N (N de 0 à 15)  | `2.675;a2` → 2,68 · `3.04;a1` → 3,0 · `-2.345;a2` → −2,35 · `2.6;a0` → 3      |
+| `;pN`        | arrondit à N chiffres significatifs, tous écrits (N de 1 à 15) | `3.04;p2` → 3,0 · `0.00456;p2` → 0,0046 · `9.96;p2` → 10 · `0.0996;p2` → 0,10 |
+| `;sci;pN`    | notation scientifique, mantisse à N chiffres                   | `1234;sci;p2` → 1,2 × 10³ · `3;sci;p2` → 3,0 × 10⁰                            |
+
+`;d` seul garde son sens (écriture décimale). L'arrondi se fait **au plus proche, 5 vers
+l'extérieur, sur la valeur exacte** (2,675 → 2,68, là où un calcul en flottants donnerait 2,67) ;
+un résultat irrationnel (`sqrt(2);a4`) est arrondi depuis sa valeur à 15 chiffres. Les espaces de
+groupement restent ceux du rendu (`1234;p2` → 1200, `123456;p2` → 120 000). Avec une grandeur :
+`{{eval:(x)[m];a2}}` → 1,50 m, et `;[cm]` convertit **avant** d'arrondir (`1[min];[h];a2` → 0,02 h).
+`;+` et `;()` lisent le signe écrit (`-0.001;a2,+` → +0,00). **Refusés** (erreur de tirage) : `;a`
+avec `;p` ; `;dN` avec `;a` ou `;p` ; `;a`, `;p` ou `;dN` avec `;hms` ; `;sci` avec `;a` ou `;dN`
+(arrondir avec `;pN`) ; `;a`, `;p` sans chiffre ; N hors bornes ; `;aN`, `;pN`, `;dN` sur un
+calcul littéral.
+
+**Euro** : une grandeur en euros (`€`, `euro`, `euros`, `EUR`) sans `;aN`, `;pN`, `;dN` ni `;sci`,
+écrite avec UNE décimale, en prend deux : `(37/10)[€]` → 3,70 €, `12[€]` → 12 €, `4.25[€]` et
+`3.755[€]` inchangés (tout est écrit). Un réglage écrit l'emporte (`12.345[€];p3` → 12,3 €). Ce
+complément est fait sur le résultat du `{{eval}}` (`euroWriting`), pas dans l'écriture des unités
+(`generateUnit`), qui sert aussi aux réponses des élèves.
+
+`round(x, n)` (n entier de 0 à 15) : le même arrondi exact que `;aN`, mais la **valeur** seulement,
+sans zéro d'écriture (`round(3.704, 2)` vaut 3,7) ; `round(x)` est inchangé ; calcul évalué et
+compilé (`mathAST/eval/decimal-rounding.ts`).
+
+**Avertissements** de `pnpm question:specs` (`checkTemplate`, sans effet sur le verdict) : des
+euros qui gardent plus de deux décimales sans `;aN`/`;pN` ; `;dN` sur une valeur qui a plus de N
+décimales ; une réponse attendue arrondie (`;aN`, `;pN`) dans une case sans `precision` (l'élève
+qui n'arrondit pas serait compté faux sans message). Les deux premiers sont dits par les `{{eval}}`
+pendant les tirages (`collectEvalWarnings` / `warnEval`, `mathAST/eval/eval-warnings.ts`) ; au plus
+trois différents sont listés. Tests : `src/lib/questions/generator/__tests__/eval-ecriture-nombres.test.ts`,
+`src/lib/mathAST/eval/__tests__/round-decimales.test.ts`,
+`src/lib/questions/review/__tests__/ecriture-nombres-warnings.test.ts`.
+
 ## Le pipeline
 
 ```
