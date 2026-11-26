@@ -312,7 +312,15 @@
 					"expression": "0..3"
 				}
 			],
-			"conditions": ["u1 != 0 || u2 != 0", "tk != tl"],
+			"conditions": [
+				"u1 != 0 || u2 != 0",
+				"tk != tl",
+				"tk != tr",
+				"tk != ts",
+				"tl != tr",
+				"tl != ts",
+				"tr != ts"
+			],
 			"blanks": [
 				{
 					"expectedAnswer": "0{{if:h==1|;1|}}"

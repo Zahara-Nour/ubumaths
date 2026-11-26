@@ -329,7 +329,17 @@
 					"expression": "0..3"
 				}
 			],
-			"conditions": ["c1 != 0", "c2 != 0", "c3 != 0"],
+			"conditions": [
+				"c1 != 0",
+				"c2 != 0",
+				"c3 != 0",
+				"abs(k1-l1)+abs(k2-l2) > 0",
+				"abs(k1-r1)+abs(k2-r2) > 0",
+				"abs(k1-s1)+abs(k2-s2) > 0",
+				"abs(l1-r1)+abs(l2-r2) > 0",
+				"abs(l1-s1)+abs(l2-s2) > 0",
+				"abs(r1-s1)+abs(r2-s2) > 0"
+			],
 			"blanks": [
 				{
 					"expectedAnswer": "0{{if:h==1|;1|}}"

@@ -17,6 +17,7 @@ le relancer réécrit les ajouts sans les doubler.
 
 Usage : python3 docs/wip/questions/idees-tle-geometrie-espace-publies.py scripts/questions/idees-tle-geometrie-espace-publies
 """
+import itertools
 import json
 import os
 import sys
@@ -411,7 +412,10 @@ V3 = variation(
     'Pour chaque point $M$, cherche $a$ et $b$ tels que $\\overrightarrow{AM}=a\\,'
     '\\overrightarrow{AB}+b\\,\\overrightarrow{AC}$ avec deux coordonnées, puis vérifie la '
     'troisième.',
-    ['c1 != 0', 'c2 != 0', 'c3 != 0'],
+    ['c1 != 0', 'c2 != 0', 'c3 != 0']
+    # Coefficients différents d'un point à l'autre : un leurre n'est pas un point juste décalé de 1
+    + ['abs(' + a + '1-' + b + '1)+abs(' + a + '2-' + b + '2) > 0'
+       for a, b in itertools.combinations('klrs', 2)],
 )
 
 # A(0 ; 1 ; −1), AB(1 ; 1 ; 0), AC(0 ; 1 ; 2) : n = (2 ; −2 ; 1), toutes non nulles
@@ -474,7 +478,9 @@ V4 = variation(
      + lettre(1) + '|}} }$.'],
     'Pour chaque point, trouve $t$ avec une des équations, puis vérifie que ce même $t$ convient '
     'pour les deux autres coordonnées.',
-    ['u1 != 0 || u2 != 0', 'tk != tl'],
+    ['u1 != 0 || u2 != 0']
+    # Paramètres tous différents : un leurre n'est pas un point juste décalé de 1
+    + ['t' + a + ' != t' + b for a, b in itertools.combinations('klrs', 2)],
 )
 
 V4V = {'x0': 1, 'y0': -2, 'z0': 0, 'u1': 3, 'u2': 0, 'u3': -1, 'tk': 1, 'tl': -2, 'tr': 2,

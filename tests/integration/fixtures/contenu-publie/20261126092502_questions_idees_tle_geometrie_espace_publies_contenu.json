@@ -1,5 +1,5 @@
 {
-	"migration": "supabase/migrations/20261126090344_questions_idees_tle_geometrie_espace_publies_contenu.sql",
+	"migration": "supabase/migrations/20261126092502_questions_idees_tle_geometrie_espace_publies_contenu.sql",
 	"modeles": [
 		{
 			"id": "2b240d8c-bdc2-4a55-a8db-a028f02ec889",
@@ -2172,7 +2172,15 @@
 								"expression": "0..3"
 							}
 						],
-						"conditions": ["u1 != 0 || u2 != 0", "tk != tl"],
+						"conditions": [
+							"u1 != 0 || u2 != 0",
+							"tk != tl",
+							"tk != tr",
+							"tk != ts",
+							"tl != tr",
+							"tl != ts",
+							"tr != ts"
+						],
 						"blanks": [
 							{
 								"expectedAnswer": "0{{if:h==1|;1|}}"
@@ -4289,7 +4297,17 @@
 								"expression": "0..3"
 							}
 						],
-						"conditions": ["c1 != 0", "c2 != 0", "c3 != 0"],
+						"conditions": [
+							"c1 != 0",
+							"c2 != 0",
+							"c3 != 0",
+							"abs(k1-l1)+abs(k2-l2) > 0",
+							"abs(k1-r1)+abs(k2-r2) > 0",
+							"abs(k1-s1)+abs(k2-s2) > 0",
+							"abs(l1-r1)+abs(l2-r2) > 0",
+							"abs(l1-s1)+abs(l2-s2) > 0",
+							"abs(r1-s1)+abs(r2-s2) > 0"
+						],
 						"blanks": [
 							{
 								"expectedAnswer": "0{{if:h==1|;1|}}"
