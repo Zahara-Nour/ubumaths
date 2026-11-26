@@ -148,7 +148,7 @@ Chaque exemple ci-dessous est **tiré d'un test existant** (cité) ; aucun n'est
 
 La notation custom est stockée **telle quelle** dans l'AST ; elle n'est convertie en LaTeX qu'au
 rendu (`expressionToLatex` à l'écran, `expressionToRawLatex` puis `convertLatexToTypstMath` au PDF).
-Les lettres-fonctions viennent de `generic_functions` de l'exercice (`genericFunctionsConfig`) :
+Les lettres-fonctions viennent de `generic_functions` de la version de l'exercice (`exercise_versions`, ADR 0044 ; `genericFunctionsConfig`) :
 une liste déclarée **remplace** les défauts (f, g, h, u, v, w, F, G, H). Le sens de `AB` (longueur
 ou produit) passe au PDF par l'option `capitalPairs` de `generateTypst` (absente : produit, l'écriture
 d'avant) ; à l'écran par le contexte `content-capital-pairs.ts`. Règles des unités et des
