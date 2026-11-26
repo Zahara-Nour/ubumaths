@@ -2,22 +2,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3195._
+_Mis à jour le 2026-11-26, après #3200._
 
-- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée par David
-  (§ 2, et Q1 à Q4 du § 3 selon les recommandations) ; **lot 1 mergé** (#3195 : moteur de vue
-  `utils/espace-vue.ts`, rien de branché à l'écran, § 5).
-- **Prochaine action** : lot 2 — clé `tourner:` du bloc ` ```solide ` pour les polyèdres (cube, pavé,
-  prisme, pyramide) : glisser, clavier, bouton « Vue de départ », catalogue et doc (§ 4).
-- **En attente de David** : rien.
+- **État** : [ADR 0045](../adr/0045-figures-de-l-espace-qui-tournent.md) ; phase 0 validée (§ 2, Q1 à Q4
+  du § 3) ; **lots 1 et 2 mergés** (#3195 moteur de vue ; #3200 clé `tourner: oui` sur les polyèdres, § 6).
+  Rien n'est en prod.
+- **Prochaine action** : lot 3 — cylindre, cône, boule qui tournent (§ 4), revue `code-reviewer` en opus.
+- **En attente de David** : son avis après essai du lot 2 sur (1) la mention « Figure à tourner » sous la
+  figure au repos, ajoutée hors phase 0 ; (2) les noms des sommets, replacés à chaque angle, qui peuvent
+  sauter pendant la rotation. Il n'avait pas encore essayé au moment du merge.
 - **Pièges en cours** : une figure sans rotation reste strictement celle d'aujourd'hui
-  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts (le cosinus diffère entre
-  le Mac et la CI) ; le cadre du dessin tourné (échelle fixe, pivot fixe, place réservée dès le
-  repos) est à concevoir au lot 2 ; cylindre, cône et boule sont dessinés « à plat » (pas une vraie
-  projection) : passage à la vue tournée à concevoir au lot 3 ; noms et cotes sont placés pour la
-  cavalière (cotes à la vue de départ seulement, Q1).
-- **Worktree / branche** : aucun (retirés au merge) ; lot 2 = nouveau worktree
-  `../ubumaths-wt-solides-3d`.
+  (`solide-scene-figee.test.ts`) ; jamais d'instantané de flottants bruts ; cylindre, cône et boule sont
+  dessinés « à plat » (ellipses, pas une vraie projection) : leur vue tournée et leur contour sont à
+  concevoir ; une ligne `tourner:` non suivie va dans `rotationErrors`, jamais dans `errors` ; un `onclick`
+  de Svelte est délégué à la racine (écouteur posé sur la figure pour arrêter le clic après un glissement) ;
+  « moins d'animations » et le geste tactile réel n'ont pas de test.
+- **Worktree / branche** : aucun (retirés après #3200) ; lot 3 = nouveau worktree
+  `../ubumaths-wt-solides-3d`. Le lien `pnpm lien` du port 5177 est resté publié, serveur arrêté : le
+  retirer par `pnpm lien --stop` depuis le prochain worktree.
 
 ## 1. D'où l'on part
 
@@ -114,3 +116,38 @@ principale ou `pedagogy-expert` pour le branchement ubumark ; `frontend-develope
   CI (cosinus de la machine, code non touché). Instantanés arrondis au milliardième de centimètre ;
   l'identité exacte avec l'ancien code a été vérifiée en local avant l'arrondi. À retenir pour les
   lots suivants : jamais d'instantané de flottants bruts.
+
+## 6. Lot 2 — `tourner: oui` sur les polyèdres (2026-11-26)
+
+- **Clé** `tourner: oui | non` du bloc ` ```solide ` (`SolideSpec.rotate`). Prise en charge : cube, pavé,
+  prisme, pyramide, avec sommets, `points:`, `vecteurs:`, `marquer:`, `cachees:`. Pas encore : cylindre, cône,
+  boule (lot 3), `section:` et `cotes:` (lot 4), `tracer:` (lot 5).
+- **Comportements 14 et 15** (figure fixe pour l'élève, message pour l'auteur) : une ligne `tourner:` qu'on
+  ne peut pas suivre ne met **pas** le bloc en erreur. La phrase va dans `EspaceNode.rotationErrors`, à part
+  de `errors` : tout ce qui lit `errors` (PDF, cases à geste, corrigé) continue de dessiner la figure, fixe.
+  L'auteur lit la phrase au-dessus de la figure (`SolideRotationNote.svelte`).
+- **Scène** : `buildSolideScene(spec, vue)`. Cadre du dessin tourné : échelle du dessin fixe, centre du solide
+  au milieu d'un carré fixe où la figure tient sous tous les angles (le pavé 4 × 2 × 3 passe de 4,8 cm à
+  6,1 cm de large, le cube à 6,6 cm, la pyramide carrée 4 × 5 à 7,1 cm ; sur un écran plus étroit la figure
+  rétrécit en bloc) ; la place est réservée dès le repos, la page ne bouge pas. À la vue de départ : le dessin
+  fixe, déplacé en bloc (prouvé sur les 8 formes). Noms des sommets : même placement que le dessin fixe, à
+  chaque angle (ils peuvent sauter d'un côté à l'autre d'un sommet pendant la rotation ; vus de dessus, les
+  noms de deux sommets superposés se chevauchent).
+- **Écran** (`Solide.svelte`) : glisser (seuil 4 px, la page ne défile pas sous le doigt), flèches du clavier
+  (15°), Échap et bouton « Vue de départ », passage cavalière → vue droite en 250 ms, retour en 350 ms,
+  immédiats si l'appareil demande moins d'animations. La vue est attachée au texte du bloc : un autre bloc
+  repart de la vue de départ.
+- **Ajout hors phase 0** : sous la figure au repos, la mention « Figure à tourner » (avec une icône), à la
+  place que prendra le bouton — sans elle, rien ne dit à l'élève que la figure tourne. À retirer si David
+  n'en veut pas.
+- Vu à l'écran par la session (captures Chromium du composant, pavé, pyramide et prisme sous cinq angles) :
+  tirets recalculés, face teintée, arête épaisse, flèches et noms qui suivent, bouton à la place de la
+  mention sans déplacer la suite. **Pas vu** : le geste du doigt sur un vrai téléphone (défilement de la
+  page bloqué sur la figure, fluidité).
+- Catalogue (`block-catalog/solide.ts` : réglage et exemple), doc `docs/systeme/ubumark.md`.
+- Revue (`code-reviewer`) : aucun bug d'animation ni de fuite ; figure sans la clé inchangée (diff, 414 tests
+  de la scène) ; cadre balayé par pas de 5° sur 6 solides, passage compris : aucun débordement. Corrigé avant
+  la PR : tourner une figure posée dans un choix ne coche plus ce choix (le clic qui suit un glissement
+  s'arrête à la figure) ; Alt / Ctrl / Cmd + flèche laissés au navigateur ; souris relâchée hors de la figure
+  sans capture ; animation arrêtée quand le bloc change. Restent sans test : « moins d'animations »
+  (comportement 11), le vrai geste tactile (comportement 10).

@@ -16,7 +16,7 @@ export const solideEntry: BlockCatalogEntry = {
 	summary:
 		'Un cube, un pavé, un prisme, une pyramide, un cylindre, un cône ou une boule dessiné en perspective cavalière, arêtes cachées en tirets : pour reconnaître et nommer un solide, repérer ses faces, ses arêtes et ses sommets, lire ses dimensions.',
 	intro:
-		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse.',
+		'Le bloc dessine le solide en perspective cavalière, comme les assemblages de cubes : la face de devant est en vraie grandeur, les fuyantes partent à 45° vers le haut à droite, réduites de moitié. Les arêtes cachées sont en tirets ; le cylindre, le cône et la boule ont des ellipses à plat, dont la moitié arrière est en tirets. Les dimensions de forme: sont des proportions : le dessin est toujours ramené à 4 cm sur son plus grand côté, à l’écran comme sur la fiche PDF ; avec cotes:, les dimensions sont écrites sur le dessin. Les sommets se nomment dans un ordre fixe, puis se marquent avec marquer:. Le nom du solide n’est jamais lu par le lecteur d’écran : il peut être la réponse. Avec tourner: oui, l’élève peut faire tourner un polyèdre à l’écran pour voir comment ses points, ses arêtes et ses vecteurs sont disposés ; sans cette ligne, la figure est fixe.',
 	settingGroups: [
 		{
 			settings: [
@@ -84,6 +84,13 @@ export const solideEntry: BlockCatalogEntry = {
 					defaultValue: null,
 					description:
 						'Geste de l’élève, dans une question : il touche un point pour l’origine, puis un point pour l’extrémité, et une flèche se dessine. La combinaison : au plus 6 vecteurs entre points nommés, ou nommés dans vecteurs: (2 u - v), signes + et -, coefficients entiers ou fractions irréductibles de dénominateur 2, 3 ou 4 (2 AB, 1/2 AE, 1/3 SA). depuis A impose l’origine (posée d’office, l’élève ne touche que l’extrémité) ; sans lui, tout représentant du vecteur est juste. Les points à toucher : les sommets nommés, puis les points de points: (pas de milieux automatiques) ; l’extrémité doit tomber sur l’un d’eux. Polyèdres seulement, sommets nommés. Faux : une phrase, et la flèche juste en vert. Réponse de la case : les noms des deux points (A/G).'
+				},
+				{
+					key: 'tourner',
+					values: 'oui | non',
+					defaultValue: 'non',
+					description:
+						'oui : l’élève peut faire tourner la figure à l’écran, en la faisant glisser du doigt ou de la souris, ou avec les flèches du clavier. Elle s’ouvre en perspective cavalière, comme sans cette ligne, puis passe en douceur à une vue sans déformation ; les arêtes cachées sont recalculées à chaque angle, les noms, les points, les vecteurs et les marques suivent. On peut la regarder par-dessus et par-dessous, pas la renverser. Un bouton « Vue de départ » (ou la touche Échap) la ramène à la cavalière ; chaque nouvelle question repart de la vue de départ. Tourner la figure ne compte pas dans la réponse. Sur la fiche PDF, la figure est toujours la vue de départ. Éteint par défaut : lire la perspective est souvent ce qu’on évalue. Pour l’instant : cube, pavé, prisme et pyramide, sans section:, cotes: ni tracer: ; sinon la figure reste fixe et un message le dit à l’auteur.'
 				}
 			]
 		}
@@ -222,6 +229,19 @@ export const solideEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Les vecteurs u, v, w sont dessinés et nommés ; l’élève touche l’extrémité, ici G, le centre de gravité de ABC. Une phrase de correction écrit la combinaison avec u, v, w.'
+		},
+		{
+			title: 'Un pavé que l’élève peut tourner',
+			source: fence(
+				'solide',
+				'forme: pave 4 2 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu CG',
+				'vecteurs: AG, u = AI',
+				'tourner: oui'
+			),
+			explanation:
+				'Faire glisser la figure la fait tourner : on voit que les flèches AG et AI ne sont pas dans une même face. « Vue de départ » revient à la perspective cavalière.'
 		},
 		{
 			title: 'Sans arêtes cachées',

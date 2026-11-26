@@ -13,6 +13,8 @@
  * 3. Sur un exercice absent, la même sauvegarde crée la version 1 ; un exercice exporté sans
  *    version (`versions: []`) ne reçoit pas de version vide.
  * 4. Une sauvegarde dont deux versions ont le même numéro est refusée à la lecture.
+ * 5. Le fichier SQL de la sauvegarde se rejoue sur la base (PR 4 : `exercises` n'a plus de colonnes
+ *    de contenu) : l'exercice et ses versions reviennent, dans une transaction annulée.
  *
  * La sauvegarde est une action d'admin : client service (hors RLS), comme la route.
  *
@@ -20,13 +22,18 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
-import { exportBackupJSON, restoreFromBackup } from '../../src/lib/server/admin/exercise-backup';
+import {
+	exportBackupJSON,
+	exportBackupSQL,
+	restoreFromBackup
+} from '../../src/lib/server/admin/exercise-backup';
 import type { ExerciseBackup } from '../../src/lib/server/validation/backup';
 import {
 	cleanupAllTestData,
 	createServiceRoleClient
 } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
+import { getPostgresClient } from '../helpers/database/postgres-client';
 
 // ============================================================================
 // TYPES
@@ -96,6 +103,12 @@ beforeAll(async () => {
 
 	// Exercice dont la v1 est pointée par une fiche
 	pointedId = (await TestData.exercise(teacherId).create()).id;
+	// Des niveaux, comme presque tous les exercices de la prod (colonne text[] du fichier SQL)
+	const { error: gradesError } = await service
+		.from('exercises')
+		.update({ grades: ['1_SPE', 'T_SPE'] })
+		.eq('id', pointedId);
+	if (gradesError) throw new Error(gradesError.message);
 	pointedV1 = (await versionsOf(pointedId))[0].id;
 	const { data: ws } = await service
 		.from('worksheets')
@@ -202,5 +215,47 @@ describe('lecture du fichier', () => {
 		const result = await restoreFromBackup(service, broken, { conflict_strategy: 'replace' });
 		expect(result.success).toBe(false);
 		expect(await versionsOf(pointedId)).toEqual(before);
+	});
+});
+
+describe('fichier SQL de la sauvegarde', () => {
+	it('se rejoue : l’exercice revient, son contenu dans ses versions', async () => {
+		const before = await versionsOf(pointedId);
+		const sqlDump = await exportBackupSQL(service, ADMIN_EMAIL);
+		// Les instructions de CET exercice : sa ligne et ses versions (les étiquettes, à part, ne
+		// sont pas en cause ici).
+		const statements = sqlDump
+			.split('\n\n')
+			.map((block) => block.trim())
+			.filter(
+				(block) =>
+					(block.startsWith('INSERT INTO exercises (') ||
+						block.startsWith('INSERT INTO exercise_versions (')) &&
+					block.includes(`'${pointedId}'`)
+			);
+		expect(statements.map((s) => s.slice(0, 30))).toEqual([
+			'INSERT INTO exercises (\n  id, ',
+			...before.map(() => 'INSERT INTO exercise_versions ')
+		]);
+
+		const pg = await getPostgresClient();
+		await pg.query('begin');
+		try {
+			await pg.query('delete from public.worksheet_exercises where exercise_id = $1', [pointedId]);
+			await pg.query('delete from public.exercises where id = $1', [pointedId]);
+			for (const statement of statements) await pg.query(statement);
+			const { rows } = await pg.query(
+				`select v.number, v.variations from public.exercise_versions v
+				  where v.exercise_id = $1 order by v.number`,
+				[pointedId]
+			);
+			expect(rows).toEqual(before.map(({ number, variations }) => ({ number, variations })));
+			const { rows: exo } = await pg.query('select grades from public.exercises where id = $1', [
+				pointedId
+			]);
+			expect(exo).toEqual([{ grades: ['1_SPE', 'T_SPE'] }]);
+		} finally {
+			await pg.query('rollback');
+		}
 	});
 });

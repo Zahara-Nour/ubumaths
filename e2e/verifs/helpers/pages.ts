@@ -69,7 +69,8 @@ export async function shoot(page: Page, name: string, project: string): Promise<
 /**
  * Une erreur de console née d'une navigation : la page qu'on quitte voit ses requêtes de fond
  * coupées et l'écrit. Firefox le fait à chaque navigation (« NetworkError when attempting to fetch
- * resource. », et son canal temps réel fermé : « Channel "user-notifications" error »), WebKit
+ * resource. », et son canal temps réel fermé : « Channel "user-notifications" error », ou sa
+ * websocket coupée : « The connection to ws://… was interrupted while the page was loading »), WebKit
  * (« Load failed ») et Chromium (« Failed to fetch ») plus rarement. Aucune n'est vue en prod
  * (journal d'erreurs, 30 jours, relevé le 2026-11-26) : bruit des tests, pas de la page.
  */
@@ -81,7 +82,12 @@ export function isNavigationAbortNoise(error: string, projectName: string): bool
 	) {
 		return true;
 	}
-	return projectName.includes('firefox') && /Channel "user-notifications" error/.test(error);
+	return (
+		projectName.includes('firefox') &&
+		/Channel "user-notifications" error|The connection to ws:\/\/(localhost|127\.0\.0\.1)[^ ]* was interrupted while the page was loading/.test(
+			error
+		)
+	);
 }
 
 /** Le texte d'un argument de `console.error` : message d'une erreur, champs d'un objet */

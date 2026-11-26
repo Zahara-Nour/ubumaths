@@ -285,8 +285,11 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
   ligne d'`exercises` garde la fiche d'identité. Hors fiche, on lit la dernière (plus grand
   numéro) ; dans une fiche, celle de `worksheet_exercises.exercise_version_id`. Toute lecture et
   écriture du contenu passe par `src/lib/server/exercise-versions.ts`. Reprise : chaque exercice
-  existant est devenu sa v1. ⚠️ Jusqu'à la PR 4 du chantier `versions-exercices`, `exercises` garde
-  ses anciennes colonnes de contenu, figées à la reprise : plus rien ne les lit ni ne les écrit.
+  existant est devenu sa v1. Les anciennes colonnes de contenu d'`exercises` sont supprimées
+  (`20261126221127`, PR 4, destructive : réconciliées avant, 428 exercices sur 428 identiques à
+  leur v1), avec cinq fonctions mortes qui les lisaient (`get_my|teacher|all_exercise_assignments`,
+  `exercise_has_multiple_variations`, `exercise_variation_count`). `get_exercise_by_share_token`
+  rend une table explicite : la fiche d'identité et le contenu de la dernière version.
   Accès : une version se lit exactement quand son exercice se lit (la policy délègue à la RLS
   d'`exercises`) ; elle s'écrit par le prof auteur de l'exercice. Personne ne gagne d'accès (David,
   2026-11-25). Fonctions (`20261125183550`, PR 2, toutes avec les droits de l'appelant) :

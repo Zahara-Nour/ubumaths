@@ -2,7 +2,7 @@
 scripts/questions/idees-tle-techno-analyse-publies/ (chantier idees-tle-techno-analyse).
 
 Phase 0 validée par David le 2026-11-26 (« je valide les modèles », fiches
-docs/wip/idees-tle-techno-analyse-fiches.md) : F1 et F6 (52b884ee), F2 (10bd7075), F3 et F4
+docs/archive/wip/idees-tle-techno-analyse/idees-tle-techno-analyse-fiches.md) : F1 et F6 (52b884ee), F2 (10bd7075), F3 et F4
 (af24839d), F5 (dc269779), F7 (f84e23a3), F8 (94b1dbf6), F9 (f6805041). Les variations s'ajoutent
 À LA FIN (les réponses des élèves gardent l'indice de leur variation) ; la migration de contenu est
 générée par scripts/questions/migration-contenu.ts.
@@ -153,7 +153,7 @@ F6 = variation(
         '{{if:w==1|Or ${{b}}={{c}}^{ {{a}} }$ : $x=' + PRIMAIRE + '{ {{c}} }$.|$x=' + PRIMAIRE
         + '{ {{b}}^{\\frac{1}{ {{a}} }} }$ (environ ${{eval:round(100*b^(1/a))/100;a2}}$).}}',
     ],
-    'Élève les deux membres à la puissance $\\dfrac{1}{ {{a}} }$, ou prends leur logarithme.',
+    'Cherche le nombre $p$ tel que $\\left(x^{ {{a}} }\\right)^{p}=x$.',
     ['w + abs(r-a) > 0', 'w*c^a <= 1000', 'w + abs(r^(1/a)-round(r^(1/a))) > 0.001'],
 )
 
@@ -360,7 +360,7 @@ F5 = variation(
     [var('o', '0|0|1'), var('a', '1..5;±'), var('c', '1..5;±'), var('n', '1..5'),
      var('m', '-3|-2|-1|1|2|3|4|5'), var('r', 'eval:(1-o)*(a*n+c*m)+o*n*m'),
      var('w1', 'eval:(1-o)*(a*n-c*m)-o*n*m'), var('w2', 'eval:(1-o)*(a*n+c*(m+1))+o*n*(m+1)'),
-     var('w3', 'eval:(1-o)*a*c+o*(n+m)')],
+     var('w3', 'eval:(1-o)*(a+c)+o*(n+m)')],
     [case('{{r}}', [
         erreur('{{w1}}', '$' + N10 + '=10^{ {{m}} }$, donc $\\log(' + N10 + ')={{m}}$ : vérifie '
                'le signe.', 'Signe'),
@@ -384,7 +384,7 @@ F5 = variation(
 )
 
 V_F5 = {'o': '0', 'a': '3', 'c': '-2', 'n': '2', 'm': '-2', 'r': '10', 'w1': '2', 'w2': '8',
-        'w3': '-6'}
+        'w3': '1'}
 # 3 log(10²) − 2 log(0,01) = 6 + 4 = 10
 V_F5P = {'o': '1', 'a': '1', 'c': '1', 'n': '3', 'm': '2', 'r': '6', 'w1': '-6', 'w2': '9',
          'w3': '5'}
@@ -394,7 +394,7 @@ SPECS_DC = [
          '$0.01 = 10^{-2}$, donc $\\log(0.01)=-2$ : vérifie le signe.'),
     spec('F5 : zéros comptés après la virgule', 0, V_F5, 'incorrect', ['8'],
          '$0.01 = 10^{-2}$ : le $1$ est au rang $2$ après la virgule.'),
-    spec('F5 : exposants oubliés', 0, V_F5, 'incorrect', ['-6'],
+    spec('F5 : exposants oubliés', 0, V_F5, 'incorrect', ['1'],
          'Les coefficients ne suffisent pas : $\\log\\left(10^{n}\\right)=n$ donne la valeur de '
          'chaque logarithme.'),
     spec('F5 : log(10³) × log(100) = 6', 0, V_F5P, 'correct', ['6']),

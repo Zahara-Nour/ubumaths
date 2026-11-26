@@ -780,7 +780,7 @@ describe('generateWorksheetTypst (legacy function)', () => {
 	});
 });
 
-// Fonctions déclarées par l'exercice (`exercises.generic_functions`) : sans elles,
+// Fonctions déclarées par l'exercice (`exercise_versions.generic_functions`) : sans elles,
 // `C'(x)` s'imprimait en rouge « Unexpected token: ' » dans l'énoncé ET le corrigé.
 describe('fonctions déclarées de l’exercice', () => {
 	const instanceWithC = (genericFunctions: string[] | null | undefined): InstanceData =>

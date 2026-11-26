@@ -40,6 +40,11 @@
  *   extrémité qui ne tombe sur aucun point cliquable (sommets nommés, points
  *   déclarés) depuis l'origine imposée, ou depuis aucun point si elle est libre.
  *   `case: N` y est posée par le générateur de questions.
+ * - `tourner:` (facultatif, `oui` ou `non`, chantier `solides-3d`) : l'élève peut
+ *   faire tourner la figure à l'écran. Polyèdres sans `section:`, `cotes:` ni
+ *   `tracer:` pour l'instant. Une valeur mal écrite ou un réglage pas encore pris
+ *   en charge ne met PAS le bloc en erreur : phrase pour l'auteur
+ *   (`rotationErrors`), figure fixe.
  *
  * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034 ; points et
  * vecteurs : chantier `solide-vecteur`, lot 1 ; `tracer:` : lot 2.
@@ -651,6 +656,8 @@ export function parseSolideContent(source: string): {
 	errors: string[];
 	/** Geste dans une question : sa case, posée par le générateur (`case: N`) */
 	caseIndex?: number;
+	/** Phrases pour l'auteur sur `tourner:` ; la figure se dessine, fixe */
+	rotationErrors?: string[];
 } {
 	const errors: string[] = [];
 	const fail = (line: number, message: string) => errors.push(`Ligne ${line} : ${message}`);
@@ -817,8 +824,28 @@ export function parseSolideContent(source: string): {
 	}
 
 	if (errors.length > 0) return { spec: null, errors, ...withCase };
+
+	// Rotation : une ligne `tourner:` fausse laisse la figure fixe, sans mettre le bloc en erreur
+	const turnEntry = seen.get('tourner');
+	let rotate = false;
+	let rotationErrors: string[] | undefined;
+	if (turnEntry !== undefined) {
+		const value = plain(turnEntry.value);
+		const notYet = (what: string) => `tourner: ${what} ne tourne pas encore (la figure reste fixe)`;
+		let problem: string | null = null;
+		if (value !== 'oui' && value !== 'non') problem = `tourner « ${turnEntry.value} » : oui ou non`;
+		else if (value === 'oui') {
+			if (topology.curved) problem = notYet(topology.indefinite);
+			else if (section !== null) problem = notYet('un solide coupé (section:)');
+			else if (cotes !== null) problem = notYet('un solide coté (cotes:)');
+			else if (task !== undefined) problem = notYet('un solide à geste (tracer:)');
+			else rotate = true;
+		}
+		if (problem !== null) rotationErrors = [`Ligne ${turnEntry.line} : ${problem}`];
+	}
 	return {
 		...withCase,
+		...(rotationErrors !== undefined && { rotationErrors }),
 		spec: {
 			kind: 'solide',
 			form: shape.form,
@@ -830,7 +857,8 @@ export function parseSolideContent(source: string): {
 			section,
 			points,
 			vectors,
-			...(task !== undefined && { task })
+			...(task !== undefined && { task }),
+			...(rotate && { rotate: true as const })
 		},
 		errors
 	};

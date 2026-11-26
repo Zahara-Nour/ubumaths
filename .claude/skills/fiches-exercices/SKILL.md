@@ -62,7 +62,11 @@ Suivre `docs/pratiques/fiches-exercices.md` dans l'ordre :
 4. **Vérifier le rendu** (`pnpm fiche:verifier`) puis **relire les pages** (§ 2.4) : les détecteurs ne
    voient pas les défauts de sens.
 5. **Simuler l'écriture en base** (§ 2.5) : `pnpm tsx scripts/create-<thème>-1spe.ts` (sans
-   `--publier`). Montrer la simulation à David.
+   `--publier`). Montrer la simulation à David. ⚠️ Le contenu d'un exercice (`variations`,
+   `shared`, `generic_functions`) s'écrit dans sa **version** (`exercise_versions`, ADR 0044),
+   jamais sur `exercises`, qui n'a plus ces colonnes : `createFirstVersion` / `writeVersionContent`
+   de `src/lib/server/exercise-versions.ts`. Ne pas recopier un ancien `scripts/create-*.ts` ou
+   `fix-*.ts` : ils écrivent encore `exercises` et échoueraient.
 6. **Publier** seulement après son accord explicite : `--publier` écrit en production.
 7. **Vérifier ce qui est en base** (§ 2.6).
 

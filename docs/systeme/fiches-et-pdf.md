@@ -197,7 +197,8 @@ worksheets (type, status, config jsonb, translations, style_id, school_id,
   décidé par `worksheet-outline.ts`, qui compare aux **props** et jamais à l'état du geste (l'ombre
   de la bibliothèque y porte déjà l'identifiant de l'élément tiré). Fiche publiée : même liste,
   en lecture seule.
-- **Exercice ↔ variation** : le contenu vient de `exercises.variations` (énoncé, solution, indices),
+- **Exercice ↔ variation** : le contenu vient des `variations` de la **version** de la ligne de fiche
+  (`exercise_versions`, ADR 0044 ; énoncé, solution, indices),
   via `getExerciseContentSafe` / `generateExerciseInstance` (`src/lib/exercises/`) ;
   `worksheet_exercises.variation_index` force une variation. Les **fonctions déclarées**
   (`generic_functions`) suivent l'exercice jusqu'au PDF. Le **sens de `AB`** (longueur ou produit,
@@ -372,7 +373,7 @@ true)` sont réécrits en `counter(page).at(<chiphre-copie-fin-i>)`. Un gabarit 
 ## La production PDF
 
 ```
-exercises.variations (ubumark, FR + translations.en)
+exercise_versions.variations, version de la ligne de fiche (ubumark, FR + translations.en)
   → InstanceData / StudentWorksheetView (contenu résolu dans la langue de la fiche)
   → WorksheetGenerator (prof : le gabarit de la forme ; fiche | réponses | corrigé | fiche + corrections)
     (élève : generateStudentWorksheetTypst → le même WorksheetGenerator, document de la vue)

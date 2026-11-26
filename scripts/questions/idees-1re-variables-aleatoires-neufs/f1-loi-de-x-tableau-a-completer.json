@@ -1,0 +1,1192 @@
+{
+	"id": "505ee05a-b19a-4cd3-a409-509d51cf9fbd",
+	"rangement": {
+		"noeud": "Probabilités > Variables aléatoires > loi d'une variable aléatoire",
+		"point": "1SPE-355"
+	},
+	"title": "Déterminer la loi de X : tableau à compléter",
+	"description": "À partir d'un énoncé (pari aux cartes, loterie, deux tirs indépendants), compléter le tableau de la loi de X : valeurs et probabilités.",
+	"grades": ["1_SPE", "1_TECHNO"],
+	"level": 2,
+	"delay": 240,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On propose un pari à un joueur avec un jeu de ${{j}}$ cartes bien mélangé, qui contient $4$ as et $12$ figures (rois, dames et valets). Il mise ${{a}}$ € puis tire une carte au hasard. S'il obtient un as, il reçoit ${{b}}$ € ; s'il obtient une figure, il reçoit ${{c}}$ € ; sinon, il ne reçoit rien.\n\nOn note $X$ le gain algébrique du joueur, en euros (ce qu'il reçoit moins sa mise). Complète le tableau de la loi de $X$. Range les valeurs de $X$ dans l'ordre croissant. Les probabilités s'écrivent en fraction irréductible ou en nombre décimal exact.\n\n| $x_k$ | $?$ | $?$ | $?$ |\n|---|---|---|---|\n| $P(X=x_k)$ | $?$ | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "32|52"
+				},
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "30|40|50"
+				},
+				{
+					"name": "k",
+					"expression": "5..10"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+k"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Quand il ne gagne rien, le joueur a quand même perdu sa mise : son gain algébrique est négatif.",
+							"label": "Zéro au lieu de la mise perdue"
+						},
+						{
+							"answer": "{{a}}",
+							"message": "Perdre sa mise donne un gain **négatif**.",
+							"label": "Mise perdue comptée positive"
+						},
+						{
+							"answer": "{{eval:b-a}}",
+							"message": "Les valeurs de $X$ se rangent dans l'ordre croissant, de la plus petite à la plus grande.",
+							"label": "Ordre décroissant"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:c-a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{c}}",
+							"message": "Tu as oublié de retirer la mise : $X$ est ce que le joueur reçoit **moins** ce qu'il a misé.",
+							"label": "Mise oubliée"
+						},
+						{
+							"answer": "{{eval:c+a}}",
+							"message": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas.",
+							"label": "Mise ajoutée"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:b-a}}",
+					"expectedErrors": [
+						{
+							"answer": "{{b}}",
+							"message": "Tu as oublié de retirer la mise : $X$ est ce que le joueur reçoit **moins** ce qu'il a misé.",
+							"label": "Mise oubliée"
+						},
+						{
+							"answer": "{{eval:b+a}}",
+							"message": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas.",
+							"label": "Mise ajoutée"
+						},
+						{
+							"answer": "{{eval:-a}}",
+							"message": "Les valeurs de $X$ se rangent dans l'ordre croissant, de la plus petite à la plus grande.",
+							"label": "Ordre décroissant"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(j-16)/j}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(j-4)/j}}",
+							"message": "Les cartes qui ne rapportent rien ne sont ni des as ni des figures : enlève les $4$ as **et** les $12$ figures.",
+							"label": "Figures oubliées"
+						},
+						{
+							"answer": "{{eval:(j-12)/j}}",
+							"message": "Les cartes qui ne rapportent rien ne sont ni des as ni des figures : enlève les $12$ figures **et** les $4$ as.",
+							"label": "As oubliés"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:12/j}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:8/j}}",
+							"message": "Les figures sont les rois, les dames **et** les valets : il y en a $12$.",
+							"label": "Rois oubliés"
+						},
+						{
+							"answer": "{{eval:4/j}}",
+							"message": "Il y a $4$ cartes de chaque figure : $4$ rois, $4$ dames et $4$ valets, soit $12$ figures.",
+							"label": "Une seule sorte de figure"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:4/j}}",
+					"expectedErrors": [
+						{
+							"answer": "\\frac{1}{4}",
+							"message": "Il y a $4$ as, mais la probabilité se calcule sur toutes les cartes du jeu : divise par le nombre de cartes.",
+							"label": "Un quart"
+						},
+						{
+							"answer": "{{eval:1/j}}",
+							"message": "Il n'y a pas un seul as dans le jeu : il y en a $4$, un par couleur.",
+							"label": "Un seul as"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le joueur a misé ${{a}}$ € : as, ${{b}}-{{a}}={{eval:b-a}}$ ; figure, ${{c}}-{{a}}={{eval:c-a}}$ ; autre carte, $0-{{a}}=-{{a}}$. Les valeurs de $X$ sont $-{{a}}$, ${{eval:c-a}}$ et ${{eval:b-a}}$.",
+					"Le jeu contient $4$ as, $12$ figures et ${{j}}-16={{eval:j-16}}$ autres cartes, toutes tirées avec la même probabilité.",
+					"$P(X=-{{a}})=\\dfrac{ {{eval:j-16}} }{ {{j}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(j-16)/j}} }$, $P(X={{eval:c-a}})=\\dfrac{12}{ {{j}} }=\\textcolor{{{color:primary.0}}}{ {{eval:12/j}} }$ et $P(X={{eval:b-a}})=\\dfrac{4}{ {{j}} }=\\textcolor{{{color:primary.0}}}{ {{eval:4/j}} }$."
+				]
+			},
+			"hint": "Commence par la ligne des valeurs : pour chaque carte, ce que reçoit le joueur moins ce qu'il a misé."
+		},
+		{
+			"statement": "Une association organise une loterie. Elle vend ${{eval:100*t}}$ tickets à ${{p}}$ € l'un. Un seul ticket fait gagner ${{eval:1000*u}}$ €, ${{n}}$ tickets font gagner ${{eval:100*w}}$ € chacun, ${{eval:10*z}}$ tickets font gagner ${{eval:10*y}}$ € chacun, et les autres sont perdants.\n\nUn joueur achète un ticket. On note $X$ son gain algébrique, en euros (ce qu'il reçoit moins le prix du ticket). Complète le tableau de la loi de $X$. Range les valeurs de $X$ dans l'ordre croissant. Les probabilités s'écrivent en fraction irréductible ou en nombre décimal exact.\n\n| $x_k$ | $?$ | $?$ | $?$ | $?$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | $?$ | $?$ | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "20..50"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "u",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "5..10"
+				},
+				{
+					"name": "w",
+					"expression": "5..10"
+				},
+				{
+					"name": "z",
+					"expression": "5..10"
+				},
+				{
+					"name": "y",
+					"expression": "5..10"
+				}
+			],
+			"conditions": ["1000*u > 100*w"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-p}}",
+					"expectedErrors": [
+						{
+							"answer": "0",
+							"message": "Un ticket perdant fait quand même perdre son prix : le gain algébrique est négatif.",
+							"label": "Zéro pour un ticket perdant"
+						},
+						{
+							"answer": "{{p}}",
+							"message": "Perdre sa mise donne un gain **négatif**.",
+							"label": "Prix compté positif"
+						},
+						{
+							"answer": "{{eval:1000*u-p}}",
+							"message": "Les valeurs de $X$ se rangent dans l'ordre croissant, de la plus petite à la plus grande.",
+							"label": "Ordre décroissant"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:10*y-p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*y}}",
+							"message": "Le joueur a payé son ticket : retire son prix de ce qu'il reçoit, même quand il gagne.",
+							"label": "Prix du ticket oublié"
+						},
+						{
+							"answer": "{{eval:10*y+p}}",
+							"message": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas.",
+							"label": "Prix ajouté"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:100*w-p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:100*w}}",
+							"message": "Le joueur a payé son ticket : retire son prix de ce qu'il reçoit, même quand il gagne.",
+							"label": "Prix du ticket oublié"
+						},
+						{
+							"answer": "{{eval:100*w+p}}",
+							"message": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas.",
+							"label": "Prix ajouté"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:1000*u-p}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1000*u}}",
+							"message": "Le joueur a payé son ticket : retire son prix de ce qu'il reçoit, même quand il gagne.",
+							"label": "Prix du ticket oublié"
+						},
+						{
+							"answer": "{{eval:1000*u+p}}",
+							"message": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas.",
+							"label": "Prix ajouté"
+						},
+						{
+							"answer": "{{eval:-p}}",
+							"message": "Les valeurs de $X$ se rangent dans l'ordre croissant, de la plus petite à la plus grande.",
+							"label": "Ordre décroissant"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:(100*t-1-n-10*z)/(100*t)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(100*t-n-10*z)/(100*t)}}",
+							"message": "Les tickets perdants sont tous ceux qui ne gagnent rien : enlève aussi le ticket du gros lot.",
+							"label": "Gros lot oublié"
+						},
+						{
+							"answer": "{{eval:100*t-1-n-10*z}}",
+							"message": "C'est le nombre de tickets perdants : la probabilité s'obtient en le divisant par le nombre total de tickets.",
+							"label": "Effectif des perdants"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:10*z/(100*t)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:10*z}}",
+							"message": "C'est un nombre de tickets : la probabilité s'obtient en le divisant par le nombre total de tickets.",
+							"label": "Effectif au lieu de probabilité"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n/(100*t)}}",
+					"expectedErrors": [
+						{
+							"answer": "{{n}}",
+							"message": "C'est un nombre de tickets : la probabilité s'obtient en le divisant par le nombre total de tickets.",
+							"label": "Effectif au lieu de probabilité"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:1/(100*t)}}",
+					"expectedErrors": [
+						{
+							"answer": "1",
+							"message": "C'est un nombre de tickets : la probabilité s'obtient en le divisant par le nombre total de tickets.",
+							"label": "Effectif au lieu de probabilité"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le joueur a payé ${{p}}$ € : les valeurs de $X$ sont $-{{p}}$ (ticket perdant), ${{eval:10*y-p}}$, ${{eval:100*w-p}}$ et ${{eval:1000*u-p}}$.",
+					"Il y a $1+{{n}}+{{eval:10*z}}={{eval:1+n+10*z}}$ tickets gagnants, donc ${{eval:100*t}}-{{eval:1+n+10*z}}={{eval:100*t-1-n-10*z}}$ tickets perdants, tous tirés avec la même probabilité.",
+					"$P(X=-{{p}})=\\dfrac{ {{eval:100*t-1-n-10*z}} }{ {{eval:100*t}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(100*t-1-n-10*z)/(100*t)}} }$, $P(X={{eval:10*y-p}})=\\dfrac{ {{eval:10*z}} }{ {{eval:100*t}} }=\\textcolor{{{color:primary.0}}}{ {{eval:10*z/(100*t)}} }$, $P(X={{eval:100*w-p}})=\\dfrac{ {{n}} }{ {{eval:100*t}} }=\\textcolor{{{color:primary.0}}}{ {{eval:n/(100*t)}} }$ et $P(X={{eval:1000*u-p}})=\\textcolor{{{color:primary.0}}}{ {{eval:1/(100*t)}} }$."
+				]
+			},
+			"hint": "Le joueur paie son ticket dans tous les cas, même s'il gagne."
+		},
+		{
+			"statement": "Une joueuse de handball a remarqué que, lorsqu'elle tire au but, elle a ${{a}}$ {{if:a == 1|chance|chances}} sur ${{b}}$ de marquer. Elle tire deux fois, et les deux tirs sont indépendants.\n\nOn note $X$ le nombre de buts marqués au cours des deux tirs. Complète le tableau de la loi de $X$. Les probabilités s'écrivent en fraction irréductible ou en nombre décimal exact.\n\n| $x_k$ | $0$ | $1$ | $2$ |\n|---|---|---|---|\n| $P(X=x_k)$ | $?$ | $?$ | $?$ |",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				}
+			],
+			"conditions": ["a < b", "gcd(a, b) = 1", "2*a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b-a)^2/b^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:(b-a)/b}}",
+							"message": "Il y a deux tirs : « aucun but » veut dire manquer le premier **et** le second, les probabilités se multiplient.",
+							"label": "Un seul tir"
+						},
+						{
+							"answer": "{{eval:1-a^2/b^2}}",
+							"message": "$1-P(X=2)$ est la probabilité de marquer au plus un but, pas celle de n'en marquer aucun.",
+							"label": "Contraire de X = 2"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:2*a*(b-a)/b^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*(b-a)/b^2}}",
+							"message": "Deux chemins de l'arbre donnent exactement un but : marquer puis manquer, ou manquer puis marquer.",
+							"label": "Un seul chemin"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:a^2/b^2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:2*a/b}}",
+							"message": "Pour deux tirs successifs, les probabilités le long d'un chemin se **multiplient**.",
+							"label": "Somme au lieu du produit"
+						},
+						{
+							"answer": "{{eval:a/b}}",
+							"message": "C'est la probabilité de marquer sur **un** tir : pour deux buts, il faut marquer au premier et au second tir.",
+							"label": "Un seul tir"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $M$ l'évènement « la joueuse marque ». À chaque tir, $P(M)=\\dfrac{ {{a}} }{ {{b}} }$ et $P(\\overline{M})=\\dfrac{ {{eval:b-a}} }{ {{b}} }$ ; les tirs sont indépendants, donc on multiplie le long des chemins de l'arbre.",
+					"$P(X=0)=\\dfrac{ {{eval:b-a}} }{ {{b}} }\\times\\dfrac{ {{eval:b-a}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(b-a)^2/b^2}} }$ et $P(X=2)=\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{a}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{eval:a^2/b^2}} }$.",
+					"Deux chemins donnent un but : $P(X=1)=2\\times\\dfrac{ {{a}} }{ {{b}} }\\times\\dfrac{ {{eval:b-a}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{eval:2*a*(b-a)/b^2}} }$."
+				]
+			},
+			"hint": "Dessine l'arbre des deux tirs : combien de chemins donnent exactement un but ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "32 cartes, mise 4 : -4, 7, 36 ; 1/2, 3/8, 1/8",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4", "7", "36", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Décimaux exacts",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-4", "7", "36", "0{,}5", "0{,}375", "0{,}125"]
+		},
+		{
+			"description": "Fractions non réduites",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions", "reducedFractions", "reducedFractions"]
+			},
+			"answers": ["-4", "7", "36", "\\frac{16}{32}", "\\frac{12}{32}", "\\frac{4}{32}"]
+		},
+		{
+			"description": "Zéro au lieu de -4",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Quand il ne gagne rien, le joueur a quand même perdu sa mise : son gain algébrique est négatif."
+			},
+			"answers": ["0", "7", "36", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "4 au lieu de -4",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Perdre sa mise donne un gain **négatif**."
+			},
+			"answers": ["4", "7", "36", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Mise oubliée (figure)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de retirer la mise : $X$ est ce que le joueur reçoit **moins** ce qu'il a misé."
+			},
+			"answers": ["-4", "11", "36", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Mise ajoutée (figure)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas."
+			},
+			"answers": ["-4", "15", "36", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Mise oubliée (as)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Tu as oublié de retirer la mise : $X$ est ce que le joueur reçoit **moins** ce qu'il a misé."
+			},
+			"answers": ["-4", "7", "40", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Mise ajoutée (as)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas."
+			},
+			"answers": ["-4", "7", "44", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Figures oubliées",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les cartes qui ne rapportent rien ne sont ni des as ni des figures : enlève les $4$ as **et** les $12$ figures."
+			},
+			"answers": ["-4", "7", "36", "\\frac{7}{8}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "As oubliés",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les cartes qui ne rapportent rien ne sont ni des as ni des figures : enlève les $12$ figures **et** les $4$ as."
+			},
+			"answers": ["-4", "7", "36", "\\frac{5}{8}", "\\frac{3}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Rois oubliés",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les figures sont les rois, les dames **et** les valets : il y en a $12$."
+			},
+			"answers": ["-4", "7", "36", "\\frac{1}{2}", "\\frac{1}{4}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Une sorte de figure",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $4$ cartes de chaque figure : $4$ rois, $4$ dames et $4$ valets, soit $12$ figures."
+			},
+			"answers": ["-4", "7", "36", "\\frac{1}{2}", "\\frac{1}{8}", "\\frac{1}{8}"]
+		},
+		{
+			"description": "Un quart pour un as",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a $4$ as, mais la probabilité se calcule sur toutes les cartes du jeu : divise par le nombre de cartes."
+			},
+			"answers": ["-4", "7", "36", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{4}"]
+		},
+		{
+			"description": "Un seul as",
+			"variationIndex": 0,
+			"variables": {
+				"j": "32",
+				"a": "4",
+				"b": "40",
+				"k": "7",
+				"c": "11"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il n'y a pas un seul as dans le jeu : il y en a $4$, un par couleur."
+			},
+			"answers": ["-4", "7", "36", "\\frac{1}{2}", "\\frac{3}{8}", "\\frac{1}{32}"]
+		},
+		{
+			"description": "52 cartes, mise 3 : -3, 5, 47 ; 9/13, 3/13, 1/13",
+			"variationIndex": 0,
+			"variables": {
+				"j": "52",
+				"a": "3",
+				"b": "50",
+				"k": "5",
+				"c": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-3", "5", "47", "\\frac{9}{13}", "\\frac{3}{13}", "\\frac{1}{13}"]
+		},
+		{
+			"description": "52 cartes, ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"j": "52",
+				"a": "3",
+				"b": "50",
+				"k": "5",
+				"c": "8"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les valeurs de $X$ se rangent dans l'ordre croissant, de la plus petite à la plus grande."
+			},
+			"answers": ["47", "5", "-3", "\\frac{9}{13}", "\\frac{3}{13}", "\\frac{1}{13}"]
+		},
+		{
+			"description": "2 500 tickets à 2 €",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Décimaux exacts",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["-2", "58", "798", "2998", "0{,}9772", "0{,}02", "0{,}0024", "0{,}0004"]
+		},
+		{
+			"description": "Fractions non réduites",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions", "reducedFractions"]
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{50}{2500}",
+				"\\frac{6}{2500}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Zéro pour un ticket perdant",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Un ticket perdant fait quand même perdre son prix : le gain algébrique est négatif."
+			},
+			"answers": [
+				"0",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Prix positif",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Perdre sa mise donne un gain **négatif**."
+			},
+			"answers": [
+				"2",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Prix oublié (petit lot)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le joueur a payé son ticket : retire son prix de ce qu'il reçoit, même quand il gagne."
+			},
+			"answers": [
+				"-2",
+				"60",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Prix ajouté (petit lot)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas."
+			},
+			"answers": [
+				"-2",
+				"62",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Prix oublié (lot moyen)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le joueur a payé son ticket : retire son prix de ce qu'il reçoit, même quand il gagne."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"800",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Prix ajouté (lot moyen)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"802",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Prix oublié (gros lot)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Le joueur a payé son ticket : retire son prix de ce qu'il reçoit, même quand il gagne."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"3000",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Prix ajouté (gros lot)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "La mise se **retire** de ce que reçoit le joueur, elle ne s'ajoute pas."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"3002",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Gros lot oublié dans les perdants",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les tickets perdants sont tous ceux qui ne gagnent rien : enlève aussi le ticket du gros lot."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2444}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Effectif des perdants",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est le nombre de tickets perdants : la probabilité s'obtient en le divisant par le nombre total de tickets."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"2998",
+				"2443",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Effectif (petits lots)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un nombre de tickets : la probabilité s'obtient en le divisant par le nombre total de tickets."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"50",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Effectif (lots moyens)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un nombre de tickets : la probabilité s'obtient en le divisant par le nombre total de tickets."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"6",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "Effectif (gros lot)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est un nombre de tickets : la probabilité s'obtient en le divisant par le nombre total de tickets."
+			},
+			"answers": [
+				"-2",
+				"58",
+				"798",
+				"2998",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"1"
+			]
+		},
+		{
+			"description": "Ordre décroissant",
+			"variationIndex": 1,
+			"variables": {
+				"t": "25",
+				"p": "2",
+				"u": "3",
+				"n": "6",
+				"w": "8",
+				"z": "5",
+				"y": "6"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Les valeurs de $X$ se rangent dans l'ordre croissant, de la plus petite à la plus grande."
+			},
+			"answers": [
+				"2998",
+				"798",
+				"58",
+				"-2",
+				"\\frac{2443}{2500}",
+				"\\frac{1}{50}",
+				"\\frac{3}{1250}",
+				"\\frac{1}{2500}"
+			]
+		},
+		{
+			"description": "2 chances sur 5 : 9/25, 12/25, 4/25",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["\\frac{9}{25}", "\\frac{12}{25}", "\\frac{4}{25}"]
+		},
+		{
+			"description": "Décimaux exacts",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}36", "0{,}48", "0{,}16"]
+		},
+		{
+			"description": "Un seul tir (aucun but)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Il y a deux tirs : « aucun but » veut dire manquer le premier **et** le second, les probabilités se multiplient."
+			},
+			"answers": ["\\frac{3}{5}", "\\frac{12}{25}", "\\frac{4}{25}"]
+		},
+		{
+			"description": "Contraire de X = 2",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "$1 - P \\left( X = 2 \\right)$ est la probabilité de marquer au plus un but, pas celle de n'en marquer aucun."
+			},
+			"answers": ["\\frac{21}{25}", "\\frac{12}{25}", "\\frac{4}{25}"]
+		},
+		{
+			"description": "Un seul chemin",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Deux chemins de l'arbre donnent exactement un but : marquer puis manquer, ou manquer puis marquer."
+			},
+			"answers": ["\\frac{9}{25}", "\\frac{6}{25}", "\\frac{4}{25}"]
+		},
+		{
+			"description": "Somme au lieu du produit",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "Pour deux tirs successifs, les probabilités le long d'un chemin se **multiplient**."
+			},
+			"answers": ["\\frac{9}{25}", "\\frac{12}{25}", "\\frac{4}{5}"]
+		},
+		{
+			"description": "Un seul tir (deux buts)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2"
+			},
+			"expected": {
+				"status": "incorrect",
+				"expectedErrorMessage": "C'est la probabilité de marquer sur **un** tir : pour deux buts, il faut marquer au premier et au second tir."
+			},
+			"answers": ["\\frac{9}{25}", "\\frac{12}{25}", "\\frac{2}{5}"]
+		}
+	]
+}

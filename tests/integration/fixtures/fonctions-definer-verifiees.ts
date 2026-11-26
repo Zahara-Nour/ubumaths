@@ -259,19 +259,11 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'auth-uid',
 		justification: 'filtre student_id = auth.uid()'
 	},
-	'get_my_exercise_assignments()': {
-		categorie: 'auth-uid',
-		justification: 'filtre ea.student_id / classes de auth.uid()'
-	},
 	'get_students_in_class_by_grade(target_class_id uuid)': {
 		categorie: 'auth-uid',
 		justification: 'exige que auth.uid() soit membre de target_class_id'
 	},
 	'get_teacher_assignment_stats()': {
-		categorie: 'auth-uid',
-		justification: 'filtre assigned_by = auth.uid()'
-	},
-	'get_teacher_exercise_assignments()': {
 		categorie: 'auth-uid',
 		justification: 'filtre assigned_by = auth.uid()'
 	},
@@ -604,10 +596,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'close_school_year(p_school_year_id uuid)': {
 		categorie: 'admin',
 		justification: 'is_admin en tête, exception sinon'
-	},
-	'get_all_exercise_assignments()': {
-		categorie: 'admin',
-		justification: 'WHERE exige rôle admin de auth.uid() : vide sinon'
 	},
 	'get_database_stats()': {
 		categorie: 'admin',

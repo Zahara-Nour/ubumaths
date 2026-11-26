@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, correctif de `9ed8c72e` en PR._
+_Mis à jour le 2026-11-26, après #3198 : chantier clos, journal archivé._
 
-- **État** : balayage fait (aucune spec rouge, § Balayage). David a validé mes recos : corriger `x--5x` dans `9ed8c72e`, laisser le brouillon `2dcb4b3c`, clore après le merge. Migration de contenu `20261126195740_questions_specs_rouges_3170_contenu.sql` écrite et testée (verte ; rouge sans elle).
-- **Prochaine action** : PR → CI verte → merge → `db:migrate` (si seule en attente, `migration list --linked`) → vérifier la prod au MCP → archiver ce journal (clôture).
-- **En attente de David** : rien.
-- **Pièges en cours** : `checkTemplate` sur une ligne de la base → retirer `created_at`, `updated_at`, `created_by`.
-- **Worktree / branche** : `ubumaths-wt-specs-rouges-3170` · `fix/specs-rouges-3170`.
+- **État** : clos. Balayage : aucune spec rouge sur les 2 758 modèles publiés. Correctif de `9ed8c72e` (`x--5x`) mergé (#3198), `db:migrate` joué le 2026-11-26 (question d'accès confirmée par David : personne ne gagne d'accès), prod vérifiée au MCP.
+- **Prochaine action** : aucune.
+- **En attente de David** : rien. Laissé de côté, sur sa décision : le brouillon `2dcb4b3c` (1 spec rouge, à revoir avant sa publication).
+- **Worktree / branche** : retirés par `pr:merger`.
 
 ## Contexte
 

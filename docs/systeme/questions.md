@@ -101,7 +101,7 @@ le SRS ([srs.md](srs.md)).
 
 ### `src/lib/exercises/` — exercices de fiche (autre moteur)
 
-Les **exercices** (table `exercises`) sont les exercices rédigés des fiches PDF, pas des modèles
+Les **exercices** (table `exercises`, contenu dans `exercise_versions`, ADR 0044) sont les exercices rédigés des fiches PDF, pas des modèles
 de question. Ils ont leur propre générateur (`src/lib/exercises/generator/instance-generator.ts`,
 syntaxe `{{}}` d'ubumark, résolue dans l'énoncé, la correction et les réponses `answers_md`), leur export Typst (`typst/exercise-typst-generator.ts`), leur import /
 export validé par Zod (`validation.ts`, `markdown-frontmatter.ts` ; le format v2.0 porte aussi
