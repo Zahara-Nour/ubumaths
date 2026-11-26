@@ -9,7 +9,7 @@ Une ligne : identifiant · type · domaine · ce que voit l'élève ou le prof �
 Un nouvel écart entre par `pnpm ecarts ajouter`, qui donne son numéro. Une ligne close est barrée,
 jamais effacée.
 
-Derniers numéros : V136 · L135 · M60 · C44 · D45 · T37 · E86
+Derniers numéros : V136 · L135 · M60 · C44 · D45 · T37 · E87
 
 ## Écarts
 
@@ -350,3 +350,4 @@ Derniers numéros : V136 · L135 · M60 · C44 · D45 · T37 · E86
 - E85 · vérification à l'écran · modèles de questions · la liste des modèles (/api/questions/templates/all) est resservie périmée par le cache du navigateur jusqu'à 5 min (cache-control: public, max-age=0, s-maxage=300, stale-while-revalidate=300 : le stale-while-revalidate vaut aussi pour le navigateur) ; 10 rouges operations sous Firefox à la première nuit ; EN LOCAL SEULEMENT : en prod, Vercel retire s-maxage et stale-while-revalidate avant d'envoyer la réponse (le navigateur reçoit « public, max-age=0 », relevé le 2026-11-26 ; le CDN, lui, sert HIT) · preuve : à la main · tranché par David le 2026-11-26 : à corriger (le navigateur relit toujours, seul le CDN de Vercel garde 5 min), chantier verifs-auto ; le constat en prod change la question, reposée à David le 2026-11-26
 - V136 · bug visible · Atelier · `.résoudre sin(x) = 2sin(10°) dans [0;360]` lit l'intervalle en degrés mais écrit ses deux solutions en radians, avec arcsin (pas de mesure simple en degrés) : intervalle et réponse ne sont pas dans la même unité · preuve : à la main · à faire, pas dans ecarts-verifs (limite connue de #3193, inscrite sur décision de David le 2026-11-26)
 - E86 · vérification à l'écran · signalements de bug · la carte d'un signalement de bug (BugReportCard.svelte) met une case à cocher dans un bouton : la carte entière est un <button> et MyCheckbox en est un autre ; erreur de console node_invalid_placement_ssr sur le serveur de dev (famille de E80 et E84), vue sur ordi-chrome à la page des signalements de bug de l'admin en mode sélection ; antérieure à verifs-auto, trouvée en rejouant base-locale-paquet9 le 2026-11-26 · preuve : à la main · en attente
+- E87 · vérification à l'écran · modèles de questions · « Factoriser un trinôme à l'aide de ses racines », variation « en calculant d'abord ses racines », quand a < 0 (−2x² + 2x + 24) : la case de la réponse attendue écrit −2(x + 3)(x − 4) alors que la correction finit par −2(x − 4)(x + 3), dans l'ordre de x₁, x₂ (suite de E34 ; les deux écritures sont justes) · preuve : à la main · tranché par David le 2026-11-26 : à aligner sur l'ordre de x₁, x₂ ; c'est le contenu du modèle (expectedAnswer), à republier en prod par David
