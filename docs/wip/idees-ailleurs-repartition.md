@@ -178,6 +178,9 @@ de contenu appliquée en prod.
 | d03e49c0 Calculer la valeur d'une valeur absolue             | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | d264f7aa Pair ou impair : écrire 2k ou 2k + 1                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
 | fa65910d Multiple : a = k × b                                | `ensembles-2de` (relecture de David, corrections possibles) | 2026-11-20 |                                      |
+| 96992ea8 Médiane d'une série à effectifs                     | `idees-3e-statistiques`                                     | 2026-11-26 |                                      |
+| c2497d96 Moyenne pondérée                                    | `idees-3e-statistiques`                                     | 2026-11-26 |                                      |
+| 21ebfb57 Calculer une fréquence                              | `idees-3e-statistiques`                                     | 2026-11-26 |                                      |
 
 ## Idées en attente
 
