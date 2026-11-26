@@ -6,6 +6,7 @@ import {
 	VERIFS_PROJECTS,
 	type Engine
 } from './e2e/verifs/projets';
+import { devServerCommandFromPackage } from './e2e/verifs/serveur-de-dev';
 
 /**
  * Vérifications manuelles automatisées (`e2e/verifs/`)
@@ -31,7 +32,8 @@ import {
  * gâteraient le décor.
  *
  * Port : `VERIFS_PORT` (5176 par défaut, celui d'un worktree ; 5175 dans le
- * dépôt principal). Un serveur déjà lancé sur ce port est réutilisé.
+ * dépôt principal). Un serveur déjà lancé sur ce port est réutilisé ; sinon
+ * Playwright en lance un et l'arrête à la fin (`e2e/verifs/serveur-de-dev.ts`).
  *
  * `VERIFS_URL=https://chiph.re` : les mêmes tests contre la prod, sans serveur
  * local — les lignes « puis prod » (pages publiques, sans compte).
@@ -99,7 +101,7 @@ export default defineConfig({
 	webServer:
 		remoteURL === undefined
 			? {
-					command: `pnpm dev --port ${port} --strictPort`,
+					command: devServerCommandFromPackage(port),
 					port,
 					reuseExistingServer: true,
 					timeout: 120 * 1000
