@@ -395,3 +395,19 @@ Worktree `ubumaths-wt-ecarts-verifs-e77-variation-0`, branche `fix/ecarts-verifs
 **Attendu d'un test changé** : `tests/integration/versions-exercices.test.ts` affirmait l'ancien comportement (l'élève affecté sans fiche ne lit ni l'exercice ni ses versions par la base) ; il attend maintenant les deux versions. Vu rouge en CI au premier push, la suite d'intégration complète est verte en local (619 fichiers, 8155 tests).
 
 **Restes, à part** : la policy d'insertion `exercise_assignments_insert` ne vérifie ni que l'exercice est à celui qui assigne, ni que la classe ou l'élève est le sien (sans effet en mono-professeur ; question d'accès à poser si un second prof arrive). `pnpm voir --compte eleve` ne connecte que l'Élève 01 : pas de capture de la page avec l'Élève 02 (vue par Playwright seulement).
+
+## PR X : onglet « Rendre public » et liste « Mes exercices » retirés (2026-11-26)
+
+Décision de David du 2026-11-26 (détail dans « PR W »). Rien n'est supprimé en base.
+
+**Fait** :
+
+- page « Assigner » d'un exercice : onglet « Public » retiré (deux onglets : élèves, classes) ; une ancienne affectation `public` reste affichée dans « Assignations actuelles » et supprimable ;
+- liste élève `/dashboard/student/exercises` supprimée (404), avec son squelette `ExerciseSkeleton` (plus aucun appelant) ; bouton « Pratique d'exercices » de l'écran vide de « Mon travail » retiré ; le « lien du tableau de bord » était dans un bloc en commentaire de `StudentDashboard.svelte` (code mort), bloc retiré ;
+- page d'UN exercice : « Quitter » menait à la liste ; il mène à « Mon travail », ou au chapitre de cours si on en vient (`?depuis=cours&chapitre=<uuid>`, `studentExerciseHref` / `studentExerciseReturnHref` dans `return-links.ts`) ;
+- **trouvé à l'écran** (`pnpm voir /dashboard/student/work --compte eleve`) : « Mon travail » listait encore une affectation `public` : carte sans titre (l'élève ne lit pas l'exercice) qui menait à un refus. Retirée de la requête de `fetchExerciseItems` (test rouge puis vert). En prod : 0 affectation hors fiche, aucun élève ne la voyait ;
+- graine `db-seed-riche` : deux signalements fictifs pointaient la liste, ils pointent « Mon travail ».
+
+**Restes, à demander à David** (rien n'est retiré sans réponse) : route `GET /api/exercises/assigned` et `getAssignmentsForStudent` sans appelant ; `make_public` encore accepté par `POST /api/exercises/[id]/assign` (schéma Zod, `exercise-assignments.ts`, type) sans appelant. **Vu au passage, pas corrigé** : la page « Assigner » met une case à cocher Shadcn dans un bouton (deux erreurs de console `node_invalid_placement_ssr`, même famille que E80 ; antérieur à cette PR).
+
+**Preuves** : `return-links.test.ts` (3 tests rouges puis verts), `student-inbox.test.ts` (1 rouge puis vert) ; `pnpm voir` : page « Assigner » (prof, ordi) à deux onglets, `/dashboard/student/exercises` → « Page introuvable », « Mon travail » de l'Élève 01 vide avec le seul bouton Python. Pas vu à l'écran : « Quitter » sur la page d'un exercice (`pnpm voir --compte eleve` = Élève 01, qui n'a pas d'exercice assigné) ; couvert par les tests du lien.

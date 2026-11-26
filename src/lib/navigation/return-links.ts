@@ -14,6 +14,8 @@ export const FROM_PARAM = 'depuis';
 
 export type ReturnLink = { href: string; label: string };
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 // ============================================================================
 // JOURNAL D'UN ÉLÈVE (prof) — ouvert depuis les classes, l'accueil ou le suivi
 // ============================================================================
@@ -68,6 +70,27 @@ export function notionReturn(searchParams: ReadonlyURLSearchParams): ReturnLink 
 }
 
 // ============================================================================
+// EXERCICE HORS FICHE (élève) — ouvert depuis « Mon travail » ou depuis un
+// chapitre de cours
+// ============================================================================
+
+const CHAPTER_PARAM = 'chapitre';
+
+export function studentExerciseHref(exerciseId: string, fromChapterId?: string): string {
+	const href = `/dashboard/student/exercises/${exerciseId}`;
+	if (!fromChapterId) return href;
+	return `${href}?${FROM_PARAM}=cours&${CHAPTER_PARAM}=${encodeURIComponent(fromChapterId)}`;
+}
+
+export function studentExerciseReturnHref(searchParams: ReadonlyURLSearchParams): string {
+	const chapterId = searchParams.get(CHAPTER_PARAM);
+	if (searchParams.get(FROM_PARAM) === 'cours' && chapterId && UUID_PATTERN.test(chapterId)) {
+		return `/dashboard/student/cours/${chapterId}`;
+	}
+	return '/dashboard/student/work';
+}
+
+// ============================================================================
 // SESSION DE RÉVISION — lancée depuis la page du deck ou depuis le Programme
 // ============================================================================
 
@@ -97,7 +120,6 @@ export function studySessionReturnHref(
 // ============================================================================
 
 const REPORT_PARAM = 'signalement';
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function assignmentBase(worksheetId: string, assignmentId: string): string {
 	return `/dashboard/teacher/contenu/worksheets/${worksheetId}/assignments/${assignmentId}`;

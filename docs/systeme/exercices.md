@@ -82,8 +82,10 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   la classe quittée), ou `public`. Garde d'appelant : son propre compte, ou prof/admin.
   ⚠️ Cette surcharge répond à la route d'accès ; c'est l'autre, `(id)`, qui garde la **lecture**
   de la ligne. Elles s'accordent sur l'élève désigné et la classe, pas sur `public` (cette
-  surcharge dit oui, la lecture reste fermée : décision de David du 2026-11-26, qui retire
-  l'onglet « Rendre public » de la page d'affectation).
+  surcharge dit oui, la lecture reste fermée : décision de David du 2026-11-26). L'onglet
+  « Rendre public » de la page d'affectation est retiré : la page n'assigne plus qu'à des élèves
+  ou à des classes ; une ancienne affectation `public` reste listée et supprimable, et l'API
+  accepte encore `make_public`, sans appelant.
   ⚠️ La fonction a deux surcharges, que le générateur de types saute : l'appel passe par
   `callExerciseAccess` (`exercise-assignments.ts`), seul contournement de typage du module.
 - **Maîtrise** : l'élève lit et écrit ses lignes ; le prof (et l'admin) **lit** celles des élèves
@@ -185,8 +187,12 @@ sinon 403 (message du jeton) ou 404. `?variation=` et `?seed=` fixent le niveau 
 graine.
 `noindex` partout **sauf** exercice public coché « Afficher sur Google » ouvert **sans** jeton.
 
-**Page élève** `dashboard/student/exercises/` : la liste lit `/api/exercises/assigned`
-(`getAssignmentsForStudent`) ; `[id]` vérifie l'accès (`/api/exercises/[id]/access`), lit
+**Page élève** `dashboard/student/exercises/[id]` : il n'y a plus de liste « Mes exercices »
+(retirée le 2026-11-26 avec ses entrées ; `/api/exercises/assigned` et `getAssignmentsForStudent`
+restent, sans appelant). L'élève arrive sur un exercice par « Mon travail » ou par un chapitre
+de cours (`?depuis=cours&chapitre=<uuid>`, `studentExerciseHref`), et « Quitter » l'y ramène
+(`studentExerciseReturnHref`, « Mon travail » par défaut). « Mon travail » ne liste pas une
+affectation `public` (`fetchExerciseItems`, `student-inbox.ts`) : elle n'ouvre rien. La page vérifie l'accès (`/api/exercises/[id]/access`), lit
 l'affectation à montrer (note, échéance : celle de l'élève, sinon celle d'une de ses classes
 actives, `pickStudentAssignment`), affiche l'exercice (`ExerciseDisplay mode="instance"`), enregistre une vue (`POST …/view`) et le
 « terminé » (`POST`/`DELETE …/complete`, dans `exercise_completions`).
