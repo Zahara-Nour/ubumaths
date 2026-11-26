@@ -2,18 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, phase 0 validée, modèles réservés._
+_Mis à jour le 2026-11-26, lot écrit, migration de contenu générée (PR à ouvrir)._
 
-- **État** : relevé écrit ([idees-3e-proportionnalite-releve.md](idees-3e-proportionnalite-releve.md)).
-  **Phase 0 validée en entier par David** (« je valide tout », dans la session, pas sur la page à
-  cocher) : V1 à V4 comme écrites ci-dessous, Q1 = oui (variations sur les modèles publiés, vues
-  aussi en 4e). ccb51039, 76f5f143 et 8b59ca4b réservés dans le tableau (commit sur `main`). Rien
-  d'écrit en code.
-- **Prochaine action** : exporter les 3 modèles de prod dans
-  `scripts/questions/idees-3e-proportionnalite-publies/` (`scripts/export-question-templates.ts`),
-  écrire `docs/wip/questions/idees-3e-proportionnalite-publies.py` (10 variations ajoutées à la
-  fin, specs, 3 erreurs prévues par case, coup de pouce), `question:specs`, essai en base locale,
-  puis `migration-contenu.ts --dir …`.
+- **État** : phase 0 validée (V1 à V4, Q1 = oui). Lot écrit : 10 variations ajoutées à la fin
+  (ccb51039 +4, 76f5f143 +4, 8b59ca4b +2), specs vertes, essai local vu, migration de contenu
+  `20261126185210_…_publies_contenu.sql` générée, test d'intégration vert, preuve rouge faite.
+- **Prochaine action** : PR → CI verte → merge → `db:migrate` (4 conditions ; `migration list
+--linked` d'abord) → série de relecture des 3 modèles dans `/dev/modeles` (David la publie).
 - **En attente de David** : rien.
 - **Pièges en cours** : ccb51039 et 76f5f143 portent aussi le niveau 4e (4-057, 4-080) : leurs
   variations ajoutées sont vues en 4e (accepté, Q1). 8b59ca4b : réponse en puissance acceptée
@@ -77,3 +72,26 @@ refusées), trois erreurs prévues par case et un coup de pouce qui ne donne pas
 ccb51039 et 76f5f143 portent les niveaux 4e et 3e. Les élèves de 4e verront les nouvelles variations.
 Le taux d'évolution est travaillé au cycle 4 (BO de Seconde, § information chiffrée) et d727be44 fait
 déjà le coefficient à partir des deux prix en 4e. Recommandation : oui.
+
+## 2026-11-26 : lot écrit, migration de contenu
+
+- Export de prod des 3 modèles (`scripts/export-question-templates.ts`) dans
+  `scripts/questions/idees-3e-proportionnalite-publies/` ; script
+  `docs/wip/questions/idees-3e-proportionnalite-publies.py` (repart de l'origine : 3 / 12, 3 / 11,
+  2 / 15 variations / specs).
+- ccb51039 et 76f5f143 : v4 « de quel pourcentage ? » (prix, collège, ville), v5 appliquer une
+  évolution (collège, ville, facture), v6 taux → coefficient (1 à 9 %, 110 à 190 % ; baisse : 1 à
+  9 % et deux chiffres non multiples de 5), v7 coefficient → taux. 8b59ca4b : v3 hausse (salaire
+  ou capital, au centime), v4 baisse (espèce protégée, à l'unité), deux cases chacune.
+- Écart aux fiches, assumé : l'erreur « 7 % lu 0,7 » ne vaut que pour un taux à un chiffre ; au-delà
+  (V2, taux de baisse V3), la troisième erreur prévue devient l'évolution dans le mauvais sens
+  (V2), ou le pourcentage non converti (taux de baisse V3, « 77 » pour − 23 %).
+- Tirages écartés : − 50 % d'un prix en V1 (l'erreur « valeur finale en % » vaudrait la réponse).
+- `question:specs` : 72 / 67 / 31 specs vertes, 1 400 / 1 400 / 800 tirages réussis. Chaque
+  réponse fausse des specs déclenche bien son message d'erreur prévue (relevé par
+  `runTestSpec`, aucune sans message).
+- Essai local : copies en brouillon « (essai local) » et « (essai local, ajouts) » (nouvelles
+  variations seules) ; `pnpm voir` de l'aperçu admin : ville « 54 000 habitants », collège,
+  facture, salaire et espèce protégée à deux cases, taux et coefficients ; 0 erreur de console.
+- `migration-contenu.ts` : +4, +4, +2 variations ; test d'intégration vert ; preuve rouge
+  (migration vidée → 5 échecs, tous sur elle), fichier restauré d'une copie.

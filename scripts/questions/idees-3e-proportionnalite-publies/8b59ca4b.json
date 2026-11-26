@@ -1,0 +1,625 @@
+{
+	"id": "8b59ca4b-9a09-49df-a10c-4f3772176d46",
+	"title": "Coefficient multiplicateur d'une évolution répétée",
+	"description": "Même taux appliqué plusieurs années de suite",
+	"grades": ["2", "1_SPE"],
+	"level": 11,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }"
+				}
+			],
+			"statement": "Une grandeur augmente de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1|2|3|4|5|10"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, la grandeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+					"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1+t/100;d}}^{ {{n}} }$.",
+					"Attention : ce n'est pas $1+\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1+n*t/100;d}}$, les taux ne s'additionnent pas."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }"
+				}
+			],
+			"statement": "Une grandeur diminue de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1|2|3|4|5|10|20"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, la grandeur est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+					"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1-t/100;d}}^{ {{n}} }$.",
+					"Attention : ce n'est pas $1-\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1-n*t/100;d}}$, les taux ne s'additionnent pas."
+				]
+			}
+		},
+		{
+			"statement": "{{if:c==0|Un salaire mensuel de ${{a}}~\\unit{€}$ augmente de ${{t}}\\,\\%$ chaque année|Un capital de ${{a}}~\\unit{€}$ rapporte ${{t}}\\,\\%$ d'intérêts par an, ajoutés au capital chaque année}}, pendant ${{n}}$ ans.\n\nLe coefficient multiplicateur global est $?$.\n\nAu bout de ${{n}}$ ans, {{if:c==0|le salaire|le capital}} vaut, arrondi au centime, $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "20..40"
+				},
+				{
+					"name": "a",
+					"expression": "eval:50*j"
+				},
+				{
+					"name": "t",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1+n*t/100;d}}",
+							"message": "Les taux ne s'additionnent pas : chaque année, on multiplie par ${{eval:1+t/100;d}}$, donc ${{n}}$ fois de suite.",
+							"label": "Taux additionnés"
+						},
+						{
+							"answer": "{{eval:n*(1+t/100);d}}",
+							"message": "Multiplier ${{n}}$ fois par ${{eval:1+t/100;d}}$, ce n'est pas multiplier par ${{n}}\\times{{eval:1+t/100;d}}$ : c'est une puissance.",
+							"label": "Coefficient multiplié par n"
+						},
+						{
+							"answer": "{{eval:1+t/100;d}}",
+							"message": "C'est le coefficient d'une seule année : on le demande pour ${{n}}$ ans.",
+							"label": "Une seule année"
+						}
+					]
+				},
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					},
+					"expectedAnswer": "{{eval:a*(1+t/100)^n;a2}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*(1+n*t/100);a2}}",
+							"message": "Les taux ne s'additionnent pas : on multiplie ${{a}}$ par ${{eval:1+t/100;d}}^{ {{n}} }$, pas par ${{eval:1+n*t/100;d}}$.",
+							"label": "Taux additionnés"
+						},
+						{
+							"answer": "{{eval:a*n*(1+t/100);a2}}",
+							"message": "Tu as multiplié par ${{n}}$ : il faut multiplier ${{n}}$ fois par ${{eval:1+t/100;d}}$, c'est-à-dire par ${{eval:1+t/100;d}}^{ {{n}} }$.",
+							"label": "Multiplié par n"
+						},
+						{
+							"answer": "{{eval:a*(1+t/100)^n-a;a2}}",
+							"message": "C'est ce qui a été gagné : on demande la nouvelle valeur.",
+							"label": "Le gain seul"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, la valeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+					"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est $\\textcolor{{{color:primary.0}}}{ {{eval:1+t/100;d}}^{ {{n}} } }$.",
+					"$${{a}}\\times{{eval:1+t/100;d}}^{ {{n}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:a*(1+t/100)^n;a2}} }$$"
+				]
+			},
+			"hint": "Chaque année, la valeur est multipliée par le même nombre : lequel, et combien de fois ?"
+		},
+		{
+			"statement": "Une espèce protégée compte ${{a}}$ individus. Sa population diminue de ${{t}}\\,\\%$ chaque année, pendant ${{n}}$ ans.\n\nLe coefficient multiplicateur global est $?$.\n\nAu bout de ${{n}}$ ans, il reste environ $?$ individus (arrondi à l'unité).",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "300..1300"
+				},
+				{
+					"name": "t",
+					"expression": "4..16"
+				},
+				{
+					"name": "n",
+					"expression": "3..6"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:1-n*t/100;d}}",
+							"message": "Les taux ne s'additionnent pas : chaque année, on multiplie par ${{eval:1-t/100;d}}$, donc ${{n}}$ fois de suite.",
+							"label": "Taux additionnés"
+						},
+						{
+							"answer": "{{eval:n*(1-t/100);d}}",
+							"message": "Multiplier ${{n}}$ fois par ${{eval:1-t/100;d}}$, ce n'est pas multiplier par ${{n}}\\times{{eval:1-t/100;d}}$ : c'est une puissance.",
+							"label": "Coefficient multiplié par n"
+						},
+						{
+							"answer": "{{eval:1-t/100;d}}",
+							"message": "C'est le coefficient d'une seule année : on le demande pour ${{n}}$ ans.",
+							"label": "Une seule année"
+						}
+					]
+				},
+				{
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					},
+					"expectedAnswer": "{{eval:a*(1-t/100)^n;a0}}",
+					"expectedErrors": [
+						{
+							"answer": "{{eval:a*(1-n*t/100);a0}}",
+							"message": "Les taux ne s'additionnent pas : on multiplie ${{a}}$ par ${{eval:1-t/100;d}}^{ {{n}} }$, pas par ${{eval:1-n*t/100;d}}$.",
+							"label": "Taux additionnés"
+						},
+						{
+							"answer": "{{eval:a*n*(1-t/100);a0}}",
+							"message": "Tu as multiplié par ${{n}}$ : il faut multiplier ${{n}}$ fois par ${{eval:1-t/100;d}}$, c'est-à-dire par ${{eval:1-t/100;d}}^{ {{n}} }$.",
+							"label": "Multiplié par n"
+						},
+						{
+							"answer": "{{eval:a-a*(1-t/100)^n;a0}}",
+							"message": "C'est le nombre d'individus disparus : on demande combien il en reste.",
+							"label": "La perte seule"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, la population est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+					"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est $\\textcolor{{{color:primary.0}}}{ {{eval:1-t/100;d}}^{ {{n}} } }$.",
+					"$${{a}}\\times{{eval:1-t/100;d}}^{ {{n}} }\\approx\\textcolor{{{color:primary.0}}}{ {{eval:a*(1-t/100)^n;a0}} }$$"
+				]
+			},
+			"hint": "Chaque année, la population est multipliée par le même nombre : lequel, et combien de fois ?"
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1{,}03^5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "+3 % pendant 5 ans : 1,03^5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1.03^{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "+3 % pendant 5 ans : 1.03^5 saisi au point",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1{,}159\\,274\\,074\\,3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "valeur décimale exacte avec espaces fines : 1,159 274 074 3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1{,}1592740743"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "valeur décimale exacte sans espaces : juste mais perfectible",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1{,}331"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "3",
+				"t": "10"
+			},
+			"description": "+10 % pendant 3 ans : décimal exact 1,331",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1{,}159"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "valeur approchée 1,159 refusée (valeur exacte demandée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1{,}15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "erreur typique : taux additionnés 1,15",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1{,}03\\times5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "erreur typique : 1,03 × 5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}03^5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "erreur typique : 0,03^5 (taux au lieu du coefficient)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0{,}98^{10}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10",
+				"t": "2"
+			},
+			"description": "−2 % pendant 10 ans : 0,98^10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0{,}64"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "2",
+				"t": "20"
+			},
+			"description": "−20 % pendant 2 ans : décimal exact 0,64",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0{,}98^{9}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10",
+				"t": "2"
+			},
+			"description": "erreur : mauvais exposant 0,98^9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0{,}8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10",
+				"t": "2"
+			},
+			"description": "erreur typique : taux additionnés 0,8",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1{,}02^{10}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10",
+				"t": "2"
+			},
+			"description": "erreur typique : 1,02^10 (hausse au lieu de baisse)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\left(1+0{,}03\\right)^5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"description": "calcul non effectué (1+0,03)^5 : mauvaise forme (convention « calcul non effectué »)",
+			"variationIndex": 0
+		},
+		{
+			"description": "1500 € à + 2 % pendant 5 ans",
+			"variationIndex": 2,
+			"variables": {
+				"c": "0",
+				"j": "30",
+				"a": "1500",
+				"t": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}02^{5}", "1656,12"]
+		},
+		{
+			"description": "1500 € : taux additionnés",
+			"variationIndex": 2,
+			"variables": {
+				"c": "0",
+				"j": "30",
+				"a": "1500",
+				"t": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,1", "1650,00"]
+		},
+		{
+			"description": "1500 € : multiplié par n",
+			"variationIndex": 2,
+			"variables": {
+				"c": "0",
+				"j": "30",
+				"a": "1500",
+				"t": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5,1", "7650,00"]
+		},
+		{
+			"description": "1500 € : une seule année, gain seul",
+			"variationIndex": 2,
+			"variables": {
+				"c": "0",
+				"j": "30",
+				"a": "1500",
+				"t": "2",
+				"n": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,02", "156,12"]
+		},
+		{
+			"description": "1250 € à + 4 % pendant 3 ans",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"j": "25",
+				"a": "1250",
+				"t": "4",
+				"n": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1{,}04^{3}", "1406,08"]
+		},
+		{
+			"description": "1250 € : taux additionnés",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"j": "25",
+				"a": "1250",
+				"t": "4",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,12", "1400,00"]
+		},
+		{
+			"description": "1250 € : multiplié par n",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"j": "25",
+				"a": "1250",
+				"t": "4",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3,12", "3900,00"]
+		},
+		{
+			"description": "1250 € : une seule année, gain seul",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"j": "25",
+				"a": "1250",
+				"t": "4",
+				"n": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1,04", "156,08"]
+		},
+		{
+			"description": "800 individus, − 10 % pendant 4 ans",
+			"variationIndex": 3,
+			"variables": {
+				"a": "800",
+				"t": "10",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}9^{4}", "525"]
+		},
+		{
+			"description": "800 individus : taux additionnés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "800",
+				"t": "10",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,6", "480"]
+		},
+		{
+			"description": "800 individus : multiplié par n",
+			"variationIndex": 3,
+			"variables": {
+				"a": "800",
+				"t": "10",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3,6", "2880"]
+		},
+		{
+			"description": "800 individus : une seule année, perte seule",
+			"variationIndex": 3,
+			"variables": {
+				"a": "800",
+				"t": "10",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,9", "275"]
+		},
+		{
+			"description": "1250 individus, − 5 % pendant 6 ans",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1250",
+				"t": "5",
+				"n": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["0{,}95^{6}", "919"]
+		},
+		{
+			"description": "1250 individus : taux additionnés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1250",
+				"t": "5",
+				"n": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,7", "875"]
+		},
+		{
+			"description": "1250 individus : multiplié par n",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1250",
+				"t": "5",
+				"n": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5,7", "7125"]
+		},
+		{
+			"description": "1250 individus : une seule année, perte seule",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1250",
+				"t": "5",
+				"n": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["0,95", "331"]
+		}
+	]
+}
