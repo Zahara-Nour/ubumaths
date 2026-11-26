@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, après #3199._
+_Mis à jour le 2026-11-26, après #3199 et sa migration._
 
-- **État** : #3196 mergée et migrée ; #3199 (retouches F5 et F6) mergée, migration
-  `20261126200955_…_publies_contenu` en attente · **Prochaine action** : `pnpm db:migrate` (David),
-  puis verser le chantier (archiver le journal, ligne de la répartition) · **En attente de David** :
-  `db:migrate` · **Pièges en cours** : le moteur ne voit pas 4^(1/4) = 2^(1/2) (F6 limitée à
-  r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** : aucun.
+- **État** : #3196 et #3199 mergées et migrées (prod vérifiée : coup de pouce de F6 et erreur
+  a + c de F5 en place) · **Prochaine action** : verser le chantier (archiver le journal, ligne de
+  la répartition) · **En attente de David** : rien · **Pièges en cours** : le moteur ne voit pas
+  4^(1/4) = 2^(1/2) (F6 limitée à r ∈ {2, 3, 5, 6, 7}) · **Worktree / branche** : aucun.
 
 ## Journal
 
@@ -69,3 +68,6 @@ _Mis à jour le 2026-11-26, après #3199._
   - F6 : coup de pouce « Cherche le nombre p tel que (xᵃ)ᵖ = x », qui ne donne plus la réponse.
 - `question:specs` vert, migration de contenu générée (2 variations corrigées), test d'intégration
   vert (266 tests).
+- #3199 mergée (1er échec de CI : délai d'un test d'empreinte Typst sans lien, vert à la relance).
+  `db:migrate` lancé sur le go de David, avec la migration en attente de `idees-1re-variables-aleatoires`
+  (`20261126205931_…_rangement_tags`), poussée aussi avec son accord. Prod vérifiée en lecture.
