@@ -111,6 +111,24 @@ Au téléphone, les outils communs font les gestes de l'élève : `calc` déplie
 lui (`CFFIXED_USER_HOME`), sinon il s'arrête (« Could not find profile folder »). Captures « à
 l'œil » au format iPhone : `pnpm test:verifs:captures --project iphone`.
 
+**Pièges de `pnpm test:verifs`** (relevés par le chantier `ecarts-verifs`, clos le 2026-11-26) :
+
+- **Ne jamais changer l'attendu d'un test de `e2e/verifs/`** pour le faire passer : un rouge est un
+  écart à inscrire au registre (`pnpm ecarts ajouter`), tranché par David.
+- **Lancer soi-même son serveur de dev** avant `test:verifs` (`VERIFS_PORT=<port>` s'il n'est pas
+  sur 5176) : le serveur lancé par Playwright meurt avec un lot arrêté.
+- **Plusieurs lots en parallèle** (agents) : `--output=<dossier à soi>` et `--workers=1` ou `2`,
+  sinon `ENOENT` et délais dépassés.
+- **L'énoncé d'un exercice est présent deux fois dans la page** (une copie cachée) : compter avec
+  `:visible`.
+- **Un test qui ouvre un modèle de questions lit le modèle EN BASE**, pas le fichier du dépôt : un
+  modèle corrigé en prod reste à l'ancienne dans la base locale tant qu'il n'y est pas réécrit, et
+  un `pnpm db:neuf` le remet à l'ancienne.
+- **La capture WebKit d'une carte retournée sort en miroir** (artefact de `page.screenshot`, pas un
+  défaut de la page) : la retourner pour la lire, ou lire la vidéo.
+- **Un seul professeur par base** : le second compte capable d'assigner est l'admin. Le prof de la
+  base locale n'a pas d'école : ce qui dépend de l'école (périodes) ne s'y vérifie pas.
+
 **Intégration : PR ou nightly ? Les deux.** Le workflow `nightly-integration.yml` se déclenche
 (1) chaque nuit, (2) sur toute PR qui touche un fichier de son filtre `paths` (`supabase/**`,
 `tests/integration/**`, `tests/helpers/**`, configs vitest, `package.json`, et la fermeture des
