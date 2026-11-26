@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, migrations commitées, PR pas encore ouverte._
+_Mis à jour le 2026-11-26, PR de rangement et de contenu ouverte._
 
-- **État** : 3 brouillons créés en prod par David (80c43412, 8f08fca1, 61c4a8ed, ids commités) ; migrations générées (rangement `20261126072904`, contenu de 2b382069 `20261126072928`), tests d'intégration des fixtures verts ; `security-auditor` lancé sur les deux migrations, branche pas encore poussée depuis.
-- **Prochaine action** : lire le verdict de `security-auditor` (le relancer sur les deux migrations s'il est perdu), pousser, ouvrir la PR ; CI verte → `pnpm pr:merger`, puis `migration list --linked` (seules les deux du lot en attente) et `db:migrate` ; puis relecture dans `/dev/modeles?noeud=` (brouillons) et série de relecture pour 2b382069.
+- **État** : 3 brouillons en prod (80c43412, 8f08fca1, 61c4a8ed) ; migrations rangement `20261126072904` et contenu de 2b382069 `20261126072928` commitées, tests d'intégration verts, `security-auditor` sans finding bloquant ; PR ouverte (n° dans `gh pr list --head feat/idees-1re-variations`).
+- **Prochaine action** : CI verte → `pnpm pr:merger <n>` ; puis, depuis le dépôt principal à jour, `migration list --linked` (seules les deux du lot en attente) et `db:migrate` ; puis relecture par David dans `/dev/modeles?noeud=` (brouillons) et série de relecture pour 2b382069.
 - **En attente de David** : rien avant le merge ; ensuite, sa relecture dans `/dev/modeles`.
-- **Pièges en cours** : choix + tableau à compléter dans une même variation = réponse du choix perdue ; flèche cachée près de `||` refusée (outils-manquants 59 et 63) ; pas d'erreur prévue dans une case de tableau ; ids locaux à retirer après un `--publier` local.
+- **Pièges en cours** : choix + tableau à compléter dans une même variation = réponse du choix perdue ; flèche cachée près de `||` refusée (outils-manquants 59 et 63) ; pas d'erreur prévue dans une case de tableau.
 - **Worktree / branche** : `../ubumaths-wt-idees-1re-variations`, `feat/idees-1re-variations`.
 
 ## Historique
@@ -57,3 +57,6 @@ _Mis à jour le 2026-11-26, migrations commitées, PR pas encore ouverte._
   extremums », 1SPE-283 / 1SPE-401). `migration-contenu.ts` : 2b382069 +1 variation et ses specs.
 - Tests d'intégration `migrations-rangement-tags` et `migrations-contenu-publie` verts ;
   `garde-niveaux-tags` vert ; `types:cliquet` tenu.
+- `security-auditor` : aucun finding bloquant ; notes : `disable/enable trigger` du générateur
+  (verrou bref, sans effet sur les droits), en-tête « variation(s) ajoutée(s) : 4 » = numéro de la
+  variation, pas un nombre.
