@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-26, migrations générées, PR à ouvrir._
+_Mis à jour le 2026-11-26, après #3169 et son `db:migrate`._
 
-- **État** : migrations `20261126090110_…_neufs_rangement_tags` (N1, N2 → « événements », 3-033) et `20261126090116_…_publies_contenu` (+1, +4, +1 variations) générées et commitées sur la branche. Tests d'intégration verts, rouges sans les écritures ; règles du tag vérifiées en prod (MCP).
-- **Prochaine action** : PR, CI, merge ; `db:migrate` (4 conditions, `migration list --linked` d'abord). Ensuite relecture dans `/dev/modeles` (`?point=3-033`, série pour les publiés).
-- **En attente de David** : rien.
-- **Pièges en cours** : les gardes des migrations refusent si un modèle a changé en prod depuis le relevé du 2026-11-26. La base locale garde 5 brouillons d'essai.
-- **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites-migrations` · `feat/idees-3e-probabilites-migrations`.
+- **État** : #3169 mergée, migrations appliquées en prod et vérifiées (N1, N2 brouillons sur « événements » + 3-033 ; 247fddd1 5 var., b28ed4fa 8, e73b947f 5). Série de relecture des 3 publiés (4e) écrite, simulation verte, pas encore enregistrée.
+- **Prochaine action** : après le `--publier` de David, commiter l'id de la série, PR, merge. Puis lire les verdicts (`question_template_reviews`), corriger, `publier-lot.ts` en simulation.
+- **En attente de David** : `--publier` de la série (commande dans le dernier message de la session), puis relecture : brouillons `/dev/modeles?point=3-033`, publiés `/dev/modeles?serie=<id>`.
+- **Pièges en cours** : la base locale garde 5 brouillons d'essai.
+- **Worktree / branche** : `../ubumaths-wt-idees-3e-probabilites-serie` · `feat/idees-3e-probabilites-serie`.
 
 ## Migrations (2026-11-26)
 
