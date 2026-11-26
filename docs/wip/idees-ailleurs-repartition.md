@@ -162,6 +162,9 @@ de contenu appliquée en prod.
 
 | Modèle (id court, titre)                                            | Session                                                     | Depuis     | Idées laissées par d'autres sessions |
 | ------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | ------------------------------------ |
+| ccb51039 Augmentation et coefficient multiplicateur                 | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 76f5f143 Diminution et coefficient multiplicateur                   | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
+| 8b59ca4b Coefficient multiplicateur d'une évolution répétée         | `idees-3e-proportionnalite`                                 | 2026-11-26 |                                      |
 | b73923a1 Choisir la méthode dans une figure usuelle                 | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
 | 9c7f7ef0 Produit scalaire par projection orthogonale                | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
 | d787d8c0 Produit scalaire avec les normes                           | `idees-1re-produit-scalaire`                                | 2026-11-26 |                                      |
