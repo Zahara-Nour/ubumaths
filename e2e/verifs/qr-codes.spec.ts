@@ -2,7 +2,15 @@ import { execFileSync } from 'node:child_process';
 import { readdir, readFile } from 'node:fs/promises';
 import type { Locator } from '@playwright/test';
 import { expect, test, type Page } from '@playwright/test';
-import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import {
+	assertLocalServerEnv,
+	login,
+	sql,
+	TEACHER,
+	withFirstVersion,
+	LATEST_VERSION_OF
+} from './helpers/carnet';
+import { allowClipboard, readClipboard } from './helpers/atelier';
 import { acquireLock, LOCK_WAIT_MAX_MS, releaseLock } from './helpers/verrou';
 import { encodeQr, QR_BORDER, QR_COLORS } from '../../src/lib/qr/qr-code';
 import {
@@ -161,10 +169,9 @@ test.describe('#1539 liens courts : forme, élève, déconnecté, code inconnu',
 
 	for (const who of ['élève', 'déconnecté'] as const) {
 		test(`#1539 ${who} : au panier, le bouton QR est grisé « réservé aux profs », Copier le lien marche`, async ({
-			page,
-			context
+			page
 		}) => {
-			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+			await allowClipboard(page);
 			if (who === 'élève') await login(page, STUDENT.email, STUDENT.password);
 			await openCart(page);
 			const qrButton = page.getByRole('button', { name: /^QR code de/ });
@@ -175,7 +182,7 @@ test.describe('#1539 liens courts : forme, élève, déconnecté, code inconnu',
 
 			await page.getByRole('button', { name: 'Copier le lien' }).click();
 			await expect(page.getByText('Lien copié')).toBeVisible();
-			const copied = await page.evaluate(() => navigator.clipboard.readText());
+			const copied = await readClipboard(page);
 			expect(copied).toMatch(/^http:\/\/localhost:\d+\/automaths\/panier\?modeles=/);
 		});
 	}
@@ -466,8 +473,10 @@ interface FicheDecor {
 async function createFicheDecor(): Promise<FicheDecor> {
 	const run = Date.now().toString(36);
 	const exercise = await sql<{ id: string }>(
-		`insert into exercises (title, created_by, is_public, slug, category, variations)
-		 values ('Verifs QR', $1, true, $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, created_by, is_public, slug, category, variations)
+			 values ('Verifs QR', $1, true, $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			'11111111-1111-4111-8111-111111111111',
 			`verifs-qr-${run}`,
@@ -486,7 +495,8 @@ async function createFicheDecor(): Promise<FicheDecor> {
 		['11111111-1111-4111-8111-111111111111']
 	);
 	await sql(
-		`insert into worksheet_exercises (worksheet_id, exercise_id, position) values ($1, $2, 1)`,
+		`insert into worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, position)
+		 values ($1, $2, ${LATEST_VERSION_OF('$2')}, 1)`,
 		[worksheet[0].id, exercise[0].id]
 	);
 	const assignment = await sql<{ id: string }>(

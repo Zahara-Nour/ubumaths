@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import { assertLocalServerEnv, login, sql, TEACHER, withFirstVersion } from './helpers/carnet';
 import {
 	createWorksheet,
 	FICHES_TMP,
@@ -98,8 +98,8 @@ async function copyOf(title: string, tag: string, type?: string): Promise<string
 		[src[0].id, id]
 	);
 	await sql(
-		`insert into worksheet_exercises (worksheet_id, exercise_id, position)
-		 select $2, exercise_id, row_number() over (order by position) from worksheet_exercises
+		`insert into worksheet_exercises (worksheet_id, exercise_id, exercise_version_id, position)
+		 select $2, exercise_id, exercise_version_id, row_number() over (order by position) from worksheet_exercises
 		 where worksheet_id = $1 order by position limit 2`,
 		[src[0].id, id]
 	);
@@ -517,8 +517,10 @@ async function createExercise9(
 	answers: string
 ): Promise<string> {
 	const rows = await sql<{ id: string }>(
-		`insert into exercises (title, source, grades, topic, created_by, category, variations)
-		 values ($1, 'verifs9', '{}', 'Verifs9', $2, 'automatisme', $3::jsonb) returning id`,
+		withFirstVersion(
+			`insert into exercises (title, source, grades, topic, created_by, category, variations)
+			 values ($1, 'verifs9', '{}', 'Verifs9', $2, 'automatisme', $3::jsonb) returning id`
+		),
 		[
 			title,
 			TEACHER_ID,

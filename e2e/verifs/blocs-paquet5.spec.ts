@@ -1,7 +1,14 @@
 import { mkdir } from 'node:fs/promises';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { templateMarkdown } from '../../src/lib/ubumark/index';
-import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import {
+	ADMIN,
+	assertLocalServerEnv,
+	login,
+	sql,
+	TEACHER,
+	withFirstVersion
+} from './helpers/carnet';
 import {
 	createWorksheet,
 	pdfFonts,
@@ -1624,8 +1631,10 @@ test.describe('PDF de fiche', () => {
 
 	async function exercise(title: string, statement: string, solution: string): Promise<string> {
 		const rows = await sql<{ id: string }>(
-			`insert into exercises (title, source, grades, topic, created_by, category, variations)
-			 values ($1, 'verifs5', '{}', 'Verifs5', $2, 'automatisme', $3::jsonb) returning id`,
+			withFirstVersion(
+				`insert into exercises (title, source, grades, topic, created_by, category, variations)
+				 values ($1, 'verifs5', '{}', 'Verifs5', $2, 'automatisme', $3::jsonb) returning id`
+			),
 			[
 				title,
 				TEACHER_ID,

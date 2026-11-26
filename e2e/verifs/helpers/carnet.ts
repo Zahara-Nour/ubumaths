@@ -110,6 +110,22 @@ export async function sql<T extends pg.QueryResultRow = pg.QueryResultRow>(
 	return withDb(async (db) => (await db.query<T>(text, values)).rows);
 }
 
+/** La version que porte une ligne de fiche créée par le décor : la dernière de l'exercice. */
+export const LATEST_VERSION_OF = (exerciseParam: string): string =>
+	`(select id from exercise_versions where exercise_id = ${exerciseParam} order by number desc limit 1)`;
+
+/**
+ * Un exercice créé par le décor reçoit sa version 1 dans la même requête : depuis les versions
+ * d'exercices (ADR 0044), le contenu se lit dans `exercise_versions` et une ligne de fiche exige
+ * une version. `insert` est un `insert into exercises … returning id` ; la requête rend toujours `id`.
+ */
+export function withFirstVersion(insert: string): string {
+	return `with e as (${insert}, variations, shared, generic_functions, created_by),
+	 v as (insert into exercise_versions (exercise_id, number, variations, shared, generic_functions, created_by)
+	       select id, 1, variations, shared, generic_functions, created_by from e)
+	 select id from e`;
+}
+
 /**
  * Remet une classe du prof local à zéro et pose le décor. Le carnet de la classe
  * est DÉSACTIVÉ en sortie : le test du professeur l'active.

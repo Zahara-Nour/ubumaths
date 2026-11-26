@@ -1,5 +1,12 @@
 import { expect, test, type Browser, type Locator, type Page } from '@playwright/test';
-import { ADMIN, assertLocalServerEnv, login, sql, TEACHER } from './helpers/carnet';
+import {
+	ADMIN,
+	assertLocalServerEnv,
+	login,
+	sql,
+	TEACHER,
+	withFirstVersion
+} from './helpers/carnet';
 import { TEACHER_ID } from './helpers/fiches';
 
 /**
@@ -489,8 +496,10 @@ test('#1581 — exercice rangé : « Points de programme » ne montre que les po
 	await login(page, TEACHER.email, TEACHER.password);
 	const insert = async (title: string) => {
 		const rows = await sql<{ id: string }>(
-			`insert into exercises (title, source, grades, topic, created_by, category, variations)
-			 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`,
+			withFirstVersion(
+				`insert into exercises (title, source, grades, topic, created_by, category, variations)
+				 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`
+			),
 			[
 				title,
 				TEACHER_ID,
@@ -609,8 +618,10 @@ test('#1583 — point de 5e archivé déjà coché : « archivé » au cahier, d
 	// Un exercice tagué sur ce point (archivé) et un autre sur 5-045 (actif) : seul le second allume son point
 	const make = async (title: string, nodeId: string, pointId: string) => {
 		const rows = await sql<{ id: string }>(
-			`insert into exercises (title, source, grades, topic, created_by, category, variations)
-			 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`,
+			withFirstVersion(
+				`insert into exercises (title, source, grades, topic, created_by, category, variations)
+				 values ($1, 'verifs2', '{5}', 'Verifs2', $2, 'automatisme', $3::jsonb) returning id`
+			),
 			[
 				title,
 				TEACHER_ID,
